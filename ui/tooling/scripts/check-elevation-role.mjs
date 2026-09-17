@@ -56,7 +56,6 @@ const EXPECTED = {
   'color-picker': { 'content': ['frosted'], 'area-thumb': ['raised'] },
   'segmented': { indicator: ['raised'] },
   'sortable': { item: ['raised'] },
-  'checkbox': { root: ['soft'] },
   'cascader': { content: ['frosted'] },
   'combobox': { content: ['frosted'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档

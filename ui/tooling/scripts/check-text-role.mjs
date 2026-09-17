@@ -3,6 +3,9 @@
 //
 // 真源 component-design.md §6.4 / §6.5：
 // 字段标签 = --xh-text-label-size 14 / --xh-text-label-weight 500 / --xh-fg-default，贴控件 --xh-space-1，不随 size 档；
+// 控件随文标签（Checkbox / Switch 的 <label> 整行：方框 / 轨道 + 它自己的文字）= 控件文字，字号随档取
+// --xh-control-font-sm / md / lg（§6.4 控件字号随档，与 checkbox-group / radio-group 的条目文字同一把尺），
+// 颜色 --xh-fg-default；
 // 集合标题（RadioGroup / CheckboxGroup / Listbox / Tree / TagGroup / Descriptions）= --xh-fg-muted，与集合 --xh-space-2；
 // 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal；错误文案 = 13 / --xh-fg-danger；
 // Surface / Feedback / 浮层内标题 = --xh-text-label-size + --xh-font-weight-semibold，页面级面板（Dialog / Drawer / Tour）= heading-3；
@@ -45,8 +48,11 @@ const FIELD_LABEL = new Set([
   'color-swatch-picker',
   'file-upload',
   'switch',
-  'checkbox',
 ])
+/** 控件随文标签：整行 <label> 包住控件与文字，文字是控件自己的文字，字号随 size 档。 */
+const CONTROL_LABEL = new Set(['checkbox'])
+/** 控件文字允许的档。 */
+const CONTROL_FONT_STEPS = ['--xh-control-font-sm', '--xh-control-font-md', '--xh-control-font-lg']
 /** 集合标题：scope → 标签所在的容器部件（与集合的间距读它的 gap）。Descriptions 的标签是每一格的标题，坐在 item 里。 */
 const COLLECTION_TITLE = {
   'radio-group': 'root',
@@ -218,6 +224,19 @@ for (const scope of FIELD_LABEL) {
   expect(scope, 'label', label, 'font-weight', '--xh-text-label-weight', '字段标签')
   expect(scope, 'label', label, 'color', '--xh-fg-default', '字段标签')
   expectSpacing(scope, 'label', label, '--xh-space-1', '字段标签贴控件')
+  const disabled = declsFor(scope, 'label', '[data-disabled]')
+  expect(scope, 'label', disabled, 'color', '--xh-fg-subtle', '禁用标签色统一')
+}
+
+// 控件随文标签
+for (const scope of CONTROL_LABEL) {
+  if (!scopes.has(scope)) {
+    problems.push(`${scope}.css 读不到——CONTROL_LABEL 名单过期`)
+    continue
+  }
+  const label = declsFor(scope, 'label')
+  expect(scope, 'label', label, 'font-size', CONTROL_FONT_STEPS, '控件随文标签的字号随 size 档，')
+  expect(scope, 'label', label, 'color', '--xh-fg-default', '控件随文标签')
   const disabled = declsFor(scope, 'label', '[data-disabled]')
   expect(scope, 'label', disabled, 'color', '--xh-fg-subtle', '禁用标签色统一')
 }

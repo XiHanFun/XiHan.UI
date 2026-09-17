@@ -13,9 +13,6 @@ import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
  */
 export type CheckboxCheckedState = boolean | 'indeterminate'
 
-/** 视觉变体：primary 是默认的实体控制盒，secondary 用于已有表面的低强调场景。 */
-export type CheckboxVariant = 'primary' | 'secondary'
-
 export interface CheckboxCheckedChangeDetails {
   /** 用户交互的落点只可能是全选或全不选，半选不在其中。 */
   checked: boolean
@@ -38,8 +35,6 @@ export interface CheckboxSchema extends MachineSchema {
     value?: string
     /** 语气：brand / neutral / success / warning / danger / info，决定选中态使用哪族颜色。 */
     tone?: Tone
-    /** 视觉变体：primary / secondary。默认 primary。 */
-    variant?: CheckboxVariant
     /** 尺寸：sm / md / lg，决定方框边长与勾选符号的字号档位。 */
     size?: Size
     /** checked 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */

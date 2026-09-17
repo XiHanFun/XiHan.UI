@@ -1,12 +1,15 @@
-// 变体 | 根据所在表面选择强调层级
+// 语气 | tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 import type { ReactNode } from "react";
 import { XhCheckbox } from "@xihan-ui/react";
 
+const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
+
 export default function Demo(): ReactNode {
   return (
-    <div style={{ display: "grid", gap: "12px" }}>
-      <XhCheckbox defaultChecked>主要复选框</XhCheckbox>
-      <XhCheckbox variant="secondary" defaultChecked>次级复选框</XhCheckbox>
+    <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+      {tones.map(t => (
+        <XhCheckbox key={t} tone={t} defaultChecked>{t}</XhCheckbox>
+      ))}
     </div>
   );
 }

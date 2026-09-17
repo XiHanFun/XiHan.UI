@@ -30,9 +30,9 @@
 
 <XhDemo src="checkbox/02-indeterminate" />
 
-### 变体
+### 颜色
 
-根据所在表面选择强调层级
+tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 
 <XhDemo src="checkbox/03-tone" />
 
@@ -70,7 +70,7 @@
 ### 特性
 
 - 支持选中、未选中与 `indeterminate` 状态。
-- `primary` 为默认实体控制盒，`secondary` 用于已有表面的低强调场景。
+- 方框是字段家族的控制盒：canvas 底、描边与无影，勾中后以语气色填充，按下缩放并换底。
 - `readOnly` 仍可聚焦并参与提交，`disabled` 不参与提交。
 - 标签、三档尺寸、校验状态和自定义指示器均使用同一状态动画。
 - `name` 与 `value` 通过隐藏字段参与原生表单。
@@ -115,7 +115,6 @@
 | `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name 并参与提交。 |
 | `value` | `string` |  | 提交的值，默认 'on'，与原生复选框一致。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态使用哪族颜色。 |
-| `variant` | `CheckboxVariant` |  | 视觉变体：primary / secondary。默认 primary。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾选符号的字号档位。 |
 | `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
@@ -213,7 +212,6 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
 | `indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-invalid` | ''（条件成立时才出现） |
@@ -231,33 +229,33 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-checkbox-bg` | `root` | `background-color` | `default` | `--xh-material-soft-bg` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg` | `root` | `background-color` | `default` | `--xh-bg-canvas` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-bg-checked` | `root` | `background-color` | `state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg-checked-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-_tone-active` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg-disabled` | `root` | `background-color` | `disabled` | `--xh-bg-subtle` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle-hover` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-border` | `root` | `border`<br>`border-color` | `contrast=more`<br>`default`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | checkbox 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-checkbox-border-checked` | `root` | `border-color` | `state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 root 部件 border-color 覆盖槽。 |
-| `--xh-checkbox-border-hover` | `label`<br>`root` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`readonly` | `--xh-_checkbox-accent` | checkbox 的 label、root 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-border-disabled` | `root` | `border-color` | `disabled` | `--xh-border-default` | checkbox 的 root 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-border-hover` | `label`<br>`root` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`not([data-state='indeterminate'])`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-border-control-hover` | checkbox 的 label、root 部件 border-color 覆盖槽。 |
 | `--xh-checkbox-border-invalid` | `root` | `border-color` | `invalid`<br>`state=checked`<br>`state=indeterminate` | `--xh-border-invalid` | checkbox 的 root 部件 border-color 覆盖槽。 |
 | `--xh-checkbox-fg` | `root` | `color` | `default` | `--xh-_checkbox-on-accent` | checkbox 的 root 部件 color 覆盖槽。 |
+| `--xh-checkbox-fg-disabled` | `indicator`<br>`root` | `background-color`<br>`color` | `disabled`<br>`state=indeterminate` | `--xh-fg-disabled` | checkbox 的 indicator、root 部件 background-color、color 覆盖槽。 |
 | `--xh-checkbox-fg-invalid` | `label`<br>`text` | `color` | `invalid` | `--xh-fg-danger` | checkbox 的 label、text 部件 color 覆盖槽。 |
-| `--xh-checkbox-highlight` | `root` | `background-image` | `default` | `--xh-material-soft-highlight` | checkbox 的 root 部件 background-image 覆盖槽。 |
 | `--xh-checkbox-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_checkbox-glyph` | checkbox 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-checkbox-indicator-fg` | `indicator` | `background-color` | `state=indeterminate` | `--xh-_checkbox-on-accent` | checkbox 的 indicator 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | checkbox 的 label 部件 color 覆盖槽。 |
-| `--xh-checkbox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | checkbox 的 label 部件 color 覆盖槽。 |
+| `--xh-checkbox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | checkbox 的 label 部件 color 覆盖槽。 |
 | `--xh-checkbox-label-font-size` | `label` | `font-size` | `default` | `--xh-_checkbox-label-font-size` | checkbox 的 label 部件 font-size 覆盖槽。 |
 | `--xh-checkbox-label-gap` | `label` | `gap` | `default` | `--xh-_checkbox-label-gap` | checkbox 的 label 部件 gap 覆盖槽。 |
 | `--xh-checkbox-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` | checkbox 的 label 部件 line-height 覆盖槽。 |
 | `--xh-checkbox-radius` | `root` | `border-radius` | `default` | `--xh-shape-inset` | checkbox 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-checkbox-shadow` | `root` | `box-shadow` | `default` | `--xh-_checkbox-shadow-rest` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-checkbox-shadow-disabled` | `root` | `box-shadow` | `disabled` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-checkbox-shadow-hover` | `label`<br>`root` | `box-shadow` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`readonly` | `--xh-_checkbox-shadow-hover` | checkbox 的 label、root 部件 box-shadow 覆盖槽。 |
-| `--xh-checkbox-shadow-pressed` | `root` | `box-shadow` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`readonly` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-checkbox-shadow-readonly` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-shadow` | `root` | `box-shadow` | `default` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background-color` · `border-color` · `box-shadow` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

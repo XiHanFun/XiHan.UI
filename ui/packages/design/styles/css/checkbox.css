@@ -28,11 +28,9 @@
 
     /* 实心底上的勾与横杠，同样没写 data-tone 时退回原来的品牌底前景色 */
     --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    /* M1 常态、悬停与按压只换这三支表面槽，控制盒尺寸始终不动。 */
-    --xh-_checkbox-bg: var(--xh-checkbox-bg, var(--xh-material-soft-bg));
-    --xh-_checkbox-edge: var(--xh-checkbox-highlight, var(--xh-material-soft-highlight));
-    --xh-_checkbox-shadow-rest: var(--xh-material-soft-shadow);
-    --xh-_checkbox-shadow-hover: var(--xh-elevation-raised);
+    /* 方框是字段家族的控制盒（§8.3 字段静息形态）：canvas 底 + --xh-border-control 描边 + 无影，
+       不消费海拔与顶光；常态、勾中、按下与禁用只换这一支底色槽，控制盒尺寸始终不动 */
+    --xh-_checkbox-bg: var(--xh-checkbox-bg, var(--xh-bg-canvas));
 
     position: relative;
     display: inline-flex;
@@ -44,21 +42,13 @@
     padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-checkbox-border, var(--xh-border-control));
     border-radius: var(--xh-checkbox-radius, var(--xh-shape-inset));
-    /* 实体底与装饰顶光分成两条属性：底色可独立参与焦点环对比计算，
-       高光仍只占内侧一像素，不改变任何状态的实际面色。 */
     background-color: var(--xh-_checkbox-bg);
-    background-image: linear-gradient(
-      to bottom,
-      var(--xh-_checkbox-edge) 0 var(--xh-stroke-thin),
-      transparent var(--xh-stroke-thin)
-    );
     color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
-    box-shadow: var(--xh-checkbox-shadow, var(--xh-_checkbox-shadow-rest));
+    box-shadow: var(--xh-checkbox-shadow, none);
     cursor: pointer;
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
@@ -67,17 +57,8 @@
   [data-scope='checkbox'][data-part='root'][data-state='checked'],
   [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
     --xh-_checkbox-bg: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
-    --xh-_checkbox-edge: transparent;
-    --xh-_checkbox-shadow-rest: var(--xh-_highlight-tone), var(--xh-material-soft-shadow);
-    --xh-_checkbox-shadow-hover: var(--xh-_highlight-tone), var(--xh-elevation-raised);
 
     border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
-  }
-
-  /* 低强调变体用于已有表面：保留实体边界与三态填充，只移除控制盒海拔。 */
-  [data-scope='checkbox'][data-part='root'][data-variant='secondary'] {
-    --xh-_checkbox-shadow-rest: none;
-    --xh-_checkbox-shadow-hover: none;
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -105,32 +86,39 @@
     color: var(--xh-checkbox-fg-invalid, var(--xh-fg-danger));
   }
 
-  /* 悬停标签文字时也让控制盒回应，整行可点不再只有移到 16px 小盒上才看得出来。 */
+  /* 悬停标签文字时也让控制盒回应，整行可点不再只有移到 16px 小盒上才看得出来。
+     未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯，§8.3）；
+     勾中的方框描边与底同色，悬停不换描边——填色本身已经在表达状态 */
   @media (hover: hover) {
-    [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-invalid]):hover,
+    [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-state='checked']):not([data-state='indeterminate']):hover,
     [data-scope='checkbox'][data-part='label']:not([data-disabled]):not([data-readonly]):not([data-invalid]):hover
-      [data-scope='checkbox'][data-part='root'] {
-      border-color: var(--xh-checkbox-border-hover, var(--xh-_checkbox-accent));
-      box-shadow: var(--xh-checkbox-shadow-hover, var(--xh-_checkbox-shadow-hover));
+      [data-scope='checkbox'][data-part='root']:not([data-state='checked']):not([data-state='indeterminate']) {
+      border-color: var(--xh-checkbox-border-hover, var(--xh-border-control-hover));
     }
   }
 
-  /* 按下去要有回应：方框自己轻微下压，松手即弹回。
-     缩的是方框这一个定尺盒，文字在外层 label 里，整行排版不跟着动。只读与禁用不压 */
-  [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):active {
-    --xh-_checkbox-edge: transparent;
+  /* 按下去要有回应：方框是定尺盒（§9.1），0.97 缩放并同时换底——未勾选的方框换到 200 档中性面
+     （白底承载），勾中 / 半选的换到语气的 active 档。缩的是方框这一个定尺盒，文字在外层 label 里，
+     整行排版不跟着动。只读与禁用不压 */
+  [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed]) {
+    --xh-_checkbox-bg: var(--xh-checkbox-bg-pressed, var(--xh-bg-subtle-hover));
 
-    box-shadow: var(--xh-checkbox-shadow-pressed, none);
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  [data-scope='checkbox'][data-part='root'][data-disabled] {
-    --xh-_checkbox-edge: transparent;
+  [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):is([data-state='checked'], [data-state='indeterminate']):is(:active, [data-pressed]) {
+    --xh-_checkbox-bg: var(--xh-checkbox-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+  }
 
-    box-shadow: var(--xh-checkbox-shadow-disabled, none);
-    opacity: var(--xh-state-disabled-opacity);
+  /* 禁用（§7.2）：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 字形，不靠 opacity；
+     勾中的禁用方框同样退回中性面，勾由置灰色画出，值仍读得出 */
+  [data-scope='checkbox'][data-part='root'][data-disabled] {
+    --xh-_checkbox-bg: var(--xh-checkbox-bg-disabled, var(--xh-bg-subtle));
+
+    border-color: var(--xh-checkbox-border-disabled, var(--xh-border-default));
+    color: var(--xh-checkbox-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
   }
 
@@ -140,10 +128,6 @@
   [data-scope='checkbox'][data-part='root'][data-readonly]:not([data-disabled]),
   [data-scope='checkbox'][data-part='label'][data-readonly]:not([data-disabled]) {
     cursor: default;
-  }
-
-  [data-scope='checkbox'][data-part='root'][data-readonly]:not([data-disabled]) {
-    box-shadow: var(--xh-checkbox-shadow-readonly, none);
   }
 
   /* —— 尺寸 —— */
@@ -223,7 +207,15 @@
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
-  /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */
+  /* 禁用时横杠也走置灰色：它自己画底色，不从 root 的 color 继承 */
+  [data-scope='checkbox'][data-part='root'][data-disabled]
+    [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
+    background-color: var(--xh-checkbox-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目、switch 的标签同一副样子 ——
+     文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（§6.4 控件字号随档）；
+     行高取正文档，长文字可以自然换行 */
   [data-scope='checkbox'][data-part='label'] {
     --xh-_checkbox-label-gap: var(--xh-control-gap-md);
     --xh-_checkbox-label-font-size: var(--xh-control-font-md);
@@ -247,8 +239,9 @@
     --xh-_checkbox-label-font-size: var(--xh-control-font-lg);
   }
 
+  /* 禁用标签色统一 --xh-fg-subtle（§6.4） */
   [data-scope='checkbox'][data-part='label'][data-disabled] {
-    color: var(--xh-checkbox-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-checkbox-label-fg-disabled, var(--xh-fg-subtle));
     cursor: not-allowed;
   }
 
@@ -267,16 +260,7 @@
   }
 
   @media (forced-colors: active) {
-    /* 系统丢弃背景图与阴影；真实 border 保住盒，系统前景重新画出勾与半选横杠。 */
-    [data-scope='checkbox'][data-part='root'] {
-      background-image: none;
-      box-shadow: none;
-    }
-
-    [data-scope='checkbox'][data-part='root'][data-disabled] {
-      opacity: 1;
-    }
-
+    /* 真实 border 保住盒，系统前景重新画出勾与半选横杠。 */
     [data-scope='checkbox'][data-part='indicator']:empty::before,
     [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
       background-color: CanvasText;
@@ -302,11 +286,6 @@
     [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
       border-width: var(--xh-stroke-thick);
       border-style: dashed;
-    }
-
-    [data-scope='checkbox'][data-part='root'] {
-      background-image: none;
-      box-shadow: none;
     }
   }
 }
