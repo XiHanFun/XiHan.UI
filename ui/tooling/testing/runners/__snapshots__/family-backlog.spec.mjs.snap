@@ -8,7 +8,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "press": 50,
   "scroll": 27,
   "selection": 18,
-  "shape": 21,
+  "shape": 19,
   "text": 69,
 }
 `;
@@ -240,8 +240,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "switch:thumb::after",
   "table:row-select-trigger",
   "table:select-all-trigger",
-  "tag:close-trigger",
-  "tag:root",
   "tour:progress-dot",
   "transfer:select-all-trigger",
 ]

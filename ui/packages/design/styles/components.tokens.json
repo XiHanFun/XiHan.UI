@@ -58196,7 +58196,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 border-radius 覆盖槽。"

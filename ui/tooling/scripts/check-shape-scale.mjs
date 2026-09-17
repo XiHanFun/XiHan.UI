@@ -89,7 +89,6 @@ const IDENTITY = {
   'carousel:indicator': 'circle',
   'slider:tick': 'circle',
   'image-cropper:crop-area': 'circle',
-  'tag:close-trigger': 'circle',
   // circle + floating：悬浮于内容之上的单图标动作，走 Action Control floating profile
   'float-button:trigger': { shape: 'circle', floating: true },
   'back-top:trigger': { shape: 'circle', floating: true },
@@ -149,6 +148,9 @@ const IDENTITY = {
   'tabs:list': 'surface',
   // inset：嵌在 control 内的小块
   'checkbox:root': 'inset',
+  // 标签里的叉是随文标记档（coarse-target 的 inlineMark：指示符尺寸 + inset 圆角），与 checkbox 系方框同档，
+  // 不按 close-trigger 后缀归 control，也不是圆
+  'tag:close-trigger': 'inset',
   'question-flow:item-indicator': 'inset',
   'checkbox-group:indicator': 'inset',
   'checkbox-group:select-all-trigger': 'inset',

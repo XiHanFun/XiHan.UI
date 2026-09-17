@@ -31,7 +31,8 @@
     padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
     padding-block: var(--xh-tag-py, var(--xh-_tag-py));
     border: var(--xh-stroke-thin) solid var(--xh-tag-border, var(--xh-material-soft-border));
-    border-radius: var(--xh-tag-radius, var(--xh-shape-control));
+    /* 状态 chip 的身份是胶囊（§6.3 pill 只给状态 chip 与一维对象） */
+    border-radius: var(--xh-tag-radius, var(--xh-shape-pill));
     background: var(--xh-tag-bg, var(--xh-material-soft-bg));
     box-shadow: var(--xh-tag-shadow, var(--xh-material-soft-shadow));
     color: var(--xh-tag-fg, var(--xh-material-soft-fg));
@@ -70,6 +71,7 @@
     /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
     margin-inline-end: calc(-1 * var(--xh-space-1));
     border: 0;
+    /* 随文标记档的叉：16px 正方盒取 inset 4px，与 checkbox 系方框同档，嵌在胶囊里内层圆角不越过外层 */
     border-radius: var(--xh-tag-close-radius, var(--xh-shape-inset));
     background: transparent;
     /* 叉取标签自己的文字色：实心底上是浅字、淡底上是深字，不必逐形态各写一遍 */
