@@ -34483,7 +34483,7 @@
         "hoverable"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_list-item-bg-hover"
       ],
       "visibility": "public",
       "description": "list 的 item、root 部件 background 覆盖槽。"

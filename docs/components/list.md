@@ -142,7 +142,7 @@ size 改变条目的内边距、图文间距与两行文字的字号，不传 si
 | `--xh-list-description-font-size` | `item-description` | `font-size` | `default` | `--xh-_list-description-size` | list 的 item-description 部件 font-size 覆盖槽。 |
 | `--xh-list-divider` | `item`<br>`root` | `border-block-start` | `split` | `--xh-border-subtle` | list 的 item、root 部件 border-block-start 覆盖槽。 |
 | `--xh-list-fg` | `root` | `color` | `default` | `--xh-fg-default` | list 的 root 部件 color 覆盖槽。 |
-| `--xh-list-item-bg-hover` | `item`<br>`root` | `background` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-bg-subtle` | list 的 item、root 部件 background 覆盖槽。 |
+| `--xh-list-item-bg-hover` | `item`<br>`root` | `background` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-_list-item-bg-hover` | list 的 item、root 部件 background 覆盖槽。 |
 | `--xh-list-item-gap` | `item` | `gap` | `default` | `--xh-_list-item-gap` | list 的 item 部件 gap 覆盖槽。 |
 | `--xh-list-item-px` | `item` | `padding-inline` | `default` | `--xh-_list-item-px` | list 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-list-item-py` | `item` | `padding-block` | `default` | `--xh-_list-item-py` | list 的 item 部件 padding-block 覆盖槽。 |
