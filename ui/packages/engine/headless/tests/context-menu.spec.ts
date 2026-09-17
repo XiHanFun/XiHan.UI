@@ -525,6 +525,20 @@ describe('connectContextMenu 属性输出', () => {
     expect(h.itemText('paste').getAttribute('data-disabled')).toBe('')
     expect(h.itemText('delete').hasAttribute('data-highlighted')).toBe(false)
   })
+
+  it('条目投影 Collection Item 的 overlay 语境与尺寸档，子部件落槽，分隔线带家族标记', () => {
+    const h = mount({ size: 'lg' })
+    const api = h.api()
+    const decl = { value: 'copy', disabled: false }
+    expect(api.getItemProps(decl) as Record<string, unknown>).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'lg', 'data-xh-collection-context': 'overlay' })
+    expect((api.getItemProps(decl) as Record<string, unknown>)['aria-selected']).toBeUndefined()
+    expect((api.getItemTextProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    // 标记位是常显的前导图标槽，不是选中对号
+    expect((api.getItemIndicatorProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('prefix')
+    expect((api.getItemDescriptionProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('description')
+    expect((api.getSeparatorProps() as Record<string, unknown>)['data-xh-collection-separator']).toBe('')
+    expect((mount().api().getItemProps(decl) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
+  })
 })
 
 describe('roving tabindex 与焦点锚点', () => {

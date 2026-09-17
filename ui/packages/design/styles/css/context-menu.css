@@ -5,7 +5,8 @@
 
 /* 定义 context menu 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，条目走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
+@import '../family/collection-item.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -61,6 +62,10 @@
 
   /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
   [data-scope='context-menu']:is([data-part='root'], [data-part='positioner']) {
+    /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；同样声明在 positioner 上，被搬走的浮层
+       才拿得到；条目里的图标由家族随 data-xh-collection-size 下发（§6.5） */
+    --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-md));
+
     /* 尺寸档只换这四个私有槽，条目与分组标题都从这两处继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_context-menu-item-py: var(--xh-list-option-py-md);
@@ -72,17 +77,10 @@
 
   /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
   [data-scope='context-menu'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-text));
-
     display: contents;
   }
 
-  /* 浮层被搬到 portal 落点，继承不到 root 上的槽：这把尺在被搬走的那一侧再声明一次，
-     关闭钮与条目里作者塞的图标才和皮肤画的兜底字形一样大 */
   [data-scope='context-menu'][data-part='content'] {
-    --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-text));
-
     position: relative;
     display: flex;
     flex-direction: column;
@@ -101,8 +99,10 @@
     box-shadow: var(--xh-context-menu-content-shadow, var(--xh-material-frosted-shadow));
     -webkit-backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
     backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
-    /* 条目超过上限就在菜单内部滚；内收焦点环不会被内边距缘裁掉。 */
+    /* 条目超过上限就在菜单内部滚；内收焦点环不会被内边距缘裁掉。
+       浮层滚动面：到底后不把滚动链穿透给页面（§6.6） */
     overflow-y: auto;
+    overscroll-behavior: contain;
     pointer-events: auto;
   }
 
@@ -126,6 +126,7 @@
   /* 缺省档写在上面的基础规则里。条目高度由 padding 撑出来：
      纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
   [data-scope='context-menu']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-sm));
     --xh-_context-menu-item-py: var(--xh-list-option-py-sm);
     --xh-_context-menu-item-px: var(--xh-control-px-sm);
     --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
@@ -133,6 +134,7 @@
   }
 
   [data-scope='context-menu']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-lg));
     --xh-_context-menu-item-py: var(--xh-list-option-py-lg);
     --xh-_context-menu-item-px: var(--xh-control-px-lg);
     --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
@@ -213,22 +215,34 @@
     display: none;
   }
 
+  /* 条目走 Collection Item 的 overlay 语境：悬停 / 键盘锚点（data-highlighted，白底承载 100）、按下（200）、
+     子层开着的打开路径（data-in-path，与 hover 同档）与禁用面（aria-disabled）都由家族给，这里只把公开槽映射到
+     桥接槽。布局保持 flex 而不用家族网格：图标、正文、快捷键按一行排布，说明另起一行靠 flex-wrap 折下去，
+     子菜单箭头是行尾的伪元素；间距统一由行的 gap 给，家族按槽下发的外边距归零 */
   [data-scope='context-menu'][data-part='item'] {
+    --xh-collection-block-padding: var(--xh-context-menu-item-py, var(--xh-_context-menu-item-py));
+    --xh-collection-inline-padding: var(--xh-context-menu-item-px, var(--xh-_context-menu-item-px));
+    --xh-collection-gap: 0;
+    --xh-collection-font-size: var(--xh-context-menu-item-font-size, var(--xh-_context-menu-font-size));
+    --xh-collection-radius: var(--xh-context-menu-item-radius, var(--xh-shape-control));
+    --xh-collection-fg-rest: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-hover: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-keyboard-highlight: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-pressed: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-open-path: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-bg-hover: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-context-menu-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-open-path: var(--xh-context-menu-item-bg-active, var(--xh-bg-subtle));
+    /* data-highlighted 同时覆盖指针与键盘路径：指针只换面，焦点环在 :focus-visible 下再接回 */
+    --xh-collection-outline-keyboard-highlight: transparent;
+
     display: flex;
     align-items: center;
     gap: var(--xh-context-menu-item-gap, var(--xh-_context-menu-item-gap));
-    padding-block: var(--xh-context-menu-item-py, var(--xh-_context-menu-item-py));
-    padding-inline: var(--xh-context-menu-item-px, var(--xh-_context-menu-item-px));
-    border-radius: var(--xh-context-menu-item-radius, var(--xh-shape-control));
-    color: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
-    font-size: var(--xh-context-menu-item-font-size, var(--xh-_context-menu-font-size));
     line-height: var(--xh-context-menu-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 条目可以按需收起（按上下文过滤掉的命令），有 display 就得补这条 */
@@ -236,19 +250,11 @@
     display: none;
   }
 
-  /* 悬停与键盘锚点共用中性灰轻档：锚点只认连接层打的 data-highlighted，不读 :focus */
-  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
-  }
+  /* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+  [data-scope='context-menu'][data-part='item']:focus-visible:not(:hover) {
+    --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
 
-  [data-scope='context-menu'][data-part='item']:not([data-disabled]):active {
-    background: var(--xh-context-menu-item-bg-pressed, var(--xh-bg-subtle-active));
-  }
-
-  /* 打开子菜单的触发条目只用品牌淡底表达路径，不增装饰、不改变字重。
-     必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
-  [data-scope='context-menu'][data-part='item']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-context-menu-item-bg-active, var(--xh-bg-subtle));
+    transition: none;
   }
 
   /* 子菜单箭头留在主行末端；description 即使写在它前面，也由 order 独占下一行。 */
@@ -274,13 +280,6 @@
     outline: none;
   }
 
-  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
-     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
-  [data-scope='context-menu'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
-  }
-
   [data-scope='context-menu'][data-part='item-text'] {
     flex: 1;
     min-inline-size: 0;
@@ -293,14 +292,14 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）按作者写入的槽位留在主行，不为没写的条目强制占列。 */
+  /* 标记位（勾选符号 / 图标）按作者写入的槽位留在主行，不为没写的条目强制占列；盒尺随家族按档下发的 --xh-icon-size */
   [data-scope='context-menu'][data-part='item-indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    block-size: var(--xh-context-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
     color: var(--xh-context-menu-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   }
 

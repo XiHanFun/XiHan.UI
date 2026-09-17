@@ -17343,20 +17343,24 @@
       "name": "--xh-context-menu-icon-size",
       "component": "context-menu",
       "part": [
-        "content",
+        "positioner",
         "root"
       ],
       "property": [
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "is([data-part='root'], [data-part='positioner'])",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "context-menu 的 content、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "context-menu 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-item-bg-active",
@@ -17365,18 +17369,16 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled",
-        "not([data-disabled])",
-        "state=open"
+        "in-path"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "context-menu 的 item 部件 background 覆盖槽。"
+      "description": "context-menu 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-item-bg-hover",
@@ -17385,19 +17387,21 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "highlighted",
-        "is(:hover, [data-highlighted])",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "context-menu 的 item 部件 background 覆盖槽。"
+      "description": "context-menu 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-item-bg-pressed",
@@ -17406,18 +17410,20 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
         "disabled",
-        "not([data-disabled])"
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "context-menu 的 item 部件 background 覆盖槽。"
+      "description": "context-menu 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-item-description-fg",
@@ -17465,7 +17471,16 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "in-path",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-material-frosted-fg"
@@ -17541,7 +17556,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-icon-size"
       ],
       "visibility": "public",
       "description": "context-menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。"
