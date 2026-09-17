@@ -58307,20 +58307,24 @@
       "name": "--xh-tabs-list-border",
       "component": "tabs",
       "part": [
-        "list"
+        "list",
+        "root"
       ],
       "property": [
+        "border",
         "border-block-end",
         "border-inline-end"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=segment"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-default",
+        "transparent"
       ],
       "visibility": "public",
-      "description": "tabs 的 list 部件 border-block-end、border-inline-end 覆盖槽。"
+      "description": "tabs 的 list、root 部件 border、border-block-end、border-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-tabs-list-gap",
@@ -58472,19 +58476,22 @@
       "name": "--xh-tabs-trigger-bg-active",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "background"
       ],
       "state": [
-        "state=active"
+        "state=active",
+        "variant=segment"
       ],
       "defaultToken": [
-        "--xh-_tabs-trigger-bg-active"
+        "--xh-_tabs-trigger-bg-active",
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 background 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-bg-active-hover",
@@ -58522,7 +58529,30 @@
         "not([data-disabled])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_tabs-trigger-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tabs-trigger-bg-pressed",
+      "component": "tabs",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-state='active'])",
+        "pressed",
+        "state=active"
+      ],
+      "defaultToken": [
+        "--xh-_tabs-trigger-bg-pressed"
       ],
       "visibility": "public",
       "description": "tabs 的 trigger 部件 background 覆盖槽。"
@@ -58549,19 +58579,22 @@
       "name": "--xh-tabs-trigger-border-active",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "border-color"
       ],
       "state": [
-        "state=active"
+        "state=active",
+        "variant=segment"
       ],
       "defaultToken": [
-        "--xh-_tabs-trigger-border-active"
+        "--xh-_tabs-trigger-border-active",
+        "--xh-_tone-border"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 border-color 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-fg",
@@ -58613,6 +58646,33 @@
         "disabled",
         "hover",
         "not([data-disabled])",
+        "not([data-state='active'])",
+        "state=active",
+        "variant=line"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 root、trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tabs-trigger-fg-pressed",
+      "component": "tabs",
+      "part": [
+        "root",
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-state='active'])",
+        "pressed",
+        "state=active",
         "variant=line"
       ],
       "defaultToken": [
@@ -58653,6 +58713,24 @@
       ],
       "defaultToken": [
         "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 trigger 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-tabs-trigger-font-weight-active",
+      "component": "tabs",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "state=active"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "tabs 的 trigger 部件 font-weight 覆盖槽。"
@@ -58733,19 +58811,22 @@
       "name": "--xh-tabs-trigger-shadow-active",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "box-shadow"
       ],
       "state": [
-        "state=active"
+        "state=active",
+        "variant=segment"
       ],
       "defaultToken": [
-        "--xh-_tabs-trigger-shadow-active"
+        "--xh-_tabs-trigger-shadow-active",
+        "--xh-elevation-raised"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 box-shadow 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-tag-bg",
