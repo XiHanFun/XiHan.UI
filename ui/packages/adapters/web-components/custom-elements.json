@@ -2338,7 +2338,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定底色、描边与前景的使用方式",
+              "description": "形态，默认 outline（磨砂面；solid 才品牌实心）",
               "name": "variant",
               "fieldName": "variant"
             },

@@ -57,7 +57,7 @@
 
 - `visibilityHeight` 设置显示阈值。
 - `behavior` 支持平滑或立即返回。
-- 默认使用磨砂浮动表面，也可通过 `variant` 调整外观。
+- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，也可通过 `variant` 切换为 solid / subtle / ghost。
 - 减少动效、减少透明度与强制色模式会自动降级。
 
 ### 组合
@@ -92,9 +92,9 @@
 | `visibilityHeight` | `number` |  | 滚动超过该像素数后按钮才显示，默认 200。 |
 | `behavior` | `BackTopBehavior` |  | 滚回顶部的方式，默认 smooth。 |
 | `translations` | `Partial<BackTopTranslations>` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景的使用方式。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（40 / 48 / 56px）。 |
 | `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 显隐变化时回调。 |
 
 ### 事件
@@ -126,7 +126,7 @@
 
 **状态**：`hidden` · `visible`
 
-**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK`
+**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK` · `PRESS.START` · `PRESS.END`
 
 **判据**：`shouldShow` · `shouldHide`
 
@@ -150,6 +150,7 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in trigger | 滚回顶部；按 behavior 决定是一步到位还是平滑滚过去 |
+| `Enter` / `Space` | held in trigger | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
 | `Tab` / `Shift+Tab` | trigger 露面时 | 走到按钮上；收起时整个 root 带 hidden，按钮不在 Tab 序列里 |
 
 ### ARIA
@@ -176,7 +177,13 @@
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'visible' \| 'hidden' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'floating' |
+| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -185,30 +192,24 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-back-top-bg` | `trigger` | `background-color` | `default` | `--xh-_back-top-bg` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-bg-active` | `trigger` | `background-color` | `active` | `--xh-_back-top-bg-active` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-bg-hover` | `trigger` | `background-color` | `@media (hover: hover)`<br>`hover` | `--xh-_back-top-bg-hover` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-border` | `trigger` | `border` | `default` | `--xh-_back-top-border` | back-top 的 trigger 部件 border 覆盖槽。 |
-| `--xh-back-top-border-hover` | `trigger` | `border-color` | `@media (hover: hover)`<br>`hover` | `--xh-_back-top-border-hover` | back-top 的 trigger 部件 border-color 覆盖槽。 |
-| `--xh-back-top-fg` | `trigger` | `color` | `default` | `--xh-_back-top-fg` | back-top 的 trigger 部件 color 覆盖槽。 |
-| `--xh-back-top-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | back-top 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-back-top-bg` | `root`<br>`trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_back-top-bg`<br>`--xh-material-frosted-focus-surface` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-bg-active` | `trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | back-top 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | back-top 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-border` | `root`<br>`trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline` | `--xh-_action-variant-border-disabled`<br>`--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-_back-top-border` | back-top 的 root、trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-back-top-border-hover` | `root`<br>`trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_back-top-border` | back-top 的 root、trigger 部件 border-color 覆盖槽。 |
+| `--xh-back-top-fg` | `root`<br>`trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-_back-top-fg` | back-top 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-back-top-icon-size` | `trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | back-top 的 trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-back-top-inset-block` | `root` | `inset-block-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-block-end 覆盖槽。 |
 | `--xh-back-top-inset-inline` | `root` | `inset-inline-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-inline-end 覆盖槽。 |
 | `--xh-back-top-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | back-top 的 root 部件 z-index 覆盖槽。 |
-| `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-circle` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
-| `--xh-back-top-shadow` | `trigger` | `box-shadow` | `default` | `--xh-_back-top-shadow` | back-top 的 trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_back-top-size` | back-top 的 trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_back-top-shadow`<br>`none` | back-top 的 root、trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | back-top 的 trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

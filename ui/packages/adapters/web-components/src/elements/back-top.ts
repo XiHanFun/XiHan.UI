@@ -26,7 +26,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @customElement xh-back-top
  * @attr {number} visibility-height - 滚动超过该像素数后按钮才显示，默认 200
  * @attr {'auto'|'smooth'} behavior - 滚回顶部的方式，默认 smooth
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景的使用方式
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，默认 outline（磨砂面；solid 才品牌实心）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires visibility-change - 显隐变化；detail 为 `{ visible: boolean }`

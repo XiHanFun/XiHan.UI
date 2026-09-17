@@ -49,7 +49,6 @@
     "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移"
   },
   "shape": {
-    "back-top:trigger": "登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
     "carousel:autoplay-trigger": "登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
     "carousel:next-trigger": "登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
     "carousel:prev-trigger": "登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
@@ -82,7 +81,6 @@
     "tour:skip-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移"
   },
   "text": {
-    "back-top:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "carousel:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "color-picker:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "dialog:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",

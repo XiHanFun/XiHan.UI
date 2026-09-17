@@ -29,6 +29,10 @@ export function resolveBackTopVisibilityHeight(height: number | undefined): numb
  */
 export const backTopMachine = createMachine({
   name: 'back-top',
+  // 按压通道（context.pressed）与显隐无关：两个状态都认 PRESS.*；组件没有禁用轴，按住即进入
+  context: ({ cell }) => ({
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
+  }),
   refs: () => ({
     getTargetEl: () => null,
   }),
@@ -37,6 +41,8 @@ export const backTopMachine = createMachine({
   effects: ['trackScroll'],
   on: {
     'TRIGGER.CLICK': { actions: ['scrollToTop'] },
+    'PRESS.START': { actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     hidden: {
@@ -66,6 +72,8 @@ export const backTopMachine = createMachine({
       },
     },
     actions: {
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
       invokeOnChange: ({ prop, event }) => {
         const e = event.current()
         if (e.type !== 'SCROLL.RESOLVE')

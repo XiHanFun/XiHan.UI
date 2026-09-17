@@ -122,6 +122,55 @@ describe('backTopMachine 露面与收起', () => {
     expect((b.api().getTriggerProps() as Record<string, unknown>)['aria-label']).toBe('回到顶部')
     b.stop()
   })
+
+  it('触发器接 Action Control floating 档：缺省 outline、md，data-variant 与 data-xh-action-variant 同源', async () => {
+    const b = makeBackTop()
+    await flush()
+    const trigger = b.api().getTriggerProps() as Record<string, unknown>
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('floating')
+    expect(trigger['data-xh-action-display']).toBe('always')
+    expect(trigger['data-xh-action-size']).toBe('md')
+    // 缺省中性：描边 + 磨砂面（真源 §7.2 第 2 条），不传 variant 时显式落 outline
+    expect(trigger['data-xh-action-variant']).toBe('outline')
+    expect((b.api().getRootProps() as Record<string, unknown>)['data-variant']).toBe('outline')
+    expect(trigger['data-pressed']).toBeUndefined()
+    b.stop()
+
+    const solid = makeBackTop({ variant: 'solid', size: 'lg' })
+    await flush()
+    expect((solid.api().getRootProps() as Record<string, unknown>)['data-variant']).toBe('solid')
+    const solidTrigger = solid.api().getTriggerProps() as Record<string, unknown>
+    expect(solidTrigger['data-xh-action-variant']).toBe('solid')
+    expect(solidTrigger['data-xh-action-size']).toBe('lg')
+    solid.stop()
+  })
+})
+
+describe('backTopMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  type Dict = Record<string, unknown>
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+  it('静息不带 data-pressed；keydown 期间在场，keyup 撤下；触屏按下在场、抬起撤下；失焦撤下', async () => {
+    const b = makeBackTop()
+    await flush()
+    const trigger = (): Dict => b.api().getTriggerProps() as Dict
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    b.stop()
+  })
 })
 
 describe('backTopMachine 点按', () => {

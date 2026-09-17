@@ -15,7 +15,7 @@
 
 - `visibilityHeight` 设置显示阈值。
 - `behavior` 支持平滑或立即返回。
-- 默认使用磨砂浮动表面，也可通过 `variant` 调整外观。
+- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，也可通过 `variant` 切换为 solid / subtle / ghost。
 - 减少动效、减少透明度与强制色模式会自动降级。
 
 ## 组合

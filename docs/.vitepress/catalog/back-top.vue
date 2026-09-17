@@ -12,7 +12,7 @@ onMounted(() => {
 
 <template>
   <div style="position: relative; inline-size: 220px">
-    <div ref="scrollEl" style="block-size: 150px; overflow: auto; padding-inline: 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-size: 13px">
+    <div ref="scrollEl" data-xh-scroll style="block-size: 150px; overflow: auto; padding-inline: 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-size: 13px">
       <section v-for="section in ['概览', '安装', '主题', '发布']" :key="section" style="min-block-size: 90px; padding-block: 10px">
         <strong>{{ section }}</strong>
         <p style="margin: 4px 0 0; color: var(--xh-fg-muted)">{{ section }}相关内容</p>

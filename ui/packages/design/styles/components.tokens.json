@@ -2848,19 +2848,27 @@
       "name": "--xh-back-top-bg",
       "component": "back-top",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "variant=outline"
       ],
       "defaultToken": [
-        "--xh-_back-top-bg"
+        "--xh-_action-variant-bg-disabled",
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-rest",
+        "--xh-_back-top-bg",
+        "--xh-material-frosted-focus-surface"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 background-color 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-back-top-bg-active",
@@ -2872,10 +2880,15 @@
         "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_back-top-bg-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "back-top 的 trigger 部件 background-color 覆盖槽。"
@@ -2890,11 +2903,14 @@
         "background-color"
       ],
       "state": [
-        "@media (hover: hover)",
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_back-top-bg-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
       "description": "back-top 的 trigger 部件 background-color 覆盖槽。"
@@ -2903,62 +2919,93 @@
       "name": "--xh-back-top-border",
       "component": "back-top",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "variant=outline"
       ],
       "defaultToken": [
+        "--xh-_action-variant-border-disabled",
+        "--xh-_action-variant-border-focus-visible",
+        "--xh-_action-variant-border-rest",
         "--xh-_back-top-border"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 border 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-back-top-border-hover",
       "component": "back-top",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "border-color"
       ],
       "state": [
-        "@media (hover: hover)",
-        "hover"
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "variant=outline"
       ],
       "defaultToken": [
-        "--xh-_back-top-border-hover"
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed",
+        "--xh-_back-top-border"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 border-color 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-back-top-fg",
       "component": "back-top",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "variant=outline"
       ],
       "defaultToken": [
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest",
         "--xh-_back-top-fg"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 color 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-back-top-icon-size",
       "component": "back-top",
       "part": [
-        "root"
+        "trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -2967,10 +3014,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
-      "description": "back-top 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "back-top 的 trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-back-top-inset-block",
@@ -3039,7 +3086,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-circle"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "back-top 的 trigger 部件 border-radius 覆盖槽。"
@@ -3048,19 +3095,30 @@
       "name": "--xh-back-top-shadow",
       "component": "back-top",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "box-shadow"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "variant=outline"
       ],
       "defaultToken": [
-        "--xh-_back-top-shadow"
+        "--xh-_back-top-shadow",
+        "none"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 box-shadow 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-back-top-size",
@@ -3073,10 +3131,11 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-_back-top-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "back-top 的 trigger 部件 block-size、inline-size 覆盖槽。"

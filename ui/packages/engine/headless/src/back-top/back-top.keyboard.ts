@@ -21,6 +21,12 @@ export const backTopKeyboard: KeyboardTable = {
       does: '滚回顶部；按 behavior 决定是一步到位还是平滑滚过去',
     },
     {
+      id: 'back-top.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in trigger',
+      does: '按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下',
+    },
+    {
       id: 'back-top.kbd.tab',
       keys: ['Tab', 'Shift+Tab'],
       when: 'trigger 露面时',

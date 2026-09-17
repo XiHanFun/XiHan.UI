@@ -17,8 +17,6 @@
     "tree [data-part='item-checkbox'][data-scope='tree'][data-selected]": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去"
   },
   "opaque": {
-    "back-top [trigger] var(--xh-material-frosted-bg)": "缺省触发器是随页面背景透入的 M2 磨砂面，静态工具不能按单一实体面判环；键盘聚焦时皮肤将它切到 material-frosted-focus-surface，浏览器回归量该实体面与公共焦点环。",
-    "back-top [trigger] var(--xh-material-frosted-focus-surface)": "M2 focus-surface 在浅深主题都收敛到不透明 bg.surface；默认公共环继续由浏览器对比回归验证。",
     "cascader [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "color-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "combobox [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
@@ -175,13 +173,6 @@
     "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
   },
   "solid": {
-    "back-top [data-part='root'][data-scope='back-top'][data-variant='solid'] [data-part='trigger'][data-scope='back-top']": {
-      "parts": [
-        "trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "calendar-picker [data-part='cell-trigger'][data-scope='calendar-picker'][data-selected]": {
       "parts": [
         "cell-trigger"
