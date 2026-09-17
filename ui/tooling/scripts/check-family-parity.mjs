@@ -307,14 +307,16 @@ const FAMILIES = [
     ],
   },
   {
-    // 导航当前页：字色与字重（§7.3）；Breadcrumb 当前页不可点，是登记的例外，不在族内
+    // 导航当前页：字色与字重（§7.3）；Breadcrumb 当前页不可点，是登记的例外，不在族内；
+    // SideNav 按 §7.3 是页内持久集合，当前项走 Collection Item page 语境的品牌淡底行面（由家族按
+    // data-current 给，皮肤没有自己的当前页规则），不是导航当前页的字色档，不在族内
     name: '导航族',
     backlog: true,
-    members: ['tabs', 'anchor', 'navigation-menu', 'side-nav'],
+    members: ['tabs', 'anchor', 'navigation-menu'],
     parts: [
       {
-        partBy: { 'tabs': 'trigger', 'anchor': 'link', 'navigation-menu': 'link', 'side-nav': 'link' },
-        stateBy: { 'tabs': '[data-state=\'active\']', 'anchor': '[data-current]', 'navigation-menu': '[data-current]', 'side-nav': '[data-current]' },
+        partBy: { 'tabs': 'trigger', 'anchor': 'link', 'navigation-menu': 'link' },
+        stateBy: { 'tabs': '[data-state=\'active\']', 'anchor': '[data-current]', 'navigation-menu': '[data-current]' },
         props: ['color', 'font-weight'],
       },
     ],

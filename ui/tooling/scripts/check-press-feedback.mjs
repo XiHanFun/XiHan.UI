@@ -161,7 +161,8 @@ const PRESSABLE = {
   'accordion': [{ part: 'trigger', feedback: 'surface' }],
   'collapsible': [{ part: 'trigger', feedback: 'surface' }],
   'menubar': ['trigger', { part: 'item', feedback: 'surface' }],
-  'navigation-menu': ['trigger'],
+  // 横排导航的入口是铺开的一段，按下只换面不缩放（§9.2）；面板里的链接走 Collection Item 的 overlay 语境
+  'navigation-menu': [{ part: 'trigger', feedback: 'surface' }, { part: 'link', feedback: 'surface' }],
   'tabs': ['trigger'],
   'toolbar': ['item'],
   // 表格里的勾选与展开把手（定尺方框，缩放并换底）；表体行走 Collection Item 的 page 语境只换面；

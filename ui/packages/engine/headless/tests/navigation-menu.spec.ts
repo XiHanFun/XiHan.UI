@@ -716,6 +716,13 @@ describe('connectNavigationMenu 输出', () => {
     expect((api.getLinkProps({}) as Record<string, unknown>)['aria-current']).toBeUndefined()
   })
 
+  it('链接投影 Collection Item 的 overlay 语境与尺寸档，不报 aria-selected', () => {
+    const link = makeMenu({ size: 'sm' }).api().getLinkProps({ current: true }) as Record<string, unknown>
+    expect(link).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'sm', 'data-xh-collection-context': 'overlay', 'data-current': '' })
+    expect(link['aria-selected']).toBeUndefined()
+    expect((makeMenu().api().getLinkProps({}) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
+  })
+
   it('指示条：装饰、随展开项显隐，横排只写内联轴那一条', () => {
     const c = makeMenu({ defaultValue: 'docs' })
     stubRect(c.list, { top: 0, left: 100, width: 600, height: 40 })
