@@ -168,6 +168,7 @@ export type ComponentTokenName =
   | '--xh-back-top-shadow'
   | '--xh-back-top-size'
   | '--xh-badge-bg'
+  | '--xh-badge-dot-radius'
   | '--xh-badge-dot-size'
   | '--xh-badge-fg'
   | '--xh-badge-font-size'

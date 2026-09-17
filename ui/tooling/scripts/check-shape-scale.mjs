@@ -99,6 +99,8 @@ const IDENTITY = {
   'message-feed:scroll-to-end-trigger': { shape: 'circle', floating: true },
   'image-viewer:prev-trigger': { shape: 'circle', floating: true },
   'image-viewer:next-trigger': { shape: 'circle', floating: true },
+  // 角标圆点档是宽高同槽的正方盒：计数档是胶囊，圆点档必须取 circle
+  'badge:indicator[data-dot]': 'circle',
   // pill：(a) 状态 chip
   'badge:indicator': 'pill',
   'tag:root': 'pill',

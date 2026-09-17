@@ -66,11 +66,14 @@
   }
 
   /* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒。
+     宽高同槽的正方盒按身份取 circle（§6.3），不沿用计数档的胶囊冒充圆：
+     胶囊那 9999px 在正方盒上虽也画成圆，形状身份却写错了档，作者按圆点覆盖圆角时无处落手。
      圆点直径只有六到十像素，一像素的内高光会占去顶上一大截、读成缺了一圈的描边，这里收掉 */
   [data-scope='badge'][data-part='indicator'][data-dot] {
     min-inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
     inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
     block-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
+    border-radius: var(--xh-badge-dot-radius, var(--xh-shape-circle));
     padding: 0;
     box-shadow: none;
     font-size: 0;

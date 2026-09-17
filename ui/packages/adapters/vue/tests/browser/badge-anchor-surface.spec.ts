@@ -10,12 +10,12 @@ import '@xihan-ui/styles'
 let app: App | null = null
 let host: HTMLElement | null = null
 
-async function mount(size?: Size): Promise<void> {
+async function mount(size?: Size, dot = false): Promise<void> {
   host = document.createElement('div')
   host.style.padding = '40px'
   document.body.append(host)
   app = createApp({
-    render: () => h(XhBadge, { count: 8, size }, () => h(XhButton, { variant: 'outline' }, () => '收件箱')),
+    render: () => h(XhBadge, { count: 8, size, dot }, () => h(XhButton, { variant: 'outline' }, () => '收件箱')),
   })
   app.mount(host)
   await nextTick()
@@ -61,5 +61,17 @@ describe('徽标的计数盒与附着位置', () => {
 
     expect(indicator.right - root.right).toBeCloseTo(indicator.width / 4, 1)
     expect(root.top - indicator.top).toBeCloseTo(indicator.height / 4, 1)
+  })
+
+  // 圆点档是宽高同槽的正方盒：真源 §6.3 要求正方盒取 circle，不得沿用计数档的胶囊冒充圆
+  it('圆点档的正方盒取 circle 而非沿用计数档的胶囊', async () => {
+    await mount(undefined, true)
+    const indicator = part('indicator')
+    const rect = indicator.getBoundingClientRect()
+
+    expect(indicator.dataset.dot).toBe('')
+    expect(rect.width).toBe(8)
+    expect(rect.height).toBe(8)
+    expect(getComputedStyle(indicator).borderRadius).toBe('50%')
   })
 })

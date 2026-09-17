@@ -3081,6 +3081,24 @@
       "description": "badge 的 indicator 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-badge-dot-radius",
+      "component": "badge",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "dot"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "badge 的 indicator 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-badge-dot-size",
       "component": "badge",
       "part": [
