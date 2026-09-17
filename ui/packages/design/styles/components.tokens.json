@@ -53580,7 +53580,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-bg-canvas"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -53598,7 +53598,27 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-bg-readonly",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "not([data-disabled])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -53620,6 +53640,24 @@
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-border-disabled",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-border-drawing",
@@ -53646,16 +53684,18 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-bg-active",
@@ -53664,17 +53704,21 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-bg-disabled",
@@ -53683,16 +53727,16 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-bg-hover",
@@ -53701,17 +53745,20 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-border",
@@ -53720,16 +53767,44 @@
         "clear-trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-focus-visible",
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 border 覆盖槽。"
+      "description": "signature-pad 的 clear-trigger 部件 border、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-clear-border-hover",
+      "component": "signature-pad",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 clear-trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-fg",
@@ -53741,13 +53816,60 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "signature-pad 的 clear-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-clear-fg-empty",
+      "component": "signature-pad",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "empty"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 clear-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-clear-font-size",
+      "component": "signature-pad",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-font-size"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 clear-trigger 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-gap",
@@ -53762,7 +53884,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-sm"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "signature-pad 的 clear-trigger 部件 gap 覆盖槽。"
@@ -53780,10 +53902,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "signature-pad 的 clear-trigger 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-clear-icon-size",
+      "component": "signature-pad",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 clear-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-px",
@@ -53798,7 +53938,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "signature-pad 的 clear-trigger 部件 padding-inline 覆盖槽。"
@@ -53831,11 +53971,14 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "signature-pad 的 clear-trigger 部件 box-shadow 覆盖槽。"
@@ -53862,19 +54005,21 @@
       "name": "--xh-signature-pad-gap",
       "component": "signature-pad",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 root 部件 gap 覆盖槽。"
+      "description": "signature-pad 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-guide-stroke",
@@ -53925,7 +54070,25 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-label-fg-disabled",
+      "component": "signature-pad",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "signature-pad 的 label 部件 color 覆盖槽。"
@@ -53967,6 +54130,24 @@
       "description": "signature-pad 的 label 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-signature-pad-label-gap",
+      "component": "signature-pad",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 label 部件 margin-block-end 覆盖槽。"
+    },
+    {
       "name": "--xh-signature-pad-radius",
       "component": "signature-pad",
       "part": [
@@ -53979,7 +54160,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 border-radius 覆盖槽。"
@@ -54015,7 +54196,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "signature-pad 的 status 部件 font-size 覆盖槽。"

@@ -46580,7 +46580,13 @@
               "name": "--xh-signature-pad-bg-disabled"
             },
             {
+              "name": "--xh-signature-pad-bg-readonly"
+            },
+            {
               "name": "--xh-signature-pad-border"
+            },
+            {
+              "name": "--xh-signature-pad-border-disabled"
             },
             {
               "name": "--xh-signature-pad-border-drawing"
@@ -46601,13 +46607,25 @@
               "name": "--xh-signature-pad-clear-border"
             },
             {
+              "name": "--xh-signature-pad-clear-border-hover"
+            },
+            {
               "name": "--xh-signature-pad-clear-fg"
+            },
+            {
+              "name": "--xh-signature-pad-clear-fg-empty"
+            },
+            {
+              "name": "--xh-signature-pad-clear-font-size"
             },
             {
               "name": "--xh-signature-pad-clear-gap"
             },
             {
               "name": "--xh-signature-pad-clear-h"
+            },
+            {
+              "name": "--xh-signature-pad-clear-icon-size"
             },
             {
               "name": "--xh-signature-pad-clear-px"
@@ -46634,10 +46652,16 @@
               "name": "--xh-signature-pad-label-fg"
             },
             {
+              "name": "--xh-signature-pad-label-fg-disabled"
+            },
+            {
               "name": "--xh-signature-pad-label-font-size"
             },
             {
               "name": "--xh-signature-pad-label-font-weight"
+            },
+            {
+              "name": "--xh-signature-pad-label-gap"
             },
             {
               "name": "--xh-signature-pad-radius"

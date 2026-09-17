@@ -6,7 +6,8 @@
 //    有 aria-label、pointerdown 不夺焦、点完发 VALUE.CLEAR 并把焦点送回宿主；没值就 hidden（不灰留位）；
 //    尺寸 --xh-<c>-action-size → --xh-control-action-size，圆角 --xh-<c>-action-radius → --xh-shape-control。
 // ② 独立动作钮（file-upload / signature-pad 的清空）：普通 Tab 位按钮，空时不收不灰、只打 data-empty；
-//    高 --xh-<c>-clear-h → --xh-control-h-sm。
+//    高 --xh-<c>-clear-h → --xh-control-h-sm；接了 Action Control text 档的由连接层投 data-xh-action-size=sm，
+//    皮肤把 --xh-<c>-clear-h 映到家族视觉盒，按压面由家族给。
 // ③ 浮层角落关闭钮：--xh-<c>-close-size → --xh-control-h-sm，--xh-<c>-close-radius → --xh-shape-control；
 //    字形颜色也得留使用者槽——常态一个、悬停换色的再一个，写死语义令牌等于这颗叉的颜色改不动。
 // ④ 标签内移除钮：尺寸基准 --xh-control-indicator-size，圆角 --xh-shape-inset；行级删除钮同 ①的尺寸基准。
@@ -216,17 +217,36 @@ for (const c of EMBEDDED) {
 // ② 独立动作钮
 for (const c of STANDALONE) {
   const css = await skin(c)
+  const src = await connect(c)
+  const g = src ? getter(src, 'getClearTriggerProps') : null
   if (css) {
     const rules = rulesOf(css, c, 'clear-trigger')
-    const hRe = new RegExp(`block-size:\\s*var\\(--xh-${esc(c)}-clear-h,\\s*var\\(--xh-control-h-sm\\)\\)`)
-    if (!has(rules, (t, b) => t.trim() === '' && hRe.test(b)))
-      problems.push(`${c}.css [clear-trigger] 高该写 var(--xh-${c}-clear-h, var(--xh-control-h-sm))`)
-    if (!has(rules, (t, b) => /:active/.test(t) && /--xh-motion-scale-press/.test(b)))
-      problems.push(`${c}.css [clear-trigger] 缺 :active 按压反馈`)
+    // 投影了 Action Control text 档的清空钮：高度、按压与粗指针热区由家族给，皮肤只把 --xh-<c>-clear-h 映到
+    // 家族视觉盒；连接层投的档位得与 --xh-control-h-sm 基准同高（sm）
+    const sharedAction = /@import\s+['"]\.\.\/family\/action-control\.css['"]/.test(css)
+      && /['"]data-xh-action-profile['"]\s*:\s*['"]text['"]/.test(g ?? '')
+    if (sharedAction) {
+      const family = await readFile(ACTION_FAMILY, 'utf8')
+      const sizeRe = new RegExp(`--xh-action-visual-size:\\s*var\\(--xh-${esc(c)}-clear-h,\\s*var\\(--xh-_action-profile-visual-size\\)\\)`)
+      if (!has(rules, (t, b) => t.trim() === '' && sizeRe.test(b)))
+        problems.push(`${c}.css [clear-trigger] 没把 --xh-${c}-clear-h 映到家族视觉盒（--xh-action-visual-size）`)
+      if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
+        problems.push(`${c}.css [clear-trigger] 缺 [hidden] { display: none }`)
+      if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):is\(:active, \[data-pressed\]\)[\s\S]*--xh-motion-scale-press/.test(family))
+        problems.push('family/action-control.css 缺共用的 :is(:active, [data-pressed]) 按压反馈')
+      const size = /['"]data-xh-action-size['"]\s*:\s*['"]([a-z]+)['"]/.exec(g ?? '')?.[1]
+      if (size !== 'sm')
+        problems.push(`${c}.connect.ts 的 clear-trigger 投的 data-xh-action-size 是 ${size ?? '（没投）'}，独立清空钮的基准 --xh-control-h-sm 对应 sm 档`)
+    }
+    else {
+      const hRe = new RegExp(`block-size:\\s*var\\(--xh-${esc(c)}-clear-h,\\s*var\\(--xh-control-h-sm\\)\\)`)
+      if (!has(rules, (t, b) => t.trim() === '' && hRe.test(b)))
+        problems.push(`${c}.css [clear-trigger] 高该写 var(--xh-${c}-clear-h, var(--xh-control-h-sm))`)
+      if (!has(rules, (t, b) => /:active/.test(t) && /--xh-motion-scale-press/.test(b)))
+        problems.push(`${c}.css [clear-trigger] 缺 :active 按压反馈`)
+    }
   }
-  const src = await connect(c)
   if (src) {
-    const g = getter(src, 'getClearTriggerProps')
     if (!g) {
       problems.push(`${c}.connect.ts 没有 getClearTriggerProps`)
       continue

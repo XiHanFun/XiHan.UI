@@ -84,17 +84,24 @@ export const signaturePadMachine = createMachine({
       defaultValue: EMPTY_SURFACE,
       isEqual: (a, b) => b != null && a.width === b.width && a.height === b.height,
     })),
+    // 清空按钮的按压通道，与落笔状态无关：两个状态都认 PRESS.*
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     getControlEl: () => null,
     strokePointerId: null,
   }),
   initialState: () => 'idle',
+  // 按住途中被禁用或转只读：原生 disabled 的按钮不再派 keyup / blur，按压面得由机器自己收
+  watch: ({ track, prop, action }) => track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert'])),
   // 表单重置与程序化清空从哪个状态发出都要认，因此挂根级
   on: {
     'FORM.RESET': { actions: ['clearStrokes'] },
     // 程序化清空不设守卫，与原生表单重置一致；界面上的清空按钮在禁用/只读时本就按不动
     'STROKES.CLEAR': { actions: ['clearStrokes'] },
+    // 清空按钮的按压通道：禁用与只读时按不动，按住也不进按压面
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -115,8 +122,16 @@ export const signaturePadMachine = createMachine({
   implementations: {
     guards: {
       canDraw: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      // 清空按钮与画布同一道判据：禁用或只读都按不动
+      canPress: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled') || prop('readOnly'))
+          context.set('pressed', false)
+      },
       clearStrokes: ({ context, prop, refs }) => {
         refs.set('strokePointerId', null)
         // 本来就是空的就不发通知：表单重置会连着打到每一个字段上

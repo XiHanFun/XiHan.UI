@@ -21,5 +21,11 @@ export const signaturePadKeyboard: KeyboardTable = {
       when: 'focus on clear-trigger, 未禁用且非只读',
       does: '清空整块画布；按钮是原生 button，这两个键由平台翻成 click',
     },
+    {
+      id: 'signature-pad.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in clear-trigger, 未禁用且非只读',
+      does: '按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下',
+    },
   ],
 }

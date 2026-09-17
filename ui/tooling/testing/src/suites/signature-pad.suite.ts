@@ -1,6 +1,7 @@
 import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
 import { signaturePadAnatomy, signaturePadKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 签名板没有对应的 APG 模式：画布是一张图、不接键盘，组件里唯一的键盘落点是清空按钮。
 // 出处取 APG 的按钮模式，可达性的正文写在 doc.md 的无障碍段。
@@ -186,6 +187,13 @@ export const signaturePadSuite: ConformanceSuite = {
             'disabled': null,
             'data-disabled': null,
             'data-empty': '',
+            'data-pressed': null,
+            // 画布旁的独立文字按钮：接 Action Control text 档 sm、缺省 outline，盒型与四态面由家族配方给
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'outline',
           },
           // 画布是 role=img、名字恒定，签没签只能从这块活区域听出来
           'status': {
@@ -344,6 +352,7 @@ export const signaturePadSuite: ConformanceSuite = {
           },
         }),
         assertInk(false),
+        heldPressIgnored('signature-pad', 'clear-trigger', '禁用时清空按钮不接受按压'),
       ],
     },
     {
@@ -363,7 +372,14 @@ export const signaturePadSuite: ConformanceSuite = {
         layoutStep,
         penDown(20, 20),
         assertInk(false),
+        heldPressIgnored('signature-pad', 'clear-trigger', '只读时清空按钮不接受按压'),
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空按钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['signature-pad.kbd.press'],
+      steps: [heldPress('signature-pad', 'clear-trigger')],
     },
     {
       name: 'Enter / Space 靠原生按钮的激活行为，清空按钮必须是 <button type="button">',
