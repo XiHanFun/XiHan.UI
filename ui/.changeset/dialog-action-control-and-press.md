@@ -19,5 +19,6 @@ trigger 新增稳定属性 `data-xh-action-control` / `data-xh-action-profile="t
 `--xh-text-secondary-size` 13。content 的 `--xh-icon-size` 缺省由 `--xh-glyph-size-text` 改为 `--xh-glyph-size-md`。
 body 新增 `overscroll-behavior: contain` 与带 `:not([data-xh-scrollbar])` 守卫的 `scrollbar-gutter: stable`。
 
-公开槽 `--xh-dialog-close-size / -radius / -fg / -fg-hover / -bg-hover / -bg-active` 改为桥接到配方之前；删除
-`--xh-dialog-close-bg-focus` / `--xh-dialog-close-fg-focus`（焦点面不再铺实体底）。
+公开槽 `--xh-dialog-close-size / -radius / -fg / -fg-hover / -bg-hover / -bg-active / -bg-focus / -fg-focus` 改为桥接
+到配方之前（`-bg-focus` / `-fg-focus` 桥到配方的 focus-visible 面，缺省不再铺实体底而是透明底 + 悬停字色，槽本身
+保留）。
