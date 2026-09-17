@@ -8,7 +8,7 @@
 // 三、焦点停在条里的钮上时，左右方向键与 Home/End 仍然翻页：
 //     这是看片的主交互，条内走位一旦接管这四个键，它就从这七颗钮上消失。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
+import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -36,7 +36,8 @@ import '@xihan-ui/styles'
 let app: App | null = null
 let host: HTMLElement | null = null
 
-afterEach(() => {
+afterEach(async () => {
+  await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
   app?.unmount()
   app = null
   host?.remove()
@@ -213,5 +214,25 @@ describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子�
     // 工具条外壳与计数气泡按身份取圆角：容器 surface 8px、一行字的气泡 control 4px
     expect(getComputedStyle(part('toolbar')).borderRadius).toBe('8px')
     expect(getComputedStyle(part('counter')).borderRadius).toBe('4px')
+  })
+
+  it('粗指针下工具条七颗钮各自撑出 44×44 命中区，钮心点到的是自己', async () => {
+    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+    mount()
+    await settle()
+    expect(matchMedia('(pointer: coarse)').matches).toBe(true)
+
+    // 命中区由配方 icon 档的 ::after 撑出，包含块必须是钮自己：
+    // 皮肤一旦把钮写成 position: static，七块命中区就都以工具条为包含块，
+    // 尺寸变成整条工具条那么宽、彼此盖住，触屏上只剩最后一颗（reset）可点
+    for (const name of TOOL_PARTS) {
+      const button = part(name)
+      const target = getComputedStyle(button, '::after')
+      expect([target.width, target.height], `${name} 的命中区`).toEqual(['44px', '44px'])
+
+      const rect = button.getBoundingClientRect()
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
+      expect(hit && button.contains(hit), `${name} 钮心命中的是 ${hit?.closest('[data-part]')?.getAttribute('data-part')}`).toBe(true)
+    }
   })
 })
