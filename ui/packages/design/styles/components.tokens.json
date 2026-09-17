@@ -55818,7 +55818,7 @@
         "hover"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-border-control"
       ],
       "visibility": "public",
       "description": "splitter 的 resize-trigger 部件 background 覆盖槽。"
