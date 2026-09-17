@@ -669,4 +669,36 @@ describe('集合相位三件套', () => {
     h.setProps({ loading: false, disabled: true })
     expect((h.api().getLoadMoreTriggerProps() as Record<string, unknown>).disabled).toBe(true)
   })
+
+  it('取下一页的钮接 Action Control 的 row 档：ghost 形态、铺满一行只换面，档位随 size', () => {
+    const h = mount({ size: 'sm' })
+    expect(h.api().getLoadMoreTriggerProps() as Record<string, unknown>).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+    })
+    expect((mount().api().getLoadMoreTriggerProps() as Record<string, unknown>)['data-xh-action-size']).toBe('md')
+  })
+
+  it('条目把 Collection Item 角色、尺寸与页内语境投影给三端，文字与对号各落一格', () => {
+    const h = mount({ defaultValue: 'apple', size: 'lg' })
+    expect(h.item('apple').dataset).toMatchObject({
+      xhCollectionItem: '',
+      xhCollectionSize: 'lg',
+      xhCollectionContext: 'page',
+    })
+    // 禁用条目同样投影：家族守卫按 aria-disabled 拦掉悬停 / 按下面
+    expect(h.item('banana').dataset).toMatchObject({
+      xhCollectionItem: '',
+      xhCollectionSize: 'lg',
+      xhCollectionContext: 'page',
+      disabled: '',
+    })
+    expect((mount().api().getItemProps({ value: 'apple' }) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
+    const decl = { value: 'apple' }
+    expect((h.api().getItemTextProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    expect((h.api().getItemIndicatorProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('indicator')
+  })
 })

@@ -35157,19 +35157,25 @@
       "name": "--xh-listbox-icon-size",
       "component": "listbox",
       "part": [
+        "item",
         "root"
       ],
       "property": [
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "default",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_collection-glyph-size",
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "listbox 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "listbox 的 item、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-bg-hover",
@@ -35178,19 +35184,98 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "highlighted",
-        "is(:hover, [data-highlighted], :focus-visible)",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "listbox 的 item 部件 background 覆盖槽。"
+      "description": "listbox 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-bg-pressed",
+      "component": "listbox",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-bg-selected",
+      "component": "listbox",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=page"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-check-fg",
+      "component": "listbox",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color",
+        "color"
+      ],
+      "state": [
+        "current",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "state=checked",
+        "xh-collection-context=page",
+        "xh-collection-slot=indicator"
+      ],
+      "defaultToken": [
+        "--xh-listbox-item-indicator-fg"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item 部件 background-color、color 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-fg",
@@ -35203,7 +35288,14 @@
       ],
       "state": [
         "default",
-        "state=checked"
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -35221,10 +35313,20 @@
         "color"
       ],
       "state": [
-        "state=checked"
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=page"
       ],
       "defaultToken": [
-        "--xh-listbox-item-fg"
+        "--xh-fg-on-brand-subtle"
       ],
       "visibility": "public",
       "description": "listbox 的 item 部件 color 覆盖槽。"
@@ -35257,7 +35359,17 @@
         "font-weight"
       ],
       "state": [
-        "state=checked"
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=page"
       ],
       "defaultToken": [
         "--xh-font-weight-regular"
@@ -35272,34 +35384,53 @@
         "item"
       ],
       "property": [
-        "gap"
+        "margin-inline-end",
+        "margin-inline-start"
       ],
       "state": [
-        "default"
+        "xh-collection-context=page",
+        "xh-collection-slot=indicator",
+        "xh-collection-slot=prefix",
+        "xh-collection-slot=shortcut",
+        "xh-collection-slot=suffix"
       ],
       "defaultToken": [
         "--xh-_listbox-gap"
       ],
       "visibility": "public",
-      "description": "listbox 的 item 部件 gap 覆盖槽。"
+      "description": "listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-indicator-fg",
       "component": "listbox",
       "part": [
-        "item-indicator"
+        "item"
       ],
       "property": [
+        "background-color",
         "color"
       ],
       "state": [
-        "default"
+        "current",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "state=checked",
+        "xh-collection-context=page",
+        "xh-collection-slot=indicator"
       ],
       "defaultToken": [
         "--xh-_listbox-accent"
       ],
       "visibility": "public",
-      "description": "listbox 的 item-indicator 部件 color 覆盖槽。"
+      "description": "listbox 的 item 部件 background-color、color 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-indicator-size",
@@ -35315,7 +35446,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-icon-size"
       ],
       "visibility": "public",
       "description": "listbox 的 item-indicator 部件 block-size、inline-size 覆盖槽。"
@@ -35456,10 +35587,14 @@
         "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
       "description": "listbox 的 load-more-trigger 部件 background-color 覆盖槽。"
@@ -35474,7 +35609,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_tone-fg"
@@ -35546,7 +35688,7 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-_listbox-item-py"

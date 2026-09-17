@@ -155,6 +155,9 @@ const FAMILIES = [
     parts: [
       {
         partBy: { tree: 'tree', listbox: 'content', transfer: 'source-panel', list: 'root', descriptions: 'root', table: 'root' },
+        // 面就是 root（list / descriptions / table）或组件本体（tree）的成员，槽名不带部件段（--xh-list-border）；
+        // transfer 两侧面板共用 panel 段（--xh-transfer-panel-border）；listbox 的面是 content，槽名按部件取
+        slotBy: { tree: '', transfer: 'panel', list: '', descriptions: '', table: '' },
         stateBy: { tree: '', listbox: '', transfer: '', list: '[data-variant=\'outline\']', descriptions: '[data-variant=\'outline\']', table: '[data-variant=\'outline\']' },
         props: ['border', 'background', 'box-shadow'],
       },

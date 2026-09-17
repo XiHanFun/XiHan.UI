@@ -9,7 +9,8 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, ref, watch } from 'vue'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   provideListbox,
@@ -99,9 +100,29 @@ export const XhListboxLabel = defineComponent({
 
 export const XhListboxContent = defineComponent({
   name: 'XhListboxContent',
-  setup(_, { slots }) {
+  // 根是片段（列表节点 + 贴层的条子），Vue 不会把直通属性合上去：作者写的 class、style 与 data-* 自己接住落到列表节点上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useListboxContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    const contentRef = ref<HTMLElement | null>(null)
+    // 定高小列表走自绘条（§6.6）：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
+    // （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。
+    // 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
+    const bars = useScrollbars({
+      scrollable: () => contentRef.value,
+      axes: ['vertical', 'horizontal'],
+      anchor: 'layer',
+      props: () => ({ dir: ctx.service.prop('dir') }),
+    })
+    // 条目增减、占位显隐都会挪动列表在壳内的位置与尺寸：每次更新后重量一次偏移盒
+    onUpdated(() => bars.measure())
+    return () => [
+      h('div', {
+        ...mergeProps(ctx.api.value.getContentProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { contentRef.value = el as HTMLElement | null },
+      }, slots.default?.()),
+      ...bars.render(),
+    ]
   },
 })
 

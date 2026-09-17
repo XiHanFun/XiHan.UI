@@ -5,6 +5,9 @@
 
 /* 定义 listbox 样式。 */
 
+@import '../family/action-control.css';
+@import '../family/collection-item.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='listbox'] {
@@ -12,8 +15,11 @@
   }
 
   [data-scope='listbox'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-text));
+    /* 条目外的字形（空态 / 在途占位里作者塞的图标）按档取尺，缺省 md；条目内的字形由家族随
+       data-xh-collection-size 下发（§6.5） */
+    --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-md));
+    /* 定高小列表的自绘条挂在根上（§6.6）：根是条子的定位盒，轨道底色关掉才不会在列表右缘糊出一条灰带 */
+    --xh-scrollbar-track-bg: transparent;
 
     /* 尺寸档只换这四个私有槽，条目、分组标题与空态占位都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
@@ -25,6 +31,7 @@
     /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
     --xh-_listbox-accent: var(--xh-_tone, var(--xh-fg-brand));
 
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--xh-listbox-gap, var(--xh-space-2));
@@ -37,6 +44,7 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='listbox'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-sm));
     --xh-_listbox-item-py: var(--xh-list-option-py-sm);
     --xh-_listbox-item-px: var(--xh-control-px-sm);
     --xh-_listbox-gap: var(--xh-control-gap-sm);
@@ -44,6 +52,7 @@
   }
 
   [data-scope='listbox'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-lg));
     --xh-_listbox-item-py: var(--xh-list-option-py-lg);
     --xh-_listbox-item-px: var(--xh-control-px-lg);
     --xh-_listbox-gap: var(--xh-control-gap-lg);
@@ -56,10 +65,17 @@
   }
 
   /* 只读改不动选中值，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
-     排掉禁用项是因为这条选择器权重高过条目那条，不排就会把禁用的手势指示覆盖回 default */
+     光标由家族按态解算，这里在各态的槽上统一收回；禁用项的 not-allowed 由家族按 aria-disabled 给，不在此列 */
   [data-scope='listbox'][data-part='root'][data-readonly]
     [data-scope='listbox'][data-part='item']:not([data-disabled]) {
-    cursor: default;
+    --xh-collection-cursor-rest: default;
+    --xh-collection-cursor-hover: default;
+    --xh-collection-cursor-keyboard-highlight: default;
+    --xh-collection-cursor-pressed: default;
+    --xh-collection-cursor-selected: default;
+    --xh-collection-cursor-selected-hover: default;
+    --xh-collection-cursor-selected-highlight: default;
+    --xh-collection-cursor-selected-pressed: default;
   }
 
   [data-scope='listbox'][data-part='label'] {
@@ -198,116 +214,110 @@
     display: none;
   }
 
-  /* 取下一页的按钮：铺满一行摆在列表尾，与条目同一套内衬，视觉上仍是一颗按钮 */
+  /* 取下一页的按钮：铺满一行摆在列表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
+     ghost 形态（§9.2）：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
+     焦点环与粗指针热区全由家族给，白底承载 hover 100 → pressed 200。
+     这里只把使用者槽映射到桥接槽并把文案居中：它是一行里唯一的东西，靠起始缘会像一条没对齐的条目 */
   [data-scope='listbox'][data-part='load-more-trigger'] {
-    display: flex;
-    align-items: center;
+    --xh-action-gap: var(--xh-listbox-load-more-trigger-gap, var(--xh-_listbox-gap));
+    --xh-action-padding-block: var(--xh-listbox-load-more-trigger-py, var(--xh-_listbox-item-py));
+    --xh-action-padding-inline: var(--xh-listbox-load-more-trigger-px, var(--xh-_listbox-item-px));
+    --xh-action-radius: var(--xh-listbox-load-more-trigger-radius, var(--xh-shape-control));
+    --xh-action-bg-hover: var(--xh-listbox-load-more-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-fg-rest: var(--xh-listbox-load-more-trigger-fg, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
+    --xh-action-fg-hover: var(--xh-listbox-load-more-trigger-fg, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
+    --xh-action-fg-pressed: var(--xh-listbox-load-more-trigger-fg, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
+    --xh-action-font-size: var(--xh-listbox-load-more-trigger-font-size, var(--xh-_listbox-font-size));
+
     justify-content: center;
-    inline-size: 100%;
-    gap: var(--xh-listbox-load-more-trigger-gap, var(--xh-_listbox-gap));
-    padding-block: var(--xh-listbox-load-more-trigger-py, var(--xh-_listbox-item-py));
-    padding-inline: var(--xh-listbox-load-more-trigger-px, var(--xh-_listbox-item-px));
-    border-radius: var(--xh-listbox-load-more-trigger-radius, var(--xh-shape-control));
-    background: none;
-    color: var(--xh-listbox-load-more-trigger-fg, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
-    font-size: var(--xh-listbox-load-more-trigger-font-size, var(--xh-_listbox-font-size));
+    text-align: center;
+    /* row 档允许换行、高度随内容，折行的文案走正文行高（§6.4） */
     line-height: var(--xh-leading-normal);
-    cursor: pointer;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='listbox'][data-part='load-more-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='listbox'][data-part='load-more-trigger']:hover {
-    background-color: var(--xh-listbox-load-more-trigger-bg-hover, var(--xh-bg-subtle));
-  }
-
-  [data-scope='listbox'][data-part='load-more-trigger']:active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 取数在途与整列禁用两档都点不动：手势指示与前景色一起收回 */
-  [data-scope='listbox'][data-part='load-more-trigger']:disabled {
-    color: var(--xh-fg-disabled);
-    cursor: default;
-  }
-
+  /* 条目走 Collection Item 的 page 语境（页内持久集合，§7.3）：网格、尺寸档、悬停 / 高亮 / 按下面
+     （白底承载 hover 100 → pressed 200）与选中面（品牌淡底 + 淡底前景 + 前导对号，selected+hover 20% /
+     +pressed 28%）都由家族按 aria-selected / aria-disabled 给出；禁用面（字色降级、not-allowed、不换面）
+     也归家族。这里只把公开槽映射到桥接槽，不复制任何状态选择器。
+     page 集合坐在 surface 白底上，前景走 fg-default 而不是浮层的 frosted 前景 */
   [data-scope='listbox'][data-part='item'] {
-    display: flex;
-    align-items: center;
-    gap: var(--xh-listbox-item-gap, var(--xh-_listbox-gap));
-    padding-block: var(--xh-listbox-item-py, var(--xh-_listbox-item-py));
-    padding-inline: var(--xh-listbox-item-px, var(--xh-_listbox-item-px));
-    border-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
-    color: var(--xh-listbox-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-listbox-item-font-size, var(--xh-_listbox-font-size));
+    --xh-collection-block-padding: var(--xh-listbox-item-py, var(--xh-_listbox-item-py));
+    --xh-collection-inline-padding: var(--xh-listbox-item-px, var(--xh-_listbox-item-px));
+    --xh-collection-gap: var(--xh-listbox-item-gap, var(--xh-_listbox-gap));
+    --xh-collection-font-size: var(--xh-listbox-item-font-size, var(--xh-_listbox-font-size));
+    --xh-collection-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
+    /* 作者的图标尺槽经桥接槽下发到条目，家族缺省按 data-xh-collection-size 取档 */
+    --xh-collection-glyph-size: var(--xh-listbox-icon-size, var(--xh-_collection-glyph-size));
+    --xh-collection-fg-rest: var(--xh-listbox-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-hover: var(--xh-listbox-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-keyboard-highlight: var(--xh-listbox-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-pressed: var(--xh-listbox-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-selected: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-hover: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-highlight: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-pressed: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-font-weight-selected: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-hover: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-highlight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-pressed: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-bg-hover: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-listbox-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-selected: var(--xh-listbox-item-bg-selected, var(--xh-bg-brand-subtle));
+    /* data-highlighted 跟的是连接层记的焦点条目（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
+    --xh-collection-outline-keyboard-highlight: transparent;
+    --xh-collection-outline-selected-highlight: transparent;
+    /* 对号随语气走：没写 data-tone 时退回品牌色；槽按本部件取名（item-check-fg），标记部件的旧槽留在兜底位 */
+    --xh-collection-indicator-fg-rest: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
+    --xh-collection-indicator-fg-checked: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
+    --xh-collection-indicator-fg-selected: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
+    --xh-collection-indicator-fg-selected-hover: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
+    --xh-collection-indicator-fg-selected-highlight: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
+    --xh-collection-indicator-fg-selected-pressed: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
+
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-listbox-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 条目可以按需收起（过滤掉的选项），有 display 就得补这条 */
+  /* 家族给了 display，UA 的 [hidden]{display:none} 已被盖掉：条目可以按需收起（过滤掉的选项） */
   [data-scope='listbox'][data-part='item'][hidden] {
     display: none;
   }
 
-  /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点条目，
-     与选中互相独立 */
-  [data-scope='listbox'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible) {
-    background: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
-  }
+  /* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+  [data-scope='listbox'][data-part='item']:focus-visible:not(:hover) {
+    --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+    --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
-  /* 与下拉选项一致：单选、多选只用对号表达选中，正文颜色和字重保持稳定。 */
-  [data-scope='listbox'][data-part='item'][data-state='checked'] {
-    color: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
-    font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
+    transition: none;
   }
 
   [data-scope='listbox'][data-part='item']:focus:not(:focus-visible) {
     outline: none;
   }
 
-  [data-scope='listbox'][data-part='item']:focus-visible {
-    transition-property: color;
-  }
-
-  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
-     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
-  [data-scope='listbox'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
   [data-scope='listbox'][data-part='item-text'] {
-    flex: 1;
-    /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
+    /* 网格子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
     min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  /* 勾选标记落在家族网格的 indicator 列（page 语境下前置为前导对号）；显隐与颜色由家族按选中态给，
+     未选中时占位不塌，切换选中不引起行宽抖动 */
   [data-scope='listbox'][data-part='item-indicator'] {
     display: inline-flex;
-    flex: none;
     align-items: center;
     justify-content: center;
-    margin-inline-start: auto;
-    inline-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent));
-    visibility: hidden;
+    inline-size: var(--xh-listbox-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    block-size: var(--xh-listbox-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
   }
 
   [data-scope='listbox'][data-part='item-indicator'][hidden] {
@@ -324,13 +334,5 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  }
-
-  [data-scope='listbox'][data-part='item-indicator'][data-state='checked'] {
-    visibility: visible;
-  }
-
-  [data-scope='listbox'][data-part='item-indicator'][data-disabled] {
-    color: var(--xh-fg-disabled);
   }
 }

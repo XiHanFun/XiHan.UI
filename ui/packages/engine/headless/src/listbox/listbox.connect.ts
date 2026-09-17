@@ -285,9 +285,16 @@ export function connectListbox<T extends PropTypes>(
     }),
 
     // 取下一页的入口：还有没有下一页只有作者知道，露不露面与点了做什么都归他，
-    // 连接层只焊死「在途中与整列禁用点不动」
+    // 连接层只焊死「在途中与整列禁用点不动」。
+    // 它是铺满一行的独立动作条目（§9.2 load-more trigger）：接 Action Control 的 row 档、ghost 形态，
+    // 宽度由容器给、高度随内容、按下只换面不缩放；悬停 / 按下 / 禁用面与粗指针热区由家族给，档位随 size
     getLoadMoreTriggerProps: () => normalize.button({
       ...parts['load-more-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': loading || listDisabled || undefined,
       'data-loading': dataAttr(loading),
@@ -308,9 +315,14 @@ export function connectListbox<T extends PropTypes>(
       'data-disabled': dataAttr(listDisabled),
     }),
 
+    // 条目走 Collection Item 的 page 语境（页内持久集合）：网格、尺寸档、悬停 / 高亮 / 按下面与
+    // 选中面（品牌淡底 + 前导对号）都由家族配方按 aria-selected / aria-disabled 给出，皮肤只映射公开槽
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...stateAttrs(item),
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'page',
       // 导航、检索与选中的条目身份
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'option',
@@ -349,11 +361,14 @@ export function connectListbox<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...stateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 选中标记落在家族网格的 indicator 列：page 语境下它是前导对号，显隐由家族按 data-state='checked' 给
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...stateAttrs(item),
+      'data-xh-collection-slot': 'indicator',
       'aria-hidden': true,
     }),
   }
