@@ -387,7 +387,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能出现在 `border-block-start / inline-start` 类分隔线与 `::after` 分隔伪元素中。
 - 字段静息形态 = 描边：`--xh-bg-canvas` + `--xh-border-control` + `--xh-shape-control` + 无影；hover 升 `--xh-border-control-hover`，focus-within 换 `--xh-border-control-focus` + `--xh-ring-focus`，invalid 用 `--xh-border-invalid` + `--xh-ring-invalid`。字段家族不消费 `--xh-elevation-raised`。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
-- 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft。
+- 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `--xh-bg-canvas` + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边，子字段压平为透明。
 
 ### 8.4 浮层材质判据
