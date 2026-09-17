@@ -194,6 +194,13 @@
       "ratio": 1,
       "ring": "poured"
     },
+    "carousel [data-part='root'][data-scope='carousel']:not([data-autoplay]):not([data-paused]) [data-current][data-part='indicator'][data-scope='carousel']": {
+      "parts": [
+        "indicator"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
     "checkbox [data-part='root'][data-scope='checkbox'][data-state=:is(checked,indeterminate)]:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])": {
       "parts": [
         "root"

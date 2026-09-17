@@ -195,6 +195,11 @@ export const carouselSuite: ConformanceSuite = {
             'aria-controls': '@part(viewport)',
             'disabled': '',
             'data-disabled': '',
+            // 浮在媒体之上的单图标圆钮：接 Action Control floating 档，固定 md、不投影 variant（面由皮肤桥接磨砂缺省）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'floating',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': null,
           },
           'next-trigger': {
             'type': 'button',
@@ -202,6 +207,9 @@ export const carouselSuite: ConformanceSuite = {
             'aria-controls': '@part(viewport)',
             'disabled': null,
             'data-disabled': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'floating',
+            'data-xh-action-size': 'md',
           },
           'indicator-group': { 'role': 'group', 'aria-label': 'Choose slide to display' },
           'indicator[0]': {
@@ -210,6 +218,8 @@ export const carouselSuite: ConformanceSuite = {
             'aria-current': 'true',
             'data-current': '',
             'data-index': '0',
+            // 分页点是 8px 圆点 / 当前项 20px 胶囊，不是配方管的按钮盒
+            'data-xh-action-control': null,
             // 指示点不做 roving tabindex：每一颗都该是一个 Tab 停靠点
             'tabindex': null,
           },

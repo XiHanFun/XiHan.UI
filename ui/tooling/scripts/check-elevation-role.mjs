@@ -53,6 +53,8 @@ const EXPECTED = {
   'back-top': { root: ['frosted'] },
   'button': { root: ['soft', 'raised'] },
   'card': { root: ['raised'] },
+  // 浮在媒体之上的三颗翻页 / 播放钮：与 back-top / float-button 同属角落浮钮族，走 frosted 四件套（私有槽写在根上）
+  'carousel': { root: ['frosted'] },
   'color-picker': { 'content': ['frosted'], 'area-thumb': ['raised'] },
   'segmented': { indicator: ['raised'] },
   // 被指针拎起、跟着手走的条目：lifted（拖起的面是作者内容，不强加描边，raised 条款不适用）

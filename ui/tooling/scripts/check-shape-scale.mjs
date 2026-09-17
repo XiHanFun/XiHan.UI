@@ -89,7 +89,12 @@ const IDENTITY = {
   'approval:footer::before': 'circle',
   'color-swatch-picker:indicator::before': 'circle',
   'skeleton:item[data-shape=\'circle\']': 'circle',
+  // 位置指示点：8px 圆点，当前项拉长成 20px 胶囊（§6.3）；粗指针下点由 ::after 画、进度条由 ::before 画，同一张表
   'carousel:indicator': 'circle',
+  'carousel:indicator[data-current]': 'pill',
+  'carousel:indicator::after': 'circle',
+  'carousel:indicator::after[data-current]': 'pill',
+  'carousel:indicator::before[data-current]': 'pill',
   'slider:tick': 'circle',
   'image-cropper:crop-area': 'circle',
   // circle + floating：悬浮于内容之上的单图标动作，走 Action Control floating profile

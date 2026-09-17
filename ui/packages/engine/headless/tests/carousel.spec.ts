@@ -573,6 +573,20 @@ describe('connectCarousel 属性', () => {
     expect((a.getItemProps({ index: 0 }) as Dict)['aria-label']).toBe('第 1 张，共 6 张')
   })
 
+  it('三颗控制钮接 Action Control floating 档：固定 md、不投影 variant，指示点不接', () => {
+    const a = makeCarousel(SIX).api()
+    for (const props of [a.getPrevTriggerProps() as Dict, a.getNextTriggerProps() as Dict, a.getAutoplayTriggerProps() as Dict]) {
+      expect(props['data-xh-action-control']).toBe('')
+      expect(props['data-xh-action-profile']).toBe('floating')
+      expect(props['data-xh-action-display']).toBe('always')
+      // 组件没有 size 轴，固定 md；面由皮肤桥接到磨砂缺省，不投影 variant
+      expect(props['data-xh-action-size']).toBe('md')
+      expect(props['data-xh-action-variant']).toBeUndefined()
+    }
+    // 分页点是 8px 圆点 / 当前项 20px 胶囊（§6.3），不是配方管的按钮盒
+    expect((a.getIndicatorProps({ index: 0 }) as Dict)['data-xh-action-control']).toBeUndefined()
+  })
+
   it('条目自报"第几张 / 共几张"，只有当前页的那几张带 data-inview', () => {
     const a = makeCarousel({ slideCount: 6, slidesPerPage: 2, defaultPage: 1 }).api()
     const item = (i: number) => a.getItemProps({ index: i }) as Dict
