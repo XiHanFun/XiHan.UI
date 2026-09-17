@@ -68538,6 +68538,7 @@
         "variant=solid"
       ],
       "defaultToken": [
+        "--xh-_action-variant-bg-rest",
         "--xh-_toggle-bg-on"
       ],
       "visibility": "public",
@@ -68738,6 +68739,7 @@
         "variant=solid"
       ],
       "defaultToken": [
+        "--xh-_action-variant-fg-rest",
         "--xh-_toggle-fg-on"
       ],
       "visibility": "public",
