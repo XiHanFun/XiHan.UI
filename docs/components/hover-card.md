@@ -231,6 +231,7 @@ disabled 只关闭卡片本身，触发器照常可点击、可聚焦，也照�
 | `--xh-hover-card-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | hover-card 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-hover-card-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | hover-card 的 arrow、content 部件 border 覆盖槽。 |
 | `--xh-hover-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | hover-card 的 description 部件 color 覆盖槽。 |
+| `--xh-hover-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | hover-card 的 description 部件 font-size 覆盖槽。 |
 | `--xh-hover-card-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | hover-card 的 content 部件 color 覆盖槽。 |
 | `--xh-hover-card-gap` | `content` | `gap` | `default` | `--xh-space-2` | hover-card 的 content 部件 gap 覆盖槽。 |
 | `--xh-hover-card-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | hover-card 的 positioner 部件 z-index 覆盖槽。 |

@@ -90,7 +90,7 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: 0px
-font-size: 14px
+font-size: 13px
 line-height: normal
 font-weight: 400
 color: oklch(0.439 0.006 258)

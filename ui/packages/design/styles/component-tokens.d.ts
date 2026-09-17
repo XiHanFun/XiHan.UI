@@ -1642,6 +1642,7 @@ export type ComponentTokenName =
   | '--xh-hover-card-bg'
   | '--xh-hover-card-border'
   | '--xh-hover-card-description-fg'
+  | '--xh-hover-card-description-font-size'
   | '--xh-hover-card-fg'
   | '--xh-hover-card-gap'
   | '--xh-hover-card-layer'

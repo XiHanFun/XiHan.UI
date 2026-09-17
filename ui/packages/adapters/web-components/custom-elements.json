@@ -25527,7 +25527,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里走 4px 档 props: () => ({ size: 'sm' }), })",
               "description": "卡片内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
@@ -25699,6 +25699,9 @@
             },
             {
               "name": "--xh-hover-card-description-fg"
+            },
+            {
+              "name": "--xh-hover-card-description-font-size"
             },
             {
               "name": "--xh-hover-card-fg"

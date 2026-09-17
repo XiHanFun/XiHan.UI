@@ -31917,6 +31917,24 @@
       "description": "hover-card 的 description 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-hover-card-description-font-size",
+      "component": "hover-card",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "hover-card 的 description 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-hover-card-fg",
       "component": "hover-card",
       "part": [
