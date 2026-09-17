@@ -228,7 +228,6 @@
     "command:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "context-menu:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "context-menu:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "descriptions:label:spacing": "根的 gap 落 --xh-space-3，集合标题与集合应为 --xh-space-2；待本组件迁移",
     "dialog:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "dialog:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "drawer:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",

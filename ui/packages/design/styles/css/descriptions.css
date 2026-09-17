@@ -15,7 +15,8 @@
     /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_descriptions-gap: var(--xh-space-3);
-    --xh-_descriptions-pair-gap: var(--xh-space-1);
+    /* 标签是每一格的集合标题：叠着排时与取值隔 space-2（§6.4 集合标题与集合的间距） */
+    --xh-_descriptions-pair-gap: var(--xh-space-2);
     --xh-_descriptions-label-gap: var(--xh-space-2);
     --xh-_descriptions-py: var(--xh-space-2);
     --xh-_descriptions-px: var(--xh-space-3);
@@ -130,8 +131,9 @@
     border-block-start-width: 0;
   }
 
-  /* 淡底档：不画描边也不补网格线，surface 圆角 + subtle 底 */
+  /* 淡底档：不补网格线，surface 圆角 + subtle 底；描边留一圈透明边位，与 outline 同一几何 */
   [data-scope='descriptions'][data-part='root'][data-variant='subtle'] {
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-descriptions-radius, var(--xh-shape-surface));
     background: var(--xh-descriptions-bg, var(--xh-bg-subtle));
     overflow: hidden;

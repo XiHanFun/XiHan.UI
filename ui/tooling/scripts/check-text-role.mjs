@@ -47,8 +47,15 @@ const FIELD_LABEL = new Set([
   'switch',
   'checkbox',
 ])
-/** 集合标题。 */
-const COLLECTION_TITLE = new Set(['radio-group', 'checkbox-group', 'listbox', 'tree', 'tag-group', 'descriptions'])
+/** 集合标题：scope → 标签所在的容器部件（与集合的间距读它的 gap）。Descriptions 的标签是每一格的标题，坐在 item 里。 */
+const COLLECTION_TITLE = {
+  'radio-group': 'root',
+  'checkbox-group': 'root',
+  'listbox': 'root',
+  'tree': 'root',
+  'tag-group': 'root',
+  'descriptions': 'item',
+}
 /** Surface / Feedback / 浮层内标题：scope → 标题部件。 */
 const SURFACE_TITLE = {
   'card': 'title',
@@ -180,13 +187,13 @@ function expect(scope, part, decls, prop, want, why) {
     problems.push(`${decl.file}:${decl.line}  ${key}  ${prop} 落 ${token}，${why}应为 ${Array.isArray(want) ? want.join(' / ') : want}`)
 }
 
-/** 与相邻元素的间距：部件自己的 margin-block-end，没有就看根的 gap / row-gap。 */
-function expectSpacing(scope, part, decls, want, why) {
+/** 与相邻元素的间距：部件自己的 margin-block-end，没有就看所在容器（缺省是根）的 gap / row-gap。 */
+function expectSpacing(scope, part, decls, want, why, container = 'root') {
   // 标签自己的 margin 是 calc 差值（field 那种「容器 gap 之上补差」）时，真正的距离仍是根的 gap
   const margin = decls.get('margin-block-end')
   const own = margin && !margin.value.startsWith('calc(') ? margin : null
-  const root = declsFor(scope, 'root')
-  const decl = own ?? root.get('row-gap') ?? root.get('gap')
+  const host = declsFor(scope, container)
+  const decl = own ?? host.get('row-gap') ?? host.get('gap')
   if (!decl)
     return
   governed++
@@ -195,7 +202,7 @@ function expectSpacing(scope, part, decls, want, why) {
     return
   const key = `${scope}:${part}:spacing`
   if (!backlog.excuse(key))
-    problems.push(`${decl.file}:${decl.line}  ${key}  ${own ? 'margin-block-end' : '根的 gap'} 落 ${token}，${why}应为 ${want}`)
+    problems.push(`${decl.file}:${decl.line}  ${key}  ${own ? 'margin-block-end' : `${container} 的 gap`} 落 ${token}，${why}应为 ${want}`)
 }
 
 const scopes = new Set(skins.map(s => s.comp))
@@ -216,7 +223,7 @@ for (const scope of FIELD_LABEL) {
 }
 
 // 集合标题
-for (const scope of COLLECTION_TITLE) {
+for (const [scope, container] of Object.entries(COLLECTION_TITLE)) {
   if (!scopes.has(scope)) {
     problems.push(`${scope}.css 读不到——COLLECTION_TITLE 名单过期`)
     continue
@@ -224,7 +231,7 @@ for (const scope of COLLECTION_TITLE) {
   const label = declsFor(scope, 'label')
   expect(scope, 'label', label, 'font-size', '--xh-text-label-size', '集合标题')
   expect(scope, 'label', label, 'color', '--xh-fg-muted', '集合标题')
-  expectSpacing(scope, 'label', label, '--xh-space-2', '集合标题与集合')
+  expectSpacing(scope, 'label', label, '--xh-space-2', '集合标题与集合', container)
 }
 
 // 说明与错误文案：所有写了这两个部件的皮肤
