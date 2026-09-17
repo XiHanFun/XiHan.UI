@@ -60,12 +60,12 @@
     cursor: move;
   }
 
-  /* 圆形裁切的这一档只能写 50%：shape 那四档给的是固定长度，
-     裁切框的宽高由数据决定、两边通常不等长，固定长度画出来是胶囊不是椭圆。 */
+  /* 圆形裁切取 circle 档（50%）：shape 的固定长度档画出来是胶囊不是椭圆，
+     裁切框的宽高由数据决定、两边通常不等长，只有百分比才随框变成椭圆；圆角只能来自语义形状令牌（§6.3） */
   [data-scope='image-cropper'][data-part='crop-area'][data-shape='round'] {
     --xh-_image-cropper-corner-radius: var(--xh-shape-circle);
 
-    border-radius: 50%;
+    border-radius: var(--xh-image-cropper-crop-area-radius, var(--xh-shape-circle));
   }
 
   [data-scope='image-cropper'][data-part='crop-area'][data-dragging] {
@@ -145,8 +145,9 @@
     content: '';
   }
 
+  /* 把手静息是白面（bg-surface），悬停从同一语义面派生一档（§7.2 第 8 条），不切到品牌淡底；拖动中才是品牌实心 */
   [data-scope='image-cropper'][data-part='crop-handle']:hover:not([data-disabled], [data-readonly]) {
-    --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-brand-subtle-hover));
+    --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-subtle));
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {

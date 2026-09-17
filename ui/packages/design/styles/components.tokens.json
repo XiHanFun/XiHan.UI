@@ -32516,6 +32516,24 @@
       "description": "image-cropper 的 viewport 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-image-cropper-crop-area-radius",
+      "component": "image-cropper",
+      "part": [
+        "crop-area"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "shape=round"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "image-cropper 的 crop-area 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-image-cropper-crop-border",
       "component": "image-cropper",
       "part": [
@@ -32597,7 +32615,7 @@
         "readonly"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle-hover"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "image-cropper 的 crop-handle 部件 background、border 覆盖槽。"
