@@ -91,6 +91,12 @@ export const timerSuite: ConformanceSuite = {
             'data-action': 'start',
             // 起停按钮不是集合条目，不上 aria-disabled
             'aria-disabled': null,
+            // 离散动作钮：Action Control text outline 档，档位缺省 md
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
         },
         activeElement: null,
@@ -117,6 +123,8 @@ export const timerSuite: ConformanceSuite = {
           root: { 'data-size': 'lg' },
           display: { 'data-size': null },
           item: [{ 'data-size': null }, { 'data-size': null }, { 'data-size': null }],
+          // 起停钮不重复标 data-size，家族档位跟着 size 走
+          control: { 'data-size': null, 'data-xh-action-size': 'lg' },
         },
       },
     },

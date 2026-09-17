@@ -127,8 +127,16 @@ export function connectTimer<T extends PropTypes>(
       'aria-hidden': true,
     }),
 
+    // 起停钮是一颗带文案（或图标）的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环由
+    // Action Control 家族按 text outline 档给——中性描边、透明底，白底承载 hover 100 → pressed 200；
+    // 档位随 size 走（缺省 md），皮肤只映射既有使用者槽
     getControlProps: () => normalize.button({
       ...parts.control.attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       // 原生按钮的 Enter/Space 激活由平台负责；少了 type，按钮落在 form 里会变成 submit
       'type': 'button',
       // 按钮里常常只有一个图标，名字得随这一下要做的事一起换

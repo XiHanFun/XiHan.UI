@@ -309,6 +309,8 @@ describe('connectTimer 部件属性', () => {
     const up = makeTimer({ size: 'lg' })
     expect(up.root()['data-state']).toBe('idle')
     expect(up.root()['data-size']).toBe('lg')
+    // 起停钮的家族档位跟着 size 走
+    expect(up.control()['data-xh-action-size']).toBe('lg')
     expect(up.root()['data-countdown']).toBeUndefined()
 
     const down = makeTimer({ countdown: true })
@@ -367,6 +369,12 @@ describe('connectTimer 部件属性', () => {
     expect(t.control().type).toBe('button')
     expect(t.control()['data-action']).toBe('start')
     expect(t.control()['aria-label']).toBe('Start')
+    // 离散动作钮：Action Control text outline 档，缺省 md
+    expect(t.control()['data-xh-action-control']).toBe('')
+    expect(t.control()['data-xh-action-profile']).toBe('text')
+    expect(t.control()['data-xh-action-variant']).toBe('outline')
+    expect(t.control()['data-xh-action-display']).toBe('always')
+    expect(t.control()['data-xh-action-size']).toBe('md')
 
     t.api().start()
     expect(t.control()['data-action']).toBe('pause')

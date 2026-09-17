@@ -64881,16 +64881,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "timer 的 control 部件 background 覆盖槽。"
+      "description": "timer 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-timer-control-bg-active",
@@ -64899,17 +64899,21 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "timer 的 control 部件 background 覆盖槽。"
+      "description": "timer 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-timer-control-bg-disabled",
@@ -64918,16 +64922,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "timer 的 control 部件 background 覆盖槽。"
+      "description": "timer 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-timer-control-bg-hover",
@@ -64936,16 +64940,20 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "timer 的 control 部件 background 覆盖槽。"
+      "description": "timer 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-timer-control-border",
@@ -64960,7 +64968,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 border 覆盖槽。"
@@ -64978,7 +64986,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-_action-variant-border-disabled"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 border-color 覆盖槽。"
@@ -64996,7 +65004,7 @@
         "focus-visible"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_action-variant-border-focus-visible"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 border-color 覆盖槽。"
@@ -65011,10 +65019,17 @@
         "border-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 border-color 覆盖槽。"
@@ -65029,10 +65044,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 color 覆盖槽。"
@@ -65050,7 +65074,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_timer-control-gap"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 gap 覆盖槽。"
@@ -65068,7 +65092,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_timer-control-h"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 block-size 覆盖槽。"
@@ -65086,7 +65110,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_timer-control-px"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 padding-inline 覆盖槽。"
@@ -65119,8 +65143,12 @@
         "box-shadow"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "none"
@@ -65138,11 +65166,14 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 box-shadow 覆盖槽。"
@@ -65218,6 +65249,24 @@
       ],
       "visibility": "public",
       "description": "timer 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-timer-icon-size",
+      "component": "timer",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size"
+      ],
+      "visibility": "public",
+      "description": "timer 的 control 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-timer-item-fg",

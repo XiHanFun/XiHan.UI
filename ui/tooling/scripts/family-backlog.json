@@ -19,7 +19,6 @@
     "sortable:item:raised": "拖起的条目没有描边，raised 必带 --xh-border-default，待本组件迁移",
     "switch:thumb:raised": "滑块描边落 --xh-material-soft-border，应为 --xh-border-default，待本组件迁移",
     "tabs:root:raised": "raised 退役待本组件迁移",
-    "timer:control:raised": "raised 退役待本组件迁移",
     "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移",
     "transfer:to-source-trigger:raised": "raised 退役待本组件迁移"
   },
@@ -98,9 +97,6 @@
     "steps:indicator:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "switch:root:selected": "background: --xh-bg-muted，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
     "tabs:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "timer:control:focus": "焦点边写了 border-color: var(--xh-timer-control-border-focus, var(--xh-_tone, var(--x，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
-    "timer:control:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "timer:control:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "tour:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "transfer:to-target-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",

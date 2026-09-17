@@ -2,8 +2,8 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 21,
-  "ladder": 61,
+  "edge": 20,
+  "ladder": 58,
   "motion": 1,
   "press": 50,
   "scroll": 27,
@@ -33,7 +33,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "sortable:item:raised",
   "switch:thumb:raised",
   "tabs:root:raised",
-  "timer:control:raised",
   "tooltip:content",
   "transfer:to-source-trigger:raised",
 ]
@@ -95,9 +94,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "steps:indicator:hover",
   "switch:root:selected",
   "tabs:trigger:hover",
-  "timer:control:focus",
-  "timer:control:hover",
-  "timer:control:pressed",
   "tour:close-trigger:hover",
   "tour:close-trigger:pressed",
   "transfer:to-target-trigger:hover",
