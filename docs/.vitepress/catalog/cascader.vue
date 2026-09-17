@@ -8,7 +8,7 @@ const regions = [
 </script>
 
 <template>
-  <XhCascaderRoot :collection="regions" :default-value="['zhejiang', 'hangzhou', 'xihu']" style="inline-size: 220px">
+  <XhCascaderRoot :collection="regions" :default-value="['zhejiang', 'hangzhou', 'xihu']" style="inline-size: var(--xh-doc-catalog-w)">
     <XhCascaderLabel>收货地区</XhCascaderLabel>
     <XhCascaderControl>
       <XhCascaderTrigger>

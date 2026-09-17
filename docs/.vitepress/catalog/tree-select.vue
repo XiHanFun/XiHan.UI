@@ -8,7 +8,7 @@ const files = [
 </script>
 
 <template>
-  <XhTreeSelectRoot :collection="files" :default-value="['guide']" placeholder="选一个文件" style="inline-size: 220px">
+  <XhTreeSelectRoot :collection="files" :default-value="['guide']" placeholder="选一个文件" style="inline-size: var(--xh-doc-catalog-w)">
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>
       <XhTreeSelectTrigger>

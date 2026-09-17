@@ -7,7 +7,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 <template>
   <XhImageViewerRoot :collection="items">
     <XhImageViewerTrigger>
-      <img :src="items[0]!.src" :alt="items[0]!.alt" style="display: block; inline-size: 200px; border-radius: var(--xh-shape-surface); cursor: zoom-in">
+      <img :src="items[0]!.src" :alt="items[0]!.alt" style="display: block; inline-size: var(--xh-doc-catalog-w); border-radius: var(--xh-shape-surface); cursor: zoom-in">
     </XhImageViewerTrigger>
   </XhImageViewerRoot>
 </template>

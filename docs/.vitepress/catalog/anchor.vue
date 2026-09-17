@@ -11,7 +11,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 </script>
 
 <template>
-  <div style="display: grid; grid-template-columns: 80px 1fr; gap: 12px; inline-size: 230px; align-items: start; font-size: 13px">
+  <div style="display: grid; grid-template-columns: 80px 1fr; gap: var(--xh-space-3); inline-size: var(--xh-doc-catalog-w); align-items: start">
     <XhAnchorRoot :scroll-element="scrollEl">
       <XhAnchorList>
         <XhAnchorItem v-for="s in sections" :key="s.value">
@@ -20,10 +20,10 @@ const scrollEl = ref<HTMLElement | null>(null);
         <XhAnchorIndicator />
       </XhAnchorList>
     </XhAnchorRoot>
-    <div ref="scrollEl" style="block-size: 130px; overflow: auto; padding-inline: 10px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
-      <div v-for="s in sections" :id="s.value" :key="s.value" style="block-size: 90px; padding-block: 8px">
+    <div ref="scrollEl" data-xh-scroll style="block-size: var(--xh-doc-catalog-h); overflow: auto; padding-inline: var(--xh-space-2_5); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+      <div v-for="s in sections" :id="s.value" :key="s.value" style="block-size: 90px; padding-block: var(--xh-space-2)">
         <strong>{{ s.label }}</strong>
-        <p style="margin: 4px 0 0; color: var(--xh-fg-muted)">{{ s.label }}相关内容</p>
+        <div style="margin-block-start: var(--xh-space-1); color: var(--xh-fg-muted)">{{ s.label }}相关内容</div>
       </div>
     </div>
   </div>

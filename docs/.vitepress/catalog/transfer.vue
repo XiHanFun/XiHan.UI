@@ -21,7 +21,7 @@ const items = [
 </script>
 
 <template>
-  <XhTransferRoot :default-value="['read']" :collection="items" size="sm" style="inline-size: 260px; --xh-transfer-list-h: 64px">
+  <XhTransferRoot :default-value="['read']" :collection="items" style="inline-size: var(--xh-doc-catalog-w); --xh-transfer-list-h: 64px">
     <XhTransferSourcePanel>
       <XhTransferPanelHeader><XhTransferPanelTitle>待选</XhTransferPanelTitle></XhTransferPanelHeader>
       <XhTransferList>

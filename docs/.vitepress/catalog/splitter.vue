@@ -8,7 +8,7 @@ const panels = [
 </script>
 
 <template>
-  <XhSplitterRoot :panels="panels" aria-label="双栏分隔预览" style="inline-size: 240px; block-size: 140px">
+  <XhSplitterRoot :panels="panels" aria-label="双栏分隔预览" style="inline-size: var(--xh-doc-catalog-w); block-size: var(--xh-doc-catalog-h)">
     <XhSplitterPanel
       :index="0"
       data-demo-block

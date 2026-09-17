@@ -12,9 +12,9 @@ const items = ["brand", "neutral", "info", "success", "warning", "danger", "bran
 </script>
 
 <template>
-  <XhScrollAreaRoot type="always" style="block-size: 150px; inline-size: 220px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+  <XhScrollAreaRoot style="block-size: var(--xh-doc-catalog-h); inline-size: var(--xh-doc-catalog-w); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <XhScrollAreaViewport>
-      <XhScrollAreaContent aria-label="可滚动淡色区块" style="display: grid; gap: 12px; padding: 12px">
+      <XhScrollAreaContent aria-label="可滚动淡色区块" style="display: grid; gap: var(--xh-space-3); padding: var(--xh-space-3)">
         <span
           v-for="(tone, index) in items"
           :key="`${tone}-${index}`"

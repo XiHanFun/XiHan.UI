@@ -14,7 +14,7 @@ import {
 </script>
 
 <template>
-  <XhDateRangePickerRoot :default-value="['2026-09-15', '2026-09-19']" locale="zh-CN" size="sm">
+  <XhDateRangePickerRoot :default-value="['2026-09-15', '2026-09-19']" locale="zh-CN">
     <XhDateRangePickerControl>
       <XhDateRangePickerSegmentGroup :index="0">
         <XhDateRangePickerSegment :index="0" />

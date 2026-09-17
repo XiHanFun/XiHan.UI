@@ -9,7 +9,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
     src="/images/image-cropper-landscape.svg"
     alt="山谷与湖泊风景图"
     :default-value="{ x: 96, y: 64, width: 448, height: 280 }"
-    style="inline-size: 240px"
+    style="inline-size: var(--xh-doc-catalog-w)"
   >
     <XhImageCropperViewport>
       <XhImageCropperImage />

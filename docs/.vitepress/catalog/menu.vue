@@ -12,7 +12,7 @@ const actions = [
 <template>
   <XhMenuRoot :collection="actions" trigger-as-child>
     <template #trigger>
-      <XhButton variant="subtle">
+      <XhButton>
         操作
         <XhIcon :icon="ChevronDownIcon" />
       </XhButton>

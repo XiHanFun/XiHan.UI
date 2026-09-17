@@ -5,7 +5,7 @@ const cells = ["brand", "success", "info"] as const;
 </script>
 
 <template>
-  <XhGridRoot :cols="3" gap="sm" aria-label="三列栅格预览" style="inline-size: 240px">
+  <XhGridRoot :cols="3" gap="sm" aria-label="三列栅格预览" style="inline-size: var(--xh-doc-catalog-w)">
     <XhGridItem
       v-for="tone in cells"
       :key="tone"

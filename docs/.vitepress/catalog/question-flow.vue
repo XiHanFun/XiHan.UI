@@ -24,7 +24,7 @@ const questions: QuestionFlowQuestion[] = [
 </script>
 
 <template>
-  <XhQuestionFlowRoot :questions="questions" style="inline-size: 240px; font-size: 13px">
+  <XhQuestionFlowRoot :questions="questions" style="inline-size: var(--xh-doc-catalog-w)">
     <XhQuestionFlowViewport>
       <XhQuestionFlowTrack>
         <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
@@ -39,7 +39,7 @@ const questions: QuestionFlowQuestion[] = [
       </XhQuestionFlowTrack>
     </XhQuestionFlowViewport>
     <XhQuestionFlowFooter>
-      <div style="display: flex; align-items: center; gap: 4px">
+      <div style="display: flex; align-items: center; gap: var(--xh-space-1)">
         <XhQuestionFlowPrevTrigger />
         <XhQuestionFlowCounter />
         <XhQuestionFlowNextTrigger />

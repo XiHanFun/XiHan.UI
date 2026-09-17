@@ -3,7 +3,7 @@ import { XhInputGroupItem, XhInputGroupRoot, XhTextFieldControl, XhTextFieldInpu
 </script>
 
 <template>
-  <XhInputGroupRoot style="inline-size: 220px">
+  <XhInputGroupRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhInputGroupItem>https://</XhInputGroupItem>
     <XhTextFieldRoot default-value="xihan.fun">
       <XhTextFieldControl>

@@ -9,7 +9,7 @@ import {
   XhStepsTrigger,
 } from "@xihan-ui/vue";
 
-const steps = ["填写信息", "确认内容", "完成"];
+const steps = ["填写信息", "完成"];
 </script>
 
 <template>

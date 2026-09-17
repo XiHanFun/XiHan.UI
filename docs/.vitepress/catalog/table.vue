@@ -15,7 +15,7 @@ const rows = members.map(m => ({ id: m.id }));
 </script>
 
 <template>
-  <XhTableRoot :columns="columns" :rows="rows" size="sm" style="inline-size: 240px; font-size: 12px">
+  <XhTableRoot :columns="columns" :rows="rows" style="inline-size: var(--xh-doc-catalog-w)">
     <XhTableHeader>
       <XhTableRow>
         <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">{{ col.label }}</XhTableColumnHeader>

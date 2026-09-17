@@ -13,7 +13,7 @@ const steps = [{ id: "welcome", title: "快速上手", description: "从这里�
 
 <template>
   <XhTourRoot :steps="steps" default-open>
-    <XhTourContent style="position: static; inline-size: 220px">
+    <XhTourContent style="position: static; inline-size: var(--xh-doc-catalog-w)">
       <XhTourTitle />
       <XhTourDescription />
       <XhTourProgressText />

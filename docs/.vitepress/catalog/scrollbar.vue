@@ -6,11 +6,12 @@ const scrollable = ref<HTMLElement | null>(null);
 </script>
 
 <template>
-  <div style="position: relative; inline-size: 180px">
-    <div ref="scrollable" style="block-size: 96px; overflow: auto; scrollbar-width: none">
-      <div v-for="line in 8" :key="line">第 {{ line }} 行</div>
+  <div style="position: relative; inline-size: var(--xh-doc-catalog-w-narrow)">
+    <!-- 自绘条的宿主：原生条由 [data-xh-scrollbar] 隐藏，不加 data-xh-scroll -->
+    <div ref="scrollable" style="block-size: var(--xh-doc-catalog-h); overflow: auto">
+      <div v-for="line in 12" :key="line">第 {{ line }} 行</div>
     </div>
-    <XhScrollbarRoot :scrollable="scrollable" type="always">
+    <XhScrollbarRoot :scrollable="scrollable">
       <XhScrollbarTrack><XhScrollbarThumb /></XhScrollbarTrack>
     </XhScrollbarRoot>
   </div>

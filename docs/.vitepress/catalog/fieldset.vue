@@ -3,7 +3,7 @@ import { XhCheckbox, XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } f
 </script>
 
 <template>
-  <XhFieldsetRoot style="inline-size: 220px">
+  <XhFieldsetRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhFieldsetLegend>通知方式</XhFieldsetLegend>
     <XhCheckbox default-checked>站内消息</XhCheckbox>
     <XhCheckbox>邮件</XhCheckbox>

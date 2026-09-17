@@ -3,7 +3,7 @@ import { XhCollapsibleContent, XhCollapsibleIndicator, XhCollapsibleRoot, XhColl
 </script>
 
 <template>
-  <XhCollapsibleRoot default-open style="inline-size: 230px; font-size: 13px">
+  <XhCollapsibleRoot default-open style="inline-size: var(--xh-doc-catalog-w)">
     <XhCollapsibleTrigger>
       展开详情
       <XhCollapsibleIndicator />

@@ -3,7 +3,7 @@ import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@
 </script>
 
 <template>
-  <XhFieldRoot style="inline-size: 220px">
+  <XhFieldRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhFieldLabel>邮箱</XhFieldLabel>
     <XhFieldControl>
       <input type="email" placeholder="you@example.com">

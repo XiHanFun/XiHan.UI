@@ -27,7 +27,7 @@ const collection: SideNavNode[] = [
 </script>
 
 <template>
-  <XhSideNavRoot :collection="collection" default-value="user-list" :default-expanded-value="['user']" style="inline-size: 180px">
+  <XhSideNavRoot :collection="collection" default-value="user-list" :default-expanded-value="['user']" style="inline-size: var(--xh-doc-catalog-w-narrow)">
     <XhSideNavList>
       <XhSideNavItem>
         <XhSideNavLink value="dashboard"><XhSideNavLinkText>工作台</XhSideNavLinkText></XhSideNavLink>

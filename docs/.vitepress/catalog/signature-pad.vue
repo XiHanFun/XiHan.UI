@@ -3,7 +3,7 @@ import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@
 </script>
 
 <template>
-  <XhSignaturePadRoot style="inline-size: 240px">
+  <XhSignaturePadRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhSignaturePadControl>
       <XhSignaturePadPath />
     </XhSignaturePadControl>

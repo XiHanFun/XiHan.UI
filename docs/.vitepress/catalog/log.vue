@@ -11,7 +11,7 @@ const lines = [
 </script>
 
 <template>
-  <XhLogRoot :rows="5" style="inline-size: 240px; font-size: 11px">
+  <XhLogRoot :rows="5" style="inline-size: var(--xh-doc-catalog-w)">
     <XhLogViewport>
       <XhLogContent>
         <XhLogLine v-for="(line, i) in lines" :key="i">{{ line }}</XhLogLine>

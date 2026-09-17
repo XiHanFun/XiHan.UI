@@ -12,7 +12,7 @@ const links = ["https://xihan.fun", ""];
 </script>
 
 <template>
-  <XhFieldArrayRoot v-slot="{ items }" :default-value="links" :create-item="() => ''" style="inline-size: 230px">
+  <XhFieldArrayRoot v-slot="{ items }" :default-value="links" :create-item="() => ''" style="inline-size: var(--xh-doc-catalog-w)">
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <input class="xh-demo-control" style="inline-size: 100%" placeholder="填一个链接" :value="row.value">

@@ -12,7 +12,7 @@ const model = computeTextDiff(before, after);
 </script>
 
 <template>
-  <XhDiffViewRoot :model="model" style="inline-size: 250px; font-size: 11px">
+  <XhDiffViewRoot :model="model" style="inline-size: var(--xh-doc-catalog-w)">
     <XhDiffViewViewport>
       <XhDiffViewBody />
     </XhDiffViewViewport>

@@ -8,5 +8,5 @@ const items = [
 </script>
 
 <template>
-  <XhAccordionRoot :collection="items" :default-value="['install']" style="inline-size: 240px; font-size: 13px" />
+  <XhAccordionRoot :collection="items" :default-value="['install']" style="inline-size: var(--xh-doc-catalog-w)" />
 </template>

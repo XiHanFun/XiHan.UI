@@ -3,7 +3,7 @@ import { XhTabsContent, XhTabsList, XhTabsRoot, XhTabsTrigger } from "@xihan-ui/
 </script>
 
 <template>
-  <XhTabsRoot default-value="overview" style="inline-size: 220px">
+  <XhTabsRoot default-value="overview" style="inline-size: var(--xh-doc-catalog-w)">
     <XhTabsList aria-label="内容视图">
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="activity">动态</XhTabsTrigger>

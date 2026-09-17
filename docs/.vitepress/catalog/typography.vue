@@ -3,7 +3,7 @@ import { XhTypographyHeading, XhTypographyParagraph, XhTypographyRoot } from "@x
 </script>
 
 <template>
-  <XhTypographyRoot style="max-inline-size: 190px">
+  <XhTypographyRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhTypographyHeading as="h3" :level="3">排印标题</XhTypographyHeading>
     <XhTypographyParagraph>统一正文的字号与行高。</XhTypographyParagraph>
   </XhTypographyRoot>

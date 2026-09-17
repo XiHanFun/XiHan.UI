@@ -8,5 +8,5 @@ const cities = [
 </script>
 
 <template>
-  <XhComboboxRoot :collection="cities" :default-value="['beijing']" label="城市" placeholder="搜索城市" style="inline-size: 220px" />
+  <XhComboboxRoot :collection="cities" :default-value="['beijing']" label="城市" placeholder="搜索城市" style="inline-size: var(--xh-doc-catalog-w)" />
 </template>
