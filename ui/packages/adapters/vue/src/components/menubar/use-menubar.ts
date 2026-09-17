@@ -41,7 +41,7 @@ export function useMenubar(
   const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
   // 触发器只在事件与效应里被机器读，普通 Map 即可；定位层与内容还要派生「当前展开那张」的两支 ref
-  //（层注册的 node 与分支读它们），登记表得是响应式的，菜单后到时派生值才跟着更新
+  // （层注册的 node 与分支读它们），登记表得是响应式的，菜单后到时派生值才跟着更新
   const triggers = new Map<string, HTMLElement>()
   const positioners = shallowReactive(new Map<string, HTMLElement>())
   const contents = shallowReactive(new Map<string, HTMLElement>())
