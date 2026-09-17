@@ -182,10 +182,11 @@ export class XhPaginationElement extends XhPortalHostElement {
     onChange: () => this.requestUpdate(),
   })
 
-  /** 折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  /** 折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档（§6.6） */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
+    props: () => ({ size: 'sm' }),
   })
 
   private ensureConfig(): void {

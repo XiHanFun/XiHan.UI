@@ -268,13 +268,6 @@
       "ratio": 2.89,
       "ring": "poured"
     },
-    "pagination [data-part=:is(positioner,root)][data-scope='pagination'] [data-current][data-part='item'][data-scope='pagination']": {
-      "parts": [
-        "item"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "popconfirm [data-part='confirm-trigger'][data-scope='popconfirm']": {
       "parts": [
         "confirm-trigger"

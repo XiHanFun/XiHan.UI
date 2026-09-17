@@ -249,10 +249,30 @@
 | `summary` | `data-empty` | ''（条件成立时才出现） |
 | `jumper` | `data-empty` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-xh-action-control` | '' |
+| `prev-trigger` | `data-xh-action-display` | 'always' |
+| `prev-trigger` | `data-xh-action-profile` | 'text' |
+| `prev-trigger` | `data-xh-action-size` | props.size |
+| `prev-trigger` | `data-xh-action-variant` | 'ghost' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-xh-action-control` | '' |
+| `next-trigger` | `data-xh-action-display` | 'always' |
+| `next-trigger` | `data-xh-action-profile` | 'text' |
+| `next-trigger` | `data-xh-action-size` | props.size |
+| `next-trigger` | `data-xh-action-variant` | 'ghost' |
 | `item` | `data-current` | ''（条件成立时才出现） |
+| `item` | `data-xh-action-control` | '' |
+| `item` | `data-xh-action-display` | 'always' |
+| `item` | `data-xh-action-profile` | 'text' |
+| `item` | `data-xh-action-size` | props.size |
+| `item` | `data-xh-action-variant` | 'ghost' |
 | `ellipsis-trigger` | `data-side` | props.side |
 | `ellipsis-trigger` | `data-state` | 'open' \| 'closed' |
+| `ellipsis-trigger` | `data-xh-action-control` | '' |
+| `ellipsis-trigger` | `data-xh-action-display` | 'always' |
+| `ellipsis-trigger` | `data-xh-action-profile` | 'text' |
+| `ellipsis-trigger` | `data-xh-action-size` | props.size |
+| `ellipsis-trigger` | `data-xh-action-variant` | 'ghost' |
 | `page-size-select` | `data-empty` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
@@ -278,27 +298,27 @@
 | `--xh-pagination-content-p` | `content` | `padding` | `default` | `--xh-space-1` | pagination 的 content 部件 padding 覆盖槽。 |
 | `--xh-pagination-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | pagination 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-pagination-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | pagination 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-pagination-ellipsis-trigger-fg` | `ellipsis-trigger` | `color` | `default` | `--xh-fg-subtle` | pagination 的 ellipsis-trigger 部件 color 覆盖槽。 |
+| `--xh-pagination-ellipsis-trigger-fg` | `ellipsis-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | pagination 的 ellipsis-trigger 部件 color 覆盖槽。 |
 | `--xh-pagination-font-size` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `font-size` | `default` | `--xh-_pagination-font-size` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 font-size 覆盖槽。 |
 | `--xh-pagination-gap` | `content`<br>`root` | `gap` | `default` | `--xh-space-1` | pagination 的 content、root 部件 gap 覆盖槽。 |
-| `--xh-pagination-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-glyph-size-text` | pagination 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-pagination-item-bg` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `transparent` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。 |
-| `--xh-pagination-item-bg-active` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background` | `active`<br>`current`<br>`not(:disabled)`<br>`not([data-current])` | `--xh-bg-subtle-active` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。 |
-| `--xh-pagination-item-bg-hover` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background` | `current`<br>`hover`<br>`not(:disabled)`<br>`not([data-current])` | `--xh-bg-subtle-hover` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。 |
-| `--xh-pagination-item-bg-selected` | `item` | `background` | `current` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 background 覆盖槽。 |
-| `--xh-pagination-item-bg-selected-active` | `item` | `background` | `active`<br>`current` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 background 覆盖槽。 |
-| `--xh-pagination-item-bg-selected-hover` | `item` | `background` | `current`<br>`hover` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 background 覆盖槽。 |
-| `--xh-pagination-item-border-selected` | `item` | `border-color` | `current` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 border-color 覆盖槽。 |
-| `--xh-pagination-item-border-selected-active` | `item` | `border-color` | `active`<br>`current` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 border-color 覆盖槽。 |
-| `--xh-pagination-item-border-selected-hover` | `item` | `border-color` | `current`<br>`hover` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 border-color 覆盖槽。 |
-| `--xh-pagination-item-fg` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-default` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 color 覆盖槽。 |
-| `--xh-pagination-item-fg-selected` | `item` | `color` | `current` | `--xh-_pagination-selected-fg` | pagination 的 item 部件 color 覆盖槽。 |
+| `--xh-pagination-icon-size` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`positioner`<br>`prev-trigger`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | pagination 的 ellipsis-trigger、item、next-trigger、positioner、prev-trigger、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-pagination-item-bg` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-bg-active` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-bg-hover` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-bg-selected` | `item` | `background-color` | `current`<br>`focus-visible` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-bg-selected-active` | `item` | `background-color` | `current`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-bg-selected-hover` | `item` | `background-color` | `current`<br>`disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-border-selected` | `item` | `border`<br>`border-color` | `current`<br>`focus-visible` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 border、border-color 覆盖槽。 |
+| `--xh-pagination-item-border-selected-active` | `item` | `border-color` | `current`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 border-color 覆盖槽。 |
+| `--xh-pagination-item-border-selected-hover` | `item` | `border-color` | `current`<br>`disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 border-color 覆盖槽。 |
+| `--xh-pagination-item-fg` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-fg-default` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 color 覆盖槽。 |
+| `--xh-pagination-item-fg-selected` | `item` | `color` | `current`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_pagination-selected-fg` | pagination 的 item 部件 color 覆盖槽。 |
 | `--xh-pagination-item-font-weight` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-pagination-item-h` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `block-size` | `default` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 block-size 覆盖槽。 |
 | `--xh-pagination-item-min-size` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `min-inline-size` | `default` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 min-inline-size 覆盖槽。 |
 | `--xh-pagination-item-px` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger` | `padding-inline` | `default` | `--xh-_pagination-item-px` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-pagination-item-radius` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-control` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-pagination-item-shadow` | `item` | `box-shadow` | `current` | `--xh-_pagination-highlight` | pagination 的 item 部件 box-shadow 覆盖槽。 |
+| `--xh-pagination-item-shadow` | `item` | `box-shadow` | `current`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | pagination 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-pagination-jumper-bg` | `jumper` | `background` | `default` | `--xh-bg-surface` | pagination 的 jumper 部件 background 覆盖槽。 |
 | `--xh-pagination-jumper-bg-hover` | `jumper` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | pagination 的 jumper 部件 background 覆盖槽。 |
 | `--xh-pagination-jumper-border` | `jumper` | `border` | `default` | `--xh-border-default` | pagination 的 jumper 部件 border 覆盖槽。 |
@@ -310,7 +330,7 @@
 
 ### 动效
 
-共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
