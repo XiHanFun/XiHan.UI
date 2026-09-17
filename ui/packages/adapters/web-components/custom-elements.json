@@ -13131,6 +13131,14 @@
             },
             {
               "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('list'), props: () => ({ size: 'sm' }), })",
+              "description": "结果列表的自绘条：与 list 同级挂在面板（content 已经 relative）里；模态浮层里的条子走 4px 档"
+            },
+            {
+              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -13584,6 +13592,9 @@
               "name": "--xh-command-bg"
             },
             {
+              "name": "--xh-command-border"
+            },
+            {
               "name": "--xh-command-empty-fg"
             },
             {
@@ -13666,6 +13677,9 @@
             },
             {
               "name": "--xh-command-item-bg-hover"
+            },
+            {
+              "name": "--xh-command-item-bg-pressed"
             },
             {
               "name": "--xh-command-item-fg"

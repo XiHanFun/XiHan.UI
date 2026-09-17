@@ -254,9 +254,15 @@ export function connectCommand<T extends PropTypes>(
       id: groupLabelId(group.value),
     }),
 
+    // 命令走 Collection Item 的 overlay 语境（模态命令面板）：悬停 / 键盘锚点（data-highlighted）/ 按下面与禁用面
+    // 由家族给；aria-selected 跟着活动候选走（下面），家族的浮层选中面缺省透明、行尾对号槽本组件不投影，
+    // 所以活动候选看上去仍只是中性高亮，不画对号也不留选中底
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       // 导航与选中都以此为条目身份
       [ITEM_VALUE_ATTR]: item.value,
       // aria-activedescendant 要指得到它，所以每条命令都得有个稳定 id
@@ -298,6 +304,7 @@ export function connectCommand<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
 
     getEmptyProps: () => normalize.element({

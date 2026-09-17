@@ -27,6 +27,7 @@ import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -137,6 +138,13 @@ export class XhCommandElement extends XhPortalHostElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+
+  /** 结果列表的自绘条：与 list 同级挂在面板（content 已经 relative）里；模态浮层里的条子走 4px 档 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollable: () => this.getPart('list'),
+    props: () => ({ size: 'sm' }),
+  })
   private readonly portal = this.createPortalLeaseController({
     name: 'Command 视口',
     config: () => this.config,
@@ -395,6 +403,8 @@ export class XhCommandElement extends XhPortalHostElement {
     this.setPartHidden(this.getPart('positioner'), !visible)
     // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.getPart('content'), !visible)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

@@ -18,6 +18,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import {
   CommandGroupProvider,
   CommandItemProvider,
@@ -128,6 +129,9 @@ export interface XhCommandContentProps extends ComponentPropsWithRef<'div'> {
 /** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhCommandContent({ children, container, ...rest }: XhCommandContentProps): ReactNode {
   const ctx = useCommandContext()
+  // 结果列表的自绘条：与 list 同级、绝对定位不占布局，壳是面板自己（content 已经 relative）；
+  // 模态浮层里的条子走 4px 档。hook 在早退之前调用，调用顺序不随开合变
+  const bars = useScrollbars({ scrollable: () => ctx.listRef.current, props: () => ({ size: 'sm' }) })
   if (!ctx.rendered)
     return null
   const api = ctx.api
@@ -151,6 +155,7 @@ export function XhCommandContent({ children, container, ...rest }: XhCommandCont
           )}
         >
           {children}
+          {bars.render()}
         </div>
       </div>
     </XhPortal>

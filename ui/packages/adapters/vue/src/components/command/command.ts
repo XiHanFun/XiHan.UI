@@ -15,6 +15,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import {
   provideCommand,
   provideCommandItem,
@@ -165,6 +166,9 @@ export const XhCommandContent = defineComponent({
   inheritAttrs: false,
   setup(props, { slots, attrs }) {
     const ctx = useCommandContext()
+    // 结果列表的自绘条：与 list 同级、绝对定位不占布局，壳是面板自己（content 已经 relative）；
+    // 模态浮层里的条子走 4px 档
+    const bars = useScrollbars({ scrollable: () => ctx.listRef.value, props: { size: 'sm' } })
     return () => {
       if (!ctx.rendered.value)
         return null
@@ -182,7 +186,7 @@ export const XhCommandContent = defineComponent({
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-          }, slots.default?.()),
+          }, [...(slots.default?.() ?? []), ...bars.render()]),
         ]),
       ])
     }

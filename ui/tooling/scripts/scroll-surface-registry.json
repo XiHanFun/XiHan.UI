@@ -18,7 +18,8 @@
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "命令面板的候选列表，居中浮层 positioner 下的 list"
+      "layerNode": "content",
+      "why": "命令面板的候选列表，模态浮层 positioner 下的 list；层注册的 node 是包着它的 content，条子也挂在 content 里"
     },
     "cascader:content": {
       "mode": "drawn",
