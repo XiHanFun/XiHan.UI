@@ -1,14 +1,14 @@
-import { cdp, userEvent } from '@vitest/browser/context'
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { pressPointer, releasePointerAway } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
 
 afterEach(async () => {
-  // 按住途中断言完就松开，指针停在空白处，下一用例的悬停从干净状态起
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 0, y: 0, button: 'left', buttons: 0, clickCount: 1 })
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 0, y: 0 })
+  // 按住途中断言完就在停靠点松开，下一用例的悬停从干净状态起
+  await releasePointerAway()
   host?.remove()
   host = null
 })
@@ -28,11 +28,6 @@ function resolveColor(token: string, scope: HTMLElement): string {
   const value = getComputedStyle(probe).backgroundColor
   probe.remove()
   return value
-}
-
-async function press(element: HTMLElement): Promise<void> {
-  const rect = element.getBoundingClientRect()
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, button: 'left', buttons: 1, clickCount: 1 })
 }
 
 function mount(variant?: 'card' | 'line' | 'segment'): { list: HTMLElement, active: HTMLElement, inactive: HTMLElement, indicator: HTMLElement } {
@@ -170,7 +165,7 @@ describe('tabs 默认视觉', () => {
     await userEvent.hover(line.inactive)
     const lineHover = getComputedStyle(line.inactive).color
     expect(lineHover).not.toBe(lineRest)
-    await press(line.inactive)
+    await pressPointer(line.inactive)
     expect(line.inactive.matches(':active')).toBe(true)
     expect(getComputedStyle(line.inactive).scale).toBe('none')
     expect(getComputedStyle(line.inactive).backgroundColor).toBe('rgba(0, 0, 0, 0)')
@@ -182,7 +177,7 @@ describe('tabs 默认视觉', () => {
     freezeMotion()
     await userEvent.hover(card.inactive)
     expect(getComputedStyle(card.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle', card.list))
-    await press(card.inactive)
+    await pressPointer(card.inactive)
     expect(getComputedStyle(card.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', card.list))
     expect(getComputedStyle(card.inactive).scale).toBe('none')
     host!.remove()
@@ -191,12 +186,12 @@ describe('tabs 默认视觉', () => {
     freezeMotion()
     await userEvent.hover(segment.inactive)
     expect(getComputedStyle(segment.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', segment.list))
-    await press(segment.inactive)
+    await pressPointer(segment.inactive)
     expect(getComputedStyle(segment.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', segment.list))
     expect(getComputedStyle(segment.inactive).scale).toBe('none')
-    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 0, y: 0, button: 'left', buttons: 0, clickCount: 1 })
+    await releasePointerAway()
     const raised = getComputedStyle(segment.active).backgroundColor
-    await press(segment.active)
+    await pressPointer(segment.active)
     expect(segment.active.matches(':active')).toBe(true)
     expect(getComputedStyle(segment.active).backgroundColor).toBe(raised)
     expect(getComputedStyle(segment.active).scale).toBe('none')

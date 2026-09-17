@@ -1,14 +1,14 @@
-import { cdp, userEvent } from '@vitest/browser/context'
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { pressPointer, releasePointerAway } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
 
 afterEach(async () => {
-  // 按住途中断言完就松开，指针停在空白处，下一用例的悬停从干净状态起
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 0, y: 0, button: 'left', buttons: 0, clickCount: 1 })
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 0, y: 0 })
+  // 按住途中断言完就在停靠点松开，下一用例的悬停从干净状态起
+  await releasePointerAway()
   host?.remove()
   host = null
 })
@@ -45,11 +45,6 @@ function resolveColor(token: string, scope: HTMLElement): string {
   return value
 }
 
-async function press(element: HTMLElement): Promise<void> {
-  const rect = element.getBoundingClientRect()
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, button: 'left', buttons: 1, clickCount: 1 })
-}
-
 describe('segmented 默认视觉', () => {
   it('轨道是淡底面：subtle 底 + 透明占位边 + 无影，滑块是白色抬起面：surface-raised 底 + border-default 描边 + raised 影', () => {
     const { root, indicator } = mount()
@@ -80,14 +75,14 @@ describe('segmented 默认视觉', () => {
     const { root, idle, checked } = mount()
     await userEvent.hover(idle)
     expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
-    await press(idle)
+    await pressPointer(idle)
     expect(idle.matches(':active')).toBe(true)
     expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', root))
     expect(getComputedStyle(idle).scale).toBe('none')
-    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 0, y: 0, button: 'left', buttons: 0, clickCount: 1 })
+    await releasePointerAway()
 
     const rest = getComputedStyle(checked).backgroundColor
-    await press(checked)
+    await pressPointer(checked)
     expect(checked.matches(':active')).toBe(true)
     expect(getComputedStyle(checked).backgroundColor).toBe(rest)
     expect(getComputedStyle(checked).scale).toBe('none')

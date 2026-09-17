@@ -1,15 +1,14 @@
 import type { App } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h } from 'vue'
 import { XhToggleGroupItem, XhToggleGroupRoot } from '../../src'
+import { pressPointer, releasePointerAway } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let app: App | null = null
 let host: HTMLElement | null = null
-let pointer = { x: 1, y: 1 }
-let pressed = false
 
 function mount(props: Record<string, unknown> = {}): void {
   host = document.createElement('div')
@@ -27,26 +26,13 @@ function mount(props: Record<string, unknown> = {}): void {
   app.mount(host)
 }
 
-async function release(): Promise<void> {
-  if (!pressed)
-    return
-  await cdp().send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    ...pointer,
-    button: 'left',
-    buttons: 0,
-    clickCount: 1,
-  })
-  pressed = false
-}
-
 afterEach(async () => {
-  await release()
+  // 按住途中断言完就在停靠点松开，指针也停回停靠点
+  await releasePointerAway()
   app?.unmount()
   app = null
   host?.remove()
   host = null
-  await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
 /** 语义色令牌在该元素上解到的颜色。 */
@@ -64,21 +50,6 @@ function freezeMotion(): void {
   host!.style.setProperty('--xh-motion-duration-micro', '0ms')
   host!.style.setProperty('--xh-motion-duration-press', '0ms')
   host!.style.setProperty('--xh-motion-duration-release', '0ms')
-}
-
-/** 在空白处松开：mousedown 与 mouseup 的目标不同，不会派 click，选中值不变。 */
-async function releaseAway(): Promise<void> {
-  if (!pressed)
-    return
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 0, y: 0, button: 'left', buttons: 0, clickCount: 1 })
-  pressed = false
-}
-
-async function press(item: HTMLElement): Promise<void> {
-  const rect = item.getBoundingClientRect()
-  pointer = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', ...pointer, button: 'left', buttons: 1, clickCount: 1 })
-  pressed = true
 }
 
 /** 语义形状令牌在该元素上解到的像素值。 */
@@ -121,16 +92,7 @@ describe('切换按钮组视觉', () => {
     const item = host!.querySelector<HTMLElement>(`[data-part='item'][data-value='center']`)
       ?? host!.querySelectorAll<HTMLElement>(`[data-part='item']`)[1]!
     await userEvent.hover(item)
-    const rect = item.getBoundingClientRect()
-    pointer = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
-    await cdp().send('Input.dispatchMouseEvent', {
-      type: 'mousePressed',
-      ...pointer,
-      button: 'left',
-      buttons: 1,
-      clickCount: 1,
-    })
-    pressed = true
+    await pressPointer(item)
 
     expect(item.matches(':active')).toBe(true)
     expect(getComputedStyle(item).scale).toBe('none')
@@ -168,16 +130,16 @@ describe('切换按钮组视觉', () => {
 
     await userEvent.hover(idle)
     expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
-    await press(idle)
+    await pressPointer(idle)
     expect(idle.matches(':active')).toBe(true)
     expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', root))
     expect(getComputedStyle(idle).scale).toBe('none')
-    await releaseAway()
+    await releasePointerAway()
 
     await userEvent.hover(on)
     expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-hover', root))
     expect(getComputedStyle(on).color).toBe(resolveColor('--xh-fg-on-brand-subtle', root))
-    await press(on)
+    await pressPointer(on)
     expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-active', root))
     expect(getComputedStyle(on).scale).toBe('none')
   })
@@ -191,14 +153,13 @@ describe('切换按钮组视觉', () => {
       expect(getComputedStyle(idle).backgroundColor).toBe('rgba(0, 0, 0, 0)')
       await userEvent.hover(idle)
       expect(getComputedStyle(idle).backgroundColor, `${variant} hover`).toBe(resolveColor('--xh-bg-subtle', root))
-      await press(idle)
+      await pressPointer(idle)
       expect(getComputedStyle(idle).backgroundColor, `${variant} pressed`).toBe(resolveColor('--xh-bg-subtle-hover', root))
-      await releaseAway()
+      await releasePointerAway()
       app?.unmount()
       app = null
       host?.remove()
       host = null
-      await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
     }
   })
 })
