@@ -107,6 +107,15 @@ describe('connectColorSwatchPicker 投影', () => {
     ])
   })
 
+  it('标题只随整组置灰：单格禁用不投影到 label', () => {
+    const partial = makeService({ swatches: [{ value: '#e11d48' }, { value: '#f59e0b', disabled: true }] })
+    const label = api(partial).getLabelProps() as Dict
+    expect(label.id).toBe((api(partial).getRootProps() as Dict)['aria-labelledby'])
+    expect(label['data-disabled']).toBeUndefined()
+    const whole = makeService({ disabled: true })
+    expect((api(whole).getLabelProps() as Dict)['data-disabled']).toBe('')
+  })
+
   it('色块经家族属性投影颜色；解析不出的串不画颜色层；表单影子是 radio', () => {
     const s = makeService({ defaultValue: '#e11d48', name: 'accent', size: 'lg' })
     const swatch = api(s).getSwatchProps({ value: '#e11d48' }) as Dict

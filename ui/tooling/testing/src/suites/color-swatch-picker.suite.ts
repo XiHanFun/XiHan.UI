@@ -83,6 +83,8 @@ export const colorSwatchPickerSuite: ConformanceSuite = {
             'data-disabled': null,
             'tabindex': '0',
           },
+          // 标题只随整组置灰：绿格自己禁用不带累标签
+          'label': { 'id': '@self', 'data-disabled': null },
           'item': [
             {
               'role': 'radio',
@@ -417,6 +419,7 @@ export const colorSwatchPickerSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: { 'data-disabled': '' },
+              label: { 'data-disabled': '' },
               item: [
                 { 'aria-checked': 'false', 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
                 { 'aria-checked': 'false', 'aria-disabled': 'true', 'data-disabled': '' },
