@@ -31,3 +31,15 @@ export async function releasePointer(element: HTMLElement): Promise<void> {
   const { x, y } = centerOf(element)
   await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', buttons: 0, clickCount: 1 })
 }
+
+/**
+ * 在视口角落那块停靠点上松开主键：mousedown 与 mouseup 的目标不同，浏览器不派 click，
+ * 按住途中的断言做完即可撤下 :active 面而不翻动选中值；指针随后停在停靠点上，下一用例的悬停从干净状态起。
+ */
+export async function releasePointerAway(): Promise<void> {
+  const park = document.querySelector<HTMLElement>('[data-test-park-pointer]')
+  if (!park)
+    throw new Error('停靠点不在 DOM 里：setup.ts 的 parkPointer 没跑')
+  await releasePointer(park)
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...centerOf(park) })
+}
