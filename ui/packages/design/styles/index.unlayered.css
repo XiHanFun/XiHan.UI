@@ -38157,12 +38157,13 @@
   --xh-_tooltip-py: var(--xh-space-1);
   --xh-_tooltip-px: var(--xh-space-2);
   --xh-_tooltip-font-size: var(--xh-control-caption-md);
-  /* Tooltip 保留反白身份：短提示要与可交互的普通主题浮层一眼分开。
-     94% 是六种 tone 在纯黑/纯白最坏底色上仍托住 4.5:1 正文的首个安全档。 */
+  /* Tooltip 保留反白身份（真源 §8.4 登记的反白 compact frosted）：短提示要与可交互的普通主题浮层一眼分开。
+     94% 是六种 tone 在纯黑/纯白最坏底色上仍托住 4.5:1 正文的首个安全档。
+     边不取 --xh-material-frosted-border：那是深色 14% 的透明边，压在反白深底上看不见，
+     §8.1 要求的 1px 可见边界由 on 色 20% 拼色承担；§8.1 禁玻璃高光，顶光缺省不画 */
   --xh-_tooltip-solid: var(--xh-_tone, var(--xh-fg-default));
   --xh-_tooltip-on: var(--xh-_tone-on, var(--xh-bg-surface));
   --xh-_tooltip-border: color-mix(in oklab, var(--xh-_tooltip-on) 20%, transparent);
-  --xh-_tooltip-highlight: color-mix(in oklab, var(--xh-_tooltip-on) 24%, transparent);
 
   /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
      （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
@@ -38187,8 +38188,9 @@
   text-wrap: pretty;
   --xh-_tooltip-elevation-shadow: var(--xh-tooltip-shadow, var(--xh-material-frosted-compact-shadow));
 
+  /* 顶光槽缺省透明（§8.1 不用顶部高光），使用者要加自行灌色 */
   box-shadow:
-    inset 0 var(--xh-stroke-thin) 0 var(--xh-tooltip-highlight, var(--xh-_tooltip-highlight)),
+    inset 0 var(--xh-stroke-thin) 0 var(--xh-tooltip-highlight, transparent),
     var(--xh-_tooltip-elevation-shadow);
   -webkit-backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
   backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
@@ -38206,8 +38208,9 @@
   pointer-events: none;
 }
 
+/* 入场走 enter 档（§9.5：锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit */
 [data-scope='tooltip'][data-part='content'][data-state='open'] {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
   will-change: opacity, translate;
 }
@@ -38248,11 +38251,9 @@
   opacity: var(--xh-material-frosted-compact-alpha);
 }
 
-/* 高对比仍保持反白语义：compact 配方已把 tint / blur / shadow 换成实体档，
-   此处只加强同色边界并撤掉装饰顶光。 */
+/* 高对比仍保持反白语义：compact 配方已把 tint / blur / shadow 换成实体档，此处只加强同色边界。 */
 :is([data-contrast='more'] *, [data-contrast='more'])[data-scope='tooltip'][data-part='content'] {
   --xh-_tooltip-border: var(--xh-_tooltip-on);
-  --xh-_tooltip-highlight: transparent;
 }
 
 @media (forced-colors: active) {

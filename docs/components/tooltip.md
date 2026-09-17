@@ -84,8 +84,8 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 - `openDelay` / `closeDelay` 防止指针经过时连续闪烁。
 - 聚焦也能触发，键盘用户可以访问。
 - 语气与尺寸两轴。
-- 默认保持反白的小型 M2 表面，与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。
-- 进退场只做侧向短移与透明度，120ms 内完成，不缩放文字和箭头。
+- 默认保持反白的小型 M2 表面（compact 档 frosted），与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。边界由 on 色 20% 的拼色描边承担（frosted 的透明深边压在反白底上看不见），不画顶部高光；圆角取 4px 控件档。
+- 进退场只做侧向短移与透明度，不缩放文字和箭头：入场 `--xh-motion-duration-enter`（200ms），退场 `--xh-motion-duration-exit`（120ms），与其他锚定列表浮层同一节奏。
 
 ### 组合
 
@@ -242,7 +242,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 | `--xh-tooltip-border` | `arrow`<br>`content` | `border` | `default` | `--xh-_tooltip-border` | tooltip 的 arrow、content 部件 border 覆盖槽。 |
 | `--xh-tooltip-fg` | `content` | `color` | `default` | `--xh-_tooltip-on` | tooltip 的 content 部件 color 覆盖槽。 |
 | `--xh-tooltip-font-size` | `content` | `font-size` | `default` | `--xh-_tooltip-font-size` | tooltip 的 content 部件 font-size 覆盖槽。 |
-| `--xh-tooltip-highlight` | `content` | `box-shadow` | `default` | `--xh-_tooltip-highlight` | tooltip 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tooltip-highlight` | `content` | `box-shadow` | `default` | `transparent` | tooltip 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-tooltip-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | tooltip 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-tooltip-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | tooltip 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-tooltip-px` | `content` | `padding-inline` | `default` | `--xh-_tooltip-px` | tooltip 的 content 部件 padding-inline 覆盖槽。 |

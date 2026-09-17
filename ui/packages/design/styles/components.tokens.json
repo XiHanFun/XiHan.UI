@@ -71795,7 +71795,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_tooltip-highlight"
+        "transparent"
       ],
       "visibility": "public",
       "description": "tooltip 的 content 部件 box-shadow 覆盖槽。"

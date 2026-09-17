@@ -35,12 +35,22 @@ const OUTLINE_BORDER = new Set([
 const SUBTLE_BG = /^--xh-(?:bg-subtle|_tone-subtle|tone-subtle)$/
 /** 真源 §8 登记的 soft 材质消费者：状态 chip 的描边是 soft 边。 */
 const SOFT_CONSUMERS = new Set(['tag:root'])
+/**
+ * 真源 §8.4 登记的反白 compact frosted 面：--xh-material-frosted-border 是深色 14% 的透明边，压在反白深底上
+ * 看不见，§8.1 要求的 1px 可见边界改由 on 色 20% 的 color-mix 承担。键 组件:部件，值是理由；
+ * 登记了却没在描边位落 color-mix 的照样报过期。
+ */
+const INVERTED_COMPACT = {
+  'tooltip:content': '反白 compact frosted，边取 on 色（--xh-_tooltip-on）20% 拼色',
+}
 /** 不画东西的取值：占位边、无底、无影。 */
 const NOTHING = new Set(['transparent', 'none', '0', '0 0 0 transparent'])
 
 const backlog = await openBacklog('edge', { owns: key => !key.endsWith(':raised') })
 const problems = [...backlog.problems]
 let managed = 0
+/** INVERTED_COMPACT 里真被用来放行过的键：登了却没命中即过期。 */
+const invertedSeen = new Set()
 
 /** 受管分支：主体是受管部件，主体上除 scope / part 之外只允许一个 variant 属性。 */
 function classify(branch, comp) {
@@ -174,12 +184,20 @@ for (const { comp, file, rules } of await readSkins()) {
         continue
       if (border === '--xh-material-soft-border' && SOFT_CONSUMERS.has(`${comp}:${part}`))
         continue
+      if (`${comp}:${part}` in INVERTED_COMPACT && border.startsWith('color-mix(')) {
+        invertedSeen.add(`${comp}:${part}`)
+        continue
+      }
       report(`${variant ?? '缺省'} 分支的 border 颜色位是 ${border}——描边面只能取 --xh-border-default / --xh-material-solid-border / --xh-border-control 或浮层材质边`)
     }
   }
 }
 
 problems.push(...backlog.stale())
+for (const key of Object.keys(INVERTED_COMPACT)) {
+  if (!invertedSeen.has(key))
+    problems.push(`${key} 登在 INVERTED_COMPACT 里却没在描边位落 color-mix——反白登记过期了`)
+}
 
 if (problems.length) {
   console.error('[check-surface-edge] ✗ 根面边界没按三选一走：')

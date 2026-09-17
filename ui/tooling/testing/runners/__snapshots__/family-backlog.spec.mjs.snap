@@ -2,7 +2,7 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 6,
+  "edge": 5,
   "ladder": 25,
   "motion": 1,
   "press": 5,
@@ -20,7 +20,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "color-picker:control:raised",
   "file-upload:trigger:raised",
   "popconfirm:confirm-trigger:raised",
-  "tooltip:content",
 ]
 `;
 
