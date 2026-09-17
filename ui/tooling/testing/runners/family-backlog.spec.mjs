@@ -12,10 +12,10 @@ const CEILING = {
   edge: 12,
   selection: 2,
   ladder: 40,
-  shape: 14,
+  shape: 12,
   scroll: 12,
-  press: 9,
-  text: 42,
+  press: 8,
+  text: 39,
   motion: 1,
 }
 

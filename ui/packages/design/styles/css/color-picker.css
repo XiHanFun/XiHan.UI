@@ -454,7 +454,6 @@
   [data-scope='color-picker'][data-part='swatch-picker'] {
     --xh-_color-swatch-picker-cell: var(--xh-color-picker-swatch-cell, var(--xh-control-h-sm));
     --xh-_color-swatch-picker-gap: var(--xh-color-picker-swatch-gap, var(--xh-control-gap-sm));
-    --xh-_color-swatch-picker-font-size: var(--xh-control-font-sm);
     --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-sm);
     --xh-_color-swatch-picker-mark: calc(var(--xh-_color-swatch-picker-indicator) - var(--xh-space-1));
     --xh-_color-swatch-picker-accent: var(--xh-_tone, var(--xh-bg-brand));

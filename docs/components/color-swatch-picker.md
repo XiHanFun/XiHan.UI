@@ -38,7 +38,7 @@
 
 ### 尺寸与语气
 
-格子边长跟随控件行高分三档；tone 决定选中环与选中标记使用哪族颜色
+格子边长跟随控件行高分三档；tone 决定选中描边与选中徽标使用哪族颜色
 
 <XhDemo src="color-swatch-picker/04-size-tone" />
 
@@ -66,8 +66,8 @@
 - 每格的色块面由 Swatch 家族绘制：无法解析的串只显示棋盘格，半透明颜色铺在棋盘格上。
 - `readOnly` 时方向键照常移动焦点但不取值；`disabled` 整组置灰，格子仍可聚焦。
 - 尺寸 sm / md / lg 三档：格子边长跟随控件行高，与旁边的按钮、字段等高。
-- 选中环与选中标记随 `data-tone` 变化；标记自带一圈画布色描边，落在任何颜色上都可见。
-- 高对比模式下色块保留原色，选中环与标记换用系统高亮色；打印时标记改为实边。
+- 选中徽标与色块的品牌描边随 `data-tone` 变化；徽标自带一圈画布色描边，落在任何颜色上都可见。
+- 高对比模式下色块保留原色，选中描边与徽标换用系统高亮色；打印时徽标改为实边。
 
 ### 组合
 
@@ -228,21 +228,24 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-color-swatch-picker-gap` | `root` | `gap` | `default` | `--xh-_color-swatch-picker-gap` | color-swatch-picker 的 root 部件 gap 覆盖槽。 |
+| `--xh-color-swatch-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-_color-swatch-picker-gap` | color-swatch-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-color-swatch-picker-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_color-swatch-picker-mark` | color-swatch-picker 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-bg` | `indicator` | `background` | `default` | `--xh-_color-swatch-picker-accent` | color-swatch-picker 的 indicator 部件 background 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-border` | `indicator` | `border` | `default` | `--xh-bg-canvas` | color-swatch-picker 的 indicator 部件 border 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-fg` | `indicator` | `background-color`<br>`color` | `default`<br>`empty` | `--xh-_tone-on` | color-swatch-picker 的 indicator 部件 background-color、color 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-indicator` | color-swatch-picker 的 indicator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-color-swatch-picker-item-radius` | `item`<br>`swatch` | `--xh-swatch-radius`<br>`border-radius` | `default` | `--xh-shape-control` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。 |
+| `--xh-color-swatch-picker-item-radius` | `item`<br>`swatch` | `--xh-swatch-radius`<br>`border-radius` | `default` | `--xh-shape-inset` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。 |
 | `--xh-color-swatch-picker-item-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-cell` | color-swatch-picker 的 item 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-color-swatch-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-_color-swatch-picker-font-size` | color-swatch-picker 的 label 部件 font-size 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-swatch-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-swatch-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-swatch-picker 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-color-swatch-picker-ring` | `item` | `outline` | `state=checked` | `--xh-_color-swatch-picker-accent` | color-swatch-picker 的 item 部件 outline 覆盖槽。 |
-| `--xh-color-swatch-picker-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
-| `--xh-color-swatch-picker-swatch-border-hover` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-border-strong` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | color-swatch-picker 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-color-swatch-picker-ring` | `item`<br>`swatch` | `--xh-swatch-border` | `state=checked` | `--xh-_tone` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border` | `item`<br>`swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border-hover` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly], [data-state='checked'])`<br>`readonly`<br>`state=checked` | `--xh-border-control-hover` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
 | `--xh-color-swatch-picker-swatch-border-invalid` | `swatch` | `--xh-swatch-border` | `invalid` | `--xh-border-invalid` | color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border-pressed` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled], [data-readonly])`<br>`pressed`<br>`readonly` | `--xh-_tone` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
