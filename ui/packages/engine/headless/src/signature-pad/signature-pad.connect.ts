@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SignaturePadApi, SignaturePadSchema } from './signature-pad.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { signaturePadAnatomy } from './signature-pad.anatomy'
 import { signaturePadSvg, strokesToPaths } from './signature-pad.geometry'
@@ -36,6 +37,8 @@ export function connectSignaturePad<T extends PropTypes>(
   const drawing = state.matches('drawing')
   const translations = prop('translations')
   const ids = scope.ids('signature-pad', 'label')
+  // 清空按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   const surface = context.get('surface')
   const paths = strokesToPaths(context.get('strokes'), prop('drawing') ?? {})
@@ -142,10 +145,24 @@ export function connectSignaturePad<T extends PropTypes>(
       'data-disabled': dataAttr(!editable),
       // 空画布时按钮照常可按（按下去是空操作），收掉它会让焦点掉回 body
       'data-empty': dataAttr(empty),
+      // 画布旁的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
+      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心），sm 档贴着画布不抢主体
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'outline',
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => {
         if (editable)
           send({ type: 'STROKES.CLEAR' })
       },
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
 
     getStatusProps: () => normalize.element({

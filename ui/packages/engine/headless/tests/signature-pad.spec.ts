@@ -352,6 +352,66 @@ describe('connectSignaturePad 属性表', () => {
     expect(api(h.service).getClearTriggerProps()).toMatchObject({ disabled: undefined })
   })
 
+  it('清空按钮接 Action Control text 档：sm、缺省 outline，静息不带 data-pressed', () => {
+    const h = makeService()
+    expect(api(h.service).getClearTriggerProps()).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      // 缺省中性描边（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+      'data-xh-action-variant': 'outline',
+    })
+    expect((api(h.service).getClearTriggerProps() as Record<string, unknown>)['data-pressed']).toBeUndefined()
+  })
+
+  it('按压通道：Space / Enter 与触屏按住投影 data-pressed，抬起、失焦撤下；禁用与只读按不进，按住途中转禁用由机器收面', () => {
+    type Dict = Record<string, unknown>
+    const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+    const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+    const h = makeService()
+    const trigger = (): Dict => api(h.service).getClearTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+
+    // 禁用与只读都按不进
+    h.setProps({ disabled: true })
+    fire(trigger(), 'onKeyDown', key(' '))
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    h.setProps({ disabled: false, readOnly: true })
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+
+    // 按住途中被禁用或转只读：原生 disabled 的按钮不再派 keyup，按压面由机器经 watch 自己收；
+    // props 得是运行时信号，改值才会通知机器
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({})
+    const service = createService(signaturePadMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const live = (): Dict => api(service).getClearTriggerProps() as Dict
+    fire(live(), 'onKeyDown', key('Enter'))
+    expect(live()['data-pressed']).toBe('')
+    props.set({ disabled: true })
+    expect(live()['data-pressed']).toBeUndefined()
+    props.set({})
+    fire(live(), 'onKeyDown', key('Enter'))
+    expect(live()['data-pressed']).toBe('')
+    props.set({ readOnly: true })
+    expect(live()['data-pressed']).toBeUndefined()
+    runtime.stop()
+  })
+
   it('基准线自报落位并带 aria-hidden：它只是画面，读屏念它没有意义', () => {
     const h = makeService()
     expect(api(h.service).getGuideProps()).toMatchObject({

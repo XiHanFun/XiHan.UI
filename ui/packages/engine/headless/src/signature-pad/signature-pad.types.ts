@@ -86,6 +86,8 @@ export interface SignaturePadSchema extends MachineSchema {
     strokes: SignaturePadStroke[]
     /** 笔迹坐标系的尺寸，第一笔落下时测量并固定；画布 viewBox 与导出视窗都按它写入。 */
     surface: SignaturePadSurface
+    /** 清空按钮正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: {
@@ -101,9 +103,12 @@ export interface SignaturePadSchema extends MachineSchema {
     | { type: 'DRAW.END' }
     | { type: 'STROKES.CLEAR' }
     | { type: 'FORM.RESET' }
+    // 按压通道（shared/press）：清空按钮的 Space / Enter 或触屏按住与松开
+    | { type: 'PRESS.START' }
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'canDraw'
-  action: 'beginStroke' | 'clearStrokes' | 'endStroke' | 'extendStroke'
+  guard: 'canDraw' | 'canPress'
+  action: 'beginStroke' | 'clearStrokes' | 'endStroke' | 'extendStroke' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: 'trackPointer'
 }
 

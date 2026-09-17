@@ -75,6 +75,9 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 - 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会清空画布。
 - 笔迹变化时发出 `draw`，签名定稿时发出 `draw-end`：抬笔、点击清空、表单重置三条路径都发出。按 `draw-end` 缓存待提交的 SVG 不会取到过期版本。
 - 指针划出画布甚至划出窗口都持续跟随，抬起即收笔；落笔的指针被捕获，手掌与第二根手指的移动不会续进这一笔。
+- 画布是一块字段外壳：静息 `--xh-bg-canvas` 底 + `--xh-border-control` 描边 + 4px 控件圆角、无影；落笔时描边加深，只读只换淡底，禁用退到 `--xh-border-default` + `--xh-bg-subtle`。画布按宽高比撑高，吃不下字段家族配方钉死的控件行高，因此外壳按同一套字段规则自绘。
+- 标签走字段标签档（14 / 500 / `--xh-fg-default`），贴画布 `--xh-space-1`；状态句是说明角色（13 / `--xh-fg-muted`）。
+- 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下缩放并换底；空画布时只把静息前景压淡，按钮照常可按。
 
 ### 组合
 
@@ -162,9 +165,9 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 
 **状态**：`drawing` · `idle`
 
-**事件**：`DRAW.START` · `DRAW.MOVE` · `DRAW.END` · `STROKES.CLEAR` · `FORM.RESET`
+**事件**：`DRAW.START` · `DRAW.MOVE` · `DRAW.END` · `STROKES.CLEAR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canDraw`
+**判据**：`canDraw` · `canPress`
 
 ### connect API
 
@@ -198,6 +201,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus on clear-trigger, 未禁用且非只读 | 清空整块画布；按钮是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held in clear-trigger, 未禁用且非只读 | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
 
 ### ARIA
 
@@ -250,6 +254,12 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `path` | `data-empty` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-control` | '' |
+| `clear-trigger` | `data-xh-action-display` | 'always' |
+| `clear-trigger` | `data-xh-action-profile` | 'text' |
+| `clear-trigger` | `data-xh-action-size` | 'sm' |
+| `clear-trigger` | `data-xh-action-variant` | 'outline' |
 | `status` | `data-empty` | ''（条件成立时才出现） |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
@@ -261,36 +271,44 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-signature-pad-aspect-ratio` | `control` | `aspect-ratio` | `default` | `5 / 2` | signature-pad 的 control 部件 aspect-ratio 覆盖槽。 |
-| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-surface` | signature-pad 的 control 部件 background 覆盖槽。 |
-| `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-muted` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-canvas` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |
+| `--xh-signature-pad-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-default` | signature-pad 的 control 部件 border-color 覆盖槽。 |
 | `--xh-signature-pad-border-drawing` | `control` | `border-color` | `drawing` | `--xh-border-control-hover` | signature-pad 的 control 部件 border-color 覆盖槽。 |
-| `--xh-signature-pad-clear-bg` | `clear-trigger` | `background` | `default` | `--xh-bg-surface` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-bg-active` | `clear-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `background` | `disabled` | `--xh-bg-muted` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-bg-hover` | `clear-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-border` | `clear-trigger` | `border` | `default` | `--xh-border-control` | signature-pad 的 clear-trigger 部件 border 覆盖槽。 |
-| `--xh-signature-pad-clear-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-default` | signature-pad 的 clear-trigger 部件 color 覆盖槽。 |
-| `--xh-signature-pad-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-control-gap-sm` | signature-pad 的 clear-trigger 部件 gap 覆盖槽。 |
-| `--xh-signature-pad-clear-h` | `clear-trigger` | `block-size` | `default` | `--xh-control-h-sm` | signature-pad 的 clear-trigger 部件 block-size 覆盖槽。 |
-| `--xh-signature-pad-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | signature-pad 的 clear-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-signature-pad-clear-bg` | `clear-trigger` | `background-color` | `default`<br>`focus-visible` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-border` | `clear-trigger` | `border`<br>`border-color` | `default`<br>`focus-visible` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest` | signature-pad 的 clear-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-signature-pad-clear-border-hover` | `clear-trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed` | signature-pad 的 clear-trigger 部件 border-color 覆盖槽。 |
+| `--xh-signature-pad-clear-fg` | `clear-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | signature-pad 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-signature-pad-clear-fg-empty` | `clear-trigger` | `color` | `empty` | `--xh-fg-muted` | signature-pad 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-signature-pad-clear-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | signature-pad 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-signature-pad-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-_action-profile-gap` | signature-pad 的 clear-trigger 部件 gap 覆盖槽。 |
+| `--xh-signature-pad-clear-h` | `clear-trigger` | `block-size` | `default` | `--xh-_action-profile-visual-size` | signature-pad 的 clear-trigger 部件 block-size 覆盖槽。 |
+| `--xh-signature-pad-clear-icon-size` | `clear-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | signature-pad 的 clear-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-signature-pad-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | signature-pad 的 clear-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-signature-pad-clear-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | signature-pad 的 clear-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-signature-pad-clear-shadow-hover` | `clear-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | signature-pad 的 clear-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-signature-pad-clear-shadow-hover` | `clear-trigger` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | signature-pad 的 clear-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-signature-pad-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | signature-pad 的 control 部件 border-color 覆盖槽。 |
-| `--xh-signature-pad-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | signature-pad 的 root 部件 gap 覆盖槽。 |
+| `--xh-signature-pad-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-2` | signature-pad 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-signature-pad-guide-stroke` | `guide` | `stroke` | `default` | `--xh-border-control` | signature-pad 的 guide 部件 stroke 覆盖槽。 |
 | `--xh-signature-pad-ink` | `path` | `fill` | `default` | `--xh-fg-default` | signature-pad 的 path 部件 fill 覆盖槽。 |
-| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | signature-pad 的 label 部件 color 覆盖槽。 |
 | `--xh-signature-pad-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 label 部件 font-size 覆盖槽。 |
 | `--xh-signature-pad-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | signature-pad 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-signature-pad-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | signature-pad 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-signature-pad-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | signature-pad 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-signature-pad-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | signature-pad 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-signature-pad-status-fg` | `status` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 status 部件 color 覆盖槽。 |
-| `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |
+| `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-secondary-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
