@@ -145,6 +145,7 @@ export class XhCommandElement extends XhPortalHostElement {
     scrollable: () => this.getPart('list'),
     props: () => ({ size: 'sm' }),
   })
+
   private readonly portal = this.createPortalLeaseController({
     name: 'Command 视口',
     config: () => this.config,
