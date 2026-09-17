@@ -186,9 +186,14 @@ export function connectNavigationMenu<T extends PropTypes>(
       })
     },
 
-    // 面板里的链接不拦默认行为，只把导航收起
+    // 面板里的链接不拦默认行为，只把导航收起。
+    // 链接走 Collection Item 的 overlay 语境（面板是锚定浮层）：悬停 / 键盘高亮 / 按下面由家族给；
+    // 链接不报 aria-selected，overlay 的选中面永不命中，当前页的字色与字重由皮肤按 data-current 画
     getLinkProps: link => normalize.element({
       ...parts.link.attrs,
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       // 非当前项省略 aria-current，不写 "false"
       'aria-current': link.current ? 'page' : undefined,
       'data-current': dataAttr(link.current),

@@ -112,7 +112,8 @@ export const navigationMenuSuite: ConformanceSuite = {
           },
           'content[0]': { 'role': 'group', 'hidden': '', 'data-state': 'closed' },
           'content[2]': { hidden: '' },
-          'link[0]': { 'aria-current': null, 'data-current': null },
+          // 面板里的链接走 Collection Item 的 overlay 语境；不报 aria-selected，当前页由皮肤按 data-current 画
+          'link[0]': { 'data-xh-collection-item': '', 'data-xh-collection-size': 'md', 'data-xh-collection-context': 'overlay', 'aria-current': null, 'data-current': null, 'aria-selected': null },
           'indicator': { 'aria-hidden': 'true', 'hidden': '' },
           'viewport': { 'hidden': '', 'data-state': 'closed' },
         },

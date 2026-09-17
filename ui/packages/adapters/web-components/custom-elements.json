@@ -34690,6 +34690,9 @@
               "name": "--xh-navigation-menu-link-bg-hover"
             },
             {
+              "name": "--xh-navigation-menu-link-bg-pressed"
+            },
+            {
               "name": "--xh-navigation-menu-link-fg"
             },
             {
@@ -34715,6 +34718,9 @@
             },
             {
               "name": "--xh-navigation-menu-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-navigation-menu-trigger-bg-pressed"
             },
             {
               "name": "--xh-navigation-menu-trigger-fg"

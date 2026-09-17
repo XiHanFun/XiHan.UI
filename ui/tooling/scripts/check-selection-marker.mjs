@@ -16,6 +16,8 @@
 // 三条判据：
 // ① connect 投影 data-xh-collection-item 的 getter 必须同时投影 data-xh-collection-context（overlay | page）；
 // ② 已投影 collection-item 的部件，皮肤不得再写选中态的 background / color / font-weight（由家族配方给）；
+//    配方只有 overlay / page 两种语境，没有导航语境：导航当前页（nav）的部件接了配方后，当前页的字色与字重
+//    仍由皮肤按 data-current 画、按 nav 档核，只是不得再写该状态的 background（面由家族给）；
 // ③ 未接配方的部件按 SEMANTIC 登记的语义类查上表；open / in-path 的底色要与同部件 hover 档同值；
 //    投影 data-xh-action-control 的部件（无滑块开关、字段内展开钮）读它在该状态里映射的
 //    --xh-action-bg-rest / --xh-action-fg-rest 桥接槽，面由 Action Control 配方按这两支画。
@@ -221,8 +223,11 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
     /** 同部件基础块的字色：「保持 rest」= 与它同值（浮层里 rest 是材质前景）。 */
     const restColor = tokenOf(declsFor(skin, target, null, within).get('color'), slots)
 
-    // ② 接了配方的部件：选中态三件由家族给，皮肤不得再写
-    if (onRecipe && kind !== 'open') {
+    // ② 接了配方的部件：选中态三件由家族给，皮肤不得再写。导航当前页例外：配方没有导航语境，
+    // 字色与字重由皮肤画、走下面的 nav 档核，只有面不得再写
+    if (onRecipe && kind === 'nav' && bg != null)
+      report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 background: ${bg}——配方没有导航语境，当前页只画字色与字重，面由家族给`)
+    if (onRecipe && kind !== 'open' && kind !== 'nav') {
       for (const [name, token] of [['background', bg], ['color', color], ['font-weight', weight]]) {
         if (token != null)
           report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 ${name}: ${token}——选中标记由 collection-item 配方按 context 给`)
