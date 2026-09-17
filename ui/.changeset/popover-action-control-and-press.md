@@ -22,6 +22,6 @@
 `--xh-icon-size` 缺省由 `--xh-glyph-size-text` 改为 `--xh-glyph-size-md`，并新增 `overscroll-behavior: contain`；
 三端的自绘滚动条改走浮层 4px 档（`size: 'sm'`）。
 
-公开槽 `--xh-popover-close-size / -radius / -fg / -fg-hover / -bg-hover / -bg-active` 改为桥接到配方之前；删除
-`--xh-popover-close-bg-focus` / `--xh-popover-close-fg-focus`（焦点面不再铺实体底）；新增
-`--xh-popover-description-font-size`。
+公开槽 `--xh-popover-close-size / -radius / -fg / -fg-hover / -bg-hover / -bg-active / -bg-focus / -fg-focus` 改为
+桥接到配方之前（`-bg-focus` / `-fg-focus` 桥到配方的 focus-visible 面，缺省不再铺实体底而是透明底 + 悬停字色，
+槽本身保留）；新增 `--xh-popover-description-font-size`。

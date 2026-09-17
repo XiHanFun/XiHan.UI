@@ -28720,7 +28720,8 @@
 /*
  * 关闭钮是浮层角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方给出——磨砂白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
- * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放：
+ * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
+ * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面，缺省仍是透明底与悬停字色：
  * 贴边比 dialog 一族的面板档（--xh-surface-action-inset）小一档：气泡的面板内衬是 12px，
  * 28px 的钮按 12px 贴边会伸出面板自己的盒子，被 content 的 overflow 裁掉。
  * 静息前景取磨砂面的 muted 字色，悬停 / 按下回到 fg-default。
@@ -28730,10 +28731,11 @@
   --xh-action-radius: var(--xh-popover-close-radius, var(--xh-shape-control));
   --xh-action-bg-hover: var(--xh-popover-close-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-popover-close-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-bg-focus-visible: var(--xh-popover-close-bg-focus, var(--xh-_action-variant-bg-focus-visible));
   --xh-action-fg-rest: var(--xh-popover-close-fg, var(--xh-material-frosted-fg-muted));
   --xh-action-fg-hover: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-hover));
   --xh-action-fg-pressed: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-pressed));
-  --xh-action-fg-focus-visible: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-focus-visible));
+  --xh-action-fg-focus-visible: var(--xh-popover-close-fg-focus, var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-focus-visible)));
   /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-popover-icon-size, var(--xh-_action-profile-glyph-size));
 
