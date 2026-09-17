@@ -6,7 +6,7 @@
 // 提供 checkbox group 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxVariant } from '@xihan-ui/headless'
+import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
@@ -43,7 +43,6 @@ export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'di
   name?: string
   orientation?: Orientation
   tone?: Tone
-  variant?: CheckboxVariant
   size?: Size
   onValueChange?: CheckboxGroupProps['onValueChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
@@ -63,7 +62,6 @@ export function XhCheckboxGroupRoot({
   name,
   orientation,
   tone,
-  variant,
   size,
   onValueChange,
   renderItem,
@@ -81,7 +79,6 @@ export function XhCheckboxGroupRoot({
     name,
     orientation,
     tone,
-    variant,
     size,
     onValueChange,
   } as CheckboxGroupProps))

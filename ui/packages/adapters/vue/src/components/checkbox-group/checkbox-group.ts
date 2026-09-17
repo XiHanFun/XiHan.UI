@@ -12,7 +12,6 @@ import type {
   CheckboxGroupNode,
   CheckboxGroupNodeMeta,
   CheckboxGroupSchema,
-  CheckboxVariant,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -50,7 +49,6 @@ export const XhCheckboxGroupRoot = defineComponent({
     name: { type: String },
     orientation: { type: String as PropType<Orientation> },
     tone: { type: String as PropType<Tone> },
-    variant: { type: String as PropType<CheckboxVariant> },
     size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸数组

@@ -6,7 +6,7 @@
 // 提供 checkbox group 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxVariant, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/core'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -42,7 +42,6 @@ const LIST_CONVERTER = {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @attr {'primary'|'secondary'} variant - 视觉变体；secondary 不绘制控制盒阴影
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
@@ -69,7 +68,6 @@ export class XhCheckboxGroupElement extends XhElement {
     invalid: { converter: BOOLEAN_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
-    variant: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
   }
@@ -83,7 +81,6 @@ export class XhCheckboxGroupElement extends XhElement {
   declare invalid?: boolean
   declare orientation?: Orientation
   declare tone?: Tone
-  declare variant?: CheckboxVariant
   declare size?: Size
   declare name?: string
 
@@ -125,7 +122,6 @@ export class XhCheckboxGroupElement extends XhElement {
       invalid: control.invalid,
       orientation: this.orientation,
       tone: this.tone,
-      variant: this.variant,
       size: this.size,
       name: this.name,
       onValueChange: this.notify,

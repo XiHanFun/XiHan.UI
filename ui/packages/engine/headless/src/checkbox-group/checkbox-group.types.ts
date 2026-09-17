@@ -6,7 +6,6 @@
 // 定义 checkbox group 类型契约。
 
 import type { MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxVariant } from '../checkbox'
 
 export interface CheckboxGroupValueChangeDetails {
   value: string[]
@@ -71,8 +70,6 @@ export interface CheckboxGroupSchema extends MachineSchema {
     orientation?: Orientation
     /** 语气：brand / neutral / success / warning / danger / info，决定勾选方框使用哪族颜色。 */
     tone?: Tone
-    /** 视觉变体：primary / secondary。默认 primary。 */
-    variant?: CheckboxVariant
     /** 尺寸：sm / md / lg，决定方框与文字的几何档位。 */
     size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */

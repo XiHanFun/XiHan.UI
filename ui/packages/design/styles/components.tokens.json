@@ -9134,7 +9134,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 root 部件 gap 覆盖槽。"
@@ -9152,7 +9152,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_checkbox-group-glyph"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -9172,7 +9172,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-bg"
+        "--xh-bg-canvas"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、root、select-all-trigger 部件 background-color 覆盖槽。"
@@ -9199,6 +9199,35 @@
       "description": "checkbox-group 的 indicator、select-all-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-checkbox-group-indicator-bg-checked-pressed",
+      "component": "checkbox-group",
+      "part": [
+        "indicator",
+        "item",
+        "root",
+        "select-all-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "is([data-state='checked'], [data-state='indeterminate'])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly",
+        "state=checked",
+        "state=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-checkbox-group-indicator-bg-disabled",
       "component": "checkbox-group",
       "part": [
@@ -9214,7 +9243,33 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-group-indicator-bg-pressed",
+      "component": "checkbox-group",
+      "part": [
+        "indicator",
+        "item",
+        "root",
+        "select-all-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 background-color 覆盖槽。"
@@ -9275,7 +9330,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 border-color 覆盖槽。"
@@ -9300,10 +9355,14 @@
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-readonly])",
-        "readonly"
+        "not([data-state='checked'])",
+        "not([data-state='indeterminate'])",
+        "readonly",
+        "state=checked",
+        "state=indeterminate"
       ],
       "defaultToken": [
-        "--xh-_checkbox-group-accent"
+        "--xh-border-control-hover"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 border-color 覆盖槽。"
@@ -9392,26 +9451,6 @@
       "description": "checkbox-group 的 indicator、select-all-trigger 部件 font-size 覆盖槽。"
     },
     {
-      "name": "--xh-checkbox-group-indicator-highlight",
-      "component": "checkbox-group",
-      "part": [
-        "indicator",
-        "root",
-        "select-all-trigger"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-soft-highlight"
-      ],
-      "visibility": "public",
-      "description": "checkbox-group 的 indicator、root、select-all-trigger 部件 background-image 覆盖槽。"
-    },
-    {
       "name": "--xh-checkbox-group-indicator-radius",
       "component": "checkbox-group",
       "part": [
@@ -9444,106 +9483,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_checkbox-group-shadow-rest"
+        "none"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、select-all-trigger 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-group-indicator-shadow-disabled",
-      "component": "checkbox-group",
-      "part": [
-        "indicator",
-        "item",
-        "root",
-        "select-all-trigger"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-group-indicator-shadow-hover",
-      "component": "checkbox-group",
-      "part": [
-        "indicator",
-        "item",
-        "root",
-        "select-all-trigger"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "@media (hover: hover)",
-        "disabled",
-        "hover",
-        "invalid",
-        "not([data-disabled])",
-        "not([data-invalid])",
-        "not([data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "--xh-_checkbox-group-shadow-hover"
-      ],
-      "visibility": "public",
-      "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-group-indicator-shadow-pressed",
-      "component": "checkbox-group",
-      "part": [
-        "indicator",
-        "item",
-        "root",
-        "select-all-trigger"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "active",
-        "disabled",
-        "not([data-disabled])",
-        "not([data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-group-indicator-shadow-readonly",
-      "component": "checkbox-group",
-      "part": [
-        "indicator",
-        "root",
-        "select-all-trigger"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled",
-        "not([data-disabled])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "checkbox-group 的 indicator、root、select-all-trigger 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-group-indicator-size",
@@ -9617,7 +9560,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-_checkbox-group-font-size"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 item 部件 font-size 覆盖槽。"
@@ -9780,7 +9723,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-_checkbox-group-font-size"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 select-all-trigger 部件 font-size 覆盖槽。"
@@ -9834,7 +9777,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 select-all-trigger 部件 border-radius 覆盖槽。"
