@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h } from 'vue'
 import {
   XhButton,
+  XhButtonGroup,
   XhNavigationMenuItem,
   XhNavigationMenuList,
   XhNavigationMenuRoot,
@@ -59,7 +60,31 @@ async function bgAtRestAndHover(el: HTMLElement): Promise<[string, string]> {
  * 皮肤里落在该部件上的 :active 规则，去掉 :active 之后剩下的选择器。
  * 拿它去 matches 一颗置灰的件：还能匹配上，就说明按下时那条规则会生效。
  * :active 没法用真实指针按住不放来验，改从装好的样式表反推。
+ * 按压选择器有两种写法：裸 :active（只有指针）与 :is(:active, [data-pressed])（键盘 / 触屏同档），
+ * 后者整段去掉——只删 :active 会剩下 :is(, [data-pressed])，宽容选择器列表把它当成 [data-pressed]，
+ * 可按的那颗静息时没有这个属性，判据就空转成「谁都匹配不上」；拆选择器列表也只认顶层逗号。
  */
+/** 按顶层逗号拆选择器列表：:is(a, b) 括号里的逗号不是分隔符，拆开就把选择器切断了。 */
+function splitTopLevel(selector: string): string[] {
+  const out: string[] = []
+  let depth = 0
+  let current = ''
+  for (const ch of selector) {
+    if (ch === '(')
+      depth++
+    else if (ch === ')')
+      depth--
+    if (ch === ',' && depth === 0) {
+      out.push(current)
+      current = ''
+      continue
+    }
+    current += ch
+  }
+  out.push(current)
+  return out
+}
+
 function activeSelectors(scope: string, part: string): string[] {
   const scopeRe = new RegExp(`\\[data-scope=["']?${scope}["']?\\]`)
   const partRe = new RegExp(`\\[data-part=["']?${part}["']?\\]`)
@@ -70,9 +95,9 @@ function activeSelectors(scope: string, part: string): string[] {
       const rule = rules.item(i) as CSSStyleRule & CSSGroupingRule
       const selector = typeof rule.selectorText === 'string' ? rule.selectorText : ''
       if (selector.includes(':active')) {
-        for (const one of selector.split(',')) {
+        for (const one of splitTopLevel(selector)) {
           if (scopeRe.test(one) && partRe.test(one))
-            found.push(one.trim().replaceAll(':active', ''))
+            found.push(one.trim().replaceAll(':is(:active, [data-pressed])', '').replaceAll(':active', ''))
         }
       }
       // @layer / @media 里的规则要往里走；样式规则自身也可能嵌套
@@ -89,11 +114,15 @@ function activeSelectors(scope: string, part: string): string[] {
 }
 
 describe('按钮：置灰与挂起时不该有交互反馈', () => {
+  // 三颗放进按钮组里：落在 button root 上的按压规则里有一条是组内段的（收掉缩放保住接缝），
+  // 只有组内的段才匹配得上它；单独三枚的话那一条对可按的那颗也匹配不上，对照就空转
   function mountThree(): { idle: HTMLElement, loading: HTMLElement, off: HTMLElement } {
     mount(() => [
-      h(XhButton, { variant: 'solid' }, () => '可按'),
-      h(XhButton, { variant: 'solid', loading: true }, () => '挂起'),
-      h(XhButton, { variant: 'solid', disabled: true }, () => '置灰'),
+      h(XhButtonGroup, { variant: 'solid' }, () => [
+        h(XhButton, null, () => '可按'),
+        h(XhButton, { loading: true }, () => '挂起'),
+        h(XhButton, { disabled: true }, () => '置灰'),
+      ]),
     ])
     const [idle, loading, off] = parts('button', 'root')
     return { idle: idle!, loading: loading!, off: off! }
@@ -122,8 +151,10 @@ describe('按钮：置灰与挂起时不该有交互反馈', () => {
     const { idle, loading, off } = mountThree()
     const selectors = activeSelectors('button', 'root')
     expect(selectors.length).toBeGreaterThan(0)
+    // 对照：这些规则真能落到可按的那颗上。逐条要求匹配做不到——同一条规则里给 Web Components
+    // 宿主结构写的 > * > 那一支在 Vue 的直接子节点上本来就不成立，只要求有一支能落上
+    expect(selectors.some(selector => idle.matches(selector)), '没有一条按下换底的规则落得到可按的那颗').toBe(true)
     for (const selector of selectors) {
-      expect(idle.matches(selector), `${selector} 连可按的那颗都匹配不上`).toBe(true)
       expect(loading.matches(selector), `${selector} 会落在挂起的那颗上`).toBe(false)
       expect(off.matches(selector), `${selector} 会落在置灰的那颗上`).toBe(false)
     }
