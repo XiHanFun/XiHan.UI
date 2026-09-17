@@ -55704,7 +55704,15 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
@@ -55722,10 +55730,44 @@
         "background"
       ],
       "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly",
         "state=checked"
       ],
       "defaultToken": [
         "--xh-_switch-accent"
+      ],
+      "visibility": "public",
+      "description": "switch 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-switch-bg-checked-pressed",
+      "component": "switch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly",
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
       ],
       "visibility": "public",
       "description": "switch 的 root 部件 background 覆盖槽。"
@@ -55740,11 +55782,68 @@
         "background"
       ],
       "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "pressed",
         "readonly",
         "state=checked"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "switch 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-switch-bg-disabled",
+      "component": "switch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "switch 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-switch-bg-pressed",
+      "component": "switch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-_switch-track-bg"
       ],
       "visibility": "public",
       "description": "switch 的 root 部件 background 覆盖槽。"
@@ -55807,6 +55906,24 @@
       "defaultToken": [
         "--xh-border-control",
         "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "switch 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-switch-border-disabled",
+      "component": "switch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "switch 的 root 部件 box-shadow 覆盖槽。"
@@ -55885,6 +56002,24 @@
       "description": "switch 的 root 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-switch-fg-disabled",
+      "component": "switch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "switch 的 root 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-switch-label-fg",
       "component": "switch",
       "part": [
@@ -55915,7 +56050,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-disabled"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "switch 的 label 部件 color 覆盖槽。"
@@ -55933,7 +56068,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-_switch-label-font-size"
       ],
       "visibility": "public",
       "description": "switch 的 label 部件 font-size 覆盖槽。"
@@ -55955,6 +56090,24 @@
       ],
       "visibility": "public",
       "description": "switch 的 label 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-switch-label-leading",
+      "component": "switch",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "line-height"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-leading-normal"
+      ],
+      "visibility": "public",
+      "description": "switch 的 label 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-switch-loading-duration",
@@ -56028,7 +56181,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-bg"
+        "--xh-bg-surface-raised"
       ],
       "visibility": "public",
       "description": "switch 的 thumb 部件 background 覆盖槽。"
@@ -56046,7 +56199,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-border"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "switch 的 thumb 部件 border 覆盖槽。"
@@ -56064,28 +56217,29 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "switch 的 thumb 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-switch-thumb-highlight",
+      "name": "--xh-switch-thumb-fg-disabled",
       "component": "switch",
       "part": [
+        "root",
         "thumb"
       ],
       "property": [
-        "background"
+        "color"
       ],
       "state": [
-        "default"
+        "disabled"
       ],
       "defaultToken": [
-        "--xh-material-soft-highlight"
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
-      "description": "switch 的 thumb 部件 background 覆盖槽。"
+      "description": "switch 的 root、thumb 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-switch-thumb-press-stretch",
@@ -56099,12 +56253,13 @@
         "translate"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
         "not([data-readonly])",
+        "pressed",
         "readonly",
         "state=checked"
       ],
@@ -56145,7 +56300,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-shadow"
+        "--xh-elevation-raised"
       ],
       "visibility": "public",
       "description": "switch 的 thumb 部件 box-shadow 覆盖槽。"
@@ -56170,32 +56325,6 @@
       "description": "switch 的 root、thumb 部件 box-shadow 覆盖槽。"
     },
     {
-      "name": "--xh-switch-thumb-shadow-hover",
-      "component": "switch",
-      "part": [
-        "root",
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "@media (hover: hover)",
-        "disabled",
-        "hover",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "not([data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "switch 的 root、thumb 部件 box-shadow 覆盖槽。"
-    },
-    {
       "name": "--xh-switch-thumb-shadow-pressed",
       "component": "switch",
       "part": [
@@ -56206,12 +56335,13 @@
         "box-shadow"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
         "not([data-readonly])",
+        "pressed",
         "readonly"
       ],
       "defaultToken": [

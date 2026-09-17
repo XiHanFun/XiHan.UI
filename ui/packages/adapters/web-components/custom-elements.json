@@ -49192,7 +49192,16 @@
               "name": "--xh-switch-bg-checked"
             },
             {
+              "name": "--xh-switch-bg-checked-pressed"
+            },
+            {
               "name": "--xh-switch-bg-checked-readonly"
+            },
+            {
+              "name": "--xh-switch-bg-disabled"
+            },
+            {
+              "name": "--xh-switch-bg-pressed"
             },
             {
               "name": "--xh-switch-border"
@@ -49202,6 +49211,9 @@
             },
             {
               "name": "--xh-switch-border-checked-readonly"
+            },
+            {
+              "name": "--xh-switch-border-disabled"
             },
             {
               "name": "--xh-switch-border-invalid"
@@ -49216,6 +49228,9 @@
               "name": "--xh-switch-fg-checked-readonly"
             },
             {
+              "name": "--xh-switch-fg-disabled"
+            },
+            {
               "name": "--xh-switch-label-fg"
             },
             {
@@ -49226,6 +49241,9 @@
             },
             {
               "name": "--xh-switch-label-gap"
+            },
+            {
+              "name": "--xh-switch-label-leading"
             },
             {
               "name": "--xh-switch-loading-duration"
@@ -49246,7 +49264,7 @@
               "name": "--xh-switch-thumb-fg"
             },
             {
-              "name": "--xh-switch-thumb-highlight"
+              "name": "--xh-switch-thumb-fg-disabled"
             },
             {
               "name": "--xh-switch-thumb-press-stretch"
@@ -49259,9 +49277,6 @@
             },
             {
               "name": "--xh-switch-thumb-shadow-disabled"
-            },
-            {
-              "name": "--xh-switch-thumb-shadow-hover"
             },
             {
               "name": "--xh-switch-thumb-shadow-pressed"

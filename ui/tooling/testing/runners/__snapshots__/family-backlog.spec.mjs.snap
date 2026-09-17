@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 13,
-  "ladder": 49,
+  "edge": 12,
+  "ladder": 48,
   "motion": 1,
-  "press": 26,
+  "press": 25,
   "scroll": 16,
   "selection": 3,
-  "shape": 15,
-  "text": 50,
+  "shape": 14,
+  "text": 49,
 }
 `;
 
@@ -26,7 +26,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "signature-pad:clear-trigger:raised",
   "slider:thumb:raised",
   "sortable:item:raised",
-  "switch:thumb:raised",
   "tooltip:content",
 ]
 `;
@@ -79,7 +78,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "sortable:item-drag-trigger:hover",
   "splitter:resize-trigger:hover",
   "steps:indicator:hover",
-  "switch:root:selected",
   "tour:close-trigger:hover",
   "tour:close-trigger:pressed",
 ]
@@ -114,7 +112,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "form:error-summary-item",
   "rating:item",
   "steps:trigger",
-  "switch:root",
   "tag-group:tag/root",
   "tour:next-trigger",
   "tour:prev-trigger",
@@ -166,7 +163,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "image-viewer:prev-trigger",
   "popconfirm:confirm-trigger::before",
   "slider:tick",
-  "switch:thumb::after",
   "tour:progress-dot",
 ]
 `;
@@ -216,7 +212,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "steps:root:icon-size",
   "steps:title:font-size",
   "steps:title:font-weight",
-  "switch:label:color",
   "timeline:title:font-size",
   "timeline:title:font-weight",
   "tour:content:icon-size",

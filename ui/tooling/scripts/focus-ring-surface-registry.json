@@ -303,6 +303,13 @@
       "ratio": 1,
       "ring": "poured"
     },
+    "switch [data-part='root'][data-readonly][data-scope='switch'][data-state='checked']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 2.89,
+      "ring": "poured"
+    },
     "switch [data-part='root'][data-scope='switch']": {
       "parts": [
         "root"
