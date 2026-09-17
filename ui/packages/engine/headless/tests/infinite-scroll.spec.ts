@@ -36,6 +36,15 @@ describe('取下一页的按钮', () => {
     expect(onLoad).toHaveBeenCalledTimes(1)
   })
 
+  it('铺满一行的独立动作条目：投影 Action Control 的 row outline 档，档位固定 md', () => {
+    const trigger = mount().api().getLoadMoreTriggerProps() as Attrs
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('row')
+    expect(trigger['data-xh-action-variant']).toBe('outline')
+    expect(trigger['data-xh-action-display']).toBe('always')
+    expect(trigger['data-xh-action-size']).toBe('md')
+  })
+
   it('取数中：按钮停用，事件送到也不再报第二次', () => {
     const { api, onLoad } = mount({ loading: true })
     const trigger = api().getLoadMoreTriggerProps() as Attrs

@@ -240,6 +240,12 @@ export const infiniteScrollSuite: ConformanceSuite = {
             'data-disabled': null,
             // 文案由作者写在按钮里，组件不代填名字
             'aria-label': null,
+            // 铺满一行的独立动作条目：Action Control row outline 档，档位固定 md
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'row',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
         },
       },

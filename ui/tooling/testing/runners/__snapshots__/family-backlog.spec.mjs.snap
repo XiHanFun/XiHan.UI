@@ -3,9 +3,9 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 20,
-  "ladder": 58,
+  "ladder": 56,
   "motion": 1,
-  "press": 50,
+  "press": 49,
   "scroll": 26,
   "selection": 18,
   "shape": 19,
@@ -75,8 +75,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "image-viewer:close-trigger:pressed",
   "image-viewer:zoom-in-trigger:hover",
   "image-viewer:zoom-in-trigger:pressed",
-  "infinite-scroll:load-more-trigger:hover",
-  "infinite-scroll:load-more-trigger:pressed",
   "menu:item:pressed",
   "menubar:item:pressed",
   "pagination:jumper:hover",
@@ -132,7 +130,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "command:item",
   "floating-panel:trigger",
   "form:error-summary-item",
-  "infinite-scroll:load-more-trigger",
   "listbox:item",
   "listbox:load-more-trigger",
   "menubar:trigger",
