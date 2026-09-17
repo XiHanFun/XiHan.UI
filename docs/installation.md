@@ -258,6 +258,8 @@ import "@xihan-ui/styles/index.unlayered.css";
 | 自己的样式也都在 `@layer` 内（如 Tailwind v4） | `index.css` | 写进 `@layer xihan.overrides`，或任何排在 `xihan` 之后的层 |
 | 宿主带无层 reset / normalize | `index.unlayered.css` | 使用不低于 `[data-scope][data-part]` 的特异性 |
 
+无层版本里库自己的 reset 层（`box-sizing`、表单控件的 `font: inherit`、浮层落位前的 `visibility: hidden` 等）特指度是 (0,0,0)，宿主的元素选择器（`button { font-family: … }` 这类 (0,0,1)）会压过它。这只影响 reset 本身：Action Control / Field Chrome 等家族配方与组件皮肤自己声明的 `font-size`、`line-height` 不受影响，宿主 reset 需要与库一致时把同样的声明写成 `inherit` 即可。取舍见[皮肤与样式分层](./guide/styling#reset-只作用于库节点)。
+
 使用 `index.css` 时，覆盖位置是现成的：
 
 ```css

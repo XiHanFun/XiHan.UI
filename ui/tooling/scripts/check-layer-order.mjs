@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // 门禁：层序声明在皮肤与令牌两份产物里逐字一致、在 tokens.css 里排在 @layer 块之前，
 // 两份入口里层序与令牌都排在任何样式规则之前，且 reset 层全部选择器为 (0,0,0)——
-// 无层产物里配方排在 reset 之前，reset 只有低一档才不会靠源序压掉配方的字号。
+// 无层产物里配方排在 reset 之前，reset 只有低一档才不会靠源序压掉配方的字号；反向断言产物里
+// 每条声明 font / font-size 的规则都高于 (0,0,0)。
 import { readFile } from 'node:fs/promises'
 
 const FILES = {
@@ -201,7 +202,51 @@ else {
     // 在 index.css 里排在 reset.css 之后）；这条守的正是「配方在前、reset 在后」的失效场景真实存在。
     if (!before.includes(`\n${FAMILY_ROOTS[0]} {`))
       errors.push(`${ENTRIES.unlayered} 里 \`${FAMILY_ROOTS[0]}\` 根规则没有排在 reset 段之前——配方与 reset 的先后变了，重新核对特指度取舍`)
+
+    // 反向那一半：reset 压到 (0,0,0) 只保证它不靠源序赢，前提是每条要定字号的规则都比它高。
+    // 无层产物里任何声明 font / font-size 的规则（含 @media 一类条件块内的），选择器剥去伪元素后
+    // 都不得同为 (0,0,0)——否则排在 reset 之前的那条会被 `font: inherit` 按源序压回继承值，
+    // 且有层产物、单测与其余门禁照样全绿。reset 那条 `font: inherit` 自身是唯一豁免。
+    const RESET_FONT_RULE = ':where([data-scope]):where(button, input, optgroup, select, textarea)'
+    for (const { selectors, body } of styleRulesOf(stripComments(unlayeredCss))) {
+      if (!/(?:^|[;\s])font(?:-size)?\s*:/.test(body))
+        continue
+      for (const selector of selectors) {
+        if (selector === RESET_FONT_RULE)
+          continue
+        if (isZeroSpecificity(selector))
+          errors.push(`${ENTRIES.unlayered} 里声明字号的规则 \`${selector}\` 是 (0,0,0)，与 reset 的 font: inherit 同档、只能靠源序竞争——给它至少 (0,0,1) 的特指度`)
+      }
+    }
   }
+}
+
+/** 递归取一段 CSS 里全部样式规则（含条件 @ 块内的）的选择器与声明体。 */
+function styleRulesOf(css) {
+  const out = []
+  let i = 0
+  while (i < css.length) {
+    const brace = css.indexOf('{', i)
+    if (brace === -1)
+      break
+    const close = matchBrace(css, brace)
+    if (close === -1)
+      break
+    // 顶层规则之间可能夹着 @import 一类语句，只取最后一个分号之后的那段作为 prelude
+    const raw = css.slice(i, brace)
+    const prelude = raw.slice(raw.lastIndexOf(';') + 1).trim()
+    const body = css.slice(brace + 1, close)
+    if (prelude.startsWith('@')) {
+      // @keyframes 的百分比帧、@font-face 一类没有选择器；@media / @supports / @container 内才有样式规则
+      if (/^@(?:media|supports|container|layer)\b/.test(prelude))
+        out.push(...styleRulesOf(body))
+    }
+    else {
+      out.push({ selectors: splitSelectorList(prelude), body })
+    }
+    i = close + 1
+  }
+  return out
 }
 
 if (errors.length > 0) {
@@ -212,4 +257,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-layer-order] 通过：${orders.layers.join(' → ')}；reset 层 (0,0,0)，无层产物里配方先于 reset`)
+console.log(`[check-layer-order] 通过：${orders.layers.join(' → ')}；reset 层 (0,0,0)，无层产物里配方先于 reset 且字号规则都高于 reset`)
