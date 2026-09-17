@@ -2,12 +2,12 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 18,
-  "ladder": 50,
+  "edge": 16,
+  "ladder": 49,
   "motion": 1,
-  "press": 31,
+  "press": 30,
   "scroll": 16,
-  "selection": 5,
+  "selection": 4,
   "shape": 16,
   "text": 56,
 }
@@ -26,8 +26,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "download-trigger:root:raised",
   "file-upload:trigger:raised",
   "popconfirm:confirm-trigger:raised",
-  "segmented:indicator:raised",
-  "segmented:root",
   "signature-pad:clear-trigger:raised",
   "slider:thumb:raised",
   "sortable:item:raised",
@@ -79,7 +77,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "popconfirm:cancel-trigger:pressed",
   "popover:close-trigger:hover",
   "popover:close-trigger:pressed",
-  "segmented:item:hover",
   "signature-pad:clear-trigger:hover",
   "signature-pad:clear-trigger:pressed",
   "sortable:item-drag-trigger:hover",
@@ -123,7 +120,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "form:error-summary-item",
   "radio-group:item",
   "rating:item",
-  "segmented:item",
   "steps:trigger",
   "switch:root",
   "tag-group:tag/root",
@@ -157,7 +153,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 exports[`family-backlog 键集合 > selection 1`] = `
 [
   "anchor:link",
-  "segmented:indicator",
   "tag-group:tag/root",
   "toggle-group:item",
   "toggle:root",

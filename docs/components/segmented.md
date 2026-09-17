@@ -1,6 +1,6 @@
 # Segmented 分段控制器 <Badge type="info" text="alpha" />
 
-一排连在一起的互斥选项，选中的一段下方有一块滑动的指示器。它是单选组，参与表单提交。
+一排连在一起的互斥选项，选中的一段下方有一块滑动的指示器：淡底轨道里一块带描边的白色抬起面。它是单选组，参与表单提交。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/segmented" target="_blank" rel="noreferrer">Headless</a>
@@ -227,6 +227,8 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 `@xihan-ui/styles/segmented.css` 使用 `[data-scope="segmented"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -252,15 +254,17 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | --- | --- | --- | --- | --- | --- |
 | `--xh-segmented-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | segmented 的 root 部件 background 覆盖槽。 |
 | `--xh-segmented-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | segmented 的 root 部件 background 覆盖槽。 |
-| `--xh-segmented-border` | `root` | `border` | `default` | `--xh-border-subtle` | segmented 的 root 部件 border 覆盖槽。 |
+| `--xh-segmented-border` | `root` | `border` | `default` | `transparent` | segmented 的 root 部件 border 覆盖槽。 |
 | `--xh-segmented-border-invalid` | `root` | `border-color` | `invalid` | `--xh-border-invalid` | segmented 的 root 部件 border-color 覆盖槽。 |
 | `--xh-segmented-font-size` | `root` | `font-size` | `default` | `--xh-_segmented-font-size` | segmented 的 root 部件 font-size 覆盖槽。 |
 | `--xh-segmented-h` | `item`<br>`root` | `min-block-size` | `orientation=horizontal` | `--xh-_segmented-h` | segmented 的 item、root 部件 min-block-size 覆盖槽。 |
 | `--xh-segmented-indicator-bg` | `indicator` | `background` | `default` | `--xh-_segmented-indicator-bg` | segmented 的 indicator 部件 background 覆盖槽。 |
+| `--xh-segmented-indicator-border` | `indicator`<br>`root` | `border`<br>`border-color` | `default`<br>`tone` | `--xh-_tone`<br>`--xh-border-default` | segmented 的 indicator、root 部件 border、border-color 覆盖槽。 |
 | `--xh-segmented-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-segmented-indicator-shadow` | `indicator` | `box-shadow` | `default` | `--xh-elevation-raised` | segmented 的 indicator 部件 box-shadow 覆盖槽。 |
 | `--xh-segmented-indicator-shadow-disabled` | `indicator`<br>`root` | `box-shadow` | `disabled` | `none` | segmented 的 indicator、root 部件 box-shadow 覆盖槽。 |
 | `--xh-segmented-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-bg-subtle-hover` | segmented 的 item 部件 background-color 覆盖槽。 |
+| `--xh-segmented-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-bg-subtle-active` | segmented 的 item 部件 background-color 覆盖槽。 |
 | `--xh-segmented-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | segmented 的 item 部件 color 覆盖槽。 |
 | `--xh-segmented-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
 | `--xh-segmented-item-fg-checked-disabled` | `item` | `color` | `disabled`<br>`state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
@@ -276,7 +280,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 ### 动效
 
-`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
