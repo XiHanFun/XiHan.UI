@@ -183,7 +183,7 @@ export type { PinInputApi, PinInputInputProps, PinInputSchema, PinInputTranslati
 export { connectPopconfirm, POPCONFIRM_DEFAULT_PLACEMENT, popconfirmAnatomy, popconfirmKeyboard, popconfirmMeta } from './popconfirm'
 export type { PopconfirmActionErrorChannel, PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmPendingChannel, PopconfirmProps, PopconfirmTranslations } from './popconfirm'
 export { connectPopover, POPOVER_DEFAULT_PLACEMENT, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
-export type { PopoverApi, PopoverOpenChangeDetails, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
+export type { PopoverApi, PopoverOpenChangeDetails, PopoverPressedPart, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
 export { connectProgress, PROGRESS_VIEW, progressAnatomy, progressKeyboard, progressMeta, progressRing } from './progress'
 export type { ProgressApi, ProgressGapPosition, ProgressProps, ProgressRing, ProgressSemantics, ProgressTranslations, ProgressVariant } from './progress'
 export { connectPromptInput, promptInputAnatomy, promptInputKeyboard, promptInputMachine, promptInputMeta } from './prompt-input'

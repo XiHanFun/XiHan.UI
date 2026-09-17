@@ -28621,6 +28621,8 @@
 
 /* family/motion.css */
 
+/* family/action-control.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='popover'] {
   --xh-popover-skin: 1;
@@ -28672,9 +28674,23 @@
   --xh-_overlay-enter-left: 1;
 }
 
+/*
+ * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
+ * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
+ */
+[data-scope='popover'][data-part='trigger'] {
+  --xh-icon-size: var(--xh-popover-icon-size, var(--xh-_action-profile-glyph-size));
+}
+
+/* 家族配方给了 display，作者手写 hidden 时得把 UA 的 [hidden]{display:none} 还回去 */
+[data-scope='popover'][data-part='trigger'][hidden] {
+  display: none;
+}
+
 [data-scope='popover'][data-part='content'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-popover-icon-size, var(--xh-glyph-size-text));
+  /* 作者塞进面板里的图标按控件档取（§6.5）；关闭钮另由家族配方按 sm 档下发字形尺 */
+  --xh-icon-size: var(--xh-popover-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这两个私有槽。popover 没有 root 部件，size 落在浮层树最外层的 content 上。
      语气不接：面板是内容容器，语气该由里面的内容表达 */
@@ -28691,6 +28707,8 @@
   /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-popover-max-h, var(--xh-overlay-max-h)), var(--xh-_popover-available-h));
   overflow-y: auto;
+  /* 浮在页面之上的 Overlay 滚动面（§6.6）：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
   padding-block: var(--xh-popover-py, var(--xh-_popover-pad));
   padding-inline: var(--xh-popover-px, var(--xh-_popover-pad));
   border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-material-frosted-border));
@@ -28753,10 +28771,11 @@
   color: var(--xh-popover-title-fg, var(--xh-material-frosted-fg));
 }
 
+/* 说明文字走说明档（§6.4）：13px + fg-muted */
 [data-scope='popover'][data-part='description'] {
   margin: 0;
-  font-size: var(--xh-text-body-size);
-  color: var(--xh-popover-description-fg, var(--xh-material-frosted-fg-muted));
+  font-size: var(--xh-popover-description-font-size, var(--xh-text-secondary-size));
+  color: var(--xh-popover-description-fg, var(--xh-fg-muted));
 }
 
 /* 关闭按钮是绝对定位的，不占流内宽度：标题得自己让出右上角那块，
@@ -28766,50 +28785,33 @@
   padding-inline-end: calc(var(--xh-popover-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
 }
 
-/* 贴边比 dialog 一族的面板档（--xh-surface-action-inset）小一档：气泡的面板内衬是 12px，
-   28px 的钮按 12px 贴边会伸出面板自己的盒子，被 content 的 overflow 裁掉。 */
+/*
+ * 关闭钮是浮层角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+ * 由家族配方给出——磨砂白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
+ * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放：
+ * 贴边比 dialog 一族的面板档（--xh-surface-action-inset）小一档：气泡的面板内衬是 12px，
+ * 28px 的钮按 12px 贴边会伸出面板自己的盒子，被 content 的 overflow 裁掉。
+ * 静息前景取磨砂面的 muted 字色，悬停 / 按下回到 fg-default。
+ */
 [data-scope='popover'][data-part='close-trigger'] {
+  --xh-action-visual-size: var(--xh-popover-close-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-popover-close-radius, var(--xh-shape-control));
+  --xh-action-bg-hover: var(--xh-popover-close-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-popover-close-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-popover-close-fg, var(--xh-material-frosted-fg-muted));
+  --xh-action-fg-hover: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-focus-visible));
+  /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-popover-icon-size, var(--xh-_action-profile-glyph-size));
+
   position: absolute;
   inset-block-start: var(--xh-space-2);
   inset-inline-end: var(--xh-space-2);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  block-size: var(--xh-popover-close-size, var(--xh-control-h-sm));
-  inline-size: var(--xh-popover-close-size, var(--xh-control-h-sm));
-  border: 0;
-  border-radius: var(--xh-popover-close-radius, var(--xh-shape-control));
-  background: transparent;
-  color: var(--xh-popover-close-fg, var(--xh-material-frosted-fg-muted));
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='popover'][data-part='close-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='popover'][data-part='close-trigger']:hover {
-  background: var(--xh-popover-close-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-popover-close-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='popover'][data-part='close-trigger']:active {
-  background: var(--xh-popover-close-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 品牌环往内收时先落在这一小块实体隔离底上，不直接与不断变化的模糊背景比对。 */
-[data-scope='popover'][data-part='close-trigger']:focus-visible {
-  background: var(--xh-popover-close-bg-focus, var(--xh-material-frosted-focus-surface));
-  color: var(--xh-popover-close-fg-focus, var(--xh-material-frosted-fg));
-  /* 隔离底随焦点立即出现，不从透明背景渐变而短暂丢失环对比度。 */
-  transition-property: color, scale;
 }
 
 /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -28835,18 +28837,6 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-}
-
-/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
-   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
-   用 ::after：::before 已经被兜底字形占着。
-   钮本身贴边 8px，8px 的外扩正好齐到气泡的边，不会被 content 裁掉 */
-@media (pointer: coarse) {
-  [data-scope='popover'][data-part='close-trigger']::after {
-    content: '';
-    position: absolute;
-    inset: calc(-1 * var(--xh-space-2));
-  }
 }
 
 @media (forced-colors: active) {

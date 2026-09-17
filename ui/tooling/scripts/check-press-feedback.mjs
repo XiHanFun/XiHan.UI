@@ -117,7 +117,8 @@ const PRESSABLE = {
   'dialog': ['close-trigger'],
   'drawer': ['close-trigger', 'trigger'],
   'notification': ['item-close-trigger', 'item-action-trigger'],
-  'popover': ['close-trigger'],
+  // 开合触发器接了 Action Control text 档，与角落的叉同走家族按压块（§9.1）
+  'popover': ['close-trigger', 'trigger'],
   'tour': ['close-trigger', 'prev-trigger', 'next-trigger', 'skip-trigger'],
   'toast': ['close-trigger', 'action-trigger'],
   'alert': ['close-trigger'],

@@ -37,6 +37,12 @@ export interface PopoverRefs {
   getInitialFocusEl: () => HTMLElement | null
 }
 
+/**
+ * 正被按住的按钮。popover 自己只有 trigger 与 close-trigger；popconfirm 跑的是同一台机器，
+ * 它的 confirm-trigger / cancel-trigger 也记在这里——两颗动作钮并排，只记一个布尔分不清按住的是哪颗。
+ */
+export type PopoverPressedPart = 'trigger' | 'close-trigger' | 'confirm-trigger' | 'cancel-trigger'
+
 export interface PopoverOpenChangeDetails {
   open: boolean
   /**
@@ -69,6 +75,11 @@ export interface PopoverSchema extends MachineSchema {
     position: PositionResult | null
     /** 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
+    /**
+     * 正被按住的按钮：Space / Enter 或触屏手指按下到松开之间，该按钮投影 data-pressed；没有按住时为 null。
+     * 指针按住由 :active 表出。浮层收起时一并清空——按住 Enter 关掉浮层后，里面的按钮不会再来 keyup。
+     */
+    pressed: PopoverPressedPart | null
   }
   computed: Record<string, never>
   refs: PopoverRefs
@@ -80,9 +91,12 @@ export interface PopoverSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪颗按钮
+    | { type: 'PRESS.START', part: PopoverPressedPart }
+    | { type: 'PRESS.END', part: PopoverPressedPart }
   tag: never
   guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress'
   effect: 'trackPosition' | 'trackLayer'
 }
 
