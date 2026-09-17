@@ -124,8 +124,6 @@
     "switch:thumb::after": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（60%）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
     "table:row-select-trigger": "取了 control，身份表登记的是 inset；待本组件迁移",
     "table:select-all-trigger": "取了 control，身份表登记的是 inset；待本组件迁移",
-    "tag:close-trigger": "取了 inset，身份表登记的是 circle；待本组件迁移",
-    "tag:root": "取了 control，身份表登记的是 pill；待本组件迁移",
     "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
     "transfer:select-all-trigger": "取了 control，身份表登记的是 inset；待本组件迁移"
   },

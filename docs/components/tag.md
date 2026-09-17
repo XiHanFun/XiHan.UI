@@ -228,7 +228,7 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 | `--xh-tag-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-px` | `root` | `padding-inline` | `default` | `--xh-_tag-px` | tag 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-tag-py` | `root` | `padding-block` | `default` | `--xh-_tag-py` | tag 的 root 部件 padding-block 覆盖槽。 |
-| `--xh-tag-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | tag 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-tag-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | tag 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-tag-shadow` | `root` | `box-shadow` | `default`<br>`variant=solid` | `--xh-_tag-highlight`<br>`--xh-material-soft-shadow` | tag 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
