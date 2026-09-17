@@ -1,8 +1,9 @@
 import type { App } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhListboxRoot } from '../../src'
+import { pressPointer, releasePointer } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -38,31 +39,6 @@ function resolve(token: string, property: 'background-color' | 'color' = 'backgr
   const value = getComputedStyle(probe).getPropertyValue(property)
   probe.remove()
   return value
-}
-
-/** 真实主键按住 / 松开拆开派：按住的中间帧要真实的 :active 才看得见。 */
-async function press(element: HTMLElement): Promise<void> {
-  const rect = element.getBoundingClientRect()
-  await cdp().send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height / 2,
-    button: 'left',
-    buttons: 1,
-    clickCount: 1,
-  })
-}
-
-async function release(element: HTMLElement): Promise<void> {
-  const rect = element.getBoundingClientRect()
-  await cdp().send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height / 2,
-    button: 'left',
-    buttons: 0,
-    clickCount: 1,
-  })
 }
 
 afterEach(() => {
@@ -155,18 +131,18 @@ describe('列表框的页内选中反馈', () => {
 
     const before = banana.getBoundingClientRect()
     await userEvent.hover(banana)
-    await press(banana)
+    await pressPointer(banana)
     expect(banana.matches(':active')).toBe(true)
     expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
     expect(getComputedStyle(banana).scale).toBe('none')
     expect(banana.getBoundingClientRect().width).toBe(before.width)
-    await release(banana)
+    await releasePointer(banana)
     await nextTick()
 
     // 松手后 banana 成为选中行；再按住它落 28%
     expect(banana.getAttribute('data-state')).toBe('checked')
-    await press(banana)
+    await pressPointer(banana)
     expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-active'))
-    await release(banana)
+    await releasePointer(banana)
   })
 })

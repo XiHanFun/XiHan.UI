@@ -62430,6 +62430,9 @@
               "name": "--xh-tree-indicator-size"
             },
             {
+              "name": "--xh-tree-item-check-fg"
+            },
+            {
               "name": "--xh-tree-item-indicator-fg"
             },
             {
@@ -62470,6 +62473,12 @@
             },
             {
               "name": "--xh-tree-row-bg-hover"
+            },
+            {
+              "name": "--xh-tree-row-bg-pressed"
+            },
+            {
+              "name": "--xh-tree-row-bg-selected"
             },
             {
               "name": "--xh-tree-row-fg"

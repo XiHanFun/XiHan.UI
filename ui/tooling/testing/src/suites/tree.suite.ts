@@ -273,9 +273,23 @@ export const treeSuite: ConformanceSuite = {
             'data-value': 'docs',
           },
           'branch-content[0]': { 'role': 'group', 'data-state': 'closed' },
-          // 展开箭头只是重复了分支自己的语义：退出可及树，也不占 Tab 位
-          'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
+          // 分支行走 Collection Item 的 page 语境；aria-selected / aria-disabled 在 branch 上，行只带 data-*
+          'branch-control[0]': {
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'page',
+            'data-selected': null,
+            'data-disabled': null,
+            'aria-selected': null,
+          },
+          // 展开箭头只是重复了分支自己的语义：退出可及树，也不占 Tab 位；它是前导图标，不占 indicator 槽
+          'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1', 'data-xh-collection-slot': 'prefix' },
+          'branch-indicator[0]': { 'data-xh-collection-slot': 'prefix' },
+          'branch-text[0]': { 'data-xh-collection-slot': 'text' },
           'item[0]': {
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'page',
             'role': 'treeitem',
             'aria-level': '2',
             'aria-posinset': '1',
@@ -292,8 +306,10 @@ export const treeSuite: ConformanceSuite = {
           'item[1]': { 'aria-level': '3', 'aria-posinset': '1', 'aria-setsize': '1', 'data-value': 'dom' },
           'item[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'data-value': 'readme', 'disabled': null },
           'item[3]': { 'aria-level': '1', 'aria-posinset': '3', 'aria-setsize': '3', 'data-value': 'license' },
-          'item-indicator[0]': { 'aria-hidden': 'true' },
+          'item-text[0]': { 'data-xh-collection-slot': 'text' },
+          'item-indicator[0]': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'indicator' },
           'node-drag-trigger[0]': {
+            'data-xh-collection-slot': 'prefix',
             // 把手不占 Tab 位、也不进可及树：键盘搬家由树上的 Alt + 方向键承担
             'aria-hidden': 'true',
             'tabindex': '-1',

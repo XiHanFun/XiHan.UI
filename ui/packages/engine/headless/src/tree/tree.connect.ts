@@ -334,6 +334,8 @@ export function connectTree<T extends PropTypes>(
       const draggable = nodeDraggable && !isDisabled(node.value)
       return normalize.element({
         ...parts['node-drag-trigger'].attrs,
+        // 拖拽把手是行首的前导部件
+        'data-xh-collection-slot': 'prefix',
         // 把手对读屏隐藏、也不占 Tab 位：键盘那一路由树上的 Alt + 方向键承担
         'aria-hidden': true,
         'tabindex': -1,
@@ -553,6 +555,11 @@ export function connectTree<T extends PropTypes>(
       ...parts.item.attrs,
       ...nodeAttrs(node.value),
       ...itemState(node.value),
+      // 行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与选中面（品牌淡底 +
+      // 淡底前景 + 前导标记）由家族按 aria-selected / aria-disabled 给出。树没有 size 轴，行固定走 md 尺
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': 'md',
+      'data-xh-collection-context': 'page',
       'onClick': (event: MouseEvent) => {
         if (isDisabled(node.value))
           return
@@ -567,11 +574,14 @@ export function connectTree<T extends PropTypes>(
     getItemTextProps: node => normalize.element({
       ...parts['item-text'].attrs,
       ...itemState(node.value),
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 叶子的选中对号是 page 语境的前导标记，显隐由家族按行的 aria-selected 给
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemState(node.value),
+      'data-xh-collection-slot': 'indicator',
       'aria-hidden': true,
     }),
 
@@ -591,6 +601,8 @@ export function connectTree<T extends PropTypes>(
     getItemCheckboxProps: node => normalize.element({
       ...parts['item-checkbox'].attrs,
       ...itemState(node.value),
+      // 前导勾选部件自己就是选中标记（§7.3 页内持久集合），不占家族的 indicator 槽
+      'data-xh-collection-slot': 'prefix',
       // 勾选态由所在的 treeitem 用 aria-selected / aria-checked 报，把手自己不重复一遍
       'aria-hidden': true,
       'tabindex': -1,
@@ -617,6 +629,7 @@ export function connectTree<T extends PropTypes>(
     getBranchCheckboxProps: node => normalize.element({
       ...parts['branch-checkbox'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-slot': 'prefix',
       'aria-hidden': true,
       'tabindex': -1,
       // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
@@ -636,9 +649,14 @@ export function connectTree<T extends PropTypes>(
       },
     }),
 
+    // 分支行不是 treeitem 本体（aria-selected / aria-disabled 在 branch 上）：家族的选中面与禁用守卫
+    // 读连接层同步下来的 data-selected / data-disabled
     getBranchControlProps: node => normalize.element({
       ...parts['branch-control'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': 'md',
+      'data-xh-collection-context': 'page',
       'data-dragging': dataAttr(draggingNode === node.value),
       'data-drop': dropSide(node.value),
       'data-draggable': dataAttr(nodeDraggable && !isDisabled(node.value)),
@@ -656,9 +674,11 @@ export function connectTree<T extends PropTypes>(
       },
     }),
 
+    // 展开箭头是前导图标，不是选中标记
     getBranchTriggerProps: node => normalize.element({
       ...parts['branch-trigger'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-slot': 'prefix',
       // 展开箭头重复了 branch 已有的左右方向键与点行语义，对读屏隐藏；
       // tabindex=-1 让它退出 Tab 序列，否则每条分支多占一个 Tab 位会让 roving tabindex 失效
       'aria-hidden': true,
@@ -686,12 +706,14 @@ export function connectTree<T extends PropTypes>(
     getBranchIndicatorProps: node => normalize.element({
       ...parts['branch-indicator'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-slot': 'prefix',
       'aria-hidden': true,
     }),
 
     getBranchTextProps: node => normalize.element({
       ...parts['branch-text'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-slot': 'text',
     }),
 
     // 收起只翻 branchState 里的 data-state，不卸载作者节点，子树里的输入框与滚动位置得留着

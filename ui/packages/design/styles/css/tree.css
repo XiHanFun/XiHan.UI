@@ -5,6 +5,8 @@
 
 /* 定义 tree 样式。 */
 
+@import '../family/collection-item.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='tree'] {
@@ -12,12 +14,9 @@
   }
 
   [data-scope='tree'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-text));
-
-    /* 形态只换这两个私有槽，容器那条边框与底色的声明只写一遍 */
-    --xh-_tree-border: var(--xh-border-default);
-    --xh-_tree-bg: var(--xh-bg-surface);
+    /* 行外的字形（空态 / 在途占位里作者塞的图标）按档取尺，树没有 size 轴、固定 md；
+       行内的字形由家族随 data-xh-collection-size 下发（§6.5） */
+    --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-md));
 
     display: flex;
     flex-direction: column;
@@ -28,16 +27,18 @@
     display: none;
   }
 
-  /* 淡底档：描边透明、底换成 subtle；outline 即基础规则 */
-  [data-scope='tree'][data-part='root'][data-variant='subtle'] {
-    --xh-_tree-border: transparent;
-    --xh-_tree-bg: var(--xh-bg-subtle);
+  /* 淡底档：描边透明、底换成 subtle；outline 即基础规则。
+     形态由 root 的 data-variant 向容器下发，容器基础规则直接写 border-default / bg-surface，
+     与 list / descriptions 的 outline 面同源（列表容器族） */
+  [data-scope='tree'][data-part='root'][data-variant='subtle'] [data-scope='tree'][data-part='tree'] {
+    border-color: transparent;
+    background: var(--xh-tree-bg, var(--xh-bg-subtle));
   }
 
   /* 无框档：边框留着但透明，去掉外框不会让行的位置跳一格 */
-  [data-scope='tree'][data-part='root'][data-variant='ghost'] {
-    --xh-_tree-border: transparent;
-    --xh-_tree-bg: transparent;
+  [data-scope='tree'][data-part='root'][data-variant='ghost'] [data-scope='tree'][data-part='tree'] {
+    border-color: transparent;
+    background: transparent;
   }
 
   [data-scope='tree'][data-part='label'] {
@@ -60,9 +61,9 @@
     max-block-size: var(--xh-tree-max-h, var(--xh-viewport-h-lg));
     padding-block: var(--xh-tree-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-px, var(--xh-space-1));
-    border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-_tree-border));
+    border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-border-default));
     border-radius: var(--xh-tree-radius, var(--xh-shape-surface));
-    background: var(--xh-tree-bg, var(--xh-_tree-bg));
+    background: var(--xh-tree-bg, var(--xh-bg-surface));
     color: var(--xh-tree-fg, var(--xh-fg-default));
     /* 两轴一起给：深层节点靠缩进往右推，横向溢出是常态，得够得着 */
     overflow: auto;
@@ -142,57 +143,112 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平 */
+  /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。
+     行走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
+     pressed 200）与选中面（品牌淡底 + 淡底前景 + 前导标记，selected+hover 20% / +pressed 28%）都由家族按
+     aria-selected / data-selected 与 aria-disabled / data-disabled 给出；这里只把公开槽映射到桥接槽。
+     布局保持 flex 而不用家族网格：一行里可以并排多个前导部件（箭头、勾选把手、拖拽把手）与作者自己的图标、
+     按钮，单列的 prefix 放不下；间距统一由行的 gap 给，家族按槽下发的外边距（--xh-collection-gap）归零 */
   [data-scope='tree'][data-part='item'],
   [data-scope='tree'][data-part='branch-control'] {
+    --xh-collection-block-padding: var(--xh-tree-row-py, var(--xh-list-option-py-md));
+    --xh-collection-inline-padding: var(--xh-tree-row-px, var(--xh-control-px-md));
+    --xh-collection-gap: 0;
+    --xh-collection-font-size: var(--xh-tree-row-font-size, var(--xh-text-body-size));
+    --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
+    /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 md 档 */
+    --xh-collection-glyph-size: var(--xh-tree-icon-size, var(--xh-_collection-glyph-size));
+    /* 箭头 / 对号盒与叶子的占位同一把尺：随家族按档下发的行内字形尺 */
+    --xh-_tree-indicator-size: var(--xh-tree-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    --xh-collection-fg-rest: var(--xh-tree-row-fg, var(--xh-fg-default));
+    --xh-collection-fg-hover: var(--xh-tree-row-fg, var(--xh-fg-default));
+    --xh-collection-fg-keyboard-highlight: var(--xh-tree-row-fg, var(--xh-fg-default));
+    --xh-collection-fg-pressed: var(--xh-tree-row-fg, var(--xh-fg-default));
+    --xh-collection-fg-selected: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-hover: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-highlight: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-pressed: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-font-weight-selected: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-hover: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-highlight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-pressed: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-regular));
+    --xh-collection-bg-hover: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-tree-row-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-selected: var(--xh-tree-row-bg-selected, var(--xh-bg-brand-subtle));
+    /* data-highlighted 跟的是连接层记的焦点行（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
+    --xh-collection-outline-keyboard-highlight: transparent;
+    --xh-collection-outline-selected-highlight: transparent;
+    /* 叶子的对号：槽按本部件取名（item-check-fg），标记部件的旧槽留在兜底位 */
+    --xh-collection-indicator-fg-rest: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
+    --xh-collection-indicator-fg-checked: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
+    --xh-collection-indicator-fg-selected: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
+    --xh-collection-indicator-fg-selected-hover: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
+    --xh-collection-indicator-fg-selected-highlight: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
+    --xh-collection-indicator-fg-selected-pressed: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
+
     display: flex;
     align-items: center;
     gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-tree-row-py, var(--xh-list-option-py-md));
-    padding-inline: var(--xh-tree-row-px, var(--xh-control-px-md));
-    border-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
-    color: var(--xh-tree-row-fg, var(--xh-fg-default));
-    font-size: var(--xh-tree-row-font-size, var(--xh-text-body-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-tree-row-leading, var(--xh-leading-normal));
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
-    /* box-shadow 一并接过渡：换父落点那圈内描边挂在行自己身上，跟着 data-drop 在行间移动 */
+    /* 换面走家族的按下 / 释放时间线；box-shadow 一并接过渡：换父落点那圈内描边挂在行自己身上，
+       跟着 data-drop 在行间移动 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
      没摆（如勾选档首位直接是 item-checkbox）就由行盒自己补出来，
-     否则叶子会比同级分支往行首缩一格，层级关系读不出来 */
+     否则叶子会比同级分支往行首缩一格，层级关系读不出来。占位宽度与箭头 / 对号盒同一把尺 */
   [data-orientation='vertical'] > [data-scope='tree'][data-part='item']:not(
       :has(> [data-scope='tree'][data-part='item-indicator'])
     ) {
     padding-inline-start: calc(
       var(--xh-tree-row-px, var(--xh-control-px-md)) +
-        var(--xh-tree-indicator-size, var(--xh-control-indicator-size)) +
+        var(--xh-_tree-indicator-size) +
         var(--xh-tree-row-gap, var(--xh-control-gap-md))
     );
   }
 
+  /* 家族给了 display，UA 的 [hidden]{display:none} 已被盖掉 */
   [data-scope='tree'][data-part='item'][hidden],
   [data-scope='tree'][data-part='branch-control'][hidden] {
     display: none;
   }
 
-  /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点行，
-     与选中互相独立，键盘落焦另有聚焦环标记位置 */
-  [data-scope='tree'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]),
-  [data-scope='tree'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
+  /* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上：叶子自己承载焦点；
+     分支的焦点在 branch 上、环画在它那一行（见上面 branch:focus-visible 那条） */
+  [data-scope='tree'][data-part='item']:focus-visible:not(:hover) {
+    --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+    --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
+    transition: none;
+  }
+
+  [data-scope='tree'][data-part='item']:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：叶子的禁用面由家族按 aria-disabled 给；
+     分支行不是 treeitem 本体（aria-disabled 在 branch 上），按连接层的 data-disabled 映射到家族槽：
+     字色降级、光标 not-allowed，悬停 / 高亮 / 按下由家族守卫拦掉 */
+  [data-scope='tree'][data-part='branch-control'][data-disabled] {
+    --xh-collection-fg-rest: var(--xh-fg-disabled);
+    --xh-collection-cursor-rest: not-allowed;
   }
 
   /* 勾选把手：勾选态只画在它身上，不碰行底色——底色那条通道归高亮 */
   [data-scope='tree'][data-part='item-checkbox'],
   [data-scope='tree'][data-part='branch-checkbox'] {
+    /* 方框里的勾按边长的比例取尺（与 Checkbox 同一比例），不吃家族按档下发的行内字形尺 */
+    --xh-icon-size: calc(var(--xh-tree-checkbox-size, var(--xh-control-indicator-size)) * 0.75);
+
     display: inline-grid;
     place-items: center;
     flex: none;
@@ -257,21 +313,6 @@
     border-color: var(--xh-tree-checkbox-border-disabled, var(--xh-border-subtle));
   }
 
-  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
-     两者因此能同时看见 */
-  [data-scope='tree'][data-part='item'][data-selected],
-  [data-scope='tree'][data-part='branch-control'][data-selected] {
-    color: var(--xh-tree-row-fg-selected, var(--xh-fg-brand-strong));
-    font-weight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-medium));
-  }
-
-  /* 禁用走 aria-disabled 而非原生 disabled：节点仍要可聚焦（它还得当方向键的起点），
-     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
-  [data-scope='tree'][data-part='item'][data-disabled],
-  [data-scope='tree'][data-part='branch-control'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
   [data-scope='tree'][data-part='item-text'],
   [data-scope='tree'][data-part='branch-text'] {
     flex: 1;
@@ -282,28 +323,18 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动。
-     前景槽带 item- 段与分支那条成对 */
+  /* 勾选标记是 page 语境的前导对号：显隐与颜色由家族按行的选中态给；
+     未选中时占位不塌，切换选中不引起行宽抖动。盒尺随家族按档下发的字形尺 */
   [data-scope='tree'][data-part='item-indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-tree-item-indicator-fg, var(--xh-fg-brand));
-    visibility: hidden;
+    inline-size: var(--xh-_tree-indicator-size);
   }
 
   [data-scope='tree'][data-part='item-indicator'][hidden] {
     display: none;
-  }
-
-  [data-scope='tree'][data-part='item-indicator'][data-selected] {
-    visibility: visible;
-  }
-
-  [data-scope='tree'][data-part='item-indicator'][data-disabled] {
-    color: var(--xh-fg-disabled);
   }
 
   /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
@@ -314,7 +345,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-_tree-indicator-size);
     color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-subtle));
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
@@ -505,7 +536,8 @@
      禁用的节点从来不做落点，这一段因此不会漏画任何一处高亮 */
   [data-scope='tree'][data-part='item'][data-drop='inside']:not([data-disabled]),
   [data-scope='tree'][data-part='branch-control'][data-drop='inside']:not([data-disabled]) {
-    background: var(--xh-tree-drop-inside-bg, var(--xh-bg-brand-subtle));
+    /* 落点不是选中：品牌淡底专属选中 / 当前（§7.1），落点面取悬停之上一档的中性面 */
+    background: var(--xh-tree-drop-inside-bg, var(--xh-bg-subtle-hover));
     box-shadow: inset 0 0 0 var(--xh-tree-drop-line, var(--xh-stroke-thick))
       var(--xh-tree-drop-fg, var(--xh-border-control-focus));
   }
