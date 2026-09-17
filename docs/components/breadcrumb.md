@@ -144,6 +144,8 @@
 
 `@xihan-ui/styles/breadcrumb.css` 使用 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -167,7 +169,8 @@
 | `--xh-breadcrumb-gap` | `list` | `gap` | `default` | `--xh-_breadcrumb-gap` | breadcrumb 的 list 部件 gap 覆盖槽。 |
 | `--xh-breadcrumb-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-breadcrumb-leading` | `root` | `line-height` | `default` | `--xh-leading-tight` | breadcrumb 的 root 部件 line-height 覆盖槽。 |
-| `--xh-breadcrumb-link-bg-hover` | `link` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-bg-subtle-hover` | breadcrumb 的 link 部件 background 覆盖槽。 |
+| `--xh-breadcrumb-link-bg-hover` | `link` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-bg-subtle` | breadcrumb 的 link 部件 background 覆盖槽。 |
+| `--xh-breadcrumb-link-bg-pressed` | `link` | `background` | `current`<br>`is(:active, [data-pressed])`<br>`not([data-current])`<br>`pressed` | `--xh-bg-subtle-hover` | breadcrumb 的 link 部件 background 覆盖槽。 |
 | `--xh-breadcrumb-link-fg-current` | `link` | `color` | `current` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
 | `--xh-breadcrumb-link-fg-hover` | `link` | `color` | `current`<br>`hover`<br>`not([data-current])` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
 | `--xh-breadcrumb-link-font-weight-current` | `link` | `font-weight` | `current` | `--xh-font-weight-medium` | breadcrumb 的 link 部件 font-weight 覆盖槽。 |

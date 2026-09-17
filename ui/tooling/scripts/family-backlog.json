@@ -18,7 +18,6 @@
     "toggle:root": "无滑块开关的选中字色（桥接槽 --xh-action-fg-rest 解析到底）是 --xh-fg-brand，应为 --xh-fg-on-brand-subtle；待本组件迁移"
   },
   "ladder": {
-    "breadcrumb:link:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "carousel:prev-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "carousel:prev-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "clipboard:input:focus": "焦点边写了 border-color: var(--xh-clipboard-input-border-focus, var(--xh-_tone, var(-，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",

@@ -3515,6 +3515,27 @@
         "not([data-current])"
       ],
       "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "breadcrumb 的 link 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-breadcrumb-link-bg-pressed",
+      "component": "breadcrumb",
+      "part": [
+        "link"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "current",
+        "is(:active, [data-pressed])",
+        "not([data-current])",
+        "pressed"
+      ],
+      "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",

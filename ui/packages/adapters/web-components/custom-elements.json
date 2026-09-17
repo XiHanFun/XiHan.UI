@@ -3104,6 +3104,9 @@
               "name": "--xh-breadcrumb-link-bg-hover"
             },
             {
+              "name": "--xh-breadcrumb-link-bg-pressed"
+            },
+            {
               "name": "--xh-breadcrumb-link-fg-current"
             },
             {

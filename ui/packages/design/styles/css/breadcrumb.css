@@ -108,10 +108,19 @@
   }
 
   /* 当前页那条不再是"可去的地方"：不给悬停反馈，指针也不摆出可点的样子。
-     连接层同时拦下了它的点击并把它移出了 Tab 序列，这里只负责说清楚这件事 */
+     连接层同时拦下了它的点击并把它移出了 Tab 序列，这里只负责说清楚这件事。
+     悬停走白底承载的阶梯（§7.2）：hover 100，与目录的链接同一副回执 */
   [data-scope='breadcrumb'][data-part='link']:not([data-current]):hover {
-    background: var(--xh-breadcrumb-link-bg-hover, var(--xh-bg-subtle-hover));
+    background: var(--xh-breadcrumb-link-bg-hover, var(--xh-bg-subtle));
     color: var(--xh-breadcrumb-link-fg-hover, var(--xh-_breadcrumb-accent-text));
+  }
+
+  /* 按下：链接是随文铺开的一段（§9.2），只换面不缩放，pressed 200；
+     指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
+  [data-scope='breadcrumb'][data-part='link']:not([data-current]):is(:active, [data-pressed]) {
+    background: var(--xh-breadcrumb-link-bg-pressed, var(--xh-bg-subtle-hover));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
@@ -164,5 +173,13 @@
   /* 从右往左排版时「向前」在左边 */
   [dir='rtl'] [data-scope='breadcrumb'][data-part='separator']:empty::before {
     rotate: 180deg;
+  }
+
+  /* 高对比档：按下常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
+  @media (forced-colors: active) {
+    [data-scope='breadcrumb'][data-part='link']:not([data-current]):is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 }

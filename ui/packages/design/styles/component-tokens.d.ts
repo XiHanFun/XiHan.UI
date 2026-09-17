@@ -192,6 +192,7 @@ export type ComponentTokenName =
   | '--xh-breadcrumb-icon-size'
   | '--xh-breadcrumb-leading'
   | '--xh-breadcrumb-link-bg-hover'
+  | '--xh-breadcrumb-link-bg-pressed'
   | '--xh-breadcrumb-link-fg-current'
   | '--xh-breadcrumb-link-fg-hover'
   | '--xh-breadcrumb-link-font-weight-current'
