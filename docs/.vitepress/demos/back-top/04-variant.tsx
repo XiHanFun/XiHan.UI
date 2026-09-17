@@ -3,9 +3,8 @@ import type { CSSProperties, ReactNode } from "react";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/react";
 
 const variants = [
-  { label: "默认", value: undefined },
+  { label: "线框（默认）", value: "outline" },
   { label: "实心", value: "solid" },
-  { label: "线框", value: "outline" },
   { label: "幽灵", value: "ghost" },
 ] as const;
 
