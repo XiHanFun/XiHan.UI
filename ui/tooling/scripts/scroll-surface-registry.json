@@ -226,9 +226,9 @@
     },
     "drawer:content": {
       "mode": "native",
-      "overscroll": false,
+      "overscroll": true,
       "gutter": false,
-      "why": "现状 content 与 body 双层 overflow，两层都能滚；应收成只由 body 滚，随 drawer 提交收口后从表里删掉"
+      "why": "作者不用 header / body / footer 三段时它是唯一的滚动层（最小结构 root + content）：模态面滚到头不带动页面；三段结构下 content 封顶 overflow: hidden 由 body 滚。内容高度不动态变化，不写 gutter"
     },
     "floating-panel:body": {
       "mode": "native",

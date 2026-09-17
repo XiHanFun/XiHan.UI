@@ -6,8 +6,9 @@
 // 提供 drawer 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { DialogPressedPart } from '../dialog'
 import type { DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
-import { dataAttr } from '@xihan-ui/core'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { drawerAnatomy } from './drawer.anatomy'
 
 const parts = drawerAnatomy.build()
@@ -19,7 +20,7 @@ export function connectDrawer<T extends PropTypes>(
   service: Service<DrawerSchema>,
   normalize: NormalizeProps<T>,
 ): DrawerApi<T> {
-  const { state, prop, send, scope } = service
+  const { state, prop, send, context, scope } = service
   const open = state.get() === 'open'
   const modal = prop('modal') ?? true
   const role = prop('role') ?? 'dialog'
@@ -31,6 +32,25 @@ export function connectDrawer<T extends PropTypes>(
   const setOpen = (next: boolean): void => {
     if (next !== open)
       send({ type: next ? 'OPEN' : 'CLOSE' })
+  }
+
+  // 按压通道：两颗按钮各自合成一份跟踪器，真源是（与对话框共用的）机器 context 里「正被按住的那颗」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
+  const pressed = context.get('pressed')
+  const press = (part: DialogPressedPart) => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === part,
+      onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
   }
 
   return {
@@ -53,6 +73,15 @@ export function connectDrawer<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'data-state': stateAttr,
+      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
+      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心）。作者以 asChild 换成自己的按钮时，
+      // 这几条家族标记不落到它身上（适配器合并时跳过 data-xh-*）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      'data-xh-action-variant': 'outline',
+      ...press('trigger'),
       'onClick': () => send({ type: 'TOGGLE' }),
     }),
     getBackdropProps: () => normalize.element({
@@ -102,6 +131,13 @@ export function connectDrawer<T extends PropTypes>(
       ...parts['close-trigger'].attrs,
       'type': 'button',
       'aria-label': prop('translations')?.close ?? 'Close',
+      // 面板角落的叉：icon 档 sm、ghost 面，白面上走画布承载阶梯（hover 100 → pressed 200）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'ghost',
+      ...press('close-trigger'),
       'onClick': () => send({ type: 'CLOSE', src: 'close-trigger' }),
     }),
   }

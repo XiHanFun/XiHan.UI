@@ -24295,6 +24295,7 @@
         "backdrop"
       ],
       "property": [
+        "-webkit-backdrop-filter",
         "backdrop-filter"
       ],
       "state": [
@@ -24304,7 +24305,7 @@
         "--xh-overlay-backdrop-blur"
       ],
       "visibility": "public",
-      "description": "drawer 的 backdrop 部件 backdrop-filter 覆盖槽。"
+      "description": "drawer 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
     },
     {
       "name": "--xh-drawer-backdrop-layer",
@@ -24337,10 +24338,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-material-elevated-bg"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-border",
+      "component": "drawer",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-elevated-border"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-drawer-close-bg-active",
@@ -24349,16 +24368,21 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "drawer 的 close-trigger 部件 background 覆盖槽。"
+      "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-close-bg-hover",
@@ -24367,16 +24391,20 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "drawer 的 close-trigger 部件 background 覆盖槽。"
+      "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-close-fg",
@@ -24406,10 +24434,19 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed"
       ],
       "visibility": "public",
       "description": "drawer 的 close-trigger 部件 color 覆盖槽。"
@@ -24447,9 +24484,11 @@
       ],
       "state": [
         "default",
-        "has([data-scope='drawer'][data-part='close-trigger'])"
+        "has([data-scope='drawer'][data-part='close-trigger'])",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
+        "--xh-_action-profile-visual-size",
         "--xh-control-h-sm"
       ],
       "visibility": "public",
@@ -24486,7 +24525,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "drawer 的 description 部件 font-size 覆盖槽。"
@@ -24504,7 +24543,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-material-elevated-fg"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 color 覆盖槽。"
@@ -24603,8 +24642,10 @@
       "name": "--xh-drawer-icon-size",
       "component": "drawer",
       "part": [
+        "close-trigger",
         "content",
-        "root"
+        "root",
+        "trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -24613,10 +24654,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "drawer 的 content、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "drawer 的 close-trigger、content、root、trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-drawer-layer",
@@ -24713,7 +24755,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-sheet"
+        "--xh-material-elevated-shadow"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 box-shadow 覆盖槽。"
@@ -24801,16 +24843,18 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 background 覆盖槽。"
+      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-bg-active",
@@ -24819,17 +24863,21 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 background 覆盖槽。"
+      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-bg-hover",
@@ -24838,17 +24886,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 background 覆盖槽。"
+      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-bg-open",
@@ -24857,16 +24908,17 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "focus-visible",
         "state=open"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 background 覆盖槽。"
+      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-border",
@@ -24875,16 +24927,19 @@
         "trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-focus-visible",
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 border 覆盖槽。"
+      "description": "drawer 的 trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-border-hover",
@@ -24896,11 +24951,17 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed"
       ],
       "visibility": "public",
       "description": "drawer 的 trigger 部件 border-color 覆盖槽。"
@@ -24912,16 +24973,18 @@
         "trigger"
       ],
       "property": [
+        "border",
         "border-color"
       ],
       "state": [
+        "focus-visible",
         "state=open"
       ],
       "defaultToken": [
         "--xh-border-control-hover"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 border-color 覆盖槽。"
+      "description": "drawer 的 trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-fg",
@@ -24933,10 +24996,21 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "drawer 的 trigger 部件 color 覆盖槽。"
@@ -24954,7 +25028,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "drawer 的 trigger 部件 font-size 覆盖槽。"
@@ -24990,7 +25064,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "drawer 的 trigger 部件 gap 覆盖槽。"
@@ -25002,16 +25076,18 @@
         "trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 block-size 覆盖槽。"
+      "description": "drawer 的 trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-px",
@@ -25026,7 +25102,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "drawer 的 trigger 部件 padding-inline 覆盖槽。"

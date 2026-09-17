@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 4,
-  "ladder": 19,
-  "motion": 1,
+  "ladder": 15,
+  "motion": 0,
   "press": 5,
-  "scroll": 4,
+  "scroll": 2,
   "selection": 0,
   "shape": 1,
-  "text": 14,
+  "text": 11,
 }
 `;
 
@@ -28,10 +28,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "color-picker:control:focus",
   "color-picker:eye-dropper-trigger:hover",
   "color-picker:eye-dropper-trigger:pressed",
-  "drawer:close-trigger:hover",
-  "drawer:close-trigger:pressed",
-  "drawer:trigger:hover",
-  "drawer:trigger:pressed",
   "file-upload:clear-trigger:hover",
   "file-upload:clear-trigger:pressed",
   "file-upload:dropzone:focus",
@@ -46,11 +42,7 @@ exports[`family-backlog 键集合 > ladder 1`] = `
 ]
 `;
 
-exports[`family-backlog 键集合 > motion 1`] = `
-[
-  "drawer:translate",
-]
-`;
+exports[`family-backlog 键集合 > motion 1`] = `[]`;
 
 exports[`family-backlog 键集合 > press 1`] = `
 [
@@ -66,8 +58,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 [
   "color-picker:content:overscroll",
   "color-picker:content:size",
-  "drawer:body:gutter",
-  "drawer:body:overscroll",
 ]
 `;
 
@@ -82,9 +72,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
 exports[`family-backlog 键集合 > text 1`] = `
 [
   "color-picker:label:font-size",
-  "drawer:content:icon-size",
-  "drawer:description:font-size",
-  "drawer:root:icon-size",
   "file-upload:label:spacing",
   "file-upload:root:icon-size",
   "steps:title:font-size",

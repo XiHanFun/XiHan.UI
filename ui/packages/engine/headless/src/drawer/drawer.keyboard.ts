@@ -19,5 +19,6 @@ export const drawerKeyboard: KeyboardTable = {
     { id: 'drawer.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭并把焦点还给 trigger', restoresFocus: true },
     { id: 'drawer.kbd.tab', keys: ['Tab'], when: 'open 且 modal', does: '在 content 内向后循环焦点' },
     { id: 'drawer.kbd.shift-tab', keys: ['Shift+Tab'], when: 'open 且 modal', does: '在 content 内向前循环焦点' },
+    { id: 'drawer.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger / close-trigger', does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或抽屉收起撤下' },
   ],
 }

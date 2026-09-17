@@ -1,6 +1,7 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { drawerAnatomy, drawerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 
@@ -73,6 +74,13 @@ export const drawerSuite: ConformanceSuite = {
             'aria-haspopup': 'dialog',
             'aria-expanded': 'false',
             'data-state': 'closed',
+            // 页面上的独立文字按钮：Action Control text 档 md，缺省中性描边（§7.2 第 2 条）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
+            'data-pressed': null,
           },
         },
       },
@@ -98,6 +106,16 @@ export const drawerSuite: ConformanceSuite = {
                 'data-side': 'right',
                 'aria-labelledby': '@part(title)',
                 'aria-describedby': '@part(description)',
+              },
+              // 面板角落的叉：Action Control icon 档 sm、ghost 面
+              'close-trigger': {
+                'type': 'button',
+                'data-xh-action-control': '',
+                'data-xh-action-profile': 'icon',
+                'data-xh-action-display': 'always',
+                'data-xh-action-size': 'sm',
+                'data-xh-action-variant': 'ghost',
+                'data-pressed': null,
               },
             },
           },
@@ -250,6 +268,17 @@ export const drawerSuite: ConformanceSuite = {
             parts: { root: { 'data-state': 'open' }, content: { 'data-state': 'open' } },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：触发器与关闭钮各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['drawer.kbd.press'],
+      steps: [
+        heldPress('drawer', 'trigger'),
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { present: 'content' } },
+        heldPress('drawer', 'close-trigger'),
       ],
     },
   ],

@@ -1254,6 +1254,7 @@ export type ComponentTokenName =
   | '--xh-drawer-backdrop-blur'
   | '--xh-drawer-backdrop-layer'
   | '--xh-drawer-bg'
+  | '--xh-drawer-border'
   | '--xh-drawer-close-bg-active'
   | '--xh-drawer-close-bg-hover'
   | '--xh-drawer-close-fg'
