@@ -5,7 +5,7 @@
 
 // 提供 dialog 相关实现。
 
-import type { DialogSchema } from './dialog.types'
+import type { DialogPressedPart, DialogSchema } from './dialog.types'
 import { createDismissLayer, createFocusScope, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
@@ -27,6 +27,10 @@ function queryInContent(content: HTMLElement | null, selector: string): HTMLElem
 
 export const dialogMachine = createMachine({
   name: 'dialog',
+  context: ({ cell }) => ({
+    // 按压通道：正被按住的那颗按钮，与开合无关
+    pressed: cell<DialogPressedPart | null>(() => ({ defaultValue: null })),
+  }),
   refs: () => ({
     config: null,
     registerLayer: null,
@@ -45,6 +49,11 @@ export const dialogMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('modal')], () => action(['syncModalResources']))
   },
+  // 按压通道：trigger 与 close-trigger 都不受开合状态影响，两个状态都认 PRESS.*
+  on: {
+    'PRESS.START': { actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
+  },
   states: {
     closed: {
       on: {
@@ -61,6 +70,8 @@ export const dialogMachine = createMachine({
       },
     },
     open: {
+      // 收起即松开：按住 Enter 关掉面板，里面那颗关闭钮随内容一起藏起，不会再来 keyup 或 blur
+      exit: ['releasePress'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -79,6 +90,18 @@ export const dialogMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.part)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.part)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭

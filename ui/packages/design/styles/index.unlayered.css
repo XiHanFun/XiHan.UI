@@ -22655,6 +22655,8 @@
 
 /* family/motion.css */
 
+/* family/action-control.css */
+
 /* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
    两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
 @keyframes xh-dialog-in {
@@ -22688,6 +22690,20 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='dialog'] {
   --xh-dialog-skin: 1;
+}
+
+/*
+ * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
+ * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
+ */
+[data-scope='dialog'][data-part='trigger'] {
+  --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-_action-profile-glyph-size));
+}
+
+/* 家族配方给了 display，作者手写 hidden 时得把 UA 的 [hidden]{display:none} 还回去 */
+[data-scope='dialog'][data-part='trigger'][hidden] {
+  display: none;
 }
 
 [data-scope='dialog'][data-part='backdrop'] {
@@ -22741,8 +22757,8 @@
 }
 
 [data-scope='dialog'][data-part='content'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-text));
+  /* 作者塞进面板里的图标按控件档取（§6.5）；语气徽记与关闭钮另有各自的尺 */
+  --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这一个私有槽。它声明在 content 而不是别处：dialog 的解剖里没有 root，
      positioner 又不是必需部件，content 才是这层浮层恒在的最外层，且它会被 portal 到 body，
@@ -22890,11 +22906,19 @@
 }
 
 /* 正文段：面板里唯一会滚的一段。最小高度归零，
-   否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来 */
+   否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来。
+   模态 body 是原生细条滚动面（§6.6）：细条由 reset 层统一给，滚到头不把页面一起带走 */
 [data-scope='dialog'][data-part='body'] {
   flex: 1 1 auto;
   min-block-size: 0;
   overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* 正文高度随交互变化（表单校验、展开段落）：还在用原生滚动条的正文留一条稳定空道，
+   滚动条出现与消失时不推动文字。带 data-xh-scrollbar 的容器已经把原生条藏成零宽，排除掉 */
+[data-scope='dialog'][data-part='body']:not([data-xh-scrollbar]) {
+  scrollbar-gutter: stable;
 }
 
 /* 尾段：动作按钮排一行靠尾；同样不参与压缩 */
@@ -22926,9 +22950,10 @@
   color: var(--xh-dialog-title-fg, var(--xh-fg-default));
 }
 
+/* 说明文字走说明档（§6.4）：13px + fg-muted */
 [data-scope='dialog'][data-part='description'] {
   margin: 0;
-  font-size: var(--xh-dialog-description-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-dialog-description-font-size, var(--xh-text-secondary-size));
   color: var(--xh-dialog-description-fg, var(--xh-fg-muted));
 }
 
@@ -22939,47 +22964,31 @@
   padding-inline-end: calc(var(--xh-dialog-close-size, var(--xh-control-h-sm)) + var(--xh-surface-action-inset));
 }
 
+/*
+ * 关闭钮是面板角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+ * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
+ * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放；
+ * 静息前景取 muted 字色，悬停 / 按下回到 fg-default。
+ */
 [data-scope='dialog'][data-part='close-trigger'] {
+  --xh-action-visual-size: var(--xh-dialog-close-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-dialog-close-radius, var(--xh-shape-control));
+  --xh-action-bg-hover: var(--xh-dialog-close-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-dialog-close-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-dialog-close-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-focus-visible));
+  /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-_action-profile-glyph-size));
+
   position: absolute;
   inset-block-start: var(--xh-surface-action-inset);
   inset-inline-end: var(--xh-surface-action-inset);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  block-size: var(--xh-dialog-close-size, var(--xh-control-h-sm));
-  inline-size: var(--xh-dialog-close-size, var(--xh-control-h-sm));
-  border: 0;
-  border-radius: var(--xh-dialog-close-radius, var(--xh-shape-control));
-  background: transparent;
-  color: var(--xh-dialog-close-fg, var(--xh-fg-muted));
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='dialog'][data-part='close-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='dialog'][data-part='close-trigger']:hover {
-  background: var(--xh-dialog-close-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-dialog-close-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='dialog'][data-part='close-trigger']:active {
-  background: var(--xh-dialog-close-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 内收的焦点环先落到实体隔离底，不依赖正文底色。 */
-[data-scope='dialog'][data-part='close-trigger']:focus-visible {
-  background: var(--xh-dialog-close-bg-focus, var(--xh-material-elevated-focus-surface));
-  color: var(--xh-dialog-close-fg-focus, var(--xh-material-elevated-fg));
-  transition-property: color, scale;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -22992,18 +23001,6 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-}
-
-/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
-   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
-   用 ::after：::before 已经被兜底字形占着。
-   钮本身贴边 12px，8px 的外扩仍落在面板的内衬里 */
-@media (pointer: coarse) {
-  [data-scope='dialog'][data-part='close-trigger']::after {
-    content: '';
-    position: absolute;
-    inset: calc(-1 * var(--xh-space-2));
-  }
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

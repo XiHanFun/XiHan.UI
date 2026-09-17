@@ -30,6 +30,12 @@ export interface DialogRefs {
   partScope: string
 }
 
+/**
+ * 正被按住的按钮：开合触发器或角落的关闭钮。drawer 跑的是同一台机器，它的两颗同名按钮也记在这里；
+ * 两颗按钮只记一个布尔分不清按住的是哪颗。
+ */
+export type DialogPressedPart = 'trigger' | 'close-trigger'
+
 export interface DialogOpenChangeDetails {
   open: boolean
   /**
@@ -60,7 +66,13 @@ export interface DialogSchema extends MachineSchema {
     /** 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 */
     onExitComplete?: () => void
   }
-  context: Record<string, never>
+  context: {
+    /**
+     * 正被按住的按钮：Space / Enter 或触屏手指按下到松开之间，该按钮投影 data-pressed；没有按住时为 null。
+     * 指针按住由 :active 表出。面板收起时一并清空——按住 Enter 关掉面板后，里面的关闭钮不会再来 keyup。
+     */
+    pressed: DialogPressedPart | null
+  }
   computed: Record<string, never>
   refs: DialogRefs
   state: 'open' | 'closed'
@@ -71,9 +83,12 @@ export interface DialogSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪颗按钮
+    | { type: 'PRESS.START', part: DialogPressedPart }
+    | { type: 'PRESS.END', part: DialogPressedPart }
   tag: never
   guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress'
   effect: 'trackOverlay'
 }
 

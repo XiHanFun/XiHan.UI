@@ -114,7 +114,8 @@ const PRESSABLE = {
   'time-field': ['clear-trigger'],
   'file-upload': ['clear-trigger', 'item-delete-trigger', 'trigger'],
   'signature-pad': ['clear-trigger'],
-  'dialog': ['close-trigger'],
+  // 开合触发器接了 Action Control text 档，与角落的叉同走家族按压块（§9.1）
+  'dialog': ['close-trigger', 'trigger'],
   'drawer': ['close-trigger', 'trigger'],
   'notification': ['item-close-trigger', 'item-action-trigger'],
   // 开合触发器接了 Action Control text 档，与角落的叉同走家族按压块（§9.1）
