@@ -7,11 +7,13 @@
 
 import type { KeyboardTable } from '../spec/types'
 
-// 键盘全归平台：复制按钮与只读展示框都是原生元素，本组件不接任何键，表为空。
+// 激活归平台：复制按钮与只读展示框都是原生元素；本组件只接按住期间的按压面。
 const SPEC = 'https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element'
 
 export const clipboardKeyboard: KeyboardTable = {
   component: 'clipboard',
   source: SPEC,
-  rows: [],
+  rows: [
+    { id: 'clipboard.kbd.press', keys: ['Enter', 'Space'], when: 'held in copy-trigger, not disabled, not copying', does: '按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下' },
+  ],
 }

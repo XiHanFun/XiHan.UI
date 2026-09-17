@@ -28,7 +28,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} value - 要复制的文本；未提供时复制空串
  * @attr {number} timeout - 复制成功后指示器保持的毫秒数，默认 3000；<=0 表示不自动回落
  * @attr {boolean} disabled - 禁用，复制按钮不可点击；作者调用 api.copy() 也无效
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定复制按钮的颜色使用方式
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定复制按钮的颜色使用方式，默认 subtle（solid 才品牌实心）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires status-change - 状态变化；detail 为 `{ status: 'copying' | 'copied' | 'idle' }`

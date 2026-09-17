@@ -128,8 +128,8 @@
       "why": "勾选框本体，手指直接落上去"
     },
     "clipboard:copy-trigger": {
-      "px": 24,
-      "why": "复制钮，手指直接落上去；24px 是 Action Control 的内部 xs 视觉地板，公开 sm/md/lg 更高"
+      "px": 36,
+      "why": "复制钮，手指直接落上去；36px 是 md 档视觉盒（--xh-control-h-md），粗指针命中区由 Action Control 配方的 ::after 扩到 44px"
     },
     "dialog:close-trigger": {
       "px": 32,

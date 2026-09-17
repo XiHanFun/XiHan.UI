@@ -226,13 +226,6 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "clipboard [data-part='root'][data-scope='clipboard'][data-variant='solid'] [data-part='copy-trigger'][data-scope='clipboard']": {
-      "parts": [
-        "copy-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "color-picker [data-part='eye-dropper-trigger'][data-scope='color-picker'][data-state='picking']": {
       "parts": [
         "eye-dropper-trigger"

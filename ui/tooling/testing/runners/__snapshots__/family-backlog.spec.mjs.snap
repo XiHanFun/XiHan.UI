@@ -2,13 +2,13 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 9,
-  "ladder": 37,
+  "edge": 8,
+  "ladder": 36,
   "motion": 1,
   "press": 7,
   "scroll": 12,
   "selection": 0,
-  "shape": 11,
+  "shape": 10,
   "text": 31,
 }
 `;
@@ -16,7 +16,6 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 exports[`family-backlog 键集合 > edge 1`] = `
 [
   "button:root:raised",
-  "clipboard:root:raised",
   "color-picker:area-thumb:raised",
   "color-picker:control:raised",
   "download-trigger:root:raised",
@@ -31,7 +30,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
 [
   "carousel:prev-trigger:hover",
   "carousel:prev-trigger:pressed",
-  "clipboard:input:focus",
   "color-picker:channel-input:focus",
   "color-picker:control:focus",
   "color-picker:eye-dropper-trigger:hover",
@@ -112,7 +110,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "carousel:autoplay-trigger",
   "carousel:next-trigger",
   "carousel:prev-trigger",
-  "clipboard:copy-trigger::before",
   "download-trigger:root::before",
   "float-button:trigger",
   "image-viewer:next-trigger",
