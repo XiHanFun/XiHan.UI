@@ -27,6 +27,8 @@ export function connectButton<T extends PropTypes>(
   const interactive = !disabled && !loading
   const iconOnly = !!prop('iconOnly')
   const size = prop('size')
+  // 缺省形态显式落 solid：只有 Button 缺省品牌实心（真源 §7.2 第 2 条），其余触发器缺省中性
+  const variant = prop('variant') ?? 'solid'
   // 渲染成链接时没有原生 type 与原生 disabled 可用，两件事都改走 ARIA
   const nativeButton = (prop('as') ?? 'button') === 'button'
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
@@ -51,11 +53,13 @@ export function connectButton<T extends PropTypes>(
       // 两件事都成立。同族的 switch / popconfirm / table 都发这一条
       'aria-busy': loading ? 'true' : undefined,
       // Family Recipe 只需要稳定的视觉角色事实；具体尺寸与状态值全部由样式层配方决定。
+      // 四种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出，皮肤只桥接海拔与高光
       'data-xh-action-control': '',
       'data-xh-action-profile': iconOnly ? 'icon' : 'text',
       'data-xh-action-display': 'always',
       'data-xh-action-size': size ?? 'md',
-      'data-variant': prop('variant'),
+      'data-xh-action-variant': variant,
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': size,
       'data-disabled': dataAttr(disabled),

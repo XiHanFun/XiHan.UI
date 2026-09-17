@@ -3737,15 +3737,12 @@
       "state": [
         "default",
         "focus-visible",
-        "loading",
-        "not([data-scope='button-group'] *)",
-        "not([data-variant])",
-        "variant",
-        "variant=solid"
+        "loading"
       ],
       "defaultToken": [
-        "--xh-_tone",
-        "--xh-bg-brand"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-loading",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 background-color 覆盖槽。"
@@ -3768,7 +3765,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-brand-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 background-color 覆盖槽。"
@@ -3790,7 +3787,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-brand-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 background-color 覆盖槽。"
@@ -3813,15 +3810,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-scope='button-group'] *)",
-        "not([data-variant])",
-        "pressed",
-        "variant",
-        "variant=solid"
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-on",
-        "--xh-fg-on-brand"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-loading",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 color 覆盖槽。"

@@ -14500,17 +14500,23 @@
   --xh-button-skin: 1;
 }
 
+/* 四种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出（缺省 solid 由连接层显式投影，
+   只有 Button 缺省品牌实心）；这里只把公开颜色槽桥接到矩阵之前：使用者槽 → 形态矩阵 → 家族缺省，
+   再映射几何、海拔与顶光。状态选择器、命中区与尺寸 profile 不在这里复制。 */
 [data-scope='button'][data-part='root'] {
-  /* 组件公开槽只映射到家族合同；状态选择器、命中区与尺寸 profile 不在这里复制。 */
-  --xh-action-bg-rest: var(--xh-button-bg, var(--xh-bg-brand));
-  --xh-action-bg-hover: var(--xh-button-bg-hover, var(--xh-bg-brand-hover));
-  --xh-action-bg-pressed: var(--xh-button-bg-active, var(--xh-bg-brand-active));
-  --xh-action-fg-rest: var(--xh-button-fg, var(--xh-fg-on-brand));
-  --xh-action-fg-hover: var(--xh-button-fg, var(--xh-fg-on-brand));
-  --xh-action-fg-pressed: var(--xh-button-fg, var(--xh-fg-on-brand));
-  --xh-action-border-rest: transparent;
+  --xh-action-bg-rest: var(--xh-button-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-button-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-button-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-bg-focus-visible: var(--xh-button-bg, var(--xh-_action-variant-bg-focus-visible));
+  --xh-action-bg-loading: var(--xh-button-bg, var(--xh-_action-variant-bg-loading));
+  --xh-action-fg-rest: var(--xh-button-fg, var(--xh-_action-variant-fg-rest));
+  --xh-action-fg-hover: var(--xh-button-fg, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-button-fg, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-button-fg, var(--xh-_action-variant-fg-focus-visible));
+  --xh-action-fg-loading: var(--xh-button-fg, var(--xh-_action-variant-fg-loading));
   --xh-action-highlight-rest: transparent;
   --xh-action-highlight-pressed: transparent;
+  /* 海拔只有 solid 一档有：其余形态按 §8.3 无影，私有槽在下面的 solid 块里才被赋值 */
   --xh-_button-shadow-rest: var(--xh-button-shadow, none);
   --xh-_button-shadow-hover: var(--xh-button-shadow-hover, none);
   --xh-_button-shadow-pressed: none;
@@ -14518,6 +14524,7 @@
   --xh-action-shadow-hover: var(--xh-_button-shadow-hover);
   --xh-action-shadow-pressed: var(--xh-_button-shadow-pressed);
   --xh-action-radius: var(--xh-button-radius, var(--xh-_button-radius));
+  /* 成组时几何从 ButtonGroup 的私有槽取：高度、内距、间距与字号沿继承流下来 */
   --xh-action-visual-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-_action-profile-visual-size)));
   --xh-action-padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-_action-profile-padding-inline)));
   --xh-action-gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-_action-profile-gap)));
@@ -14530,130 +14537,22 @@
   font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
 }
 
-/* variant 只负责把颜色与海拔映到家族状态槽；交互状态本身由 Action Control 绘制。 */
+/* Button soft 是 §5.3 登记的 raised 消费者：solid 一档静息带顶光与贴地软影，悬停抬到 raised，按下只留顶光。
+   成组时段与段共边焊成一条，悬停不抬起——投影会压到左右两段的面上，ButtonGroup 用
+   --xh-_button-group-shadow-hover 只留顶光 */
 [data-scope='button'][data-part='root'][data-variant='solid'] {
-  --xh-action-bg-rest: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-action-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-  --xh-action-bg-pressed: var(--xh-_tone-active, var(--xh-bg-brand-active));
-  --xh-action-fg-rest: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-action-fg-hover: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-action-fg-pressed: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-action-border-rest: transparent;
-  --xh-action-highlight-rest: transparent;
   --xh-action-highlight-pressed: var(--xh-_highlight-tone);
   --xh-_button-shadow-rest: var(--xh-_highlight-tone), var(--xh-material-soft-shadow);
   --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
   --xh-_button-shadow-pressed: var(--xh-_highlight-tone);
 }
 
-[data-scope='button'][data-part='root'][data-variant='subtle'] {
-  --xh-action-bg-rest: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-action-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-action-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-border-rest: var(--xh-material-soft-border);
-}
-
-[data-scope='button'][data-part='root'][data-variant='outline'] {
-  --xh-action-bg-rest: transparent;
-  --xh-action-bg-disabled: transparent;
-  --xh-action-border-disabled: var(--xh-border-subtle);
-  --xh-action-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-action-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
-  --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-border-rest: var(--xh-_tone-border-control, var(--xh-border-control));
-  --xh-action-highlight-rest: transparent;
-  --xh-action-shadow-rest: none;
-  --xh-action-shadow-hover: none;
-}
-
-[data-scope='button'][data-part='root'][data-variant='ghost'] {
-  --xh-action-bg-rest: transparent;
-  --xh-action-bg-disabled: transparent;
-  --xh-action-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-action-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
-  --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-action-border-rest: transparent;
-  --xh-action-highlight-rest: transparent;
-  --xh-action-shadow-rest: none;
-  --xh-action-shadow-hover: none;
-}
-
-/* 深色主题仍使用稳定的深品牌面与浅色文字，避免同一主按钮只因主题变化翻成黑字。 */
-:is([data-theme='dark'] *, [data-theme='dark'])
-  [data-scope='button'][data-part='root']:is(:not([data-variant]), [data-variant='solid']):is(
-    :not([data-tone]),
-    [data-tone='brand']
-  ):not([data-scope='button-group'] *) {
-  --xh-action-bg-rest: var(--xh-action-brand-solid);
-  --xh-action-bg-hover: var(--xh-action-brand-solid-hover);
-  --xh-action-bg-pressed: var(--xh-action-brand-solid-active);
-  --xh-action-fg-rest: var(--xh-action-on-brand-solid);
-  --xh-action-fg-hover: var(--xh-action-on-brand-solid);
-  --xh-action-fg-pressed: var(--xh-action-on-brand-solid);
-  --xh-_button-primary-bg: var(--xh-action-brand-solid);
-  --xh-_button-primary-fg: var(--xh-action-on-brand-solid);
-}
-
-:is([data-theme='dark'] *, [data-theme='dark'])[data-scope='button-group'][data-part='root'][data-variant='solid']:is(
-  :not([data-tone]),
-  [data-tone='brand']
-) {
-  --xh-button-bg: var(--xh-action-brand-solid);
-  --xh-button-bg-hover: var(--xh-action-brand-solid-hover);
-  --xh-button-bg-active: var(--xh-action-brand-solid-active);
-  --xh-button-fg: var(--xh-action-on-brand-solid);
-}
-
-/* 默认按钮与 solid 都是品牌主动作，焦点和载入不能退回灰色家族缺省面；
-   禁用由家族统一给出中性面与 fg-disabled，不靠 opacity 压暗品牌面。
-   ButtonGroup 的 solid 段从容器继承同名公开槽，仍由一份规则得到相同状态。 */
-[data-scope='button'][data-part='root']:not([data-variant]):not([data-scope='button-group'] *),
-[data-scope='button'][data-part='root'][data-variant='solid'],
-[data-scope='button-group'][data-part='root'][data-variant='solid']
-  [data-scope='button'][data-part='root']:not([data-variant]) {
-  --xh-_button-primary-bg: var(--xh-button-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  --xh-_button-primary-fg: var(--xh-button-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-  --xh-action-bg-focus-visible: var(--xh-_button-primary-bg);
-  --xh-action-bg-loading: var(--xh-_button-primary-bg);
-  --xh-action-fg-focus-visible: var(--xh-_button-primary-fg);
-  --xh-action-fg-loading: var(--xh-_button-primary-fg);
-  --xh-action-border-focus-visible: transparent;
-  --xh-action-border-loading: transparent;
-  --xh-action-highlight-focus-visible: transparent;
-  --xh-action-highlight-loading: transparent;
-  --xh-action-shadow-focus-visible: none;
-  --xh-action-shadow-loading: none;
-}
-
-/* ButtonGroup 只向段灌公开颜色槽；段仍从同一份家族状态读取。 */
-:where([data-scope='button-group'][data-part='root'])
-  [data-scope='button'][data-part='root']:not([data-variant]) {
-  --xh-action-border-rest: transparent;
-  --xh-action-highlight-rest: transparent;
-  --xh-action-shadow-rest: var(--xh-_button-group-highlight, none);
-  --xh-action-shadow-hover: var(--xh-_button-group-shadow-hover, none);
-  --xh-action-shadow-pressed: var(--xh-_button-group-highlight, none);
-}
-
 /* 实心面用对比前景作内环，再加品牌外环；不覆盖表面 box-shadow。 */
-[data-scope='button'][data-part='root']:not([data-variant]):focus-visible,
-[data-scope='button'][data-part='root'][data-variant='solid']:focus-visible,
-[data-scope='button-group'][data-part='root'][data-variant='solid']
-  [data-scope='button'][data-part='root']:not([data-variant]):focus-visible {
+[data-scope='button'][data-part='root'][data-xh-action-variant='solid']:focus-visible {
   --xh-action-ring-color-focus-visible: currentColor;
 }
 
-[data-scope='button'][data-part='root']:not([data-variant]):focus-visible::before,
-[data-scope='button'][data-part='root'][data-variant='solid']:focus-visible::before,
-[data-scope='button-group'][data-part='root'][data-variant='solid']
-  [data-scope='button'][data-part='root']:not([data-variant]):focus-visible::before {
+[data-scope='button'][data-part='root'][data-xh-action-variant='solid']:focus-visible::before {
   content: '';
   position: absolute;
   inset: calc(-1 * (var(--xh-ring-width) + var(--xh-stroke-thin)));
@@ -14731,10 +14630,7 @@
 }
 
 @media (forced-colors: active) {
-  [data-scope='button'][data-part='root']:not([data-variant]):focus-visible::before,
-  [data-scope='button'][data-part='root'][data-variant='solid']:focus-visible::before,
-  [data-scope='button-group'][data-part='root'][data-variant='solid']
-    [data-scope='button'][data-part='root']:not([data-variant]):focus-visible::before {
+  [data-scope='button'][data-part='root'][data-xh-action-variant='solid']:focus-visible::before {
     border-color: Highlight;
   }
 }
