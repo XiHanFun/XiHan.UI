@@ -46000,6 +46000,24 @@
       "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-popconfirm-cancel-bg-focus",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-popconfirm-cancel-bg"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-popconfirm-cancel-bg-hover",
       "component": "popconfirm",
       "part": [
@@ -46087,6 +46105,24 @@
       ],
       "defaultToken": [
         "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popconfirm-cancel-fg-focus",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-popconfirm-cancel-fg"
       ],
       "visibility": "public",
       "description": "popconfirm 的 cancel-trigger 部件 color 覆盖槽。"
