@@ -17,5 +17,6 @@ export const popconfirmKeyboard: KeyboardTable = {
     { id: 'popconfirm.kbd.confirm', keys: ['Enter', 'Space'], when: 'focus in confirm-trigger', does: '发确认意图；同步成功或 thenable 兑现后收起' },
     { id: 'popconfirm.kbd.cancel', keys: ['Enter', 'Space'], when: 'focus in cancel-trigger', does: '终止组件等待，发取消意图并收起浮层' },
     { id: 'popconfirm.kbd.escape', keys: ['Escape'], when: 'open and not pending', does: '收起浮层并把焦点还给 trigger；不发确认也不发取消', restoresFocus: true },
+    { id: 'popconfirm.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger / confirm-trigger / cancel-trigger', does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或浮层收起撤下' },
   ],
 }

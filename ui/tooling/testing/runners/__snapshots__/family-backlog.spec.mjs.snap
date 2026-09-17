@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 5,
-  "ladder": 23,
+  "edge": 4,
+  "ladder": 21,
   "motion": 1,
   "press": 5,
-  "scroll": 8,
+  "scroll": 6,
   "selection": 0,
-  "shape": 2,
-  "text": 18,
+  "shape": 1,
+  "text": 16,
 }
 `;
 
@@ -19,7 +19,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "color-picker:area-thumb:raised",
   "color-picker:control:raised",
   "file-upload:trigger:raised",
-  "popconfirm:confirm-trigger:raised",
 ]
 `;
 
@@ -43,8 +42,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "file-upload:trigger:hover",
   "file-upload:trigger:pressed",
   "pagination:jumper:hover",
-  "popconfirm:cancel-trigger:hover",
-  "popconfirm:cancel-trigger:pressed",
   "steps:indicator:hover",
   "tour:close-trigger:hover",
   "tour:close-trigger:pressed",
@@ -75,8 +72,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "dialog:body:overscroll",
   "drawer:body:gutter",
   "drawer:body:overscroll",
-  "popconfirm:content:overscroll",
-  "popconfirm:content:unwired",
 ]
 `;
 
@@ -84,7 +79,6 @@ exports[`family-backlog 键集合 > selection 1`] = `[]`;
 
 exports[`family-backlog 键集合 > shape 1`] = `
 [
-  "popconfirm:confirm-trigger::before",
   "tour:progress-dot",
 ]
 `;
@@ -99,8 +93,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "drawer:root:icon-size",
   "file-upload:label:spacing",
   "file-upload:root:icon-size",
-  "popconfirm:description:color",
-  "popconfirm:description:font-size",
   "steps:title:font-size",
   "steps:title:font-weight",
   "timeline:title:font-size",

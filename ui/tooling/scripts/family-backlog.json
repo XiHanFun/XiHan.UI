@@ -4,8 +4,7 @@
     "button:root:raised": "solid 档的 raised 抬升没有描边，raised 必带 --xh-border-default，待本组件迁移",
     "color-picker:area-thumb:raised": "拇指描边落 --xh-color-neutral-0 原语，应为 --xh-border-default，待本组件迁移",
     "color-picker:control:raised": "raised 退役待本组件迁移",
-    "file-upload:trigger:raised": "raised 退役待本组件迁移",
-    "popconfirm:confirm-trigger:raised": "raised 退役待本组件迁移"
+    "file-upload:trigger:raised": "raised 退役待本组件迁移"
   },
   "selection": {},
   "ladder": {
@@ -27,19 +26,14 @@
     "file-upload:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "file-upload:trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "pagination:jumper:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100）；跳页框是字段外壳，随 Field Chrome 任务一并迁到字段家族配方（静息描边 + 悬停升 --xh-border-control-hover）",
-    "popconfirm:cancel-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "popconfirm:cancel-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "steps:indicator:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "tour:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移"
   },
   "shape": {
-    "popconfirm:confirm-trigger::before": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（1em）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
     "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移"
   },
   "scroll": {
-    "popconfirm:content:unwired": "气泡确认尚未接自绘条，随 popconfirm 提交接线（接线时把 positioner 上的 --xh-scrollbar-track-bg 加回）",
-    "popconfirm:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 popconfirm 提交补",
     "color-picker:content:size": "浮层宿主未传 size: 'sm'，随 color-picker 提交补",
     "color-picker:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 color-picker 提交补",
     "dialog:body:overscroll": "模态 body 缺 overscroll-behavior: contain，随 dialog 提交补",
@@ -63,8 +57,6 @@
     "drawer:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "file-upload:label:spacing": "根的 gap 落 --xh-space-3，字段标签贴控件应为 --xh-space-1；待本组件迁移",
     "file-upload:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "popconfirm:description:color": "color 落 --xh-material-frosted-fg-muted，说明文字应为 --xh-fg-muted；待本组件迁移",
-    "popconfirm:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "steps:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",
     "steps:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
     "timeline:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",

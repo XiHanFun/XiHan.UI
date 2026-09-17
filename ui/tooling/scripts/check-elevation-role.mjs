@@ -87,7 +87,8 @@ const EXPECTED = {
   'notification': { item: ['sheet'] },
   // 摊开的页码面板是锚在省略号上的浮层：有 positioner、有 pop-in 进场、吃 --xh-overlay-max-h
   'pagination': { content: ['floating'] },
-  'popconfirm': { 'content': ['frosted'], 'confirm-trigger': ['soft'], 'cancel-trigger': ['soft'] },
+  // 两颗动作钮接了 Action Control（确认 solid / 取消 outline），矩阵各态无影，soft 材质不再由它们消费
+  'popconfirm': { content: ['frosted'] },
   'popover': { content: ['frosted'] },
   'select': { content: ['frosted'] },
   'side-nav': { 'branch-content': ['floating'] },

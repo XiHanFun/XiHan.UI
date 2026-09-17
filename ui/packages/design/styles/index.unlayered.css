@@ -8941,6 +8941,8 @@
 
 /* family/motion.css */
 
+/* family/action-control.css */
+
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-popconfirm-rotate {
   to {
@@ -8958,6 +8960,20 @@
   display: inline-block;
 }
 
+/*
+ * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
+ * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
+ */
+[data-scope='popconfirm'][data-part='trigger'] {
+  --xh-icon-size: var(--xh-popconfirm-icon-size, var(--xh-_action-profile-glyph-size));
+}
+
+/* 家族配方给了 display，作者手写 hidden 时得把 UA 的 [hidden]{display:none} 还回去 */
+[data-scope='popconfirm'][data-part='trigger'][hidden] {
+  display: none;
+}
+
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='popconfirm'][data-part='positioner'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
@@ -8966,6 +8982,9 @@
   /* 落定那一侧的可用宽度，同一路由定位引擎写进来，行内轴据此夹取；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
   --xh-_popconfirm-available-w: 100vw;
+
+  /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-popconfirm-layer, var(--xh-_layer, var(--xh-layer-popover)));
@@ -9004,6 +9023,8 @@
 /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
    标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
 [data-scope='popconfirm'][data-part='content'] {
+  /* 作者塞进面板里的图标按控件档取（§6.5）；两颗动作钮另由家族配方按 sm 档下发字形尺 */
+  --xh-icon-size: var(--xh-popconfirm-icon-size, var(--xh-glyph-size-md));
   /* 尺寸档只换这两个私有槽 */
   --xh-_popconfirm-pad: var(--xh-surface-pad-md);
   --xh-_popconfirm-max-w: var(--xh-overlay-max-w);
@@ -9019,6 +9040,8 @@
   /* 说明文案长度由作者给，矮视口下不限高面板会整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-popconfirm-max-h, var(--xh-overlay-max-h)), var(--xh-_popconfirm-available-h));
   overflow-y: auto;
+  /* 浮在页面之上的 Overlay 滚动面（§6.6）：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
   padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
   padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
   border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-material-frosted-border));
@@ -9093,13 +9116,14 @@
   color: var(--xh-popconfirm-title-fg, var(--xh-material-frosted-fg));
 }
 
+/* 说明文字走说明档（§6.4）：13px + fg-muted */
 [data-scope='popconfirm'][data-part='description'] {
   margin: 0;
   min-inline-size: 0;
-  font-size: var(--xh-text-body-size);
+  font-size: var(--xh-popconfirm-description-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
   overflow-wrap: anywhere;
-  color: var(--xh-popconfirm-description-fg, var(--xh-material-frosted-fg-muted));
+  color: var(--xh-popconfirm-description-fg, var(--xh-fg-muted));
 }
 
 /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -9115,41 +9139,22 @@
   border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-material-frosted-border));
 }
 
-/* —— 两颗按钮 —— */
-/* 这条规则同时作用在确认与取消上，内衬槽因此取两颗共用的 action 段，与下一行的
-   --xh-popconfirm-action-radius 一致 */
+/*
+ * —— 两颗按钮 ——
+ * 确认与取消都是浮层末行的文字按钮（§9.1）：盒型、sm 档几何、四态面、0.97 按压并换底、粗指针命中区与
+ * 强制色由家族配方按连接层投影的 data-xh-action-variant / -size 给出。这里只把公开槽桥接到矩阵之前
+ * （使用者槽 → 形态矩阵 → 家族缺省）与几何映射；内衬与圆角槽取两颗共用的 action 段。
+ */
 [data-scope='popconfirm'][data-part='confirm-trigger'],
 [data-scope='popconfirm'][data-part='cancel-trigger'] {
-  --xh-_popconfirm-action-border: var(--xh-material-soft-border);
-  --xh-_popconfirm-action-edge: var(--xh-material-soft-highlight);
-  --xh-_popconfirm-action-shadow: var(--xh-popconfirm-action-shadow, var(--xh-material-soft-shadow));
+  --xh-action-padding-inline: var(--xh-popconfirm-action-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-radius: var(--xh-popconfirm-action-radius, var(--xh-shape-control));
+  --xh-action-shadow-rest: var(--xh-popconfirm-action-shadow, none);
+  /* 作者塞进按钮的图标随档取字形尺（sm = 16px） */
+  --xh-icon-size: var(--xh-popconfirm-icon-size, var(--xh-_action-profile-glyph-size));
 
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  block-size: var(--xh-control-h-sm);
-  padding-inline: var(--xh-popconfirm-action-px, var(--xh-control-px-sm));
-  border: var(--xh-stroke-thin) solid var(--xh-_popconfirm-action-border);
-  border-radius: var(--xh-popconfirm-action-radius, var(--xh-shape-control));
-  background-image: linear-gradient(
-    to bottom,
-    var(--xh-_popconfirm-action-edge) 0 var(--xh-stroke-thin),
-    transparent var(--xh-stroke-thin)
-  );
-  box-shadow: var(--xh-_popconfirm-action-shadow);
-  font-size: var(--xh-text-secondary-size);
-  font-weight: var(--xh-text-label-weight);
-  line-height: var(--xh-leading-none);
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  /* 动作钮的文字与 Button 同一字重（家族配方不管字重） */
+  font-weight: var(--xh-popconfirm-action-font-weight, var(--xh-text-label-weight));
 }
 
 /* 并排落在最后一行的右侧两格；取消在左、确认在右 */
@@ -9161,39 +9166,27 @@
   grid-column: 3;
 }
 
-/* 确认是实心的主操作。底色走共享语气槽：作者在 content 上写 data-tone="danger"
-   就整体换成危险色，不写则用品牌色 */
+/* 确认是实心的主操作（§7.2 第 2 条）。底色走共享语气槽：作者在 content 上写 data-tone="danger"
+   就整体换成危险色，不写则用品牌色——配方 solid 列本就读 --xh-_tone，这里只桥接使用者槽 */
 [data-scope='popconfirm'][data-part='confirm-trigger'] {
-  /* 实心底顶边一条极浅的内高光，把这块面衬出厚度；换语气时高光跟着换 */
-  --xh-_popconfirm-confirm-highlight: var(--xh-_highlight-tone);
-  --xh-_popconfirm-action-border: transparent;
-  --xh-_popconfirm-action-edge: transparent;
-  --xh-_popconfirm-action-shadow: var(--xh-popconfirm-confirm-shadow,
-    var(
-      --xh-popconfirm-action-shadow,
-      var(--xh-_popconfirm-confirm-highlight), var(--xh-material-soft-shadow)
-    )
-  );
-
-  background-color: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  --xh-action-bg-rest: var(--xh-popconfirm-confirm-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-focus-visible: var(--xh-popconfirm-confirm-bg, var(--xh-_action-variant-bg-focus-visible));
+  --xh-action-bg-loading: var(--xh-popconfirm-confirm-bg, var(--xh-_action-variant-bg-loading));
+  --xh-action-fg-rest: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-rest));
+  --xh-action-fg-hover: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-focus-visible));
+  --xh-action-fg-loading: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-loading));
+  --xh-action-shadow-rest: var(--xh-popconfirm-confirm-shadow, var(--xh-popconfirm-action-shadow, none));
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='popconfirm'][data-part='confirm-trigger']:focus-visible {
-  --xh-_ring-color: currentColor;
-
-  /* 聚焦面显式落回不透明实心底，环不与上层装饰渐变或背后的 M2 采样比较。 */
-  background-color: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  background-image: none;
+[data-scope='popconfirm'][data-part='confirm-trigger'][data-xh-action-variant='solid']:focus-visible {
+  --xh-action-ring-color-focus-visible: currentColor;
 }
 
-/* 异步确认挂起：按钮转圈、指针摆「在途」；不是禁用，焦点与对比度都保持 */
-[data-scope='popconfirm'][data-part='confirm-trigger'][data-loading] {
-  cursor: progress;
-}
-
+/* 异步确认挂起：确认文案前转一枚圆环；不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给 */
 [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
   content: '';
   inline-size: 1em;
@@ -9201,64 +9194,26 @@
   margin-inline-end: var(--xh-space-1);
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: currentcolor;
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-shape-circle);
   animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
-[data-scope='popconfirm'][data-part='confirm-trigger']:not([data-loading]):hover {
-  --xh-_popconfirm-action-shadow: var(--xh-popconfirm-confirm-shadow,
-    var(
-      --xh-popconfirm-action-shadow,
-      var(--xh-_popconfirm-confirm-highlight), var(--xh-elevation-raised)
-    )
-  );
-
-  background-color: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-}
-
-[data-scope='popconfirm'][data-part='confirm-trigger']:not([data-loading]):active {
-  --xh-_popconfirm-action-edge: transparent;
-
-  background-color: var(--xh-_tone-active, var(--xh-bg-brand-active));
-  box-shadow: var(--xh-_popconfirm-confirm-highlight);
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 取消是次要出口，用淡底中性色，不参与语气 */
+/* 取消是中性的次要出口，不参与语气：content 上的 data-tone 会把 --xh-_tone-* 一路继承下来，
+   配方 outline 列的面、字与边都先读它，这里逐档钉回中性令牌——白底 / 磨砂面上走画布承载阶梯
+   悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200） */
 [data-scope='popconfirm'][data-part='cancel-trigger'] {
-  background-color: var(--xh-popconfirm-cancel-bg, var(--xh-material-soft-bg));
-  color: var(--xh-popconfirm-cancel-fg, var(--xh-material-soft-fg));
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-   悬停与按下两档的底更深，环跟着这块面的前景色走才在三档上都读得出来 */
-[data-scope='popconfirm'][data-part='cancel-trigger']:is(:hover, :active):focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-[data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
-  background-color: var(--xh-popconfirm-cancel-bg-focus, var(--xh-material-soft-focus-surface));
-  background-image: none;
-  color: var(--xh-popconfirm-cancel-fg-focus, var(--xh-material-soft-fg));
-  /* 隔离底立即出现，避免渐变途中短暂失去焦点环对比。 */
-  transition-property: border-color, box-shadow, color, scale;
-}
-
-[data-scope='popconfirm'][data-part='cancel-trigger']:hover {
-  background-color: var(--xh-bg-subtle-hover);
-}
-
-[data-scope='popconfirm'][data-part='cancel-trigger']:active {
-  --xh-_popconfirm-action-edge: transparent;
-
-  background-color: var(--xh-bg-subtle-active);
-  box-shadow: none;
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
+  --xh-action-bg-rest: var(--xh-popconfirm-cancel-bg, transparent);
+  --xh-action-bg-hover: var(--xh-popconfirm-cancel-bg-hover, var(--xh-bg-subtle));
+  --xh-action-bg-pressed: var(--xh-popconfirm-cancel-bg-active, var(--xh-bg-subtle-hover));
+  --xh-action-bg-focus-visible: var(--xh-popconfirm-cancel-bg, transparent);
+  --xh-action-fg-rest: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
+  --xh-action-fg-hover: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
+  --xh-action-fg-focus-visible: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
+  --xh-action-border-rest: var(--xh-popconfirm-cancel-border, var(--xh-border-control));
+  --xh-action-border-hover: var(--xh-popconfirm-cancel-border-hover, var(--xh-border-control-hover));
+  --xh-action-border-pressed: var(--xh-popconfirm-cancel-border-hover, var(--xh-border-control-hover));
+  --xh-action-border-focus-visible: var(--xh-popconfirm-cancel-border, var(--xh-border-control));
 }
 
 /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
@@ -9277,22 +9232,9 @@
   animation: none;
 }
 
-/* 两颗小操作钮保持原视觉盒，粗指针命中区只沿块轴扩到 44px，不挤压内容与彼此间距。 */
-@media (pointer: coarse) {
-  [data-scope='popconfirm'][data-part='confirm-trigger']::after,
-  [data-scope='popconfirm'][data-part='cancel-trigger']::after {
-    content: '';
-    position: absolute;
-    inset-block: -8px;
-    inset-inline: 0;
-  }
-}
-
 @media (forced-colors: active) {
-  /* 系统色接管内容与操作边界；装饰顶光在这一档没有额外信息。 */
-  [data-scope='popconfirm'][data-part='content'],
-  [data-scope='popconfirm'][data-part='confirm-trigger'],
-  [data-scope='popconfirm'][data-part='cancel-trigger'] {
+  /* 系统色接管内容边界；装饰顶光在这一档没有额外信息。两颗按钮的强制色由家族配方给 */
+  [data-scope='popconfirm'][data-part='content'] {
     background-image: none;
   }
 }

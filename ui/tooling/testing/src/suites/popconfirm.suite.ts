@@ -1,6 +1,21 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
 import { popconfirmAnatomy, popconfirmKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress } from './shared/press-channel'
+
+/** 自绘条挂在 positioner 里、戴 scrollbar 的 scope，本 scope 的快照收不到它，用裸查询验三端都接了线。 */
+const scrollbarsWired: StepWithExpect = {
+  kind: 'raw',
+  why: '自绘条的轨道与滑块归 scrollbar 那套解剖（data-scope="scrollbar"），本 scope 的快照收不到它们',
+  run: ({ doc }) => {
+    const shell = doc.querySelector('[data-scope="popconfirm"][data-part="positioner"]')
+    if (!shell)
+      throw new Error('找不到 popconfirm 的 positioner 部件')
+    const bar = shell.querySelector('[data-scope="scrollbar"][data-part="root"]')
+    if (!bar)
+      throw new Error('positioner 里没有自绘条：气泡确认的 content 是自绘条滚动面（§6.6），三端都要在浮层壳上接线')
+  },
+}
 
 const DIALOG_SPEC = 'https://www.w3.org/TR/wai-aria-1.2/#dialog'
 
@@ -69,6 +84,13 @@ export const popconfirmSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'aria-controls': '@part(content)',
             'data-state': 'closed',
+            // 页面上的独立文字按钮：Action Control text 档 md，缺省中性描边（§7.2 第 2 条）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
+            'data-pressed': null,
           },
           'content': {
             'role': 'dialog',
@@ -82,8 +104,25 @@ export const popconfirmSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-placement': 'bottom',
           },
-          'confirm-trigger': { type: 'button' },
-          'cancel-trigger': { type: 'button' },
+          // 确认是本浮层的主要动作，显式 solid；取消是中性次要出口，outline；两颗都是 text 档 sm
+          'confirm-trigger': {
+            'type': 'button',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'solid',
+            'data-pressed': null,
+          },
+          'cancel-trigger': {
+            'type': 'button',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'outline',
+            'data-pressed': null,
+          },
           'arrow': { 'aria-hidden': 'true', 'data-placement': 'bottom' },
         },
       },
@@ -268,6 +307,19 @@ export const popconfirmSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：触发器与两颗动作钮各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['popconfirm.kbd.press'],
+      props: { defaultOpen: true },
+      steps: [heldPress('popconfirm', 'trigger'), heldPress('popconfirm', 'cancel-trigger'), heldPress('popconfirm', 'confirm-trigger')],
+    },
+    {
+      name: '自绘条接在浮层壳上：positioner 里有 scrollbar 的根，三端一致',
+      spec: { adr: 'scroll-surface' },
+      props: { defaultOpen: true },
+      steps: [scrollbarsWired],
     },
   ],
 }

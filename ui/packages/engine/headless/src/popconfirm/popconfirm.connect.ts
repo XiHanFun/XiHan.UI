@@ -6,9 +6,9 @@
 // 提供 popconfirm 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { PopoverSchema } from '../popover'
+import type { PopoverPressedPart, PopoverSchema } from '../popover'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents } from './popconfirm.types'
-import { dataAttr } from '@xihan-ui/core'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { OVERLAY_PLACEMENT_ANCHORED, overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { popconfirmAnatomy } from './popconfirm.anatomy'
 
@@ -281,6 +281,26 @@ export function connectPopconfirm<T extends PropTypes>(
     }
   }
 
+  // 按压通道：三颗按钮各自合成一份跟踪器，真源是 popover 机器 context 里「正被按住的那颗」
+  // （两颗动作钮并排，只记一个布尔分不清按住的是哪颗）；Space / Enter 与触屏按住投影 data-pressed，
+  // 指针按住由 :active 表出，皮肤两者同一档；浮层收起时机器一并松开
+  const pressed = context.get('pressed')
+  const press = (part: PopoverPressedPart) => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === part,
+      onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+
   return {
     open,
     get pending() {
@@ -303,6 +323,15 @@ export function connectPopconfirm<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'data-state': stateAttr,
+      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
+      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心）。作者以 asChild 换成自己的按钮时，
+      // 这几条家族标记不落到它身上（适配器合并时跳过 data-xh-*）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      'data-xh-action-variant': 'outline',
+      ...press('trigger'),
       'onClick': () => setOpen(!open),
     }),
     getPositionerProps: () => normalize.element({
@@ -345,12 +374,27 @@ export function connectPopconfirm<T extends PropTypes>(
       'aria-busy': isPending() ? 'true' : undefined,
       'aria-disabled': isPending() ? 'true' : undefined,
       'data-loading': dataAttr(isPending()),
+      // 确认是本浮层的主要动作，与 Button 主动作同待遇：text 档 sm、显式 solid（§7.2 第 2 条），
+      // 语气由 content 上的 data-tone 经 --xh-_tone 下发；挂起期间家族的 loading 面接管 hover / pressed
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'solid',
+      ...press('confirm-trigger'),
       'onClick': confirm,
     }),
     getCancelTriggerProps: () => normalize.button({
       ...parts['cancel-trigger'].attrs,
-      type: 'button',
-      onClick: cancel,
+      'type': 'button',
+      // 取消是中性的次要出口：text 档 sm、outline 描边，不参与语气
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'outline',
+      ...press('cancel-trigger'),
+      'onClick': cancel,
     }),
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,
