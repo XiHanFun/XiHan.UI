@@ -177,7 +177,7 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `--xh-timeline-content-pb` | `content`<br>`item` | `padding-block-end` | `@media (min-width: 768px)`<br>`nth-child(even)`<br>`orientation=horizontal`<br>`placement=alternate`<br>`placement=start` | `--xh-space-2` | timeline 的 content、item 部件 padding-block-end 覆盖槽。 |
 | `--xh-timeline-content-pt` | `content`<br>`item`<br>`label` | `padding-block-start` | `@media (min-width: 768px)`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-2` | timeline 的 content、item、label 部件 padding-block-start 覆盖槽。 |
 | `--xh-timeline-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | timeline 的 description 部件 color 覆盖槽。 |
-| `--xh-timeline-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | timeline 的 description 部件 font-size 覆盖槽。 |
+| `--xh-timeline-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | timeline 的 description 部件 font-size 覆盖槽。 |
 | `--xh-timeline-fg` | `root` | `color` | `default` | `--xh-fg-default` | timeline 的 root 部件 color 覆盖槽。 |
 | `--xh-timeline-gutter` | `item` | `column-gap` | `default` | `--xh-_timeline-gutter` | timeline 的 item 部件 column-gap 覆盖槽。 |
 | `--xh-timeline-indicator-bg` | `indicator` | `background` | `default` | `--xh-_tone-soft` | timeline 的 indicator 部件 background 覆盖槽。 |
