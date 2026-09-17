@@ -48,8 +48,9 @@ export function usePopconfirm(
 
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'popover',
-    // trigger 记为本层分支，点它算层内交互
-    branches: () => [triggerRef.current].filter(Boolean) as Element[],
+    // trigger 记为本层分支，点它算层内交互；浮层壳一并记上：面板之外还浮着自绘滚动条，
+    // 按住它拖动不该把面板消解掉
+    branches: () => [triggerRef.current, positionerRef.current].filter(Boolean) as Element[],
     // 气泡确认不陷焦点、不锁滚动、无遮罩
     isModal: () => false,
   }), [])

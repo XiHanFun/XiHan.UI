@@ -14,6 +14,7 @@ import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { PopconfirmProvider, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
 
@@ -110,6 +111,8 @@ export interface XhPopconfirmPositionerProps extends ComponentPropsWithRef<'div'
 /** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhPopconfirmPositioner({ children, container, ...rest }: XhPopconfirmPositionerProps): ReactNode {
   const ctx = usePopconfirmContext()
+  // 面板内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里走 4px 档
+  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
@@ -120,6 +123,7 @@ export function XhPopconfirmPositioner({ children, container, ...rest }: XhPopco
         )}
       >
         {children}
+        {bars.render()}
       </div>
     </XhPortal>
   )

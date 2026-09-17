@@ -48,7 +48,7 @@ const NO_SLOT = {
   'radio-group:indicator::before': '单选圆点，圆是它的身份',
   'color-swatch-picker:indicator::before': '压在色块正中的选中徽标，圆是它的身份',
   'tour:progress-dot': '进度圆点，圆是它的身份；当前那颗拉成胶囊也靠这条圆角',
-  'popconfirm:confirm-trigger::before': '转圈的加载环',
+  'popconfirm:confirm-trigger::before': '转圈的加载环，正方盒取 circle',
   'switch:thumb::after': '转圈的加载环',
   'download-trigger:root::before': '转圈的加载环，正方盒取 circle',
   'clipboard:copy-trigger::before': '转圈的加载环，正方盒取 circle',

@@ -123,7 +123,8 @@ const PRESSABLE = {
   'toast': ['close-trigger', 'action-trigger'],
   'alert': ['close-trigger'],
   'floating-panel': ['close-trigger', 'trigger', 'window-state-trigger'],
-  'popconfirm': ['confirm-trigger', 'cancel-trigger'],
+  // 开合触发器与两颗动作钮都接了 Action Control text 档，同走家族按压块（§9.1）
+  'popconfirm': ['confirm-trigger', 'cancel-trigger', 'trigger'],
   'image-viewer': [
     'close-trigger',
     'zoom-in-trigger',

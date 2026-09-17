@@ -38844,6 +38844,14 @@
             },
             {
               "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -39085,6 +39093,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-popconfirm-action-font-weight"
+            },
+            {
               "name": "--xh-popconfirm-action-px"
             },
             {
@@ -39109,13 +39120,19 @@
               "name": "--xh-popconfirm-cancel-bg"
             },
             {
-              "name": "--xh-popconfirm-cancel-bg-focus"
+              "name": "--xh-popconfirm-cancel-bg-active"
+            },
+            {
+              "name": "--xh-popconfirm-cancel-bg-hover"
+            },
+            {
+              "name": "--xh-popconfirm-cancel-border"
+            },
+            {
+              "name": "--xh-popconfirm-cancel-border-hover"
             },
             {
               "name": "--xh-popconfirm-cancel-fg"
-            },
-            {
-              "name": "--xh-popconfirm-cancel-fg-focus"
             },
             {
               "name": "--xh-popconfirm-confirm-bg"
@@ -39130,10 +39147,16 @@
               "name": "--xh-popconfirm-description-fg"
             },
             {
+              "name": "--xh-popconfirm-description-font-size"
+            },
+            {
               "name": "--xh-popconfirm-fg"
             },
             {
               "name": "--xh-popconfirm-gap"
+            },
+            {
+              "name": "--xh-popconfirm-icon-size"
             },
             {
               "name": "--xh-popconfirm-layer"

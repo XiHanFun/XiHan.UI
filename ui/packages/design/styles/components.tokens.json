@@ -45744,6 +45744,25 @@
       "description": "pin-input 的 separator 部件 margin-inline 覆盖槽。"
     },
     {
+      "name": "--xh-popconfirm-action-font-weight",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger",
+        "confirm-trigger"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-popconfirm-action-px",
       "component": "popconfirm",
       "part": [
@@ -45757,7 +45776,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 padding-inline 覆盖槽。"
@@ -45792,14 +45811,10 @@
         "box-shadow"
       ],
       "state": [
-        "default",
-        "hover",
-        "loading",
-        "not([data-loading])"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_popconfirm-confirm-highlight",
-        "--xh-material-soft-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 box-shadow 覆盖槽。"
@@ -45889,16 +45904,17 @@
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-material-soft-bg"
+        "transparent"
       ],
       "visibility": "public",
       "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-popconfirm-cancel-bg-focus",
+      "name": "--xh-popconfirm-cancel-bg-active",
       "component": "popconfirm",
       "part": [
         "cancel-trigger"
@@ -45907,13 +45923,84 @@
         "background-color"
       ],
       "state": [
-        "focus-visible"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-material-soft-focus-surface"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popconfirm-cancel-bg-hover",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popconfirm-cancel-border",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger"
+      ],
+      "property": [
+        "border",
+        "border-color"
+      ],
+      "state": [
+        "default",
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-border-control"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger 部件 border、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popconfirm-cancel-border-hover",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-cancel-fg",
@@ -45925,28 +46012,18 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-material-soft-fg"
-      ],
-      "visibility": "public",
-      "description": "popconfirm 的 cancel-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-popconfirm-cancel-fg-focus",
-      "component": "popconfirm",
-      "part": [
-        "cancel-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-material-soft-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "popconfirm 的 cancel-trigger 部件 color 覆盖槽。"
@@ -45962,10 +46039,13 @@
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "loading"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-loading",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
       "description": "popconfirm 的 confirm-trigger 部件 background-color 覆盖槽。"
@@ -45980,10 +46060,22 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-on"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-loading",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "popconfirm 的 confirm-trigger 部件 color 覆盖槽。"
@@ -45992,23 +46084,19 @@
       "name": "--xh-popconfirm-confirm-shadow",
       "component": "popconfirm",
       "part": [
-        "cancel-trigger",
         "confirm-trigger"
       ],
       "property": [
         "box-shadow"
       ],
       "state": [
-        "default",
-        "hover",
-        "loading",
-        "not([data-loading])"
+        "default"
       ],
       "defaultToken": [
         "--xh-popconfirm-action-shadow"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 box-shadow 覆盖槽。"
+      "description": "popconfirm 的 confirm-trigger 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-description-fg",
@@ -46023,10 +46111,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "popconfirm 的 description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popconfirm-description-font-size",
+      "component": "popconfirm",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 description 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-fg",
@@ -46063,6 +46169,28 @@
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-popconfirm-icon-size",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger",
+        "confirm-trigger",
+        "content",
+        "trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger、confirm-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-layer",

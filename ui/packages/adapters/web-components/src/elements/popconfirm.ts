@@ -15,6 +15,7 @@ import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -92,6 +93,13 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     source: () => this.getPart('trigger'),
     root: () => this.getPart('positioner'),
     onChange: () => this.requestUpdate(),
+  })
+
+  /** 面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+    props: () => ({ size: 'sm' }),
   })
 
   private readonly notify = (details: PopoverOpenChangeDetails): void => {
@@ -191,7 +199,8 @@ export class XhPopconfirmElement extends XhPortalHostElement {
       node: () => this.getPart('content'),
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       // 气泡确认不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
@@ -254,6 +263,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     exit.track(content)
     exit.update(api.open)
     this.setPartHidden(content, !exit.visible)
+    this.bars.wire()
     this.portal.sync(exit.visible)
   }
 
