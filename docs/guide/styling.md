@@ -80,28 +80,25 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 @layer xihan.components {
   [data-scope='toggle'][data-part='root'] {
     /* 私有槽带组件名：组件令牌 → 语义令牌两级回退 */
-    --xh-_toggle-bg: var(--xh-toggle-bg, var(--xh-bg-subtle));
-    --xh-_toggle-bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
-    --xh-_toggle-fg: var(--xh-toggle-fg, var(--xh-fg-default));
+    --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-bg-brand-subtle));
+    --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-fg-on-brand-subtle));
 
-    block-size: var(--xh-toggle-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-toggle-px, var(--xh-control-px-md));
-    border-radius: var(--xh-toggle-radius, var(--xh-shape-control));
-    background: var(--xh-_toggle-bg);
-    color: var(--xh-_toggle-fg);
+    /* 家族配方画面：公开槽桥接到形态矩阵之前，使用者槽 → 矩阵（data-xh-action-variant）→ 家族缺省 */
+    --xh-action-bg-rest: var(--xh-toggle-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-fg-rest: var(--xh-toggle-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-radius: var(--xh-toggle-radius, var(--xh-shape-control));
   }
 
-  /* 变体只改槽，不重写整条规则 */
-  [data-scope='toggle'][data-part='root'][data-variant='solid'] {
-    --xh-_toggle-bg: var(--xh-bg-brand);
-    --xh-_toggle-fg: var(--xh-fg-on-brand);
+  /* 状态只改槽，不重写整条规则 */
+  [data-scope='toggle'][data-part='root'][data-state='on'] {
+    --xh-action-bg-rest: var(--xh-_toggle-bg-on);
+    --xh-action-fg-rest: var(--xh-_toggle-fg-on);
   }
 
-  /* 禁用同时降级前景与表面，不只降低 opacity */
-  [data-scope='toggle'][data-part='root'][data-disabled] {
-    --xh-_toggle-bg: var(--xh-bg-subtle);
-    --xh-_toggle-fg: var(--xh-fg-disabled);
-    cursor: not-allowed;
+  /* 禁用同时降级前景与表面，不只降低 opacity；手型与状态选择器由配方给 */
+  [data-scope='toggle'][data-part='root'][data-state='on'] {
+    --xh-action-bg-disabled: var(--xh-_toggle-bg-on-disabled);
+    --xh-action-fg-disabled: var(--xh-_toggle-fg-on-disabled);
   }
 }
 ```
@@ -112,7 +109,7 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 | --- | --- | --- |
 | 组件覆盖槽 | `--xh-button-bg` | 使用者：修改该组件的背景 |
 | 语义令牌 | `--xh-bg-subtle` | 令牌产物：修改后影响全库 |
-| 皮肤私有槽 | `--xh-_bg` | 皮肤内部：变体只改它，规则不重复 |
+| 皮肤私有槽 | `--xh-_toggle-bg-on` | 皮肤内部：状态只改它，规则不重复 |
 
 带下划线前缀的私有槽不是公开接口，不在外部设置。
 
