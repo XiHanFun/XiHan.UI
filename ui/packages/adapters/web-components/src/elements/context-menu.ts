@@ -201,6 +201,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
+    // 浮层里的条子走 4px 档
+    props: () => ({ size: 'sm' }),
   })
 
   /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */

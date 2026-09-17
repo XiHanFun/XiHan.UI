@@ -161,8 +161,12 @@ export const contextMenuSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-placement': 'bottom-start',
           },
-          // 收起态没有锚点：条目连同 content 一起 hidden
+          // 收起态没有锚点：条目连同 content 一起 hidden。条目走 Collection Item 的 overlay 语境，不报 aria-selected
           'item[0]': {
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'overlay',
+            'aria-selected': null,
             'role': 'menuitem',
             'aria-disabled': 'false',
             'disabled': null,
@@ -178,9 +182,10 @@ export const contextMenuSuite: ConformanceSuite = {
             'data-value': 'paste',
           },
           'item[2]': { 'data-value': 'delete', 'tabindex': '-1' },
-          'item-text[1]': { 'data-disabled': '' },
-          'item-indicator[0]': { 'aria-hidden': 'true' },
-          'separator': { 'role': 'separator', 'aria-orientation': 'horizontal' },
+          'item-text[1]': { 'data-disabled': '', 'data-xh-collection-slot': 'text' },
+          // 标记位是常显的前导图标槽，落 prefix 列而不是藏起来的 indicator 列
+          'item-indicator[0]': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'prefix' },
+          'separator': { 'role': 'separator', 'aria-orientation': 'horizontal', 'data-xh-collection-separator': '' },
           'group[0]': { 'role': 'group', 'aria-labelledby': '@part(group-label[0])' },
           'group[1]': { 'role': 'group', 'aria-labelledby': '@part(group-label[1])' },
         },

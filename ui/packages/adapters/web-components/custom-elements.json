@@ -14322,7 +14322,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里的条子走 4px 档 props: () => ({ size: 'sm' }), })",
               "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
