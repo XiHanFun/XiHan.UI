@@ -19,7 +19,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} pressed - 受控按下态；未提供该属性即非受控
  * @attr {boolean} default-pressed - 非受控初始为按下
  * @attr {boolean} disabled - 禁用
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体，默认 subtle；solid 只在按下时品牌实心，未按下按 ghost 取面
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} icon-only - 仅图标：左右内边距清零、宽高相等；作者须自行提供可及名

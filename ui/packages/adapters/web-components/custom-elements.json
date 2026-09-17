@@ -57980,7 +57980,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "视觉变体",
+              "description": "视觉变体，默认 subtle；solid 只在按下时品牌实心，未按下按 ghost 取面",
               "name": "variant",
               "fieldName": "variant"
             },
