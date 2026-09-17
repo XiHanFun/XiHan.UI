@@ -33754,6 +33754,10 @@
   --xh-_tabs-trigger-border-width: 0;
   --xh-_tabs-trigger-border: transparent;
   --xh-_tabs-trigger-radius: var(--xh-shape-control);
+  /* 悬停与按下的面按承载面分档（§7.2）：line 档无底，两态都只换前景；card 坐在画布上 hover 100 →
+     pressed 200；segment 坐在淡底轨道里 hover 200 → pressed 300。三档各自在形态块里赋值 */
+  --xh-_tabs-trigger-bg-hover: transparent;
+  --xh-_tabs-trigger-bg-pressed: transparent;
   --xh-_tabs-trigger-bg-active: transparent;
   --xh-_tabs-trigger-bg-active-hover: transparent;
   --xh-_tabs-trigger-border-active: transparent;
@@ -33799,6 +33803,8 @@
   --xh-_tabs-trigger-border-width: 0;
   --xh-_tabs-trigger-border: transparent;
   --xh-_tabs-trigger-radius: var(--xh-shape-control);
+  --xh-_tabs-trigger-bg-hover: transparent;
+  --xh-_tabs-trigger-bg-pressed: transparent;
   --xh-_tabs-trigger-bg-active: transparent;
   --xh-_tabs-trigger-bg-active-hover: transparent;
   --xh-_tabs-trigger-border-active: transparent;
@@ -33806,7 +33812,8 @@
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 }
 
-/* 卡片式：基线收掉，选中的那张标签自己成为一张有描边有底的卡片，顶边一条指示条 */
+/* 卡片式：基线收掉，选中的那张标签自己成为一张有描边有底的卡片，顶边一条指示条。
+   标签坐在画布上，悬停 100 → 按下 200（§7.2 白底承载） */
 [data-scope='tabs'][data-part='root'][data-variant='card'] {
   --xh-_tabs-list-gap: var(--xh-control-gap-md);
   --xh-_tabs-list-bg: transparent;
@@ -33815,6 +33822,8 @@
   --xh-_tabs-list-border-width: 0;
   --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
   --xh-_tabs-trigger-radius: var(--xh-shape-control);
+  --xh-_tabs-trigger-bg-hover: var(--xh-bg-subtle);
+  --xh-_tabs-trigger-bg-pressed: var(--xh-bg-subtle-hover);
   --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
   --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
   --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
@@ -33823,20 +33832,23 @@
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
 }
 
-/* 分段式：浅色标签带承载一块浮起的选中面，选中文字保持默认字色。 */
+/* 分段式（§7.3 有滑块开关）：淡底轨道承载一块白色抬起的选中面，选中文字保持默认字色。
+   未选中标签坐在淡底轨道里，悬停 200 → 按下 300；选中面自己不再叠悬停 / 按下态。
+   选中面的三件（surface-raised 底、border-default 描边、raised 影）写在下面标签自己的规则里 */
 [data-scope='tabs'][data-part='root'][data-variant='segment'] {
   --xh-_tabs-list-gap: var(--xh-space-0_5);
   --xh-_tabs-list-bg: var(--xh-bg-subtle);
   --xh-_tabs-list-p: var(--xh-space-1);
   --xh-_tabs-list-radius: var(--xh-shape-surface);
   --xh-_tabs-list-border-width: 0;
-  --xh-_tabs-trigger-border-width: 0;
+  --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
   --xh-_tabs-trigger-border: transparent;
   --xh-_tabs-trigger-radius: var(--xh-shape-control);
-  --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
-  --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
-  --xh-_tabs-trigger-border-active: transparent;
-  --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
+  --xh-_tabs-trigger-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_tabs-trigger-bg-pressed: var(--xh-bg-subtle-active);
+  --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface-raised));
+  --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle, var(--xh-bg-surface-raised));
+  --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
 }
 
@@ -33863,6 +33875,16 @@
   border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
 }
 
+/* segment 档的标签带是一块淡底面：--xh-bg-subtle 底 + 一圈透明占位边 + 无影（§8.3 三选一）。
+   它同时是标签的淡底承载面，向内下发 hover 200 → pressed 300 的承载阶梯（§7.2）；
+   只写在标签带上不写在 root 上：内容面板里的按钮坐在画布上，不该跟着抬一档 */
+[data-scope='tabs'][data-part='root'][data-variant='segment'] [data-scope='tabs'][data-part='list'] {
+  --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
+  border: var(--xh-stroke-thin) solid var(--xh-tabs-list-border, transparent);
+}
+
 [data-scope='tabs'][data-part='trigger'] {
   position: relative;
   display: inline-flex;
@@ -33880,10 +33902,11 @@
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
+  /* 标签是铺开的一段（§9.2 Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale */
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 主标签带按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
@@ -33893,30 +33916,49 @@
 }
 
 /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
-   不挡掉的话置灰的那一页悬停仍会换底，看着还能点 */
+   不挡掉的话置灰的那一页悬停仍会换底，看着还能点。
+   悬停面按形态分档：card 100、segment 200、line 无底（见 root 上的私有槽） */
 [data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
-  background: var(--xh-tabs-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-tabs-trigger-bg-hover, var(--xh-_tabs-trigger-bg-hover));
 }
 
-/* 次级标签只通过文字与指示条反馈交互，不出现按钮式悬停色块。 */
+/* line 档没有底，悬停与按下都只换前景（§9.2）：静息 muted → 悬停 default → 按下与选中 brand-strong，
+   三步各是一档，指针按住时看得出与悬停不同 */
 [data-scope='tabs'][data-part='root'][data-variant='line']
-  [data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
-  background: transparent;
-  color: var(--xh-tabs-trigger-fg-hover, var(--xh-_tabs-accent-text));
+  [data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):hover {
+  color: var(--xh-tabs-trigger-fg-hover, var(--xh-fg-default));
 }
 
-/* 按下去要有回应：页签整块轻微下压，松手即弹回。选中页也压 */
-[data-scope='tabs'][data-part='trigger']:not([data-disabled]):active {
-  scale: var(--xh-motion-scale-press);
+[data-scope='tabs'][data-part='root'][data-variant='line']
+  [data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):is(:active, [data-pressed]) {
+  color: var(--xh-tabs-trigger-fg-pressed, var(--xh-_tabs-accent-text));
+}
+
+/* 按下去要有回应：card / segment 档的未选中标签换到按下面（card 200、segment 300），几何不动。
+   选中标签不叠按下面：card 的卡片面与 segment 的抬起面本身就是选中身份（§7.3 有滑块开关无叠加态） */
+[data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):is(:active, [data-pressed]) {
+  background: var(--xh-tabs-trigger-bg-pressed, var(--xh-_tabs-trigger-bg-pressed));
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
+/* 导航当前页（§7.3）：指示条 + brand-strong 字色 + medium 字重；card / segment 档把字色收回默认，
+   由卡片面 / 抬起面表达当前 */
 [data-scope='tabs'][data-part='trigger'][data-state='active'] {
   border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tabs-trigger-border-active));
   background: var(--xh-tabs-trigger-bg-active, var(--xh-_tabs-trigger-bg-active));
   color: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
   box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
+  font-weight: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
+}
+
+/* segment 档的选中标签就是那块白色抬起的滑块面（§7.3 有滑块开关）：surface-raised 底 +
+   border-default 描边 + raised 影三件写在标签自己身上——指示条部件在这一档收起，抬起面的归属就是标签 */
+[data-scope='tabs'][data-part='root'][data-variant='segment']
+  [data-scope='tabs'][data-part='trigger'][data-state='active'] {
+  border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
+  background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
+  box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
 }
 
 /* 选中项被悬停：常态 :hover 那条带着禁用守卫，特指度高过上面那条选中档，
@@ -34147,6 +34189,12 @@
 
   [data-scope='tabs'][data-part='separator'] {
     background: CanvasText;
+  }
+
+  /* 按下：常态靠底色深一档（line 档靠字色）表出，这一档里两者都被统一换掉；按住那一下用系统高亮反色画回来 */
+  [data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):is(:active, [data-pressed]) {
+    background: Highlight;
+    color: HighlightText;
   }
 }
 

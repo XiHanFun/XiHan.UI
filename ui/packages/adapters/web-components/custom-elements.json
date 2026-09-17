@@ -50771,6 +50771,9 @@
               "name": "--xh-tabs-trigger-bg-hover"
             },
             {
+              "name": "--xh-tabs-trigger-bg-pressed"
+            },
+            {
               "name": "--xh-tabs-trigger-border"
             },
             {
@@ -50786,10 +50789,16 @@
               "name": "--xh-tabs-trigger-fg-hover"
             },
             {
+              "name": "--xh-tabs-trigger-fg-pressed"
+            },
+            {
               "name": "--xh-tabs-trigger-font-size"
             },
             {
               "name": "--xh-tabs-trigger-font-weight"
+            },
+            {
+              "name": "--xh-tabs-trigger-font-weight-active"
             },
             {
               "name": "--xh-tabs-trigger-gap"

@@ -58,8 +58,13 @@ const SEMANTIC = {
   'transfer:item': [{ kind: 'page', state: '[data-state=\'checked\']' }],
   'tag-group:tag/root': [{ kind: 'page', state: '[data-selected]' }],
   'side-nav:link': [{ kind: 'page', state: '[data-current]' }],
-  // 导航当前页：指示条 + 品牌深字 + medium；Breadcrumb 当前页不可点，保留默认字色
-  'tabs:trigger': [{ kind: 'nav', state: '[data-state=\'active\']' }],
+  // 导航当前页：指示条 + 品牌深字 + medium；Breadcrumb 当前页不可点，保留默认字色。
+  // tabs 的 segment 档是有滑块开关：指示条部件在这一档收起，白色抬起面长在选中标签自己身上，
+  // 滑块三件（surface-raised 底 + border-default 描边 + raised 影）按 slider 类核选中标签在 segment 根下的规则
+  'tabs:trigger': [
+    { kind: 'nav', state: '[data-state=\'active\']' },
+    { kind: 'slider', state: '[data-state=\'active\']', within: '[data-variant=\'segment\']' },
+  ],
   'anchor:link': [{ kind: 'nav', state: '[data-current]' }],
   'navigation-menu:link': [{ kind: 'nav', state: '[data-current]' }],
   'breadcrumb:link': [{ kind: 'nav-terminal', state: '[data-current]' }],
@@ -70,7 +75,6 @@ const SEMANTIC = {
   'calendar-range-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
   // 有滑块开关：白色抬起 indicator
   'segmented:indicator': [{ kind: 'slider' }],
-  'tabs:indicator': [{ kind: 'slider', within: '[data-variant=\'segment\']' }],
   // 无滑块开关：品牌淡底
   'toggle:root': [{ kind: 'flat', state: '[data-state=\'on\']' }],
   'toggle-group:item': [{ kind: 'flat', state: '[data-state=\'on\']' }],
@@ -216,7 +220,8 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
 
   for (const { kind, state, within } of rules) {
     governed++
-    const decls = declsFor(skin, target, kind === 'slider' ? null : state, within)
+    // slider 类多半是常驻的 indicator 部件（看基础块）；登记了 state 的（tabs segment 档的选中标签）看该状态块
+    const decls = declsFor(skin, target, state ?? null, within)
     const bg = tokenOf(decls.get('background') ?? decls.get('background-color'), slots)
     const color = tokenOf(decls.get('color'), slots)
     const weight = tokenOf(decls.get('font-weight'), slots)

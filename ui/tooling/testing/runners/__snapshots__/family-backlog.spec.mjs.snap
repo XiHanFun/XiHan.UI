@@ -2,12 +2,12 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 19,
-  "ladder": 51,
+  "edge": 18,
+  "ladder": 50,
   "motion": 1,
-  "press": 32,
+  "press": 31,
   "scroll": 16,
-  "selection": 7,
+  "selection": 5,
   "shape": 16,
   "text": 56,
 }
@@ -32,7 +32,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "slider:thumb:raised",
   "sortable:item:raised",
   "switch:thumb:raised",
-  "tabs:root:raised",
   "tooltip:content",
 ]
 `;
@@ -87,7 +86,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "splitter:resize-trigger:hover",
   "steps:indicator:hover",
   "switch:root:selected",
-  "tabs:trigger:hover",
   "tour:close-trigger:hover",
   "tour:close-trigger:pressed",
 ]
@@ -128,7 +126,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "segmented:item",
   "steps:trigger",
   "switch:root",
-  "tabs:trigger",
   "tag-group:tag/root",
   "tour:next-trigger",
   "tour:prev-trigger",
@@ -161,8 +158,6 @@ exports[`family-backlog 键集合 > selection 1`] = `
 [
   "anchor:link",
   "segmented:indicator",
-  "tabs:indicator",
-  "tabs:trigger",
   "tag-group:tag/root",
   "toggle-group:item",
   "toggle:root",
