@@ -249,6 +249,15 @@ const ROW_OR_DISCLOSURE = new Set([
 ])
 /** 基础规则里的这几条说明部件是铺满一行的东西，不是定尺的独立动作控件。 */
 const ROW_GEOMETRY = /(?:^|;)\s*(?:inline-size\s*:\s*100%|flex\s*:\s*1|display\s*:\s*block)\s*(?:;|$)/
+/**
+ * 真源 §9.1 点名的定尺动作控件里，基础规则却带 ROW_GEOMETRY 那几条的：它们撑的是等分轨道里的一格，
+ * 不是一整行——日历格用 flex: 1 撑满七等分的一列并按 aspect-ratio 取方，宽由轨道给、高随宽走，仍是一颗定尺的格。
+ * 逐部件登记并写明理由，⑤ 不判。
+ */
+const TRACK_SQUARE = {
+  'calendar-picker:cell-trigger': '日历格：flex: 1 撑满七等分轨道的一格并按 aspect-ratio 取方（§9.1 日历格是定尺控件）',
+  'calendar-range-picker:cell-trigger': '同 calendar-picker 的日历格',
+}
 
 const backlog = await openBacklog('press')
 /** 各组件接上 press-channel 之前 data-pressed 判据的总豁免键。 */
@@ -258,6 +267,8 @@ const PRESS_SELECTOR = String.raw`(?::active|:is\(:active, \[data-pressed\]\))`
 const FAMILY_PRESS = String.raw`:is\(:active, \[data-pressed\]\)`
 
 const problems = [...backlog.problems]
+/** TRACK_SQUARE 里真被用来放行过 ⑤ 的键：登了却没命中即过期。 */
+const trackSquareSeen = new Set()
 const actionRecipe = await readFile(ACTION_RECIPE, 'utf8').catch(() => '')
 const collectionRecipe = await readFile(COLLECTION_RECIPE, 'utf8').catch(() => '')
 
@@ -290,6 +301,11 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
     if (body != null && !body.includes('\'data-pressed\''))
       report(PRESSED_CHANNEL, `${name} 的 ${partName} 登记为可按，connect 的 getter 却没投影 data-pressed——键盘与粗指针的按压回执要由 Headless 给`)
   }
+}
+
+for (const key of Object.keys(TRACK_SQUARE)) {
+  if (!trackSquareSeen.has(key))
+    problems.push(`${key} 登在 TRACK_SQUARE 里却没有作为缩放形态核过——名单过期了`)
 }
 
 // ⑧ 家族配方的按压选择器必须同时认 :active 与 [data-pressed]
@@ -447,6 +463,9 @@ function checkPart(name, part, css, familyCss = '') {
   // ⑤ 几何判据：铺满一行的东西不该缩放整条
   if (ROW_OR_DISCLOSURE.has(key)) {
     report(key, `${name} 的 ${part} 按 §4.1 是 disclosure trigger / row，登记成缩放形态——改登记 { part: '${part}', feedback: 'surface' }，皮肤只换面`)
+  }
+  else if (key in TRACK_SQUARE) {
+    trackSquareSeen.add(key)
   }
   else {
     const base = css.match(new RegExp(`(?:^|[,}])\\s*\\[data-scope='${name}'\\]${partSelector(part)}\\s*\\{([^}]*)\\}`, 'm'))

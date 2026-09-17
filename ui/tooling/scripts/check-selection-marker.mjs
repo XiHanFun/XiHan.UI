@@ -27,7 +27,7 @@ import { openBacklog } from './lib/family-backlog.mjs'
 import { colorPositionOf, conditional, innermost, partOf, privateSlots, readSkins, scopeOf, splitCompounds, splitSelectors } from './lib/skin-rules.mjs'
 
 /** 主体上另带这些时不是纯状态规则（叠加态、禁用、伪元素），不参与比对。 */
-const OVERLAY_STATES = [':hover', ':active', ':focus', '[data-highlighted]', '[data-disabled]', '[aria-disabled', '[data-in-range]', '[data-today]', '[data-indeterminate]', '[data-dragging]', '[data-loading]', '::before', '::after', '[data-tone', '[data-variant', '[hidden]', ':empty', '[data-error]', '[aria-busy']
+const OVERLAY_STATES = [':hover', ':active', '[data-pressed]', ':focus', '[data-highlighted]', '[data-disabled]', '[aria-disabled', '[data-in-range]', '[data-today]', '[data-indeterminate]', '[data-dragging]', '[data-loading]', '::before', '::after', '[data-tone', '[data-variant', '[hidden]', ':empty', '[data-error]', '[aria-busy']
 
 /**
  * 组件:部件 → 语义类与状态选择器。按真源 §7.3 与 §4.1 登记。
