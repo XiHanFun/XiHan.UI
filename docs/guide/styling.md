@@ -78,29 +78,29 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 ```css
 @layer xihan.components {
-  [data-scope='button'][data-part='root'] {
-    /* 私有槽：组件令牌 → 语义令牌两级回退 */
-    --xh-_bg: var(--xh-button-bg, var(--xh-bg-subtle));
-    --xh-_bg-hover: var(--xh-button-bg-hover, var(--xh-bg-subtle-hover));
-    --xh-_fg: var(--xh-button-fg, var(--xh-fg-default));
+  [data-scope='toggle'][data-part='root'] {
+    /* 私有槽带组件名：组件令牌 → 语义令牌两级回退 */
+    --xh-_toggle-bg: var(--xh-toggle-bg, var(--xh-bg-subtle));
+    --xh-_toggle-bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
+    --xh-_toggle-fg: var(--xh-toggle-fg, var(--xh-fg-default));
 
-    block-size: var(--xh-button-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-button-px, var(--xh-control-px-md));
-    border-radius: var(--xh-button-radius, var(--xh-shape-control));
-    background: var(--xh-_bg);
-    color: var(--xh-_fg);
+    block-size: var(--xh-toggle-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-toggle-px, var(--xh-control-px-md));
+    border-radius: var(--xh-toggle-radius, var(--xh-shape-control));
+    background: var(--xh-_toggle-bg);
+    color: var(--xh-_toggle-fg);
   }
 
   /* 变体只改槽，不重写整条规则 */
-  [data-scope='button'][data-part='root'][data-variant='solid'] {
-    --xh-_bg: var(--xh-bg-brand);
-    --xh-_fg: var(--xh-fg-on-brand);
+  [data-scope='toggle'][data-part='root'][data-variant='solid'] {
+    --xh-_toggle-bg: var(--xh-bg-brand);
+    --xh-_toggle-fg: var(--xh-fg-on-brand);
   }
 
   /* 禁用同时降级前景与表面，不只降低 opacity */
-  [data-scope='button'][data-part='root'][data-disabled] {
-    --xh-_bg: var(--xh-bg-subtle);
-    --xh-_fg: var(--xh-fg-disabled);
+  [data-scope='toggle'][data-part='root'][data-disabled] {
+    --xh-_toggle-bg: var(--xh-bg-subtle);
+    --xh-_toggle-fg: var(--xh-fg-disabled);
     cursor: not-allowed;
   }
 }
