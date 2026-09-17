@@ -21,7 +21,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} icon-only - 仅图标：左右内边距清零、宽高相等；作者须自行提供可及名
  * @attr {boolean} full-width - 撑满行宽
  * @attr {boolean} loading - 加载中（aria-disabled，保留焦点并拦截点击）
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体，默认 solid（只有 Button 缺省品牌实心，其余触发器缺省中性）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'button'|'a'} as - 根节点渲染的标签，默认 button；写 a 时不再产出 type 与原生 disabled

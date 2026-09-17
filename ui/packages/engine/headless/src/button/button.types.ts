@@ -16,7 +16,7 @@ export interface ButtonSchema extends MachineSchema {
     disabled?: boolean
     /** 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 */
     loading?: boolean
-    /** 变体：solid / subtle / outline / ghost。 */
+    /** 变体：solid / subtle / outline / ghost，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 */
     variant?: ActionVariant
     /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone

@@ -39,8 +39,21 @@ describe('connectButton', () => {
     expect(root['data-xh-action-profile']).toBe('text')
     expect(root['data-xh-action-display']).toBe('always')
     expect(root['data-xh-action-size']).toBe('md')
+    expect(root['data-xh-action-variant']).toBe('solid')
     expect(root['data-variant']).toBe('solid')
     expect(root['data-size']).toBe('md')
+  })
+
+  it('不传 variant 落 solid：只有 Button 缺省品牌实心，形态矩阵与 data-variant 同源', () => {
+    const root = connect({}).getRootProps() as Record<string, unknown>
+    expect(root['data-xh-action-variant']).toBe('solid')
+    expect(root['data-variant']).toBe('solid')
+  })
+
+  it.each(['subtle', 'outline', 'ghost'] as const)('variant=%s 原样投影到 data-xh-action-variant 与 data-variant', (variant) => {
+    const root = connect({ variant }).getRootProps() as Record<string, unknown>
+    expect(root['data-xh-action-variant']).toBe(variant)
+    expect(root['data-variant']).toBe(variant)
   })
 
   it('只投影 Action Control 的稳定 profile 与 size，不计算 CSS 数值', () => {

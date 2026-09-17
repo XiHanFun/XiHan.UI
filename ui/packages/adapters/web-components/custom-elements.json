@@ -3631,7 +3631,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "视觉变体",
+              "description": "视觉变体，默认 solid（只有 Button 缺省品牌实心，其余触发器缺省中性）",
               "name": "variant",
               "fieldName": "variant"
             },

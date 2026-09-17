@@ -95,6 +95,7 @@
 ### 特性
 
 - 支持四种变体、六种颜色和三种尺寸。
+- 缺省变体是品牌实心 `solid`，这是按钮独有的缺省；其余触发器缺省中性。
 - 支持文字、图标、图标加文字与全宽按钮。
 - `loading` 保留焦点并阻止重复操作。
 - `as="a"` 保留原生链接能力。
@@ -134,7 +135,7 @@
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
 | `disabled` | `boolean` |  |  |
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  |  |
 | `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。 |
@@ -216,6 +217,7 @@
 | `root` | `data-xh-action-display` | 'always' |
 | `root` | `data-xh-action-profile` | 'icon' \| 'text' |
 | `root` | `data-xh-action-size` | props.size |
+| `root` | `data-xh-action-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -224,10 +226,10 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-button-bg` | `root` | `background-color` | `default`<br>`focus-visible`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone`<br>`--xh-bg-brand` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-brand-active` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-hover` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`pressed`<br>`variant`<br>`variant=solid` | `--xh-_tone-on`<br>`--xh-fg-on-brand` | button 的 root 部件 color 覆盖槽。 |
+| `--xh-button-bg` | `root` | `background-color` | `default`<br>`focus-visible`<br>`loading` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | button 的 root 部件 color 覆盖槽。 |
 | `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_button-group-font-size` | button 的 root 部件 font-size 覆盖槽。 |
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` | button 的 root 部件 gap 覆盖槽。 |

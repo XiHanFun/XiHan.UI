@@ -34,7 +34,7 @@ export const buttonSuite: ConformanceSuite = {
       steps: [heldPressIgnored('button', 'root', 'loading 时不接受按压')],
     },
     {
-      name: '默认：type=button，单一 root，无禁用/加载态',
+      name: '默认：type=button，单一 root，无禁用/加载态，形态显式落 solid（只有 Button 缺省品牌实心）',
       spec: { apg: APG },
       initial: {
         order: ['root'],
@@ -51,16 +51,18 @@ export const buttonSuite: ConformanceSuite = {
             'data-xh-action-profile': 'text',
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'solid',
+            'data-variant': 'solid',
           },
         },
       },
     },
     {
-      name: 'variant/size/type 属性接线到 data-* 与原生 type',
+      name: 'variant/size/type 属性接线到 data-* 与原生 type，形态矩阵与 data-variant 同源',
       spec: { apg: APG },
-      props: { variant: 'solid', size: 'sm', type: 'submit' },
+      props: { variant: 'outline', size: 'sm', type: 'submit' },
       initial: {
-        parts: { root: { 'type': 'submit', 'data-variant': 'solid', 'data-size': 'sm' } },
+        parts: { root: { 'type': 'submit', 'data-variant': 'outline', 'data-xh-action-variant': 'outline', 'data-size': 'sm' } },
       },
     },
     {
