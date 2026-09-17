@@ -67,6 +67,35 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏，但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
+## 组件内滚动
+
+滚动条形态只有两档，按滚动面的身份固定，不按组件各自决定：
+
+| 档 | 适用面 | 令牌 |
+| --- | --- | --- |
+| 自绘条（Scrollbar 组件接线） | Overlay 家族 positioner 下的 content / list / column；定高小列表（Listbox content、Transfer list、时间列、Cascader column） | `type` 默认 `scroll-hover`；厚度浮层 `--xh-scrollbar-thickness-sm`（4px）、页内 `--xh-scrollbar-thickness-md`（6px）；壳上 `--xh-scrollbar-track-bg: transparent` |
+| 原生细条 | 页内结构容器（Table、Tree、Transfer 面板、Virtualizer viewport、Dialog / Drawer / FloatingPanel body、Layout sider / content、SideNav popout、Log / MessageFeed 视口、日历年网格、Typography `pre`）与作者自建滚动容器 | reset 层 `:where([data-scope][data-part], [data-xh-scroll])` 统一给 `scrollbar-width: thin` + `scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track)` |
+
+滑块色阶维持三级：`--xh-fg-scrollbar-thumb` / `-hover` / `-active` 分别是前景色 15% / 25% / 35%，两档共用。作者自己的滚动容器加 `data-xh-scroll` 即得同一套细条，写法与边界见[皮肤与样式分层](./styling#组件内滚动)。
+
+边界行为按身份给：`overscroll-behavior: contain` 只给浮层滚动面、模态 body 与粘底视口，页内结构容器保持 `auto`；`scrollbar-gutter: stable` 只给内容高度动态变化的容器（Log、MessageFeed、Dialog / Drawer body），并带 `:not([data-xh-scrollbar])` 守卫；边缘渐隐只在 ScrollArea 的 fade 变体与 Marquee 提供。文档站页面滚动条与组件滚动条同一 `type`，不另写覆写。
+
+## 排版角色
+
+`text-*` 排版令牌按角色取用，层级由字号、字重、行高和间距共同表达，不能只调颜色：
+
+| 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
+| --- | --- | --- |
+| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 500 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
+| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
+| 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
+| 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
+| Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
+| 页面级面板标题（Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`） | — |
+| 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
+
+必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不各画一套；禁用标签色统一 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+
 ## 七轴视觉环境运行时
 
 `VisualEnvironmentController` 是 mode、brand、density、dir、contrast、motion、transparency 的唯一状态与 DOM 投影入口。一次 `setPreference` 同步提交同一 scope 的完整七轴：
@@ -159,7 +188,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 ## 材质配方
 
-材质只有四档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。
+令牌配方四档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
@@ -167,6 +196,8 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
 | M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Toast、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Segmented、Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
+| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
 
 | 后缀 | 用途 |
 | --- | --- |
@@ -175,6 +206,8 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | `separator` | 内部分段线 |
 | `fg` / `fg-muted` | 正文与次要文字，始终不透明 |
 | `focus-surface` | 键盘聚焦时铺在焦点环内侧的实体隔离底 |
+
+Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
 环境轴在同一令牌名上原位降级：高对比档提高不透明度并加强边界；减少透明度与打印改为实体底并关闭背景滤镜；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
 
