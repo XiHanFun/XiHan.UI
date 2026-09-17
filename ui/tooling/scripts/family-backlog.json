@@ -30,10 +30,6 @@
     "file-upload:trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "floating-panel:window-state-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "floating-panel:window-state-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
-    "image-viewer:close-trigger:hover": "background: color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent)，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
-    "image-viewer:close-trigger:pressed": "background: color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent)，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
-    "image-viewer:zoom-in-trigger:hover": "background: color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent)，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
-    "image-viewer:zoom-in-trigger:pressed": "background: color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent)，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
     "pagination:jumper:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100）；跳页框是字段外壳，随 Field Chrome 任务一并迁到字段家族配方（静息描边 + 悬停升 --xh-border-control-hover）",
     "popconfirm:cancel-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "popconfirm:cancel-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
@@ -47,8 +43,6 @@
     "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移"
   },
   "shape": {
-    "image-viewer:next-trigger": "取了 pill，身份表登记的是 circle；登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
-    "image-viewer:prev-trigger": "取了 pill，身份表登记的是 circle；登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
     "popconfirm:confirm-trigger::before": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（1em）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
     "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移"
   },
@@ -87,7 +81,6 @@
     "floating-panel:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "floating-panel:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
     "hover-card:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
-    "image-viewer:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "popconfirm:description:color": "color 落 --xh-material-frosted-fg-muted，说明文字应为 --xh-fg-muted；待本组件迁移",
     "popconfirm:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "popover:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",

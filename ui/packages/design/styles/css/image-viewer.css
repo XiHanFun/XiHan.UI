@@ -5,6 +5,8 @@
 
 /* 定义 image viewer 样式。 */
 
+@import '../family/action-control.css';
+
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 
@@ -24,6 +26,7 @@
 
   /* 同一层底色之上再糊背后的页面 */
   [data-scope='image-viewer'][data-part='backdrop'][data-variant='blur'] {
+    -webkit-backdrop-filter: blur(var(--xh-image-viewer-backdrop-blur, var(--xh-overlay-backdrop-blur)));
     backdrop-filter: blur(var(--xh-image-viewer-backdrop-blur, var(--xh-overlay-backdrop-blur)));
   }
 
@@ -54,8 +57,12 @@
        既不让页面上的层号插进来，也不让它们漏出去压住别人 */
     isolation: isolate;
 
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进浮层的图标：内容层给一档 md 的尺，十颗钮各自再按 Action Control 档位覆盖 */
+    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-glyph-size-md));
+    /* 十颗钮共用的深色 chrome：压在使用者的图片上的半透明深底，是这一层自己的面，不取页面语义面 */
+    --xh-_image-viewer-chrome-bg: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
+    --xh-_image-viewer-chrome-bg-hover: var(--xh-image-viewer-action-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
+    --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
 
     position: relative;
     inline-size: 100%;
@@ -127,17 +134,16 @@
   /* —— 悬浮件共用：半透明深底加浅字 ——
      四件都钉在铺满视口的那一层的边上，贴边一律与安全区取大的一头：刘海、圆角与
      底部横条压住的那一段由系统给出，贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0。
-     安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
+     安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。
+     工具条是容器、计数是一行字的气泡，各按身份取圆角（surface / control，§6.3），
+     --xh-image-viewer-overlay-radius 仍是两者共用的使用者入口；翻页钮的面走下面的桥接槽 */
   [data-scope='image-viewer'][data-part='toolbar'],
-  [data-scope='image-viewer'][data-part='counter'],
-  [data-scope='image-viewer'][data-part='prev-trigger'],
-  [data-scope='image-viewer'][data-part='next-trigger'] {
+  [data-scope='image-viewer'][data-part='counter'] {
     position: absolute;
     z-index: 1;
-    background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
+    background: var(--xh-_image-viewer-chrome-bg);
     color: inherit;
     border: none;
-    border-radius: var(--xh-image-viewer-overlay-radius, var(--xh-shape-pill));
   }
 
   [data-scope='image-viewer'][data-part='toolbar'] {
@@ -148,25 +154,31 @@
     align-items: center;
     gap: var(--xh-image-viewer-toolbar-gap, var(--xh-space-1));
     padding: var(--xh-image-viewer-toolbar-padding, var(--xh-space-1_5) var(--xh-space-3));
+    border-radius: var(--xh-image-viewer-toolbar-radius-outer, var(--xh-image-viewer-overlay-radius, var(--xh-shape-surface)));
   }
 
-  /* 工具条里的按钮：底色交给工具条，本体只管命中区 */
+  /* 工具条里的七颗钮：接 Action Control icon 档 xs（24px 视觉盒），底色交给工具条，本体只管命中区与按压。
+     悬停 / 按下的底从 chrome 那层深底派生，不取页面的 --xh-bg-subtle-* 阶梯 */
   [data-scope='image-viewer'][data-part='toolbar'] > [data-part] {
+    --xh-action-bg-rest: transparent;
+    --xh-action-bg-hover: var(--xh-_image-viewer-chrome-bg-hover);
+    --xh-action-bg-pressed: var(--xh-_image-viewer-chrome-bg-active);
+    --xh-action-bg-focus-visible: transparent;
+    --xh-action-bg-disabled: transparent;
+    --xh-action-fg-rest: currentColor;
+    --xh-action-fg-hover: currentColor;
+    --xh-action-fg-pressed: currentColor;
+    --xh-action-fg-focus-visible: currentColor;
+    --xh-action-fg-disabled: currentColor;
+    --xh-action-border-rest: transparent;
+    --xh-action-border-hover: transparent;
+    --xh-action-border-pressed: transparent;
+    --xh-action-border-focus-visible: transparent;
+    --xh-action-border-disabled: transparent;
+    --xh-action-radius: var(--xh-image-viewer-toolbar-radius, var(--xh-_action-profile-radius));
+    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
+
     position: static;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-control-action-size);
-    block-size: var(--xh-control-action-size);
-    background: none;
-    border: none;
-    border-radius: var(--xh-image-viewer-toolbar-radius, var(--xh-shape-control));
-    color: inherit;
-    font-size: var(--xh-glyph-size-sm);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='image-viewer'][data-part='counter'] {
@@ -174,21 +186,35 @@
     inset-inline-start: 50%;
     translate: -50% 0;
     padding: var(--xh-image-viewer-counter-padding, var(--xh-space-1) var(--xh-space-3));
+    border-radius: var(--xh-image-viewer-counter-radius, var(--xh-image-viewer-overlay-radius, var(--xh-shape-control)));
     font-size: var(--xh-text-secondary-size);
   }
 
+  /* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle，§6.3）。
+     面桥接到自家深色 chrome：跟的是图上那层半透明深底不是页面底色，所以不取 frosted 缺省面，
+     也不取语义档的 --xh-bg-subtle-*；到头时是原生 disabled，压不动的东西不给回应 */
   [data-scope='image-viewer'][data-part='prev-trigger'],
   [data-scope='image-viewer'][data-part='next-trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-control-h-lg);
-    block-size: var(--xh-control-h-lg);
-    font-size: var(--xh-glyph-size-md);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-bg-rest: var(--xh-_image-viewer-chrome-bg);
+    --xh-action-bg-hover: var(--xh-_image-viewer-chrome-bg-hover);
+    --xh-action-bg-pressed: var(--xh-_image-viewer-chrome-bg-active);
+    --xh-action-bg-focus-visible: var(--xh-_image-viewer-chrome-bg);
+    --xh-action-bg-disabled: var(--xh-_image-viewer-chrome-bg);
+    --xh-action-fg-rest: currentColor;
+    --xh-action-fg-hover: currentColor;
+    --xh-action-fg-pressed: currentColor;
+    --xh-action-fg-focus-visible: currentColor;
+    --xh-action-fg-disabled: currentColor;
+    --xh-action-border-rest: transparent;
+    --xh-action-border-hover: transparent;
+    --xh-action-border-pressed: transparent;
+    --xh-action-border-focus-visible: transparent;
+    --xh-action-border-disabled: transparent;
+    --xh-action-radius: var(--xh-image-viewer-overlay-radius, var(--xh-_action-profile-radius));
+    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
+
+    position: absolute;
+    z-index: 1;
   }
 
   [data-scope='image-viewer'][data-part='prev-trigger'] {
@@ -203,81 +229,45 @@
     translate: 0 -50%;
   }
 
-  /* 工具条按钮与翻页钮共用一副交互观感：底色再压一档，按下多一次轻微下压。
-     这几颗钮浮在图上，跟的是图上那层半透明深底而不是页面底色，所以不取语义档的
-     --xh-bg-subtle-*，与关闭钮同源。翻页钮到头时是原生 disabled，压不动的东西不给回应。
-     位移用 scale 而非 transform：这两颗钮的居中靠 translate，写 transform 会把它顶掉 */
-  [data-scope='image-viewer'][data-part='zoom-in-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='zoom-out-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='rotate-left-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='rotate-right-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='flip-horizontal-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='flip-vertical-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='reset-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='prev-trigger']:hover:not(:disabled),
-  [data-scope='image-viewer'][data-part='next-trigger']:hover:not(:disabled) {
-    background: var(--xh-image-viewer-action-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
-  }
-
-  [data-scope='image-viewer'][data-part='zoom-in-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='zoom-out-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='rotate-left-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='rotate-right-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='flip-horizontal-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='flip-vertical-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='reset-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='prev-trigger']:active:not(:disabled),
-  [data-scope='image-viewer'][data-part='next-trigger']:active:not(:disabled) {
-    background: var(--xh-image-viewer-action-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 右上角的关闭钮：与翻页钮同底同高，但圆角走控件档，按下有缩放 */
+  /* 右上角的关闭钮：接 Action Control icon 档 lg（40px，触控靶走 lg），圆角走控件档；面与翻页钮同一层深色 chrome */
   [data-scope='image-viewer'][data-part='close-trigger'] {
+    --xh-action-bg-rest: var(--xh-_image-viewer-chrome-bg);
+    --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_image-viewer-chrome-bg-hover));
+    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-active, var(--xh-_image-viewer-chrome-bg-active));
+    --xh-action-bg-focus-visible: var(--xh-_image-viewer-chrome-bg);
+    --xh-action-bg-disabled: var(--xh-_image-viewer-chrome-bg);
+    /* 看图时整块 chrome 盖住页面，叉的颜色随那层继承；使用者要单独换叉的颜色走这支槽 */
+    --xh-action-fg-rest: var(--xh-image-viewer-close-fg, currentColor);
+    --xh-action-fg-hover: var(--xh-image-viewer-close-fg, currentColor);
+    --xh-action-fg-pressed: var(--xh-image-viewer-close-fg, currentColor);
+    --xh-action-fg-focus-visible: var(--xh-image-viewer-close-fg, currentColor);
+    --xh-action-fg-disabled: var(--xh-image-viewer-close-fg, currentColor);
+    --xh-action-border-rest: transparent;
+    --xh-action-border-hover: transparent;
+    --xh-action-border-pressed: transparent;
+    --xh-action-border-focus-visible: transparent;
+    --xh-action-border-disabled: transparent;
+    --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-control));
+    --xh-action-visual-size: var(--xh-image-viewer-close-size, var(--xh-_action-profile-visual-size));
+    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
+
     position: absolute;
     z-index: 1;
     inset-block-start: max(var(--xh-space-6), env(safe-area-inset-top));
     inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-image-viewer-close-size, var(--xh-control-h-lg));
-    block-size: var(--xh-image-viewer-close-size, var(--xh-control-h-lg));
-    border: none;
-    border-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-control));
-    background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
-    color: inherit;
-    font-size: var(--xh-glyph-size-md);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 三颗钮的面是一层深色纱，纱底下是使用者的图片，环色算不出稳定的取值。
-     content 把前景钉死在浅字上、三颗钮写 color: inherit，环取 currentColor 即是那支浅字，
+     content 把前景钉死在浅字上、三颗钮的前景随它继承，环取 currentColor 即是那支浅字，
      不随图片内容也不随主题翻 */
   [data-scope='image-viewer'][data-part='close-trigger']:focus-visible,
   [data-scope='image-viewer'][data-part='prev-trigger']:focus-visible,
   [data-scope='image-viewer'][data-part='next-trigger']:focus-visible {
-    --xh-_ring-color: currentColor;
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   [data-scope='image-viewer'][data-part='close-trigger'][hidden] {
     display: none;
-  }
-
-  [data-scope='image-viewer'][data-part='close-trigger']:hover:not(:disabled) {
-    background: var(--xh-image-viewer-close-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
-  }
-
-  [data-scope='image-viewer'][data-part='close-trigger']:active {
-    background: var(--xh-image-viewer-close-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='image-viewer'] button[data-part]:disabled {

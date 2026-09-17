@@ -62,6 +62,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 - 关闭后焦点归还触发器。
 - 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
 - 底部控件带是一组有名称的控件，每个按钮各占一个 Tab 位；左右方向键与 Home/End 用于翻页，控件带内外一致。
+- 翻页按钮走 Action Control floating 档（48px 圆形），关闭按钮与控件带按钮走 icon 档；十个按钮共用取景器自己的深色半透明 chrome，不取页面语义面。
 
 ### 组合
 
@@ -260,9 +261,49 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `image` | `data-loading` | ''（条件成立时才出现） |
 | `image` | `data-state` | 'open' \| 'closed' |
 | `toolbar` | `data-state` | 'open' \| 'closed' |
+| `zoom-in-trigger` | `data-xh-action-control` | '' |
+| `zoom-in-trigger` | `data-xh-action-display` | 'always' |
+| `zoom-in-trigger` | `data-xh-action-profile` | 'icon' |
+| `zoom-in-trigger` | `data-xh-action-size` | 'xs' |
+| `zoom-out-trigger` | `data-xh-action-control` | '' |
+| `zoom-out-trigger` | `data-xh-action-display` | 'always' |
+| `zoom-out-trigger` | `data-xh-action-profile` | 'icon' |
+| `zoom-out-trigger` | `data-xh-action-size` | 'xs' |
+| `rotate-left-trigger` | `data-xh-action-control` | '' |
+| `rotate-left-trigger` | `data-xh-action-display` | 'always' |
+| `rotate-left-trigger` | `data-xh-action-profile` | 'icon' |
+| `rotate-left-trigger` | `data-xh-action-size` | 'xs' |
+| `rotate-right-trigger` | `data-xh-action-control` | '' |
+| `rotate-right-trigger` | `data-xh-action-display` | 'always' |
+| `rotate-right-trigger` | `data-xh-action-profile` | 'icon' |
+| `rotate-right-trigger` | `data-xh-action-size` | 'xs' |
+| `flip-horizontal-trigger` | `data-xh-action-control` | '' |
+| `flip-horizontal-trigger` | `data-xh-action-display` | 'always' |
+| `flip-horizontal-trigger` | `data-xh-action-profile` | 'icon' |
+| `flip-horizontal-trigger` | `data-xh-action-size` | 'xs' |
+| `flip-vertical-trigger` | `data-xh-action-control` | '' |
+| `flip-vertical-trigger` | `data-xh-action-display` | 'always' |
+| `flip-vertical-trigger` | `data-xh-action-profile` | 'icon' |
+| `flip-vertical-trigger` | `data-xh-action-size` | 'xs' |
+| `reset-trigger` | `data-xh-action-control` | '' |
+| `reset-trigger` | `data-xh-action-display` | 'always' |
+| `reset-trigger` | `data-xh-action-profile` | 'icon' |
+| `reset-trigger` | `data-xh-action-size` | 'xs' |
+| `prev-trigger` | `data-xh-action-control` | '' |
+| `prev-trigger` | `data-xh-action-display` | 'always' |
+| `prev-trigger` | `data-xh-action-profile` | 'floating' |
+| `prev-trigger` | `data-xh-action-size` | 'md' |
+| `next-trigger` | `data-xh-action-control` | '' |
+| `next-trigger` | `data-xh-action-display` | 'always' |
+| `next-trigger` | `data-xh-action-profile` | 'floating' |
+| `next-trigger` | `data-xh-action-size` | 'md' |
 | `counter` | `data-count` | String(count) |
 | `counter` | `data-index` | String(index + 1) |
 | `counter` | `data-state` | 'open' \| 'closed' |
+| `close-trigger` | `data-xh-action-control` | '' |
+| `close-trigger` | `data-xh-action-display` | 'always' |
+| `close-trigger` | `data-xh-action-profile` | 'icon' |
+| `close-trigger` | `data-xh-action-size` | 'lg' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -271,32 +312,35 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-image-viewer-action-bg-active` | `flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`next-trigger`<br>`prev-trigger`<br>`reset-trigger`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-color-neutral-950` | image-viewer 的 flip-horizontal-trigger、flip-vertical-trigger、next-trigger、prev-trigger、reset-trigger、rotate-left-trigger、rotate-right-trigger、zoom-in-trigger、zoom-out-trigger 部件 background 覆盖槽。 |
-| `--xh-image-viewer-action-bg-hover` | `flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`next-trigger`<br>`prev-trigger`<br>`reset-trigger`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-color-neutral-950` | image-viewer 的 flip-horizontal-trigger、flip-vertical-trigger、next-trigger、prev-trigger、reset-trigger、rotate-left-trigger、rotate-right-trigger、zoom-in-trigger、zoom-out-trigger 部件 background 覆盖槽。 |
+| `--xh-image-viewer-action-bg-active` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-color-neutral-950` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。 |
+| `--xh-image-viewer-action-bg-hover` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-color-neutral-950` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。 |
 | `--xh-image-viewer-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-color-neutral-950` | image-viewer 的 backdrop 部件 background 覆盖槽。 |
-| `--xh-image-viewer-backdrop-blur` | `backdrop` | `backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | image-viewer 的 backdrop 部件 backdrop-filter 覆盖槽。 |
+| `--xh-image-viewer-backdrop-blur` | `backdrop` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | image-viewer 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-image-viewer-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | image-viewer 的 backdrop 部件 z-index 覆盖槽。 |
-| `--xh-image-viewer-chrome-bg` | `close-trigger`<br>`counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background` | `default` | `--xh-color-neutral-950` | image-viewer 的 close-trigger、counter、next-trigger、prev-trigger、toolbar 部件 background 覆盖槽。 |
-| `--xh-image-viewer-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-color-neutral-950` | image-viewer 的 close-trigger 部件 background 覆盖槽。 |
-| `--xh-image-viewer-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-color-neutral-950` | image-viewer 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-image-viewer-chrome-bg` | `close-trigger`<br>`content`<br>`counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible` | `--xh-color-neutral-950` | image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 background、background-color 覆盖槽。 |
+| `--xh-image-viewer-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_image-viewer-chrome-bg-active` | image-viewer 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-image-viewer-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_image-viewer-chrome-bg-hover` | image-viewer 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-image-viewer-close-fg` | `close-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `currentColor` | image-viewer 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-image-viewer-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | image-viewer 的 close-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-image-viewer-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-lg` | image-viewer 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-image-viewer-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | image-viewer 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-image-viewer-counter-padding` | `counter` | `padding` | `default` | `--xh-space-1` | image-viewer 的 counter 部件 padding 覆盖槽。 |
+| `--xh-image-viewer-counter-radius` | `counter` | `border-radius` | `default` | `--xh-image-viewer-overlay-radius` | image-viewer 的 counter 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-fg` | `content` | `color` | `default` | `--xh-color-neutral-0` | image-viewer 的 content 部件 color 覆盖槽。 |
-| `--xh-image-viewer-icon-size` | `content` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | image-viewer 的 content 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-image-viewer-icon-size` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-image-viewer-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | image-viewer 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-image-viewer-loading-bg` | `viewport` | `background` | `loading` | `--xh-bg-surface-raised` | image-viewer 的 viewport 部件 background 覆盖槽。 |
 | `--xh-image-viewer-loading-radius` | `viewport` | `border-radius` | `loading` | `--xh-shape-surface` | image-viewer 的 viewport 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-loading-size` | `viewport` | `block-size`<br>`inline-size` | `loading` | `--xh-control-h-lg` | image-viewer 的 viewport 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-image-viewer-overlay-radius` | `counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `border-radius` | `default` | `--xh-shape-pill` | image-viewer 的 counter、next-trigger、prev-trigger、toolbar 部件 border-radius 覆盖槽。 |
+| `--xh-image-viewer-overlay-radius` | `counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `border-radius` | `default` | `--xh-_action-profile-radius`<br>`--xh-shape-control`<br>`--xh-shape-surface` | image-viewer 的 counter、next-trigger、prev-trigger、toolbar 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-space-1` | image-viewer 的 toolbar 部件 gap 覆盖槽。 |
 | `--xh-image-viewer-toolbar-padding` | `toolbar` | `padding` | `default` | `--xh-space-1_5` | image-viewer 的 toolbar 部件 padding 覆盖槽。 |
-| `--xh-image-viewer-toolbar-radius` | `toolbar` | `border-radius` | `default` | `--xh-shape-control` | image-viewer 的 toolbar 部件 border-radius 覆盖槽。 |
+| `--xh-image-viewer-toolbar-radius` | `toolbar` | `border-radius` | `default` | `--xh-_action-profile-radius` | image-viewer 的 toolbar 部件 border-radius 覆盖槽。 |
+| `--xh-image-viewer-toolbar-radius-outer` | `toolbar` | `border-radius` | `default` | `--xh-image-viewer-overlay-radius` | image-viewer 的 toolbar 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

@@ -56,8 +56,11 @@ export function connectImageViewer<T extends PropTypes>(
     counter: translations?.counter ?? ((i: number, n: number) => `${i} / ${n}`),
   }
 
-  /** 工具条按钮共用的骨架：type/禁用与关闭态一次给齐。 */
-  const toolButton = (part: keyof typeof parts, aria: string, onClick: () => void, disabled = false): T['button'] =>
+  /**
+   * 工具条按钮共用的骨架：type / 禁用与关闭态一次给齐。
+   * Action Control 的档位（data-xh-action-*）由各 getter 自己写成字面量：门禁按 getter 切片认家族归属。
+   */
+  const toolButton = (part: keyof typeof parts, aria: string, onClick: () => void, disabled: boolean, action: Record<string, string>): T['button'] =>
     normalize.button({
       ...parts[part].attrs,
       'type': 'button',
@@ -65,6 +68,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-state': stateAttr,
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
+      ...action,
       onClick,
     })
 
@@ -237,15 +241,69 @@ export function connectImageViewer<T extends PropTypes>(
       'data-state': stateAttr,
     }),
 
-    getZoomInTriggerProps: () => toolButton('zoom-in-trigger', label.zoomIn, () => send({ type: 'ZOOM.BY', delta: 1 }), transform.scale >= maxScale),
-    getZoomOutTriggerProps: () => toolButton('zoom-out-trigger', label.zoomOut, () => send({ type: 'ZOOM.BY', delta: -1 }), transform.scale <= minScale),
-    getRotateLeftTriggerProps: () => toolButton('rotate-left-trigger', label.rotateLeft, () => send({ type: 'ROTATE.BY', delta: -90 })),
-    getRotateRightTriggerProps: () => toolButton('rotate-right-trigger', label.rotateRight, () => send({ type: 'ROTATE.BY', delta: 90 })),
-    getFlipHorizontalTriggerProps: () => toolButton('flip-horizontal-trigger', label.flipHorizontal, () => send({ type: 'FLIP', axis: 'x' })),
-    getFlipVerticalTriggerProps: () => toolButton('flip-vertical-trigger', label.flipVertical, () => send({ type: 'FLIP', axis: 'y' })),
-    getResetTriggerProps: () => toolButton('reset-trigger', label.reset, () => send({ type: 'TRANSFORM.RESET' })),
-    getPrevTriggerProps: () => toolButton('prev-trigger', label.prev, () => send({ type: 'INDEX.PREV' }), !canPrev),
-    getNextTriggerProps: () => toolButton('next-trigger', label.next, () => send({ type: 'INDEX.NEXT' }), !canNext),
+    getZoomInTriggerProps: () => toolButton('zoom-in-trigger', label.zoomIn, () => send({ type: 'ZOOM.BY', delta: 1 }), transform.scale >= maxScale, {
+      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getZoomOutTriggerProps: () => toolButton('zoom-out-trigger', label.zoomOut, () => send({ type: 'ZOOM.BY', delta: -1 }), transform.scale <= minScale, {
+      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getRotateLeftTriggerProps: () => toolButton('rotate-left-trigger', label.rotateLeft, () => send({ type: 'ROTATE.BY', delta: -90 }), false, {
+      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getRotateRightTriggerProps: () => toolButton('rotate-right-trigger', label.rotateRight, () => send({ type: 'ROTATE.BY', delta: 90 }), false, {
+      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getFlipHorizontalTriggerProps: () => toolButton('flip-horizontal-trigger', label.flipHorizontal, () => send({ type: 'FLIP', axis: 'x' }), false, {
+      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getFlipVerticalTriggerProps: () => toolButton('flip-vertical-trigger', label.flipVertical, () => send({ type: 'FLIP', axis: 'y' }), false, {
+      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getResetTriggerProps: () => toolButton('reset-trigger', label.reset, () => send({ type: 'TRANSFORM.RESET' }), false, {
+      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getPrevTriggerProps: () => toolButton('prev-trigger', label.prev, () => send({ type: 'INDEX.PREV' }), !canPrev, {
+      // 浮在图上的翻页圆钮：接 Action Control floating 档 md（48px 圆形），面由皮肤桥接到自家深色 chrome
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    }),
+    getNextTriggerProps: () => toolButton('next-trigger', label.next, () => send({ type: 'INDEX.NEXT' }), !canNext, {
+      // 浮在图上的翻页圆钮：接 Action Control floating 档 md（48px 圆形），面由皮肤桥接到自家深色 chrome
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    }),
 
     getCounterProps: () => normalize.element({
       ...parts.counter.attrs,
@@ -256,7 +314,13 @@ export function connectImageViewer<T extends PropTypes>(
       'data-count': String(count),
     }),
 
-    getCloseTriggerProps: () => toolButton('close-trigger', label.close, () => send({ type: 'CLOSE', src: 'close-trigger' })),
+    getCloseTriggerProps: () => toolButton('close-trigger', label.close, () => send({ type: 'CLOSE', src: 'close-trigger' }), false, {
+      // 右上角的叉：接 Action Control icon 档 lg（40px，触控靶走 lg），面由皮肤桥接到自家深色 chrome
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'lg',
+    }),
   }
 }
 

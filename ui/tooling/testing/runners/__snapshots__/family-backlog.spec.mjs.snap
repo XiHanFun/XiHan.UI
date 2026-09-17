@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 7,
-  "ladder": 34,
+  "ladder": 30,
   "motion": 1,
   "press": 6,
   "scroll": 12,
   "selection": 0,
-  "shape": 4,
-  "text": 28,
+  "shape": 2,
+  "text": 27,
 }
 `;
 
@@ -46,10 +46,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "file-upload:trigger:pressed",
   "floating-panel:window-state-trigger:hover",
   "floating-panel:window-state-trigger:pressed",
-  "image-viewer:close-trigger:hover",
-  "image-viewer:close-trigger:pressed",
-  "image-viewer:zoom-in-trigger:hover",
-  "image-viewer:zoom-in-trigger:pressed",
   "pagination:jumper:hover",
   "popconfirm:cancel-trigger:hover",
   "popconfirm:cancel-trigger:pressed",
@@ -102,8 +98,6 @@ exports[`family-backlog 键集合 > selection 1`] = `[]`;
 
 exports[`family-backlog 键集合 > shape 1`] = `
 [
-  "image-viewer:next-trigger",
-  "image-viewer:prev-trigger",
   "popconfirm:confirm-trigger::before",
   "tour:progress-dot",
 ]
@@ -123,7 +117,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "floating-panel:root:icon-size",
   "floating-panel:title:font-weight",
   "hover-card:description:font-size",
-  "image-viewer:content:icon-size",
   "popconfirm:description:color",
   "popconfirm:description:font-size",
   "popover:content:icon-size",
