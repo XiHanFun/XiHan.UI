@@ -19,7 +19,10 @@ const { createMachine } = setup<FloatButtonSchema>()
  */
 export const floatButtonMachine = createMachine({
   name: 'float-button',
-  context: () => ({}),
+  // 按压通道（context.pressed）与开合无关：两个状态都认 PRESS.*，禁用时按住的一律松开
+  context: ({ cell }) => ({
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
+  }),
   refs: () => ({
     config: null,
     registerLayer: null,
@@ -32,7 +35,11 @@ export const floatButtonMachine = createMachine({
   effects: ['trackLayer'],
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
-    track([() => prop('disabled')], () => action(['syncDisabled']))
+    track([() => prop('disabled')], () => action(['syncDisabled', 'releaseWhenInert']))
+  },
+  on: {
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     closed: {
@@ -75,8 +82,16 @@ export const floatButtonMachine = createMachine({
     guards: {
       isDisabled: ({ prop }) => prop('disabled') ?? false,
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      canPress: ({ prop }) => !prop('disabled'),
     },
     actions: {
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      // 按住途中被禁用：原生 disabled 的按钮不再派 keyup / blur，按压面得由机器自己收
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled'))
+          context.set('pressed', false)
+      },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       syncOpen: ({ prop, send }) => {

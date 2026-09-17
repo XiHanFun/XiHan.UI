@@ -104,7 +104,12 @@ describe('float-button 的 M2 磨砂皮肤', () => {
 
     const element = trigger()
     const style = getComputedStyle(element)
-    expect(element.closest('[data-part=\'root\']')!.hasAttribute('data-variant')).toBe(false)
+    // 不传 variant 时连接层显式落 outline：描边 + 磨砂面的中性圆钮
+    expect(element.closest('[data-part=\'root\']')!.getAttribute('data-variant')).toBe('outline')
+    expect(element.getAttribute('data-xh-action-variant')).toBe('outline')
+    // floating 档 md：48px 圆形
+    expect(element.getBoundingClientRect().width).toBe(48)
+    expect(element.getBoundingClientRect().height).toBe(48)
     expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-frosted-bg)'))
     expect(style.borderTopColor).toBe(resolve(element, 'border-top-color', 'var(--xh-material-frosted-border)'))
     expect(style.color).toBe(resolve(element, 'color', 'var(--xh-material-frosted-fg)'))

@@ -45,7 +45,7 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @attr {'top-start'|'top-end'|'bottom-start'|'bottom-end'} placement - 固定在哪一角，默认 bottom-end
  * @attr {number} offset - 距两条边的距离（px），默认 24
  * @attr {'hover'|'click'} expand-trigger - 展开方式，默认 click
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，默认 outline（磨砂面；solid 才品牌实心）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸，默认与 lg 同档
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`

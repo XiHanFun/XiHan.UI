@@ -113,13 +113,50 @@ const FAMILIES = [
     ],
   },
   {
-    // 钉在视口一角、浮在内容之上的圆钮：两家的按钮块从盒型到三轴取值逐条同源。
-    // 宽高与圆角不在此列——一颗是回顶钮（缺省中档），一颗是悬浮动作钮（缺省大一档），
-    // 那是两件东西各自的身量，不是分叉
+    // 钉在视口一角、浮在内容之上的圆钮：两家的触发器都接了 Action Control floating 档，盒型、四态面、
+    // 按压与命中区由配方给，皮肤只剩把使用者槽映射到桥接槽——比的是这些映射声明（面、字、边、影、几何）
+    // 缺省 outline 那一档的磨砂桥接写在 root[data-variant] 的后代规则里，本门禁不比后代规则，由两家的浏览器
+    // 材质用例各自钉住。
+    // 两家的槽名都不带部件段（--xh-float-button-bg / --xh-back-top-bg），slotBy 给空串
     name: '角落浮钮族',
     members: ['float-button', 'back-top'],
     parts: [
-      { part: 'trigger', state: '', props: ['display', 'align-items', 'justify-content', 'padding', 'border', 'background', 'color', 'box-shadow', 'cursor', 'transition'] },
+      {
+        part: 'trigger',
+        slotBy: { 'float-button': '', 'back-top': '' },
+        state: '',
+        props: [
+          '--xh-action-bg-rest',
+          '--xh-action-bg-hover',
+          '--xh-action-bg-pressed',
+          '--xh-action-bg-focus-visible',
+          '--xh-action-bg-disabled',
+          '--xh-action-fg-rest',
+          '--xh-action-fg-hover',
+          '--xh-action-fg-pressed',
+          '--xh-action-fg-focus-visible',
+          '--xh-action-border-rest',
+          '--xh-action-border-hover',
+          '--xh-action-border-pressed',
+          '--xh-action-border-focus-visible',
+          '--xh-action-border-disabled',
+          '--xh-action-shadow-rest',
+          '--xh-action-shadow-hover',
+          '--xh-action-shadow-pressed',
+          '--xh-action-shadow-focus-visible',
+          '--xh-action-shadow-disabled',
+          '--xh-action-radius',
+          '--xh-action-visual-size',
+          '--xh-icon-size',
+          'display',
+          'border',
+          'background',
+          'color',
+          'box-shadow',
+          'cursor',
+          'transition',
+        ],
+      },
     ],
   },
   {
@@ -337,7 +374,7 @@ const FAMILIES = [
       {
         partBy: { 'toggle': 'root', 'clipboard': 'copy-trigger', 'download-trigger': 'root', 'float-button': 'trigger', 'back-top': 'trigger', 'toolbar': 'item', 'pagination': 'item' },
         // 面就是 root 的成员，槽名不带部件段（--xh-toggle-bg-hover / --xh-download-trigger-bg-hover）
-        slotBy: { 'toggle': '', 'download-trigger': '' },
+        slotBy: { 'toggle': '', 'download-trigger': '', 'float-button': '', 'back-top': '' },
         state: '',
         props: ['--xh-action-bg-hover', '--xh-action-bg-pressed'],
       },

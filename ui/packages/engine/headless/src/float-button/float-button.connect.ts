@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonSchema } from './float-button.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { floatButtonAnatomy } from './float-button.anatomy'
 
 const parts = floatButtonAnatomy.build()
@@ -35,7 +36,7 @@ export function connectFloatButton<T extends PropTypes>(
   props: FloatButtonAppearance,
   normalize: NormalizeProps<T>,
 ): FloatButtonApi<T> {
-  const { state, prop, send, scope } = service
+  const { state, context, prop, send, scope } = service
 
   const open = state.get() === 'open'
   const disabled = !!prop('disabled')
@@ -44,6 +45,10 @@ export function connectFloatButton<T extends PropTypes>(
   const placement = props.placement ?? FLOAT_BUTTON_DEFAULT_PLACEMENT
   const offset = resolveFloatButtonOffset(props.offset)
   const hover = prop('expandTrigger') === 'hover'
+  // 缺省 outline：描边 + 磨砂面的中性圆钮（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  const variant = props.variant ?? 'outline'
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -59,7 +64,7 @@ export function connectFloatButton<T extends PropTypes>(
       'data-state': stateAttr,
       'data-placement': placement,
       // 三个视觉轴落在壳上，触发器与展开的每一条动作沿继承流取值
-      'data-variant': props.variant,
+      'data-variant': variant,
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
@@ -91,11 +96,24 @@ export function connectFloatButton<T extends PropTypes>(
       'disabled': disabled || undefined,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      // 浮在内容之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': props.size ?? 'md',
+      'data-xh-action-variant': variant,
+      'data-pressed': dataAttr(context.get('pressed')),
       // 点一下恒能开合：悬停只是多给一条路，触摸与键盘还得靠它
       'onClick': () => {
         if (!disabled)
           send({ type: 'TOGGLE' })
       },
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
 
     getListProps: () => normalize.element({

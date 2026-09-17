@@ -46,7 +46,7 @@ export interface FloatButtonAppearance {
   offset?: number
   /** 展开方式，默认 click。 */
   expandTrigger?: FloatButtonExpandTrigger
-  /** 变体：solid / subtle / outline / ghost。 */
+  /** 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 */
   variant?: ActionVariant
   /** 颜色：brand / neutral / success / warning / danger / info。 */
   tone?: Tone
@@ -67,7 +67,10 @@ export interface FloatButtonRefs {
 /** FloatButton 专用状态机：开合、禁用和消解层资源都由 Headless 持有。 */
 export interface FloatButtonSchema extends MachineSchema {
   props: FloatButtonDisclosureProps & FloatButtonNotifiers & Pick<FloatButtonAppearance, 'expandTrigger'>
-  context: Record<string, never>
+  context: {
+    /** 触发器正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: FloatButtonRefs
   state: 'open' | 'closed'
@@ -78,15 +81,22 @@ export interface FloatButtonSchema extends MachineSchema {
     | { type: 'DISABLE' }
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
+    | { type: 'PRESS.START' }
+    | { type: 'PRESS.END' }
   tag: never
   guard:
     | 'isDisabled'
     | 'isOpenControlled'
+    | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'
     | 'syncDisabled'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'trackLayer'
 }
 
