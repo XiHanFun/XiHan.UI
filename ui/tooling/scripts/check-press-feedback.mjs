@@ -72,6 +72,8 @@ const PRESSABLE = {
   'side-nav': [{ part: 'link', feedback: 'surface' }, { part: 'branch-trigger', feedback: 'surface' }],
   // 目录里的一节是铺开的一行链接（§9.2），按下只换面不缩放
   'anchor': [{ part: 'link', feedback: 'surface' }],
+  // 面包屑的一层是随文铺开的一段链接（§9.2），按下只换面不缩放
+  'breadcrumb': [{ part: 'link', feedback: 'surface' }],
   'steps': [{ part: 'trigger', feedback: 'surface' }],
   // 圆圈 + 文字的整行条目：整行没有面，按下的回执落在圆圈上（圆圈坐在画布上，按下换到 200 档中性面），圆点不动
   'radio-group': [{ part: 'item', feedback: 'surface', target: 'indicator' }],
