@@ -279,6 +279,11 @@ describe('浮层关闭钮的字形颜色改得动', () => {
       setSlot(`--xh-${scope}-close-fg-hover`, BLUE)
       await mount(spec.render)
       const close = part(scope, spec.part)
+      // 模态面板展开时焦点落在里面第一个可聚焦元素——正是这颗叉：聚焦档的字色是它自己的一档
+      //（家族 ghost 列取 fg-default，桥接到悬停槽），等焦点域落定后把焦点挪走再量「常态」
+      await new Promise(r => setTimeout(r, 300))
+      close.blur()
+      await new Promise(r => setTimeout(r, 200))
 
       expect(styleOf(close, 'color')).toBe(RED)
       await hover(close)
