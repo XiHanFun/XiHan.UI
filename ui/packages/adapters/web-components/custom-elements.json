@@ -50129,6 +50129,9 @@
               "name": "--xh-table-row-bg-hover"
             },
             {
+              "name": "--xh-table-row-bg-pressed"
+            },
+            {
               "name": "--xh-table-row-bg-selected"
             },
             {
@@ -50136,6 +50139,9 @@
             },
             {
               "name": "--xh-table-row-border"
+            },
+            {
+              "name": "--xh-table-row-cursor"
             },
             {
               "name": "--xh-table-row-drag-fg"
@@ -50154,6 +50160,15 @@
             },
             {
               "name": "--xh-table-row-drag-size"
+            },
+            {
+              "name": "--xh-table-row-fg-selected"
+            },
+            {
+              "name": "--xh-table-sort-bg-hover"
+            },
+            {
+              "name": "--xh-table-sort-bg-pressed"
             },
             {
               "name": "--xh-table-sort-fg"
@@ -50199,6 +50214,12 @@
             },
             {
               "name": "--xh-table-trigger-bg-checked"
+            },
+            {
+              "name": "--xh-table-trigger-bg-checked-pressed"
+            },
+            {
+              "name": "--xh-table-trigger-bg-pressed"
             },
             {
               "name": "--xh-table-trigger-border"

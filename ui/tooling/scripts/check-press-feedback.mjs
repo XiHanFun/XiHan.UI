@@ -164,8 +164,9 @@ const PRESSABLE = {
   'navigation-menu': ['trigger'],
   'tabs': ['trigger'],
   'toolbar': ['item'],
-  // 表格里的勾选与展开把手，以及表尾那颗「取下一页」
-  'table': ['select-all-trigger', 'row-select-trigger', 'column-visibility-trigger', 'expand-trigger', 'load-more-trigger', { part: 'sort-trigger', feedback: 'surface' }],
+  // 表格里的勾选与展开把手（定尺方框，缩放并换底）；表体行走 Collection Item 的 page 语境只换面；
+  // 排序把手撑满一格、表尾那颗「取下一页」接 Action Control row 档，都只换面不缩放（§9.2）
+  'table': ['select-all-trigger', 'row-select-trigger', 'column-visibility-trigger', 'expand-trigger', { part: 'row', feedback: 'surface' }, { part: 'load-more-trigger', feedback: 'surface' }, { part: 'sort-trigger', feedback: 'surface' }],
   // 走马灯的翻页钮、播放钮与圆点
   'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
   'layout': ['sider-trigger'],
