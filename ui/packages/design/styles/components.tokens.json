@@ -46552,6 +46552,24 @@
       "description": "popover 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-popover-close-bg-focus",
+      "component": "popover",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-focus-visible"
+      ],
+      "visibility": "public",
+      "description": "popover 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-popover-close-bg-hover",
       "component": "popover",
       "part": [
@@ -46587,6 +46605,24 @@
       ],
       "defaultToken": [
         "--xh-material-frosted-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "popover 的 close-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popover-close-fg-focus",
+      "component": "popover",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-popover-close-fg-hover"
       ],
       "visibility": "public",
       "description": "popover 的 close-trigger 部件 color 覆盖槽。"

@@ -39608,10 +39608,16 @@
               "name": "--xh-popover-close-bg-active"
             },
             {
+              "name": "--xh-popover-close-bg-focus"
+            },
+            {
               "name": "--xh-popover-close-bg-hover"
             },
             {
               "name": "--xh-popover-close-fg"
+            },
+            {
+              "name": "--xh-popover-close-fg-focus"
             },
             {
               "name": "--xh-popover-close-fg-hover"
