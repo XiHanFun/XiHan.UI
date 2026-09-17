@@ -25,7 +25,8 @@
     background: var(--xh-kbd-bg, var(--xh-bg-subtle));
     color: var(--xh-kbd-fg, var(--xh-fg-muted));
     font-family: var(--xh-kbd-font, inherit);
-    font-size: var(--xh-kbd-font-size, var(--xh-text-label-size));
+    /* 快捷键是次级标注，字号取 caption 档（§6.4） */
+    font-size: var(--xh-kbd-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-kbd-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     text-align: center;

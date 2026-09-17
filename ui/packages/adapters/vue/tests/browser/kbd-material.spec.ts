@@ -19,6 +19,15 @@ function mount(render: () => VNode): HTMLElement {
   return host
 }
 
+function tokenColor(name: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${name})`
+  document.body.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
 afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
   app?.unmount()
@@ -64,6 +73,19 @@ describe('kbd 键盘按键', () => {
     expect(getComputedStyle(standard).boxShadow).toBe('none')
     expect(getComputedStyle(standard).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(light).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+  })
+
+  it('键帽是 subtle 材质的 control 形状：透明边位 + 淡底 + 无影，字号取次级标注档 12px，键帽高 24px', () => {
+    const root = mount(() => h(XhKbd, { keys: ['Mod', 'K'], platform: 'other' }))
+    const kbd = root.querySelector<HTMLElement>('[data-scope="kbd"][data-part="root"]')!
+    const style = getComputedStyle(kbd)
+    expect(Number.parseFloat(style.borderTopWidth)).toBe(1)
+    expect(style.borderTopColor).toBe('rgba(0, 0, 0, 0)')
+    expect(style.backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
+    expect(style.boxShadow).toBe('none')
+    expect(style.borderTopLeftRadius).toBe('4px')
+    expect(Number.parseFloat(style.fontSize)).toBe(12)
+    expect(kbd.getBoundingClientRect().height).toBe(24)
   })
 
   it('forced-colors 下由根键帽提供系统边界', async () => {

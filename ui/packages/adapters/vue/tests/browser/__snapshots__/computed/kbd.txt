@@ -20,8 +20,8 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: auto
-font-size: 14px
-line-height: 14px
+font-size: 12px
+line-height: 12px
 font-weight: 500
 color: oklch(0.439 0.006 258)
 background-color: rgba(0, 0, 0, 0)
@@ -55,8 +55,8 @@ border-right-color: rgba(0, 0, 0, 0)
 border-bottom-color: rgba(0, 0, 0, 0)
 border-left-color: rgba(0, 0, 0, 0)
 min-height: 0px
-font-size: 14px
-line-height: 14px
+font-size: 12px
+line-height: 12px
 font-weight: 500
 color: oklch(0.439 0.006 258)
 background-color: oklch(0.967 0.001 258)
