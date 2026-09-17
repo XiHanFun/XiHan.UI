@@ -193,6 +193,8 @@ size 改变条目间距与字号，不写即默认中档
 
 `@xihan-ui/styles/radio-group.css` 使用 `[data-scope="radio-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -214,10 +216,12 @@ size 改变条目间距与字号，不写即默认中档
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-radio-group-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | radio-group 的 root 部件 gap 覆盖槽。 |
+| `--xh-radio-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | radio-group 的 root 部件 gap 覆盖槽。 |
 | `--xh-radio-group-indicator-bg` | `indicator` | `background` | `default` | `--xh-bg-canvas` | radio-group 的 indicator 部件 background 覆盖槽。 |
+| `--xh-radio-group-indicator-bg-pressed` | `indicator`<br>`item` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle-hover` | radio-group 的 indicator、item 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-border` | `indicator` | `border` | `default` | `--xh-border-control` | radio-group 的 indicator 部件 border 覆盖槽。 |
 | `--xh-radio-group-indicator-border-checked` | `indicator` | `border-color` | `state=checked` | `--xh-_radio-group-accent` | radio-group 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-radio-group-indicator-border-hover` | `indicator`<br>`item` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`readonly`<br>`state=checked` | `--xh-border-control-hover` | radio-group 的 indicator、item 部件 border-color 覆盖槽。 |
 | `--xh-radio-group-indicator-border-invalid` | `indicator` | `border-color` | `invalid`<br>`state=checked` | `--xh-border-invalid` | radio-group 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-radio-group-indicator-dot` | `indicator` | `background` | `default` | `--xh-_radio-group-accent` | radio-group 的 indicator 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | radio-group 的 indicator 部件 border-radius 覆盖槽。 |
@@ -228,12 +232,13 @@ size 改变条目间距与字号，不写即默认中档
 | `--xh-radio-group-item-gap` | `item` | `gap` | `default` | `--xh-_radio-group-item-gap` | radio-group 的 item 部件 gap 覆盖槽。 |
 | `--xh-radio-group-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | radio-group 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-radio-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | radio-group 的 label 部件 color 覆盖槽。 |
-| `--xh-radio-group-label-font-size` | `label` | `font-size` | `default` | `--xh-_radio-group-font-size` | radio-group 的 label 部件 font-size 覆盖槽。 |
+| `--xh-radio-group-label-fg-disabled` | `label`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | radio-group 的 label、root 部件 color 覆盖槽。 |
+| `--xh-radio-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | radio-group 的 label 部件 font-size 覆盖槽。 |
 | `--xh-radio-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | radio-group 的 label 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

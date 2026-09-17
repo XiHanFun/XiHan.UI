@@ -41481,10 +41481,16 @@
               "name": "--xh-radio-group-indicator-bg"
             },
             {
+              "name": "--xh-radio-group-indicator-bg-pressed"
+            },
+            {
               "name": "--xh-radio-group-indicator-border"
             },
             {
               "name": "--xh-radio-group-indicator-border-checked"
+            },
+            {
+              "name": "--xh-radio-group-indicator-border-hover"
             },
             {
               "name": "--xh-radio-group-indicator-border-invalid"
@@ -41515,6 +41521,9 @@
             },
             {
               "name": "--xh-radio-group-label-fg"
+            },
+            {
+              "name": "--xh-radio-group-label-fg-disabled"
             },
             {
               "name": "--xh-radio-group-label-font-size"
