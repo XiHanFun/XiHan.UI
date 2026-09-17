@@ -20,23 +20,16 @@
     "file-upload:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "file-upload:trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "pagination:jumper:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100）；跳页框是字段外壳，随 Field Chrome 任务一并迁到字段家族配方（静息描边 + 悬停升 --xh-border-control-hover）",
-    "steps:indicator:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "tour:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移"
+    "steps:indicator:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移"
   },
-  "shape": {
-    "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移"
-  },
+  "shape": {},
   "scroll": {
     "color-picker:content:size": "浮层宿主未传 size: 'sm'，随 color-picker 提交补",
     "color-picker:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 color-picker 提交补"
   },
   "press": {
     "*:data-pressed": "按压通道已落地（Core createPressTracker / pressHandlers，家族配方按压选择器已是 :is(:active, [data-pressed])），button / toggle 已投影 data-pressed；其余 PRESSABLE 部件（check-press-feedback ⑧）随各组件提交接入，全部接完删除这一条",
-    "form:error-summary-item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；没把换面写进本部件的 transition；待本组件迁移",
-    "tour:next-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
-    "tour:prev-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
-    "tour:skip-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移"
+    "form:error-summary-item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；没把换面写进本部件的 transition；待本组件迁移"
   },
   "text": {
     "color-picker:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
@@ -45,11 +38,7 @@
     "steps:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",
     "steps:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
     "timeline:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",
-    "timeline:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
-    "tour:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "tour:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
-    "tour:description:line-height": "line-height 落 --xh-text-body-leading，说明文字应为 --xh-leading-normal；待本组件迁移",
-    "tour:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移"
+    "timeline:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移"
   },
   "motion": {}
 }

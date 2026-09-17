@@ -38223,6 +38223,8 @@
 
 /* family/motion.css */
 
+/* family/action-control.css */
+
 /* 高亮框落定时那一下呼吸：换步时视线要跟着它走，纯位移太容易被漏看 */
 @keyframes xh-tour-spotlight-in {
   from {
@@ -38257,8 +38259,8 @@
 /* 根节点只是几个浮层的归属容器，不参与排版。
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='tour'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-tour-icon-size, var(--xh-glyph-size-text));
+  /* 作者塞进部件里的图标按控件档取字形尺（md = 20px）；四颗按钮各自再按 sm 档收一档 */
+  --xh-icon-size: var(--xh-tour-icon-size, var(--xh-glyph-size-md));
 
   color: var(--xh-tour-fg, var(--xh-fg-default));
 }
@@ -38266,7 +38268,7 @@
 /* 浮层被搬到 portal 落点，继承不到 root 上的槽：这把尺在被搬走的那一侧再声明一次，
    关闭钮与条目里作者塞的图标才和皮肤画的兜底字形一样大 */
 [data-scope='tour'][data-part='content'] {
-  --xh-icon-size: var(--xh-tour-icon-size, var(--xh-glyph-size-text));
+  --xh-icon-size: var(--xh-tour-icon-size, var(--xh-glyph-size-md));
 }
 
 /* 遮罩：整页压暗，把注意力逼到高亮框那一块上 */
@@ -38402,11 +38404,12 @@
   padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
   /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
   max-block-size: min(var(--xh-tour-max-h, var(--xh-overlay-max-h)), var(--xh-_tour-available-h));
-  border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
+  /* M4 sheet 三件套（§8.4），与 dialog 同源：1px 描边是它的边界，不透明底，影只是加成 */
+  border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-material-elevated-border));
   border-radius: var(--xh-tour-radius, var(--xh-shape-overlay));
-  background: var(--xh-tour-bg, var(--xh-bg-surface));
-  color: var(--xh-tour-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-tour-shadow, var(--xh-elevation-sheet));
+  background: var(--xh-tour-bg, var(--xh-material-elevated-bg));
+  color: var(--xh-tour-fg, var(--xh-material-elevated-fg));
+  box-shadow: var(--xh-tour-shadow, var(--xh-material-elevated-shadow));
   pointer-events: auto;
   /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
@@ -38445,10 +38448,11 @@
   padding-inline-end: calc(var(--xh-tour-close-size, var(--xh-control-h-sm)) + var(--xh-surface-action-inset));
 }
 
+/* 说明文字走说明档（§6.4）：13px + fg-muted */
 [data-scope='tour'][data-part='description'] {
   margin: 0;
-  font-size: var(--xh-text-body-size);
-  line-height: var(--xh-text-body-leading);
+  font-size: var(--xh-text-secondary-size);
+  line-height: var(--xh-leading-normal);
   color: var(--xh-tour-description-fg, var(--xh-fg-muted));
 }
 
@@ -38469,11 +38473,12 @@
   display: none;
 }
 
-/* 圆点：未走到的一档取中性描边色。宽度与底色都随状态换，换步那一下能看出进度在推进 */
+/* 圆点：8px 正圆取 circle（§6.3 分页点统一款），未走到的一档取中性描边色。
+   宽度与底色都随状态换，换步那一下能看出进度在推进 */
 [data-scope='tour'][data-part='progress-dot'] {
   inline-size: var(--xh-space-2);
   block-size: var(--xh-space-2);
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-shape-circle);
   background: var(--xh-tour-progress-dot-bg, var(--xh-border-default));
   transition:
     inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
@@ -38485,25 +38490,26 @@
   background: var(--xh-tour-progress-dot-bg-complete, var(--xh-border-strong));
 }
 
-/* 当前步：拉成胶囊并换品牌色 */
+/* 当前步：拉成 20px 胶囊并换品牌色；一维对象取 pill */
 [data-scope='tour'][data-part='progress-dot'][data-current] {
   inline-size: var(--xh-space-5);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-tour-progress-dot-bg-current, var(--xh-bg-brand));
 }
 
+/*
+ * —— 末行三颗按钮 ——
+ * 上一步 / 下一步 / 跳过都是气泡末行的文字按钮（§9.1）：盒型、sm 档几何、四态面、0.97 按压并换底、粗指针命中区与
+ * 强制色由家族配方按连接层投影的 data-xh-action-variant / -size 给出。这里只把公开槽桥接到矩阵之前
+ * （使用者槽 → 形态矩阵 → 家族缺省）与几何映射；内衬与圆角槽三颗共用。
+ */
 [data-scope='tour'][data-part='prev-trigger'],
 [data-scope='tour'][data-part='next-trigger'],
 [data-scope='tour'][data-part='skip-trigger'] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  block-size: var(--xh-control-h-sm);
-  padding-inline: var(--xh-tour-skip-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-tour-action-radius, var(--xh-shape-control));
-  font-size: var(--xh-text-secondary-size);
-  cursor: pointer;
-  transition: scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-padding-inline: var(--xh-tour-skip-trigger-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-radius: var(--xh-tour-action-radius, var(--xh-shape-control));
+  /* 作者塞进按钮的图标随档取字形尺（sm = 16px） */
+  --xh-icon-size: var(--xh-tour-icon-size, var(--xh-_action-profile-glyph-size));
 }
 
 [data-scope='tour'][data-part='prev-trigger'][hidden],
@@ -38512,90 +38518,49 @@
   display: none;
 }
 
-/* 主按钮：整条引导的主线动作。实心底顶边一条极浅的内高光，把这块面衬出厚度 */
+/* 下一步是整条引导的主线动作，显式 solid（§7.2 第 2 条）：底、字与影三组使用者槽桥到配方 solid 列之前 */
 [data-scope='tour'][data-part='next-trigger'] {
-  --xh-_tour-next-highlight: var(--xh-_highlight-brand);
-
-  background: var(--xh-tour-next-bg, var(--xh-bg-brand));
-  color: var(--xh-tour-next-fg, var(--xh-fg-on-brand));
-  box-shadow: var(--xh-tour-next-shadow, var(--xh-_tour-next-highlight));
+  --xh-action-bg-rest: var(--xh-tour-next-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-tour-next-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-focus-visible: var(--xh-tour-next-bg, var(--xh-_action-variant-bg-focus-visible));
+  --xh-action-fg-rest: var(--xh-tour-next-fg, var(--xh-_action-variant-fg-rest));
+  --xh-action-fg-hover: var(--xh-tour-next-fg, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-tour-next-fg, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-tour-next-fg, var(--xh-_action-variant-fg-focus-visible));
+  --xh-action-shadow-rest: var(--xh-tour-next-shadow, none);
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='tour'][data-part='next-trigger']:focus-visible {
-  --xh-_ring-color: currentColor;
+[data-scope='tour'][data-part='next-trigger'][data-xh-action-variant='solid']:focus-visible {
+  --xh-action-ring-color-focus-visible: currentColor;
 }
 
-[data-scope='tour'][data-part='next-trigger']:hover {
-  background: var(--xh-tour-next-bg-hover, var(--xh-bg-brand-hover));
-}
-
-[data-scope='tour'][data-part='prev-trigger'],
-[data-scope='tour'][data-part='skip-trigger'] {
-  background: transparent;
-  color: var(--xh-fg-muted);
-}
-
-[data-scope='tour'][data-part='prev-trigger'] {
-  border-color: var(--xh-border-control);
-  color: var(--xh-fg-default);
-}
-
-[data-scope='tour'][data-part='prev-trigger']:hover:not(:disabled),
-[data-scope='tour'][data-part='skip-trigger']:hover {
-  background: var(--xh-bg-subtle);
-}
-
-/* 按下的回执：三颗按钮同一档缩放 */
-[data-scope='tour'][data-part='next-trigger']:active,
-[data-scope='tour'][data-part='skip-trigger']:active,
-[data-scope='tour'][data-part='prev-trigger']:active:not(:disabled) {
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 单体控件用原生 disabled（集合条目才用 [data-disabled]）：首步的上一步就是这个形态 */
-[data-scope='tour'][data-part='prev-trigger']:disabled {
-  color: var(--xh-fg-disabled);
-  border-color: var(--xh-border-subtle);
-}
-
+/*
+ * 关闭钮是气泡角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+ * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
+ * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放；
+ * 静息前景取 muted 字色，悬停 / 按下 / 聚焦回到 fg-default。
+ */
 [data-scope='tour'][data-part='close-trigger'] {
+  --xh-action-visual-size: var(--xh-tour-close-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-tour-close-radius, var(--xh-shape-control));
+  --xh-action-bg-hover: var(--xh-tour-close-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-tour-close-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-tour-close-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-focus-visible));
+  /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-tour-icon-size, var(--xh-_action-profile-glyph-size));
+
   position: absolute;
   inset-block-start: var(--xh-surface-action-inset);
   inset-inline-end: var(--xh-surface-action-inset);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  block-size: var(--xh-tour-close-size, var(--xh-control-h-sm));
-  inline-size: var(--xh-tour-close-size, var(--xh-control-h-sm));
-  border: 0;
-  border-radius: var(--xh-tour-close-radius, var(--xh-shape-control));
-  background: transparent;
-  color: var(--xh-tour-close-fg, var(--xh-fg-muted));
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='tour'][data-part='close-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='tour'][data-part='close-trigger']:hover {
-  background: var(--xh-tour-close-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-tour-close-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='tour'][data-part='close-trigger']:active {
-  background: var(--xh-tour-close-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -38607,8 +38572,8 @@
   --xh-_overlay-arrow-x: var(--xh-_tour-arrow-x);
   --xh-_overlay-arrow-y: var(--xh-_tour-arrow-y);
 
-  background: var(--xh-tour-bg, var(--xh-bg-surface));
-  border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
+  background: var(--xh-tour-bg, var(--xh-material-elevated-bg));
+  border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-material-elevated-border));
 }
 
 /* 居中步没有锚点，连接层会给箭头发 hidden */
@@ -38628,23 +38593,13 @@
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
-/* 气泡限高之后只让正文让步：标题与上下步按钮滚出视线就点不到了 */
+/* 气泡限高之后只让正文让步：标题与上下步按钮滚出视线就点不到了。
+   模态气泡里的原生细条滚动面（§6.6）：细条由 reset 层统一给，滚到头不把页面一起带走；内容高度不动态变化，不写 gutter */
 [data-scope='tour'][data-part='description'] {
   flex: 1 1 auto;
   min-block-size: 0;
   overflow-y: auto;
-}
-
-/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
-   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
-   用 ::after：::before 已经被兜底字形占着。
-   钮本身贴边 12px，8px 的外扩仍落在气泡的内衬里 */
-@media (pointer: coarse) {
-  [data-scope='tour'][data-part='close-trigger']::after {
-    content: '';
-    position: absolute;
-    inset: calc(-1 * var(--xh-space-2));
-  }
+  overscroll-behavior: contain;
 }
 
 @media (forced-colors: active) {

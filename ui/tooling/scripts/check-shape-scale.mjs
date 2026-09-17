@@ -47,7 +47,7 @@ const RADIUS_SLOT = /^--xh-_[\w-]*radius[\w-]*$/
 const NO_SLOT = {
   'radio-group:indicator::before': '单选圆点，圆是它的身份',
   'color-swatch-picker:indicator::before': '压在色块正中的选中徽标，圆是它的身份',
-  'tour:progress-dot': '进度圆点，圆是它的身份；当前那颗拉成胶囊也靠这条圆角',
+  'tour:progress-dot': '进度圆点，8px 正方盒取 circle；当前那颗拉成 20px 胶囊取 pill，两档都是身份',
   'popconfirm:confirm-trigger::before': '转圈的加载环，正方盒取 circle',
   'switch:thumb::after': '转圈的加载环',
   'download-trigger:root::before': '转圈的加载环，正方盒取 circle',
@@ -144,7 +144,9 @@ const IDENTITY = {
   'sortable:drop-indicator': 'pill',
   'skeleton:item[data-shape=\'text\']': 'pill',
 
+  // 引导的分页点：圆点 circle，当前那颗拉长成 pill（§6.3 分页点统一 tour 款）
   'tour:progress-dot': 'circle',
+  'tour:progress-dot[data-current]': 'pill',
   // control：在 chrome 内或随文的按钮与字段
   'pagination:item': 'control',
   // 看图器顶部一行字的计数气泡：与 tooltip / kbd 同档

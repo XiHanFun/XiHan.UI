@@ -685,3 +685,108 @@ describe('tour 活 DOM：高亮框与键盘', () => {
     t.stop()
   })
 })
+
+// ══ Action Control 与按压通道 ══
+
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('connectTour：四颗按钮接 Action Control', () => {
+  it('末行三颗是 text 档 sm：下一步 solid、上一步 outline、跳过 ghost；关闭钮 icon sm ghost；静息不带 data-pressed', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    const text = { 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-display': 'always', 'data-xh-action-size': 'sm' }
+    const next = t.api().getNextTriggerProps() as Dict
+    // 主线动作显式 solid（真源 §7.2 第 2 条：确认 / 主线动作钮与 Popconfirm 确认同列）
+    expect(next).toMatchObject({ ...text, 'data-xh-action-variant': 'solid' })
+    const prev = t.api().getPrevTriggerProps() as Dict
+    expect(prev).toMatchObject({ ...text, 'data-xh-action-variant': 'outline' })
+    const skip = t.api().getSkipTriggerProps() as Dict
+    expect(skip).toMatchObject({ ...text, 'data-xh-action-variant': 'ghost' })
+    const close = t.api().getCloseTriggerProps() as Dict
+    expect(close).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'ghost',
+    })
+    for (const props of [next, prev, skip, close])
+      expect(props['data-pressed']).toBeUndefined()
+  })
+
+  it('首步的上一步同时投影原生 disabled 与 data-disabled：家族配方按后者铺禁用面', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    expect(t.api().getPrevTriggerProps() as Dict).toMatchObject({ 'disabled': true, 'data-disabled': '' })
+    t.api().setValue(1)
+    const prev = t.api().getPrevTriggerProps() as Dict
+    expect(prev.disabled).toBeUndefined()
+    expect(prev['data-disabled']).toBeUndefined()
+  })
+})
+
+describe('tourMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed，按住的是哪颗就只落在哪颗上', () => {
+  it('下一步：keydown 在场、keyup 撤下；触屏按下在场、抬起撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    const next = (): Dict => t.api().getNextTriggerProps() as Dict
+    fire(next(), 'onKeyDown', key(' '))
+    expect(next()['data-pressed']).toBe('')
+    fire(next(), 'onKeyUp', key(' '))
+    expect(next()['data-pressed']).toBeUndefined()
+    fire(next(), 'onPointerDown', { pointerType: 'touch' })
+    expect(next()['data-pressed']).toBe('')
+    fire(next(), 'onPointerUp', {})
+    expect(next()['data-pressed']).toBeUndefined()
+    fire(next(), 'onKeyDown', key('Enter'))
+    expect(next()['data-pressed']).toBe('')
+    fire(next(), 'onBlur', {})
+    expect(next()['data-pressed']).toBeUndefined()
+    fire(next(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(next()['data-pressed']).toBeUndefined()
+  })
+
+  it('只有按住的那颗带 data-pressed，另一颗的 keyup 不把它松开', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    const skip = (): Dict => t.api().getSkipTriggerProps() as Dict
+    const close = (): Dict => t.api().getCloseTriggerProps() as Dict
+    fire(close(), 'onKeyDown', key(' '))
+    expect(close()['data-pressed']).toBe('')
+    expect(skip()['data-pressed']).toBeUndefined()
+    fire(skip(), 'onKeyUp', key(' '))
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onKeyUp', key(' '))
+    expect(close()['data-pressed']).toBeUndefined()
+  })
+
+  it('首步的上一步是原生禁用：按住不进按压面；走到第二步后照收', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    const prev = (): Dict => t.api().getPrevTriggerProps() as Dict
+    fire(prev(), 'onKeyDown', key(' '))
+    expect(prev()['data-pressed']).toBeUndefined()
+    fire(prev(), 'onPointerDown', { pointerType: 'touch' })
+    expect(prev()['data-pressed']).toBeUndefined()
+    t.api().setValue(1)
+    fire(prev(), 'onKeyDown', key(' '))
+    expect(prev()['data-pressed']).toBe('')
+    fire(prev(), 'onKeyUp', key(' '))
+    expect(prev()['data-pressed']).toBeUndefined()
+  })
+
+  it('气泡收起即松开：按住 Enter 跳过后，跳过钮随内容藏起不会再来 keyup，按压面由机器收', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    const skip = (): Dict => t.api().getSkipTriggerProps() as Dict
+    fire(skip(), 'onKeyDown', key('Enter'))
+    expect(skip()['data-pressed']).toBe('')
+    t.service.send({ type: 'SKIP' })
+    expect(t.service.state.get()).toBe('closed')
+    expect(skip()['data-pressed']).toBeUndefined()
+    t.service.send({ type: 'OPEN' })
+    expect(skip()['data-pressed']).toBeUndefined()
+  })
+
+  it('收起态不收按压：气泡藏着时四颗按钮都不在可访问树里', () => {
+    const t = makeService({ steps: STEPS })
+    const next = (): Dict => t.api().getNextTriggerProps() as Dict
+    fire(next(), 'onKeyDown', key(' '))
+    expect(next()['data-pressed']).toBeUndefined()
+  })
+})

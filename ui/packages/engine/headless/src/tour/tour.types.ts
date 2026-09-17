@@ -70,6 +70,12 @@ export interface TourRefs {
 }
 
 /**
+ * 正被按住的按钮：气泡末行的上一步 / 下一步 / 跳过与角落的关闭钮。
+ * 四颗按钮只记一个布尔分不清按住的是哪颗。
+ */
+export type TourPressedPart = 'prev-trigger' | 'next-trigger' | 'skip-trigger' | 'close-trigger'
+
+/**
  * 圆点的身份。connect 在 render 期求值，此时 DOM 尚不存在，序号由调用方提供。
  */
 export interface TourProgressDotProps {
@@ -140,6 +146,11 @@ export interface TourSchema extends MachineSchema {
     position: PositionResult | null
     /** 高亮框几何，由效应测量后写入；居中步与收起态恒为 null。 */
     spotlight: TourSpotlightRect | null
+    /**
+     * 正被按住的按钮：Space / Enter 或触屏手指按下到松开之间，该按钮投影 data-pressed；没有按住时为 null。
+     * 指针按住由 :active 表出。气泡收起时一并清空——按住 Enter 走完末步或跳过后，那颗按钮随内容藏起，不会再来 keyup。
+     */
+    pressed: TourPressedPart | null
   }
   computed: Record<string, never>
   refs: TourRefs
@@ -156,8 +167,11 @@ export interface TourSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪颗按钮
+    | { type: 'PRESS.START', part: TourPressedPart }
+    | { type: 'PRESS.END', part: TourPressedPart }
   tag: never
-  guard: 'isOpenControlled' | 'isLastStep' | 'isLastStepOpenControlled'
+  guard: 'isOpenControlled' | 'isLastStep' | 'isLastStepOpenControlled' | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -171,6 +185,9 @@ export interface TourSchema extends MachineSchema {
     | 'reanchorPosition'
     | 'clearGeometry'
     | 'scrollTargetIntoView'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
   effect: 'trackPosition' | 'trackSpotlight' | 'trackOverlay'
 }
 

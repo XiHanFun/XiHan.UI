@@ -1,5 +1,6 @@
 import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
 import { tourAnatomy, tourKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 
@@ -127,8 +128,48 @@ export const tourSuite: ConformanceSuite = {
             'data-step': '0',
           },
           'arrow': { 'aria-hidden': 'true', 'hidden': '' },
-          'prev-trigger': { type: 'button', disabled: '' },
-          'next-trigger': { type: 'button', disabled: null },
+          // 末行三颗都是 Action Control text 档 sm：上一步中性描边（首步原生禁用，同步投影 data-disabled 给家族铺禁用面）、
+          // 下一步显式 solid（主线动作，§7.2 第 2 条）、跳过无壳 ghost；静息都不带 data-pressed
+          'prev-trigger': {
+            'type': 'button',
+            'disabled': '',
+            'data-disabled': '',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'outline',
+            'data-pressed': null,
+          },
+          'next-trigger': {
+            'type': 'button',
+            'disabled': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'solid',
+            'data-pressed': null,
+          },
+          'skip-trigger': {
+            'type': 'button',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'ghost',
+            'data-pressed': null,
+          },
+          // 气泡角落的叉：Action Control icon 档 sm、ghost 面
+          'close-trigger': {
+            'type': 'button',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'ghost',
+            'data-pressed': null,
+          },
           'progress-text': { 'aria-live': 'polite', 'data-step': '0' },
           'progress-indicator': { 'aria-hidden': 'true', 'data-step': '0', 'data-count': '3' },
           'progress-dot[0]': { 'data-index': '0', 'data-current': '', 'data-complete': null },
@@ -308,7 +349,7 @@ export const tourSuite: ConformanceSuite = {
           expect: {
             parts: {
               'content': { 'data-step': '1' },
-              'prev-trigger': { disabled: null },
+              'prev-trigger': { 'disabled': null, 'data-disabled': null },
               // 第二步声明了 placement=right，避让后的实际位仍写在 data-placement 上
               'positioner': { 'data-position': 'anchored' },
             },
@@ -320,7 +361,7 @@ export const tourSuite: ConformanceSuite = {
           expect: {
             parts: {
               'content': { 'data-step': '0' },
-              'prev-trigger': { disabled: '' },
+              'prev-trigger': { 'disabled': '', 'data-disabled': '' },
             },
           },
         },
@@ -429,6 +470,21 @@ export const tourSuite: ConformanceSuite = {
             },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：四颗按钮各自投影 data-pressed，抬起、失焦或指针取消撤下；首步的上一步原生禁用不进按压面',
+      spec: { adr: 'press-channel' },
+      covers: ['tour.kbd.press'],
+      props: { ...PROPS, defaultOpen: true },
+      steps: [
+        { kind: 'settle', until: { activeElement: 'content' } },
+        heldPressIgnored('tour', 'prev-trigger', '首步的上一步是原生禁用'),
+        heldPress('tour', 'next-trigger'),
+        heldPress('tour', 'skip-trigger'),
+        heldPress('tour', 'close-trigger'),
+        { kind: 'click', part: 'next-trigger' },
+        heldPress('tour', 'prev-trigger'),
       ],
     },
   ],

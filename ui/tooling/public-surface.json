@@ -6441,6 +6441,7 @@
       "TourApi",
       "TourCompleteDetails",
       "TourOpenChangeDetails",
+      "TourPressedPart",
       "TourProgressDotProps",
       "TourRefs",
       "TourSchema",
