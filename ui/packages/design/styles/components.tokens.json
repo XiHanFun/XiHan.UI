@@ -72372,7 +72372,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-material-elevated-bg"
       ],
       "visibility": "public",
       "description": "tour 的 arrow、content 部件 background 覆盖槽。"
@@ -72391,7 +72391,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "tour 的 arrow、content 部件 border 覆盖槽。"
@@ -72403,16 +72403,21 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "tour 的 close-trigger 部件 background 覆盖槽。"
+      "description": "tour 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-tour-close-bg-hover",
@@ -72421,16 +72426,20 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "tour 的 close-trigger 部件 background 覆盖槽。"
+      "description": "tour 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-tour-close-fg",
@@ -72460,10 +72469,19 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed"
       ],
       "visibility": "public",
       "description": "tour 的 close-trigger 部件 color 覆盖槽。"
@@ -72501,9 +72519,11 @@
       ],
       "state": [
         "default",
-        "has([data-scope='tour'][data-part='close-trigger'])"
+        "has([data-scope='tour'][data-part='close-trigger'])",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
+        "--xh-_action-profile-visual-size",
         "--xh-control-h-sm"
       ],
       "visibility": "public",
@@ -72541,7 +72561,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-default",
+        "--xh-material-elevated-fg"
       ],
       "visibility": "public",
       "description": "tour 的 content、root 部件 color 覆盖槽。"
@@ -72568,8 +72589,12 @@
       "name": "--xh-tour-icon-size",
       "component": "tour",
       "part": [
+        "close-trigger",
         "content",
-        "root"
+        "next-trigger",
+        "prev-trigger",
+        "root",
+        "skip-trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -72578,10 +72603,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "tour 的 content、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "tour 的 close-trigger、content、next-trigger、prev-trigger、root、skip-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-tour-max-h",
@@ -72626,16 +72652,18 @@
         "next-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-bg-brand"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "tour 的 next-trigger 部件 background 覆盖槽。"
+      "description": "tour 的 next-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-tour-next-bg-hover",
@@ -72644,16 +72672,20 @@
         "next-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-brand-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "tour 的 next-trigger 部件 background 覆盖槽。"
+      "description": "tour 的 next-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-tour-next-fg",
@@ -72665,10 +72697,21 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-on-brand"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "tour 的 next-trigger 部件 color 覆盖槽。"
@@ -72686,7 +72729,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_tour-next-highlight"
+        "none"
       ],
       "visibility": "public",
       "description": "tour 的 next-trigger 部件 box-shadow 覆盖槽。"
@@ -72902,7 +72945,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-sheet"
+        "--xh-material-elevated-shadow"
       ],
       "visibility": "public",
       "description": "tour 的 content 部件 box-shadow 覆盖槽。"
@@ -72922,7 +72965,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "tour 的 next-trigger、prev-trigger、skip-trigger 部件 padding-inline 覆盖槽。"

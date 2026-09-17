@@ -23,6 +23,7 @@ export type {
   TourApi,
   TourCompleteDetails,
   TourOpenChangeDetails,
+  TourPressedPart,
   TourProgressDotProps,
   TourRefs,
   TourSchema,

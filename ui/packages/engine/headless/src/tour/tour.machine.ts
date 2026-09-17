@@ -6,7 +6,7 @@
 // 提供 tour 相关实现。
 
 import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
-import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
+import type { TourPressedPart, TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction } from '../shared/overlay-shell'
@@ -83,6 +83,8 @@ export const tourMachine = createMachine({
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 高亮框由 measureSpotlight 量出来写进来；带 isEqual，量到同一个结果不多推一轮重渲
     spotlight: cell<TourSpotlightRect | null>(() => ({ defaultValue: null, isEqual: sameTourSpotlight })),
+    // 按压通道：正被按住的那颗按钮，四颗都住在气泡里，只在展开态收事件
+    pressed: cell<TourPressedPart | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -117,8 +119,9 @@ export const tourMachine = createMachine({
     open: {
       // 进入 open：定位 → 高亮 → 消解与焦点。退出 open 时按同序清理。
       effects: ['trackPosition', 'trackSpotlight'],
-      // 几何随展开态一起来一起走，留着上一轮坐标会让下次展开先按旧位置闪一帧
-      exit: ['clearGeometry'],
+      // 几何随展开态一起来一起走，留着上一轮坐标会让下次展开先按旧位置闪一帧；
+      // 收起即松开：按住 Enter 走完末步或跳过，那颗按钮随内容藏起，不会再来 keyup 或 blur
+      exit: ['clearGeometry', 'releasePress'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -137,6 +140,9 @@ export const tourMachine = createMachine({
           { target: 'closed', actions: ['invokeOnSkip', 'invokeOnClose'] },
         ],
         'GEOMETRY.SYNC': { actions: ['reanchorPosition', 'measureSpotlight'] },
+        // 按压通道：首步的上一步是原生禁用，按住它不进按压面；其余三颗照收
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -154,6 +160,13 @@ export const tourMachine = createMachine({
           return false
         const count = tourStepCount(prop('steps'))
         return isTourLastStep(clampTourStep(context.get('value'), count), count)
+      },
+      // 上一步在首步是原生 disabled：真实浏览器不会给它派键盘与指针事件，这里再守一道，纯逻辑测试与合成事件也不会把它按下
+      canPress: ({ prop, context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || e.part !== 'prev-trigger')
+          return true
+        return stepOf(prop, context.get('value')) > 0
       },
     },
     actions: {
@@ -184,6 +197,18 @@ export const tourMachine = createMachine({
         context.set('position', null)
         context.set('spotlight', null)
       },
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.part)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.part)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
       reanchorPosition: ({ refs }) => refs.get('reanchor')?.(),
       // 目标不在视口内先滚进来（nearest：已可见时不动）；量测与定位随后按滚完的布局取
       scrollTargetIntoView: ({ prop, context, scope }) => {

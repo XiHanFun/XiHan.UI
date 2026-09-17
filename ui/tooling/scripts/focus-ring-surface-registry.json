@@ -286,13 +286,6 @@
       ],
       "ratio": 1,
       "ring": "poured"
-    },
-    "tour [data-part='next-trigger'][data-scope='tour']": {
-      "parts": [
-        "next-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
     }
   }
 }

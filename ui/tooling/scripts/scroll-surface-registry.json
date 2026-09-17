@@ -292,9 +292,9 @@
     },
     "tour:description": {
       "mode": "native",
-      "overscroll": false,
+      "overscroll": true,
       "gutter": false,
-      "why": "导览步骤的说明文案区，长文案时在卡内滚"
+      "why": "导览步骤的说明文案区，长文案时在气泡内滚：气泡是 aria-modal 的模态面，滚到头不带动页面；内容高度不动态变化，不写 gutter"
     },
     "heatmap:root": {
       "mode": "native",

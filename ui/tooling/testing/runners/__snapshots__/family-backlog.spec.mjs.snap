@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 4,
-  "ladder": 15,
+  "ladder": 13,
   "motion": 0,
-  "press": 5,
+  "press": 2,
   "scroll": 2,
   "selection": 0,
-  "shape": 1,
-  "text": 11,
+  "shape": 0,
+  "text": 7,
 }
 `;
 
@@ -37,8 +37,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "file-upload:trigger:pressed",
   "pagination:jumper:hover",
   "steps:indicator:hover",
-  "tour:close-trigger:hover",
-  "tour:close-trigger:pressed",
 ]
 `;
 
@@ -48,9 +46,6 @@ exports[`family-backlog 键集合 > press 1`] = `
 [
   "*:data-pressed",
   "form:error-summary-item",
-  "tour:next-trigger",
-  "tour:prev-trigger",
-  "tour:skip-trigger",
 ]
 `;
 
@@ -63,11 +58,7 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 
 exports[`family-backlog 键集合 > selection 1`] = `[]`;
 
-exports[`family-backlog 键集合 > shape 1`] = `
-[
-  "tour:progress-dot",
-]
-`;
+exports[`family-backlog 键集合 > shape 1`] = `[]`;
 
 exports[`family-backlog 键集合 > text 1`] = `
 [
@@ -78,9 +69,5 @@ exports[`family-backlog 键集合 > text 1`] = `
   "steps:title:font-weight",
   "timeline:title:font-size",
   "timeline:title:font-weight",
-  "tour:content:icon-size",
-  "tour:description:font-size",
-  "tour:description:line-height",
-  "tour:root:icon-size",
 ]
 `;

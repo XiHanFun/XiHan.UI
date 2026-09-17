@@ -6,8 +6,8 @@
 // 提供 tour 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TourApi, TourSchema } from './tour.types'
-import { dataAttr } from '@xihan-ui/core'
+import type { TourApi, TourPressedPart, TourSchema } from './tour.types'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayPositioned } from '../shared/overlay'
 import { tourAnatomy } from './tour.anatomy'
 import { clampTourStep, currentTourStep, isTourLastStep, TOUR_DEFAULT_PLACEMENT, tourStepCount } from './tour.machine'
@@ -58,6 +58,25 @@ export function connectTour<T extends PropTypes>(
   const setOpen = (next: boolean): void => {
     if (next !== open)
       send({ type: next ? 'OPEN' : 'CLOSE' })
+  }
+
+  // 按压通道：四颗按钮各自合成一份跟踪器，真源是机器 context 里「正被按住的那颗」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
+  const pressed = context.get('pressed')
+  const press = (part: TourPressedPart) => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === part,
+      onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
   }
 
   return {
@@ -197,12 +216,22 @@ export function connectTour<T extends PropTypes>(
       })
     },
 
-    // 上一步/下一步/跳过/关闭都是单体控件，禁用一律用原生 disabled
+    // 上一步/下一步/跳过/关闭都是单体控件，禁用一律用原生 disabled；
+    // 家族配方按 data-disabled 铺禁用面，两者同步投影
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
       'disabled': firstStep || undefined,
+      'data-disabled': dataAttr(firstStep),
       'data-state': stateAttr,
+      // 末行的文字按钮：盒型、sm 档几何、四态面、0.97 按压并换底与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
+      // 回退是次要动作，中性描边（§7.2 第 2 条：只有 Button 缺省品牌实心）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'outline',
+      ...press('prev-trigger'),
       'onClick': () => send({ type: 'STEP.PREV' }),
     }),
 
@@ -214,6 +243,13 @@ export function connectTour<T extends PropTypes>(
       // 两句都不给就整条不输出：这颗按钮通常带可见文字，发一句会把它盖掉
       'aria-label': lastStep ? translations?.finish : translations?.next,
       'data-state': stateAttr,
+      // 整条引导的主线动作：与 Popconfirm 的确认钮同列，显式 solid 品牌实心（真源 §7.2 第 2 条）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'solid',
+      ...press('next-trigger'),
       'onClick': () => send({ type: 'STEP.NEXT' }),
     }),
 
@@ -221,6 +257,13 @@ export function connectTour<T extends PropTypes>(
       ...parts['skip-trigger'].attrs,
       'type': 'button',
       'data-state': stateAttr,
+      // 放弃引导的第三出口：无壳 ghost，白面上走画布承载阶梯（hover 100 → pressed 200）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'ghost',
+      ...press('skip-trigger'),
       'onClick': () => send({ type: 'SKIP' }),
     }),
 
@@ -230,6 +273,13 @@ export function connectTour<T extends PropTypes>(
       ...parts['close-trigger'].attrs,
       'type': 'button',
       'aria-label': closeLabel,
+      // 气泡角落的叉：icon 档 sm、ghost 面，白面上走画布承载阶梯（hover 100 → pressed 200）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'ghost',
+      ...press('close-trigger'),
       'onClick': () => send({ type: 'CLOSE', src: 'close-trigger' }),
     }),
 
