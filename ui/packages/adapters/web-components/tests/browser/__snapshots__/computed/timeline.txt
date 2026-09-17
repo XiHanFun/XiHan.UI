@@ -90,8 +90,8 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: auto
-font-size: 14px
-line-height: 21px
+font-size: 13px
+line-height: 19.5px
 font-weight: 400
 color: oklch(0.439 0.006 258)
 background-color: rgba(0, 0, 0, 0)

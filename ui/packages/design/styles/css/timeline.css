@@ -394,7 +394,7 @@
 
   [data-scope='timeline'][data-part='description'] {
     color: var(--xh-timeline-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-timeline-description-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-timeline-description-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 

@@ -269,7 +269,6 @@
     "steps:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
     "switch:label:color": "color 落 --xh-fg-disabled，禁用标签色统一应为 --xh-fg-subtle；待本组件迁移",
     "table:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "timeline:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "timeline:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",
     "timeline:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
     "tour:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",

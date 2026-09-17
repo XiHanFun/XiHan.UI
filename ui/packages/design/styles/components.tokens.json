@@ -64550,7 +64550,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "timeline 的 description 部件 font-size 覆盖槽。"

@@ -9,7 +9,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "scroll": 27,
   "selection": 18,
   "shape": 19,
-  "text": 69,
+  "text": 68,
 }
 `;
 
@@ -307,7 +307,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "steps:title:font-weight",
   "switch:label:color",
   "table:root:icon-size",
-  "timeline:description:font-size",
   "timeline:title:font-size",
   "timeline:title:font-weight",
   "tour:content:icon-size",
