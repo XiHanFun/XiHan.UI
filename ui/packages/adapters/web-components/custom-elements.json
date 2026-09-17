@@ -5696,10 +5696,22 @@
               "name": "--xh-carousel-indicator-bg"
             },
             {
+              "name": "--xh-carousel-indicator-bg-active"
+            },
+            {
               "name": "--xh-carousel-indicator-bg-hover"
             },
             {
               "name": "--xh-carousel-indicator-bg-selected"
+            },
+            {
+              "name": "--xh-carousel-indicator-bg-selected-active"
+            },
+            {
+              "name": "--xh-carousel-indicator-bg-track"
+            },
+            {
+              "name": "--xh-carousel-indicator-fg-selected"
             },
             {
               "name": "--xh-carousel-indicator-gap"
@@ -5709,6 +5721,9 @@
             },
             {
               "name": "--xh-carousel-indicator-radius"
+            },
+            {
+              "name": "--xh-carousel-indicator-radius-current"
             },
             {
               "name": "--xh-carousel-indicator-size"
@@ -5736,6 +5751,9 @@
             },
             {
               "name": "--xh-carousel-trigger-radius"
+            },
+            {
+              "name": "--xh-carousel-trigger-shadow"
             },
             {
               "name": "--xh-carousel-trigger-shadow-hover"

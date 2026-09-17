@@ -235,6 +235,12 @@ export function connectCarousel<T extends PropTypes>(
       'disabled': !canScrollPrev || undefined,
       'data-disabled': dataAttr(!canScrollPrev),
       'data-orientation': orientation,
+      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）；
+      // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
       // 边界由机器守住，这里不再判一次 canScrollPrev
       'onClick': () => send({ type: 'PAGE.PREV' }),
     }),
@@ -247,6 +253,12 @@ export function connectCarousel<T extends PropTypes>(
       'disabled': !canScrollNext || undefined,
       'data-disabled': dataAttr(!canScrollNext),
       'data-orientation': orientation,
+      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）；
+      // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
       'onClick': () => send({ type: 'PAGE.NEXT' }),
     }),
 
@@ -266,6 +278,12 @@ export function connectCarousel<T extends PropTypes>(
       'disabled': autoplayInterval <= 0 || undefined,
       'data-disabled': dataAttr(autoplayInterval <= 0),
       'data-state': autoplayStopped ? 'paused' : 'running',
+      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）；
+      // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
       // 三条出口各对一种停法：从没起播过要 START，被自己按住的要 RESUME，
       // 正在走的才是 PAUSE。只发 PAUSE / RESUME 的话，reduce 档下那条停在 idle 的
       // 轮播永远也播不起来

@@ -6677,7 +6677,9 @@
       "name": "--xh-carousel-icon-size",
       "component": "carousel",
       "part": [
-        "root"
+        "autoplay-trigger",
+        "next-trigger",
+        "prev-trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -6686,10 +6688,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
-      "description": "carousel 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-bg",
@@ -6701,10 +6703,32 @@
         "background"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-indicator-bg-active",
+      "component": "carousel",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (pointer: coarse)",
+        "active",
+        "current",
+        "not([data-current])"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator 部件 background 覆盖槽。"
@@ -6716,7 +6740,7 @@
         "indicator"
       ],
       "property": [
-        "--xh-carousel-indicator-bg"
+        "background"
       ],
       "state": [
         "current",
@@ -6724,13 +6748,36 @@
         "not([data-current])"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator 部件 --xh-carousel-indicator-bg 覆盖槽。"
+      "description": "carousel 的 indicator 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-bg-selected",
+      "component": "carousel",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (pointer: coarse)",
+        "autoplay",
+        "current",
+        "not([data-autoplay], [data-paused])",
+        "paused"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-indicator-bg-selected-active",
       "component": "carousel",
       "part": [
         "indicator"
@@ -6739,13 +6786,59 @@
         "background"
       ],
       "state": [
-        "default"
+        "@media (pointer: coarse)",
+        "active",
+        "current"
       ],
       "defaultToken": [
-        "--xh-bg-brand"
+        "--xh-bg-brand-active"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-indicator-bg-track",
+      "component": "carousel",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (pointer: coarse)",
+        "autoplay",
+        "current",
+        "paused"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-indicator-fg-selected",
+      "component": "carousel",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "autoplay",
+        "current",
+        "not([data-autoplay], [data-paused])",
+        "paused"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator、root 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-gap",
@@ -6793,6 +6886,7 @@
         "border-radius"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default"
       ],
       "defaultToken": [
@@ -6802,35 +6896,60 @@
       "description": "carousel 的 indicator 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-carousel-indicator-radius-current",
+      "component": "carousel",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "@media (pointer: coarse)",
+        "autoplay",
+        "current",
+        "paused"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator、root 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-carousel-indicator-size",
       "component": "carousel",
       "part": [
         "indicator",
-        "indicator-group"
+        "indicator-group",
+        "root"
       ],
       "property": [
-        "background-size",
         "block-size",
         "inline-size"
       ],
       "state": [
         "@media (pointer: coarse)",
+        "autoplay",
         "current",
         "default",
-        "orientation=vertical"
+        "orientation=vertical",
+        "paused"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator、indicator-group 部件 background-size、block-size、inline-size 覆盖槽。"
+      "description": "carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-size-current",
       "component": "carousel",
       "part": [
         "indicator",
-        "indicator-group"
+        "indicator-group",
+        "root"
       ],
       "property": [
         "block-size",
@@ -6838,33 +6957,43 @@
       ],
       "state": [
         "@media (pointer: coarse)",
+        "autoplay",
         "current",
-        "orientation=vertical"
+        "orientation=vertical",
+        "paused"
       ],
       "defaultToken": [
-        "--xh-space-6"
+        "--xh-space-5"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。"
+      "description": "carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-target-size",
       "component": "carousel",
       "part": [
-        "indicator"
+        "indicator",
+        "root"
       ],
       "property": [
         "min-block-size",
         "min-inline-size"
       ],
       "state": [
-        "@media (pointer: coarse)"
+        "@media (pointer: coarse)",
+        "active",
+        "autoplay",
+        "current",
+        "hover",
+        "not([data-autoplay], [data-paused])",
+        "not([data-current])",
+        "paused"
       ],
       "defaultToken": [
         "44px"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator 部件 min-block-size、min-inline-size 覆盖槽。"
+      "description": "carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-bg",
@@ -6875,16 +7004,19 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-bg-surface-raised"
+        "--xh-_carousel-trigger-bg",
+        "--xh-material-frosted-focus-surface"
       ],
       "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-bg-active",
@@ -6895,17 +7027,21 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-bg-hover",
@@ -6916,17 +7052,20 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-border",
@@ -6937,16 +7076,25 @@
         "prev-trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_carousel-trigger-border"
       ],
       "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-fg",
@@ -6960,10 +7108,18 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-material-frosted-fg"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。"
@@ -6983,10 +7139,37 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-circle"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-trigger-shadow",
+      "component": "carousel",
+      "part": [
+        "autoplay-trigger",
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "focus-visible",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_carousel-trigger-shadow"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-shadow-hover",
@@ -7000,11 +7183,14 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "none"
+        "--xh-_carousel-trigger-shadow"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。"
@@ -7022,10 +7208,11 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。"

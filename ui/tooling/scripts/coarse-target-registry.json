@@ -112,16 +112,16 @@
       "why": "按钮本体，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，Button 公开 sm/md/lg 更高"
     },
     "carousel:indicator": {
-      "px": 16,
-      "why": "走马灯内容下沿的短线分页，粗指针下由首尾相接的 44px 按钮盒分区命中，视觉短线保持 16/24px"
+      "px": 8,
+      "why": "走马灯内容下沿的分页点，粗指针下由首尾相接的 44px 按钮盒分区命中，视觉仍是 8px 圆点 / 20px 当前胶囊（点改由 ::after 画）"
     },
     "carousel:next-trigger": {
-      "px": 36,
-      "why": "走马灯的翻页钮，手指直接落上去"
+      "px": 24,
+      "why": "走马灯的翻页钮，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，连接层固定投 floating 档 md（48px），粗指针热区由家族外扩到 44px"
     },
     "carousel:prev-trigger": {
-      "px": 36,
-      "why": "走马灯的翻页钮，手指直接落上去"
+      "px": 24,
+      "why": "走马灯的翻页钮，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，连接层固定投 floating 档 md（48px），粗指针热区由家族外扩到 44px"
     },
     "checkbox:root": {
       "px": 16,

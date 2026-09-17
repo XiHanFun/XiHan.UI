@@ -5,6 +5,8 @@
 
 /* 定义 carousel 样式。 */
 
+@import '../family/action-control.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='carousel'] {
@@ -14,8 +16,11 @@
   /* 根节点建立自己的覆盖层：视口占满容器，导航与分页压在内容之上，
      isolation 把内部层号关在本组件内，不参与页面级层序。 */
   [data-scope='carousel'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-glyph-size-text));
+    /* 三颗控制钮浮在媒体之上，缺省 M2 磨砂面：背景、边缘、顶光、投影与磨砂从同一份配方取，
+       高对比、减少透明度、打印和强制色便能一起降级。三支写在根上：check-elevation-role 按赋值点认海拔角色 */
+    --xh-_carousel-trigger-bg: var(--xh-material-frosted-bg);
+    --xh-_carousel-trigger-border: var(--xh-material-frosted-border);
+    --xh-_carousel-trigger-shadow: var(--xh-material-frosted-shadow);
     /* 自动播放开启时由 Headless 写入真实间隔；0ms 只用于未接入运行时的静态标记。 */
     --xh-_carousel-autoplay-duration: 0ms;
     --xh-_carousel-progress-from: 0 1;
@@ -94,30 +99,47 @@
     display: none;
   }
 
-  /* 两端按钮与播放开关：圆形、与控件同高，禁用时靠原生 :disabled 变灰 */
+  /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档（§4.1）：
+     盒型（md = box-lg 48px，圆形）、四态面、0.97 按压与 44px 命中区由家族配方给出，组件没有 size 轴、固定 md。
+     连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
+     （100 → 200，§7.2 第 3 条），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
   [data-scope='carousel'][data-part='prev-trigger'],
   [data-scope='carousel'][data-part='next-trigger'],
   [data-scope='carousel'][data-part='autoplay-trigger'] {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
-    block-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
+    --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
+    --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-material-frosted-focus-surface));
+    --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
+    --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
+    --xh-action-fg-hover: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
+    --xh-action-fg-pressed: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
+    --xh-action-fg-focus-visible: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
+    --xh-action-border-rest: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
+    --xh-action-border-hover: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
+    --xh-action-border-pressed: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
+    --xh-action-border-focus-visible: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
+    --xh-action-border-disabled: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
+    --xh-action-shadow-rest: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
+    --xh-action-shadow-hover: var(--xh-carousel-trigger-shadow-hover, var(--xh-_carousel-trigger-shadow));
+    --xh-action-shadow-pressed: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
+    --xh-action-shadow-disabled: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
+    /* M2 顶光走配方的高光通道 */
+    --xh-action-highlight-rest: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-hover: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-pressed: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-focus-visible: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-disabled: var(--xh-material-frosted-highlight);
+    --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
+    --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-_action-profile-visual-size));
+    /* 作者塞进来的图标跟着 floating 档走（md 24px），与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-_action-profile-glyph-size));
+
     position: absolute;
     z-index: 1;
-    border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, transparent);
-    border-radius: var(--xh-carousel-trigger-radius, var(--xh-shape-circle));
-    background: var(--xh-carousel-trigger-bg, var(--xh-bg-surface-raised));
-    color: var(--xh-carousel-trigger-fg, var(--xh-fg-default));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
+    backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
   [data-scope='carousel'][data-part='prev-trigger'],
@@ -146,30 +168,11 @@
     display: none;
   }
 
-  /* 覆盖按钮保持低海拔，只用柔和底色反馈悬停。 */
-  [data-scope='carousel'][data-part='prev-trigger']:hover:not(:disabled),
-  [data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled),
-  [data-scope='carousel'][data-part='autoplay-trigger']:hover:not(:disabled) {
-    background: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-hover));
-    box-shadow: var(--xh-carousel-trigger-shadow-hover, none);
-  }
-
-  /* 按下：底色换到按压档，抬起的那一档同时落回 */
-  [data-scope='carousel'][data-part='prev-trigger']:active:not(:disabled),
-  [data-scope='carousel'][data-part='next-trigger']:active:not(:disabled),
-  [data-scope='carousel'][data-part='autoplay-trigger']:active:not(:disabled) {
-    background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
-    box-shadow: none;
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 两端到头时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），所以这里必须用 :disabled；
-     连接层同时给的 data-disabled 只是留给作者的钩子 */
-  [data-scope='carousel'][data-part='prev-trigger']:disabled,
-  [data-scope='carousel'][data-part='next-trigger']:disabled,
-  [data-scope='carousel'][data-part='autoplay-trigger']:disabled {
+  /* 两端到头 / 没配自动播放时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），连接层同时给 data-disabled：
+     到头即隐藏是刻意行为，配方 disabled 列给的面被 opacity 0 盖住，两者不冲突 */
+  [data-scope='carousel'][data-part='prev-trigger'][data-disabled],
+  [data-scope='carousel'][data-part='next-trigger'][data-disabled],
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-disabled] {
     opacity: 0;
     pointer-events: none;
   }
@@ -209,80 +212,103 @@
     translate: -50% 0;
   }
 
-  /* 分页标记使用短线，当前页沿轨道方向伸长；透明按钮盒保留焦点轮廓，
-     ::after 再把细指针命中区外扩到至少 24px。 */
+  /* 分页点与 Tour 的步骤点同一种语言（§6.3）：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
+     本体就是那颗点：没有文字（页码交给作者，默认不显示），底色即标记。
+     悬停 / 按下的回执落在点的颜色上：中性标记按前景阶梯加深一档、再加深一档；当前页按品牌阶梯压一档 */
   [data-scope='carousel'][data-part='indicator'] {
     position: relative;
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-4));
-    block-size: var(--xh-carousel-indicator-size, var(--xh-space-4));
-    /* 圆点本身没有文字，按钮里的文案（页码）交给作者，默认不显示 */
+    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+    block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
     padding: 0;
     border: 0;
     border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
-    background: transparent;
+    background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
     font-size: 0;
+    /* 自动播放的进度条画在点里，超出胶囊的那截裁掉 */
+    overflow: hidden;
     cursor: pointer;
     transition:
       inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
-  }
-
-  [data-scope='carousel'][data-part='indicator']::before {
-    content: '';
-    position: relative;
-    z-index: 1;
-    inline-size: 100%;
-    block-size: var(--xh-stroke-thick);
-    border-radius: inherit;
-    background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
-    opacity: 0;
-    scale: var(--xh-_carousel-progress-to);
-    transform-origin: left center;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  [data-scope='carousel'][data-part='indicator']::after {
-    content: '';
-    position: absolute;
-    inset: calc(-1 * var(--xh-space-1));
-    background: linear-gradient(
-      var(--xh-carousel-indicator-bg, var(--xh-border-control)),
-      var(--xh-carousel-indicator-bg, var(--xh-border-control))
-    ) center / calc(100% - 2 * var(--xh-space-1)) var(--xh-stroke-thick) no-repeat;
   }
 
   [data-scope='carousel'][data-part='indicator'][hidden] {
     display: none;
   }
 
-  [data-scope='carousel'][data-part='indicator']:hover:not([data-current]) {
-    --xh-carousel-indicator-bg: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-subtle));
+  /* 细指针的命中区外扩到 24×24（8px 点四面各扩 8px）；粗指针下这颗伪元素改画点，盒子自己承担命中 */
+  [data-scope='carousel'][data-part='indicator']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2));
   }
 
-  /* 底色被当前页与悬停占着，按下的回执只剩缩放 */
-  [data-scope='carousel'][data-part='indicator']:active {
+  [data-scope='carousel'][data-part='indicator']:hover:not([data-current]) {
+    background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-muted));
+  }
+
+  /* 按下：点的颜色再压一档，同时缩一下（§9.1 同时换底） */
+  [data-scope='carousel'][data-part='indicator']:active:not([data-current]) {
+    background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
-     样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职 */
+     样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
+     拉长成胶囊并换品牌色（格状当前 = 实心品牌，§7.3） */
   [data-scope='carousel'][data-part='indicator'][data-current] {
-    inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
+    inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
+    border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
   }
 
-  [data-scope='carousel'][data-part='indicator'][data-current]::before {
-    opacity: 1;
+  /* 没开自动播放：整颗品牌胶囊。面是品牌实心，环色与面同族画在面里看不出来：
+     环取面配对的前景色（聚焦规则灌 currentColor）。两条都带「没开自动播放」的祖先条件，
+     与下面自动播放那一档互斥，环色只灌给实心那一档 */
+  [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
+    [data-scope='carousel'][data-part='indicator'][data-current] {
+    background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
+    color: var(--xh-carousel-indicator-fg-selected, var(--xh-fg-on-brand));
   }
 
-  [data-scope='carousel'][data-part='root']:is([data-autoplay], [data-paused])
+  [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
+    [data-scope='carousel'][data-part='indicator'][data-current]:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
+  [data-scope='carousel'][data-part='indicator'][data-current]:active {
+    background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
+    scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  /* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义，§7.1；淡底上公共环够对比，不灌环色），
+     品牌填充条从起点沿轨道方向长满这一页的时长；暂停时定住 */
+  [data-scope='carousel'][data-part='root'][data-autoplay]
+    [data-scope='carousel'][data-part='indicator'][data-current],
+  [data-scope='carousel'][data-part='root'][data-paused]
+    [data-scope='carousel'][data-part='indicator'][data-current] {
+    background: var(--xh-carousel-indicator-bg-track, var(--xh-bg-brand-subtle));
+  }
+
+  [data-scope='carousel'][data-part='root'][data-autoplay]
+    [data-scope='carousel'][data-part='indicator'][data-current]::before,
+  [data-scope='carousel'][data-part='root'][data-paused]
     [data-scope='carousel'][data-part='indicator'][data-current]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
+    transform-origin: left center;
     animation: xh-carousel-indicator-progress var(--xh-_carousel-autoplay-duration) var(--xh-motion-ease-loop) both;
   }
 
@@ -291,21 +317,15 @@
     animation-play-state: paused;
   }
 
+  /* 纵轨：胶囊沿块轴拉长，进度条从上往下长 */
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
     > [data-scope='carousel'][data-part='indicator'][data-current] {
-    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-4));
-    block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
+    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+    block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
   }
 
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
-    > [data-scope='carousel'][data-part='indicator']::after {
-    background-size: var(--xh-stroke-thick) calc(100% - 2 * var(--xh-space-1));
-  }
-
-  [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
-    > [data-scope='carousel'][data-part='indicator']::before {
-    inline-size: var(--xh-stroke-thick);
-    block-size: 100%;
+    > [data-scope='carousel'][data-part='indicator'][data-current]::before {
     transform-origin: center top;
   }
 
@@ -356,14 +376,30 @@
   }
 
   @media (forced-colors: active) {
+    [data-scope='carousel'][data-part='indicator'],
     [data-scope='carousel'][data-part='indicator']::after {
-      background-image: linear-gradient(GrayText, GrayText);
+      background: GrayText;
       forced-color-adjust: none;
     }
 
-    [data-scope='carousel'][data-part='indicator']::before {
+    [data-scope='carousel'][data-part='indicator'][data-current],
+    [data-scope='carousel'][data-part='indicator'][data-current]::after,
+    [data-scope='carousel'][data-part='indicator'][data-current]::before {
       background: Highlight;
       forced-color-adjust: none;
+    }
+
+    /* 自动播放时轨道退回画布色、描一圈 Highlight 边，进度条仍是 Highlight：走没走在动由描边与填充的差表出 */
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator'][data-current],
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator'][data-current],
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator'][data-current]::after,
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator'][data-current]::after {
+      border: var(--xh-stroke-thin) solid Highlight;
+      background: Canvas;
     }
   }
 
@@ -413,59 +449,98 @@
     mask: var(--xh-glyph-mark-play) center / contain no-repeat;
   }
 
-  /* 手指落点：三颗钮的视觉盒是 32px，命中区外扩到 44×44（两边各 6px）。
-     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把它旁边的东西挤开。
-     用 ::after：::before 已经被兜底字形占着 */
+  /* 手指落点：三颗钮的 44px 命中区由配方的 ::after 给（floating 档）。
+     分页点的视觉仍是 8 / 20px，按钮盒改成首尾相接的 44px 分区：直接用负 inset 外扩会让相邻页的命中区重叠，
+     落点归属取决于绘制顺序；这里让真实按钮盒承担命中，点与进度条改由伪元素画在盒子中央 */
   @media (pointer: coarse) {
-    /* 分页的视觉仍是 16/24px 短线，按钮盒改成首尾相接的 44px 分区。
-       直接用负 inset 外扩会让相邻页的命中区重叠，落点归属取决于绘制顺序；
-       这里让真实按钮盒承担命中，再把 ::before / ::after 的短线收回盒子中央。 */
     [data-scope='carousel'][data-part='indicator-group'] {
       gap: 0;
     }
 
-    [data-scope='carousel'][data-part='indicator'] {
+    /* 盒子只管命中：四个状态的底色都从盒子上撤下来，落到 ::after 画的点上 */
+    [data-scope='carousel'][data-part='indicator'],
+    [data-scope='carousel'][data-part='indicator']:hover:not([data-current]),
+    [data-scope='carousel'][data-part='indicator']:active:not([data-current]),
+    [data-scope='carousel'][data-part='indicator'][data-current],
+    [data-scope='carousel'][data-part='indicator'][data-current]:active,
+    [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
+      [data-scope='carousel'][data-part='indicator'][data-current],
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator'][data-current],
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator'][data-current] {
       min-inline-size: var(--xh-carousel-indicator-target-size, 44px);
       min-block-size: var(--xh-carousel-indicator-target-size, 44px);
-    }
-
-    [data-scope='carousel'][data-part='indicator']::before {
-      position: absolute;
-      inset-block-start: 50%;
-      inset-inline-start: 50%;
-      inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
-      block-size: var(--xh-stroke-thick);
-      translate: -50% -50%;
+      border-radius: 0;
+      background: transparent;
+      overflow: visible;
     }
 
     [data-scope='carousel'][data-part='indicator']::after {
-      inset: 0;
-      background-size: var(--xh-carousel-indicator-size, var(--xh-space-4)) var(--xh-stroke-thick);
+      inset: auto;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+      block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+      border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
+      background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
+      translate: -50% -50%;
+      transition:
+        inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+        block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+        background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    }
+
+    [data-scope='carousel'][data-part='indicator']:active:not([data-current])::after {
+      background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
+    }
+
+    [data-scope='carousel'][data-part='indicator'][data-current]::after {
+      inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
+      border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
+    }
+
+    [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
+      [data-scope='carousel'][data-part='indicator'][data-current]::after {
+      background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
+    }
+
+    [data-scope='carousel'][data-part='indicator'][data-current]:active::after {
+      background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
+    }
+
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator'][data-current]::after,
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator'][data-current]::after {
+      background: var(--xh-carousel-indicator-bg-track, var(--xh-bg-brand-subtle));
+    }
+
+    /* 进度条落到点的那块盒上，跟 ::after 画的胶囊同位同形 */
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator'][data-current]::before,
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator'][data-current]::before {
+      inset: auto;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      z-index: 1;
+      inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
+      block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+      border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
+      translate: -50% -50%;
     }
 
     [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
-      > [data-scope='carousel'][data-part='indicator']::before {
-      inline-size: var(--xh-stroke-thick);
-      block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
-    }
-
-    [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
-      > [data-scope='carousel'][data-part='indicator']::after {
-      background-size: var(--xh-stroke-thick) var(--xh-carousel-indicator-size, var(--xh-space-4));
-    }
-
-    [data-scope='carousel'][data-part='prev-trigger'],
-    [data-scope='carousel'][data-part='next-trigger'],
-    [data-scope='carousel'][data-part='autoplay-trigger'] {
-      position: relative;
-    }
-
-    [data-scope='carousel'][data-part='prev-trigger']::after,
-    [data-scope='carousel'][data-part='next-trigger']::after,
-    [data-scope='carousel'][data-part='autoplay-trigger']::after {
-      content: '';
-      position: absolute;
-      inset: calc(-1 * var(--xh-space-1_5));
+      > [data-scope='carousel'][data-part='indicator'][data-current]::after,
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
+      > [data-scope='carousel'][data-part='indicator'][data-current]::before,
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
+      > [data-scope='carousel'][data-part='indicator'][data-current]::before {
+      inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+      block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
     }
   }
 }

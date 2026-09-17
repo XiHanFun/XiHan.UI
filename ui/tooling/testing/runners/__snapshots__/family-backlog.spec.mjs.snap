@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 7,
-  "ladder": 36,
+  "ladder": 34,
   "motion": 1,
-  "press": 7,
+  "press": 6,
   "scroll": 12,
   "selection": 0,
-  "shape": 7,
-  "text": 29,
+  "shape": 4,
+  "text": 28,
 }
 `;
 
@@ -27,8 +27,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
 
 exports[`family-backlog 键集合 > ladder 1`] = `
 [
-  "carousel:prev-trigger:hover",
-  "carousel:prev-trigger:pressed",
   "color-picker:channel-input:focus",
   "color-picker:control:focus",
   "color-picker:eye-dropper-trigger:hover",
@@ -75,7 +73,6 @@ exports[`family-backlog 键集合 > motion 1`] = `
 exports[`family-backlog 键集合 > press 1`] = `
 [
   "*:data-pressed",
-  "carousel:indicator",
   "floating-panel:trigger",
   "form:error-summary-item",
   "tour:next-trigger",
@@ -105,9 +102,6 @@ exports[`family-backlog 键集合 > selection 1`] = `[]`;
 
 exports[`family-backlog 键集合 > shape 1`] = `
 [
-  "carousel:autoplay-trigger",
-  "carousel:next-trigger",
-  "carousel:prev-trigger",
   "image-viewer:next-trigger",
   "image-viewer:prev-trigger",
   "popconfirm:confirm-trigger::before",
@@ -117,7 +111,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
 
 exports[`family-backlog 键集合 > text 1`] = `
 [
-  "carousel:root:icon-size",
   "color-picker:label:font-size",
   "dialog:content:icon-size",
   "dialog:description:font-size",
