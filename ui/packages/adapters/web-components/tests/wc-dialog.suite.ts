@@ -1,6 +1,6 @@
 import type { ConformanceSuite } from '@xihan-ui/testing'
 import { dialogAnatomy, dialogKeyboard } from '@xihan-ui/headless'
-import { nativeActivation } from '@xihan-ui/testing'
+import { heldPress, nativeActivation } from '@xihan-ui/testing'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 
@@ -48,9 +48,30 @@ export const wcDialogSuite: ConformanceSuite = {
       initial: {
         counts: { content: 1, trigger: 1 },
         parts: {
-          trigger: { 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'data-state': 'closed', 'aria-controls': '@part(content)' },
+          trigger: {
+            'aria-haspopup': 'dialog',
+            'aria-expanded': 'false',
+            'data-state': 'closed',
+            'aria-controls': '@part(content)',
+            // 页面上的独立文字按钮：Action Control text 档 md，缺省中性描边（§7.2 第 2 条）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
+            'data-pressed': null,
+          },
           content: { 'data-state': 'closed', 'role': 'dialog' },
           positioner: { 'data-state': 'closed' },
+          // 面板角落的叉：Action Control icon 档 sm、ghost 面
+          'close-trigger': {
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'ghost',
+            'data-pressed': null,
+          },
         },
       },
     },
@@ -115,6 +136,13 @@ export const wcDialogSuite: ConformanceSuite = {
           expect: { activeElement: { part: 'content', exact: true }, parts: { content: { role: 'alertdialog' } } },
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：触发器与关闭钮各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['dialog.kbd.press'],
+      props: { defaultOpen: true },
+      steps: [heldPress('dialog', 'trigger'), heldPress('dialog', 'close-trigger')],
     },
   ],
 }

@@ -18450,16 +18450,10 @@
               "name": "--xh-dialog-close-bg-active"
             },
             {
-              "name": "--xh-dialog-close-bg-focus"
-            },
-            {
               "name": "--xh-dialog-close-bg-hover"
             },
             {
               "name": "--xh-dialog-close-fg"
-            },
-            {
-              "name": "--xh-dialog-close-fg-focus"
             },
             {
               "name": "--xh-dialog-close-fg-hover"

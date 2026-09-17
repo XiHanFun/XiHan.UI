@@ -22470,34 +22470,21 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "dialog 的 close-trigger 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-dialog-close-bg-focus",
-      "component": "dialog",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-material-elevated-focus-surface"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 close-trigger 部件 background 覆盖槽。"
+      "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-dialog-close-bg-hover",
@@ -22506,16 +22493,20 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "dialog 的 close-trigger 部件 background 覆盖槽。"
+      "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-dialog-close-fg",
@@ -22536,24 +22527,6 @@
       "description": "dialog 的 close-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-dialog-close-fg-focus",
-      "component": "dialog",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-material-elevated-fg"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 close-trigger 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-dialog-close-fg-hover",
       "component": "dialog",
       "part": [
@@ -22563,10 +22536,19 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed"
       ],
       "visibility": "public",
       "description": "dialog 的 close-trigger 部件 color 覆盖槽。"
@@ -22604,9 +22586,11 @@
       ],
       "state": [
         "default",
-        "has([data-scope='dialog'][data-part='close-trigger'])"
+        "has([data-scope='dialog'][data-part='close-trigger'])",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
+        "--xh-_action-profile-visual-size",
         "--xh-control-h-sm"
       ],
       "visibility": "public",
@@ -22698,7 +22682,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "dialog 的 description 部件 font-size 覆盖槽。"
@@ -22869,7 +22853,9 @@
       "name": "--xh-dialog-icon-size",
       "component": "dialog",
       "part": [
-        "content"
+        "close-trigger",
+        "content",
+        "trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -22878,10 +22864,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "dialog 的 content 部件 --xh-icon-size 覆盖槽。"
+      "description": "dialog 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-dialog-indicator-bg",
