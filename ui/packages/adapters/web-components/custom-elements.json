@@ -5014,10 +5014,16 @@
               "name": "--xh-calendar-range-picker-cell-bg-hover"
             },
             {
+              "name": "--xh-calendar-range-picker-cell-bg-pressed"
+            },
+            {
               "name": "--xh-calendar-range-picker-cell-bg-selected"
             },
             {
               "name": "--xh-calendar-range-picker-cell-bg-selected-active"
+            },
+            {
+              "name": "--xh-calendar-range-picker-cell-bg-selected-disabled"
             },
             {
               "name": "--xh-calendar-range-picker-cell-fg"
@@ -5062,6 +5068,9 @@
               "name": "--xh-calendar-range-picker-heading-font-weight"
             },
             {
+              "name": "--xh-calendar-range-picker-heading-trigger-bg-pressed"
+            },
+            {
               "name": "--xh-calendar-range-picker-heading-trigger-fg-hover"
             },
             {
@@ -5078,6 +5087,9 @@
             },
             {
               "name": "--xh-calendar-range-picker-nav-bg-hover"
+            },
+            {
+              "name": "--xh-calendar-range-picker-nav-bg-pressed"
             },
             {
               "name": "--xh-calendar-range-picker-nav-fg"
@@ -5107,6 +5119,12 @@
               "name": "--xh-calendar-range-picker-range-cap-radius"
             },
             {
+              "name": "--xh-calendar-range-picker-range-cell-bg-hover"
+            },
+            {
+              "name": "--xh-calendar-range-picker-range-cell-bg-pressed"
+            },
+            {
               "name": "--xh-calendar-range-picker-range-row-radius"
             },
             {
@@ -5114,9 +5132,6 @@
             },
             {
               "name": "--xh-calendar-range-picker-today-bg"
-            },
-            {
-              "name": "--xh-calendar-range-picker-today-bg-hover"
             },
             {
               "name": "--xh-calendar-range-picker-today-border"

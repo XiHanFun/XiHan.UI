@@ -132,6 +132,20 @@ const FAMILIES = [
       { part: 'trigger', state: '[hidden]', props: '*' },
     ],
   },
+  {
+    // 两份日历共用同一套部件名与皮肤槽（doc.md 互相点名）：日期格的基础块、今天、选中、悬停与按下五个状态逐条同源；
+    // 范围日历多出的区间轨道与端点规则带 [data-in-range]，不在这五条的匹配面里
+    name: '日历族',
+    backlog: true,
+    members: ['calendar-picker', 'calendar-range-picker'],
+    parts: [
+      { part: 'cell-trigger', state: '', props: '*' },
+      { part: 'cell-trigger', state: '[data-today]', props: ['background', 'border-color', 'color'] },
+      { part: 'cell-trigger', state: '[data-selected]', props: ['background', 'border-color', 'color'] },
+      { part: 'cell-trigger', state: ':hover', props: ['background'] },
+      { part: 'cell-trigger', state: ':active', props: ['background', 'scale'] },
+    ],
+  },
   // ——以下家族按真源 §4 登记，读 family-backlog.json，已迁移成员 ≥ 2 才比——
   {
     // 静态内容面：边界三选一（§8.3），根面的边、底同源；影只在 Card 之外比——

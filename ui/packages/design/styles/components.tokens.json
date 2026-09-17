@@ -5108,6 +5108,27 @@
         "selected"
       ],
       "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-cell-bg-pressed",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "pressed"
+      ],
+      "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
@@ -5148,20 +5169,40 @@
         "background"
       ],
       "state": [
-        "active",
         "disabled",
         "in-range",
+        "is(:active, [data-pressed])",
         "is([data-range-start], [data-range-end])",
         "not([data-disabled])",
         "not([data-in-range], [data-disabled])",
         "not([data-outside-month])",
         "outside-month",
+        "pressed",
         "range-end",
         "range-start",
         "selected"
       ],
       "defaultToken": [
-        "--xh-bg-brand-hover"
+        "--xh-bg-brand-active"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-cell-bg-selected-disabled",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "selected"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
@@ -5458,6 +5499,27 @@
       "description": "calendar-range-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-range-picker-heading-trigger-bg-pressed",
+      "component": "calendar-range-picker",
+      "part": [
+        "heading-month-trigger",
+        "heading-year-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is(:active, [data-pressed])",
+        "not(:disabled)",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 heading-month-trigger、heading-year-trigger 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-calendar-range-picker-heading-trigger-fg-hover",
       "component": "calendar-range-picker",
       "part": [
@@ -5528,7 +5590,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -5569,6 +5631,29 @@
       "state": [
         "hover",
         "not(:disabled)"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-nav-bg-pressed",
+      "component": "calendar-range-picker",
+      "part": [
+        "next-trigger",
+        "next-year-trigger",
+        "prev-trigger",
+        "prev-year-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is(:active, [data-pressed])",
+        "not(:disabled)",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
@@ -5773,6 +5858,55 @@
       "description": "calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-range-picker-range-cell-bg-hover",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "in-range",
+        "not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])",
+        "outside-month",
+        "range-end",
+        "range-start"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-range-cell-bg-pressed",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "in-range",
+        "is(:active, [data-pressed])",
+        "not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])",
+        "outside-month",
+        "pressed",
+        "range-end",
+        "range-start"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-calendar-range-picker-range-row-radius",
       "component": "calendar-range-picker",
       "part": [
@@ -5829,30 +5963,7 @@
         "today"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle"
-      ],
-      "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-calendar-range-picker-today-bg-hover",
-      "component": "calendar-range-picker",
-      "part": [
-        "cell-trigger"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled",
-        "hover",
-        "in-range",
-        "not([data-selected], [data-disabled], [data-in-range])",
-        "selected",
-        "today"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand-subtle-hover"
+        "transparent"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
@@ -5870,7 +5981,7 @@
         "today"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell-trigger 部件 border-color 覆盖槽。"

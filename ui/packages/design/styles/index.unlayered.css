@@ -15409,8 +15409,9 @@
 }
 
 [data-scope='calendar-range-picker'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-calendar-range-picker-icon-size, var(--xh-glyph-size-text));
+  /* 翻页钮是 sm 档的图标钮（--xh-control-h-sm 见方），钮里的图标按 sm 档取 --xh-glyph-size-sm（§6.5）；
+     作者塞进去的图标与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-calendar-range-picker-icon-size, var(--xh-glyph-size-sm));
 
   display: flex;
   flex-direction: column;
@@ -15461,6 +15462,7 @@
   line-height: var(--xh-leading-none);
   cursor: pointer;
   transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
@@ -15475,9 +15477,10 @@
   color: var(--xh-calendar-range-picker-heading-trigger-fg-hover, var(--xh-fg-brand));
 }
 
-/* 按下微缩：钻进上一层时给指针一个回执 */
-[data-scope='calendar-range-picker'][data-part='heading-year-trigger']:active:not(:disabled),
-[data-scope='calendar-range-picker'][data-part='heading-month-trigger']:active:not(:disabled) {
+/* 按下微缩并同时换底（§9.1 定尺控件缩放必换底，白底承载按下是 200 档）：钻进上一层时给指针一个回执 */
+[data-scope='calendar-range-picker'][data-part='heading-year-trigger']:is(:active, [data-pressed]):not(:disabled),
+[data-scope='calendar-range-picker'][data-part='heading-month-trigger']:is(:active, [data-pressed]):not(:disabled) {
+  background: var(--xh-calendar-range-picker-heading-trigger-bg-pressed, var(--xh-bg-subtle-hover));
   scale: var(--xh-motion-scale-press);
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
@@ -15516,19 +15519,21 @@
   display: none;
 }
 
+/* 方向钮坐在日历的白底上：悬停 100 档（§7.2 白底承载阶梯） */
 [data-scope='calendar-range-picker'][data-part='prev-year-trigger']:hover:not(:disabled),
 [data-scope='calendar-range-picker'][data-part='prev-trigger']:hover:not(:disabled),
 [data-scope='calendar-range-picker'][data-part='next-year-trigger']:hover:not(:disabled),
 [data-scope='calendar-range-picker'][data-part='next-trigger']:hover:not(:disabled) {
-  background: var(--xh-calendar-range-picker-nav-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-calendar-range-picker-nav-bg-hover, var(--xh-bg-subtle));
   color: var(--xh-calendar-range-picker-nav-fg-hover, var(--xh-fg-default));
 }
 
-/* 换底之外再压一档：方向钮按下时缩放 */
-[data-scope='calendar-range-picker'][data-part='prev-year-trigger']:active:not(:disabled),
-[data-scope='calendar-range-picker'][data-part='prev-trigger']:active:not(:disabled),
-[data-scope='calendar-range-picker'][data-part='next-year-trigger']:active:not(:disabled),
-[data-scope='calendar-range-picker'][data-part='next-trigger']:active:not(:disabled) {
+/* 按下再压一档到 200 并缩放（§9.1 定尺控件缩放必换底） */
+[data-scope='calendar-range-picker'][data-part='prev-year-trigger']:is(:active, [data-pressed]):not(:disabled),
+[data-scope='calendar-range-picker'][data-part='prev-trigger']:is(:active, [data-pressed]):not(:disabled),
+[data-scope='calendar-range-picker'][data-part='next-year-trigger']:is(:active, [data-pressed]):not(:disabled),
+[data-scope='calendar-range-picker'][data-part='next-trigger']:is(:active, [data-pressed]):not(:disabled) {
+  background: var(--xh-calendar-range-picker-nav-bg-pressed, var(--xh-bg-subtle-hover));
   scale: var(--xh-motion-scale-press);
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
@@ -15573,8 +15578,8 @@
   align-content: start;
   max-block-size: var(--xh-calendar-range-picker-year-grid-max-h, var(--xh-viewport-h-sm));
   padding-inline-end: var(--xh-calendar-range-picker-year-grid-pe, var(--xh-space-1));
+  /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto（§6.6）；嵌进 date-picker 浮层时由那份皮肤补 contain */
   overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 /* 周期格沿横轴铺开，但始终保持控制件高度；选中面只换颜色，不改变几何尺寸。 */
@@ -15758,26 +15763,35 @@
   color: var(--xh-calendar-range-picker-cell-fg-outside, var(--xh-fg-subtle));
 }
 
+/* 格子坐在日历的白底上：悬停 100 档、按下 200 档（§7.2 白底承载阶梯）；区间里的格另走品牌淡底的阶梯 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger']:not([data-disabled], [data-selected], [data-in-range]):hover {
-  background: var(--xh-calendar-range-picker-cell-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-calendar-range-picker-cell-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 按下微缩：缩放走 transform 通道，一格自己缩不推动整张网格；已选中的格照样压 */
-[data-scope='calendar-range-picker'][data-part='cell-trigger']:not([data-disabled]):active {
+/* 按下微缩并同时换底（§9.1 日历格是定尺控件）：缩放走 transform 通道，一格自己缩不推动整张网格；
+   已选中的格与区间里的格照样压，它们的按下面由下面各自的规则另给 */
+[data-scope='calendar-range-picker'][data-part='cell-trigger']:not([data-disabled]):is(:active, [data-pressed]) {
+  background: var(--xh-calendar-range-picker-cell-bg-pressed, var(--xh-bg-subtle-hover));
   scale: var(--xh-motion-scale-press);
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
-/* 今天用淡强调面，选中仍用后面的实心强调面；两个状态叠加时不会混成同一种反馈。 */
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-today] {
-  border-color: var(--xh-calendar-range-picker-today-border, transparent);
-  background: var(--xh-calendar-range-picker-today-bg, var(--xh-bg-brand-subtle));
-  color: var(--xh-calendar-range-picker-today-fg, var(--xh-fg-brand));
+/* 区间中段的格坐在品牌淡底的轨道上（§7.3 页内选中 12%）：悬停 20%、按下 28%，铺在格子自己的选中片上 */
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month], [data-disabled], [data-range-start], [data-range-end]):hover {
+  background: var(--xh-calendar-range-picker-range-cell-bg-hover, var(--xh-bg-brand-subtle-hover));
 }
 
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-today]:not([data-selected], [data-disabled], [data-in-range]):hover {
-  background: var(--xh-calendar-range-picker-today-bg-hover, var(--xh-bg-brand-subtle-hover));
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month], [data-disabled], [data-range-start], [data-range-end]):is(:active, [data-pressed]) {
+  background: var(--xh-calendar-range-picker-range-cell-bg-pressed, var(--xh-bg-brand-subtle-active));
+}
+
+/* 今天：1px 品牌环 + 品牌字（§7.3 brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
+   落在区间里时环压在轨道上，选中仍用后面的实心强调面，状态叠加时不会混成同一种反馈 */
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-today] {
+  border-color: var(--xh-calendar-range-picker-today-border, var(--xh-fg-brand));
+  background: var(--xh-calendar-range-picker-today-bg, transparent);
+  color: var(--xh-calendar-range-picker-today-fg, var(--xh-fg-brand));
 }
 
 /* 实心强调面只给单选 / 多选的选中格与区间的两端；区间中段的格子由格子上的轨道铺底，
@@ -15789,15 +15803,10 @@
   color: var(--xh-calendar-range-picker-cell-fg-selected, var(--xh-fg-on-brand));
 }
 
-/* 实心面按下时再压深一档：光缩放在深色底上看不出回执 */
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-selected]:not([data-in-range], [data-disabled]):active,
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]):not([data-disabled]):active {
-  background: var(--xh-calendar-range-picker-cell-bg-selected-active, var(--xh-bg-brand-hover));
-}
-
-/* 区间中段的今天：轨道已经是淡强调面，今天那一格不再单独垫一层 */
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range][data-today]:not([data-range-start], [data-range-end]) {
-  background: transparent;
+/* 实心面按下时压到 active 档（§7.3 格状当前 pressed = brand-active）：光缩放在深色底上看不出回执 */
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-selected]:not([data-in-range], [data-disabled]):is(:active, [data-pressed]),
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]):not([data-disabled]):is(:active, [data-pressed]) {
+  background: var(--xh-calendar-range-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
 }
 
 @media (forced-colors: active) {
@@ -15807,6 +15816,17 @@
 
   /* 强制色下底色被抹平，区间两端只剩描边能说明身份 */
   [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]) {
+    border-color: Highlight;
+  }
+
+  /* 按下换的底在这一档被抹平：格子、方向钮与标题钮的透明占位边换成 Highlight 表出按住 */
+  [data-scope='calendar-range-picker'][data-part='cell-trigger']:not([data-disabled]):is(:active, [data-pressed]),
+  [data-scope='calendar-range-picker'][data-part='prev-year-trigger']:is(:active, [data-pressed]):not(:disabled),
+  [data-scope='calendar-range-picker'][data-part='prev-trigger']:is(:active, [data-pressed]):not(:disabled),
+  [data-scope='calendar-range-picker'][data-part='next-year-trigger']:is(:active, [data-pressed]):not(:disabled),
+  [data-scope='calendar-range-picker'][data-part='next-trigger']:is(:active, [data-pressed]):not(:disabled),
+  [data-scope='calendar-range-picker'][data-part='heading-year-trigger']:is(:active, [data-pressed]):not(:disabled),
+  [data-scope='calendar-range-picker'][data-part='heading-month-trigger']:is(:active, [data-pressed]):not(:disabled) {
     border-color: Highlight;
   }
 }
@@ -15826,8 +15846,9 @@
   color: var(--xh-fg-disabled);
 }
 
+/* 不可用又选中的格：退到中性淡底 + 置灰字（§7.2 禁用面），选中身份仍由这块底与未选中的透明格分开 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-disabled][data-selected] {
-  background: var(--xh-bg-muted);
+  background: var(--xh-calendar-range-picker-cell-bg-selected-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
 }
 
