@@ -163,6 +163,10 @@ export const commandSuite: ConformanceSuite = {
           group: { 'role': 'group', 'aria-labelledby': '@part(group-label)', 'hidden': null },
           item: [
             {
+              // 命令走 Collection Item 的 overlay 语境；活动候选的 aria-selected 只是同档高亮，没有对号槽
+              'data-xh-collection-item': '',
+              'data-xh-collection-size': 'md',
+              'data-xh-collection-context': 'overlay',
               'role': 'option',
               'aria-selected': 'true',
               'aria-disabled': 'false',

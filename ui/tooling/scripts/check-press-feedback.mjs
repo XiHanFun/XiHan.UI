@@ -57,6 +57,7 @@ const COLLECTION_RECIPE = 'packages/design/styles/family/collection-item.css'
 const PRESSABLE = {
   'menu': [{ part: 'item', feedback: 'surface' }],
   // 列表族条目：一行文字，按下的回执走换面，不缩放整列（§9.2 集合行不允许零反馈）
+  // 命令走 Collection Item 的 overlay 语境，按下面由家族给
   'command': [{ part: 'item', feedback: 'surface' }],
   'mention': [{ part: 'item', feedback: 'surface' }],
   'tree': [{ part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],

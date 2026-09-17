@@ -5,7 +5,8 @@
 
 /* 定义 command 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，命令走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
+@import '../family/collection-item.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -17,6 +18,10 @@
   /* 私有槽同时声明在定位层与面板上：面板被搬到 portal 落点，两处各自带一份 data-size，
      谁先命中谁给出这一档的取值；条目、检索框与提示条都从面板继承下去 */
   [data-scope='command']:is([data-part='positioner'], [data-part='content']) {
+    /* 条目外的字形（分组标题、底部提示条）按档取尺，缺省 md，随 data-size 换档；命令里的图标由家族随
+       data-xh-collection-size 下发（§6.5） */
+    --xh-icon-size: var(--xh-command-icon-size, var(--xh-glyph-size-md));
+
     /* 尺寸档只换这六个私有槽，换档不必给每个部件各写一条选择器 */
     --xh-_command-max-w: var(--xh-overlay-sheet-w-md);
     --xh-_command-input-h: var(--xh-control-h-md);
@@ -34,6 +39,7 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='command']:is([data-part='positioner'], [data-part='content'])[data-size='sm'] {
+    --xh-icon-size: var(--xh-command-icon-size, var(--xh-glyph-size-sm));
     --xh-_command-max-w: var(--xh-overlay-sheet-w-sm);
     --xh-_command-input-h: var(--xh-control-h-sm);
     --xh-_command-px: var(--xh-control-px-sm);
@@ -43,6 +49,7 @@
   }
 
   [data-scope='command']:is([data-part='positioner'], [data-part='content'])[data-size='lg'] {
+    --xh-icon-size: var(--xh-command-icon-size, var(--xh-glyph-size-lg));
     --xh-_command-max-w: var(--xh-overlay-sheet-w-lg);
     --xh-_command-input-h: var(--xh-control-h-lg);
     --xh-_command-px: var(--xh-control-px-lg);
@@ -101,8 +108,8 @@
 
   /* —— 面板 —— */
   [data-scope='command'][data-part='content'] {
-    /* 作者塞进条目里的图标跟着这一档的字号走，与命令文字同一把尺 */
-    --xh-icon-size: var(--xh-command-icon-size, var(--xh-glyph-size-text));
+    /* 结果列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
+    --xh-scrollbar-track-bg: transparent;
 
     position: relative;
     display: flex;
@@ -111,10 +118,13 @@
     max-inline-size: var(--xh-command-max-w, var(--xh-_command-max-w));
     /* 封顶才有可滚的余量：不封顶结果列表会一路撑到视口外，滚动条永远出不来 */
     max-block-size: var(--xh-command-max-h, var(--xh-overlay-max-h));
-    border-radius: var(--xh-command-radius, var(--xh-shape-surface));
-    background: var(--xh-command-bg, var(--xh-bg-surface));
-    color: var(--xh-command-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-command-shadow, var(--xh-elevation-sheet));
+    /* 模态命令面板与 Dialog 同档：overlay 圆角 + sheet 三件套（material-elevated 的边 / 底 / 影，§8.4），
+       边界由描边承担，不再只靠落影 */
+    border: var(--xh-stroke-thin) solid var(--xh-command-border, var(--xh-material-elevated-border));
+    border-radius: var(--xh-command-radius, var(--xh-shape-overlay));
+    background: var(--xh-command-bg, var(--xh-material-elevated-bg));
+    color: var(--xh-command-fg, var(--xh-material-elevated-fg));
+    box-shadow: var(--xh-command-shadow, var(--xh-material-elevated-shadow));
     /* 条目的高亮底色是方角，滚到两端时会探出面板的圆角 */
     overflow: hidden;
     /* positioner 不吃指针，面板自身恢复交互。 */
@@ -195,7 +205,9 @@
     min-block-size: 0;
     padding-block: var(--xh-command-list-py, var(--xh-space-2));
     padding-inline: var(--xh-command-list-px, var(--xh-space-2));
+    /* 模态面板里的滚动面：到底后不把滚动链穿透给页面（§6.6） */
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   /* 没有可见命令时不保留列表的上下内距；只排除列表内部 hidden 祖先，退场中的外壳不影响判断。 */
@@ -238,33 +250,41 @@
   }
 
   /* —— 命令 —— */
+  /* 命令走 Collection Item 的 overlay 语境：悬停 / 键盘锚点（data-highlighted，白底承载 100）、按下（200）与禁用面
+     （aria-disabled）都由家族给，这里只把公开槽映射到桥接槽。aria-selected 跟着活动候选走（selection-follows-focus），
+     家族的浮层选中面缺省透明：这里把选中各态映射到与悬停 / 按下同一档，活动候选与指针悬停看上去是同一副面，
+     命令面板里没有第二档，选中即执行、不留状态。命令从不承载焦点（焦点恒在检索框），高亮不画环。
+     布局保持 flex：图标、正文、快捷键按作者顺序排成一行，不用家族网格；间距由行的 gap 给 */
   [data-scope='command'][data-part='item'] {
+    --xh-collection-block-padding: var(--xh-command-item-py, var(--xh-_command-item-py));
+    --xh-collection-inline-padding: var(--xh-command-item-px, var(--xh-_command-px));
+    --xh-collection-gap: 0;
+    --xh-collection-font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));
+    --xh-collection-radius: var(--xh-command-item-radius, var(--xh-shape-control));
+    --xh-collection-fg-rest: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-hover: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-keyboard-highlight: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-pressed: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-selected: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-selected-hover: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-selected-highlight: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-selected-pressed: var(--xh-command-item-fg, var(--xh-fg-default));
+    --xh-collection-bg-hover: var(--xh-command-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-command-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected: var(--xh-command-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-hover: var(--xh-command-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-highlight: var(--xh-command-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-command-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-selected-pressed: var(--xh-command-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-outline-keyboard-highlight: transparent;
+    --xh-collection-outline-selected-highlight: transparent;
+
     display: flex;
     align-items: center;
     gap: var(--xh-command-item-gap, var(--xh-_command-gap));
-    padding-block: var(--xh-command-item-py, var(--xh-_command-item-py));
-    padding-inline: var(--xh-command-item-px, var(--xh-_command-px));
-    border-radius: var(--xh-command-item-radius, var(--xh-shape-control));
-    color: var(--xh-command-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-command-item-leading, var(--xh-leading-normal));
-    cursor: pointer;
     user-select: none;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* 悬停与键盘锚点共用中性灰轻档：命令面板里没有第二档，选中即执行、不留状态 */
-  [data-scope='command'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-command-item-bg-hover, var(--xh-bg-subtle));
-  }
-
-  /* 禁用走 aria-disabled 而非原生 disabled，条目仍在文档里，样式由 data-disabled 表达 */
-  [data-scope='command'][data-part='item'][data-disabled] {
-    cursor: not-allowed;
-    color: var(--xh-fg-disabled);
   }
 
   /* 开幕：结果自上而下逐条冒出来。筛掉的条目带 hidden 不生成盒子，重新露面时这段动画重新起跑，

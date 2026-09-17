@@ -269,6 +269,14 @@ describe('commandMachine 与连接层的边界', () => {
     expect(modal.getBackdropProps().hidden).toBeUndefined()
   })
 
+  it('命令投影 Collection Item 的 overlay 语境与尺寸档，文字落 text 槽；没有对号槽，活动候选只是同档高亮', () => {
+    const c = makeCommand({ defaultOpen: true, size: 'lg' })
+    const item = c.api().getItemProps({ value: 'users' }) as unknown as Record<string, unknown>
+    expect(item).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'lg', 'data-xh-collection-context': 'overlay', 'aria-selected': 'true' })
+    expect((c.api().getItemTextProps({ value: 'users' }) as unknown as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    expect((makeCommand({ defaultOpen: true }).api().getItemProps({ value: 'users' }) as unknown as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
+  })
+
   it('活动候选与 aria-activedescendant 同步 aria-selected，其余项保持 false 且没有持久状态', () => {
     const c = makeCommand({ defaultOpen: true })
     const item = (value: string): Record<string, unknown> =>

@@ -102,8 +102,6 @@
     "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移"
   },
   "scroll": {
-    "command:list:unwired": "命令面板尚未接自绘条，随 command 提交接线",
-    "command:list:overscroll": "浮层面缺 overscroll-behavior: contain，随 command 提交补",
     "popover:content:size": "浮层宿主未传 size: 'sm'，随 popover 提交补",
     "popover:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 popover 提交补",
     "hover-card:content:size": "浮层宿主未传 size: 'sm'，随 hover-card 提交补",
@@ -142,7 +140,6 @@
     "checkbox-group:select-all-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "checkbox:root": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "color-swatch-picker:item": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
-    "command:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
     "floating-panel:trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "form:error-summary-item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；没把换面写进本部件的 transition；待本组件迁移",
     "radio-group:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；没把换面写进本部件的 transition；待本组件迁移",
@@ -171,7 +168,6 @@
     "color-swatch-picker:label:color": "color 落 --xh-fg-muted，字段标签应为 --xh-fg-default；待本组件迁移",
     "color-swatch-picker:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "color-swatch-picker:label:spacing": "根的 gap 落 --xh-control-gap-md，字段标签贴控件应为 --xh-space-1；待本组件迁移",
-    "command:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "dialog:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "dialog:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "drawer:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
