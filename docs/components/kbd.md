@@ -184,7 +184,7 @@ default 使用中性底，light 保持透明
 | `--xh-kbd-fg` | `root` | `color` | `default` | `--xh-fg-muted` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-disabled` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-font` | `root` | `font-family` | `default` | `inherit` | kbd 的 root 部件 font-family 覆盖槽。 |
-| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | kbd 的 root 部件 font-size 覆盖槽。 |
+| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-text-caption-size` | kbd 的 root 部件 font-size 覆盖槽。 |
 | `--xh-kbd-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | kbd 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-kbd-gap` | `root` | `gap` | `default` | `--xh-space-1` | kbd 的 root 部件 gap 覆盖槽。 |
 | `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-space-6` | kbd 的 root 部件 block-size 覆盖槽。 |

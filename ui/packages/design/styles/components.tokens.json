@@ -33665,7 +33665,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 font-size 覆盖槽。"
