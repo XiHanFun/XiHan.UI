@@ -34,11 +34,22 @@ async function componentDirs() {
   return out.sort()
 }
 
-/** 取出每个 onKeyDown 处理器的函数体（按花括号配平）。 */
+/**
+ * 取出每个 onKeyDown 处理器的函数体（按花括号配平）。
+ * 只把处理器引用（`'onKeyDown': press.onKeyDown`，按压通道把 Core 合成好的跟踪器直接挂上）的那一处跳过：
+ * 它的函数体在 Core 里，跟在后面的花括号块是别的东西（下一段 getter、整份 api 对象），拿它判会把
+ * 不相干的 onClick TOGGLE 算到 keydown 头上。写成内联函数的照旧取块。
+ */
 function keydownBlocks(src) {
   const out = []
   let i = src.indexOf('onKeyDown')
   while (i >= 0) {
+    const after = src.slice(i + 'onKeyDown'.length, i + 'onKeyDown'.length + 120)
+    // 引用本身（press.onKeyDown 里的属性名）与「键: 引用,」两种写法都不是内联函数体
+    if (src[i - 1] === '.' || /^['"]?\s*:\s*[\w$]+(?:\.[\w$]+)+\s*,/.test(after)) {
+      i = src.indexOf('onKeyDown', i + 'onKeyDown'.length)
+      continue
+    }
     const start = src.indexOf('{', i)
     if (start < 0)
       break
