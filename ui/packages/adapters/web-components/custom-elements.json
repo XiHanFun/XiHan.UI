@@ -60157,6 +60157,14 @@
             },
             {
               "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollables: () => this.getParts('list'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
+              "description": "两侧定高小列表各走一路自绘条（§6.6）：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、\n贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；\n两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算"
+            },
+            {
+              "kind": "field",
               "name": "inheritedControl",
               "type": {
                 "text": "FormControlState | undefined"
@@ -60460,7 +60468,16 @@
               "name": "--xh-transfer-item-bg-hover"
             },
             {
+              "name": "--xh-transfer-item-bg-pressed"
+            },
+            {
+              "name": "--xh-transfer-item-bg-selected"
+            },
+            {
               "name": "--xh-transfer-item-fg"
+            },
+            {
+              "name": "--xh-transfer-item-fg-selected"
             },
             {
               "name": "--xh-transfer-item-font-size"
@@ -60560,6 +60577,12 @@
             },
             {
               "name": "--xh-transfer-search-px"
+            },
+            {
+              "name": "--xh-transfer-select-all-bg-hover"
+            },
+            {
+              "name": "--xh-transfer-select-all-bg-pressed"
             },
             {
               "name": "--xh-transfer-select-all-fg"

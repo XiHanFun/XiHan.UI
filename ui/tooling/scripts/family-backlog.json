@@ -19,8 +19,7 @@
     "sortable:item:raised": "拖起的条目没有描边，raised 必带 --xh-border-default，待本组件迁移",
     "switch:thumb:raised": "滑块描边落 --xh-material-soft-border，应为 --xh-border-default，待本组件迁移",
     "tabs:root:raised": "raised 退役待本组件迁移",
-    "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移",
-    "transfer:to-source-trigger:raised": "raised 退役待本组件迁移"
+    "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移"
   },
   "selection": {
     "anchor:link": "导航当前页字色是 --xh-fg-brand，应为 --xh-fg-brand-strong；待本组件迁移",
@@ -35,8 +34,7 @@
     "tabs:trigger": "导航当前页字重是 （没写 font-weight），应为 --xh-font-weight-medium；待本组件迁移",
     "tag-group:tag/root": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "toggle-group:item": "无滑块开关的选中底是 （没写 background），应为 --xh-bg-brand-subtle；无滑块开关的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "toggle:root": "无滑块开关的选中字色（桥接槽 --xh-action-fg-rest 解析到底）是 --xh-fg-brand，应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "transfer:item": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移"
+    "toggle:root": "无滑块开关的选中字色（桥接槽 --xh-action-fg-rest 解析到底）是 --xh-fg-brand，应为 --xh-fg-on-brand-subtle；待本组件迁移"
   },
   "ladder": {
     "anchor:link:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
@@ -92,9 +90,7 @@
     "switch:root:selected": "background: --xh-bg-muted，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
     "tabs:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "tour:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
-    "transfer:to-target-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "transfer:to-target-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移"
+    "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移"
   },
   "shape": {
     "back-top:trigger": "登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
@@ -112,8 +108,7 @@
     "popconfirm:confirm-trigger::before": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（1em）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
     "slider:tick": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-slider-tick-size, var(--xh-spac）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
     "switch:thumb::after": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（60%）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
-    "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
-    "transfer:select-all-trigger": "取了 control，身份表登记的是 inset；待本组件迁移"
+    "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移"
   },
   "scroll": {
     "command:list:unwired": "命令面板尚未接自绘条，随 command 提交接线",
@@ -134,7 +129,6 @@
     "pagination:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 pagination 提交补",
     "color-picker:content:size": "浮层宿主未传 size: 'sm'，随 color-picker 提交补",
     "color-picker:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 color-picker 提交补",
-    "transfer:list:unwired": "穿梭框列表尚未接自绘条，随 transfer 提交接线",
     "calendar-picker:grid:overscroll": "快速选年网格多写了 overscroll-behavior: contain，随 calendar-picker 提交删",
     "calendar-range-picker:grid:overscroll": "快速选年网格多写了 overscroll-behavior: contain，随 calendar-range-picker 提交删",
     "dialog:body:overscroll": "模态 body 缺 overscroll-behavior: contain，随 dialog 提交补",
@@ -179,9 +173,7 @@
     "tag-group:tag/root": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "tour:next-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "tour:prev-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
-    "tour:skip-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
-    "transfer:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
-    "transfer:select-all-trigger": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移"
+    "tour:skip-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移"
   },
   "text": {
     "back-top:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
@@ -247,8 +239,7 @@
     "tour:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "tour:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "tour:description:line-height": "line-height 落 --xh-text-body-leading，说明文字应为 --xh-leading-normal；待本组件迁移",
-    "tour:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "transfer:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移"
+    "tour:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移"
   },
   "motion": {
     "drawer:translate": "入场仍走 --xh-motion-ease-enter-strong 与 duration-enter，改走 --xh-motion-ease-slide + --xh-motion-duration-slide 留给 drawer 提交（规范 §9.5）"

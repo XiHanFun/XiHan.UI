@@ -438,6 +438,11 @@ export function connectTransfer<T extends PropTypes>(
       return normalize.element({
         ...parts.item.attrs,
         ...itemState(item),
+        // 条目走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与勾选行的选中面
+        // （品牌淡底 + 淡底前景）由家族按 aria-selected / aria-disabled 给出，标记由行首的勾选方框承担
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'page',
         // 导航、焦点与勾选都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'option',
@@ -468,21 +473,31 @@ export function connectTransfer<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemState(item),
+      'data-xh-collection-slot': 'text',
     }),
 
     // 视觉方框，读屏不需要它——勾选态由条目自己的 aria-selected 承担。
+    // 它是前导勾选部件、自己就是选中标记（§7.3 页内持久集合），不占家族的 indicator 槽。
     // oneWay 下的 target 侧勾不了任何东西，这一格也就不该在场
     getItemCheckboxProps: item => normalize.element({
       ...parts['item-checkbox'].attrs,
       ...itemState(item),
+      'data-xh-collection-slot': 'prefix',
       'aria-hidden': true,
       'hidden': !selectable[item.side] || undefined,
     }),
 
     // 两颗搬运钮是本组件唯一的操作出口，且默认只画一枚箭头、没有可读文字，
-    // 名字无条件发：缺了它读屏就只念得出「按钮」，整个组件对读屏不可用
+    // 名字无条件发：缺了它读屏就只念得出「按钮」，整个组件对读屏不可用。
+    // 它们是只有字形的离散动作钮：接 Action Control 的 icon 档、outline 形态（中性描边、透明底），
+    // 盒、悬停 / 按下与 0.97 按压、粗指针热区、禁用面由家族按这几位给；正方盒固定取 sm 档一个控件高
     getToTargetTriggerProps: () => normalize.button({
       ...parts['to-target-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
       'type': 'button',
       'aria-label': label.toTarget,
       // 单体控件用原生 disabled：没勾中任何可搬的条目时按下去什么也不会发生，
@@ -499,6 +514,11 @@ export function connectTransfer<T extends PropTypes>(
 
     getToSourceTriggerProps: () => normalize.button({
       ...parts['to-source-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
       'type': 'button',
       'aria-label': label.toSource,
       // oneWay 把这条路整个封死，此时它恒为禁用

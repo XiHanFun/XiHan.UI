@@ -1052,3 +1052,29 @@ describe('连接层：视觉轴与读取面', () => {
     expect(api.query('source')).toBe('')
   })
 })
+
+describe('collection Item 家族投影', () => {
+  it('条目投影 page 语境的行角色与尺寸；勾选方框是前导标记、文字落 text 槽', () => {
+    const h = mount({ size: 'lg', defaultSelection: ['apple'] })
+    expect(h.item('source', 'apple').dataset).toMatchObject({ xhCollectionItem: '', xhCollectionSize: 'lg', xhCollectionContext: 'page' })
+    expect(h.item('source', 'apple').getAttribute('aria-selected')).toBe('true')
+    expect(h.item('source', 'banana').dataset).toMatchObject({ xhCollectionItem: '', disabled: '' })
+    expect(mount().item('source', 'apple').dataset.xhCollectionSize).toBe('md')
+    const item = { value: 'apple', side: 'source' as const }
+    expect((h.api().getItemTextProps(item) as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    expect((h.api().getItemCheckboxProps(item) as Record<string, unknown>)['data-xh-collection-slot']).toBe('prefix')
+  })
+
+  it('两颗搬运钮接 Action Control 的 icon 档 outline 形态，正方盒固定 sm 档', () => {
+    const h = mount({ size: 'lg' })
+    for (const el of [h.toTarget, h.toSource]) {
+      expect(el.dataset).toMatchObject({
+        xhActionControl: '',
+        xhActionProfile: 'icon',
+        xhActionVariant: 'outline',
+        xhActionDisplay: 'always',
+        xhActionSize: 'sm',
+      })
+    }
+  })
+})

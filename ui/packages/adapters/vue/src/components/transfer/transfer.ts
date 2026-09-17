@@ -18,8 +18,9 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   provideTransfer,
@@ -199,10 +200,30 @@ export const XhTransferSearch = defineComponent({
 
 export const XhTransferList = defineComponent({
   name: 'XhTransferList',
-  setup(_, { slots }) {
+  // 根是片段（列表节点 + 贴层的条子），Vue 不会把直通属性合上去：作者写的 class、style 与 data-* 自己接住落到列表节点上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    return () => h('div', ctx.api.value.getListProps(panel.value) as Record<string, unknown>, slots.default?.())
+    const listRef = ref<HTMLElement | null>(null)
+    // 两侧定高小列表各走一路自绘条（§6.6）：条子紧跟在列表后面、贴在列表自己的盒子上，
+    // 挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；两条轴都摆——皮肤给的是两轴 overflow: auto。
+    // 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
+    const bars = useScrollbars({
+      scrollable: () => listRef.value,
+      axes: ['vertical', 'horizontal'],
+      anchor: 'layer',
+      props: () => ({ dir: ctx.service.prop('dir') }),
+    })
+    // 搬运、搜索筛选与空态显隐都会挪动列表在壳内的位置与尺寸：每次更新后重量一次偏移盒
+    onUpdated(() => bars.measure())
+    return () => [
+      h('div', {
+        ...mergeProps(ctx.api.value.getListProps(panel.value) as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { listRef.value = el as HTMLElement | null },
+      }, slots.default?.()),
+      ...bars.render(),
+    ]
   },
 })
 
