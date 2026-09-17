@@ -267,22 +267,25 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | rating 的 root 部件 gap 覆盖槽。 |
+| `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-space-1` | rating 的 root 部件 gap 覆盖槽。 |
+| `--xh-rating-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle-hover` | rating 的 item 部件 background-color 覆盖槽。 |
 | `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`not(:empty)` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
 | `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`highlighted`<br>`not(:empty)` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
 | `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
-| `--xh-rating-label-font-size` | `label` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 label 部件 font-size 覆盖槽。 |
+| `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | rating 的 label 部件 color 覆盖槽。 |
+| `--xh-rating-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | rating 的 label 部件 color 覆盖槽。 |
+| `--xh-rating-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | rating 的 label 部件 font-size 覆盖槽。 |
 | `--xh-rating-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | rating 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-rating-value-text-fg` | `value-text` | `color` | `default` | `--xh-fg-muted` | rating 的 value-text 部件 color 覆盖槽。 |
+| `--xh-rating-value-text-fg-disabled` | `value-text` | `color` | `disabled` | `--xh-fg-subtle` | rating 的 value-text 部件 color 覆盖槽。 |
 | `--xh-rating-value-text-font-size` | `value-text` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 value-text 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`clip-path` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `clip-path` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

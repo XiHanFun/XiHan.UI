@@ -48863,10 +48863,33 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "rating 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-rating-item-bg-pressed",
+      "component": "rating",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "rating 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-rating-item-fg",
@@ -48986,7 +49009,25 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "rating 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-rating-label-fg-disabled",
+      "component": "rating",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "rating 的 label 部件 color 覆盖槽。"
@@ -49004,7 +49045,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_rating-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "rating 的 label 部件 font-size 覆盖槽。"
@@ -49041,6 +49082,24 @@
       ],
       "defaultToken": [
         "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "rating 的 value-text 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-rating-value-text-fg-disabled",
+      "component": "rating",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "rating 的 value-text 部件 color 覆盖槽。"
