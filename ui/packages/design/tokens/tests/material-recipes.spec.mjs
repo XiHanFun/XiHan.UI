@@ -151,7 +151,8 @@ describe('material Recipe 生成', () => {
     expect(fullEntry.match(/@import '@xihan-ui\/tokens\/tokens\.css';/g)).toHaveLength(1)
 
     const representatives = {
-      soft: 'switch.css',
+      // Switch 的滑块已改 raised 抬起面（a8f421f52），soft 配方的消费者只剩 Tag
+      soft: 'tag.css',
       frosted: 'popover.css',
       elevated: 'dialog.css',
     }
