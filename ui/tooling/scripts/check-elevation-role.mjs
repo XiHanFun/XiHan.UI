@@ -71,7 +71,8 @@ const EXPECTED = {
   'drawer': { content: ['sheet'] },
   'float-button': { root: ['frosted'] },
   'floating-panel': { content: ['frosted'] },
-  'heatmap': { tooltip: ['floating'] },
+  // 网格里跟着格子走的反白详情条：与 Tooltip 同一副气泡，描边 + frosted 紧凑影（§8.4）
+  'heatmap': { tooltip: ['frosted'] },
   // 浮在视口一角的回底钮：与 back-top / float-button 同属角落浮钮族，走 frosted 四件套
   'log': { 'scroll-to-end-trigger': ['frosted'] },
   'message-feed': { 'scroll-to-end-trigger': ['frosted'] },

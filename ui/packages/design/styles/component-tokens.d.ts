@@ -1598,6 +1598,7 @@ export type ComponentTokenName =
   | '--xh-heatmap-sticky-layer'
   | '--xh-heatmap-title-fg'
   | '--xh-heatmap-tooltip-bg'
+  | '--xh-heatmap-tooltip-border'
   | '--xh-heatmap-tooltip-fg'
   | '--xh-heatmap-tooltip-font-size'
   | '--xh-heatmap-tooltip-layer'

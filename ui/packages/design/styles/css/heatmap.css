@@ -323,12 +323,16 @@
     padding-block: var(--xh-heatmap-tooltip-py, var(--xh-space-1));
     padding-inline: var(--xh-heatmap-tooltip-px, var(--xh-space-2));
     border-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-control));
+    /* 与 Tooltip 同一副反白气泡：任何浮层都得有一圈非透明描边（§8.4），描边从字色里兑两成，
+       深浅主题与语气换色时跟着字色走；影走 frosted 紧凑档，与 Tooltip 的 content 同深 */
+    border: var(--xh-stroke-thin) solid var(--xh-heatmap-tooltip-border, color-mix(in oklab, var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface)) 20%, transparent));
     background: var(--xh-heatmap-tooltip-bg, var(--xh-fg-default));
     color: var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface));
-    font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-text-caption-size));
+    /* 字号与 Tooltip 缺省档同一把尺（次级标注档 13px） */
+    font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-control-caption-md));
     line-height: var(--xh-leading-normal);
     white-space: nowrap;
-    box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-elevation-floating));
+    box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-material-frosted-compact-shadow));
     /* 详情条不接指针：压在格子上时指针要能穿过去，否则一进条里就算离开了格子，
        详情自己把自己收起来，来回闪 */
     pointer-events: none;
