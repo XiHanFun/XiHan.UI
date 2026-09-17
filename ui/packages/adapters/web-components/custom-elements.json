@@ -47739,6 +47739,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-sortable-drag-bg-active"
+            },
+            {
               "name": "--xh-sortable-drag-bg-hover"
             },
             {
@@ -47755,6 +47758,9 @@
             },
             {
               "name": "--xh-sortable-drag-grip-w"
+            },
+            {
+              "name": "--xh-sortable-drag-icon-size"
             },
             {
               "name": "--xh-sortable-drag-radius"

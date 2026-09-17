@@ -147,6 +147,8 @@ const PRESSABLE = {
   'checkbox-group': ['item', 'select-all-trigger'],
   'switch': ['root'],
   'rating': ['item'],
+  // 排序把手是定尺的图标钮（§9.1）：接 Action Control icon ghost 档，按下缩放并换底
+  'sortable': ['item-drag-trigger'],
   // 预设色板的格子归内嵌的 color-swatch-picker，按压归那份皮
   'color-picker': ['eye-dropper-trigger'],
   // 色板的格子：底色就是展示物，按下缩放并换描边（形态 ④）

@@ -271,6 +271,25 @@ describe('排序 · 产出的属性', () => {
     expect((handle.style as Record<string, unknown>).touchAction).toBe('none')
   })
 
+  it('手柄投影 Action Control 家族属性：icon ghost 档、xs 正方盒、常显', () => {
+    const s = makeSortable()
+    const handle = s.api().getItemDragTriggerProps({ id: 'a' }) as Record<string, unknown>
+    expect(handle['data-xh-action-control']).toBe('')
+    expect(handle['data-xh-action-profile']).toBe('icon')
+    expect(handle['data-xh-action-variant']).toBe('ghost')
+    expect(handle['data-xh-action-display']).toBe('always')
+    expect(handle['data-xh-action-size']).toBe('xs')
+  })
+
+  it('禁掉的手柄同时打 aria-disabled 与 data-disabled：前者给读屏，后者给家族收反馈', () => {
+    const s = makeSortable()
+    const handle = s.api().getItemDragTriggerProps({ id: 'a', disabled: true }) as Record<string, unknown>
+    expect(handle['aria-disabled']).toBe('true')
+    expect(handle['data-disabled']).toBe('')
+    const other = s.api().getItemDragTriggerProps({ id: 'b' }) as Record<string, unknown>
+    expect(other['data-disabled']).toBeUndefined()
+  })
+
   it('拖动中的手柄报 aria-pressed=true', () => {
     const s = makeSortable()
     s.service.send({ type: 'ITEM.PICKUP', id: 'a' })

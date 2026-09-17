@@ -103,6 +103,12 @@ export const sortableSuite: ConformanceSuite = {
             'aria-disabled': 'false',
             'aria-pressed': 'false',
             'tabindex': '0',
+            // 把手接 Action Control 家族：icon ghost 档、xs 正方盒、常显
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
           },
         },
       },
