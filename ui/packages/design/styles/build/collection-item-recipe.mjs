@@ -32,9 +32,11 @@ const STATE_SLOT = {
 }
 const MARKER_GLYPHS = ['trailing', 'leading']
 const MARKER_CURRENTS = ['none', 'bar']
-/** 上下文态的主体：selected 读 aria 事实，current 读状态词汇表里的 data-current。 */
-const SUBJECT = { selected: '[aria-selected=\'true\']', current: '[data-current]' }
-const GUARD = ':not([aria-disabled=\'true\'], [aria-busy=\'true\'], [data-error])'
+/** 上下文态的主体：selected 读 aria 事实，行不是 ARIA 主体时（Tree / TreeSelect 的 branch-control，aria-selected 在
+ *  branch 上）读连接层同步下来的 data-selected；current 读状态词汇表里的 data-current。:is 取最高特指度，仍是 (0,1,0)。 */
+const SUBJECT = { selected: ':is([aria-selected=\'true\'], [data-selected])', current: '[data-current]' }
+/** 交互守卫：aria-disabled 与 data-disabled 同为禁用事实（分支行只带后者）；busy / error 行的换面由组件皮肤自行接回。 */
+const GUARD = ':not([aria-disabled=\'true\'], [data-disabled], [aria-busy=\'true\'], [data-error])'
 /** 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档（真源 §9.2）。 */
 const PRESSED = ':is(:active, [data-pressed])'
 /** 叠加态的后缀：hover / highlight / pressed 与基础态使用同一组选择器。 */

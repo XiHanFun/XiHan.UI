@@ -8,7 +8,7 @@ const UI_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const SOURCE = join(UI_ROOT, 'packages/design/styles/recipes/collection-item.recipe.json')
 const TOKENS = join(UI_ROOT, 'packages/design/tokens/tokens.json')
 
-const GUARD = ':not([aria-disabled=\'true\'], [aria-busy=\'true\'], [data-error])'
+const GUARD = ':not([aria-disabled=\'true\'], [data-disabled], [aria-busy=\'true\'], [data-error])'
 
 async function source() {
   return JSON.parse(await readFile(SOURCE, 'utf8'))
@@ -24,7 +24,8 @@ function ruleBody(css, selector) {
 
 function contextSelector(context, subject, overlay) {
   const suffix = { hover: ':hover', highlight: ':is(:focus-visible, [data-highlighted])', pressed: ':is(:active, [data-pressed])' }
-  const base = `[data-xh-collection-item][data-xh-collection-context='${context}'][${subject === 'selected' ? 'aria-selected=\'true\'' : 'data-current'}]${GUARD}`
+  // selected 主体兼认 aria-selected 与分支行的 data-selected；current 只读 data-current
+  const base = `[data-xh-collection-item][data-xh-collection-context='${context}']${subject === 'selected' ? ':is([aria-selected=\'true\'], [data-selected])' : '[data-current]'}${GUARD}`
   return overlay ? `${base}${suffix[overlay]}` : base
 }
 

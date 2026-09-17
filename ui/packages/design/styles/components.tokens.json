@@ -8028,11 +8028,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -8052,10 +8055,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -8074,14 +8080,17 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "in-path",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
@@ -8104,14 +8113,17 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "in-path",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -8131,13 +8143,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -8177,13 +8192,16 @@
         "font-weight"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -8231,14 +8249,17 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "in-path",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
@@ -15516,11 +15537,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -15539,10 +15563,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -15561,13 +15588,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
@@ -15589,13 +15619,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -15614,13 +15647,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -15657,13 +15693,16 @@
         "font-weight"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -15704,13 +15743,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
@@ -19597,11 +19639,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -19620,10 +19665,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -19700,13 +19748,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -19979,11 +20030,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -20002,10 +20056,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -20065,13 +20122,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -20090,13 +20150,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -20115,13 +20178,16 @@
         "font-weight"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -21084,11 +21150,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -21107,10 +21176,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -21187,13 +21259,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -37292,11 +37367,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -37315,10 +37393,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -37338,13 +37419,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -50770,11 +50854,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -50793,10 +50880,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -50815,13 +50905,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
@@ -50843,13 +50936,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -50868,13 +50964,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -50911,13 +51010,16 @@
         "font-weight"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -61925,11 +62027,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -61948,10 +62053,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -62009,13 +62117,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -62034,13 +62145,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -62077,13 +62191,16 @@
         "font-weight"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -62300,11 +62417,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -62323,10 +62443,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -62384,13 +62507,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -62409,13 +62535,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -63612,11 +63741,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -63635,10 +63767,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -63696,13 +63831,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -63721,13 +63859,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -63764,13 +63905,16 @@
         "font-weight"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -63987,11 +64131,14 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -64010,10 +64157,13 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -64071,13 +64221,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -64096,13 +64249,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -73432,8 +73588,10 @@
         "hover",
         "is(:focus-visible, [data-highlighted])",
         "is(:hover, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "not([data-disabled])",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -73456,9 +73614,11 @@
         "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "not([data-disabled])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -73478,13 +73638,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
@@ -73507,13 +73670,16 @@
       ],
       "state": [
         "default",
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -73533,13 +73699,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -73578,13 +73747,16 @@
         "font-weight"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -73628,13 +73800,16 @@
         "color"
       ],
       "state": [
+        "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
+        "selected",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
