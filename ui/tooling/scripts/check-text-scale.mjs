@@ -2,7 +2,7 @@
 // 门禁：皮肤里的字号只走语义档，不许直接下探到 --xh-font-size-* 原语。
 //
 // 语义档：控件文字 --xh-control-font-sm/md/lg（与 --xh-control-h-* 同构，按尺寸档走）、
-// 正文 --xh-text-body-size、标签 --xh-text-label-size、说明文字 --xh-text-caption-size、
+// 正文 --xh-text-body-size、标签 --xh-text-label-size、说明 --xh-text-secondary-size、次级标注 --xh-text-caption-size、
 // 标题 --xh-text-heading-1/2/3-size。皮肤直接点名原语，改「所有控件文字小一号」就得改几十份皮肤。
 //
 // 控件里的次级文字（提示、计数、快捷键、清空钮）走 --xh-control-caption-sm/md/lg，比同档主文字低一级。
@@ -65,7 +65,7 @@ if (problems.length) {
   console.error('[check-text-scale] ✗ 字号直接用了 --xh-font-size-* 原语，改走语义档：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('控件文字按尺寸档走 --xh-control-font-sm/md/lg；正文 --xh-text-body-size、标签 --xh-text-label-size、说明 --xh-text-caption-size、标题 --xh-text-heading-1/2/3-size。')
+  console.error('控件文字按尺寸档走 --xh-control-font-sm/md/lg；正文 --xh-text-body-size、标签 --xh-text-label-size、说明 --xh-text-secondary-size、次级标注（计数 / 快捷键 / 时间戳）--xh-text-caption-size、标题 --xh-text-heading-1/2/3-size。')
   process.exit(1)
 }
 

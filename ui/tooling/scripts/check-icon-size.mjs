@@ -99,7 +99,7 @@ if (problems.length) {
   console.error('[check-icon-size] ✗ 图标尺寸没接线：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('root（浮层族是 content）上写 --xh-icon-size: var(--xh-<comp>-icon-size, var(--xh-glyph-size-text))，兜底盒写 inline-size / block-size: var(--xh-icon-size, var(--xh-glyph-size-text))。')
+  console.error('root（浮层族是 content）上写 --xh-icon-size: var(--xh-<comp>-icon-size, var(--xh-glyph-size-md))（控件内图标按 data-size 走 sm / md / lg；--xh-glyph-size-text 只给 Tag / Kbd / Breadcrumb / Typography / Highlight 这些纯行内文字组件），兜底盒写 inline-size / block-size: var(--xh-icon-size, var(--xh-glyph-size-md))。')
   process.exit(1)
 }
 
