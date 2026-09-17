@@ -131,19 +131,25 @@ export function runSsrConformance(
     }
 
     /**
-     * 全部入参直出过的部件名合集，不限 scope。
-     * 组件会把一部分部件装配成另一套解剖（scroll-area 的轨道戴 scrollbar 的 scope），
-     * 按名字收才对得上 fixture 里写的那一棵树。
+     * 全部入参直出过的部件名合集。
+     * `any` 不限 scope：组件会把一部分部件装配成另一套解剖（scroll-area 的轨道戴 scrollbar
+     * 的 scope），按名字收才对得上 fixture 里写的那一棵树，缺失判定用它。
+     * `own` 只收本组件 scope：partExempt 过期判定用它，免得别的 scope 里同名的部件
+     * （command 的内容区里挂着 scrollbar 的 root）把本组件确实不产出的部件判成直出过。
      */
-    const emittedParts = (): Set<string> => {
-      const out = new Set<string>()
+    const emittedParts = (): { any: Set<string>, own: Set<string> } => {
+      const any = new Set<string>()
+      const own = new Set<string>()
       for (const r of rendered) {
         for (const t of scanScopedTags(r.html ?? '')) {
-          if (t.part != null)
-            out.add(t.part)
+          if (t.part == null)
+            continue
+          any.add(t.part)
+          if (t.scope === scope)
+            own.add(t.part)
         }
       }
-      return out
+      return { any, own }
     }
 
     hooks.describe(`SSR: ${suite.component} (${harness.adapterName})`, () => {
@@ -185,7 +191,7 @@ export function runSsrConformance(
         await renderAll()
         if (throwReason != null)
           return
-        const emitted = emittedParts()
+        const { any: emitted, own: emittedOwn } = emittedParts()
         if (emitted.size === 0) {
           if (emptyReason != null)
             return
@@ -196,7 +202,7 @@ export function runSsrConformance(
 
         const declared = [...declaredParts(suite.fixture)]
         const missing = declared.filter(p => !emitted.has(p) && !(p in exemptParts))
-        const stale = Object.keys(exemptParts).filter(p => emitted.has(p))
+        const stale = Object.keys(exemptParts).filter(p => emittedOwn.has(p))
         const errs: string[] = []
         if (missing.length)
           errs.push(`  没直出：${missing.join(', ')}`)
