@@ -22,18 +22,21 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { MenuProvider, useMenuContext } from '../menu/context'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   MenubarGroupProvider,
   MenubarItemProvider,
   MenubarMenuProvider,
+  MenubarPositionerProvider,
   MenubarProvider,
   MenubarSubProvider,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
   useMenubarMenuContext,
+  useMenubarPositionerContext,
   useMenubarSubContext,
 } from './context'
 import { useMenubar } from './use-menubar'
@@ -188,19 +191,26 @@ export function XhMenubarPositioner({ value, container, children, ...rest }: XhM
       return getTrigger(value)
     },
   }), [getTrigger, value])
+  // 这张菜单的内容节点由 content 挂载后写回；条目列表的自绘条与 content 同级、绝对定位不占布局，
+  // 壳是这层已经 fixed 的 positioner；一张菜单一套，浮层里的条子走 4px 档
+  const contentRef = useRef<HTMLElement | null>(null)
+  const bars = useScrollbars({ scrollable: () => contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <MenubarMenuProvider value={menu}>
-      <XhPortal container={container ?? ctx.portalContainer} source={source}>
-        <div
-          {...mergeReactProps(
-            ctx.api.getPositionerProps(menu) as Record<string, unknown>,
-            rest as Record<string, unknown>,
-            { ref: setEl },
-          )}
-        >
-          {children}
-        </div>
-      </XhPortal>
+      <MenubarPositionerProvider value={contentRef}>
+        <XhPortal container={container ?? ctx.portalContainer} source={source}>
+          <div
+            {...mergeReactProps(
+              ctx.api.getPositionerProps(menu) as Record<string, unknown>,
+              rest as Record<string, unknown>,
+              { ref: setEl },
+            )}
+          >
+            {children}
+            {bars.render()}
+          </div>
+        </XhPortal>
+      </MenubarPositionerProvider>
     </MenubarMenuProvider>
   )
 }
@@ -218,6 +228,8 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
   const menu = useMemo<MenubarContentProps>(() => ({ value: own }), [own])
   const setEl = useMenubarPart(ctx.registerContent, own)
   const contentRef = useRef<HTMLElement | null>(null)
+  // 外层 positioner 按这个节点配自绘条
+  const positionerContentRef = useMenubarPositionerContext()
   const presenceRef = useRef<PresenceHandle | null>(null)
   const presenceValueRef = useRef<string | null>(null)
   const sendPresence = (event: MenubarSchema['event']): void => {
@@ -258,7 +270,13 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
           style: visible ? undefined : { display: 'none' },
           ref: setEl,
         },
-        { ref: (el: HTMLDivElement | null) => { contentRef.current = el } },
+        {
+          ref: (el: HTMLDivElement | null) => {
+            contentRef.current = el
+            if (positionerContentRef)
+              positionerContentRef.current = el
+          },
+        },
       )}
     >
       {children}

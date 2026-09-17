@@ -388,9 +388,15 @@ export function connectMenubar<T extends PropTypes>(
       })
     },
 
+    // 条目走 Collection Item 的 overlay 语境（锚定浮层）：悬停 / 键盘高亮（data-highlighted）/ 按下面与禁用面
+    // （aria-disabled）由家族给；菜单没有持久选中，浮层选中面永不命中。子菜单触发项由子层的 menu 机器
+    // 合并同一批标记并按开合报 data-in-path
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       // 导航、检索与选中的条目身份
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'menuitem',
@@ -412,11 +418,14 @@ export function connectMenubar<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 标记位是常显的前导图标槽，不是选中对号：落家族的 prefix 列（indicator 槽缺省是藏起来的勾选标记）
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'prefix',
       // 标记位是纯装饰
       'aria-hidden': true,
     }),
@@ -424,10 +433,12 @@ export function connectMenubar<T extends PropTypes>(
     getItemDescriptionProps: item => normalize.element({
       ...parts['item-description'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'description',
     }),
 
     getSeparatorProps: () => normalize.element({
       ...parts.separator.attrs,
+      'data-xh-collection-separator': '',
       'role': 'separator',
       // 分隔线恒横跨菜单
       'aria-orientation': 'horizontal',

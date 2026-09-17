@@ -198,7 +198,12 @@ export const menubarSuite: ConformanceSuite = {
           },
           'content[2]': { hidden: '' },
           'positioner[0]': { 'data-state': 'closed', 'data-placement': null },
+          // 条目走 Collection Item 的 overlay 语境，不报 aria-selected
           'item[0]': {
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'overlay',
+            'aria-selected': null,
             'role': 'menuitem',
             'aria-disabled': 'false',
             'disabled': null,
@@ -207,8 +212,10 @@ export const menubarSuite: ConformanceSuite = {
             'data-highlighted': null,
             'tabindex': '-1',
           },
-          'separator': { 'role': 'separator', 'aria-orientation': 'horizontal' },
-          'item-indicator': { 'aria-hidden': 'true' },
+          'item-text[0]': { 'data-xh-collection-slot': 'text' },
+          'separator': { 'role': 'separator', 'aria-orientation': 'horizontal', 'data-xh-collection-separator': '' },
+          // 标记位是常显的前导图标槽，落 prefix 列而不是藏起来的 indicator 列
+          'item-indicator': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'prefix' },
         },
       },
     },

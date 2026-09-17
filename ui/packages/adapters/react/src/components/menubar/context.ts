@@ -6,6 +6,7 @@
 // 提供 context 相关实现。
 
 import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps } from '@xihan-ui/headless'
+import type { RefObject } from 'react'
 import type { MenubarContext } from './use-menubar'
 import { createContext, useContext } from 'react'
 
@@ -28,6 +29,16 @@ export const MenubarMenuProvider = MenuCtx
 /** 取所属菜单项的身份，不在 positioner 内时返回 null（此时 content 须自带 value）。 */
 export function useMenubarMenuContext(): MenubarContentProps | null {
   return useContext(MenuCtx) ?? null
+}
+
+/** positioner 交给 content 的内容节点 ref：positioner 按它给这张菜单配自绘条，content 挂载后写回。 */
+const PositionerCtx = createContext<RefObject<HTMLElement | null> | undefined>(undefined)
+
+export const MenubarPositionerProvider = PositionerCtx
+
+/** 取外层 positioner 的内容节点 ref，不在 positioner 内时返回 null。 */
+export function useMenubarPositionerContext(): RefObject<HTMLElement | null> | null {
+  return useContext(PositionerCtx) ?? null
 }
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */

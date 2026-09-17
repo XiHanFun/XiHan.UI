@@ -160,7 +160,8 @@ const PRESSABLE = {
   // 展开与导航的触发钮
   'accordion': [{ part: 'trigger', feedback: 'surface' }],
   'collapsible': [{ part: 'trigger', feedback: 'surface' }],
-  'menubar': ['trigger', { part: 'item', feedback: 'surface' }],
+  // 菜单栏的入口是一排菜单名里铺开的一段，按下只换面不缩放（§9.2）
+  'menubar': [{ part: 'trigger', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
   // 横排导航的入口是铺开的一段，按下只换面不缩放（§9.2）；面板里的链接走 Collection Item 的 overlay 语境
   'navigation-menu': [{ part: 'trigger', feedback: 'surface' }, { part: 'link', feedback: 'surface' }],
   'tabs': ['trigger'],
