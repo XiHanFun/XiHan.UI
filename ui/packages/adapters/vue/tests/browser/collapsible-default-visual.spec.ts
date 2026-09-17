@@ -10,11 +10,23 @@ afterEach(() => {
   host = null
 })
 
+function tokenColor(name: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${name})`
+  document.body.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
+/** 静态夹具带上 connect 投影的家族属性：触发器的盒型与三态面由 Action Control 的 disclosure-trigger 档按它们画。 */
+const TRIGGER_ATTRS = 'data-xh-action-control data-xh-action-profile="disclosure-trigger" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="md"'
+
 function mount(state: 'closed' | 'open' = 'open') {
   host = document.createElement('div')
   host.innerHTML = `
     <div data-scope="collapsible" data-part="root">
-      <button data-scope="collapsible" data-part="trigger" data-state="${state}">
+      <button data-scope="collapsible" data-part="trigger" data-state="${state}" ${TRIGGER_ATTRS}>
         详情
         <span data-scope="collapsible" data-part="indicator" data-state="${state}"></span>
       </button>
@@ -45,16 +57,21 @@ describe('collapsible 默认视觉', () => {
     expect(indicator.color).toBe(content.color)
   })
 
-  it('收起状态悬停换面，展开状态保持稳定', async () => {
+  it('标题栏悬停换面到画布承载的 hover 档（100），展开态与收起态同档，按下只换面不缩放', async () => {
     const closed = mount('closed').trigger
     const closedRest = getComputedStyle(closed).backgroundColor
+
+    // 换面走 micro 过渡，等它落定再读
     await userEvent.hover(closed)
+    await expect.poll(() => getComputedStyle(closed).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
     expect(getComputedStyle(closed).backgroundColor).not.toBe(closedRest)
+    expect(getComputedStyle(closed).scale).toBe('none')
 
     host?.remove()
     const open = mount('open').trigger
     const openRest = getComputedStyle(open).backgroundColor
     await userEvent.hover(open)
-    expect(getComputedStyle(open).backgroundColor).toBe(openRest)
+    await expect.poll(() => getComputedStyle(open).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
+    expect(getComputedStyle(open).backgroundColor).not.toBe(openRest)
   })
 })
