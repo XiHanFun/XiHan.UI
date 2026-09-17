@@ -214,7 +214,7 @@
 | `--xh-splitter-trigger-bg` | `resize-trigger` | `background` | `default` | `--xh-border-default` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-splitter-trigger-bg-disabled` | `resize-trigger` | `background` | `disabled` | `--xh-border-subtle` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-splitter-trigger-bg-dragging` | `resize-trigger` | `background` | `dragging` | `--xh-bg-brand` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
-| `--xh-splitter-trigger-bg-hover` | `resize-trigger` | `background` | `hover` | `--xh-bg-subtle-active` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-splitter-trigger-bg-hover` | `resize-trigger` | `background` | `hover` | `--xh-border-control` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-splitter-trigger-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | splitter 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

@@ -15,6 +15,8 @@
 // ② 阶梯：hover 落 200 档而这份皮肤没给 host 槽赋值即判红，hover 不得落 300；pressed 不得停在 100，
 //    落 300 同样要求 host 槽；
 // ③ :focus-visible / [data-focus] 规则的 border-color 必须是 --xh-border-control-focus，出现 --xh-_tone 即判红。
+// ④ 线状部件（LINE 登记）：分隔线的 background 画的是线本身的描边色而不是一块面，交互态按线取——
+//    只许落描边梯度（rest → hover 与字段描边同向加深），仍不许落 300 档面色或原语。
 // 存量登 family-backlog.json ladder 段，键 组件:部件[:状态]，命中即放行、不命中判过期。
 import { openBacklog } from './lib/family-backlog.mjs'
 import { colorPositionOf, conditional, innermost, partOf, readSkins, scopeOf, splitCompounds, splitSelectors, topLevelTokens } from './lib/skin-rules.mjs'
@@ -37,6 +39,16 @@ const STATES = [
 ]
 /** 焦点规则。 */
 const FOCUS = [':focus-visible', '[data-focus]', ':focus-within']
+
+/**
+ * ④ 线状部件：background 画的是一根分隔线的描边色，不是承载内容的面；交互态按线取描边梯度。
+ * 键 组件:部件，值是理由；登记了却没在交互态落描边色的照样报过期。
+ */
+const LINE = {
+  'splitter:resize-trigger': '面板之间的分隔条是一根 4px 的线（rest --xh-border-default），悬停按线加深到 --xh-border-control，拖动中才换品牌实心',
+}
+/** 线状部件交互态允许落的描边梯度（不含 focus，focus 边归 ③）。 */
+const LINE_ALLOWED = /^--xh-border-(?:default|control|control-hover)$/
 
 /** 交互态里 background / color 允许落的语义面。 */
 const ALLOWED = [
@@ -111,6 +123,8 @@ function slotRole(prop) {
 const backlog = await openBacklog('ladder')
 const problems = [...backlog.problems]
 let governed = 0
+/** LINE 里真被用来放行过的键：登了却没命中即过期。 */
+const lineSeen = new Set()
 
 for (const { comp, file, rules } of await readSkins()) {
   /** 这份皮肤是否给承载面的 host 槽赋过值：有就是淡底容器，阶梯整体上抬一档。 */
@@ -177,6 +191,11 @@ for (const { comp, file, rules } of await readSkins()) {
           if (!ALLOWED.some(re => re.test(token))) {
             if (derivedMix(token, resolve))
               continue
+            // ④ 线状部件的 background 是线的描边色，按描边梯度取
+            if (role === 'background' && `${comp}:${part}` in LINE && LINE_ALLOWED.test(token)) {
+              lineSeen.add(`${comp}:${part}`)
+              continue
+            }
             report(`${decl.prop}: ${token}——交互态的${role === 'background' ? '底' : '字'}只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）`)
             continue
           }
@@ -220,6 +239,10 @@ for (const { comp, file, rules } of await readSkins()) {
 }
 
 problems.push(...backlog.stale())
+for (const key of Object.keys(LINE)) {
+  if (!lineSeen.has(key))
+    problems.push(`${key} 登在 LINE 里却没有交互态落描边色——线状登记过期了`)
+}
 
 if (problems.length) {
   console.error('[check-state-ladder] ✗ 交互态没按承载面阶梯走：')
@@ -229,4 +252,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-state-ladder] 通过：${governed} 条交互态取值按语义面与阶梯核过；backlog 待办 ${backlog.pending} 条，无过期豁免`)
+console.log(`[check-state-ladder] 通过：${governed} 条交互态取值按语义面与阶梯核过（线状部件 ${lineSeen.size} 个按描边梯度）；backlog 待办 ${backlog.pending} 条，无过期豁免`)

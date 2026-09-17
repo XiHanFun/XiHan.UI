@@ -3,7 +3,7 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 6,
-  "ladder": 28,
+  "ladder": 27,
   "motion": 1,
   "press": 6,
   "scroll": 12,
@@ -50,7 +50,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "popconfirm:cancel-trigger:pressed",
   "popover:close-trigger:hover",
   "popover:close-trigger:pressed",
-  "splitter:resize-trigger:hover",
   "steps:indicator:hover",
   "tour:close-trigger:hover",
   "tour:close-trigger:pressed",
