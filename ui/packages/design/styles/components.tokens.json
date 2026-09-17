@@ -53908,6 +53908,24 @@
       "description": "statistic 的 root 部件 column-gap 覆盖槽。"
     },
     {
+      "name": "--xh-statistic-icon-size",
+      "component": "statistic",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_statistic-icon-size"
+      ],
+      "visibility": "public",
+      "description": "statistic 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-statistic-label-fg",
       "component": "statistic",
       "part": [

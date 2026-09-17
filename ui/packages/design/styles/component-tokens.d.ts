@@ -2814,6 +2814,7 @@ export type ComponentTokenName =
   | '--xh-statistic-affix-font-size'
   | '--xh-statistic-fg'
   | '--xh-statistic-gap'
+  | '--xh-statistic-icon-size'
   | '--xh-statistic-label-fg'
   | '--xh-statistic-label-font-size'
   | '--xh-statistic-row-gap'

@@ -48284,6 +48284,9 @@
               "name": "--xh-statistic-gap"
             },
             {
+              "name": "--xh-statistic-icon-size"
+            },
+            {
               "name": "--xh-statistic-label-fg"
             },
             {

@@ -153,6 +153,7 @@ trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone �
 | `--xh-statistic-affix-font-size` | `prefix`<br>`suffix` | `font-size` | `default` | `--xh-_statistic-affix-size` | statistic 的 prefix、suffix 部件 font-size 覆盖槽。 |
 | `--xh-statistic-fg` | `root` | `color` | `default` | `--xh-fg-default` | statistic 的 root 部件 color 覆盖槽。 |
 | `--xh-statistic-gap` | `root` | `column-gap` | `default` | `--xh-space-0` | statistic 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-statistic-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_statistic-icon-size` | statistic 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-statistic-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | statistic 的 label 部件 color 覆盖槽。 |
 | `--xh-statistic-label-font-size` | `label` | `font-size` | `default` | `--xh-_statistic-label-size` | statistic 的 label 部件 font-size 覆盖槽。 |
 | `--xh-statistic-row-gap` | `root` | `row-gap` | `default` | `--xh-_statistic-row-gap` | statistic 的 root 部件 row-gap 覆盖槽。 |
