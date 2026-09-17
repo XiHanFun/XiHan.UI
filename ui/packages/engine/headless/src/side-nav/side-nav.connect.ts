@@ -278,6 +278,11 @@ export function connectSideNav<T extends PropTypes>(
       const expandedAttr = popoutTrigger ? popoutValue === v : (staticOpen || isExpanded(v))
       return normalize.button({
         ...parts['branch-trigger'].attrs,
+        // 分支行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与展开路径的中性面
+        // （data-in-path 与 hover 同档）由家族给出；箭头是行尾的后缀，不是选中标记
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'page',
         'type': 'button',
         'id': triggerId(v),
         'data-value': v,
@@ -288,6 +293,8 @@ export function connectSideNav<T extends PropTypes>(
         // 方向键锚定的那一行：皮肤据此画高亮
         'data-highlighted': dataAttr(focusedValue === v),
         'data-disabled': dataAttr(isDisabled(v)),
+        // 原生 disabled 之外再报一遍 aria-disabled：家族的禁用面按它给
+        'aria-disabled': isDisabled(v) ? 'true' : 'false',
         'disabled': isDisabled(v) || undefined,
         'tabindex': anchor === v ? 0 : -1,
         'onClick': () => {
@@ -325,10 +332,13 @@ export function connectSideNav<T extends PropTypes>(
 
     getBranchTextProps: () => normalize.element({
       ...parts['branch-text'].attrs,
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 展开箭头落在行尾：家族网格的 suffix 列
     getBranchIndicatorProps: ({ value: v }) => normalize.element({
       ...parts['branch-indicator'].attrs,
+      'data-xh-collection-slot': 'suffix',
       'aria-hidden': true,
       'data-state': (popoutEnabled && !isTopLevel(v)) || isExpanded(v) ? 'open' : 'closed',
     }),
@@ -404,8 +414,13 @@ export function connectSideNav<T extends PropTypes>(
       })
     },
 
+    // 链接行走 Collection Item 的 page 语境：当前页（data-current）由家族给品牌淡底行面 + 淡底前景 +
+    // 起始侧 2px 指示条，悬停 / 高亮 / 按下面与禁用面按 aria-disabled 给
     getLinkProps: ({ value: v }) => normalize.element({
       ...parts.link.attrs,
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'page',
       'data-value': v,
       'href': metaOf(v) ? (collectionHref(collection, v) ?? undefined) : undefined,
       // 选中的那条就是「当前页」，读屏与皮肤都认它
@@ -432,6 +447,7 @@ export function connectSideNav<T extends PropTypes>(
 
     getLinkTextProps: () => normalize.element({
       ...parts['link-text'].attrs,
+      'data-xh-collection-slot': 'text',
     }),
   }
 }

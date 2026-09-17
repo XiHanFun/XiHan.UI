@@ -340,6 +340,10 @@ export const sideNavSuite: ConformanceSuite = {
           'list': { 'data-collapsed': null },
           'branch[0]': { 'data-state': 'closed', 'data-in-path': null, 'data-disabled': null },
           'branch-trigger[0]': {
+            // 分支行走 Collection Item 的 page 语境；禁用面按 aria-disabled 给
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'page',
             'type': 'button',
             'id': '@self',
             'data-value': 'user',
@@ -348,13 +352,19 @@ export const sideNavSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-in-path': null,
             'data-disabled': null,
+            'aria-disabled': 'false',
             'disabled': null,
             'tabindex': '-1',
           },
           'branch-trigger[1]': { 'data-value': 'order', 'aria-controls': '@part(branch-content[1])', 'tabindex': '-1' },
-          'branch-indicator[0]': { 'aria-hidden': 'true', 'data-state': 'closed' },
+          'branch-text[0]': { 'data-xh-collection-slot': 'text' },
+          // 箭头是行尾的后缀，不是选中标记
+          'branch-indicator[0]': { 'aria-hidden': 'true', 'data-state': 'closed', 'data-xh-collection-slot': 'suffix' },
           'branch-content[0]': { 'id': '@self', 'data-state': 'closed', 'hidden': '', 'data-popout': null },
           'link[0]': {
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'page',
             'data-value': 'home',
             'aria-current': null,
             'data-current': null,
@@ -364,6 +374,7 @@ export const sideNavSuite: ConformanceSuite = {
           },
           'link[1]': { 'data-value': 'user-list', 'tabindex': '-1' },
           'link[3]': { 'data-value': 'order-list', 'tabindex': '-1' },
+          'link-text[0]': { 'data-xh-collection-slot': 'text' },
         },
       },
       steps: [singleSideNavTabStop()],
@@ -562,7 +573,7 @@ export const sideNavSuite: ConformanceSuite = {
         parts: {
           'root': { 'data-disabled': '' },
           'branch[0]': { 'data-disabled': '' },
-          'branch-trigger[0]': { 'disabled': '', 'data-disabled': '' },
+          'branch-trigger[0]': { 'disabled': '', 'data-disabled': '', 'aria-disabled': 'true' },
           'link[0]': { 'aria-disabled': 'true', 'data-disabled': '' },
         },
       },

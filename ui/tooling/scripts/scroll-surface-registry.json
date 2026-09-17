@@ -243,9 +243,9 @@
     },
     "side-nav:branch-content": {
       "mode": "native",
-      "overscroll": false,
+      "overscroll": true,
       "gutter": false,
-      "why": "侧导航折叠态的 popout 分支列表"
+      "why": "侧导航折叠态的 popout 分支列表：真源 §6.6 把 SideNav popout 归原生细条，但它是锚定浮层里的滚动面，到底后不把滚动链穿透给页面"
     },
     "log:viewport": {
       "mode": "native",

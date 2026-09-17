@@ -46012,6 +46012,12 @@
               "name": "--xh-side-nav-indent"
             },
             {
+              "name": "--xh-side-nav-indicator-color"
+            },
+            {
+              "name": "--xh-side-nav-link-font-size"
+            },
+            {
               "name": "--xh-side-nav-link-gap"
             },
             {
@@ -46058,6 +46064,15 @@
             },
             {
               "name": "--xh-side-nav-row-bg-hover"
+            },
+            {
+              "name": "--xh-side-nav-row-bg-in-path"
+            },
+            {
+              "name": "--xh-side-nav-row-bg-pressed"
+            },
+            {
+              "name": "--xh-side-nav-row-fg"
             },
             {
               "name": "--xh-side-nav-row-fg-active"

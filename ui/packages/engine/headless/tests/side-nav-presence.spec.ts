@@ -135,3 +135,24 @@ describe('sideNav 弹出面板真实退场资源', () => {
     runtime.stop()
   })
 })
+
+describe('sideNav Collection Item 家族投影', () => {
+  it('链接与分支按钮投影 page 语境的行角色与尺寸，文字落 text 槽、箭头落 suffix 槽，分支按钮同报 aria-disabled', () => {
+    const runtime = createVanillaRuntime()
+    const service = createService(sideNavMachine, {
+      props: () => ({ collection: [...COLLECTION, { value: 'archive', disabled: true, children: [{ value: 'old' }] }], size: 'sm', defaultValue: 'product-a' }),
+      runtime,
+    })
+    runtime.start()
+    const api = connectSideNav(service, normalizeProps)
+    const row = { 'data-xh-collection-item': '', 'data-xh-collection-size': 'sm', 'data-xh-collection-context': 'page' }
+    expect(api.getLinkProps({ value: 'product-a' }) as Record<string, unknown>).toMatchObject({ ...row, 'data-current': '' })
+    expect(api.getBranchTriggerProps({ value: 'products' }) as Record<string, unknown>).toMatchObject({ ...row, 'data-in-path': '', 'aria-disabled': 'false' })
+    // 禁用分支：原生 disabled 之外同报 aria-disabled，家族按它给禁用面
+    expect(api.getBranchTriggerProps({ value: 'archive' }) as Record<string, unknown>).toMatchObject({ 'disabled': true, 'aria-disabled': 'true', 'data-disabled': '' })
+    expect((api.getLinkTextProps() as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    expect((api.getBranchTextProps() as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    expect((api.getBranchIndicatorProps({ value: 'products' }) as Record<string, unknown>)['data-xh-collection-slot']).toBe('suffix')
+    runtime.stop()
+  })
+})

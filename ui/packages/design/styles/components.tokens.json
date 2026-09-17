@@ -51840,6 +51840,8 @@
       "name": "--xh-side-nav-icon-size",
       "component": "side-nav",
       "part": [
+        "branch-trigger",
+        "link",
         "positioner",
         "root"
       ],
@@ -51847,13 +51849,19 @@
         "--xh-icon-size"
       ],
       "state": [
-        "is([data-part='root'], [data-part='positioner'])"
+        "default",
+        "is([data-part='root'], [data-part='positioner'])",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_collection-glyph-size",
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "side-nav 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "side-nav 的 branch-trigger、link、positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-indent",
@@ -51872,6 +51880,55 @@
       ],
       "visibility": "public",
       "description": "side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-indicator-color",
+      "component": "side-nav",
+      "part": [
+        "branch-trigger",
+        "link"
+      ],
+      "property": [
+        "background-color",
+        "color"
+      ],
+      "state": [
+        "current",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=page",
+        "xh-collection-slot=indicator"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 branch-trigger、link 部件 background-color、color 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-link-font-size",
+      "component": "side-nav",
+      "part": [
+        "branch-trigger",
+        "link"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_side-nav-row-font-size"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 branch-trigger、link 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-link-gap",
@@ -52133,21 +52190,24 @@
       "name": "--xh-side-nav-row-bg-active",
       "component": "side-nav",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "current",
         "disabled",
-        "not([data-disabled])"
+        "error",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=page"
       ],
       "defaultToken": [
-        "--xh-_side-nav-accent-bg"
+        "--xh-bg-brand-subtle"
       ],
       "visibility": "public",
-      "description": "side-nav 的 link 部件 background 覆盖槽。"
+      "description": "side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-row-bg-hover",
@@ -52157,24 +52217,97 @@
         "link"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "highlighted",
-        "is(:hover, [data-highlighted])",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "side-nav 的 branch-trigger、link 部件 background 覆盖槽。"
+      "description": "side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-row-bg-in-path",
+      "component": "side-nav",
+      "part": [
+        "branch-trigger",
+        "link"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "in-path"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-row-bg-pressed",
+      "component": "side-nav",
+      "part": [
+        "branch-trigger",
+        "link"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-row-fg",
+      "component": "side-nav",
+      "part": [
+        "branch-trigger",
+        "link"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "in-path",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "currentColor"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-row-fg-active",
       "component": "side-nav",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -52183,19 +52316,27 @@
       "state": [
         "current",
         "disabled",
-        "not([data-disabled])"
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=page"
       ],
       "defaultToken": [
-        "--xh-_side-nav-accent-fg"
+        "--xh-fg-on-brand-subtle"
       ],
       "visibility": "public",
-      "description": "side-nav 的 link 部件 color 覆盖槽。"
+      "description": "side-nav 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-row-fg-in-path",
       "component": "side-nav",
       "part": [
-        "branch-trigger"
+        "branch-trigger",
+        "link"
       ],
       "property": [
         "color"
@@ -52204,15 +52345,16 @@
         "in-path"
       ],
       "defaultToken": [
-        "--xh-_side-nav-in-path-fg"
+        "--xh-side-nav-row-fg"
       ],
       "visibility": "public",
-      "description": "side-nav 的 branch-trigger 部件 color 覆盖槽。"
+      "description": "side-nav 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-row-font-weight-active",
       "component": "side-nav",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -52221,13 +52363,20 @@
       "state": [
         "current",
         "disabled",
-        "not([data-disabled])"
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=page"
       ],
       "defaultToken": [
         "--xh-font-weight-medium"
       ],
       "visibility": "public",
-      "description": "side-nav 的 link 部件 font-weight 覆盖槽。"
+      "description": "side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-w",

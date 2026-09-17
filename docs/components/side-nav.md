@@ -56,7 +56,7 @@
 
 ### 特性
 
-- 支持分组、嵌套分支与当前项高亮。
+- 支持分组、嵌套分支与当前项高亮：当前项铺品牌淡底行面并在起始侧画 2px 指示条，通往当前项的展开分支只落与悬停同档的中性面。
 - `accordion` 限制同一层级只展开一个分支。
 - 折叠后保留图标入口，子级在浮层中展示。
 - 方向键上下移动，左右键展开或收起分支。
@@ -211,6 +211,7 @@
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
 | `branch-trigger` | `aria-controls` | `content` 部件的 id |
+| `branch-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `branch-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `aria-hidden` | !open \|\| undefined |
@@ -248,13 +249,22 @@
 | `branch-trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-value` | itemValue(el) |
+| `branch-trigger` | `data-xh-collection-context` | 'page' |
+| `branch-trigger` | `data-xh-collection-item` | '' |
+| `branch-trigger` | `data-xh-collection-size` | props.size |
+| `branch-text` | `data-xh-collection-slot` | 'text' |
 | `branch-indicator` | `data-state` | 'open' \| 'closed' |
+| `branch-indicator` | `data-xh-collection-slot` | 'suffix' |
 | `branch-content` | `data-popout` | '' |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
 | `link` | `data-current` | ''（条件成立时才出现） |
 | `link` | `data-disabled` | ''（条件成立时才出现） |
 | `link` | `data-highlighted` | ''（条件成立时才出现） |
 | `link` | `data-value` | itemValue(el) |
+| `link` | `data-xh-collection-context` | 'page' |
+| `link` | `data-xh-collection-item` | '' |
+| `link` | `data-xh-collection-size` | props.size |
+| `link-text` | `data-xh-collection-slot` | 'text' |
 | `popout-positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `popout-positioner` | `data-placement` | placed?.placement |
 | `popout-positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -274,8 +284,10 @@
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
 | `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | side-nav 的 group-label 部件 padding-block 覆盖槽。 |
-| `--xh-side-nav-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-glyph-size-text` | side-nav 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-side-nav-icon-size` | `branch-trigger`<br>`link`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | side-nav 的 branch-trigger、link、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-side-nav-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。 |
+| `--xh-side-nav-indicator-color` | `branch-trigger`<br>`link` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | side-nav 的 branch-trigger、link 部件 background-color、color 覆盖槽。 |
+| `--xh-side-nav-link-font-size` | `branch-trigger`<br>`link` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 branch-trigger、link 部件 font-size 覆盖槽。 |
 | `--xh-side-nav-link-gap` | `branch-trigger`<br>`link` | `gap` | `default` | `--xh-_side-nav-row-gap` | side-nav 的 branch-trigger、link 部件 gap 覆盖槽。 |
 | `--xh-side-nav-link-h` | `branch-trigger`<br>`link` | `min-block-size` | `default` | `--xh-_side-nav-row-h` | side-nav 的 branch-trigger、link 部件 min-block-size 覆盖槽。 |
 | `--xh-side-nav-link-px` | `branch-trigger`<br>`link` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 branch-trigger、link 部件 padding-inline 覆盖槽。 |
@@ -290,11 +302,14 @@
 | `--xh-side-nav-popout-p` | `branch-content` | `padding` | `popout` | `--xh-space-1` | side-nav 的 branch-content 部件 padding 覆盖槽。 |
 | `--xh-side-nav-popout-radius` | `branch-content` | `border-radius` | `popout` | `--xh-shape-overlay` | side-nav 的 branch-content 部件 border-radius 覆盖槽。 |
 | `--xh-side-nav-popout-shadow` | `branch-content` | `box-shadow` | `popout` | `--xh-elevation-floating` | side-nav 的 branch-content 部件 box-shadow 覆盖槽。 |
-| `--xh-side-nav-row-bg-active` | `link` | `background` | `current`<br>`disabled`<br>`not([data-disabled])` | `--xh-_side-nav-accent-bg` | side-nav 的 link 部件 background 覆盖槽。 |
-| `--xh-side-nav-row-bg-hover` | `branch-trigger`<br>`link` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | side-nav 的 branch-trigger、link 部件 background 覆盖槽。 |
-| `--xh-side-nav-row-fg-active` | `link` | `color` | `current`<br>`disabled`<br>`not([data-disabled])` | `--xh-_side-nav-accent-fg` | side-nav 的 link 部件 color 覆盖槽。 |
-| `--xh-side-nav-row-fg-in-path` | `branch-trigger` | `color` | `in-path` | `--xh-_side-nav-in-path-fg` | side-nav 的 branch-trigger 部件 color 覆盖槽。 |
-| `--xh-side-nav-row-font-weight-active` | `link` | `font-weight` | `current`<br>`disabled`<br>`not([data-disabled])` | `--xh-font-weight-medium` | side-nav 的 link 部件 font-weight 覆盖槽。 |
+| `--xh-side-nav-row-bg-active` | `branch-trigger`<br>`link` | `background-color` | `current`<br>`disabled`<br>`error`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。 |
+| `--xh-side-nav-row-bg-hover` | `branch-trigger`<br>`link` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。 |
+| `--xh-side-nav-row-bg-in-path` | `branch-trigger`<br>`link` | `background-color` | `in-path` | `--xh-bg-subtle` | side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。 |
+| `--xh-side-nav-row-bg-pressed` | `branch-trigger`<br>`link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | side-nav 的 branch-trigger、link 部件 background-color 覆盖槽。 |
+| `--xh-side-nav-row-fg` | `branch-trigger`<br>`link` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `currentColor` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
+| `--xh-side-nav-row-fg-active` | `branch-trigger`<br>`link` | `color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
+| `--xh-side-nav-row-fg-in-path` | `branch-trigger`<br>`link` | `color` | `in-path` | `--xh-side-nav-row-fg` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
+| `--xh-side-nav-row-font-weight-active` | `branch-trigger`<br>`link` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-font-weight-medium` | side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。 |
 | `--xh-side-nav-w` | `root` | `inline-size` | `default` | `240px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
