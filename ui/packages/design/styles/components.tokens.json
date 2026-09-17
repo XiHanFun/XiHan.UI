@@ -24421,6 +24421,24 @@
       "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-drawer-close-bg-focus",
+      "component": "drawer",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-focus-visible"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-drawer-close-bg-hover",
       "component": "drawer",
       "part": [
@@ -24456,6 +24474,24 @@
       ],
       "defaultToken": [
         "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 close-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-close-fg-focus",
+      "component": "drawer",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-drawer-close-fg-hover"
       ],
       "visibility": "public",
       "description": "drawer 的 close-trigger 部件 color 覆盖槽。"

@@ -25,4 +25,5 @@ description 字号缺省 14 → `--xh-text-secondary-size` 13。root / content �
 
 公开槽 `--xh-drawer-trigger-gap / -h / -px / -radius / -font-size / -bg / -fg / -border / -bg-hover / -border-hover /
 -bg-active / -bg-open / -border-open`、`--xh-drawer-close-size / -radius / -fg / -fg-hover / -bg-hover / -bg-active`
-改为桥接到配方之前。
+改为桥接到配方之前；新增 `--xh-drawer-close-bg-focus` / `--xh-drawer-close-fg-focus`，桥到配方的 focus-visible 面
+（与 Dialog 关闭钮同名同缺省：透明底 + 悬停字色）。
