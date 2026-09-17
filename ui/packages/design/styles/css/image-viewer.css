@@ -158,7 +158,9 @@
   }
 
   /* 工具条里的七颗钮：接 Action Control icon 档 xs（24px 视觉盒），底色交给工具条，本体只管命中区与按压。
-     悬停 / 按下的底从 chrome 那层深底派生，不取页面的 --xh-bg-subtle-* 阶梯 */
+     悬停 / 按下的底从 chrome 那层深底派生，不取页面的 --xh-bg-subtle-* 阶梯。
+     position 交给配方的 relative：粗指针下 44px 命中区 ::after 以钮自身为包含块；
+     这里若写 static，七块命中区会一起以工具条为包含块、彼此盖住，触屏上只剩最后一颗可点 */
   [data-scope='image-viewer'][data-part='toolbar'] > [data-part] {
     --xh-action-bg-rest: transparent;
     --xh-action-bg-hover: var(--xh-_image-viewer-chrome-bg-hover);
@@ -177,8 +179,6 @@
     --xh-action-border-disabled: transparent;
     --xh-action-radius: var(--xh-image-viewer-toolbar-radius, var(--xh-_action-profile-radius));
     --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
-
-    position: static;
   }
 
   [data-scope='image-viewer'][data-part='counter'] {
