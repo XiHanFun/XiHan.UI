@@ -306,34 +306,12 @@ const FAMILIES = [
       },
     ],
   },
-  {
-    // 导航当前页：字色与字重（§7.3）；Breadcrumb 当前页不可点，是登记的例外，不在族内；
-    // SideNav 按 §7.3 是页内持久集合，当前项走 Collection Item page 语境的品牌淡底行面（由家族按
-    // data-current 给，皮肤没有自己的当前页规则），不是导航当前页的字色档，不在族内
-    name: '导航族',
-    backlog: true,
-    members: ['tabs', 'anchor', 'navigation-menu'],
-    parts: [
-      {
-        partBy: { 'tabs': 'trigger', 'anchor': 'link', 'navigation-menu': 'link' },
-        stateBy: { 'tabs': '[data-state=\'active\']', 'anchor': '[data-current]', 'navigation-menu': '[data-current]' },
-        props: ['color', 'font-weight'],
-      },
-    ],
-  },
-  {
-    // 开关型：选中段的底与影（§7.3）
-    name: '开关族',
-    backlog: true,
-    members: ['segmented', 'toggle-group', 'tabs'],
-    parts: [
-      {
-        partBy: { 'segmented': 'item', 'toggle-group': 'item', 'tabs': 'trigger' },
-        stateBy: { 'segmented': '[data-state=\'checked\']', 'toggle-group': '[data-state=\'on\']', 'tabs': '[data-state=\'active\']' },
-        props: ['background', 'box-shadow'],
-      },
-    ],
-  },
+  // 导航当前页与开关型（§7.3）不再按皮肤原文逐条比对：三家的选中面长在不同的结构上——tabs 的抬起面是
+  // segment 档下的后代规则、字色走随语气的 --xh-_tabs-accent-text；segmented 的抬起面是 indicator 部件；
+  // toggle-group 的品牌淡底经 Action Control 桥接槽给——槽名后缀又各随自家状态词汇（-active / -current / -on），
+  // 原文同值只有改公开槽名才做得到。这两类语义由 check-selection-marker 按 nav / slider / flat 三类逐成员核到
+  // 令牌（把私有槽解到底：--xh-fg-brand-strong + medium、surface-raised + border-default + raised、
+  // brand-subtle + on-brand-subtle），那一条才是它们的一致性门禁。
   {
     // 按钮形触发器：缺省中性，hover / active 的底按承载面阶梯走（§7.2）
     name: '按钮形触发器族',
