@@ -5,7 +5,7 @@ import { XhColorSliderControl, XhColorSliderRoot, XhColorSliderThumb, XhColorSli
 </script>
 
 <template>
-  <XhColorSliderRoot default-value="#3b82f6" size="sm" style="inline-size: 160px">
+  <XhColorSliderRoot default-value="#3b82f6" style="inline-size: var(--xh-doc-catalog-w-narrow)">
     <XhColorSliderControl>
       <XhColorSliderTrack />
       <XhColorSliderThumb />

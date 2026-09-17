@@ -14,5 +14,5 @@ for (let time = Date.UTC(2024, 8, 1); time <= Date.UTC(2024, 10, 23); time += DA
 </script>
 
 <template>
-  <XhHeatmapRoot :value="activity" start-date="2024-09-01" end-date="2024-11-23" style="inline-size: 240px" />
+  <XhHeatmapRoot :value="activity" start-date="2024-09-01" end-date="2024-11-23" style="inline-size: var(--xh-doc-catalog-w)" />
 </template>

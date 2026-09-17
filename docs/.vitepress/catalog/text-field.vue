@@ -5,7 +5,7 @@ import { XhTextFieldControl, XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot
 <template>
   <XhTextFieldRoot placeholder="请输入内容">
     <XhTextFieldLabel>文本输入</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 190px">
+    <XhTextFieldControl style="inline-size: var(--xh-doc-catalog-w-narrow)">
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>

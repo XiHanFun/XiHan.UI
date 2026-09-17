@@ -19,7 +19,7 @@ const collection = [
 </script>
 
 <template>
-  <XhTreeRoot :collection="collection" :default-expanded-value="['src']" :default-selection="['app']" style="inline-size: 200px; font-size: 13px">
+  <XhTreeRoot :collection="collection" :default-expanded-value="['src']" :default-selection="['app']" style="inline-size: var(--xh-doc-catalog-w)">
     <XhTreeTree>
       <XhTreeBranch value="src">
         <XhTreeBranchControl>

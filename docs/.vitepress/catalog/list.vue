@@ -8,7 +8,7 @@ const people = [
 </script>
 
 <template>
-  <XhListRoot style="inline-size: 220px; font-size: 13px">
+  <XhListRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhListItem v-for="p in people" :key="p.name">
       <XhListItemContent>
         <XhListItemTitle>{{ p.name }}</XhListItemTitle>

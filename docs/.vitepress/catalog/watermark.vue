@@ -5,7 +5,7 @@ import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
 <template>
   <XhWatermarkRoot text="XiHan.UI">
     <XhWatermarkContent>
-      <div style="padding: 28px">水印内容</div>
+      <div style="padding: var(--xh-space-7)">水印内容</div>
     </XhWatermarkContent>
   </XhWatermarkRoot>
 </template>

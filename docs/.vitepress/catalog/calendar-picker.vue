@@ -18,11 +18,11 @@ import {
 <template>
   <XhCalendarPickerRoot
     v-slot="{ weeks, weekDays }"
-    default-value="2026-09-18"
+    default-value="2026-09-10"
     default-focused-value="2026-09-13"
     locale="zh-CN"
     weekday-format="narrow"
-    style="max-inline-size: 220px; font-size: 12px"
+    style="max-inline-size: var(--xh-doc-catalog-w)"
   >
     <XhCalendarPickerHeader>
       <XhCalendarPickerHeading />
@@ -34,7 +34,7 @@ import {
         </XhCalendarPickerWeekRow>
       </XhCalendarPickerGridHead>
       <XhCalendarPickerGridBody>
-        <XhCalendarPickerWeekRow v-for="week in weeks.slice(0, 3)" :key="week[0].start">
+        <XhCalendarPickerWeekRow v-for="week in weeks.slice(0, 2)" :key="week[0].start">
           <XhCalendarPickerCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarPickerCellTrigger>{{ day.day }}</XhCalendarPickerCellTrigger>
           </XhCalendarPickerCell>

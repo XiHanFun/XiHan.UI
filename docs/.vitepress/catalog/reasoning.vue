@@ -6,7 +6,7 @@ const translations = { label: "思考过程", thinking: "正在思考…", thoug
 </script>
 
 <template>
-  <XhReasoningRoot :streaming="false" :start-time="1_000" :end-time="4_000" :translations="translations" default-open style="inline-size: 240px; font-size: 13px">
+  <XhReasoningRoot :streaming="false" :start-time="1_000" :end-time="4_000" :translations="translations" default-open style="inline-size: var(--xh-doc-catalog-w)">
     <XhReasoningTrigger>
       <XhReasoningIndicator />
       <XhReasoningLabel />

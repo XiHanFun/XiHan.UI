@@ -11,7 +11,7 @@ const blocks = createStreamRenderer().render(article, { ended: true }) as readon
 </script>
 
 <template>
-  <XhMarkdownStreamRoot :blocks="blocks" style="inline-size: 240px; font-size: 13px">
+  <XhMarkdownStreamRoot :blocks="blocks" style="inline-size: var(--xh-doc-catalog-w)">
     <XhMarkdownStreamContent />
   </XhMarkdownStreamRoot>
 </template>

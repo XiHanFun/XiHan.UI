@@ -14,7 +14,7 @@ import {
 </script>
 
 <template>
-  <XhTimeRangePickerRoot :default-value="['09:00', '18:00']" size="sm">
+  <XhTimeRangePickerRoot :default-value="['09:00', '18:00']">
     <XhTimeRangePickerControl>
       <XhTimeRangePickerSegmentGroup :index="0">
         <XhTimeRangePickerSegment segment="hour" />

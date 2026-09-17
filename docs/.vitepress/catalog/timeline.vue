@@ -17,7 +17,7 @@ const events = [
 </script>
 
 <template>
-  <XhTimelineRoot style="inline-size: 200px; font-size: 13px">
+  <XhTimelineRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhTimelineItem v-for="e in events" :key="e.at">
       <XhTimelineIndicator />
       <XhTimelineConnector />

@@ -15,12 +15,11 @@ import {
 
 const scopes: ApprovalScope[] = [
   { value: "read", label: "读取 src/", required: true },
-  { value: "write", label: "写回改动" },
 ];
 </script>
 
 <template>
-  <XhApprovalRoot :scopes="scopes" tone="warning" size="sm" style="inline-size: 240px">
+  <XhApprovalRoot :scopes="scopes" style="inline-size: var(--xh-doc-catalog-w)">
     <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
     <XhApprovalGroup>
       <XhApprovalItem v-for="scope in scopes" :key="scope.value" :scope-value="scope.value" :scope-label="scope.label" :scope-required="scope.required">

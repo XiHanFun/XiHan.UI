@@ -11,7 +11,7 @@ import {
 </script>
 
 <template>
-  <XhAlertRoot tone="success" style="inline-size: 240px">
+  <XhAlertRoot tone="success" style="inline-size: var(--xh-doc-catalog-w)">
     <XhAlertIndicator><XhIcon :icon="CheckIcon" /></XhAlertIndicator>
     <XhAlertContent>
       <XhAlertTitle>保存成功</XhAlertTitle>

@@ -9,13 +9,13 @@ const items = [
 </script>
 
 <template>
-  <XhSortableRoot :ids="items.map(item => item.id)" style="inline-size: 220px">
+  <XhSortableRoot :ids="items.map(item => item.id)" style="inline-size: var(--xh-doc-catalog-w)">
     <XhSortableItem
       v-for="item in items"
       :key="item.id"
       :item-id="item.id"
       :aria-label="item.id"
-      style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+      style="display: flex; align-items: center; gap: var(--xh-space-2); padding: var(--xh-space-2) var(--xh-space-3); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
     >
       <XhSortableItemDragTrigger :item-id="item.id" />
       <span data-demo-block="line" :data-tone="item.tone" aria-hidden="true" />

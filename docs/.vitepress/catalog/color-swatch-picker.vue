@@ -12,5 +12,5 @@ const swatches = [
 </script>
 
 <template>
-  <XhColorSwatchPickerRoot :swatches="swatches" default-value="#3b82f6" size="sm" />
+  <XhColorSwatchPickerRoot :swatches="swatches" default-value="#3b82f6" />
 </template>

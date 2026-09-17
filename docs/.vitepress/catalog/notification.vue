@@ -16,7 +16,7 @@ import {
     tone="info"
     :duration="0"
     :translations="{ close: '关闭' }"
-    style="inline-size: 240px"
+    style="inline-size: var(--xh-doc-catalog-w)"
   >
     <XhNotificationItemIndicator />
     <XhNotificationItemTitle />

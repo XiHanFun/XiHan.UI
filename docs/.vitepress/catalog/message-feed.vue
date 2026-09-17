@@ -8,7 +8,7 @@ const messages = [
 </script>
 
 <template>
-  <XhMessageFeedRoot :count="messages.length" style="inline-size: 240px; block-size: 150px; font-size: 13px">
+  <XhMessageFeedRoot :count="messages.length" style="inline-size: var(--xh-doc-catalog-w); block-size: var(--xh-doc-catalog-h)">
     <XhMessageFeedViewport>
       <XhMessageFeedList>
         <XhMessageFeedItem v-for="(message, index) in messages" :key="message.id" :item-id="message.id" :item-index="index" :item-role="message.role">

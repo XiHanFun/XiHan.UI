@@ -3,7 +3,7 @@ import { XhSliderControl, XhSliderHiddenInput, XhSliderLabel, XhSliderRange, XhS
 </script>
 
 <template>
-  <XhSliderRoot v-slot="{ value }" :default-value="[40]" style="inline-size: 220px">
+  <XhSliderRoot v-slot="{ value }" :default-value="[40]" style="inline-size: var(--xh-doc-catalog-w)">
     <XhSliderLabel>音量：{{ value[0] }}</XhSliderLabel>
     <XhSliderControl>
       <XhSliderTrack>

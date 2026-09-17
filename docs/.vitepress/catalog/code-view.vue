@@ -7,7 +7,7 @@ const sample = `export function clamp(n: number) {
 </script>
 
 <template>
-  <XhCodeViewRoot :code="sample" lang="typescript" filename="clamp.ts" complete style="inline-size: 240px; font-size: 11px">
+  <XhCodeViewRoot :code="sample" lang="typescript" filename="clamp.ts" complete style="inline-size: var(--xh-doc-catalog-w)">
     <XhCodeViewHeader>
       <XhCodeViewFilename />
     </XhCodeViewHeader>

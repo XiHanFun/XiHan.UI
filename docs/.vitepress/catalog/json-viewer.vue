@@ -10,5 +10,5 @@ const payload = {
 </script>
 
 <template>
-  <XhJsonViewerRoot :value="payload" style="inline-size: 240px; font-size: 12px" />
+  <XhJsonViewerRoot :value="payload" style="inline-size: var(--xh-doc-catalog-w)" />
 </template>

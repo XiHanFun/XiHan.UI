@@ -3,11 +3,11 @@ import { XhButton, XhPageHeaderDescription, XhPageHeaderExtra, XhPageHeaderRoot,
 </script>
 
 <template>
-  <XhPageHeaderRoot variant="outline" style="inline-size: 250px">
+  <XhPageHeaderRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhPageHeaderTitle>订单 SO-004</XhPageHeaderTitle>
     <XhPageHeaderDescription>今天 14:32 更新</XhPageHeaderDescription>
     <XhPageHeaderExtra>
-      <XhButton size="sm">编辑</XhButton>
+      <XhButton>编辑</XhButton>
     </XhPageHeaderExtra>
   </XhPageHeaderRoot>
 </template>

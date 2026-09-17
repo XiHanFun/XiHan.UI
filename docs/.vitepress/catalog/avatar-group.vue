@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import { XhAvatarFallback, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
-const members = [
-  { label: "曦", tone: "brand" },
-  { label: "寒", tone: "success" },
-  { label: "懿", tone: "warning" },
-  { label: "承", tone: "info" },
-] as const;
+const members = ["曦", "寒", "懿", "承"];
 </script>
 
 <template>
   <XhAvatarGroupRoot>
-    <XhAvatarRoot v-for="member in members" :key="member.label" :tone="member.tone">
-      <XhAvatarFallback>{{ member.label }}</XhAvatarFallback>
+    <XhAvatarRoot v-for="member in members" :key="member">
+      <XhAvatarFallback>{{ member }}</XhAvatarFallback>
     </XhAvatarRoot>
   </XhAvatarGroupRoot>
 </template>

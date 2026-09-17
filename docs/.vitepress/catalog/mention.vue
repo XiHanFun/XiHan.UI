@@ -12,6 +12,6 @@ const people = [
     :collection="people"
     default-value="这个问题交给 @李雷 跟进"
     :translations="{ input: '正文', content: '提及谁' }"
-    style="inline-size: 230px"
+    style="inline-size: var(--xh-doc-catalog-w)"
   />
 </template>

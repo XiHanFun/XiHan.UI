@@ -5,8 +5,8 @@ import { XhColorFieldControl, XhColorFieldInput, XhColorFieldRoot, XhColorFieldS
 </script>
 
 <template>
-  <XhColorFieldRoot default-value="#3b82f6" size="sm">
-    <XhColorFieldControl style="inline-size: 9rem">
+  <XhColorFieldRoot default-value="#3b82f6">
+    <XhColorFieldControl style="inline-size: var(--xh-doc-catalog-w-narrow)">
       <XhColorFieldSwatch />
       <XhColorFieldInput />
     </XhColorFieldControl>

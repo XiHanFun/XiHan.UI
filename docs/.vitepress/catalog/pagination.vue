@@ -9,7 +9,7 @@ import {
 </script>
 
 <template>
-  <XhPaginationRoot v-slot="{ pages }" :count="60" :page-size="10" :default-page="2" size="sm">
+  <XhPaginationRoot v-slot="{ pages }" :count="60" :page-size="10" :default-page="2">
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
       <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />

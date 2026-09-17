@@ -5,7 +5,7 @@ const cover = "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%2
 </script>
 
 <template>
-  <XhImageRoot :src="cover" alt="示例封面图" style="--xh-image-w: 220px; --xh-image-ratio: 16 / 9">
+  <XhImageRoot :src="cover" alt="示例封面图" style="--xh-image-w: var(--xh-doc-catalog-w); --xh-image-ratio: 16 / 9">
     <XhImageImage />
     <XhImageFallback>加载中</XhImageFallback>
   </XhImageRoot>

@@ -3,7 +3,7 @@ import { XhFileUploadDropzone, XhFileUploadHiddenInput, XhFileUploadLabel, XhFil
 </script>
 
 <template>
-  <XhFileUploadRoot style="inline-size: 230px">
+  <XhFileUploadRoot style="inline-size: var(--xh-doc-catalog-w)">
     <XhFileUploadLabel>附件</XhFileUploadLabel>
     <XhFileUploadDropzone>
       <span>把文件拖到这里</span>

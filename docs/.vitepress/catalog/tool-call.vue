@@ -3,7 +3,7 @@ import { XhToolCallContent, XhToolCallIndicator, XhToolCallLabel, XhToolCallOutp
 </script>
 
 <template>
-  <div style="display: grid; gap: 8px; inline-size: 240px; font-size: 13px">
+  <div style="display: grid; gap: var(--xh-space-2); inline-size: var(--xh-doc-catalog-w)">
     <XhToolCallRoot phase="input-streaming">
       <XhToolCallTrigger>
         <XhToolCallIndicator />

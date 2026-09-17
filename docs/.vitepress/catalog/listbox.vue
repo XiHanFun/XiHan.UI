@@ -9,7 +9,7 @@ const members = [
 </script>
 
 <template>
-  <XhListboxRoot :default-value="['lin']" style="inline-size: 200px">
+  <XhListboxRoot :default-value="['lin']" style="inline-size: var(--xh-doc-catalog-w)">
     <XhListboxLabel>团队成员</XhListboxLabel>
     <XhListboxContent>
       <XhListboxItem v-for="member in members" :key="member.value" :value="member.value">
