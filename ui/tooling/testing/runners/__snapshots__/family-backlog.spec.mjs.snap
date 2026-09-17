@@ -5,11 +5,11 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 12,
   "ladder": 40,
   "motion": 1,
-  "press": 11,
+  "press": 10,
   "scroll": 12,
   "selection": 3,
   "shape": 14,
-  "text": 46,
+  "text": 42,
 }
 `;
 
@@ -89,7 +89,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "floating-panel:trigger",
   "form:error-summary-item",
   "rating:item",
-  "steps:trigger",
   "tag-group:tag/root",
   "tour:next-trigger",
   "tour:prev-trigger",
@@ -177,10 +176,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "signature-pad:label:spacing",
   "slider:label:color",
   "slider:label:spacing",
-  "steps:description:color",
-  "steps:description:font-size",
-  "steps:description:line-height",
-  "steps:root:icon-size",
   "steps:title:font-size",
   "steps:title:font-weight",
   "timeline:title:font-size",

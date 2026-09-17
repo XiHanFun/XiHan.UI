@@ -48883,6 +48883,9 @@
               "name": "--xh-steps-trigger-bg-hover"
             },
             {
+              "name": "--xh-steps-trigger-bg-pressed"
+            },
+            {
               "name": "--xh-steps-trigger-gap"
             },
             {

@@ -32056,22 +32056,24 @@
 }
 
 [data-scope='steps'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-text));
+  /* 作者塞进指示符槽的图标与皮肤画的兜底对号同一把尺：控件内图标取 sm 档（§6.5），
+     序号圆点最小 28px，16px 的字形在三档圆点里都留得出边距 */
+  --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
 
-  /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
-     换档不必给每个部件各写一条选择器 */
+  /* 尺寸档只换这三个私有槽，序号圆点、标题与圆点里的序号都从 root 继承它们，
+     换档不必给每个部件各写一条选择器；说明走说明角色（13px），不随档 */
   --xh-_steps-indicator-size: var(--xh-space-8);
   --xh-_steps-title-font-size: var(--xh-control-font-md);
   --xh-_steps-caption-font-size: var(--xh-text-caption-size);
 
-  /* 语气落在走过与当前这两步的标记和连接线上：强调色画描边与填充，
-     accent-text 是普通底上的强调文字（当前步的序号），on-accent 是实心底上的前景。
-     没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色 */
+  /* 语气落在当前步的标记、走过那几步的对号与连接线上：强调色画描边与填充，
+     accent-text 是普通底上的强调文字（走过与当前步的标题），on-accent 是实心底上的前景。
+     没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色。
+     走过的步不再用品牌淡底（§7.3 brand-subtle 退出 completed 语义），淡底那两支私有槽随之撤掉 */
   --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_steps-accent-soft: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-  --xh-_steps-accent-soft-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
   --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+  /* 走过的步里那枚对号：中性淡底上的品牌色标记，不用标题那档更深的字色 */
+  --xh-_steps-accent-mark: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
   /* 走过的那几步是实心圆，顶边画一条极浅的内高光把它衬出厚度 */
   --xh-_steps-highlight: inset 0 var(--xh-stroke-thin) 0 0
@@ -32103,7 +32105,7 @@
 [data-scope='steps'][data-part='root'][data-size='sm'] {
   --xh-_steps-indicator-size: var(--xh-space-7);
   --xh-_steps-title-font-size: var(--xh-control-font-sm);
-  /* 字号档最小就是 xs，序号与说明不再往下走，故不重声明 caption */
+  /* 字号档最小就是 xs，序号不再往下走，故不重声明 caption */
 }
 
 [data-scope='steps'][data-part='root'][data-size='lg'] {
@@ -32186,14 +32188,23 @@
   font: inherit;
   text-align: start;
   cursor: pointer;
+  /* 整块内容行（序号 + 标题 + 说明）按 §9.2 归行级：按下只换面不缩放，transition 里没有 scale */
+  transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='steps'][data-part='trigger'][hidden] {
   display: none;
 }
 
+/* 白底承载的阶梯（§7.2）：hover 100 → pressed 200 */
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled]) {
-  background: var(--xh-steps-trigger-bg-hover, transparent);
+  background: var(--xh-steps-trigger-bg-hover, var(--xh-bg-subtle));
+}
+
+[data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
+  background: var(--xh-steps-trigger-bg-pressed, var(--xh-bg-subtle-hover));
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='title'],
@@ -32201,7 +32212,7 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤使用柔和强调面。 */
+/* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号（§7.3）。 */
 [data-scope='steps'][data-part='indicator'] {
   display: inline-flex;
   grid-row: 1 / span 2;
@@ -32230,6 +32241,7 @@
   display: none;
 }
 
+/* 圆点坐在触发器的 hover 面（100）上，自己再上一档到 200 才与承载面分得开 */
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
   [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
   background: var(--xh-steps-indicator-bg-hover, var(--xh-bg-subtle-hover));
@@ -32238,7 +32250,7 @@
 
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
   [data-scope='steps'][data-part='indicator'][data-state='completed'] {
-  background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-accent-soft-hover));
+  background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-bg-subtle-hover));
 }
 
 [data-scope='steps'][data-part='indicator'][data-state='current'] {
@@ -32248,19 +32260,19 @@
   box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
 }
 
+/* 走过的步：中性淡底（透明边位，§8.3）承一枚品牌色对号；标了语气的步对号跟语气的前景走 */
 [data-scope='steps'][data-part='indicator'][data-state='completed'] {
-  border-color: var(--xh-steps-indicator-border-completed, var(--xh-_steps-accent-soft));
-  background: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent-soft));
-  color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-accent-text));
+  border-color: var(--xh-steps-indicator-border-completed, transparent);
+  background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-subtle));
+  color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-accent-mark));
 }
 
-/* 单步语气：tones / collection 给某一步标了 data-tone，五个强调槽在这一步重新从语气层取值，
+/* 单步语气：tones / collection 给某一步标了 data-tone，四个强调槽在这一步重新从语气层取值，
    它的标记、标题与连接线照旧从祖先继承——只有这一步换色，状态那一档照算 */
 [data-scope='steps'][data-part='item'][data-tone] {
   --xh-_steps-accent: var(--xh-_tone);
-  --xh-_steps-accent-soft: var(--xh-_tone-subtle);
-  --xh-_steps-accent-soft-hover: var(--xh-_tone-subtle-hover);
   --xh-_steps-accent-text: var(--xh-_tone-fg);
+  --xh-_steps-accent-mark: var(--xh-_tone-fg);
   --xh-_steps-on-accent: var(--xh-_tone-on);
 }
 
@@ -32268,7 +32280,7 @@
 [data-scope='steps'][data-part='item'][data-tone]
   [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
   border-color: var(--xh-steps-indicator-border-toned, var(--xh-_steps-accent));
-  background: var(--xh-steps-indicator-bg-toned, var(--xh-_steps-accent-soft));
+  background: var(--xh-steps-indicator-bg-toned, var(--xh-_tone-subtle));
   color: var(--xh-steps-indicator-fg-toned, var(--xh-_steps-accent-text));
 }
 
@@ -32302,11 +32314,12 @@
   color: var(--xh-steps-title-fg-toned, var(--xh-_steps-accent-text));
 }
 
+/* 说明走说明角色（§6.4）：13 / fg-muted / leading-normal，不随 size 档 */
 [data-scope='steps'][data-part='description'] {
   grid-column: 2;
-  color: var(--xh-steps-description-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-steps-description-font-size, var(--xh-_steps-caption-font-size));
-  line-height: var(--xh-leading-tight);
+  color: var(--xh-steps-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-steps-description-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-leading-normal);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -32351,12 +32364,12 @@
   color: var(--xh-steps-content-fg, var(--xh-fg-default));
 }
 
-/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+/* 没写内容就由皮肤画兜底对号；作者往部件里塞了自己的图形，这几条即不命中 */
 [data-scope='steps'][data-part='indicator'][data-state='completed']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
