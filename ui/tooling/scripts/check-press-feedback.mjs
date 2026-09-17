@@ -70,6 +70,8 @@ const PRESSABLE = {
   'tree': [{ part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],
   'json-viewer': [{ part: 'branch-control', feedback: 'surface' }],
   'side-nav': [{ part: 'link', feedback: 'surface' }, { part: 'branch-trigger', feedback: 'surface' }],
+  // 目录里的一节是铺开的一行链接（§9.2），按下只换面不缩放
+  'anchor': [{ part: 'link', feedback: 'surface' }],
   'steps': [{ part: 'trigger', feedback: 'surface' }],
   // 圆圈 + 文字的整行条目：整行没有面，按下的回执落在圆圈上（圆圈坐在画布上，按下换到 200 档中性面），圆点不动
   'radio-group': [{ part: 'item', feedback: 'surface', target: 'indicator' }],

@@ -66,6 +66,7 @@ export type ComponentTokenName =
   | '--xh-anchor-indicator-thickness'
   | '--xh-anchor-leading'
   | '--xh-anchor-link-bg-hover'
+  | '--xh-anchor-link-bg-pressed'
   | '--xh-anchor-link-fg-current'
   | '--xh-anchor-link-fg-hover'
   | '--xh-anchor-link-font-weight-current'
