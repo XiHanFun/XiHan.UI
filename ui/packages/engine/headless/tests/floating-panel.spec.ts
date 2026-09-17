@@ -444,6 +444,102 @@ describe('connectFloatingPanel ARIA', () => {
     expect((api(rig.service).getWindowStateTriggerProps({ windowState: 'minimized' }) as Dict)['aria-label'])
       .toBe('Minimize panel')
   })
+
+  it('三种按钮接 Action Control：触发器 text md outline，形态钮与关闭钮 icon sm ghost，静息不带 data-pressed', () => {
+    const rig = makeRig({ defaultOpen: true })
+    const trigger = api(rig.service).getTriggerProps() as Dict
+    expect(trigger).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      // 缺省中性描边（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+      'data-xh-action-variant': 'outline',
+    })
+    expect(trigger['data-pressed']).toBeUndefined()
+    for (const props of [
+      api(rig.service).getWindowStateTriggerProps({ windowState: 'maximized' }) as Dict,
+      api(rig.service).getCloseTriggerProps() as Dict,
+    ]) {
+      expect(props).toMatchObject({
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'sm',
+        'data-xh-action-variant': 'ghost',
+      })
+      expect(props['data-pressed']).toBeUndefined()
+    }
+  })
+})
+
+// ══ 按压通道 ══
+
+describe('floatingPanelMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed，按住的是哪颗就只落在哪颗上', () => {
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+  it('触发器：keydown 在场、keyup 撤下；触屏按下在场、抬起撤下；失焦撤下', () => {
+    const rig = makeRig()
+    const trigger = (): Dict => api(rig.service).getTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+  })
+
+  it('形态钮按键：只有按住的那颗带 data-pressed，另一颗形态钮与关闭钮不带；另一颗的 keyup 不把它松开', () => {
+    const rig = makeRig({ defaultOpen: true })
+    const minimize = (): Dict => api(rig.service).getWindowStateTriggerProps({ windowState: 'minimized' }) as Dict
+    const maximize = (): Dict => api(rig.service).getWindowStateTriggerProps({ windowState: 'maximized' }) as Dict
+    const close = (): Dict => api(rig.service).getCloseTriggerProps() as Dict
+    fire(minimize(), 'onKeyDown', key(' '))
+    expect(minimize()['data-pressed']).toBe('')
+    expect(maximize()['data-pressed']).toBeUndefined()
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(maximize(), 'onKeyUp', key(' '))
+    expect(minimize()['data-pressed']).toBe('')
+    fire(minimize(), 'onKeyUp', key(' '))
+    expect(minimize()['data-pressed']).toBeUndefined()
+
+    fire(close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(close()['data-pressed']).toBe('')
+    expect(minimize()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerCancel', {})
+    expect(close()['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用只挡形态钮：形态钮按不进，开合触发器与关闭钮照常；按住途中被禁用由机器收面', () => {
+    const rig = makeRig({ defaultOpen: true, disabled: true })
+    const maximize = (): Dict => api(rig.service).getWindowStateTriggerProps({ windowState: 'maximized' }) as Dict
+    fire(maximize(), 'onKeyDown', key(' '))
+    fire(maximize(), 'onPointerDown', { pointerType: 'touch' })
+    expect(maximize()['data-pressed']).toBeUndefined()
+    const close = (): Dict => api(rig.service).getCloseTriggerProps() as Dict
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onKeyUp', key('Enter'))
+
+    // 途中禁用要经 watch 收面：props 得是运行时信号，改值才会通知机器
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ defaultOpen: true })
+    const service = createService(floatingPanelMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const live = (): Dict => api(service).getWindowStateTriggerProps({ windowState: 'maximized' }) as Dict
+    fire(live(), 'onKeyDown', key('Enter'))
+    expect(live()['data-pressed']).toBe('')
+    props.set({ defaultOpen: true, disabled: true })
+    expect(live()['data-pressed']).toBeUndefined()
+    runtime.stop()
+  })
 })
 
 // ══ 键盘：平移与推边 ══

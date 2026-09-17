@@ -5,7 +5,7 @@
 
 // 提供 floating panel 相关实现。
 
-import type { FloatingPanelSchema } from './floating-panel.types'
+import type { FloatingPanelPressedPart, FloatingPanelSchema } from './floating-panel.types'
 import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import {
@@ -63,6 +63,8 @@ export const floatingPanelMachine = createMachine({
         defaultValue: prop('defaultWindowState') ?? 'default',
         onChange: windowState => prop('onWindowStateChange')?.({ windowState }),
       })),
+      // 按压通道：正被按住的那颗按钮，与开合、拖动无关
+      pressed: cell<FloatingPanelPressedPart | null>(() => ({ defaultValue: null })),
     }
   },
   refs: () => ({
@@ -70,10 +72,17 @@ export const floatingPanelMachine = createMachine({
     session: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
-  // 受控时用户事件只发意图、不自改状态；宿主写回 open 后由这条 watch 派发影子事件回写
-  watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
+  // 受控时用户事件只发意图、不自改状态；宿主写回 open 后由这条 watch 派发影子事件回写。
+  // 形态钮按住途中被禁用：aria-disabled 的按钮仍会派 keyup，但守卫已不认它，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('open')], () => action(['syncOpen']))
+    track([() => prop('disabled')], () => action(['releaseWhenInert']))
+  },
   // 摆位置、改尺寸、切形态与开合无关：面板收起着也能被作者摆好，展开时就在那儿
   on: {
+    // 按压通道：开合触发器与关闭钮不受禁用影响，形态钮禁用时按不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'POSITION.SET': { guard: 'canInteract', actions: ['setPosition'] },
     'POSITION.NUDGE': { guard: 'canDrag', actions: ['nudgePosition'] },
     'DIMENSIONS.SET': { guard: 'canInteract', actions: ['setDimensions'] },
@@ -143,8 +152,28 @@ export const floatingPanelMachine = createMachine({
       // 收拢与铺满两种形态的尺寸都不由 dimensions 决定，此时改尺寸是改一个看不见的值
       canResize: ({ prop, context }) =>
         !prop('disabled') && (prop('resizable') ?? true) && context.get('windowState') === 'default',
+      // 禁用只挡形态钮：开合与关闭不受禁用影响（与 canInteract 的管辖面一致）
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type !== 'PRESS.START' || !e.part.startsWith('window-state:') || !prop('disabled')
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.part)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.part)
+          context.set('pressed', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled') && context.get('pressed')?.startsWith('window-state:'))
+          context.set('pressed', null)
+      },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭

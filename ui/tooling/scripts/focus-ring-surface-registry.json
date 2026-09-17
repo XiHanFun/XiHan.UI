@@ -21,9 +21,7 @@
     "context-menu [content] var(--xh-material-frosted-focus-surface)": "只有 tabindex=0 的空菜单接收此焦点面；M2 focus-surface 收敛到不透明 bg.surface，浏览器回归验证公共环。",
     "dialog [close-trigger] var(--xh-material-elevated-focus-surface)": "关闭钮聚焦时立即铺 M4 不透明 focus-surface，公共环不再与半透明内容面比较；浏览器回归验证浅深主题。",
     "dialog [content] linear-gradient(\n        to bottom,\n        var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      linear-gradient(\n        to bottom,\n        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-elevated-bg))),\n        var(\n          --xh-dialog-bg,\n          var(--xh-material-elevated-bg)\n        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))\n      )": "M4 内容面由透明顶光与 lens 到正文的同一实体面渐变叠合，静态工具无法按单一实体色求环对比；content 已在同表 ringless 登记为焦点陷阱的 tabindex=-1 兜底，真实交互控件各自铺实体焦点面并由浏览器回归覆盖。",
-    "floating-panel [close-trigger] var(--xh-material-frosted-focus-surface)": "关闭钮聚焦时铺不透明 M2 focus-surface，避免公共环与磨砂面后的未知内容直接比较。",
     "floating-panel [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-floating-panel-bg, var(--xh-material-frosted-bg))": "M2 面板由半透明 tint 与顶边高光叠合，静态工具无法以单一实体色判环；content 已在同表 ringless 登记为键盘事件收口，真实可交互的标题栏按钮聚焦时各自铺 material-frosted-focus-surface 实体底。",
-    "floating-panel [window-state-trigger] var(--xh-material-frosted-focus-surface)": "窗口状态钮聚焦时铺不透明 M2 focus-surface；选中实心档另由 currentColor 环规则保证。",
     "heatmap [cell] color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))": "档位是连着的百分比、由连接层内联写进 style，皮肤里恒是 0%，静态解不出格子的实际颜色；满档那一格的面就是 --xh-_heatmap-ink（缺省即 --xh-bg-brand），环压上去大概率不到 3:1，要浏览器态判据接",
     "hover-card [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-hover-card-bg, var(--xh-material-frosted-bg))": "M2 预览面含透明底与顶光，content 的程序化聚焦已明确关环；预览默认没有内建交互控件，作者若组合控件，其实体焦点面由各自皮肤提供。",
     "mention [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
@@ -226,13 +224,6 @@
     "drawer [data-part='trigger'][data-scope='drawer'][data-state='open']": {
       "parts": [
         "trigger"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "floating-panel [data-part='window-state-trigger'][data-scope='floating-panel'][data-state='on']": {
-      "parts": [
-        "window-state-trigger"
       ],
       "ratio": 2.89,
       "ring": "poured"

@@ -232,9 +232,9 @@
     },
     "floating-panel:body": {
       "mode": "native",
-      "overscroll": false,
+      "overscroll": true,
       "gutter": false,
-      "why": "非模态浮动面板的 body，页内结构容器"
+      "why": "浮在页面之上的 Overlay 家族滚动面：原生细条（§6.6 FloatingPanel body 走 reset 层统一细条），滚到头不把页面一起带走；内容高度不动态变化，不写 gutter"
     },
     "layout:sider": {
       "mode": "native",

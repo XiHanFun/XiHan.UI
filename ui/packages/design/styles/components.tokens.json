@@ -29392,17 +29392,21 @@
         "window-state-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "state=on"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。"
+      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-bg-hover",
@@ -29412,16 +29416,86 @@
         "window-state-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。"
+      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-floating-panel-action-bg-on",
+      "component": "floating-panel",
+      "part": [
+        "window-state-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "focus-visible",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-floating-panel-action-bg-on-active",
+      "component": "floating-panel",
+      "part": [
+        "window-state-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-floating-panel-action-bg-on-hover",
+      "component": "floating-panel",
+      "part": [
+        "window-state-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-fg",
@@ -29446,19 +29520,25 @@
       "name": "--xh-floating-panel-action-fg-active",
       "component": "floating-panel",
       "part": [
+        "close-trigger",
         "window-state-trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "state=on"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-pressed"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 window-state-trigger 部件 color 覆盖槽。"
+      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-fg-hover",
@@ -29471,13 +29551,45 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover"
       ],
       "visibility": "public",
       "description": "floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-floating-panel-action-fg-on",
+      "component": "floating-panel",
+      "part": [
+        "window-state-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "floating-panel 的 window-state-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-radius",
@@ -29508,10 +29620,11 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "floating-panel 的 window-state-trigger 部件 block-size、inline-size 覆盖槽。"
@@ -29617,10 +29730,11 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "floating-panel 的 close-trigger 部件 block-size、inline-size 覆盖槽。"
@@ -29783,8 +29897,11 @@
       "name": "--xh-floating-panel-icon-size",
       "component": "floating-panel",
       "part": [
+        "close-trigger",
         "content",
-        "root"
+        "root",
+        "trigger",
+        "window-state-trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -29793,10 +29910,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 content、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "floating-panel 的 close-trigger、content、root、trigger、window-state-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-layer",
@@ -29901,7 +30019,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-semibold"
       ],
       "visibility": "public",
       "description": "floating-panel 的 title 部件 font-weight 覆盖槽。"
@@ -29913,16 +30031,18 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 trigger 部件 background 覆盖槽。"
+      "description": "floating-panel 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-trigger-border",
@@ -29931,16 +30051,19 @@
         "trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-focus-visible",
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 trigger 部件 border 覆盖槽。"
+      "description": "floating-panel 的 trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-trigger-fg",
@@ -29952,10 +30075,21 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "floating-panel 的 trigger 部件 color 覆盖槽。"
@@ -29967,16 +30101,18 @@
         "trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 trigger 部件 block-size 覆盖槽。"
+      "description": "floating-panel 的 trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-trigger-px",
@@ -29991,7 +30127,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "floating-panel 的 trigger 部件 padding-inline 覆盖槽。"

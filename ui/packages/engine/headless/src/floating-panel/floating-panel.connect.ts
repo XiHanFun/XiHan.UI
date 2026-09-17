@@ -8,12 +8,13 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type {
   FloatingPanelApi,
+  FloatingPanelPressedPart,
   FloatingPanelResizeEdge,
   FloatingPanelSchema,
   FloatingPanelSize,
   FloatingPanelWindowState,
 } from './floating-panel.types'
-import { dataAttr, focusSafely } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, focusSafely } from '@xihan-ui/core'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
 import {
   fitFloatingPanelToViewport,
@@ -78,6 +79,25 @@ export function connectFloatingPanel<T extends PropTypes>(
   const canResize = !disabled && (prop('resizable') ?? true) && windowState === 'default'
 
   const ids = scope.ids('floating-panel', 'content', 'title')
+
+  // 按压通道：三种按钮各自合成一份跟踪器，真源是机器 context 里「正被按住的那颗」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
+  const pressed = context.get('pressed')
+  const press = (part: FloatingPanelPressedPart) => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === part,
+      onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
   const stateAttr = open ? 'open' : 'closed'
 
   const translations = prop('translations')
@@ -143,6 +163,14 @@ export function connectFloatingPanel<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'data-state': stateAttr,
+      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
+      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      'data-xh-action-variant': 'outline',
+      ...press('trigger'),
       'onClick': () => send({ type: 'TOGGLE' }),
     }),
 
@@ -298,6 +326,13 @@ export function connectFloatingPanel<T extends PropTypes>(
         'data-target-window-state': item.windowState,
         'data-state': active ? 'on' : 'off',
         'data-disabled': dataAttr(disabled),
+        // 标题栏上的单图标钮：icon 档 sm、ghost 面，按下即处于该形态的 on 态由皮肤按无滑块开关取品牌淡底（§7.3）
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'sm',
+        'data-xh-action-variant': 'ghost',
+        ...press(`window-state:${item.windowState}`),
         'onClick': () => {
           if (disabled)
             return
@@ -311,6 +346,13 @@ export function connectFloatingPanel<T extends PropTypes>(
       ...parts['close-trigger'].attrs,
       'type': 'button',
       'aria-label': label.close,
+      // 标题栏角落的叉：icon 档 sm、ghost 面，与形态钮同一副几何
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'ghost',
+      ...press('close-trigger'),
       'onClick': () => send({ type: 'CLOSE', src: 'close-trigger' }),
     }),
 

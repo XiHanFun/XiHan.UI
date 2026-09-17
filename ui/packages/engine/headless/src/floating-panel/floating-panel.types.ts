@@ -14,6 +14,12 @@ import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 export type FloatingPanelWindowState = 'default' | 'maximized' | 'minimized'
 
 /**
+ * 正被按住的按钮：开合触发器、关闭钮，或指向某一形态的形态钮（`window-state:<形态>`）。
+ * 标题栏上排着两三颗形态钮，只记一个布尔分不清按住的是哪颗。
+ */
+export type FloatingPanelPressedPart = 'trigger' | 'close-trigger' | `window-state:${FloatingPanelWindowState}`
+
+/**
  * 八个改尺把手对应的边，取值为罗盘方位：n 上 / e 右 / s 下 / w 左，两两组合即四角。
  * 这是屏幕方位而不是逻辑方位：推动量来自指针与方向键，两者都是屏幕坐标。
  */
@@ -140,6 +146,11 @@ export interface FloatingPanelSchema extends MachineSchema {
     /** 面板尺寸，恒已夹进 minSize / maxSize。 */
     dimensions: FloatingPanelSize
     windowState: FloatingPanelWindowState
+    /**
+     * 正被按住的按钮：Space / Enter 或触屏手指按下到松开之间，该按钮投影 data-pressed；没有按住时为 null。
+     * 指针按住由 :active 表出。
+     */
+    pressed: FloatingPanelPressedPart | null
   }
   computed: Record<string, never>
   refs: FloatingPanelRefs
@@ -162,8 +173,11 @@ export interface FloatingPanelSchema extends MachineSchema {
     | { type: 'RESIZE.START', edge: FloatingPanelResizeEdge, point: FloatingPanelPoint }
     | { type: 'DRAG.MOVE', point: FloatingPanelPoint }
     | { type: 'DRAG.END' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪颗按钮
+    | { type: 'PRESS.START', part: FloatingPanelPressedPart }
+    | { type: 'PRESS.END', part: FloatingPanelPressedPart }
   tag: never
-  guard: 'canDrag' | 'canInteract' | 'canResize' | 'isOpenControlled'
+  guard: 'canDrag' | 'canInteract' | 'canResize' | 'isOpenControlled' | 'canPress'
   action:
     | 'invokeOnClose'
     | 'invokeOnOpen'
@@ -175,6 +189,9 @@ export interface FloatingPanelSchema extends MachineSchema {
     | 'setWindowState'
     | 'startSession'
     | 'dragMove'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'trackPointer'
 }
 

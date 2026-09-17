@@ -7,6 +7,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
+@import '../family/action-control.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -20,8 +21,8 @@
      皮肤只管层级、配色、圆角、阴影、把手的摆放与状态表现。 */
 
   [data-scope='floating-panel'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进面板里的图标按控件档取（§6.5）；标题栏上的按钮另由家族配方按各自的档下发字形尺 */
+    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-md));
 
     /* 面板本身是 fixed 定位，root 只是作者那棵树里的容器，不参与排布 */
     display: contents;
@@ -30,36 +31,41 @@
   /* 浮层被搬到 portal 落点，继承不到 root 上的槽：这把尺在被搬走的那一侧再声明一次，
      关闭钮与条目里作者塞的图标才和皮肤画的兜底字形一样大 */
   [data-scope='floating-panel'][data-part='content'] {
-    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-text));
+    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-md));
   }
 
   [data-scope='floating-panel'][data-part='root'][hidden] {
     display: none;
   }
 
+  /*
+   * 开合触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+   * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出（此前只缩放不换底）。这里只把公开槽桥接到
+   * 矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射。
+   */
   [data-scope='floating-panel'][data-part='trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    block-size: var(--xh-floating-panel-trigger-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-floating-panel-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-floating-panel-trigger-border, var(--xh-border-control));
-    border-radius: var(--xh-floating-panel-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-floating-panel-trigger-bg, var(--xh-bg-surface));
-    color: var(--xh-floating-panel-trigger-fg, var(--xh-fg-default));
-    font-size: var(--xh-text-label-size);
-    cursor: pointer;
-    transition: scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-bg-rest: var(--xh-floating-panel-trigger-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-focus-visible: var(--xh-floating-panel-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
+    --xh-action-fg-rest: var(--xh-floating-panel-trigger-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-floating-panel-trigger-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-floating-panel-trigger-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-fg-focus-visible: var(--xh-floating-panel-trigger-fg, var(--xh-_action-variant-fg-focus-visible));
+    --xh-action-border-rest: var(--xh-floating-panel-trigger-border, var(--xh-_action-variant-border-rest));
+    --xh-action-border-focus-visible: var(--xh-floating-panel-trigger-border, var(--xh-_action-variant-border-focus-visible));
+    --xh-action-radius: var(--xh-floating-panel-trigger-radius, var(--xh-shape-control));
+    --xh-action-visual-size: var(--xh-floating-panel-trigger-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-floating-panel-trigger-px, var(--xh-_action-profile-padding-inline));
+    /* 作者塞进按钮的图标随档取字形尺（md = 20px） */
+    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-_action-profile-glyph-size));
   }
 
   [data-scope='floating-panel'][data-part='trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='floating-panel'][data-part='trigger']:active:not(:disabled) {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色 */
+  [data-scope='floating-panel'][data-part='trigger'][data-xh-action-variant='solid']:focus-visible {
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 把手的粗细：八个把手共用这两档，声明在这里往下继承。 */
@@ -153,12 +159,13 @@
     display: none;
   }
 
+  /* 浮层内标题（§6.4）：14 / 600 */
   [data-scope='floating-panel'][data-part='title'] {
     margin: 0;
     flex: 1 1 auto;
     overflow: hidden;
     font-size: var(--xh-floating-panel-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-leading-tight);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -267,34 +274,34 @@
     cursor: nesw-resize;
   }
 
-  /* —— 标题栏上的按钮 —— */
+  /*
+   * —— 标题栏上的按钮 ——
+   * 形态钮与关闭钮是标题栏上的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针
+   * 命中区由家族配方给出——磨砂白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
+   * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）；
+   * 静息前景取磨砂面的 muted 字色，悬停 / 按下回到 fg-default。
+   */
   [data-scope='floating-panel'][data-part='window-state-trigger'],
   [data-scope='floating-panel'][data-part='close-trigger'] {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    background: transparent;
-    color: var(--xh-floating-panel-action-fg, var(--xh-material-frosted-fg-muted));
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-bg-hover: var(--xh-floating-panel-action-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-floating-panel-action-fg, var(--xh-material-frosted-fg-muted));
+    --xh-action-fg-hover: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-floating-panel-action-fg-active, var(--xh-_action-variant-fg-pressed));
+    --xh-action-fg-focus-visible: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-focus-visible));
+    /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-_action-profile-glyph-size));
   }
 
-  /* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名 */
+  /* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名，映到家族正方盒 */
   [data-scope='floating-panel'][data-part='window-state-trigger'] {
-    inline-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
-    block-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
-    border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-control));
+    --xh-action-visual-size: var(--xh-floating-panel-action-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-control));
   }
 
   [data-scope='floating-panel'][data-part='close-trigger'] {
-    inline-size: var(--xh-floating-panel-close-size, var(--xh-control-h-sm));
-    block-size: var(--xh-floating-panel-close-size, var(--xh-control-h-sm));
-    border-radius: var(--xh-floating-panel-close-radius, var(--xh-shape-control));
+    --xh-action-visual-size: var(--xh-floating-panel-close-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-floating-panel-close-radius, var(--xh-shape-control));
   }
 
   [data-scope='floating-panel'][data-part='window-state-trigger'][hidden],
@@ -302,47 +309,18 @@
     display: none;
   }
 
-  [data-scope='floating-panel'][data-part='window-state-trigger']:hover,
-  [data-scope='floating-panel'][data-part='close-trigger']:hover {
-    background: var(--xh-floating-panel-action-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-floating-panel-action-fg-hover, var(--xh-fg-default));
-  }
-
-  [data-scope='floating-panel'][data-part='window-state-trigger']:active,
-  [data-scope='floating-panel'][data-part='close-trigger']:active {
-    background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
-     按下态的前景取 fg-default 而不是品牌色：品牌色压在这块底上只有 3.4:1（深色皮肤 2.9:1），
-     按钮里通常就一个字形，够不着文字该有的对比度。 */
+  /* 当前形态的那颗钮是按下的开关（aria-pressed），无滑块开关的 on 态取品牌淡底（§7.3）：
+     rest 12% → hover 20% → pressed 28%，前景一律 --xh-fg-on-brand-subtle（对比度由该令牌承担）；
+     淡底不是实心面，焦点吃库环 */
   [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on'] {
-    background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
-    color: var(--xh-floating-panel-action-fg-active, var(--xh-fg-default));
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
-  /* 磨砂面会透入宿主背景，键盘焦点先落到配方给出的实体隔离底；
-     高对比、减透明、强制色与打印都由同一令牌在原位收敛。 */
-  [data-scope='floating-panel'][data-part='window-state-trigger']:focus-visible,
-  [data-scope='floating-panel'][data-part='close-trigger']:focus-visible {
-    background: var(--xh-material-frosted-focus-surface);
-    color: var(--xh-material-frosted-fg);
-    transition-property: color, scale;
-  }
-
-  /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
-  [data-scope='floating-panel'][data-part='window-state-trigger'][data-disabled] {
-    background: transparent;
-    color: var(--xh-fg-disabled);
+    --xh-action-bg-rest: var(--xh-floating-panel-action-bg-on, var(--xh-bg-brand-subtle));
+    --xh-action-bg-hover: var(--xh-floating-panel-action-bg-on-hover, var(--xh-bg-brand-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-on-active, var(--xh-bg-brand-subtle-active));
+    --xh-action-bg-focus-visible: var(--xh-floating-panel-action-bg-on, var(--xh-bg-brand-subtle));
+    --xh-action-fg-rest: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-hover: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-pressed: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-focus-visible: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));
   }
 
   @media (forced-colors: active) {
@@ -352,10 +330,13 @@
     }
   }
 
+  /* 正文是浮在页面之上的 Overlay 滚动面（§6.6）：原生细条由 reset 层统一给，滚到头不把页面一起带走；
+     内容高度不动态变化，不写 scrollbar-gutter */
   [data-scope='floating-panel'][data-part='body'] {
     flex: 1 1 auto;
     display: block;
     overflow: auto;
+    overscroll-behavior: contain;
     padding-block: var(--xh-floating-panel-body-py, var(--xh-surface-py-sm));
     padding-inline: var(--xh-floating-panel-body-px, var(--xh-surface-px-sm));
   }
