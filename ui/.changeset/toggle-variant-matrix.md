@@ -13,3 +13,5 @@
 后描边仍是 `--xh-border-control`；只有 `solid` 按下后的实心面才灌 currentColor 环。family-backlog 删
 selection 段 `toggle:root`，快照重录、CEILING selection 1 → 0；check-family-parity 的按钮形触发器族改比
 基础规则里的 `--xh-action-bg-hover / -pressed` 桥接声明。
+四档按下且禁用仍掺一半中性面保留选中信息（`solid` 取实心面掺 `--xh-bg-subtle`，前景留配对前景），不随
+矩阵 disabled 列退成中性面。

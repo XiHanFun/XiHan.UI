@@ -36951,8 +36951,16 @@
   --xh-action-shadow-disabled: none;
 }
 
-/* solid 按下后是实心面：顶边内高光与全库实心档共用一条式子 */
+/* solid 按下后是实心面：顶边内高光与全库实心档共用一条式子。
+   禁用同样掺一半中性面保留选中信息（与上面三档同一条规则）：矩阵 solid 列的 disabled 是中性
+   bg-subtle + fg-disabled，直接吃它就与未按下的禁用面分不开；底取实心面本身（矩阵在暗色下
+   换过的品牌实心也一并跟着）掺 --xh-bg-subtle，前景留实心面的配对前景。 */
 [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on'] {
+  --xh-action-bg-disabled: var(
+    --xh-toggle-bg-on-disabled,
+    color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-subtle))
+  );
+  --xh-action-fg-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_action-variant-fg-rest));
   --xh-action-highlight-rest: var(--xh-_highlight-tone);
   --xh-action-highlight-hover: var(--xh-_highlight-tone);
   --xh-action-highlight-pressed: var(--xh-_highlight-tone);
