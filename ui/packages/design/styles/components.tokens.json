@@ -22487,6 +22487,24 @@
       "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-dialog-close-bg-focus",
+      "component": "dialog",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-focus-visible"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-dialog-close-bg-hover",
       "component": "dialog",
       "part": [
@@ -22522,6 +22540,24 @@
       ],
       "defaultToken": [
         "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 close-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-dialog-close-fg-focus",
+      "component": "dialog",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-dialog-close-fg-hover"
       ],
       "visibility": "public",
       "description": "dialog 的 close-trigger 部件 color 覆盖槽。"
