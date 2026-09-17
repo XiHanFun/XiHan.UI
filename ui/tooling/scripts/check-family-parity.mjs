@@ -30,12 +30,12 @@ const FAMILY_DIR = 'packages/design/styles/family'
  */
 const FAMILIES = [
   {
+    // 条目接了 Collection Item 配方：悬停 / 键盘锚点 / 打开路径的面由家族按 data-highlighted / data-in-path 给，
+    // 三份皮肤不再各写这些状态的规则，一致性由配方保证；这里比的是基础块里的布局与映射到桥接槽的几何
     name: '菜单族',
     members: ['menu', 'menubar', 'context-menu'],
     parts: [
-      { part: 'item', state: '', props: ['padding-block', 'padding-inline', 'font-size', 'border-radius', 'line-height'] },
-      { part: 'item', state: `[data-state='open']`, props: ['background', 'font-weight'] },
-      { part: 'item', state: '[data-highlighted]', props: ['background'] },
+      { part: 'item', state: '', props: ['--xh-collection-block-padding', '--xh-collection-inline-padding', '--xh-collection-font-size', '--xh-collection-radius', '--xh-collection-bg-hover', '--xh-collection-bg-pressed', '--xh-collection-bg-open-path', 'line-height'] },
       { part: 'content', state: '', props: ['border', 'border-radius', 'background', 'box-shadow', 'padding-block', 'padding-inline', 'min-inline-size', 'max-block-size'] },
       { part: 'separator', state: '', props: '*' },
       { part: 'group-label', state: '', props: '*' },

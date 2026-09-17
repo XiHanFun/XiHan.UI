@@ -5,7 +5,8 @@
 
 /* 定义 menu 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，条目走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
+@import '../family/collection-item.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -59,22 +60,16 @@
     --xh-_overlay-enter-left: 1;
   }
 
-  /* 触发器的长相归作者，皮肤只表达展开态。私有槽声明在它自己身上：
-     菜单没有 root 部件，触发器上头没有别的 menu 节点可以挂 */
-  [data-scope='menu'][data-part='trigger'] {
-    /* 展开着的那张菜单的触发器走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底 */
-    --xh-_menu-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-  }
-
-  /* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
-     不加粗：加粗会推挤相邻内容 */
+  /* 触发器的长相归作者，皮肤只表达展开态：展开着的那一张是打开路径，落与家族 hover 同档的中性面——
+     打开中不是选中，不用品牌色、不接语气（§7.3）；哪一张开着由浮层本身说明。不加粗：加粗会推挤相邻内容 */
   [data-scope='menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-menu-trigger-bg-active, var(--xh-_menu-active-bg));
+    background: var(--xh-menu-trigger-bg-active, var(--xh-bg-subtle));
   }
 
   [data-scope='menu'][data-part='content'] {
-    /* 作者塞进条目里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-text));
+    /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；条目里的图标由家族随
+       data-xh-collection-size 下发（§6.5） */
+    --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这四个私有槽，条目从 content 继承它们，换档不必给每个部件各写一条选择器。
        菜单没有 root 部件（浮层树的最外层就是 content），三轴属性都落在这里 */
@@ -102,8 +97,10 @@
     box-shadow: var(--xh-menu-content-shadow, var(--xh-material-frosted-shadow));
     -webkit-backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
     backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
-    /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
+    /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
+       浮层滚动面：到底后不把滚动链穿透给页面（§6.6） */
     overflow-y: auto;
+    overscroll-behavior: contain;
     pointer-events: auto;
   }
 
@@ -147,6 +144,7 @@
   /* 缺省档写在 content 的基础规则里。条目高度由 padding 撑出来：
      纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
   [data-scope='menu'][data-part='content'][data-size='sm'] {
+    --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-sm));
     --xh-_menu-item-py: var(--xh-list-option-py-sm);
     --xh-_menu-item-px: var(--xh-control-px-sm);
     --xh-_menu-item-gap: var(--xh-control-gap-sm);
@@ -154,52 +152,52 @@
   }
 
   [data-scope='menu'][data-part='content'][data-size='lg'] {
+    --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-lg));
     --xh-_menu-item-py: var(--xh-list-option-py-lg);
     --xh-_menu-item-px: var(--xh-control-px-lg);
     --xh-_menu-item-gap: var(--xh-control-gap-lg);
     --xh-_menu-font-size: var(--xh-control-font-lg);
   }
 
+  /* 条目走 Collection Item 的 overlay 语境：悬停 / 键盘锚点（data-highlighted，白底承载 100）、按下（200）、
+     子层开着的打开路径（data-in-path，与 hover 同档）与禁用面（aria-disabled）都由家族给，这里只把公开槽映射到
+     桥接槽。布局保持 flex 而不用家族网格：图标、正文、快捷键按一行排布，说明另起一行靠 flex-wrap 折下去，
+     子菜单箭头是行尾的伪元素；间距统一由行的 gap 给，家族按槽下发的外边距归零 */
   [data-scope='menu'][data-part='item'] {
+    --xh-collection-block-padding: var(--xh-menu-item-py, var(--xh-_menu-item-py));
+    --xh-collection-inline-padding: var(--xh-menu-item-px, var(--xh-_menu-item-px));
+    --xh-collection-gap: 0;
+    --xh-collection-font-size: var(--xh-menu-item-font-size, var(--xh-_menu-font-size));
+    --xh-collection-radius: var(--xh-menu-item-radius, var(--xh-shape-control));
+    --xh-collection-fg-rest: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-hover: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-keyboard-highlight: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-pressed: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-open-path: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-bg-hover: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-menu-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-open-path: var(--xh-menu-item-bg-active, var(--xh-bg-subtle));
+    /* data-highlighted 同时覆盖指针与键盘路径：指针只换面，焦点环在 :focus-visible 下再接回 */
+    --xh-collection-outline-keyboard-highlight: transparent;
+
     display: flex;
     align-items: center;
     gap: var(--xh-menu-item-gap, var(--xh-_menu-item-gap));
-    padding-block: var(--xh-menu-item-py, var(--xh-_menu-item-py));
-    padding-inline: var(--xh-menu-item-px, var(--xh-_menu-item-px));
-    border-radius: var(--xh-menu-item-radius, var(--xh-shape-control));
-    color: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
-    font-size: var(--xh-menu-item-font-size, var(--xh-_menu-font-size));
     line-height: var(--xh-menu-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 悬停与键盘锚点共用中性灰轻档：锚点只认连接层打的 data-highlighted，不读 :focus */
-  [data-scope='menu'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
-  }
+  /* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+  [data-scope='menu'][data-part='item']:focus-visible:not(:hover) {
+    --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
 
-  [data-scope='menu'][data-part='item']:not([data-disabled]):active {
-    background: var(--xh-menu-item-bg-pressed, var(--xh-bg-subtle-active));
-  }
-
-  /* 展开项使用中性底色，不加侧条，也不改变字重。
-     必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
-  [data-scope='menu'][data-part='item']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-menu-item-bg-active, var(--xh-bg-subtle));
+    transition: none;
   }
 
   [data-scope='menu'][data-part='item']:focus:not(:focus-visible) {
     outline: none;
-  }
-
-  [data-scope='menu'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 条目里的文字载体：占满剩余宽度，长文本自己收省略号 */
@@ -215,14 +213,14 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动 */
+  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动；盒尺随家族按档下发的 --xh-icon-size */
   [data-scope='menu'][data-part='item-indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    block-size: var(--xh-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
     color: var(--xh-menu-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   }
 

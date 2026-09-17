@@ -228,6 +228,25 @@ describe('条目高亮标记', () => {
     expect((h.api().getItemProps({ value: 'paste' }) as Dict)['data-highlighted']).toBeUndefined()
   })
 
+  it('条目与子菜单触发项投影 Collection Item 的 overlay 语境与尺寸档，子部件落槽，子层开着时触发项报 data-in-path', () => {
+    const h = mount({ size: 'sm' })
+    const row = { 'data-xh-collection-item': '', 'data-xh-collection-size': 'sm', 'data-xh-collection-context': 'overlay' }
+    expect(h.api().getItemProps({ value: 'copy' }) as Dict).toMatchObject({ ...row, 'aria-disabled': 'false' })
+    expect((h.api().getItemProps({ value: 'copy' }) as Dict)['aria-selected']).toBeUndefined()
+    expect((h.api().getItemTextProps({ value: 'copy' }) as Dict)['data-xh-collection-slot']).toBe('text')
+    // 标记位是常显的前导图标槽，不是选中对号
+    expect((h.api().getItemIndicatorProps({ value: 'copy' }) as Dict)['data-xh-collection-slot']).toBe('prefix')
+    expect((h.api().getItemDescriptionProps({ value: 'copy' }) as Dict)['data-xh-collection-slot']).toBe('description')
+    expect((h.api().getSeparatorProps() as Dict)['data-xh-collection-separator']).toBe('')
+
+    const closed = h.api().getSubmenuTriggerProps({ value: 'copy' }) as Dict
+    expect(closed).toMatchObject({ ...row, 'data-state': 'closed' })
+    expect(closed['data-in-path']).toBeUndefined()
+    h.send({ type: 'OPEN', focus: 'none' })
+    expect(h.api().getSubmenuTriggerProps({ value: 'copy' }) as Dict).toMatchObject({ 'data-state': 'open', 'data-in-path': '' })
+    expect((h.api().getItemProps({ value: 'paste' }) as Dict)['data-xh-collection-size']).toBe('sm')
+  })
+
   it('焦点回到 content 自身时锚点清空，标记随之摘掉', () => {
     const h = mount()
     h.send({ type: 'OPEN', focus: 'none' })

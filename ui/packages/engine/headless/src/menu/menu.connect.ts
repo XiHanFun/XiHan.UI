@@ -213,8 +213,13 @@ export function connectMenu<T extends PropTypes>(
           activate(event)
       },
     }),
+    // 条目走 Collection Item 的 overlay 语境（锚定浮层）：悬停 / 键盘高亮（data-highlighted）/ 按下面与禁用面
+    // （aria-disabled）由家族给；菜单没有持久选中，浮层选中面永不命中
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       // 导航与选中的条目身份
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'menuitem',
@@ -260,11 +265,14 @@ export function connectMenu<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 标记位是常显的前导图标槽，不是选中对号：落家族的 prefix 列（indicator 槽缺省是藏起来的勾选标记）
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'prefix',
       // 标记位是纯装饰，语义由条目自己给出
       'aria-hidden': true,
     }),
@@ -272,12 +280,16 @@ export function connectMenu<T extends PropTypes>(
     getItemDescriptionProps: item => normalize.element({
       ...parts['item-description'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'description',
     }),
 
     // 双重身份：value 是它在父菜单里的条目身份（父层导航与高亮照常认），
     // 其余属性都是本子菜单的触发器。父层的选中经 aria-haspopup 嗅探跳过它。
     getSubmenuTriggerProps: item => normalize.element({
       ...parts.item.attrs,
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'menuitem',
       'aria-haspopup': 'menu',
@@ -286,6 +298,8 @@ export function connectMenu<T extends PropTypes>(
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       'data-disabled': dataAttr(itemDisabled(item)),
       'data-state': stateAttr,
+      // 子层开着时这一条是打开路径：家族按 data-in-path 给与 hover 同档的中性面；data-state 留给箭头
+      'data-in-path': dataAttr(open),
       'onClick': (event: MouseEvent) => {
         if (itemDisabled(item))
           return
@@ -312,6 +326,7 @@ export function connectMenu<T extends PropTypes>(
     }),
     getSeparatorProps: () => normalize.element({
       ...parts.separator.attrs,
+      'data-xh-collection-separator': '',
       'role': 'separator',
       'aria-orientation': 'horizontal',
     }),
