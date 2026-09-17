@@ -393,6 +393,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 ### 8.4 浮层材质判据
 
 - 内容为短列表、菜单、tooltip、气泡 → frosted 四件套；reduced-transparency 下退回同语义实体面。
+- 刻意例外（须登记）：Tooltip 保留反白身份，走 compact 档 frosted（`--xh-material-frosted-compact-*` 的 backdrop / shadow / alpha + 光学层），边不取 `--xh-material-frosted-border`（深色 14% 透明边压在反白深底上不可见），改取 on 色 20% 拼色承担 §8.1 的 1px 可见边界；不画顶部高光。
 - 内容含网格或多列（日历、时间列、导航大面板）→ floating（solid + border-default + elevation-floating）。
 - 模态与强反馈面 → sheet 三件套；任何浮层不得只靠 box-shadow 分层，content / item 部件必须有非透明 border 或 material-*-border。
 
