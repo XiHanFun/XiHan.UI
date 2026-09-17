@@ -100,11 +100,13 @@ const 表格根 = (inner: string) => `<div data-scope="table" data-part="root">$
 
 const 失效档: Tier[] = [
   {
+    // 表体行走 Collection Item 的 page 语境：选中面是品牌淡底、失效面透明，都不是反白实心面，默认环过得了线
     名: 'table/row 选中且失效',
     markup: 表格根(`<div data-scope="table" data-part="body">
-      <div data-scope="table" data-part="row" data-selected data-disabled tabindex="0" data-anchor>文</div>
+      <div data-scope="table" data-part="row" data-xh-collection-item data-xh-collection-context="page"
+           aria-selected="true" aria-disabled="true" data-selected data-disabled tabindex="0" data-anchor>文</div>
     </div>`),
-    达标: false,
+    达标: true,
   },
   {
     名: 'table/select-all-trigger 勾选且失效',
@@ -132,13 +134,6 @@ const 失效档: Tier[] = [
 
 const 实心档: Tier[] = [
   {
-    名: 'table/row 选中未失效',
-    markup: 表格根(`<div data-scope="table" data-part="body">
-      <div data-scope="table" data-part="row" data-selected tabindex="0" data-anchor>文</div>
-    </div>`),
-    达标: true,
-  },
-  {
     名: 'table/select-all-trigger 勾选未失效',
     markup: 表格根(`<button data-scope="table" data-part="select-all-trigger"
       data-state="checked" data-anchor></button>`),
@@ -146,8 +141,17 @@ const 实心档: Tier[] = [
   },
 ]
 
-/* TimePicker 选中改由对号表达，落焦时铺中性实体底，不再属于反白实心面。 */
+/* TimePicker 选中改由对号表达，落焦时铺中性实体底，不再属于反白实心面；
+   Table 选中行改铺品牌淡底（页内持久集合），同样用公共环。 */
 const 中性选中档: Tier[] = [
+  {
+    名: 'table/row 选中未失效',
+    markup: 表格根(`<div data-scope="table" data-part="body">
+      <div data-scope="table" data-part="row" data-xh-collection-item data-xh-collection-context="page"
+           aria-selected="true" data-selected tabindex="0" data-anchor>文</div>
+    </div>`),
+    达标: true,
+  },
   {
     名: 'time-picker/item 对号选中',
     markup: `<div data-scope="time-picker" data-part="content">
@@ -202,7 +206,6 @@ describe('失效档的聚焦环', () => {
   it.each(逐档(失效档.filter(t => !t.达标)))('$label：默认环比那支前景墨看得出来，但这块面还差着', async ({ markup, theme }) => {
     const m = await measure(markup, theme)
     expect(m.环压面, `环 ${m.环} ${m.环压面.toFixed(2)}｜墨 ${m.墨} ${m.墨压面.toFixed(2)}`).toBeGreaterThan(m.墨压面)
-    // 选中行的面（bg-subtle-active）与默认环之间浅色 2.52、深色 2.89，换环色换不出 3:1，
     // 过线要换这一档的面；这条在过线那天变红，好把它挪进上面那组
     expect(m.环压面).toBeLessThan(3)
   })
