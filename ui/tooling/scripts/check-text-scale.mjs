@@ -29,7 +29,6 @@ const OFF_SCALE = {
   'typography.css --xh-_typography-h5': '同上',
   'typography.css --xh-_typography-h6': '同上',
   'typography.css --xh-_typography-body-size': '排版组件的正文档位沿字号阶梯逐级走',
-  'rating.css --xh-_rating-item-size': '星标是按 em 画的字形，三档尺寸取字号阶梯的三个相邻刻度',
 }
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()

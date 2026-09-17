@@ -14,9 +14,10 @@
   /* position 是给表单影子做定位基准的：那份输入被连接层内联写成绝对定位，
      根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
   [data-scope='rating'][data-part='root'] {
-    /* 尺寸档只换这三个私有槽，标题与星星都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    /* 尺寸档只换这三个私有槽，星星与分值都从 root 继承它们，换档不必给每个部件各写一条选择器。
+       星是控件内的字形，按档取 --xh-glyph-size-sm / md / lg（§6.5）；标签字号不随档 */
     --xh-_rating-item-gap: var(--xh-control-gap-md);
-    --xh-_rating-item-size: var(--xh-font-size-2xl);
+    --xh-_rating-item-size: var(--xh-glyph-size-md);
     --xh-_rating-item-box-size: var(--xh-control-action-size);
     --xh-_rating-font-size: var(--xh-control-font-md);
     --xh-icon-size: var(--xh-rating-item-font-size, var(--xh-_rating-item-size));
@@ -26,37 +27,44 @@
     position: relative;
     display: inline-flex;
     flex-direction: column;
-    gap: var(--xh-rating-gap, var(--xh-stack-gap-md));
+    /* 字段标签贴控件（§6.4 复合单字段） */
+    gap: var(--xh-rating-gap, var(--xh-space-1));
   }
 
   /* —— 尺寸 —— */
   [data-scope='rating'][data-part='root'][data-size='sm'] {
     --xh-_rating-item-gap: var(--xh-control-gap-sm);
-    --xh-_rating-item-size: var(--xh-font-size-xl);
+    --xh-_rating-item-size: var(--xh-glyph-size-sm);
     --xh-_rating-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='rating'][data-part='root'][data-size='lg'] {
     --xh-_rating-item-gap: var(--xh-control-gap-lg);
-    --xh-_rating-item-size: var(--xh-font-size-3xl);
+    --xh-_rating-item-size: var(--xh-glyph-size-lg);
     --xh-_rating-font-size: var(--xh-control-font-lg);
   }
 
-  /* 整体压暗只做一次，落在最外层：星星逐颗再叠 opacity 会越叠越黑 */
-  [data-scope='rating'][data-part='root'][data-disabled] {
-    opacity: var(--xh-state-disabled-opacity);
+  /* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle；文字部件不叠 opacity */
+  [data-scope='rating'][data-part='label'] {
+    color: var(--xh-rating-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-rating-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-rating-label-font-weight, var(--xh-text-label-weight));
   }
 
-  [data-scope='rating'][data-part='label'] {
-    color: var(--xh-rating-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-rating-label-font-size, var(--xh-_rating-font-size));
-    font-weight: var(--xh-rating-label-font-weight, var(--xh-text-label-weight));
+  [data-scope='rating'][data-part='label'][data-disabled] {
+    color: var(--xh-rating-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   [data-scope='rating'][data-part='control'] {
     display: inline-flex;
     align-items: center;
     gap: var(--xh-rating-item-gap, var(--xh-_rating-item-gap));
+  }
+
+  /* 禁用：星带是纯图形，整体压暗只做一次、落在星带上（星星逐颗再叠 opacity 会越叠越黑）；
+     标签与分值是文字，各自换到禁用前景，不落在这层 opacity 之下 */
+  [data-scope='rating'][data-part='control'][data-disabled] {
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 分值文本在场时根改成两列栅格：星星带与分值并排，标题仍独占一整行。
@@ -78,6 +86,10 @@
     font-size: var(--xh-rating-value-text-font-size, var(--xh-_rating-font-size));
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-none);
+  }
+
+  [data-scope='rating'][data-part='value-text'][data-disabled] {
+    color: var(--xh-rating-value-text-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 容器只是焦点域的兜底落点（焦点从带外进来先落在它身上，随即被转投给某颗星），
@@ -109,6 +121,7 @@
     user-select: none;
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
@@ -177,10 +190,13 @@
     clip-path: inset(0 0 0 50%);
   }
 
-  /* 按下去要有回应：被按的那一颗星单独下压，松手即弹回。
-     缩的是 inline-block 的这一个盒子，其余星不动，星带整体不移位。只读与禁用不压 */
-  [data-scope='rating'][data-part='item']:not([data-disabled]):not([data-readonly]):active {
+  /* 按下去要有回应：被按的那一颗星单独下压，松手即弹回（§9.1 星是定尺的动作控件）。
+     缩的是这一个方形盒子，其余星不动，星带整体不移位；同时换底——盒坐在白底上，按下进入 200 档。
+     只写 background-color 不写简写：作者内容的半颗星把渐变裁在字形上，简写会把那层渐变一起抹掉。
+     指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面。只读与禁用不压 */
+  [data-scope='rating'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed]) {
     scale: var(--xh-motion-scale-press);
+    background-color: var(--xh-rating-item-bg-pressed, var(--xh-bg-subtle-hover));
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
@@ -230,6 +246,13 @@
       color: Highlight;
       /* 亮档已经由字色表出，公共层那圈锚点虚线在这里只是重影 */
       outline: none;
+    }
+
+    /* 按下：常态靠盒底深一档表出，这一档里底色被统一换成 Canvas；按住那一下给盒画一圈系统高亮环。
+       不反色填盒：点亮的那层星形也是 Highlight，填了盒就把它吞掉 */
+    [data-scope='rating'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed]) {
+      outline: var(--xh-stroke-thick) solid Highlight;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
     }
   }
 

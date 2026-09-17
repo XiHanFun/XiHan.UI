@@ -41963,6 +41963,9 @@
               "name": "--xh-rating-gap"
             },
             {
+              "name": "--xh-rating-item-bg-pressed"
+            },
+            {
               "name": "--xh-rating-item-fg"
             },
             {
@@ -41981,6 +41984,9 @@
               "name": "--xh-rating-label-fg"
             },
             {
+              "name": "--xh-rating-label-fg-disabled"
+            },
+            {
               "name": "--xh-rating-label-font-size"
             },
             {
@@ -41988,6 +41994,9 @@
             },
             {
               "name": "--xh-rating-value-text-fg"
+            },
+            {
+              "name": "--xh-rating-value-text-fg-disabled"
             },
             {
               "name": "--xh-rating-value-text-font-size"
