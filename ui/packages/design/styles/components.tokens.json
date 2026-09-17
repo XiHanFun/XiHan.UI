@@ -68347,7 +68347,8 @@
         "focus-visible"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 background-color 覆盖槽。"
@@ -68370,7 +68371,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 background-color 覆盖槽。"
@@ -68385,14 +68386,10 @@
         "background-color"
       ],
       "state": [
-        "disabled",
-        "variant=ghost",
-        "variant=outline",
-        "variant=solid"
+        "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-subtle",
-        "transparent"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 background-color 覆盖槽。"
@@ -68414,7 +68411,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 background-color 覆盖槽。"
@@ -68431,7 +68428,9 @@
       "state": [
         "disabled",
         "focus-visible",
-        "state=on"
+        "not([data-variant='solid'])",
+        "state=on",
+        "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-subtle"
@@ -68454,8 +68453,10 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
+        "not([data-variant='solid'])",
         "pressed",
-        "state=on"
+        "state=on",
+        "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-subtle-active"
@@ -68474,7 +68475,9 @@
       ],
       "state": [
         "disabled",
-        "state=on"
+        "not([data-variant='solid'])",
+        "state=on",
+        "variant=solid"
       ],
       "defaultToken": [
         "--xh-_toggle-bg-on"
@@ -68497,7 +68500,9 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "state=on"
+        "not([data-variant='solid'])",
+        "state=on",
+        "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-subtle-hover"
@@ -68527,7 +68532,10 @@
         "pressed"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-border-focus-visible",
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed",
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 border、border-color 覆盖槽。"
@@ -68542,12 +68550,10 @@
         "border-color"
       ],
       "state": [
-        "disabled",
-        "variant=outline"
+        "disabled"
       ],
       "defaultToken": [
-        "--xh-border-subtle",
-        "transparent"
+        "--xh-_action-variant-border-disabled"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 border-color 覆盖槽。"
@@ -68570,10 +68576,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
+        "not([data-variant='solid'])",
         "pressed",
-        "state=on"
+        "state=on",
+        "variant=outline",
+        "variant=solid"
       ],
       "defaultToken": [
+        "--xh-_tone-border-control",
         "transparent"
       ],
       "visibility": "public",
@@ -68600,7 +68610,10 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 color 覆盖槽。"
@@ -68618,7 +68631,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-disabled"
+        "--xh-_action-variant-fg-disabled"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 color 覆盖槽。"
@@ -68640,8 +68653,10 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
+        "not([data-variant='solid'])",
         "pressed",
-        "state=on"
+        "state=on",
+        "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-fg"
@@ -68660,7 +68675,9 @@
       ],
       "state": [
         "disabled",
-        "state=on"
+        "not([data-variant='solid'])",
+        "state=on",
+        "variant=solid"
       ],
       "defaultToken": [
         "--xh-_toggle-fg-on"

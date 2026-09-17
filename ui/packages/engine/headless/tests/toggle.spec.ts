@@ -58,6 +58,34 @@ describe('toggleMachine 开关', () => {
   })
 })
 
+describe('形态矩阵投影：data-xh-action-variant 由 variant × 开关态派生', () => {
+  it('缺省不传 variant：data-variant 与 data-xh-action-variant 都落 subtle，按下不变', () => {
+    const t = makeToggle()
+    expect(t.root()['data-variant']).toBe('subtle')
+    expect(t.root()['data-xh-action-variant']).toBe('subtle')
+    t.handlers().onClick()
+    expect(t.root()['data-state']).toBe('on')
+    expect(t.root()['data-xh-action-variant']).toBe('subtle')
+  })
+
+  it('solid 未按下投 ghost（透明底），按下才投 solid（品牌实心）；data-variant 始终是 solid', () => {
+    const t = makeToggle({ variant: 'solid' })
+    expect(t.root()['data-variant']).toBe('solid')
+    expect(t.root()['data-xh-action-variant']).toBe('ghost')
+    t.handlers().onClick()
+    expect(t.root()['data-state']).toBe('on')
+    expect(t.root()['data-xh-action-variant']).toBe('solid')
+    expect(t.root()['data-variant']).toBe('solid')
+  })
+
+  it.each(['outline', 'ghost'] as const)('variant=%s 原样投影，按下后仍是同一档（选中面由皮肤按 data-state 桥接）', (variant) => {
+    const t = makeToggle({ variant })
+    expect(t.root()['data-xh-action-variant']).toBe(variant)
+    t.handlers().onClick()
+    expect(t.root()['data-xh-action-variant']).toBe(variant)
+  })
+})
+
 describe('按压通道：与开关态无关的瞬态按压面', () => {
   it('keydown Space 期间 data-pressed 在场，keyup 撤下；aria-pressed 不受影响', () => {
     const t = makeToggle()

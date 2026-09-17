@@ -37037,12 +37037,11 @@
   --xh-toggle-skin: 1;
 }
 
+/* 未按下的四档形态由家族形态矩阵按 data-xh-action-variant 给出（缺省 subtle 由连接层显式投影；solid 未按下时
+   投 ghost，只在按下时才是品牌实心）；公开槽桥接到矩阵之前：使用者槽 → 形态矩阵 → 家族缺省。
+   按下（on）是 §7.3 无滑块开关的选中面：品牌淡底 12 → 悬停 20 → 按压 28，前景 fg-on-brand-subtle，
+   私有槽在下面的 data-state='on' 块里接到桥接槽上。 */
 [data-scope='toggle'][data-part='root'] {
-  --xh-_toggle-bg: var(--xh-toggle-bg, var(--xh-bg-subtle));
-  --xh-_toggle-bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
-  --xh-_toggle-bg-active: var(--xh-toggle-bg-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-fg: var(--xh-toggle-fg, var(--xh-fg-default));
-  --xh-_toggle-border: var(--xh-toggle-border, transparent);
   --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)));
   --xh-_toggle-bg-on-hover: var(
     --xh-toggle-bg-on-hover,
@@ -37058,44 +37057,29 @@
       var(--xh-bg-brand-subtle-active)
     )
   );
-  --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-brand)));
+  --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle)));
   --xh-_toggle-border-on: var(--xh-toggle-border-on, transparent);
-  --xh-_toggle-highlight-on: transparent;
-  --xh-_toggle-shadow-on: var(--xh-toggle-shadow, none);
   /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。 */
-  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, var(--xh-bg-subtle));
-  --xh-_toggle-fg-disabled: var(--xh-toggle-fg-disabled, var(--xh-fg-disabled));
-  --xh-_toggle-border-disabled: var(--xh-toggle-border-disabled, transparent);
   --xh-_toggle-bg-on-disabled: var(
     --xh-toggle-bg-on-disabled,
     color-mix(in oklab, var(--xh-_toggle-bg-on) 50%, var(--xh-bg-subtle))
   );
   --xh-_toggle-fg-on-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_toggle-fg-on));
-  --xh-action-bg-rest: var(--xh-_toggle-bg);
-  --xh-action-bg-hover: var(--xh-_toggle-bg-hover);
-  --xh-action-bg-pressed: var(--xh-_toggle-bg-active);
-  --xh-action-bg-focus-visible: var(--xh-_toggle-bg);
-  --xh-action-bg-disabled: var(--xh-_toggle-bg-disabled);
-  --xh-action-fg-rest: var(--xh-_toggle-fg);
-  --xh-action-fg-hover: var(--xh-_toggle-fg);
-  --xh-action-fg-pressed: var(--xh-_toggle-fg);
-  --xh-action-fg-focus-visible: var(--xh-_toggle-fg);
-  --xh-action-fg-disabled: var(--xh-_toggle-fg-disabled);
-  --xh-action-border-rest: var(--xh-_toggle-border);
-  --xh-action-border-hover: var(--xh-_toggle-border);
-  --xh-action-border-pressed: var(--xh-_toggle-border);
-  --xh-action-border-focus-visible: var(--xh-_toggle-border);
-  --xh-action-border-disabled: var(--xh-_toggle-border-disabled);
-  --xh-action-highlight-rest: transparent;
-  --xh-action-highlight-hover: transparent;
-  --xh-action-highlight-pressed: transparent;
-  --xh-action-highlight-focus-visible: transparent;
-  --xh-action-highlight-disabled: transparent;
-  --xh-action-shadow-rest: none;
-  --xh-action-shadow-hover: none;
-  --xh-action-shadow-pressed: none;
-  --xh-action-shadow-focus-visible: none;
-  --xh-action-shadow-disabled: none;
+  --xh-action-bg-rest: var(--xh-toggle-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-toggle-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-toggle-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-bg-focus-visible: var(--xh-toggle-bg, var(--xh-_action-variant-bg-focus-visible));
+  --xh-action-bg-disabled: var(--xh-toggle-bg-disabled, var(--xh-_action-variant-bg-disabled));
+  --xh-action-fg-rest: var(--xh-toggle-fg, var(--xh-_action-variant-fg-rest));
+  --xh-action-fg-hover: var(--xh-toggle-fg, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-toggle-fg, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-toggle-fg, var(--xh-_action-variant-fg-focus-visible));
+  --xh-action-fg-disabled: var(--xh-toggle-fg-disabled, var(--xh-_action-variant-fg-disabled));
+  --xh-action-border-rest: var(--xh-toggle-border, var(--xh-_action-variant-border-rest));
+  --xh-action-border-hover: var(--xh-toggle-border, var(--xh-_action-variant-border-hover));
+  --xh-action-border-pressed: var(--xh-toggle-border, var(--xh-_action-variant-border-pressed));
+  --xh-action-border-focus-visible: var(--xh-toggle-border, var(--xh-_action-variant-border-focus-visible));
+  --xh-action-border-disabled: var(--xh-toggle-border-disabled, var(--xh-_action-variant-border-disabled));
   --xh-action-radius: var(--xh-toggle-radius, var(--xh-shape-control));
   --xh-action-visual-size: var(--xh-toggle-h, var(--xh-_action-profile-visual-size));
   --xh-action-padding-inline: var(--xh-toggle-px, var(--xh-_action-profile-padding-inline));
@@ -37113,56 +37097,14 @@
   pointer-events: none;
 }
 
-[data-scope='toggle'][data-part='root'][data-variant='solid'] {
-  --xh-_toggle-bg: transparent;
-  --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, transparent);
-  --xh-_toggle-bg-on: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_toggle-bg-on-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-  --xh-_toggle-bg-on-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
-  --xh-_toggle-fg-on: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-_toggle-highlight-on: var(--xh-_highlight-tone);
-}
-
-:is([data-theme='dark'] *, [data-theme='dark'])[data-scope='toggle'][data-part='root'][data-variant='solid']:is(
-  :not([data-tone]),
-  [data-tone='brand']
-) {
-  --xh-_toggle-bg-on: var(--xh-action-brand-solid);
-  --xh-_toggle-bg-on-hover: var(--xh-action-brand-solid-hover);
-  --xh-_toggle-bg-on-active: var(--xh-action-brand-solid-active);
-  --xh-_toggle-fg-on: var(--xh-action-on-brand-solid);
-}
-
-[data-scope='toggle'][data-part='root'][data-variant='subtle'] {
-  --xh-_toggle-bg: var(--xh-bg-subtle);
-  --xh-_toggle-bg-hover: var(--xh-bg-subtle-hover);
-  --xh-_toggle-bg-active: var(--xh-bg-subtle-active);
-  --xh-_toggle-fg: var(--xh-fg-default);
-}
-
+/* outline 按下后描边仍是可操作区那一档：淡底面上没有描边就与 subtle 的按下态分不开 */
 [data-scope='toggle'][data-part='root'][data-variant='outline'] {
-  --xh-_toggle-bg: transparent;
-  --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_toggle-border: var(--xh-_tone-border-control, var(--xh-border-control));
-  --xh-_toggle-border-on: var(--xh-_tone-border-control, var(--xh-border-control));
-  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, transparent);
-  --xh-_toggle-border-disabled: var(--xh-toggle-border-disabled, var(--xh-border-subtle));
+  --xh-_toggle-border-on: var(--xh-toggle-border-on, var(--xh-_tone-border-control, var(--xh-border-control)));
 }
 
-[data-scope='toggle'][data-part='root'][data-variant='ghost'] {
-  --xh-_toggle-bg: transparent;
-  --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, transparent);
-}
-
-[data-scope='toggle'][data-part='root'][data-state='on'] {
+/* 按下（on）：solid 之外的三档一律品牌淡底；solid 的按下面由矩阵 solid 列给出（连接层此时投影
+   data-xh-action-variant='solid'），这里不接管。 */
+[data-scope='toggle'][data-part='root']:not([data-variant='solid'])[data-state='on'] {
   --xh-action-bg-rest: var(--xh-_toggle-bg-on);
   --xh-action-bg-hover: var(--xh-_toggle-bg-on-hover);
   --xh-action-bg-pressed: var(--xh-_toggle-bg-on-active);
@@ -37178,16 +37120,28 @@
   --xh-action-border-pressed: var(--xh-_toggle-border-on);
   --xh-action-border-focus-visible: var(--xh-_toggle-border-on);
   --xh-action-border-disabled: var(--xh-_toggle-border-on);
-  --xh-action-highlight-rest: var(--xh-_toggle-highlight-on);
-  --xh-action-highlight-hover: var(--xh-_toggle-highlight-on);
-  --xh-action-highlight-pressed: var(--xh-_toggle-highlight-on);
-  --xh-action-highlight-focus-visible: var(--xh-_toggle-highlight-on);
-  --xh-action-highlight-disabled: transparent;
-  --xh-action-shadow-rest: var(--xh-_toggle-shadow-on);
-  --xh-action-shadow-hover: var(--xh-_toggle-shadow-on);
-  --xh-action-shadow-pressed: var(--xh-_toggle-shadow-on);
-  --xh-action-shadow-focus-visible: var(--xh-_toggle-shadow-on);
+}
+
+/* 使用者的 --xh-toggle-shadow 只落在按下面上：矩阵各态无影，淡底与阴影互斥（§5.3） */
+[data-scope='toggle'][data-part='root'][data-state='on'] {
+  --xh-action-shadow-rest: var(--xh-toggle-shadow, none);
+  --xh-action-shadow-hover: var(--xh-toggle-shadow, none);
+  --xh-action-shadow-pressed: var(--xh-toggle-shadow, none);
+  --xh-action-shadow-focus-visible: var(--xh-toggle-shadow, none);
   --xh-action-shadow-disabled: none;
+}
+
+/* solid 按下后是实心面：顶边内高光与全库实心档共用一条式子 */
+[data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on'] {
+  --xh-action-highlight-rest: var(--xh-_highlight-tone);
+  --xh-action-highlight-hover: var(--xh-_highlight-tone);
+  --xh-action-highlight-pressed: var(--xh-_highlight-tone);
+  --xh-action-highlight-focus-visible: var(--xh-_highlight-tone);
+}
+
+/* 只有 solid 按下后才是实心面：环色与面同族画在面里看不出来，环改取面自己的前景色；
+   品牌淡底不是实心面，吃库环 */
+[data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:focus-visible {
   --xh-action-ring-color-focus-visible: currentColor;
 }
 

@@ -36,7 +36,7 @@ export const toggleSuite: ConformanceSuite = {
       steps: [heldPressIgnored('toggle', 'root', '禁用时不接受按压')],
     },
     {
-      name: '初始未按下：type=button、aria-pressed=false、data-state=off',
+      name: '初始未按下：type=button、aria-pressed=false、data-state=off，形态缺省显式落 subtle',
       spec: { apg: APG },
       initial: {
         order: ['root'],
@@ -52,9 +52,28 @@ export const toggleSuite: ConformanceSuite = {
             'data-xh-action-profile': 'text',
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'subtle',
+            'data-variant': 'subtle',
           },
         },
       },
+    },
+    {
+      name: 'solid：未按下投 ghost、按下投 solid（只在按下时品牌实心），data-variant 始终 solid',
+      spec: { adr: 'action-control-family' },
+      props: { variant: 'solid' },
+      initial: {
+        parts: { root: { 'data-variant': 'solid', 'data-xh-action-variant': 'ghost' } },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'root',
+          expect: {
+            parts: { root: { 'data-state': 'on', 'data-variant': 'solid', 'data-xh-action-variant': 'solid' } },
+          },
+        },
+      ],
     },
     {
       name: '图标与尺寸映射到动作控件视觉角色',

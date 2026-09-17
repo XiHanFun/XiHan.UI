@@ -327,20 +327,19 @@ const FAMILIES = [
   // 令牌（把私有槽解到底：--xh-fg-brand-strong + medium、surface-raised + border-default + raised、
   // brand-subtle + on-brand-subtle），那一条才是它们的一致性门禁。
   {
-    // 按钮形触发器：缺省中性，hover / active 的底按承载面阶梯走（§7.2）
+    // 按钮形触发器：缺省中性，hover / active 的底按承载面阶梯走（§7.2）。已迁移成员都接了 Action Control
+    // 形态矩阵，悬停 / 按下面不再在皮肤里写 :hover / :active 规则，而是在部件基础规则里把使用者槽映射到
+    // 桥接槽 --xh-action-bg-hover / -pressed（兜底 --xh-_action-variant-*），比的是这两条映射声明
     name: '按钮形触发器族',
     backlog: true,
     members: ['toggle', 'clipboard', 'download-trigger', 'float-button', 'back-top', 'toolbar', 'pagination'],
     parts: [
       {
         partBy: { 'toggle': 'root', 'clipboard': 'copy-trigger', 'download-trigger': 'root', 'float-button': 'trigger', 'back-top': 'trigger', 'toolbar': 'item', 'pagination': 'item' },
-        state: ':hover',
-        props: ['background'],
-      },
-      {
-        partBy: { 'toggle': 'root', 'clipboard': 'copy-trigger', 'download-trigger': 'root', 'float-button': 'trigger', 'back-top': 'trigger', 'toolbar': 'item', 'pagination': 'item' },
-        state: ':active',
-        props: ['background'],
+        // 面就是 root 的成员，槽名不带部件段（--xh-toggle-bg-hover / --xh-download-trigger-bg-hover）
+        slotBy: { 'toggle': '', 'download-trigger': '' },
+        state: '',
+        props: ['--xh-action-bg-hover', '--xh-action-bg-pressed'],
       },
     ],
   },
