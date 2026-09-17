@@ -34,16 +34,19 @@ export interface BackTopSchema extends MachineSchema {
     /** 滚回顶部的方式，默认 smooth。 */
     behavior?: BackTopBehavior
     translations?: Partial<BackTopTranslations>
-    /** 形态：solid / subtle / outline / ghost，决定底色、描边与前景的使用方式。 */
+    /** 形态：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 */
     variant?: ActionVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 */
     tone?: Tone
-    /** 尺寸：sm / md / lg。 */
+    /** 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（40 / 48 / 56px）。 */
     size?: Size
     /** 显隐变化时回调。 */
     onVisibilityChange?: (details: BackTopVisibilityChangeDetails) => void
   }
-  context: Record<string, never>
+  context: {
+    /** 触发器正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: BackTopRefs
   /** hidden 隐藏（滚动量未过线）；visible 显示。 */
@@ -53,9 +56,12 @@ export interface BackTopSchema extends MachineSchema {
     | { type: 'SCROLL.RESOLVE', visible: boolean }
     /** 点击了按钮。 */
     | { type: 'TRIGGER.CLICK' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
+    | { type: 'PRESS.START' }
+    | { type: 'PRESS.END' }
   tag: never
   guard: 'shouldShow' | 'shouldHide'
-  action: 'scrollToTop' | 'invokeOnChange'
+  action: 'scrollToTop' | 'invokeOnChange' | 'startPress' | 'endPress'
   effect: 'trackScroll'
 }
 

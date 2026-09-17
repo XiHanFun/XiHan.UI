@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { backTopAnatomy, backTopKeyboard } from '@xihan-ui/headless'
+import { heldPress } from './shared/press-channel'
 
 // trigger 是原生 button，激活与 Tab 停靠归平台；判据锁的是「什么时候露面」与「点下去往哪滚」。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
@@ -99,6 +100,8 @@ export const backTopSuite: ConformanceSuite = {
             // 收起时整块让位：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到
             'hidden': '',
             'role': null,
+            // 缺省中性：不传 variant 时显式落 outline（描边 + 磨砂面），只有 solid 才品牌实心
+            'data-variant': 'outline',
             'data-tone': null,
             'data-size': null,
           },
@@ -108,6 +111,12 @@ export const backTopSuite: ConformanceSuite = {
             // 按钮里通常只有一个图标，名字只能由组件给
             'aria-label': 'Back to top',
             'data-state': 'hidden',
+            'data-pressed': null,
+            // 浮在内容之上的单图标圆钮：接 Action Control floating 档，盒型与四态面由家族配方给
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'floating',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
             // 原生 button 自带 Tab 停靠，不该套 roving tabindex
             'tabindex': null,
           },
@@ -169,14 +178,21 @@ export const backTopSuite: ConformanceSuite = {
       initial: { parts: { trigger: { 'aria-label': '回到顶部' } } },
     },
     {
-      name: '语气与尺寸如实落到定位壳上',
+      name: '语气与尺寸如实落到定位壳上，variant 与 size 同源投影到触发器的 data-xh-action-*',
       spec: { apg: APG },
-      props: { tone: 'brand', size: 'lg' },
+      props: { variant: 'solid', tone: 'brand', size: 'lg' },
       initial: {
         parts: {
-          root: { 'data-tone': 'brand', 'data-size': 'lg' },
+          root: { 'data-variant': 'solid', 'data-tone': 'brand', 'data-size': 'lg' },
+          trigger: { 'data-xh-action-variant': 'solid', 'data-xh-action-size': 'lg' },
         },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：trigger 投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['back-top.kbd.press'],
+      steps: [step(400, true), heldPress('back-top', 'trigger')],
     },
   ],
 }

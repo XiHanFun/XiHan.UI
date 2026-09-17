@@ -7,6 +7,8 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { BackTopApi, BackTopSchema } from './back-top.types'
+import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { backTopAnatomy } from './back-top.anatomy'
 
 const parts = backTopAnatomy.build()
@@ -15,9 +17,13 @@ export function connectBackTop<T extends PropTypes>(
   service: Service<BackTopSchema>,
   normalize: NormalizeProps<T>,
 ): BackTopApi<T> {
-  const { state, prop, send } = service
+  const { state, context, prop, send } = service
 
   const visible = state.matches('visible')
+  // 缺省 outline：描边 + 磨砂面的中性圆钮（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  const variant = prop('variant') ?? 'outline'
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   return {
     visible,
@@ -27,7 +33,7 @@ export function connectBackTop<T extends PropTypes>(
       ...parts.root.attrs,
       'data-state': visible ? 'visible' : 'hidden',
       // 三个视觉轴落在壳上，按钮沿继承流取值
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       // 收起时留着节点，只加 hidden：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到
@@ -41,7 +47,20 @@ export function connectBackTop<T extends PropTypes>(
       // 按钮里通常只有一个图标，可及名字只能由这里给
       'aria-label': prop('translations')?.trigger ?? 'Back to top',
       'data-state': visible ? 'visible' : 'hidden',
+      // 浮在内容之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-variant': variant,
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'TRIGGER.CLICK' }),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
   }
 }
