@@ -47,10 +47,9 @@ const FIELD_LABEL = new Set([
   'color-slider',
   'color-swatch-picker',
   'file-upload',
-  'switch',
 ])
 /** 控件随文标签：整行 <label> 包住控件与文字，文字是控件自己的文字，字号随 size 档。 */
-const CONTROL_LABEL = new Set(['checkbox'])
+const CONTROL_LABEL = new Set(['checkbox', 'switch'])
 /** 控件文字允许的档。 */
 const CONTROL_FONT_STEPS = ['--xh-control-font-sm', '--xh-control-font-md', '--xh-control-font-lg']
 /** 集合标题：scope → 标签所在的容器部件（与集合的间距读它的 gap）。Descriptions 的标签是每一格的标题，坐在 item 里。 */

@@ -105,7 +105,7 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('switch 实体轨道与 M1 滑块', () => {
+describe('switch 实体轨道与 raised 滑块', () => {
   it.each(['light', 'dark'] as const)('%s：开关两态、边界与滑块材质保持可辨', async (theme) => {
     document.documentElement.dataset.theme = theme
     document.body.style.backgroundColor = 'var(--xh-bg-canvas)'
@@ -131,14 +131,65 @@ describe('switch 实体轨道与 M1 滑块', () => {
     expect(off.boxShadow).toContain('inset')
     expect(off.backdropFilter).toBe('none')
 
+    // 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影，无顶光
     const knob = getComputedStyle(thumb('off'))
-    expect(knob.backgroundColor).toBe(resolveColor(thumb('off'), 'var(--xh-material-soft-bg)'))
+    expect(knob.backgroundColor).toBe(resolveColor(thumb('off'), 'var(--xh-bg-surface-raised)'))
     expect(knob.borderStyle).toBe('solid')
-    expect(knob.backgroundImage).not.toBe('none')
+    expect(knob.borderColor).toBe(resolveColor(thumb('off'), 'var(--xh-border-default)'))
+    expect(knob.backgroundImage).toBe('none')
     expect(knob.boxShadow).not.toBe('none')
   })
 
-  it('disabled、readonly 与 loading 各自使用正确光标和海拔', async () => {
+  it('按下时轨道缩放并换底：未选中保持轨道面、选中换到 active 档；禁用轨道改中性面不降 opacity', async () => {
+    await mount([
+      h(XhSwitch, { 'data-testid': 'live' }),
+      h(XhSwitch, { 'data-testid': 'checked', 'defaultChecked': true }),
+      h(XhSwitch, { 'data-testid': 'disabled', 'disabled': true }),
+      h(XhSwitch, { 'data-testid': 'disabled-on', 'defaultChecked': true, 'disabled': true }),
+    ])
+    const rest = getComputedStyle(track('live')).backgroundColor
+    await holdSpace(track('live'))
+    expect(getComputedStyle(track('live')).scale).toBe('0.97')
+    expect(getComputedStyle(track('live')).backgroundColor).toBe(rest)
+    expect(getComputedStyle(thumb('live')).boxShadow).toBe('none')
+    await releaseSpace()
+    await holdSpace(track('checked'))
+    expect(getComputedStyle(track('checked')).backgroundColor).toBe(resolveColor(track('checked'), 'var(--xh-bg-brand-active)'))
+    await releaseSpace()
+
+    for (const id of ['disabled', 'disabled-on']) {
+      const style = getComputedStyle(track(id))
+      expect(style.opacity, id).toBe('1')
+      expect(style.backgroundColor, id).toBe(resolveColor(track(id), 'var(--xh-bg-subtle)'))
+      expect(resolveColor(track(id), 'var(--xh-_switch-track-border)'), id).toBe(resolveColor(track(id), 'var(--xh-border-default)'))
+      expect(getComputedStyle(thumb(id)).color, id).toBe(resolveColor(track(id), 'var(--xh-fg-disabled)'))
+      expect(getComputedStyle(thumb(id)).boxShadow, id).toBe('none')
+    }
+  })
+
+  it('标签文字随 size 档取控件字号，禁用标签落 fg-subtle', async () => {
+    await mount([
+      h(XhSwitch, { 'data-testid': 'sm', 'size': 'sm' }, () => '小'),
+      h(XhSwitch, { 'data-testid': 'md' }, () => '中'),
+      h(XhSwitch, { 'data-testid': 'lg', 'size': 'lg' }, () => '大'),
+      h(XhSwitch, { 'data-testid': 'disabled', 'disabled': true }, () => '禁用'),
+    ])
+    const labels = [...document.querySelectorAll<HTMLElement>(`[data-scope='switch'][data-part='label']`)]
+    const px = (token: string): number => {
+      const span = document.createElement('span')
+      span.style.fontSize = `var(${token})`
+      labels[1]!.append(span)
+      const value = Number.parseFloat(getComputedStyle(span).fontSize)
+      span.remove()
+      return value
+    }
+    expect(Number.parseFloat(getComputedStyle(labels[0]!).fontSize)).toBe(px('--xh-control-font-sm'))
+    expect(Number.parseFloat(getComputedStyle(labels[1]!).fontSize)).toBe(px('--xh-control-font-md'))
+    expect(Number.parseFloat(getComputedStyle(labels[2]!).fontSize)).toBe(px('--xh-control-font-lg'))
+    expect(getComputedStyle(labels[3]!).color).toBe(resolveColor(labels[3]!, 'var(--xh-fg-subtle)'))
+  })
+
+  it('disabled、readonly 与 loading 各自使用正确光标和海拔；滑块静息即 raised，悬停不再升档', async () => {
     await mount([
       h(XhSwitch, { 'data-testid': 'live', 'defaultChecked': true }, () => '实时同步'),
       h(XhSwitch, { 'data-testid': 'disabled', 'defaultChecked': true, 'disabled': true }, () => '已禁用'),
@@ -159,7 +210,7 @@ describe('switch 实体轨道与 M1 滑块', () => {
     expect(getComputedStyle(labels[3]!).cursor).toBe('progress')
     expect(getComputedStyle(roots[4]!).cursor).toBe('not-allowed')
     expect(getComputedStyle(labels[4]!).cursor).toBe('not-allowed')
-    expect(getComputedStyle(roots[1]!).opacity).not.toBe('1')
+    expect(getComputedStyle(roots[1]!).opacity).toBe('1')
     expect(getComputedStyle(roots[2]!).opacity).toBe('1')
     const restShadow = getComputedStyle(thumbs[0]!).boxShadow
     expect(restShadow).not.toBe('none')
@@ -172,14 +223,14 @@ describe('switch 实体轨道与 M1 滑块', () => {
 
     await userEvent.hover(roots[0]!)
     await finishMotion()
-    expect(getComputedStyle(thumbs[0]!).boxShadow).not.toBe(restShadow)
+    expect(getComputedStyle(thumbs[0]!).boxShadow).toBe(restShadow)
     const loadingShadow = getComputedStyle(thumbs[3]!).boxShadow
     await userEvent.hover(roots[3]!)
     await finishMotion()
     expect(getComputedStyle(thumbs[3]!).boxShadow).toBe(loadingShadow)
   })
 
-  it.each(['light', 'dark'] as const)('%s 高对比轴：轨道与 M1 滑块仍由实体边界分层', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s 高对比轴：轨道与滑块仍由实体边界分层', async (theme) => {
     document.documentElement.dataset.theme = theme
     document.documentElement.dataset.contrast = 'more'
     document.body.style.backgroundColor = 'var(--xh-bg-canvas)'

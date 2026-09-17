@@ -92,7 +92,7 @@ const EXPECTED = {
   // 又不与下拉面板同深
   'slider': { thumb: ['raised', 'lifted'] },
   'color-slider': { thumb: ['raised', 'lifted'] },
-  'switch': { thumb: ['soft', 'raised'] },
+  'switch': { thumb: ['raised'] },
   // segment 档的选中标签是有滑块开关的白色抬起面（§7.3）：指示条部件在这一档收起，raised 落在标签自己身上
   'tabs': { trigger: ['raised'] },
   'tag': { root: ['soft'] },

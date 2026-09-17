@@ -36,6 +36,8 @@
     --xh-_switch-accent: var(--xh-_tone, var(--xh-bg-brand));
     /* 轨道边界以内描边表达，不吃掉滑块行程；checked / readonly / invalid 只换这一支色。 */
     --xh-_switch-track-border: var(--xh-switch-border, var(--xh-border-control));
+    /* 轨道的面：未选中是 --xh-bg-subtle-active（300）的实体字段控件面；checked / readonly / disabled 换这一支 */
+    --xh-_switch-track-bg: var(--xh-switch-bg, var(--xh-bg-subtle-active));
 
     position: relative;
     display: inline-flex;
@@ -45,7 +47,7 @@
     padding: var(--xh-_switch-pad);
     border: 0;
     border-radius: var(--xh-switch-radius, var(--xh-shape-pill));
-    background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
+    background: var(--xh-_switch-track-bg);
     color: var(--xh-switch-fg, var(--xh-fg-default));
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     cursor: pointer;
@@ -56,21 +58,22 @@
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  /* 内收环压在实体轨道上，直接取轨道的配对前景；只读 checked 已换中性底，退回默认品牌环。 */
-  [data-scope='switch'][data-part='root']:not([data-readonly][data-state='checked']):focus-visible {
+  /* 内收环压在实体轨道上，直接取轨道的配对前景：未选中与只读 checked 的中性轨道配 fg-default，
+     选中的语气轨道配它的 on 色；禁用面是淡底、也不落焦，吃库环 */
+  [data-scope='switch'][data-part='root']:not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
   }
 
   [data-scope='switch'][data-part='root'][data-state='checked'] {
     --xh-_switch-track-border: var(--xh-switch-border-checked, var(--xh-_switch-accent));
+    --xh-_switch-track-bg: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
 
-    background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
     color: var(--xh-switch-fg-checked, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   }
 
   /* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。
-     变的是"动不动得了"：指针不摆手型，选中档的轨道换成中性底，滑块收掉那层浮起的投影
-     ——投影是"这颗按得动"的信号。与文本框只读那一档同口径（压低底色而非置灰）。
+     变的是"动不动得了"：指针不摆手型，选中档的轨道退回未选中那一档的中性底（§7.2 交互态的底只从语义面派生），
+     滑块收掉那层抬起的投影——投影是"这颗按得动"的信号。与文本框只读那一档同口径（压低底色而非置灰）。
      滑块停在哪一端不受影响，值本身仍由位置这条非颜色通道读出。 */
   [data-scope='switch'][data-part='root'][data-readonly]:not([data-disabled]) {
     cursor: default;
@@ -78,8 +81,8 @@
 
   [data-scope='switch'][data-part='root'][data-readonly][data-state='checked'] {
     --xh-_switch-track-border: var(--xh-switch-border-checked-readonly, var(--xh-border-control));
+    --xh-_switch-track-bg: var(--xh-switch-bg-checked-readonly, var(--xh-bg-subtle-active));
 
-    background: var(--xh-switch-bg-checked-readonly, var(--xh-bg-muted));
     color: var(--xh-switch-fg-checked-readonly, var(--xh-fg-default));
   }
 
@@ -102,16 +105,28 @@
     box-shadow: var(--xh-switch-thumb-shadow-readonly, none);
   }
 
-  /* 按下去要有回应：轨道整条轻微下压，松手即弹回。
-     轨道宽高由私有槽定死，文字在外层 label 里，缩它不改布局。只读与禁用不压 */
-  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):active {
+  /* 按下去要有回应：轨道是定尺控件（§9.1），整条轻微下压并同时换底，松手即弹回。
+     未选中轨道静息已是 --xh-bg-subtle-active（300），中性阶梯再无更深一档可换：按下的底缺省仍是轨道静息面
+     （使用者可经 --xh-switch-bg-pressed 另给），换面的通道由下面滑块的橡皮带拉伸与压平投影承担；
+     选中轨道换到语气的 active 档。轨道宽高由私有槽定死，文字在外层 label 里，缩它不改布局。只读与禁用不压 */
+  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):is(:active, [data-pressed]) {
+    background: var(--xh-switch-bg-pressed, var(--xh-_switch-track-bg));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
+  [data-scope='switch'][data-part='root'][data-state='checked']:not([data-disabled]):not([data-readonly]):not([data-loading]):is(:active, [data-pressed]) {
+    background: var(--xh-switch-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+  }
+
+  /* 禁用（§7.2）：不靠 opacity——轨道退回 --xh-bg-subtle 底 + --xh-border-default 内描边，滑块前景置灰；
+     选中的禁用轨道同样退回中性面，值由滑块位置读出 */
   [data-scope='switch'][data-part='root'][data-disabled] {
-    opacity: var(--xh-state-disabled-opacity);
+    --xh-_switch-track-border: var(--xh-switch-border-disabled, var(--xh-border-default));
+    --xh-_switch-track-bg: var(--xh-switch-bg-disabled, var(--xh-bg-subtle));
+
+    color: var(--xh-switch-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
   }
 
@@ -141,26 +156,20 @@
     }
   }
 
+  /* 滑块是 raised 抬起面（§5.3 可拖起部件，逐部件登记）：--xh-bg-surface-raised 底 + --xh-border-default 描边 +
+     --xh-elevation-raised 影，无顶光；描边必须在，影只是加成 */
   [data-scope='switch'][data-part='thumb'] {
-    --xh-_switch-thumb-highlight: var(--xh-switch-thumb-highlight, var(--xh-material-soft-highlight));
-
     position: relative;
     display: grid;
     flex: none;
     place-items: center;
     inline-size: var(--xh-_switch-thumb-size);
     block-size: var(--xh-_switch-thumb-size);
-    border: var(--xh-stroke-thin) solid var(--xh-switch-thumb-border, var(--xh-material-soft-border));
+    border: var(--xh-stroke-thin) solid var(--xh-switch-thumb-border, var(--xh-border-default));
     border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-circle));
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-_switch-thumb-highlight) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      var(--xh-switch-thumb, var(--xh-material-soft-bg));
-    color: var(--xh-switch-thumb-fg, var(--xh-material-soft-fg));
-    box-shadow: var(--xh-switch-thumb-shadow, var(--xh-material-soft-shadow));
+    background: var(--xh-switch-thumb, var(--xh-bg-surface-raised));
+    color: var(--xh-switch-thumb-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
     line-height: 0;
     /* 状态切换只动位移与表面，按压拉伸另走 inline-size；不使用 transition-all。 */
     transition:
@@ -178,37 +187,27 @@
     translate: calc(-1 * var(--xh-_switch-thumb-size)) 0;
   }
 
-  /* 指针设备悬停时只把滑块从接触影抬到 raised；轨道仍是实体表单控件，不增加 blur。 */
-  @media (hover: hover) {
-    [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):hover
-      [data-scope='switch'][data-part='thumb'] {
-      box-shadow: var(--xh-switch-thumb-shadow-hover, var(--xh-elevation-raised));
-    }
-  }
-
-  /* Naive 同类的橡皮带回执：按住时向行进方向拉长，已选中端同步回退同一段，外缘不越出轨道。 */
-  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):active
+  /* Naive 同类的橡皮带回执：按住时向行进方向拉长并压平投影，已选中端同步回退同一段，外缘不越出轨道。 */
+  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):is(:active, [data-pressed])
     [data-scope='switch'][data-part='thumb'] {
-    --xh-_switch-thumb-highlight: transparent;
-
     inline-size: calc(var(--xh-_switch-thumb-size) + var(--xh-_switch-thumb-press-stretch));
     box-shadow: var(--xh-switch-thumb-shadow-pressed, none);
   }
 
-  [data-scope='switch'][data-part='root'][data-state='checked']:not([data-disabled]):not([data-readonly]):not([data-loading]):active
+  [data-scope='switch'][data-part='root'][data-state='checked']:not([data-disabled]):not([data-readonly]):not([data-loading]):is(:active, [data-pressed])
     [data-scope='switch'][data-part='thumb'] {
     translate: calc(var(--xh-_switch-thumb-size) - var(--xh-_switch-thumb-press-stretch)) 0;
   }
 
   [dir='rtl']
-    [data-scope='switch'][data-part='root'][data-state='checked']:not([data-disabled]):not([data-readonly]):not([data-loading]):active
+    [data-scope='switch'][data-part='root'][data-state='checked']:not([data-disabled]):not([data-readonly]):not([data-loading]):is(:active, [data-pressed])
     [data-scope='switch'][data-part='thumb'] {
     translate: calc(-1 * (var(--xh-_switch-thumb-size) - var(--xh-_switch-thumb-press-stretch))) 0;
   }
 
+  /* 禁用滑块收掉抬起影、前景置灰；描边与底保持，滑块仍是一块读得出位置的实体 */
   [data-scope='switch'][data-part='root'][data-disabled] [data-scope='switch'][data-part='thumb'] {
-    --xh-_switch-thumb-highlight: transparent;
-
+    color: var(--xh-switch-thumb-fg-disabled, var(--xh-fg-disabled));
     box-shadow: var(--xh-switch-thumb-shadow-disabled, none);
   }
 
@@ -223,22 +222,37 @@
     block-size: 60%;
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
-    border-radius: var(--xh-shape-pill);
+    /* 加载环是等宽高的圆（§6.3 全部加载环取 circle） */
+    border-radius: var(--xh-shape-circle);
     animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
-  /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */
+  /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——
+     文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（§6.4 控件字号随档）；
+     行高取正文档，长文字可以自然换行 */
   [data-scope='switch'][data-part='label'] {
+    --xh-_switch-label-font-size: var(--xh-control-font-md);
+
     display: inline-flex;
     align-items: center;
     gap: var(--xh-switch-label-gap, var(--xh-control-gap-md));
     color: var(--xh-switch-label-fg, var(--xh-fg-default));
-    font-size: var(--xh-switch-label-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-switch-label-font-size, var(--xh-_switch-label-font-size));
+    line-height: var(--xh-switch-label-leading, var(--xh-leading-normal));
     cursor: pointer;
   }
 
+  [data-scope='switch'][data-part='label'][data-size='sm'] {
+    --xh-_switch-label-font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='switch'][data-part='label'][data-size='lg'] {
+    --xh-_switch-label-font-size: var(--xh-control-font-lg);
+  }
+
+  /* 禁用标签色统一 --xh-fg-subtle（§6.4） */
   [data-scope='switch'][data-part='label'][data-disabled] {
-    color: var(--xh-switch-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-switch-label-fg-disabled, var(--xh-fg-subtle));
     cursor: not-allowed;
   }
 
@@ -293,7 +307,7 @@
   }
 
   @media (forced-colors: active) {
-    /* 系统会丢弃 box-shadow 与背景图：轨道改用内收 outline，滑块用真实边框保住两层几何。 */
+    /* 系统会丢弃 box-shadow：轨道改用内收 outline，滑块用真实边框保住两层几何。 */
     [data-scope='switch'][data-part='root'] {
       outline: var(--xh-stroke-thin) solid CanvasText;
       outline-offset: calc(-1 * var(--xh-stroke-thin));
@@ -301,6 +315,11 @@
 
     [data-scope='switch'][data-part='root'][data-disabled] {
       outline-color: GrayText;
+    }
+
+    /* 按下换的底在这一档被抹平：轨道的内收 outline 换成 Highlight 表出按住 */
+    [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):is(:active, [data-pressed]) {
+      outline-color: Highlight;
     }
 
     [data-scope='switch'][data-part='root'][data-readonly] {
@@ -316,7 +335,6 @@
 
     [data-scope='switch'][data-part='thumb'] {
       border-color: CanvasText;
-      background-image: none;
       box-shadow: none;
     }
   }
@@ -335,7 +353,6 @@
 
     [data-scope='switch'][data-part='thumb'] {
       border: var(--xh-stroke-thin) solid currentColor;
-      background-image: none;
       box-shadow: none;
     }
 
