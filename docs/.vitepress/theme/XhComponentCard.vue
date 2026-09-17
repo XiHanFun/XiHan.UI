@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { withBase } from "vitepress";
-import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
+import { useData, withBase } from "vitepress";
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
+import { restoreDemoStage, stageAttrs } from "./demo-stage";
 
 const props = defineProps<{
   href: string;
@@ -21,7 +22,13 @@ const root = ref<HTMLElement | null>(null);
 const visible = ref(false);
 let observer: IntersectionObserver | undefined;
 
+const { isDark } = useData();
+// 预览与示例舞台打同一组档位属性（主题 / 密度 / 对比度 / 方向），读者在示例页存下的档位
+// 到总览页同样生效；总览页没有工具条，这里自己校正一次（幂等）
+const stageBindings = computed(() => stageAttrs(isDark.value));
+
 onMounted(() => {
+  restoreDemoStage();
   if (!("IntersectionObserver" in window)) {
     visible.value = true;
     return;
@@ -43,7 +50,12 @@ onBeforeUnmount(() => observer?.disconnect());
 
 <template>
   <article ref="root" class="xh-component-card">
-    <div class="xh-component-card__preview" inert aria-hidden="true">
+    <div
+      class="xh-component-card__preview xh-demo__stage"
+      inert
+      aria-hidden="true"
+      v-bind="stageBindings"
+    >
       <div v-if="visible && demo && !renderless" class="xh-component-card__demo">
         <component :is="demo" />
       </div>
@@ -78,16 +90,28 @@ onBeforeUnmount(() => observer?.disconnect());
   min-width: 0;
 }
 
+/*
+ * 预览卡是描边面，不是 Card：边界只由描边承担，底取页面色、无影、不缩放。
+ * 宽高两档由这里以变量下发给各预览根（--xh-doc-catalog-w 常规、-narrow 单行输入类、-h 可用高），
+ * 预览文件自己不写尺寸散值。contain: layout paint 兼做裁切与固定定位包含块：
+ * Dialog / Command 缩略面板的 positioner 是 position: fixed，靠它圈在卡内。
+ */
 .xh-component-card__preview {
+  --xh-doc-catalog-w: 240px;
+  --xh-doc-catalog-w-narrow: 160px;
+  --xh-doc-catalog-h: 166px;
+
   position: relative;
-  display: grid;
-  place-items: center;
-  height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 190px;
+  padding: var(--xh-space-3);
   border: var(--xh-stroke-thin) solid var(--xh-border-default);
   border-radius: var(--xh-shape-surface);
-  overflow: hidden;
-  background: var(--xh-bg-surface-raised);
-  box-shadow: var(--xh-elevation-raised);
+  background: var(--xh-bg-page);
+  box-shadow: none;
+  contain: layout paint;
 }
 
 .xh-component-card__demo {
@@ -96,12 +120,9 @@ onBeforeUnmount(() => observer?.disconnect());
   align-items: center;
   justify-content: center;
   gap: var(--xh-space-2);
-  width: 116%;
-  max-height: 210px;
-  padding: var(--xh-space-3);
+  inline-size: 100%;
+  max-block-size: 100%;
   overflow: hidden;
-  transform: scale(0.86);
-  transform-origin: center;
 }
 
 .xh-component-card__placeholder {
@@ -110,7 +131,7 @@ onBeforeUnmount(() => observer?.disconnect());
   --xh-demo-block-radius: var(--xh-shape-control);
 }
 
-.xh-component-card__link {
+.vp-doc .xh-component-card__link {
   display: inline-flex;
   gap: var(--xh-space-1_5);
   align-items: baseline;
@@ -159,7 +180,9 @@ onBeforeUnmount(() => observer?.disconnect());
   }
 
   .xh-component-card__preview {
-    height: 148px;
+    --xh-doc-catalog-h: 124px;
+
+    block-size: 148px;
   }
 }
 </style>
