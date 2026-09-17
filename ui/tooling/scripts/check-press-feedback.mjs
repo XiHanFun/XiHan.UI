@@ -87,7 +87,8 @@ const PRESSABLE = {
   'segmented': [{ part: 'item', feedback: 'surface' }],
   'back-top': ['trigger'],
   'float-button': ['trigger'],
-  'clipboard': [{ part: 'copy-trigger', feedback: 'surface' }],
+  // 定尺的独立复制钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给（§9.1）
+  'clipboard': ['copy-trigger'],
   // 列表末尾铺满一行的「取下一页」：Action Control row 档，按下只换面不缩放（§9.2）
   'infinite-scroll': [{ part: 'load-more-trigger', feedback: 'surface' }],
   // 集合件尾部的「取下一页」：Action Control row 档铺满一行，按下只换面不缩放（§9.2）；条目走 Collection Item 的 page 语境

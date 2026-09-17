@@ -89,9 +89,13 @@ describe('工具触发器视觉合同', () => {
     }
   })
 
-  it('按下只换面，不改变按钮几何', async () => {
+  it('按下同时换底并按 §9.1 缩到 0.97：定尺的独立动作钮由家族按压块给触感，布局盒不变', async () => {
     host = document.createElement('div')
     document.body.append(host)
+    // 过渡即时完成：断言的是按住的稳定态，不是过渡中间帧
+    host.style.setProperty('--xh-motion-duration-micro', '0ms')
+    host.style.setProperty('--xh-motion-duration-press', '0ms')
+    host.style.setProperty('--xh-motion-duration-release', '0ms')
     app = createApp({
       setup: () => () => h('div', null, [
         h(XhDownloadTrigger, { data: 'XiHan.UI', fileName: 'xihan-ui.txt' }, () => '下载'),
@@ -107,21 +111,22 @@ describe('工具触发器视觉合同', () => {
     await nextTick()
 
     const utilities = [
-      host.querySelector<HTMLElement>(`[data-scope='download-trigger'][data-part='root']`)!,
-      host.querySelector<HTMLElement>(`[data-scope='clipboard'][data-part='copy-trigger']`)!,
+      // download-trigger 随其自己的提交接入家族按压块，此前皮肤锁 scale: none
+      { el: host.querySelector<HTMLElement>(`[data-scope='download-trigger'][data-part='root']`)!, scale: 'none' },
+      { el: host.querySelector<HTMLElement>(`[data-scope='clipboard'][data-part='copy-trigger']`)!, scale: '0.97' },
     ]
 
-    for (const utility of utilities) {
+    for (const { el: utility, scale } of utilities) {
       const before = utility.getBoundingClientRect()
       const rest = getComputedStyle(utility).backgroundColor
       await press(utility)
       const pressedStyle = getComputedStyle(utility)
-      const during = utility.getBoundingClientRect()
       expect(utility.matches(':active')).toBe(true)
       expect(pressedStyle.backgroundColor).not.toBe(rest)
-      expect(pressedStyle.scale).toBe('none')
-      expect(during.width).toBeCloseTo(before.width, 4)
-      expect(during.height).toBeCloseTo(before.height, 4)
+      expect(pressedStyle.scale).toBe(scale)
+      // scale 不改变布局盒：getBoundingClientRect 量的是变换后的盒，布局尺寸看 offsetWidth / offsetHeight
+      expect(utility.offsetWidth).toBeCloseTo(before.width, 4)
+      expect(utility.offsetHeight).toBeCloseTo(before.height, 4)
       await release()
     }
   })

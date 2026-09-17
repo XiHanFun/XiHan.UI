@@ -8101,7 +8101,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定复制按钮的颜色使用方式",
+              "description": "形态，决定复制按钮的颜色使用方式，默认 subtle（solid 才品牌实心）",
               "name": "variant",
               "fieldName": "variant"
             },

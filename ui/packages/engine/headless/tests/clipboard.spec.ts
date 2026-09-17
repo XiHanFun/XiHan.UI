@@ -452,4 +452,77 @@ describe('connectClipboard 结构与标注', () => {
     expect(makeClipboard().api().value).toBe('')
     expect(makeClipboard({ value: 'x' }).api().value).toBe('x')
   })
+
+  it('variant 缺省显式落 subtle：根 data-variant 与复制钮 data-xh-action-variant 同源', () => {
+    const bare = makeClipboard().api()
+    expect((bare.getRootProps() as Dict)['data-variant']).toBe('subtle')
+    expect((bare.getCopyTriggerProps() as Dict)['data-xh-action-variant']).toBe('subtle')
+    const solid = makeClipboard({ variant: 'solid' }).api()
+    expect((solid.getRootProps() as Dict)['data-variant']).toBe('solid')
+    expect((solid.getCopyTriggerProps() as Dict)['data-xh-action-variant']).toBe('solid')
+  })
+})
+
+/** 键盘桩：只带跟踪器会读的三个字段。 */
+function key(name: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent {
+  return { key: name, repeat: false, isComposing: false, keyCode: 0, ...init } as KeyboardEvent
+}
+
+describe('按压通道：复制钮 Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('静息不带 data-pressed；keydown Space 期间在场，keyup 撤下', () => {
+    const c = makeClipboard({ value: 'abc' })
+    const trigger = () => c.api().getCopyTriggerProps() as Dict
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+  })
+
+  it('触屏按下在场、抬起撤下；按住途中失焦即撤下', () => {
+    const c = makeClipboard({ value: 'abc' })
+    const trigger = () => c.api().getCopyTriggerProps() as Dict
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用时按住不进入按压面；按住途中被禁用即松开', () => {
+    const off = makeClipboard({ value: 'abc', disabled: true })
+    fire(off.api().getCopyTriggerProps() as Dict, 'onKeyDown', key(' '))
+    expect((off.api().getCopyTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+
+    // 途中禁用要经 watch 收面：props 得是运行时信号，改值才会通知机器
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ value: 'abc' })
+    const service = createService(clipboardMachine, {
+      props: () => props.get(),
+      runtime,
+      scope: createScope(document.body, createCounterIdGenerator()),
+    })
+    runtime.start()
+    const trigger = () => connectClipboard(service, normalizeProps).getCopyTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    props.set({ value: 'abc', disabled: true })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    runtime.stop()
+  })
+
+  it('写入在途时不接受按压；按住途中转入写入即松开', async () => {
+    teardowns.push(installClipboard(() => new Promise(() => {})))
+    const c = makeClipboard({ value: 'abc' })
+    fire(c.api().getCopyTriggerProps() as Dict, 'onKeyDown', key(' '))
+    expect((c.api().getCopyTriggerProps() as Dict)['data-pressed']).toBe('')
+    c.service.send({ type: 'COPY.TRIGGER' })
+    expect(c.state()).toBe('copying')
+    expect((c.api().getCopyTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+    fire(c.api().getCopyTriggerProps() as Dict, 'onKeyDown', key('Enter'))
+    expect((c.api().getCopyTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+  })
 })

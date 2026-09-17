@@ -51,7 +51,7 @@ const NO_SLOT = {
   'popconfirm:confirm-trigger::before': '转圈的加载环',
   'switch:thumb::after': '转圈的加载环',
   'download-trigger:root::before': '转圈的加载环',
-  'clipboard:copy-trigger::before': '转圈的加载环',
+  'clipboard:copy-trigger::before': '转圈的加载环，正方盒取 circle',
   'approval:footer::before': '转圈的加载环',
   // reset 层的原生细条：主体是 :where([data-scope][data-part], [data-xh-scroll], …) 一组宿主，
   // 部件位记作 *；原生滑块与自绘 scrollbar:thumb 同为一维对象，pill 是它的身份

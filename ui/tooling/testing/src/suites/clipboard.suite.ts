@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { clipboardAnatomy, clipboardKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const SPEC = 'https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element'
 
@@ -104,7 +105,7 @@ export const clipboardSuite: ConformanceSuite = {
         order: ['root', 'label', 'control', 'input', 'copy-trigger', 'indicator[0]', 'indicator[1]'],
         counts: { 'root': 1, 'label': 1, 'control': 1, 'input': 1, 'copy-trigger': 1, 'indicator': 2 },
         parts: {
-          'root': { 'data-state': 'idle', 'data-copied': null },
+          'root': { 'data-state': 'idle', 'data-copied': null, 'data-variant': 'subtle' },
           'label': { 'id': '@self', 'for': '@part(input)', 'data-state': 'idle' },
           'control': { 'data-state': 'idle' },
           'input': {
@@ -115,14 +116,45 @@ export const clipboardSuite: ConformanceSuite = {
             'disabled': null,
             'aria-labelledby': '@part(label)',
           },
-          'copy-trigger': { 'type': 'button', 'data-state': 'idle', 'data-copied': null },
+          'copy-trigger': {
+            'type': 'button',
+            'data-state': 'idle',
+            'data-copied': null,
+            'data-pressed': null,
+            // 定尺的独立动作按钮：形态缺省显式落 subtle（缺省中性，solid 才品牌实心）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'subtle',
+          },
           'indicator': [
-            { 'data-copied': null, 'hidden': null },
-            { 'data-copied': '', 'hidden': '' },
+            // 非当前侧只从视觉与无障碍树收起（aria-hidden），不写 hidden：保留宽度避免切换抖动
+            { 'data-copied': null, 'aria-hidden': null },
+            { 'data-copied': '', 'aria-hidden': 'true' },
           ],
         },
       },
       steps: [nativeActivation('clipboard', 'copy-trigger')],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：copy-trigger 投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['clipboard.kbd.press'],
+      props: { value: VALUE },
+      steps: [heldPress('clipboard', 'copy-trigger')],
+    },
+    {
+      name: 'disabled：按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { value: VALUE, disabled: true },
+      steps: [heldPressIgnored('clipboard', 'copy-trigger', '禁用时不接受按压')],
+    },
+    {
+      name: 'variant 落到根与复制钮：根 data-variant，钮 data-xh-action-variant 同源',
+      spec: { adr: 'action-control-family' },
+      props: { value: VALUE, variant: 'solid' },
+      initial: {
+        parts: { 'root': { 'data-variant': 'solid' }, 'copy-trigger': { 'data-xh-action-variant': 'solid' } },
+      },
     },
     {
       name: '点复制：写入兑现前停在 copying，兑现后才落 copied 并换边',
@@ -142,7 +174,7 @@ export const clipboardSuite: ConformanceSuite = {
             parts: {
               'root': { 'data-state': 'copying', 'data-copied': null },
               'copy-trigger': { 'data-state': 'copying' },
-              'indicator': [{ hidden: null }, { hidden: '' }],
+              'indicator': [{ 'aria-hidden': null }, { 'aria-hidden': 'true' }],
             },
           },
         },
@@ -155,7 +187,7 @@ export const clipboardSuite: ConformanceSuite = {
               'root': { 'data-state': 'copied', 'data-copied': '' },
               'copy-trigger': { 'data-state': 'copied', 'data-copied': '' },
               // 两个指示器都还在，只是换了谁露面
-              'indicator': [{ hidden: '' }, { 'data-copied': '', 'hidden': null }],
+              'indicator': [{ 'aria-hidden': 'true' }, { 'data-copied': '', 'aria-hidden': null }],
             },
             counts: { indicator: 2 },
           },
@@ -187,7 +219,7 @@ export const clipboardSuite: ConformanceSuite = {
               'root': { 'data-state': 'idle', 'data-copied': null },
               'copy-trigger': { 'data-state': 'idle', 'data-copied': null },
               // 成功侧仍旧收着：没成功就不该露对钩
-              'indicator': [{ hidden: null }, { hidden: '' }],
+              'indicator': [{ 'aria-hidden': null }, { 'aria-hidden': 'true' }],
             },
           },
         },
@@ -223,7 +255,7 @@ export const clipboardSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: { 'data-state': 'idle', 'data-copied': null },
-              indicator: [{ hidden: null }, { hidden: '' }],
+              indicator: [{ 'aria-hidden': null }, { 'aria-hidden': 'true' }],
             },
           },
         },

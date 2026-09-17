@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ClipboardApi, ClipboardSchema } from './clipboard.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { clipboardAnatomy } from './clipboard.anatomy'
 
 const parts = clipboardAnatomy.build()
@@ -16,7 +17,7 @@ export function connectClipboard<T extends PropTypes>(
   service: Service<ClipboardSchema>,
   normalize: NormalizeProps<T>,
 ): ClipboardApi<T> {
-  const { state, prop, send, scope } = service
+  const { state, context, prop, send, scope } = service
   const ids = scope.ids('clipboard', 'label', 'input')
 
   const status = state.get()
@@ -25,8 +26,12 @@ export function connectClipboard<T extends PropTypes>(
   const value = prop('value') ?? ''
   const disabled = !!prop('disabled')
   const translations = prop('translations')
+  // 缺省中性淡底（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  const variant = prop('variant') ?? 'subtle'
   // 播报区只在成功那一档有话说；平时是空串，读屏不会念一段旧文案
   const announcement = copied ? (translations?.copied ?? 'Copied') : ''
+  // 复制按钮键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   return {
     status,
@@ -38,8 +43,8 @@ export function connectClipboard<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      // 三个视觉轴落在根上，复制按钮沿继承流取值
-      'data-variant': prop('variant'),
+      // 三个视觉轴落在根上，复制按钮沿继承流取值；variant 缺省显式落 subtle
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': status,
@@ -92,11 +97,20 @@ export function connectClipboard<T extends PropTypes>(
       'data-copied': dataAttr(copied),
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(copying),
+      // 定尺的独立动作按钮：盒型、四态面与 0.97 按压由家族配方按 data-xh-action-variant 给出
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-variant': variant,
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'COPY.TRIGGER' }),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
 
     /**

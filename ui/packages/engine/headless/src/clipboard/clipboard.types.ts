@@ -39,7 +39,7 @@ export interface ClipboardSchema extends MachineSchema {
     timeout?: number
     /** 禁用：复制按钮不可点击，作者调用 api.copy() 也无效（守卫在状态机层）。 */
     disabled?: boolean
-    /** 变体：solid / subtle / outline / ghost。 */
+    /** 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 */
     variant?: ActionVariant
     /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone
@@ -51,7 +51,10 @@ export interface ClipboardSchema extends MachineSchema {
     /** 写入失败时通知；此时状态已回到 idle。 */
     onCopyError?: (details: ClipboardCopyErrorDetails) => void
   }
-  context: Record<string, never>
+  context: {
+    /** 复制按钮正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: ClipboardStatus
@@ -68,9 +71,12 @@ export interface ClipboardSchema extends MachineSchema {
     | { type: 'COPY.ERROR', error: unknown, value: string }
     /** 停留计时到期，指示器应收回。 */
     | { type: 'after.timeout' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
+    | { type: 'PRESS.START' }
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'isDisabled'
-  action: 'invokeCopying' | 'invokeCopied' | 'invokeIdle' | 'invokeCopyError'
+  guard: 'isDisabled' | 'canPress'
+  action: 'invokeCopying' | 'invokeCopied' | 'invokeIdle' | 'invokeCopyError' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: 'writeValue' | 'trackTimeout'
 }
 
