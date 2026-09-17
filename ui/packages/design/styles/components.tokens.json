@@ -55845,6 +55845,7 @@
       ],
       "state": [
         "default",
+        "variant=outline",
         "variant=subtle"
       ],
       "defaultToken": [
@@ -56366,7 +56367,7 @@
         "not([data-disabled])"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "table 的 body、root、row 部件 background 覆盖槽。"
@@ -56439,7 +56440,8 @@
       "name": "--xh-table-font-size",
       "component": "table",
       "part": [
-        "root"
+        "root",
+        "row"
       ],
       "property": [
         "font-size"
@@ -56451,7 +56453,7 @@
         "--xh-_table-font-size"
       ],
       "visibility": "public",
-      "description": "table 的 root 部件 font-size 覆盖槽。"
+      "description": "table 的 root、row 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-table-footer-bg",
@@ -56519,10 +56521,14 @@
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "default",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "table 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -56537,10 +56543,14 @@
         "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
       "description": "table 的 load-more-trigger 部件 background-color 覆盖槽。"
@@ -56555,7 +56565,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-brand-strong"
@@ -56627,7 +56644,7 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-space-3"
@@ -56824,7 +56841,7 @@
         "row"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
@@ -56833,29 +56850,52 @@
         "--xh-bg-surface"
       ],
       "visibility": "public",
-      "description": "table 的 row 部件 background 覆盖槽。"
+      "description": "table 的 row 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-row-bg-hover",
       "component": "table",
       "part": [
-        "body",
         "row"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "highlighted",
-        "is(:hover, [data-highlighted])",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "table 的 body、row 部件 background 覆盖槽。"
+      "description": "table 的 row 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-row-bg-pressed",
+      "component": "table",
+      "part": [
+        "row"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "table 的 row 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-row-bg-selected",
@@ -56864,16 +56904,21 @@
         "row"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "selected"
+        "disabled",
+        "error",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=page"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-brand-subtle"
       ],
       "visibility": "public",
-      "description": "table 的 row 部件 background 覆盖槽。"
+      "description": "table 的 row 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-row-bg-striped",
@@ -56884,7 +56929,7 @@
         "row"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "striped",
@@ -56895,7 +56940,7 @@
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "table 的 body、root、row 部件 background 覆盖槽。"
+      "description": "table 的 body、root、row 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-row-border",
@@ -56926,6 +56971,35 @@
       ],
       "visibility": "public",
       "description": "table 的 body、cell、column-header、expanded-row、footer、header、root、row 部件 border-block-start、border-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-row-cursor",
+      "component": "table",
+      "part": [
+        "row"
+      ],
+      "property": [
+        "cursor"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=page"
+      ],
+      "defaultToken": [
+        "default"
+      ],
+      "visibility": "public",
+      "description": "table 的 row 部件 cursor 覆盖槽。"
     },
     {
       "name": "--xh-table-row-drag-fg",
@@ -57038,6 +57112,74 @@
       ],
       "visibility": "public",
       "description": "table 的 row-drag-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-row-fg-selected",
+      "component": "table",
+      "part": [
+        "row"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=page"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "table 的 row 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-sort-bg-hover",
+      "component": "table",
+      "part": [
+        "sort-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "table 的 sort-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-sort-bg-pressed",
+      "component": "table",
+      "part": [
+        "sort-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "table 的 sort-trigger 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-table-sort-fg",
@@ -57332,6 +57474,55 @@
       "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 background、border-color 覆盖槽。"
     },
     {
+      "name": "--xh-table-trigger-bg-checked-pressed",
+      "component": "table",
+      "part": [
+        "column-visibility-trigger",
+        "row-select-trigger",
+        "select-all-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "is([data-state='checked'], [data-state='indeterminate'])",
+        "not([data-disabled])",
+        "selected",
+        "state=checked",
+        "state=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-active"
+      ],
+      "visibility": "public",
+      "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-trigger-bg-pressed",
+      "component": "table",
+      "part": [
+        "column-visibility-trigger",
+        "expand-trigger",
+        "row-select-trigger",
+        "select-all-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-table-trigger-border",
       "component": "table",
       "part": [
@@ -57419,7 +57610,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-control",
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。"

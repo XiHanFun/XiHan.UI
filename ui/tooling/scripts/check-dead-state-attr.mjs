@@ -111,7 +111,6 @@ const HOOKS = {
   'rating:data-state': '星的填充走 data-highlighted 与 data-half',
   'number-animation:data-state': '数字滚动的外观不随相位变，相位只留给作者接线',
   // 禁用不在这张表里：pointer.css 那条与组件无关的规则消费全库的 data-disabled
-  'table:data-loading': '加载中的观感由 loading 部件承载（table.css:746 起，收起时 hidden）',
   // 集合件取条目在途：那一格由只在取数期在场的 loading 部件顶上来
 
   'transfer:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',

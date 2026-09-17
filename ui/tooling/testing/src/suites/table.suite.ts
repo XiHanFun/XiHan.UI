@@ -325,11 +325,17 @@ export const tableSuite: ConformanceSuite = {
             'data-value': null,
             'data-section': 'header',
             'aria-selected': null,
+            // 表头行不是可选中的条目，不投影 Collection Item
+            'data-xh-collection-item': null,
             // 层级只报给数据行，表头行不在那棵树里
             'aria-level': null,
             'aria-posinset': null,
           },
           'row[1]': {
+            // 表体行走 Collection Item 的 page 语境
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'page',
             'role': 'row',
             'aria-rowindex': '2',
             'data-value': 'a',

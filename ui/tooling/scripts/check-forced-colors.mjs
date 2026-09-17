@@ -65,7 +65,6 @@ const EXEMPT = {
   'slider.css:data-invalid': '校验失败的表达在字段层：错误文案由 field 渲出来并由 aria-describedby 念出',
   'splitter.css:data-dragging': '正在拖动分隔条时的临时反馈，指针正按在把手上',
   'table.css:data-resizing': '正在拖动列宽时的临时反馈，指针正按在列边上',
-  'table.css:data-striped': '斑马纹是读长表的辅助，行与行的分界由行盒自己的排版给出',
   'tool-call.css:data-state=awaiting-approval': '各档状态由状态区的文字写出来，底色只是重复一遍',
   'tool-call.css:data-state=output-available': '同上',
   'tool-call.css:data-state=output-error': '同上',

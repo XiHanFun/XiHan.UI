@@ -712,6 +712,12 @@ export function connectTable<T extends PropTypes>(
       return normalize.element({
         ...parts.row.attrs,
         ...rowState(row.value),
+        // 表体行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与选中面（品牌淡底 +
+        // 淡底前景）由家族按 aria-selected / aria-disabled 给出；标记由行首的勾选把手承担，行不投影子槽。
+        // 表头 / 脚注行不投影：它们不是可选中的条目
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'page',
         // 导航、选中与展开都以此为行身份
         [ITEM_VALUE_ATTR]: row.value,
         'role': 'row',
@@ -1144,9 +1150,16 @@ export function connectTable<T extends PropTypes>(
       hidden: !showLoading || undefined,
     }),
 
-    // 取下一页的入口：摆在表尾，还有没有下一页归作者判定；这里只焊死取数在途点不动
+    // 取下一页的入口：摆在表尾，还有没有下一页归作者判定；这里只焊死取数在途点不动。
+    // 它是铺满一行的独立动作条目（§9.2 load-more trigger）：接 Action Control 的 row 档、ghost 形态，
+    // 宽度由容器给、高度随内容、按下只换面不缩放；悬停 / 按下 / 禁用面与粗指针热区由家族给，档位随 size
     getLoadMoreTriggerProps: () => normalize.button({
       ...parts['load-more-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': loading || undefined,
       'data-loading': dataAttr(loading),

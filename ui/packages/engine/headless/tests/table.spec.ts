@@ -1248,3 +1248,20 @@ describe('键盘：落在可编辑单元格里的按键不归表格管', () => {
     expect(h.selection()).toEqual([])
   })
 })
+
+describe('collection Item 与 Action Control 家族投影', () => {
+  it('表体行投影 page 语境的行角色与尺寸，表头行不投影；取页钮接 row 档 ghost 形态', () => {
+    const h = mount({ size: 'sm', selectionMode: 'multiple' })
+    expect(h.row('a').row.dataset).toMatchObject({ xhCollectionItem: '', xhCollectionSize: 'sm', xhCollectionContext: 'page' })
+    expect(h.row('a').row.getAttribute('aria-selected')).toBe('false')
+    expect(h.headerRow.hasAttribute('data-xh-collection-item')).toBe(false)
+    expect((mount().row('a').row.dataset.xhCollectionSize)).toBe('md')
+    expect(h.api().getLoadMoreTriggerProps() as Record<string, unknown>).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+    })
+  })
+})

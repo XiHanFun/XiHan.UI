@@ -318,13 +318,6 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "table [data-part='row'][data-scope='table'][data-selected]": {
-      "parts": [
-        "row"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
     "table [data-part='select-all-trigger'][data-scope='table'][data-state=:is(checked,indeterminate)]": {
       "parts": [
         "select-all-trigger"
