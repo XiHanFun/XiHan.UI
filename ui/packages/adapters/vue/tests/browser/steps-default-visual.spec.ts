@@ -49,14 +49,40 @@ describe('steps 默认视觉', () => {
     expect(steps.items.every(item => item.scrollWidth <= item.clientWidth)).toBe(true)
   })
 
-  it('当前、已完成与未开始标记具有不同层级', () => {
+  it('当前步实心强调，已完成步与未开始步共用中性面、靠对号色分开', () => {
     const steps = mount()
     const [completed, current, incomplete] = steps.indicators.map(indicator => getComputedStyle(indicator))
 
+    // 格状当前（§7.3）：实心品牌底 + 内高光；brand-subtle 退出 completed 语义，走过的步坐回中性面
     expect(current!.backgroundColor).not.toBe(completed!.backgroundColor)
-    expect(completed!.backgroundColor).not.toBe(incomplete!.backgroundColor)
+    expect(completed!.backgroundColor).toBe(incomplete!.backgroundColor)
+    expect(completed!.color).not.toBe(incomplete!.color)
     expect(current!.color).not.toBe(incomplete!.color)
     expect(current!.boxShadow).not.toBe('none')
+  })
+
+  it('已完成步没写内容时由皮肤画 16px 对号', () => {
+    const steps = mount()
+    const completed = steps.indicators[0]!
+    completed.textContent = ''
+    const mark = getComputedStyle(completed, '::before')
+
+    expect(mark.maskImage === 'none' && mark.webkitMaskImage === 'none').toBe(false)
+    expect(Number.parseFloat(mark.inlineSize)).toBe(16)
+    expect(Number.parseFloat(mark.blockSize)).toBe(16)
+    expect(mark.backgroundColor).toBe(getComputedStyle(completed).color)
+  })
+
+  it('触发器按下只换面不缩放', () => {
+    const steps = mount()
+    const trigger = steps.items[2]!.querySelector<HTMLElement>('[data-part="trigger"]')!
+    const rest = getComputedStyle(trigger).backgroundColor
+    trigger.setAttribute('data-pressed', '')
+    const pressed = getComputedStyle(trigger)
+
+    expect(pressed.backgroundColor).not.toBe(rest)
+    expect(pressed.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(pressed.transform).toBe('none')
   })
 
   it('纵向连接线保持清晰长度并与标记同轴', () => {

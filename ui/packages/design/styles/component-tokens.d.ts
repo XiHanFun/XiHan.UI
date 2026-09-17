@@ -2893,6 +2893,7 @@ export type ComponentTokenName =
   | '--xh-steps-title-font-size'
   | '--xh-steps-title-font-weight'
   | '--xh-steps-trigger-bg-hover'
+  | '--xh-steps-trigger-bg-pressed'
   | '--xh-steps-trigger-gap'
   | '--xh-steps-trigger-p'
   | '--xh-steps-trigger-radius'
