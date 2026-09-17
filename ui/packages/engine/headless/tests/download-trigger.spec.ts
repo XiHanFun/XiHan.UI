@@ -328,7 +328,17 @@ describe('connectDownloadTrigger 属性表', () => {
     expect(props['data-xh-action-control']).toBe('')
     expect(props['data-xh-action-profile']).toBe('text')
     expect(props['data-xh-action-size']).toBe('md')
+    // 缺省中性淡底：只有 Button 缺省品牌实心
+    expect(props['data-xh-action-variant']).toBe('subtle')
+    expect(props['data-variant']).toBe('subtle')
+    expect(props['data-pressed']).toBeUndefined()
     expect(props.disabled).toBeUndefined()
+  })
+
+  it('variant 原样投影到 data-variant 与 data-xh-action-variant', () => {
+    const props = makeTrigger({ data: 'x', variant: 'solid' }).api().getRootProps() as Dict
+    expect(props['data-variant']).toBe('solid')
+    expect(props['data-xh-action-variant']).toBe('solid')
   })
 
   it('禁用走原生 disabled，同时留一个 data-disabled 给皮肤与作者取用', () => {
@@ -362,5 +372,66 @@ describe('connectDownloadTrigger 属性表', () => {
 
     await settleDownload()
     expect(captured.list[0]!.download).toBe(DOWNLOAD_TRIGGER_FILE_NAME)
+  })
+})
+
+/** 键盘桩：只带跟踪器会读的三个字段。 */
+function key(name: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent {
+  return { key: name, repeat: false, isComposing: false, keyCode: 0, ...init } as KeyboardEvent
+}
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('静息不带 data-pressed；keydown Space 期间在场，keyup 撤下；触屏按下在场、抬起撤下；失焦撤下', () => {
+    const t = makeTrigger({ data: 'x' })
+    const root = () => t.api().getRootProps() as Dict
+    expect(root()['data-pressed']).toBeUndefined()
+    fire(root(), 'onKeyDown', key(' '))
+    expect(root()['data-pressed']).toBe('')
+    fire(root(), 'onKeyUp', key(' '))
+    expect(root()['data-pressed']).toBeUndefined()
+    fire(root(), 'onPointerDown', { pointerType: 'touch' })
+    expect(root()['data-pressed']).toBe('')
+    fire(root(), 'onPointerUp', {})
+    expect(root()['data-pressed']).toBeUndefined()
+    fire(root(), 'onKeyDown', key('Enter'))
+    expect(root()['data-pressed']).toBe('')
+    fire(root(), 'onBlur', {})
+    expect(root()['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用时按住不进入按压面；按住途中被禁用即松开', () => {
+    const off = makeTrigger({ data: 'x', disabled: true })
+    fire(off.api().getRootProps() as Dict, 'onKeyDown', key(' '))
+    expect((off.api().getRootProps() as Dict)['data-pressed']).toBeUndefined()
+
+    // 途中禁用要经 watch 收面：props 得是运行时信号，改值才会通知机器
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ data: 'x' })
+    const service = createService(downloadTriggerMachine, {
+      props: () => props.get(),
+      runtime,
+      scope: createScope(document.body, createCounterIdGenerator()),
+    })
+    runtime.start()
+    teardowns.push(() => runtime.stop())
+    const root = () => connectDownloadTrigger(service, normalizeProps).getRootProps() as Dict
+    fire(root(), 'onKeyDown', key(' '))
+    expect(root()['data-pressed']).toBe('')
+    props.set({ data: 'x', disabled: true })
+    expect(root()['data-pressed']).toBeUndefined()
+  })
+
+  it('取数在途不接受按压；按住途中转入取数即松开', () => {
+    const captured = captureDownloads()
+    teardowns.push(captured.dispose)
+    const t = makeTrigger({ data: () => new Promise<string>(() => {}) })
+    const root = () => t.api().getRootProps() as Dict
+    fire(root(), 'onKeyDown', key(' '))
+    expect(root()['data-pressed']).toBe('')
+    t.api().download()
+    expect(t.state()).toBe('preparing')
+    expect(root()['data-pressed']).toBeUndefined()
+    fire(root(), 'onKeyDown', key('Enter'))
+    expect(root()['data-pressed']).toBeUndefined()
   })
 })

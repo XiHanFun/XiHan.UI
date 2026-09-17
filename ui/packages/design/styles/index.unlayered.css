@@ -1988,56 +1988,49 @@
 }
 
 /*
- * 触发器就是这一个原生按钮，两个适配器都由组件自己渲染它，
- * 所以外观得由设计系统给出一份完整的中性按钮：底色、描边、高度、字号都上令牌，
+ * 触发器就是这一个原生按钮，是定尺的独立动作按钮（§9.1）：盒型、三档几何、四态面、0.97 按压与粗指针
+ * 命中区由家族配方按 data-xh-action-variant / -size 给出（缺省 subtle 由连接层显式投影，只有 solid 才品牌实心）。
+ * 这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射；
  * 要换成品牌样式的作者改 --xh-download-trigger-* 这一族槽位，或直接写自己的类名。
  */
 [data-scope='download-trigger'][data-part='root'] {
-  --xh-action-scale-pressed: none;
-
-  /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，规则读的是
-     「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
-  --xh-_download-trigger-bg: var(--xh-bg-subtle);
-  --xh-_download-trigger-bg-hover: var(--xh-bg-subtle-hover);
-  --xh-_download-trigger-bg-active: var(--xh-bg-subtle-active);
-  --xh-_download-trigger-fg: var(--xh-fg-default);
-  --xh-_download-trigger-border: transparent;
-  --xh-_download-trigger-border-hover: transparent;
-  --xh-_download-trigger-shadow-hover: none;
-
+  --xh-action-bg-rest: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-download-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-download-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-bg-focus-visible: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
+  --xh-action-bg-loading: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-loading));
+  --xh-action-bg-disabled: var(--xh-download-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
+  --xh-action-fg-rest: var(--xh-download-trigger-fg, var(--xh-_action-variant-fg-rest));
+  --xh-action-fg-hover: var(--xh-download-trigger-fg, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-download-trigger-fg, var(--xh-_action-variant-fg-pressed));
+  --xh-action-fg-focus-visible: var(--xh-download-trigger-fg, var(--xh-_action-variant-fg-focus-visible));
+  --xh-action-fg-loading: var(--xh-download-trigger-fg, var(--xh-_action-variant-fg-loading));
+  --xh-action-border-rest: var(--xh-download-trigger-border, var(--xh-_action-variant-border-rest));
+  --xh-action-border-hover: var(--xh-download-trigger-border-hover, var(--xh-_action-variant-border-hover));
+  --xh-action-border-pressed: var(--xh-download-trigger-border-hover, var(--xh-_action-variant-border-pressed));
+  --xh-action-border-focus-visible: var(--xh-download-trigger-border, var(--xh-_action-variant-border-focus-visible));
+  --xh-action-border-disabled: var(--xh-download-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
+  /* 矩阵各态无影（§8.3 淡底与阴影互斥）：solid 也不再悬停抬影，使用者槽仍可自行加 */
+  --xh-action-shadow-hover: var(--xh-download-trigger-shadow-hover, none);
+  --xh-action-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
+  --xh-action-visual-size: var(--xh-download-trigger-h, var(--xh-_action-profile-visual-size));
+  --xh-action-padding-inline: var(--xh-download-trigger-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-gap: var(--xh-download-trigger-gap, var(--xh-_action-profile-gap));
+  --xh-action-font-size: var(--xh-download-trigger-font-size, var(--xh-_action-profile-font-size));
   /* 作者塞进来的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-glyph-size-md));
+  --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-_action-profile-glyph-size));
+  /* 取数在途那枚圆环的颜色：字被 content-hide 关键帧压成透明，环不能跟着 currentColor 走，取加载态的前景 */
+  --xh-_download-trigger-loading-fg: var(--xh-download-trigger-loading-fg, var(--xh-download-trigger-fg, var(--xh-_action-variant-fg-loading)));
 
-  display: inline-flex;
-  align-items: center;
   /* safe：文案放不下时居中改成靠行首排，裁掉的是末尾那截，开头仍然读得到 */
   justify-content: safe center;
-  gap: var(--xh-download-trigger-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-download-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
-  padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-download-trigger-border, var(--xh-_download-trigger-border));
-  border-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-download-trigger-bg, var(--xh-_download-trigger-bg));
-  color: var(--xh-download-trigger-fg, var(--xh-_download-trigger-fg));
-  /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
-  font-family: inherit;
-  font-size: var(--xh-download-trigger-font-size, var(--xh-control-font-md));
   font-weight: var(--xh-download-trigger-font-weight, var(--xh-text-label-weight));
-  line-height: var(--xh-leading-none);
-  white-space: nowrap;
   /* 文案比所在那一栏还长时，按钮的盒收到栏宽为止，多出来的字在行内一轴裁掉，
      整颗按钮不再撑破侧栏。块轴留 visible：粗指针那一档的命中区是往块轴外扩的伪元素 */
   max-inline-size: 100%;
   overflow-x: clip;
-  cursor: pointer;
   /* 导出键常被连点，触屏上默认会当成双击缩放 */
-  user-select: none;
   touch-action: manipulation;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
@@ -2045,81 +2038,10 @@
   display: none;
 }
 
-/* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从页面里浮出来 */
-[data-scope='download-trigger'][data-part='root']:not([data-loading]):hover {
-  border-color: var(--xh-download-trigger-border-hover, var(--xh-_download-trigger-border-hover));
-  background: var(--xh-download-trigger-bg-hover, var(--xh-_download-trigger-bg-hover));
-  box-shadow: var(--xh-download-trigger-shadow-hover, var(--xh-_download-trigger-shadow-hover));
-}
-
-/* 工具触发器按下只加深表面，不缩放；取数状态接管时不会发生骤然回弹。 */
-[data-scope='download-trigger'][data-part='root']:not([data-loading]):active {
-  background: var(--xh-download-trigger-bg-active, var(--xh-_download-trigger-bg-active));
-}
-
-/* —— 形态 ——
-   四档与按钮一处对一处：形态只决定颜色怎么用，用哪族颜色由 data-tone 决定。
-   缺省档（没写 data-variant）不进这几块，取值仍是画布底 + 一圈可操作区描边 */
-[data-scope='download-trigger'][data-part='root'][data-variant='solid'] {
-  --xh-_download-trigger-bg: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_download-trigger-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-  --xh-_download-trigger-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
-  --xh-_download-trigger-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-_download-trigger-border: transparent;
-  --xh-_download-trigger-border-hover: transparent;
-  --xh-_download-trigger-shadow-hover: var(--xh-elevation-raised);
-}
-
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='download-trigger'][data-part='root'][data-variant='solid']:focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-[data-scope='download-trigger'][data-part='root'][data-variant='subtle'] {
-  --xh-_download-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_download-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_download-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_download-trigger-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_download-trigger-border: transparent;
-  --xh-_download-trigger-border-hover: transparent;
-}
-
-[data-scope='download-trigger'][data-part='root'][data-variant='outline'] {
-  --xh-_download-trigger-bg: transparent;
-  --xh-_download-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_download-trigger-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
-  --xh-_download-trigger-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_download-trigger-border: var(--xh-_tone-border-control, var(--xh-border-control));
-  --xh-_download-trigger-border-hover: var(--xh-_tone-border-control, var(--xh-border-control-hover));
-}
-
-[data-scope='download-trigger'][data-part='root'][data-variant='ghost'] {
-  --xh-_download-trigger-bg: transparent;
-  --xh-_download-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_download-trigger-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
-  --xh-_download-trigger-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_download-trigger-border: transparent;
-  --xh-_download-trigger-border-hover: transparent;
-}
-
-/* —— 尺寸 —— */
-[data-scope='download-trigger'][data-part='root'][data-size='sm'] {
-  --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-glyph-size-sm));
-
-  gap: var(--xh-download-trigger-gap, var(--xh-control-gap-sm));
-  block-size: var(--xh-download-trigger-h, var(--xh-control-h-sm));
-  padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-sm));
-  font-size: var(--xh-download-trigger-font-size, var(--xh-control-font-sm));
-}
-
-[data-scope='download-trigger'][data-part='root'][data-size='lg'] {
-  --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-glyph-size-lg));
-
-  gap: var(--xh-download-trigger-gap, var(--xh-control-gap-lg));
-  block-size: var(--xh-download-trigger-h, var(--xh-control-h-lg));
-  padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-lg));
-  font-size: var(--xh-download-trigger-font-size, var(--xh-control-font-lg));
+[data-scope='download-trigger'][data-part='root'][data-xh-action-variant='solid']:focus-visible {
+  --xh-action-ring-color-focus-visible: currentColor;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往按钮里塞了文字或自己的图形，这几条即不命中。
@@ -2151,8 +2073,9 @@
   block-size: 1em;
   margin: auto;
   border: var(--xh-stroke-thin) solid transparent;
-  border-block-start-color: var(--xh-download-trigger-loading-fg, var(--xh-_download-trigger-fg));
-  border-radius: var(--xh-shape-pill);
+  border-block-start-color: var(--xh-_download-trigger-loading-fg);
+  /* 正圆的加载环：正方盒取 circle（§6.3） */
+  border-radius: var(--xh-shape-circle);
   opacity: 0;
   animation:
     xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
@@ -2167,7 +2090,7 @@
 
   [data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
     border-style: dotted;
-    border-color: var(--xh-download-trigger-loading-fg, var(--xh-_download-trigger-fg));
+    border-color: var(--xh-_download-trigger-loading-fg);
     opacity: 1;
     animation: none;
   }
@@ -2180,43 +2103,24 @@
 
 :where([data-motion='reduce']) [data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
   border-style: dotted;
-  border-color: var(--xh-download-trigger-loading-fg, var(--xh-_download-trigger-fg));
+  border-color: var(--xh-_download-trigger-loading-fg);
   opacity: 1;
   animation: none;
 }
 
-/*
- * 单体原生控件的禁用走 :disabled。前景与底色一起换，禁用前后两侧都由令牌管着；
- * 用了 fg-disabled 就不再叠 opacity——两样一起用会压到读不出来。
- * 这条排在悬停与按下之后，特异度相同、后写的赢。
- * 描边仍按可操作区那一档：这是一颗独立按钮，四周没有别的结构标出它的位置，
- * 描边一压下去整颗按钮在页面上就没影了。
- */
-[data-scope='download-trigger'][data-part='root']:disabled {
-  border-color: var(--xh-download-trigger-border-disabled, var(--xh-_download-trigger-border));
-  background: var(--xh-download-trigger-bg-disabled, var(--xh-bg-muted));
-  color: var(--xh-fg-disabled);
-  /* 置灰的按钮仍然会命中 :hover，抬起那一档要在这里收掉 */
-  box-shadow: none;
-}
-
-/* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，按钮的盒一点不动——
-   加高盒子会把同一行里的控件顶得高低不齐。
-   只扩块轴：行内那两边由内距与文字撑开。
-   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
-   两颗伪元素轮着用：取数在途时 ::before 是那枚圆环，此外 ::after 可能是兜底字形，
-   两条选择器各挑当前空着的那一颗，不覆盖已被占用的那颗的定位与尺寸 */
+/* 手指落点：配方 text 档用 ::after 把块轴命中区扩到 44px；没写内容的按钮 ::after 已被兜底字形占着
+   （那条规则特指度更高，配方的命中区落不下来），这一档改用当时空着的 ::before 扩——
+   取数在途时字形不画、::before 是圆环，配方的 ::after 又能落下来，两颗伪元素轮着用 */
 @media (pointer: coarse) {
-  [data-scope='download-trigger'][data-part='root'] {
-    position: relative;
-  }
-
-  [data-scope='download-trigger'][data-part='root']:not([aria-busy='true'])::before,
-  [data-scope='download-trigger'][data-part='root'][aria-busy='true']::after {
+  [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true'])::before {
     content: '';
     position: absolute;
-    inset-block: -8px;
-    inset-inline: 0;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    min-block-size: 44px;
+    inline-size: 100%;
+    block-size: 100%;
+    translate: -50% -50%;
   }
 }
 

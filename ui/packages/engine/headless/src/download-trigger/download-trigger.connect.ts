@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { DownloadTriggerApi, DownloadTriggerSchema } from './download-trigger.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { downloadTriggerAnatomy } from './download-trigger.anatomy'
 import { resolveDownloadFileName } from './download-trigger.machine'
 
@@ -17,13 +18,17 @@ export function connectDownloadTrigger<T extends PropTypes>(
   service: Service<DownloadTriggerSchema>,
   normalize: NormalizeProps<T>,
 ): DownloadTriggerApi<T> {
-  const { state, prop, send } = service
+  const { state, context, prop, send } = service
 
   const status = state.get()
   const preparing = status === 'preparing'
   const disabled = !!prop('disabled')
   // 与副作用里写进 download 属性的是同一份算法，界面上报的文件名不会与实际写出的那份对不上
   const fileName = resolveDownloadFileName(prop('fileName'))
+  // 缺省中性淡底（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  const variant = prop('variant') ?? 'subtle'
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   return {
     status,
@@ -46,20 +51,29 @@ export function connectDownloadTrigger<T extends PropTypes>(
       // 不给缺省值：按钮里多半写着「导出 CSV」这类可见文字，凭空盖一个名字上去
       // 会让读屏念的与屏幕上写的对不上
       'aria-label': prop('translations')?.trigger,
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': status,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(preparing),
+      // 定尺的独立动作按钮：盒型、四态面与 0.97 按压由家族配方按 data-xh-action-variant 给出
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-variant': variant,
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => {
         if (!disabled)
           send({ type: 'DOWNLOAD.TRIGGER' })
       },
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
   }
 }

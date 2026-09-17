@@ -49,7 +49,7 @@ export interface DownloadTriggerSchema extends MachineSchema {
     mimeType?: string
     /** 禁用：按钮不可聚焦、不可点击。 */
     disabled?: boolean
-    /** 变体：solid / subtle / outline / ghost。 */
+    /** 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 */
     variant?: ActionVariant
     /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone
@@ -61,7 +61,10 @@ export interface DownloadTriggerSchema extends MachineSchema {
     /** 取数失败或无法创建下载时通知；此时状态已回到 idle。 */
     onDownloadError?: (details: DownloadTriggerErrorDetails) => void
   }
-  context: Record<string, never>
+  context: {
+    /** 正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: DownloadTriggerStatus
@@ -79,9 +82,12 @@ export interface DownloadTriggerSchema extends MachineSchema {
     | { type: 'DOWNLOAD.SUCCESS', fileName: string }
     /** 取数失败或创建下载时抛错，由 preparing 的副作用回送，附带原始拒绝值。 */
     | { type: 'DOWNLOAD.ERROR', error: unknown, fileName: string }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
+    | { type: 'PRESS.START' }
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'isDisabled'
-  action: 'invokeComplete' | 'invokeError'
+  guard: 'isDisabled' | 'canPress'
+  action: 'invokeComplete' | 'invokeError' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: 'runDownload'
 }
 

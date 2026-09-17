@@ -79,7 +79,8 @@ const PRESSABLE = {
   'radio-group': [{ part: 'item', feedback: 'surface', target: 'indicator' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
-  'download-trigger': [{ part: 'root', feedback: 'surface' }],
+  // 定尺的独立下载钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给（§9.1）
+  'download-trigger': ['root'],
   'toggle': ['root'],
   // 共边相接的分段：接 Action Control text 档换面，皮肤给 --xh-action-scale-pressed: none 保住接缝
   'toggle-group': [{ part: 'item', feedback: 'surface' }],

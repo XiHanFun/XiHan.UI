@@ -23672,16 +23672,20 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible",
+        "loading"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-bg"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-loading",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 background 覆盖槽。"
+      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-bg-active",
@@ -23690,18 +23694,21 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
+        "disabled",
+        "is(:active, [data-pressed])",
         "loading",
-        "not([data-loading])"
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-bg-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 background 覆盖槽。"
+      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-bg-disabled",
@@ -23710,16 +23717,16 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 background 覆盖槽。"
+      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-bg-hover",
@@ -23728,18 +23735,20 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
         "loading",
+        "not([data-disabled])",
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-bg-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 background 覆盖槽。"
+      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-border",
@@ -23748,16 +23757,19 @@
         "root"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-border"
+        "--xh-_action-variant-border-focus-visible",
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 border 覆盖槽。"
+      "description": "download-trigger 的 root 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-border-disabled",
@@ -23772,7 +23784,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-border"
+        "--xh-_action-variant-border-disabled"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 border-color 覆盖槽。"
@@ -23787,12 +23799,17 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
-        "not([data-loading])"
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-border-hover"
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 border-color 覆盖槽。"
@@ -23804,16 +23821,33 @@
         "root"
       ],
       "property": [
+        "border-block-start-color",
+        "border-color",
         "color"
       ],
       "state": [
-        "default"
+        "@media (prefers-reduced-motion: reduce)",
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "motion=reduce",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "where([data-motion='reduce'])"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-fg"
+        "--xh-_action-variant-fg-focus-visible",
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-loading",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 color 覆盖槽。"
+      "description": "download-trigger 的 root 部件 border-block-start-color、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-font-size",
@@ -23825,14 +23859,10 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-font-lg",
-        "--xh-control-font-md",
-        "--xh-control-font-sm"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 font-size 覆盖槽。"
@@ -23865,14 +23895,10 @@
         "gap"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-lg",
-        "--xh-control-gap-md",
-        "--xh-control-gap-sm"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 gap 覆盖槽。"
@@ -23887,14 +23913,10 @@
         "block-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-h-lg",
-        "--xh-control-h-md",
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 block-size 覆盖槽。"
@@ -23909,14 +23931,10 @@
         "--xh-icon-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-lg",
-        "--xh-glyph-size-md",
-        "--xh-glyph-size-sm"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -23956,7 +23974,7 @@
         "where([data-motion='reduce'])"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-fg"
+        "--xh-download-trigger-fg"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。"
@@ -23971,14 +23989,10 @@
         "padding-inline"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-px-lg",
-        "--xh-control-px-md",
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 padding-inline 覆盖槽。"
@@ -24011,12 +24025,14 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
         "hover",
         "loading",
+        "not([data-disabled])",
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_download-trigger-shadow-hover"
+        "none"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 box-shadow 覆盖槽。"

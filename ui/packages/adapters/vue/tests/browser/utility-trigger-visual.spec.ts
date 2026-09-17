@@ -111,8 +111,7 @@ describe('工具触发器视觉合同', () => {
     await nextTick()
 
     const utilities = [
-      // download-trigger 随其自己的提交接入家族按压块，此前皮肤锁 scale: none
-      { el: host.querySelector<HTMLElement>(`[data-scope='download-trigger'][data-part='root']`)!, scale: 'none' },
+      { el: host.querySelector<HTMLElement>(`[data-scope='download-trigger'][data-part='root']`)!, scale: '0.97' },
       { el: host.querySelector<HTMLElement>(`[data-scope='clipboard'][data-part='copy-trigger']`)!, scale: '0.97' },
     ]
 

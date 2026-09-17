@@ -30,7 +30,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} file-name - 写出的文件名；未提供或空串时回退为内建名 download
  * @attr {string} mime-type - 内容类型；提供后以它为准，Blob 自带的类型也按它重新包装
  * @attr {boolean} disabled - 禁用，按钮不可聚焦也不可点击
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，默认 subtle（solid 才品牌实心）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires download-complete - 数据已交给浏览器；detail 为 `{ fileName }`

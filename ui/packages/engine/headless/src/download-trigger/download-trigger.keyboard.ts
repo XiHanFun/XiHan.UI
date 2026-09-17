@@ -15,5 +15,6 @@ export const downloadTriggerKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'download-trigger.kbd.activate', keys: ['Enter', 'Space'], when: 'focus in root, 未禁用', does: '发起一次下载；取数在途时这两个键同样不会重复发起' },
+    { id: 'download-trigger.kbd.press', keys: ['Enter', 'Space'], when: 'held in root, not disabled, not preparing', does: '按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下' },
   ],
 }

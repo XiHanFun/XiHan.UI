@@ -106,10 +106,7 @@
   "diff-view": [
     "size"
   ],
-  "download-trigger": [
-    "variant",
-    "size"
-  ],
+  "download-trigger": [],
   "drawer": [
     "variant",
     "size"

@@ -112,7 +112,16 @@ export function saveDownload(
  */
 export const downloadTriggerMachine = createMachine({
   name: 'download-trigger',
+  // 按压通道（context.pressed）与取数状态无关：两个状态都认 PRESS.*，禁用或取数在途按住的一律松开
+  context: ({ cell }) => ({
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
+  }),
   initialState: () => 'idle',
+  watch: ({ track, prop, action }) => track([() => prop('disabled')], () => action(['releaseWhenInert'])),
+  on: {
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
+  },
   states: {
     idle: {
       on: {
@@ -125,6 +134,8 @@ export const downloadTriggerMachine = createMachine({
       },
     },
     preparing: {
+      // 取数在途：按钮 aria-disabled，按住途中转入这一档时按压面由机器自己收（entry 跑在状态落定之前，直接松开）
+      entry: ['endPress'],
       effects: ['runDownload'],
       on: {
         'DOWNLOAD.SUCCESS': { target: 'idle', actions: ['invokeComplete'] },
@@ -136,8 +147,16 @@ export const downloadTriggerMachine = createMachine({
   implementations: {
     guards: {
       isDisabled: ({ prop }) => !!prop('disabled'),
+      canPress: ({ prop, state }) => !prop('disabled') && !state.matches('preparing'),
     },
     actions: {
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      // 按住途中被禁用：原生 disabled 的按钮不再派 keyup / blur，按压面得由机器自己收
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled'))
+          context.set('pressed', false)
+      },
       invokeComplete: ({ prop, event }) => {
         const e = event.current()
         if (e.type !== 'DOWNLOAD.SUCCESS')

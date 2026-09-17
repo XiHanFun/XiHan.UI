@@ -72,7 +72,7 @@
 - 接受字符串、Blob 与异步数据函数。
 - `preparing` 期间保留焦点并阻止重复触发。
 - 通过完成与失败事件返回本次文件名和错误。
-- 默认使用 Button 家族的中性工具样式，按下时只改变表面，不缩放。
+- 缺省是中性淡底 `subtle`，只有 `solid` 才是品牌实心；按下有统一的缩放与换底反馈。
 
 ### 组合
 
@@ -111,7 +111,7 @@
 | `fileName` | `string` |  | 写出的文件名；未提供或空串时回退为内建默认名。 |
 | `mimeType` | `string` |  | 内容类型；提供后以它为准，Blob 自带的类型也按它重新包装。未提供时文本按纯文本处理。 |
 | `disabled` | `boolean` |  | 禁用：按钮不可聚焦、不可点击。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<DownloadTriggerTranslations>` |  |  |
@@ -147,9 +147,9 @@
 
 **状态**：`idle` · `preparing`
 
-**事件**：`DOWNLOAD.TRIGGER` · `DOWNLOAD.SUCCESS` · `DOWNLOAD.ERROR`
+**事件**：`DOWNLOAD.TRIGGER` · `DOWNLOAD.SUCCESS` · `DOWNLOAD.ERROR` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isDisabled`
+**判据**：`isDisabled` · `canPress`
 
 ### connect API
 
@@ -173,6 +173,7 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, 未禁用 | 发起一次下载；取数在途时这两个键同样不会重复发起 |
+| `Enter` / `Space` | held in root, not disabled, not preparing | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
 
 ### ARIA
 
@@ -202,6 +203,7 @@
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-pressed` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'idle' \| 'preparing' |
 | `root` | `data-tone` | props.tone |
@@ -210,6 +212,7 @@
 | `root` | `data-xh-action-display` | 'always' |
 | `root` | `data-xh-action-profile` | 'text' |
 | `root` | `data-xh-action-size` | props.size |
+| `root` | `data-xh-action-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -218,29 +221,29 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-download-trigger-bg` | `root` | `background` | `default` | `--xh-_download-trigger-bg` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-bg-active` | `root` | `background` | `active`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-bg-active` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-bg-hover` | `root` | `background` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-bg-hover` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-border` | `root` | `border` | `default` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border 覆盖槽。 |
-| `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border-color 覆盖槽。 |
-| `--xh-download-trigger-border-hover` | `root` | `border-color` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-border-hover` | download-trigger 的 root 部件 border-color 覆盖槽。 |
-| `--xh-download-trigger-fg` | `root` | `color` | `default` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 color 覆盖槽。 |
-| `--xh-download-trigger-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-md`<br>`--xh-control-font-sm` | download-trigger 的 root 部件 font-size 覆盖槽。 |
+| `--xh-download-trigger-bg` | `root` | `background-color` | `default`<br>`focus-visible`<br>`loading` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | download-trigger 的 root 部件 background-color 覆盖槽。 |
+| `--xh-download-trigger-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | download-trigger 的 root 部件 background-color 覆盖槽。 |
+| `--xh-download-trigger-bg-disabled` | `root` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | download-trigger 的 root 部件 background-color 覆盖槽。 |
+| `--xh-download-trigger-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | download-trigger 的 root 部件 background-color 覆盖槽。 |
+| `--xh-download-trigger-border` | `root` | `border`<br>`border-color` | `default`<br>`focus-visible` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest` | download-trigger 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-fg` | `root` | `border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`motion=reduce`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-motion='reduce'])` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | download-trigger 的 root 部件 border-block-start-color、border-color、color 覆盖槽。 |
+| `--xh-download-trigger-font-size` | `root` | `font-size` | `default` | `--xh-_action-profile-font-size` | download-trigger 的 root 部件 font-size 覆盖槽。 |
 | `--xh-download-trigger-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | download-trigger 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-download-trigger-gap` | `root` | `gap` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-gap-lg`<br>`--xh-control-gap-md`<br>`--xh-control-gap-sm` | download-trigger 的 root 部件 gap 覆盖槽。 |
-| `--xh-download-trigger-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | download-trigger 的 root 部件 block-size 覆盖槽。 |
-| `--xh-download-trigger-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | download-trigger 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-download-trigger-gap` | `root` | `gap` | `default` | `--xh-_action-profile-gap` | download-trigger 的 root 部件 gap 覆盖槽。 |
+| `--xh-download-trigger-h` | `root` | `block-size` | `default` | `--xh-_action-profile-visual-size` | download-trigger 的 root 部件 block-size 覆盖槽。 |
+| `--xh-download-trigger-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | download-trigger 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-download-trigger-loading-duration` | `root` | `animation` | `default` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
-| `--xh-download-trigger-loading-fg` | `root` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`default`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。 |
-| `--xh-download-trigger-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | download-trigger 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-download-trigger-loading-fg` | `root` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`default`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-download-trigger-fg` | download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。 |
+| `--xh-download-trigger-px` | `root` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | download-trigger 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-shadow-hover` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-download-trigger-content-hide` · `xh-download-trigger-loading-reveal` · `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-download-trigger-content-hide` · `xh-download-trigger-loading-reveal` · `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
