@@ -360,6 +360,29 @@ describe('connectPagination', () => {
     expect(el['data-side']).toBe('end')
   })
 
+  it('四类格子都接 Action Control 的 text 档：恒显、缺省 ghost 形态，档位随 size 缺省 md', () => {
+    // 首尾两端、页码与省略位是同一族按钮：悬停 / 按下 / 禁用面与按压缩放由家族配方给，
+    // 皮肤只映射使用者槽，所以四个 getter 必须投影同一组配方键
+    const recipe = {
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    }
+    const a = api(makeService({ count: 2000, pageSize: 10, defaultPage: 100 }))
+    expect(a.getPrevTriggerProps()).toMatchObject(recipe)
+    expect(a.getNextTriggerProps()).toMatchObject(recipe)
+    expect(a.getItemProps({ page: 100 })).toMatchObject(recipe)
+    expect(a.getEllipsisTriggerProps({ side: 'end' })).toMatchObject(recipe)
+
+    const sm = api(makeService({ count: 2000, pageSize: 10, defaultPage: 100, size: 'sm' }))
+    expect((sm.getPrevTriggerProps() as Props)['data-xh-action-size']).toBe('sm')
+    expect((sm.getNextTriggerProps() as Props)['data-xh-action-size']).toBe('sm')
+    expect((sm.getItemProps({ page: 100 }) as Props)['data-xh-action-size']).toBe('sm')
+    expect((sm.getEllipsisTriggerProps({ side: 'end' }) as Props)['data-xh-action-size']).toBe('sm')
+  })
+
   it('pageItems 带出被折叠的是哪几页，两侧各一段', () => {
     // 200 页停在第 100 页：首页与窗口之间折一段，窗口与末页之间折一段
     const items = api(makeService({ count: 2000, pageSize: 10, defaultPage: 100 })).pageItems
