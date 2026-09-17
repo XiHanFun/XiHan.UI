@@ -2,7 +2,8 @@
 //
 // 轴不止一条、壳不止 positioner 的那几个宿主。
 // 这里钉住五件事：条子挂在各自的壳上、是滚动层的兄弟；建出来的节点一个 data-xh-part 都不带；
-// 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 两条都摆）；
+// 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 与 listbox 两条都摆）；
+// listbox 是页内定高小列表：壳是 root、条子贴 content 的盒子、走 6px 缺省档；
 // 双轴的让位跟着另一条轴的实测溢出走、交叉口只画在竖条里；
 // json-viewer 是页内结构容器，两档都走原生细条，root 上一条自绘条也不挂。
 import type { Orientation } from '@xihan-ui/core'
@@ -22,6 +23,11 @@ import {
   XhDateRangePickerPositioner,
   XhDateRangePickerRoot,
   XhJsonViewerRoot,
+  XhListboxContent,
+  XhListboxItem,
+  XhListboxItemText,
+  XhListboxLabel,
+  XhListboxRoot,
   XhTimeRangePickerContent,
   XhTimeRangePickerPositioner,
   XhTimeRangePickerRoot,
@@ -193,6 +199,24 @@ const CASES: Case[] = [
     },
   },
   {
+    // 页内定高小列表（§6.6）：条子挂在 root 上、贴在 content 自己的盒子上（root 里还有标题），两轴都摆，走 6px 缺省档
+    scope: 'listbox',
+    axes: ['vertical', 'horizontal'],
+    shell: 'root',
+    layer: 'content',
+    overlay: false,
+    mount: async () => {
+      render(() => h(XhListboxRoot, null, () => [
+        h(XhListboxLabel, null, () => '水果'),
+        h(XhListboxContent, null, () => [
+          h(XhListboxItem, { value: 'apple' }, () => [h(XhListboxItemText, null, () => 'Apple')]),
+          h(XhListboxItem, { value: 'pear' }, () => [h(XhListboxItemText, null, () => 'Pear')]),
+        ]),
+      ]))
+      await settle()
+    },
+  },
+  {
     // 两组时列并排放不下时面板整体横滚：横条挂在浮层壳上；各列自己的竖条贴在列上、挂在 content 里
     scope: 'time-range-picker',
     axes: ['horizontal'],
@@ -247,6 +271,16 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
     // 标记是引用计数：几条轴挂上去就记几
     expect(part(item.scope, item.layer).getAttribute('data-xh-scrollbar'))
       .toBe(String(item.axes.length))
+  })
+
+  it.runIf(!item.overlay)('页内宿主：条子贴层锚定、走 6px 缺省档', async () => {
+    await item.mount()
+
+    for (const root of bars(part(item.scope, item.shell))) {
+      expect(root.getAttribute('data-anchor')).toBe('layer')
+      // 页内宿主不传 size：缺省 6px 档，根上不写 data-size
+      expect(root.getAttribute('data-size')).toBeNull()
+    }
   })
 
   it('交叉口只画在双轴宿主的竖条里', async () => {

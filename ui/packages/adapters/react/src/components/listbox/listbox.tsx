@@ -14,6 +14,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   ListboxGroupProvider,
@@ -137,10 +138,25 @@ export function XhListboxContent({ children, ...rest }: XhListboxContentProps): 
   // 冒泡的 focusin 上，后代条目得焦也会把它叫起来，判据整个变味。
   // onFocusOut 不动——它经归一化落到 React 的 onBlur，挂的正是冒泡的 focusout
   const bind = useNativeEvents(ctx.api.getContentProps() as Record<string, unknown>, ['onFocus'])
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  // 定高小列表走自绘条（§6.6）：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
+  // （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。
+  // 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
+  const bars = useScrollbars({
+    scrollable: () => contentRef.current,
+    axes: ['vertical', 'horizontal'],
+    anchor: 'layer',
+    props: () => ({ dir: ctx.service.prop('dir') }),
+  })
+  // 条目增减、占位显隐都会挪动列表在壳内的位置与尺寸：每次提交后重量一次偏移盒
+  useEffect(() => bars.measure())
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
-      {children}
-    </div>
+    <>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: contentRef })}>
+        {children}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 

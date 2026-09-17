@@ -76,8 +76,8 @@ const PRESSABLE = {
   'clipboard': [{ part: 'copy-trigger', feedback: 'surface' }],
   // 列表末尾铺满一行的「取下一页」：Action Control row 档，按下只换面不缩放（§9.2）
   'infinite-scroll': [{ part: 'load-more-trigger', feedback: 'surface' }],
-  // 集合件尾部的「取下一页」：一颗铺满一行的按钮，整条就是点击目标
-  'listbox': ['load-more-trigger', { part: 'item', feedback: 'surface' }],
+  // 集合件尾部的「取下一页」：Action Control row 档铺满一行，按下只换面不缩放（§9.2）；条目走 Collection Item 的 page 语境
+  'listbox': [{ part: 'load-more-trigger', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
   // 组里的一枚标签就是 tag 的 root，整枚就是点击目标；摘除钮是 tag 的 close-trigger，按压归 tag.css
   'tag-group': ['tag/root'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）

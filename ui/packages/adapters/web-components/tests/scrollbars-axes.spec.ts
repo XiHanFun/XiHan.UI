@@ -317,6 +317,24 @@ const CASES: Case[] = [
     `,
   },
   {
+    // 页内定高小列表（§6.6）：条子挂在 root 上、贴在 content 自己的盒子上（root 里还有标题），两轴都摆，走 6px 缺省档
+    scope: 'listbox',
+    tag: 'xh-listbox',
+    axes: ['vertical', 'horizontal'],
+    shell: 'root',
+    layer: 'content',
+    overlay: false,
+    markup: `
+      <div data-xh-part="root">
+        <span data-xh-part="label">水果</span>
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="apple"><span data-xh-part="item-text">Apple</span></div>
+          <div data-xh-part="item" value="pear"><span data-xh-part="item-text">Pear</span></div>
+        </div>
+      </div>
+    `,
+  },
+  {
     // 两组时列并排放不下时面板整体横滚：横条挂在浮层壳上
     scope: 'time-range-picker',
     tag: 'xh-time-range-picker',
@@ -401,6 +419,16 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
 
     // 标记是引用计数：几条轴挂上去就记几
     expect(layerOf(el, item).getAttribute('data-xh-scrollbar')).toBe(String(item.axes.length))
+  })
+
+  it.runIf(!item.overlay)('页内宿主：条子贴层锚定、走 6px 缺省档', async () => {
+    const el = await mount(item)
+
+    for (const root of bars(part(el, item.shell))) {
+      expect(root.getAttribute('data-anchor')).toBe('layer')
+      // 页内宿主不传 size：缺省 6px 档，根上不写 data-size
+      expect(root.getAttribute('data-size')).toBeNull()
+    }
   })
 
   it('交叉口只画在双轴宿主的竖条里', async () => {

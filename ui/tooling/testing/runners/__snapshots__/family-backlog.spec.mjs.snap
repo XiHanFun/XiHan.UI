@@ -5,11 +5,11 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 20,
   "ladder": 56,
   "motion": 1,
-  "press": 49,
-  "scroll": 26,
-  "selection": 18,
+  "press": 47,
+  "scroll": 25,
+  "selection": 17,
   "shape": 19,
-  "text": 68,
+  "text": 67,
 }
 `;
 
@@ -130,8 +130,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "command:item",
   "floating-panel:trigger",
   "form:error-summary-item",
-  "listbox:item",
-  "listbox:load-more-trigger",
   "menubar:trigger",
   "navigation-menu:trigger",
   "radio-group:item",
@@ -175,7 +173,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "drawer:body:overscroll",
   "hover-card:content:overscroll",
   "hover-card:content:size",
-  "listbox:content:unwired",
   "menu:content:overscroll",
   "menu:content:size",
   "menubar:content:overscroll",
@@ -193,7 +190,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 exports[`family-backlog 键集合 > selection 1`] = `
 [
   "anchor:link",
-  "listbox:item",
   "menu:trigger",
   "menubar:trigger",
   "navigation-menu:link",
@@ -269,7 +265,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "floating-panel:title:font-weight",
   "hover-card:description:font-size",
   "image-viewer:content:icon-size",
-  "listbox:root:icon-size",
   "menu:content:icon-size",
   "menubar:content:icon-size",
   "menubar:root:icon-size",

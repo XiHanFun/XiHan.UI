@@ -13,6 +13,7 @@ import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 // （value 尤其：落成 null 就分不出"非受控"与"受控且当前无选中"）。
@@ -132,6 +133,19 @@ export class XhListboxElement extends XhElement {
   // 不需要 config/layer/定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<ListboxSchema>(this, listboxMachine, () => this.machineProps())
 
+  /**
+   * 定高小列表的自绘条（§6.6）：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
+   * （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。
+   * 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
+   */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('root'),
+    scrollable: () => this.getPart('content'),
+    axes: ['vertical', 'horizontal'],
+    anchor: 'layer',
+    props: () => ({ dir: this.direction }),
+  })
+
   private machineProps(): Partial<ListboxSchema['props']> {
     const control = this.controlState()
     return {
@@ -241,5 +255,7 @@ export class XhListboxElement extends XhElement {
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
     this.wasListDisabled = !!this.controlState().disabled
+
+    this.bars.wire()
   }
 }
