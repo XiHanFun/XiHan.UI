@@ -39120,6 +39120,9 @@
               "name": "--xh-popconfirm-cancel-bg-active"
             },
             {
+              "name": "--xh-popconfirm-cancel-bg-focus"
+            },
+            {
               "name": "--xh-popconfirm-cancel-bg-hover"
             },
             {
@@ -39130,6 +39133,9 @@
             },
             {
               "name": "--xh-popconfirm-cancel-fg"
+            },
+            {
+              "name": "--xh-popconfirm-cancel-fg-focus"
             },
             {
               "name": "--xh-popconfirm-confirm-bg"

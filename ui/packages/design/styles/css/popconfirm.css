@@ -270,16 +270,17 @@
 
   /* 取消是中性的次要出口，不参与语气：content 上的 data-tone 会把 --xh-_tone-* 一路继承下来，
      配方 outline 列的面、字与边都先读它，这里逐档钉回中性令牌——白底 / 磨砂面上走画布承载阶梯
-     悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200） */
+     悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200）；聚焦档 -bg-focus / -fg-focus 两槽
+     桥到配方的 focus-visible 面，缺省透明底 + 静息字色吃库环 */
   [data-scope='popconfirm'][data-part='cancel-trigger'] {
     --xh-action-bg-rest: var(--xh-popconfirm-cancel-bg, transparent);
     --xh-action-bg-hover: var(--xh-popconfirm-cancel-bg-hover, var(--xh-bg-subtle));
     --xh-action-bg-pressed: var(--xh-popconfirm-cancel-bg-active, var(--xh-bg-subtle-hover));
-    --xh-action-bg-focus-visible: var(--xh-popconfirm-cancel-bg, transparent);
+    --xh-action-bg-focus-visible: var(--xh-popconfirm-cancel-bg-focus, var(--xh-popconfirm-cancel-bg, transparent));
     --xh-action-fg-rest: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
     --xh-action-fg-hover: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
-    --xh-action-fg-focus-visible: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
+    --xh-action-fg-focus-visible: var(--xh-popconfirm-cancel-fg-focus, var(--xh-popconfirm-cancel-fg, var(--xh-fg-default)));
     --xh-action-border-rest: var(--xh-popconfirm-cancel-border, var(--xh-border-control));
     --xh-action-border-hover: var(--xh-popconfirm-cancel-border-hover, var(--xh-border-control-hover));
     --xh-action-border-pressed: var(--xh-popconfirm-cancel-border-hover, var(--xh-border-control-hover));

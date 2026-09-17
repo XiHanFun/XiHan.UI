@@ -23,6 +23,7 @@ soft 影与悬停 `--xh-elevation-raised` 抬升，改由配方 solid 列给出�
 接上与 Popover 同款的自绘滚动条（浮层 4px 档，positioner 记进层分支、轨道透明）。
 
 公开槽 `--xh-popconfirm-action-px / -radius / -shadow`、`--xh-popconfirm-confirm-bg / -fg / -shadow`、
-`--xh-popconfirm-cancel-bg / -fg` 改为桥接到配方之前；删除 `--xh-popconfirm-cancel-bg-focus` /
-`--xh-popconfirm-cancel-fg-focus`；新增 `--xh-popconfirm-cancel-bg-hover / -bg-active / -border / -border-hover`、
-`--xh-popconfirm-action-font-weight`、`--xh-popconfirm-description-font-size`、`--xh-popconfirm-icon-size`。
+`--xh-popconfirm-cancel-bg / -fg / -bg-focus / -fg-focus` 改为桥接到配方之前（`-bg-focus` / `-fg-focus` 桥到配方
+的 focus-visible 面，缺省不再铺实体底而是透明底 + 静息字色，槽本身保留）；新增
+`--xh-popconfirm-cancel-bg-hover / -bg-active / -border / -border-hover`、`--xh-popconfirm-action-font-weight`、
+`--xh-popconfirm-description-font-size`、`--xh-popconfirm-icon-size`。
