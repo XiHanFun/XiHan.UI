@@ -136,10 +136,17 @@ export function connectPagination<T extends PropTypes>(
     }),
 
     // 首尾两端的按钮是单体控件，用原生 disabled（不可聚焦、脱出 Tab 序列）
+    // 四类格子都是 Action Control 的 text 档（§4.1 分页按钮），缺省中性的 ghost 形态：
+    // 悬停 / 按下 / 禁用面、按压缩放与几何由家族配方给，皮肤只映射使用者槽
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
       'aria-label': label.prevTrigger,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'disabled': !canGoPrev || undefined,
       'data-disabled': dataAttr(!canGoPrev),
       // 不再判一次 canGoPrev：边界由机器的夹取守住，值没变 cell 也不会通知宿主
@@ -150,6 +157,11 @@ export function connectPagination<T extends PropTypes>(
       ...parts['next-trigger'].attrs,
       'type': 'button',
       'aria-label': label.nextTrigger,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'disabled': !canGoNext || undefined,
       'data-disabled': dataAttr(!canGoNext),
       'onClick': () => send({ type: 'PAGE.NEXT' }),
@@ -163,6 +175,11 @@ export function connectPagination<T extends PropTypes>(
         [ITEM_VALUE_ATTR]: item.page,
         'type': 'button',
         'aria-label': label.item(item.page),
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'text',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
         // aria-current 不是布尔属性，规范里默认值就是 "false"，省略即"不是当前项"
         'aria-current': current ? 'page' : undefined,
         'data-current': dataAttr(current),
@@ -181,6 +198,11 @@ export function connectPagination<T extends PropTypes>(
       ...parts['ellipsis-trigger'].attrs,
       'type': 'button',
       'data-side': props.side,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'aria-label': label.ellipsis(
         (items.find(item => item.type === 'ellipsis' && item.side === props.side) as
         | { pages: number[] }

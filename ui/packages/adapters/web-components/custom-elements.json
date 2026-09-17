@@ -36927,8 +36927,8 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
-              "description": "折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "description": "折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档（§6.6）"
             },
             {
               "kind": "method",

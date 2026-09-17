@@ -43013,7 +43013,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -43067,20 +43074,30 @@
       "name": "--xh-pagination-icon-size",
       "component": "pagination",
       "part": [
+        "ellipsis-trigger",
+        "item",
+        "next-trigger",
         "positioner",
+        "prev-trigger",
         "root"
       ],
       "property": [
         "--xh-icon-size"
       ],
       "state": [
-        "is([data-part='root'], [data-part='positioner'])"
+        "default",
+        "is([data-part='root'], [data-part='positioner'])",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "pagination 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、item、next-trigger、positioner、prev-trigger、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg",
@@ -43092,16 +43109,16 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-active",
@@ -43113,19 +43130,21 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "current",
-        "not(:disabled)",
-        "not([data-current])"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-hover",
@@ -43137,19 +43156,20 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "current",
+        "disabled",
         "hover",
-        "not(:disabled)",
-        "not([data-current])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-selected",
@@ -43158,16 +43178,17 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "current"
+        "current",
+        "focus-visible"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg"
       ],
       "visibility": "public",
-      "description": "pagination 的 item 部件 background 覆盖槽。"
+      "description": "pagination 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-selected-active",
@@ -43176,17 +43197,22 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "current"
+        "current",
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg-active"
       ],
       "visibility": "public",
-      "description": "pagination 的 item 部件 background 覆盖槽。"
+      "description": "pagination 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-selected-hover",
@@ -43195,17 +43221,21 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "current",
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg-hover"
       ],
       "visibility": "public",
-      "description": "pagination 的 item 部件 background 覆盖槽。"
+      "description": "pagination 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-border-selected",
@@ -43214,16 +43244,18 @@
         "item"
       ],
       "property": [
+        "border",
         "border-color"
       ],
       "state": [
-        "current"
+        "current",
+        "focus-visible"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg"
       ],
       "visibility": "public",
-      "description": "pagination 的 item 部件 border-color 覆盖槽。"
+      "description": "pagination 的 item 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-border-selected-active",
@@ -43235,8 +43267,13 @@
         "border-color"
       ],
       "state": [
-        "active",
-        "current"
+        "current",
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg-active"
@@ -43255,7 +43292,11 @@
       ],
       "state": [
         "current",
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg-hover"
@@ -43277,9 +43318,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest",
         "--xh-fg-default"
       ],
       "visibility": "public",
@@ -43295,7 +43346,15 @@
         "color"
       ],
       "state": [
-        "current"
+        "current",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-fg"
@@ -43422,10 +43481,18 @@
         "box-shadow"
       ],
       "state": [
-        "current"
+        "current",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_pagination-highlight"
+        "none"
       ],
       "visibility": "public",
       "description": "pagination 的 item 部件 box-shadow 覆盖槽。"

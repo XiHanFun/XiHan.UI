@@ -274,14 +274,20 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
         if (color !== '--xh-fg-on-brand-subtle')
           report(`页内持久集合的选中字色是 ${color ?? '（没写 color）'}，应为 --xh-fg-on-brand-subtle`)
         break
-      case 'grid':
-        if (bg !== '--xh-bg-brand')
-          report(`格状当前的底是 ${bg ?? '（没写 background）'}，应为实心 --xh-bg-brand`)
-        if (color !== '--xh-fg-on-brand')
-          report(`格状当前的字色是 ${color ?? '（没写 color）'}，应为 --xh-fg-on-brand`)
+      case 'grid': {
+        // 投影了 Action Control 的部件（Pagination item）：底与字色由家族按 --xh-action-bg-rest / --xh-action-fg-rest 画，
+        // 当前态的面是皮肤在该状态里映射的这两支桥接槽（与 flat 类同路径）；两支都按槽解析到底
+        const onAction = await getterProjects(comp, target, 'data-xh-action-control')
+        const gridBg = onAction ? tokenOf(decls.get('--xh-action-bg-rest'), slots) ?? bg : bg
+        const gridColor = onAction ? tokenOf(decls.get('--xh-action-fg-rest'), slots) ?? color : color
+        if (gridBg !== '--xh-bg-brand')
+          report(`格状当前的底是 ${gridBg ?? '（没写 background）'}，应为实心 --xh-bg-brand`)
+        if (gridColor !== '--xh-fg-on-brand')
+          report(`格状当前的字色是 ${gridColor ?? '（没写 color）'}，应为 --xh-fg-on-brand`)
         if (weight != null && !REST_WEIGHT.has(weight))
           report(`格状当前加粗成 ${weight}，实心品牌面不加粗`)
         break
+      }
       case 'nav':
         if (color !== '--xh-fg-brand-strong')
           report(`导航当前页字色是 ${color ?? '（没写 color）'}，应为 --xh-fg-brand-strong`)
