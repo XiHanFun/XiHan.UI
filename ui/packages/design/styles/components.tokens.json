@@ -49751,7 +49751,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "transparent"
       ],
       "visibility": "public",
       "description": "segmented 的 root 部件 border 覆盖槽。"
@@ -49830,6 +49830,28 @@
       "description": "segmented 的 indicator 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-segmented-indicator-border",
+      "component": "segmented",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "border",
+        "border-color"
+      ],
+      "state": [
+        "default",
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-_tone",
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "segmented 的 indicator、root 部件 border、border-color 覆盖槽。"
+    },
+    {
       "name": "--xh-segmented-indicator-radius",
       "component": "segmented",
       "part": [
@@ -49902,6 +49924,31 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "segmented 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-segmented-item-bg-pressed",
+      "component": "segmented",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "not([data-state='checked'])",
+        "pressed",
+        "readonly",
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
       ],
       "visibility": "public",
       "description": "segmented 的 item 部件 background-color 覆盖槽。"

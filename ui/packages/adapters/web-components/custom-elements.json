@@ -44105,6 +44105,9 @@
               "name": "--xh-segmented-indicator-bg"
             },
             {
+              "name": "--xh-segmented-indicator-border"
+            },
+            {
               "name": "--xh-segmented-indicator-radius"
             },
             {
@@ -44115,6 +44118,9 @@
             },
             {
               "name": "--xh-segmented-item-bg-hover"
+            },
+            {
+              "name": "--xh-segmented-item-bg-pressed"
             },
             {
               "name": "--xh-segmented-item-fg"
