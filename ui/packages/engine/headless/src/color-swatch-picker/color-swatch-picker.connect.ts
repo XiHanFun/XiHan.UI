@@ -161,7 +161,12 @@ export function connectColorSwatchPicker<T extends PropTypes>(
           send({ type: 'ITEM.SELECT', value: next })
       },
     }),
-    getLabelProps: () => normalize.element({ ...parts.label.attrs, id: ids.label }),
+    // 标题只随整组置灰：单格禁用是格子自己的事，标签不跟
+    getLabelProps: () => normalize.element({
+      ...parts.label.attrs,
+      'id': ids.label,
+      'data-disabled': dataAttr(groupDisabled),
+    }),
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...stateAttrs(item),
