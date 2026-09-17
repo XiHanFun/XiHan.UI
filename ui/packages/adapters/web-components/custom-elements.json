@@ -47299,6 +47299,9 @@
               "name": "--xh-slider-label-fg"
             },
             {
+              "name": "--xh-slider-label-fg-disabled"
+            },
+            {
               "name": "--xh-slider-label-font-size"
             },
             {
@@ -47308,6 +47311,9 @@
               "name": "--xh-slider-range-bg"
             },
             {
+              "name": "--xh-slider-range-bg-disabled"
+            },
+            {
               "name": "--xh-slider-range-bg-invalid"
             },
             {
@@ -47315,6 +47321,9 @@
             },
             {
               "name": "--xh-slider-thumb-bg"
+            },
+            {
+              "name": "--xh-slider-thumb-bg-disabled"
             },
             {
               "name": "--xh-slider-thumb-bg-invalid"
@@ -47332,6 +47341,9 @@
               "name": "--xh-slider-thumb-shadow"
             },
             {
+              "name": "--xh-slider-thumb-shadow-disabled"
+            },
+            {
               "name": "--xh-slider-thumb-shadow-dragging"
             },
             {
@@ -47344,10 +47356,19 @@
               "name": "--xh-slider-tick-bg-active"
             },
             {
+              "name": "--xh-slider-tick-bg-active-disabled"
+            },
+            {
+              "name": "--xh-slider-tick-bg-disabled"
+            },
+            {
               "name": "--xh-slider-tick-label-fg"
             },
             {
               "name": "--xh-slider-tick-label-fg-active"
+            },
+            {
+              "name": "--xh-slider-tick-label-fg-disabled"
             },
             {
               "name": "--xh-slider-tick-label-font-size"
@@ -47363,6 +47384,9 @@
             },
             {
               "name": "--xh-slider-track-bg"
+            },
+            {
+              "name": "--xh-slider-track-bg-disabled"
             },
             {
               "name": "--xh-slider-track-radius"

@@ -53778,7 +53778,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "slider 的 root 部件 gap 覆盖槽。"
@@ -53796,7 +53796,25 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "slider 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-label-fg-disabled",
+      "component": "slider",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "slider 的 label 部件 color 覆盖槽。"
@@ -53856,6 +53874,24 @@
       "description": "slider 的 range 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-slider-range-bg-disabled",
+      "component": "slider",
+      "part": [
+        "range"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "slider 的 range 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-slider-range-bg-invalid",
       "component": "slider",
       "part": [
@@ -53910,6 +53946,24 @@
       "description": "slider 的 thumb 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-slider-thumb-bg-disabled",
+      "component": "slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "slider 的 thumb 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-slider-thumb-bg-invalid",
       "component": "slider",
       "part": [
@@ -53940,7 +53994,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "slider 的 thumb 部件 border 覆盖槽。"
@@ -53995,6 +54049,24 @@
       ],
       "defaultToken": [
         "--xh-elevation-raised"
+      ],
+      "visibility": "public",
+      "description": "slider 的 thumb 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-thumb-shadow-disabled",
+      "component": "slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "none"
       ],
       "visibility": "public",
       "description": "slider 的 thumb 部件 box-shadow 覆盖槽。"
@@ -54084,6 +54156,45 @@
       "description": "slider 的 tick 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-slider-tick-bg-active-disabled",
+      "component": "slider",
+      "part": [
+        "tick",
+        "tick-group"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "passed"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "slider 的 tick、tick-group 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-tick-bg-disabled",
+      "component": "slider",
+      "part": [
+        "tick",
+        "tick-group"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "slider 的 tick、tick-group 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-slider-tick-label-fg",
       "component": "slider",
       "part": [
@@ -54118,6 +54229,25 @@
       ],
       "visibility": "public",
       "description": "slider 的 tick-label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-tick-label-fg-disabled",
+      "component": "slider",
+      "part": [
+        "tick-group",
+        "tick-label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "slider 的 tick-group、tick-label 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-slider-tick-label-font-size",
@@ -54171,7 +54301,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "slider 的 tick 部件 border-radius 覆盖槽。"
@@ -54209,6 +54339,24 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "slider 的 track 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-track-bg-disabled",
+      "component": "slider",
+      "part": [
+        "track"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "slider 的 track 部件 background 覆盖槽。"

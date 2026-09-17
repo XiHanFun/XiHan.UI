@@ -25,7 +25,8 @@
 
     display: flex;
     flex-direction: column;
-    gap: var(--xh-slider-gap, var(--xh-stack-gap-md));
+    /* 字段标签贴控件（§6.4 复合单字段） */
+    gap: var(--xh-slider-gap, var(--xh-space-1));
   }
 
   /* 竖排时整条控件收成一块，不再撑满一行：宽度由拇指直径决定 */
@@ -34,15 +35,18 @@
     align-items: center;
   }
 
-  /* 禁用的整体压暗只做一次，落在最外层：track / range / thumb 各自再叠一层 opacity 会越叠越黑 */
-  [data-scope='slider'][data-part='root'][data-disabled] {
-    opacity: var(--xh-state-disabled-opacity);
-  }
+  /* 禁用不整体压暗（§7.2 第 9 条）：前景与表面各自降级——连接层把 data-disabled 发到每个角色节点上，
+     轨道、区间、拇指、刻度与标签就近消费，写在各自的规则里 */
 
+  /* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle */
   [data-scope='slider'][data-part='label'] {
-    color: var(--xh-slider-label-fg, var(--xh-fg-muted));
+    color: var(--xh-slider-label-fg, var(--xh-fg-default));
     font-size: var(--xh-slider-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-slider-label-font-weight, var(--xh-text-label-weight));
+  }
+
+  [data-scope='slider'][data-part='label'][data-disabled] {
+    color: var(--xh-slider-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
@@ -80,6 +84,10 @@
     cursor: default;
   }
 
+  [data-scope='slider'][data-part='control'][data-disabled] {
+    cursor: not-allowed;
+  }
+
   /* 已选区间以它为定位上下文。不写 overflow: hidden：作者把拇指写进轨道里也是合法结构，
      一裁就把拇指切掉半个；区间的圆角由它自己那条 border-radius 兜住，本就不靠轨道来裁。 */
   [data-scope='slider'][data-part='track'] {
@@ -96,6 +104,11 @@
   [data-scope='slider'][data-part='track'][data-orientation='vertical'] {
     block-size: 100%;
     inline-size: var(--xh-_track-thickness);
+  }
+
+  /* 禁用：底槽退到 100 档淡底，已选区间换成禁用前景——两者仍分得开，值还读得出，只是没了品牌色 */
+  [data-scope='slider'][data-part='track'][data-disabled] {
+    background: var(--xh-slider-track-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 主轴（起点 + 长度）来自内联样式，这里只给定位模式与配色。
@@ -124,15 +137,20 @@
     background: var(--xh-slider-range-bg-invalid, var(--xh-border-invalid));
   }
 
+  [data-scope='slider'][data-part='range'][data-disabled] {
+    background: var(--xh-slider-range-bg-disabled, var(--xh-fg-disabled));
+  }
+
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
-     下面按半个直径回拉的负外边距就对不上圆心。 */
+     下面按半个直径回拉的负外边距就对不上圆心。
+     拇指是可拖起的 raised 面（§8）：描边取 --xh-border-default，raised 影只是加成、不作边界 */
   [data-scope='slider'][data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
     inline-size: var(--xh-_thumb-size);
     block-size: var(--xh-_thumb-size);
-    border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
+    border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-border-default));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
     /* 圆点上没有字，这一支是给环用的：环灌 currentColor 时取到的是与这块底配对的前景色，
@@ -146,8 +164,9 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='slider'][data-part='thumb']:focus-visible {
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     禁用的拇指退成白面，不在这一档里，吃库环 */
+  [data-scope='slider'][data-part='thumb']:not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
   }
 
@@ -185,6 +204,14 @@
 
   [data-scope='slider'][data-part='thumb'][data-readonly]:not([data-disabled]) {
     cursor: default;
+  }
+
+  /* 禁用：面退到实体白面、描边留着、影收掉——拖不起来的东西不该看着像浮在轨道上。
+     不写 color：圆点上没有字，禁用拇指不进 Tab 序列也不会聚焦，环的前景在这里没有消费者 */
+  [data-scope='slider'][data-part='thumb'][data-disabled] {
+    background: var(--xh-slider-thumb-bg-disabled, var(--xh-bg-surface));
+    box-shadow: var(--xh-slider-thumb-shadow-disabled, none);
+    cursor: not-allowed;
   }
 
   /* 值气泡：挂在拇指里，跟着拇指一起走位。
@@ -250,12 +277,13 @@
     pointer-events: none;
   }
 
+  /* 刻度点是正方盒，取 circle（§6.3 正方盒不得用 pill 冒充圆） */
   [data-scope='slider'][data-part='tick'] {
     position: absolute;
     inset-block-start: 50%;
     inline-size: var(--xh-slider-tick-size, var(--xh-space-1));
     block-size: var(--xh-slider-tick-size, var(--xh-space-1));
-    border-radius: var(--xh-slider-tick-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-slider-tick-radius, var(--xh-shape-circle));
     background: var(--xh-slider-tick-bg, var(--xh-border-strong));
     translate: -50% -50%;
   }
@@ -281,6 +309,21 @@
 
   [data-scope='slider'][data-part='tick-label'][data-passed] {
     color: var(--xh-slider-tick-label-fg-active, var(--xh-fg-default));
+  }
+
+  /* 禁用：刻度点与文案由 tick-group 上的 data-disabled 下发（连接层不给每个刻度单发），
+     已过的刻度点与区间同色，文案换禁用前景，点它跳档的手型收掉 */
+  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick'] {
+    background: var(--xh-slider-tick-bg-disabled, var(--xh-border-default));
+  }
+
+  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick'][data-passed] {
+    background: var(--xh-slider-tick-bg-active-disabled, var(--xh-fg-disabled));
+  }
+
+  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick-label'] {
+    color: var(--xh-slider-tick-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
   }
 
   /* 竖直轨道：点与文案换轴，坐标由连接层写在 block 轴上 */

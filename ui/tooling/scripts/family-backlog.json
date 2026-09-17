@@ -10,7 +10,6 @@
     "file-upload:trigger:raised": "raised 退役待本组件迁移",
     "popconfirm:confirm-trigger:raised": "raised 退役待本组件迁移",
     "signature-pad:clear-trigger:raised": "raised 退役待本组件迁移",
-    "slider:thumb:raised": "拇指描边落 --xh-bg-surface，应为 --xh-border-default，待本组件迁移",
     "sortable:item:raised": "拖起的条目没有描边，raised 必带 --xh-border-default，待本组件迁移",
     "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移"
   },
@@ -68,7 +67,6 @@
     "image-viewer:next-trigger": "取了 pill，身份表登记的是 circle；登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
     "image-viewer:prev-trigger": "取了 pill，身份表登记的是 circle；登记为悬浮圆钮，connect 的 getter 却没投影 data-xh-action-profile: 'floating'，手写圆钮不算，接 Action Control floating 档；待本组件迁移",
     "popconfirm:confirm-trigger::before": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（1em）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
-    "slider:tick": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-slider-tick-size, var(--xh-spac）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
     "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移"
   },
   "scroll": {
@@ -120,8 +118,6 @@
     "popover:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "signature-pad:label:color": "color 落 --xh-fg-muted，字段标签应为 --xh-fg-default；待本组件迁移",
     "signature-pad:label:spacing": "根的 gap 落 --xh-stack-gap-md，字段标签贴控件应为 --xh-space-1；待本组件迁移",
-    "slider:label:color": "color 落 --xh-fg-muted，字段标签应为 --xh-fg-default；待本组件迁移",
-    "slider:label:spacing": "根的 gap 落 --xh-stack-gap-md，字段标签贴控件应为 --xh-space-1；待本组件迁移",
     "steps:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",
     "steps:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
     "timeline:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",

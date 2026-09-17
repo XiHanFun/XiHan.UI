@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 12,
+  "edge": 11,
   "ladder": 38,
   "motion": 1,
   "press": 7,
   "scroll": 12,
   "selection": 1,
-  "shape": 12,
-  "text": 35,
+  "shape": 11,
+  "text": 33,
 }
 `;
 
@@ -24,7 +24,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "file-upload:trigger:raised",
   "popconfirm:confirm-trigger:raised",
   "signature-pad:clear-trigger:raised",
-  "slider:thumb:raised",
   "sortable:item:raised",
   "tooltip:content",
 ]
@@ -126,7 +125,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "image-viewer:next-trigger",
   "image-viewer:prev-trigger",
   "popconfirm:confirm-trigger::before",
-  "slider:tick",
   "tour:progress-dot",
 ]
 `;
@@ -158,8 +156,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "popover:description:font-size",
   "signature-pad:label:color",
   "signature-pad:label:spacing",
-  "slider:label:color",
-  "slider:label:spacing",
   "steps:title:font-size",
   "steps:title:font-weight",
   "timeline:title:font-size",
