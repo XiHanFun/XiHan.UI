@@ -39392,8 +39392,8 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
-              "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档"
             },
             {
               "kind": "method",
@@ -39585,16 +39585,10 @@
               "name": "--xh-popover-close-bg-active"
             },
             {
-              "name": "--xh-popover-close-bg-focus"
-            },
-            {
               "name": "--xh-popover-close-bg-hover"
             },
             {
               "name": "--xh-popover-close-fg"
-            },
-            {
-              "name": "--xh-popover-close-fg-focus"
             },
             {
               "name": "--xh-popover-close-fg-hover"
@@ -39607,6 +39601,9 @@
             },
             {
               "name": "--xh-popover-description-fg"
+            },
+            {
+              "name": "--xh-popover-description-font-size"
             },
             {
               "name": "--xh-popover-fg"

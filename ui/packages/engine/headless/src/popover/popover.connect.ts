@@ -6,8 +6,8 @@
 // 提供 popover 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { PopoverApi, PopoverSchema } from './popover.types'
-import { dataAttr } from '@xihan-ui/core'
+import type { PopoverApi, PopoverPressedPart, PopoverSchema } from './popover.types'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { popoverAnatomy } from './popover.anatomy'
 import { POPOVER_DEFAULT_PLACEMENT } from './popover.machine'
@@ -34,6 +34,25 @@ export function connectPopover<T extends PropTypes>(
       send({ type: next ? 'OPEN' : 'CLOSE' })
   }
 
+  // 按压通道：两颗按钮各自合成一份跟踪器，真源是机器 context 里「正被按住的那颗」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
+  const pressed = context.get('pressed')
+  const press = (part: PopoverPressedPart) => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === part,
+      onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+
   return {
     open,
     setOpen,
@@ -45,6 +64,15 @@ export function connectPopover<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'data-state': stateAttr,
+      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
+      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心）。作者以 asChild 换成自己的按钮时，
+      // 这几条家族标记不落到它身上（适配器合并时跳过 data-xh-*）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      'data-xh-action-variant': 'outline',
+      ...press('trigger'),
       'onClick': () => send({ type: 'TOGGLE' }),
     }),
     getPositionerProps: () => normalize.element({
@@ -87,6 +115,13 @@ export function connectPopover<T extends PropTypes>(
       ...parts['close-trigger'].attrs,
       'type': 'button',
       'aria-label': prop('translations')?.close ?? 'Close',
+      // 浮层角落的叉：icon 档 sm、ghost 面，磨砂白面上走画布承载阶梯（hover 100 → pressed 200）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'ghost',
+      ...press('close-trigger'),
       'onClick': () => send({ type: 'CLOSE', src: 'close-trigger' }),
     }),
     getArrowProps: () => normalize.element({

@@ -108,10 +108,11 @@ export class XhPopoverElement extends XhPortalHostElement {
     { scope: this.popoverScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  /** 面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  /** 面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档 */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
+    props: () => ({ size: 'sm' }),
   })
 
   private machineProps(): Partial<PopoverSchema['props']> {
