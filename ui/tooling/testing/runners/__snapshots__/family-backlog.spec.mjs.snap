@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 19,
-  "ladder": 52,
+  "ladder": 51,
   "motion": 1,
-  "press": 34,
-  "scroll": 20,
-  "selection": 8,
+  "press": 33,
+  "scroll": 18,
+  "selection": 7,
   "shape": 16,
-  "text": 59,
+  "text": 57,
 }
 `;
 
@@ -73,7 +73,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "image-viewer:close-trigger:pressed",
   "image-viewer:zoom-in-trigger:hover",
   "image-viewer:zoom-in-trigger:pressed",
-  "menubar:item:pressed",
   "pagination:jumper:hover",
   "pagination:prev-trigger:hover",
   "pagination:prev-trigger:pressed",
@@ -125,7 +124,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "command:item",
   "floating-panel:trigger",
   "form:error-summary-item",
-  "menubar:trigger",
   "radio-group:item",
   "rating:item",
   "segmented:item",
@@ -153,8 +151,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "drawer:body:overscroll",
   "hover-card:content:overscroll",
   "hover-card:content:size",
-  "menubar:content:overscroll",
-  "menubar:content:unwired",
   "pagination:content:overscroll",
   "pagination:content:size",
   "popconfirm:content:overscroll",
@@ -167,7 +163,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 exports[`family-backlog 键集合 > selection 1`] = `
 [
   "anchor:link",
-  "menubar:trigger",
   "segmented:indicator",
   "tabs:indicator",
   "tabs:trigger",
@@ -228,8 +223,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "floating-panel:title:font-weight",
   "hover-card:description:font-size",
   "image-viewer:content:icon-size",
-  "menubar:content:icon-size",
-  "menubar:root:icon-size",
   "pagination:root:icon-size",
   "popconfirm:description:color",
   "popconfirm:description:font-size",

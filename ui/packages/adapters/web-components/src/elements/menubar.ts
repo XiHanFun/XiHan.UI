@@ -18,6 +18,7 @@ import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -77,6 +78,19 @@ export class XhMenubarElement extends XhPortalHostElement {
 
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
   private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
+
+  /**
+   * 最近展开过的那张菜单。一次只开一张，自绘条只配给它；收起后仍指向它——
+   * 壳与滚动层不落空，条子的机器不必为找不到容器投诊断，下次开的若是别张，壳换了整套重建。
+   */
+  private currentMenu: string | null = null
+
+  /** 条目列表的自绘条：壳是当前那张菜单已经 fixed 的 positioner，滚动层是它的 content；浮层里的条子走 4px 档 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.partFor('positioner', this.currentMenu),
+    scrollable: () => this.partFor('content', this.currentMenu),
+    props: () => ({ size: 'sm' }),
+  })
 
   static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
 
@@ -273,8 +287,9 @@ export class XhMenubarElement extends XhPortalHostElement {
       kind: 'popover',
       node: () => this.partFor('content', this.openValue()),
       // 整条菜单栏记为本层分支：点 trigger、在 trigger 之间走、掠过换菜单都算层内交互，
-      // 开合归菜单栏自己切换。
-      branches: () => [this.getPart('root')].filter(Boolean) as Element[],
+      // 开合归菜单栏自己切换；当前那张的定位层一并记上：条目列表之外还浮着自绘滚动条，
+      // 按住它拖动不该把菜单消解掉
+      branches: () => [this.getPart('root'), this.partFor('positioner', this.openValue())].filter(Boolean) as Element[],
       isModal: () => false,
       // 菜单不带遮罩，无可点关闭的表面
       surfaces: () => [],
@@ -321,6 +336,9 @@ export class XhMenubarElement extends XhPortalHostElement {
 
   protected wire(): void {
     const api = connectMenubar(this.ctrl.service, wcNormalize)
+    const open = this.openValue()
+    if (open != null)
+      this.currentMenu = open
 
     const root = this.getPart('root')
     if (root)
@@ -418,6 +436,8 @@ export class XhMenubarElement extends XhPortalHostElement {
     // 分隔线不带身份，属性对每个都一样
     for (const el of this.getParts('separator'))
       this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

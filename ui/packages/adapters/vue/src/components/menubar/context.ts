@@ -6,13 +6,15 @@
 // 提供 context 相关实现。
 
 import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps } from '@xihan-ui/headless'
-import type { ComputedRef, InjectionKey } from 'vue'
+import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { MenubarContext } from './use-menubar'
 import { inject, provide } from 'vue'
 
 /** 某一项菜单声明的身份，供它的 positioner / content 取到同一个值（两者与 trigger 依靠它互相认领）。 */
 export interface MenubarMenuContext {
   menu: ComputedRef<MenubarContentProps>
+  /** 这张菜单的内容节点：positioner 给它配自绘条，content 挂载后写回。 */
+  contentRef: Ref<HTMLElement | null>
 }
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */

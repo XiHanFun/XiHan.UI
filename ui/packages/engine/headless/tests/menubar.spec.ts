@@ -416,6 +416,20 @@ describe('menubar 初态与 ARIA', () => {
     const separator = c.content('file').querySelector<HTMLElement>('[data-part="separator"]')!
     expect(attrs(separator, 'role', 'aria-orientation')).toEqual({ 'role': 'separator', 'aria-orientation': 'horizontal' })
   })
+
+  it('条目投影 Collection Item 的 overlay 语境与尺寸档，子部件落槽，分隔线带家族标记', () => {
+    const c = mount({ size: 'sm' })
+    const api = c.api()
+    const decl = { value: 'new', disabled: false }
+    expect(api.getItemProps(decl) as Record<string, unknown>).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'sm', 'data-xh-collection-context': 'overlay' })
+    expect((api.getItemProps(decl) as Record<string, unknown>)['aria-selected']).toBeUndefined()
+    expect((api.getItemTextProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    // 标记位是常显的前导图标槽，不是选中对号
+    expect((api.getItemIndicatorProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('prefix')
+    expect((api.getItemDescriptionProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('description')
+    expect((api.getSeparatorProps() as Record<string, unknown>)['data-xh-collection-separator']).toBe('')
+    expect((mount().api().getItemProps(decl) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
+  })
 })
 
 describe('menubar 打开态传染', () => {

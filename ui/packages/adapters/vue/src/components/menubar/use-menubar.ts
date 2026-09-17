@@ -11,7 +11,7 @@ import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { computed, ref } from 'vue'
+import { computed, ref, shallowReactive } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -40,10 +40,11 @@ export function useMenubar(
 ): MenubarContext {
   const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
-  // 普通 Map 而非响应式，这三份表只在事件与效应里被机器读
+  // 触发器只在事件与效应里被机器读，普通 Map 即可；定位层与内容还要派生「当前展开那张」的两支 ref
+  //（层注册的 node 与分支读它们），登记表得是响应式的，菜单后到时派生值才跟着更新
   const triggers = new Map<string, HTMLElement>()
-  const positioners = new Map<string, HTMLElement>()
-  const contents = new Map<string, HTMLElement>()
+  const positioners = shallowReactive(new Map<string, HTMLElement>())
+  const contents = shallowReactive(new Map<string, HTMLElement>())
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
@@ -74,6 +75,9 @@ export function useMenubar(
     const value = service.context.get('value') ?? null
     return value == null ? null : table.get(value) ?? null
   }
+  // 当前展开那张菜单的定位层与内容：层注册按它们记 node 与分支
+  const positionerRef = computed(current(positioners))
+  const contentRef = computed(current(contents))
 
   let config: RuntimeConfig | null = null
 
@@ -83,9 +87,10 @@ export function useMenubar(
     // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按有无菜单展开驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
-      node: current(contents),
-      // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互
-      branches: () => [rootRef.value].filter(Boolean) as Element[],
+      node: () => contentRef.value,
+      // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互；
+      // 当前那张的定位层一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
+      branches: () => [rootRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       // 菜单不带遮罩，没有可点关闭的表面
       surfaces: () => [],

@@ -2057,6 +2057,7 @@ export type ComponentTokenName =
   | '--xh-menubar-submenu-indicator-fg'
   | '--xh-menubar-trigger-bg-active'
   | '--xh-menubar-trigger-bg-hover'
+  | '--xh-menubar-trigger-bg-pressed'
   | '--xh-menubar-trigger-font-size'
   | '--xh-menubar-trigger-gap'
   | '--xh-menubar-trigger-px'

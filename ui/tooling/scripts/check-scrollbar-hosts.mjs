@@ -217,8 +217,13 @@ function functionBody(src, name) {
   return anchor ? blockAt(src, anchor.index) : null
 }
 
-/** 进不去、进去也找不到角色节点的调用：语言关键字、DOM 查询、以及 getPart 自己。 */
+/**
+ * 进不去、进去也找不到角色节点的调用：语言关键字、DOM 查询、以及 getPart 自己。
+ * partFor 也在其列：它是「按作者 value 取某一项的角色节点」的宿主级取法（一栏多张菜单、一次只开一张的
+ * menubar），点的是哪个部件写在它的第一个实参里，下面的字面量形态按那个实参收，不进函数体。
+ */
 const OPAQUE_CALLS = new Set([
+  'partFor',
   'if',
   'for',
   'while',
@@ -264,9 +269,10 @@ function resolveParts(src, text, seen = new Set(), many = false) {
     unresolved.push(...inner.unresolved)
   }
   // 展开过的那几段调用文本已经按函数体算过，这里只收剩下的；
-  // 多路形态（scrollables）点名的是一族同名节点，getParts('x') 也算数
+  // 多路形态（scrollables）点名的是一族同名节点，getParts('x') 也算数；
+  // partFor('x', value) 按 value 在一族同名节点里取一个，点的仍是 x 这一个部件
   const outside = index => !spans.some(s => index >= s.start && index < s.end)
-  const patterns = [/getPart\('([\w-]+)'\)/g, /\[data-part=["']([\w-]+)["']\]/g]
+  const patterns = [/getPart\('([\w-]+)'\)/g, /partFor\('([\w-]+)',/g, /\[data-part=["']([\w-]+)["']\]/g]
   if (many)
     patterns.push(/getParts\('([\w-]+)'\)/g)
   for (const pattern of patterns) {
@@ -460,7 +466,8 @@ for (const [comp, { blocks, src }] of wcHosts) {
   for (const shellPart of new Set(routes.map(route => route.shellPart))) {
     const scrollables = [...new Set(routes.filter(route => route.shellPart === shellPart).flatMap(route => route.scrollables))]
     // 规则⑥：条子是 content 的兄弟，浮层不把壳记进层分支，按住条子那一下就被判成层外交互
-    problems.push(...checkLayerBranches(comp, src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\bgetPart\\(\\s*['"]${part}['"]\\s*\\)`)))
+    // 层注册里点名角色节点的两种取法：getPart('x') 与按 value 取一个的 partFor('x', …)
+    problems.push(...checkLayerBranches(comp, src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\b(?:getPart\\(\\s*['"]${part}['"]\\s*\\)|partFor\\(\\s*['"]${part}['"]\\s*,)`)))
     for (const { file, src: vueSrc } of vueSources.get(comp) ?? []) {
       problems.push(...checkLayerBranches(comp, vueSrc, file, shellPart, scrollables, part => new RegExp(`\\b${camel(part)}Ref\\b`)))
     }

@@ -18,6 +18,7 @@ import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideMenu, useMenuContext } from '../menu/context'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
@@ -174,15 +175,19 @@ export const XhMenubarPositioner = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useMenubarContext()
     const menu = computed<MenubarContentProps>(() => ({ value: props.value }))
-    // 供内部 content 继承 value
-    provideMenubarMenu({ menu })
+    // 供内部 content 继承 value，并把它的内容节点写回来给自绘条
+    const contentRef = ref<HTMLElement | null>(null)
+    provideMenubarMenu({ menu, contentRef })
     const setEl = useMenubarPart(ctx.registerPositioner, () => props.value)
+    // 这张菜单的条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；
+    // 一张菜单一套，浮层里的条子走 4px 档
+    const bars = useScrollbars({ scrollable: () => contentRef.value, props: { size: 'sm' } })
     // 每张菜单各搬各的定位层到 portal 落点，逃开祖先的层叠上下文
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps(menu.value) as Record<string, unknown>, attrs),
         ref: (el: unknown) => setEl(el as HTMLElement | null),
-      }, slots.default?.()),
+      }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
   },
 })
@@ -238,6 +243,9 @@ export const XhMenubarContent = defineComponent({
       ref: (el: unknown) => {
         contentRef.value = el as HTMLElement | null
         setEl(el as HTMLElement | null)
+        // 写回给外层 positioner：它按这个节点配自绘条
+        if (inherited)
+          inherited.contentRef.value = el as HTMLElement | null
       },
     }, slots.default?.())
   },

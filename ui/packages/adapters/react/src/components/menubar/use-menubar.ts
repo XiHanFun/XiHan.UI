@@ -104,8 +104,9 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'popover',
       node: current(registry.contents),
-      // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互
-      branches: () => [rootRef.current].filter(Boolean) as Element[],
+      // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互；
+      // 当前那张的定位层一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
+      branches: () => [rootRef.current, current(registry.positioners)()].filter(Boolean) as Element[],
       isModal: () => false,
       // 菜单不带遮罩，没有可点关闭的表面
       surfaces: () => [],
