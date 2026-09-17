@@ -53,6 +53,9 @@ const NO_SLOT = {
   'download-trigger:root::before': '转圈的加载环',
   'clipboard:copy-trigger::before': '转圈的加载环',
   'approval:footer::before': '转圈的加载环',
+  // reset 层的原生细条：主体是 :where([data-scope][data-part], [data-xh-scroll], …) 一组宿主，
+  // 部件位记作 *；原生滑块与自绘 scrollbar:thumb 同为一维对象，pill 是它的身份
+  'reset:*::-webkit-scrollbar-thumb': '原生细条的滑块，与自绘 scrollbar:thumb 同身份',
 }
 
 /**
@@ -229,6 +232,9 @@ function splitBranches(selector) {
 function identityKeyOf(comp, branch) {
   const compounds = compoundsOf(branch)
   const subject = compounds.at(-1) ?? ''
+  // 主体是 :where(…) / :is(…) 一组宿主（reset 层的原生细条）时没有单一部件身份，由 NO_SLOT 按伪元素登记
+  if (/^:(?:where|is)\(/.test(subject))
+    return null
   const part = /data-part='([a-z-]+)'/.exec(subject)?.[1]
   if (!part)
     return null
@@ -289,8 +295,11 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
 
     const selector = (selectors.at(-1) ?? '').replace(/\s+/g, ' ').trim()
     const parts = [...selector.matchAll(/data-part='([a-z-]+)'/g)].map(x => x[1])
-    const pseudo = /::(before|after)/.exec(selector)?.[1]
-    const key = `${comp}:${parts.at(-1) ?? '?'}${pseudo ? `::${pseudo}` : ''}`
+    // 伪元素取全名：reset 层的 ::-webkit-scrollbar-thumb 也要落到可登记的键上；
+    // 主体是 :where(…) / :is(…) 一组宿主（reset 层的原生细条）时没有单一部件，部件位记作 *
+    const pseudo = /::([a-z-]+)/.exec(selector)?.[1]
+    const part = /^:(?:where|is)\(/.test(selector) ? '*' : (parts.at(-1) ?? '?')
+    const key = `${comp}:${part}${pseudo ? `::${pseudo}` : ''}`
 
     // 第三条判据：形状身份
     if ((prop === 'border-radius' || prop === ACTION_RADIUS) && !selectors.some(s => s.startsWith('@keyframes'))) {

@@ -61,6 +61,8 @@
    * Typography prose 里的 <pre>——它是库内唯一不带 data-part 的滚动面，作者只写 <pre> 不写角色。
    * 皮肤不得再手写 scrollbar-width / scrollbar-color（stylelint 判红），要藏条写 none。
    * 这里不写 scrollbar-gutter：auto 是初始值，stable 只给内容高度会变的容器由皮肤显式写。
+   * ::-webkit-scrollbar-thumb 的圆角取 pill：原生滑块与自绘 scrollbar:thumb 同为一维对象（真源 §6.3），
+   * 不再按厚度折半凑半圆，三档厚度都是同一身份。
    *
    * 令牌住在 xihan.tokens 层、排在本层之后，但自定义属性的求值不受层序影响：
    * var() 在计算值阶段沿元素树取值，层序只裁决同一属性的两条声明谁赢。
@@ -82,7 +84,7 @@
   }
 
   :where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-thumb {
-    border-radius: calc(var(--xh-scrollbar-thickness-md) / 2);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-fg-scrollbar-thumb);
   }
 
