@@ -19,8 +19,10 @@
     /* 选中色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
     --xh-_radio-group-accent: var(--xh-_tone, var(--xh-bg-brand));
 
+    /* 标题与条目都是根的直接子节点，一支 gap 同时管「标题到集合」与「条目之间」：
+       集合标题与集合隔 --xh-space-2（§6.4），同组条目之间也是同一档紧密关系 */
     display: flex;
-    gap: var(--xh-radio-group-gap, var(--xh-stack-gap-md));
+    gap: var(--xh-radio-group-gap, var(--xh-space-2));
   }
 
   [data-scope='radio-group'][data-part='root'][data-orientation='vertical'] {
@@ -48,10 +50,17 @@
     --xh-_radio-group-indicator: var(--xh-control-indicator-lg);
   }
 
+  /* 集合标题（§6.4）：14 / 500 / fg-muted，字号不随 size 档——随档的是条目文字 */
   [data-scope='radio-group'][data-part='label'] {
     color: var(--xh-radio-group-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-radio-group-label-font-size, var(--xh-_radio-group-font-size));
+    font-size: var(--xh-radio-group-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-radio-group-label-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+  }
+
+  /* label 自己不带状态属性，整组禁用只写在 root 上，禁用标签色统一 --xh-fg-subtle（§6.4） */
+  [data-scope='radio-group'][data-part='root'][data-disabled] [data-scope='radio-group'][data-part='label'] {
+    color: var(--xh-radio-group-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* position 是给条目内那份视觉隐藏的原生输入做定位基准，别去掉 */
@@ -88,7 +97,24 @@
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-radio-group-indicator-radius, var(--xh-shape-circle));
     background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 整行是命中区，回执落在圆圈上：悬停升一档描边（字段静息 → hover 的同一条阶梯，§8.3），
+     按下换底到 200 档中性面（圆圈坐在画布上，§7.2 白底承载），圆点不动、几何不动（§9.2 集合行不允许零反馈）。
+     禁用与只读的行不给回执；选中圈与校验失败的圈保住各自的描边，按下同样换底，圈内的点仍在 */
+  [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):hover
+    > [data-scope='radio-group'][data-part='indicator']:not([data-state='checked']):not([data-invalid]) {
+    border-color: var(--xh-radio-group-indicator-border-hover, var(--xh-border-control-hover));
+  }
+
+  [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])
+    > [data-scope='radio-group'][data-part='indicator'] {
+    background: var(--xh-radio-group-indicator-bg-pressed, var(--xh-bg-subtle-hover));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='radio-group'][data-part='indicator'][data-state='checked'] {
@@ -129,6 +155,14 @@
   [data-scope='radio-group'][data-part='item'][hidden],
   [data-scope='radio-group'][data-part='indicator'][hidden] {
     display: none;
+  }
+
+  @media (forced-colors: active) {
+    /* 按下：常态靠圆圈换底表出，这一档里底色被统一换成 Canvas；按住那一下把圈的描边换成系统高亮色 */
+    [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])
+      > [data-scope='radio-group'][data-part='indicator'] {
+      border-color: Highlight;
+    }
   }
 
   @media print {

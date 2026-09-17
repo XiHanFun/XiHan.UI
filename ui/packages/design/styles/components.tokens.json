@@ -48209,7 +48209,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 gap 覆盖槽。"
@@ -48231,6 +48231,30 @@
       ],
       "visibility": "public",
       "description": "radio-group 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-indicator-bg-pressed",
+      "component": "radio-group",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 indicator、item 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-indicator-border",
@@ -48267,6 +48291,33 @@
       ],
       "visibility": "public",
       "description": "radio-group 的 indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-indicator-border-hover",
+      "component": "radio-group",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-readonly])",
+        "not([data-state='checked'])",
+        "readonly",
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 indicator、item 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-indicator-border-invalid",
@@ -48451,6 +48502,25 @@
       "description": "radio-group 的 label 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-label-fg-disabled",
+      "component": "radio-group",
+      "part": [
+        "label",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 label、root 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-label-font-size",
       "component": "radio-group",
       "part": [
@@ -48463,7 +48533,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_radio-group-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "radio-group 的 label 部件 font-size 覆盖槽。"

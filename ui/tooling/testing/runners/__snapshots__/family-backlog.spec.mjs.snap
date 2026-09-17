@@ -5,11 +5,11 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 16,
   "ladder": 49,
   "motion": 1,
-  "press": 30,
+  "press": 29,
   "scroll": 16,
   "selection": 3,
   "shape": 16,
-  "text": 56,
+  "text": 54,
 }
 `;
 
@@ -118,7 +118,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "color-swatch-picker:item",
   "floating-panel:trigger",
   "form:error-summary-item",
-  "radio-group:item",
   "rating:item",
   "steps:trigger",
   "switch:root",
@@ -214,8 +213,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "popover:content:icon-size",
   "popover:description:color",
   "popover:description:font-size",
-  "radio-group:label:font-size",
-  "radio-group:label:spacing",
   "rating:label:color",
   "rating:label:font-size",
   "rating:label:spacing",

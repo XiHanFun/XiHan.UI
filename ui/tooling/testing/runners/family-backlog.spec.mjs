@@ -14,8 +14,8 @@ const CEILING = {
   ladder: 49,
   shape: 16,
   scroll: 16,
-  press: 30,
-  text: 56,
+  press: 29,
+  text: 54,
   motion: 1,
 }
 
