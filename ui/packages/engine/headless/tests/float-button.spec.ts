@@ -110,6 +110,58 @@ describe('float-button 结构与缺省', () => {
     const rig = makeRig({}, { translations: { trigger: '更多操作' } })
     expect(rig.trigger()['aria-label']).toBe('更多操作')
   })
+
+  it('触发器接 Action Control floating 档：缺省 outline、md，data-variant 与 data-xh-action-variant 同源', () => {
+    const rig = makeRig()
+    const trigger = rig.trigger()
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('floating')
+    expect(trigger['data-xh-action-display']).toBe('always')
+    expect(trigger['data-xh-action-size']).toBe('md')
+    // 缺省中性：描边 + 磨砂面（真源 §7.2 第 2 条），不传 variant 时显式落 outline
+    expect(trigger['data-xh-action-variant']).toBe('outline')
+    expect(rig.root()['data-variant']).toBe('outline')
+    expect(trigger['data-pressed']).toBeUndefined()
+
+    const solid = makeRig({}, { variant: 'solid', size: 'lg' })
+    expect(solid.root()['data-variant']).toBe('solid')
+    expect(solid.trigger()['data-xh-action-variant']).toBe('solid')
+    expect(solid.trigger()['data-xh-action-size']).toBe('lg')
+  })
+})
+
+describe('float-button 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+  it('静息不带 data-pressed；keydown 期间在场，keyup 撤下；触屏按下在场、抬起撤下；失焦撤下', () => {
+    const rig = makeRig()
+    expect(rig.trigger()['data-pressed']).toBeUndefined()
+    fire(rig.trigger(), 'onKeyDown', key(' '))
+    expect(rig.trigger()['data-pressed']).toBe('')
+    fire(rig.trigger(), 'onKeyUp', key(' '))
+    expect(rig.trigger()['data-pressed']).toBeUndefined()
+    fire(rig.trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(rig.trigger()['data-pressed']).toBe('')
+    fire(rig.trigger(), 'onPointerUp', {})
+    expect(rig.trigger()['data-pressed']).toBeUndefined()
+    fire(rig.trigger(), 'onKeyDown', key('Enter'))
+    expect(rig.trigger()['data-pressed']).toBe('')
+    fire(rig.trigger(), 'onBlur', {})
+    expect(rig.trigger()['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用时按住不进入按压面；按住途中被禁用即松开', () => {
+    const off = makeRig({ disabled: true })
+    fire(off.trigger(), 'onKeyDown', key(' '))
+    expect(off.trigger()['data-pressed']).toBeUndefined()
+
+    const rig = makeRig()
+    fire(rig.trigger(), 'onKeyDown', key(' '))
+    expect(rig.trigger()['data-pressed']).toBe('')
+    rig.setProps({ disabled: true })
+    expect(rig.trigger()['data-pressed']).toBeUndefined()
+  })
 })
 
 describe('float-button 开合', () => {

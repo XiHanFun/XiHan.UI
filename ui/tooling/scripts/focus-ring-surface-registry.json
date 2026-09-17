@@ -26,8 +26,6 @@
     "context-menu [content] var(--xh-material-frosted-focus-surface)": "只有 tabindex=0 的空菜单接收此焦点面；M2 focus-surface 收敛到不透明 bg.surface，浏览器回归验证公共环。",
     "dialog [close-trigger] var(--xh-material-elevated-focus-surface)": "关闭钮聚焦时立即铺 M4 不透明 focus-surface，公共环不再与半透明内容面比较；浏览器回归验证浅深主题。",
     "dialog [content] linear-gradient(\n        to bottom,\n        var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      linear-gradient(\n        to bottom,\n        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-elevated-bg))),\n        var(\n          --xh-dialog-bg,\n          var(--xh-material-elevated-bg)\n        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))\n      )": "M4 内容面由透明顶光与 lens 到正文的同一实体面渐变叠合，静态工具无法按单一实体色求环对比；content 已在同表 ringless 登记为焦点陷阱的 tabindex=-1 兜底，真实交互控件各自铺实体焦点面并由浏览器回归覆盖。",
-    "float-button [trigger] var(--xh-material-frosted-bg)": "缺省触发器是随页面背景透入的 M2 磨砂面，静态工具不能按单一实体面判环；键盘聚焦时皮肤将它切到 material-frosted-focus-surface，浏览器回归量该实体面与公共焦点环。",
-    "float-button [trigger] var(--xh-material-frosted-focus-surface)": "M2 focus-surface 在键盘聚焦时提供不透明隔离底，公共环由浏览器浅深主题回归验证。",
     "floating-panel [close-trigger] var(--xh-material-frosted-focus-surface)": "关闭钮聚焦时铺不透明 M2 focus-surface，避免公共环与磨砂面后的未知内容直接比较。",
     "floating-panel [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-floating-panel-bg, var(--xh-material-frosted-bg))": "M2 面板由半透明 tint 与顶边高光叠合，静态工具无法以单一实体色判环；content 已在同表 ringless 登记为键盘事件收口，真实可交互的标题栏按钮聚焦时各自铺 material-frosted-focus-surface 实体底。",
     "floating-panel [window-state-trigger] var(--xh-material-frosted-focus-surface)": "窗口状态钮聚焦时铺不透明 M2 focus-surface；选中实心档另由 currentColor 环规则保证。",
@@ -238,13 +236,6 @@
         "trigger"
       ],
       "ratio": 2.89,
-      "ring": "poured"
-    },
-    "float-button [data-part='root'][data-scope='float-button'][data-variant='solid'] [data-part='trigger'][data-scope='float-button']": {
-      "parts": [
-        "trigger"
-      ],
-      "ratio": 1,
       "ring": "poured"
     },
     "floating-panel [data-part='window-state-trigger'][data-scope='floating-panel'][data-state='on']": {

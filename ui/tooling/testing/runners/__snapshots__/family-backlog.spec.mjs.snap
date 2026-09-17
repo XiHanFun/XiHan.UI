@@ -8,8 +8,8 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "press": 7,
   "scroll": 12,
   "selection": 0,
-  "shape": 9,
-  "text": 31,
+  "shape": 8,
+  "text": 30,
 }
 `;
 
@@ -109,7 +109,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "carousel:autoplay-trigger",
   "carousel:next-trigger",
   "carousel:prev-trigger",
-  "float-button:trigger",
   "image-viewer:next-trigger",
   "image-viewer:prev-trigger",
   "popconfirm:confirm-trigger::before",
@@ -129,7 +128,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "drawer:root:icon-size",
   "file-upload:label:spacing",
   "file-upload:root:icon-size",
-  "float-button:root:icon-size",
   "floating-panel:content:icon-size",
   "floating-panel:root:icon-size",
   "floating-panel:title:font-weight",

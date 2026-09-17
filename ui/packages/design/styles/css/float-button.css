@@ -5,6 +5,8 @@
 
 /* 定义 float button 样式。 */
 
+@import '../family/action-control.css';
+
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 
@@ -20,24 +22,14 @@
      transform / filter / backdrop-filter / contain，包含块就被抢走，整组立刻贴错位置——
      所以别往覆盖钩子里加这几个属性。 */
   [data-scope='float-button'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-glyph-size-text));
-
     --xh-_float-button-offset: var(--xh-space-6);
-    /* 触发器与展开的每一条动作共用这两个私有槽，换档只改这里 */
-    --xh-_float-button-size: var(--xh-control-h-lg);
-    /* 触发器与每一条动作都是圆形：悬浮钮没有 shape 轴，作者要方的写 --xh-float-button-radius */
-    --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-circle));
-
-    /* 缺省面是 M2 磨砂面：背景、边缘、顶光、投影与磨砂全部从同一份配方取，
-       高对比、减少透明度、打印和强制色便能一起降级。显式 variant 只覆写必要的动作色。 */
-    --xh-_float-button-bg: var(--xh-material-frosted-bg);
-    --xh-_float-button-bg-hover: var(--xh-bg-subtle-hover);
-    --xh-_float-button-bg-active: var(--xh-bg-subtle-active);
-    --xh-_float-button-fg: var(--xh-material-frosted-fg);
-    --xh-_float-button-border: var(--xh-material-frosted-border);
-    --xh-_float-button-border-hover: var(--xh-material-frosted-border);
-    --xh-_float-button-shadow: var(--xh-material-frosted-shadow);
+    /* 展开列表里原生动作项的身量与字形尺：触发器自己走 Action Control floating 档
+       （sm = box-md / md = box-lg / lg = box-lg + space-2，字形 md / lg / xl），
+       原生动作项不是 Headless 部件、配方打不到它，这两支私有槽按同一张表镜像，换档只改这里 */
+    --xh-_float-button-size: var(--xh-control-box-lg);
+    --xh-_float-button-glyph-size: var(--xh-glyph-size-lg);
+    /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-_float-button-glyph-size));
 
     position: fixed;
     /* 展开时消费 LayerRegistry 的实时层序；收起后没有逻辑层，仍回到普通 sticky 槽。 */
@@ -73,23 +65,28 @@
     inset-inline-end: max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right));
   }
 
-  /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里，与 lg 同值：悬浮钮起步就比行内按钮大一号 */
+  /* —— 尺寸：原生动作项与触发器的 floating 档逐档同表 —— */
   [data-scope='float-button'][data-part='root'][data-size='sm'] {
-    --xh-_float-button-size: var(--xh-control-h-sm);
+    --xh-_float-button-size: var(--xh-control-box-md);
+    --xh-_float-button-glyph-size: var(--xh-glyph-size-md);
   }
 
   [data-scope='float-button'][data-part='root'][data-size='md'] {
-    --xh-_float-button-size: var(--xh-control-h-md);
+    --xh-_float-button-size: var(--xh-control-box-lg);
+    --xh-_float-button-glyph-size: var(--xh-glyph-size-lg);
   }
 
   [data-scope='float-button'][data-part='root'][data-size='lg'] {
-    --xh-_float-button-size: var(--xh-control-h-lg);
+    --xh-_float-button-size: calc(var(--xh-control-box-lg) + var(--xh-space-2));
+    --xh-_float-button-glyph-size: var(--xh-glyph-size-xl);
   }
 
-  /* —— 形态 ——
-     与回到顶部那颗钮逐档同形：两颗都是钉在视口角落、浮在内容之上的圆钮。
-     缺省档（没写 data-variant）不进这几块，取值仍是抬起的面 + 一圈可操作区描边 */
+  /* —— 形态：给展开列表里原生动作项用的面 ——
+     触发器的面由 Action Control 形态矩阵按 data-xh-action-variant 给（solid / subtle / ghost），
+     原生动作项读不到矩阵，这几块私有槽按矩阵同一张表镜像；ghost 与 outline 的悬停 / 按下走画布承载的
+     阶梯（100 → 200，§7.2 第 3 条）。缺省 outline（连接层不传 variant 时显式落）是磨砂面：背景、边缘、
+     顶光、投影与磨砂从同一份 M2 配方取，高对比、减少透明度、打印和强制色便能一起降级——钮浮在正文
+     之上，透空的面在任何内容上都读不出边界，所以 outline 这一档面留着 */
   [data-scope='float-button'][data-part='root'][data-variant='solid'] {
     --xh-_float-button-bg: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_float-button-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
@@ -97,20 +94,7 @@
     --xh-_float-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-_float-button-border: transparent;
     --xh-_float-button-border-hover: transparent;
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     形态写在壳上、面画在触发器上，所以这条是后代选择器，环落在拿焦点的那颗钮上 */
-  [data-scope='float-button'][data-part='root'][data-variant='solid']
-    [data-scope='float-button'][data-part='trigger']:not([data-disabled]):focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
-  /* 置灰只换字色、面仍是实心语气底：环取面配对的那支前景色，不取被换掉的置灰色 */
-  [data-scope='float-button'][data-part='root'][data-variant='solid']
-    [data-scope='float-button'][data-part='trigger'][data-disabled]:focus-visible {
-    --xh-_ring-color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
+    --xh-_float-button-shadow: none;
   }
 
   [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
@@ -120,84 +104,99 @@
     --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_float-button-border: transparent;
     --xh-_float-button-border-hover: transparent;
+    --xh-_float-button-shadow: none;
   }
 
-  /* 面留着：钮浮在正文之上，透空的面在任何内容上都读不出边界 */
   [data-scope='float-button'][data-part='root'][data-variant='outline'] {
-    --xh-_float-button-border: var(--xh-_tone-border-control, var(--xh-border-control));
-    --xh-_float-button-border-hover: var(--xh-_tone-border-control, var(--xh-border-control-hover));
+    --xh-_float-button-bg: var(--xh-material-frosted-bg);
+    --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_float-button-fg: var(--xh-material-frosted-fg);
+    --xh-_float-button-border: var(--xh-material-frosted-border);
+    --xh-_float-button-border-hover: var(--xh-material-frosted-border);
+    --xh-_float-button-shadow: var(--xh-material-frosted-shadow);
   }
 
   [data-scope='float-button'][data-part='root'][data-variant='ghost'] {
     --xh-_float-button-bg: transparent;
-    --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
-    --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_float-button-border: transparent;
     --xh-_float-button-border-hover: transparent;
+    --xh-_float-button-shadow: none;
   }
 
-  /* 缺省档留住 M2 顶光；实心、淡色、描边和透空形态各有自身表面，不能把磨砂高光误铺上去。 */
-  [data-scope='float-button'][data-part='root']:not([data-variant])
+  /* —— 触发器 ——
+     浮在内容之上的单图标圆钮，接 Action Control floating 档（§4.1）：盒型（md = box-lg 48px，圆形）、
+     四态面、0.97 按压与 44px 命中区由家族配方按 data-xh-action-variant / -size 给出。
+     这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射 */
+  [data-scope='float-button'][data-part='trigger'] {
+    --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_action-variant-bg-focus-visible));
+    --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-float-button-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-float-button-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-fg-focus-visible: var(--xh-float-button-fg, var(--xh-_action-variant-fg-focus-visible));
+    --xh-action-border-rest: var(--xh-float-button-border, var(--xh-_action-variant-border-rest));
+    --xh-action-border-hover: var(--xh-float-button-border-hover, var(--xh-_action-variant-border-hover));
+    --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-_action-variant-border-pressed));
+    --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-_action-variant-border-focus-visible));
+    --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-_action-variant-border-disabled));
+    /* 矩阵各态无影（§8.3 淡底与阴影互斥）；outline 那一档的磨砂投影在下面另桥接 */
+    --xh-action-shadow-rest: var(--xh-float-button-shadow, none);
+    --xh-action-shadow-hover: var(--xh-float-button-shadow, none);
+    --xh-action-shadow-pressed: var(--xh-float-button-shadow, none);
+    --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, none);
+    --xh-action-shadow-disabled: var(--xh-float-button-shadow, none);
+    --xh-action-radius: var(--xh-float-button-radius, var(--xh-_action-profile-radius));
+    --xh-action-visual-size: var(--xh-float-button-size, var(--xh-_action-profile-visual-size));
+    /* 作者塞进来的图标跟着 floating 档走（md 24px），与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-_action-profile-glyph-size));
+  }
+
+  /* 缺省 outline 是 M2 磨砂面：背景、边缘、顶光、投影与磨砂从同一份配方取。
+     悬停 / 按下的底走矩阵 outline 列的画布阶梯（100 → 200），边缘与投影不动；
+     键盘聚焦时铺配方的实体 focus surface——透明面上的内收环没有稳定的底可量对比；
+     置灰只换字色（矩阵 disabled 列的前景），面仍留着，透空的面在任何内容上都读不出边界 */
+  [data-scope='float-button'][data-part='root'][data-variant='outline']
     [data-scope='float-button'][data-part='trigger'] {
-    background-image: linear-gradient(
-      to bottom,
-      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-      transparent var(--xh-stroke-thin)
-    );
+    --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_float-button-bg));
+    --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-material-frosted-focus-surface));
+    --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_float-button-bg));
+    --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_float-button-fg));
+    --xh-action-fg-hover: var(--xh-float-button-fg, var(--xh-_float-button-fg));
+    --xh-action-fg-pressed: var(--xh-float-button-fg, var(--xh-_float-button-fg));
+    --xh-action-fg-focus-visible: var(--xh-float-button-fg, var(--xh-_float-button-fg));
+    --xh-action-border-rest: var(--xh-float-button-border, var(--xh-_float-button-border));
+    --xh-action-border-hover: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
+    --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
+    --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-_float-button-border));
+    --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-_float-button-border));
+    --xh-action-shadow-rest: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
+    --xh-action-shadow-hover: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
+    --xh-action-shadow-pressed: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
+    --xh-action-shadow-disabled: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
+    /* M2 顶光走配方的高光通道：实心、淡色与透空形态各有自身表面，不能把磨砂高光误铺上去 */
+    --xh-action-highlight-rest: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-hover: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-pressed: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-focus-visible: var(--xh-material-frosted-highlight);
+    --xh-action-highlight-disabled: var(--xh-material-frosted-highlight);
+
     -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
     backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
-  /* —— 触发器 —— */
-  /* 里面通常只放一个图标，宽高同取一档尺寸 */
-  [data-scope='float-button'][data-part='trigger'] {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-float-button-size, var(--xh-_float-button-size));
-    block-size: var(--xh-float-button-size, var(--xh-_float-button-size));
-    padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-_float-button-border));
-    border-radius: var(--xh-_float-button-radius);
-    /* 使用者令牌排在形态之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
-    background-color: var(--xh-float-button-bg, var(--xh-_float-button-bg));
-    color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
-    /* 缺省走 M2 浮层投影；使用者已有的 shadow 槽仍排在配方前面。 */
-    box-shadow: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
-  }
-
-  /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
-  @media (hover: hover) {
-    [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
-      border-color: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
-      background-color: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
-    }
-  }
-
-  /* 换底之外再压一档：钮浮在内容之上，缩放不牵动页面排版 */
-  [data-scope='float-button'][data-part='trigger']:not([data-disabled]):active {
-    background-color: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 透明面上的内收环没有稳定的底可量对比：键盘聚焦时铺 M2 配方提供的实体 focus surface。
-     这个面与公共焦点环已有足够对比，继续吃库环；不改盒模型，也不影响鼠标或触摸激活。 */
-  [data-scope='float-button'][data-part='root']:not([data-variant])
-    [data-scope='float-button'][data-part='trigger']:focus-visible {
-    background-color: var(--xh-material-frosted-focus-surface);
-  }
-
-  /* 禁用只换颜色，不叠不透明度：两者同时用只会互相抵消，把字压到读不出来 */
-  [data-scope='float-button'][data-part='trigger'][data-disabled] {
-    color: var(--xh-fg-disabled);
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     置灰后矩阵把面换成中性淡底，公共环压上去足够对比，不再另灌 */
+  [data-scope='float-button'][data-part='trigger'][data-xh-action-variant='solid']:not([data-disabled]):focus-visible {
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* —— 展开的那一组 —— */
@@ -223,12 +222,12 @@
     flex: none;
     inline-size: var(--xh-float-button-size, var(--xh-_float-button-size));
     block-size: var(--xh-float-button-size, var(--xh-_float-button-size));
-    border-radius: var(--xh-_float-button-radius);
+    border-radius: var(--xh-float-button-radius, var(--xh-shape-circle));
     /* 逐条依次冒出来，离触发器最近的那条先到。backwards 让每条在自己那份延迟里保持起始帧 */
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
-  /* 原生按钮直接作为动作项时，沿用触发器的视觉面；XhButton 保留自己的皮肤。 */
+  /* 原生按钮直接作为动作项时，沿用触发器的视觉面（同一组公开槽、同一张形态表）；XhButton 保留自己的皮肤。 */
   [data-scope='float-button'][data-part='list'] > button:not([data-scope]) {
     padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-_float-button-border));
@@ -243,7 +242,7 @@
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  [data-scope='float-button'][data-part='root']:not([data-variant])
+  [data-scope='float-button'][data-part='root'][data-variant='outline']
     [data-scope='float-button'][data-part='list']
     > button:not([data-scope]) {
     background-image: linear-gradient(
@@ -301,7 +300,8 @@
     animation-delay: calc(5 * var(--xh-motion-stagger-step));
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
+     粗指针的 44px 命中区由配方的 ::after 给，字形占的是 ::before */
   [data-scope='float-button'][data-part='trigger']:empty::before {
     content: '';
     display: inline-block;
@@ -311,21 +311,6 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
     mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
-  }
-
-  /* 手指落点：触发器的视觉盒是 40px，命中区外扩到 44×44（两边各 2px）。
-     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把它和展开的那一列对不齐。
-     用 ::after：::before 已经被兜底字形占着 */
-  @media (pointer: coarse) {
-    [data-scope='float-button'][data-part='trigger'] {
-      position: relative;
-    }
-
-    [data-scope='float-button'][data-part='trigger']::after {
-      content: '';
-      position: absolute;
-      inset: calc(-1 * var(--xh-space-0_5));
-    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

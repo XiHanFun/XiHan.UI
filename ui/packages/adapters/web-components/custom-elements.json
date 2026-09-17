@@ -22932,7 +22932,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体",
+              "description": "变体，默认 outline（磨砂面；solid 才品牌实心）",
               "name": "variant",
               "fieldName": "variant"
             },

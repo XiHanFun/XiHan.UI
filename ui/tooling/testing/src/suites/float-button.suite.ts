@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { floatButtonAnatomy, floatButtonKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 一颗触发器管着一组动作的开合，走的是披露那套；list 始终在 DOM，收起态靠 hidden 显隐，不卸载。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/'
@@ -56,6 +57,8 @@ export const floatButtonSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-placement': 'bottom-end',
             'data-shape': null,
+            // 缺省中性：不传 variant 时显式落 outline（描边 + 磨砂面），只有 solid 才品牌实心
+            'data-variant': 'outline',
             'data-disabled': null,
             // 壳只管落位，语义都在 trigger 与 list 上
             'role': null,
@@ -69,6 +72,12 @@ export const floatButtonSuite: ConformanceSuite = {
             'aria-label': 'Actions',
             'data-state': 'closed',
             'data-disabled': null,
+            'data-pressed': null,
+            // 浮在内容之上的单图标圆钮：接 Action Control floating 档，盒型与四态面由家族配方给
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'floating',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
             // 原生 button 自带 Tab 停靠，不该套 roving tabindex
             'tabindex': null,
           },
@@ -183,6 +192,29 @@ export const floatButtonSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：trigger 投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['float-button.kbd.press'],
+      steps: [heldPress('float-button', 'trigger')],
+    },
+    {
+      name: 'disabled：按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { disabled: true },
+      steps: [heldPressIgnored('float-button', 'trigger', '禁用时不接受按压')],
+    },
+    {
+      name: 'variant 原样投影：壳的 data-variant 与触发器的 data-xh-action-variant 同源，size 落到 data-xh-action-size',
+      spec: { adr: 'action-control-family' },
+      props: { variant: 'solid', size: 'lg' },
+      initial: {
+        parts: {
+          root: { 'data-variant': 'solid', 'data-size': 'lg' },
+          trigger: { 'data-xh-action-variant': 'solid', 'data-xh-action-size': 'lg' },
+        },
+      },
     },
     {
       name: '落位如实落到壳上，list 也拿得到落位',

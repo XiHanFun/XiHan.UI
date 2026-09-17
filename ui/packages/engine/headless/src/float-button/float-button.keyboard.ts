@@ -20,6 +20,12 @@ export const floatButtonKeyboard: KeyboardTable = {
       does: '展开 / 收起 list；悬停展开时这条路照样在，触摸与键盘都靠它',
     },
     {
+      id: 'float-button.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in trigger, not disabled',
+      does: '按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下',
+    },
+    {
       id: 'float-button.kbd.escape',
       keys: ['Escape'],
       when: 'open，无论焦点是否仍在整组内',

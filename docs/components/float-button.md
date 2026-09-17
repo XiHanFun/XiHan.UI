@@ -61,7 +61,7 @@
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
-- 默认使用磨砂浮动表面，显式变体使用对应语义表面。
+- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，solid / subtle / ghost 使用对应语义表面。
 - 原生按钮动作项自动继承触发器的尺寸与外观。
 
 ### 组合
@@ -107,7 +107,7 @@
 | `size` | `Size` |  | 尺寸：sm / md / lg，默认与 lg 同档：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
 
 ### 事件
 
@@ -139,9 +139,9 @@
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `DISABLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `DISABLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isDisabled` · `isOpenControlled`
+**判据**：`isDisabled` · `isOpenControlled` · `canPress`
 
 ### connect API
 
@@ -164,6 +164,7 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in trigger, not disabled | 展开 / 收起 list；悬停展开时这条路照样在，触摸与键盘都靠它 |
+| `Enter` / `Space` | held in trigger, not disabled | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
 | `Escape` | open，无论焦点是否仍在整组内 | 只收起当前 LayerRegistry 的栈顶层；更晚打开的 Drawer / Popover 先处理自己的 Escape |
 | `Tab` / `Shift+Tab` | open | 走进展开的那一组；收起时 list 带 hidden，里面的按钮一并退出 Tab 序列 |
 
@@ -198,7 +199,13 @@
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'floating' |
+| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-variant` | props.variant |
 | `list` | `data-placement` | props.placement |
 | `list` | `data-state` | 'open' \| 'closed' |
 
@@ -209,29 +216,29 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-float-button-bg` | `list`<br>`trigger` | `background-color` | `default`<br>`not([data-scope])` | `--xh-_float-button-bg` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-bg-active` | `list`<br>`trigger` | `background-color` | `active`<br>`disabled`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-bg-active` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-bg-hover` | `list`<br>`trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-bg-hover` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-border` | `list`<br>`trigger` | `border` | `default`<br>`not([data-scope])` | `--xh-_float-button-border` | float-button 的 list、trigger 部件 border 覆盖槽。 |
-| `--xh-float-button-border-hover` | `list`<br>`trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-border-hover` | float-button 的 list、trigger 部件 border-color 覆盖槽。 |
-| `--xh-float-button-fg` | `list`<br>`root`<br>`trigger` | `--xh-_ring-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`not([data-scope])`<br>`variant=solid` | `--xh-_float-button-fg` | float-button 的 list、root、trigger 部件 --xh-_ring-color、color 覆盖槽。 |
+| `--xh-float-button-bg` | `list`<br>`root`<br>`trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`not([data-scope])`<br>`variant=outline` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_float-button-bg`<br>`--xh-material-frosted-focus-surface` | float-button 的 list、root、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-active` | `list`<br>`trigger` | `background-color` | `active`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`pressed` | `--xh-_action-variant-bg-pressed`<br>`--xh-_float-button-bg-active` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-hover` | `list`<br>`trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])` | `--xh-_action-variant-bg-hover`<br>`--xh-_float-button-bg-hover` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-border` | `list`<br>`root`<br>`trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`not([data-scope])`<br>`variant=outline` | `--xh-_action-variant-border-disabled`<br>`--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-_float-button-border` | float-button 的 list、root、trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-float-button-border-hover` | `list`<br>`root`<br>`trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_float-button-border-hover` | float-button 的 list、root、trigger 部件 border-color 覆盖槽。 |
+| `--xh-float-button-fg` | `list`<br>`root`<br>`trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-_float-button-fg` | float-button 的 list、root、trigger 部件 color 覆盖槽。 |
 | `--xh-float-button-gap` | `list`<br>`root` | `gap` | `default` | `--xh-space-2` | float-button 的 list、root 部件 gap 覆盖槽。 |
-| `--xh-float-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | float-button 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-float-button-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-_float-button-glyph-size` | float-button 的 root、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-_layer` | float-button 的 root 部件 z-index 覆盖槽。 |
-| `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default` | `--xh-shape-circle` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
-| `--xh-float-button-shadow` | `list`<br>`trigger` | `box-shadow` | `default`<br>`not([data-scope])` | `--xh-_float-button-shadow` | float-button 的 list、trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-float-button-radius` | `list`<br>`trigger` | `border-radius` | `default` | `--xh-_action-profile-radius`<br>`--xh-shape-circle` | float-button 的 list、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-float-button-shadow` | `list`<br>`root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`pressed`<br>`variant=outline` | `--xh-_float-button-shadow`<br>`none` | float-button 的 list、root、trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size`<br>`--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-共享关键帧 `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
-皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 
