@@ -160,6 +160,13 @@ export function connectToggleGroup<T extends PropTypes>(
         'tabindex': itemTabIndex(item),
         'data-state': selected ? 'on' : 'off',
         'data-disabled': dataAttr(disabled),
+        // 段是 Action Control 的 text 档定尺按钮：盒型、三档几何与四态面由家族配方给；
+        // variant 未提供时按皮肤缺省档（subtle）投影，皮肤按 data-variant 改写桥接槽
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'text',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-xh-action-variant': prop('variant') ?? 'subtle',
         'onClick': () => {
           if (!disabled)
             send({ type: 'ITEM.TOGGLE', value: item.value })

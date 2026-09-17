@@ -224,6 +224,19 @@ describe('connectToggleGroup ARIA 两套语义', () => {
     expect(itemProps(service, { value: 'a' }).type).toBe('button')
   })
 
+  it('条目接 Action Control 的 text 档：恒显，形态随 variant 缺省 subtle，档位随 size 缺省 md', () => {
+    expect(itemProps(makeService().service, { value: 'a' })).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'subtle',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
+    const item = itemProps(makeService({ variant: 'outline', size: 'sm' }).service, { value: 'a' })
+    expect(item['data-xh-action-variant']).toBe('outline')
+    expect(item['data-xh-action-size']).toBe('sm')
+  })
+
   it('禁用一律 aria-disabled，绝不输出原生 disabled', () => {
     const { service } = makeService()
     const item = itemProps(service, { value: 'a', disabled: true })
