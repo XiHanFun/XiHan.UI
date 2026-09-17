@@ -7,7 +7,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "motion": 1,
   "press": 30,
   "scroll": 16,
-  "selection": 4,
+  "selection": 3,
   "shape": 16,
   "text": 56,
 }
@@ -154,7 +154,6 @@ exports[`family-backlog 键集合 > selection 1`] = `
 [
   "anchor:link",
   "tag-group:tag/root",
-  "toggle-group:item",
   "toggle:root",
 ]
 `;

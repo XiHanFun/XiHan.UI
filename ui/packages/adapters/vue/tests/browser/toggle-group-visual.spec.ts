@@ -49,6 +49,37 @@ afterEach(async () => {
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
+/** 语义色令牌在该元素上解到的颜色。 */
+function resolveColor(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.backgroundColor = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
+
+/** 令过渡即时完成：这里断言的是稳定态的颜色与几何，不是过渡中间帧。 */
+function freezeMotion(): void {
+  host!.style.setProperty('--xh-motion-duration-micro', '0ms')
+  host!.style.setProperty('--xh-motion-duration-press', '0ms')
+  host!.style.setProperty('--xh-motion-duration-release', '0ms')
+}
+
+/** 在空白处松开：mousedown 与 mouseup 的目标不同，不会派 click，选中值不变。 */
+async function releaseAway(): Promise<void> {
+  if (!pressed)
+    return
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 0, y: 0, button: 'left', buttons: 0, clickCount: 1 })
+  pressed = false
+}
+
+async function press(item: HTMLElement): Promise<void> {
+  const rect = item.getBoundingClientRect()
+  pointer = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', ...pointer, button: 'left', buttons: 1, clickCount: 1 })
+  pressed = true
+}
 
 /** 语义形状令牌在该元素上解到的像素值。 */
 function shapePx(element: HTMLElement, token: string): number {
@@ -122,5 +153,52 @@ describe('切换按钮组视觉', () => {
   it('separators=false 时不生成分隔线', () => {
     mount({ separators: false })
     expect(host!.querySelector('[data-xh-toggle-group-separator]')).toBeNull()
+  })
+
+  it('段接 Action Control text 档：缺省淡底段 hover 200 / pressed 300 不缩放，选中段品牌淡底 + 淡底前景，悬停 20%', async () => {
+    mount()
+    freezeMotion()
+    const root = host!.querySelector<HTMLElement>(`[data-scope='toggle-group'][data-part='root']`)!
+    const [on, idle] = [...root.querySelectorAll<HTMLElement>(`[data-part='item']`)] as [HTMLElement, HTMLElement]
+    expect(on.dataset.xhActionControl).toBe('')
+    expect(on.dataset.xhActionProfile).toBe('text')
+    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle', root))
+    expect(getComputedStyle(on).color).toBe(resolveColor('--xh-fg-on-brand-subtle', root))
+    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
+
+    await userEvent.hover(idle)
+    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
+    await press(idle)
+    expect(idle.matches(':active')).toBe(true)
+    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', root))
+    expect(getComputedStyle(idle).scale).toBe('none')
+    await releaseAway()
+
+    await userEvent.hover(on)
+    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-hover', root))
+    expect(getComputedStyle(on).color).toBe(resolveColor('--xh-fg-on-brand-subtle', root))
+    await press(on)
+    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-active', root))
+    expect(getComputedStyle(on).scale).toBe('none')
+  })
+
+  it('outline 与 ghost 的段坐在画布上：hover 100 / pressed 200', async () => {
+    for (const variant of ['outline', 'ghost'] as const) {
+      mount({ variant })
+      freezeMotion()
+      const root = host!.querySelector<HTMLElement>(`[data-scope='toggle-group'][data-part='root']`)!
+      const idle = root.querySelectorAll<HTMLElement>(`[data-part='item']`)[1]!
+      expect(getComputedStyle(idle).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+      await userEvent.hover(idle)
+      expect(getComputedStyle(idle).backgroundColor, `${variant} hover`).toBe(resolveColor('--xh-bg-subtle', root))
+      await press(idle)
+      expect(getComputedStyle(idle).backgroundColor, `${variant} pressed`).toBe(resolveColor('--xh-bg-subtle-hover', root))
+      await releaseAway()
+      app?.unmount()
+      app = null
+      host?.remove()
+      host = null
+      await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+    }
   })
 })

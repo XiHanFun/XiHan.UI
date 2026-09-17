@@ -67870,16 +67870,17 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-active",
@@ -67888,18 +67889,21 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
         "disabled",
-        "not([data-disabled])"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-active"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-disabled",
@@ -67908,7 +67912,7 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
@@ -67917,7 +67921,7 @@
         "--xh-bg-muted"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-hover",
@@ -67926,18 +67930,20 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-hover"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-on",
@@ -67946,16 +67952,17 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "focus-visible",
         "state=on"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-on"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-on-active",
@@ -67964,19 +67971,22 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
         "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-on-active"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-on-disabled",
@@ -67985,7 +67995,7 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
@@ -67995,7 +68005,7 @@
         "--xh-_toggle-group-item-bg-on"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-on-hover",
@@ -68004,19 +68014,21 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
+        "loading",
         "not([data-disabled])",
+        "not([data-loading])",
         "state=on"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-on-hover"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background 覆盖槽。"
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-border",
@@ -68025,16 +68037,25 @@
         "item"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-border"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 border 覆盖槽。"
+      "description": "toggle-group 的 item 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-border-disabled",
@@ -68043,7 +68064,7 @@
         "item"
       ],
       "property": [
-        "border"
+        "border-color"
       ],
       "state": [
         "disabled"
@@ -68052,7 +68073,7 @@
         "--xh-border-subtle"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 border 覆盖槽。"
+      "description": "toggle-group 的 item 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-border-on",
@@ -68061,16 +68082,25 @@
         "item"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-border-on"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 border 覆盖槽。"
+      "description": "toggle-group 的 item 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-border-on-disabled",
@@ -68079,7 +68109,7 @@
         "item"
       ],
       "property": [
-        "border"
+        "border-color"
       ],
       "state": [
         "disabled",
@@ -68089,7 +68119,7 @@
         "--xh-_toggle-group-item-border-on"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 border 覆盖槽。"
+      "description": "toggle-group 的 item 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-fg",
@@ -68101,7 +68131,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-fg"
@@ -68137,6 +68175,14 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [
@@ -68293,10 +68339,18 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [
-        "--xh-_toggle-group-highlight"
+        "--xh-_toggle-group-item-highlight-on"
       ],
       "visibility": "public",
       "description": "toggle-group 的 item 部件 box-shadow 覆盖槽。"

@@ -21,7 +21,6 @@
   "selection": {
     "anchor:link": "导航当前页字色是 --xh-fg-brand，应为 --xh-fg-brand-strong；待本组件迁移",
     "tag-group:tag/root": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "toggle-group:item": "无滑块开关的选中底是 （没写 background），应为 --xh-bg-brand-subtle；无滑块开关的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "toggle:root": "无滑块开关的选中字色（桥接槽 --xh-action-fg-rest 解析到底）是 --xh-fg-brand，应为 --xh-fg-on-brand-subtle；待本组件迁移"
   },
   "ladder": {

@@ -65,6 +65,12 @@ export const toggleGroupSuite: ConformanceSuite = {
               'tabindex': '-1',
               // 集合条目绝不输出原生 disabled
               'disabled': null,
+              // 段接 Action Control 的 text 档：恒显，形态缺省 subtle，档位随 size 缺省 md
+              'data-xh-action-control': '',
+              'data-xh-action-profile': 'text',
+              'data-xh-action-variant': 'subtle',
+              'data-xh-action-display': 'always',
+              'data-xh-action-size': 'md',
             },
             {
               'role': 'radio',
