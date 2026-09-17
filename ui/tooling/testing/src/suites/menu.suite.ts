@@ -73,8 +73,12 @@ export const menuSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-placement': 'bottom-start',
           },
-          // 收起态没有锚点：条目连同 content 一起 hidden
+          // 收起态没有锚点：条目连同 content 一起 hidden。条目走 Collection Item 的 overlay 语境，不报 aria-selected
           'item[0]': {
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'overlay',
+            'aria-selected': null,
             'role': 'menuitem',
             'aria-disabled': 'false',
             'disabled': null,
@@ -83,7 +87,7 @@ export const menuSuite: ConformanceSuite = {
             'tabindex': '-1',
           },
           'item[2]': { 'data-value': 'delete', 'tabindex': '-1' },
-          'separator': { 'role': 'separator', 'aria-orientation': 'horizontal' },
+          'separator': { 'role': 'separator', 'aria-orientation': 'horizontal', 'data-xh-collection-separator': '' },
         },
       },
     },

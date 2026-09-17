@@ -106,8 +106,8 @@ export interface XhMenuPositionerProps extends ComponentPropsWithRef<'div'> {
 /** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhMenuPositioner({ children, container, ...rest }: XhMenuPositionerProps): ReactNode {
   const ctx = useMenuContext()
-  // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
-  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
+  // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里的条子走 4px 档
+  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div

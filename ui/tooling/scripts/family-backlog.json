@@ -23,7 +23,6 @@
   },
   "selection": {
     "anchor:link": "导航当前页字色是 --xh-fg-brand，应为 --xh-fg-brand-strong；待本组件迁移",
-    "menu:trigger": "[data-state='open'] 的底是 --xh-bg-brand-subtle，打开中不是选中，不用品牌色；待本组件迁移",
     "menubar:trigger": "[data-state='open'] 的底是 --xh-bg-brand-subtle，打开中不是选中，不用品牌色；待本组件迁移",
     "segmented:indicator": "滑块 indicator 的底是 --xh-bg-surface，应为 --xh-bg-surface-raised；滑块 indicator 的描边是 （没写 border），应为 --xh-border-default；待本组件迁移",
     "tabs:indicator": "滑块 indicator 的底是 （没写 background），应为 --xh-bg-surface-raised；滑块 indicator 的描边是 （没写 border），应为 --xh-border-default；滑块 indicator 的落影是 （没写 box-shadow），应为 --xh-elevation-raised；待本组件迁移",
@@ -68,7 +67,6 @@
     "image-viewer:close-trigger:pressed": "background: color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent)，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
     "image-viewer:zoom-in-trigger:hover": "background: color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent)，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
     "image-viewer:zoom-in-trigger:pressed": "background: color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent)，交互态的底只从语义面派生（bg-subtle / brand / brand-subtle 阶梯、fg-default / muted / brand / on-brand、语气与配方槽）；待本组件迁移",
-    "menu:item:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "menubar:item:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "pagination:jumper:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "pagination:prev-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
@@ -109,8 +107,6 @@
   "scroll": {
     "command:list:unwired": "命令面板尚未接自绘条，随 command 提交接线",
     "command:list:overscroll": "浮层面缺 overscroll-behavior: contain，随 command 提交补",
-    "menu:content:size": "浮层宿主未传 size: 'sm'，随 menu 提交补",
-    "menu:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 menu 提交补",
     "context-menu:content:size": "浮层宿主未传 size: 'sm'，随 context-menu 提交补",
     "context-menu:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 context-menu 提交补",
     "menubar:content:unwired": "菜单栏下拉尚未接自绘条，随 menubar 提交接线（接线时把 positioner 上的 --xh-scrollbar-track-bg 加回）",
@@ -199,7 +195,6 @@
     "floating-panel:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
     "hover-card:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "image-viewer:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "menu:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "menubar:content:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "menubar:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "pagination:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",

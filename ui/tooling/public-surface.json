@@ -11649,6 +11649,7 @@
     "data-xh-action-variant",
     "data-xh-collection-context",
     "data-xh-collection-item",
+    "data-xh-collection-separator",
     "data-xh-collection-size",
     "data-xh-collection-slot",
     "data-xh-field-affix",

@@ -72,6 +72,8 @@ async function mountMenu(): Promise<void> {
   submenu.style.transition = 'none'
   submenu.setAttribute('aria-haspopup', 'menu')
   submenu.setAttribute('data-state', 'open')
+  // 子层开着时连接层同时报 data-in-path：打开路径的面由 Collection Item 配方按它给
+  submenu.setAttribute('data-in-path', '')
 }
 
 afterEach(() => {
