@@ -118,20 +118,24 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('checkbox M1 控制盒与三态', () => {
-  it('primary 保留实体海拔，secondary 在表面中使用低强调控制盒', async () => {
+describe('checkbox 字段家族控制盒与三态', () => {
+  it('方框是字段家族的控制盒：canvas 底 + border-control 描边 + 无影无顶光，勾中后以语气色填充', async () => {
     await mount([
-      h(XhCheckbox, { 'data-testid': 'primary', 'defaultChecked': true }, () => '主要'),
-      h(XhCheckbox, { 'data-testid': 'secondary', 'defaultChecked': true, 'variant': 'secondary' }, () => '次级'),
+      h(XhCheckbox, { 'data-testid': 'off' }, () => '未勾'),
+      h(XhCheckbox, { 'data-testid': 'on', 'defaultChecked': true }, () => '勾中'),
     ])
 
-    const primary = getComputedStyle(labelledBox('primary'))
-    const secondary = getComputedStyle(labelledBox('secondary'))
-    expect(primary.boxShadow).not.toBe('none')
-    expect(secondary.boxShadow).toBe('none')
-    expect(secondary.backgroundColor).toBe(primary.backgroundColor)
-    expect(secondary.borderColor).toBe(primary.borderColor)
-    expect(labelledBox('secondary').getAttribute('data-variant')).toBe('secondary')
+    const off = labelledBox('off')
+    const idle = getComputedStyle(off)
+    expect(idle.backgroundColor).toBe(resolveColor(off, 'var(--xh-bg-canvas)'))
+    expect(idle.borderColor).toBe(resolveColor(off, 'var(--xh-border-control)'))
+    expect(idle.boxShadow).toBe('none')
+    expect(idle.backgroundImage).toBe('none')
+    const on = getComputedStyle(labelledBox('on'))
+    expect(on.backgroundColor).toBe(resolveColor(off, 'var(--xh-bg-brand)'))
+    expect(on.borderColor).toBe(resolveColor(off, 'var(--xh-bg-brand)'))
+    expect(on.boxShadow).toBe('none')
+    expect(labelledBox('on').hasAttribute('data-variant')).toBe(false)
   })
 
   it.each(THEMES)('%s：六种 tone 的实体选中面、勾与半选横杠都保持 3:1', async (theme) => {
@@ -161,9 +165,9 @@ describe('checkbox M1 控制盒与三态', () => {
     }
 
     const off = getComputedStyle(box('brand-off'))
-    expect(off.backgroundColor).toBe(resolveColor(box('brand-off'), 'var(--xh-material-soft-bg)'))
-    expect(off.backgroundImage).not.toBe('none')
-    expect(off.boxShadow).not.toBe('none')
+    expect(off.backgroundColor).toBe(resolveColor(box('brand-off'), 'var(--xh-bg-canvas)'))
+    expect(off.backgroundImage).toBe('none')
+    expect(off.boxShadow).toBe('none')
     expect(off.backdropFilter).toBe('none')
   })
 
@@ -194,38 +198,55 @@ describe('checkbox M1 控制盒与三态', () => {
     expect(getComputedStyle(live).scale).not.toBe('1')
   })
 
-  it('整行 hover 回应，active 撤掉海拔；disabled、readonly 与 invalid 不伪装可操作', async () => {
+  it('整行 hover 时未勾方框描边升一档，勾中方框不换描边；按下缩放并换底；disabled、readonly 与 invalid 不伪装可操作', async () => {
     await mount([
       h(XhCheckbox, { 'data-testid': 'live' }, () => '接收通知'),
+      h(XhCheckbox, { 'data-testid': 'on', 'defaultChecked': true }, () => '已勾中'),
       h(XhCheckbox, { 'data-testid': 'disabled', 'disabled': true }, () => '已禁用'),
+      h(XhCheckbox, { 'data-testid': 'disabled-on', 'disabled': true, 'defaultChecked': true }, () => '已禁用且勾中'),
       h(XhCheckbox, { 'data-testid': 'readonly', 'readOnly': true }, () => '只读'),
       h(XhCheckbox, { 'data-testid': 'invalid', 'invalid': true }, () => '必须同意'),
     ])
     const live = labelledBox('live')
+    const on = labelledBox('on')
     const disabled = labelledBox('disabled')
+    const disabledOn = labelledBox('disabled-on')
     const readonly = labelledBox('readonly')
     const invalid = labelledBox('invalid')
-    const restBorder = getComputedStyle(live).borderColor
-    const restShadow = getComputedStyle(live).boxShadow
     const invalidBorder = getComputedStyle(invalid).borderColor
+    const onBorder = getComputedStyle(on).borderColor
 
     await userEvent.hover(label('live'))
     await finishMotion()
-    expect(getComputedStyle(live).borderColor).not.toBe(restBorder)
-    expect(getComputedStyle(live).boxShadow).not.toBe(restShadow)
+    expect(getComputedStyle(live).borderColor).toBe(resolveColor(live, 'var(--xh-border-control-hover)'))
+    expect(getComputedStyle(live).boxShadow).toBe('none')
+    await userEvent.hover(label('on'))
+    await finishMotion()
+    expect(getComputedStyle(on).borderColor).toBe(onBorder)
     await userEvent.hover(label('invalid'))
     await finishMotion()
     expect(getComputedStyle(invalid).borderColor).toBe(invalidBorder)
 
     await holdSpace(live)
-    expect(getComputedStyle(live).scale).not.toBe('none')
-    expect(getComputedStyle(live).boxShadow).toBe('none')
+    expect(getComputedStyle(live).scale).toBe('0.97')
+    expect(getComputedStyle(live).backgroundColor).toBe(resolveColor(live, 'var(--xh-bg-subtle-hover)'))
+    await releaseSpace()
+    await holdSpace(on)
+    expect(getComputedStyle(on).scale).toBe('0.97')
+    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor(on, 'var(--xh-bg-brand-active)'))
     await releaseSpace()
 
-    expect(getComputedStyle(disabled).cursor).toBe('not-allowed')
+    // 禁用面：border-default + bg-subtle + fg-disabled，不靠 opacity；勾中的禁用方框同样退回中性面，勾由置灰色画出
+    for (const target of [disabled, disabledOn]) {
+      expect(getComputedStyle(target).cursor).toBe('not-allowed')
+      expect(getComputedStyle(target).opacity).toBe('1')
+      expect(getComputedStyle(target).backgroundColor).toBe(resolveColor(target, 'var(--xh-bg-subtle)'))
+      expect(getComputedStyle(target).borderColor).toBe(resolveColor(target, 'var(--xh-border-default)'))
+      expect(getComputedStyle(target).color).toBe(resolveColor(target, 'var(--xh-fg-disabled)'))
+      expect(getComputedStyle(target).boxShadow).toBe('none')
+    }
     expect(getComputedStyle(label('disabled')).cursor).toBe('not-allowed')
-    expect(getComputedStyle(disabled).opacity).not.toBe('1')
-    expect(getComputedStyle(disabled).boxShadow).toBe('none')
+    expect(getComputedStyle(label('disabled')).color).toBe(resolveColor(disabled, 'var(--xh-fg-subtle)'))
     expect(getComputedStyle(readonly).cursor).toBe('default')
     expect(getComputedStyle(label('readonly')).cursor).toBe('default')
     expect(getComputedStyle(readonly).opacity).toBe('1')
@@ -267,7 +288,6 @@ describe('checkbox M1 控制盒与三态', () => {
     expect(getComputedStyle(box('mixed')).outlineStyle).toBe('solid')
     expect(getComputedStyle(box('off')).backgroundImage).toBe('none')
     expect(getComputedStyle(box('off')).boxShadow).toBe('none')
-    expect(getComputedStyle(box('disabled')).opacity).toBe('1')
     expect(
       getComputedStyle(indicator('on'), '::before').backgroundColor,
     ).not.toBe(getComputedStyle(indicator('disabled'), '::before').backgroundColor)
@@ -305,6 +325,26 @@ describe('checkbox M1 控制盒与三态', () => {
       app = null
       host = null
     }
+  })
+
+  it('标签文字随 size 档取控件字号，禁用标签落 fg-subtle', async () => {
+    await mount([
+      h(XhCheckbox, { 'data-testid': 'sm', 'size': 'sm' }, () => '小'),
+      h(XhCheckbox, { 'data-testid': 'md' }, () => '中'),
+      h(XhCheckbox, { 'data-testid': 'lg', 'size': 'lg' }, () => '大'),
+    ])
+    const probe = label('md')
+    const px = (token: string): number => {
+      const span = document.createElement('span')
+      span.style.fontSize = `var(${token})`
+      probe.append(span)
+      const value = Number.parseFloat(getComputedStyle(span).fontSize)
+      span.remove()
+      return value
+    }
+    expect(Number.parseFloat(getComputedStyle(label('sm')).fontSize)).toBe(px('--xh-control-font-sm'))
+    expect(Number.parseFloat(getComputedStyle(label('md')).fontSize)).toBe(px('--xh-control-font-md'))
+    expect(Number.parseFloat(getComputedStyle(label('lg')).fontSize)).toBe(px('--xh-control-font-lg'))
   })
 
   it('三尺寸、compact 与 RTL 保持盒/勾比例和可见文字间距，长标签不压缩控制盒', async () => {

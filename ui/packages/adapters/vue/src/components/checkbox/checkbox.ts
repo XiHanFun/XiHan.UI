@@ -6,7 +6,7 @@
 // 提供 checkbox 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { CheckboxCheckedState, CheckboxSchema, CheckboxVariant } from '@xihan-ui/headless'
+import type { CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, useId } from 'vue'
@@ -31,7 +31,6 @@ export const XhCheckbox = defineComponent({
     name: { type: String },
     value: { type: String },
     tone: String as PropType<Tone>,
-    variant: String as PropType<CheckboxVariant>,
     size: String as PropType<Size>,
   },
   slots: Object as SlotsType<{

@@ -7585,15 +7585,6 @@
             },
             {
               "kind": "field",
-              "name": "variant",
-              "privacy": "public",
-              "type": {
-                "text": "CheckboxVariant | undefined"
-              },
-              "attribute": "variant"
-            },
-            {
-              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -7729,14 +7720,6 @@
             },
             {
               "type": {
-                "text": "CheckboxVariant | undefined"
-              },
-              "description": "视觉变体；secondary 不绘制控制盒阴影",
-              "name": "variant",
-              "fieldName": "variant"
-            },
-            {
-              "type": {
                 "text": "Size | undefined"
               },
               "description": "尺寸",
@@ -7773,10 +7756,22 @@
               "name": "--xh-checkbox-bg-checked"
             },
             {
+              "name": "--xh-checkbox-bg-checked-pressed"
+            },
+            {
+              "name": "--xh-checkbox-bg-disabled"
+            },
+            {
+              "name": "--xh-checkbox-bg-pressed"
+            },
+            {
               "name": "--xh-checkbox-border"
             },
             {
               "name": "--xh-checkbox-border-checked"
+            },
+            {
+              "name": "--xh-checkbox-border-disabled"
             },
             {
               "name": "--xh-checkbox-border-hover"
@@ -7788,10 +7783,10 @@
               "name": "--xh-checkbox-fg"
             },
             {
-              "name": "--xh-checkbox-fg-invalid"
+              "name": "--xh-checkbox-fg-disabled"
             },
             {
-              "name": "--xh-checkbox-highlight"
+              "name": "--xh-checkbox-fg-invalid"
             },
             {
               "name": "--xh-checkbox-icon-size"
@@ -7819,18 +7814,6 @@
             },
             {
               "name": "--xh-checkbox-shadow"
-            },
-            {
-              "name": "--xh-checkbox-shadow-disabled"
-            },
-            {
-              "name": "--xh-checkbox-shadow-hover"
-            },
-            {
-              "name": "--xh-checkbox-shadow-pressed"
-            },
-            {
-              "name": "--xh-checkbox-shadow-readonly"
             }
           ]
         }

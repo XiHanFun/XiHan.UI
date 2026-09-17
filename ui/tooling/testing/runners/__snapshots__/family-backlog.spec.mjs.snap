@@ -2,21 +2,20 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 14,
+  "edge": 13,
   "ladder": 49,
   "motion": 1,
-  "press": 27,
+  "press": 26,
   "scroll": 16,
   "selection": 3,
   "shape": 15,
-  "text": 52,
+  "text": 50,
 }
 `;
 
 exports[`family-backlog 键集合 > edge 1`] = `
 [
   "button:root:raised",
-  "checkbox:root:raised",
   "clipboard:root:raised",
   "color-picker:area-thumb:raised",
   "color-picker:control:raised",
@@ -110,7 +109,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "calendar-range-picker:prev-trigger",
   "calendar-range-picker:prev-year-trigger",
   "carousel:indicator",
-  "checkbox:root",
   "color-swatch-picker:item",
   "floating-panel:trigger",
   "form:error-summary-item",
@@ -179,8 +177,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "calendar-picker:root:icon-size",
   "calendar-range-picker:root:icon-size",
   "carousel:root:icon-size",
-  "checkbox:label:color",
-  "checkbox:label:font-size",
   "color-picker:label:font-size",
   "color-slider:label:color",
   "color-slider:label:spacing",

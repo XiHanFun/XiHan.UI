@@ -8706,7 +8706,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-bg"
+        "--xh-bg-canvas"
       ],
       "visibility": "public",
       "description": "checkbox 的 root 部件 background-color 覆盖槽。"
@@ -8726,6 +8726,73 @@
       ],
       "defaultToken": [
         "--xh-_checkbox-accent"
+      ],
+      "visibility": "public",
+      "description": "checkbox 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-bg-checked-pressed",
+      "component": "checkbox",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "is([data-state='checked'], [data-state='indeterminate'])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly",
+        "state=checked",
+        "state=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
+      ],
+      "visibility": "public",
+      "description": "checkbox 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-bg-disabled",
+      "component": "checkbox",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "checkbox 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-bg-pressed",
+      "component": "checkbox",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "checkbox 的 root 部件 background-color 覆盖槽。"
@@ -8773,6 +8840,24 @@
       "description": "checkbox 的 root 部件 border-color 覆盖槽。"
     },
     {
+      "name": "--xh-checkbox-border-disabled",
+      "component": "checkbox",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "checkbox 的 root 部件 border-color 覆盖槽。"
+    },
+    {
       "name": "--xh-checkbox-border-hover",
       "component": "checkbox",
       "part": [
@@ -8790,10 +8875,14 @@
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-readonly])",
-        "readonly"
+        "not([data-state='checked'])",
+        "not([data-state='indeterminate'])",
+        "readonly",
+        "state=checked",
+        "state=indeterminate"
       ],
       "defaultToken": [
-        "--xh-_checkbox-accent"
+        "--xh-border-control-hover"
       ],
       "visibility": "public",
       "description": "checkbox 的 label、root 部件 border-color 覆盖槽。"
@@ -8837,6 +8926,27 @@
       "description": "checkbox 的 root 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-checkbox-fg-disabled",
+      "component": "checkbox",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "background-color",
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "state=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "checkbox 的 indicator、root 部件 background-color、color 覆盖槽。"
+    },
+    {
       "name": "--xh-checkbox-fg-invalid",
       "component": "checkbox",
       "part": [
@@ -8854,24 +8964,6 @@
       ],
       "visibility": "public",
       "description": "checkbox 的 label、text 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-highlight",
-      "component": "checkbox",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-soft-highlight"
-      ],
-      "visibility": "public",
-      "description": "checkbox 的 root 部件 background-image 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-icon-size",
@@ -8940,7 +9032,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-disabled"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "checkbox 的 label 部件 color 覆盖槽。"
@@ -9028,92 +9120,6 @@
       ],
       "state": [
         "default"
-      ],
-      "defaultToken": [
-        "--xh-_checkbox-shadow-rest"
-      ],
-      "visibility": "public",
-      "description": "checkbox 的 root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-shadow-disabled",
-      "component": "checkbox",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "checkbox 的 root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-shadow-hover",
-      "component": "checkbox",
-      "part": [
-        "label",
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "@media (hover: hover)",
-        "disabled",
-        "hover",
-        "invalid",
-        "not([data-disabled])",
-        "not([data-invalid])",
-        "not([data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "--xh-_checkbox-shadow-hover"
-      ],
-      "visibility": "public",
-      "description": "checkbox 的 label、root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-shadow-pressed",
-      "component": "checkbox",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "active",
-        "disabled",
-        "not([data-disabled])",
-        "not([data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "checkbox 的 root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-checkbox-shadow-readonly",
-      "component": "checkbox",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled",
-        "not([data-disabled])",
-        "readonly"
       ],
       "defaultToken": [
         "none"

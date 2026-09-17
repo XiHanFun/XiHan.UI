@@ -5237,7 +5237,6 @@
       "CheckboxGroupValueChangeDetails",
       "CheckboxSchema",
       "CheckboxTranslations",
-      "CheckboxVariant",
       "ClipboardApi",
       "ClipboardCopyErrorDetails",
       "ClipboardIndicatorProps",
@@ -9687,8 +9686,7 @@
       "required",
       "size",
       "tone",
-      "value",
-      "variant"
+      "value"
     ],
     "checkbox-group": [
       "collection",
@@ -12572,11 +12570,16 @@
     "--xh-cascader-trigger-gap",
     "--xh-checkbox-bg",
     "--xh-checkbox-bg-checked",
+    "--xh-checkbox-bg-checked-pressed",
+    "--xh-checkbox-bg-disabled",
+    "--xh-checkbox-bg-pressed",
     "--xh-checkbox-border",
     "--xh-checkbox-border-checked",
+    "--xh-checkbox-border-disabled",
     "--xh-checkbox-border-hover",
     "--xh-checkbox-border-invalid",
     "--xh-checkbox-fg",
+    "--xh-checkbox-fg-disabled",
     "--xh-checkbox-fg-invalid",
     "--xh-checkbox-group-gap",
     "--xh-checkbox-group-icon-size",
@@ -12611,7 +12614,6 @@
     "--xh-checkbox-group-select-all-trigger-font-weight",
     "--xh-checkbox-group-select-all-trigger-gap",
     "--xh-checkbox-group-select-all-trigger-radius",
-    "--xh-checkbox-highlight",
     "--xh-checkbox-icon-size",
     "--xh-checkbox-indicator-fg",
     "--xh-checkbox-label-fg",
@@ -12621,10 +12623,6 @@
     "--xh-checkbox-label-leading",
     "--xh-checkbox-radius",
     "--xh-checkbox-shadow",
-    "--xh-checkbox-shadow-disabled",
-    "--xh-checkbox-shadow-hover",
-    "--xh-checkbox-shadow-pressed",
-    "--xh-checkbox-shadow-readonly",
     "--xh-clipboard-control-active-layer",
     "--xh-clipboard-control-gap",
     "--xh-clipboard-copy-trigger-attached-radius",
@@ -16427,8 +16425,7 @@
         "required",
         "size",
         "tone",
-        "value",
-        "variant"
+        "value"
       ],
       "events": [
         "checked-change"

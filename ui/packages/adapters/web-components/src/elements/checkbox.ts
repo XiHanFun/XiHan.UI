@@ -6,7 +6,7 @@
 // 提供 checkbox 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema, CheckboxVariant, FormControlState } from '@xihan-ui/headless'
+import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema, FormControlState } from '@xihan-ui/headless'
 import { checkboxAnatomy, checkboxMachine, checkboxMeta, connectCheckbox, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -25,7 +25,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} invalid - 校验失败态
  * @attr {boolean} required - 必填
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @attr {'primary'|'secondary'} variant - 视觉变体；secondary 不绘制控制盒阴影
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
  * @csspart root - role=checkbox 的按钮（承载 aria-checked / data-state）
@@ -49,7 +48,6 @@ export class XhCheckboxElement extends XhElement {
     name: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     tone: {},
-    variant: {},
     size: {},
   }
 
@@ -62,7 +60,6 @@ export class XhCheckboxElement extends XhElement {
   declare name?: string
   declare value?: string
   declare tone?: Tone
-  declare variant?: CheckboxVariant
   declare size?: Size
 
   private readonly notify = (details: CheckboxCheckedChangeDetails): void => {
@@ -93,7 +90,6 @@ export class XhCheckboxElement extends XhElement {
       invalid: control.invalid,
       required: control.required,
       tone: this.tone,
-      variant: this.variant,
       size: this.size,
       name: this.name,
       value: this.value,
