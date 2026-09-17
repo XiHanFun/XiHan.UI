@@ -19730,10 +19730,16 @@
               "name": "--xh-drawer-close-bg-active"
             },
             {
+              "name": "--xh-drawer-close-bg-focus"
+            },
+            {
               "name": "--xh-drawer-close-bg-hover"
             },
             {
               "name": "--xh-drawer-close-fg"
+            },
+            {
+              "name": "--xh-drawer-close-fg-focus"
             },
             {
               "name": "--xh-drawer-close-fg-hover"

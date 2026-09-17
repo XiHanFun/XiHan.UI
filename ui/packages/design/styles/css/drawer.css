@@ -468,7 +468,8 @@
   /*
    * 关闭钮是面板角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
    * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
-   * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放；
+   * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
+   * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面（与 dialog 一致），缺省仍是透明底与悬停字色；
    * 静息前景取 muted 字色，悬停 / 按下回到 fg-default。
    */
   [data-scope='drawer'][data-part='close-trigger'] {
@@ -476,10 +477,11 @@
     --xh-action-radius: var(--xh-drawer-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-drawer-close-bg-hover, var(--xh-_action-variant-bg-hover));
     --xh-action-bg-pressed: var(--xh-drawer-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-drawer-close-bg-focus, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-fg-rest: var(--xh-drawer-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-pressed));
-    --xh-action-fg-focus-visible: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-focus-visible));
+    --xh-action-fg-focus-visible: var(--xh-drawer-close-fg-focus, var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-focus-visible)));
     /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-_action-profile-glyph-size));
 
