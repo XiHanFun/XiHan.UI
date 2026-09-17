@@ -6,7 +6,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "ladder": 58,
   "motion": 1,
   "press": 50,
-  "scroll": 27,
+  "scroll": 26,
   "selection": 18,
   "shape": 19,
   "text": 68,
@@ -190,7 +190,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "popover:content:overscroll",
   "popover:content:size",
   "transfer:list:unwired",
-  "virtualizer:viewport:overscroll",
 ]
 `;
 

@@ -144,7 +144,6 @@
     "color-picker:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 color-picker 提交补",
     "listbox:content:unwired": "页内定高小列表尚未接自绘条，随 listbox 提交接线",
     "transfer:list:unwired": "穿梭框列表尚未接自绘条，随 transfer 提交接线",
-    "virtualizer:viewport:overscroll": "页内结构容器多写了 overscroll-behavior: contain，真源只给浮层、模态 body 与粘底视口，随 virtualizer 提交删",
     "calendar-picker:grid:overscroll": "快速选年网格多写了 overscroll-behavior: contain，随 calendar-picker 提交删",
     "calendar-range-picker:grid:overscroll": "快速选年网格多写了 overscroll-behavior: contain，随 calendar-range-picker 提交删",
     "dialog:body:overscroll": "模态 body 缺 overscroll-behavior: contain，随 dialog 提交补",
