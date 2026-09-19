@@ -144,14 +144,23 @@ export const tagsInputMachine = createMachine({
     // 光标锚点与编辑缓冲都不受控、不对外通知：它们是交互过程，不是组件的值
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     editedValue: cell<string>(() => ({ defaultValue: '' })),
+    // 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
+  // 按住途中转入禁用 / 只读，或标签与文本都被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
+  watch: ({ track, prop, context, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value'), context.dep('inputValue')], () => action(['releaseWhenInert']))
+  },
   // 这几条从哪个状态发出都一样，挂根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'TAG.ADD': { guard: 'canEdit', actions: ['addTags'] },
     'VALUE.CLEAR': { guard: 'canEdit', target: 'idle', actions: ['clearAll'] },
+    // 清空按钮的按压与 connect 里它的显隐同一口径：可编辑且有标签或有文本；藏起的按钮不该有按下的回执
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     // 承载焦点的标签节点没了，一律退回输入框
     'ITEM.FOCUS_LOST': { target: 'idle', actions: ['cancelEdit'] },
   },
@@ -217,6 +226,8 @@ export const tagsInputMachine = createMachine({
         const e = event.current()
         return e.type === 'TAG.HIGHLIGHT' && e.value != null
       },
+      canPress: ({ prop, context }) =>
+        !prop('disabled') && !prop('readOnly') && (context.get('value').length > 0 || context.get('inputValue') !== ''),
     },
     actions: {
       resetToDefault: (params) => {
@@ -345,6 +356,13 @@ export const tagsInputMachine = createMachine({
       cancelEdit: ({ context }) => {
         context.set('focusedValue', null)
         context.set('editedValue', '')
+      },
+
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled') || prop('readOnly') || (context.get('value').length === 0 && context.get('inputValue') === ''))
+          context.set('pressed', false)
       },
     },
     effects: {

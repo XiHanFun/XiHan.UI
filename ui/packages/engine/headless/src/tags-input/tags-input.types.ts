@@ -98,6 +98,8 @@ export interface TagsInputSchema extends MachineSchema {
     focusedValue: string | null
     /** 就地编辑的缓冲；提交前不修改 value，Escape 撤销即丢弃它。 */
     editedValue: string
+    /** 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true；抬起、失焦、指针取消或清不了时即撤下。 */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -130,8 +132,12 @@ export interface TagsInputSchema extends MachineSchema {
     /** 适配器补报：承载焦点的标签节点被移出 DOM，浏览器不会为此派发 focusout。 */
     | { type: 'ITEM.FOCUS_LOST' }
     | { type: 'FORM.RESET' }
+    /** 清空按钮被 Space / Enter 或触屏按住；清不了（禁用、只读，或既无标签也无文本）时被守卫拦截。 */
+    | { type: 'PRESS.START' }
+    /** 按住的清空按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'canEdit' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget'
+  guard: 'canEdit' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget' | 'canPress'
   action:
     | 'setValue'
     | 'addTags'
@@ -147,6 +153,9 @@ export interface TagsInputSchema extends MachineSchema {
     | 'commitEdit'
     | 'cancelEdit'
     | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'focusEditInput'
 }
 

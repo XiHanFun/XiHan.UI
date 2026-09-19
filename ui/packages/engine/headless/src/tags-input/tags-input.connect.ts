@@ -9,6 +9,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TagApi } from '../tag'
 import type { TagsInputApi, TagsInputItemProps, TagsInputSchema } from './tags-input.types'
 import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, mergeProps } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { connectStaticTag, tagVariantForControl } from '../tag'
 import { tagsInputAnatomy, tagsInputEditInputId } from './tags-input.anatomy'
 import { appendTags, isAtMax, isOverflow, splitTags, tagsDelimiter } from './tags-input.machine'
@@ -51,6 +52,8 @@ export function connectTagsInput<T extends PropTypes>(
   const overflow = isOverflow(count, max)
   const empty = count === 0
   const canClear = editable && (count > 0 || inputValue !== '')
+  // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   const translations = prop('translations')
   const label = {
@@ -448,6 +451,8 @@ export function connectTagsInput<T extends PropTypes>(
       'data-xh-action-display': 'has-value',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-has-value': dataAttr(count > 0 || inputValue !== ''),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      'data-pressed': dataAttr(context.get('pressed')),
       'type': 'button',
       'aria-label': label.clearTrigger,
       // 不占 Tab 位，键盘用户走 Backspace 逐个删
@@ -455,11 +460,16 @@ export function connectTagsInput<T extends PropTypes>(
       // 没值、只读或禁用就整个收起，不灰留位：有值才出现，出现即可用
       'hidden': !canClear || undefined,
       'onPointerDown': (event: PointerEvent) => {
-        if (event.button !== 0)
-          return
-        // 焦点留在输入框，清完还能接着打字
-        event.preventDefault()
+        // 主键拦默认聚焦，焦点留在输入框，清完还能接着打字；触屏按下仍要进按压通道
+        if (event.button === 0)
+          event.preventDefault()
+        press.onPointerDown(event)
       },
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
       'onClick': (event: MouseEvent) => {
         if (!canClear)
           return

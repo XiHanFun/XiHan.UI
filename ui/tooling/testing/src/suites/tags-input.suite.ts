@@ -2,6 +2,7 @@ import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } fr
 import { tagsInputAnatomy, tagsInputKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // APG 没有"标签输入"这个模式：它是文本框加一串可删条目的组合件。
 // 可核对的规格是"每个控件都要有可及的名字"这条实践，以及 HTML 的文本输入状态。
@@ -864,6 +865,31 @@ export const tagsInputSuite: ConformanceSuite = {
           input: { 'aria-invalid': 'true' },
         },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空按钮投影 data-pressed，抬起、失焦或指针取消撤下；按住不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['tags-input.kbd.press'],
+      fixture: withTags('vue'),
+      // 清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+      props: { defaultValue: ['vue'] },
+      steps: [
+        heldPress('tags-input', 'clear-trigger'),
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'root': { 'data-empty': null }, 'clear-trigger': { hidden: null } }, events: [] } },
+      ],
+    },
+    {
+      name: '禁用、只读，或既无标签也无文本时清空按钮藏着，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: withTags('vue'),
+      props: { defaultValue: ['vue'], disabled: true },
+      steps: [
+        heldPressIgnored('tags-input', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('tags-input', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, value: [] } },
+        heldPressIgnored('tags-input', 'clear-trigger', '既无标签也无文本时清空钮藏着，不接受按压'),
+      ],
     },
   ],
 }

@@ -1026,3 +1026,85 @@ describe('命令式出口', () => {
     expect(h.api().overflow).toBe(false)
   })
 })
+
+describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const keyDown = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+  }
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): PointerEvent => {
+    const event = new PointerEvent(type, { pointerType, button: 0, bubbles: true, cancelable: true })
+    el.dispatchEvent(event)
+    return event
+  }
+  const pressed = (h: Harness): boolean => h.clearTrigger.hasAttribute('data-pressed')
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；按压不清值', () => {
+    const h = mount({ defaultValue: ['a'], defaultInputValue: 'x' })
+    expect(pressed(h)).toBe(false)
+    keyDown(h.clearTrigger, ' ')
+    expect(pressed(h)).toBe(true)
+    keyUp(h.clearTrigger, ' ')
+    expect(pressed(h)).toBe(false)
+    h.clearTrigger.focus()
+    keyDown(h.clearTrigger, 'Enter')
+    expect(pressed(h)).toBe(true)
+    h.clearTrigger.blur()
+    expect(pressed(h)).toBe(false)
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown，焦点仍留在输入框
+    expect(pointer(h.clearTrigger, 'pointerdown', 'touch').defaultPrevented).toBe(true)
+    expect(pressed(h)).toBe(true)
+    pointer(h.clearTrigger, 'pointercancel', 'touch')
+    expect(pressed(h)).toBe(false)
+    pointer(h.clearTrigger, 'pointerdown', 'touch')
+    expect(pressed(h)).toBe(true)
+    pointer(h.clearTrigger, 'pointerup', 'touch')
+    expect(pressed(h)).toBe(false)
+    pointer(h.clearTrigger, 'pointerdown', 'mouse')
+    expect(pressed(h)).toBe(false)
+    expect(h.value()).toEqual(['a'])
+    expect(h.inputValue()).toBe('x')
+  })
+
+  it('不进：禁用、只读，或既无标签也无文本时清空按钮藏着，按住不投影', () => {
+    for (const props of [{ defaultValue: ['a'], disabled: true }, { defaultValue: ['a'], readOnly: true }, {}] as Partial<Props>[]) {
+      const h = mount(props)
+      expect(h.clearTrigger.hasAttribute('hidden')).toBe(true)
+      keyDown(h.clearTrigger, ' ')
+      pointer(h.clearTrigger, 'pointerdown', 'touch')
+      expect(pressed(h)).toBe(false)
+    }
+  })
+
+  it('按住途中标签与文本被清空，或转入禁用 / 只读：按钮藏起、不会再来 keyup，按压面由机器自己收', () => {
+    const cleared = mount({ defaultValue: ['a'] })
+    keyDown(cleared.clearTrigger, 'Enter')
+    expect(pressed(cleared)).toBe(true)
+    cleared.send({ type: 'VALUE.CLEAR' })
+    expect(cleared.value()).toEqual([])
+    expect(pressed(cleared)).toBe(false)
+    // 只剩文本也算有值：只清标签不松，文本再清掉才松
+    const textual = mount({ defaultValue: ['a'], defaultInputValue: 'x' })
+    keyDown(textual.clearTrigger, 'Enter')
+    textual.send({ type: 'VALUE.SET', value: [] })
+    expect(pressed(textual)).toBe(true)
+    textual.send({ type: 'INPUT.CHANGE', value: '' })
+    expect(pressed(textual)).toBe(false)
+
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Partial<Props>[]) {
+      // watch 只在 props 身份变化时复查，走 signal 才惊动它
+      const runtime = createVanillaRuntime()
+      const props = runtime.signal<Partial<Props>>({ defaultValue: ['a'] })
+      const service = createService(tagsInputMachine, { props: () => props.get(), runtime })
+      runtime.start()
+      const trigger = (): Record<string, unknown> => connectTagsInput(service, normalizeProps).getClearTriggerProps() as Record<string, unknown>
+      ;(trigger().onKeyDown as (e: unknown) => void)({ key: 'Enter', repeat: false, isComposing: false, keyCode: 0 })
+      expect(trigger()['data-pressed']).toBe('')
+      props.set({ ...props.get(), ...inert })
+      expect(trigger()['data-pressed']).toBeUndefined()
+      runtime.stop()
+    }
+  })
+})

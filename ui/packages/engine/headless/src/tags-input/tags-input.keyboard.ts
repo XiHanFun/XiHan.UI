@@ -93,5 +93,11 @@ export const tagsInputKeyboard: KeyboardTable = {
       when: 'focus in item-input（就地编辑中）',
       does: '撤销这次改写，标签保持原样，焦点交回输入框',
     },
+    {
+      id: 'tags-input.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in clear-trigger, 有标签或框里有文本, not disabled/readOnly',
+      does: '按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面',
+    },
   ],
 }
