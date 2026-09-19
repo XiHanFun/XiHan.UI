@@ -120,9 +120,9 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 
 **状态**：`idle` · `anchored`
 
-**事件**：`RANGE.ANCHOR` · `RANGE.COMMIT` · `DRAG.SET` · `HOVER.SET` · `HOVER.CLEAR`
+**事件**：`RANGE.ANCHOR` · `RANGE.COMMIT` · `DRAG.SET` · `HOVER.SET` · `HOVER.CLEAR` · `PRESS.START` · `PRESS.END`
 
-**判据**：`startsRange` · `anchorsRange`
+**判据**：`startsRange` · `anchorsRange` · `canPress`
 
 ### connect API
 
@@ -156,6 +156,7 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 | `Enter` / `Space` | focus in grid, 聚焦周期可用且非只读 | 先落起点再落终点。落起点后焦点自动前进一格（挑不了就退一格），方向键走到哪儿预览就铺到哪儿；落终点那一下把两端一并写出。还没钻到 granularity 那一档时这一下是往下钻一层 |
 | `Escape` | focus in grid, 区间已落起点 | 撤掉起点，原来的区间原样还在；不拦默认行为，外层浮层照常收起 |
 | `Tab` / `Shift+Tab` | focus in grid, 区间已落起点 | 焦点离开前把区间收在起点到聚焦日之间；不拦默认行为，焦点照常离开 |
+| `Enter` / `Space` | held in prev-year-trigger / prev-trigger / next-trigger / next-year-trigger / heading-year-trigger / heading-month-trigger / cell-trigger, 该部件可按 | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整张转入禁用也撤下。落起点那一下焦点前进一格，按压面随焦点一起走。整张禁用时谁都不进；只读时日期格不进（翻页与钻层照常）；到界的翻页钮与到顶的标题是原生 disabled，不可选的格子是 aria-disabled，都不进 |
 
 ### ARIA
 
@@ -247,6 +248,7 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 | `grid` | `data-index` | frame.panelOf(panel).index |
 | `grid` | `data-readonly` | ''（条件成立时才出现） |
 | `grid` | `data-view` | view |
+| `cell-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-xh-action-control` | '' |
 | `cell-trigger` | `data-xh-action-display` | 'always' |
 | `cell-trigger` | `data-xh-action-profile` | 'text' |

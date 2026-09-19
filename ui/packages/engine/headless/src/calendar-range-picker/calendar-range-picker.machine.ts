@@ -6,7 +6,7 @@
 // 提供 calendar range picker 相关实现。
 
 import type { CalendarGranularity } from '../shared/calendar'
-import type { CalendarRangePickerSchema } from './calendar-range-picker.types'
+import type { CalendarRangePickerPressedKey, CalendarRangePickerSchema } from './calendar-range-picker.types'
 import { contains, isElement, setup } from '@xihan-ui/core'
 import { resolveSessionDoc } from '@xihan-ui/pointer'
 import {
@@ -25,6 +25,11 @@ const { createMachine } = setup<CalendarRangePickerSchema>()
 const ROOT_SELECTOR = calendarRangePickerAnatomy.build().root.selector
 const CELL_TRIGGER_SELECTOR = calendarRangePickerAnatomy.build()['cell-trigger'].selector
 
+/** 日期格的按压键以 cell: 开头；只读只挡这一类。 */
+function isCellKey(key: CalendarRangePickerPressedKey | null): key is `cell:${string}` {
+  return key != null && key.startsWith('cell:')
+}
+
 /** 选中集合的不变量：最多两端、去重且升序。 */
 function normalizeRange(next: readonly string[]): string[] {
   return sortIso(next).slice(0, 2)
@@ -41,6 +46,8 @@ export const calendarRangePickerMachine = createMachine({
     rangeAnchor: params.cell<string | null>(() => ({ defaultValue: null })),
     hoveredValue: params.cell<string | null>(() => ({ defaultValue: null })),
     dragging: params.cell<boolean>(() => ({ defaultValue: false })),
+    // 按压通道：正被按住的那一个（翻页钮 / 标题两截 / 日期格），与选中、聚焦日、区间起点都无关
+    pressed: params.cell<CalendarRangePickerPressedKey | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     ...calendarBaseRefs(),
@@ -50,11 +57,19 @@ export const calendarRangePickerMachine = createMachine({
   initialState: () => 'idle',
   effects: ['trackLiveness'],
   // 作者换了选择粒度，钻层与原选择都失去语义：回到新粒度并清空。
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('granularity')], () => action(['syncGranularity']))
     // 值被宿主整份改写（快捷选项、清空、段位输入）：挑到一半的那个起点作废。
     // 盯的是引用：清空时 [] 换成另一份 []，内容没变也算改写；宿主每次读都归一出新数组的话得自己缓存
     track([() => prop('value')], () => action(['dropRangeAnchor']))
+    // 按住途中整张转入禁用或只读：不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
+    // 钻层时整页格子换掉、标题钮到顶转禁用：被按住的那一个不会再来 keyup / blur（节点被换掉不派 blur），一并松开
+    track([context.dep('activeView')], () => action(['releasePress']))
+    // 视窗挪动（Enter 选中邻月格连带翻页）：按住的那一格随页换掉，只松开格子，正按着的翻页钮留着
+    track([context.dep('visibleStart')], () => action(['releaseCellPress']))
+    // 触屏拖选在按下时释放了指针捕获，手指在网格之外抬起时格子收不到 pointerup：拖动结束即松开格子
+    track([context.dep('dragging')], () => action(['releaseCellPressAfterDrag']))
   },
   // 两个状态都要认的事件
   on: {
@@ -65,6 +80,9 @@ export const calendarRangePickerMachine = createMachine({
     'HOVER.SET': { actions: ['setHoveredValue'] },
     'HOVER.CLEAR': { actions: ['clearHoveredValue'] },
     'DRAG.SET': { actions: ['setDragging'] },
+    // 按压通道：按 key 记按住的那一个；整张禁用不进，只读时日期格不进，部件自身的禁用由 connect 判定后随事件带入
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -100,6 +118,13 @@ export const calendarRangePickerMachine = createMachine({
       anchorsRange: ({ event }) => {
         const e = event.current()
         return e.type === 'RANGE.ANCHOR' && e.value != null
+      },
+      // 整张禁用一票否决；只读只挡日期格（翻页与钻层照常）；到界 / 到顶 / 不可选的事实随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('disabled') || e.disabled)
+          return false
+        return !(prop('readOnly') && isCellKey(e.key))
       },
     },
     effects: {
@@ -234,6 +259,37 @@ export const calendarRangePickerMachine = createMachine({
       },
 
       clearHoveredValue: ({ context }) => context.set('hoveredValue', null),
+
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开。
+      // 格子之间例外：触屏按下落起点时释放了指针捕获，手指滑到另一格抬起，pointerup 落在那一格上，
+      // 松开的仍是先前按住的那一格——同一时刻只有一根手指按在网格上
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END')
+          return
+        const pressed = context.get('pressed')
+        if (pressed === e.key || (isCellKey(pressed) && isCellKey(e.key)))
+          context.set('pressed', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressed')
+        if (pressed != null && (prop('disabled') || (prop('readOnly') && isCellKey(pressed))))
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      releaseCellPress: ({ context }) => {
+        if (isCellKey(context.get('pressed')))
+          context.set('pressed', null)
+      },
+      releaseCellPressAfterDrag: ({ context }) => {
+        if (!context.get('dragging') && isCellKey(context.get('pressed')))
+          context.set('pressed', null)
+      },
     },
   },
 })

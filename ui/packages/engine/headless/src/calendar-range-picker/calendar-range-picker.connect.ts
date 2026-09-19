@@ -6,10 +6,10 @@
 // 提供 calendar range picker 相关实现。
 
 import type { CalendarDate } from '@internationalized/date'
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarCellBaseState, CalendarCellProps, CalendarPeriod } from '../shared/calendar'
-import type { CalendarRangePickerApi, CalendarRangePickerPress, CalendarRangePickerSchema, CalendarRangePickerTranslations } from './calendar-range-picker.types'
-import { dataAttr, isElement, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import type { CalendarRangePickerApi, CalendarRangePickerPress, CalendarRangePickerPressedKey, CalendarRangePickerSchema, CalendarRangePickerTranslations } from './calendar-range-picker.types'
+import { createPressTracker, dataAttr, isElement, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { calendarNavTarget, calendarPageMonths, createCalendarFrame, parseCalendarDate } from '../shared/calendar'
 import { calendarRangePickerAnatomy } from './calendar-range-picker.anatomy'
 
@@ -228,6 +228,33 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       focusBesideAnchor(focusedValue, periodAt(focusedValue)!.start)
   }
 
+  // 按压通道：真源是机器 context 里「正被按住的那一个」，七类可按部件各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 到界的翻页钮与到顶的标题是原生 disabled（不派 keydown / pointerdown），不可选的格子是 aria-disabled（照样派），
+  // 这份事实一律随 PRESS.START 带给机器的守卫；整张禁用与只读由机器按 prop 自己判。
+  // 格子那一路与拖选并存：触屏按下落起点时会释放指针捕获，抬起可能落在另一格上，
+  // 格子的跟踪器因此把「任一格子按着」都算按住，抬起时由机器松开先前那一格
+  const pressed = context.get('pressed')
+  const pressChannel = (key: CalendarRangePickerPressedKey, disabled: boolean): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const cell = key.startsWith('cell:')
+    const handlers = createPressTracker({
+      isPressed: () => {
+        const current = context.get('pressed')
+        return cell ? current != null && current.startsWith('cell:') : current === key
+      },
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+
   // —— 指针路：按下即落起点，松开在另一格上即落终点 ——
   const setPress = (press: CalendarRangePickerPress | null): void => refs.set('press', press)
 
@@ -403,6 +430,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoPrevYear || undefined,
       'data-disabled': dataAttr(!frame.canGoPrevYear),
+      ...pressChannel('prev-year', !frame.canGoPrevYear),
       'onClick': () => frame.stepYear(-1),
     }),
 
@@ -418,6 +446,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoPrev || undefined,
       'data-disabled': dataAttr(!frame.canGoPrev),
+      ...pressChannel('prev', !frame.canGoPrev),
       'onClick': () => frame.stepMonth(-1),
     }),
 
@@ -433,6 +462,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoNext || undefined,
       'data-disabled': dataAttr(!frame.canGoNext),
+      ...pressChannel('next', !frame.canGoNext),
       'onClick': () => frame.stepMonth(1),
     }),
 
@@ -448,6 +478,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoNextYear || undefined,
       'data-disabled': dataAttr(!frame.canGoNextYear),
+      ...pressChannel('next-year', !frame.canGoNextYear),
       'onClick': () => frame.stepYear(1),
     }),
 
@@ -475,6 +506,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       'data-view': view,
       'disabled': !frame.canZoomOutYear || undefined,
       'data-disabled': dataAttr(!frame.canZoomOutYear),
+      ...pressChannel(`heading-year:${frame.panelOf(panel).index}`, !frame.canZoomOutYear),
       'onClick': () => {
         if (frame.canZoomOutYear)
           frame.zoomTo('year')
@@ -496,6 +528,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       'hidden': !frame.canZoomOutMonth || undefined,
       'disabled': !frame.canZoomOutMonth || undefined,
       'data-disabled': dataAttr(!frame.canZoomOutMonth),
+      ...pressChannel(`heading-month:${frame.panelOf(panel).index}`, !frame.canZoomOutMonth),
       'onClick': () => {
         if (frame.canZoomOutMonth)
           frame.zoomTo('month')
@@ -608,6 +641,10 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       const prompt = state.focused && !readOnly && !state.disabled
         ? (anchored ? translations.finishRangeSelectionPrompt : translations.startRangeSelectionPrompt)
         : undefined
+      // 格子按 ISO 键记按住的那一格；不可选（越界 / 作者判定不可用）的格子不进，只读由机器按 prop 挡。
+      // 指针的按下 / 抬起先过跟踪器（触屏投影按压面）再走拖选那一路，两者互不打断
+      const cellKey: CalendarRangePickerPressedKey = `cell:${item.value}`
+      const cellPress = pressChannel(cellKey, state.disabled)
       return normalize.element({
         ...parts['cell-trigger'].attrs,
         ...stateAttrs(state),
@@ -629,6 +666,11 @@ export function connectCalendarRangePicker<T extends PropTypes>(
         'aria-description': prompt,
         // roving tabindex：整张网格只有聚焦日那一格留在 Tab 序列内
         'tabindex': state.focused ? 0 : -1,
+        'data-pressed': dataAttr(pressed === cellKey),
+        'onKeyDown': cellPress.onKeyDown,
+        'onKeyUp': cellPress.onKeyUp,
+        'onBlur': cellPress.onBlur,
+        'onPointerCancel': cellPress.onPointerCancel,
         'onClick': () => frame.cellClick(item, state, {
           // 指针那一路已在按下 / 松开时落定，click 只剩键盘与读屏合成的那一下
           beforeClick: () => {
@@ -641,8 +683,14 @@ export function connectCalendarRangePicker<T extends PropTypes>(
           },
           onSelect: () => frame.selectAt(item.value),
         }),
-        'onPointerDown': (event: PointerEvent) => pressDown(item.value, event, state.outsideMonth),
-        'onPointerUp': () => pressUp(item.value),
+        'onPointerDown': (event: PointerEvent) => {
+          cellPress.onPointerDown(event)
+          pressDown(item.value, event, state.outsideMonth)
+        },
+        'onPointerUp': () => {
+          cellPress.onPointerUp()
+          pressUp(item.value)
+        },
         // 不可用的格子获得焦点也记锚点，方向键据此起步。
         // 邻月的格子只记聚焦日不翻页：翻了页格子会从指针底下挪走，松开那一下就压在另一格上；
         // 翻页由松开 / click 里的 focusInGrid 做

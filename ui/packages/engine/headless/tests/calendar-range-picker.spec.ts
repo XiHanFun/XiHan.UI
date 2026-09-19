@@ -569,3 +569,205 @@ describe('区间模式', () => {
     expect(h.value()).toEqual([])
   })
 })
+
+describe('按压通道', () => {
+  type Handlers = Record<string, unknown> & {
+    onKeyDown: (e: KeyboardEvent) => void
+    onKeyUp: (e: KeyboardEvent) => void
+    onPointerDown: (e: PointerEvent) => void
+    onPointerUp: () => void
+  }
+  /** 键盘桩：只带跟踪器会读的三个字段。 */
+  const key = (name: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent =>
+    ({ key: name, repeat: false, isComposing: false, keyCode: 0, ...init } as KeyboardEvent)
+  const keyup = (el: HTMLElement, name: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key: name, bubbles: true, cancelable: true }))
+  }
+  const has = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  it('七类部件各走自己的键：只有按住的那一个投影 data-pressed，另一颗钮的 keyup 不串；区间与聚焦日不动', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    press(h.prev, 'Enter')
+    expect(has(h.prev)).toBe(true)
+    expect(has(h.next)).toBe(false)
+    expect(has(h.cell('2024-02-15'))).toBe(false)
+    keyup(h.next, 'Enter')
+    expect(has(h.prev)).toBe(true)
+    keyup(h.prev, 'Enter')
+    expect(has(h.prev)).toBe(false)
+
+    // 翻年钮与标题两截不在这套夹具里，直接走 getter 上的处理器；按面板下标记
+    const prevYear = h.api().getPrevYearTriggerProps() as Handlers
+    prevYear.onKeyDown(key(' '))
+    expect((h.api().getPrevYearTriggerProps() as Handlers)['data-pressed']).toBe('')
+    expect((h.api().getNextYearTriggerProps() as Handlers)['data-pressed']).toBeUndefined()
+    prevYear.onKeyUp(key(' '))
+    expect((h.api().getPrevYearTriggerProps() as Handlers)['data-pressed']).toBeUndefined()
+    const year = h.api().getHeadingYearTriggerProps() as Handlers
+    year.onPointerDown({ pointerType: 'touch' } as PointerEvent)
+    expect((h.api().getHeadingYearTriggerProps() as Handlers)['data-pressed']).toBe('')
+    expect((h.api().getHeadingMonthTriggerProps() as Handlers)['data-pressed']).toBeUndefined()
+    year.onPointerUp()
+    expect((h.api().getHeadingYearTriggerProps() as Handlers)['data-pressed']).toBeUndefined()
+    expect(h.value()).toEqual([])
+    expect(h.api().rangeAnchor).toBeNull()
+    expect(h.focusedValue()).toBe('2024-02-15')
+  })
+
+  it('日期格按 ISO 键记：落起点那一下焦点前进一格，按压面随焦点一起走；收尾那一下焦点留在原地，按住到抬起', async () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    h.cell('2024-02-15').focus()
+    press(h.cell('2024-02-15'), 'Enter')
+    expect(h.api().rangeAnchor).toBe('2024-02-15')
+    await settle()
+    // 焦点挪到了 16 日，15 日已经 blur：不会再来 keyup，按压面跟着走
+    expect(focused()).toBe('2024-02-16')
+    expect(has(h.cell('2024-02-15'))).toBe(false)
+    expect(has(h.cell('2024-02-16'))).toBe(false)
+    press(h.cell('2024-02-16'), 'ArrowRight')
+    await settle()
+    press(h.cell('2024-02-17'), ' ')
+    expect(h.value()).toEqual(['2024-02-15', '2024-02-17'])
+    expect(has(h.cell('2024-02-17'))).toBe(true)
+    press(h.cell('2024-02-17'), ' ', { repeat: true })
+    expect(has(h.cell('2024-02-17'))).toBe(true)
+    keyup(h.cell('2024-02-17'), ' ')
+    expect(has(h.cell('2024-02-17'))).toBe(false)
+  })
+
+  it('触屏按下即投影按压面、拖选起点仍按延时落下；抬起落在另一格上时松开先前按住的那一格', () => {
+    vi.useFakeTimers()
+    try {
+      const h = mount({ defaultFocusedValue: '2024-02-15' })
+      pointerDown(h.cell('2024-02-10'), 'mouse')
+      expect(has(h.cell('2024-02-10'))).toBe(false)
+      pointerUp(h.cell('2024-02-10'), 'mouse')
+
+      // 轻点：按下即投影，起点要等抬手才落；抬起撤下
+      pointerDown(h.cell('2024-02-12'), 'touch')
+      expect(has(h.cell('2024-02-12'))).toBe(true)
+      expect(h.api().rangeAnchor).toBe('2024-02-10')
+      pointerUp(h.cell('2024-02-12'), 'touch')
+      expect(has(h.cell('2024-02-12'))).toBe(false)
+      expect(h.value()).toEqual(['2024-02-10', '2024-02-12'])
+
+      // 按住够久起拖：按压面一直在，手指滑到另一格抬起，那一格的 pointerup 松开的是先前按住的这一格
+      pointerDown(h.cell('2024-02-20'), 'touch')
+      expect(has(h.cell('2024-02-20'))).toBe(true)
+      vi.advanceTimersByTime(250)
+      expect(h.api().dragging).toBe(true)
+      expect(has(h.cell('2024-02-20'))).toBe(true)
+      hover(h.cell('2024-02-22'), 'touch')
+      pointerUp(h.cell('2024-02-22'), 'touch')
+      expect(has(h.cell('2024-02-20'))).toBe(false)
+      expect(has(h.cell('2024-02-22'))).toBe(false)
+      expect(h.value()).toEqual(['2024-02-20', '2024-02-22'])
+
+      // 手指滑出网格再抬起：格子收不到 pointerup，拖动结束（文档级松手）即松开
+      pointerDown(h.cell('2024-02-05'), 'touch')
+      vi.advanceTimersByTime(250)
+      expect(h.api().dragging).toBe(true)
+      expect(has(h.cell('2024-02-05'))).toBe(true)
+      document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerType: 'touch' }))
+      expect(h.api().dragging).toBe(false)
+      expect(has(h.cell('2024-02-05'))).toBe(false)
+
+      // 滚动接管（pointercancel）即撤下
+      pointerDown(h.cell('2024-02-08'), 'touch')
+      expect(has(h.cell('2024-02-08'))).toBe(true)
+      h.cell('2024-02-08').dispatchEvent(new PointerEvent('pointercancel', { bubbles: true, pointerType: 'touch' }))
+      expect(has(h.cell('2024-02-08'))).toBe(false)
+    }
+    finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('不可选的格子（越界 / 作者判定）不进按压面；到界的翻页钮不进', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', min: '2024-02-10', max: '2024-02-28', isDateUnavailable: v => v === '2024-02-20' })
+    press(h.cell('2024-02-05'), 'Enter')
+    expect(has(h.cell('2024-02-05'))).toBe(false)
+    pointerDown(h.cell('2024-02-20'), 'touch')
+    expect(has(h.cell('2024-02-20'))).toBe(false)
+    press(h.next, 'Enter')
+    expect(has(h.next)).toBe(false)
+    press(h.prev, 'Enter')
+    expect(has(h.prev)).toBe(false)
+    press(h.cell('2024-02-15'), 'Enter')
+    expect(has(h.cell('2024-02-15'))).toBe(true)
+  })
+
+  it('只读只挡日期格，翻页与钻层照常；整张禁用谁都不进', () => {
+    const readOnly = mount({ defaultFocusedValue: '2024-02-15', readOnly: true })
+    press(readOnly.cell('2024-02-15'), 'Enter')
+    expect(has(readOnly.cell('2024-02-15'))).toBe(false)
+    press(readOnly.next, 'Enter')
+    expect(has(readOnly.next)).toBe(true)
+    keyup(readOnly.next, 'Enter')
+    const heading = readOnly.api().getHeadingYearTriggerProps() as Handlers
+    heading.onKeyDown(key('Enter'))
+    expect((readOnly.api().getHeadingYearTriggerProps() as Handlers)['data-pressed']).toBe('')
+
+    const disabled = mount({ defaultFocusedValue: '2024-02-15', disabled: true })
+    press(disabled.cell('2024-02-15'), 'Enter')
+    pointerDown(disabled.cell('2024-02-15'), 'touch')
+    expect(has(disabled.cell('2024-02-15'))).toBe(false)
+    const year = disabled.api().getHeadingYearTriggerProps() as Handlers
+    year.onKeyDown(key('Enter'))
+    expect((disabled.api().getHeadingYearTriggerProps() as Handlers)['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中整张转入禁用即松开；转入只读只松开日期格，按着的标题钮留着', () => {
+    const cell = mountDrill({ defaultFocusedValue: '2024-02-15' })
+    pointerDown(cell.cell('2024-02-15'), 'touch')
+    expect(has(cell.cell('2024-02-15'))).toBe(true)
+    cell.setProps({ disabled: true })
+    expect(has(cell.cell('2024-02-15'))).toBe(false)
+
+    const ro = mountDrill({ defaultFocusedValue: '2024-02-15' })
+    pointerDown(ro.cell('2024-02-15'), 'touch')
+    expect(has(ro.cell('2024-02-15'))).toBe(true)
+    ro.setProps({ readOnly: true })
+    expect(has(ro.cell('2024-02-15'))).toBe(false)
+
+    const heading = mountDrill({ defaultFocusedValue: '2024-02-15' })
+    press(heading.yearTrigger, 'Enter')
+    expect(has(heading.yearTrigger)).toBe(true)
+    heading.setProps({ readOnly: true })
+    expect(has(heading.yearTrigger)).toBe(true)
+    heading.setProps({ disabled: true })
+    expect(has(heading.yearTrigger)).toBe(false)
+  })
+
+  it('钻层时一并松开：Enter 在月格上按住那一下钻进日视图，整页格子换掉，不会再来 keyup；标题钮到顶同理', () => {
+    const h = mountDrill({ defaultFocusedValue: '2024-02-15', defaultActiveView: 'month' })
+    h.cell('2024-02-01').focus()
+    press(h.cell('2024-02-01'), 'Enter')
+    expect(h.api().activeView).toBe('day')
+    expect(h.api().getCellTriggerProps({ value: '2024-02-01' })['data-pressed']).toBeUndefined()
+
+    const heading = mountDrill({ defaultFocusedValue: '2024-02-15' })
+    press(heading.yearTrigger, 'Enter')
+    expect(has(heading.yearTrigger)).toBe(true)
+    click(heading.yearTrigger)
+    expect(heading.api().activeView).toBe('year')
+    expect(has(heading.yearTrigger)).toBe(false)
+  })
+
+  it('视窗挪动只松开格子：按住的那一格随页换掉，不会再来 keyup；正按着的翻页钮留着', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    pointerDown(h.cell('2024-02-15'), 'touch')
+    expect(has(h.cell('2024-02-15'))).toBe(true)
+    h.api().goToNextMonth()
+    expect(h.api().visibleMonth.month).toBe(3)
+    expect(h.api().getCellTriggerProps({ value: '2024-02-15' })['data-pressed']).toBeUndefined()
+
+    press(h.next, 'Enter')
+    expect(has(h.next)).toBe(true)
+    click(h.next)
+    expect(h.api().visibleMonth.month).toBe(4)
+    expect(has(h.next)).toBe(true)
+    keyup(h.next, 'Enter')
+    expect(has(h.next)).toBe(false)
+  })
+})

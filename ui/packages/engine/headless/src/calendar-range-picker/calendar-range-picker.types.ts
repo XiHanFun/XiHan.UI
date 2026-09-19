@@ -44,6 +44,19 @@ export interface CalendarRangePickerTranslations {
   todayDate: (date: string) => string
 }
 
+/**
+ * 按压通道里「正被按住的那一个」的键：四颗翻页钮各占一个身份，标题两截按面板下标记，
+ * 日期格按格子的 ISO 键记（同一天在多面板下可能出现两次，两格同时投影是对的：它们就是同一格）。
+ */
+export type CalendarRangePickerPressedKey
+  = | 'prev-year'
+    | 'prev'
+    | 'next'
+    | 'next-year'
+    | `heading-year:${number}`
+    | `heading-month:${number}`
+    | `cell:${string}`
+
 export interface CalendarRangePickerRefs extends CalendarBaseRefs {
   /**
    * 区间选择的边界节点：指针在这些节点之外松开时，选到一半的区间就地收口。
@@ -83,6 +96,12 @@ export interface CalendarRangePickerSchema extends MachineSchema {
     hoveredValue: string | null
     /** 指针正按在格子上拖动：按下即落下起点，在另一格松开即落下终点。 */
     dragging: boolean
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个，该部件投影 data-pressed；没有按住时为 null。
+     * 整张禁用时谁都不进；只读时日期格不进（翻页与钻层照常，选不动的格子不该有按下的回执）。
+     * 与拖选并存：触屏按下先投影按压面，拖选起点仍按延时落下，抬起或拖动结束一并松开。
+     */
+    pressed: CalendarRangePickerPressedKey | null
   }
   computed: Record<string, never>
   refs: CalendarRangePickerRefs
@@ -100,8 +119,12 @@ export interface CalendarRangePickerSchema extends MachineSchema {
     | { type: 'DRAG.SET', dragging: boolean }
     | { type: 'HOVER.SET', value: string }
     | { type: 'HOVER.CLEAR' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，key 说的是哪一个；
+    // disabled 是该部件自身的禁用事实（到界的翻页钮、到顶的标题、不可选的格子），由 connect 判定后随事件带入
+    | { type: 'PRESS.START', key: CalendarRangePickerPressedKey, disabled?: boolean }
+    | { type: 'PRESS.END', key: CalendarRangePickerPressedKey }
   tag: never
-  guard: 'startsRange' | 'anchorsRange'
+  guard: 'startsRange' | 'anchorsRange' | 'canPress'
   action:
     | CalendarBaseAction
     | 'setValue'
@@ -113,6 +136,12 @@ export interface CalendarRangePickerSchema extends MachineSchema {
     | 'dropRangeAnchor'
     | 'setHoveredValue'
     | 'clearHoveredValue'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
+    | 'releasePress'
+    | 'releaseCellPress'
+    | 'releaseCellPressAfterDrag'
   effect: CalendarBaseEffect | 'trackRangeRelease'
 }
 
