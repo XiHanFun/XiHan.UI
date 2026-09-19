@@ -23,6 +23,7 @@ export const dateFieldKeyboard: KeyboardTable = {
     { id: 'date-field.kbd.last', keys: ['End'], when: 'focus in a segment, not disabled', does: '焦点移到末段' },
     { id: 'date-field.kbd.clear', keys: ['Backspace'], when: 'focus in a segment, not disabled/readOnly', does: '清掉本段，焦点不动；整份值随之变成 null' },
     { id: 'date-field.kbd.digit', keys: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], when: 'focus in a segment, not disabled/readOnly', does: '往本段补一位数字；补满（再补一位必溢出或位数用尽）即自动跳下一段。上下午段没有数字位，不收数字' },
+    { id: 'date-field.kbd.press', keys: ['Enter', 'Space'], when: 'held in clear-trigger, 填了哪怕一段, not disabled/readOnly', does: '按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，段位清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面' },
     { id: 'date-field.kbd.day-period', keys: ['a', 'p'], when: 'focus in 上下午段, not disabled/readOnly', does: '直接指定上午 / 下午；上下键在两者之间翻面' },
   ],
 }

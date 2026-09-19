@@ -157,6 +157,8 @@ export interface DateFieldSchema extends MachineSchema {
     typing: DateTypingBuffer | null
     /** 焦点所在的段；焦点在组外时为 null。 */
     focusedSegment: DateSegmentType | null
+    /** 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true；抬起、失焦、指针取消或清不了时即撤下。 */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -178,8 +180,12 @@ export interface DateFieldSchema extends MachineSchema {
     | { type: 'SEGMENT.FOCUS', segment: DateSegmentType }
     | { type: 'SEGMENT.BLUR' }
     | { type: 'FORM.RESET' }
+    /** 清空按钮被 Space / Enter 或触屏按住；清不了（禁用、只读或一段都没填）时被守卫拦截。 */
+    | { type: 'PRESS.START' }
+    /** 按住的清空按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'canEdit'
+  guard: 'canEdit' | 'canPress'
   action:
     | 'syncSegmentsFromValue'
     | 'syncSegmentsFromSet'
@@ -193,6 +199,9 @@ export interface DateFieldSchema extends MachineSchema {
     | 'setFocusedSegment'
     | 'clearFocusedSegment'
     | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 

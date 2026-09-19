@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { dateFieldAnatomy, dateFieldKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 分段日期不在 APG 的模式清单里；每一段都是 role=spinbutton 的节点，规范面落在 spinbutton 上。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#keyboardinteraction'
@@ -871,6 +872,33 @@ export const dateFieldSuite: ConformanceSuite = {
         parts: { 'clear-trigger': { 'aria-label': '清空日期', 'hidden': null } },
       },
       steps: [],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['date-field.kbd.press'],
+      // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+      props: { locale: 'zh-CN', defaultValue: '2026-07-28' },
+      steps: [
+        heldPress('date-field', 'clear-trigger'),
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'root': { 'data-complete': '' }, 'clear-trigger': { hidden: null } }, events: [] } },
+      ],
+    },
+    {
+      name: '禁用、只读或一段都没填时清空钮藏着，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { locale: 'zh-CN', defaultValue: '2026-07-28', disabled: true },
+      steps: [
+        heldPressIgnored('date-field', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('date-field', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+      ],
+    },
+    {
+      name: '一段都没填时清空钮藏着，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { locale: 'zh-CN' },
+      steps: [heldPressIgnored('date-field', 'clear-trigger', '一段都没填时清空钮藏着，不接受按压')],
     },
   ],
 }

@@ -16,6 +16,7 @@ import type {
 } from './date-field.types'
 import { getLocalTimeZone, parseDateTime } from '@internationalized/date'
 import { dataAttr, focusSafely, navIntentFromKey, queryItems, readDirection, resolveLocale, stepIndex } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { dateFieldAnatomy } from './date-field.anatomy'
 import { isMetaSegment } from './date-field.blocks'
 import {
@@ -81,6 +82,8 @@ export function connectDateField<T extends PropTypes>(
   const clearLabel = prop('translations')?.clearTrigger ?? DATE_FIELD_CLEAR_LABEL
   // 填了哪怕一段就能清；禁用与只读下清空钮收起
   const canClear = editable && !empty
+  // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
   // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
 
@@ -333,17 +336,25 @@ export function connectDateField<T extends PropTypes>(
       'data-xh-action-display': 'has-value',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-has-value': dataAttr(!empty),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      'data-pressed': dataAttr(context.get('pressed')),
       'type': 'button',
       // 不进 Tab 序：段位上按退格即可清值；读屏仍能按名字找到它
       'tabindex': -1,
       'aria-label': clearLabel,
       // 没值或不可编辑就整个收起：出现即可用
       'hidden': !canClear || undefined,
-      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个收起的节点里
+      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个收起的节点里；触屏按下仍要进按压通道
       'onPointerDown': (event: PointerEvent) => {
         if (event.button === 0)
           event.preventDefault()
+        press.onPointerDown(event)
       },
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
       'onClick': (event: MouseEvent) => {
         if (!canClear)
           return

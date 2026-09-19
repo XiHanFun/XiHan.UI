@@ -1382,3 +1382,76 @@ describe('段位按段名认领', () => {
     expect(m.api().segmentOf({ segment: 'year' })?.index).toBe(2)
   })
 })
+
+describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (el: HTMLElement, type: 'keydown' | 'keyup', k: string): void => {
+    el.dispatchEvent(new KeyboardEvent(type, { key: k, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): PointerEvent => {
+    const event = new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+    el.dispatchEvent(event)
+    return event
+  }
+  const pressed = (m: Mounted): boolean => m.clear.hasAttribute('data-pressed')
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const m = open({ defaultValue: '2026-07-28' })
+    expect(pressed(m)).toBe(false)
+    key(m.clear, 'keydown', ' ')
+    expect(pressed(m)).toBe(true)
+    key(m.clear, 'keyup', ' ')
+    expect(pressed(m)).toBe(false)
+    key(m.clear, 'keydown', 'Enter')
+    expect(pressed(m)).toBe(true)
+    m.clear.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(m)).toBe(false)
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown，焦点仍留在段位上
+    expect(pointer(m.clear, 'pointerdown', 'touch').defaultPrevented).toBe(true)
+    expect(pressed(m)).toBe(true)
+    pointer(m.clear, 'pointercancel', 'touch')
+    expect(pressed(m)).toBe(false)
+    pointer(m.clear, 'pointerdown', 'touch')
+    expect(pressed(m)).toBe(true)
+    pointer(m.clear, 'pointerup', 'touch')
+    expect(pressed(m)).toBe(false)
+    pointer(m.clear, 'pointerdown', 'mouse')
+    expect(pressed(m)).toBe(false)
+    // 按压不清值
+    expect(m.api().value).toBe('2026-07-28')
+  })
+
+  it('不进：禁用、只读或一段都没填时清空按钮藏着，按住不投影；填了一段就能进', () => {
+    for (const props of [{ defaultValue: '2026-07-28', disabled: true }, { defaultValue: '2026-07-28', readOnly: true }, {}] as Props[]) {
+      const m = open(props)
+      expect(m.clear.hasAttribute('hidden')).toBe(true)
+      key(m.clear, 'keydown', ' ')
+      pointer(m.clear, 'pointerdown', 'touch')
+      expect(pressed(m)).toBe(false)
+    }
+    // 只填了一段（en-US 首段是月，上键从今天的对应位起）：清空按钮出现，按压照进
+    const partial = open()
+    pressKey(partial.seg[0]!, 'ArrowUp')
+    expect(partial.api().value).toBeNull()
+    expect(partial.clear.hasAttribute('hidden')).toBe(false)
+    key(partial.clear, 'keydown', ' ')
+    expect(pressed(partial)).toBe(true)
+  })
+
+  it('按住途中段位被清空或转入禁用 / 只读：按钮藏起、不会再来 keyup，按压面由机器自己收', () => {
+    const cleared = open({ defaultValue: '2026-07-28' })
+    key(cleared.clear, 'keydown', 'Enter')
+    expect(pressed(cleared)).toBe(true)
+    cleared.api().clear()
+    expect(cleared.api().value).toBeNull()
+    expect(cleared.clear.hasAttribute('hidden')).toBe(true)
+    expect(pressed(cleared)).toBe(false)
+
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Props[]) {
+      const m = open({ defaultValue: '2026-07-28' })
+      key(m.clear, 'keydown', 'Enter')
+      expect(pressed(m)).toBe(true)
+      m.setProps(inert)
+      expect(pressed(m)).toBe(false)
+    }
+  })
+})
