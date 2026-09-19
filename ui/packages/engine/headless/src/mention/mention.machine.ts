@@ -65,6 +65,8 @@ export const mentionMachine = createMachine({
     // 高亮不受控、不对外通知：它只服务 aria-activedescendant 与回车的落点
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
     itemCount: cell<number | null>(() => ({ defaultValue: null })),
+    // 按压通道：正被触屏按住的候选，与开合无关
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -79,7 +81,14 @@ export const mentionMachine = createMachine({
   initialState: () => 'closed',
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
+  // 按住途中转入禁用 / 只读 / 加载：不会再来 pointerup，由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
+  },
   on: {
+    // 按压通道：两个状态都认；禁用 / 只读 / 加载与候选自身禁用不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     // 表单重置从任何状态都要认。不设禁用/只读守卫：原生表单的重置算法不看这两个标志
     'FORM.RESET': { actions: ['resetToDefault'] },
     // 这三件事与开合无关，两个状态里都得认
@@ -97,7 +106,8 @@ export const mentionMachine = createMachine({
     open: {
       // 先结算候选条数，再把高亮落到首条：提及浮层恒有高亮，回车才有确定的落点
       entry: ['syncItems', 'highlightFirst'],
-      exit: ['clearHighlightedValue'],
+      // 收起即松开：按住的候选随浮层藏起，不会再来 pointerup
+      exit: ['clearHighlightedValue', 'releasePress'],
       // 定位只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -109,8 +119,32 @@ export const mentionMachine = createMachine({
     },
   },
   implementations: {
+    guards: {
+      // 禁用、只读与加载都插不了候选，一票否决；候选自身的禁用随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('disabled') && !prop('readOnly') && !prop('loading') && !e.disabled
+      },
+    },
     actions: {
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一条候选的抬起不该把正按着的这条松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
+      releasePress: ({ context }) => context.set('pressedValue', null),
+      releaseWhenInert: ({ context, prop }) => {
+        if (context.get('pressedValue') != null && (prop('disabled') || prop('readOnly') || prop('loading')))
+          context.set('pressedValue', null)
+      },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),

@@ -163,6 +163,11 @@ export interface MentionSchema extends MachineSchema {
     highlightedValue: string | null
     /** 当前候选条数；null 表示尚未结算。 */
     itemCount: number | null
+    /**
+     * 按压通道：触屏按住的候选 value；抬起、指针取消或浮层收起即清空。
+     * 焦点恒在输入框，Enter 在同一次 keydown 里插入并收起，键盘那一路没有可见的按住帧，只有触屏进这条通道。
+     */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: MentionRefs
@@ -187,8 +192,12 @@ export interface MentionSchema extends MachineSchema {
      */
     | { type: 'ITEMS.SYNC' }
     | { type: 'FORM.RESET' }
+    /** 候选被触屏按住；disabled 是候选自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 按住的候选抬起或指针取消；只松开 value 对应的那一个。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: never
+  guard: 'canPress'
   action:
     | 'resetToDefault'
     | 'invokeOnOpen'
@@ -204,6 +213,10 @@ export interface MentionSchema extends MachineSchema {
     | 'clearHighlightedValue'
     | 'dismissHere'
     | 'selectItem'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackPosition' | 'trackLayer'
 }
 
