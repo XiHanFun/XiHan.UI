@@ -16,6 +16,7 @@ export const tableKeyboard: KeyboardTable = {
   component: 'table',
   source: APG,
   rows: [
+    { id: 'table.kbd.press', keys: ['Enter', 'Space'], when: 'held on 可按部件, 未加载且部件自身未禁用', does: '按住期间行、全选 / 行选 / 展开 / 列显隐把手、排序把手或取下一页按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，取数在途由机器撤下。选中、排序与展开语义照旧由这一次按键承担' },
     { id: 'table.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus outside the table body', does: '表体只占一个 Tab 位：焦点进入锚点行，无锚点时先落 body 再由它转投；再按一次 Tab 整体离开表体' },
     { id: 'table.kbd.next', keys: ['ArrowDown'], when: 'focus in table body', does: '焦点移到下一个可见数据行（禁用行跳过；详情行不是落点；loop 默认关，末行不回绕）' },
     { id: 'table.kbd.prev', keys: ['ArrowUp'], when: 'focus in table body', does: '焦点移到上一个可见数据行（禁用行跳过；loop 默认关，首行不回绕）' },

@@ -261,6 +261,19 @@ export interface TableCellProps {
   colSpan?: number
 }
 
+/**
+ * 接了按压通道的部件键：单颗的记部件名，逐行 / 逐列的带上行 id 或列 id。
+ * 多部件共用一个机器，同一时刻只有一个在按着，按键比对投影。
+ */
+export type TablePressedKey
+  = | 'select-all'
+    | 'load-more'
+    | `row-select:${string}`
+    | `column-visibility:${string}`
+    | `expand:${string}`
+    | `row:${string}`
+    | `sort:${string}`
+
 export interface TableSchema extends MachineSchema {
   props: {
     /** 列定义，列号与列总数的唯一事实源。默认为空表。 */
@@ -410,6 +423,11 @@ export interface TableSchema extends MachineSchema {
       /** 拖动源节点。拖动中用它测量版面整体移动的距离，见 snapshotDrift。 */
       source: HTMLElement | null
     } | null
+    /**
+     * 按压通道：正被 Space / Enter 或触屏按住的那一个，按部件键记（见 TablePressedKey）；
+     * 没有按住时为 null。抬起、失焦或指针取消即清空，加载中由机器自行松开。
+     */
+    pressed: TablePressedKey | null
   }
   /**
    * 排序、选中、展开与列偏好都不编码进状态：它们是随时可读可写的事实，不是过程。
@@ -476,8 +494,15 @@ export interface TableSchema extends MachineSchema {
     | { type: 'ROW.FOCUS', value: string }
     /** 焦点离开表体，或持有焦点的行被移出 DOM（此时浏览器不派发 focusout，由适配器上报）。 */
     | { type: 'TABLE.BLUR' }
+    /**
+     * 某个可按部件被 Space / Enter 或触屏按住。disabled 是该部件自身的禁用事实（行禁用、列不可排序、
+     * 全选无基数等），由 connect 判定后随事件带入。
+     */
+    | { type: 'PRESS.START', key: TablePressedKey, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开键对应的那一个。 */
+    | { type: 'PRESS.END', key: TablePressedKey }
   tag: never
-  guard: never
+  guard: 'canPress'
   action:
     | 'setColumnPreference'
     | 'patchColumnPreference'
@@ -508,6 +533,9 @@ export interface TableSchema extends MachineSchema {
     | 'cancelRowDrag'
     | 'moveRowBy'
     | 'blockRowReorder'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer'
 }
 

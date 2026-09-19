@@ -9,6 +9,7 @@ import type { DragAnnounceKind } from '../shared/drag'
 import type {
   TableColumnPreference,
   TableDropTarget,
+  TablePressedKey,
   TableRowDef,
   TableRowReorderReason,
   TableSchema,
@@ -109,13 +110,24 @@ export const tableMachine = createMachine({
     rowReorderBlocked: cell<TableRowReorderReason | null>(() => ({ defaultValue: null })),
     dropTarget: cell<TableDropTarget | null>(() => ({ defaultValue: null })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
+    // 按压通道：正被按住的那一个，按部件键记；与排序、选中、展开无关
+    pressed: cell<TablePressedKey | null>(() => ({ defaultValue: null })),
   }),
+  // 按住途中转入加载：取数在途各把手都动不了，不会再来 keyup，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('loading')], () => action(['releaseWhenInert']))
+  },
   refs: () => ({
     resize: null,
     columnDrag: null,
     rowDrag: null,
   }),
   initialState: () => 'idle',
+  // 按压通道与拖动 / 改宽的过程无关，四个状态都认；加载中不进，部件自身的禁用随事件带入
+  on: {
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
+  },
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
@@ -175,6 +187,13 @@ export const tableMachine = createMachine({
     },
   },
   implementations: {
+    guards: {
+      // 取数在途各把手都动不了，一票否决；部件自身的禁用（行禁用、列不可排序、全选无基数等）随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('loading') && !e.disabled
+      },
+    },
     effects: {
       /** 跟手交给指针会话：拖出表头仍要跟，系统收走指针也会收尾。 */
       trackResizePointer: ({ scope, send }) => {
@@ -209,6 +228,22 @@ export const tableMachine = createMachine({
       },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (context.get('pressed') != null && prop('loading'))
+          context.set('pressed', null)
+      },
+
       startColumnResize: ({ context, refs, event }) => {
         const e = event.current()
         if (e.type !== 'COLUMN_RESIZE.START')
