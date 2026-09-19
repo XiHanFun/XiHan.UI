@@ -49,55 +49,35 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 入口归 Collection Item 展开路径 / 打开中（nav 语境）：几何、字号与面全经家族桥接槽。静息字色取 default
+     （菜单名不是次要文字，不取 nav 缺省的 muted），悬停走白底承载 hover 100，展开着的那一张由连接层投影
+     data-in-path，家族给与悬停同档的中性面——打开中不是选中，不用品牌色、不接语气、不加粗（§7.3）；
+     按下 pressed 200 只换面不缩放（§9.2）；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
+     本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 background / color / cursor */
   [data-scope='menubar'][data-part='trigger'] {
+    --xh-collection-block-padding: var(--xh-menubar-trigger-py, var(--xh-_menubar-trigger-py));
+    --xh-collection-inline-padding: var(--xh-menubar-trigger-px, var(--xh-_menubar-trigger-px));
+    --xh-collection-radius: var(--xh-menubar-trigger-radius, var(--xh-shape-control));
+    --xh-collection-font-size: var(--xh-menubar-trigger-font-size, var(--xh-_menubar-font-size));
+    --xh-collection-fg-rest: var(--xh-menubar-trigger-fg, var(--xh-fg-default));
+    --xh-collection-bg-hover: var(--xh-menubar-trigger-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-menubar-trigger-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-menubar-trigger-bg-pressed, var(--xh-bg-subtle-hover));
+
     display: inline-flex;
     flex: none;
     align-items: center;
     gap: var(--xh-menubar-trigger-gap, var(--xh-control-gap-sm));
-    padding-block: var(--xh-menubar-trigger-py, var(--xh-_menubar-trigger-py));
-    padding-inline: var(--xh-menubar-trigger-px, var(--xh-_menubar-trigger-px));
     border: none;
-    border-radius: var(--xh-menubar-trigger-radius, var(--xh-shape-control));
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-size: var(--xh-menubar-trigger-font-size, var(--xh-_menubar-font-size));
+    /* 不再写 font: inherit：按钮的 UA 字体由 reset.css 抹平，这里再写一遍会把家族给的字号与字重一并盖掉。
+       行高压回 none：家族基础块给条目写了 leading-normal，入口的高度只由内缩定 */
     line-height: var(--xh-leading-none);
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
-    /* 入口是一排菜单名里铺开的一段，按下只换面不缩放（§9.2 disclosure trigger），过渡只管底色 */
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='menubar'][data-part='trigger'][hidden] {
     display: none;
-  }
-
-  /* 指针悬停走中性灰轻档 */
-  [data-scope='menubar'][data-part='trigger']:not([data-disabled]):hover {
-    background: var(--xh-menubar-trigger-bg-hover, var(--xh-bg-subtle));
-  }
-
-  /* 展开着的那一张是打开路径，与悬停同档的中性面：打开中不是选中，不用品牌色、不接语气（§7.3）；
-     哪一张开着由浮层本身说明。不加粗：横排的栏加粗会推挤相邻触发器。
-     必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
-  [data-scope='menubar'][data-part='trigger']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-menubar-trigger-bg-active, var(--xh-bg-subtle));
-  }
-
-  /* 按下去要有回应：白底承载 hover 100 → pressed 200，只换面（§7.2）；键盘与粗指针的按压由 Headless
-     投影 data-pressed 后走同一档。排在展开态之后：按下的那一张多半正开着，同特指度靠书写顺序才压得过 */
-  [data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
-    background: var(--xh-menubar-trigger-bg-pressed, var(--xh-bg-subtle-hover));
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 禁用走 aria-disabled 而非原生 disabled：trigger 仍要可聚焦（它还得当方向键的起点），
-     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
-  [data-scope='menubar'][data-part='trigger'][data-disabled] {
-    color: var(--xh-fg-disabled);
   }
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -446,12 +426,6 @@
        几组条目就连成了一长串。换成前景色画回来 */
     [data-scope='menubar'][data-part='separator'] {
       background: CanvasText;
-    }
-
-    /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
-    [data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
-      background: Highlight;
-      color: HighlightText;
     }
   }
 }

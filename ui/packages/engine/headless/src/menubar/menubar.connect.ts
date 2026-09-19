@@ -249,6 +249,13 @@ export function connectMenubar<T extends PropTypes>(
         'aria-disabled': disabled ? 'true' : 'false',
         'data-state': stateAttr(isOpen),
         'data-disabled': dataAttr(disabled),
+        // 入口归 Collection Item 展开路径 / 打开中（真源 §4.1）：面、字色、光标与按压时间线由家族按 nav 语境给；
+        // 展开着的那一张投影 data-in-path（与菜单的子菜单入口同法），家族按它给与 hover 同档的中性面。
+        // data-state open / closed 仍保留给箭头与 positioner
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'nav',
+        'data-in-path': dataAttr(isOpen),
         // roving tabindex：整条菜单栏只有锚点 trigger 留在 Tab 序列内
         'tabindex': focusedValue === item.value ? 0 : -1,
         /** 已有菜单展开时掠过即切换，并把焦点搬到被掠过的 trigger 上。 */

@@ -372,11 +372,16 @@ describe('menubar 初态与 ARIA', () => {
       'data-state': 'closed',
     })
     for (const menu of MENUS) {
-      expect(attrs(c.trigger(menu.value), 'role', 'aria-haspopup', 'aria-expanded', 'data-state')).toEqual({
+      expect(attrs(c.trigger(menu.value), 'role', 'aria-haspopup', 'aria-expanded', 'data-state', 'data-in-path', 'data-xh-collection-item', 'data-xh-collection-size', 'data-xh-collection-context')).toEqual({
         'role': 'menuitem',
         'aria-haspopup': 'menu',
         'aria-expanded': 'false',
         'data-state': 'closed',
+        // 入口归 Collection Item 展开路径 / 打开中：投影 nav 语境；收着的入口不在路径上
+        'data-in-path': null,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': 'md',
+        'data-xh-collection-context': 'nav',
       })
       expect(c.content(menu.value).hasAttribute('hidden')).toBe(true)
       expect(c.content(menu.value).getAttribute('role')).toBe('menu')
@@ -403,6 +408,9 @@ describe('menubar 初态与 ARIA', () => {
     expect(c.content('edit').hasAttribute('hidden')).toBe(false)
     expect(c.content('file').hasAttribute('hidden')).toBe(true)
     expect(c.trigger('edit').getAttribute('aria-expanded')).toBe('true')
+    // 展开着的那一张投影 data-in-path，家族按它给与 hover 同档的中性面；其余不投
+    expect(c.trigger('edit').hasAttribute('data-in-path')).toBe(true)
+    expect(c.trigger('file').hasAttribute('data-in-path')).toBe(false)
     // 页面刚加载就把焦点抢进浮层是彻底的越权
     expect(document.activeElement).toBe(document.body)
   })

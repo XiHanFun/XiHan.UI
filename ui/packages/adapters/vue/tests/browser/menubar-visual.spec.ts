@@ -90,7 +90,13 @@ describe('menubar 入口与条目（真源 §7.2 / §7.3 / §9.2）', () => {
     await mountMenubar()
     const open = trigger('file')
     expect(open.dataset.state).toBe('open')
+    // 入口接 Collection Item 的 nav 语境：展开着的那一张投影 data-in-path，面由家族给
+    expect(open.getAttribute('data-xh-collection-context')).toBe('nav')
+    expect(open.hasAttribute('data-in-path')).toBe(true)
     expect(getComputedStyle(open).backgroundColor).toBe(resolve('--xh-bg-subtle'))
+    // 打开中不加粗、不用品牌字色：菜单名静息就是 default 字
+    expect(getComputedStyle(open).fontWeight).toBe('400')
+    expect(getComputedStyle(open).color).toBe(resolve('--xh-fg-default', 'color'))
     expect(getComputedStyle(open).backgroundColor).not.toBe(resolve('--xh-bg-brand-subtle'))
 
     const before = open.getBoundingClientRect()
@@ -100,6 +106,16 @@ describe('menubar 入口与条目（真源 §7.2 / §7.3 / §9.2）', () => {
     expect(getComputedStyle(open).scale).toBe('none')
     expect(open.getBoundingClientRect().width).toBe(before.width)
     await releasePointer(open)
+  })
+
+  it('收着的入口静息透明面 + default 字，悬停走白底承载的 100', async () => {
+    await mountMenubar()
+    const closed = trigger('edit')
+    expect(closed.hasAttribute('data-in-path')).toBe(false)
+    expect(getComputedStyle(closed).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(closed).color).toBe(resolve('--xh-fg-default', 'color'))
+    await userEvent.hover(closed)
+    expect(getComputedStyle(closed).backgroundColor).toBe(resolve('--xh-bg-subtle'))
   })
 
   it('条目接 Collection Item：悬停 100、按下 200 不缩放', async () => {
