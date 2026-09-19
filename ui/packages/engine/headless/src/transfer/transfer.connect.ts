@@ -382,6 +382,13 @@ export function connectTransfer<T extends PropTypes>(
         ...parts['select-all-trigger'].attrs,
         'type': 'button',
         'role': 'checkbox',
+        // 「方框 + 文案」的整行命中区（§9.2）：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面由家族给，
+        // 按下只换面不缩放（皮肤钉 --xh-action-scale-pressed: none）；xs 档 24px 是命中地板，方框 16px 居中其间
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'text',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'xs',
         'aria-checked': state === 'checked' ? 'true' : state === 'indeterminate' ? 'mixed' : 'false',
         'aria-controls': listId[panel.side],
         'disabled': off || undefined,

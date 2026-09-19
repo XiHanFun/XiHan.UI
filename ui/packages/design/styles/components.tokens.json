@@ -74516,17 +74516,20 @@
         "select-all-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "transfer 的 select-all-trigger 部件 background 覆盖槽。"
+      "description": "transfer 的 select-all-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-select-all-bg-pressed",
@@ -74535,17 +74538,21 @@
         "select-all-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "transfer 的 select-all-trigger 部件 background 覆盖槽。"
+      "description": "transfer 的 select-all-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-select-all-fg",
@@ -74557,7 +74564,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-muted"

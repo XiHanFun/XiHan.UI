@@ -338,6 +338,11 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-side` | panel.side |
 | `select-all-trigger` | `data-state` | checkStates[panel.side] |
+| `select-all-trigger` | `data-xh-action-control` | '' |
+| `select-all-trigger` | `data-xh-action-display` | 'always' |
+| `select-all-trigger` | `data-xh-action-profile` | 'text' |
+| `select-all-trigger` | `data-xh-action-size` | 'xs' |
+| `select-all-trigger` | `data-xh-action-variant` | 'ghost' |
 | `panel` | `data-disabled` | ''（条件成立时才出现） |
 | `panel` | `data-side` | panel.side |
 
@@ -410,9 +415,9 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `--xh-transfer-search-font-size` | `search` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 search 部件 font-size 覆盖槽。 |
 | `--xh-transfer-search-h` | `search` | `block-size` | `default` | `--xh-control-h-sm` | transfer 的 search 部件 block-size 覆盖槽。 |
 | `--xh-transfer-search-px` | `search` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 search 部件 padding-inline 覆盖槽。 |
-| `--xh-transfer-select-all-bg-hover` | `select-all-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle` | transfer 的 select-all-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-select-all-bg-pressed` | `select-all-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | transfer 的 select-all-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-select-all-fg` | `select-all-trigger` | `color` | `default` | `--xh-fg-muted` | transfer 的 select-all-trigger 部件 color 覆盖槽。 |
+| `--xh-transfer-select-all-bg-hover` | `select-all-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-select-all-bg-pressed` | `select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-select-all-fg` | `select-all-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-muted` | transfer 的 select-all-trigger 部件 color 覆盖槽。 |
 | `--xh-transfer-select-all-font-size` | `select-all-trigger` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-select-all-gap` | `select-all-trigger` | `gap` | `default` | `--xh-control-gap-sm` | transfer 的 select-all-trigger 部件 gap 覆盖槽。 |
 | `--xh-transfer-select-all-radius` | `select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 select-all-trigger 部件 border-radius 覆盖槽。 |
@@ -431,13 +436,15 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 ### 动效
 
-`background` · `background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
 皮肤按视口分档：`min-width: 640px`。
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

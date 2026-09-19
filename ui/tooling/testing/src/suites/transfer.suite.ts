@@ -260,6 +260,12 @@ export const transferSuite: ConformanceSuite = {
             'data-state': 'unchecked',
             'data-side': 'source',
             'disabled': null,
+            // 「方框 + 文案」的整行命中区：Action Control text 档 ghost 形态、xs 档 24px 命中地板、按下只换面
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
           },
           'to-target-trigger': {
             // 只有字形的离散动作钮：Action Control icon 档 outline 形态、正方盒固定 sm 档
