@@ -39118,7 +39118,7 @@
 }
 
 [data-scope='transfer'][data-part='item-checkbox'][data-disabled] {
-  border-color: var(--xh-transfer-checkbox-border-disabled, var(--xh-border-subtle));
+  border-color: var(--xh-transfer-checkbox-border-disabled, var(--xh-border-default));
   background: var(--xh-transfer-checkbox-bg-disabled, var(--xh-bg-muted));
 }
 
