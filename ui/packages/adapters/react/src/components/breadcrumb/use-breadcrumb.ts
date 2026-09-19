@@ -5,15 +5,19 @@
 
 // 提供 use breadcrumb 相关实现。
 
-import type { BreadcrumbApi, BreadcrumbProps } from '@xihan-ui/headless'
-import { connectBreadcrumb } from '@xihan-ui/headless'
+import type { Service } from '@xihan-ui/core'
+import type { BreadcrumbApi, BreadcrumbSchema } from '@xihan-ui/headless'
+import { breadcrumbMachine, connectBreadcrumb } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useMachine } from '../../runtime/use-machine'
 
 export interface BreadcrumbContext {
   api: BreadcrumbApi
+  service: Service<BreadcrumbSchema>
 }
 
-// Breadcrumb 没有状态机也不派生部件 id，props 变了就整份重算属性
-export function useBreadcrumb(props: BreadcrumbProps): BreadcrumbContext {
-  return { api: connectBreadcrumb(props, reactNormalize) }
+// Breadcrumb 不派生部件 id，故不另建 scope；机器只承载按压通道，属性仍随 props 整份重算
+export function useBreadcrumb(props: BreadcrumbSchema['props']): BreadcrumbContext {
+  const service = useMachine(breadcrumbMachine, () => props)
+  return { api: connectBreadcrumb(service, reactNormalize), service }
 }
