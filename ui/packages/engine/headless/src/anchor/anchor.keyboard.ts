@@ -15,6 +15,7 @@ export const anchorKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'anchor.kbd.link', keys: ['Enter'], when: 'focus in link', does: '跳到目标区块：smooth 关时由原生 <a href="#id"> 跳转，开时组件拦下并平滑滚动（两种情况都当场把激活项切过去，不等观察器）' },
+    { id: 'anchor.kbd.press', keys: ['Enter', 'Space'], when: 'held in link', does: '按住期间该链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。跳到目标区块照旧由这一次按键承担，激活项与按压互相独立' },
     { id: 'anchor.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in root', does: '逐条走过目录里的链接；锚点导航不做 roving tabindex，每一条都是独立的 Tab 停靠点' },
   ],
 }

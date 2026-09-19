@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { anchorAnatomy, anchorKeyboard } from '@xihan-ui/headless'
+import { heldPress } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/navigation.html'
 
@@ -262,6 +263,18 @@ export const anchorSuite: ConformanceSuite = {
           'link[2]': { 'aria-current': 'location', 'data-current': '' },
         },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：链接投影 data-pressed，抬起、失焦或指针取消撤下；激活项与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['anchor.kbd.press'],
+      // 受控 value：按住 Enter 会点过去，宿主不写回则激活项不动；当前那条与别的条都接按压
+      props: { value: 'install' },
+      steps: [
+        heldPress('anchor', 'link', { value: 'install' }),
+        heldPress('anchor', 'link', { value: 'intro' }),
+        { kind: 'settle', until: { attr: { part: 'link[0]', name: 'data-pressed', value: null } }, expect: { parts: { 'link[0]': { 'aria-current': null }, 'link[1]': { 'aria-current': 'location' } } } },
+      ],
     },
   ],
 }

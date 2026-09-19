@@ -81,6 +81,8 @@ export interface AnchorSchema extends MachineSchema {
     value: string | null
     /** 指示条的测量结果；没有激活项或无法测量时为 null。 */
     indicator: AnchorIndicatorRect | null
+    /** 按压通道：Space / Enter 或触屏按住的链接 value。抬起、失焦或指针取消即清空，与激活项互相独立。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: AnchorRefs
@@ -95,9 +97,13 @@ export interface AnchorSchema extends MachineSchema {
     | { type: 'VALUE.SET', value: string | null }
     /** 平滑滚动的兜底解锁。 */
     | { type: 'after.scrollLock' }
+    /** 链接被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START', value: string }
+    /** 按住的链接抬起、失焦或指针取消；只松开 value 对应的那一条。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: 'isSmooth' | 'isTargetReached'
-  action: 'setValue' | 'scrollToTarget' | 'measureIndicator'
+  guard: 'isSmooth' | 'isTargetReached' | 'canPress'
+  action: 'setValue' | 'scrollToTarget' | 'measureIndicator' | 'startPress' | 'endPress'
   effect: 'trackScroll' | 'waitForScrollLock'
 }
 

@@ -116,9 +116,9 @@
 
 **状态**：`idle` · `scrolling`
 
-**事件**：`SPY.RESOLVE` · `LINK.CLICK` · `VALUE.SET` · `after.scrollLock`
+**事件**：`SPY.RESOLVE` · `LINK.CLICK` · `VALUE.SET` · `after.scrollLock` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isSmooth` · `isTargetReached`
+**判据**：`isSmooth` · `isTargetReached` · `canPress`
 
 ### connect API
 
@@ -145,6 +145,7 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` | focus in link | 跳到目标区块：smooth 关时由原生 &lt;a href="#id"&gt; 跳转，开时组件拦下并平滑滚动（两种情况都当场把激活项切过去，不等观察器） |
+| `Enter` / `Space` | held in link | 按住期间该链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。跳到目标区块照旧由这一次按键承担，激活项与按压互相独立 |
 | `Tab` / `Shift+Tab` | focus in root | 逐条走过目录里的链接；锚点导航不做 roving tabindex，每一条都是独立的 Tab 停靠点 |
 
 ### ARIA
@@ -176,6 +177,7 @@
 | `root` | `data-tone` | props.tone |
 | `list` | `data-orientation` | props.orientation |
 | `link` | `data-current` | ''（条件成立时才出现） |
+| `link` | `data-pressed` | ''（条件成立时才出现） |
 | `link` | `data-xh-collection-context` | 'nav' |
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |
