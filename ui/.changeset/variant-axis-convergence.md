@@ -1103,3 +1103,9 @@ Highlight，会吞掉同为 Highlight 的点亮星形：皮肤把盒钉回 Canva
 Highlight 内环。三端 computed 快照里星多出家族的 1px 透明描边与 `gap: 0`，`color` 不再在过渡列表里（作者图标的点亮换色
 改为即时；皮肤字形的点亮仍走 `::after` 的 clip-path 过渡）。皮肤体积基线 rating.css 6675 → 7907，涨在桥接槽映射与
 forced-colors 补救。
+
+**steps 序号圆点补按下换面，阶梯按淡底容器登记。** 圆点是格状当前的标记（§7.3），但它是 trigger 里 aria-hidden 的装饰子节点，
+激活落在 trigger 上（真源 §9.1 登记例外，不投影 Action Control）：悬停仍由 trigger 带动到 200，新增按下随 trigger 换到 300
+（`--xh-steps-indicator-bg-pressed`，缺省 `--xh-bg-subtle-active`），当前步按下换语气 active 档
+（`--xh-steps-indicator-bg-current-pressed`，缺省 `--xh-_tone-active` / `--xh-bg-brand-active`），不缩放；trigger 以
+`--xh-action-host-bg-hover / -pressed` 声明自己是圆点的淡底承载面（圆点静息就坐在 `--xh-bg-subtle` 上，阶梯 100 → 200 → 300）。

@@ -19,8 +19,7 @@
     "file-upload:item-delete-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "file-upload:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "file-upload:trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
-    "pagination:jumper:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100）；跳页框是字段外壳，随 Field Chrome 任务一并迁到字段家族配方（静息描边 + 悬停升 --xh-border-control-hover）",
-    "steps:indicator:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移"
+    "pagination:jumper:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100）；跳页框是字段外壳，随 Field Chrome 任务一并迁到字段家族配方（静息描边 + 悬停升 --xh-border-control-hover）"
   },
   "shape": {},
   "scroll": {},

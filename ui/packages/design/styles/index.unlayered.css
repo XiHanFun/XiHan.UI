@@ -31950,6 +31950,11 @@
    用 grid 而不是再包一层节点——解剖里没有那个包裹层，作者也不该被逼着多写一个 div。
    只有说明缺席时右列的第二行是零高，不会留白 */
 [data-scope='steps'][data-part='trigger'] {
+  /* 触发器是序号圆点的承载面：圆点静息就坐在 --xh-bg-subtle（100）的淡底上，它的阶梯按淡底容器走
+     （hover 200 → pressed 300，§7.2 第 3 条），这两支 host 槽把这一点向内声明 */
+  --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
@@ -32017,7 +32022,9 @@
   display: none;
 }
 
-/* 圆点坐在触发器的 hover 面（100）上，自己再上一档到 200 才与承载面分得开 */
+/* 圆点是格状当前的 Action Control 标记（§4.1），但它是 aria-hidden 的装饰子节点，激活落在触发器上（§9.1
+   登记例外）：悬停 / 按下由触发器带动，按淡底容器阶梯走——圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，
+   再上一档到 200 才与承载面分得开，按下到 300；当前步的实心面按下换语气 active 档 */
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
   [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
   background: var(--xh-steps-indicator-bg-hover, var(--xh-bg-subtle-hover));
@@ -32027,6 +32034,20 @@
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
   [data-scope='steps'][data-part='indicator'][data-state='completed'] {
   background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed])
+  [data-scope='steps'][data-part='indicator']:is([data-state='incomplete'], [data-state='completed']) {
+  background: var(--xh-steps-indicator-bg-pressed, var(--xh-bg-subtle-active));
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+[data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed])
+  [data-scope='steps'][data-part='indicator'][data-state='current'] {
+  background: var(--xh-steps-indicator-bg-current-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='steps'][data-part='indicator'][data-state='current'] {

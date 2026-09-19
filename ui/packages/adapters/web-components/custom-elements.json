@@ -48990,10 +48990,16 @@
               "name": "--xh-steps-indicator-bg-current"
             },
             {
+              "name": "--xh-steps-indicator-bg-current-pressed"
+            },
+            {
               "name": "--xh-steps-indicator-bg-disabled"
             },
             {
               "name": "--xh-steps-indicator-bg-hover"
+            },
+            {
+              "name": "--xh-steps-indicator-bg-pressed"
             },
             {
               "name": "--xh-steps-indicator-bg-toned"
