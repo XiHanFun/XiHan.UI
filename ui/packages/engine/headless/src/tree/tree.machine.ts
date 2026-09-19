@@ -6,7 +6,7 @@
 // 提供 tree 相关实现。
 
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
-import type { TreeMove, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
+import type { TreeMove, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
@@ -117,7 +117,14 @@ export const treeMachine = createMachine({
     draggingNode: cell<string | null>(() => ({ defaultValue: null })),
     dropTarget: cell<DropTarget | null>(() => ({ defaultValue: null })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
+    // 按压通道：正被按住的那一个（节点按 value 记、叶子行与分支行分开认），与选中、展开无关
+    pressedPart: cell<TreePressedPart | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
+  // 按住途中整棵树转入禁用 / 加载：不会再来 keyup，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled'), () => prop('loading')], () => action(['releaseWhenInert']))
+  },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是树的状态树一行都不用改——8 个既有事件原地不动
   effects: ['trackPointer'],
@@ -145,10 +152,20 @@ export const treeMachine = createMachine({
         'NODE_DRAG.CANCEL': { actions: ['cancelNodeDrag'] },
         // 键盘换位不进拖动态：按一下就是一次已过守卫的完整提交
         'NODE.MOVE_BY': { actions: ['moveNodeBy'] },
+        // 按压通道：禁用 / 加载不进，节点自身禁用随事件带入
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
       },
     },
   },
   implementations: {
+    guards: {
+      // 整棵树禁用或加载中都改不了选中与展开，一票否决；节点自身的禁用随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('disabled') && !prop('loading') && !e.disabled
+      },
+    },
     effects: {
       /**
        * 跟住按在节点上的那根手指。
@@ -175,6 +192,28 @@ export const treeMachine = createMachine({
       },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一个部件或另一个节点的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== e.value)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (context.get('pressedPart') == null || !(prop('disabled') || prop('loading')))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+
       startNodeDrag: ({ context, refs, event }) => {
         const e = event.current()
         if (e.type !== 'NODE_DRAG.START')

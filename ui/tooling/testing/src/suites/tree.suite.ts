@@ -1,6 +1,7 @@
 import type { TreeNode } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { treeAnatomy, treeKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/treeview/'
 
@@ -765,6 +766,45 @@ export const treeSuite: ConformanceSuite = {
           modifiers: ['Alt'],
           expect: { events: [{ type: 'node-move', detail: { value: 'utils', parent: null, index: 1 } }] },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：叶子行投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['tree.kbd.press'],
+      props: props({ defaultExpandedValue: ['src'] }),
+      steps: [
+        { kind: 'focus', part: 'item[0]', expect: { activeElement: { part: 'item[0]', exact: true } } },
+        heldPress('tree', 'item', { value: 'index' }),
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：分支行投影 data-pressed，键盘由 branch 代发、触屏按在行上',
+      spec: { adr: 'press-channel' },
+      // 确认键的展开语义关掉：按住期间子树不来回收放，只看按压面
+      props: props({ defaultExpandedValue: ['src'], expandOnClick: false }),
+      steps: [
+        { kind: 'focus', part: 'branch[0]', expect: { activeElement: { part: 'branch[0]', exact: true } } },
+        // 焦点落在 branch 上、按压面画在 branch-control 上：键盘与失焦派到 branch，看的是行身上的属性
+        heldPress('tree', 'branch-control', {
+          selector: '[data-scope="tree"][data-part="branch"][data-value="src"] > [data-scope="tree"][data-part="branch-control"]',
+          keyboardHost: '[data-scope="tree"][data-part="branch"][data-value="src"]',
+          keys: [' ', 'Enter'],
+        }),
+      ],
+    },
+    {
+      name: '禁用节点按住不进入按压面；整棵树禁用 / 加载时叶子与分支行都不进',
+      spec: { adr: 'press-channel' },
+      props: props({ defaultExpandedValue: ['src'] }),
+      steps: [
+        heldPressIgnored('tree', 'item', '禁用叶子不接受按压', { value: 'readme' }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('tree', 'item', '整棵树禁用时叶子不接受按压', { value: 'index' }),
+        heldPressIgnored('tree', 'branch-control', '整棵树禁用时分支行不接受按压', { keyboardHost: '[data-scope="tree"][data-part="branch"][data-value="src"]' }),
+        { kind: 'setProps', props: { disabled: false, loading: true } },
+        heldPressIgnored('tree', 'item', '加载中叶子不接受按压', { value: 'index' }),
+        heldPressIgnored('tree', 'branch-control', '加载中分支行不接受按压', { keyboardHost: '[data-scope="tree"][data-part="branch"][data-value="src"]' }),
       ],
     },
   ],

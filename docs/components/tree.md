@@ -199,7 +199,9 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 
 **状态**：`idle`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `SELECTION.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR` · `NODE_DRAG.START` · `NODE_DRAG.MOVE` · `NODE_DRAG.END` · `NODE_DRAG.CANCEL` · `NODE.MOVE_BY`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `SELECTION.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR` · `NODE_DRAG.START` · `NODE_DRAG.MOVE` · `NODE_DRAG.END` · `NODE_DRAG.CANCEL` · `NODE.MOVE_BY` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -259,6 +261,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `ArrowRight` | focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
 | `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 未关时顺带切换展开态 |
+| `Enter` / `Space` | held on node, 树未禁用、未加载且节点未禁用 | 按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
 | `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, draggable 开启 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
@@ -311,6 +314,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `item` | `data-draggable` | ''（条件成立时才出现） |
 | `item` | `data-dragging` | ''（条件成立时才出现） |
 | `item` | `data-drop` | 'before' \| 'after' \| 'inside' |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | 'md' |
@@ -321,6 +325,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `branch-control` | `data-draggable` | ''（条件成立时才出现） |
 | `branch-control` | `data-dragging` | ''（条件成立时才出现） |
 | `branch-control` | `data-drop` | 'before' \| 'after' \| 'inside' |
+| `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-xh-collection-context` | 'page' |
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | 'md' |

@@ -97,12 +97,13 @@ interface Harness {
 }
 
 function mount(initial: Partial<Props> = {}): Harness {
-  const props: Partial<Props> = { collection: COLLECTION, ...initial }
+  const runtime = createVanillaRuntime()
+  // props 放进信号里：setProps 改写后机器的 watch 才看得见（按住途中转入禁用要由它自收）
+  const props = runtime.signal<Partial<Props>>({ collection: COLLECTION, ...initial })
   // 作者标记镜像的是机器手上的那份 collection：两边不同源的话，
   // 摊平算出来的可见行在 DOM 里一个也找不到，用例会假绿
-  const collection = props.collection!
-  const runtime = createVanillaRuntime()
-  const service = createService(treeMachine, { props: () => props, runtime })
+  const collection = props.get().collection!
+  const service = createService(treeMachine, { props: () => props.get(), runtime })
   runtime.start()
 
   const doc = document
@@ -182,7 +183,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     item: v => items.get(v)!,
     node: v => branches.get(v)?.branch ?? items.get(v)!.item,
     setProps: (next) => {
-      Object.assign(props, next)
+      props.set({ ...props.get(), ...next })
       render()
     },
     render,
@@ -1030,5 +1031,115 @@ describe('collection Item 家族投影', () => {
     expect(slot(h.api().getBranchTriggerProps(branch) as Record<string, unknown>)).toBe('prefix')
     expect(slot(h.api().getBranchIndicatorProps(branch) as Record<string, unknown>)).toBe('prefix')
     expect(slot(h.api().getBranchCheckboxProps(branch) as Record<string, unknown>)).toBe('prefix')
+  })
+})
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，叶子行与分支行按 value 分开记', () => {
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  it('叶子行：keydown 在场、keyup 撤下；触屏按下在场、抬起或取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const h = mount({ defaultExpandedValue: ['src'] })
+    const index = h.item('index').item
+    index.focus()
+    expect(pressed(index)).toBe(false)
+    press(index, ' ')
+    expect(pressed(index)).toBe(true)
+    // 选中语义照旧由冒泡到 tree 容器的那份处理器承担
+    expect(h.selected()).toEqual(['index'])
+    keyUp(index, ' ')
+    expect(pressed(index)).toBe(false)
+    press(index, 'Enter')
+    expect(pressed(index)).toBe(true)
+    index.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(index)).toBe(false)
+    touch(index, 'pointerdown')
+    expect(pressed(index)).toBe(true)
+    touch(index, 'pointerup')
+    expect(pressed(index)).toBe(false)
+    touch(index, 'pointerdown')
+    touch(index, 'pointercancel')
+    expect(pressed(index)).toBe(false)
+    index.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true, button: 0 }))
+    expect(pressed(index)).toBe(false)
+  })
+
+  it('分支行：焦点落在 branch 上，按键由它替行代发，按压面画在 branch-control 上；子节点上的按键与失焦冒泡上来不算', () => {
+    const h = mount({ defaultExpandedValue: ['src', 'utils'], expandOnClick: false })
+    const { branch, control } = h.branch('src')
+    branch.focus()
+    press(branch, ' ')
+    expect(pressed(control)).toBe(true)
+    expect(pressed(branch)).toBe(false)
+    expect(pressed(h.branch('utils').control)).toBe(false)
+    keyUp(branch, ' ')
+    expect(pressed(control)).toBe(false)
+    press(branch, 'Enter')
+    expect(pressed(control)).toBe(true)
+    branch.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(control)).toBe(false)
+
+    // 子树里的叶子按住：只亮叶子，祖先分支行不跟着亮
+    const dom = h.item('dom').item
+    dom.focus()
+    press(dom, ' ')
+    expect(pressed(dom)).toBe(true)
+    expect(pressed(control)).toBe(false)
+    expect(pressed(h.branch('utils').control)).toBe(false)
+    keyUp(dom, ' ')
+    expect(pressed(dom)).toBe(false)
+
+    // 触屏按在行上
+    touch(control, 'pointerdown')
+    expect(pressed(control)).toBe(true)
+    touch(control, 'pointerup')
+    expect(pressed(control)).toBe(false)
+  })
+
+  it('另一个节点的 keyup 不把正按着的松开；同一个值按住分支行时叶子不亮', () => {
+    const h = mount({ defaultExpandedValue: ['src'], multiple: true })
+    const index = h.item('index').item
+    index.focus()
+    press(index, ' ')
+    expect(pressed(index)).toBe(true)
+    keyUp(h.item('license').item, ' ')
+    expect(pressed(index)).toBe(true)
+    keyUp(index, ' ')
+    expect(pressed(index)).toBe(false)
+  })
+
+  it('不进：整棵树禁用 / 加载时叶子与分支行都不进；节点自身禁用不进', () => {
+    for (const inert of [{ disabled: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ defaultExpandedValue: ['src'], ...inert })
+      const index = h.item('index').item
+      index.focus()
+      press(index, ' ')
+      touch(h.branch('src').control, 'pointerdown')
+      expect(pressed(index)).toBe(false)
+      expect(pressed(h.branch('src').control)).toBe(false)
+    }
+    const h = mount({ defaultExpandedValue: ['src'] })
+    const readme = h.item('readme').item
+    readme.focus()
+    press(readme, ' ')
+    touch(readme, 'pointerdown')
+    expect(pressed(readme)).toBe(false)
+  })
+
+  it('按住途中整棵树转入禁用 / 加载：按压面由机器自己收，不等 keyup', () => {
+    for (const inert of [{ disabled: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ defaultExpandedValue: ['src'] })
+      const index = h.item('index').item
+      index.focus()
+      press(index, ' ')
+      expect(pressed(index)).toBe(true)
+      h.setProps(inert)
+      expect(pressed(index)).toBe(false)
+    }
   })
 })
