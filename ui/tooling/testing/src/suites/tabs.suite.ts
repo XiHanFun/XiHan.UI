@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { tabsAnatomy, tabsKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/tabs/'
 
@@ -623,6 +624,26 @@ export const tabsSuite: ConformanceSuite = {
           expect: { events: [{ type: 'tab-move', detail: { value: 'two', from: 1, to: 0, values: ['two', 'one', 'three'] } }] },
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：trigger 投影 data-pressed，抬起、失焦或指针取消撤下；选中与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['tabs.kbd.press'],
+      props: { defaultValue: 'one' },
+      steps: [
+        // 选中的那一条也接按压：确认键在 list 上是幂等的，按住只多一帧按压面
+        heldPress('tabs', 'trigger', { value: 'one' }),
+        // 未选中的那一条：确认键在 keydown 那一刻就把选中切过来，按压面撤下后选中留在它身上
+        heldPress('tabs', 'trigger', { value: 'three' }),
+        { kind: 'settle', until: { attr: { part: 'trigger[2]', name: 'data-pressed', value: null } }, expect: { parts: { 'trigger[0]': { 'aria-selected': 'false' }, 'trigger[2]': { 'aria-selected': 'true', 'data-current': '' } } } },
+      ],
+    },
+    {
+      name: '禁用条目不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: () => tabsTree('two'),
+      props: { defaultValue: 'one' },
+      steps: [heldPressIgnored('tabs', 'trigger', '禁用的 trigger 不接受按压', { value: 'two' })],
     },
   ],
 }

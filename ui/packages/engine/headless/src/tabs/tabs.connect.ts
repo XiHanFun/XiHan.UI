@@ -5,10 +5,10 @@
 
 // 提供 tabs 相关实现。
 
-import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { ItemQuery, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DragRect } from '../shared/drag'
 import type { TabsApi, TabsNodeMeta, TabsSchema, TabsTriggerProps } from './tabs.types'
-import { anchorItem, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { anchorItem, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { flatMoveCommand, flatMoveIntentFromKey } from '../shared/drag'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tabsAnatomy } from './tabs.anatomy'
@@ -48,6 +48,18 @@ export function connectTabs<T extends PropTypes>(
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
   const triggerId = (target: string): string => scope.partId(tabsAnatomy.name, `trigger:${target}`)
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（按 value 记），每个 trigger 各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 选中（aria-selected / data-current）与按压互相独立；条目自身的禁用只有 connect 知道，随 PRESS.START
+  // 带给机器的守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: TabsTriggerProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', value: item.value, disabled: itemDisabled(item) }
+      : { type: 'PRESS.END', value: item.value }),
+  })
 
   const reorderable = !!prop('reorderable')
   const draggingTab = context.get('draggingTab') ?? null
@@ -266,37 +278,52 @@ export function connectTabs<T extends PropTypes>(
         send({ type: 'LIST.BLUR' })
       },
     }),
-    getTriggerProps: item => normalize.button({
-      ...parts.trigger.attrs,
-      [ITEM_VALUE_ATTR]: item.value,
-      'id': triggerId(item.value),
-      'type': 'button',
-      'role': 'tab',
-      'aria-selected': item.value === value ? 'true' : 'false',
-      'aria-controls': contentId(item.value),
-      // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      // roving tabindex：整组只有锚点条目留在 Tab 序列内
-      'tabindex': anchor === item.value ? 0 : -1,
-      'data-state': stateAttr(item.value),
-      // 导航当前页由家族按 data-current 给面与字；activation 族 data-state 与 aria-selected 保留给 content 与
-      // card / segment 皮肤
-      'data-current': dataAttr(item.value === value),
-      'data-xh-collection-item': dataAttr(nav),
-      'data-xh-collection-size': nav ? (prop('size') ?? 'md') : undefined,
-      'data-xh-collection-context': nav ? 'nav' : undefined,
-      'data-disabled': dataAttr(itemDisabled(item)),
-      'data-dragging': dataAttr(draggingTab === item.value),
-      'data-drop': dropSide(item.value),
-      'data-draggable': dataAttr(reorderable && !itemDisabled(item)),
-      'data-closable': dataAttr(closable && !itemDisabled(item)),
-      'onPointerDown': (event: PointerEvent) => onTabDragStart(event, item),
-      'onClick': () => {
-        if (!itemDisabled(item))
-          send({ type: 'TRIGGER.SELECT', value: item.value })
-      },
-      'onFocus': () => send({ type: 'TRIGGER.FOCUS', value: item.value }),
-    }),
+    getTriggerProps: (item) => {
+      const handlers = press(item)
+      return normalize.button({
+        ...parts.trigger.attrs,
+        [ITEM_VALUE_ATTR]: item.value,
+        'id': triggerId(item.value),
+        'type': 'button',
+        'role': 'tab',
+        'aria-selected': item.value === value ? 'true' : 'false',
+        'aria-controls': contentId(item.value),
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        // roving tabindex：整组只有锚点条目留在 Tab 序列内
+        'tabindex': anchor === item.value ? 0 : -1,
+        'data-state': stateAttr(item.value),
+        // 导航当前页由家族按 data-current 给面与字；activation 族 data-state 与 aria-selected 保留给 content 与
+        // card / segment 皮肤
+        'data-current': dataAttr(item.value === value),
+        'data-xh-collection-item': dataAttr(nav),
+        'data-xh-collection-size': nav ? (prop('size') ?? 'md') : undefined,
+        'data-xh-collection-context': nav ? 'nav' : undefined,
+        'data-disabled': dataAttr(itemDisabled(item)),
+        'data-dragging': dataAttr(draggingTab === item.value),
+        'data-drop': dropSide(item.value),
+        'data-draggable': dataAttr(reorderable && !itemDisabled(item)),
+        'data-closable': dataAttr(closable && !itemDisabled(item)),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与选中互相独立
+        'data-pressed': dataAttr(pressedValue === item.value),
+        // 同一个 pointerdown 先过跟踪器再判拖动起手：触屏归按压（拖动不认触屏），鼠标归拖动（按压不认鼠标）
+        'onPointerDown': (event: PointerEvent) => {
+          handlers.onPointerDown(event)
+          onTabDragStart(event, item)
+        },
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        // 确认键本身仍在 list 上收口，trigger 只记按住的那一帧
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onClick': () => {
+          if (!itemDisabled(item))
+            send({ type: 'TRIGGER.SELECT', value: item.value })
+        },
+        'onFocus': () => send({ type: 'TRIGGER.FOCUS', value: item.value }),
+      })
+    },
     // 主轴上的位置与长度由机器量成内联样式（它量得到，样式表量不到）；
     // 交叉轴的贴边与粗细归皮肤
     getIndicatorProps: () => normalize.element({
