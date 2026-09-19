@@ -29,15 +29,24 @@ export const listboxMachine = createMachine({
     // 焦点锚点与区间起点都不受控、不对外通知
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     anchorValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 按压通道：正被按住的那一个（条目按 value 记，取下一页只记 part）
+    pressedPart: cell<'item' | 'load-more-trigger' | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     typeahead: createTypeahead(),
   }),
   initialState: () => 'idle',
+  // 按住途中整列被禁用、转只读或进入加载：部件不再派 keyup，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
+  },
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
       on: {
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
         'VALUE.SET': { actions: ['setValue'] },
         'VALUE.CLEAR': { actions: ['clearValue'] },
         'ITEM.SELECT': { actions: ['selectItem'] },
@@ -49,7 +58,39 @@ export const listboxMachine = createMachine({
     },
   },
   implementations: {
+    guards: {
+      // 整列禁用一票否决；条目改不了选中值的只读态不进，取下一页在途中不进；条目自身的禁用随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('disabled') || e.disabled)
+          return false
+        return e.part === 'item' ? !prop('readOnly') : !prop('loading')
+      },
+    },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value ?? null)
+      },
+      // 只收自己那一下：另一个的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== (e.value ?? null))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const part = context.get('pressedPart')
+        const inert = prop('disabled') || (part === 'item' ? prop('readOnly') : prop('loading'))
+        if (!part || !inert)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       // 整体改写不动区间起点
       setValue: ({ context, prop, event }) => {
         const e = event.current()
