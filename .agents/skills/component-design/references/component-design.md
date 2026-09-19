@@ -130,6 +130,7 @@ Vue、React、Web Components 只负责：
 | Breadcrumb link | Collection Item（导航当前） | 当前页是不可点位置：`aria-current="page"`，`--xh-fg-default` + medium，无指示条；投影 `data-xh-collection-context='nav'`，当前页再投影 `data-xh-collection-terminal`（它同时带 `aria-disabled`，不显式标会被家族禁用面吃掉）；见 §7.3 |
 | Menubar trigger | Collection Item（展开路径 / 打开中） | 没有当前态：open 与家族 hover 同档的中性面，不用品牌色、不加粗；投影 `data-xh-collection-context='nav'`，展开时投影 `data-in-path`；见 §7.3 |
 | Pagination item、Steps indicator、Calendar cell | Action Control（格状当前） | 当前 = 实心品牌；见 §7.3 |
+| CheckboxGroup item / select-all trigger、Steps trigger | Action Control `row` profile | 只换面不缩放；方框 / 圆点是宿主内的标记，读宿主 host 槽；见 §9.2 |
 | Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger | disclosure trigger | 只换面，不缩放；见 §9.2 |
 | FloatButton、BackTop、Carousel 翻页、Log/MessageFeed 回底、ImageViewer 翻页 | Action Control `floating` profile | 形状 circle；见 §6.3 |
 | Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
@@ -321,7 +322,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 1. 页面主体保持中性，品牌色只用于主要动作、选中 / 当前、焦点和关键进度。
 2. 缺省语气：只有 Button 缺省为品牌实心（`solid`）；其余按钮形触发器（Toggle、ToggleGroup item、Clipboard、DownloadTrigger、FloatButton、BackTop、Pagination 非当前、Toolbar item、Tabs trigger、Segmented item、Accordion / Collapsible / Menu / Menubar / NavigationMenu trigger、Carousel / Calendar / ImageViewer 控制、所有 field-inset 动作）缺省中性，只有写了 `data-tone` 才切到语气淡底。浮层里的确认 / 主线动作钮（Popconfirm confirm、Tour next）是该浮层的主要动作，与 Button 主动作同待遇，由连接层显式投影 `solid`；这不属缺省语气，同一浮层里的次要出口（Popconfirm cancel）仍是中性 `outline`。
-3. 交互阶梯按承载面而不是按家族：坐在 canvas / surface 白底上的控件 hover `--xh-bg-subtle`（100）→ pressed `--xh-bg-subtle-hover`（200）；坐在 subtle 淡底（轨道、淡底容器）上的控件 hover `--xh-bg-subtle-hover`（200）→ pressed `--xh-bg-subtle-active`（300）；300 只留给 pressed。Collection Item 的 `nav` 语境固定按白底承载阶梯生成（rest 透明面 + `--xh-fg-muted` + regular，hover 100 + `--xh-fg-default`，pressed 200 只换面）。承载面通过 `--xh-action-host-bg-hover / -pressed` 向内下发（Action Control 配方的 ghost / outline 悬停与按下面读这两支，缺省画布承载）；`--xh-action-bg-hover / -pressed` 是控件自身的桥接槽，控件皮肤在自己身上赋值，不能作容器下发口。
+3. 交互阶梯按承载面而不是按家族：坐在 canvas / surface 白底上的控件 hover `--xh-bg-subtle`（100）→ pressed `--xh-bg-subtle-hover`（200）；坐在 subtle 淡底（轨道、淡底容器）上的控件 hover `--xh-bg-subtle-hover`（200）→ pressed `--xh-bg-subtle-active`（300）；300 只留给 pressed。Collection Item 的 `nav` 语境固定按白底承载阶梯生成（rest 透明面 + `--xh-fg-muted` + regular，hover 100 + `--xh-fg-default`，pressed 200 只换面）。承载面通过 `--xh-action-host-bg-hover / -pressed` 向内下发（Action Control 配方的 ghost / outline 悬停与按下面读这两支，缺省画布承载）；`--xh-action-bg-hover / -pressed` 是控件自身的桥接槽，控件皮肤在自己身上赋值，不能作容器下发口。一个部件既投影 Action Control 又承载内嵌标记时，自己的面必须用 `--xh-action-bg-*` 钉住，`--xh-action-host-bg-*` 只对后代生效（否则 ghost / outline 会把自己身上的 host 槽读成自己的面）。
 4. 品牌淡底上的阶梯：rest `--xh-bg-brand-subtle`（12%）→ hover `--xh-bg-brand-subtle-hover`（20%）→ pressed `--xh-bg-brand-subtle-active`（28%）；前景一律 `--xh-fg-on-brand-subtle`。
 5. 焦点边框一律 `--xh-border-control-focus`，不随 tone；焦点环 `--xh-ring-focus` 不随 tone。
 6. 状态色表达任务结果，不表达空间层级。
@@ -418,7 +419,6 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 不采用点击波纹。
 - 不允许组件自行设置 0.94、0.96、0.98 等缩放。
 - 业务事件不能等待动画结束；按下首帧必须先于异步 loading 状态可见。
-- 刻意例外（须登记）：CheckboxGroup 条目的方框是条目里 aria-hidden 的 indicator 子节点、全选格的方框是 trigger 的 `::before` 伪元素，Steps 的序号圆点是 trigger 里 aria-hidden 的 indicator 子节点——它们都不是承接指针与键盘激活的宿主（激活落在条目 / trigger 上），家族配方的 `:hover` / `:is(:active, [data-pressed])` 落不到方框与圆点上，允许不投影 `data-xh-action-control`；由皮肤在宿主的悬停 / 按压选择器下按同一时间线（120ms 按下、200ms 释放）给它们换面，取值必须与投影了配方的同类控件逐档一致：CheckboxGroup 方框与独立 Checkbox 同值（静息 canvas + `--xh-border-control`、悬停 `--xh-border-control-hover`、按下 200 档 / 语气 active 档并 0.97 缩放、禁用 `--xh-border-default` + `--xh-bg-subtle`）；Steps 圆点是格状当前标记（§7.3），按淡底容器阶梯走（圆点自身是 100 淡底：悬停 200 → 按下 300，当前步按下换语气 active 档，不缩放），trigger 以 `--xh-action-host-bg-*` 声明自己是淡底承载面。
 
 ### 9.2 行级与 disclosure trigger
 
@@ -428,6 +428,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 只换面：active 背景，不缩放整个条目。
 - 集合行投影 `data-xh-collection-item`（Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger 投影 `nav` 语境）；铺满一行的独立动作条目（load-more trigger、审批项）登记 Action Control `row` profile，disclosure trigger 登记 `disclosure-trigger` profile。两档 `press: surface`、`fill: true`：宽度由容器给、高度随内容、按下 `scale: none` 只换面；不允许零反馈。
 - Space / Enter 与粗指针触屏由 Headless / pointer 会话投影 `data-pressed`，皮肤 `:is(:active, [data-pressed])`。
+- 带内嵌标记的行级宿主（CheckboxGroup item / select-all trigger 的方框、Steps trigger 的序号圆点）：激活落在宿主上，宿主投影 `row` profile、`ghost` 形态并在自己身上用 `--xh-action-bg-hover / -pressed` 钉住画布阶梯（100 → 200），同时以 `--xh-action-host-bg-hover / -pressed` 向内声明自己是标记的承载面（200 → 300）；aria-hidden 的方框 / 圆点不投影配方，只在宿主的 `:hover` / `:is(:active, [data-pressed])` 下换面，走同一时间线（按下 `--xh-motion-duration-press`、释放 micro），不缩放。桥接槽只写不读：host 槽的值由皮肤的私有槽（`--xh-_<c>-host-bg-*`）供给，标记读同一支私有槽即与宿主的 host 槽同源。取值与投影了配方的同类控件逐档一致（CheckboxGroup 方框 = 独立 Checkbox：悬停 `--xh-border-control-hover`、按下承载面阶梯上一档、勾中语气 active、禁用 `--xh-border-default` + `--xh-bg-subtle`；Steps 圆点是格状当前标记，当前步按下 `--xh-bg-brand-active`）。
 
 ### 9.3 状态叠加
 
