@@ -119,6 +119,12 @@ export interface TimeRangePickerPresetProps {
   value: string
 }
 
+/**
+ * 接了按压通道的部件，按 key 记住正被按住的那一个：
+ * 清空钮、触发钮各一，快捷选项按其值、时间格按「端:列:值」。
+ */
+export type TimeRangePickerPressedKey = 'clear' | 'trigger' | `preset:${string}` | `item:${TimeRangePickerEndIndex}:${TimePickerColumnUnit}:${string}`
+
 export interface TimeRangePickerSchema extends MachineSchema {
   props: {
     /** 受控的区间两端 `[start, end]`；空缺的一端用空串占位。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 */
@@ -206,6 +212,11 @@ export interface TimeRangePickerSchema extends MachineSchema {
      * 点击输入行展开时为假：该操作的意图是编辑段位，移走焦点后无法输入。
      */
     moveFocusIn: boolean
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个，该部件投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦、指针取消或浮层收起时即撤下。
+     */
+    pressed: TimeRangePickerPressedKey | null
   }
   computed: Record<string, never>
   refs: TimeRangePickerRefs
@@ -238,9 +249,20 @@ export interface TimeRangePickerSchema extends MachineSchema {
     /** 选中某一端某列的一个值：只修改该段，浮层不收起（其余列仍需继续选择）。 */
     | { type: 'ITEM.SELECT', index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit, value: string }
     | { type: 'FORM.RESET' }
+    /**
+     * 按压通道（shared/press）：某个部件被 Space / Enter 或触屏按住，key 说的是哪一个；
+     * disabled 是 connect 按该部件自己的可按性（快捷选项 / 时间格的逐条禁用、清空钮的可清）带来的事实。
+     */
+    | { type: 'PRESS.START', key: TimeRangePickerPressedKey, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只收自己那一下。 */
+    | { type: 'PRESS.END', key: TimeRangePickerPressedKey }
   tag: never
-  guard: 'isOpenControlled' | 'canEdit' | 'closesOnPreset'
+  guard: 'isOpenControlled' | 'canEdit' | 'closesOnPreset' | 'canPress'
   action:
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'

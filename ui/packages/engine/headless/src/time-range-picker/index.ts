@@ -48,6 +48,7 @@ export type {
   TimeRangePickerPreset,
   TimeRangePickerPresetProps,
   TimeRangePickerPresetState,
+  TimeRangePickerPressedKey,
   TimeRangePickerRefs,
   TimeRangePickerSchema,
   TimeRangePickerSegmentProps,
