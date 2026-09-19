@@ -9,7 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useEffect, useId, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -230,7 +230,9 @@ export interface XhNavigationMenuLinkProps extends ComponentPropsWithRef<'a'> {
 /** 面板内的链接项：href 由作者写，点击不拦截，只收起导航。 */
 export function XhNavigationMenuLink({ current, children, ...rest }: XhNavigationMenuLinkProps): ReactNode {
   const ctx = useNavigationMenuContext()
-  return <a {...mergeReactProps(ctx.api.getLinkProps({ current }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</a>
+  // 链接身份：按压通道按它记按住的那一条，按实例生成，作者不必提供
+  const value = useId()
+  return <a {...mergeReactProps(ctx.api.getLinkProps({ value, current }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</a>
 }
 
 export interface XhNavigationMenuIndicatorProps extends ComponentPropsWithRef<'li'> {}

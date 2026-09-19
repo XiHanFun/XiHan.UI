@@ -14,6 +14,7 @@ export const navigationMenuKeyboard: KeyboardTable = {
   component: 'navigation-menu',
   source: APG,
   rows: [
+    { id: 'navigation-menu.kbd.press', keys: ['Enter', 'Space'], when: 'held on trigger / link, 导航未禁用且入口未禁用', does: '按住期间入口或面板链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，链接随面板收起一并撤下。开合与激活语义照旧由这一次按键承担' },
     { id: 'navigation-menu.kbd.next', keys: ['ArrowRight', 'ArrowDown'], when: 'focus in trigger, 按键与 orientation 同轴', does: '焦点移到下一个 trigger（禁用项跳过、尽头按 loop 回绕）；随后的自动展开走 delayDuration' },
     { id: 'navigation-menu.kbd.prev', keys: ['ArrowLeft', 'ArrowUp'], when: 'focus in trigger, 按键与 orientation 同轴', does: '焦点移到上一个 trigger' },
     { id: 'navigation-menu.kbd.first', keys: ['Home'], when: 'focus in trigger', does: '焦点移到首个可停留 trigger' },

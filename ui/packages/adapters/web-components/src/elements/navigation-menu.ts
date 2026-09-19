@@ -121,6 +121,20 @@ export class XhNavigationMenuElement extends XhElement {
   declare translations?: Partial<NavigationMenuTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
+
+  /** 链接身份：按压通道按它记按住的那一条。作者节点没有 value 这一说，升级后按节点分配一次、随节点存活。 */
+  private readonly linkValues = new WeakMap<HTMLElement, string>()
+  private linkSeq = 0
+
+  private linkValueOf(el: HTMLElement): string {
+    let value = this.linkValues.get(el)
+    if (value === undefined) {
+      value = `link-${++this.linkSeq}`
+      this.linkValues.set(el, value)
+    }
+    return value
+  }
+
   // trigger 与 content 要按 value 逐对互指（aria-controls / aria-labelledby），
   // 那些 id 由 scope 派生，因此这里必须自己建一个
   private readonly menuScope = createScope(null, this.idGen)
@@ -276,7 +290,7 @@ export class XhNavigationMenuElement extends XhElement {
     }
 
     for (const el of this.getParts('link'))
-      this.spreader.spread(el, api.getLinkProps({ current: authorFlag(el, 'current') }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLinkProps({ value: this.linkValueOf(el), current: authorFlag(el, 'current') }) as Record<string, unknown>)
 
     const indicator = this.getPart('indicator')
     if (indicator) {

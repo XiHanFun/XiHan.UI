@@ -5,9 +5,9 @@
 
 // 提供 navigation menu 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { NavigationMenuApi, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTriggerProps } from './navigation-menu.types'
-import { contains, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { NavigationMenuApi, NavigationMenuNodeMeta, NavigationMenuPressedPart, NavigationMenuSchema, NavigationMenuTriggerProps } from './navigation-menu.types'
+import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { navigationMenuAnatomy, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 
 const parts = navigationMenuAnatomy.build()
@@ -45,6 +45,16 @@ export function connectNavigationMenu<T extends PropTypes>(
   /** 入口禁用：整套禁用一票通过，否则部件上写的优先，没写就回 collection 里查。 */
   const triggerDisabled = (item: NavigationMenuTriggerProps): boolean =>
     navDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（入口与链接各按 value 记、分开认），各自合成一份
+  // 跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 入口自身的禁用只有 connect 知道，随 PRESS.START 带给机器的 canPress 守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const press = (part: NavigationMenuPressedPart, value: string, disabled = false): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === value,
+    onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
+  })
 
   const triggerId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `content:${target}`)
@@ -116,6 +126,7 @@ export function connectNavigationMenu<T extends PropTypes>(
     getTriggerProps: (item) => {
       const isOpen = item.value === value
       const disabled = triggerDisabled(item)
+      const handlers = press('trigger', item.value, disabled)
       return normalize.button({
         ...parts.trigger.attrs,
         [ITEM_VALUE_ATTR]: item.value,
@@ -135,7 +146,14 @@ export function connectNavigationMenu<T extends PropTypes>(
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'nav',
         'data-in-path': dataAttr(isOpen),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'trigger' && pressedValue === item.value),
         // 不做 roving tabindex，每个 trigger 都留在 Tab 序列里
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
         'onPointerenter': () => {
           if (!disabled)
             send({ type: 'TRIGGER.POINTER', value: item.value })
@@ -148,7 +166,9 @@ export function connectNavigationMenu<T extends PropTypes>(
           if (!disabled)
             send({ type: 'TRIGGER.TOGGLE', value: item.value })
         },
+        // 同一个 keydown 先过跟踪器再走导航：React 把 onKeydown 与 onKeyDown 归成同一个合成事件，两个键会互相覆盖
         'onKeydown': (event: KeyboardEvent) => {
+          handlers.onKeyDown(event)
           if (disabled)
             return
           // 轴跟随 orientation，异轴按键不拦默认行为
@@ -161,6 +181,9 @@ export function connectNavigationMenu<T extends PropTypes>(
           // 吞掉 Enter/Space，避免按钮默认行为再合成一次 click
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault()
+            // 按住不放会连发 keydown，这是开合切换：重复执行会来回翻转；按压面由跟踪器在首次 keydown 记下
+            if (event.repeat)
+              return
             send({ type: 'TRIGGER.TOGGLE', value: item.value })
           }
         },
@@ -196,16 +219,28 @@ export function connectNavigationMenu<T extends PropTypes>(
     // 面板里的链接不拦默认行为，只把导航收起。
     // 链接归 Collection Item 导航当前（真源 §4.1 / §7.3）：走 nav 语境，悬停 / 键盘高亮 / 按下面与当前页的
     // 字色字重（data-current：透明面 + brand-strong + medium）都由家族给；nav 不读 aria-selected
-    getLinkProps: link => normalize.element({
-      ...parts.link.attrs,
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'nav',
-      // 非当前项省略 aria-current，不写 "false"
-      'aria-current': link.current ? 'page' : undefined,
-      'data-current': dataAttr(link.current),
-      'onClick': () => send({ type: 'DISMISS' }),
-    }),
+    getLinkProps: (link) => {
+      const handlers = press('link', link.value)
+      return normalize.element({
+        ...parts.link.attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'nav',
+        // 非当前项省略 aria-current，不写 "false"
+        'aria-current': link.current ? 'page' : undefined,
+        'data-current': dataAttr(link.current),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+        // 按住 Enter 激活后面板收起，链接藏进 inert 的面板里不会再来 keyup，由机器随 value 变化撤下
+        'data-pressed': dataAttr(pressedPart === 'link' && pressedValue === link.value),
+        'onClick': () => send({ type: 'DISMISS' }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     // 指示条是纯装饰
     getIndicatorProps: () => normalize.element({
