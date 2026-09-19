@@ -55,6 +55,11 @@ export interface PromptInputSchema extends MachineSchema {
     value: string
     /** 输入法组合中。组合期间的按键属于候选词框，一律不接受。 */
     isComposing: boolean
+    /**
+     * 按压通道：发送 / 停止按钮被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或按钮身份随 loading 切换、提交后清空使按钮转禁用时即撤下。
+     */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -72,9 +77,13 @@ export interface PromptInputSchema extends MachineSchema {
     | { type: 'CONTROLLED.DISABLE' }
     | { type: 'CONTROLLED.ENABLE' }
     | { type: 'CONTROLLED.VALUE.EMPTY' }
+    /** 按压通道（shared/press）：发送 / 停止按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** 发送 / 停止按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
     | { type: 'CONTROLLED.VALUE.FILLED' }
   tag: never
-  guard: 'canSubmit' | 'isLoading' | 'isValueEmpty' | 'isNextValueEmpty'
+  guard: 'canSubmit' | 'isLoading' | 'isValueEmpty' | 'isNextValueEmpty' | 'canPress'
   action:
     | 'setValue'
     | 'clearValue'
@@ -84,6 +93,9 @@ export interface PromptInputSchema extends MachineSchema {
     | 'clearComposing'
     | 'syncDisabled'
     | 'syncValueState'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 

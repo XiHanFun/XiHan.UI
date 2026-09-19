@@ -180,9 +180,9 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 
 **状态**：`empty` · `editing` · `disabled`
 
-**事件**：`VALUE.SET` · `COMPOSITION.START` · `COMPOSITION.END` · `KEY.SUBMIT` · `SUBMIT` · `STOP` · `CONTROLLED.DISABLE` · `CONTROLLED.ENABLE` · `CONTROLLED.VALUE.EMPTY` · `CONTROLLED.VALUE.FILLED`
+**事件**：`VALUE.SET` · `COMPOSITION.START` · `COMPOSITION.END` · `KEY.SUBMIT` · `SUBMIT` · `STOP` · `CONTROLLED.DISABLE` · `CONTROLLED.ENABLE` · `CONTROLLED.VALUE.EMPTY` · `PRESS.START` · `PRESS.END` · `CONTROLLED.VALUE.FILLED`
 
-**判据**：`canSubmit` · `isLoading` · `isValueEmpty` · `isNextValueEmpty`
+**判据**：`canSubmit` · `isLoading` · `isValueEmpty` · `isNextValueEmpty` · `canPress`
 
 ### connect API
 
@@ -218,6 +218,7 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 | `Enter` | 输入法组合中 | 不提交也不拦截：这一下是在确认候选词 |
 | `Enter` | 同一个输入框上叠了别的处理器且它已经处理过这一下 | 让位，本组件什么都不做 |
 | `Enter` / `Space` | 焦点在发送按钮上 | 按当前身份触发提交或停止（原生按钮激活） |
+| `Enter` / `Space` | held on submit-trigger, not disabled（发送身份要可提交，停止身份恒可用） | 按住期间按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，身份随 loading 切换或提交后清空使按钮转禁用时一并撤下 |
 | `Escape` | 任何时候 | 不接管：留给叠在输入框上的浮层与页面 |
 
 ### ARIA
@@ -256,6 +257,7 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 | `input` | `data-xh-field-input` | '' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-mode` | 'stop' \| 'send' |
+| `submit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-xh-action-control` | '' |
 | `submit-trigger` | `data-xh-action-display` | 'always' |
 | `submit-trigger` | `data-xh-action-profile` | 'text' |

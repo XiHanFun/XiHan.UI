@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PromptInputApi, PromptInputSchema } from './prompt-input.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { promptInputAnatomy } from './prompt-input.anatomy'
 
 const parts = promptInputAnatomy.build()
@@ -33,6 +34,9 @@ export function connectPromptInput<T extends PropTypes>(
    * 两处必须一起改，否则会出现「按钮亮着但按不动」。
    */
   const canSubmit = !disabled && !loading && !isComposing && (allowEmptySubmit || value.trim() !== '')
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
 
   return {
     value,
@@ -129,6 +133,15 @@ export function connectPromptInput<T extends PropTypes>(
       // 生成期间恒可用，此刻按钮的语义是停止；家族按 data-disabled 给禁用面，与原生 disabled 同步
       'disabled': (!loading && !canSubmit) || undefined,
       'data-disabled': dataAttr(!loading && !canSubmit),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+      // 停止身份下同样有回执，身份切换（loading 翻转）时由机器松开
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => {
         send(loading ? { type: 'STOP' } : { type: 'SUBMIT' })
       },
