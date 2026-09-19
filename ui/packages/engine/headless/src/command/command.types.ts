@@ -140,6 +140,11 @@ export interface CommandSchema extends MachineSchema {
     highlightedValue: string | null
     /** 已挂载条目的显式 hidden 镜像；未挂载的虚拟候选不在其中。 */
     hiddenValues: string[]
+    /**
+     * 按压通道：Enter 或触屏按住的命令 value；抬起、失焦或面板收起即清空。
+     * 焦点恒在检索框，键盘那一路由检索框替锚点命令代发。
+     */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: CommandRefs
@@ -156,8 +161,12 @@ export interface CommandSchema extends MachineSchema {
     | { type: 'ITEM.HIGHLIGHT', value: string }
     | { type: 'HIGHLIGHT.CLEAR' }
     | { type: 'ITEM.SELECT', value: string, label: string }
+    /** 命令被 Enter 或触屏按住；disabled 是命令自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 按住的命令抬起、失焦或指针取消；只松开 value 对应的那一条。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: 'isOpenControlled' | 'keepsOpenOnSelect'
+  guard: 'isOpenControlled' | 'keepsOpenOnSelect' | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -171,6 +180,10 @@ export interface CommandSchema extends MachineSchema {
     | 'highlightVisibleIfDangling'
     | 'invokeOnSelect'
     | 'syncModalResources'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackOverlay' | 'trackItemVisibility'
 }
 

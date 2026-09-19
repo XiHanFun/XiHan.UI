@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { commandAnatomy, commandKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 
@@ -490,6 +491,29 @@ export const commandSuite: ConformanceSuite = {
           until: { attr: { part: 'trigger', name: 'data-state', value: 'open' } },
           expect: { parts: { trigger: { 'aria-expanded': 'true' } } },
         },
+      ],
+    },
+    {
+      name: 'Enter 在检索框里按住与触屏按下：锚点命令投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['command.kbd.press'],
+      // 选完不收起，按住的中间帧才看得见。焦点恒在检索框，命令自己收不到按键：键盘那一路派到检索框上
+      props: { ...OPEN, closeOnSelect: false },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        heldPress('command', 'item', { value: 'page-users', keyboardHost: INPUT }),
+      ],
+    },
+    {
+      name: '禁用命令按住不进入按压面；加载中锚点命令也不进',
+      spec: { adr: 'press-channel' },
+      props: { ...OPEN, closeOnSelect: false },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        // 禁用命令从不被锚点指到，键盘到不了它，只验触屏
+        heldPressIgnored('command', 'item', '禁用命令不接受按压', { value: 'page-roles', keyboardHost: null }),
+        { kind: 'setProps', props: { loading: true } },
+        heldPressIgnored('command', 'item', '加载中命令不接受按压', { value: 'page-users', keyboardHost: INPUT }),
       ],
     },
   ],

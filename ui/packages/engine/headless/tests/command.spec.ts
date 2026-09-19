@@ -349,3 +349,93 @@ describe('commandMachine 与连接层的边界', () => {
     expect((c.api().getGroupProps({ value: 'nav' }) as unknown as Record<string, unknown>).hidden).toBe(true)
   })
 })
+
+describe('按压通道：Enter 与触屏按住投影 data-pressed，按命令 value 记', () => {
+  type Dict = Record<string, unknown>
+  const item = (c: ReturnType<typeof makeCommand>, value: string): Dict => c.api().getItemProps({ value }) as unknown as Dict
+  const input = (c: ReturnType<typeof makeCommand>): Dict => c.api().getInputProps() as unknown as Dict
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+  const keyEvent = (value: string, repeat = false): Record<string, unknown> => ({ key: value, ctrlKey: false, metaKey: false, altKey: false, repeat, isComposing: false, preventDefault() {} })
+
+  it('焦点恒在检索框：Enter 在检索框里按住即锚点命令在场、抬起或失焦撤下；重复键不再进', () => {
+    // 选完不收起，按住的中间帧才看得见
+    const c = makeCommand({ defaultOpen: true, closeOnSelect: false })
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    fire(input(c), 'onKeyDown', keyEvent('Enter'))
+    expect(item(c, 'users')['data-pressed']).toBe('')
+    expect(item(c, 'export')['data-pressed']).toBeUndefined()
+    fire(input(c), 'onKeyUp', keyEvent('Enter'))
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    fire(input(c), 'onKeyDown', keyEvent('Enter', true))
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    fire(input(c), 'onKeyDown', keyEvent('Enter'))
+    expect(item(c, 'users')['data-pressed']).toBe('')
+    fire(input(c), 'onBlur', {})
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    // 锚点在按住期间挪走：松开按 context 记着的那一条
+    fire(input(c), 'onKeyDown', keyEvent('Enter'))
+    fire(input(c), 'onKeyDown', keyEvent('ArrowDown'))
+    expect(item(c, 'users')['data-pressed']).toBe('')
+    fire(input(c), 'onKeyUp', keyEvent('Enter'))
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    c.stop()
+  })
+
+  it('触屏按下在场、抬起或取消撤下；另一条的抬起不把它松开；鼠标按下不走这一路', () => {
+    const c = makeCommand({ defaultOpen: true })
+    fire(item(c, 'export'), 'onPointerDown', { pointerType: 'touch' })
+    expect(item(c, 'export')['data-pressed']).toBe('')
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    fire(item(c, 'users'), 'onPointerUp', {})
+    expect(item(c, 'export')['data-pressed']).toBe('')
+    fire(item(c, 'export'), 'onPointerUp', {})
+    expect(item(c, 'export')['data-pressed']).toBeUndefined()
+    fire(item(c, 'export'), 'onPointerDown', { pointerType: 'touch' })
+    fire(item(c, 'export'), 'onPointerCancel', {})
+    expect(item(c, 'export')['data-pressed']).toBeUndefined()
+    fire(item(c, 'export'), 'onPointerDown', { pointerType: 'mouse' })
+    expect(item(c, 'export')['data-pressed']).toBeUndefined()
+    c.stop()
+  })
+
+  it('不进：加载中不进；命令自身禁用（部件声明或清单）不进', () => {
+    const loading = makeCommand({ defaultOpen: true, loading: true })
+    fire(input(loading), 'onKeyDown', keyEvent('Enter'))
+    fire(item(loading, 'export'), 'onPointerDown', { pointerType: 'touch' })
+    expect(item(loading, 'users')['data-pressed']).toBeUndefined()
+    expect(item(loading, 'export')['data-pressed']).toBeUndefined()
+    loading.stop()
+
+    const c = makeCommand({ defaultOpen: true })
+    fire(item(c, 'roles'), 'onPointerDown', { pointerType: 'touch' })
+    expect(item(c, 'roles')['data-pressed']).toBeUndefined()
+    fire(c.api().getItemProps({ value: 'export', disabled: true }) as unknown as Dict, 'onPointerDown', { pointerType: 'touch' })
+    expect(item(c, 'export')['data-pressed']).toBeUndefined()
+    c.stop()
+  })
+
+  it('面板收起即松开：按住 Enter 选中后命令随面板藏起，不会再来 keyup，按压面由机器收', () => {
+    const c = makeCommand({ defaultOpen: true })
+    fire(input(c), 'onKeyDown', keyEvent('Enter'))
+    expect(c.state()).toBe('closed')
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    // 受控 open：宿主不写回就仍开着，按住的中间帧看得见
+    const controlled = makeCommand({ open: true })
+    fire(input(controlled), 'onKeyDown', keyEvent('Enter'))
+    expect(controlled.state()).toBe('open')
+    expect(item(controlled, 'users')['data-pressed']).toBe('')
+    fire(input(controlled), 'onKeyUp', keyEvent('Enter'))
+    expect(item(controlled, 'users')['data-pressed']).toBeUndefined()
+    c.stop()
+    controlled.stop()
+  })
+
+  it('按住途中转入加载：按压面由机器自己收，不等 keyup', () => {
+    const c = makeCommand({ open: true })
+    fire(input(c), 'onKeyDown', keyEvent('Enter'))
+    expect(item(c, 'users')['data-pressed']).toBe('')
+    c.setProps({ loading: true })
+    expect(item(c, 'users')['data-pressed']).toBeUndefined()
+    c.stop()
+  })
+})

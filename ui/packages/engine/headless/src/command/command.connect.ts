@@ -5,9 +5,9 @@
 
 // 提供 command 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CommandApi, CommandGroupMeta, CommandItemProps, CommandNodeMeta, CommandSchema } from './command.types'
-import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
 import { commandAnatomy, commandItemQuery, commandItemText } from './command.anatomy'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
 import { hiddenCommandValues } from './command.visibility'
@@ -97,6 +97,27 @@ export function connectCommand<T extends PropTypes>(
     if (!meta || meta.disabled || renderedHidden().has(meta.value))
       return
     send({ type: 'ITEM.SELECT', value: meta.value, label: meta.label })
+  }
+
+  // 按压通道：真源是机器 context 里「正被按住的那一条」，每条命令合成一份跟踪器投影 data-pressed，
+  // 指针按住由 :active 表出，家族配方两者同一档。命令自身的禁用随 PRESS.START 带给机器的 canPress 守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: CommandItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down ? { type: 'PRESS.START', value: item.value, disabled: itemDisabled(item) } : { type: 'PRESS.END', value: item.value }),
+  })
+  // 焦点恒在检索框，命令自己收不到按键：Enter 在检索框里按住时，由它替锚点命令进按压通道；
+  // 松开按 context 里记着的那一条，锚点在按住期间挪走也松得掉
+  const pressHighlighted = (): void => {
+    const meta = highlighted == null ? undefined : metaOf.get(highlighted)
+    if (!meta || context.get('pressedValue') === meta.value)
+      return
+    send({ type: 'PRESS.START', value: meta.value, disabled: meta.disabled || renderedHidden().has(meta.value) })
+  }
+  const releaseHighlighted = (): void => {
+    const value = context.get('pressedValue')
+    if (value != null)
+      send({ type: 'PRESS.END', value })
   }
 
   return {
@@ -193,6 +214,12 @@ export function connectCommand<T extends PropTypes>(
       'onInput': (event: Event) => {
         send({ type: 'INPUT.CHANGE', value: (event.target as HTMLInputElement).value })
       },
+      // 焦点走了就没有「按住」可言：不会再来 keyup
+      'onBlur': releaseHighlighted,
+      'onKeyUp': (event: KeyboardEvent) => {
+        if (event.key === 'Enter')
+          releaseHighlighted()
+      },
       'onKeyDown': (event: KeyboardEvent) => {
         // 组合期间的按键属于输入法候选框，组件一律不接
         if (isComposingEvent(event))
@@ -221,6 +248,8 @@ export function connectCommand<T extends PropTypes>(
           // 按住不放会连发 keydown，选中是一次性动作，重复执行会连开好几条命令
           if (event.repeat)
             return
+          // 按住期间锚点命令投影 data-pressed；选中即收起时命令随面板藏起，由机器松开
+          pressHighlighted()
           commitHighlighted()
         }
         // Escape 由消解层收口，这里不拦：拦了浏览器把输入框回滚成默认值的行为反而要另写
@@ -257,49 +286,58 @@ export function connectCommand<T extends PropTypes>(
     // 命令走 Collection Item 的 overlay 语境（模态命令面板）：悬停 / 键盘锚点（data-highlighted）/ 按下面与禁用面
     // 由家族给；aria-selected 跟着活动候选走（下面），家族的浮层选中面缺省透明、行尾对号槽本组件不投影，
     // 所以活动候选看上去仍只是中性高亮，不画对号也不留选中底
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...itemStateAttrs(item),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      // 导航与选中都以此为条目身份
-      [ITEM_VALUE_ATTR]: item.value,
-      // aria-activedescendant 要指得到它，所以每条命令都得有个稳定 id
-      'id': itemId(item.value),
-      'role': 'option',
-      // 命令没有持久选值；这里是 APG combobox 的 selection-follows-focus：
-      // aria-activedescendant 指到哪一条，哪一条就向读屏报 selected，其余显式为 false。
-      'aria-selected': highlighted === item.value ? 'true' : 'false',
-      // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      // 不给 tabindex：焦点恒在检索框
-      'hidden': itemHidden(item.value) || undefined,
-      'onClick': (event: MouseEvent) => {
-        if (itemDisabled(item) || renderedHidden().has(item.value))
-          return
-        send({ type: 'ITEM.SELECT', value: item.value, label: commandItemText(event.currentTarget as HTMLElement) })
-      },
-      // 指针划过即挪锚点：不同步的话，鼠标停在 A 上、回车却执行了键盘锚点所在的 B
-      'onPointerMove': (event: PointerEvent) => {
-        if (!itemDisabled(item) && !renderedHidden().has(item.value) && highlighted !== item.value) {
-          pointerHot.add(event.currentTarget as Element)
-          send({ type: 'ITEM.HIGHLIGHT', value: item.value })
-        }
-      },
-      // 指针离开整张列表才收锚点，条目之间的缝不算：那时 relatedTarget 是 list 本身。
-      // 触摸 tap 序列里的 leave 不作数；打字建立的锚点被指针路过不受影响
-      'onPointerLeave': (event: PointerEvent) => {
-        const el = event.currentTarget as HTMLElement
-        if (event.pointerType === 'touch' || !pointerHot.delete(el))
-          return
-        if (highlighted !== item.value)
-          return
-        if (contains(el.closest<HTMLElement>(parts.list.selector), event.relatedTarget as Node | null))
-          return
-        send({ type: 'HIGHLIGHT.CLEAR' })
-      },
-    }),
+    getItemProps: (item) => {
+      const handlers = press(item)
+      return normalize.element({
+        ...parts.item.attrs,
+        ...itemStateAttrs(item),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // 导航与选中都以此为条目身份
+        [ITEM_VALUE_ATTR]: item.value,
+        // aria-activedescendant 要指得到它，所以每条命令都得有个稳定 id
+        'id': itemId(item.value),
+        'role': 'option',
+        // 命令没有持久选值；这里是 APG combobox 的 selection-follows-focus：
+        // aria-activedescendant 指到哪一条，哪一条就向读屏报 selected，其余显式为 false。
+        'aria-selected': highlighted === item.value ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        // 触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+        // 键盘那一路由检索框代发（Enter 按住时锚点命令投影同一个属性），命令自己收不到按键
+        'data-pressed': dataAttr(pressedValue === item.value),
+        // 不给 tabindex：焦点恒在检索框
+        'hidden': itemHidden(item.value) || undefined,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onClick': (event: MouseEvent) => {
+          if (itemDisabled(item) || renderedHidden().has(item.value))
+            return
+          send({ type: 'ITEM.SELECT', value: item.value, label: commandItemText(event.currentTarget as HTMLElement) })
+        },
+        // 指针划过即挪锚点：不同步的话，鼠标停在 A 上、回车却执行了键盘锚点所在的 B
+        'onPointerMove': (event: PointerEvent) => {
+          if (!itemDisabled(item) && !renderedHidden().has(item.value) && highlighted !== item.value) {
+            pointerHot.add(event.currentTarget as Element)
+            send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+          }
+        },
+        // 指针离开整张列表才收锚点，条目之间的缝不算：那时 relatedTarget 是 list 本身。
+        // 触摸 tap 序列里的 leave 不作数；打字建立的锚点被指针路过不受影响
+        'onPointerLeave': (event: PointerEvent) => {
+          const el = event.currentTarget as HTMLElement
+          if (event.pointerType === 'touch' || !pointerHot.delete(el))
+            return
+          if (highlighted !== item.value)
+            return
+          if (contains(el.closest<HTMLElement>(parts.list.selector), event.relatedTarget as Node | null))
+            return
+          send({ type: 'HIGHLIGHT.CLEAR' })
+        },
+      })
+    },
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,

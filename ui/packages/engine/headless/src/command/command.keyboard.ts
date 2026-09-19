@@ -20,6 +20,7 @@ export const commandKeyboard: KeyboardTable = {
     { id: 'command.kbd.first', keys: ['Home'], when: 'open', does: '锚点移到首条命令' },
     { id: 'command.kbd.last', keys: ['End'], when: 'open', does: '锚点移到末条命令' },
     { id: 'command.kbd.select', keys: ['Enter'], when: 'open, 锚点落在可用命令上', does: '选中该命令；长按连发的重复键不重复选中' },
+    { id: 'command.kbd.press', keys: ['Enter'], when: 'open, 锚点落在可用命令上且未加载，按住', does: '按住期间锚点命令投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，命令随面板收起一并撤下' },
     { id: 'command.kbd.tab', keys: ['Tab'], when: 'open, modal', does: '在面板内循环焦点' },
   ],
 }
