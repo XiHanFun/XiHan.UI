@@ -6,7 +6,7 @@
 // 提供 toast 相关实现。
 
 import type { Scope } from '@xihan-ui/core'
-import type { ToastPauseSource, ToastPlacement, ToastSchema } from './toast.types'
+import type { ToastPauseSource, ToastPlacement, ToastPressedPart, ToastSchema } from './toast.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ToastSchema>()
@@ -47,6 +47,8 @@ export const toastMachine = createMachine({
     remaining: cell<number>(() => ({ defaultValue: resolveToastDuration(prop('loading'), prop('duration')) })),
     // 暂停来源做成集合而不是布尔：指针悬停与焦点停留会同时按住计时，最后一个松开才继续走
     pausedBy: cell<ToastPauseSource[]>(() => ({ defaultValue: prop('paused') ? ['service'] : [] })),
+    // 按压通道：正被按住的那颗按钮，与计时无关
+    pressed: cell<ToastPressedPart | null>(() => ({ defaultValue: null })),
   }),
   // 建出来就被宿主按住的那种直接落 paused 子态：watch 只在值变了才响，起手为真的这一条它看不见
   initialState: ({ prop }) => (prop('paused') ? 'visible.paused' : 'visible'),
@@ -61,17 +63,26 @@ export const toastMachine = createMachine({
       [() => prop('paused') ?? false],
       () => action(['syncPaused']),
     )
+    // 按住途中转成不可关闭：关闭按钮随即 disabled 并收起、不会再来 keyup，按压面由机器自己收
+    track([() => prop('closable') ?? true], () => action(['releaseWhenInert']))
   },
   // 页面可见性要跨整条生命周期盯着，因此挂根级
   effects: ['trackPageIdle'],
+  // 按压通道的松开挂根级：退场后才到的 keyup / blur 也认，不留残留
+  on: {
+    'PRESS.END': { actions: ['endPress'] },
+  },
   states: {
     visible: {
       initial: 'running',
-      // 三条出口都通向退场，两个子态下都成立，故挂在父状态上
+      // 进入退场即松开：按住 Enter 关掉条子，按钮随条目一起离场，不会再来 keyup 或 blur
+      exit: ['releasePress'],
+      // 三条出口都通向退场，两个子态下都成立，故挂在父状态上；按压只在台上时进
       on: {
         'TOAST.DISMISS': { target: 'dismissing' },
         'TOAST.ACTION': { target: 'dismissing', actions: ['invokeAction'] },
         'after.duration': { target: 'dismissing' },
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
       },
       states: {
         running: {
@@ -115,6 +126,14 @@ export const toastMachine = createMachine({
           return false
         return context.get('pausedBy').every(src => src === e.src)
       },
+      // 关闭按钮原生 disabled 且收起，程序化派发再守一次；动作按钮加载中照常可点（TOAST.ACTION 不看
+      // loading），指针 :active 有面，键盘与触屏也得有，故不按 loading 拦
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return false
+        return e.part !== 'close' || (prop('closable') ?? true)
+      },
     },
     actions: {
       addPauseSource: ({ context, event }) => {
@@ -145,6 +164,22 @@ export const toastMachine = createMachine({
         prop('onStatusChange')?.({ id: resolveToastId(prop('id'), scope), status: 'dismissing' }),
       invokeUnmounted: ({ prop, scope }) =>
         prop('onStatusChange')?.({ id: resolveToastId(prop('id'), scope), status: 'unmounted' }),
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.part)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.part)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      releaseWhenInert: ({ context, prop }) => {
+        if (!(prop('closable') ?? true) && context.get('pressed') === 'close')
+          context.set('pressed', null)
+      },
     },
     effects: {
       /**

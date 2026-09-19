@@ -27,5 +27,11 @@ export const toastKeyboard: KeyboardTable = {
       when: 'focus 在 action-trigger 上',
       does: '触发 onAction 并进入 dismissing',
     },
+    {
+      id: 'toast.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in close-trigger / action-trigger（close-trigger 须 closable）',
+      does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或进入退场撤下。notification 的卡片按钮同此',
+    },
   ],
 }

@@ -149,9 +149,9 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 **状态**：`visible` · `visible.running` · `visible.paused` · `dismissing` · `unmounted`
 
-**事件**：`TOAST.DISMISS` · `TOAST.ACTION` · `TOAST.PAUSE` · `TOAST.RESUME` · `TOAST.RESET` · `after.duration` · `after.removeDelay`
+**事件**：`TOAST.DISMISS` · `TOAST.ACTION` · `TOAST.PAUSE` · `TOAST.RESUME` · `TOAST.RESET` · `after.duration` · `after.removeDelay` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isLastPauseSource`
+**判据**：`isLastPauseSource` · `canPress`
 
 ### connect API
 
@@ -191,6 +191,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | --- | --- | --- |
 | `Enter` / `Space` | focus 在 close-trigger 上且 closable | 立即进入 dismissing，走完 removeDelay 后转 unmounted |
 | `Enter` / `Space` | focus 在 action-trigger 上 | 触发 onAction 并进入 dismissing |
+| `Enter` / `Space` | held in close-trigger / action-trigger（close-trigger 须 closable） | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或进入退场撤下。notification 的卡片按钮同此 |
 
 ### ARIA
 
@@ -224,6 +225,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `root` | `data-state` | toStatus(state.get()) |
 | `root` | `data-tone` | props.tone |
 | `indicator` | `data-loading` | ''（条件成立时才出现） |
+| `action-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `action-trigger` | `data-xh-action-control` | '' |
 | `action-trigger` | `data-xh-action-display` | 'always' |
 | `action-trigger` | `data-xh-action-profile` | 'text' |
@@ -231,6 +233,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `action-trigger` | `data-xh-action-variant` | 'outline' |
 | `progress` | `data-state` | toStatus(state.get()) |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

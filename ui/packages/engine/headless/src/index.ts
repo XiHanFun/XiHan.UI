@@ -267,7 +267,7 @@ export type { TimerApi, TimerCompleteDetails, TimerControlAction, TimerItemProps
 export { connectTimestamp, formatRelativeTime, formatTimePattern, TIMESTAMP_RELATIVE_LIMIT, timestampAnatomy, timestampKeyboard, timestampMachineStamp, timestampMeta, toTimeDate } from './timestamp'
 export type { TimestampApi, TimestampProps, TimestampState, TimestampTranslations, TimestampType, TimestampValue } from './timestamp'
 export { connectToast, createToastStackController, resolveToastDuration, resolveToastId, resolveToastServiceItem, TOAST_DURATION, TOAST_GAP, TOAST_MAX, TOAST_PLACEMENT, TOAST_REMOVE_DELAY, toastAnatomy, toastKeyboard, toastMachine, toastMeta } from './toast'
-export type { ResolvedToastServiceItem, ToastActionDetails, ToastApi, ToastOptions, ToastPauseSource, ToastPlacement, ToastRecord, ToastSchema, ToastServiceDefaults, ToastStackController, ToastStackControllerOptions, ToastStatus, ToastStatusChangeDetails, ToastTone, ToastTranslations } from './toast'
+export type { ResolvedToastServiceItem, ToastActionDetails, ToastApi, ToastOptions, ToastPauseSource, ToastPlacement, ToastPressedPart, ToastRecord, ToastSchema, ToastServiceDefaults, ToastStackController, ToastStackControllerOptions, ToastStatus, ToastStatusChangeDetails, ToastTone, ToastTranslations } from './toast'
 export { connectToggle, toggleAnatomy, toggleKeyboard, toggleMachine, toggleMeta } from './toggle'
 export type { ToggleApi, TogglePressedChangeDetails, ToggleSchema, ToggleTranslations } from './toggle'
 export { connectToggleGroup, normalizeToggleGroupValue, sameToggleGroupValue, toggleGroupAnatomy, toggleGroupKeyboard, toggleGroupMachine, toggleGroupMeta, toToggleGroupChangeValue } from './toggle-group'

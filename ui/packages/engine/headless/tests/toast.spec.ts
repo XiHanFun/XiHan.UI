@@ -330,3 +330,102 @@ describe('connectToast', () => {
     expect(t.api().status).toBe('dismissing')
   })
 })
+
+// ══ 按压通道 ══
+
+type Dict = Record<string, unknown>
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('toastMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed，按住的是哪颗就只落在哪颗上', () => {
+  it('关闭按钮：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const t = makeToast({ duration: 0 })
+    const close = (): Dict => t.api().getCloseTriggerProps() as Dict
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onKeyDown', key(' '))
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onKeyUp', key(' '))
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onBlur', {})
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onPointerCancel', {})
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onPointerUp', {})
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(close()['data-pressed']).toBeUndefined()
+    // 按住不等于按下：计时照旧、状态不动
+    expect(t.state()).toBe('visible.running')
+  })
+
+  it('操作按钮：只有按住的那颗带 data-pressed，另一颗的 keyup 不把它松开；加载中照常有回执', () => {
+    const t = makeToast({ loading: true })
+    const close = (): Dict => t.api().getCloseTriggerProps() as Dict
+    const action = (): Dict => t.api().getActionTriggerProps() as Dict
+    fire(action(), 'onKeyDown', key(' '))
+    expect(action()['data-pressed']).toBe('')
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onKeyUp', key(' '))
+    expect(action()['data-pressed']).toBe('')
+    fire(action(), 'onKeyUp', key(' '))
+    expect(action()['data-pressed']).toBeUndefined()
+  })
+
+  it('进入退场即松开：按住 Enter 关掉条子，按钮随条目离场、不会再来 keyup，按压面由机器收；退场后按住不进', () => {
+    const t = makeToast({ duration: 0, removeDelay: 20 })
+    const close = (): Dict => t.api().getCloseTriggerProps() as Dict
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBe('')
+    t.service.send({ type: 'TOAST.DISMISS' })
+    expect(t.state()).toBe('dismissing')
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBeUndefined()
+    vi.advanceTimersByTime(20)
+    expect(t.state()).toBe('unmounted')
+    fire(close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(close()['data-pressed']).toBeUndefined()
+  })
+
+  it('到点自动退场同样松开：手指还按在操作按钮上时条子走掉，按压面不留残留', () => {
+    const t = makeToast({ duration: 100, removeDelay: 20 })
+    const action = (): Dict => t.api().getActionTriggerProps() as Dict
+    fire(action(), 'onPointerDown', { pointerType: 'touch' })
+    expect(action()['data-pressed']).toBe('')
+    // 触屏按住不暂停计时（暂停来源只有指针悬停与焦点），到点照走
+    vi.advanceTimersByTime(100)
+    expect(t.state()).toBe('dismissing')
+    expect(action()['data-pressed']).toBeUndefined()
+  })
+
+  it('closable=false：关闭按钮按住不进；经 signal 转成不可关闭时按住的关闭按钮自收，操作按钮不受影响', () => {
+    const off = makeToast({ duration: 0, closable: false })
+    const offClose = (): Dict => off.api().getCloseTriggerProps() as Dict
+    fire(offClose(), 'onKeyDown', key(' '))
+    expect(offClose()['data-pressed']).toBeUndefined()
+    fire(offClose(), 'onPointerDown', { pointerType: 'touch' })
+    expect(offClose()['data-pressed']).toBeUndefined()
+
+    const t = makeToast({ duration: 0 })
+    const close = (): Dict => t.api().getCloseTriggerProps() as Dict
+    const action = (): Dict => t.api().getActionTriggerProps() as Dict
+    fire(close(), 'onKeyDown', key(' '))
+    expect(close()['data-pressed']).toBe('')
+    t.setProps({ closable: false })
+    expect(close()['data-pressed']).toBeUndefined()
+
+    t.setProps({ closable: true })
+    fire(action(), 'onKeyDown', key(' '))
+    expect(action()['data-pressed']).toBe('')
+    t.setProps({ closable: false })
+    expect(action()['data-pressed']).toBe('')
+    fire(action(), 'onKeyUp', key(' '))
+    expect(action()['data-pressed']).toBeUndefined()
+  })
+})
