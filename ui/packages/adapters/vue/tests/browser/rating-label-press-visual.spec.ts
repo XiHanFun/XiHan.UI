@@ -18,6 +18,9 @@ function resolvedToken(name: string): string {
   return value
 }
 
+/** 星接 Action Control icon 档，连接层投影的家族属性在静态夹具里照抄 */
+const STAR = 'data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="xs"'
+
 /** 评分的静态投影：标签 + 星带 + 分值。 */
 function mount(attrs = '') {
   host = document.createElement('div')
@@ -29,8 +32,8 @@ function mount(attrs = '') {
     <div data-scope="rating" data-part="root" ${attrs}>
       <span data-scope="rating" data-part="label" ${attrs}>满意度</span>
       <div data-scope="rating" data-part="control" ${attrs}>
-        <span data-scope="rating" data-part="item" data-highlighted ${attrs}></span>
-        <span data-scope="rating" data-part="item" ${attrs}></span>
+        <span data-scope="rating" data-part="item" data-highlighted ${STAR} ${attrs}></span>
+        <span data-scope="rating" data-part="item" ${STAR} ${attrs}></span>
       </div>
       <span data-scope="rating" data-part="value-text" ${attrs}>1 / 2</span>
     </div>`
@@ -58,10 +61,14 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(item.getBoundingClientRect().height).toBe(24)
   })
 
-  it('按下 0.97 缩放并同时换到 200 档底，松手回到透明', () => {
+  it('按下 0.97 缩放并同时换到 200 档底，松手回到透明；点亮色在按下时保持', () => {
     const { item } = mount()
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(item).transitionProperty.split(', ')).toContain('scale')
+    const lit = getComputedStyle(item).color
+    expect(lit).not.toBe(resolvedToken('--xh-fg-subtle'))
     item.setAttribute('data-pressed', '')
+    expect(getComputedStyle(item).color).toBe(lit)
     expect(getComputedStyle(item).scale).toBe('0.97')
     expect(getComputedStyle(item).backgroundColor).toBe(resolvedToken('--xh-bg-subtle-hover'))
     item.removeAttribute('data-pressed')
@@ -78,5 +85,16 @@ describe('rating 字段标签、星形尺度与按压', () => {
     item.setAttribute('data-pressed', '')
     expect(getComputedStyle(item).scale).toBe('none')
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+  })
+
+  it('只读：手型收回，按下不缩放不换底；星形本身不被家族的粗指针热区撑大', () => {
+    const { item } = mount('data-readonly')
+    expect(getComputedStyle(item).cursor).toBe('default')
+    item.setAttribute('data-pressed', '')
+    expect(getComputedStyle(item).scale).toBe('none')
+    expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    const after = getComputedStyle(item, '::after')
+    expect(after.width).toBe('20px')
+    expect(after.minWidth).toBe('0px')
   })
 })

@@ -258,6 +258,11 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-xh-action-control` | '' |
+| `item` | `data-xh-action-display` | 'always' |
+| `item` | `data-xh-action-profile` | 'icon' |
+| `item` | `data-xh-action-size` | 'xs' |
+| `item` | `data-xh-action-variant` | 'ghost' |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
@@ -268,9 +273,9 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-space-1` | rating 的 root 部件 gap 覆盖槽。 |
-| `--xh-rating-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle-hover` | rating 的 item 部件 background-color 覆盖槽。 |
-| `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`not(:empty)` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
-| `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`highlighted`<br>`not(:empty)` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | rating 的 item 部件 background-color 覆盖槽。 |
+| `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
 | `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
@@ -285,9 +290,13 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 
 ### 动效
 
-`background-color` · `clip-path` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`clip-path` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 
