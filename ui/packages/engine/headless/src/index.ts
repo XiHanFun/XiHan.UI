@@ -35,7 +35,7 @@ export type { ButtonApi, ButtonElement, ButtonProps, ButtonSchema, ButtonTransla
 export { buttonGroupAnatomy, buttonGroupKeyboard, buttonGroupMeta, connectButtonGroup } from './button-group'
 export type { ButtonGroupApi, ButtonGroupProps, ButtonGroupTranslations } from './button-group'
 export { calendarPickerAnatomy, calendarPickerCellTriggerQuery, calendarPickerKeyboard, calendarPickerMachine, calendarPickerMeta, connectCalendarPicker } from './calendar-picker'
-export type { CalendarPickerApi, CalendarPickerRefs, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations, CalendarPickerValueChangeDetails } from './calendar-picker'
+export type { CalendarPickerApi, CalendarPickerPressedKey, CalendarPickerRefs, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations, CalendarPickerValueChangeDetails } from './calendar-picker'
 export { calendarRangePickerAnatomy, calendarRangePickerCellTriggerQuery, calendarRangePickerKeyboard, calendarRangePickerMachine, calendarRangePickerMeta, connectCalendarRangePicker } from './calendar-range-picker'
 export type { CalendarRangePickerApi, CalendarRangePickerPress, CalendarRangePickerRefs, CalendarRangePickerSchema, CalendarRangePickerTranslations, CalendarRangePickerValueChangeDetails } from './calendar-range-picker'
 export { cardAnatomy, cardKeyboard, cardMeta, connectCard } from './card'

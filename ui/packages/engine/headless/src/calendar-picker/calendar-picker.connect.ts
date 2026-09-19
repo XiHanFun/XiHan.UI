@@ -5,10 +5,10 @@
 
 // 提供 calendar picker 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarCellBaseState, CalendarCellProps, CalendarPeriod } from '../shared/calendar'
-import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerTranslations } from './calendar-picker.types'
-import { dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import type { CalendarPickerApi, CalendarPickerPressedKey, CalendarPickerSchema, CalendarPickerTranslations } from './calendar-picker.types'
+import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { createCalendarFrame } from '../shared/calendar'
 import { calendarPickerAnatomy } from './calendar-picker.anatomy'
 
@@ -71,6 +71,27 @@ export function connectCalendarPicker<T extends PropTypes>(
     'data-today': dataAttr(state.isToday),
     'data-focus': dataAttr(state.focused),
   })
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」，七类可按部件各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 到界的翻页钮与到顶的标题是原生 disabled（不派 keydown / pointerdown），不可选的格子是 aria-disabled（照样派），
+  // 这份事实一律随 PRESS.START 带给机器的守卫；整张禁用与只读由机器按 prop 自己判
+  const pressed = context.get('pressed')
+  const press = (key: CalendarPickerPressedKey, disabled: boolean): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
 
   /** 确认键：选中聚焦日。只读与不可用的日子不认，禁用的日历整条不进来。 */
   const commit = (): void => {
@@ -138,6 +159,7 @@ export function connectCalendarPicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoPrevYear || undefined,
       'data-disabled': dataAttr(!frame.canGoPrevYear),
+      ...press('prev-year', !frame.canGoPrevYear),
       'onClick': () => frame.stepYear(-1),
     }),
 
@@ -153,6 +175,7 @@ export function connectCalendarPicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoPrev || undefined,
       'data-disabled': dataAttr(!frame.canGoPrev),
+      ...press('prev', !frame.canGoPrev),
       'onClick': () => frame.stepMonth(-1),
     }),
 
@@ -168,6 +191,7 @@ export function connectCalendarPicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoNext || undefined,
       'data-disabled': dataAttr(!frame.canGoNext),
+      ...press('next', !frame.canGoNext),
       'onClick': () => frame.stepMonth(1),
     }),
 
@@ -183,6 +207,7 @@ export function connectCalendarPicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'disabled': !frame.canGoNextYear || undefined,
       'data-disabled': dataAttr(!frame.canGoNextYear),
+      ...press('next-year', !frame.canGoNextYear),
       'onClick': () => frame.stepYear(1),
     }),
 
@@ -210,6 +235,7 @@ export function connectCalendarPicker<T extends PropTypes>(
       'data-view': view,
       'disabled': !frame.canZoomOutYear || undefined,
       'data-disabled': dataAttr(!frame.canZoomOutYear),
+      ...press(`heading-year:${frame.panelOf(panel).index}`, !frame.canZoomOutYear),
       'onClick': () => {
         if (frame.canZoomOutYear)
           frame.zoomTo('year')
@@ -231,6 +257,7 @@ export function connectCalendarPicker<T extends PropTypes>(
       'hidden': !frame.canZoomOutMonth || undefined,
       'disabled': !frame.canZoomOutMonth || undefined,
       'data-disabled': dataAttr(!frame.canZoomOutMonth),
+      ...press(`heading-month:${frame.panelOf(panel).index}`, !frame.canZoomOutMonth),
       'onClick': () => {
         if (frame.canZoomOutMonth)
           frame.zoomTo('month')
@@ -329,6 +356,8 @@ export function connectCalendarPicker<T extends PropTypes>(
         'aria-label': label,
         // roving tabindex：整张网格只有聚焦日那一格留在 Tab 序列内
         'tabindex': state.focused ? 0 : -1,
+        // 格子按 ISO 键记按住的那一格；不可选（越界 / 作者判定不可用）的格子不进，只读由机器按 prop 挡
+        ...press(`cell:${item.value}`, state.disabled),
         'onClick': () => frame.cellClick(item, state, { onSelect: () => frame.selectAt(item.value) }),
         // 不可用的格子获得焦点也记锚点，方向键据此起步
         // 邻月的格子：按下那一刻浏览器把焦点落上来，只记聚焦日不翻页——

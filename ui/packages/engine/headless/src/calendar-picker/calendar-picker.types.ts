@@ -30,6 +30,19 @@ export interface CalendarPickerTranslations {
 
 export interface CalendarPickerRefs extends CalendarBaseRefs {}
 
+/**
+ * 按压通道里「正被按住的那一个」的键：四颗翻页钮各占一个身份，标题两截按面板下标记，
+ * 日期格按格子的 ISO 键记（同一天在多面板下可能出现两次，两格同时投影是对的：它们就是同一格）。
+ */
+export type CalendarPickerPressedKey
+  = | 'prev-year'
+    | 'prev'
+    | 'next'
+    | 'next-year'
+    | `heading-year:${number}`
+    | `heading-month:${number}`
+    | `cell:${string}`
+
 export interface CalendarPickerSchema extends MachineSchema {
   props: CalendarBaseProps & {
     selectionMode?: CalendarPickerSelectionMode
@@ -39,15 +52,36 @@ export interface CalendarPickerSchema extends MachineSchema {
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: CalendarPickerValueChangeDetails) => void
   }
-  context: CalendarBaseContext
+  context: CalendarBaseContext & {
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个，该部件投影 data-pressed；没有按住时为 null。
+     * 整张禁用时谁都不进；只读时日期格不进（翻页与钻层照常，选不动的格子不该有按下的回执）。
+     */
+    pressed: CalendarPickerPressedKey | null
+  }
   computed: Record<string, never>
   refs: CalendarPickerRefs
   /** 选中值与聚焦日不编码进状态；单选与多选没有中间态，只有一个 idle。 */
   state: 'idle'
-  event: CalendarBaseEvent
+  event:
+    | CalendarBaseEvent
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，key 说的是哪一个；
+    // disabled 是该部件自身的禁用事实（到界的翻页钮、到顶的标题、不可选的格子），由 connect 判定后随事件带入
+    | { type: 'PRESS.START', key: CalendarPickerPressedKey, disabled?: boolean }
+    | { type: 'PRESS.END', key: CalendarPickerPressedKey }
   tag: never
-  guard: never
-  action: CalendarBaseAction | 'setValue' | 'selectCell' | 'syncGranularity' | 'syncSelectionMode'
+  guard: 'canPress'
+  action:
+    | CalendarBaseAction
+    | 'setValue'
+    | 'selectCell'
+    | 'syncGranularity'
+    | 'syncSelectionMode'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
+    | 'releasePress'
+    | 'releaseCellPress'
   effect: CalendarBaseEffect
 }
 

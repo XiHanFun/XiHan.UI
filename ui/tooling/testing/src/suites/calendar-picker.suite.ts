@@ -3,6 +3,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { buildMonthGrid, buildWeekDays, calendarPickerAnatomy, calendarPickerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation, singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/'
 
@@ -52,6 +53,27 @@ function withHeadingTriggers(base: FixtureNode): FixtureNode {
                   { part: 'heading-month-trigger', tag: 'button' },
                 ],
               })),
+        })),
+  }
+}
+
+/** 在翻月钮两侧各加一颗翻年钮：与翻月钮同一副长相，只是步子大；只有验它们的用例用这一版。 */
+function withYearTriggers(base: FixtureNode): FixtureNode {
+  const children = base.children
+  const header = children?.[0]
+  if (!children || !header?.children)
+    throw new Error('fixture 的头一个子节点该是 header')
+  return {
+    ...base,
+    children: children.map((child, index) => (index !== 0
+      ? child
+      : {
+          ...header,
+          children: [
+            { part: 'prev-year-trigger', tag: 'button', text: '上一年' },
+            ...header.children!,
+            { part: 'next-year-trigger', tag: 'button', text: '下一年' },
+          ],
         })),
   }
 }
@@ -389,6 +411,57 @@ export const calendarPickerSuite: ConformanceSuite = {
             events: [{ type: 'value-change', detail: { value: ['2024-02-16'] } }],
           },
         },
+      ],
+    },
+    {
+      // 翻月钮是原生按钮，Space 与 Enter 都是激活键；格子的确认键在 grid 的 keydown 里收口，keydown 那一刻就选中
+      name: 'Space / Enter 按住与触屏按下：翻月钮与日期格各自投影 data-pressed，抬起、失焦或指针取消撤下；选中与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['calendar-picker.kbd.press'],
+      props: BASE_PROPS,
+      steps: [
+        heldPress('calendar-picker', 'prev-trigger'),
+        heldPress('calendar-picker', 'next-trigger'),
+        heldPress('calendar-picker', 'cell-trigger', { value: ANCHOR }),
+        {
+          kind: 'settle',
+          until: { attr: { part: `cell-trigger[${at(ANCHOR)}]`, name: 'data-pressed', value: null } },
+          expect: { parts: { ...selection(ANCHOR), 'prev-trigger': { 'data-pressed': null }, 'next-trigger': { 'data-pressed': null } } },
+        },
+      ],
+    },
+    {
+      name: '翻年钮与标题两截同样接按压：按住投影 data-pressed，抬起撤下',
+      spec: { adr: 'press-channel' },
+      props: BASE_PROPS,
+      fixture: base => withHeadingTriggers(withYearTriggers(base)),
+      steps: [
+        heldPress('calendar-picker', 'prev-year-trigger'),
+        heldPress('calendar-picker', 'next-year-trigger'),
+        heldPress('calendar-picker', 'heading-month-trigger'),
+        heldPress('calendar-picker', 'heading-year-trigger'),
+      ],
+    },
+    {
+      name: '不可选的格子与到界的翻月钮不进按压面',
+      spec: { adr: 'press-channel' },
+      props: { ...BASE_PROPS, min: '2024-02-10', max: '2024-02-20' },
+      steps: [
+        heldPressIgnored('calendar-picker', 'cell-trigger', 'min 之前的日子不接受按压', { value: '2024-02-01' }),
+        heldPressIgnored('calendar-picker', 'prev-trigger', '到界的上一月按不动'),
+        heldPressIgnored('calendar-picker', 'next-trigger', '到界的下一月按不动'),
+      ],
+    },
+    {
+      name: '只读只挡格子，翻月照常；整张禁用谁都不进',
+      spec: { adr: 'press-channel' },
+      props: { ...BASE_PROPS, readOnly: true },
+      steps: [
+        heldPressIgnored('calendar-picker', 'cell-trigger', '只读时格子不接受按压', { value: ANCHOR }),
+        heldPress('calendar-picker', 'next-trigger'),
+        { kind: 'setProps', props: { readOnly: false, disabled: true } },
+        heldPressIgnored('calendar-picker', 'cell-trigger', '整张禁用时格子不接受按压', { value: ANCHOR }),
+        heldPressIgnored('calendar-picker', 'next-trigger', '整张禁用时翻月钮不接受按压'),
       ],
     },
     {
