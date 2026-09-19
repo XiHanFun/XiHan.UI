@@ -415,6 +415,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 不采用点击波纹。
 - 不允许组件自行设置 0.94、0.96、0.98 等缩放。
 - 业务事件不能等待动画结束；按下首帧必须先于异步 loading 状态可见。
+- 刻意例外（须登记）：CheckboxGroup 条目的方框是条目里 aria-hidden 的 indicator 子节点、全选格的方框是 trigger 的 `::before` 伪元素，Steps 的序号圆点是 trigger 里 aria-hidden 的 indicator 子节点——它们都不是承接指针与键盘激活的宿主（激活落在条目 / trigger 上），家族配方的 `:hover` / `:is(:active, [data-pressed])` 落不到方框与圆点上，允许不投影 `data-xh-action-control`；由皮肤在宿主的悬停 / 按压选择器下按同一时间线（120ms 按下、200ms 释放）给它们换面，取值必须与投影了配方的同类控件逐档一致：CheckboxGroup 方框与独立 Checkbox 同值（静息 canvas + `--xh-border-control`、悬停 `--xh-border-control-hover`、按下 200 档 / 语气 active 档并 0.97 缩放、禁用 `--xh-border-default` + `--xh-bg-subtle`）；Steps 圆点是格状当前标记（§7.3），按淡底容器阶梯走（圆点自身是 100 淡底：悬停 200 → 按下 300，当前步按下换语气 active 档，不缩放），trigger 以 `--xh-action-host-bg-*` 声明自己是淡底承载面。
 
 ### 9.2 行级与 disclosure trigger
 
