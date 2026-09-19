@@ -25,7 +25,13 @@ export interface CollapsibleSchema extends MachineSchema {
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: CollapsibleOpenChangeDetails) => void
   }
-  context: Record<string, never>
+  context: {
+    /**
+     * 按压通道：trigger 被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或按住途中转为禁用时撤下；与开合互相独立。
+     */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: 'open' | 'closed'
@@ -36,9 +42,13 @@ export interface CollapsibleSchema extends MachineSchema {
     // 受控回写：宿主改 open 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
+    /** 按压通道（shared/press）：trigger 被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** trigger 抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
+  guard: 'isOpenControlled' | 'canPress'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 

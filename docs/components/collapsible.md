@@ -138,9 +138,9 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled`
+**判据**：`isOpenControlled` · `canPress`
 
 ### connect API
 
@@ -165,6 +165,7 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in trigger, not disabled | 展开/收起 content |
+| `Enter` / `Space` | held in trigger, not disabled | 按住期间 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或转禁用撤下 |
 
 ### ARIA
 
@@ -195,6 +196,7 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 | `header` | `data-disabled` | ''（条件成立时才出现） |
 | `header` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
