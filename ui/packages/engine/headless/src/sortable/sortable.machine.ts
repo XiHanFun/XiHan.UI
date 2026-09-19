@@ -79,24 +79,37 @@ export const sortableMachine = createMachine({
       isEqual: (a, b) => a === b || (!!a && !!b && a.x === b.x && a.y === b.y),
     })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
+    // 按压通道：被 Space / Enter 或触屏按住的那一个把手所属项，按 id 记
+    pressedId: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getRootEl: () => null,
     origin: null,
   }),
   initialState: () => 'idle',
+  // 按住途中整体转禁用，或按住的把手所属项离开了 ids：不会再来 keyup，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled'), () => prop('ids')], () => action(['releaseWhenInert']))
+  },
+  // 松开从任何状态都要认
+  on: {
+    'PRESS.END': { actions: ['endPress'] },
+  },
   states: {
     idle: {
       on: {
         // 按下先进 pending：还没走够激活距离，这一下可能只是点击
         'ITEM.POINTER_DOWN': { guard: 'canSort', target: 'pending', actions: ['setPending'] },
         'ITEM.PICKUP': { guard: 'canSort', target: 'dragging', actions: ['startKeyboardDrag'] },
+        // 按压通道：触屏按下的那一帧与 ITEM.POINTER_DOWN 并存，拖动真开始前把手先有按压面
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
       },
     },
     pending: {
       // pending 也要跟指针：走够距离才升级成拖动，抬手就散
       effects: ['trackPointer'],
       on: {
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         // 守卫不过就原地不动，视觉上完全没有拖动发生
         'POINTER.MOVE': { guard: 'passedActivation', target: 'dragging', actions: ['startPointerDrag', 'trackDelta'] },
         'POINTER.END': { target: 'idle', actions: ['clearSession'] },
@@ -104,6 +117,8 @@ export const sortableMachine = createMachine({
       },
     },
     dragging: {
+      // 拖动一开始就撤下按压面：拖动中的回执是 data-dragging，不叠着 data-pressed 一路拖到底
+      entry: ['releasePress'],
       effects: ['trackPointer', 'trackAutoScroll'],
       on: {
         'POINTER.MOVE': { actions: ['trackDelta'] },
@@ -119,6 +134,11 @@ export const sortableMachine = createMachine({
   implementations: {
     guards: {
       canSort: ({ prop }) => !prop('disabled'),
+      // 整体禁用一律不进；该项自己的禁用由 connect 随事件带来
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !e.disabled && !prop('disabled')
+      },
       passedActivation: ({ prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'POINTER.MOVE')
@@ -127,6 +147,25 @@ export const sortableMachine = createMachine({
       },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedId', e.id)
+      },
+      // 只收自己那一下：另一个把手的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedId') === e.id)
+          context.set('pressedId', null)
+      },
+      releasePress: ({ context }) => context.set('pressedId', null),
+      // 转入禁用一律松开；按住的把手所属项不在 ids 里了也松开
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressedId')
+        if (pressed != null && (prop('disabled') || !(prop('ids') ?? []).includes(pressed)))
+          context.set('pressedId', null)
+      },
+
       setPending: ({ context, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ITEM.POINTER_DOWN')

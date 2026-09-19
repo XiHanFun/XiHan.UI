@@ -130,9 +130,9 @@
 
 **状态**：`idle` · `pending` · `dragging`
 
-**事件**：`ITEM.POINTER_DOWN` · `POINTER.MOVE` · `POINTER.END` · `POINTER.CANCEL` · `ITEM.PICKUP` · `KEY.MOVE` · `KEY.DROP` · `KEY.CANCEL`
+**事件**：`ITEM.POINTER_DOWN` · `POINTER.MOVE` · `POINTER.END` · `POINTER.CANCEL` · `ITEM.PICKUP` · `KEY.MOVE` · `KEY.DROP` · `KEY.CANCEL` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canSort` · `passedActivation`
+**判据**：`canSort` · `passedActivation` · `canPress`
 
 ### connect API
 
@@ -165,6 +165,7 @@
 | `ArrowUp` / `ArrowLeft` | 键盘拖动中 | 往前挪一位，规则同上；rtl 下左右两键对调，语义恒是「往前 / 往后」 |
 | `Space` / `Enter` | 键盘拖动中 | 放下，按当前位置提交顺序并播报落点 |
 | `Escape` | 键盘拖动中 | 取消，顺序回到拾起前，播报已取消与原位置 |
+| `Enter` / `Space` | held on item-drag-trigger, not disabled | 按住期间把手投影 data-pressed，与指针 :active 同一副按压面；拾起转拖动那一下即撤下（拖动中的回执是 data-dragging），抬起或失焦撤下 |
 
 ### ARIA
 
@@ -208,6 +209,7 @@
 | `item` | `data-index` | String(item?.index ?? -1) |
 | `item-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-xh-action-control` | '' |
 | `item-drag-trigger` | `data-xh-action-display` | 'always' |
 | `item-drag-trigger` | `data-xh-action-profile` | 'icon' |

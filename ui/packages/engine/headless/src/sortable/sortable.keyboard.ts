@@ -20,5 +20,6 @@ export const sortableKeyboard: KeyboardTable = {
     { id: 'sortable.kbd.prev', keys: ['ArrowUp', 'ArrowLeft'], when: '键盘拖动中', does: '往前挪一位，规则同上；rtl 下左右两键对调，语义恒是「往前 / 往后」' },
     { id: 'sortable.kbd.drop', keys: ['Space', 'Enter'], when: '键盘拖动中', does: '放下，按当前位置提交顺序并播报落点' },
     { id: 'sortable.kbd.cancel', keys: ['Escape'], when: '键盘拖动中', does: '取消，顺序回到拾起前，播报已取消与原位置' },
+    { id: 'sortable.kbd.press', keys: ['Enter', 'Space'], when: 'held on item-drag-trigger, not disabled', does: '按住期间把手投影 data-pressed，与指针 :active 同一副按压面；拾起转拖动那一下即撤下（拖动中的回执是 data-dragging），抬起或失焦撤下' },
   ],
 }

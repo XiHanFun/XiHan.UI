@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { sortableAnatomy, sortableKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/'
 
@@ -40,10 +41,10 @@ function handleAt(doc: Document, index: number): HTMLElement {
   return el
 }
 
-function press(index: number, clientY: number) {
+function press(index: number, clientY: number, pointerType = 'mouse') {
   return ({ doc }: RawStepContext): void => {
     handleAt(doc, index).dispatchEvent(
-      new PointerEvent('pointerdown', { clientX: 0, clientY, button: 0, bubbles: true, cancelable: true }),
+      new PointerEvent('pointerdown', { clientX: 0, clientY, button: 0, pointerType, bubbles: true, cancelable: true }),
     )
   }
 }
@@ -215,6 +216,62 @@ export const sortableSuite: ConformanceSuite = {
           run: release,
           expect: { events: [{ type: 'sort', detail: { from: 0, to: 1, id: 'a', ids: ['b', 'a', 'c'] } }] },
         },
+      ],
+    },
+    {
+      name: '触屏按住：手柄投影 data-pressed，抬起或指针取消撤下，按住本身不进拖动；键盘那一下在 keydown 即拾起，不留按住帧',
+      spec: { adr: 'press-channel' },
+      covers: ['sortable.kbd.press'],
+      props: { ids: ['a', 'b', 'c'] },
+      steps: [
+        { kind: 'raw', why: LAYOUT_WHY, run: layout },
+        // Space / Enter 在 keydown 即拾起转拖动、按压面随即撤下，键盘那一路没有可见的按住帧，只验触屏
+        heldPress('sortable', 'item-drag-trigger', { keyboardHost: null }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'item-drag-trigger[0]', name: 'data-pressed', value: null } },
+          expect: { parts: { 'root': { 'data-dragging': null }, 'item-drag-trigger[0]': { 'data-pressed': null, 'aria-pressed': 'false' } }, events: [] },
+        },
+        { kind: 'focus', part: 'item-drag-trigger' },
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见：拾起那一下 keydown 之后按压面已被机器撤下',
+          run: async ({ doc, flush }: RawStepContext) => {
+            const handle = handleAt(doc, 0)
+            handle.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (handle.hasAttribute('data-pressed'))
+              throw new Error('拾起转拖动那一下不该留着 data-pressed：拖动中的回执是 data-dragging')
+            handle.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+          },
+          expect: { parts: { 'item-drag-trigger[0]': { 'aria-pressed': 'true', 'data-pressed': null }, 'root': { 'data-dragging': '' } } },
+        },
+        { kind: 'key', key: 'Escape', expect: { parts: { 'root': { 'data-dragging': null }, 'item-drag-trigger[0]': { 'aria-pressed': 'false' } }, events: [] } },
+      ],
+    },
+    {
+      name: '触屏走够激活距离升级成拖动：按压面随即撤下，拖动中的回执只剩 data-dragging',
+      spec: { adr: 'press-channel' },
+      props: { ids: ['a', 'b', 'c'] },
+      steps: [
+        { kind: 'raw', why: LAYOUT_WHY, run: layout },
+        { kind: 'raw', why: '触屏按下要带真实坐标与 pointerType，按键步骤造不出', run: press(0, 50, 'touch'), expect: { parts: { 'item-drag-trigger[0]': { 'data-pressed': '' }, 'root': { 'data-dragging': null } } } },
+        { kind: 'raw', why: '拖过第 1 项的中心（150）', run: move(210), expect: { parts: { 'item-drag-trigger[0]': { 'data-pressed': null, 'data-dragging': '' }, 'root': { 'data-dragging': '' } } } },
+        {
+          kind: 'raw',
+          why: '抬手提交',
+          run: release,
+          expect: { parts: { 'item-drag-trigger[0]': { 'data-pressed': null } }, events: [{ type: 'sort', detail: { from: 0, to: 1, id: 'a', ids: ['b', 'a', 'c'] } }] },
+        },
+      ],
+    },
+    {
+      name: 'disabled：手柄 aria-disabled，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { ids: ['a', 'b', 'c'], disabled: true },
+      steps: [
+        { kind: 'raw', why: LAYOUT_WHY, run: layout },
+        heldPressIgnored('sortable', 'item-drag-trigger', '禁用时手柄 aria-disabled，不接受按压'),
       ],
     },
     {

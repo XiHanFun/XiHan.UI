@@ -484,3 +484,110 @@ describe('排序 · 播报里的项名', () => {
     expect(s.service.context.get('announcement')).toContain('id-903')
   })
 })
+
+describe('排序 · 按压通道：把手 Space / Enter 与触屏按住投影 data-pressed', () => {
+  type Handlers = Record<string, (e?: unknown) => void> & { 'data-pressed'?: string, 'data-dragging'?: string }
+  type Rig = ReturnType<typeof makeSortable>
+  const keyEvent = (key: string): KeyboardEvent => ({ key, repeat: false, isComposing: false, preventDefault: vi.fn() } as unknown as KeyboardEvent)
+  const pointer = (pointerType: string, clientY = 50): PointerEvent =>
+    ({ pointerType, button: 0, clientX: 0, clientY, pointerId: 1, preventDefault: vi.fn() } as unknown as PointerEvent)
+  const handle = (s: Rig, id: string, disabled?: boolean): Handlers => s.api().getItemDragTriggerProps({ id, disabled }) as unknown as Handlers
+  const pressed = (s: Rig, id: string): boolean => handle(s, id)['data-pressed'] === ''
+
+  it('触屏按下：把手先进按压面、拖动会话同时起步（pending）；抬起 / 取消撤下；鼠标按下只起拖动会话不进按压面', () => {
+    const s = makeSortable()
+    handle(s, 'a').onPointerDown!(pointer('touch'))
+    expect(pressed(s, 'a')).toBe(true)
+    expect(pressed(s, 'b')).toBe(false)
+    expect(s.state()).toBe('pending')
+    handle(s, 'a').onPointerCancel!()
+    expect(pressed(s, 'a')).toBe(false)
+    s.service.send({ type: 'POINTER.CANCEL' })
+    expect(s.state()).toBe('idle')
+
+    handle(s, 'a').onPointerDown!(pointer('touch'))
+    expect(pressed(s, 'a')).toBe(true)
+    handle(s, 'a').onPointerUp!()
+    expect(pressed(s, 'a')).toBe(false)
+    s.service.send({ type: 'POINTER.END' })
+
+    handle(s, 'b').onPointerDown!(pointer('mouse'))
+    expect(pressed(s, 'b')).toBe(false)
+    expect(s.state()).toBe('pending')
+  })
+
+  it('触屏走够激活距离升级成拖动：按压面随即撤下，拖动中的回执只剩 data-dragging', () => {
+    const s = makeSortable()
+    handle(s, 'a').onPointerDown!(pointer('touch'))
+    expect(pressed(s, 'a')).toBe(true)
+    s.service.send({ type: 'POINTER.MOVE', point: at(56) })
+    expect(s.state()).toBe('dragging')
+    expect(pressed(s, 'a')).toBe(false)
+    expect(handle(s, 'a')['data-dragging']).toBe('')
+    // 拖动中再来触屏按下也不进
+    handle(s, 'a').onPointerDown!(pointer('touch'))
+    expect(pressed(s, 'a')).toBe(false)
+  })
+
+  it('键盘：Space / Enter 在 keydown 即拾起转拖动，按压面当场撤下；失焦撤下', () => {
+    const s = makeSortable()
+    handle(s, 'a').onKeyDown!(keyEvent(' '))
+    expect(s.state()).toBe('dragging')
+    expect(pressed(s, 'a')).toBe(false)
+    handle(s, 'a').onKeyUp!(keyEvent(' '))
+    // 放下
+    handle(s, 'a').onKeyDown!(keyEvent(' '))
+    expect(s.state()).toBe('idle')
+    expect(pressed(s, 'a')).toBe(false)
+
+    // 只有跟踪器那一下、没有拾起的路径（程序化派发）：失焦撤下
+    s.service.send({ type: 'PRESS.START', id: 'b' })
+    expect(pressed(s, 'b')).toBe(true)
+    handle(s, 'b').onBlur!()
+    expect(pressed(s, 'b')).toBe(false)
+  })
+
+  it('只收自己那一下：另一个把手的抬起松不开正按着的这个', () => {
+    const s = makeSortable()
+    handle(s, 'a').onPointerDown!(pointer('touch'))
+    handle(s, 'b').onPointerUp!()
+    expect(pressed(s, 'a')).toBe(true)
+    handle(s, 'a').onPointerUp!()
+    expect(pressed(s, 'a')).toBe(false)
+  })
+
+  it('不进：整体禁用，或该项自己禁用（aria-disabled）', () => {
+    const off = makeSortable({ disabled: true })
+    off.api().getItemDragTriggerProps({ id: 'a' })
+    off.service.send({ type: 'PRESS.START', id: 'a' })
+    expect(pressed(off, 'a')).toBe(false)
+
+    const s = makeSortable()
+    const item = handle(s, 'a', true)
+    expect(item['aria-disabled']).toBe('true')
+    item.onPointerDown!(pointer('touch'))
+    item.onKeyDown!(keyEvent(' '))
+    expect(pressed(s, 'a')).toBe(false)
+    expect(s.state()).toBe('idle')
+    s.service.send({ type: 'PRESS.START', id: 'a', disabled: true })
+    expect(pressed(s, 'a')).toBe(false)
+  })
+
+  it('按住途中整体转禁用，或按住的把手所属项离开 ids：不会再来 keyup，按压面由机器自己收', () => {
+    for (const next of [{ disabled: true }, { ids: ['b', 'c'] }]) {
+      const root = mountDom()
+      layout(root)
+      const runtime = createVanillaRuntime()
+      const props = runtime.signal<SortableSchema['props']>({ ids: IDS })
+      const service = createService(sortableMachine, { runtime, props: () => props.get() })
+      service.refs.set('getRootEl', () => root)
+      runtime.start()
+      const api = (): Handlers => connectSortable(service, normalizeProps).getItemDragTriggerProps({ id: 'a' }) as unknown as Handlers
+      api().onPointerDown!(pointer('touch'))
+      expect(api()['data-pressed']).toBe('')
+      props.set({ ids: IDS, ...next })
+      expect(api()['data-pressed']).toBeUndefined()
+      runtime.stop()
+    }
+  })
+})

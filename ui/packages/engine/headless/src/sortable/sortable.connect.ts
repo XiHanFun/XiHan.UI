@@ -5,10 +5,10 @@
 
 // 提供 sortable 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DndDelta } from '@xihan-ui/pointer'
 import type { SortableApi, SortableItemState, SortableSchema } from './sortable.types'
-import { dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { sortableOffsets } from '@xihan-ui/pointer'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { sortableAnatomy } from './sortable.anatomy'
@@ -69,6 +69,15 @@ export function connectSortable<T extends PropTypes>(
   }))
 
   const itemAt = (id: string): SortableItemState | undefined => items.find(item => item.id === id)
+
+  // 按压通道：每个把手各自合成一份跟踪器，真源是机器 context 里「正被按住的那一项」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 把手的 pointerdown 同时是拖动起点：触屏那一下先进按压面，走够激活距离升级成拖动时由机器撤下
+  const pressedId = context.get('pressedId')
+  const press = (id: string, pressDisabled: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedId') === id,
+    onChange: down => send(down ? { type: 'PRESS.START', id, disabled: pressDisabled } : { type: 'PRESS.END', id }),
+  })
 
   /** 拖动中按下的键：方向键挪一格，空格 / 回车落下，Esc 取消。 */
   const onDragKeyDown = (event: KeyboardEvent): boolean => {
@@ -172,6 +181,7 @@ export function connectSortable<T extends PropTypes>(
       const position = (item?.index ?? 0) + 1
       const name = translations?.item?.(id, position, ids.length) ?? id
       const off = disabled || !!itemDisabled
+      const handlers = press(id, off)
       return normalize.element({
         ...parts['item-drag-trigger'].attrs,
         // 宿主是 <button> 时必须显式写 type：不写默认是 submit，放进表单里一按就提交
@@ -193,9 +203,18 @@ export function connectSortable<T extends PropTypes>(
         'data-xh-action-size': 'xs',
         'data-dragging': dataAttr(isDragging),
         'data-disabled': dataAttr(off),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+        // 键盘那一下在 keydown 即拾起转拖动、随即撤下，触屏按住到走够激活距离之前看得见
+        'data-pressed': dataAttr(pressedId === id),
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
         // 不关掉这一轴的默认手势，触屏上手指一划就被系统收走（pointercancel）
         'style': { touchAction: off ? undefined : 'none' },
         'onPointerDown': (event: PointerEvent) => {
+          // 触屏那一下先过跟踪器（鼠标 / 笔不走这一路），再照常起拖动会话
+          handlers.onPointerDown(event)
           // 只认主键：右键要弹上下文菜单，中键是自动滚动
           if (off || event.button !== 0)
             return
@@ -214,6 +233,8 @@ export function connectSortable<T extends PropTypes>(
             onDragKeyDown(event)
             return
           }
+          // 先过跟踪器再拾起：拾起转拖动那一下由机器撤下按压面
+          handlers.onKeyDown(event)
           if (event.key === ' ' || event.key === 'Enter') {
             event.preventDefault()
             // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
