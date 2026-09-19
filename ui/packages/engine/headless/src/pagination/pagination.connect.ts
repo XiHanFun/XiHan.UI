@@ -8,7 +8,7 @@
 import type { NormalizeProps, PressHandlers, PropTypes } from '@xihan-ui/core'
 import type { SelectApi } from '../select'
 import type { PaginationApi, PaginationPressedKey, PaginationServices } from './pagination.types'
-import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, isComposingEvent, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect } from '../select'
 import { OVERLAY_PLACEMENT_LIST, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { paginationAnatomy } from './pagination.anatomy'
@@ -142,7 +142,8 @@ export function connectPagination<T extends PropTypes>(
       'disabled': totalPages === 0 || undefined,
       'data-empty': dataAttr(totalPages === 0),
       'onKeydown': (event: KeyboardEvent) => {
-        if (event.key !== 'Enter')
+        // 输入法组合中的 Enter 是在选字，不是在跳页
+        if (event.key !== 'Enter' || isComposingEvent(event))
           return
         const raw = (event.currentTarget as HTMLInputElement).value.trim()
         if (raw === '')
