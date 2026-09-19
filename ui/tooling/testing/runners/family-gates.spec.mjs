@@ -152,9 +152,10 @@ gateSuite('check-elevation-role.mjs', {
 gateSuite('check-selection-marker.mjs', {
   section: 'selection',
   at: 'packages/design/styles/css/breadcrumb.css',
+  // 面包屑链接接了 Collection Item 配方：当前页三件由皮肤基础块映射的桥接槽解到底核，把 terminal 字色映到品牌色即红
   red: LAYER(`
-  [data-scope='breadcrumb'][data-part='link'][data-current] {
-    color: var(--xh-breadcrumb-fg-current, var(--xh-fg-brand));
+  [data-scope='breadcrumb'][data-part='link'] {
+    --xh-collection-fg-terminal: var(--xh-breadcrumb-link-fg-current, var(--xh-fg-brand));
   }`),
   redText: '面包屑当前页是不可点位置',
 })

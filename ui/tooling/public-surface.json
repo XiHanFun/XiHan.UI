@@ -11657,6 +11657,7 @@
     "data-xh-collection-separator",
     "data-xh-collection-size",
     "data-xh-collection-slot",
+    "data-xh-collection-terminal",
     "data-xh-field-affix",
     "data-xh-field-auto-size",
     "data-xh-field-chrome",

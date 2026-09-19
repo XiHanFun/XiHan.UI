@@ -104,8 +104,13 @@ export const breadcrumbSuite: ConformanceSuite = {
             // <a href> 已在 Tab 序列里，不补 tabindex
             'tabindex': null,
             'data-current': null,
+            // 链接归 Collection Item 导航当前：家族按 nav 语境给面、字与按压时间线；非当前页不是终点
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'nav',
+            'data-xh-collection-terminal': null,
           },
-          'link[1]': { 'aria-current': null, 'aria-disabled': 'false' },
+          'link[1]': { 'aria-current': null, 'aria-disabled': 'false', 'data-xh-collection-terminal': null },
         },
       },
     },
@@ -119,6 +124,10 @@ export const breadcrumbSuite: ConformanceSuite = {
             'aria-disabled': 'true',
             'tabindex': '-1',
             'data-current': '',
+            // 当前页是不可点的终点：显式投影 terminal，家族按它压过 aria-disabled 的禁用面
+            'data-xh-collection-item': '',
+            'data-xh-collection-context': 'nav',
+            'data-xh-collection-terminal': '',
           },
         },
       },

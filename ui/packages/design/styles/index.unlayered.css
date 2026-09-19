@@ -14239,6 +14239,11 @@
 /* styles/breadcrumb.css */
 /* 定义 breadcrumb 样式。 */
 
+/* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
+   本皮肤只映射桥接槽；当前页由连接层投影 data-xh-collection-terminal，走家族的 terminal 态 */
+
+/* family/collection-item.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='breadcrumb'] {
   --xh-breadcrumb-skin: 1;
@@ -14304,22 +14309,35 @@
   display: none;
 }
 
+/* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + 随语气的字色，
+   按下 pressed 200 只换面（§7.2 / §9.2）；当前页那条不再是"可去的地方"（§7.3）：连接层投影
+   data-xh-collection-terminal，家族给透明面 + 随语气的 fg-default + medium + cursor default，不响应悬停与按下，
+   并压过它同时带的 aria-disabled 禁用面。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background */
 [data-scope='breadcrumb'][data-part='link'] {
+  --xh-collection-block-padding: var(--xh-space-0);
+  --xh-collection-inline-padding: var(--xh-breadcrumb-link-px, var(--xh-space-1));
+  --xh-collection-radius: var(--xh-breadcrumb-link-radius, var(--xh-shape-control));
+  --xh-collection-font-size: var(--xh-breadcrumb-font-size, var(--xh-_breadcrumb-font-size));
+  /* 家族会把 --xh-icon-size 写在条目上；不映射，root 上随文字形档的那支会被家族的 md 档盖掉 */
+  --xh-collection-glyph-size: var(--xh-breadcrumb-icon-size, var(--xh-glyph-size-text));
+  --xh-collection-fg-rest: var(--xh-breadcrumb-fg, var(--xh-fg-muted));
+  --xh-collection-bg-hover: var(--xh-breadcrumb-link-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-fg-hover: var(--xh-breadcrumb-link-fg-hover, var(--xh-_breadcrumb-accent-text));
+  --xh-collection-bg-pressed: var(--xh-breadcrumb-link-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-fg-terminal: var(--xh-breadcrumb-link-fg-current, var(--xh-_breadcrumb-accent-text));
+  --xh-collection-font-weight-terminal: var(--xh-breadcrumb-link-font-weight-current, var(--xh-font-weight-medium));
+
   display: inline-flex;
   align-items: center;
   gap: var(--xh-breadcrumb-link-gap, var(--xh-space-1));
   /* 一层的名字可能很长（文档标题、订单号），压不住会把整条路径撑开 */
   max-inline-size: var(--xh-breadcrumb-link-max-w, var(--xh-nav-link-max-w));
-  padding-inline: var(--xh-breadcrumb-link-px, var(--xh-space-1));
-  border-radius: var(--xh-breadcrumb-link-radius, var(--xh-shape-control));
-  color: inherit;
+  /* 行高随 root 的行距槽：家族基础块给条目写了 leading-normal，这里接回 root 那一支 */
+  line-height: var(--xh-breadcrumb-leading, var(--xh-leading-tight));
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition:
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='breadcrumb'][data-part='link'][hidden] {
@@ -14338,29 +14356,6 @@
 
 [data-scope='breadcrumb'][data-part='link-icon'][hidden] {
   display: none;
-}
-
-/* 当前页那条不再是"可去的地方"：不给悬停反馈，指针也不摆出可点的样子。
-   连接层同时拦下了它的点击并把它移出了 Tab 序列，这里只负责说清楚这件事。
-   悬停走白底承载的阶梯（§7.2）：hover 100，与目录的链接同一副回执 */
-[data-scope='breadcrumb'][data-part='link']:not([data-current]):hover {
-  background: var(--xh-breadcrumb-link-bg-hover, var(--xh-bg-subtle));
-  color: var(--xh-breadcrumb-link-fg-hover, var(--xh-_breadcrumb-accent-text));
-}
-
-/* 按下：链接是随文铺开的一段（§9.2），只换面不缩放，pressed 200；
-   指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
-[data-scope='breadcrumb'][data-part='link']:not([data-current]):is(:active, [data-pressed]) {
-  background: var(--xh-breadcrumb-link-bg-pressed, var(--xh-bg-subtle-hover));
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
-[data-scope='breadcrumb'][data-part='link'][data-current] {
-  color: var(--xh-breadcrumb-link-fg-current, var(--xh-_breadcrumb-accent-text));
-  font-weight: var(--xh-breadcrumb-link-font-weight-current, var(--xh-font-weight-medium));
-  cursor: default;
 }
 
 /* 分隔符与省略号都是纯视觉占位，读屏那边已被 aria-hidden 摘掉 */
@@ -14406,14 +14401,6 @@
 /* 从右往左排版时「向前」在左边 */
 [dir='rtl'] [data-scope='breadcrumb'][data-part='separator']:empty::before {
   rotate: 180deg;
-}
-
-/* 高对比档：按下常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
-@media (forced-colors: active) {
-  [data-scope='breadcrumb'][data-part='link']:not([data-current]):is(:active, [data-pressed]) {
-    background: Highlight;
-    color: HighlightText;
-  }
 }
 
 /* styles/button.css */
