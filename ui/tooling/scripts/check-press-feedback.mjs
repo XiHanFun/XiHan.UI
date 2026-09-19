@@ -151,8 +151,10 @@ const PRESSABLE = {
   'transfer': ['to-target-trigger', 'to-source-trigger', { part: 'item', feedback: 'surface' }, { part: 'select-all-trigger', feedback: 'surface' }],
   // 勾选形的控件本体：方框、轨道、星星都是自己能被按下的一颗
   'checkbox': ['root'],
-  // 组条目的命中区包含文字，按压缩放只落在其中的方框与全选伪元素上
-  'checkbox-group': ['item', 'select-all-trigger'],
+  // 条目与全选格是「方框 + 文案」的整行命中区：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档
+  // 专属块归零；方框随行读宿主 host 槽换到 300 / 语气 active 档，不缩放（§9.2）。不登 target: 'indicator'——
+  // 那种合同要求后代块直接写 background-color，方框规则写的是私有槽 --xh-_checkbox-group-bg
+  'checkbox-group': [{ part: 'item', feedback: 'surface' }, { part: 'select-all-trigger', feedback: 'surface' }],
   'switch': ['root'],
   'rating': ['item'],
   // 排序把手是定尺的图标钮（§9.1）：接 Action Control icon ghost 档，按下缩放并换底

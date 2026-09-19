@@ -114,18 +114,39 @@ describe('checkboxGroup 控制盒', () => {
     expect(on.boxShadow).toBe('none')
   })
 
-  it('整行悬停时未勾选方框描边升一档，按下时方框缩放并换底；勾中的方框按下换到 active 档', async () => {
+  const FAMILY = {
+    'data-xh-action-control': '',
+    'data-xh-action-profile': 'row',
+    'data-xh-action-variant': 'ghost',
+    'data-xh-action-display': 'always',
+    'data-xh-action-size': 'xs',
+  }
+
+  /** 宿主上投影的五个家族属性。 */
+  function familyAttrs(el: HTMLElement): Record<string, string | null> {
+    return Object.fromEntries(Object.keys(FAMILY).map(name => [name, el.getAttribute(name)]))
+  }
+
+  it('整行接 row 档：悬停行面 100 + 方框描边升档，按下行面 200 + 方框 300 不缩放；勾中按下 active 档', async () => {
     await mountPair(false)
     const root = getPart('checkbox-group', 'root')
     const item = getPart('checkbox-group', 'item', 1)
     const box = getPart('checkbox-group', 'indicator', 1)
+    expect(familyAttrs(item)).toEqual(FAMILY)
+    const rest = getComputedStyle(box).backgroundColor
     await userEvent.hover(item)
+    // 行自己坐画布：hover 100；方框只升描边，底不动
+    expect(getComputedStyle(item).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
     expect(getComputedStyle(box).borderTopColor).toBe(resolveColor('--xh-border-control-hover', root))
+    expect(getComputedStyle(box).backgroundColor).toBe(rest)
     expect(getComputedStyle(box).boxShadow).toBe('none')
     await pressPointer(item)
     expect(item.matches(':active')).toBe(true)
-    expect(getComputedStyle(box).scale).toBe('0.97')
-    expect(getComputedStyle(box).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
+    // 行按下 200，坐在行面上的方框读宿主 host 槽到 300；两者都不缩放
+    expect(getComputedStyle(item).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
+    expect(getComputedStyle(box).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', root))
+    expect(getComputedStyle(box).scale).toBe('none')
+    expect(getComputedStyle(item).scale).toBe('none')
     await releasePointerAway()
 
     await mountPair(true)
@@ -136,7 +157,56 @@ describe('checkboxGroup 控制盒', () => {
     expect(getComputedStyle(checkedBox).borderTopColor).toBe(resolveColor('--xh-bg-brand', checkedRoot))
     await pressPointer(checkedItem)
     expect(getComputedStyle(checkedBox).backgroundColor).toBe(resolveColor('--xh-bg-brand-active', checkedRoot))
-    expect(getComputedStyle(checkedBox).scale).toBe('0.97')
+    expect(getComputedStyle(checkedBox).scale).toBe('none')
+  })
+
+  it('全选格与条目同形：row 档 xs 的 24px 命中地板、16px 方框，悬停 100 / 按下 200 行面，方框按下 300 / 半选按下 active 档', async () => {
+    await mountPair(false)
+    const root = getPart('checkbox-group', 'root')
+    const trigger = getPart('checkbox-group', 'select-all-trigger')
+    expect(familyAttrs(trigger)).toEqual(FAMILY)
+    expect(trigger.getBoundingClientRect().height).toBe(24)
+    expect(getComputedStyle(trigger, '::before').width).toBe('16px')
+    expect(getComputedStyle(trigger, '::before').height).toBe('16px')
+    await userEvent.hover(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
+    expect(getComputedStyle(trigger, '::before').borderTopColor).toBe(resolveColor('--xh-border-control-hover', root))
+    await pressPointer(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
+    expect(getComputedStyle(trigger, '::before').backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', root))
+    expect(getComputedStyle(trigger, '::before').scale).toBe('none')
+    expect(getComputedStyle(trigger).scale).toBe('none')
+    await releasePointerAway()
+
+    // 勾了一个（mail）即半选：方框是语气实心面，按下派生 active 档
+    await mountPair(true)
+    const mixedRoot = getPart('checkbox-group', 'root')
+    const mixed = getPart('checkbox-group', 'select-all-trigger')
+    expect(mixed.getAttribute('aria-checked')).toBe('mixed')
+    await pressPointer(mixed)
+    expect(getComputedStyle(mixed, '::before').backgroundColor).toBe(resolveColor('--xh-bg-brand-active', mixedRoot))
+  })
+
+  it('只读：整行不换面、手型 default，方框描边不升档', async () => {
+    await mountPair(false, { readOnly: true })
+    const root = getPart('checkbox-group', 'root')
+    const item = getPart('checkbox-group', 'item', 1)
+    const box = getPart('checkbox-group', 'indicator', 1)
+    const trigger = getPart('checkbox-group', 'select-all-trigger')
+    const restBorder = getComputedStyle(box).borderTopColor
+    await userEvent.hover(item)
+    expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(item).cursor).toBe('default')
+    expect(getComputedStyle(box).borderTopColor).toBe(restBorder)
+    await pressPointer(item)
+    expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(box).backgroundColor).toBe(resolveColor('--xh-bg-canvas', root))
+    await releasePointerAway()
+    await userEvent.hover(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(trigger).cursor).toBe('default')
+    await pressPointer(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
   it('集合标题 14 / muted 不随档，条目文字与全选格文字随档；标题到集合与条目之间都是 space-2', async () => {

@@ -7491,6 +7491,12 @@
               "name": "--xh-checkbox-group-indicator-size"
             },
             {
+              "name": "--xh-checkbox-group-item-bg-hover"
+            },
+            {
+              "name": "--xh-checkbox-group-item-bg-pressed"
+            },
+            {
               "name": "--xh-checkbox-group-item-fg"
             },
             {
@@ -7516,6 +7522,12 @@
             },
             {
               "name": "--xh-checkbox-group-label-font-weight"
+            },
+            {
+              "name": "--xh-checkbox-group-select-all-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-checkbox-group-select-all-trigger-bg-pressed"
             },
             {
               "name": "--xh-checkbox-group-select-all-trigger-fg"

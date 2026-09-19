@@ -199,6 +199,20 @@ describe('connectCheckboxGroup：条目', () => {
     expect(itemProps(s, { value: 'a' })['aria-disabled']).toBe('true')
   })
 
+  it('条目接 Action Control row 档 ghost：整行是行级命中区，按下只换面不缩放；xs 是 24px 命中地板', () => {
+    const s = makeService({})
+    expect(itemProps(s, { value: 'a' })).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    })
+    // 方框是行内 aria-hidden 的标记，不投影配方，随行读宿主的桥接槽换面
+    const box = api(s).getIndicatorProps({ value: 'a' }) as Record<string, unknown>
+    expect('data-xh-action-control' in box).toBe(false)
+  })
+
   it('invalid / readOnly 落到条目的 aria 上（role=group 接不住它们）', () => {
     const s = makeService({ invalid: true, readOnly: true })
     const item = itemProps(s, { value: 'a' })
@@ -321,6 +335,16 @@ describe('connectCheckboxGroup：全选/半选的 trigger', () => {
     expect('disabled' in off).toBe(false)
     expect(triggerProps({})['aria-disabled']).toBe('false')
     expect(triggerProps({ readOnly: true })['aria-disabled']).toBe('true')
+  })
+
+  it('全选格与条目同形：接 Action Control row 档 ghost，xs 命中地板', () => {
+    expect(triggerProps({})).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    })
   })
 })
 

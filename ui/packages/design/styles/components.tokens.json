@@ -10008,7 +10008,7 @@
         "readonly"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_checkbox-group-host-bg-pressed"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 background-color 覆盖槽。"
@@ -10251,6 +10251,51 @@
       "description": "checkbox-group 的 indicator、select-all-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
     },
     {
+      "name": "--xh-checkbox-group-item-bg-hover",
+      "component": "checkbox-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-group-item-bg-pressed",
+      "component": "checkbox-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-checkbox-group-item-fg",
       "component": "checkbox-group",
       "part": [
@@ -10260,7 +10305,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -10414,6 +10467,51 @@
       "description": "checkbox-group 的 label 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-checkbox-group-select-all-trigger-bg-hover",
+      "component": "checkbox-group",
+      "part": [
+        "select-all-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 select-all-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-group-select-all-trigger-bg-pressed",
+      "component": "checkbox-group",
+      "part": [
+        "select-all-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 select-all-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-checkbox-group-select-all-trigger-fg",
       "component": "checkbox-group",
       "part": [
@@ -10423,7 +10521,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"

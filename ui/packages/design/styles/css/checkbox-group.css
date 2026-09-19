@@ -5,6 +5,8 @@
 
 /* 定义 checkbox group 样式。 */
 
+@import '../family/action-control.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='checkbox-group'] {
@@ -29,6 +31,11 @@
     --xh-_checkbox-group-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
     /* 方框是字段家族的控制盒（§8.3 字段静息形态）：canvas 底 + --xh-border-control 描边 + 无影，不消费海拔与顶光 */
     --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
+    /* 条目与全选格是方框的承载面：行自己坐画布走 100 → 200，行面上的方框按淡底容器阶梯再上一档（200 → 300）。
+       两支私有槽是这一档的唯一来源——宿主拿它们给 --xh-action-host-bg-* 赋值（桥接槽只写不读），
+       方框按下读同一支私有槽，即与宿主的 host 槽同源 */
+    --xh-_checkbox-group-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-_checkbox-group-host-bg-pressed: var(--xh-bg-subtle-active);
 
     /* 标题与条目都是根的直接子节点，一支 gap 同时管「标题到集合」与「条目之间」：
        集合标题与集合隔 --xh-space-2（§6.4），同组条目之间也是同一档紧密关系 */
@@ -78,31 +85,50 @@
     color: var(--xh-checkbox-group-label-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* position 是给条目内那份视觉隐藏的原生输入当定位基准：连接层给它写死了 position:absolute，
+  /* 条目是「方框 + 文案」的整行命中区（§9.2）：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、手型、
+     过渡与焦点环由家族给，按下只换面不缩放（row 档专属按压块 scale: none）；这里只把使用者槽映射到桥接槽。
+     行自己坐画布走 100 → 200（--xh-action-bg-* 钉住自己的面），行面上的方框按淡底容器阶梯再上一档
+     （--xh-action-host-bg-* 向内声明自己是方框的承载面，host 槽只对后代生效——自己的面已由 --xh-action-bg-* 钉住；
+     也因此 root 带 data-tone 时 --xh-_tone-subtle 不会把整行染色）。
+     xs 的 24px 是命中地板，方框 12 / 16 / 20px 居中其间；字号与间距按组档位从 root 的私有槽映射。
+     条目禁用一律走 aria-disabled（原生 disabled 会让它从键盘用户眼里消失），家族的禁用块读 data-disabled。
+     position 是给条目内那份视觉隐藏的原生输入当定位基准：连接层给它写死了 position:absolute，
      这里不立基准的话，原生校验气泡会飘到页面上离该条目很远的地方 */
   [data-scope='checkbox-group'][data-part='item'] {
+    --xh-action-gap: var(--xh-checkbox-group-item-gap, var(--xh-_checkbox-group-gap));
+    --xh-action-radius: var(--xh-checkbox-group-item-radius, var(--xh-shape-control));
+    --xh-action-font-size: var(--xh-checkbox-group-item-font-size, var(--xh-_checkbox-group-font-size));
+    --xh-action-padding-inline: 0;
+    --xh-action-padding-block: 0;
+    --xh-action-fg-rest: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
+    --xh-action-fg-hover: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
+    --xh-action-fg-focus-visible: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
+    --xh-action-fg-disabled: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
+    --xh-action-bg-hover: var(--xh-checkbox-group-item-bg-hover, var(--xh-bg-subtle));
+    --xh-action-bg-pressed: var(--xh-checkbox-group-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-action-host-bg-hover: var(--xh-_checkbox-group-host-bg-hover);
+    --xh-action-host-bg-pressed: var(--xh-_checkbox-group-host-bg-pressed);
+
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--xh-checkbox-group-item-gap, var(--xh-_checkbox-group-gap));
-    border-radius: var(--xh-checkbox-group-item-radius, var(--xh-shape-control));
-    color: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-checkbox-group-item-font-size, var(--xh-_checkbox-group-font-size));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
+    /* row 档铺满容器（inline-size: 100%）会把竖排的命中区拉到整行空白处、横排 wrap 也塌：
+       沿用「条目按内容收宽」的既有决定，写法同 table sort-trigger */
+    inline-size: auto;
+    /* ghost 的 1px 透明边位会把方框列相对组标题错开 1px：边归零，几何保持不变 */
+    border-width: 0;
   }
 
-  /* 条目禁用一律走 aria-disabled（原生 disabled 会让它从键盘用户眼里消失），
-     所以样式只能读 data-disabled，写 :disabled 永远不命中 */
-  [data-scope='checkbox-group'][data-part='item'][data-disabled] {
-    color: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
-  }
-
-  /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
-     排掉禁用项是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+  /* 只读整组都改不动，但不是禁用：颜色照常，把整行的悬停 / 按下面与"可点"这个暗示一起收回来。
+     家族的 :hover / 按压块不排 readonly，只能从槽上收回；排掉禁用项是因为这条选择器权重高过家族的禁用块，
+     不排就会把 not-allowed 覆盖回 default */
   [data-scope='checkbox-group'][data-part='root'][data-readonly]
     [data-scope='checkbox-group'][data-part='item']:not([data-disabled]) {
-    cursor: default;
+    --xh-action-bg-hover: transparent;
+    --xh-action-bg-pressed: transparent;
+    --xh-action-cursor-rest: default;
+    --xh-action-cursor-hover: default;
+    --xh-action-cursor-pressed: default;
+    --xh-action-cursor-focus-visible: default;
   }
 
   /* 全选格与条目格共用同一套盒子，并成一条规则写：分开写迟早只改到一半，两个方框就此走形。
@@ -123,10 +149,10 @@
     box-shadow: var(--xh-checkbox-group-indicator-shadow, none);
     font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
     line-height: var(--xh-leading-none);
+    /* 方框不缩放（§9.2 行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
@@ -155,15 +181,17 @@
     border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-_checkbox-group-accent));
   }
 
-  /* 按下去要有回应：方框是定尺盒（§9.1），0.97 缩放并同时换底——未勾选的方框换到 200 档中性面（白底承载），
-     勾中的换到语气的 active 档；整行的命中区包含文字，缩放只落在方框与全选伪元素上 */
+  /* 按下去要有回应。方框不是激活宿主：宿主是投影了 row 档的整行（条目 / 全选格），方框在宿主的
+     :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面、不缩放（§9.2）——行按下是 200，
+     坐在上面的方框到 300（行以 --xh-action-host-bg-pressed 声明自己是方框的承载面，桥接槽只写不读，
+     方框读的是喂给它的那支私有槽），勾中的换到语气的 active 档；
+     与家族按压块同一时间线（按下 --xh-motion-duration-press，释放同走 micro） */
   [data-scope='checkbox-group'][data-part='root']:not([data-readonly])
     [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):is(:active, [data-pressed])
     [data-scope='checkbox-group'][data-part='indicator'],
   [data-scope='checkbox-group'][data-part='select-all-trigger']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])::before {
-    --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg-pressed, var(--xh-_checkbox-group-host-bg-pressed));
 
-    scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
@@ -260,32 +288,57 @@
     user-select: none;
   }
 
-  /* 全选格与条目同形，但字重加一档，读起来才不像又一个普通选项。
-     它是普通元素而非原生控件（三态只有非原生控件表达得出），禁用态同样只能读 data-disabled。
-     position 是给叠在方框上的那颗字形 ::after 当定位基准 */
+  /* 全选格与条目同形（接 Action Control row 档 ghost、xs 命中地板、按下只换面不缩放，方框读宿主 host 槽），
+     但字重加一档，读起来才不像又一个普通选项。它是普通元素而非原生控件（三态只有非原生控件表达得出），
+     家族的禁用块同样只读 data-disabled。position 是给叠在方框上的那颗字形 ::after 当定位基准 */
   [data-scope='checkbox-group'][data-part='select-all-trigger'] {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--xh-checkbox-group-select-all-trigger-gap, var(--xh-_checkbox-group-gap));
+    --xh-action-gap: var(--xh-checkbox-group-select-all-trigger-gap, var(--xh-_checkbox-group-gap));
     /* 全选格的身份是嵌在 control 内的小方框（§6.3 select-all 方框取 inset），与条目方框同一档 */
-    border-radius: var(--xh-checkbox-group-select-all-trigger-radius, var(--xh-shape-inset));
-    color: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
-    font-size: var(--xh-checkbox-group-select-all-trigger-font-size, var(--xh-_checkbox-group-font-size));
+    --xh-action-radius: var(--xh-checkbox-group-select-all-trigger-radius, var(--xh-shape-inset));
+    --xh-action-font-size: var(--xh-checkbox-group-select-all-trigger-font-size, var(--xh-_checkbox-group-font-size));
+    --xh-action-padding-inline: 0;
+    --xh-action-padding-block: 0;
+    --xh-action-fg-rest: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
+    --xh-action-fg-hover: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
+    --xh-action-fg-focus-visible: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
+    --xh-action-fg-disabled: var(--xh-checkbox-group-select-all-trigger-fg-disabled, var(--xh-fg-disabled));
+    --xh-action-bg-hover: var(--xh-checkbox-group-select-all-trigger-bg-hover, var(--xh-bg-subtle));
+    --xh-action-bg-pressed: var(--xh-checkbox-group-select-all-trigger-bg-pressed, var(--xh-bg-subtle-hover));
+    /* 行自己的面已由上面两支钉住，host 槽只对方框（::before）生效：200 → 300 */
+    --xh-action-host-bg-hover: var(--xh-_checkbox-group-host-bg-hover);
+    --xh-action-host-bg-pressed: var(--xh-_checkbox-group-host-bg-pressed);
+
+    position: relative;
+    inline-size: auto;
+    border-width: 0;
     font-weight: var(--xh-checkbox-group-select-all-trigger-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    user-select: none;
   }
 
-  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled] {
-    color: var(--xh-checkbox-group-select-all-trigger-fg-disabled, var(--xh-fg-disabled));
-  }
-
-  /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），
-     同权重下后写的赢，所以这里必须显式排掉禁用，否则禁用的手势指示被只读盖掉 */
+  /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的）：只读收回整行的悬停 / 按下面与手型，
+     显式排掉禁用，否则禁用的 not-allowed 被只读的 default 盖掉 */
   [data-scope='checkbox-group'][data-part='select-all-trigger'][data-readonly]:not([data-disabled]) {
-    cursor: default;
+    --xh-action-bg-hover: transparent;
+    --xh-action-bg-pressed: transparent;
+    --xh-action-cursor-rest: default;
+    --xh-action-cursor-hover: default;
+    --xh-action-cursor-pressed: default;
+    --xh-action-cursor-focus-visible: default;
+  }
+
+  /* 家族 row 档在粗指针下用 ::after 把热区扩到 44px 高：条目按 24px 行 + 8px 间距密排，热区会压进相邻条目 2px、
+     指针落错行，A 档 24px 由 xs 地板保住（两者都不在 coarse-target 的 B 档名单）；勾中 / 半选时全选格的 ::after
+     是叠在方框上的字形，家族的热区 translate 会把它拖走，钉回原位（同 transfer select-all-trigger） */
+  @media (pointer: coarse) {
+    [data-scope='checkbox-group'][data-part='item']::after,
+    [data-scope='checkbox-group'][data-part='select-all-trigger']::after {
+      min-block-size: 0;
+    }
+
+    [data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::after {
+      min-block-size: 0;
+      translate: none;
+    }
   }
 
   /* 表单出口：连接层已经把整套视觉隐藏写进内联 style（absolute + 1px + clip-path），
