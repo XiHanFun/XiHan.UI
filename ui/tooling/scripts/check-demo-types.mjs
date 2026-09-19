@@ -7,8 +7,10 @@
 // Vue 与 Web Components 那两档不在其列：.vue 由文档站真正编译并挂载，坏了 build 当场失败；
 // .html 是纯标记，没有类型可言。只有 .tsx 这一档既不编译也没人核。
 //
-// 判据用 packages/adapters/react/tsconfig.demos.json，对着**源码**（不是 dist）校验，
-// 所以不必先 build。零份示例也判失败——示例被挪走或 include 写错时，这张门禁不能悄悄变成空跑。
+// 判据用 packages/adapters/react/tsconfig.demos.json，react 与各兄弟包都对着**源码**校验，
+// 不依赖 docs/node_modules。唯一例外是 icons：它没有 TS 源码，类型由 build 从 SVG 生成，
+// 所以本门禁不在 `pnpm gate` 里，单列为 `pnpm gate:demo-types`，CI 排在 Build 之后。
+// 零份示例也判失败——示例被挪走或 include 写错时，这张门禁不能悄悄变成空跑。
 import { spawnSync } from 'node:child_process'
 import { readdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'

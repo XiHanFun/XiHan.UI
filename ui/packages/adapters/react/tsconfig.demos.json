@@ -1,9 +1,29 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    // 示例住在 docs/ 下，按 node 解析会一路往上找 docs/node_modules——那是文档站自己的依赖，
+    // CI 上要到很后面才装。这里把用得到的兄弟包逐个钉到源码，判据就不看 docs 装没装。
+    // icons 没有 TS 源码（类型由 SVG 在 build 时生成），只能指 dist，所以这张门禁排在 Build 之后。
     "paths": {
       "@xihan-ui/react": ["./src/index.ts"],
       "@xihan-ui/react/*": ["./src/*"],
+      "@xihan-ui/core": ["../../engine/core/src/index.ts"],
+      "@xihan-ui/core/metadata": ["../../engine/core/src/kernel/metadata.ts"],
+      "@xihan-ui/core/presence": ["../../engine/core/src/behavior/presence.ts"],
+      "@xihan-ui/core/skin-check": ["../../engine/core/src/kernel/diagnostics/skin-check.ts"],
+      "@xihan-ui/core/vanilla": ["../../engine/core/src/machine/vanilla.ts"],
+      "@xihan-ui/core/visual-environment": ["../../engine/core/src/visual-environment/index.ts"],
+      "@xihan-ui/headless": ["../../engine/headless/src/index.ts"],
+      "@xihan-ui/motion": ["../../engine/motion/src/index.ts"],
+      "@xihan-ui/pointer": ["../../engine/pointer/src/index.ts"],
+      "@xihan-ui/position": ["../../engine/position/src/index.ts"],
+      "@xihan-ui/animations": ["../../features/animations/src/index.ts"],
+      "@xihan-ui/backgrounds": ["../../features/backgrounds/src/index.ts"],
+      "@xihan-ui/chat-stream": ["../../features/chat-stream/src/index.ts"],
+      "@xihan-ui/code-highlight": ["../../features/code-highlight/src/index.ts"],
+      "@xihan-ui/markdown": ["../../features/markdown/src/index.ts"],
+      "@xihan-ui/sound": ["../../features/sound/src/index.ts"],
+      "@xihan-ui/icons": ["../../design/icons/dist/index.d.mts"],
       "react": ["./node_modules/@types/react"],
       "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime"]
     },

@@ -8,8 +8,10 @@
       ]
     },
     "design/tokens": {
-      "level": 1,
-      "canDependOn": []
+      "level": 2,
+      "canDependOn": [
+        "engine/core"
+      ]
     },
     "engine/motion": {
       "level": 1,
