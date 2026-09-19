@@ -185,6 +185,11 @@ export const menubarSuite: ConformanceSuite = {
             'data-disabled': null,
             'disabled': null,
             'tabindex': '-1',
+            // 入口归 Collection Item 展开路径 / 打开中：家族按 nav 语境给面与按压时间线；收着的入口不在路径上
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'nav',
+            'data-in-path': null,
           },
           'trigger[1]': { 'tabindex': '-1', 'data-value': 'edit' },
           'trigger[2]': { 'tabindex': '-1', 'data-value': 'view' },
@@ -241,8 +246,9 @@ export const menubarSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-state': 'open' },
-          'trigger[0]': { 'aria-expanded': 'false', 'data-state': 'closed' },
-          'trigger[1]': { 'aria-expanded': 'true', 'data-state': 'open' },
+          'trigger[0]': { 'aria-expanded': 'false', 'data-state': 'closed', 'data-in-path': null },
+          // 展开着的那一张投影 data-in-path，家族按它给与 hover 同档的中性面
+          'trigger[1]': { 'aria-expanded': 'true', 'data-state': 'open', 'data-in-path': '' },
           'content[0]': { hidden: '' },
           'content[1]': { 'hidden': null, 'data-state': 'open' },
           'content[2]': { hidden: '' },
@@ -258,7 +264,7 @@ export const menubarSuite: ConformanceSuite = {
           part: 'trigger[0]',
           expect: {
             parts: {
-              'trigger[0]': { 'aria-expanded': 'true', 'data-state': 'open' },
+              'trigger[0]': { 'aria-expanded': 'true', 'data-state': 'open', 'data-in-path': '' },
               // 没有条目锚点时由 content 兜底进 Tab 序列，键盘才进得去
               'content[0]': { hidden: null, tabindex: '0' },
               // 点开的那一刻焦点留在 trigger 上，一个条目都不预先高亮

@@ -2088,6 +2088,7 @@ export type ComponentTokenName =
   | '--xh-menubar-trigger-bg-active'
   | '--xh-menubar-trigger-bg-hover'
   | '--xh-menubar-trigger-bg-pressed'
+  | '--xh-menubar-trigger-fg'
   | '--xh-menubar-trigger-font-size'
   | '--xh-menubar-trigger-gap'
   | '--xh-menubar-trigger-px'

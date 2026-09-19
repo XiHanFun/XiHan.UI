@@ -33956,6 +33956,9 @@
               "name": "--xh-menubar-trigger-bg-pressed"
             },
             {
+              "name": "--xh-menubar-trigger-fg"
+            },
+            {
               "name": "--xh-menubar-trigger-font-size"
             },
             {
