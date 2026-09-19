@@ -170,9 +170,9 @@
 
 **状态**：`open` · `closed`
 
-**事件**：`FORM.RESET` · `OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT`
+**事件**：`FORM.RESET` · `OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled` · `isMultiple` · `staysOpenOnSelect`
+**判据**：`isOpenControlled` · `isMultiple` · `staysOpenOnSelect` · `canPress`
 
 ### connect API
 
@@ -253,6 +253,7 @@
 | `ArrowRight` | open, 焦点条目有子节点（dir=rtl 时改由 ArrowLeft 承担） | 子列没开时先把它铺出来（焦点不动），已开时焦点移进它的首个可用条目；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | open, 焦点不在根列（dir=rtl 时改由 ArrowRight 承担） | 焦点退回上一列的父条目，当前这一列随之收起；根列上什么都不做且不吞键 |
 | `Enter` / `Space` | open, 焦点条目未禁用 | 叶子：落值并收起浮层、焦点归还 trigger。分支：展开它的子列且浮层不收起，changeOnSelect 打开时同时落值 |
+| `Enter` / `Space` | held in item / clear-trigger, 未禁用、未只读、未加载 | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，条目随浮层收起一并撤下；没有值可清时清空按钮不进 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
 | `可打印字符` | open, focus in input, searchable | 改写检索词；trim 后非空即把列视图整个换成候选列表（整条路径连缀匹配），高亮落到首个可选候选 |
@@ -261,6 +262,7 @@
 | `Home` | open, focus in input, 检索词非空 | 高亮移到首个可选候选；检索词为空时不接管，光标照常跳到行首 |
 | `End` | open, focus in input, 检索词非空 | 高亮移到末个可选候选；检索词为空时不接管，光标照常跳到行尾 |
 | `Enter` | open, focus in input, 有高亮候选 | 把整条候选路径落成选中值：单选收起浮层、焦点归还 trigger，多选并入集合且浮层不收起；两种都清掉检索词回列视图。无可选候选时不吞这个键 |
+| `Enter` | open, focus in input, 有高亮候选且未禁用、未只读、未加载，按住 | 按住期间高亮候选投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，候选随浮层收起一并撤下 |
 | `Escape` | open, focus in input, 检索词非空 | 清掉检索词回到列视图，浮层不收起、焦点留在检索框；检索词已空才轮到收浮层那一档 |
 | `ArrowDown` / `ArrowUp` | open, focus in input, 检索词为空 | 把焦点交给列视图：有锚点条目就落回它，没有则 ArrowDown 进当前列首个可用条目、ArrowUp 进末个 |
 | `ArrowLeft` / `ArrowRight` | open, focus in input | 不接管，留给检索框自己移光标；进子列 / 回上一列那一套只在焦点落在条目上时发生 |
@@ -352,6 +354,7 @@
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |
 | `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
@@ -372,6 +375,7 @@
 | `search-list` | `data-empty` | ''（条件成立时才出现） |
 | `search-item` | `data-disabled` | ''（条件成立时才出现） |
 | `search-item` | `data-highlighted` | ''（条件成立时才出现） |
+| `search-item` | `data-pressed` | ''（条件成立时才出现） |
 | `search-item` | `data-state` | 'checked' \| 'indeterminate' \| 'unchecked' |
 | `search-item` | `data-xh-collection-context` | 'overlay' |
 | `search-item` | `data-xh-collection-item` | '' |
@@ -382,6 +386,7 @@
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-branch` | ''（条件成立时才出现） |
 | `item` | `data-level` | String(meta.level) \| undefined |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

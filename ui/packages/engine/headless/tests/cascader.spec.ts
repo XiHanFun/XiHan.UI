@@ -1554,3 +1554,158 @@ describe('cascader 展开时的焦点', () => {
     expect(document.activeElement).not.toBe(byOutside.trigger)
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，条目按 value、候选按路径键记，清空按钮只记部件', () => {
+  type Dict = Record<string, unknown>
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+  const key = (name: string, repeat = false): KeyboardEvent => ({ key: name, repeat, isComposing: false, keyCode: 0, preventDefault: () => {}, stopPropagation: () => {} } as unknown as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+  const inputProps = (h: Harness): Dict => h.api().getInputProps() as Dict
+  const searchProps = (h: Harness, path: string[]): Dict => h.api().getSearchItemProps({ path }) as Dict
+
+  it('条目：keydown 在场、keyup 撤下；触屏按下在场、抬起或取消撤下；失焦撤下；鼠标按下不走这一路；分支按住期间列铺开也不松', () => {
+    const h = mount({ defaultOpen: true })
+    const zhejiang = h.item('zhejiang').item
+    zhejiang.focus()
+    expect(pressed(zhejiang)).toBe(false)
+    press(zhejiang, ' ')
+    expect(pressed(zhejiang)).toBe(true)
+    // 分支：Space 铺开子列、浮层不收起，按压面一直在
+    expect(h.shownColumns()).toEqual([0, 1])
+    expect(pressed(h.item('hangzhou').item)).toBe(false)
+    keyUp(zhejiang, ' ')
+    expect(pressed(zhejiang)).toBe(false)
+    press(zhejiang, 'Enter')
+    expect(pressed(zhejiang)).toBe(true)
+    zhejiang.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(zhejiang)).toBe(false)
+    touch(zhejiang, 'pointerdown')
+    expect(pressed(zhejiang)).toBe(true)
+    touch(zhejiang, 'pointerup')
+    expect(pressed(zhejiang)).toBe(false)
+    touch(zhejiang, 'pointerdown')
+    touch(zhejiang, 'pointercancel')
+    expect(pressed(zhejiang)).toBe(false)
+    zhejiang.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true }))
+    expect(pressed(zhejiang)).toBe(false)
+  })
+
+  it('清空按钮：有值可清时投影同一副按压面，与条目互不串；另一个的 keyup 不把它松开', () => {
+    const h = mount({ defaultOpen: true, defaultValue: ['macau'] })
+    press(h.clear, ' ')
+    expect(pressed(h.clear)).toBe(true)
+    expect(pressed(h.item('macau').item)).toBe(false)
+    keyUp(h.item('macau').item, ' ')
+    expect(pressed(h.clear)).toBe(true)
+    keyUp(h.clear, ' ')
+    expect(pressed(h.clear)).toBe(false)
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown
+    touch(h.clear, 'pointerdown')
+    expect(pressed(h.clear)).toBe(true)
+    touch(h.clear, 'pointercancel')
+    expect(pressed(h.clear)).toBe(false)
+    h.item('jiangsu').item.focus()
+    press(h.item('jiangsu').item, ' ')
+    expect(pressed(h.item('jiangsu').item)).toBe(true)
+    expect(pressed(h.clear)).toBe(false)
+    keyUp(h.clear, ' ')
+    expect(pressed(h.item('jiangsu').item)).toBe(true)
+  })
+
+  it('检索候选：焦点恒在检索框，Enter 在检索框里按住即高亮候选在场、抬起或失焦撤下；触屏按下在候选自己身上', () => {
+    // 受控展开：单选 Enter 即落值并发收起意图，宿主不写回就仍开着，按住的中间帧才看得见
+    const h = mount({ searchable: true, open: true })
+    h.send({ type: 'INPUT.CHANGE', value: 'zhejiang' })
+    const xihu = ['zhejiang', 'hangzhou', 'xihu']
+    const yuhang = ['zhejiang', 'hangzhou', 'yuhang']
+    expect(h.api().searchHighlightIndex).toBe(0)
+    expect(searchProps(h, xihu)['data-pressed']).toBeUndefined()
+    fire(inputProps(h), 'onKeyDown', key('Enter'))
+    expect(searchProps(h, xihu)['data-pressed']).toBe('')
+    expect(searchProps(h, yuhang)['data-pressed']).toBeUndefined()
+    expect(h.value()).toEqual([xihu])
+    fire(inputProps(h), 'onKeyUp', key('Enter'))
+    expect(searchProps(h, xihu)['data-pressed']).toBeUndefined()
+    // 长按的重复 keydown 不再进
+    fire(inputProps(h), 'onKeyDown', key('Enter', true))
+    expect(searchProps(h, xihu)['data-pressed']).toBeUndefined()
+    fire(inputProps(h), 'onKeyDown', key('Enter'))
+    expect(searchProps(h, xihu)['data-pressed']).toBe('')
+    fire(inputProps(h), 'onBlur', {})
+    expect(searchProps(h, xihu)['data-pressed']).toBeUndefined()
+
+    fire(searchProps(h, yuhang), 'onPointerDown', { pointerType: 'touch' })
+    expect(searchProps(h, yuhang)['data-pressed']).toBe('')
+    expect(searchProps(h, xihu)['data-pressed']).toBeUndefined()
+    fire(searchProps(h, yuhang), 'onPointerUp', {})
+    expect(searchProps(h, yuhang)['data-pressed']).toBeUndefined()
+    fire(searchProps(h, yuhang), 'onPointerDown', { pointerType: 'mouse' })
+    expect(searchProps(h, yuhang)['data-pressed']).toBeUndefined()
+  })
+
+  it('不进：禁用 / 只读 / 加载时三者都不进；没有值可清时清空按钮不进；条目与候选自身禁用不进', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ defaultOpen: true, defaultValue: ['macau'], searchable: true, ...inert })
+      h.item('jiangsu').item.focus()
+      press(h.item('jiangsu').item, ' ')
+      press(h.clear, ' ')
+      expect(pressed(h.item('jiangsu').item)).toBe(false)
+      expect(pressed(h.clear)).toBe(false)
+      h.send({ type: 'INPUT.CHANGE', value: 'zhejiang' })
+      fire(inputProps(h), 'onKeyDown', key('Enter'))
+      fire(searchProps(h, ['zhejiang', 'hangzhou', 'xihu']), 'onPointerDown', { pointerType: 'touch' })
+      expect(searchProps(h, ['zhejiang', 'hangzhou', 'xihu'])['data-pressed']).toBeUndefined()
+    }
+    const empty = mount({ defaultOpen: true })
+    press(empty.clear, ' ')
+    expect(pressed(empty.clear)).toBe(false)
+
+    const h = mount({ defaultOpen: true, searchable: true })
+    click(h.item('zhejiang').item)
+    press(h.item('wenzhou').item, ' ')
+    touch(h.item('wenzhou').item, 'pointerdown')
+    expect(pressed(h.item('wenzhou').item)).toBe(false)
+    h.send({ type: 'INPUT.CHANGE', value: 'wenzhou' })
+    fire(searchProps(h, ['zhejiang', 'wenzhou']), 'onPointerDown', { pointerType: 'touch' })
+    expect(searchProps(h, ['zhejiang', 'wenzhou'])['data-pressed']).toBeUndefined()
+  })
+
+  it('浮层收起即松开：按住 Enter 选中叶子后条目随内容藏起，不会再来 keyup，按压面由机器收', () => {
+    const h = mount({ defaultOpen: true })
+    const macau = h.item('macau').item
+    macau.focus()
+    press(macau, 'Enter')
+    expect(h.state()).toBe('closed')
+    expect(h.value()).toEqual([['macau']])
+    expect(pressed(macau)).toBe(false)
+    // 检索候选同理
+    const s = mount({ defaultOpen: true, searchable: true })
+    s.send({ type: 'INPUT.CHANGE', value: 'macau' })
+    fire(inputProps(s), 'onKeyDown', key('Enter'))
+    expect(s.state()).toBe('closed')
+    expect(searchProps(s, ['macau'])['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中转入禁用 / 只读 / 加载、或值被清空：按压面由机器自己收，不等 keyup', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ defaultOpen: true, defaultValue: ['macau'] })
+      h.item('jiangsu').item.focus()
+      press(h.item('jiangsu').item, ' ')
+      expect(pressed(h.item('jiangsu').item)).toBe(true)
+      h.setProps(inert)
+      expect(pressed(h.item('jiangsu').item)).toBe(false)
+    }
+    const h = mount({ defaultValue: ['macau'] })
+    press(h.clear, 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    click(h.clear)
+    expect(h.value()).toEqual([])
+    expect(pressed(h.clear)).toBe(false)
+  })
+})

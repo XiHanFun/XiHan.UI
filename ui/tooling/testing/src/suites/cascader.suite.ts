@@ -1,12 +1,14 @@
 import type { CascaderNode } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { cascaderAnatomy, cascaderKeyboard, cascaderPathKey } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 触发器照 combobox 规格，展开后的每一列照 listbox 规格（APG 没有级联模式）。
 const APG_COMBOBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 const APG_LISTBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
 const SCOPE = '[data-scope="cascader"]'
+const INPUT = `${SCOPE}[data-part="input"]`
 
 /**
  * 树数据：所在列、整条路径、显示文本与条目禁用的事实源。
@@ -1592,6 +1594,79 @@ export const cascaderSuite: ConformanceSuite = {
           'item[0]': { hidden: null },
         },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：列内条目投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['cascader.kbd.press'],
+      props: props(),
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'column[0]' } },
+        // zhejiang 是分支：按住只铺子列、浮层不收，中间帧看得见；失焦落到同层另一个条目，焦点不离开浮层
+        heldPress('cascader', 'item', { value: 'zhejiang', blurTo: `${SCOPE}[data-part="item"][data-value="macau"]` }),
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      // 收起态按：清空钮不占 Tab 位，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路
+      props: props({ defaultValue: ['macau'] }),
+      steps: [heldPress('cascader', 'clear-trigger')],
+    },
+    {
+      name: '检索档：Enter 在检索框里按住与触屏按下，高亮候选投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['cascader.kbd.search.press'],
+      // 受控展开：单选 Enter 即落值并发收起意图，宿主不写回就仍开着，按住的中间帧才看得见。
+      // 焦点恒在检索框，候选自己收不到按键：键盘那一路派到检索框上，看的仍是候选身上的属性
+      props: props({ searchable: true, open: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      steps: [
+        { kind: 'focus', part: 'input', expect: { activeElement: { part: 'input', exact: true } } },
+        {
+          kind: 'raw',
+          why: 'type 步骤只派按键、改不动输入框的值，而检索的入口正是原生 input 事件',
+          run: ({ doc, flush }) => typeQuery(doc, 'zhejiang', flush),
+        },
+        expectHighlight(XIHU),
+        // 首条候选即高亮的那条（xihu），文档序里也排第一
+        heldPress('cascader', 'search-item', { keyboardHost: INPUT }),
+      ],
+    },
+    {
+      name: '禁用条目与整条禁用的候选按住不进入按压面；只读 / 加载时三者都不进；无值时清空钮不进',
+      spec: { adr: 'press-channel' },
+      props: props({ searchable: true, defaultValue: ['macau'] }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'item[3]' } },
+        { kind: 'click', part: 'item[0]', expect: { parts: { column: columnsShown(2) } } },
+        heldPressIgnored('cascader', 'item', '禁用条目不接受按压', { value: 'wenzhou' }),
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: 'type 步骤只派按键、改不动输入框的值，而检索的入口正是原生 input 事件',
+          run: ({ doc, flush }) => typeQuery(doc, 'zhejiang', flush),
+        },
+        // 禁用候选从不被高亮，键盘到不了它，只验触屏
+        heldPressIgnored('cascader', 'search-item', '整条禁用的候选不接受按压', { selector: `${SCOPE}[data-part="search-item"][data-disabled]`, keyboardHost: null }),
+        { kind: 'setProps', props: { readOnly: true } },
+        // 候选先验：焦点条目上的按键会冒泡到浮层壳、激活焦点所在的条目，激活分支会清掉检索词
+        heldPressIgnored('cascader', 'search-item', '只读时候选改不了选中值，不接受按压', { keyboardHost: INPUT }),
+        heldPressIgnored('cascader', 'item', '只读时条目改不了选中值，不接受按压', { value: 'zhejiang' }),
+        heldPressIgnored('cascader', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, loading: true } },
+        // 加载中 Enter 仍会选中高亮候选（叶子即收起），键盘那一路不派，只验触屏
+        heldPressIgnored('cascader', 'search-item', '加载中候选不接受按压', { keyboardHost: null }),
+        heldPressIgnored('cascader', 'item', '加载中条目不接受按压', { value: 'zhejiang' }),
+        heldPressIgnored('cascader', 'clear-trigger', '加载中清空钮不接受按压'),
+        { kind: 'setProps', props: { loading: false, value: [] } },
+        heldPressIgnored('cascader', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
+      ],
     },
   ],
 }

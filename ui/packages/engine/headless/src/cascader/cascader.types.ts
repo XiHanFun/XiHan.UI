@@ -156,6 +156,9 @@ export interface CascaderColumnProps {
   level: number
 }
 
+/** 接了按压通道的三个部件：列内条目按 value 记、检索候选按整条路径的键记，清空按钮只记部件。 */
+export type CascaderPressedPart = 'item' | 'search-item' | 'clear-trigger'
+
 export interface CascaderSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息与显示文本的唯一事实源。默认为空树。 */
@@ -240,6 +243,10 @@ export interface CascaderSchema extends MachineSchema {
     inputValue: string
     /** 搜索候选里的虚拟高亮下标，随输入重置为 0。 */
     searchIndex: number
+    /** 按压通道：Space / Enter 或触屏按住的是列内条目、检索候选还是清空按钮。 */
+    pressedPart: CascaderPressedPart | null
+    /** 按压通道：按住的条目 value 或候选路径键；clear-trigger 没有值，记 null。抬起、失焦或浮层收起即清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: CascaderRefs
@@ -274,8 +281,15 @@ export interface CascaderSchema extends MachineSchema {
     | { type: 'INPUT.CHANGE', value: string }
     /** 搜索候选的虚拟高亮切换到第 index 条。 */
     | { type: 'SEARCH.HIGHLIGHT', index: number }
+    /**
+     * 条目、检索候选或清空按钮被 Space / Enter 或触屏按住。候选的键盘按压由检索框代发（焦点恒在检索框，
+     * 高亮候选自己收不到按键）；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。
+     */
+    | { type: 'PRESS.START', part: CascaderPressedPart, value?: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: CascaderPressedPart, value?: string }
   tag: never
-  guard: 'isOpenControlled' | 'isMultiple' | 'staysOpenOnSelect'
+  guard: 'isOpenControlled' | 'isMultiple' | 'staysOpenOnSelect' | 'canPress'
   action:
     | 'resetToDefault'
     | 'invokeOnOpen'
@@ -294,6 +308,10 @@ export interface CascaderSchema extends MachineSchema {
     | 'setInputValue'
     | 'setSearchIndex'
     | 'clearInput'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackPosition' | 'trackLayer'
 }
 
