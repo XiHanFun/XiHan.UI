@@ -24,5 +24,6 @@ export const dateRangePickerKeyboard: KeyboardTable = {
     { id: 'date-range-picker.kbd.preset-pick', keys: ['Enter', 'Space'], when: 'open, focus in 某条快捷选项', does: '把这条快捷选项的两端整份写进去；closeOnSelect 时收起浮层' },
     { id: 'date-range-picker.kbd.segment-open', keys: ['Alt+ArrowDown'], when: 'focus in 某一段, closed, not disabled', does: '展开浮层并把焦点移入；触发按钮是可选部件，键盘入口不能只挂在它上面' },
     { id: 'date-range-picker.kbd.segment-close', keys: ['Enter'], when: 'focus in 某一段, open', does: '收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势' },
+    { id: 'date-range-picker.kbd.press', keys: ['Enter', 'Space'], when: 'held on trigger（not disabled）、clear-trigger（可清）或 preset（open, not disabled/readOnly, 该条可按）', does: '按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，浮层收起时一并撤下。日历里的部件由 calendar-range-picker 自己投影' },
   ],
 }

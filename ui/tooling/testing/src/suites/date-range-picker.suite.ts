@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { buildMonthGrid, buildWeekDays, dateRangePickerAnatomy, dateRangePickerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/'
 
@@ -1083,6 +1084,71 @@ export const dateRangePickerSuite: ConformanceSuite = {
           },
           expect: { events: [] },
         },
+      ],
+    },
+
+    {
+      name: 'Space / Enter 按住与触屏按下：触发钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不开合也不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['date-range-picker.kbd.press'],
+      props: { ...BASE_PROPS },
+      steps: [
+        heldPress('date-range-picker', 'trigger'),
+        // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+        heldPress('date-range-picker', 'clear-trigger'),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } },
+          expect: { parts: { 'content': { hidden: '' }, 'trigger': { 'data-pressed': null }, 'clear-trigger': { hidden: null } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '展开后快捷选项触屏按下投影 data-pressed，抬起或指针取消撤下（Enter 在 keydown 即写值收起，键盘那一路没有可见的按住帧）',
+      spec: { adr: 'press-channel' },
+      covers: ['date-range-picker.kbd.press'],
+      fixture: presetGroupFixture,
+      props: { ...BASE_PROPS, presets: [...PRESETS] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        heldPress('date-range-picker', 'preset', { value: '2024-02-01/2024-02-10', keyboardHost: null }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'preset', name: 'data-pressed', value: null } },
+          expect: { parts: { content: { hidden: null } } },
+        },
+      ],
+    },
+    {
+      name: '禁用时触发钮、清空钮与快捷选项都不进入按压面；只读时触发钮照常有回执，其余不进',
+      spec: { adr: 'press-channel' },
+      fixture: base => presetGroupFixture(base, PRESETS_MIXED),
+      props: { ...BASE_PROPS, presets: [...PRESETS_MIXED] },
+      steps: [
+        // 不用 defaultOpen 起手：那条路两个适配器的挂载落焦时序本就有差；先展开再转禁用，浮层留在原地
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        { kind: 'setProps', props: { disabled: true }, expect: { parts: { root: { 'data-disabled': '' } } } },
+        heldPressIgnored('date-range-picker', 'trigger', '禁用时触发钮原生 disabled，不接受按压'),
+        heldPressIgnored('date-range-picker', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        heldPressIgnored('date-range-picker', 'preset', '禁用时快捷选项 aria-disabled，不接受按压', { value: '2024-02-01/2024-02-10', keyboardHost: null }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true }, expect: { parts: { root: { 'data-readonly': '' } } } },
+        heldPressIgnored('date-range-picker', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        heldPressIgnored('date-range-picker', 'preset', '只读时快捷选项写不了值，不接受按压', { value: '2024-02-01/2024-02-10', keyboardHost: null }),
+        heldPress('date-range-picker', 'trigger'),
+      ],
+    },
+    {
+      name: '按不下去的快捷选项（单日、作者禁用）不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: base => presetGroupFixture(base, PRESETS_MIXED),
+      props: { ...BASE_PROPS, presets: [...PRESETS_MIXED] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        heldPressIgnored('date-range-picker', 'preset', '单日的快捷选项不成一对，不接受按压', { value: '2024-02-15', keyboardHost: null }),
+        heldPressIgnored('date-range-picker', 'preset', '作者禁用的快捷选项不接受按压', { value: '2024-02-20/2024-02-29', keyboardHost: null }),
       ],
     },
   ],
