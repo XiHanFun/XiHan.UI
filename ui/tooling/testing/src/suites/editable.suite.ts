@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { editableAnatomy, editableKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 就地编辑没有对应的 APG 模式页（它是一段文字与一个文本框轮流上场）。
 // 可核对的规格是"控件必须有可及的名字"这条实践，以及 HTML 的文本输入状态。
@@ -580,6 +581,43 @@ export const editableSuite: ConformanceSuite = {
         },
         activeElement: { part: 'input', exact: true },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：预览态编辑钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不进编辑态',
+      spec: { adr: 'press-channel' },
+      covers: ['editable.kbd.press'],
+      props: { defaultValue: '阿旺' },
+      steps: [
+        heldPress('editable', 'edit-trigger'),
+        { kind: 'settle', until: { attr: { part: 'edit-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'root': { 'data-state': 'preview' }, 'edit-trigger': { hidden: null } }, events: [] } },
+      ],
+    },
+    {
+      name: '编辑态提交 / 撤销钮：触屏按下投影 data-pressed 且焦点仍摁在输入框里，抬起、取消撤下；按住本身不收尾',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: '阿旺', defaultEdit: true },
+      steps: [
+        // 键盘那一路到不了这两颗钮：焦点一离开输入框机器就按 submitMode 收尾、把钮藏起（Tab 走 EDIT.LEAVE），
+        // 键盘按住的按压面由 headless 单测验；这里只验触屏
+        heldPress('editable', 'submit-trigger', { keyboardHost: null }),
+        heldPress('editable', 'cancel-trigger', { keyboardHost: null }),
+        { kind: 'settle', until: { attr: { part: 'cancel-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'root': { 'data-state': 'edit' }, 'submit-trigger': { 'data-pressed': null } }, events: [], activeElement: { part: 'input', exact: true } } },
+      ],
+    },
+    {
+      name: '禁用 / 只读时编辑钮不进入按压面；藏起的那一形态的钮按住也不进',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: '阿旺', disabled: true },
+      steps: [
+        heldPressIgnored('editable', 'edit-trigger', '禁用时编辑钮 disabled，不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('editable', 'edit-trigger', '只读时编辑钮 disabled，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false } },
+        heldPressIgnored('editable', 'submit-trigger', '预览态提交钮藏着，不接受按压', { keyboardHost: null }),
+        heldPressIgnored('editable', 'cancel-trigger', '预览态撤销钮藏着，不接受按压', { keyboardHost: null }),
+        { kind: 'setProps', props: { edit: true }, expect: { parts: { root: { 'data-state': 'edit' } } } },
+        heldPressIgnored('editable', 'edit-trigger', '编辑态编辑钮藏着，不接受按压', { keyboardHost: null }),
+      ],
     },
   ],
 }

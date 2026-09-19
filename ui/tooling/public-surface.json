@@ -5490,6 +5490,7 @@
       "EditableActivationMode",
       "EditableApi",
       "EditableEditChangeDetails",
+      "EditablePressedPart",
       "EditableRefs",
       "EditableSchema",
       "EditableSubmitMode",

@@ -5,9 +5,9 @@
 
 // 提供 editable 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { EditableActivationMode, EditableApi, EditableSchema } from './editable.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { EditableActivationMode, EditableApi, EditablePressedPart, EditableSchema } from './editable.types'
+import { createPressTracker, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { editableAnatomy } from './editable.anatomy'
 import {
   EDITABLE_DEFAULT_ACTIVATION_MODE,
@@ -59,6 +59,37 @@ export function connectEditable<T extends PropTypes>(
     if (event.button != null && event.button !== 0)
       return
     event.preventDefault()
+  }
+
+  // 按压通道：三颗钮各自合成一份跟踪器，真源是机器 context 里「正被按住的那颗」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
+  const pressed = context.get('pressed')
+  type PressProps = PressHandlers & { 'data-pressed': '' | undefined }
+  const press = (part: EditablePressedPart): PressProps => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === part,
+      onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+  // 提交 / 撤销钮：按下先把焦点摁在输入框里，再交给跟踪器（触屏按下照进按压通道）
+  const holdFocusThenPress = (part: EditablePressedPart): PressProps => {
+    const handlers = press(part)
+    return {
+      ...handlers,
+      onPointerDown: (event: PointerEvent) => {
+        holdFocus(event)
+        handlers.onPointerDown(event)
+      },
+    }
   }
 
   return {
@@ -216,6 +247,7 @@ export function connectEditable<T extends PropTypes>(
       'data-disabled': dataAttr(!interactive),
       'hidden': editing || undefined,
       'data-state': stateAttr,
+      ...press('edit-trigger'),
       'onClick': () => startEdit('edit-trigger'),
     }),
 
@@ -231,7 +263,7 @@ export function connectEditable<T extends PropTypes>(
       'data-disabled': dataAttr(!editing),
       'hidden': !editing || undefined,
       'data-state': stateAttr,
-      'onPointerDown': (event: PointerEvent) => holdFocus(event),
+      ...holdFocusThenPress('submit-trigger'),
       'onClick': () => {
         if (editing)
           send({ type: 'EDIT.SUBMIT', src: 'submit-trigger' })
@@ -250,7 +282,7 @@ export function connectEditable<T extends PropTypes>(
       'data-disabled': dataAttr(!editing),
       'hidden': !editing || undefined,
       'data-state': stateAttr,
-      'onPointerDown': (event: PointerEvent) => holdFocus(event),
+      ...holdFocusThenPress('cancel-trigger'),
       'onClick': () => {
         if (editing)
           send({ type: 'EDIT.CANCEL', src: 'cancel-trigger' })

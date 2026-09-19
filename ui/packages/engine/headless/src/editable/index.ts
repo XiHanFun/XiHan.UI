@@ -18,4 +18,4 @@ export {
   submitsOnLeave,
 } from './editable.machine'
 export { editableMeta } from './editable.meta'
-export type { EditableActivationMode, EditableApi, EditableEditChangeDetails, EditableRefs, EditableSchema, EditableSubmitMode, EditableTranslations, EditableValueChangeDetails, EditableValueCommitDetails, EditableValueRevertDetails } from './editable.types'
+export type { EditableActivationMode, EditableApi, EditableEditChangeDetails, EditablePressedPart, EditableRefs, EditableSchema, EditableSubmitMode, EditableTranslations, EditableValueChangeDetails, EditableValueCommitDetails, EditableValueRevertDetails } from './editable.types'

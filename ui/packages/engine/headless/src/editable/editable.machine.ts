@@ -6,7 +6,7 @@
 // 提供 editable 相关实现。
 
 import type { Scope } from '@xihan-ui/core'
-import type { EditableSchema, EditableSubmitMode } from './editable.types'
+import type { EditablePressedPart, EditableSchema, EditableSubmitMode } from './editable.types'
 import { focusSafely, resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine, guards } = setup<EditableSchema>()
@@ -73,18 +73,29 @@ export const editableMachine = createMachine({
     committedValue: cell<string>(() => ({
       defaultValue: prop('value') ?? prop('defaultValue') ?? '',
     })),
+    // 按压通道：被 Space / Enter 或触屏按住的那颗钮（编辑 / 提交 / 撤销），按 part 键记
+    pressed: cell<EditablePressedPart | null>(() => ({ defaultValue: null })),
   }),
   initialState: ({ prop }) => ((prop('edit') ?? prop('defaultEdit')) ? 'edit' : 'preview'),
   // 编辑态走守卫 + CONTROLLED.* 影子事件 + watch，值走 cell 原生受控，两套不混用
-  watch: ({ track, prop, action }) => track([() => prop('edit')], () => action(['syncEdit'])),
+  watch: ({ track, prop, action }) => {
+    track([() => prop('edit')], () => action(['syncEdit']))
+    // 按住编辑钮途中转入禁用 / 只读：按钮随即 disabled，浏览器不再派 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
+  },
   // 写值不分状态：预览态也能程序化改值
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canEdit', actions: ['setValue'] },
+    // 松开只收自己那一下；按下按状态分派：预览态只有编辑钮在场，编辑态只有提交 / 撤销钮在场
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     preview: {
+      // 进编辑态后编辑钮藏起（Enter 在 keydown 即 click），不会再来 keyup，按压面随状态一起收
+      exit: ['releasePress'],
       on: {
+        'PRESS.START': { guard: 'canPressEditTrigger', actions: ['startPress'] },
         'EDIT.START': [
           // 禁用/只读：整条吃掉，连意图都不发
           { guard: not('canEdit') },
@@ -99,8 +110,12 @@ export const editableMachine = createMachine({
       // 进编辑态拍下值的快照，撤销回到它。必须挂 entry 而非 EDIT.START：
       // 受控回写（CONTROLLED.EDIT）进来的编辑态也要拍这一张
       entry: ['snapshotValue'],
+      // 提交 / 撤销后两颗钮藏起，不会再来 keyup，按压面随状态一起收
+      exit: ['releasePress'],
       effects: ['trackEditFocus'],
       on: {
+        // 提交与撤销钮的按压与它们的 click 同一口径：编辑态里在场即可按，不看 disabled / readOnly
+        'PRESS.START': { guard: 'canPressEditControls', actions: ['startPress'] },
         // 提交与撤销不看 disabled/readOnly，入口已在 EDIT.START 的守卫拦过
         'EDIT.SUBMIT': [
           { guard: 'isEditControlled', actions: ['commitValue', 'invokeEditOff'] },
@@ -127,6 +142,15 @@ export const editableMachine = createMachine({
       isEditControlled: ({ prop }) => prop('edit') !== undefined,
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
       submitsOnLeave: ({ prop }) => submitsOnLeave(prop('submitMode')),
+      // 编辑钮与 EDIT.START 同一道门：禁用 / 只读时按钮已 disabled，不该有按下的回执
+      canPressEditTrigger: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && e.part === 'edit-trigger' && !prop('disabled') && !prop('readOnly')
+      },
+      canPressEditControls: ({ event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && e.part !== 'edit-trigger'
+      },
     },
     actions: {
       resetToDefault: (params) => {
@@ -156,6 +180,22 @@ export const editableMachine = createMachine({
         if (discardedValue !== value)
           context.set('value', value)
         prop('onValueRevert')?.({ value, discardedValue })
+      },
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.part)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.part)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      releaseWhenInert: ({ context, prop }) => {
+        if (context.get('pressed') === 'edit-trigger' && (prop('disabled') || prop('readOnly')))
+          context.set('pressed', null)
       },
       invokeEditOn: ({ prop }) => prop('onEditChange')?.({ edit: true }),
       invokeEditOff: ({ prop }) => prop('onEditChange')?.({ edit: false }),
