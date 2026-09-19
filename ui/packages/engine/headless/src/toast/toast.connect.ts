@@ -5,9 +5,9 @@
 
 // 提供 toast 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ToastApi, ToastSchema, ToastStatus } from './toast.types'
-import { dataAttr } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { ToastApi, ToastPressedPart, ToastSchema, ToastStatus } from './toast.types'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { toastAnatomy } from './toast.anatomy'
 import { resolveToastDuration, resolveToastId } from './toast.machine'
 
@@ -18,6 +18,19 @@ function toStatus(state: ToastSchema['state']): ToastStatus {
   if (state === 'dismissing' || state === 'unmounted')
     return state
   return 'visible'
+}
+
+/**
+ * 按压通道：两颗按钮各自合成一份跟踪器，真源是机器 context 里「正被按住的那颗」；
+ * Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+ * notification 的卡片与 toast 同一台机器，两份 connect 共用这一段翻译。
+ */
+export function toastPressHandlers(service: Service<ToastSchema>, part: ToastPressedPart): PressHandlers {
+  const { context, send } = service
+  return createPressTracker({
+    isPressed: () => context.get('pressed') === part,
+    onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+  })
 }
 
 export function connectToast<T extends PropTypes>(
@@ -37,6 +50,9 @@ export function connectToast<T extends PropTypes>(
   const unmounted = status === 'unmounted'
   const duration = resolveToastDuration(loading, prop('duration'))
   const autoDismiss = Number.isFinite(duration)
+  const pressed = context.get('pressed')
+  const closePress = toastPressHandlers(service, 'close')
+  const actionPress = toastPressHandlers(service, 'action')
 
   return {
     id,
@@ -117,6 +133,14 @@ export function connectToast<T extends PropTypes>(
       'data-xh-action-variant': 'outline',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；进入退场由机器撤下
+      'data-pressed': dataAttr(pressed === 'action'),
+      'onKeyDown': actionPress.onKeyDown,
+      'onKeyUp': actionPress.onKeyUp,
+      'onBlur': actionPress.onBlur,
+      'onPointerDown': actionPress.onPointerDown,
+      'onPointerUp': actionPress.onPointerUp,
+      'onPointerCancel': actionPress.onPointerCancel,
       'onClick': () => send({ type: 'TOAST.ACTION' }),
     }),
 
@@ -148,6 +172,14 @@ export function connectToast<T extends PropTypes>(
       'data-disabled': dataAttr(!closable),
       // 不可关闭时连按钮一起收起，不留一个按不动的叉
       'hidden': !closable || undefined,
+      // Space / Enter 与触屏按住投影 data-pressed；不可关闭时机器守卫不进，进入退场由机器撤下
+      'data-pressed': dataAttr(pressed === 'close'),
+      'onKeyDown': closePress.onKeyDown,
+      'onKeyUp': closePress.onKeyUp,
+      'onBlur': closePress.onBlur,
+      'onPointerDown': closePress.onPointerDown,
+      'onPointerUp': closePress.onPointerUp,
+      'onPointerCancel': closePress.onPointerCancel,
       'onClick': () => {
         // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
         if (!closable)

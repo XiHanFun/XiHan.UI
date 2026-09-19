@@ -22,6 +22,9 @@ export type ToastStatus = 'visible' | 'dismissing' | 'unmounted'
  */
 export type ToastPauseSource = 'pointer' | 'focus' | 'page-idle' | 'api' | 'service'
 
+/** 按压通道记住的按钮：close 是关闭按钮，action 是行内动作按钮。notification 的卡片复用同一套键。 */
+export type ToastPressedPart = 'close' | 'action'
+
 /** 该组落在视口的哪一格。第一段是纵向、第二段是横向（start/end 跟随文字方向）。 */
 export type ToastPlacement
   = | 'top-start' | 'top' | 'top-end'
@@ -131,6 +134,11 @@ export interface ToastSchema extends MachineSchema {
     remaining: number
     /** 当前暂停计时的来源集合，空集即计时进行中。 */
     pausedBy: ToastPauseSource[]
+    /**
+     * 正被按住的按钮：Space / Enter 或触屏手指按下到松开之间，该按钮投影 data-pressed；没有按住时为 null。
+     * 抬起、失焦、指针取消，或进入退场（按钮随条目一起离场）时撤下。
+     */
+    pressed: ToastPressedPart | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -146,8 +154,12 @@ export interface ToastSchema extends MachineSchema {
     | { type: 'TOAST.RESET' }
     | { type: 'after.duration' }
     | { type: 'after.removeDelay' }
+    /** 按压通道：某颗按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START', part: ToastPressedPart }
+    /** 该按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END', part: ToastPressedPart }
   tag: never
-  guard: 'isLastPauseSource'
+  guard: 'isLastPauseSource' | 'canPress'
   action:
     | 'addPauseSource'
     | 'removePauseSource'
@@ -157,6 +169,10 @@ export interface ToastSchema extends MachineSchema {
     | 'invokeAction'
     | 'invokeDismissing'
     | 'invokeUnmounted'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackDuration' | 'waitForRemoveDelay' | 'trackPageIdle'
 }
 

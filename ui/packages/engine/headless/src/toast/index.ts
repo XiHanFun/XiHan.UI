@@ -29,6 +29,7 @@ export type {
   ToastOptions,
   ToastPauseSource,
   ToastPlacement,
+  ToastPressedPart,
   ToastRecord,
   ToastSchema,
   ToastServiceDefaults,

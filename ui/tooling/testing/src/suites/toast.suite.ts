@@ -2,6 +2,7 @@ import type { ConformanceSuite } from '../conformance/types'
 import { toastAnatomy, toastKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/alert/'
 
@@ -123,6 +124,34 @@ export const toastSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'Space / Enter 按住与触屏按下：关闭钮与操作钮各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['toast.kbd.press'],
+      props: { duration: 0 },
+      steps: [
+        heldPress('toast', 'close-trigger'),
+        heldPress('toast', 'action-trigger'),
+      ],
+    },
+    {
+      name: 'loading：操作钮照常可点，按住同样有回执；退场后按住不进',
+      spec: { adr: 'press-channel' },
+      // id 显式给：status-change 的 detail 带 id，各家 scope 流水号不同
+      props: { id: 't1', loading: true },
+      steps: [
+        heldPress('toast', 'action-trigger'),
+        {
+          kind: 'click',
+          part: 'close-trigger',
+          expect: {
+            parts: { root: { 'data-state': 'dismissing' } },
+            events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
+          },
+        },
+        heldPressIgnored('toast', 'action-trigger', '进入退场后机器不再接按压'),
+      ],
+    },
+    {
       name: '到点自动退场：先转 dismissing，走完退场窗口转 unmounted，内容一个也不卸载',
       spec: { apg: APG },
       // duration 与 removeDelay 都给足：太紧时事件断言会落到错的帧，
@@ -203,6 +232,7 @@ export const toastSuite: ConformanceSuite = {
           parts: { root: { 'data-state': 'visible' } },
           events: [],
         }),
+        heldPressIgnored('toast', 'close-trigger', '不可关闭时关闭按钮原生 disabled，不接受按压'),
       ],
     },
     {
