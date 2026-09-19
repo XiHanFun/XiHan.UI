@@ -288,6 +288,17 @@ describe('connectAnchor 静态输出', () => {
     expect(api.isActive('intro')).toBe(false)
   })
 
+  it('链接投影 Collection Item 的 nav 语境与尺寸档，文字段投影 text 槽', () => {
+    const api = makeAnchor({ size: 'sm' }).api()
+    const link = api.getLinkProps({ value: 'install' }) as Record<string, unknown>
+    expect(link['data-xh-collection-item']).toBe('')
+    expect(link['data-xh-collection-size']).toBe('sm')
+    expect(link['data-xh-collection-context']).toBe('nav')
+    expect((api.getLinkTextProps() as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
+    // size 不写时家族尺寸档落 md
+    expect((makeAnchor().api().getLinkProps({ value: 'intro' }) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
+  })
+
   it('指示条是装饰：aria-hidden 恒真；没有激活项时整条收起', () => {
     const c = makeAnchor()
     const indicator = c.api().getIndicatorProps() as Record<string, unknown>

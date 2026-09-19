@@ -983,24 +983,27 @@
       "name": "--xh-anchor-fg",
       "component": "anchor",
       "part": [
+        "link",
         "root"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "anchor 的 root 部件 color 覆盖槽。"
+      "description": "anchor 的 link、root 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-anchor-font-size",
       "component": "anchor",
       "part": [
+        "link",
         "root"
       ],
       "property": [
@@ -1013,7 +1016,7 @@
         "--xh-_anchor-font-size"
       ],
       "visibility": "public",
-      "description": "anchor 的 root 部件 font-size 覆盖槽。"
+      "description": "anchor 的 link、root 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-anchor-gap",
@@ -1113,6 +1116,7 @@
       "name": "--xh-anchor-leading",
       "component": "anchor",
       "part": [
+        "link",
         "root"
       ],
       "property": [
@@ -1125,7 +1129,7 @@
         "--xh-leading-normal"
       ],
       "visibility": "public",
-      "description": "anchor 的 root 部件 line-height 覆盖槽。"
+      "description": "anchor 的 link、root 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-anchor-link-bg-hover",
@@ -1134,16 +1138,20 @@
         "link"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "error",
+        "hover",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "anchor 的 link 部件 background 覆盖槽。"
+      "description": "anchor 的 link 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-anchor-link-bg-pressed",
@@ -1152,17 +1160,21 @@
         "link"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
+        "error",
         "is(:active, [data-pressed])",
-        "pressed"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "anchor 的 link 部件 background 覆盖槽。"
+      "description": "anchor 的 link 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-anchor-link-fg-current",
@@ -1174,7 +1186,11 @@
         "color"
       ],
       "state": [
-        "current"
+        "current",
+        "disabled",
+        "error",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-_anchor-accent-text"
@@ -1192,7 +1208,11 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "error",
+        "hover",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -1210,7 +1230,11 @@
         "font-weight"
       ],
       "state": [
-        "current"
+        "current",
+        "disabled",
+        "error",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-font-weight-medium"

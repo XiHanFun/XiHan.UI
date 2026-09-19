@@ -13329,6 +13329,11 @@
 /* styles/anchor.css */
 /* 定义 anchor 样式。 */
 
+/* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
+   本皮肤只映射桥接槽；指示条仍是 list 上的滑动 indicator 部件 */
+
+/* family/collection-item.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='anchor'] {
   --xh-anchor-skin: 1;
@@ -13403,22 +13408,32 @@
   display: none;
 }
 
+/* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + default 字，
+   按下 pressed 200 只换面（§7.2 / §9.2）；当前那一节（§7.3 导航当前页）brand-strong 字色（随语气的
+   --xh-_anchor-accent-text）+ medium 字重都跟着变，不只靠指示条——指示条是可选部件，作者不渲染它时
+   "当前在哪"仍然要看得出来。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background */
 [data-scope='anchor'][data-part='link'] {
+  --xh-collection-block-padding: var(--xh-anchor-link-py, var(--xh-space-1));
+  --xh-collection-inline-padding: var(--xh-anchor-link-px, var(--xh-_anchor-link-px));
+  --xh-collection-radius: var(--xh-anchor-link-radius, var(--xh-shape-control));
+  --xh-collection-font-size: var(--xh-anchor-font-size, var(--xh-_anchor-font-size));
+  --xh-collection-fg-rest: var(--xh-anchor-fg, var(--xh-fg-muted));
+  --xh-collection-bg-hover: var(--xh-anchor-link-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-fg-hover: var(--xh-anchor-link-fg-hover, var(--xh-fg-default));
+  --xh-collection-bg-pressed: var(--xh-anchor-link-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-fg-current: var(--xh-anchor-link-fg-current, var(--xh-_anchor-accent-text));
+  --xh-collection-font-weight-current: var(--xh-anchor-link-font-weight-current, var(--xh-font-weight-medium));
+
   display: inline-flex;
   align-items: center;
   /* 一节的标题可能很长，压不住会把整列撑开 */
   max-inline-size: var(--xh-anchor-link-max-w, var(--xh-nav-link-max-w));
-  padding-block: var(--xh-anchor-link-py, var(--xh-space-1));
-  padding-inline: var(--xh-anchor-link-px, var(--xh-_anchor-link-px));
-  border-radius: var(--xh-anchor-link-radius, var(--xh-shape-control));
-  color: inherit;
+  /* 行高随 root 的行距槽：家族基础块给条目写了 leading-normal，这里接回 root 那一支 */
+  line-height: var(--xh-anchor-leading, var(--xh-leading-normal));
   white-space: nowrap;
   text-decoration: none;
   text-overflow: ellipsis;
   overflow: hidden;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='anchor'][data-part='link'][hidden] {
@@ -13431,28 +13446,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-}
-
-/* 悬停走白底承载的阶梯（§7.2）：hover 100，与面包屑的链接同一副回执。
-   只把 muted 提到 default 的话，一行小字上那点色差在长目录里几乎读不出来 */
-[data-scope='anchor'][data-part='link']:hover {
-  background: var(--xh-anchor-link-bg-hover, var(--xh-bg-subtle));
-  color: var(--xh-anchor-link-fg-hover, var(--xh-fg-default));
-}
-
-/* 按下：链接是铺开的一行（§9.2），只换面不缩放，pressed 200；
-   指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
-[data-scope='anchor'][data-part='link']:is(:active, [data-pressed]) {
-  background: var(--xh-anchor-link-bg-pressed, var(--xh-bg-subtle-hover));
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 当前那一节（§7.3 导航当前页）：brand-strong 字色与 medium 字重都跟着变，不只靠指示条——
-   指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
-[data-scope='anchor'][data-part='link'][data-current] {
-  color: var(--xh-anchor-link-fg-current, var(--xh-_anchor-accent-text));
-  font-weight: var(--xh-anchor-link-font-weight-current, var(--xh-font-weight-medium));
 }
 
 /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
@@ -13492,12 +13485,6 @@
      "读到哪一节"就只剩链接自己的字重。换成系统高亮色画回来 */
   [data-scope='anchor'][data-part='indicator'] {
     background: Highlight;
-  }
-
-  /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
-  [data-scope='anchor'][data-part='link']:is(:active, [data-pressed]) {
-    background: Highlight;
-    color: HighlightText;
   }
 }
 
