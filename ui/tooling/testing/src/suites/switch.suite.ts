@@ -2,6 +2,7 @@ import type { ConformanceSuite } from '../conformance/types'
 import { switchAnatomy, switchKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/switch/'
 
@@ -20,6 +21,37 @@ export const switchSuite: ConformanceSuite = {
       steps: [nativeActivation('switch', 'root')],
     },
     {
+      // 轨道是原生按钮，Space 与 Enter 都是激活键，两键都进按压面；jsdom 不把 keydown / keyup 翻成 click，开关态不动
+      name: 'Space / Enter 按住与触屏按下：关着的轨道投影 data-pressed，抬起、失焦或指针取消撤下；与开关态无关',
+      spec: { adr: 'press-channel' },
+      covers: ['switch.kbd.press'],
+      steps: [
+        heldPress('switch', 'root'),
+        { kind: 'settle', until: { attr: { part: 'root', name: 'data-pressed', value: null } }, expect: { parts: { root: { 'aria-checked': 'false' } } } },
+      ],
+    },
+    {
+      name: '开着的轨道同样投影按住面：选中与按压叠加由皮肤派生',
+      spec: { adr: 'press-channel' },
+      props: { defaultChecked: true },
+      steps: [
+        heldPress('switch', 'root'),
+        { kind: 'settle', until: { attr: { part: 'root', name: 'data-pressed', value: null } }, expect: { parts: { root: { 'aria-checked': 'true' } } } },
+      ],
+    },
+    {
+      name: 'disabled / loading / readOnly：按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { disabled: true },
+      steps: [
+        heldPressIgnored('switch', 'root', '禁用时不接受按压'),
+        { kind: 'setProps', props: { disabled: false, loading: true } },
+        heldPressIgnored('switch', 'root', '提交中不接受按压'),
+        { kind: 'setProps', props: { loading: false, readOnly: true } },
+        heldPressIgnored('switch', 'root', '只读时不接受按压'),
+      ],
+    },
+    {
       name: '初始未选中：role=switch、aria-checked=false、data-state=unchecked',
       spec: { apg: APG },
       initial: {
@@ -32,6 +64,7 @@ export const switchSuite: ConformanceSuite = {
             'aria-checked': 'false',
             'data-state': 'unchecked',
             'data-disabled': null,
+            'data-pressed': null,
             // 轨道接 Action Control 家族：text 档、outline 形态、常显、字形档随 size（缺省 md）
             'data-xh-action-control': '',
             'data-xh-action-profile': 'text',

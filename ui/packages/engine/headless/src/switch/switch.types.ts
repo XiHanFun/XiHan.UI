@@ -35,7 +35,10 @@ export interface SwitchSchema extends MachineSchema {
     /** checked 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onCheckedChange?: (details: SwitchCheckedChangeDetails) => void
   }
-  context: Record<string, never>
+  context: {
+    /** 按压通道：Space / Enter 或触屏按住期间为 true，root 投影 data-pressed；抬起、失焦或指针取消即复位。与开关态无关。 */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: 'off' | 'on'
@@ -45,9 +48,19 @@ export interface SwitchSchema extends MachineSchema {
     | { type: 'CONTROLLED.ON' }
     | { type: 'CONTROLLED.OFF' }
     | { type: 'FORM.RESET' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
+    | { type: 'PRESS.START' }
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'isCheckedControlled' | 'defaultsToChecked'
-  action: 'invokeOnCheck' | 'invokeOnUncheck' | 'syncChecked' | 'invokeReset'
+  guard: 'isCheckedControlled' | 'defaultsToChecked' | 'canPress'
+  action:
+    | 'invokeOnCheck'
+    | 'invokeOnUncheck'
+    | 'syncChecked'
+    | 'invokeReset'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 
