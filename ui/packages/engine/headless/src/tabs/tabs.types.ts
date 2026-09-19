@@ -120,6 +120,8 @@ export interface TabsSchema extends MachineSchema {
     announcement: string
     /** 指示条的测量结果；没有选中项或无法测量时为 null。 */
     indicator: TabsIndicatorRect | null
+    /** 按压通道：Space / Enter 或触屏按住的 trigger value。抬起、失焦或指针取消即清空，与选中互相独立。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: {
@@ -160,8 +162,12 @@ export interface TabsSchema extends MachineSchema {
     | { type: 'TAB.MOVE_BY', value: string, target: DropTarget }
     /** 关闭一个标签：只发意图，库不修改标签序。 */
     | { type: 'TAB.CLOSE', value: string, values: string[] }
+    /** trigger 被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 按住的 trigger 抬起、失焦或指针取消；只松开 value 对应的那一个。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: 'isAutomatic'
+  guard: 'isAutomatic' | 'canPress'
   action:
     | 'setValue'
     | 'setFocusedValue'
@@ -173,6 +179,8 @@ export interface TabsSchema extends MachineSchema {
     | 'moveTabBy'
     | 'invokeOnTabClose'
     | 'measureIndicator'
+    | 'startPress'
+    | 'endPress'
   effect: 'trackPointer' | 'trackResize'
 }
 

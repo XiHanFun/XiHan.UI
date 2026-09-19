@@ -39,6 +39,8 @@ export const tabsMachine = createMachine({
     announcement: cell<string>(() => ({ defaultValue: '' })),
     // 量测结果不受控、不对外通知
     indicator: cell<TabsIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
+    // 按压通道：正被按住的 trigger（按 value 记），与选中、焦点锚点、拖动无关
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   // 挂载即量一次，让指示条首帧就在位
   entry: ['measureIndicator'],
@@ -76,6 +78,9 @@ export const tabsMachine = createMachine({
         'TAB.MOVE_BY': { actions: ['moveTabBy'] },
         // 关闭只发意图，标签序归数据源
         'TAB.CLOSE': { actions: ['invokeOnTabClose'] },
+        // 按压通道：条目按 value 记按住的那一个；条目自身的禁用由 connect 判定后随事件带入
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
       },
     },
   },
@@ -126,8 +131,24 @@ export const tabsMachine = createMachine({
     },
     guards: {
       isAutomatic: ({ prop }) => (prop('activationMode') ?? 'automatic') === 'automatic',
+      // Tabs 没有整组禁用，只有条目自己的禁用：它随 PRESS.START 带进来
+      canPress: ({ event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !e.disabled
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一个 trigger 的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET' || e.type === 'TRIGGER.SELECT' || e.type === 'TRIGGER.NAVIGATE')

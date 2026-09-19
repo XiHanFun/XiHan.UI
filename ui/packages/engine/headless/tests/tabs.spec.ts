@@ -197,6 +197,77 @@ describe('标签页 · 条目禁用', () => {
   })
 })
 
+describe('标签页 · 按压通道', () => {
+  /** 某个 trigger 此刻的 data-pressed。 */
+  const pressed = (t: ReturnType<typeof makeTabs>, value: string): unknown =>
+    (t.api().getTriggerProps({ value }) as Dict)['data-pressed']
+  /** 取 trigger 的处理器，按 DOM 事件名调用。 */
+  const handler = (t: ReturnType<typeof makeTabs>, value: string, name: string): ((event: unknown) => void) =>
+    (t.api().getTriggerProps({ value }) as Dict)[name] as (event: unknown) => void
+
+  it('PRESS.START 只让那一个 trigger 投影 data-pressed，PRESS.END 撤下；选中与按压互相独立', () => {
+    const t = makeTabs({ defaultValue: 'overview' })
+    t.service.send({ type: 'PRESS.START', value: 'logs' })
+    expect(pressed(t, 'logs')).toBe('')
+    expect(pressed(t, 'overview')).toBeUndefined()
+    expect(t.api().value).toBe('overview')
+    expect((t.api().getTriggerProps({ value: 'logs' }) as Dict)['aria-selected']).toBe('false')
+    // 另一个 trigger 的 keyup 不该把正按着的这个松开
+    t.service.send({ type: 'PRESS.END', value: 'overview' })
+    expect(pressed(t, 'logs')).toBe('')
+    t.service.send({ type: 'PRESS.END', value: 'logs' })
+    expect(pressed(t, 'logs')).toBeUndefined()
+  })
+
+  it('禁用条目不进按压面：事实随事件带入守卫', () => {
+    const t = makeTabs()
+    t.service.send({ type: 'PRESS.START', value: 'api', disabled: true })
+    expect(pressed(t, 'api')).toBeUndefined()
+  })
+
+  it('Space / Enter 按住经跟踪器进出，失焦即撤下；长按重复键不重报', () => {
+    const t = makeTabs()
+    for (const key of [' ', 'Enter']) {
+      handler(t, 'logs', 'onKeyDown')({ key, repeat: false })
+      expect(pressed(t, 'logs')).toBe('')
+      handler(t, 'logs', 'onKeyDown')({ key, repeat: true })
+      expect(pressed(t, 'logs')).toBe('')
+      handler(t, 'logs', 'onKeyUp')({ key })
+      expect(pressed(t, 'logs')).toBeUndefined()
+    }
+    handler(t, 'logs', 'onKeyDown')({ key: 'Enter', repeat: false })
+    expect(pressed(t, 'logs')).toBe('')
+    handler(t, 'logs', 'onBlur')(undefined)
+    expect(pressed(t, 'logs')).toBeUndefined()
+    // 方向键不是按压
+    handler(t, 'logs', 'onKeyDown')({ key: 'ArrowRight', repeat: false })
+    expect(pressed(t, 'logs')).toBeUndefined()
+  })
+
+  it('触屏按下进按压面，抬起或指针取消撤下；鼠标按下不走这一路（由 :active 表出）', () => {
+    const t = makeTabs()
+    handler(t, 'logs', 'onPointerDown')({ pointerType: 'mouse', button: 0 })
+    expect(pressed(t, 'logs')).toBeUndefined()
+    handler(t, 'logs', 'onPointerDown')({ pointerType: 'touch', button: 0 })
+    expect(pressed(t, 'logs')).toBe('')
+    handler(t, 'logs', 'onPointerCancel')(undefined)
+    expect(pressed(t, 'logs')).toBeUndefined()
+    handler(t, 'logs', 'onPointerDown')({ pointerType: 'touch', button: 0 })
+    expect(pressed(t, 'logs')).toBe('')
+    handler(t, 'logs', 'onPointerUp')(undefined)
+    expect(pressed(t, 'logs')).toBeUndefined()
+  })
+
+  it('禁用的 trigger 经跟踪器按住也不进：collection 里的禁用与部件上写的禁用都认', () => {
+    const t = makeTabs()
+    handler(t, 'api', 'onKeyDown')({ key: ' ', repeat: false })
+    expect(pressed(t, 'api')).toBeUndefined()
+    const props = t.api().getTriggerProps({ value: 'logs', disabled: true }) as Dict
+    ;(props.onPointerDown as (event: unknown) => void)({ pointerType: 'touch', button: 0 })
+    expect(pressed(t, 'logs')).toBeUndefined()
+  })
+})
+
 describe('标签页 · Collection Item 导航当前', () => {
   it('缺省 line 档的页签投影家族角色与 nav 语境，选中项另投 data-current', () => {
     const api = makeTabs({ defaultValue: 'overview', size: 'sm' }).api()
