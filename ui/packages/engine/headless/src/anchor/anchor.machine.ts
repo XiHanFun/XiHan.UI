@@ -100,6 +100,8 @@ export const anchorMachine = createMachine({
     })),
     // 量测结果不受控、不对外通知
     indicator: cell<AnchorIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
+    // 按压通道：正被按住的链接（按 value 记），与激活项、平滑滚动锁无关
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getScrollEl: () => null,
@@ -112,6 +114,12 @@ export const anchorMachine = createMachine({
   watch: ({ track, context, action }) => {
     // 激活值一变就重量指示条
     track([context.dep('value')], () => action(['measureIndicator']))
+  },
+  // 按压通道挂根级：按住 Enter 激活的那一下会把机器送进 scrolling，keyup 在那里到达，两个状态都要认。
+  // 锚点没有禁用，也没有整组不可点的时刻，守卫只把事件形状核一遍
+  on: {
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -150,8 +158,20 @@ export const anchorMachine = createMachine({
         // 不归一则"观察器报 null、当前也没有激活项"这一路永远判不成立，锁只能等兜底计时器
         return e.type === 'SPY.RESOLVE' && e.value === (context.get('value') ?? null)
       },
+      canPress: ({ event }) => event.current().type === 'PRESS.START',
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一条链接的 keyup 不该把正按着的这条松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'SPY.RESOLVE' || e.type === 'LINK.CLICK' || e.type === 'VALUE.SET')

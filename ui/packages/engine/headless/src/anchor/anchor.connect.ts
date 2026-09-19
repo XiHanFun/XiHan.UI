@@ -5,9 +5,9 @@
 
 // 提供 anchor 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { AnchorApi, AnchorSchema } from './anchor.types'
-import { dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { anchorAnatomy } from './anchor.anatomy'
 
 const parts = anchorAnatomy.build()
@@ -24,6 +24,13 @@ export function connectAnchor<T extends PropTypes>(
   const smooth = !!prop('smooth')
 
   const isActive = (target: string): boolean => target === value
+  // 按压通道：真源是机器 context 里「正被按住的那一条」（按 value 记），每条链接各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档
+  const pressedValue = context.get('pressedValue')
+  const press = (target: string): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === target,
+    onChange: down => send(down ? { type: 'PRESS.START', value: target } : { type: 'PRESS.END', value: target }),
+  })
 
   return {
     value,
@@ -51,6 +58,7 @@ export function connectAnchor<T extends PropTypes>(
 
     getLinkProps: (link) => {
       const active = isActive(link.value)
+      const handlers = press(link.value)
       return normalize.element({
         ...parts.link.attrs,
         // 观察器与指示条量测都以此为条目身份
@@ -64,6 +72,8 @@ export function connectAnchor<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'nav',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与激活项互相独立
+        'data-pressed': dataAttr(pressedValue === link.value),
         'onClick': (event: MouseEvent) => {
           // 作者自己的处理器已拦下就不抢
           if (event.defaultPrevented)
@@ -76,6 +86,12 @@ export function connectAnchor<T extends PropTypes>(
             event.preventDefault()
           send({ type: 'LINK.CLICK', value: link.value })
         },
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
       })
     },
 

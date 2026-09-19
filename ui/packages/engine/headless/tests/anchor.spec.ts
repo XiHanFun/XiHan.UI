@@ -599,3 +599,74 @@ describe('anchor 平滑滚动期间的锁', () => {
     expect(c.value()).toBe('install')
   })
 })
+
+describe('anchor 按压通道：Space / Enter 与触屏按住投影 data-pressed，按 value 记住按住的那一条', () => {
+  const key = (name: string, init: KeyboardEventInit = {}): KeyboardEvent =>
+    new KeyboardEvent(name, { key: 'Enter', bubbles: true, cancelable: true, ...init })
+  const pointer = (name: string, pointerType: string): PointerEvent =>
+    new PointerEvent(name, { pointerType, bubbles: true, cancelable: true })
+  // 夹具的 spread 只写不删属性，按压面的在场与否从连接层的产出读
+  const pressed = (c: ReturnType<typeof makeAnchor>, value: string): boolean =>
+    (c.api().getLinkProps({ value }) as Record<string, unknown>)['data-pressed'] === ''
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', async () => {
+    const c = makeAnchor()
+    await settle()
+    const link = c.links[0]!
+    expect(pressed(c, 'intro')).toBe(false)
+    link.dispatchEvent(key('keydown', { key: ' ' }))
+    expect(pressed(c, 'intro')).toBe(true)
+    link.dispatchEvent(key('keyup', { key: ' ' }))
+    expect(pressed(c, 'intro')).toBe(false)
+    link.dispatchEvent(key('keydown'))
+    expect(pressed(c, 'intro')).toBe(true)
+    link.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(c, 'intro')).toBe(false)
+    link.dispatchEvent(pointer('pointerdown', 'touch'))
+    expect(pressed(c, 'intro')).toBe(true)
+    link.dispatchEvent(pointer('pointercancel', 'touch'))
+    expect(pressed(c, 'intro')).toBe(false)
+    link.dispatchEvent(pointer('pointerdown', 'touch'))
+    expect(pressed(c, 'intro')).toBe(true)
+    link.dispatchEvent(pointer('pointerup', 'touch'))
+    expect(pressed(c, 'intro')).toBe(false)
+    link.dispatchEvent(pointer('pointerdown', 'mouse'))
+    expect(pressed(c, 'intro')).toBe(false)
+    c.stop()
+  })
+
+  it('按 value 记：另一条的 keyup 不把正按着的这条松开；与激活项互相独立', async () => {
+    const c = makeAnchor()
+    await settle()
+    // 滚到 install 压线：观察器把它点亮
+    c.scrollTo([-600, -20, 400])
+    expect(c.value()).toBe('install')
+    const [intro, install] = c.links as [HTMLElement, HTMLElement]
+    intro.dispatchEvent(key('keydown'))
+    expect(pressed(c, 'intro')).toBe(true)
+    expect(pressed(c, 'install')).toBe(false)
+    install.dispatchEvent(key('keyup'))
+    expect(pressed(c, 'intro')).toBe(true)
+    intro.dispatchEvent(key('keyup'))
+    expect(pressed(c, 'intro')).toBe(false)
+    // 激活项没有因按压而动
+    expect(c.value()).toBe('install')
+    expect(install.getAttribute('aria-current')).toBe('location')
+    c.stop()
+  })
+
+  it('平滑滚动锁着的时候按压照常进出：按住 Enter 点过去后机器在 scrolling，keyup 在那里到达', async () => {
+    const c = makeAnchor({ smooth: true })
+    await settle()
+    const link = c.links[2]!
+    link.dispatchEvent(key('keydown'))
+    expect(pressed(c, 'usage')).toBe(true)
+    c.click(2)
+    expect(c.state()).toBe('scrolling')
+    expect(pressed(c, 'usage')).toBe(true)
+    link.dispatchEvent(key('keyup'))
+    expect(pressed(c, 'usage')).toBe(false)
+    expect(c.state()).toBe('scrolling')
+    c.stop()
+  })
+})
