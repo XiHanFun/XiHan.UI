@@ -8,3 +8,9 @@ declare module '*?raw' {
   const content: string
   export default content
 }
+
+// 有的用例要把一份产物装进 iframe 的 <link>，用 Vite 的 ?url 取它的服务地址。
+declare module '*?url' {
+  const url: string
+  export default url
+}

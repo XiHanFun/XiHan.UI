@@ -2,7 +2,8 @@
 // 门禁：层序声明在皮肤与令牌两份产物里逐字一致、在 tokens.css 里排在 @layer 块之前，
 // 两份入口里层序与令牌都排在任何样式规则之前，且 reset 层全部选择器为 (0,0,0)——
 // 无层产物里配方排在 reset 之前，reset 只有低一档才不会靠源序压掉配方的字号；反向断言产物里
-// 每条声明 font / font-size 的规则都高于 (0,0,0)。
+// 每条声明 font / font-size 的规则都高于 (0,0,0)。无层产物里每条家族根规则还必须排在第一条
+// 皮肤规则之前：配方与皮肤同档，皮肤对配方的覆盖只有配方先出现才成立。
 import { readFile } from 'node:fs/promises'
 
 const FILES = {
@@ -86,11 +87,33 @@ const RESET = 'packages/design/styles/css/reset.css'
 const RESET_MARKER = '/* styles/reset.css */'
 // 无层产物里的根规则形态：emit-unlayered 给家族属性加了 [data-scope] 前缀，抬到 (0,2,0)
 // 与皮肤同档，才压得住宿主 `.article a` 这类 (0,1,1) 的标签规则（源文件仍是 (0,1,0)）
-const FAMILY_ROOTS = ['[data-scope][data-xh-action-control]', '[data-scope][data-xh-field-chrome]', '[data-scope][data-xh-collection-item]']
+const FAMILY_ROOTS = [
+  '[data-scope][data-xh-action-control]',
+  '[data-scope][data-xh-field-chrome]',
+  '[data-scope][data-xh-collection-item]',
+  '[data-scope][data-xh-swatch]',
+]
 
 /** 去掉块注释，避免注释里的花括号与选择器示例混进解析。 */
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, '')
+}
+
+/**
+ * 无层产物里第一条皮肤规则的位置：按段标记切开，取 css/ 下第一段含样式规则的段的起点。
+ * layers.css 拆层后只剩注释，不算；family/ 段是配方，不算。找不到返回 -1。
+ */
+function firstSkinRuleAt(css) {
+  const markers = [...css.matchAll(/\n\/\* (styles|family)\/[\w-]+\.css \*\//g)]
+  for (const [index, marker] of markers.entries()) {
+    if (marker[1] !== 'styles')
+      continue
+    const start = marker.index + marker[0].length
+    const end = markers[index + 1]?.index ?? css.length
+    if (stripComments(css.slice(start, end)).includes('{'))
+      return marker.index
+  }
+  return -1
 }
 
 /** 从 `{` 出发找到配对的 `}`。 */
@@ -199,11 +222,25 @@ else {
       const rule = `\n${root} {`
       if (!unlayeredCss.includes(rule))
         errors.push(`${ENTRIES.unlayered} 里找不到配方根规则 \`${root}\`——无层产物没把 Family Recipe 内联进来`)
+      else if (!before.includes(rule))
+        errors.push(`${ENTRIES.unlayered} 里 \`${root}\` 根规则没有排在 reset 段之前——配方与 reset 的先后变了，重新核对特指度取舍`)
     }
-    // 现状只有 action-control 内联在 reset 之前（field-chrome / collection-item 的首个消费者
-    // 在 index.css 里排在 reset.css 之后）；这条守的正是「配方在前、reset 在后」的失效场景真实存在。
-    if (!before.includes(`\n${FAMILY_ROOTS[0]} {`))
-      errors.push(`${ENTRIES.unlayered} 里 \`${FAMILY_ROOTS[0]}\` 根规则没有排在 reset 段之前——配方与 reset 的先后变了，重新核对特指度取舍`)
+
+    // 配方还得排在第一份皮肤之前。无层产物里配方被抬到与皮肤同档，同档只剩源序竞争：皮肤对配方
+    // 物理属性的直接覆盖（InputGroup 把内嵌字段外壳的 outline 置 none）只有配方先出现才成立；
+    // 配方若在第一个引用它的皮肤处才展开，前面的皮肤就全被反超，而有层产物、单测与其余门禁全绿。
+    // 第一份皮肤 = css/ 下任一文件在产物里的第一段（layers.css 拆层后是空的，不算）。
+    const firstSkinAt = firstSkinRuleAt(unlayeredCss)
+    if (firstSkinAt === -1) {
+      errors.push(`${ENTRIES.unlayered} 里找不到任何皮肤段的样式规则——产物过期了，跑一次 styles 的 gen`)
+    }
+    else {
+      for (const root of FAMILY_ROOTS) {
+        const rootAt = unlayeredCss.indexOf(`\n${root} {`)
+        if (rootAt !== -1 && rootAt > firstSkinAt)
+          errors.push(`${ENTRIES.unlayered} 里 \`${root}\` 根规则排在第一条皮肤规则之后——同档靠源序竞争，皮肤对配方的覆盖会被反超；emit-unlayered 必须把 family/ 全部配方内联在一切皮肤之前`)
+      }
+    }
 
     // 反向那一半：reset 压到 (0,0,0) 只保证它不靠源序赢，前提是每条要定字号的规则都比它高。
     // 无层产物里任何声明 font / font-size 的规则（含 @media 一类条件块内的），选择器剥去伪元素后
@@ -259,4 +296,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-layer-order] 通过：${orders.layers.join(' → ')}；reset 层 (0,0,0)，无层产物里配方先于 reset 且字号规则都高于 reset`)
+console.log(`[check-layer-order] 通过：${orders.layers.join(' → ')}；reset 层 (0,0,0)，无层产物里 ${FAMILY_ROOTS.length} 条家族根规则先于全部皮肤与 reset，字号规则都高于 reset`)

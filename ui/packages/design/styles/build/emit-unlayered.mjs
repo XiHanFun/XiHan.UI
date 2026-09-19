@@ -12,8 +12,16 @@
 // 这类带类名的标签规则——配方直接写在 <a>、<li>、<td> 这些裸标签上的底与字，
 // 否则会被宿主的正文排版压掉（文档站的 .vp-doc a 正是这样把侧栏导航链接变回 UA 蓝）。
 // 家族属性只由 connect 写在角色节点上，角色节点必带 data-scope，前缀不改变命中范围。
-// 配方在产物里排在 reset 之前，reset 只有低一档才不会靠源序把配方的字号压掉，
-// 由 check-layer-order 门禁断言。motion 层装的是 @keyframes、不参与级联。
+//
+// 抬到同档之后，皮肤与配方之间只剩源序竞争。有层产物里皮肤只要比配方高一级就稳赢，
+// 皮肤于是直接盖配方的物理属性（InputGroup 用 (0,4,0) 把内嵌字段外壳的 outline 置 none，
+// 压过配方 (0,3,0) 的聚焦环）；这一份里两边同为 (0,4,0)，配方若排在皮肤之后就反过来赢，
+// 而有层产物、单测与其余门禁全绿——InputGroup 就这样在文档站叠出第二圈焦点环。
+// 所以 family/ 下全部配方在这一份里紧随令牌、先于一切皮肤内联一次（皮肤自己的相对
+// @import 展开到已内联的文件时跳过），同档时皮肤靠源序胜出，与有层产物「皮肤 ≥ 配方 + 1
+// 即胜」等价。这也让配方排在 reset 之前：reset 只有低一档才不会靠源序把配方的字号压掉。
+// 两条先后都由 check-layer-order 门禁断言。motion 层装的是 @keyframes、不参与级联，
+// 一并提前只为去重。
 //
 // 代价是 xihan.overrides 这个覆盖槽位在这一份里不存在，使用者改用特异性覆盖。
 // 两份的取舍写在文档站的「安装与接入」。
@@ -30,6 +38,11 @@ const entry = path.join(pkgRoot, 'index.css')
 const outFile = path.join(pkgRoot, 'index.unlayered.css')
 const FAMILY_DIR = path.join(pkgRoot, 'family')
 const FAMILY_ROOT_ATTR = /\[data-xh-(?:action-control|field-chrome|collection-item|collection-separator|swatch)\]/g
+/**
+ * 先于一切皮肤内联的配方，顺序固定：四个家族互不引用，谁先谁后不影响级联；
+ * 顺序定死只为产物可比对。motion.css 只装 @keyframes，提前只为去重。
+ */
+const FAMILY_FILES = ['action-control.css', 'field-chrome.css', 'collection-item.css', 'swatch.css', 'motion.css']
 
 const source = stripFileHeader(fs.readFileSync(entry, 'utf8'))
 
@@ -44,6 +57,7 @@ const head = [
 
 const out = [...head]
 const inlined = new Set()
+let familyEmitted = false
 
 for (const line of source.split('\n')) {
   const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/)
@@ -58,12 +72,24 @@ for (const line of source.split('\n')) {
   // 留在层里也照样生效；保持 @import 也避免把另一个包的产物复制进来。
   if (!spec.startsWith('.')) {
     out.push(line)
+    // 全部配方紧跟令牌内联一次，先于第一份皮肤。@import 一旦排在样式规则之后就整条失效，
+    // 全部令牌取不到值，所以配方只能落在令牌之后
+    if (!familyEmitted) {
+      out.push('', ...emitFamilyRecipes())
+      familyEmitted = true
+    }
     continue
   }
   const file = path.join(pkgRoot, spec)
+  // layers.css 只装层序声明，拆层后是空的，不算皮肤
+  if (!familyEmitted && path.basename(file) !== 'layers.css')
+    throw new Error(`index.css 里 ${spec} 排在令牌 @import 之前，配方无处先行内联`)
   out.push('', `/* ${path.posix.join('styles', path.basename(file))} */`)
   out.push(unwrapLayerBlocks(expandRelativeImports(file, [])).trim())
 }
+
+if (!familyEmitted)
+  throw new Error('index.css 里没有令牌的 @import，配方没有内联进无层产物')
 
 fs.writeFileSync(
   outFile,
@@ -72,9 +98,36 @@ fs.writeFileSync(
 console.log(`已生成 ${path.relative(pkgRoot, outFile)}`)
 
 /**
+ * family/ 下全部配方按固定顺序内联一次，产物里紧随令牌、先于第一份皮肤。
+ *
+ * 为什么必须在皮肤之前：配方在这一份里被抬到与皮肤同档 (0,2,0)，同档只剩源序竞争。皮肤对配方
+ * 物理属性（outline / border-color / background）的直接覆盖，只有配方先出现才成立；配方若在
+ * 第一个引用它的皮肤处才展开，排在它前面的皮肤就全被反超。先行内联后皮肤靠源序胜出，与有层
+ * 产物「皮肤比配方高一级即胜」等价。目录里多出的配方文件没登记进 FAMILY_FILES 就判红，
+ * 免得它悄悄落回旧位置。
+ */
+function emitFamilyRecipes() {
+  const present = fs.readdirSync(FAMILY_DIR).filter(name => name.endsWith('.css')).sort()
+  const listed = [...FAMILY_FILES].sort()
+  if (present.join(',') !== listed.join(','))
+    throw new Error(`family/ 下的配方与 FAMILY_FILES 对不上：目录 ${present.join(', ')}；登记 ${listed.join(', ')}`)
+  const lines = [
+    '/* Family Recipe 先于一切皮肤内联：拆层后配方与皮肤同档 (0,2,0)，只剩源序竞争，',
+    '   皮肤对配方物理属性的直接覆盖只有配方先出现才成立，与有层产物里皮肤高一级即胜等价。 */',
+  ]
+  for (const name of FAMILY_FILES) {
+    const file = path.join(FAMILY_DIR, name)
+    lines.push('', `/* family/${name} */`)
+    lines.push(unwrapLayerBlocks(expandRelativeImports(file, [])).trim())
+  }
+  return lines
+}
+
+/**
  * 独立组件皮肤可以先 @import Family Recipe；无层入口内联时必须递归展开，
  * 否则嵌套 @import 会落到普通规则之后而成为无效声明。每个物理文件只展开一次，
- * 后续多个组件迁入同一家族时也不会把共享配方复制进 full bundle。
+ * 后续多个组件迁入同一家族时也不会把共享配方复制进 full bundle；
+ * 已内联过的文件连段标记也不写，产物里每个标记都对应一段真实内容。
  */
 function expandRelativeImports(file, stack) {
   const resolved = path.resolve(file)
@@ -94,6 +147,8 @@ function expandRelativeImports(file, stack) {
       continue
     }
     const child = path.resolve(path.dirname(resolved), imported[1])
+    if (inlined.has(child))
+      continue
     lines.push('', `/* ${path.relative(pkgRoot, child).replaceAll('\\', '/')} */`)
     lines.push(expandRelativeImports(child, [...stack, resolved]))
   }
