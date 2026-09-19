@@ -45,5 +45,11 @@ export const fileUploadKeyboard: KeyboardTable = {
       when: 'focus on clear-trigger',
       does: '清空整份列表（原生 button 的默认激活）；列表为空时按钮照常在位、可聚焦，激活是空操作',
     },
+    {
+      id: 'file-upload.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held on trigger / item-delete-trigger / clear-trigger, not disabled',
+      does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下（选择钮打开系统文件框即失焦），删除钮随文件离开列表时一并撤下',
+    },
   ],
 }

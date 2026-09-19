@@ -76,6 +76,12 @@ export interface FileUploadErrorDetails {
   error: unknown
 }
 
+/**
+ * 接了按压通道的部件，按 key 记住正被按住的那一个：清空钮、选择钮各一，
+ * 逐条删除钮按文件标识（本地文件是机器发的内部 id，远程附件是 remote: 前缀加它的 id）。
+ */
+export type FileUploadPressedKey = 'clear' | 'trigger' | `item-delete:${string}`
+
 export interface FileUploadRemoteFilesChangeDetails {
   /** 变化之后的完整列表，不是增量。 */
   files: FileUploadRemoteFile[]
@@ -181,6 +187,11 @@ export interface FileUploadSchema extends MachineSchema {
     remoteFiles: FileUploadRemoteFile[]
     /** 各本地文件的传输快照，键是文件的内部 id。 */
     uploads: Record<string, FileUploadSnapshot>
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个按钮，该部件投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦、指针取消，或按住的删除钮随文件一起离开列表时即撤下。
+     */
+    pressed: FileUploadPressedKey | null
   }
   computed: Record<string, never>
   refs: {
@@ -209,9 +220,13 @@ export interface FileUploadSchema extends MachineSchema {
     | { type: 'UPLOAD.START', file: File }
     | { type: 'REMOTE.DELETE', id: string }
     | { type: 'FORM.RESET' }
+    /** 按压通道（shared/press）：某个按钮被 Space / Enter 或触屏按住，key 说的是哪一个。 */
+    | { type: 'PRESS.START', key: FileUploadPressedKey }
+    /** 按住的按钮抬起、失焦或指针取消；只收自己那一下。 */
+    | { type: 'PRESS.END', key: FileUploadPressedKey }
   tag: never
   guard: 'canChange' | 'canDrop'
-  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'deleteRemoteFile'
+  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'deleteRemoteFile' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: 'trackUploads'
 }
 

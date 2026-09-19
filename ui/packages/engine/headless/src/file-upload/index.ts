@@ -32,6 +32,7 @@ export type {
   FileUploadFileRejectDetails,
   FileUploadFilesChangeDetails,
   FileUploadItemProps,
+  FileUploadPressedKey,
   FileUploadRejection,
   FileUploadRemoteFile,
   FileUploadRemoteFilesChangeDetails,

@@ -5,12 +5,12 @@
 
 // 提供 file upload 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { FileUploadApi, FileUploadFile, FileUploadSchema, FileUploadSnapshot } from './file-upload.types'
-import { contains, dataAttr, isHTMLElement } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { FileUploadApi, FileUploadFile, FileUploadPressedKey, FileUploadSchema, FileUploadSnapshot } from './file-upload.types'
+import { contains, createPressTracker, dataAttr, isHTMLElement } from '@xihan-ui/core'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { fileUploadAnatomy, fileUploadHiddenInputId } from './file-upload.anatomy'
-import { acceptAttr, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
+import { acceptAttr, fileUploadPressKey, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
 
 const parts = fileUploadAnatomy.build()
 
@@ -47,6 +47,26 @@ export function connectFileUpload<T extends PropTypes>(
   const empty = acceptedFiles.length === 0 && remoteFiles.length === 0
   const ids = scope.ids('file-upload', 'label', 'dropzone')
   const hiddenInputId = fileUploadHiddenInputId(scope)
+
+  // 按压通道：三种按钮各自合成一份跟踪器，真源是机器 context 里「正被按住的那一个」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 投放区是作者的整块内容，按下回执由拖入态给出，不进这一路
+  const pressed = context.get('pressed')
+  const press = (key: FileUploadPressedKey): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
 
   /** 本节点当下是不是正持有焦点（含它的后代）；删掉它之前据此决定焦点去处。 */
   const holdsFocus = (el: HTMLElement): boolean => {
@@ -187,6 +207,8 @@ export function connectFileUpload<T extends PropTypes>(
       'type': 'button',
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
+      // 打开系统文件框后窗口失焦，跟踪器的 onBlur 随即撤下按压面
+      ...press('trigger'),
       'onClick': () => send({ type: 'PICKER.OPEN' }),
     }),
 
@@ -283,6 +305,8 @@ export function connectFileUpload<T extends PropTypes>(
       'aria-label': label.deleteItem(file),
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
+      // Enter 在 keydown 即删掉这一条，按钮随文件离开列表后由机器松开
+      ...press(fileUploadPressKey(service.refs, file)),
       'onClick': (event: MouseEvent) => {
         const el = event.currentTarget as HTMLElement
         // 判据是本节点当下正持有焦点：删完按钮就没了，焦点会掉到 body 上。
@@ -303,6 +327,8 @@ export function connectFileUpload<T extends PropTypes>(
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
       'data-empty': dataAttr(empty),
+      // 空列表时按钮照常在位、可按（激活是空操作），按压面也照常
+      ...press('clear'),
       'onClick': () => send({ type: 'FILES.CLEAR' }),
     }),
   }
