@@ -236,6 +236,17 @@
     }
   }
 
+  /*
+   * 高对比档：关闭钮的按压面常态靠从 currentColor 兑出来的底色表出，这一档里底色被统一换成 Canvas，
+   * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来，兜底字形读 currentColor、自己跟着换
+   */
+  @media (forced-colors: active) {
+    [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
+    }
+  }
+
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
   [data-scope='tag'][data-part='close-trigger']:empty::before {
     content: '';
