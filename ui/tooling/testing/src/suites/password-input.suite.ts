@@ -2,6 +2,7 @@ import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { passwordInputAnatomy, passwordInputKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 密码框没有对应的 APG 模式页（光标、选区与遮蔽本来就归浏览器管），
 // 可核对的规格是"控件必须有可及的名字"这条实践、HTML 的密码输入状态，
@@ -430,6 +431,26 @@ export const passwordInputSuite: ConformanceSuite = {
             expectText(ctx.doc, HINT, '大写锁定已打开', '覆盖过的文案应原样写进播报区')
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：切换钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不翻明暗',
+      spec: { adr: 'press-channel' },
+      covers: ['password-input.kbd.press'],
+      props: { defaultValue: 'hunter2' },
+      steps: [
+        heldPress('password-input', 'visibility-trigger'),
+        { kind: 'settle', until: { attr: { part: 'visibility-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'visibility-trigger': { 'data-state': 'hidden' }, 'input': { type: 'password' } }, events: [] } },
+      ],
+    },
+    {
+      name: '禁用时切换钮不进入按压面；只读不拦明暗，按压面照常给',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: 'hunter2', disabled: true },
+      steps: [
+        heldPressIgnored('password-input', 'visibility-trigger', '禁用时切换钮 disabled，不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true }, expect: { parts: { 'visibility-trigger': { disabled: null } } } },
+        heldPress('password-input', 'visibility-trigger'),
       ],
     },
   ],

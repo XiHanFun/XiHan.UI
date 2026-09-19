@@ -27,5 +27,11 @@ export const passwordInputKeyboard: KeyboardTable = {
       when: 'focus in input',
       does: '每次按键都重读一次大写锁定状态：开着就亮起提示，焦点离开输入框即熄灭',
     },
+    {
+      id: 'password-input.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held on visibility-trigger, 控件未禁用',
+      does: '按住期间切换按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中明暗翻面不影响按压面。只读不拦明暗，按压面也照常给',
+    },
   ],
 }

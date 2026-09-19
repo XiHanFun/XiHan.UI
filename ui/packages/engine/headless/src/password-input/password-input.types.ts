@@ -64,6 +64,8 @@ export interface PasswordInputSchema extends MachineSchema {
     revealed: boolean
     /** 大写锁定是否开启。只有按键事件能报告，因此焦点离开输入框即清空。 */
     capsLock: boolean
+    /** 按压通道：切换按钮被 Space / Enter 或触屏按住期间为 true；抬起、失焦、指针取消或转入禁用时即撤下。 */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -79,9 +81,13 @@ export interface PasswordInputSchema extends MachineSchema {
     /** 按键事件报回的大写锁定状态，或焦点离开输入框时的清空。 */
     | { type: 'CAPS_LOCK.SET', on: boolean }
     | { type: 'FORM.RESET' }
+    /** 切换按钮被 Space / Enter 或触屏按住；禁用时被守卫拦截（只读不拦，与切换本身同一道守卫）。 */
+    | { type: 'PRESS.START' }
+    /** 按住的切换按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
   guard: 'canEdit' | 'canReveal'
-  action: 'setValue' | 'setRevealed' | 'toggleRevealed' | 'setCapsLock' | 'resetToDefault'
+  action: 'setValue' | 'setRevealed' | 'toggleRevealed' | 'setCapsLock' | 'resetToDefault' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 

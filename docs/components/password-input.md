@@ -180,7 +180,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `REVEALED.SET` · `REVEALED.TOGGLE` · `CAPS_LOCK.SET` · `FORM.RESET`
+**事件**：`VALUE.SET` · `REVEALED.SET` · `REVEALED.TOGGLE` · `CAPS_LOCK.SET` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canEdit` · `canReveal`
 
@@ -221,6 +221,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | --- | --- | --- |
 | `Enter` / `Space` | focus on visibility-trigger, 控件未禁用 | 切换明暗；切换按钮是原生 button，这两个键由平台转换为 click。焦点留在按钮上，输入框中的光标与选中范围原样恢复 |
 | `CapsLock` | focus in input | 每次按键都重读一次大写锁定状态：开着就亮起提示，焦点离开输入框即熄灭 |
+| `Enter` / `Space` | held on visibility-trigger, 控件未禁用 | 按住期间切换按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中明暗翻面不影响按压面。只读不拦明暗，按压面也照常给 |
 
 ### ARIA
 
@@ -283,6 +284,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | `input` | `data-xh-field-input` | '' |
 | `input` | `data-xh-field-layout` | 'single-line' |
 | `visibility-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `visibility-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `visibility-trigger` | `data-state` | 'visible' \| 'hidden' |
 | `visibility-trigger` | `data-xh-action-control` | '' |
 | `visibility-trigger` | `data-xh-action-display` | 'always' |
