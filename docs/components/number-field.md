@@ -192,9 +192,9 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 
 **状态**：`idle` · `spinning`
 
-**事件**：`VALUE.SET` · `VALUE.STEP` · `VALUE.TO_MIN` · `VALUE.TO_MAX` · `INPUT.BLUR` · `PRESS.START` · `PRESS.END` · `after.changeInterval` · `FORM.RESET`
+**事件**：`VALUE.SET` · `VALUE.STEP` · `VALUE.TO_MIN` · `VALUE.TO_MAX` · `INPUT.BLUR` · `PRESS.START` · `PRESS.END` · `after.changeInterval` · `FORM.RESET` · `TRIGGER.PRESS.START` · `TRIGGER.PRESS.END`
 
-**判据**：`canStep`
+**判据**：`canStep` · `canPressTrigger`
 
 ### connect API
 
@@ -236,6 +236,7 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `PageDown` | focus in input, not disabled/readOnly | 按 largeStep 递减 |
 | `Home` | focus in input, 指定了 min | 取 min；未指定 min 时不动 |
 | `End` | focus in input, 指定了 max | 取 max；未指定 max 时不动 |
+| `Enter` / `Space` | held in increment-trigger / decrement-trigger, not disabled/readOnly, 该侧未贴住端点 | 按住期间这颗钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值贴到端点后按钮转 disabled 一并撤下。步进仍由激活时的 click 走一步，按住不连发。两颗钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 
 ### ARIA
 
@@ -290,12 +291,14 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `suffix` | `data-xh-field-affix` | 'suffix' |
 | `increment-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `increment-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `increment-trigger` | `data-xh-action-control` | '' |
 | `increment-trigger` | `data-xh-action-display` | 'always' |
 | `increment-trigger` | `data-xh-action-profile` | 'field-inset' |
 | `increment-trigger` | `data-xh-action-size` | props.size |
 | `increment-trigger` | `data-xh-action-variant` | 'ghost' |
 | `decrement-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `decrement-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `decrement-trigger` | `data-xh-action-control` | '' |
 | `decrement-trigger` | `data-xh-action-display` | 'always' |
 | `decrement-trigger` | `data-xh-action-profile` | 'field-inset' |

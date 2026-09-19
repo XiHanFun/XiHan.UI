@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { numberFieldAnatomy, numberFieldKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/'
 
@@ -396,6 +397,37 @@ export const numberFieldSuite: ConformanceSuite = {
           props: { value: '7' },
           expect: { parts: { input: { 'aria-valuenow': '7' } } },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：加减钮各自投影 data-pressed，抬起、失焦或指针取消撤下；键盘按住不步进，触屏按下照走连发那一步',
+      spec: { adr: 'press-channel' },
+      covers: ['number-field.kbd.press'],
+      // 两颗钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；changeDelay 拉长，共享步骤里的几拍 flush 不会越过它连发
+      props: { defaultValue: '5', min: 0, max: 10, changeDelay: 10000 },
+      steps: [
+        // 鼠标按下与两次触屏按下各走连发那一步：pointercancel / pointerup 收尾，鼠标那下在触屏 pointercancel 时一并收
+        heldPress('number-field', 'increment-trigger'),
+        { kind: 'settle', until: { attr: { part: 'increment-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'input': { 'aria-valuenow': '7' }, 'decrement-trigger': { 'data-pressed': null } } } },
+        heldPress('number-field', 'decrement-trigger'),
+        { kind: 'settle', until: { attr: { part: 'decrement-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'input': { 'aria-valuenow': '5' }, 'increment-trigger': { 'data-pressed': null } } } },
+      ],
+    },
+    {
+      name: '禁用、只读或该侧已贴住端点时按住不进入按压面；另一侧照常',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: '10', min: 0, max: 10, changeDelay: 10000 },
+      initial: { parts: { 'increment-trigger': { disabled: '' }, 'decrement-trigger': { disabled: null } } },
+      steps: [
+        heldPressIgnored('number-field', 'increment-trigger', '贴住 max 时加号已 disabled，不接受按压'),
+        { kind: 'setProps', props: { value: '0' }, expect: { parts: { 'increment-trigger': { disabled: null }, 'decrement-trigger': { disabled: '' } } } },
+        heldPressIgnored('number-field', 'decrement-trigger', '贴住 min 时减号已 disabled，不接受按压'),
+        { kind: 'setProps', props: { value: '5', disabled: true } },
+        heldPressIgnored('number-field', 'increment-trigger', '禁用时不接受按压'),
+        heldPressIgnored('number-field', 'decrement-trigger', '禁用时不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('number-field', 'increment-trigger', '只读时不接受按压'),
+        heldPressIgnored('number-field', 'decrement-trigger', '只读时不接受按压'),
       ],
     },
   ],

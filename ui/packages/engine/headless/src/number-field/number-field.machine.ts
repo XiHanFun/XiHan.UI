@@ -7,7 +7,7 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { NumberCodec } from '../shared/number'
-import type { NumberFieldSchema } from './number-field.types'
+import type { NumberFieldPressedPart, NumberFieldSchema } from './number-field.types'
 import { resetDeclaredValue, setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { decodeNumber, encodeNumber, normalizeValue, stepValue } from '../shared/number'
 
@@ -22,6 +22,20 @@ export const NUMBER_FIELD_STEP = 1
 export const NUMBER_FIELD_CHANGE_DELAY = 300
 export const NUMBER_FIELD_CHANGE_INTERVAL = 50
 
+/**
+ * 这一侧的按钮此刻能不能按：可编辑且没贴住这一侧的端点；空值时两个方向都还能走（会落到 min 或 0）。
+ * 与 connect 里 canIncrement / canDecrement 同一口径——那里决定按钮是否 disabled，这里挡住按压回执。
+ */
+function canPressTrigger(prop: Params<NumberFieldSchema>['prop'], value: string, part: NumberFieldPressedPart): boolean {
+  if (prop('disabled') || prop('readOnly'))
+    return false
+  const n = decodeNumber(value, codecOf(prop))
+  if (!Number.isFinite(n))
+    return true
+  const bound = part === 'increment' ? prop('max') : prop('min')
+  return bound == null || (part === 'increment' ? n < bound : n > bound)
+}
+
 export const numberFieldMachine = createMachine({
   name: 'number-field',
   context: ({ prop, cell }) => ({
@@ -33,11 +47,21 @@ export const numberFieldMachine = createMachine({
     })),
     // 按住时的方向，逐实例存在 context 里
     pressDirection: cell<1 | -1>(() => ({ defaultValue: 1 })),
+    // 按压通道：被 Space / Enter 或触屏按住的那颗钮；与 spinning（连发）互不牵连，只投影按压面
+    pressed: cell<NumberFieldPressedPart | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 按住途中转入禁用 / 只读，或值贴到了这一侧的端点：按钮随即 disabled，浏览器不再派 pointerup / keyup，
+  // 按压面由机器自己收
+  watch: ({ track, prop, context, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('min'), () => prop('max'), context.dep('value')], () => action(['releaseWhenInert']))
+  },
   // 步进与取端点在 idle 与 spinning 下行为一致，挂根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
+    // 加减钮的按压通道：只投影按压面，步进由 PRESS.*（指针按住连发）与 click（键盘激活）各走各的
+    'TRIGGER.PRESS.START': { guard: 'canPressTrigger', actions: ['startTriggerPress'] },
+    'TRIGGER.PRESS.END': { actions: ['endTriggerPress'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.STEP': { guard: 'canStep', actions: ['stepValue'] },
     'VALUE.TO_MIN': { guard: 'canStep', actions: ['toMin'] },
@@ -62,6 +86,10 @@ export const numberFieldMachine = createMachine({
   implementations: {
     guards: {
       canStep: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      canPressTrigger: ({ prop, context, event }) => {
+        const e = event.current()
+        return e.type === 'TRIGGER.PRESS.START' && canPressTrigger(prop, context.get('value'), e.part)
+      },
     },
     actions: {
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
@@ -101,6 +129,22 @@ export const numberFieldMachine = createMachine({
         const max = prop('max')
         if (max != null)
           context.set('value', encodeNumber(max, codecOf(prop)))
+      },
+      startTriggerPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TRIGGER.PRESS.START')
+          context.set('pressed', e.part)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endTriggerPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TRIGGER.PRESS.END' && context.get('pressed') === e.part)
+          context.set('pressed', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressed')
+        if (pressed != null && !canPressTrigger(prop, context.get('value'), pressed))
+          context.set('pressed', null)
       },
       // 只在失焦时规范化，避免打断输入途中的中间态（如 "1."）
       normalize: ({ context, prop }) => {

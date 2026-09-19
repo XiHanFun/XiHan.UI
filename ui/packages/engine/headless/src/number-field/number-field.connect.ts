@@ -5,9 +5,9 @@
 
 // 提供 number field 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { NumberFieldApi, NumberFieldSchema } from './number-field.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { NumberFieldApi, NumberFieldPressedPart, NumberFieldSchema } from './number-field.types'
+import { createPressTracker, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { decodeNumber } from '../shared/number'
 import { numberFieldAnatomy } from './number-field.anatomy'
 
@@ -40,28 +40,51 @@ export function connectNumberField<T extends PropTypes>(
     send({ type: 'VALUE.STEP', direction, large })
   }
 
-  // 加减按钮走 pointerdown 而不是 click，按住不放要连发；只认主键
-  const pressProps = (direction: 1 | -1, enabled: boolean): Record<string, unknown> => ({
-    'onPointerDown': (event: PointerEvent) => {
-      if (!enabled || event.button !== 0)
-        return
-      // 挡掉浏览器把按钮设为 activeElement 的默认行为，焦点留在输入框
-      event.preventDefault()
-      send({ type: 'PRESS.START', direction })
-    },
-    // 松手、指针移出、按住时窗口失焦，三条都收尾
-    'onPointerUp': () => send({ type: 'PRESS.END' }),
-    'onPointerLeave': () => send({ type: 'PRESS.END' }),
-    'onPointerCancel': () => send({ type: 'PRESS.END' }),
-    // 键盘走 click：Enter/Space 激活按钮时不会有 pointerdown
-    'onClick': (event: MouseEvent) => {
-      // detail 为 0 代表这次 click 来自键盘而非指针，指针那一路已由 pointerdown 走过一步
-      if (enabled && event.detail === 0)
-        stepBy(direction)
-    },
-    'tabindex': -1,
-    'aria-hidden': true,
+  // 加减钮的按压通道：真源是机器 context 里「正被按住的那颗」，两颗各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 事件名带 TRIGGER. 前缀：PRESS.* 已是指针按住连发的事件，这一路只投影按压面、不碰步进
+  const pressed = context.get('pressed')
+  const press = (part: NumberFieldPressedPart): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressed') === part,
+    onChange: down => send(down ? { type: 'TRIGGER.PRESS.START', part } : { type: 'TRIGGER.PRESS.END', part }),
   })
+
+  // 加减按钮走 pointerdown 而不是 click，按住不放要连发；只认主键。同一处理器先走连发再交给按压跟踪器
+  const pressProps = (direction: 1 | -1, enabled: boolean, part: NumberFieldPressedPart): Record<string, unknown> => {
+    const held = press(part)
+    return {
+      'onPointerDown': (event: PointerEvent) => {
+        if (enabled && event.button === 0) {
+          // 挡掉浏览器把按钮设为 activeElement 的默认行为，焦点留在输入框
+          event.preventDefault()
+          send({ type: 'PRESS.START', direction })
+        }
+        // 触屏按下同时进按压通道；按不了的那侧由机器守卫挡下
+        held.onPointerDown(event)
+      },
+      // 松手、指针移出、按住时窗口失焦，三条都收尾；按压面随抬起 / 取消一并撤下
+      'onPointerUp': () => {
+        send({ type: 'PRESS.END' })
+        held.onPointerUp()
+      },
+      'onPointerLeave': () => send({ type: 'PRESS.END' }),
+      'onPointerCancel': () => {
+        send({ type: 'PRESS.END' })
+        held.onPointerCancel()
+      },
+      'onKeyDown': held.onKeyDown,
+      'onKeyUp': held.onKeyUp,
+      'onBlur': held.onBlur,
+      // 键盘走 click：Enter/Space 激活按钮时不会有 pointerdown
+      'onClick': (event: MouseEvent) => {
+        // detail 为 0 代表这次 click 来自键盘而非指针，指针那一路已由 pointerdown 走过一步
+        if (enabled && event.detail === 0)
+          stepBy(direction)
+      },
+      'tabindex': -1,
+      'aria-hidden': true,
+    }
+  }
 
   return {
     value,
@@ -186,7 +209,9 @@ export function connectNumberField<T extends PropTypes>(
       'type': 'button',
       'disabled': !canIncrement || undefined,
       'data-disabled': dataAttr(!canIncrement),
-      ...pressProps(1, canIncrement),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      'data-pressed': dataAttr(pressed === 'increment'),
+      ...pressProps(1, canIncrement, 'increment'),
     }),
 
     getDecrementTriggerProps: () => normalize.button({
@@ -199,7 +224,8 @@ export function connectNumberField<T extends PropTypes>(
       'type': 'button',
       'disabled': !canDecrement || undefined,
       'data-disabled': dataAttr(!canDecrement),
-      ...pressProps(-1, canDecrement),
+      'data-pressed': dataAttr(pressed === 'decrement'),
+      ...pressProps(-1, canDecrement, 'decrement'),
     }),
   }
 }
