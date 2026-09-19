@@ -34,6 +34,7 @@ export type {
   DateRangePickerPreset,
   DateRangePickerPresetProps,
   DateRangePickerPresetState,
+  DateRangePickerPressedKey,
   DateRangePickerRefs,
   DateRangePickerSchema,
   DateRangePickerSegmentGroupProps,
