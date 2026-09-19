@@ -5,9 +5,10 @@
 
 // 提供 context menu 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ContextMenuApi, ContextMenuItemProps, ContextMenuNodeMeta, ContextMenuSchema } from './context-menu.types'
 import {
+  createPressTracker,
   dataAttr,
   focusItem,
   focusSafely,
@@ -69,6 +70,17 @@ export function connectContextMenu<T extends PropTypes>(
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: ContextMenuItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
+  // 条目的按压通道：真源是机器 context 里「正被按住的那条」，每条条目各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 事件名带 ITEM. 前缀：PRESS.* 已是触发区长按的事件。条目自身的禁用随 ITEM.PRESS.START 带给机器的守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: ContextMenuItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down
+      ? { type: 'ITEM.PRESS.START', value: item.value, disabled: itemDisabled(item) }
+      : { type: 'ITEM.PRESS.END', value: item.value }),
+  })
 
   const groupLabelId = (group: string): string =>
     scope.partId(contextMenuAnatomy.name, `group-label:${group}`)
@@ -271,51 +283,62 @@ export function connectContextMenu<T extends PropTypes>(
     // 条目走 Collection Item 的 overlay 语境（锚定浮层）：悬停 / 键盘高亮（data-highlighted）/ 按下面与禁用面
     // （aria-disabled）由家族给；菜单没有持久选中，浮层选中面永不命中。子菜单触发项由子层的 menu 机器
     // 合并同一批标记并按开合报 data-in-path
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...itemStateAttrs(item),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      // 导航、检索与选中都以此为条目身份
-      [ITEM_VALUE_ATTR]: item.value,
-      'role': 'menuitem',
-      // 集合条目一律 aria-disabled，原生 disabled 不可聚焦也不派发 click
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      // roving tabindex：整组只有锚点条目留在 Tab 序列内；收起态无锚点
-      'tabindex': anchor === item.value ? 0 : -1,
-      'onClick': (event: MouseEvent) => {
-        // 子菜单触发条目（带 aria-haspopup）的点按归子层：只展开不选中
-        if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
-          return
-        if (!itemDisabled(item))
-          send({ type: 'ITEM.SELECT', value: item.value })
-      },
-      // 禁用条目被聚焦也记锚点，方向键才有起点
-      'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-      // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的；
-      // 只聚焦不滚动，滚动留给键盘导航
-      'onPointerenter': (event: PointerEvent) => {
-        const el = event.currentTarget as HTMLElement
-        if (isItemDisabled(el) || anchor === item.value)
-          return
-        pointerHot.add(el)
-        focusSafely(el)
-      },
-      // 指针离开且没落到本菜单的其他位置：焦点还给 content，锚点随其 onFocus 清空。
-      // 触摸 tap 序列里的 leave 不作数；子菜单触发条目在子层展开时保持高亮标记打开路径
-      'onPointerleave': (event: PointerEvent) => {
-        const el = event.currentTarget as HTMLElement
-        if (event.pointerType === 'touch' || !pointerHot.delete(el))
-          return
-        if (el.getAttribute('aria-expanded') === 'true' || el.ownerDocument.activeElement !== el)
-          return
-        const content = el.ownerDocument.getElementById(ids.content)
-        if (!content || content.contains(event.relatedTarget as Node | null))
-          return
-        content.focus()
-      },
-    }),
+    getItemProps: (item) => {
+      const handlers = press(item)
+      return normalize.element({
+        ...parts.item.attrs,
+        ...itemStateAttrs(item),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // 导航、检索与选中都以此为条目身份
+        [ITEM_VALUE_ATTR]: item.value,
+        'role': 'menuitem',
+        // 集合条目一律 aria-disabled，原生 disabled 不可聚焦也不派发 click
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedValue === item.value),
+        // roving tabindex：整组只有锚点条目留在 Tab 序列内；收起态无锚点
+        'tabindex': anchor === item.value ? 0 : -1,
+        'onClick': (event: MouseEvent) => {
+          // 子菜单触发条目（带 aria-haspopup）的点按归子层：只展开不选中
+          if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
+            return
+          if (!itemDisabled(item))
+            send({ type: 'ITEM.SELECT', value: item.value })
+        },
+        // 禁用条目被聚焦也记锚点，方向键才有起点
+        'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的；
+        // 只聚焦不滚动，滚动留给键盘导航
+        'onPointerenter': (event: PointerEvent) => {
+          const el = event.currentTarget as HTMLElement
+          if (isItemDisabled(el) || anchor === item.value)
+            return
+          pointerHot.add(el)
+          focusSafely(el)
+        },
+        // 指针离开且没落到本菜单的其他位置：焦点还给 content，锚点随其 onFocus 清空。
+        // 触摸 tap 序列里的 leave 不作数；子菜单触发条目在子层展开时保持高亮标记打开路径
+        'onPointerleave': (event: PointerEvent) => {
+          const el = event.currentTarget as HTMLElement
+          if (event.pointerType === 'touch' || !pointerHot.delete(el))
+            return
+          if (el.getAttribute('aria-expanded') === 'true' || el.ownerDocument.activeElement !== el)
+            return
+          const content = el.ownerDocument.getElementById(ids.content)
+          if (!content || content.contains(event.relatedTarget as Node | null))
+            return
+          content.focus()
+        },
+      })
+    },
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,

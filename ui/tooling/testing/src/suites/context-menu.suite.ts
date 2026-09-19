@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { contextMenuAnatomy, contextMenuKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 右键菜单没有独立的 APG 模式：浮层展开后的行为逐条对齐 menu，差别只在入口与锚点。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menu/'
@@ -30,42 +31,47 @@ function item(value: string, text: string, disabled = false): FixtureNode {
   }
 }
 
-const FIXTURE: FixtureNode = {
-  part: 'root',
-  children: [
-    // 触发区是一块普通内容区域，不是按钮：两个适配器都渲染成 div，语义全靠 ARIA 属性
-    { part: 'trigger', text: '右键这块区域' },
-    {
-      part: 'positioner',
-      children: [
-        {
-          part: 'content',
-          children: [
-            { part: 'arrow' },
-            {
-              part: 'group',
-              attrs: { value: 'edit' },
-              children: [
-                { part: 'group-label', tag: 'span', text: '编辑' },
-                item('copy', 'Copy'),
-                item('paste', 'Paste', true),
-              ],
-            },
-            { part: 'separator' },
-            {
-              part: 'group',
-              attrs: { value: 'danger' },
-              children: [
-                { part: 'group-label', tag: 'span', text: '危险' },
-                item('delete', 'Delete'),
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  ],
+/** copyDisabled：把文档序里第一条（copy）也改成禁用，给「禁用条目不接受按压」用。 */
+function fixture(copyDisabled = false): FixtureNode {
+  return {
+    part: 'root',
+    children: [
+      // 触发区是一块普通内容区域，不是按钮：两个适配器都渲染成 div，语义全靠 ARIA 属性
+      { part: 'trigger', text: '右键这块区域' },
+      {
+        part: 'positioner',
+        children: [
+          {
+            part: 'content',
+            children: [
+              { part: 'arrow' },
+              {
+                part: 'group',
+                attrs: { value: 'edit' },
+                children: [
+                  { part: 'group-label', tag: 'span', text: '编辑' },
+                  item('copy', 'Copy', copyDisabled),
+                  item('paste', 'Paste', true),
+                ],
+              },
+              { part: 'separator' },
+              {
+                part: 'group',
+                attrs: { value: 'danger' },
+                children: [
+                  { part: 'group-label', tag: 'span', text: '危险' },
+                  item('delete', 'Delete'),
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }
 }
+
+const FIXTURE = fixture()
 
 function requireTrigger(doc: Document): HTMLElement {
   const el = doc.querySelector<HTMLElement>(TRIGGER_SELECTOR)
@@ -668,6 +674,22 @@ export const contextMenuSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：条目投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['context-menu.kbd.press'],
+      // 受控展开：Enter / Space 按下即选中并发关闭意图，宿主不写回就仍开着，按住的中间帧才看得见
+      props: { open: true },
+      steps: [heldPress('context-menu', 'item')],
+    },
+    {
+      name: '禁用条目按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      // 首个条目 copy 改成禁用：共享步骤取的是文档序里第一条
+      fixture: () => fixture(true),
+      props: { open: true },
+      steps: [heldPressIgnored('context-menu', 'item', '禁用条目不接受按压')],
     },
   ],
 }

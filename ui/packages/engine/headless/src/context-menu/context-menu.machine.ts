@@ -52,6 +52,8 @@ export const contextMenuMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     focusIntent: cell<ContextMenuFocusIntent>(() => ({ defaultValue: 'none' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
+    // 条目的按压通道：正被按住的那条；触发区的长按是另一回事（pressing 状态），不共用这一格
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -72,6 +74,11 @@ export const contextMenuMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     // 展开期间坐标还会变（在别处再右键）：定位跟着坐标重挂，而层与焦点域原地不动。
     track([context.dep('point')], () => action(['reanchor']))
+  },
+  // 条目按压通道：按 value 记按住的那条，与开合无关；禁用条目不进
+  on: {
+    'ITEM.PRESS.START': { guard: 'canPressItem', actions: ['startItemPress'] },
+    'ITEM.PRESS.END': { actions: ['endItemPress'] },
   },
   states: {
     closed: {
@@ -114,7 +121,8 @@ export const contextMenuMachine = createMachine({
     open: {
       // 锚点在进入展开态时就位（条目常挂，收起时只是 hidden）；锚点定了才有条目认领 tabindex=0
       entry: ['setInitialFocusedValue'],
-      exit: ['clearFocusedValue', 'clearTypeahead'],
+      // 收起即松开：按住 Enter 选中条目后菜单收起，条目随内容一起藏起，不会再来 keyup 或 blur
+      exit: ['clearFocusedValue', 'clearTypeahead', 'releaseItemPress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -142,6 +150,11 @@ export const contextMenuMachine = createMachine({
   implementations: {
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      // 条目自身的禁用由 connect 判定后随事件带入
+      canPressItem: ({ event }) => {
+        const e = event.current()
+        return !(e.type === 'ITEM.PRESS.START' && e.disabled)
+      },
       movedBeyondTolerance: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.MOVE')
@@ -155,6 +168,18 @@ export const contextMenuMachine = createMachine({
       },
     },
     actions: {
+      startItemPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ITEM.PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一条条目的 keyup 不该把正按着的这条松开
+      endItemPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ITEM.PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
+      releaseItemPress: ({ context }) => context.set('pressedValue', null),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnSelect: ({ prop, event }) => {

@@ -1077,3 +1077,68 @@ describe('层、消解与焦点归还', () => {
     expect(document.activeElement).not.toBe(h.trigger)
   })
 })
+
+describe('条目按压通道：Space / Enter 与触屏按住投影 data-pressed，与触发区的长按各走各的', () => {
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const fire = (props: Record<string, unknown>, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+  const itemProps = (h: Harness, value: string, disabled = false): Record<string, unknown> => h.api().getItemProps({ value, disabled }) as Record<string, unknown>
+
+  it('条目：keydown 在场、keyup 撤下；触屏按下在场、抬起撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const h = mount({ defaultOpen: true })
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    fire(itemProps(h, 'copy'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onPointerDown', { pointerType: 'touch' })
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    fire(itemProps(h, 'copy'), 'onPointerUp', {})
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    fire(itemProps(h, 'copy'), 'onBlur', {})
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onPointerDown', { pointerType: 'mouse' })
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    // 条目的触屏按下不进触发区的长按计时
+    expect(h.state()).toBe('open')
+    expect(h.api().pressing).toBe(false)
+  })
+
+  it('只落在按住的那条上：另一条的 keyup 不把它松开，pointercancel 撤下', () => {
+    const h = mount({ defaultOpen: true })
+    fire(itemProps(h, 'delete'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'delete')['data-pressed']).toBe('')
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'delete')['data-pressed']).toBe('')
+    fire(itemProps(h, 'delete'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'delete')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'delete'), 'onPointerDown', { pointerType: 'touch' })
+    expect(itemProps(h, 'delete')['data-pressed']).toBe('')
+    fire(itemProps(h, 'delete'), 'onPointerCancel', {})
+    expect(itemProps(h, 'delete')['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用不进：部件声明禁用与 collection 里禁用都不投影', () => {
+    const h = mount({ defaultOpen: true, collection: [{ value: 'copy', disabled: true }, { value: 'delete' }] })
+    fire(itemProps(h, 'paste', true), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'paste', true)['data-pressed']).toBeUndefined()
+    fire(h.api().getItemProps({ value: 'copy' }) as Record<string, unknown>, 'onKeyDown', key(' '))
+    expect((h.api().getItemProps({ value: 'copy' }) as Record<string, unknown>)['data-pressed']).toBeUndefined()
+    // 同一台机器上没禁用的条目照常进
+    fire(itemProps(h, 'delete'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'delete')['data-pressed']).toBe('')
+  })
+
+  it('菜单收起即松开：按住 Enter 选中后条目随内容藏起，不会再来 keyup，按压面由机器收', () => {
+    const h = mount({ defaultOpen: true })
+    fire(itemProps(h, 'copy'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    h.service.send({ type: 'ITEM.SELECT', value: 'copy' })
+    expect(h.state()).toBe('closed')
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    h.service.send({ type: 'OPEN', focus: 'none' })
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+  })
+})

@@ -162,6 +162,8 @@ export interface ContextMenuSchema extends MachineSchema {
     focusIntent: ContextMenuFocusIntent
     /** 关闭时是否把焦点归还触发区；Tab 与层外交互关闭时为 false，让焦点自然离开。 */
     returnFocus: boolean
+    /** 按压通道：Space / Enter 或触屏按住的条目 value；抬起、失焦或菜单收起即清空。触发区的长按另走 pressing 状态。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: ContextMenuRefs
@@ -180,6 +182,10 @@ export interface ContextMenuSchema extends MachineSchema {
     | { type: 'PRESS.END' }
     /** 长按计时到期。 */
     | { type: 'after.longPressDelay' }
+    /** 条目被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'ITEM.PRESS.START', value: string, disabled?: boolean }
+    /** 按住的条目抬起、失焦或指针取消；只松开 value 对应的那一条。 */
+    | { type: 'ITEM.PRESS.END', value: string }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -189,7 +195,7 @@ export interface ContextMenuSchema extends MachineSchema {
     | { type: 'ITEM.LOST' }
     | { type: 'ITEM.SELECT', value: string }
   tag: never
-  guard: 'isOpenControlled' | 'movedBeyondTolerance'
+  guard: 'isOpenControlled' | 'movedBeyondTolerance' | 'canPressItem'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -205,6 +211,9 @@ export interface ContextMenuSchema extends MachineSchema {
     | 'clearFocusedValue'
     | 'clearTypeahead'
     | 'reanchor'
+    | 'startItemPress'
+    | 'endItemPress'
+    | 'releaseItemPress'
   effect: 'trackPosition' | 'trackLayer' | 'trackLongPress'
 }
 
