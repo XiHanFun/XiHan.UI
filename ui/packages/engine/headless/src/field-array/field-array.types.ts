@@ -62,6 +62,12 @@ export interface FieldArrayPendingKeys {
   keys: string[]
 }
 
+/**
+ * 接了按压通道的把手，按 key 记住正被按住的那一个：新增把手只有一个，
+ * 行内三个把手按行序号（机器分配的 `row-<流水号>`）区分，行换位或离场时随之松开。
+ */
+export type FieldArrayPressedKey = 'add' | `item-delete:${string}` | `move-up:${string}` | `move-down:${string}`
+
 export interface FieldArraySchema extends MachineSchema {
   props: {
     /** 受控数据数组；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 */
@@ -99,6 +105,11 @@ export interface FieldArraySchema extends MachineSchema {
      * 因此身份只能由组件自行分配，跟随增删换序这套动作。
      */
     keys: string[]
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个把手，该部件投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦、指针取消，或按住的把手随行换位 / 离场时即撤下。
+     */
+    pressed: FieldArrayPressedKey | null
   }
   computed: Record<string, never>
   refs: {
@@ -120,9 +131,16 @@ export interface FieldArraySchema extends MachineSchema {
     /** 把某一行移到另一个位置；restoreFocus 为真时焦点随该行移动。 */
     | { type: 'ITEM.MOVE', from: number, to: number, restoreFocus?: boolean }
     | { type: 'FORM.RESET' }
+    /**
+     * 按压通道（shared/press）：某个把手被 Space / Enter 或触屏按住，key 说的是哪一个；
+     * disabled 是该把手当下按不动（到上下限、首末行、整体禁用 / 只读），由 connect 随事件带来。
+     */
+    | { type: 'PRESS.START', key: FieldArrayPressedKey, disabled?: boolean }
+    /** 按住的把手抬起、失焦或指针取消；只收自己那一下。 */
+    | { type: 'PRESS.END', key: FieldArrayPressedKey }
   tag: never
-  guard: 'canAdd' | 'canRemove' | 'canMove'
-  action: 'setValue' | 'addItem' | 'removeItem' | 'moveItem' | 'syncKeys' | 'resetToDefault'
+  guard: 'canAdd' | 'canRemove' | 'canMove' | 'canPress'
+  action: 'setValue' | 'addItem' | 'removeItem' | 'moveItem' | 'syncKeys' | 'resetToDefault' | 'startPress' | 'endPress' | 'releasePress' | 'releaseWhenInert'
   effect: never
 }
 

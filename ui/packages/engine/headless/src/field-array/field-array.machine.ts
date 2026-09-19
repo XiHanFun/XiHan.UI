@@ -6,7 +6,7 @@
 // 提供 field array 相关实现。
 
 import type { Params, RefsFacade } from '@xihan-ui/core'
-import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArraySchema } from './field-array.types'
+import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
 import { focusSafely, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { getFormPathValue } from '../form'
 import { fieldArrayTriggerId } from './field-array.anatomy'
@@ -119,16 +119,26 @@ export const fieldArrayMachine = createMachine({
         onChange: value => prop('onValueChange')?.({ value }),
       })),
       keys: cell<string[]>(() => ({ defaultValue: seedKeys, isEqual: sameRows })),
+      // 按压通道：被 Space / Enter 或触屏按住的那一个把手（新增 / 逐行删除 / 上移 / 下移），按 key 记
+      pressed: cell<FieldArrayPressedKey | null>(() => ({ defaultValue: null })),
     }
   },
   initialState: () => 'idle',
   // 适配器会在挂载前把最近 Form 接进 refs；首个 entry 统一把行号对到 Form 真源。
   entry: ['syncKeys'],
-  // 值一变就把号对上，受控写回与作者整份替换都经这里
-  watch: ({ track, context, action }) => track([context.dep('value')], () => action(['syncKeys'])),
+  watch: ({ track, prop, context, action }) => {
+    // 值一变就把号对上，受控写回与作者整份替换都经这里
+    track([context.dep('value')], () => action(['syncKeys']))
+    // 按住途中转入禁用 / 只读，或按住的行内把手随行离场（作者整份换掉值）：不会再来 keyup，按压面由机器自己收。
+    // 值也盯着：号在上一条 watch 里刚对完，这一条排在后面读到的已是新号
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value'), context.dep('keys')], () => action(['releaseWhenInert']))
+  },
   // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法不看这两个标志
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
+    // 按压通道：四类把手都是 aria-disabled 而非原生 disabled，按不动的那一下由 connect 随事件带来、守卫拦下
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -147,8 +157,42 @@ export const fieldArrayMachine = createMachine({
       canAdd: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMax(fieldArrayValue(params).length, rowBound(params.prop('max'))),
       canRemove: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMin(fieldArrayValue(params).length, rowBound(params.prop('min'))),
       canMove: params => !params.prop('disabled') && !params.prop('readOnly') && !!params.prop('movable'),
+      // 整体禁用 / 只读一律不进；到上下限、首末行这类逐个把手的「按不动」由 connect 随事件带来
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !e.disabled && !prop('disabled') && !prop('readOnly')
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个把手的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      // 删除 / 换序落地后把手随行离场或换位（Enter 在 keydown 即动手）：不等 keyup，当场松开
+      releasePress: ({ context }) => context.set('pressed', null),
+      // 转入禁用 / 只读一律松开；按住的行内把手所属的行不在列表里了也松开
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressed')
+        if (pressed == null)
+          return
+        if (prop('disabled') || prop('readOnly')) {
+          context.set('pressed', null)
+          return
+        }
+        if (pressed === 'add')
+          return
+        const key = pressed.slice(pressed.indexOf(':') + 1)
+        if (!context.get('keys').includes(key))
+          context.set('pressed', null)
+      },
+
       resetToDefault: (params) => {
         if (params.refs.get('form')) {
           params.action(['syncKeys'])
@@ -198,6 +242,7 @@ export const fieldArrayMachine = createMachine({
           value: rest,
           keys: context.get('keys').filter((_, i) => i !== e.index),
         }, { type: 'remove', index: e.index })
+        params.action(['releasePress'])
         if (!e.restoreFocus)
           return
         // 删掉的那个把手随行离场，焦点接给接位的那一行；整份删空了就交回新增把手
@@ -220,6 +265,7 @@ export const fieldArrayMachine = createMachine({
           value: moveRow(value, e.from, e.to),
           keys: moveRow(context.get('keys'), e.from, e.to),
         }, { type: 'move', from: e.from, to: e.to })
+        params.action(['releasePress'])
         if (!e.restoreFocus)
           return
         // 焦点跟着被挪的这一行走，落在新位置上同方向的那个把手上

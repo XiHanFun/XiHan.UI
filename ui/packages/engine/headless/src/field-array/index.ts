@@ -14,6 +14,7 @@ export type {
   FieldArrayApi,
   FieldArrayItem,
   FieldArrayItemProps,
+  FieldArrayPressedKey,
   FieldArraySchema,
   FieldArrayTranslations,
   FieldArrayValueChangeDetails,
