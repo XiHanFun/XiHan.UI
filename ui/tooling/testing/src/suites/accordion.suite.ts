@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { accordionAnatomy, accordionKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/accordion/'
 
@@ -312,6 +313,41 @@ export const accordionSuite: ConformanceSuite = {
         // 末条被禁用且不回绕，焦点原地不动
         { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
         { kind: 'key', key: 'End', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        heldPressIgnored('accordion', 'trigger', '禁用条目 aria-disabled，不接受按压', { value: 'three' }),
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：trigger 投影 data-pressed，抬起、失焦或指针取消撤下；只亮按住的那一条',
+      spec: { adr: 'press-channel' },
+      covers: ['accordion.kbd.press'],
+      steps: [
+        heldPress('accordion', 'trigger', { value: 'two' }),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见：第二条按着时第一条不该亮',
+          run: async ({ doc, flush }) => {
+            const second = doc.querySelector<HTMLElement>('[data-scope="accordion"][data-part="trigger"][data-value="two"]')!
+            second.focus()
+            second.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+          },
+          expect: {
+            parts: {
+              'trigger[0]': { 'data-pressed': null },
+              'trigger[1]': { 'data-pressed': '' },
+              'trigger[2]': { 'data-pressed': null },
+            },
+          },
+        },
+        { kind: 'key', key: ' ', expect: { parts: { 'trigger[1]': { 'data-pressed': null } } } },
+      ],
+    },
+    {
+      name: '整组 disabled：按住不进',
+      spec: { adr: 'press-channel' },
+      props: { disabled: true },
+      steps: [
+        heldPressIgnored('accordion', 'trigger', '整组禁用时 trigger aria-disabled，不接受按压'),
       ],
     },
   ],

@@ -177,7 +177,9 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 
 **状态**：`idle`
 
-**事件**：`ITEM.TOGGLE` · `VALUE.SET`
+**事件**：`ITEM.TOGGLE` · `VALUE.SET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -211,6 +213,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | `Home` | focus in trigger | 焦点移到首个 trigger |
 | `End` | focus in trigger | 焦点移到末个 trigger |
 | `Tab` / `Shift+Tab` | focus in trigger | 按文档序进出：每个 trigger 都是独立 Tab 停靠点，无 roving tabindex |
+| `Enter` / `Space` | held in trigger, not disabled | 按住期间该 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或整组转禁用撤下 |
 
 ### ARIA
 
@@ -250,6 +253,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | `header` | `data-disabled` | ''（条件成立时才出现） |
 | `header` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |

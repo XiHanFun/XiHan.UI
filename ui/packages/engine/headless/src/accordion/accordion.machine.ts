@@ -18,18 +18,48 @@ export const accordionMachine = createMachine({
       defaultValue: prop('defaultValue') ?? [],
       onChange: value => prop('onValueChange')?.({ value }),
     })),
+    // 按压通道：正被按住的 trigger，与展开集合互相独立（按住途中 Enter 在 keydown 即翻面，按压面不能随之丢）
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 按住途中整组转禁用：trigger 只是 aria-disabled、仍有焦点，但按压面不该留在禁用面上
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled')], () => action(['releaseWhenInert']))
+  },
   states: {
     idle: {
       on: {
         'ITEM.TOGGLE': { actions: ['toggleItem'] },
         'VALUE.SET': { actions: ['setValue'] },
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
       },
     },
   },
   implementations: {
+    guards: {
+      // 整组禁用一票否决；条目自己的禁用只有 connect 知道，随 PRESS.START 带进来
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('disabled') && !e.disabled
+      },
+    },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：别的 trigger 的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled'))
+          context.set('pressedValue', null)
+      },
       toggleItem: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'ITEM.TOGGLE')

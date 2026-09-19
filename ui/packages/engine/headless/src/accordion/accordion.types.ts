@@ -71,16 +71,27 @@ export interface AccordionSchema extends MachineSchema {
     /** 展开集合变化回调。 */
     onValueChange?: (details: AccordionValueChangeDetails) => void
   }
-  context: { value: string[] }
+  context: {
+    value: string[]
+    /**
+     * 按压通道：正被 Space / Enter 或触屏手指按住的 trigger 的 value，该 trigger 投影 data-pressed；没有按住时为 null。
+     * 抬起、失焦、指针取消，或按住途中整组转为禁用时撤下。
+     */
+    pressedValue: string | null
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: 'idle'
   event:
     | { type: 'ITEM.TOGGLE', value: string }
     | { type: 'VALUE.SET', value: string[] }
+    /** 按压通道：某个 trigger 被 Space / Enter 或触屏按住；条目自身的禁用只有 connect 知道，随事件带给守卫。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 该 trigger 抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: never
-  action: 'toggleItem' | 'setValue'
+  guard: 'canPress'
+  action: 'toggleItem' | 'setValue' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 

@@ -30,8 +30,13 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
       }
       continue
     }
-    if (key === 'style' || raw === undefined || raw === null || raw === false)
+    if (key === 'style')
       continue
+    // 条件属性（data-pressed 这类）撤下时要真的从节点上摘掉，否则中间帧看不到「撤下」
+    if (raw === undefined || raw === null || raw === false) {
+      el.removeAttribute(key)
+      continue
+    }
     el.setAttribute(key, raw === true ? '' : String(raw))
   }
 }
@@ -210,5 +215,96 @@ describe('connectAccordion 键盘', () => {
     loop.key(2, 'ArrowDown')
     expect(document.activeElement).toBe(loop.triggers[0])
     loop.stop()
+  })
+})
+
+// ══ 按压通道 ══
+
+describe('accordionMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed，按住的是哪个 trigger 就只落在哪个上', () => {
+  const pressedOf = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+  const keyEvent = (type: 'keydown' | 'keyup', key: string): KeyboardEvent =>
+    new KeyboardEvent(type, { key, bubbles: true, cancelable: true })
+  const pointer = (type: string, pointerType: string): PointerEvent =>
+    new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；展开集合不动', () => {
+    const a = makeAccordion()
+    const t = a.triggers[0]!
+    expect(pressedOf(t)).toBe(false)
+    t.focus()
+    t.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressedOf(t)).toBe(true)
+    t.dispatchEvent(keyEvent('keyup', ' '))
+    expect(pressedOf(t)).toBe(false)
+    t.dispatchEvent(keyEvent('keydown', 'Enter'))
+    expect(pressedOf(t)).toBe(true)
+    t.blur()
+    expect(pressedOf(t)).toBe(false)
+    t.dispatchEvent(pointer('pointerdown', 'touch'))
+    expect(pressedOf(t)).toBe(true)
+    t.dispatchEvent(pointer('pointercancel', 'touch'))
+    expect(pressedOf(t)).toBe(false)
+    t.dispatchEvent(pointer('pointerdown', 'touch'))
+    expect(pressedOf(t)).toBe(true)
+    t.dispatchEvent(pointer('pointerup', 'touch'))
+    expect(pressedOf(t)).toBe(false)
+    t.dispatchEvent(pointer('pointerdown', 'mouse'))
+    expect(pressedOf(t)).toBe(false)
+    expect(a.api().value).toEqual([])
+    a.stop()
+  })
+
+  it('只亮按住的那一个，别的 trigger 的 keyup 松不开它；方向键照常在 trigger 之间搬焦点', () => {
+    const a = makeAccordion()
+    const [first, second] = [a.triggers[0]!, a.triggers[1]!]
+    first.focus()
+    first.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressedOf(first)).toBe(true)
+    expect(pressedOf(second)).toBe(false)
+    second.dispatchEvent(keyEvent('keyup', ' '))
+    expect(pressedOf(first)).toBe(true)
+    first.dispatchEvent(keyEvent('keyup', ' '))
+    expect(pressedOf(first)).toBe(false)
+    // 同一个 keydown 处理器：跟踪器与导航共用，方向键不进按压面、照常搬焦点
+    expect(a.key(0, 'ArrowDown')).toBe(true)
+    expect(document.activeElement).toBe(second)
+    expect(pressedOf(first)).toBe(false)
+    expect(pressedOf(second)).toBe(false)
+    a.stop()
+  })
+
+  it('按住途中翻面：Enter 在 keydown 即切换展开态，按压面不随之丢，keyup 才撤下', () => {
+    const a = makeAccordion()
+    const t = a.triggers[0]!
+    t.focus()
+    t.dispatchEvent(keyEvent('keydown', 'Enter'))
+    expect(pressedOf(t)).toBe(true)
+    // 原生按钮把 Enter 翻成 click：这里直接派 click 模拟
+    t.click()
+    expect(a.api().value).toEqual(['install'])
+    expect(pressedOf(t)).toBe(true)
+    t.dispatchEvent(keyEvent('keyup', 'Enter'))
+    expect(pressedOf(t)).toBe(false)
+    a.stop()
+  })
+
+  it('整组禁用 / 条目禁用不进；经 signal 转整组禁用时按住的 trigger 自收', () => {
+    const off = makeAccordion({ disabled: true })
+    off.triggers[0]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressedOf(off.triggers[0]!)).toBe(false)
+    off.triggers[0]!.dispatchEvent(pointer('pointerdown', 'touch'))
+    expect(pressedOf(off.triggers[0]!)).toBe(false)
+    off.stop()
+
+    const item = makeAccordion({ collection: [{ value: 'install' }, { value: 'theme', disabled: true }, { value: 'a11y' }] })
+    item.triggers[1]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressedOf(item.triggers[1]!)).toBe(false)
+    item.triggers[1]!.dispatchEvent(pointer('pointerdown', 'touch'))
+    expect(pressedOf(item.triggers[1]!)).toBe(false)
+    item.triggers[0]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressedOf(item.triggers[0]!)).toBe(true)
+    item.setProps({ disabled: true })
+    expect(pressedOf(item.triggers[0]!)).toBe(false)
+    item.stop()
   })
 })

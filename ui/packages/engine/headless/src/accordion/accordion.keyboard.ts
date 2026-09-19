@@ -19,5 +19,6 @@ export const accordionKeyboard: KeyboardTable = {
     { id: 'accordion.kbd.first', keys: ['Home'], when: 'focus in trigger', does: '焦点移到首个 trigger' },
     { id: 'accordion.kbd.last', keys: ['End'], when: 'focus in trigger', does: '焦点移到末个 trigger' },
     { id: 'accordion.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in trigger', does: '按文档序进出：每个 trigger 都是独立 Tab 停靠点，无 roving tabindex' },
+    { id: 'accordion.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger, not disabled', does: '按住期间该 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或整组转禁用撤下' },
   ],
 }
