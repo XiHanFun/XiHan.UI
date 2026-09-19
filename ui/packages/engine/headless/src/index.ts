@@ -47,7 +47,7 @@ export type { CascaderApi, CascaderColumn, CascaderColumnProps, CascaderExpandTr
 export { checkboxAnatomy, checkboxKeyboard, checkboxMachine, checkboxMeta, connectCheckbox } from './checkbox'
 export type { CheckboxApi, CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema, CheckboxTranslations } from './checkbox'
 export { checkboxGroupAnatomy, checkboxGroupKeyboard, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup, resolveCheckedState, toggleAllValues, toggleItemValue } from './checkbox-group'
-export type { CheckboxGroupApi, CheckboxGroupCheckedState, CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupTranslations, CheckboxGroupValueChangeDetails } from './checkbox-group'
+export type { CheckboxGroupApi, CheckboxGroupCheckedState, CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupPressedPart, CheckboxGroupSchema, CheckboxGroupTranslations, CheckboxGroupValueChangeDetails } from './checkbox-group'
 export { CLIPBOARD_TIMEOUT, clipboardAnatomy, clipboardKeyboard, clipboardMachine, clipboardMeta, connectClipboard, resolveClipboardTimeout, writeToClipboard } from './clipboard'
 export type { ClipboardApi, ClipboardCopyErrorDetails, ClipboardIndicatorProps, ClipboardSchema, ClipboardStatus, ClipboardStatusChangeDetails, ClipboardTranslations } from './clipboard'
 export { CODE_VIEW_FALLBACK_LANG, CODE_VIEW_MAX_DIGITS, CODE_VIEW_MAX_HIGHLIGHT_LINES, codeViewAnatomy, codeViewKeyboard, codeViewMeta, connectCodeView, countCodeViewLines, createCodeViewHighlighterResource, isCodeViewHighlighterUnavailable, parseLineRanges, splitCodeLines } from './code-view'

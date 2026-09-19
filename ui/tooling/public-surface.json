@@ -5236,6 +5236,7 @@
       "CheckboxGroupItemProps",
       "CheckboxGroupNode",
       "CheckboxGroupNodeMeta",
+      "CheckboxGroupPressedPart",
       "CheckboxGroupSchema",
       "CheckboxGroupTranslations",
       "CheckboxGroupValueChangeDetails",

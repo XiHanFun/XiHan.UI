@@ -140,9 +140,9 @@ size 决定方框与条目文字的几何档位，组标题不随档
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ALL.TOGGLE` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ALL.TOGGLE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`editable`
+**判据**：`editable` · `canPress`
 
 ### connect API
 
@@ -178,6 +178,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `Tab` / `Shift+Tab` | focus enters or leaves the group | 组内有几个条目就有几个 Tab 停靠点（禁用条目也留一个），容器自己不占位；单选组的"整组一个停靠点"在这里不成立 |
 | `Space` | focus on item, group editable and item not disabled | 翻转该条目的选中态；改不动时放行按键给页面滚动 |
 | `Space` | focus on select-all-trigger, group editable | 可用条目未全选则一并勾上，已全选则一并取消；禁用条目不受影响 |
+| `Space` | held on item / select-all-trigger, group editable and item not disabled | 按住期间该行投影 data-pressed，与指针 :active 同一副按压面（行换面、方框随行换底，不缩放）；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。role=checkbox 只有 Space 是激活键，Enter 不进按压面；选中与按压互相独立 |
 
 ### ARIA
 
@@ -220,12 +221,14 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'row' |
 | `item` | `data-xh-action-size` | 'xs' |
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |
 | `select-all-trigger` | `data-xh-action-control` | '' |

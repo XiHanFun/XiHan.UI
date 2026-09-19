@@ -5,7 +5,7 @@
 
 // 提供 checkbox group 相关实现。
 
-import type { CheckboxGroupSchema } from './checkbox-group.types'
+import type { CheckboxGroupPressedPart, CheckboxGroupSchema } from './checkbox-group.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<CheckboxGroupSchema>()
@@ -43,8 +43,15 @@ export const checkboxGroupMachine = createMachine({
       // 通知必须挂在 cell 上：受控时 set 不写内部值，只有这条回调能把用户意图送出去
       onChange: value => prop('onValueChange')?.({ value }),
     })),
+    // 按压通道：正被按住的那一个（条目按 value 记、全选格不带 value），与选中无关
+    pressedPart: cell<CheckboxGroupPressedPart | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 按住途中整组转入禁用或只读：不会再来 keyup，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
+  },
   // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法
   // 不看这两个标志，禁用的字段一样回落点；要拦是表单那侧 preventDefault 的事
   on: {
@@ -59,6 +66,9 @@ export const checkboxGroupMachine = createMachine({
         'VALUE.SET': { actions: ['setValue'] },
         'ITEM.TOGGLE': { guard: 'editable', actions: ['toggleItem'] },
         'ALL.TOGGLE': { guard: 'editable', actions: ['toggleAll'] },
+        // 按压通道：按 part + value 记按住的那一个；整组禁用或只读不进，条目自身的禁用由 connect 判定后随事件带入
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
       },
     },
   },
@@ -67,8 +77,34 @@ export const checkboxGroupMachine = createMachine({
       // 整组层面的闸门。单个条目自己的 disabled 只有作者声明得出来，机器看不见，
       // 那一层由 connect 在派事件前拦掉
       editable: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      // 整组闸门之上再看条目自身的禁用：它随 PRESS.START 带进来
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('disabled') && !prop('readOnly') && !e.disabled
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value ?? null)
+      },
+      // 只收自己那一下：另一个部件或另一条条目的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== (e.value ?? null))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (!prop('disabled') && !prop('readOnly'))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
 
       setValue: ({ context, event }) => {
