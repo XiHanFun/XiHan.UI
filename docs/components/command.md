@@ -169,9 +169,9 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `INPUT.CHANGE` · `INPUT.SET` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `INPUT.CHANGE` · `INPUT.SET` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled` · `keepsOpenOnSelect`
+**判据**：`isOpenControlled` · `keepsOpenOnSelect` · `canPress`
 
 ### connect API
 
@@ -218,6 +218,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `Home` | open | 锚点移到首条命令 |
 | `End` | open | 锚点移到末条命令 |
 | `Enter` | open, 锚点落在可用命令上 | 选中该命令；长按连发的重复键不重复选中 |
+| `Enter` | open, 锚点落在可用命令上且未加载，按住 | 按住期间锚点命令投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，命令随面板收起一并撤下 |
 | `Tab` | open, modal | 在面板内循环焦点 |
 
 ### ARIA
@@ -273,6 +274,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-state` | 'open' \| 'closed' |
 | `list` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

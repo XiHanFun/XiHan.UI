@@ -44,6 +44,8 @@ export const commandMachine = createMachine({
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
     // 与 collection 独立：仅镜像已挂载条目的显式 hidden，不以“找不到 DOM”推断隐藏。
     hiddenValues: cell<string[]>(() => ({ defaultValue: [] })),
+    // 按压通道：正被按住的那条命令，与开合无关
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -71,9 +73,14 @@ export const commandMachine = createMachine({
     // 无条件重挑会把方向键刚挪过去的锚点一次次拽回首条
     track([() => prop('collection')], () => action(['highlightIfDangling']))
     track([context.dep('hiddenValues')], () => action(['highlightVisibleIfDangling']))
+    // 按住途中转入加载：不会再来 keyup / pointerup，由机器自己收
+    track([() => prop('loading')], () => action(['releaseWhenInert']))
   },
   on: {
     'INPUT.SET': { actions: ['setInputValue'] },
+    // 按压通道：两个状态都认；加载中与命令自身禁用不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     closed: {
@@ -93,7 +100,8 @@ export const commandMachine = createMachine({
     open: {
       // 每次开都从空检索串起步，锚点落在首条上
       entry: ['resetInputValue', 'highlightFirst'],
-      exit: ['clearHighlightedValue'],
+      // 收起即松开：按住 Enter 选中后命令随面板藏起，不会再来 keyup
+      exit: ['clearHighlightedValue', 'releasePress'],
       // 条目可见性只服务逻辑展开；行为与模态资源由顶层 effect 延后到真实退场释放。
       effects: ['trackItemVisibility'],
       on: {
@@ -123,8 +131,29 @@ export const commandMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       // 命中即「选完不收起」：转移停在第一条上，不带 target
       keepsOpenOnSelect: ({ prop }) => (prop('closeOnSelect') ?? true) === false,
+      // 加载中选不了命令，一票否决；命令自身的禁用随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('loading') && !e.disabled
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一条命令的抬起不该把正按着的这条松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
+      releasePress: ({ context }) => context.set('pressedValue', null),
+      releaseWhenInert: ({ context, prop }) => {
+        if (context.get('pressedValue') != null && prop('loading'))
+          context.set('pressedValue', null)
+      },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
 
