@@ -441,3 +441,120 @@ describe('connectCheckboxGroup：trigger 在真实 DOM 上的全选', () => {
     expect(s.context.get('value')).toEqual(['c'])
   })
 })
+
+describe('connectCheckboxGroup：按压通道', () => {
+  type Service = ReturnType<typeof makeService>
+  const itemPressed = (s: Service, value: string): unknown => itemProps(s, { value })['data-pressed']
+  const allPressed = (s: Service): unknown => (api(s).getSelectAllTriggerProps() as Record<string, unknown>)['data-pressed']
+  const itemHandler = (s: Service, value: string, name: string): ((event: unknown) => void) =>
+    itemProps(s, { value })[name] as (event: unknown) => void
+  const allHandler = (s: Service, name: string): ((event: unknown) => void) =>
+    (api(s).getSelectAllTriggerProps() as Record<string, unknown>)[name] as (event: unknown) => void
+  /** 键盘事件替身：只带跟踪器与翻转看的几个字段；currentTarget 缺席时全选找不到 root、一个值都不动 */
+  const key = (k: string, repeat = false): unknown => ({ key: k, repeat, preventDefault: () => {}, currentTarget: null })
+
+  it('PRESS.START 按 part + value 只让那一个投影 data-pressed，PRESS.END 撤下；另一个部件或条目的 keyup 不串', () => {
+    const s = makeService({ defaultValue: ['a'] })
+    s.send({ type: 'PRESS.START', part: 'item', value: 'b' })
+    expect(itemPressed(s, 'b')).toBe('')
+    expect(itemPressed(s, 'a')).toBeUndefined()
+    expect(allPressed(s)).toBeUndefined()
+    // 选中没被碰过
+    expect(api(s).value).toEqual(['a'])
+    s.send({ type: 'PRESS.END', part: 'item', value: 'a' })
+    s.send({ type: 'PRESS.END', part: 'select-all-trigger' })
+    expect(itemPressed(s, 'b')).toBe('')
+    s.send({ type: 'PRESS.END', part: 'item', value: 'b' })
+    expect(itemPressed(s, 'b')).toBeUndefined()
+
+    s.send({ type: 'PRESS.START', part: 'select-all-trigger' })
+    expect(allPressed(s)).toBe('')
+    expect(itemPressed(s, 'b')).toBeUndefined()
+    s.send({ type: 'PRESS.END', part: 'item', value: 'b' })
+    expect(allPressed(s)).toBe('')
+    s.send({ type: 'PRESS.END', part: 'select-all-trigger' })
+    expect(allPressed(s)).toBeUndefined()
+  })
+
+  it('条目：Space 按住经跟踪器进出并在 keydown 那一刻翻转，长按重复键不重报，失焦即撤下；Enter 不是 checkbox 的激活键', () => {
+    const s = makeService()
+    itemHandler(s, 'a', 'onKeyDown')(key(' '))
+    expect(itemPressed(s, 'a')).toBe('')
+    expect(api(s).value).toEqual(['a'])
+    itemHandler(s, 'a', 'onKeyDown')(key(' ', true))
+    expect(itemPressed(s, 'a')).toBe('')
+    itemHandler(s, 'a', 'onKeyUp')(key(' '))
+    expect(itemPressed(s, 'a')).toBeUndefined()
+    itemHandler(s, 'a', 'onKeyDown')(key(' '))
+    expect(itemPressed(s, 'a')).toBe('')
+    itemHandler(s, 'a', 'onBlur')(undefined)
+    expect(itemPressed(s, 'a')).toBeUndefined()
+    itemHandler(s, 'a', 'onKeyDown')(key('Enter'))
+    expect(itemPressed(s, 'a')).toBeUndefined()
+  })
+
+  it('全选格：Space 与触屏按住进出，Enter 不进', () => {
+    const s = makeService()
+    allHandler(s, 'onKeyDown')(key(' '))
+    expect(allPressed(s)).toBe('')
+    allHandler(s, 'onKeyUp')(key(' '))
+    expect(allPressed(s)).toBeUndefined()
+    allHandler(s, 'onKeyDown')(key('Enter'))
+    expect(allPressed(s)).toBeUndefined()
+    allHandler(s, 'onPointerDown')({ pointerType: 'touch' })
+    expect(allPressed(s)).toBe('')
+    allHandler(s, 'onPointerUp')(undefined)
+    expect(allPressed(s)).toBeUndefined()
+  })
+
+  it('触屏按下进按压面，抬起或指针取消撤下；鼠标按下不走这一路', () => {
+    const s = makeService()
+    itemHandler(s, 'a', 'onPointerDown')({ pointerType: 'mouse' })
+    expect(itemPressed(s, 'a')).toBeUndefined()
+    itemHandler(s, 'a', 'onPointerDown')({ pointerType: 'touch' })
+    expect(itemPressed(s, 'a')).toBe('')
+    itemHandler(s, 'a', 'onPointerCancel')(undefined)
+    expect(itemPressed(s, 'a')).toBeUndefined()
+    itemHandler(s, 'a', 'onPointerDown')({ pointerType: 'touch' })
+    expect(itemPressed(s, 'a')).toBe('')
+    itemHandler(s, 'a', 'onPointerUp')(undefined)
+    expect(itemPressed(s, 'a')).toBeUndefined()
+  })
+
+  it('禁用条目、整组禁用与只读都不进按压面（条目与全选格）', () => {
+    const s = makeService({ collection: [{ value: 'a', disabled: true }, { value: 'b' }] })
+    itemHandler(s, 'a', 'onKeyDown')(key(' '))
+    expect(itemPressed(s, 'a')).toBeUndefined()
+    ;(itemProps(s, { value: 'b', disabled: true }).onPointerDown as (event: unknown) => void)({ pointerType: 'touch' })
+    expect(itemPressed(s, 'b')).toBeUndefined()
+
+    const off = makeService({ disabled: true })
+    itemHandler(off, 'a', 'onKeyDown')(key(' '))
+    allHandler(off, 'onKeyDown')(key(' '))
+    expect(itemPressed(off, 'a')).toBeUndefined()
+    expect(allPressed(off)).toBeUndefined()
+
+    const ro = makeService({ readOnly: true })
+    itemHandler(ro, 'a', 'onPointerDown')({ pointerType: 'touch' })
+    allHandler(ro, 'onPointerDown')({ pointerType: 'touch' })
+    expect(itemPressed(ro, 'a')).toBeUndefined()
+    expect(allPressed(ro)).toBeUndefined()
+  })
+
+  it('按住途中整组转入禁用或只读：不会再来 keyup，机器自己撤下', () => {
+    // 宿主的 props 要能唤醒 watch：用信号承载
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({})
+    const s = createService(checkboxGroupMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    itemHandler(s, 'a', 'onKeyDown')(key(' '))
+    expect(itemPressed(s, 'a')).toBe('')
+    props.set({ disabled: true })
+    expect(itemPressed(s, 'a')).toBeUndefined()
+    props.set({})
+    allHandler(s, 'onPointerDown')({ pointerType: 'touch' })
+    expect(allPressed(s)).toBe('')
+    props.set({ readOnly: true })
+    expect(allPressed(s)).toBeUndefined()
+  })
+})

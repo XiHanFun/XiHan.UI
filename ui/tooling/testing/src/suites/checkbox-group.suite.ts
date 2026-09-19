@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { checkboxGroupAnatomy, checkboxGroupKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/'
 
@@ -604,6 +605,50 @@ export const checkboxGroupSuite: ConformanceSuite = {
           why: '取消勾选是 checked 这条路上最容易静默失效的一步，单独再读一次 DOM',
           run: ({ doc }) => assertHiddenInputs(doc, [['topping', 'a', false], ['topping', 'b', false], ['topping', 'c', true]]),
         },
+      ],
+    },
+    {
+      name: 'Space 按住与触屏按下：条目与全选格投影 data-pressed，抬起、失焦或指针取消撤下；Enter 不是 checkbox 的激活键；选中与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['checkbox-group.kbd.press'],
+      props: { itemValues: ['a', 'b', 'c'] },
+      steps: [
+        // role=checkbox 只认 Space，Enter 那一路没有按压面；每一次 Space keydown 都照旧翻转一次，
+        // 一条 heldPress 里按两次，按压面撤下后选中回到起点
+        heldPress('checkbox-group', 'item', { value: 'a', keys: [' '] }),
+        heldPress('checkbox-group', 'item', { value: 'c', keys: [' '] }),
+        heldPress('checkbox-group', 'select-all-trigger', { keys: [' '] }),
+        { kind: 'settle', until: { attr: { part: 'select-all-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'item[0]': { 'aria-checked': 'false' }, 'item[2]': { 'aria-checked': 'false' }, 'select-all-trigger': { 'aria-checked': 'false' } } } },
+        {
+          kind: 'raw',
+          why: 'Enter 不是 role=checkbox 的激活键，按住它不该有按压面',
+          run: async ({ doc, flush }) => {
+            for (const selector of ['[data-scope="checkbox-group"][data-part="item"][data-value="a"]', '[data-scope="checkbox-group"][data-part="select-all-trigger"]']) {
+              const el = doc.querySelector<HTMLElement>(selector)
+              if (!el)
+                throw new Error(`找不到 ${selector}`)
+              el.focus()
+              el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+              await flush()
+              if (el.hasAttribute('data-pressed'))
+                throw new Error(`${selector} Enter 按住投影了 data-pressed，但 Enter 不是 checkbox 的激活键`)
+              el.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }))
+            }
+          },
+        },
+      ],
+    },
+    {
+      name: '禁用条目不进入按压面；整组禁用或只读时条目与全选格都不进',
+      spec: { adr: 'press-channel' },
+      steps: [
+        heldPressIgnored('checkbox-group', 'item', '禁用的条目不接受按压', { value: 'b' }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('checkbox-group', 'item', '整组禁用时条目不接受按压', { value: 'a' }),
+        heldPressIgnored('checkbox-group', 'select-all-trigger', '整组禁用时全选格不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('checkbox-group', 'item', '只读时条目不接受按压', { value: 'a' }),
+        heldPressIgnored('checkbox-group', 'select-all-trigger', '只读时全选格不接受按压'),
       ],
     },
   ],

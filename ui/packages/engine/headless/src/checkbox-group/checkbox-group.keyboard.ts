@@ -31,5 +31,11 @@ export const checkboxGroupKeyboard: KeyboardTable = {
       when: 'focus on select-all-trigger, group editable',
       does: '可用条目未全选则一并勾上，已全选则一并取消；禁用条目不受影响',
     },
+    {
+      id: 'checkbox-group.kbd.press',
+      keys: ['Space'],
+      when: 'held on item / select-all-trigger, group editable and item not disabled',
+      does: '按住期间该行投影 data-pressed，与指针 :active 同一副按压面（行换面、方框随行换底，不缩放）；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。role=checkbox 只有 Space 是激活键，Enter 不进按压面；选中与按压互相独立',
+    },
   ],
 }

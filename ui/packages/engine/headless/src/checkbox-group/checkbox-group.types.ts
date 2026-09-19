@@ -46,6 +46,9 @@ export interface CheckboxGroupItemProps {
   disabled?: boolean
 }
 
+/** 接了按压通道的两个部件：条目按 value 记，全选格整组只有一个、不带 value。 */
+export type CheckboxGroupPressedPart = 'item' | 'select-all-trigger'
+
 export interface CheckboxGroupSchema extends MachineSchema {
   props: {
     /**
@@ -78,6 +81,10 @@ export interface CheckboxGroupSchema extends MachineSchema {
   context: {
     /** 选中值。受控（value 提供）时 cell 直读 prop，写入只发 onValueChange 不修改内部值。 */
     value: string[]
+    /** 按压通道：Space 或触屏按住的是条目还是全选格。 */
+    pressedPart: CheckboxGroupPressedPart | null
+    /** 按压通道：按住的条目 value；按住的是全选格时为 null。抬起、失焦或指针取消即清空，与选中互相独立。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -88,9 +95,23 @@ export interface CheckboxGroupSchema extends MachineSchema {
     /** values 是事件发生时查询到的可用条目值。 */
     | { type: 'ALL.TOGGLE', values: string[] }
     | { type: 'FORM.RESET' }
+    /**
+     * 条目或全选格被 Space 或触屏按住；条目带 value，全选格不带。
+     * disabled 是条目自身的禁用事实，由 connect 判定后随事件带入；整组禁用与只读由守卫按 props 判。
+     */
+    | { type: 'PRESS.START', part: CheckboxGroupPressedPart, value?: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: CheckboxGroupPressedPart, value?: string }
   tag: never
-  guard: 'editable'
-  action: 'setValue' | 'toggleItem' | 'toggleAll' | 'resetToDefault'
+  guard: 'editable' | 'canPress'
+  action:
+    | 'setValue'
+    | 'toggleItem'
+    | 'toggleAll'
+    | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 
