@@ -5275,20 +5275,20 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "in-range",
-        "not([data-disabled], [data-selected], [data-in-range])",
-        "selected"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-bg-pressed",
@@ -5297,19 +5297,21 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
+        "loading",
         "not([data-disabled])",
+        "not([data-loading])",
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-bg-selected",
@@ -5318,12 +5320,18 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
         "in-range",
         "is([data-range-start], [data-range-end])",
+        "loading",
+        "not([data-disabled])",
         "not([data-in-range])",
+        "not([data-loading])",
         "not([data-outside-month])",
         "outside-month",
         "range-end",
@@ -5334,7 +5342,7 @@
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-bg-selected-active",
@@ -5343,15 +5351,17 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "in-range",
         "is(:active, [data-pressed])",
         "is([data-range-start], [data-range-end])",
+        "loading",
         "not([data-disabled])",
-        "not([data-in-range], [data-disabled])",
+        "not([data-in-range])",
+        "not([data-loading])",
         "not([data-outside-month])",
         "outside-month",
         "pressed",
@@ -5363,7 +5373,7 @@
         "--xh-bg-brand-active"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-bg-selected-disabled",
@@ -5372,7 +5382,7 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
@@ -5382,7 +5392,7 @@
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-fg",
@@ -5396,11 +5406,19 @@
       "state": [
         "@media print",
         "default",
+        "disabled",
+        "focus-visible",
+        "hover",
         "in-range",
+        "is(:active, [data-pressed])",
         "is([data-range-start], [data-range-end])",
+        "loading",
+        "not([data-disabled])",
         "not([data-in-range])",
+        "not([data-loading])",
         "not([data-outside-month])",
         "outside-month",
+        "pressed",
         "range-end",
         "range-start",
         "selected"
@@ -5421,7 +5439,15 @@
         "color"
       ],
       "state": [
-        "outside-month"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "outside-month",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -5439,11 +5465,19 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
         "in-range",
+        "is(:active, [data-pressed])",
         "is([data-range-start], [data-range-end])",
+        "loading",
+        "not([data-disabled])",
         "not([data-in-range])",
+        "not([data-loading])",
         "not([data-outside-month])",
         "outside-month",
+        "pressed",
         "range-end",
         "range-start",
         "selected"
@@ -5625,6 +5659,8 @@
       ],
       "state": [
         "default",
+        "disabled",
+        "focus-visible",
         "not([hidden])"
       ],
       "defaultToken": [
@@ -5683,18 +5719,22 @@
         "heading-year-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
-        "not(:disabled)",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([hidden])",
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 heading-month-trigger、heading-year-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 heading-month-trigger、heading-year-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-heading-trigger-fg-hover",
@@ -5707,8 +5747,14 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([hidden])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-brand"
@@ -5782,16 +5828,18 @@
         "prev-year-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-focus-visible",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-nav-bg-hover",
@@ -5803,17 +5851,20 @@
         "prev-year-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-nav-bg-pressed",
@@ -5825,18 +5876,21 @@
         "prev-year-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
-        "not(:disabled)",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-nav-fg",
@@ -5851,7 +5905,8 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "focus-visible"
       ],
       "defaultToken": [
         "--xh-fg-muted"
@@ -5872,8 +5927,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -5913,16 +5973,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-period-gap",
@@ -6041,12 +6103,15 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
         "in-range",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])",
         "outside-month",
         "range-end",
@@ -6056,7 +6121,7 @@
         "--xh-bg-brand-subtle-hover"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-range-cell-bg-pressed",
@@ -6065,12 +6130,15 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "in-range",
         "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])",
         "outside-month",
         "pressed",
@@ -6081,7 +6149,7 @@
         "--xh-bg-brand-subtle-active"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-range-row-radius",
@@ -6134,16 +6202,18 @@
         "cell-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
         "today"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-today-border",
@@ -6152,16 +6222,25 @@
         "cell-trigger"
       ],
       "property": [
+        "border",
         "border-color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "today"
       ],
       "defaultToken": [
         "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 border-color 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-today-fg",
@@ -6173,6 +6252,14 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "today"
       ],
       "defaultToken": [

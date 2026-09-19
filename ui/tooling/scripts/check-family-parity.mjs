@@ -170,17 +170,16 @@ const FAMILIES = [
     ],
   },
   {
-    // 两份日历共用同一套部件名与皮肤槽（doc.md 互相点名）：日期格的基础块、今天、选中、悬停与按下五个状态逐条同源；
-    // 范围日历多出的区间轨道与端点规则带 [data-in-range]，不在这五条的匹配面里
+    // 两份日历共用同一套部件名与皮肤槽（doc.md 互相点名）：日期格接了 Action Control text 档，悬停 / 按下 / 禁用面由家族
+    // 按桥接槽给，两份皮肤不再各写 :hover / :active 规则；比的是基础块（含映射到桥接槽的几何与三支私有槽）、
+    // 今天换的三支私有槽、选中格重写的桥接槽三态。范围日历多出的区间轨道与端点规则带 [data-in-range]，不在匹配面里
     name: '日历族',
     backlog: true,
     members: ['calendar-picker', 'calendar-range-picker'],
     parts: [
       { part: 'cell-trigger', state: '', props: '*' },
-      { part: 'cell-trigger', state: '[data-today]', props: ['background', 'border-color', 'color'] },
-      { part: 'cell-trigger', state: '[data-selected]', props: ['background', 'border-color', 'color'] },
-      { part: 'cell-trigger', state: ':hover', props: ['background'] },
-      { part: 'cell-trigger', state: ':active', props: ['background', 'scale'] },
+      { part: 'cell-trigger', state: '[data-today]', props: ['--xh-_<c>-cell-bg', '--xh-_<c>-cell-border', '--xh-_<c>-cell-fg'] },
+      { part: 'cell-trigger', state: '[data-selected]', props: ['--xh-action-bg-rest', '--xh-action-bg-hover', '--xh-action-bg-pressed', '--xh-action-border-rest', '--xh-action-fg-rest', '--xh-action-ring-color-focus-visible'] },
     ],
   },
   // ——以下家族按真源 §4 登记，读 family-backlog.json，已迁移成员 ≥ 2 才比——
