@@ -154,6 +154,26 @@ describe('parseCalendarDate 脏值兜底', () => {
   })
 })
 
+describe('Action Control 投影', () => {
+  it('四颗方向钮投 icon ghost sm、两颗标题钮投 text ghost sm、日期格投 text ghost sm', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-17' })
+    const api = h.api()
+    for (const props of [api.getPrevYearTriggerProps(), api.getPrevTriggerProps(), api.getNextTriggerProps(), api.getNextYearTriggerProps()] as Record<string, unknown>[]) {
+      expect(props['data-xh-action-control']).toBe('')
+      expect(props['data-xh-action-profile']).toBe('icon')
+      expect(props['data-xh-action-variant']).toBe('ghost')
+      expect(props['data-xh-action-display']).toBe('always')
+      expect(props['data-xh-action-size']).toBe('sm')
+    }
+    for (const props of [api.getHeadingYearTriggerProps(), api.getHeadingMonthTriggerProps(), api.getCellTriggerProps({ value: '2026-08-17' })] as Record<string, unknown>[]) {
+      expect(props['data-xh-action-control']).toBe('')
+      expect(props['data-xh-action-profile']).toBe('text')
+      expect(props['data-xh-action-variant']).toBe('ghost')
+      expect(props['data-xh-action-size']).toBe('sm')
+    }
+  })
+})
+
 describe('大步翻与周选预览', () => {
   it('« / » 的步长跟着视图走：日一年、月与季度十年、年一百年', () => {
     const day = mount({ defaultFocusedValue: '2026-08-17' })

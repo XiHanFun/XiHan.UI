@@ -180,8 +180,9 @@ export const calendarPickerSuite: ConformanceSuite = {
           'week-row[1]': { role: 'row' },
           'week-day[0]': { 'role': 'columnheader', 'aria-label': '星期一', 'data-value': '0' },
           'week-day[6]': { 'role': 'columnheader', 'aria-label': '星期日', 'data-value': '6' },
-          'prev-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null },
-          'next-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null },
+          // 方向钮接 Action Control icon ghost sm 档
+          'prev-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'sm' },
+          'next-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost' },
           [`cell[${at(ANCHOR)}]`]: {
             'role': 'gridcell',
             'data-value': ANCHOR,
@@ -206,7 +207,8 @@ export const calendarPickerSuite: ConformanceSuite = {
             'disabled': null,
           },
           // 首行是上个月的尾巴，照样是真格子
-          'cell-trigger[0]': { 'data-value': '2024-01-29', 'data-outside-month': '', 'tabindex': '-1' },
+          // 日期格接 Action Control text ghost 档（几何由网格给）
+          'cell-trigger[0]': { 'data-value': '2024-01-29', 'data-outside-month': '', 'tabindex': '-1', 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'sm' },
           [`cell-trigger[${DAYS.length - 1}]`]: { 'data-value': '2024-03-03', 'data-outside-month': '' },
           [`cell-trigger[${at('2024-02-29')}]`]: { 'data-value': '2024-02-29', 'data-outside-month': null },
         },

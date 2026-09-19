@@ -159,13 +159,6 @@
     "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
   },
   "solid": {
-    "calendar-picker [data-part='cell-trigger'][data-scope='calendar-picker'][data-selected]": {
-      "parts": [
-        "cell-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "calendar-range-picker [data-in-range][data-part='cell-trigger'][data-scope='calendar-range-picker']:not([data-outside-month]):is([data-range-start], [data-range-end])": {
       "parts": [
         "cell-trigger"
