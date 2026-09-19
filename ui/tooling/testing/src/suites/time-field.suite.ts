@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { timeFieldAnatomy, timeFieldKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 分段时间输入在 APG 里最贴近的模式是 spinbutton：每一段都是一个可加减的数。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#keyboardinteraction'
@@ -573,6 +574,32 @@ export const timeFieldSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'label', expect: { activeElement: { part: HOUR, exact: true } } },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['time-field.kbd.press'],
+      // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+      props: { defaultValue: '13:45' },
+      steps: [
+        heldPress('time-field', 'clear-trigger'),
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'clear-trigger': { hidden: null } }, events: [] } },
+      ],
+    },
+    {
+      name: '禁用或只读时清空钮藏着，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: '13:45', disabled: true },
+      steps: [
+        heldPressIgnored('time-field', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('time-field', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+      ],
+    },
+    {
+      name: '没有值时清空钮藏着，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      steps: [heldPressIgnored('time-field', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压')],
     },
   ],
 }

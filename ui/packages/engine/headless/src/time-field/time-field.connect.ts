@@ -8,6 +8,7 @@
 import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimeFieldApi, TimeFieldSchema, TimeSegmentType } from './time-field.types'
 import { dataAttr, focusSafely, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { timeFieldAnatomy } from './time-field.anatomy'
 import {
   appendSegmentDigit,
@@ -62,6 +63,8 @@ export function connectTimeField<T extends PropTypes>(
   const empty = value === ''
   // 清空按钮只在有东西可清、且改得动的时候显形
   const canClear = editable && !empty
+  // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
   const outOfRange = isTimeOutOfRange(value, prop('min'), prop('max'))
   // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法
   const flagged = invalid || outOfRange
@@ -275,17 +278,25 @@ export function connectTimeField<T extends PropTypes>(
       'data-xh-action-display': 'has-value',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-has-value': dataAttr(!empty),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      'data-pressed': dataAttr(context.get('pressed')),
       'type': 'button',
       // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
       'tabindex': -1,
       'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
       // 没值就整个收起，不是禁用：有值才出现，出现即可用
       'hidden': !canClear || undefined,
-      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里
+      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里；触屏按下仍要进按压通道
       'onPointerDown': (event: PointerEvent) => {
         if (event.button === 0)
           event.preventDefault()
+        press.onPointerDown(event)
       },
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
       'onClick': (event: MouseEvent) => {
         if (!canClear)
           return

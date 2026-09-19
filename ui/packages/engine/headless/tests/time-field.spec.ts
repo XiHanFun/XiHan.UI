@@ -1023,3 +1023,75 @@ describe('connectTimeField 受控与命令式出口', () => {
       expect(m.seg(type).textContent).toBe(api.getSegmentText({ segment: type }))
   })
 })
+
+describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (el: HTMLElement, type: 'keydown' | 'keyup', k: string): void => {
+    el.dispatchEvent(new KeyboardEvent(type, { key: k, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): PointerEvent => {
+    const event = new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+    el.dispatchEvent(event)
+    return event
+  }
+  const pressed = (m: Mounted): boolean => m.clear.hasAttribute('data-pressed')
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const m = open({ defaultValue: '13:45' })
+    expect(pressed(m)).toBe(false)
+    key(m.clear, 'keydown', ' ')
+    expect(pressed(m)).toBe(true)
+    key(m.clear, 'keyup', ' ')
+    expect(pressed(m)).toBe(false)
+    key(m.clear, 'keydown', 'Enter')
+    expect(pressed(m)).toBe(true)
+    m.clear.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(m)).toBe(false)
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown，焦点仍留在段位上
+    expect(pointer(m.clear, 'pointerdown', 'touch').defaultPrevented).toBe(true)
+    expect(pressed(m)).toBe(true)
+    pointer(m.clear, 'pointercancel', 'touch')
+    expect(pressed(m)).toBe(false)
+    pointer(m.clear, 'pointerdown', 'touch')
+    expect(pressed(m)).toBe(true)
+    pointer(m.clear, 'pointerup', 'touch')
+    expect(pressed(m)).toBe(false)
+    pointer(m.clear, 'pointerdown', 'mouse')
+    expect(pressed(m)).toBe(false)
+    // 按压不清值
+    expect(m.api().value).toBe('13:45')
+  })
+
+  it('不进：禁用、只读或没有值时清空按钮藏着，按住不投影', () => {
+    for (const props of [{ defaultValue: '13:45', disabled: true }, { defaultValue: '13:45', readOnly: true }, {}] as Props[]) {
+      const m = open(props)
+      expect(m.clear.hasAttribute('hidden')).toBe(true)
+      key(m.clear, 'keydown', ' ')
+      pointer(m.clear, 'pointerdown', 'touch')
+      expect(pressed(m)).toBe(false)
+    }
+  })
+
+  it('按住途中值被清空或转入禁用 / 只读：按钮藏起、不会再来 keyup，按压面由机器自己收', () => {
+    const cleared = open({ defaultValue: '13:45' })
+    key(cleared.clear, 'keydown', 'Enter')
+    expect(pressed(cleared)).toBe(true)
+    cleared.api().clear()
+    expect(cleared.api().value).toBe('')
+    expect(cleared.clear.hasAttribute('hidden')).toBe(true)
+    expect(pressed(cleared)).toBe(false)
+
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Props[]) {
+      // 夹具的 props 是普通对象，watch 只在 props 身份变化时复查，走 signal 才惊动它
+      const runtime = createVanillaRuntime()
+      const props = runtime.signal<Props>({ defaultValue: '13:45' })
+      const service = createService(timeFieldMachine, { props: () => props.get(), runtime })
+      runtime.start()
+      const api = (): Record<string, unknown> => connectTimeField(service, normalizeProps).getClearTriggerProps() as Record<string, unknown>
+      ;(api().onKeyDown as (e: unknown) => void)({ key: 'Enter', repeat: false, isComposing: false })
+      expect(api()['data-pressed']).toBe('')
+      props.set({ ...props.get(), ...inert })
+      expect(api()['data-pressed']).toBeUndefined()
+      runtime.stop()
+    }
+  })
+})
