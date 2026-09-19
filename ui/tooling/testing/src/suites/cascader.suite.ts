@@ -430,7 +430,7 @@ export const cascaderSuite: ConformanceSuite = {
             'data-xh-collection-size': 'md',
           },
           'item-text[0]': { 'data-xh-collection-slot': 'text' },
-          'item-indicator[0]': { 'data-xh-collection-slot': 'indicator', 'aria-hidden': 'true' },
+          'item-indicator[0]': { 'data-xh-collection-slot': 'indicator', 'aria-hidden': 'true', 'data-state': 'unchecked' },
           // taiwan（children 为空数组）与 macau（无 children）都是叶子，右边不会长出列
           'item[2]': { 'aria-haspopup': null, 'data-branch': null, 'data-value': 'taiwan' },
           'item[3]': { 'aria-haspopup': null, 'data-branch': null, 'data-value': 'macau' },
@@ -438,7 +438,6 @@ export const cascaderSuite: ConformanceSuite = {
           'item[4]': { 'hidden': '', 'data-level': '1', 'data-value': 'hangzhou' },
           'item[6]': { 'hidden': '', 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           'item[8]': { 'hidden': '', 'data-level': '2', 'data-value': 'xihu' },
-          'item-indicator[0]': { 'aria-hidden': 'true', 'data-state': 'unchecked' },
           'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau'),
         },
         activeElement: null,
