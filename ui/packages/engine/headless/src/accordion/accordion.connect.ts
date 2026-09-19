@@ -5,9 +5,9 @@
 
 // 提供 accordion 相关实现。
 
-import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { AccordionApi, AccordionItemProps, AccordionNodeMeta, AccordionSchema } from './accordion.types'
-import { dataAttr, focusItem, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { accordionAnatomy } from './accordion.anatomy'
 
 const parts = accordionAnatomy.build()
@@ -38,6 +38,17 @@ export function connectAccordion<T extends PropTypes>(
   /** 条目禁用：整组禁用一票通过，否则部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: AccordionItemProps): boolean =>
     groupDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
+
+  // 按压通道：每个 trigger 各自合成一份跟踪器，真源是机器 context 里「正被按住的那个」的 value；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档（disclosure-trigger 只换面）。
+  // 条目自身的禁用只有 connect 知道，随 PRESS.START 带给机器的守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: AccordionItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', value: item.value, disabled: itemDisabled(item) }
+      : { type: 'PRESS.END', value: item.value }),
+  })
 
   const isOpen = (target: string): boolean => value.includes(target)
   const stateAttr = (item: AccordionItemProps): 'open' | 'closed' => (isOpen(item.value) ? 'open' : 'closed')
@@ -91,29 +102,44 @@ export function connectAccordion<T extends PropTypes>(
     }),
     // 标题栏是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
     // 按下只换面不缩放（§9.2）；承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
-    getTriggerProps: item => normalize.button({
-      ...parts.trigger.attrs,
-      [ITEM_VALUE_ATTR]: item.value,
-      'id': triggerId(item.value),
-      'type': 'button',
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'disclosure-trigger',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'aria-controls': contentId(item.value),
-      'aria-expanded': isOpen(item.value) ? 'true' : 'false',
-      // 用 aria-disabled，禁用条目仍可聚焦
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      'data-state': stateAttr(item),
-      'data-disabled': dataAttr(itemDisabled(item)),
-      // 不输出 tabindex：手风琴不做 roving tabindex，每个 trigger 都是独立的 Tab 停靠点
-      'onClick': () => {
-        if (!itemDisabled(item))
-          send({ type: 'ITEM.TOGGLE', value: item.value })
-      },
-      'onKeydown': onTriggerKeydown(item),
-    }),
+    getTriggerProps: (item) => {
+      const handlers = press(item)
+      return normalize.button({
+        ...parts.trigger.attrs,
+        [ITEM_VALUE_ATTR]: item.value,
+        'id': triggerId(item.value),
+        'type': 'button',
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'disclosure-trigger',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'aria-controls': contentId(item.value),
+        'aria-expanded': isOpen(item.value) ? 'true' : 'false',
+        // 用 aria-disabled，禁用条目仍可聚焦
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        'data-state': stateAttr(item),
+        'data-disabled': dataAttr(itemDisabled(item)),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与展开态互相独立
+        'data-pressed': dataAttr(pressedValue === item.value),
+        // 不输出 tabindex：手风琴不做 roving tabindex，每个 trigger 都是独立的 Tab 停靠点
+        'onClick': () => {
+          if (!itemDisabled(item))
+            send({ type: 'ITEM.TOGGLE', value: item.value })
+        },
+        // 同一个 keydown 先过跟踪器再走方向键导航：三端把 onKeyDown / onKeydown 归一成同一个监听，
+        // 两个键并存会互相覆盖，只能合成一个处理器
+        'onKeyDown': (event: KeyboardEvent) => {
+          handlers.onKeyDown(event)
+          onTriggerKeydown(item)(event)
+        },
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
     getContentProps: item => normalize.element({
       ...parts.content.attrs,
       'id': contentId(item.value),
