@@ -364,7 +364,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 背景最终不透明度应在约 82%–90%。
 - blur 使用 16px，saturate 不高于 1.08。
 - 必须有 1px 可见边界，不能只依赖 `backdrop-filter`。
-- 不使用顶部高光、反射线或高透明玻璃效果。
+- 允许 1px 内侧顶部边界光（`--xh-material-frosted-highlight`）：它是 1px 边界的内侧一半，只表达面的厚度，不是玻璃反射；不允许更大范围的高光、反射线或高透明玻璃效果。Tooltip 反白 compact 档不画（§8.4）。
 - 大段正文、表单、Card、Table、Toast、Dialog 主阅读面默认不使用 frosted。
 - reduced transparency、forced colors 和 print 下移除 blur，使用同语义实体面。
 
@@ -393,7 +393,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 ### 8.4 浮层材质判据
 
 - 内容为短列表、菜单、tooltip、气泡 → frosted 四件套；reduced-transparency 下退回同语义实体面。
-- 刻意例外（须登记）：Tooltip 保留反白身份，走 compact 档 frosted（`--xh-material-frosted-compact-*` 的 backdrop / shadow / alpha + 光学层），边不取 `--xh-material-frosted-border`（深色 14% 透明边压在反白深底上不可见），改取 on 色 20% 拼色承担 §8.1 的 1px 可见边界；不画顶部高光。
+- 刻意例外（须登记）：Tooltip 保留反白身份，走 compact 档 frosted（`--xh-material-frosted-compact-*` 的 backdrop / shadow / alpha + 光学层），边不取 `--xh-material-frosted-border`（深色 14% 透明边压在反白深底上不可见），改取 on 色 20% 拼色承担 §8.1 的 1px 可见边界；不画 §8.1 的 1px 内侧顶部边界光（反白深底上不需要厚度提示）。
 - 内容含网格或多列（日历、时间列、导航大面板）→ floating（solid + border-default + elevation-floating）。
 - 模态与强反馈面 → sheet 三件套；任何浮层不得只靠 box-shadow 分层，content / item 部件必须有非透明 border 或 material-*-border。
 

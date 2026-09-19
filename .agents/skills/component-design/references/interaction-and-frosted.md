@@ -147,7 +147,7 @@ rest
 
 ### 3.1 定义
 
-Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背后环境，但不模拟玻璃反射、亮边、高光或强透明。
+Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背后环境，但不模拟玻璃反射、大面积高光或强透明；1px 内侧顶部边界光是边界的一部分，不是反射。
 
 建议配方：
 
@@ -158,7 +158,7 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 | border | 1px 低对比边界，确保浅色与暗色都能识别轮廓 |
 | shadow | 使用 floating 或 sheet 海拔角色，不自定义另一套彩色影 |
 | foreground | 使用正常 overlay foreground，不降低正文透明度 |
-| highlight | 无玻璃高光、无顶部反射线 |
+| highlight | 允许 1px 内侧顶部边界光（`--xh-material-frosted-highlight`，只表达厚度），不允许更大范围的玻璃高光或反射线；Tooltip 反白 compact 档不画 |
 
 具体颜色不在组件内写死，由亮色、暗色和 contrast-more 主题派生。
 
