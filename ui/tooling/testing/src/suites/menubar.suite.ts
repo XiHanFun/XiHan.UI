@@ -841,8 +841,13 @@ export const menubarSuite: ConformanceSuite = {
       // 受控展开首张菜单：trigger 的 Enter / Space 只发切换意图不自改；条目 Enter / Space 选中并发收起意图，
       // 宿主不写回就仍开着，按住的中间帧才看得见
       props: { value: 'file' },
-      // 条目按 value 指定展开着那张菜单里的：WC 只把展开的浮层搬到落点，文档序里第一条不一定是它的
-      steps: [heldPress('menubar', 'trigger'), heldPress('menubar', 'item', { value: 'new' })],
+      // 条目按 value 指定展开着那张菜单里的：WC 只把展开的浮层搬到落点，文档序里第一条不一定是它的。
+      // 失焦落回本张菜单的 trigger：条目落到 body 时 React 的合成 focusout 会穿过 Portal 叫起根的
+      // MENUBAR.BLUR，Vue / WC 的 DOM 路径不会，对拍在这一步分叉
+      steps: [
+        heldPress('menubar', 'trigger'),
+        heldPress('menubar', 'item', { value: 'new', blurTo: '[data-scope="menubar"][data-part="trigger"][data-value="file"]' }),
+      ],
     },
     {
       name: '禁用的 trigger 与条目按住不进入按压面',

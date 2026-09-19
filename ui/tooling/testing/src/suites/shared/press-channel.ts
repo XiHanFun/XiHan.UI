@@ -3,6 +3,13 @@ import type { StepWithExpect } from '../../conformance/types'
 export interface PressTargetOptions {
   /** 多条目部件按 data-value 指定按哪一条；不给取文档序里第一个。 */
   value?: string
+  /**
+   * 按住途中失焦的落点选择器；不给就 el.blur() 落到 body。
+   * 浮层里的条目落到 body 时，React 的合成 focusout 沿组件树穿过 Portal 叫起根的 onFocusOut，而 Vue / WC 的
+   * DOM 路径到不了根——两家对「焦点离开浮层」的回应不同，对拍会在这一步分叉；把落点指到宿主内部的节点，
+   * 三家都只看见条目自己的 blur。
+   */
+  blurTo?: string
 }
 
 function targetSelector(scope: string, part: string, options: PressTargetOptions): string {
@@ -47,8 +54,16 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
       // 走真实的 blur()：浏览器派 blur 再派冒泡的 focusout，React 的 onBlur 挂的正是后者
       el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
       await expectPressed(true, '再次 keydown Enter 之后')
-      el.blur()
-      await expectPressed(false, 'blur 之后')
+      if (options.blurTo === undefined) {
+        el.blur()
+      }
+      else {
+        const next = doc.querySelector<HTMLElement>(options.blurTo)
+        if (!next)
+          throw new Error(`找不到失焦落点 ${options.blurTo}`)
+        next.focus()
+      }
+      await expectPressed(false, '失焦之后')
 
       // 触屏：手指按下即在场，滚动接管（pointercancel）即撤下；鼠标按下不走这一路
       el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true }))
