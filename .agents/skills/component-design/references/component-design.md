@@ -130,7 +130,7 @@ Vue、React、Web Components 只负责：
 | Breadcrumb link | Collection Item（导航当前） | 当前页是不可点位置：`aria-current="page"`，`--xh-fg-default` + medium，无指示条；投影 `data-xh-collection-context='nav'`，当前页再投影 `data-xh-collection-terminal`（它同时带 `aria-disabled`，不显式标会被家族禁用面吃掉）；见 §7.3 |
 | Menubar trigger | Collection Item（展开路径 / 打开中） | 没有当前态：open 与家族 hover 同档的中性面，不用品牌色、不加粗；投影 `data-xh-collection-context='nav'`，展开时投影 `data-in-path`；见 §7.3 |
 | Pagination item、Steps indicator、Calendar cell | Action Control（格状当前） | 当前 = 实心品牌；见 §7.3 |
-| CheckboxGroup item / select-all trigger、Steps trigger | Action Control `row` profile | 只换面不缩放；方框 / 圆点是宿主内的标记，读宿主 host 槽；见 §9.2 |
+| CheckboxGroup item / select-all trigger、RadioGroup item、Steps trigger | Action Control `row` profile | 只换面不缩放；方框 / 圆圈 / 圆点是宿主内的标记，读宿主 host 槽；见 §9.2 |
 | Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger | disclosure trigger | 只换面，不缩放；见 §9.2 |
 | FloatButton、BackTop、Carousel 翻页、Log/MessageFeed 回底、ImageViewer 翻页 | Action Control `floating` profile | 形状 circle；见 §6.3 |
 | Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
@@ -428,7 +428,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 只换面：active 背景，不缩放整个条目。
 - 集合行投影 `data-xh-collection-item`（Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger 投影 `nav` 语境）；铺满一行的独立动作条目（load-more trigger、审批项）登记 Action Control `row` profile，disclosure trigger 登记 `disclosure-trigger` profile。两档 `press: surface`、`fill: true`：宽度由容器给、高度随内容、按下 `scale: none` 只换面；不允许零反馈。
 - Space / Enter 与粗指针触屏由 Headless / pointer 会话投影 `data-pressed`，皮肤 `:is(:active, [data-pressed])`。
-- 带内嵌标记的行级宿主（CheckboxGroup item / select-all trigger 的方框、Steps trigger 的序号圆点）：激活落在宿主上，宿主投影 `row` profile、`ghost` 形态并在自己身上用 `--xh-action-bg-hover / -pressed` 钉住画布阶梯（100 → 200），同时以 `--xh-action-host-bg-hover / -pressed` 向内声明自己是标记的承载面（200 → 300）；aria-hidden 的方框 / 圆点不投影配方，只在宿主的 `:hover` / `:is(:active, [data-pressed])` 下换面，走同一时间线（按下 `--xh-motion-duration-press`、释放 micro），不缩放。桥接槽只写不读：host 槽的值由皮肤的私有槽（`--xh-_<c>-host-bg-*`）供给，标记读同一支私有槽即与宿主的 host 槽同源。取值与投影了配方的同类控件逐档一致（CheckboxGroup 方框 = 独立 Checkbox：悬停 `--xh-border-control-hover`、按下承载面阶梯上一档、勾中语气 active、禁用 `--xh-border-default` + `--xh-bg-subtle`；Steps 圆点是格状当前标记，当前步按下 `--xh-bg-brand-active`）。
+- 带内嵌标记的行级宿主（CheckboxGroup item / select-all trigger 的方框、RadioGroup item 的圆圈、Steps trigger 的序号圆点）：激活落在宿主上，宿主投影 `row` profile、`ghost` 形态并在自己身上用 `--xh-action-bg-hover / -pressed` 钉住画布阶梯（100 → 200），同时以 `--xh-action-host-bg-hover / -pressed` 向内声明自己是标记的承载面（200 → 300）；aria-hidden 的方框 / 圆圈 / 圆点不投影配方，只在宿主的 `:hover` / `:is(:active, [data-pressed])` 下换面，走同一时间线（按下 `--xh-motion-duration-press`、释放 micro），不缩放。桥接槽只写不读：host 槽的值由皮肤的私有槽（`--xh-_<c>-host-bg-*`）供给，标记读同一支私有槽即与宿主的 host 槽同源。取值与投影了配方的同类控件逐档一致（CheckboxGroup 方框 = 独立 Checkbox：悬停 `--xh-border-control-hover`、按下承载面阶梯上一档、勾中语气 active、禁用 `--xh-border-default` + `--xh-bg-subtle`；RadioGroup 圆圈同一条阶梯，选中圈描边不换、按下换的是圆点（语气 active）、禁用圆点 `--xh-fg-disabled`；Steps 圆点是格状当前标记，当前步按下 `--xh-bg-brand-active`）。
 
 ### 9.3 状态叠加
 

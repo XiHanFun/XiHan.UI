@@ -87,28 +87,92 @@ describe('radio-group 默认视觉', () => {
     expect(getComputedStyle(label).color).toBe(resolveColor('--xh-fg-subtle', root))
   })
 
-  it('整行是命中区，回执落在圆圈上：悬停升描边、按下换到 200 档中性面，圆圈几何不动；选中圈保住品牌描边', async () => {
+  const FAMILY = {
+    'data-xh-action-control': '',
+    'data-xh-action-profile': 'row',
+    'data-xh-action-variant': 'ghost',
+    'data-xh-action-display': 'always',
+    'data-xh-action-size': 'xs',
+  }
+
+  /** 静态夹具的条目补上连接层投影的五个家族属性。 */
+  function project(items: HTMLElement[]): void {
+    for (const item of items) {
+      for (const [name, value] of Object.entries(FAMILY))
+        item.setAttribute(name, value)
+    }
+  }
+
+  it('整行接 row 档：悬停行面 100 + 圆圈描边升档，按下行面 200 + 圆圈 300 不缩放；xs 是 24px 命中地板', async () => {
     const { root, items, indicators } = mount()
-    const [checked, idle] = indicators as [HTMLElement, HTMLElement]
+    project(items)
+    const idle = indicators[1]!
     const restBorder = getComputedStyle(idle).borderTopColor
+    const restBg = getComputedStyle(idle).backgroundColor
     const size = idle.getBoundingClientRect()
+    expect(items[1]!.getBoundingClientRect().height).toBe(24)
+    expect(getComputedStyle(items[1]!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
 
     await userEvent.hover(items[1]!)
+    // 行自己坐画布：hover 100；圆圈只升描边，底不动
+    expect(getComputedStyle(items[1]!).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
     expect(getComputedStyle(idle).borderTopColor).toBe(resolveColor('--xh-border-control-hover', root))
     expect(getComputedStyle(idle).borderTopColor).not.toBe(restBorder)
+    expect(getComputedStyle(idle).backgroundColor).toBe(restBg)
     await pressPointer(items[1]!)
     expect(items[1]!.matches(':active')).toBe(true)
-    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
+    // 行按下 200，坐在行面上的圆圈读宿主 host 槽到 300；两者都不缩放
+    expect(getComputedStyle(items[1]!).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
+    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', root))
     expect(getComputedStyle(idle).scale).toBe('none')
     expect(getComputedStyle(items[1]!).scale).toBe('none')
     expect(idle.getBoundingClientRect().width).toBe(size.width)
-    await releasePointerAway()
+  })
 
+  it('选中圈保住品牌描边，按下圆圈 300、圆点换到 active 档', async () => {
+    const { root, items, indicators } = mount()
+    project(items)
+    const checked = indicators[0]!
     const checkedBorder = getComputedStyle(checked).borderTopColor
+    expect(checkedBorder).toBe(resolveColor('--xh-bg-brand', root))
+    expect(getComputedStyle(checked, '::before').backgroundColor).toBe(resolveColor('--xh-bg-brand', root))
     await userEvent.hover(items[0]!)
     expect(getComputedStyle(checked).borderTopColor).toBe(checkedBorder)
     await pressPointer(items[0]!)
-    expect(getComputedStyle(checked).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
+    expect(getComputedStyle(checked).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active', root))
     expect(getComputedStyle(checked).borderTopColor).toBe(checkedBorder)
+    expect(getComputedStyle(checked, '::before').backgroundColor).toBe(resolveColor('--xh-bg-brand-active', root))
+  })
+
+  it('只读：整行不换面、手型 default，圆圈描边不升档、底不换', async () => {
+    const { root, items, indicators } = mount(' data-readonly=')
+    project(items)
+    for (const item of items)
+      item.setAttribute('data-readonly', '')
+    const idle = indicators[1]!
+    const restBorder = getComputedStyle(idle).borderTopColor
+    await userEvent.hover(items[1]!)
+    expect(getComputedStyle(items[1]!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(items[1]!).cursor).toBe('default')
+    expect(getComputedStyle(idle).borderTopColor).toBe(restBorder)
+    await pressPointer(items[1]!)
+    expect(getComputedStyle(items[1]!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-canvas', root))
+  })
+
+  it('禁用：圆圈 border-default + bg-subtle、圆点 fg-disabled，整行 not-allowed 且不换面', async () => {
+    const { root, items, indicators } = mount(' data-disabled=')
+    project(items)
+    for (const item of items)
+      item.setAttribute('data-disabled', '')
+    const [checked, idle] = indicators as [HTMLElement, HTMLElement]
+    expect(getComputedStyle(idle).borderTopColor).toBe(resolveColor('--xh-border-default', root))
+    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
+    expect(getComputedStyle(checked, '::before').backgroundColor).toBe(resolveColor('--xh-fg-disabled', root))
+    expect(getComputedStyle(items[1]!).cursor).toBe('not-allowed')
+    await userEvent.hover(items[1]!)
+    expect(getComputedStyle(items[1]!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    await pressPointer(items[1]!)
+    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
   })
 })

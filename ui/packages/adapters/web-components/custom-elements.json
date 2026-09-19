@@ -41617,6 +41617,9 @@
               "name": "--xh-radio-group-indicator-bg"
             },
             {
+              "name": "--xh-radio-group-indicator-bg-disabled"
+            },
+            {
               "name": "--xh-radio-group-indicator-bg-pressed"
             },
             {
@@ -41624,6 +41627,9 @@
             },
             {
               "name": "--xh-radio-group-indicator-border-checked"
+            },
+            {
+              "name": "--xh-radio-group-indicator-border-disabled"
             },
             {
               "name": "--xh-radio-group-indicator-border-hover"
@@ -41635,10 +41641,22 @@
               "name": "--xh-radio-group-indicator-dot"
             },
             {
+              "name": "--xh-radio-group-indicator-dot-disabled"
+            },
+            {
+              "name": "--xh-radio-group-indicator-dot-pressed"
+            },
+            {
               "name": "--xh-radio-group-indicator-radius"
             },
             {
               "name": "--xh-radio-group-indicator-size"
+            },
+            {
+              "name": "--xh-radio-group-item-bg-hover"
+            },
+            {
+              "name": "--xh-radio-group-item-bg-pressed"
             },
             {
               "name": "--xh-radio-group-item-fg"

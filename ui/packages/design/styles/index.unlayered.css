@@ -29512,6 +29512,8 @@
 /* styles/radio-group.css */
 /* 定义 radio group 样式。 */
 
+/* family/action-control.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='radio-group'] {
   --xh-radio-group-skin: 1;
@@ -29524,6 +29526,11 @@
   --xh-_radio-group-indicator: var(--xh-control-indicator-md);
   /* 选中色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
   --xh-_radio-group-accent: var(--xh-_tone, var(--xh-bg-brand));
+  /* 条目是圆圈的承载面：行自己坐画布走 100 → 200，行面上的圆圈按淡底容器阶梯再上一档（200 → 300）。
+     两支私有槽是这一档的唯一来源——宿主拿它们给 --xh-action-host-bg-* 赋值（桥接槽只写不读），
+     圆圈按下读同一支私有槽，即与宿主的 host 槽同源 */
+  --xh-_radio-group-host-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_radio-group-host-bg-pressed: var(--xh-bg-subtle-active);
 
   /* 标题与条目都是根的直接子节点，一支 gap 同时管「标题到集合」与「条目之间」：
      集合标题与集合隔 --xh-space-2（§6.4），同组条目之间也是同一档紧密关系 */
@@ -29569,30 +29576,52 @@
   color: var(--xh-radio-group-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* position 是给条目内那份视觉隐藏的原生输入做定位基准，别去掉 */
+/* 条目是「圆圈 + 文案」的整行命中区（§9.2）：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、手型、
+   过渡与焦点环由家族给，按下只换面不缩放（row 档专属按压块 scale: none）；这里只把使用者槽映射到桥接槽。
+   行自己坐画布走 100 → 200（--xh-action-bg-* 钉住自己的面），行面上的圆圈按淡底容器阶梯再上一档
+   （--xh-action-host-bg-* 向内声明自己是圆圈的承载面，host 槽只对后代生效——自己的面已由 --xh-action-bg-* 钉住；
+   也因此 root 带 data-tone 时 --xh-_tone-subtle 不会把整行染色）。
+   xs 的 24px 是命中地板，圆圈 12 / 16 / 20px 居中其间；字号与间距按组档位从 root 的私有槽映射。
+   条目禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，家族的禁用块读 data-disabled。
+   position 是给条目内那份视觉隐藏的原生输入做定位基准，别去掉 */
 [data-scope='radio-group'][data-part='item'] {
+  --xh-action-gap: var(--xh-radio-group-item-gap, var(--xh-_radio-group-item-gap));
+  --xh-action-radius: var(--xh-radio-group-item-radius, var(--xh-shape-control));
+  --xh-action-font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
+  --xh-action-padding-inline: 0;
+  --xh-action-padding-block: 0;
+  --xh-action-fg-rest: var(--xh-radio-group-item-fg, var(--xh-fg-default));
+  --xh-action-fg-hover: var(--xh-radio-group-item-fg, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-radio-group-item-fg, var(--xh-fg-default));
+  --xh-action-fg-focus-visible: var(--xh-radio-group-item-fg, var(--xh-fg-default));
+  --xh-action-fg-disabled: var(--xh-radio-group-item-fg-disabled, var(--xh-fg-disabled));
+  --xh-action-bg-hover: var(--xh-radio-group-item-bg-hover, var(--xh-bg-subtle));
+  --xh-action-bg-pressed: var(--xh-radio-group-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-action-host-bg-hover: var(--xh-_radio-group-host-bg-hover);
+  --xh-action-host-bg-pressed: var(--xh-_radio-group-host-bg-pressed);
+
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-radio-group-item-gap, var(--xh-_radio-group-item-gap));
-  border-radius: var(--xh-radio-group-item-radius, var(--xh-shape-control));
-  color: var(--xh-radio-group-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
+  /* row 档铺满容器（inline-size: 100%）会把竖排的命中区拉到整行空白处、横排 wrap 也塌：
+     沿用「条目按内容收宽」的既有决定，写法同 checkbox-group 条目 */
+  inline-size: auto;
+  /* ghost 的 1px 透明边位会把圆圈列相对组标题错开 1px：边归零，几何保持不变 */
+  border-width: 0;
 }
 
-/* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
-[data-scope='radio-group'][data-part='item'][data-disabled] {
-  color: var(--xh-radio-group-item-fg-disabled, var(--xh-fg-disabled));
-}
-
-/* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
-   排掉禁用项是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+/* 只读整组都改不动，但不是禁用：颜色照常，把整行的悬停 / 按下面与"可点"这个暗示一起收回来。
+   家族的 :hover / 按压块不排 readonly，只能从槽上收回；排掉禁用项是因为这条选择器权重高过家族的禁用块，
+   不排就会把 not-allowed 覆盖回 default */
 [data-scope='radio-group'][data-part='item'][data-readonly]:not([data-disabled]) {
-  cursor: default;
+  --xh-action-bg-hover: transparent;
+  --xh-action-bg-pressed: transparent;
+  --xh-action-cursor-rest: default;
+  --xh-action-cursor-hover: default;
+  --xh-action-cursor-pressed: default;
+  --xh-action-cursor-focus-visible: default;
 }
 
+/* 圆圈是字段家族的控制盒（§8.3 字段静息形态）：canvas 底 + --xh-border-control 描边 + 无影。
+   不缩放（§9.2 行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
 [data-scope='radio-group'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
@@ -29608,17 +29637,21 @@
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 整行是命中区，回执落在圆圈上：悬停升一档描边（字段静息 → hover 的同一条阶梯，§8.3），
-   按下换底到 200 档中性面（圆圈坐在画布上，§7.2 白底承载），圆点不动、几何不动（§9.2 集合行不允许零反馈）。
-   禁用与只读的行不给回执；选中圈与校验失败的圈保住各自的描边，按下同样换底，圈内的点仍在 */
+/* 悬停整行时未选中的圆圈描边升一档（字段静息 → hover 的同一条阶梯，§8.3）；
+   选中圈与校验失败的圈保住各自的描边——圈内的点 / 警示色本身已经在表达状态 */
 [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):hover
   > [data-scope='radio-group'][data-part='indicator']:not([data-state='checked']):not([data-invalid]) {
   border-color: var(--xh-radio-group-indicator-border-hover, var(--xh-border-control-hover));
 }
 
+/* 按下去要有回应。圆圈不是激活宿主：宿主是投影了 row 档的整行条目，圆圈在宿主的
+   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面、不缩放（§9.2）——行按下是 200，
+   坐在上面的圆圈到 300（行以 --xh-action-host-bg-pressed 声明自己是圆圈的承载面，桥接槽只写不读，
+   圆圈读的是喂给它的那支私有槽），描边不动、几何不动；
+   与家族按压块同一时间线（按下 --xh-motion-duration-press，释放同走 micro） */
 [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])
   > [data-scope='radio-group'][data-part='indicator'] {
-  background: var(--xh-radio-group-indicator-bg-pressed, var(--xh-bg-subtle-hover));
+  background: var(--xh-radio-group-indicator-bg-pressed, var(--xh-_radio-group-host-bg-pressed));
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
@@ -29650,9 +29683,35 @@
   scale: 1;
 }
 
+/* 选中的圆点是这颗圈的「填色」：按下随行换到语气的 active 档（与 checkbox-group 勾中方框按下同档），
+   选中圈的描边保住不换 */
+[data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])
+  > [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
+  background: var(--xh-radio-group-indicator-dot-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+}
+
+/* 禁用（§7.2）：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 圆点，不靠 opacity；
+   与 checkbox-group 方框、独立 checkbox 逐档一致。条目自己带 data-disabled（组禁用也逐条下放），圆圈读它 */
+[data-scope='radio-group'][data-part='item'][data-disabled] > [data-scope='radio-group'][data-part='indicator'] {
+  border-color: var(--xh-radio-group-indicator-border-disabled, var(--xh-border-default));
+  background: var(--xh-radio-group-indicator-bg-disabled, var(--xh-bg-subtle));
+}
+
+[data-scope='radio-group'][data-part='item'][data-disabled] > [data-scope='radio-group'][data-part='indicator']::before {
+  background: var(--xh-radio-group-indicator-dot-disabled, var(--xh-fg-disabled));
+}
+
 [data-scope='radio-group'][data-part='item-text'] {
   color: inherit;
   user-select: none;
+}
+
+/* 家族 row 档在粗指针下用 ::after 把热区扩到 44px 高：条目按 24px 行 + 8px 间距密排，热区会压进相邻条目、
+   指针落错行，A 档 24px 由 xs 地板保住（同 checkbox-group 条目） */
+@media (pointer: coarse) {
+  [data-scope='radio-group'][data-part='item']::after {
+    min-block-size: 0;
+  }
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -29668,6 +29727,12 @@
   [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])
     > [data-scope='radio-group'][data-part='indicator'] {
     border-color: Highlight;
+  }
+
+  /* 禁用的圆点跟随系统的置灰前景 */
+  [data-scope='radio-group'][data-part='item'][data-disabled]
+    > [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
+    background: GrayText;
   }
 }
 

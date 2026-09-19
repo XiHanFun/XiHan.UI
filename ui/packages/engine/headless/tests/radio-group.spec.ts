@@ -116,6 +116,21 @@ describe('connectRadioGroup 投影', () => {
     g.stop()
   })
 
+  it('条目接 Action Control row 档 ghost：整行是行级命中区，按下只换面不缩放；xs 是 24px 命中地板', () => {
+    const g = makeGroup({})
+    expect(g.api().getItemProps({ value: 'free' })).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    })
+    // 圆圈是行内 aria-hidden 的标记，不投影配方，随行读宿主的桥接槽换面
+    const circle = g.api().getIndicatorProps({ value: 'free' }) as Record<string, unknown>
+    expect('data-xh-action-control' in circle).toBe(false)
+    g.stop()
+  })
+
   it('整组禁用、只读、无效、必填各落到根上，禁用与只读同时落到每个条目', () => {
     const g = makeGroup({ disabled: true, readOnly: true, invalid: true, required: true })
     expect(g.api().getRootProps()).toMatchObject({ 'data-disabled': '', 'aria-readonly': 'true', 'aria-invalid': 'true', 'aria-required': 'true', 'data-required': '' })

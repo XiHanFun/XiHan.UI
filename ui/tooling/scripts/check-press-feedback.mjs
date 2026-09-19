@@ -28,8 +28,8 @@
 //    的通用按压块换底；几何由两条路保住：profile 为 row / disclosure-trigger 的（§9.2 铺满一行的动作条目与
 //    disclosure trigger）靠两档专属的按压块 scale: none，其余 profile 的（共边相接的分段，缩放会把接缝拉开）
 //    必须在皮肤里给该部件写 --xh-action-scale-pressed: none，否则通用按压块的 0.97 缩放照样落下来。
-//    合同项可再带两个字段：target 指明换面落在该部件的哪个后代上（radio-group 的 item 按下时圆圈换底，
-//    整行本身没有面）；channel: 'color' 声明这一档无底、按下只换前景，此时 :active 块换 color 也算回执——
+//    合同项可再带两个字段：target 指明换面落在该部件的哪个后代上（当前没有成员：radio-group 的 item 曾登
+//    target: 'indicator'，接 Action Control row 档后整行自己有面）；channel: 'color' 声明这一档无底、按下只换前景，此时 :active 块换 color 也算回执——
 //    没声明 channel 的仍只认换底（当前没有成员：tabs line 档已接 Collection Item nav 语境，按下经家族换面）。
 // ④ 展示色底的缩放（登记成 { part, feedback: 'scale', channel: 'border' }）：这一格的底色就是它要展示的
 //    东西（色板的格子），按下换底等于把展示物盖掉，§9.1「同时换底」在这里落不下去；缩放仍走令牌，
@@ -79,8 +79,9 @@ const PRESSABLE = {
   // 序号 + 标题 + 说明的整块内容行：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档专属块归零；
   // 圆点随触发器读宿主 host 槽换到 300 / 当前步 brand-active，不缩放（§9.2）
   'steps': [{ part: 'trigger', feedback: 'surface' }],
-  // 圆圈 + 文字的整行条目：整行没有面，按下的回执落在圆圈上（圆圈坐在画布上，按下换到 200 档中性面），圆点不动
-  'radio-group': [{ part: 'item', feedback: 'surface', target: 'indicator' }],
+  // 圆圈 + 文字的整行条目：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档专属块归零；
+  // 圆圈随行读宿主 host 槽换到 300 / 选中圆点 active 档，不缩放（§9.2）。不登 target: 'indicator'——整行自己有面了
+  'radio-group': [{ part: 'item', feedback: 'surface' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
   // 定尺的独立下载钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给（§9.1）
