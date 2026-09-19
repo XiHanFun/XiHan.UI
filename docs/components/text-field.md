@@ -214,7 +214,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.CLEAR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `VALUE.CLEAR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canEdit` · `canClear`
 
@@ -256,6 +256,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Escape` | focus in input, clearable 且值非空, not disabled/readOnly | 清空值；三个条件缺一即不接管该键，交回给外层与浏览器 |
+| `Enter` / `Space` | held in clear-trigger, clearable 且值非空, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 
 ### ARIA
 
@@ -313,6 +314,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `input` | `data-xh-field-layout` | 'textarea' \| 'single-line' |
 | `suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `suffix` | `data-xh-field-affix` | 'suffix' |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |
 | `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |

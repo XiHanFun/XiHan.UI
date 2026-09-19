@@ -374,3 +374,69 @@ describe('connectTextField 输入与清空', () => {
     expect(s.value()).toBe('')
   })
 })
+
+describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const touch = (): PointerEvent => ({ pointerType: 'touch', button: 0, preventDefault: vi.fn() } as unknown as PointerEvent)
+  const clear = (s: ReturnType<typeof makeService>): Dict => s.api().getClearTriggerProps() as Dict
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const s = makeService({ defaultValue: 'x', clearable: true })
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onKeyDown', key(' '))
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onKeyUp', key(' '))
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onKeyDown', key('Enter'))
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onBlur', {})
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown，焦点仍留在输入框
+    const down = touch()
+    fire(clear(s), 'onPointerDown', down)
+    expect(down.preventDefault).toHaveBeenCalled()
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onPointerCancel', {})
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onPointerDown', touch())
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onPointerUp', {})
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onPointerDown', { pointerType: 'mouse', button: 0, preventDefault: vi.fn() })
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    // 按压不清值
+    expect(s.value()).toBe('x')
+  })
+
+  it('不进：没开 clearable、禁用、只读或没有值时清空按钮藏着，按住不投影', () => {
+    for (const props of [{ defaultValue: 'x' }, { defaultValue: 'x', clearable: true, disabled: true }, { defaultValue: 'x', clearable: true, readOnly: true }, { clearable: true }] as Props[]) {
+      const s = makeService(props)
+      fire(clear(s), 'onKeyDown', key(' '))
+      fire(clear(s), 'onPointerDown', touch())
+      expect(clear(s)['data-pressed']).toBeUndefined()
+    }
+  })
+
+  it('按住途中值被清空或转入禁用 / 只读：按钮藏起、不会再来 keyup，按压面由机器自己收', () => {
+    const cleared = makeService({ defaultValue: 'x', clearable: true })
+    fire(clear(cleared), 'onKeyDown', key('Enter'))
+    expect(clear(cleared)['data-pressed']).toBe('')
+    cleared.service.send({ type: 'VALUE.CLEAR' })
+    expect(cleared.value()).toBe('')
+    expect(clear(cleared)['data-pressed']).toBeUndefined()
+
+    for (const inert of [{ disabled: true }, { readOnly: true }, { clearable: false }] as Props[]) {
+      // watch 只在 props 身份变化时复查，走 signal 才惊动它
+      const runtime = createVanillaRuntime()
+      const props = runtime.signal<Props>({ defaultValue: 'x', clearable: true })
+      const service = createService(textFieldMachine, { props: () => props.get(), runtime })
+      runtime.start()
+      const api = (): Dict => connectTextField(service, normalizeProps).getClearTriggerProps() as Dict
+      fire(api(), 'onKeyDown', key('Enter'))
+      expect(api()['data-pressed']).toBe('')
+      props.set({ ...props.get(), ...inert })
+      expect(api()['data-pressed']).toBeUndefined()
+      runtime.stop()
+    }
+  })
+})

@@ -44,13 +44,22 @@ export const textFieldMachine = createMachine({
       defaultValue: prop('defaultValue') ?? '',
       onChange: value => prop('onValueChange')?.({ value }),
     })),
+    // 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
-  // 只有一个状态，两条事件挂在根级
+  // 按住途中转入禁用 / 只读、关掉 clearable 或值被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
+  watch: ({ track, prop, context, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('clearable'), context.dep('value')], () => action(['releaseWhenInert']))
+  },
+  // 只有一个状态，事件都挂在根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canEdit', actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canClear', actions: ['clearValue'] },
+    // 清空按钮的按压与清空本身同一道守卫：清不了的按钮已经藏起，不该有按下的回执
+    'PRESS.START': { guard: 'canClear', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {},
@@ -72,6 +81,12 @@ export const textFieldMachine = createMachine({
       },
       clearValue: ({ context }) => {
         context.set('value', '')
+      },
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: ({ context, prop }) => {
+        if (!prop('clearable') || prop('disabled') || prop('readOnly') || context.get('value') === '')
+          context.set('pressed', false)
       },
     },
   },
