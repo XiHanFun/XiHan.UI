@@ -533,12 +533,14 @@ export const timePickerSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          why: 'jsdom 不把 Enter 翻成 click，平台那一步只能手写：keydown 先到，紧接着才是那次 click',
+          why: 'jsdom 不把 Enter 翻成 click，平台那一步只能手写：keydown 先到，紧接着才是那次 click，松键收尾',
           run: ({ doc }) => {
             const trigger = doc.querySelector<HTMLElement>(`${SCOPE}[data-part="trigger"]`)!
             trigger.focus()
             trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
             trigger.click()
+            // 松键：按压通道在 keydown 已起，焦点何时搬进浮层（触发钮何时 blur）三家时序不同，keyup 把这一帧对齐
+            trigger.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }))
           },
           expect: {
             parts: {
