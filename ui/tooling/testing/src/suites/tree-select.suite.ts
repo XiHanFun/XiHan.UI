@@ -1,6 +1,7 @@
 import type { TreeNode } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { treeSelectAnatomy, treeSelectKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 触发器照 combobox 规格，展开后的树照 treeview 规格。
 const APG_COMBOBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
@@ -1428,6 +1429,65 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字不进属性快照；这里要验的是收起子树里的选中值照样报得出名字（文本取自 collection 而不是活 DOM）',
           run: ({ doc }) => assertValueText(doc, 'Dom'),
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：叶子行投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['tree-select.kbd.press'],
+      // 多选：选完不收起，按住的中间帧才看得见；失焦落到另一片叶子，焦点不离开浮层
+      props: props({ multiple: true, defaultExpandedValue: ['src'] }),
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
+        { kind: 'settle', until: { activeElement: 'branch[0]' } },
+        heldPress('tree-select', 'item', { value: 'index', blurTo: `${SCOPE}[data-part="item"][data-value="license"]` }),
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：分支行投影 data-pressed，键盘由 branch 代发、触屏按在行上',
+      spec: { adr: 'press-channel' },
+      props: props({ multiple: true, defaultExpandedValue: ['src'] }),
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
+        { kind: 'settle', until: { activeElement: 'branch[0]' } },
+        // 焦点落在 branch 上、按压面画在 branch-control 上：键盘与失焦派到 branch，看的是行身上的属性
+        heldPress('tree-select', 'branch-control', {
+          selector: `${SCOPE}[data-part="branch"][data-value="src"] > ${SCOPE}[data-part="branch-control"]`,
+          keyboardHost: `${SCOPE}[data-part="branch"][data-value="src"]`,
+          keys: [' ', 'Enter'],
+          blurTo: `${SCOPE}[data-part="item"][data-value="license"]`,
+        }),
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      // 收起态按：清空钮不占 Tab 位，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路
+      props: props({ defaultValue: 'license' }),
+      steps: [heldPress('tree-select', 'clear-trigger')],
+    },
+    {
+      name: '禁用节点按住不进入按压面；只读 / 加载时三者都不进；无值时清空钮不进',
+      spec: { adr: 'press-channel' },
+      props: props({ multiple: true, defaultValue: ['license'], defaultExpandedValue: ['src'] }),
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
+        // 有选中值时焦点落到选中行（license 是 item[3]）
+        { kind: 'settle', until: { activeElement: 'item[3]' } },
+        heldPressIgnored('tree-select', 'item', '禁用叶子不接受按压', { value: 'readme' }),
+        { kind: 'setProps', props: { readOnly: true } },
+        heldPressIgnored('tree-select', 'item', '只读时叶子改不了选中值，不接受按压', { value: 'index' }),
+        heldPressIgnored('tree-select', 'branch-control', '只读时分支行改不了选中值，不接受按压', { keyboardHost: `${SCOPE}[data-part="branch"][data-value="src"]` }),
+        heldPressIgnored('tree-select', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, loading: true } },
+        heldPressIgnored('tree-select', 'item', '加载中叶子不接受按压', { value: 'index' }),
+        heldPressIgnored('tree-select', 'branch-control', '加载中分支行不接受按压', { keyboardHost: `${SCOPE}[data-part="branch"][data-value="src"]` }),
+        heldPressIgnored('tree-select', 'clear-trigger', '加载中清空钮不接受按压'),
+        { kind: 'setProps', props: { loading: false, value: [] } },
+        heldPressIgnored('tree-select', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
       ],
     },
   ],

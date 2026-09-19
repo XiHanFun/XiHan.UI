@@ -7,7 +7,7 @@
 
 import type { ActionFn, PositionResult } from '@xihan-ui/core'
 import type { TreeVisibleNode } from '../tree'
-import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNode, TreeSelectSchema } from './tree-select.types'
+import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNode, TreeSelectPressedPart, TreeSelectSchema } from './tree-select.types'
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
@@ -226,6 +226,9 @@ export const treeSelectMachine = createMachine({
     branchLoads: cell(() => ({ defaultValue: {} })),
     loadedChildren: cell(() => ({ defaultValue: {} })),
     renderedNodeCount: cell<number>(() => ({ defaultValue: 0 })),
+    // 按压通道：正被按住的那一个（节点按 value 记、叶子行与分支行分开认，清空按钮只记部件），与开合无关
+    pressedPart: cell<TreeSelectPressedPart | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -249,11 +252,17 @@ export const treeSelectMachine = createMachine({
     track([() => prop('collection')], () => action(['syncBranchLoads']))
     // 受控 expandedValue、初始 defaultExpandedValue 与 API 改写共用这一个入口。
     track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
+    // 值清空时清空按钮随之藏起，按住它的那一下不会再来 keyup：与禁用 / 只读 / 加载一道由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
+    track([context.dep('value')], () => action(['releaseWhenInert']))
   },
   // 请求控制器随服务存活，但浮层或分支收起会主动中止；Layer、消解与焦点资源延迟到 Presence 完成。
   effects: ['trackBranchLoads', 'trackLayer'],
   // 这几件事与开合无关，两个状态里都得认；展开态另行声明的 NODE.SELECT 会盖过这里那一条。
   on: {
+    // 按压通道：三个部件两个状态都认；禁用 / 只读 / 加载不进，清空按钮在清不了时不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
@@ -287,8 +296,9 @@ export const treeSelectMachine = createMachine({
     open: {
       // 锚点在进入展开态时就位；节点常挂，此刻查到的顺序即最终顺序。
       entry: ['setInitialFocusedValue'],
-      // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串
-      exit: ['clearFocusedValue', 'clearTypeahead'],
+      // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串。
+      // 收起即松开：按住 Enter 选中后节点随浮层藏起，不会再来 keyup
+      exit: ['clearFocusedValue', 'clearTypeahead', 'releasePress'],
       // 定位只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -316,9 +326,45 @@ export const treeSelectMachine = createMachine({
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       isMultiple: ({ prop }) => !!prop('multiple'),
+      // 禁用、只读与加载都改不了值，一票否决；节点自身的禁用随事件带入；清空按钮没有值可清时不进
+      canPress: ({ prop, context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('disabled') || prop('readOnly') || prop('loading') || e.disabled)
+          return false
+        return e.part !== 'clear-trigger' || context.get('value').length > 0
+      },
     },
     actions: {
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value ?? null)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== (e.value ?? null))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releasePress: ({ context }) => {
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const part = context.get('pressedPart')
+        const inert = prop('disabled') || prop('readOnly') || prop('loading')
+          || (part === 'clear-trigger' && context.get('value').length === 0)
+        if (!part || !inert)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
 
       syncBranchLoads: (params) => {
         const { context, prop, refs } = params

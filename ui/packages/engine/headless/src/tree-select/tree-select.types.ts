@@ -131,6 +131,9 @@ export interface TreeSelectTranslations {
   branchEmpty: string
 }
 
+/** 接了按压通道的三个部件：叶子行与分支行按 node.value 记（同一个值在两个部件上分开认），清空按钮只记部件。 */
+export type TreeSelectPressedPart = 'item' | 'branch-control' | 'clear-trigger'
+
 export interface TreeSelectSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支；已提供 children 时它优先。默认为空树。 */
@@ -224,6 +227,10 @@ export interface TreeSelectSchema extends MachineSchema {
     loadedChildren: Record<string, TreeSelectNode[]>
     /** 三端只上报实际挂载的 item/branch 数量；手写节点是否为空由 Headless 据此判断。 */
     renderedNodeCount: number
+    /** 按压通道：Space / Enter 或触屏按住的是叶子行、分支行还是清空按钮。 */
+    pressedPart: TreeSelectPressedPart | null
+    /** 按压通道：按住的节点 value；clear-trigger 没有值，记 null。抬起、失焦或浮层收起即清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: TreeSelectRefs
@@ -254,8 +261,15 @@ export interface TreeSelectSchema extends MachineSchema {
     | { type: 'NODE.UNMOUNT', value: string }
     | { type: 'NODES.SYNC', values: string[] }
     | { type: 'FORM.RESET' }
+    /**
+     * 叶子行、分支行或清空按钮被 Space / Enter 或触屏按住。分支行的键盘按压由 branch 代发（焦点落在 branch
+     * 上，branch-control 只是它里面的一层内容）；disabled 是节点自身的禁用事实，由 connect 判定后随事件带入。
+     */
+    | { type: 'PRESS.START', part: TreeSelectPressedPart, value?: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: TreeSelectPressedPart, value?: string }
   tag: never
-  guard: 'isOpenControlled' | 'isMultiple'
+  guard: 'isOpenControlled' | 'isMultiple' | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -281,6 +295,10 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'syncRenderedNodes'
     | 'cancelBranchLoads'
     | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackPosition' | 'trackLayer' | 'trackBranchLoads'
 }
 

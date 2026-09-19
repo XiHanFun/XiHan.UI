@@ -230,9 +230,9 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `NODE.FOCUS` · `NODE.LOST` · `NODE.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `BRANCH.RETRY` · `NODE.MOUNT` · `NODE.UNMOUNT` · `NODES.SYNC` · `FORM.RESET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `NODE.FOCUS` · `NODE.LOST` · `NODE.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `BRANCH.RETRY` · `NODE.MOUNT` · `NODE.UNMOUNT` · `NODES.SYNC` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled` · `isMultiple`
+**判据**：`isOpenControlled` · `isMultiple` · `canPress`
 
 ### connect API
 
@@ -316,6 +316,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `ArrowRight` | open, focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | open, focus in content（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
 | `Enter` / `Space` | open, 焦点节点未禁用且不是错误分支 | 选中焦点节点：单选替换并收起浮层、焦点归还 trigger；多选切换且浮层不收起 |
+| `Enter` / `Space` | held in item / branch / clear-trigger, 未禁用、未只读、未加载 | 按住期间叶子行、分支行（branch-control）或清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，节点随浮层收起一并撤下；没有值可清时清空按钮不进 |
 | `Enter` / `Space` | open, focus on branch, 分支加载失败 | 重试该分支，焦点留在分支行；不改变选中值与展开集合 |
 | `*` | open, focus in content | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | open, focus in content | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
@@ -396,6 +397,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |
 | `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
@@ -414,11 +416,13 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-empty` | ''（条件成立时才出现） |
 | `tree` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
 | `item-text` | `data-xh-collection-slot` | 'text' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
+| `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-xh-collection-context` | 'overlay' |
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | props.size |

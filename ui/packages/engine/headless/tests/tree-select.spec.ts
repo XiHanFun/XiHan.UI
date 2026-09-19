@@ -1627,3 +1627,148 @@ describe('浮层的层与消解', () => {
     expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，叶子行与分支行按 value 分开记，清空按钮只记部件', () => {
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  it('叶子行：keydown 在场、keyup 撤下；触屏按下在场、抬起或取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    // 多选：选完不收起，按住的中间帧才看得见
+    const h = mount({ defaultOpen: true, defaultExpandedValue: ['src'], multiple: true })
+    const index = h.item('index').item
+    index.focus()
+    expect(pressed(index)).toBe(false)
+    press(index, ' ')
+    expect(pressed(index)).toBe(true)
+    expect(h.value()).toEqual(['index'])
+    keyUp(index, ' ')
+    expect(pressed(index)).toBe(false)
+    press(index, 'Enter')
+    expect(pressed(index)).toBe(true)
+    index.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(index)).toBe(false)
+    touch(index, 'pointerdown')
+    expect(pressed(index)).toBe(true)
+    touch(index, 'pointerup')
+    expect(pressed(index)).toBe(false)
+    touch(index, 'pointerdown')
+    touch(index, 'pointercancel')
+    expect(pressed(index)).toBe(false)
+    index.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true }))
+    expect(pressed(index)).toBe(false)
+  })
+
+  it('分支行：焦点落在 branch 上，按键由它替行代发，按压面画在 branch-control 上；子节点上的按键与失焦冒泡上来不算', () => {
+    const h = mount({ defaultOpen: true, defaultExpandedValue: ['src', 'utils'], multiple: true })
+    const { branch, control } = h.branch('src')
+    branch.focus()
+    press(branch, ' ')
+    expect(pressed(control)).toBe(true)
+    expect(pressed(branch)).toBe(false)
+    // 同一个值按住行时叶子不亮，另一分支也不亮
+    expect(pressed(h.branch('utils').control)).toBe(false)
+    keyUp(branch, ' ')
+    expect(pressed(control)).toBe(false)
+    press(branch, 'Enter')
+    expect(pressed(control)).toBe(true)
+    branch.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(control)).toBe(false)
+
+    // 子树里的叶子按住：只亮叶子，祖先分支行不跟着亮
+    const dom = h.item('dom').item
+    dom.focus()
+    press(dom, ' ')
+    expect(pressed(dom)).toBe(true)
+    expect(pressed(control)).toBe(false)
+    expect(pressed(h.branch('utils').control)).toBe(false)
+    // 叶子的 blur 冒泡到分支上不把分支的按压收掉（分支此刻本就没按着），也不动叶子之外的东西
+    keyUp(dom, ' ')
+    expect(pressed(dom)).toBe(false)
+
+    // 触屏按在行上
+    touch(control, 'pointerdown')
+    expect(pressed(control)).toBe(true)
+    touch(control, 'pointerup')
+    expect(pressed(control)).toBe(false)
+  })
+
+  it('清空按钮：有值可清时投影同一副按压面，与节点互不串；另一个的 keyup 不把它松开', () => {
+    const h = mount({ defaultOpen: true, defaultValue: ['license'], multiple: true })
+    press(h.clear, ' ')
+    expect(pressed(h.clear)).toBe(true)
+    expect(pressed(h.item('license').item)).toBe(false)
+    keyUp(h.item('license').item, ' ')
+    expect(pressed(h.clear)).toBe(true)
+    keyUp(h.clear, ' ')
+    expect(pressed(h.clear)).toBe(false)
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown
+    touch(h.clear, 'pointerdown')
+    expect(pressed(h.clear)).toBe(true)
+    touch(h.clear, 'pointercancel')
+    expect(pressed(h.clear)).toBe(false)
+    const license = h.item('license').item
+    license.focus()
+    press(license, ' ')
+    expect(pressed(license)).toBe(true)
+    expect(pressed(h.clear)).toBe(false)
+    keyUp(h.clear, ' ')
+    expect(pressed(license)).toBe(true)
+  })
+
+  it('不进：禁用 / 只读 / 加载时三者都不进；没有值可清时清空按钮不进；节点自身禁用不进', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ defaultOpen: true, defaultValue: ['license'], defaultExpandedValue: ['src'], multiple: true, ...inert })
+      const license = h.item('license').item
+      license.focus()
+      press(license, ' ')
+      press(h.clear, ' ')
+      touch(h.branch('src').control, 'pointerdown')
+      expect(pressed(license)).toBe(false)
+      expect(pressed(h.clear)).toBe(false)
+      expect(pressed(h.branch('src').control)).toBe(false)
+    }
+    const empty = mount({ defaultOpen: true })
+    press(empty.clear, ' ')
+    expect(pressed(empty.clear)).toBe(false)
+
+    const h = mount({ defaultOpen: true, defaultExpandedValue: ['src'] })
+    const readme = h.item('readme').item
+    readme.focus()
+    press(readme, ' ')
+    touch(readme, 'pointerdown')
+    expect(pressed(readme)).toBe(false)
+  })
+
+  it('浮层收起即松开：单选按住 Enter 选中后节点随浮层藏起，不会再来 keyup，按压面由机器收', () => {
+    const h = mount({ defaultOpen: true })
+    const license = h.item('license').item
+    license.focus()
+    press(license, 'Enter')
+    expect(h.state()).toBe('closed')
+    expect(h.value()).toEqual(['license'])
+    expect(pressed(license)).toBe(false)
+  })
+
+  it('按住途中转入禁用 / 只读 / 加载、或值被清空：按压面由机器自己收，不等 keyup', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ defaultOpen: true, defaultValue: ['license'], multiple: true })
+      const license = h.item('license').item
+      license.focus()
+      press(license, ' ')
+      expect(pressed(license)).toBe(true)
+      h.setProps(inert)
+      expect(pressed(license)).toBe(false)
+    }
+    const h = mount({ defaultValue: ['license'] })
+    press(h.clear, 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    click(h.clear)
+    expect(h.value()).toEqual([])
+    expect(pressed(h.clear)).toBe(false)
+  })
+})

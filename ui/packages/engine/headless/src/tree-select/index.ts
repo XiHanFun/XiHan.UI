@@ -23,6 +23,7 @@ export type {
   TreeSelectNode,
   TreeSelectNodeProps,
   TreeSelectOpenChangeDetails,
+  TreeSelectPressedPart,
   TreeSelectRefs,
   TreeSelectSchema,
   TreeSelectTranslations,
