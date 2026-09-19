@@ -42,14 +42,15 @@
 // ⑦ 集合行不许零反馈：NO_PRESS 只留扩大命中区标签、拖拽轨道、字段外壳与值区、作者内容区四类永久理由，
 //    列表行一律登 PRESSABLE 的 surface 形态；
 // ⑧ data-pressed 第二判据：PRESSABLE 部件的 connect getter 必须投影 data-pressed（Space / Enter 与粗指针
-//    的按压由 Headless 投影），家族配方的按压选择器必须是 :is(:active, [data-pressed])。
+//    的按压由 Headless 投影）——getter 里直接写 'data-pressed' 字面量，或展开同一份 connect 里返回该键的本地
+//    press(part) 辅助都算；家族配方的按压选择器必须是 :is(:active, [data-pressed])。
 //    皮肤自己写的按压规则两种写法都认：:active（只有指针）与 :is(:active, [data-pressed])（三种输入同一档）。
 // 存量登 family-backlog.json press 段：⑤ 的 15 条、⑥ 只缩放不换底的、⑦ 皮肤还没有 :active 换面的行，
 // 以及 ⑧ 各组件接上 press-channel 之前的一条 *:data-pressed 总豁免（button / toggle 已接，其余随各组件
 // 提交接入，全部接完即删）；命中即放行、不命中判过期，表只减不增。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { getterBody } from './lib/connect-getters.mjs'
+import { getterBody, getterProjectsOrSpreads } from './lib/connect-getters.mjs'
 import { openBacklog } from './lib/family-backlog.mjs'
 
 const SKINS = 'packages/design/styles/css'
@@ -351,10 +352,11 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
       checkSurfacePart(name, part.part, css, await surfaceFamilyCss(name, part.part), part, await isRowProfile(name, part.part))
     else
       checkHeldPart(name, part.part, part.attr, css)
-    // ⑧ Space / Enter 与粗指针的按压由 Headless 投影 data-pressed，皮肤的 :active 才能与键盘按压一致
+    // ⑧ Space / Enter 与粗指针的按压由 Headless 投影 data-pressed，皮肤的 :active 才能与键盘按压一致。
+    // 两种写法都认：getter 里直接写 'data-pressed' 字面量（单颗按钮读 context.pressed），或展开本地
+    // press(part) 辅助（浮层多颗按钮按 part 键记按住的那颗，辅助返回的对象里写着 'data-pressed'）
     const [scope, ownPart] = partName.includes('/') ? partName.split('/') : [name, partName]
-    const body = await getterBody(scope, ownPart)
-    if (body != null && !body.includes('\'data-pressed\''))
+    if (await getterBody(scope, ownPart) != null && !await getterProjectsOrSpreads(scope, ownPart, 'data-pressed'))
       report(PRESSED_CHANNEL, `${name} 的 ${partName} 登记为可按，connect 的 getter 却没投影 data-pressed——键盘与粗指针的按压回执要由 Headless 给`)
   }
 }
