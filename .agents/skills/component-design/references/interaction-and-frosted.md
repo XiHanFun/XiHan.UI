@@ -71,12 +71,12 @@ rest
 
 使用同节奏但只换面（主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex，或高度随内容多行）：
 
-- Menu Item、Listbox Item、Tree Node、Table Row、Transfer Item、SideNav link（投影 `data-xh-collection-item`）。
+- Menu Item、Listbox Item、Tree Node、Table Row、Transfer Item、SideNav link、Tabs line trigger、Anchor link、Breadcrumb link、NavigationMenu / Menubar trigger（投影 `data-xh-collection-item`；横向导航这五件投影 `nav` 语境）。
 - Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger（`disclosure-trigger` profile）。
-- Tabs trigger、Segmented item、NavigationMenu / Menubar trigger、load-more trigger。
+- Tabs card / segment trigger、Segmented item、load-more trigger。
 - 大面积 Card Action、导航项、可选择列表行。
 
-这些部件在 120ms 内切到 active 面（line 档无底时换前景），200ms 回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
+这些部件在 120ms 内切到 active 面，200ms 回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
 
 不播放点击反馈（须在门禁登记理由）：
 
