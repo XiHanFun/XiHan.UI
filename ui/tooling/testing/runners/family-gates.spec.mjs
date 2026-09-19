@@ -185,6 +185,24 @@ gateSuite('check-press-feedback.mjs', {
   redText: '未登记：demo:root',
 })
 
+describe('check-press-feedback.mjs 条件块', () => {
+  it('forced-colors 分支里的 :active 补救不当作按压规则：接了家族按压块的部件仍放行', () => {
+    const root = createFixture()
+    // pagination 的页码接 Action Control，按压由家族给；皮肤里只剩 forced-colors 分支的一条 :active 补救
+    append(root, 'packages/design/styles/css/pagination.css', `
+@layer xihan.components {
+  @media (forced-colors: active) {
+    [data-scope='pagination'][data-part='item']:not([data-disabled]):is(:active, [data-pressed]) {
+      outline-color: Highlight;
+    }
+  }
+}
+`)
+    const result = run('check-press-feedback.mjs', root)
+    expect(result.status, String(result.stderr)).toBe(0)
+  }, SPAWN_TIMEOUT)
+})
+
 gateSuite('check-text-role.mjs', {
   section: 'text',
   red: LAYER(`
