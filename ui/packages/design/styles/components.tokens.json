@@ -74833,7 +74833,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。"

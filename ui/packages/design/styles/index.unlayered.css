@@ -39598,7 +39598,7 @@
 
 [data-scope='tree'][data-part='item-checkbox'][data-disabled],
 [data-scope='tree'][data-part='branch-checkbox'][data-disabled] {
-  border-color: var(--xh-tree-checkbox-border-disabled, var(--xh-border-subtle));
+  border-color: var(--xh-tree-checkbox-border-disabled, var(--xh-border-default));
 }
 
 [data-scope='tree'][data-part='item-text'],
