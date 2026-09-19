@@ -216,27 +216,6 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "switch [data-part='root'][data-readonly][data-scope='switch'][data-state='checked']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "switch [data-part='root'][data-scope='switch']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "switch [data-part='root'][data-scope='switch'][data-state='checked']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "table [data-part='column-visibility-trigger'][data-scope='table'][data-state='checked']": {
       "parts": [
         "column-visibility-trigger"

@@ -240,6 +240,11 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'checked' \| 'unchecked' |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-xh-action-control` | '' |
+| `root` | `data-xh-action-display` | 'always' |
+| `root` | `data-xh-action-profile` | 'text' |
+| `root` | `data-xh-action-size` | props.size |
+| `root` | `data-xh-action-variant` | 'outline' |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `thumb` | `data-loading` | ''（条件成立时才出现） |
 | `thumb` | `data-state` | 'checked' \| 'unchecked' |
@@ -256,21 +261,21 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-switch-bg` | `root` | `background` | `default`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle-active` | switch 的 root 部件 background 覆盖槽。 |
-| `--xh-switch-bg-checked` | `root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-_switch-accent` | switch 的 root 部件 background 覆盖槽。 |
-| `--xh-switch-bg-checked-pressed` | `root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-_tone-active` | switch 的 root 部件 background 覆盖槽。 |
-| `--xh-switch-bg-checked-readonly` | `root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-bg-subtle-active` | switch 的 root 部件 background 覆盖槽。 |
-| `--xh-switch-bg-disabled` | `root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle` | switch 的 root 部件 background 覆盖槽。 |
-| `--xh-switch-bg-pressed` | `root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-_switch-track-bg` | switch 的 root 部件 background 覆盖槽。 |
-| `--xh-switch-border` | `root` | `box-shadow` | `contrast=more`<br>`default`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-switch-border-checked` | `root` | `box-shadow` | `state=checked` | `--xh-_switch-accent` | switch 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-switch-border-checked-readonly` | `root` | `box-shadow` | `contrast=more`<br>`readonly`<br>`state=checked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-switch-border-disabled` | `root` | `box-shadow` | `disabled` | `--xh-border-default` | switch 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-switch-border-invalid` | `root` | `box-shadow` | `invalid` | `--xh-border-invalid` | switch 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-switch-fg` | `root` | `color` | `default` | `--xh-fg-default` | switch 的 root 部件 color 覆盖槽。 |
-| `--xh-switch-fg-checked` | `root` | `color` | `state=checked` | `--xh-_tone-on` | switch 的 root 部件 color 覆盖槽。 |
-| `--xh-switch-fg-checked-readonly` | `root` | `color` | `readonly`<br>`state=checked` | `--xh-fg-default` | switch 的 root 部件 color 覆盖槽。 |
-| `--xh-switch-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-disabled` | switch 的 root 部件 color 覆盖槽。 |
+| `--xh-switch-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle-active` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-bg-checked` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-_switch-accent` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-bg-checked-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-_tone-active` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-bg-checked-readonly` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-bg-subtle-active` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-bg-disabled` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-bg-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_switch-track-bg` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-border` | `root` | `box-shadow` | `contrast=more`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border-checked` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-_switch-accent` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border-checked-readonly` | `root` | `box-shadow` | `contrast=more`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border-disabled` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-default` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border-invalid` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`invalid`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-invalid` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | switch 的 root 部件 color 覆盖槽。 |
+| `--xh-switch-fg-checked` | `root` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-_tone-on` | switch 的 root 部件 color 覆盖槽。 |
+| `--xh-switch-fg-checked-readonly` | `root` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-fg-default` | switch 的 root 部件 color 覆盖槽。 |
+| `--xh-switch-fg-disabled` | `root` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-disabled` | switch 的 root 部件 color 覆盖槽。 |
 | `--xh-switch-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | switch 的 label 部件 color 覆盖槽。 |
 | `--xh-switch-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | switch 的 label 部件 color 覆盖槽。 |
 | `--xh-switch-label-font-size` | `label` | `font-size` | `default` | `--xh-_switch-label-font-size` | switch 的 label 部件 font-size 覆盖槽。 |
@@ -293,7 +298,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 
 ### 动效
 
-关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`box-shadow` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
