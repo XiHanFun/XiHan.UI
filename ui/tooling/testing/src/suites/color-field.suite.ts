@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { colorFieldAnatomy, colorFieldKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 手打颜色串的单行框没有对应的 APG 模式页，可核对的规格是"控件必须有可及的名字"这条实践，
 // 以及 HTML 的文本输入状态。
@@ -325,6 +326,31 @@ export const colorFieldSuite: ConformanceSuite = {
           why: 'value 是 property',
           run: ({ doc }) => expectValue(doc, '#3b82f6', '只读时值不动'),
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空按钮投影 data-pressed，抬起、失焦或指针取消撤下；按住不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['color-field.kbd.press'],
+      // 清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+      props: { defaultValue: '#3b82f6', clearable: true },
+      steps: [
+        heldPress('color-field', 'clear-trigger'),
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'root': { 'data-empty': null }, 'clear-trigger': { hidden: null } }, events: [] } },
+      ],
+    },
+    {
+      name: '没开 clearable、禁用、只读或没有值时清空按钮藏着，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: '#3b82f6' },
+      steps: [
+        heldPressIgnored('color-field', 'clear-trigger', '没开 clearable 时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { clearable: true, disabled: true } },
+        heldPressIgnored('color-field', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('color-field', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, value: '' } },
+        heldPressIgnored('color-field', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
       ],
     },
   ],

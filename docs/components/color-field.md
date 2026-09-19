@@ -136,7 +136,7 @@
 
 **状态**：`idle`
 
-**事件**：`INPUT.CHANGE` · `INPUT.COMMIT` · `INPUT.CANCEL` · `VALUE.SET` · `VALUE.CLEAR` · `FORM.RESET`
+**事件**：`INPUT.CHANGE` · `INPUT.COMMIT` · `INPUT.CANCEL` · `VALUE.SET` · `VALUE.CLEAR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canEdit` · `canClear`
 
@@ -180,6 +180,7 @@
 | `Enter` | focus in input, 框里有还没收下的草稿 | 收下草稿：解析得了就按 format 重写成值，解析不了保留草稿并标成无效；没在编辑时不接管，回车照常提交表单 |
 | `Escape` | focus in input, 框里有还没收下的草稿 | 放弃草稿，框里回到当前值的规范文本 |
 | `Escape` | focus in input, 没有草稿, clearable 且值非空, not disabled/readOnly | 清空值；条件不满足即不接管该键，交回给外层与浏览器 |
+| `Enter` / `Space` | held in clear-trigger, clearable 且值非空, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 
 ### ARIA
 
@@ -234,6 +235,7 @@
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-xh-field-input` | '' |
 | `input` | `data-xh-field-layout` | 'single-line' |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |
 | `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |

@@ -211,3 +211,72 @@ describe('connectColorField 投影', () => {
     expect((disabled.getHiddenInputProps() as Dict).disabled).toBe(true)
   })
 })
+
+describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const touch = (): PointerEvent => ({ pointerType: 'touch', button: 0, preventDefault: vi.fn() } as unknown as PointerEvent)
+  const clear = (s: Service<ColorFieldSchema>): Dict => api(s).getClearTriggerProps() as Dict
+  const fire = (props: Dict, name: string, event: unknown): void => {
+    (props[name] as (e: unknown) => void)(event)
+  }
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const s = makeService({ defaultValue: '#ff0000', clearable: true })
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onKeyDown', key(' '))
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onKeyUp', key(' '))
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onKeyDown', key('Enter'))
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onBlur', {})
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown，焦点仍留在输入框
+    const down = touch()
+    fire(clear(s), 'onPointerDown', down)
+    expect(down.preventDefault).toHaveBeenCalled()
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onPointerCancel', {})
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onPointerDown', touch())
+    expect(clear(s)['data-pressed']).toBe('')
+    fire(clear(s), 'onPointerUp', {})
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    fire(clear(s), 'onPointerDown', { pointerType: 'mouse', button: 0, preventDefault: vi.fn() })
+    expect(clear(s)['data-pressed']).toBeUndefined()
+    // 按压不清值
+    expect(api(s).value).toBe('#ff0000')
+  })
+
+  it('不进：没开 clearable、禁用、只读或没有值时清空按钮藏着，按住不投影', () => {
+    for (const props of [{ defaultValue: '#ff0000' }, { defaultValue: '#ff0000', clearable: true, disabled: true }, { defaultValue: '#ff0000', clearable: true, readOnly: true }, { clearable: true }] as Props[]) {
+      const s = makeService(props)
+      fire(clear(s), 'onKeyDown', key(' '))
+      fire(clear(s), 'onPointerDown', touch())
+      expect(clear(s)['data-pressed']).toBeUndefined()
+    }
+  })
+
+  it('按住途中值被清空或转入禁用 / 只读：按钮藏起、不会再来 keyup，按压面由机器自己收', () => {
+    const cleared = makeService({ defaultValue: '#ff0000', clearable: true })
+    fire(clear(cleared), 'onKeyDown', key('Enter'))
+    expect(clear(cleared)['data-pressed']).toBe('')
+    cleared.send({ type: 'VALUE.CLEAR' })
+    expect(api(cleared).value).toBe('')
+    expect(clear(cleared)['data-pressed']).toBeUndefined()
+
+    for (const inert of [{ disabled: true }, { readOnly: true }, { clearable: false }] as Props[]) {
+      // watch 只在 props 身份变化时复查，走 signal 才惊动它
+      const runtime = createVanillaRuntime()
+      const props = runtime.signal<Props>({ defaultValue: '#ff0000', clearable: true })
+      const service = createService(colorFieldMachine, { props: () => props.get(), runtime })
+      runtime.start()
+      const trigger = (): Dict => connectColorField(service, normalizeProps).getClearTriggerProps() as Dict
+      fire(trigger(), 'onKeyDown', key('Enter'))
+      expect(trigger()['data-pressed']).toBe('')
+      props.set({ ...props.get(), ...inert })
+      expect(trigger()['data-pressed']).toBeUndefined()
+      runtime.stop()
+    }
+  })
+})
