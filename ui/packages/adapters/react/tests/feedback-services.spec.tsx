@@ -26,6 +26,13 @@ async function settle(): Promise<void> {
   })
 }
 
+/** 在 act 里派一个 DOM 事件，让 React 把这次状态渲出来。 */
+async function dispatchInAct(el: HTMLElement, event: Event): Promise<void> {
+  await act(async () => {
+    el.dispatchEvent(event)
+  })
+}
+
 const toasts = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="toast"][data-part="root"]')]
 const cards = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="notification"][data-part="item"]')]
 function titleTexts(nodes: HTMLElement[]): string[] {
@@ -158,19 +165,19 @@ describe('通知服务', () => {
       const el = card.querySelector<HTMLElement>(`[data-part="${part}"]`)!
       expect(el.hasAttribute('data-pressed')).toBe(false)
       el.focus()
-      await act(async () => { el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })) })
+      await dispatchInAct(el, new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
       expect(el.hasAttribute('data-pressed')).toBe(true)
-      await act(async () => { el.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true })) })
+      await dispatchInAct(el, new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
       expect(el.hasAttribute('data-pressed')).toBe(false)
-      await act(async () => { el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })) })
+      await dispatchInAct(el, new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
       expect(el.hasAttribute('data-pressed')).toBe(true)
-      await act(async () => { el.blur() })
+      await act(async () => el.blur())
       expect(el.hasAttribute('data-pressed')).toBe(false)
-      await act(async () => { el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true })) })
+      await dispatchInAct(el, new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true }))
       expect(el.hasAttribute('data-pressed')).toBe(false)
-      await act(async () => { el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true, cancelable: true })) })
+      await dispatchInAct(el, new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true, cancelable: true }))
       expect(el.hasAttribute('data-pressed')).toBe(true)
-      await act(async () => { el.dispatchEvent(new PointerEvent('pointercancel', { pointerType: 'touch', bubbles: true })) })
+      await dispatchInAct(el, new PointerEvent('pointercancel', { pointerType: 'touch', bubbles: true }))
       expect(el.hasAttribute('data-pressed')).toBe(false)
     }
   })
@@ -183,9 +190,9 @@ describe('通知服务', () => {
     await settle()
     const close = cards()[0]!.querySelector<HTMLElement>('[data-part="item-close-trigger"]')!
     close.focus()
-    await act(async () => { close.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })) })
+    await dispatchInAct(close, new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
     expect(close.hasAttribute('data-pressed')).toBe(true)
-    await act(async () => { close.click() })
+    await act(async () => close.click())
     await settle()
     expect(cards()[0]!.getAttribute('data-state')).toBe('dismissing')
     expect(close.hasAttribute('data-pressed')).toBe(false)
