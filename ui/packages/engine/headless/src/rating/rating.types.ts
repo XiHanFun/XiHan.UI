@@ -73,6 +73,12 @@ export interface RatingSchema extends MachineSchema {
     hoveredValue: number | null
     /** 焦点所在的星序号（1 起），焦点离开评分带即清空。只服务 roving tabindex 与键盘起点。 */
     focusedValue: number | null
+    /**
+     * 按压通道：触屏手指按下到松开之间正被按住的星（序号，1 起），该星投影 data-pressed；没有按住时为 null。
+     * 星是 role=radio 的 span，Space / Enter 在它上面什么都不做，也就没有键盘按压面；指针按住由 :active 表出。
+     * 与悬停预览互相独立：松开不清预览。禁用或只读时不进。
+     */
+    pressedValue: number | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -88,9 +94,15 @@ export interface RatingSchema extends MachineSchema {
     | { type: 'HOVER.CLEAR' }
     | { type: 'CONTROL.BLUR' }
     | { type: 'FORM.RESET' }
+    // 按压通道（shared/press）：触屏按住与松开，value 说的是哪颗星（序号）
+    | { type: 'PRESS.START', value: number }
+    | { type: 'PRESS.END', value: number }
   tag: never
   guard: 'canInteract'
   action:
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
     | 'setValue'
     | 'stepValue'
     | 'toMin'
