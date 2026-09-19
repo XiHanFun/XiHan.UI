@@ -246,11 +246,15 @@ function contextSelector(context, state) {
   return overlay ? `${base}${OVERLAY_SUFFIX[overlay]}` : base
 }
 
-/** 按下态（基础 pressed 与 nav 覆盖的 pressed）都带按下时长与曲线，与基础按下块同形。 */
-function pressTiming(source, state, indent) {
-  if (state !== 'pressed')
-    return ''
-  return `\n\n${indent}transition-duration: ${source.motion.pressDuration};\n${indent}transition-timing-function: ${source.motion.pressEasing};`
+/** 按下态（基础 pressed 与 nav 覆盖的 pressed）都带按下时长与曲线，与基础按下块同形；
+ *  terminal 把光标直接写回：基础块的 cursor 只有 (0,1,0)，压不过 pointer.css 给 [aria-disabled='true'] 的
+ *  not-allowed (0,3,0)，而不可点的当前页同时带 aria-disabled——它是位置不是禁用，光标要落 terminal 那一档。 */
+function stateExtras(source, state, indent) {
+  if (state === 'pressed')
+    return `\n\n${indent}transition-duration: ${source.motion.pressDuration};\n${indent}transition-timing-function: ${source.motion.pressEasing};`
+  if (state === 'terminal')
+    return `\n\n${indent}cursor: var(--xh-_collection-cursor);`
+  return ''
 }
 
 function contextRules(source, render) {
@@ -379,7 +383,7 @@ ${stateVars(source, 'pressed')}
   }
 
 ${contextRules(source, (context, state) => `  ${contextSelector(context, state)} {
-${contextStateVars(source, context, state)}${pressTiming(source, state, '    ')}
+${contextStateVars(source, context, state)}${stateExtras(source, state, '    ')}
   }`)}
 
   [data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {

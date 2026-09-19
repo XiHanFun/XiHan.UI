@@ -187,6 +187,9 @@ describe('collection Item recipe', () => {
     expect(fallbackOf(terminal, 'fg')).toBe('var(--xh-fg-default)')
     expect(fallbackOf(terminal, 'font-weight')).toBe('var(--xh-font-weight-medium)')
     expect(fallbackOf(terminal, 'cursor')).toBe('default')
+    // 光标直接写回：pointer.css 给 [aria-disabled='true'] 的 not-allowed 是 (0,3,0)，基础块的 cursor (0,1,0) 压不过，
+    // 而不可点的当前页同时带 aria-disabled，只有 terminal 这条 (0,4,0) 自己写 cursor 才落得到 default
+    expect(terminal).toContain('cursor: var(--xh-_collection-cursor);')
     // 没有 terminal 叠加态：hover / pressed 不会点亮不可点的当前页
     expect(css).not.toContain(`${selector}:hover`)
     expect(css).not.toContain(`${selector}${PRESSED}`)
