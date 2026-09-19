@@ -14,7 +14,6 @@
   },
   "opaque": {
     "cascader [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
-    "color-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "combobox [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "context-menu [content] var(--xh-material-frosted-bg)": "M2 背景依赖背后内容。tabindex 不为0时已登记关环；空菜单自身以tabindex=0接收键盘焦点时，focus-visible实际铺material-frosted-focus-surface实体底，浏览器浅深主题回归保证边界可见。",
     "context-menu [content] var(--xh-material-frosted-focus-surface)": "只有 tabindex=0 的空菜单接收此焦点面；M2 focus-surface 收敛到不透明 bg.surface，浏览器回归验证公共环。",
