@@ -68,21 +68,27 @@ const SETTLE_TIMEOUT_MS = 1000
  * 等有限时长的动画跑完再往下走。
  * 进场淡入期间 getComputedStyle 读到的是插值后的半透明色，色彩对比按那一帧算出来的比值
  * 不是用户最终看到的比值。无限循环的动画（转圈）不等，另加上限防某条动画永远不兑现。
+ * 一轮等完再看一眼：浮层的进场是"先落位、下一帧才起淡入"，与入口面的过渡不同时起跑，
+ * 只等第一轮捕到的那批会在第二批还没跑完的那一帧扫到半透明的文字；没有新起的动画才算落定。
  */
 async function settleAnimations(doc: Document): Promise<void> {
-  const finite = doc.getAnimations().filter((a) => {
-    if (a.playState !== 'running')
-      return false
-    const timing = a.effect?.getComputedTiming()
-    return timing != null && Number.isFinite(timing.endTime as number)
-  })
-  if (finite.length === 0)
-    return
-  await Promise.race([
-    Promise.all(finite.map(a => a.finished.catch(() => undefined))),
-    new Promise(resolve => setTimeout(resolve, SETTLE_TIMEOUT_MS)),
-  ])
-  await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+  const deadline = performance.now() + SETTLE_TIMEOUT_MS
+  while (true) {
+    const finite = doc.getAnimations().filter((a) => {
+      if (a.playState !== 'running')
+        return false
+      const timing = a.effect?.getComputedTiming()
+      return timing != null && Number.isFinite(timing.endTime as number)
+    })
+    const remaining = deadline - performance.now()
+    if (finite.length === 0 || remaining <= 0)
+      return
+    await Promise.race([
+      Promise.all(finite.map(a => a.finished.catch(() => undefined))),
+      new Promise(resolve => setTimeout(resolve, remaining)),
+    ])
+    await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+  }
 }
 
 /** 由归一化 DOM 快照算出的形态签名，同一形态多次挂载得到同一串。 */
