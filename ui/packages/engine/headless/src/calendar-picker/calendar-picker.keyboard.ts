@@ -27,5 +27,6 @@ export const calendarPickerKeyboard: KeyboardTable = {
     { id: 'calendar-picker.kbd.prev-year', keys: ['Shift+PageUp'], when: 'focus in grid', does: '退一年；粗粒度视图里退十页' },
     { id: 'calendar-picker.kbd.next-year', keys: ['Shift+PageDown'], when: 'focus in grid', does: '进一年；粗粒度视图里进十页' },
     { id: 'calendar-picker.kbd.select', keys: ['Enter', 'Space'], when: 'focus in grid, 聚焦周期可用且非只读', does: '选中聚焦周期：单选替换、多选切换。还没钻到 granularity 那一档时这一下是往下钻一层' },
+    { id: 'calendar-picker.kbd.press', keys: ['Enter', 'Space'], when: 'held in prev-year-trigger / prev-trigger / next-trigger / next-year-trigger / heading-year-trigger / heading-month-trigger / cell-trigger, 该部件可按', does: '按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整张转入禁用也撤下。整张禁用时谁都不进；只读时日期格不进（翻页与钻层照常）；到界的翻页钮与到顶的标题是原生 disabled，不可选的格子是 aria-disabled，都不进' },
   ],
 }

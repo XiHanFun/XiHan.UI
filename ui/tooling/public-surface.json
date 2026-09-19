@@ -5179,6 +5179,7 @@
       "CalendarPeriodGridOptions",
       "CalendarPeriodValue",
       "CalendarPickerApi",
+      "CalendarPickerPressedKey",
       "CalendarPickerRefs",
       "CalendarPickerSchema",
       "CalendarPickerSelectionMode",

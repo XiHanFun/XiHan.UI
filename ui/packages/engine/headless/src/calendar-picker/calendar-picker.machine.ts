@@ -5,7 +5,7 @@
 
 // 提供 calendar picker 相关实现。
 
-import type { CalendarPickerSchema, CalendarPickerSelectionMode } from './calendar-picker.types'
+import type { CalendarPickerPressedKey, CalendarPickerSchema, CalendarPickerSelectionMode } from './calendar-picker.types'
 import { setup } from '@xihan-ui/core'
 import {
   calendarBaseActions,
@@ -19,6 +19,11 @@ import { calendarPickerCellTriggerQuery } from './calendar-picker.anatomy'
 
 const { createMachine } = setup<CalendarPickerSchema>()
 
+/** 日期格的按压键以 cell: 开头；只读只挡这一类。 */
+function isCellKey(key: CalendarPickerPressedKey): boolean {
+  return key.startsWith('cell:')
+}
+
 /** 选中集合的不变量：单选长度 ≤ 1，多选去重升序。 */
 function normalizeSelection(next: readonly string[], mode: CalendarPickerSelectionMode): string[] {
   return mode === 'single' ? next.slice(0, 1) : sortIso(next)
@@ -28,14 +33,24 @@ function normalizeSelection(next: readonly string[], mode: CalendarPickerSelecti
 // 单选与多选没有中间态，状态只有 idle；日期数学不在机器里做：落点由连接层算好、以 ISO 串送进来。
 export const calendarPickerMachine = createMachine({
   name: 'calendar-picker',
-  context: params => calendarBaseContext(params, value => params.prop('onValueChange')?.({ value })),
+  context: params => ({
+    ...calendarBaseContext(params, value => params.prop('onValueChange')?.({ value })),
+    // 按压通道：正被按住的那一个（翻页钮 / 标题两截 / 日期格），与选中、聚焦日都无关
+    pressed: params.cell<CalendarPickerPressedKey | null>(() => ({ defaultValue: null })),
+  }),
   refs: () => calendarBaseRefs(),
   initialState: () => 'idle',
   effects: ['trackLiveness'],
   // 作者换了选择粒度，钻层与原选择都失去语义：回到新粒度并清空。
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('granularity')], () => action(['syncGranularity']))
     track([() => prop('selectionMode')], () => action(['syncSelectionMode']))
+    // 按住途中整张转入禁用或只读：不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
+    // 钻层时整页格子换掉、标题钮到顶转禁用：被按住的那一个不会再来 keyup / blur（节点被换掉不派 blur），一并松开
+    track([context.dep('activeView')], () => action(['releasePress']))
+    // 视窗挪动（Enter 选中邻月格连带翻页）：按住的那一格随页换掉，只松开格子，正按着的翻页钮留着
+    track([context.dep('visibleStart')], () => action(['releaseCellPress']))
   },
   on: {
     'VALUE.SET': { actions: ['setValue'] },
@@ -43,16 +58,51 @@ export const calendarPickerMachine = createMachine({
     'FOCUS.SET': { actions: ['setFocusedValue', 'pageVisibleStart', 'focusVisibleCell'] },
     // 钻层要顺带把视窗对到新那一档的跨度上：一页的长度变了，旧起点会与格子错开
     'VIEW.SET': { actions: ['setActiveView', 'focusVisibleCell'] },
+    // 按压通道：按 key 记按住的那一个；整张禁用不进，只读时日期格不进，部件自身的禁用由 connect 判定后随事件带入
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {},
   },
   implementations: {
+    guards: {
+      // 整张禁用一票否决；只读只挡日期格（翻页与钻层照常）；到界 / 到顶 / 不可选的事实随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('disabled') || e.disabled)
+          return false
+        return !(prop('readOnly') && isCellKey(e.key))
+      },
+    },
     effects: {
       trackLiveness: trackLiveness(),
     },
     actions: {
       ...calendarBaseActions({ cellTriggerQuery: calendarPickerCellTriggerQuery }),
+
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressed')
+        if (pressed != null && (prop('disabled') || (prop('readOnly') && isCellKey(pressed))))
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      releaseCellPress: ({ context }) => {
+        const pressed = context.get('pressed')
+        if (pressed != null && isCellKey(pressed))
+          context.set('pressed', null)
+      },
 
       setValue: ({ context, prop, event }) => {
         const e = event.current()

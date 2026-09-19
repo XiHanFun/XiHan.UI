@@ -122,6 +122,10 @@ cell-trigger 的内容全部由作者编写，日号之外还可放置自己的�
 
 **状态**：`idle`
 
+**事件**：`PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。
@@ -150,6 +154,7 @@ cell-trigger 的内容全部由作者编写，日号之外还可放置自己的�
 | `Shift+PageUp` | focus in grid | 退一年；粗粒度视图里退十页 |
 | `Shift+PageDown` | focus in grid | 进一年；粗粒度视图里进十页 |
 | `Enter` / `Space` | focus in grid, 聚焦周期可用且非只读 | 选中聚焦周期：单选替换、多选切换。还没钻到 granularity 那一档时这一下是往下钻一层 |
+| `Enter` / `Space` | held in prev-year-trigger / prev-trigger / next-trigger / next-year-trigger / heading-year-trigger / heading-month-trigger / cell-trigger, 该部件可按 | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整张转入禁用也撤下。整张禁用时谁都不进；只读时日期格不进（翻页与钻层照常）；到界的翻页钮与到顶的标题是原生 disabled，不可选的格子是 aria-disabled，都不进 |
 
 ### ARIA
 
