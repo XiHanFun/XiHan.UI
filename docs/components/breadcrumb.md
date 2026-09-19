@@ -144,8 +144,6 @@
 
 `@xihan-ui/styles/breadcrumb.css` 使用 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
-
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -155,6 +153,10 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `link` | `data-current` | ''（条件成立时才出现） |
+| `link` | `data-xh-collection-context` | 'nav' |
+| `link` | `data-xh-collection-item` | '' |
+| `link` | `data-xh-collection-size` | props.size |
+| `link` | `data-xh-collection-terminal` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -164,16 +166,16 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-breadcrumb-ellipsis-size` | `ellipsis` | `inline-size` | `default` | `--xh-space-5` | breadcrumb 的 ellipsis 部件 inline-size 覆盖槽。 |
-| `--xh-breadcrumb-fg` | `root` | `color` | `default` | `--xh-fg-muted` | breadcrumb 的 root 部件 color 覆盖槽。 |
-| `--xh-breadcrumb-font-size` | `root` | `font-size` | `default` | `--xh-_breadcrumb-font-size` | breadcrumb 的 root 部件 font-size 覆盖槽。 |
+| `--xh-breadcrumb-fg` | `link`<br>`root` | `color` | `default`<br>`xh-collection-context=nav` | `--xh-fg-muted` | breadcrumb 的 link、root 部件 color 覆盖槽。 |
+| `--xh-breadcrumb-font-size` | `link`<br>`root` | `font-size` | `default` | `--xh-_breadcrumb-font-size` | breadcrumb 的 link、root 部件 font-size 覆盖槽。 |
 | `--xh-breadcrumb-gap` | `list` | `gap` | `default` | `--xh-_breadcrumb-gap` | breadcrumb 的 list 部件 gap 覆盖槽。 |
-| `--xh-breadcrumb-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-breadcrumb-leading` | `root` | `line-height` | `default` | `--xh-leading-tight` | breadcrumb 的 root 部件 line-height 覆盖槽。 |
-| `--xh-breadcrumb-link-bg-hover` | `link` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-bg-subtle` | breadcrumb 的 link 部件 background 覆盖槽。 |
-| `--xh-breadcrumb-link-bg-pressed` | `link` | `background` | `current`<br>`is(:active, [data-pressed])`<br>`not([data-current])`<br>`pressed` | `--xh-bg-subtle-hover` | breadcrumb 的 link 部件 background 覆盖槽。 |
-| `--xh-breadcrumb-link-fg-current` | `link` | `color` | `current` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
-| `--xh-breadcrumb-link-fg-hover` | `link` | `color` | `current`<br>`hover`<br>`not([data-current])` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
-| `--xh-breadcrumb-link-font-weight-current` | `link` | `font-weight` | `current` | `--xh-font-weight-medium` | breadcrumb 的 link 部件 font-weight 覆盖槽。 |
+| `--xh-breadcrumb-icon-size` | `link`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 link、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-breadcrumb-leading` | `link`<br>`root` | `line-height` | `default` | `--xh-leading-tight` | breadcrumb 的 link、root 部件 line-height 覆盖槽。 |
+| `--xh-breadcrumb-link-bg-hover` | `link` | `background-color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | breadcrumb 的 link 部件 background-color 覆盖槽。 |
+| `--xh-breadcrumb-link-bg-pressed` | `link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | breadcrumb 的 link 部件 background-color 覆盖槽。 |
+| `--xh-breadcrumb-link-fg-current` | `link` | `color` | `current`<br>`xh-collection-context=nav`<br>`xh-collection-terminal` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
+| `--xh-breadcrumb-link-fg-hover` | `link` | `color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
+| `--xh-breadcrumb-link-font-weight-current` | `link` | `font-weight` | `current`<br>`xh-collection-context=nav`<br>`xh-collection-terminal` | `--xh-font-weight-medium` | breadcrumb 的 link 部件 font-weight 覆盖槽。 |
 | `--xh-breadcrumb-link-gap` | `link` | `gap` | `default` | `--xh-space-1` | breadcrumb 的 link 部件 gap 覆盖槽。 |
 | `--xh-breadcrumb-link-icon-size` | `link-icon` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 link-icon 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-breadcrumb-link-max-w` | `link` | `max-inline-size` | `default` | `--xh-nav-link-max-w` | breadcrumb 的 link 部件 max-inline-size 覆盖槽。 |
@@ -185,10 +187,8 @@
 
 ### 动效
 
-`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+另有按 `dir` 分支的规则。

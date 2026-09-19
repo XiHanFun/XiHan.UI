@@ -51,6 +51,19 @@ describe('connectBreadcrumb', () => {
     expect(link['data-current']).toBeUndefined()
   })
 
+  it('链接投影 Collection Item 的 nav 语境与尺寸档，当前页显式投影 terminal', () => {
+    const link = api({ size: 'sm' }).getLinkProps({ current: false }) as Props
+    expect(link['data-xh-collection-item']).toBe('')
+    expect(link['data-xh-collection-size']).toBe('sm')
+    expect(link['data-xh-collection-context']).toBe('nav')
+    expect(link['data-xh-collection-terminal']).toBeUndefined()
+    // 当前页同时带 aria-disabled='true'，terminal 要显式标出来，家族才不会按禁用面画它
+    const current = api().getLinkProps({ current: true }) as Props
+    expect(current['data-xh-collection-terminal']).toBe('')
+    // size 不写时家族尺寸档落 md
+    expect(current['data-xh-collection-size']).toBe('md')
+  })
+
   it('current 缺省等同于 false', () => {
     const link = api().getLinkProps({}) as Props
     expect(link['aria-current']).toBeUndefined()

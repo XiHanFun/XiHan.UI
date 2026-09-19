@@ -3497,24 +3497,27 @@
       "name": "--xh-breadcrumb-fg",
       "component": "breadcrumb",
       "part": [
+        "link",
         "root"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 root 部件 color 覆盖槽。"
+      "description": "breadcrumb 的 link、root 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-font-size",
       "component": "breadcrumb",
       "part": [
+        "link",
         "root"
       ],
       "property": [
@@ -3527,7 +3530,7 @@
         "--xh-_breadcrumb-font-size"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 root 部件 font-size 覆盖槽。"
+      "description": "breadcrumb 的 link、root 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-gap",
@@ -3551,6 +3554,7 @@
       "name": "--xh-breadcrumb-icon-size",
       "component": "breadcrumb",
       "part": [
+        "link",
         "root"
       ],
       "property": [
@@ -3563,12 +3567,13 @@
         "--xh-glyph-size-text"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "breadcrumb 的 link、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-leading",
       "component": "breadcrumb",
       "part": [
+        "link",
         "root"
       ],
       "property": [
@@ -3581,7 +3586,7 @@
         "--xh-leading-tight"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 root 部件 line-height 覆盖槽。"
+      "description": "breadcrumb 的 link、root 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-link-bg-hover",
@@ -3590,18 +3595,20 @@
         "link"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "current",
+        "disabled",
+        "error",
         "hover",
-        "not([data-current])"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 link 部件 background 覆盖槽。"
+      "description": "breadcrumb 的 link 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-link-bg-pressed",
@@ -3610,19 +3617,21 @@
         "link"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "current",
+        "disabled",
+        "error",
         "is(:active, [data-pressed])",
-        "not([data-current])",
-        "pressed"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 link 部件 background 覆盖槽。"
+      "description": "breadcrumb 的 link 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-link-fg-current",
@@ -3634,7 +3643,9 @@
         "color"
       ],
       "state": [
-        "current"
+        "current",
+        "xh-collection-context=nav",
+        "xh-collection-terminal"
       ],
       "defaultToken": [
         "--xh-_breadcrumb-accent-text"
@@ -3652,9 +3663,11 @@
         "color"
       ],
       "state": [
-        "current",
+        "disabled",
+        "error",
         "hover",
-        "not([data-current])"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-_breadcrumb-accent-text"
@@ -3672,7 +3685,9 @@
         "font-weight"
       ],
       "state": [
-        "current"
+        "current",
+        "xh-collection-context=nav",
+        "xh-collection-terminal"
       ],
       "defaultToken": [
         "--xh-font-weight-medium"
