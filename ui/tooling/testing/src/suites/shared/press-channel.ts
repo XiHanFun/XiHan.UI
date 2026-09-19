@@ -18,6 +18,11 @@ export interface PressTargetOptions {
    * 只测 Enter（Space 在输入框里是打字），按压面仍在条目上看；触屏那一路照旧派到条目自己身上。
    */
   keyboardHost?: string
+  /**
+   * 键盘那一路派哪些键：不给时部件自己接键盘的验 Space 与 Enter，走 keyboardHost 的只验 Enter（输入框里
+   * Space 是打字）。宿主本身就是可按的节点（如 tree-select 的 branch 替行代发）时显式给回两个键。
+   */
+  keys?: readonly string[]
 }
 
 function targetSelector(scope: string, part: string, options: PressTargetOptions): string {
@@ -58,7 +63,7 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
       }
       await expectPressed(false, '静息')
 
-      for (const key of options.keyboardHost === undefined ? [' ', 'Enter'] : ['Enter']) {
+      for (const key of options.keys ?? (options.keyboardHost === undefined ? [' ', 'Enter'] : ['Enter'])) {
         host.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
         await expectPressed(true, `keydown ${JSON.stringify(key)} 之后`)
         host.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))

@@ -5,10 +5,10 @@
 
 // 提供 tree select 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
-import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
-import { cascadeState, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
+import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectPressedPart, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
+import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
@@ -167,6 +167,21 @@ export function connectTreeSelect<T extends PropTypes>(
 
   /** 从节点内的元素向上找最近的 branch 容器。 */
   const branchElOf = (el: HTMLElement): HTMLElement | null => el.closest<HTMLElement>(parts.branch.selector)
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（节点按 value 记、叶子行与分支行分开认，清空按钮只记部件），
+  // 各自合成一份跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 节点自身的禁用只有 connect 知道，随 PRESS.START 带给机器的 canPress 守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const press = (part: TreeSelectPressedPart, value?: string, disabled?: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === (value ?? null),
+    onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
+  })
+  /** 只认落在自己身上的事件：branch 裹着整棵子树，子节点上的按键与失焦会冒泡（React 的 onBlur 挂 focusout）上来。 */
+  const onSelf = <E extends Event>(handler: (event: E) => void) => (event: E): void => {
+    if (event.target === event.currentTarget)
+      handler(event)
+  }
 
   const focusValue = (el: HTMLElement | null): void => {
     const next = itemValue(el)
@@ -353,34 +368,45 @@ export function connectTreeSelect<T extends PropTypes>(
     }),
 
     // 清空钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200，按 has-value 显隐
-    getClearTriggerProps: () => normalize.button({
-      ...parts['clear-trigger'].attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'has-value',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'data-xh-action-has-value': dataAttr(canClear),
-      'type': 'button',
-      // 整个控件只占一个 Tab 位（trigger），此按钮不入 Tab 序列；读屏按虚拟光标仍找得到它
-      'tabindex': -1,
-      'aria-label': translations.clearTrigger,
-      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
-      // 用户分不清哪个能点。有值才出现，出现即可用
-      'hidden': !canClear || undefined,
-      // 拦掉默认聚焦，避免焦点从 trigger 挪到本按钮
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      'onClick': () => {
-        if (!canClear)
-          return
-        send({ type: 'VALUE.CLEAR' })
-        // 键盘/程序化激活这一路主动把焦点送回 trigger
-        refs.get('getAnchorEl')()?.focus()
-      },
-    }),
+    getClearTriggerProps: () => {
+      const handlers = press('clear-trigger')
+      return normalize.button({
+        ...parts['clear-trigger'].attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'has-value',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-xh-action-has-value': dataAttr(canClear),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'clear-trigger'),
+        'type': 'button',
+        // 整个控件只占一个 Tab 位（trigger），此按钮不入 Tab 序列；读屏按虚拟光标仍找得到它
+        'tabindex': -1,
+        'aria-label': translations.clearTrigger,
+        // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
+        // 用户分不清哪个能点。有值才出现，出现即可用
+        'hidden': !canClear || undefined,
+        // 拦掉默认聚焦，避免焦点从 trigger 挪到本按钮；触屏按下仍要进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+          handlers.onPointerDown(event)
+        },
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onClick': () => {
+          if (!canClear)
+            return
+          send({ type: 'VALUE.CLEAR' })
+          // 键盘/程序化激活这一路主动把焦点送回 trigger
+          refs.get('getAnchorEl')()?.focus()
+        },
+      })
+    },
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
@@ -574,23 +600,34 @@ export function connectTreeSelect<T extends PropTypes>(
     }),
 
     // 叶子行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，选中只留行尾对号
-    getItemProps: node => normalize.element({
-      ...parts.item.attrs,
-      ...nodeAttrs(node.value),
-      ...nodeState(node.value),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      'onClick': (event: MouseEvent) => {
-        if (!interactive || isDisabled(node.value))
-          return
-        // 叶子本身就是 treeitem，直接认 currentTarget
-        focusValue(event.currentTarget as HTMLElement)
-        send({ type: 'NODE.SELECT', value: node.value })
-      },
-      // 禁用节点被点到也记锚点，供方向键起步
-      'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
-    }),
+    getItemProps: (node) => {
+      const handlers = press('item', node.value, isDisabled(node.value))
+      return normalize.element({
+        ...parts.item.attrs,
+        ...nodeAttrs(node.value),
+        ...nodeState(node.value),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === node.value),
+        'onClick': (event: MouseEvent) => {
+          if (!interactive || isDisabled(node.value))
+            return
+          // 叶子本身就是 treeitem，直接认 currentTarget
+          focusValue(event.currentTarget as HTMLElement)
+          send({ type: 'NODE.SELECT', value: node.value })
+        },
+        // 禁用节点被点到也记锚点，供方向键起步
+        'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     getItemTextProps: node => normalize.element({
       ...parts['item-text'].attrs,
@@ -606,35 +643,52 @@ export function connectTreeSelect<T extends PropTypes>(
       'aria-hidden': true,
     }),
 
-    getBranchProps: node => normalize.element({
-      ...parts.branch.attrs,
-      ...nodeAttrs(node.value),
-      ...branchState(node.value),
-      'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
-      'aria-busy': branchLoadState(node.value)?.status === 'loading' ? 'true' : undefined,
-      // 分支裹着整棵子树，可及名字显式取 collection 的 label（缺省退回 value）
-      'aria-label': metaOf(node.value)?.label,
-      'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
-    }),
+    getBranchProps: (node) => {
+      // 焦点落在 branch 上、按压面画在 branch-control 上：键盘那一路由这里替行代发，
+      // 只认落在自己身上的按键与失焦（子树里的会冒泡上来）
+      const handlers = press('branch-control', node.value, isDisabled(node.value))
+      return normalize.element({
+        ...parts.branch.attrs,
+        ...nodeAttrs(node.value),
+        ...branchState(node.value),
+        'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
+        'aria-busy': branchLoadState(node.value)?.status === 'loading' ? 'true' : undefined,
+        // 分支裹着整棵子树，可及名字显式取 collection 的 label（缺省退回 value）
+        'aria-label': metaOf(node.value)?.label,
+        'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
+        'onKeyDown': onSelf(handlers.onKeyDown),
+        'onKeyUp': onSelf(handlers.onKeyUp),
+        'onBlur': onSelf<FocusEvent>(handlers.onBlur),
+      })
+    },
 
     // 分支行同走 Collection Item 的 overlay 语境；aria-selected 在 branch 上，选中对号的显隐由皮肤按 data-selected 给
-    getBranchControlProps: node => normalize.element({
-      ...parts['branch-control'].attrs,
-      ...branchState(node.value),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      'onClick': (event: MouseEvent) => {
-        if (!interactive || isDisabled(node.value))
-          return
-        // 分支行只是 treeitem 里的一层内容，焦点落在 branch 上
-        const branchEl = branchElOf(event.currentTarget as HTMLElement)
-        if (branchEl)
-          focusValue(branchEl)
-        // 点行只选中不展开，展开归箭头与左右方向键
-        send({ type: 'NODE.SELECT', value: node.value })
-      },
-    }),
+    getBranchControlProps: (node) => {
+      const handlers = press('branch-control', node.value, isDisabled(node.value))
+      return normalize.element({
+        ...parts['branch-control'].attrs,
+        ...branchState(node.value),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // 触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+        // 键盘那一路由 branch 代发（焦点落在它身上），行自己只接触屏。与叶子行分开认：同一个值按住行时叶子不亮
+        'data-pressed': dataAttr(pressedPart === 'branch-control' && pressedValue === node.value),
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onClick': (event: MouseEvent) => {
+          if (!interactive || isDisabled(node.value))
+            return
+          // 分支行只是 treeitem 里的一层内容，焦点落在 branch 上
+          const branchEl = branchElOf(event.currentTarget as HTMLElement)
+          if (branchEl)
+            focusValue(branchEl)
+          // 点行只选中不展开，展开归箭头与左右方向键
+          send({ type: 'NODE.SELECT', value: node.value })
+        },
+      })
+    },
 
     // 展开箭头落在家族网格的首列（prefix），叶子行用占位对齐
     getBranchTriggerProps: node => normalize.element({
