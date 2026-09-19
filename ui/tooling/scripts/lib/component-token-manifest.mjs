@@ -315,11 +315,16 @@ export async function buildComponentTokenManifest(options = {}) {
     return profiles
   }
 
-  /* 与 actionProfiles 同形：Collection Item 家族按组件投影的 data-xh-collection-context 过滤上下文声明。 */
+  /* 与 actionProfiles 同形：Collection Item 家族按组件投影的 data-xh-collection-context 过滤上下文声明。
+     一份 connect 可以给不同部件投不同语境（menubar / navigation-menu 的 item 走 overlay、trigger 走 nav），逐处投影都算。 */
   async function collectionContexts(component) {
     const source = await readFile(join(HEADLESS_DIR, component, `${component}.connect.ts`), 'utf8').catch(() => '')
-    const expression = /['"]data-xh-collection-context['"]\s*:\s*([^,\n]+)/.exec(source)?.[1] ?? ''
-    return new Set([...expression.matchAll(/['"]([a-z-]+)['"]/g)].map(match => match[1]))
+    const contexts = new Set()
+    for (const projection of source.matchAll(/['"]data-xh-collection-context['"]\s*:\s*([^,\n]+)/g)) {
+      for (const match of projection[1].matchAll(/['"]([a-z-]+)['"]/g))
+        contexts.add(match[1])
+    }
+    return contexts
   }
 
   for (const sourceComponent of componentIds.slice().sort(compareText)) {

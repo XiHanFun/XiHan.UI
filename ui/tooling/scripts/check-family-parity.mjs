@@ -356,12 +356,13 @@ const FAMILIES = [
       },
     ],
   },
-  // 导航当前页与开关型（§7.3）不再按皮肤原文逐条比对：三家的选中面长在不同的结构上——tabs 的抬起面是
-  // segment 档下的后代规则、字色走随语气的 --xh-_tabs-accent-text；segmented 的抬起面是 indicator 部件；
-  // toggle-group 的品牌淡底经 Action Control 桥接槽给——槽名后缀又各随自家状态词汇（-active / -current / -on），
-  // 原文同值只有改公开槽名才做得到。这两类语义由 check-selection-marker 按 nav / slider / flat 三类逐成员核到
-  // 令牌（把私有槽解到底：--xh-fg-brand-strong + medium、surface-raised + border-default + raised、
-  // brand-subtle + on-brand-subtle），那一条才是它们的一致性门禁。
+  // 导航当前页与开关型（§7.3）不再按皮肤原文逐条比对：导航当前页三家（tabs line / anchor / navigation-menu）
+  // 接 Collection Item nav 语境，当前页的透明面 + --xh-fg-brand-strong + medium 由配方给，皮肤只在基础块里把
+  // 公开槽映射到 --xh-collection-fg-current / -font-weight-current 桥接槽（公开槽名后缀各随自家状态词汇
+  // -active / -current），取值由配方与 check-selection-marker 的映射核保证；开关型的选中面长在不同的结构上——
+  // tabs 的抬起面是 segment 档下的后代规则、segmented 的抬起面是 indicator 部件、toggle-group 的品牌淡底经
+  // Action Control 桥接槽给，原文同值只有改公开槽名才做得到，由 check-selection-marker 按 slider / flat 两类
+  // 逐成员核到令牌（surface-raised + border-default + raised、brand-subtle + on-brand-subtle）。
   {
     // 按钮形触发器：缺省中性，hover / active 的底按承载面阶梯走（§7.2）。已迁移成员都接了 Action Control
     // 形态矩阵，悬停 / 按下面不再在皮肤里写 :hover / :active 规则，而是在部件基础规则里把使用者槽映射到

@@ -7,22 +7,25 @@
 // 页内持久集合（Tree / Listbox / Table row / Transfer / TagGroup / SideNav 当前项）
 //   = --xh-bg-brand-subtle 行面 + --xh-fg-on-brand-subtle；
 // 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand-strong + medium，
-//   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；
+//   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；两者都是 Collection Item 的 nav 语境；
 // 格状当前（Pagination item / Steps indicator / Calendar 选中格）= 实心 --xh-bg-brand + --xh-fg-on-brand，不加粗；
 // 有滑块开关（Segmented / Tabs segment）的 indicator = --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
 // 无滑块开关（Toggle / ToggleGroup item / Toolbar aria-pressed）= --xh-bg-brand-subtle + --xh-fg-on-brand-subtle；
 // 展开路径 / 打开中不是选中：与所在家族 hover 同档的中性面，不用品牌色、不加粗。
 //
 // 三条判据：
-// ① connect 投影 data-xh-collection-item 的 getter 必须同时投影 data-xh-collection-context（overlay | page）；
+// ① connect 投影 data-xh-collection-item 的 getter 必须同时投影 data-xh-collection-context（overlay | page | nav）；
 // ② 已投影 collection-item 的部件，皮肤不得再写选中态的 background / color / font-weight（由家族配方给）；
-//    配方只有 overlay / page 两种语境，没有导航语境：导航当前页（nav）的部件接了配方后，当前页的字色与字重
-//    仍由皮肤按 data-current 画、按 nav 档核，只是不得再写该状态的 background（面由家族给）；
+//    导航当前页（nav / nav-terminal）的部件接了配方就必须投影 nav 语境，当前页 / 不可点当前页的字色与字重
+//    由配方的 nav.current / nav.terminal 给：皮肤在部件基础块里映射了 --xh-collection-fg-current /
+//    -font-weight-current（terminal 同名后缀）就把映射解到底核 brand-strong + medium（terminal：fg-default +
+//    medium），没映射就核配方缺省是这三值；
 // ③ 未接配方的部件按 SEMANTIC 登记的语义类查上表；open / in-path 的底色要与同部件 hover 档同值；
 //    投影 data-xh-action-control 的部件（无滑块开关、字段内展开钮）读它在该状态里映射的
 //    --xh-action-bg-rest / --xh-action-fg-rest 桥接槽，面由 Action Control 配方按这两支画。
 // 私有槽在赋值点判，兜底链看最内层。存量登 family-backlog.json selection 段，命中即放行、不命中判过期。
-import { getterProjects, gettersProjecting, partOfGetter } from './lib/connect-getters.mjs'
+import { readFile } from 'node:fs/promises'
+import { getterBody, getterProjects, gettersProjecting, partOfGetter } from './lib/connect-getters.mjs'
 import { openBacklog } from './lib/family-backlog.mjs'
 import { colorPositionOf, conditional, innermost, partOf, privateSlots, readSkins, scopeOf, splitCompounds, splitSelectors } from './lib/skin-rules.mjs'
 
@@ -94,6 +97,13 @@ const SEMANTIC = {
 
 const REST_WEIGHT = new Set(['--xh-font-weight-regular', '--xh-font-weight-normal', 'inherit', 'normal', '400'])
 const NO_BG = new Set(['transparent', 'none', 'unset', 'initial'])
+
+/** Collection Item 配方真源：nav 部件没在皮肤里映射当前页 / 不可点当前页的字色与字重时，核的是这里的缺省。 */
+const RECIPE = JSON.parse(await readFile('packages/design/styles/recipes/collection-item.recipe.json', 'utf8'))
+const NAV_EXPECTED = {
+  'nav': { state: 'current', color: '--xh-fg-brand-strong', weight: '--xh-font-weight-medium', label: '导航当前页' },
+  'nav-terminal': { state: 'terminal', color: '--xh-fg-default', weight: '--xh-font-weight-medium', label: '面包屑当前页是不可点位置，' },
+}
 
 const backlog = await openBacklog('selection')
 const problems = [...backlog.problems]
@@ -189,6 +199,32 @@ function tokenOf(decl, slots) {
   return token
 }
 
+/**
+ * 某部件在皮肤里映射的 Collection Item 桥接槽（--xh-collection-*）：主体纯粹是这个部件（只带 scope / part 与
+ * :not 守卫）的所有规则都收，祖先可以带形态限定——tabs 只在 line 档下把 trigger 接进 nav 语境，映射块写在
+ * [data-variant='line'] 的后代规则里。
+ */
+function collectionMappings(skin, target) {
+  const merged = new Map()
+  for (const rule of skin.rules) {
+    if (conditional(rule))
+      continue
+    for (const branch of splitSelectors(rule.selector).flatMap(expandIs)) {
+      if (!subjectMatches(branch, skin.comp, target))
+        continue
+      const subject = splitCompounds(branch).at(-1) ?? ''
+      if (subject.replace(/:not\([^)]*\)/g, '').replace(/\[data-(?:scope|part)=['"]?[a-z0-9-]+['"]?\]/g, '') !== '')
+        continue
+      for (const decl of rule.decls) {
+        if (decl.prop.startsWith('--xh-collection-'))
+          merged.set(decl.prop, { value: decl.value, rule })
+      }
+      break
+    }
+  }
+  return merged
+}
+
 const skins = await readSkins()
 const byComp = new Map(skins.map(s => [s.comp, s]))
 
@@ -200,7 +236,7 @@ for (const skin of skins) {
     const part = partOfGetter(getter)
     recipeParts.add(`${skin.comp}:${part}`)
     if (!await getterProjects(skin.comp, part, 'data-xh-collection-context'))
-      problems.push(`${skin.comp}.connect.ts  ${getter} 投影了 data-xh-collection-item 却没投影 data-xh-collection-context——配方靠它分 overlay / page 两种选中标记`)
+      problems.push(`${skin.comp}.connect.ts  ${getter} 投影了 data-xh-collection-item 却没投影 data-xh-collection-context——配方靠它分 overlay / page / nav 三种语境`)
   }
 }
 
@@ -228,11 +264,42 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
     /** 同部件基础块的字色：「保持 rest」= 与它同值（浮层里 rest 是材质前景）。 */
     const restColor = tokenOf(declsFor(skin, target, null, within).get('color'), slots)
 
-    // ② 接了配方的部件：选中态三件由家族给，皮肤不得再写。导航当前页例外：配方没有导航语境，
-    // 字色与字重由皮肤画、走下面的 nav 档核，只有面不得再写
-    if (onRecipe && kind === 'nav' && bg != null)
-      report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 background: ${bg}——配方没有导航语境，当前页只画字色与字重，面由家族给`)
-    if (onRecipe && kind !== 'open' && kind !== 'nav') {
+    // ② 接了配方的导航当前页 / 不可点当前页：必须投影 nav 语境，当前页三件由配方 nav.current / nav.terminal 给；
+    // 皮肤在基础块里映射了桥接槽就把映射解到底核，没映射就核配方缺省
+    if (onRecipe && (kind === 'nav' || kind === 'nav-terminal')) {
+      const body = await getterBody(comp, target) ?? ''
+      const navContext = /'data-xh-collection-context':[^,\n]*'nav'/.test(body)
+      // 过渡：接了配方却投影 overlay 语境的导航部件（navigation-menu:link，随 navigation-menu 迁到 nav 语境时删除
+      // 这一支）沿用旧判法——皮肤按 data-current 画字色字重、走下面的 nav 档核，只有面不得再写
+      if (!navContext && kind === 'nav' && /'data-xh-collection-context':[^,\n]*'overlay'/.test(body)) {
+        if (bg != null)
+          report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 background: ${bg}——当前页只画字色与字重，面由家族给`)
+      }
+      else {
+        const expected = NAV_EXPECTED[kind]
+        if (!navContext)
+          report(`${expected.label}接了 collection-item 配方却没投影 nav 语境——当前页由配方的 nav.${expected.state} 给，data-xh-collection-context 必须是 'nav'`)
+        for (const [name, token] of [['background', bg], ['color', color], ['font-weight', weight]]) {
+          if (token != null)
+            report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 ${name}: ${token}——${expected.label}三件由 collection-item 配方的 nav 语境给`)
+        }
+        const mappings = collectionMappings(skin, target)
+        const fgMap = mappings.get(`--xh-collection-fg-${expected.state}`)
+        const weightMap = mappings.get(`--xh-collection-font-weight-${expected.state}`)
+        const recipe = RECIPE.contextValues.nav[expected.state]
+        const fg = fgMap ? tokenOf(fgMap, slots) : innermost(recipe.color)
+        const fw = weightMap ? tokenOf(weightMap, slots) : innermost(recipe.fontWeight)
+        const from = map => (map ? '映射的' : '配方 nav 缺省的')
+        if (fg !== expected.color)
+          report(`${expected.label}字色应为 ${expected.color}，${from(fgMap)} --xh-collection-fg-${expected.state} 解到底是 ${fg}`)
+        if (fw !== expected.weight)
+          report(`${expected.label}字重应为 ${expected.weight}，${from(weightMap)} --xh-collection-font-weight-${expected.state} 解到底是 ${fw}`)
+        if (!mappings.has(`--xh-collection-bg-${expected.state}`) && innermost(recipe.backgroundColor) !== 'transparent')
+          report(`${expected.label}是透明面，配方 nav.${expected.state} 的 backgroundColor 却是 ${recipe.backgroundColor}`)
+        continue
+      }
+    }
+    if (onRecipe && kind !== 'open' && kind !== 'nav' && kind !== 'nav-terminal') {
       for (const [name, token] of [['background', bg], ['color', color], ['font-weight', weight]]) {
         if (token != null)
           report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 ${name}: ${token}——选中标记由 collection-item 配方按 context 给`)
@@ -352,7 +419,7 @@ if (problems.length) {
   console.error('[check-selection-marker] ✗ 选中与当前态没按语义分类走：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('\n浮层集合透明底 + 对号 · 页内集合品牌淡底行面 · 导航当前品牌深字 · 格状当前实心品牌 · 有滑块开关白色抬起 indicator · 无滑块开关品牌淡底 · 打开中与 hover 同档。存量登 family-backlog.json selection 段。')
+  console.error('\n浮层集合透明底 + 对号 · 页内集合品牌淡底行面 · 导航当前品牌深字（配方 nav 语境） · 格状当前实心品牌 · 有滑块开关白色抬起 indicator · 无滑块开关品牌淡底 · 打开中与 hover 同档。存量登 family-backlog.json selection 段。')
   process.exit(1)
 }
 
