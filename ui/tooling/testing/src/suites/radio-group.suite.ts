@@ -1,6 +1,7 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { radioGroupAnatomy, radioGroupKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/'
 
@@ -561,6 +562,45 @@ export const radioGroupSuite: ConformanceSuite = {
           why: 'checked 只落 DOM property，选中值迁移后要直接读 DOM 才验得到表单提交的是新值',
           run: ({ doc }) => assertHiddenInputs(doc, [['size', 'a', false], ['size', 'b', false], ['size', 'c', true]]),
         },
+      ],
+    },
+    {
+      name: 'Space 按住与触屏按下：条目投影 data-pressed，抬起、失焦或指针取消撤下；Enter 不是 radio 的激活键；选中与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['radio-group.kbd.press'],
+      props: { defaultValue: 'a' },
+      steps: [
+        // 选中的那一条也接按压；role=radio 只认 Space，Enter 那一路没有按压面
+        heldPress('radio-group', 'item', { value: 'a', keys: [' '] }),
+        // 未选中的那一条：Space 在 keydown 那一刻就选中，按压面撤下后选中留在它身上
+        heldPress('radio-group', 'item', { value: 'c', keys: [' '] }),
+        { kind: 'settle', until: { attr: { part: 'item[2]', name: 'data-pressed', value: null } }, expect: { parts: { 'item[0]': { 'aria-checked': 'false' }, 'item[2]': { 'aria-checked': 'true' } } } },
+        {
+          kind: 'raw',
+          why: 'Enter 不是 role=radio 的激活键，按住它不该有按压面',
+          run: async ({ doc, flush }) => {
+            const el = doc.querySelector<HTMLElement>('[data-scope="radio-group"][data-part="item"][data-value="c"]')
+            if (!el)
+              throw new Error('找不到 radio-group.item[c]')
+            el.focus()
+            el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (el.hasAttribute('data-pressed'))
+              throw new Error('Enter 按住投影了 data-pressed，但 Enter 不是 radio 的激活键')
+            el.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }))
+          },
+        },
+      ],
+    },
+    {
+      name: '禁用条目不进入按压面；整组禁用或只读时所有条目都不进',
+      spec: { adr: 'press-channel' },
+      steps: [
+        heldPressIgnored('radio-group', 'item', '禁用的条目不接受按压', { value: 'b' }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('radio-group', 'item', '整组禁用时条目不接受按压', { value: 'a' }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('radio-group', 'item', '只读时条目不接受按压', { value: 'a' }),
       ],
     },
   ],

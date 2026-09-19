@@ -240,3 +240,88 @@ describe('radioGroupMachine 表单重置', () => {
     c.stop()
   })
 })
+
+describe('connectRadioGroup 按压通道', () => {
+  // 夹具的 spread 不摘属性，按压面的在场与否直接读 connect 的投影
+  const pressed = (g: ReturnType<typeof makeGroup>, value: string): unknown =>
+    (g.api().getItemProps({ value }) as Record<string, unknown>)['data-pressed']
+  const keyEvent = (type: 'keydown' | 'keyup', key: string, init: KeyboardEventInit = {}): KeyboardEvent =>
+    new KeyboardEvent(type, { key, bubbles: true, cancelable: true, ...init })
+  const pointerEvent = (type: string, pointerType: string): PointerEvent =>
+    new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+
+  it('PRESS.START 只让那一个条目投影 data-pressed，PRESS.END 撤下；另一条目的 keyup 不串；选中与按压互相独立', () => {
+    const g = makeGroup({ defaultValue: 'free' })
+    g.service.send({ type: 'PRESS.START', value: 'pro' })
+    expect(pressed(g, 'pro')).toBe('')
+    expect(pressed(g, 'free')).toBeUndefined()
+    expect(g.api().value).toBe('free')
+    g.service.send({ type: 'PRESS.END', value: 'free' })
+    expect(pressed(g, 'pro')).toBe('')
+    g.service.send({ type: 'PRESS.END', value: 'pro' })
+    expect(pressed(g, 'pro')).toBeUndefined()
+    g.stop()
+  })
+
+  it('Space 按住经跟踪器进出并在 keydown 那一刻选中，长按重复键不重报，失焦即撤下；Enter 不是 radio 的激活键，不进', () => {
+    const g = makeGroup()
+    const pro = g.items[2]!
+    pro.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressed(g, 'pro')).toBe('')
+    expect(g.api().value).toBe('pro')
+    pro.dispatchEvent(keyEvent('keydown', ' ', { repeat: true }))
+    expect(pressed(g, 'pro')).toBe('')
+    pro.dispatchEvent(keyEvent('keyup', ' '))
+    expect(pressed(g, 'pro')).toBeUndefined()
+    pro.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressed(g, 'pro')).toBe('')
+    pro.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(g, 'pro')).toBeUndefined()
+    pro.dispatchEvent(keyEvent('keydown', 'Enter'))
+    expect(pressed(g, 'pro')).toBeUndefined()
+    g.stop()
+  })
+
+  it('触屏按下进按压面，抬起或指针取消撤下；鼠标按下不走这一路', () => {
+    const g = makeGroup()
+    const free = g.items[0]!
+    free.dispatchEvent(pointerEvent('pointerdown', 'mouse'))
+    expect(pressed(g, 'free')).toBeUndefined()
+    free.dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(pressed(g, 'free')).toBe('')
+    free.dispatchEvent(pointerEvent('pointercancel', 'touch'))
+    expect(pressed(g, 'free')).toBeUndefined()
+    free.dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(pressed(g, 'free')).toBe('')
+    free.dispatchEvent(pointerEvent('pointerup', 'touch'))
+    expect(pressed(g, 'free')).toBeUndefined()
+    g.stop()
+  })
+
+  it('禁用条目、整组禁用与只读都不进按压面', () => {
+    const g = makeGroup({ collection: [{ value: 'free' }, { value: 'standard', disabled: true }, { value: 'pro' }] })
+    g.items[1]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressed(g, 'standard')).toBeUndefined()
+    g.setProps({ disabled: true })
+    g.items[0]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressed(g, 'free')).toBeUndefined()
+    g.setProps({ disabled: false, readOnly: true })
+    g.items[0]!.dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(pressed(g, 'free')).toBeUndefined()
+    g.stop()
+  })
+
+  it('按住途中整组转入禁用或只读：不会再来 keyup，机器自己撤下', () => {
+    const g = makeGroup()
+    g.items[0]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressed(g, 'free')).toBe('')
+    g.setProps({ disabled: true })
+    expect(pressed(g, 'free')).toBeUndefined()
+    g.setProps({ disabled: false })
+    g.items[0]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(pressed(g, 'free')).toBe('')
+    g.setProps({ readOnly: true })
+    expect(pressed(g, 'free')).toBeUndefined()
+    g.stop()
+  })
+})

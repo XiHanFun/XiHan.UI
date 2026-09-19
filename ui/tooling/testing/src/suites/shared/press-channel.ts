@@ -21,7 +21,8 @@ export interface PressTargetOptions {
   keyboardHost?: string | null
   /**
    * 键盘那一路派哪些键：不给时部件自己接键盘的验 Space 与 Enter，走 keyboardHost 的只验 Enter（输入框里
-   * Space 是打字）。宿主本身就是可按的节点（如 tree-select 的 branch 替行代发）时显式给回两个键。
+   * Space 是打字）。宿主本身就是可按的节点（如 tree-select 的 branch 替行代发）时显式给回两个键；只认 Space 的
+   * 部件（role=radio / checkbox，Enter 不是激活键）只给 Space。失焦那一路按住的是列表里最后一个键。
    */
   keys?: readonly string[]
 }
@@ -65,7 +66,8 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
       await expectPressed(false, '静息')
 
       if (host) {
-        for (const key of options.keys ?? (options.keyboardHost === undefined ? [' ', 'Enter'] : ['Enter'])) {
+        const keys = options.keys ?? (options.keyboardHost === undefined ? [' ', 'Enter'] : ['Enter'])
+        for (const key of keys) {
           host.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
           await expectPressed(true, `keydown ${JSON.stringify(key)} 之后`)
           host.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
@@ -73,9 +75,11 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
         }
 
         // 按住途中失焦：不会再来 keyup，按压面得随焦点一起走。
-        // 走真实的 blur()：浏览器派 blur 再派冒泡的 focusout，React 的 onBlur 挂的正是后者
-        host.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
-        await expectPressed(true, '再次 keydown Enter 之后')
+        // 走真实的 blur()：浏览器派 blur 再派冒泡的 focusout，React 的 onBlur 挂的正是后者。
+        // 派键盘列表里最后一个键：只认 Space 的部件（role=radio / checkbox）没有 Enter 这一路
+        const heldKey = keys[keys.length - 1]!
+        host.dispatchEvent(new KeyboardEvent('keydown', { key: heldKey, bubbles: true, cancelable: true }))
+        await expectPressed(true, `再次 keydown ${JSON.stringify(heldKey)} 之后`)
         if (options.blurTo === undefined) {
           host.blur()
         }
