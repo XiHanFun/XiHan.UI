@@ -7773,6 +7773,119 @@
   --xh-_collection-opacity: var(--xh-collection-opacity-current-pressed, 1);
 }
 
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'] {
+  --xh-_collection-bg: var(--xh-collection-bg-rest, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-rest, var(--xh-fg-muted));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-rest, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-rest, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-rest, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-rest, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-rest, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-rest, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-hover, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-hover, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-hover, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-hover, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-hover, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-keyboard-highlight, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-keyboard-highlight, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-keyboard-highlight, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-keyboard-highlight, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-keyboard-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-keyboard-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-keyboard-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-keyboard-highlight, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-pressed, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-pressed, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-pressed, 1);
+
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-in-path] {
+  --xh-_collection-bg: var(--xh-collection-bg-open-path, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-open-path, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-open-path, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-open-path, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-open-path, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-open-path, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-open-path, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-open-path, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-current, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-current-hover, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-current-hover, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-hover, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-hover, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-hover, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-hover, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current-highlight, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-current-highlight, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-highlight, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-highlight, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-highlight, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-highlight, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-current-pressed, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-pressed, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-pressed, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-pressed, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current][data-xh-collection-terminal] {
+  --xh-_collection-bg: var(--xh-collection-bg-terminal, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-terminal, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-terminal, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-terminal, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-terminal, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-terminal, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-terminal, default);
+  --xh-_collection-opacity: var(--xh-collection-opacity-terminal, 1);
+}
+
 [data-scope][data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
   visibility: visible;
 }
@@ -7966,6 +8079,76 @@
     --xh-_collection-fg: HighlightText;
     --xh-_collection-outline: transparent;
     --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-in-path] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current][data-xh-collection-terminal] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
   }
 
   [data-scope][data-xh-collection-item][data-state='checked'] {

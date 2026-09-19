@@ -29,6 +29,10 @@ import '@xihan-ui/styles/button.css'
 Menu、Mention、Command 等导航候选在各自迁移前不会被
 机械标成持久选择。对号在 `aria-selected='true'` 或 `data-state='checked'` 时显示；`overlay` 上下文只画行尾对号，
 `page` 上下文另铺品牌淡底行面并把对号放在行首，`data-current` 画起始侧指示条；pressed 面由家族给出。
+`nav` 上下文给横向导航（Tabs line trigger、Anchor / Breadcrumb link、Menubar / NavigationMenu trigger）：静息透明面 +
+muted 字，hover 100 → pressed 200 只换面，`data-in-path` 与 hover 同档，`data-current` = 透明面 + 品牌深字 + medium，
+2px 指示条由组件自己的滑动 indicator 部件承担；`data-xh-collection-terminal` 标不可点的当前页（面包屑），
+`--xh-fg-default` + medium、cursor default，不响应 hover / pressed。
 
 ## 装
 
