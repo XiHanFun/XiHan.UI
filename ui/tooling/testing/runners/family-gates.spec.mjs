@@ -203,6 +203,54 @@ describe('check-press-feedback.mjs 条件块', () => {
   }, SPAWN_TIMEOUT)
 })
 
+describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
+  /** 摘掉 press 段的总豁免，⑧ 才会逐部件报出来。 */
+  function dropPressedExcuse(root) {
+    const path = join(root, BACKLOG)
+    const json = JSON.parse(readFileSync(path, 'utf8'))
+    delete json.press['*:data-pressed']
+    writeFileSync(path, JSON.stringify(json, null, 2))
+  }
+
+  /** 改一份 connect：把 from 换成 to，找不到 from 就让用例直接失败，免得夹具改空了还判通过。 */
+  function rewriteConnect(root, comp, from, to) {
+    const path = join(root, 'packages/engine/headless/src', comp, `${comp}.connect.ts`)
+    const source = readFileSync(path, 'utf8')
+    expect(source, `${comp}.connect.ts 里找不到 ${from}`).toContain(from)
+    writeFileSync(path, source.replace(from, to), 'utf8')
+  }
+
+  it('字面量与 press(part) 展开两种写法都认作投影', () => {
+    const root = createFixture()
+    dropPressedExcuse(root)
+    const result = run('check-press-feedback.mjs', root)
+    // button 直接写 'data-pressed' 字面量；dialog / popconfirm 经 ...press('trigger') 展开；
+    // floating-panel 的形态钮经模板串 ...press(`window-state:…`) 展开
+    for (const line of ['button 的 root', 'dialog 的 trigger', 'dialog 的 close-trigger', 'popconfirm 的 confirm-trigger', 'floating-panel 的 window-state-trigger'])
+      expect(result.stderr).not.toContain(line)
+  }, SPAWN_TIMEOUT)
+
+  it('展开的本地辅助没写 data-pressed 判红', () => {
+    const root = createFixture()
+    dropPressedExcuse(root)
+    rewriteConnect(root, 'dialog', '\'data-pressed\': dataAttr(pressed === part),', '')
+    const result = run('check-press-feedback.mjs', root)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('dialog 的 trigger 登记为可按，connect 的 getter 却没投影 data-pressed')
+    expect(result.stderr).toContain('dialog 的 close-trigger 登记为可按')
+  }, SPAWN_TIMEOUT)
+
+  it('只展开处理器（pressHandlers）不算投影', () => {
+    const root = createFixture()
+    dropPressedExcuse(root)
+    // 展开的是 shared/press 的处理器，不是本地返回 data-pressed 的辅助
+    rewriteConnect(root, 'button', '\'data-pressed\': dataAttr(context.get(\'pressed\')),', '...pressHandlers(service),')
+    const result = run('check-press-feedback.mjs', root)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('button 的 root 登记为可按，connect 的 getter 却没投影 data-pressed')
+  }, SPAWN_TIMEOUT)
+})
+
 gateSuite('check-text-role.mjs', {
   section: 'text',
   red: LAYER(`
