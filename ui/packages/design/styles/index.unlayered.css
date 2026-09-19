@@ -14408,6 +14408,8 @@
 /* styles/calendar-picker.css */
 /* 定义 calendar picker 样式。 */
 
+/* family/action-control.css */
+
 /* css/scrollbar.css */
 /* 定义 scrollbar 样式。 */
 
@@ -14652,23 +14654,25 @@
 
 /* 标题里的年与月：点它们逐级钻上去（年 → 十年格、月 → 月格）。
    长得像标题而不像按钮——它本来就是标题，只是可点 */
+/* 标题里的年与月接 Action Control text 档（§9.1 日期翻页按钮同族）：盒、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡
+   由家族配方给，这里只把使用者槽映射到桥接槽。长得像标题而不像按钮——它本来就是标题，只是可点：静息透明（ghost），
+   悬停只换字色不换底（标题不是一枚按钮面），按下换到 200 档中性面（白底承载）；到顶那一层只作标题显示，
+   光标别装成能点，也不再换面 */
 [data-scope='calendar-picker'][data-part='heading-year-trigger']:not([hidden]),
 [data-scope='calendar-picker'][data-part='heading-month-trigger']:not([hidden]) {
-  display: inline-flex;
-  align-items: center;
-  padding-inline: var(--xh-calendar-picker-heading-trigger-px, var(--xh-space-1));
-  border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-calendar-picker-heading-trigger-radius, var(--xh-shape-control));
-  background: transparent;
-  color: var(--xh-calendar-picker-heading-fg, var(--xh-fg-default));
-  font-size: var(--xh-calendar-picker-heading-font-size, var(--xh-text-label-size));
+  --xh-action-padding-inline: var(--xh-calendar-picker-heading-trigger-px, var(--xh-space-1));
+  --xh-action-radius: var(--xh-calendar-picker-heading-trigger-radius, var(--xh-shape-control));
+  --xh-action-bg-hover: transparent;
+  --xh-action-bg-pressed: var(--xh-calendar-picker-heading-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-calendar-picker-heading-fg, var(--xh-fg-default));
+  --xh-action-fg-hover: var(--xh-calendar-picker-heading-trigger-fg-hover, var(--xh-fg-brand));
+  --xh-action-fg-pressed: var(--xh-calendar-picker-heading-trigger-fg-hover, var(--xh-fg-brand));
+  --xh-action-fg-focus-visible: var(--xh-calendar-picker-heading-fg, var(--xh-fg-default));
+  --xh-action-fg-disabled: var(--xh-calendar-picker-heading-fg, var(--xh-fg-default));
+  --xh-action-font-size: var(--xh-calendar-picker-heading-font-size, var(--xh-text-label-size));
+  --xh-action-cursor-disabled: default;
+
   font-weight: var(--xh-calendar-picker-heading-font-weight, var(--xh-font-weight-semibold));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='calendar-picker'][data-part='heading-year-trigger'][hidden],
@@ -14676,44 +14680,23 @@
   display: none;
 }
 
-[data-scope='calendar-picker'][data-part='heading-year-trigger']:hover:not(:disabled),
-[data-scope='calendar-picker'][data-part='heading-month-trigger']:hover:not(:disabled) {
-  color: var(--xh-calendar-picker-heading-trigger-fg-hover, var(--xh-fg-brand));
-}
-
-/* 按下微缩并同时换底（§9.1 定尺控件缩放必换底，白底承载按下是 200 档）：钻进上一层时给指针一个回执 */
-[data-scope='calendar-picker'][data-part='heading-year-trigger']:is(:active, [data-pressed]):not(:disabled),
-[data-scope='calendar-picker'][data-part='heading-month-trigger']:is(:active, [data-pressed]):not(:disabled) {
-  background: var(--xh-calendar-picker-heading-trigger-bg-pressed, var(--xh-bg-subtle-hover));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 到顶那一层（年视图的年那一截）只作标题显示：不再是可点的东西，光标也别装成能点 */
-[data-scope='calendar-picker'][data-part='heading-year-trigger']:disabled,
-[data-scope='calendar-picker'][data-part='heading-month-trigger']:disabled {
-  cursor: default;
-}
-
+/* 四颗方向钮接 Action Control icon 档（§9.1 日期翻页按钮）、ghost 形态：正方盒、悬停 / 按下 / 禁用面、0.97 缩放与换底、
+   粗指针热区、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽；钮坐在日历的白底上，悬停 100 → 按下 200 */
 [data-scope='calendar-picker'][data-part='prev-year-trigger'],
 [data-scope='calendar-picker'][data-part='prev-trigger'],
 [data-scope='calendar-picker'][data-part='next-year-trigger'],
 [data-scope='calendar-picker'][data-part='next-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-calendar-picker-nav-size, var(--xh-control-h-sm));
-  block-size: var(--xh-calendar-picker-nav-size, var(--xh-control-h-sm));
-  border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-calendar-picker-nav-radius, var(--xh-shape-control));
-  background: var(--xh-calendar-picker-nav-bg, transparent);
-  color: var(--xh-calendar-picker-nav-fg, var(--xh-fg-muted));
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-visual-size: var(--xh-calendar-picker-nav-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-calendar-picker-nav-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-calendar-picker-nav-radius, var(--xh-shape-control));
+  --xh-action-bg-rest: var(--xh-calendar-picker-nav-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-calendar-picker-nav-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-calendar-picker-nav-bg-pressed, var(--xh-_action-variant-bg-pressed));
+  --xh-action-bg-focus-visible: var(--xh-calendar-picker-nav-bg, var(--xh-_action-variant-bg-focus-visible));
+  --xh-action-fg-rest: var(--xh-calendar-picker-nav-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-calendar-picker-nav-fg-hover, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-calendar-picker-nav-fg-hover, var(--xh-fg-default));
+  --xh-action-fg-focus-visible: var(--xh-calendar-picker-nav-fg, var(--xh-fg-muted));
 }
 
 [data-scope='calendar-picker'][data-part='prev-year-trigger'][hidden],
@@ -14721,34 +14704,6 @@
 [data-scope='calendar-picker'][data-part='next-year-trigger'][hidden],
 [data-scope='calendar-picker'][data-part='next-trigger'][hidden] {
   display: none;
-}
-
-/* 方向钮坐在日历的白底上：悬停 100 档（§7.2 白底承载阶梯） */
-[data-scope='calendar-picker'][data-part='prev-year-trigger']:hover:not(:disabled),
-[data-scope='calendar-picker'][data-part='prev-trigger']:hover:not(:disabled),
-[data-scope='calendar-picker'][data-part='next-year-trigger']:hover:not(:disabled),
-[data-scope='calendar-picker'][data-part='next-trigger']:hover:not(:disabled) {
-  background: var(--xh-calendar-picker-nav-bg-hover, var(--xh-bg-subtle));
-  color: var(--xh-calendar-picker-nav-fg-hover, var(--xh-fg-default));
-}
-
-/* 按下再压一档到 200 并缩放（§9.1 定尺控件缩放必换底） */
-[data-scope='calendar-picker'][data-part='prev-year-trigger']:is(:active, [data-pressed]):not(:disabled),
-[data-scope='calendar-picker'][data-part='prev-trigger']:is(:active, [data-pressed]):not(:disabled),
-[data-scope='calendar-picker'][data-part='next-year-trigger']:is(:active, [data-pressed]):not(:disabled),
-[data-scope='calendar-picker'][data-part='next-trigger']:is(:active, [data-pressed]):not(:disabled) {
-  background: var(--xh-calendar-picker-nav-bg-pressed, var(--xh-bg-subtle-hover));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 翻月是单体控件，禁用走原生 :disabled（连接层输出的正是原生 disabled） */
-[data-scope='calendar-picker'][data-part='prev-year-trigger']:disabled,
-[data-scope='calendar-picker'][data-part='prev-trigger']:disabled,
-[data-scope='calendar-picker'][data-part='next-year-trigger']:disabled,
-[data-scope='calendar-picker'][data-part='next-trigger']:disabled {
-  color: var(--xh-fg-disabled);
 }
 
 [data-scope='calendar-picker'][data-part='grid'] {
@@ -14883,28 +14838,53 @@
   display: none;
 }
 
+/* 日期格接 Action Control text 档（§9.1 日历格是定尺控件；§4.1 格状当前）、ghost 形态：悬停 / 按下 / 禁用面、
+   0.97 缩放与换底、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽。几何仍由网格给：宽度由 week-row 的
+   等分轨道给、高度按 aspect-ratio 跟着走（block-size 归 auto，不取家族的固定高），日历才不会被长月份拉扁。
+   格子坐在日历的白底上：悬停 100 → 按下 200；今天 / 选中 / 邻月 / 不可用只换下面的私有槽 */
 [data-scope='calendar-picker'][data-part='cell-trigger'] {
-  /* 命中区是绝对定位的伪元素，得定位 */
-  position: relative;
+  --xh-_calendar-picker-cell-bg: transparent;
+  --xh-_calendar-picker-cell-bg-hover: var(--xh-calendar-picker-cell-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-_calendar-picker-cell-bg-pressed: var(--xh-calendar-picker-cell-bg-pressed, var(--xh-_action-variant-bg-pressed));
+  --xh-_calendar-picker-cell-border: transparent;
+  --xh-_calendar-picker-cell-fg: var(--xh-calendar-picker-cell-fg, var(--xh-fg-default));
+
+  --xh-action-visual-size: auto;
+  --xh-action-min-inline-size: var(--xh-calendar-picker-cell-size, var(--xh-control-h-sm));
+  --xh-action-padding-inline: 0;
+  --xh-action-radius: var(--xh-calendar-picker-cell-radius, var(--xh-shape-inset));
+  --xh-action-bg-rest: var(--xh-_calendar-picker-cell-bg);
+  --xh-action-bg-hover: var(--xh-_calendar-picker-cell-bg-hover);
+  --xh-action-bg-pressed: var(--xh-_calendar-picker-cell-bg-pressed);
+  --xh-action-bg-focus-visible: var(--xh-_calendar-picker-cell-bg);
+  --xh-action-bg-disabled: var(--xh-_calendar-picker-cell-bg);
+  --xh-action-border-rest: var(--xh-_calendar-picker-cell-border);
+  --xh-action-border-hover: var(--xh-_calendar-picker-cell-border);
+  --xh-action-border-pressed: var(--xh-_calendar-picker-cell-border);
+  --xh-action-border-focus-visible: var(--xh-_calendar-picker-cell-border);
+  --xh-action-border-disabled: var(--xh-_calendar-picker-cell-border);
+  --xh-action-fg-rest: var(--xh-_calendar-picker-cell-fg);
+  --xh-action-fg-hover: var(--xh-_calendar-picker-cell-fg);
+  --xh-action-fg-pressed: var(--xh-_calendar-picker-cell-fg);
+  --xh-action-fg-focus-visible: var(--xh-_calendar-picker-cell-fg);
+  --xh-action-font-size: var(--xh-calendar-picker-cell-font-size, var(--xh-text-body-size));
+
   display: flex;
   flex: 1;
-  align-items: center;
-  justify-content: center;
-  /* 正方格：宽度由 week-row 的等分轨道给，高度跟着走，日历才不会被长月份拉扁 */
+  /* 正方格：宽度由 week-row 的等分轨道给，高度跟着走 */
   aspect-ratio: 1;
-  min-inline-size: var(--xh-calendar-picker-cell-size, var(--xh-control-h-sm));
-  border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-calendar-picker-cell-radius, var(--xh-shape-inset));
-  color: var(--xh-calendar-picker-cell-fg, var(--xh-fg-default));
-  font-size: var(--xh-calendar-picker-cell-font-size, var(--xh-text-body-size));
   font-weight: var(--xh-calendar-picker-cell-font-weight, var(--xh-font-weight-medium));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+}
+
+/* 家族 text 档在粗指针下用 ::after 扩热区到 44px 高，这里的 ::after 是铺满整格（含四周留白）的命中区：
+   钉回 inset 那副几何，不让家族的定位与下限把它挪走或撑高压到相邻的格 */
+@media (pointer: coarse) {
+  [data-scope='calendar-picker'][data-part='cell-trigger']::after {
+    inline-size: auto;
+    block-size: auto;
+    min-block-size: 0;
+    translate: none;
+  }
 }
 
 [data-scope='calendar-picker'][data-part='cell-trigger'][hidden] {
@@ -14920,41 +14900,34 @@
 
 /* 邻月的日子照样可点，只是压暗——它们不是占位符 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-outside-month] {
-  color: var(--xh-calendar-picker-cell-fg-outside, var(--xh-fg-subtle));
-}
-
-/* 格子坐在日历的白底上：悬停 100 档、按下 200 档（§7.2 白底承载阶梯） */
-[data-scope='calendar-picker'][data-part='cell-trigger']:not([data-disabled], [data-selected]):hover {
-  background: var(--xh-calendar-picker-cell-bg-hover, var(--xh-bg-subtle));
-}
-
-/* 按下微缩并同时换底（§9.1 日历格是定尺控件）：缩放走 transform 通道，一格自己缩不推动整张网格；
-   已选中的格照样压，它的按下面由下面的实心档规则另给 */
-[data-scope='calendar-picker'][data-part='cell-trigger']:not([data-disabled]):is(:active, [data-pressed]) {
-  background: var(--xh-calendar-picker-cell-bg-pressed, var(--xh-bg-subtle-hover));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
+  --xh-_calendar-picker-cell-fg: var(--xh-calendar-picker-cell-fg-outside, var(--xh-fg-subtle));
 }
 
 /* 今天：1px 品牌环 + 品牌字（§7.3 brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
    选中仍用后面的实心强调面，两个状态叠加时不会混成同一种反馈 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-today] {
-  border-color: var(--xh-calendar-picker-today-border, var(--xh-fg-brand));
-  background: var(--xh-calendar-picker-today-bg, transparent);
-  color: var(--xh-calendar-picker-today-fg, var(--xh-fg-brand));
+  --xh-_calendar-picker-cell-bg: var(--xh-calendar-picker-today-bg, transparent);
+  --xh-_calendar-picker-cell-border: var(--xh-calendar-picker-today-border, var(--xh-fg-brand));
+  --xh-_calendar-picker-cell-fg: var(--xh-calendar-picker-today-fg, var(--xh-fg-brand));
 }
 
-/* 实心强调面给单选 / 多选的选中格 */
+/* 实心强调面给单选 / 多选的选中格（§7.3 格状当前）：悬停不换面，按下压到 active 档（光缩放在深色底上看不出回执）。
+   面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
-  border-color: transparent;
-  background: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
-  color: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
-}
-
-/* 实心面按下时压到 active 档（§7.3 格状当前 pressed = brand-active）：光缩放在深色底上看不出回执 */
-[data-scope='calendar-picker'][data-part='cell-trigger'][data-selected]:not([data-disabled]):is(:active, [data-pressed]) {
-  background: var(--xh-calendar-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
+  --xh-action-bg-rest: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
+  --xh-action-bg-hover: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
+  --xh-action-bg-pressed: var(--xh-calendar-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
+  --xh-action-bg-focus-visible: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
+  --xh-action-border-rest: transparent;
+  --xh-action-border-hover: transparent;
+  --xh-action-border-pressed: transparent;
+  --xh-action-border-focus-visible: transparent;
+  --xh-action-fg-rest: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
+  --xh-action-fg-hover: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
+  --xh-action-fg-pressed: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
+  --xh-action-fg-focus-visible: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
+  --xh-action-ring-color-focus-visible: currentColor;
 }
 
 @media (forced-colors: active) {
@@ -14967,45 +14940,31 @@
     border-color: Highlight;
   }
 
-  /* 按下换的底在这一档被抹平：格子、方向钮与标题钮的透明占位边换成 Highlight 表出按住 */
-  [data-scope='calendar-picker'][data-part='cell-trigger']:not([data-disabled]):is(:active, [data-pressed]),
-  [data-scope='calendar-picker'][data-part='prev-year-trigger']:is(:active, [data-pressed]):not(:disabled),
-  [data-scope='calendar-picker'][data-part='prev-trigger']:is(:active, [data-pressed]):not(:disabled),
-  [data-scope='calendar-picker'][data-part='next-year-trigger']:is(:active, [data-pressed]):not(:disabled),
-  [data-scope='calendar-picker'][data-part='next-trigger']:is(:active, [data-pressed]):not(:disabled),
-  [data-scope='calendar-picker'][data-part='heading-year-trigger']:is(:active, [data-pressed]):not(:disabled),
-  [data-scope='calendar-picker'][data-part='heading-month-trigger']:is(:active, [data-pressed]):not(:disabled) {
-    border-color: Highlight;
-  }
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-   排掉不可用的格子：那一档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，
-   它仍要能聚焦（方向键的起点），环由公共层画 */
-[data-scope='calendar-picker'][data-part='cell-trigger'][data-selected]:not([data-disabled]):focus-visible {
-  --xh-_ring-color: currentColor;
+  /* 按下换的底在这一档由家族的按压块换成 Highlight（格子、方向钮与标题钮同走），这里不再另画 */
 }
 
 /* 不可用走 aria-disabled 而非原生 disabled：格子仍要可聚焦（它还得当方向键的起点），
-   所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+   所以只能靠 data-disabled 表达，写 :disabled 永远不命中；置灰字由家族的禁用块按映射给，
+   那一档不落焦点环的灌色（环取过来就跟底一起糊了），环由公共层画 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-disabled] {
-  color: var(--xh-fg-disabled);
+  --xh-action-fg-disabled: var(--xh-fg-disabled);
+  --xh-action-ring-color-focus-visible: var(--xh-ring-focus);
 }
 
 /* 不可用又选中的格：退到中性淡底 + 置灰字（§7.2 禁用面），选中身份仍由这块底与未选中的透明格分开 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-disabled][data-selected] {
-  background: var(--xh-calendar-picker-cell-bg-selected-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
+  --xh-action-bg-disabled: var(--xh-calendar-picker-cell-bg-selected-disabled, var(--xh-bg-subtle));
 }
 
 /* 只读：日子改不动，但不是禁用——颜色照常，只把"可点"这个暗示收回来。
    只收日视图这一档：粗粒度视图（月格、年格）点一格是往下钻一层，只读也照做，
-   那些格子仍是按得动的按钮，手型不能撤。
-   排掉不可用的格子是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+   那些格子仍是按得动的按钮，手型不能撤 */
 [data-scope='calendar-picker'][data-part='grid'][data-readonly][data-view='day']
   [data-part='cell-trigger']:not([data-disabled]) {
-  cursor: default;
+  --xh-action-cursor-rest: default;
+  --xh-action-cursor-hover: default;
+  --xh-action-cursor-pressed: default;
+  --xh-action-cursor-focus-visible: default;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
