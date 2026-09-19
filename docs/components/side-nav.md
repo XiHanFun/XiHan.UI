@@ -141,9 +141,9 @@
 
 **状态**：`idle` · `popout`
 
-**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `PRESENCE.SET`
+**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `PRESENCE.SET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canChange` · `canPopout`
+**判据**：`canChange` · `canPopout` · `canPress`
 
 ### connect API
 
@@ -189,6 +189,7 @@
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Enter` / `Space` | held on link / branch-trigger, 侧栏未禁用且入口未禁用 | 按住期间链接行或分支行投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，弹出面板随选中收起时一并撤下。导航当前（aria-current）与按压互相独立，激活与展开语义照旧由这一次按键承担 |
 | `Enter` / `Space` | focus in branch-trigger | 展开/收起该枝（原生按钮激活） |
 | `Enter` | focus in link | 激活链接（原生行为）并落选中 |
 | `ArrowDown` | focus in 行 | 下一可见行（roving tabindex） |
@@ -247,6 +248,7 @@
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-in-path` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-value` | itemValue(el) |
 | `branch-trigger` | `data-xh-collection-context` | 'page' |
@@ -260,6 +262,7 @@
 | `link` | `data-current` | ''（条件成立时才出现） |
 | `link` | `data-disabled` | ''（条件成立时才出现） |
 | `link` | `data-highlighted` | ''（条件成立时才出现） |
+| `link` | `data-pressed` | ''（条件成立时才出现） |
 | `link` | `data-value` | itemValue(el) |
 | `link` | `data-xh-collection-context` | 'page' |
 | `link` | `data-xh-collection-item` | '' |

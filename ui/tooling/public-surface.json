@@ -6158,6 +6158,7 @@
       "SideNavExpandedValueChangeDetails",
       "SideNavNode",
       "SideNavNodeProps",
+      "SideNavPressedPart",
       "SideNavSchema",
       "SideNavTranslations",
       "SideNavValueChangeDetails",

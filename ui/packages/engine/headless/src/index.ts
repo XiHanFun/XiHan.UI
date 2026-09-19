@@ -222,7 +222,7 @@ export { isOverflowing, maxScrollOffset, pointerDelta, SCROLL_MIN_THUMB_SIZE, sc
 export type { ScrollAxis, ScrollAxisGeometry, ScrollAxisMetrics, ScrollRect } from './shared/scroll-geometry'
 export { VISUALLY_HIDDEN_STYLE } from './shared/visually-hidden'
 export { accordionSiblings, connectSideNav, sideNavAnatomy, sideNavKeyboard, sideNavLinkQuery, sideNavMachine, sideNavMeta, sideNavTriggerQuery } from './side-nav'
-export type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from './side-nav'
+export type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavPressedPart, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from './side-nav'
 export { connectSignaturePad, pathFromPoints, SIGNATURE_PAD_SIZE, signaturePadAnatomy, signaturePadKeyboard, signaturePadMachine, signaturePadMeta, signaturePadSvg, simulatedPressure, strokeRadius, strokesToPaths } from './signature-pad'
 export type { SignaturePadApi, SignaturePadDrawDetails, SignaturePadDrawEndDetails, SignaturePadDrawingOptions, SignaturePadPoint, SignaturePadPointerPoint, SignaturePadSchema, SignaturePadStroke, SignaturePadSurface, SignaturePadTranslations } from './signature-pad'
 export { connectSkeleton, skeletonAnatomy, skeletonKeyboard, skeletonMeta } from './skeleton'

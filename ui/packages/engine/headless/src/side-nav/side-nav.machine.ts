@@ -6,7 +6,7 @@
 // 提供 side nav 相关实现。
 
 import type { Cleanup, Layer, PositionResult } from '@xihan-ui/core'
-import type { SideNavNode, SideNavSchema } from './side-nav.types'
+import type { SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.types'
 import { focusItem, navigateItems, setup, trackHoverIntent } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { OVERLAY_OFFSET } from '../shared/overlay'
@@ -77,6 +77,9 @@ export const sideNavMachine = createMachine({
     popoutPlacements: cell<Record<string, PositionResult>>(() => ({ defaultValue: {} })),
     popoutIntent: cell<'first' | 'none'>(() => ({ defaultValue: 'none' })),
     popoutReturnFocus: cell<boolean>(() => ({ defaultValue: false })),
+    // 按压通道：正被按住的那一个（入口按 value 记、链接行与分支行分开认），与选中、展开、弹出无关
+    pressedPart: cell<SideNavPressedPart | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -94,12 +97,19 @@ export const sideNavMachine = createMachine({
   // 多分支弹出层的资源会跨逻辑关闭保留，由根级会话管理器按 Presence 身份结清。
   effects: ['trackPopoutSessions'],
   // 折叠开关在弹出期间翻回平铺时收掉面板，机器自己保证「弹出只存在于折叠态」
-  watch: ({ track, prop, action }) => track(
-    [() => prop('collapsed'), () => prop('collapsedPopout')],
-    () => action(['syncCollapsed']),
-  ),
+  watch: ({ track, prop, action }) => {
+    track(
+      [() => prop('collapsed'), () => prop('collapsedPopout')],
+      () => action(['syncCollapsed']),
+    )
+    // 按住途中整个侧栏转入禁用：不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled')], () => action(['releaseWhenInert']))
+  },
   on: {
     'PRESENCE.SET': { actions: ['setPresence'] },
+    // 按压通道：两个状态都认；侧栏禁用不进，入口自身禁用随事件带入
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -117,6 +127,8 @@ export const sideNavMachine = createMachine({
     },
     popout: {
       effects: ['trackPopoutPosition', 'trackPopoutLayer', 'trackPopoutHover'],
+      // 收起即松开：面板里按住 Enter 选中叶子后面板随之收起，不会再来 keyup
+      exit: ['releasePress'],
       on: {
         'VALUE.SET': { guard: 'canChange', actions: ['setValue'] },
         // 面板里选中叶子：落值并收面板，焦点归还触发按钮
@@ -134,8 +146,38 @@ export const sideNavMachine = createMachine({
     guards: {
       canChange: ({ prop }) => !prop('disabled'),
       canPopout: ({ prop }) => !prop('disabled') && !!prop('collapsed') && (prop('collapsedPopout') ?? true),
+      // 整个侧栏禁用一票否决；入口自身的禁用随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('disabled') && !e.disabled
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一个部件或另一条入口的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== e.value)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releasePress: ({ context }) => {
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (context.get('pressedPart') == null || !prop('disabled'))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET')

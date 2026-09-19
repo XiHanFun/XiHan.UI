@@ -3,6 +3,7 @@ import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } f
 import { sideNavAnatomy, sideNavKeyboard } from '@xihan-ui/headless'
 import { installCssAnimationMock } from '../conformance/css-animation-mock'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/'
 
@@ -27,6 +28,11 @@ const COLLECTION: SideNavNode[] = [
     children: [{ value: 'order-list', label: 'Order list', href: '#order-list' }],
   },
 ]
+
+/** 按压用例专用：user-role 禁用，其余同 COLLECTION。 */
+const COLLECTION_WITH_DISABLED: SideNavNode[] = COLLECTION.map(node => node.value === 'user'
+  ? { ...node, children: node.children!.map(child => child.value === 'user-role' ? { ...child, disabled: true } : child) }
+  : node)
 
 /** 每个用例都得带上同一份 collection：没有它，标记里的节点报不出 href 与层级。 */
 function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
@@ -777,6 +783,29 @@ export const sideNavSuite: ConformanceSuite = {
             parts: { 'branch-trigger': triggersExpanded(), 'branch-content': contentsShown() },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：链接行与分支行投影 data-pressed，抬起、失焦或指针取消撤下；当前页与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['side-nav.kbd.press'],
+      props: props({ defaultExpandedValue: ['user'], defaultValue: 'home' }),
+      steps: [
+        { kind: 'focus', part: 'link[0]', expect: { activeElement: { part: 'link[0]', exact: true } } },
+        // 当前页那一条也接按压：失焦落到子层的链接，焦点不离开侧栏
+        heldPress('side-nav', 'link', { value: 'home', blurTo: '[data-scope="side-nav"][data-part="link"][data-value="user-list"]' }),
+        heldPress('side-nav', 'branch-trigger', { value: 'user', blurTo: '[data-scope="side-nav"][data-part="link"][data-value="user-list"]' }),
+      ],
+    },
+    {
+      name: '禁用入口不进入按压面；整个侧栏禁用时链接行与分支行都不进',
+      spec: { adr: 'press-channel' },
+      props: props({ collection: COLLECTION_WITH_DISABLED, defaultExpandedValue: ['user'] }),
+      steps: [
+        heldPressIgnored('side-nav', 'link', '禁用的链接不接受按压', { value: 'user-role' }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('side-nav', 'link', '整个侧栏禁用时链接不接受按压', { value: 'home' }),
+        heldPressIgnored('side-nav', 'branch-trigger', '整个侧栏禁用时分支行不接受按压', { value: 'user' }),
       ],
     },
   ],

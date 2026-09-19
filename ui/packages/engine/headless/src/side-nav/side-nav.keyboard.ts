@@ -13,6 +13,7 @@ export const sideNavKeyboard: KeyboardTable = {
   component: 'side-nav',
   source: APG,
   rows: [
+    { id: 'side-nav.kbd.press', keys: ['Enter', 'Space'], when: 'held on link / branch-trigger, 侧栏未禁用且入口未禁用', does: '按住期间链接行或分支行投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，弹出面板随选中收起时一并撤下。导航当前（aria-current）与按压互相独立，激活与展开语义照旧由这一次按键承担' },
     { id: 'side-nav.kbd.activate', keys: ['Enter', 'Space'], when: 'focus in branch-trigger', does: '展开/收起该枝（原生按钮激活）' },
     { id: 'side-nav.kbd.link', keys: ['Enter'], when: 'focus in link', does: '激活链接（原生行为）并落选中' },
     { id: 'side-nav.kbd.down', keys: ['ArrowDown'], when: 'focus in 行', does: '下一可见行（roving tabindex）' },
