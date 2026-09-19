@@ -396,10 +396,6 @@
     transition: none;
   }
 
-  [data-scope='time-picker'][data-part='preset']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   /* 对号是 preset 自身的正式选中出口：全部条目恒留末端轨，不依赖作者补节点。 */
   [data-scope='time-picker'][data-part='preset']::after {
     content: '';
@@ -522,10 +518,6 @@
     --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
     transition: none;
-  }
-
-  [data-scope='time-picker'][data-part='item']:focus:not(:focus-visible) {
-    outline: none;
   }
 
   /* 作者自己藏掉某几格时要让位，有 display 就得补这条 */

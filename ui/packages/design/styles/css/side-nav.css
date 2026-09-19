@@ -178,11 +178,6 @@
     transition: none;
   }
 
-  [data-scope='side-nav'][data-part='branch-trigger']:focus:not(:focus-visible),
-  [data-scope='side-nav'][data-part='link']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   [data-scope='side-nav'][data-part='branch-text'],
   [data-scope='side-nav'][data-part='link-text'] {
     flex: 1;

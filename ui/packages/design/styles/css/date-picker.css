@@ -485,10 +485,6 @@
     transition: none;
   }
 
-  [data-scope='date-picker'][data-part='preset']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
   [data-scope='date-picker'][data-part='preset'][hidden] {
     display: none;
@@ -605,10 +601,6 @@
     --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
     transition: none;
-  }
-
-  [data-scope='date-picker'][data-part='time-item']:focus:not(:focus-visible) {
-    outline: none;
   }
 
   [data-scope='date-picker'][data-part='time-item']::after {

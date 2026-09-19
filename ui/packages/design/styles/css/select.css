@@ -517,10 +517,6 @@
     transition: none;
   }
 
-  [data-scope='select'][data-part='item']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   [data-scope='select'][data-part='item-text'] {
     /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
     min-inline-size: 0;

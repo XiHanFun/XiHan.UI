@@ -87,8 +87,8 @@ describe('menu 条目接入 Collection Item（真源 §7.2 / §7.3 / §9.2）', 
     await userEvent.hover(paste)
     expect(paste.hasAttribute('data-highlighted')).toBe(true)
     expect(getComputedStyle(paste).backgroundColor).toBe(resolve('--xh-bg-subtle'))
-    // 指针落焦不画环
-    expect(getComputedStyle(paste).outlineStyle).toBe('none')
+    // 指针落焦不画环：家族配方的描边留在 solid，颜色由皮肤的指针路径槽置成透明
+    expect(getComputedStyle(paste).outlineColor).toBe('rgba(0, 0, 0, 0)')
 
     const before = paste.getBoundingClientRect()
     await pressPointer(paste)

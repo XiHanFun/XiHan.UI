@@ -496,10 +496,6 @@
     transition: none;
   }
 
-  [data-scope='cascader'][data-part='item']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。落在家族网格的 suffix 列、跨两行居中。
      与菜单族的子菜单箭头同走字形令牌——此前这里是「描全边框再抹掉两条、把剩下的直角旋 45 度」，
      作者换掉标记时换不动它，RTL 还得再翻一次旋转角 */
@@ -699,10 +695,6 @@
     --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
     transition: none;
-  }
-
-  [data-scope='cascader'][data-part='search-item']:focus:not(:focus-visible) {
-    outline: none;
   }
 
   /* 自动生成的搜索结果复用 item-indicator 的尺寸、颜色和对号字形，不新增第二套作者槽。 */
