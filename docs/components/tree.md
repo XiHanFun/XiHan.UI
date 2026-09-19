@@ -350,7 +350,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `--xh-tree-checkbox-bg-checked` | `branch-checkbox`<br>`item-checkbox` | `background` | `indeterminate`<br>`not([data-selected])`<br>`selected` | `--xh-bg-brand` | tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。 |
 | `--xh-tree-checkbox-border` | `branch-checkbox`<br>`item-checkbox` | `border` | `default` | `--xh-border-control` | tree 的 branch-checkbox、item-checkbox 部件 border 覆盖槽。 |
 | `--xh-tree-checkbox-border-checked` | `branch-checkbox`<br>`item-checkbox` | `border-color` | `indeterminate`<br>`not([data-selected])`<br>`selected` | `--xh-bg-brand` | tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。 |
-| `--xh-tree-checkbox-border-disabled` | `branch-checkbox`<br>`item-checkbox` | `border-color` | `disabled` | `--xh-border-subtle` | tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。 |
+| `--xh-tree-checkbox-border-disabled` | `branch-checkbox`<br>`item-checkbox` | `border-color` | `disabled` | `--xh-border-default` | tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。 |
 | `--xh-tree-checkbox-fg` | `branch-checkbox`<br>`item-checkbox` | `color` | `default` | `--xh-fg-on-brand` | tree 的 branch-checkbox、item-checkbox 部件 color 覆盖槽。 |
 | `--xh-tree-checkbox-radius` | `branch-checkbox`<br>`item-checkbox` | `border-radius` | `default` | `--xh-shape-inset` | tree 的 branch-checkbox、item-checkbox 部件 border-radius 覆盖槽。 |
 | `--xh-tree-checkbox-size` | `branch-checkbox`<br>`item-checkbox` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree 的 branch-checkbox、item-checkbox 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
