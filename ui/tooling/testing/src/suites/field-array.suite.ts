@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { fieldArrayAnatomy, fieldArrayKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 动态录入不在 APG 的模式清单里：三类把手都是原生 button，规范面落在按钮上。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
@@ -26,6 +27,11 @@ function row(index: number): FixtureNode {
 }
 
 const addTrigger: FixtureNode = { part: 'add-trigger', tag: 'button', text: '新增一行' }
+
+/** 某一行的把手：把手带着作者声明的行下标，按它选到那一行的。 */
+function handle(part: string, index: number): string {
+  return `[data-scope="field-array"][data-part="${part}"][data-index="${index}"]`
+}
 
 /** 一行的部件在文档里的顺序。 */
 function rowOrder(index: number): string[] {
@@ -337,6 +343,66 @@ export const fieldArraySuite: ConformanceSuite = {
         { kind: 'click', part: 'add-trigger', expect: { events: [] } },
         { kind: 'click', part: 'item-delete-trigger[0]', expect: { events: [] } },
         { kind: 'click', part: 'move-down-trigger[0]', expect: { events: [] } },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：四类把手投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不加行、不删行、不换序',
+      spec: { adr: 'press-channel' },
+      covers: ['field-array.kbd.press'],
+      props: { defaultValue: ['甲', '乙', '丙'], movable: true },
+      steps: [
+        heldPress('field-array', 'add-trigger'),
+        heldPress('field-array', 'item-delete-trigger', { selector: handle('item-delete-trigger', 1) }),
+        // 首行上不去、末行下不来：换序把手各取按得动的那一行
+        heldPress('field-array', 'move-up-trigger', { selector: handle('move-up-trigger', 1) }),
+        heldPress('field-array', 'move-down-trigger', { selector: handle('move-down-trigger', 1) }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'move-down-trigger[1]', name: 'data-pressed', value: null } },
+          expect: {
+            counts: { item: 3 },
+            parts: {
+              'add-trigger': { 'data-pressed': null },
+              'item-delete-trigger[1]': { 'data-pressed': null },
+              'move-up-trigger[1]': { 'data-pressed': null },
+              'move-down-trigger[1]': { 'data-pressed': null },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '按不动的把手不进入按压面：到上限的新增、到下限的删除、首行上移与末行下移都是 aria-disabled',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: ['甲', '乙', '丙'], movable: true, min: 3, max: 3 },
+      steps: [
+        heldPressIgnored('field-array', 'add-trigger', '到 max 的新增把手 aria-disabled，不接受按压'),
+        heldPressIgnored('field-array', 'item-delete-trigger', '到 min 的删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 0) }),
+        heldPressIgnored('field-array', 'move-up-trigger', '首行的上移把手 aria-disabled，不接受按压', { selector: handle('move-up-trigger', 0) }),
+        heldPressIgnored('field-array', 'move-down-trigger', '末行的下移把手 aria-disabled，不接受按压', { selector: handle('move-down-trigger', 2) }),
+      ],
+    },
+    {
+      name: 'disabled / readOnly：四类把手全部 aria-disabled，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: ['甲', '乙', '丙'], movable: true, disabled: true },
+      steps: [
+        heldPressIgnored('field-array', 'add-trigger', '禁用时新增把手 aria-disabled，不接受按压'),
+        heldPressIgnored('field-array', 'item-delete-trigger', '禁用时删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 1) }),
+        heldPressIgnored('field-array', 'move-up-trigger', '禁用时上移把手 aria-disabled，不接受按压', { selector: handle('move-up-trigger', 1) }),
+        heldPressIgnored('field-array', 'move-down-trigger', '禁用时下移把手 aria-disabled，不接受按压', { selector: handle('move-down-trigger', 1) }),
+      ],
+    },
+    {
+      name: 'readOnly：行数改不动，四类把手同样不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: ['甲', '乙', '丙'], movable: true, readOnly: true },
+      steps: [
+        heldPressIgnored('field-array', 'add-trigger', '只读时新增把手 aria-disabled，不接受按压'),
+        heldPressIgnored('field-array', 'item-delete-trigger', '只读时删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 1) }),
+        heldPressIgnored('field-array', 'move-up-trigger', '只读时上移把手 aria-disabled，不接受按压', { selector: handle('move-up-trigger', 1) }),
+        heldPressIgnored('field-array', 'move-down-trigger', '只读时下移把手 aria-disabled，不接受按压', { selector: handle('move-down-trigger', 1) }),
       ],
     },
     {

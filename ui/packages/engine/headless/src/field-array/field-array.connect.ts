@@ -5,9 +5,9 @@
 
 // 提供 field array 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArraySchema } from './field-array.types'
-import { contains, dataAttr } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
+import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
 import { formArrayItemPath } from '../form'
 import { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
 import { atRowMax, atRowMin, fieldArrayValue, rowBound } from './field-array.machine'
@@ -56,6 +56,28 @@ export function connectFieldArray<T extends PropTypes>(
   const canRemove = (index: number): boolean => editable && !atMin && inRange(index)
   const canMoveUp = (index: number): boolean => editable && movable && inRange(index) && index > 0
   const canMoveDown = (index: number): boolean => editable && movable && inRange(index) && index + 1 < count
+  // 行内把手按行序号记按压：行换位后号跟着行走，按 index 记会在换序那一下认错把手
+  const rowKey = (index: number): string => keys[index] ?? fallbackKey(index)
+
+  // 按压通道：四类把手各自合成一份跟踪器，真源是机器 context 里「正被按住的那一个」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 把手用 aria-disabled 而非原生 disabled，按不动的那一下随 PRESS.START 带给守卫
+  const pressed = context.get('pressed')
+  const press = (key: FieldArrayPressedKey, pressDisabled: boolean): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled: pressDisabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
 
   /**
    * 本节点当下是不是正持有焦点。
@@ -92,7 +114,7 @@ export function connectFieldArray<T extends PropTypes>(
   })
 
   // 两颗换序把手只差方向；家族标记由各自的 getter 写在自己身上（门禁按 getter 切片判家族归属）
-  const moveTriggerProps = (item: FieldArrayItemProps, step: -1 | 1, attrs: Record<string, string>): T['button'] => {
+  const moveTriggerProps = (item: FieldArrayItemProps, step: -1 | 1, attrs: Record<string, unknown>): T['button'] => {
     const part = step < 0 ? 'move-up-trigger' : 'move-down-trigger'
     const enabled = step < 0 ? canMoveUp(item.index) : canMoveDown(item.index)
     const text = step < 0 ? label.moveUpTrigger : label.moveDownTrigger
@@ -192,6 +214,8 @@ export function connectFieldArray<T extends PropTypes>(
       // 禁用守卫就走不到；而且禁用元素持不住焦点，连按几下加到顶时键盘用户会当场丢焦点
       'aria-disabled': canAdd ? 'false' : 'true',
       'data-disabled': dataAttr(!canAdd),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      ...press('add', !canAdd),
       'onClick': () => {
         if (canAdd)
           send({ type: 'ITEM.ADD' })
@@ -217,6 +241,8 @@ export function connectFieldArray<T extends PropTypes>(
       // 同新增把手：到下限用 aria-disabled，原生 disabled 不派 click
       'aria-disabled': canRemove(item.index) ? 'false' : 'true',
       'data-disabled': dataAttr(!canRemove(item.index)),
+      // Enter 在 keydown 即删掉这一行，把手随行离场后由机器松开
+      ...press(`item-delete:${rowKey(item.index)}`, !canRemove(item.index)),
       'onClick': (event: MouseEvent) => {
         if (!canRemove(item.index))
           return
@@ -228,12 +254,14 @@ export function connectFieldArray<T extends PropTypes>(
       },
     }),
 
+    // 两颗换序把手的按压也各自记：Enter 在 keydown 即换位，把手随行挪走后由机器松开
     getMoveUpTriggerProps: item => moveTriggerProps(item, -1, {
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press(`move-up:${rowKey(item.index)}`, !canMoveUp(item.index)),
     }),
     getMoveDownTriggerProps: item => moveTriggerProps(item, 1, {
       'data-xh-action-control': '',
@@ -241,6 +269,7 @@ export function connectFieldArray<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press(`move-down:${rowKey(item.index)}`, !canMoveDown(item.index)),
     }),
   }
 }

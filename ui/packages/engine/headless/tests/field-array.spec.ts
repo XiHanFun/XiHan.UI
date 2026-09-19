@@ -462,3 +462,135 @@ describe('把手投影 Action Control 家族属性', () => {
     expect(add['data-disabled']).toBe('')
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  type Handlers = Record<string, (e?: unknown) => void> & { 'data-pressed'?: string, 'aria-disabled'?: string }
+  const keyEvent = (key: string): KeyboardEvent => ({ key, repeat: false, isComposing: false } as unknown as KeyboardEvent)
+  const touch = { pointerType: 'touch' } as unknown as PointerEvent
+  const mouse = { pointerType: 'mouse' } as unknown as PointerEvent
+  const add = (service: Svc): Handlers => api(service).getAddTriggerProps() as unknown as Handlers
+  const del = (service: Svc, index: number): Handlers => api(service).getItemDeleteTriggerProps({ index }) as unknown as Handlers
+  const up = (service: Svc, index: number): Handlers => api(service).getMoveUpTriggerProps({ index }) as unknown as Handlers
+  const down = (service: Svc, index: number): Handlers => api(service).getMoveDownTriggerProps({ index }) as unknown as Handlers
+  const pressed = (h: Handlers): boolean => h['data-pressed'] === ''
+
+  it('新增把手：keydown 在场、keyup 撤下；失焦撤下；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路', () => {
+    const service = makeService({ defaultValue: ['甲'] })
+    expect(pressed(add(service))).toBe(false)
+    add(service).onKeyDown!(keyEvent(' '))
+    expect(pressed(add(service))).toBe(true)
+    add(service).onKeyUp!(keyEvent(' '))
+    expect(pressed(add(service))).toBe(false)
+    add(service).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(add(service))).toBe(true)
+    add(service).onBlur!()
+    expect(pressed(add(service))).toBe(false)
+    add(service).onPointerDown!(touch)
+    expect(pressed(add(service))).toBe(true)
+    add(service).onPointerCancel!()
+    expect(pressed(add(service))).toBe(false)
+    add(service).onPointerDown!(touch)
+    expect(pressed(add(service))).toBe(true)
+    add(service).onPointerUp!()
+    expect(pressed(add(service))).toBe(false)
+    add(service).onPointerDown!(mouse)
+    expect(pressed(add(service))).toBe(false)
+    // 按住本身不加行
+    expect(api(service).count).toBe(1)
+  })
+
+  it('行内把手按行序号只亮那一颗；另一颗把手的 keyup 松不开正按着的这个', () => {
+    const service = makeService({ defaultValue: ['甲', '乙'], movable: true })
+    del(service, 1).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(del(service, 1))).toBe(true)
+    expect(pressed(del(service, 0))).toBe(false)
+    expect(pressed(up(service, 1))).toBe(false)
+    expect(pressed(down(service, 1))).toBe(false)
+    up(service, 1).onKeyUp!(keyEvent('Enter'))
+    expect(pressed(del(service, 1))).toBe(true)
+    del(service, 1).onKeyUp!(keyEvent('Enter'))
+    expect(pressed(del(service, 1))).toBe(false)
+
+    up(service, 1).onPointerDown!(touch)
+    expect(pressed(up(service, 1))).toBe(true)
+    expect(pressed(down(service, 1))).toBe(false)
+    up(service, 1).onPointerUp!()
+    expect(pressed(up(service, 1))).toBe(false)
+  })
+
+  it('按住途中这一行被删掉（Enter 在 keydown 即删）：机器当场松开，接位的行不会顶着按压面', () => {
+    const service = makeService({ defaultValue: ['甲', '乙', '丙'] })
+    del(service, 1).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(del(service, 1))).toBe(true)
+    api(service).remove(1)
+    expect(api(service).value).toEqual(['甲', '丙'])
+    expect(pressed(del(service, 0))).toBe(false)
+    expect(pressed(del(service, 1))).toBe(false)
+    expect(service.context.get('pressed')).toBeFalsy()
+  })
+
+  it('按住途中这一行被挪走（Enter 在 keydown 即换序）：机器当场松开，号跟着行走、新位置上的把手也不带按压面', () => {
+    const service = makeService({ defaultValue: ['甲', '乙', '丙'], movable: true })
+    down(service, 0).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(down(service, 0))).toBe(true)
+    api(service).moveDown(0)
+    expect(api(service).value).toEqual(['乙', '甲', '丙'])
+    expect(pressed(down(service, 0))).toBe(false)
+    expect(pressed(down(service, 1))).toBe(false)
+    expect(service.context.get('pressed')).toBeFalsy()
+  })
+
+  it('作者整份换掉值、按住的行不在了：由 watch 松开；行还在则照旧按着', () => {
+    const service = makeService({ defaultValue: ['甲', '乙'] })
+    del(service, 1).onPointerDown!(touch)
+    expect(pressed(del(service, 1))).toBe(true)
+    // 行数没变：按位置续用旧号，行还在
+    api(service).setValue(['A', 'B'])
+    expect(pressed(del(service, 1))).toBe(true)
+    // 少了一行：末行的号随之离场
+    api(service).setValue(['A'])
+    expect(service.context.get('pressed')).toBeFalsy()
+    expect(pressed(del(service, 0))).toBe(false)
+  })
+
+  it('不进：整体禁用 / 只读；到上限的新增把手、到下限的删除把手、首行上移与末行下移都是 aria-disabled', () => {
+    for (const props of [{ disabled: true }, { readOnly: true }]) {
+      const service = makeService({ defaultValue: ['甲', '乙'], movable: true, ...props })
+      add(service).onKeyDown!(keyEvent(' '))
+      del(service, 0).onPointerDown!(touch)
+      up(service, 1).onKeyDown!(keyEvent('Enter'))
+      expect(service.context.get('pressed')).toBeFalsy()
+    }
+    const edge = makeService({ defaultValue: ['甲', '乙'], movable: true, min: 2, max: 2 })
+    expect(add(edge)['aria-disabled']).toBe('true')
+    add(edge).onKeyDown!(keyEvent(' '))
+    expect(pressed(add(edge))).toBe(false)
+    expect(del(edge, 0)['aria-disabled']).toBe('true')
+    del(edge, 0).onPointerDown!(touch)
+    expect(pressed(del(edge, 0))).toBe(false)
+    expect(up(edge, 0)['aria-disabled']).toBe('true')
+    up(edge, 0).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(up(edge, 0))).toBe(false)
+    expect(down(edge, 1)['aria-disabled']).toBe('true')
+    down(edge, 1).onPointerDown!(touch)
+    expect(pressed(down(edge, 1))).toBe(false)
+    // 同一行里按得动的方向照常进
+    down(edge, 0).onPointerDown!(touch)
+    expect(pressed(down(edge, 0))).toBe(true)
+  })
+
+  it('按住途中转入禁用 / 只读：不会再来 keyup，按压面由机器自己收', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }]) {
+      // 夹具的 props 是普通对象，watch 只在 props 身份变化时复查，走 signal 才惊动它
+      const runtime = createVanillaRuntime()
+      const props = runtime.signal<Props>({ defaultValue: ['甲'] })
+      const service = createService(fieldArrayMachine, { props: () => props.get(), runtime })
+      runtime.start()
+      add(service).onKeyDown!(keyEvent('Enter'))
+      expect(pressed(add(service))).toBe(true)
+      props.set({ defaultValue: ['甲'], ...inert })
+      expect(pressed(add(service))).toBe(false)
+      runtime.stop()
+    }
+  })
+})

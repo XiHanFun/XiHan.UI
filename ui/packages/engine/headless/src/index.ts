@@ -97,7 +97,7 @@ export type { EmptyStateApi, EmptyStateLive, EmptyStateProps, EmptyStateStatus, 
 export { connectField, fieldAnatomy, fieldKeyboard, fieldMeta } from './field'
 export type { FieldApi, FieldProps, FieldTranslations } from './field'
 export { connectFieldArray, fieldArrayAnatomy, fieldArrayKeyboard, fieldArrayMachine, fieldArrayMeta, fieldArrayTriggerId } from './field-array'
-export type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from './field-array'
+export type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from './field-array'
 export { connectFieldset, fieldsetAnatomy, fieldsetKeyboard, fieldsetMeta } from './fieldset'
 export type { FieldsetApi, FieldsetProps, FieldsetTranslations } from './fieldset'
 export { acceptAttr, acceptsFile, connectFileUpload, FILE_UPLOAD_MAX_FILES, fileUploadAnatomy, fileUploadHiddenInputId, fileUploadKeyboard, fileUploadMachine, fileUploadMeta, formatFileSize, normalizeAccept, normalizeMaxFiles, sameFiles, sameRemoteFiles, validateFiles } from './file-upload'

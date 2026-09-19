@@ -128,9 +128,9 @@
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canAdd` · `canRemove` · `canMove`
+**判据**：`canAdd` · `canRemove` · `canMove` · `canPress`
 
 ### connect API
 
@@ -171,7 +171,9 @@
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
-无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Enter` / `Space` | held on add-trigger / item-delete-trigger / move-up-trigger / move-down-trigger, not aria-disabled | 按住期间该把手投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，删除 / 换序落地后把手随行离场或换位时一并撤下 |
 
 ### ARIA
 
