@@ -294,10 +294,48 @@ function report(key, message) {
     problems.push(message)
 }
 
+/**
+ * 去掉条件块（@media / @supports / @container 整块连同内部规则），@layer 不是条件、保留。
+ * 按压规则找的是这块面的基础取值：forced-colors / print 分支里的 :active 只是那一档的补救
+ * （换 outline、还原底色），不是按压反馈本身；接了家族配方、皮肤删掉自写按压块之后，
+ * 不剥条件块会把 forced-colors 里那条当成按压规则来判。
+ */
+function stripConditional(source) {
+  // 注释先换成等长空白：注释里提到的 @media / @import 不是块
+  const css = source.replace(/\/\*[\s\S]*?\*\//g, block => block.replace(/[^\n]/g, ' '))
+  let out = ''
+  let i = 0
+  while (i < css.length) {
+    const at = css.indexOf('@', i)
+    if (at < 0) {
+      out += css.slice(i)
+      break
+    }
+    const open = css.indexOf('{', at)
+    const prelude = open < 0 ? '' : css.slice(at, open)
+    if (open < 0 || /^@layer(?=[ {])/.test(prelude) || /[;}]/.test(prelude)) {
+      out += css.slice(i, at + 1)
+      i = at + 1
+      continue
+    }
+    let depth = 0
+    let j = open
+    for (; j < css.length; j++) {
+      if (css[j] === '{')
+        depth++
+      else if (css[j] === '}' && --depth === 0)
+        break
+    }
+    out += css.slice(i, at)
+    i = j + 1
+  }
+  return out
+}
+
 for (const [name, parts] of Object.entries(PRESSABLE)) {
   let css
   try {
-    css = await readFile(`${SKINS}/${name}.css`, 'utf8')
+    css = stripConditional(await readFile(`${SKINS}/${name}.css`, 'utf8'))
   }
   catch {
     problems.push(`${name}.css 读不到——组件改名了就把 PRESSABLE 里那条一起改`)
