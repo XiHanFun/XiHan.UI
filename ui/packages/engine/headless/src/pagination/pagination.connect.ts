@@ -5,10 +5,10 @@
 
 // 提供 pagination 相关实现。
 
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes } from '@xihan-ui/core'
 import type { SelectApi } from '../select'
-import type { PaginationApi, PaginationServices } from './pagination.types'
-import { dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import type { PaginationApi, PaginationPressedKey, PaginationServices } from './pagination.types'
+import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect } from '../select'
 import { OVERLAY_PLACEMENT_LIST, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { paginationAnatomy } from './pagination.anatomy'
@@ -40,6 +40,26 @@ export function connectPagination<T extends PropTypes>(
 
   const setPage = (next: number): void => {
     send({ type: 'PAGE.SET', page: next })
+  }
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」，四类格子各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 到边界的翻页钮是原生 disabled（不派 keydown / pointerdown），那份事实仍随 PRESS.START 带给机器的守卫
+  const pressed = context.get('pressed')
+  const press = (key: PaginationPressedKey, disabled = false): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
   }
 
   // 展开态是复合状态，state.get() 拿到的是叶子路径，一律用 matches 判
@@ -149,6 +169,7 @@ export function connectPagination<T extends PropTypes>(
       'data-xh-action-size': prop('size') ?? 'md',
       'disabled': !canGoPrev || undefined,
       'data-disabled': dataAttr(!canGoPrev),
+      ...press('prev', !canGoPrev),
       // 不再判一次 canGoPrev：边界由机器的夹取守住，值没变 cell 也不会通知宿主
       'onClick': () => send({ type: 'PAGE.PREV' }),
     }),
@@ -164,6 +185,7 @@ export function connectPagination<T extends PropTypes>(
       'data-xh-action-size': prop('size') ?? 'md',
       'disabled': !canGoNext || undefined,
       'data-disabled': dataAttr(!canGoNext),
+      ...press('next', !canGoNext),
       'onClick': () => send({ type: 'PAGE.NEXT' }),
     }),
 
@@ -183,6 +205,8 @@ export function connectPagination<T extends PropTypes>(
         // aria-current 不是布尔属性，规范里默认值就是 "false"，省略即"不是当前项"
         'aria-current': current ? 'page' : undefined,
         'data-current': dataAttr(current),
+        // 行里与摊开面板里的页码同用 item:页号，同一页不会同时出现在两处
+        ...press(`item:${item.page}`),
         // 不写 tabindex：分页是一组各自独立的按钮，每个页码都是一个 Tab 停靠点
         'onClick': () => setPage(item.page),
       })
@@ -212,6 +236,7 @@ export function connectPagination<T extends PropTypes>(
       'aria-haspopup': 'true',
       'aria-controls': openEllipsis === props.side ? ids.content : undefined,
       'data-state': openEllipsis === props.side ? 'open' : 'closed',
+      ...press(`ellipsis:${props.side}`),
       'onPointerenter': () => send({ type: 'ELLIPSIS.ENTER', side: props.side }),
       'onPointerleave': () => send({ type: 'ELLIPSIS.LEAVE' }),
       'onClick': () => send({ type: 'ELLIPSIS.TOGGLE', side: props.side }),

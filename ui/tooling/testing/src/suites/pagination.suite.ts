@@ -2,6 +2,7 @@ import type { ConformanceSuite } from '../conformance/types'
 import { paginationAnatomy, paginationKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // APG 没有 pagination 模式：分页器是一组独立按钮放在 nav 地标里，
 // 规格出处因此指向 button 模式与 aria-current 的属性定义。
@@ -59,6 +60,7 @@ export const paginationSuite: ConformanceSuite = {
             'aria-label': 'Previous page',
             'disabled': '',
             'data-disabled': '',
+            'data-pressed': null,
           },
           'next-trigger': {
             'type': 'button',
@@ -255,6 +257,30 @@ export const paginationSuite: ConformanceSuite = {
         nativeActivation('pagination', 'item'),
         nativeActivation('pagination', 'prev-trigger'),
         nativeActivation('pagination', 'next-trigger'),
+      ],
+    },
+    {
+      // 四类格子都是原生按钮，Space 与 Enter 都是激活键；jsdom 不把 keydown / keyup 翻成 click，页码不动
+      name: 'Space / Enter 按住与触屏按下：两端钮、页码与省略位各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['pagination.kbd.press'],
+      props: { count: 100, pageSize: 10, defaultPage: 2 },
+      steps: [
+        heldPress('pagination', 'prev-trigger'),
+        heldPress('pagination', 'next-trigger'),
+        heldPress('pagination', 'item', { value: '3' }),
+        heldPress('pagination', 'ellipsis-trigger', { selector: '[data-scope="pagination"][data-part="ellipsis-trigger"][data-side="end"]' }),
+        { kind: 'settle', until: { attr: { part: 'ellipsis-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'item[1]': { 'aria-current': 'page' }, 'item[2]': { 'aria-current': null, 'data-pressed': null } } } },
+      ],
+    },
+    {
+      name: '到边界的翻页钮不进按压面：首页的 prev 与末页的 next 都是原生 disabled',
+      spec: { adr: 'press-channel' },
+      props: { count: 100, pageSize: 10 },
+      steps: [
+        heldPressIgnored('pagination', 'prev-trigger', '首页时上一页按不动'),
+        { kind: 'setProps', props: { defaultPage: 10, page: 10 } },
+        heldPressIgnored('pagination', 'next-trigger', '末页时下一页按不动'),
       ],
     },
     {

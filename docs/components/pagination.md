@@ -156,9 +156,9 @@
 
 **状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
 
-**事件**：`PAGE.SET` · `PAGE_SIZE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `ELLIPSIS.ENTER` · `ELLIPSIS.LEAVE` · `ELLIPSIS.TOGGLE` · `ELLIPSIS.CLOSE` · `after.openDelay` · `after.closeDelay`
+**事件**：`PAGE.SET` · `PAGE_SIZE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `ELLIPSIS.ENTER` · `ELLIPSIS.LEAVE` · `ELLIPSIS.TOGGLE` · `ELLIPSIS.CLOSE` · `after.openDelay` · `after.closeDelay` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isSameEllipsis`
+**判据**：`isSameEllipsis` · `canPress`
 
 ### connect API
 
@@ -208,6 +208,7 @@
 | `Enter` / `Space` | focus in prev-trigger, 非首页 | 回上一页；首页时按钮是原生 disabled，焦点根本落不上去 |
 | `Enter` / `Space` | focus in next-trigger, 非末页 | 进下一页；末页时按钮是原生 disabled |
 | `Enter` / `Space` | focus in ellipsis-trigger | 摊开被折叠的那几页；再按一次收起。纯悬停会把键盘用户挡在外面，而那几页除了这里没有别的入口 |
+| `Enter` / `Space` | held in prev-trigger / next-trigger / item / ellipsis-trigger, 该钮未禁用 | 按住期间该钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，摊开面板收起时面板里被按住的页码也撤下。到边界的翻页钮是原生 disabled，不进按压面 |
 | `Escape` | ellipsis-trigger 已摊开 | 收起摊开的页码面板（走消解层，点面板外面同样收起） |
 | `Tab` / `Shift+Tab` | focus in root | 逐个经过每个可用按钮：分页不做 roving tabindex，用户要能 Tab 到某一页再确认；禁用的首尾按钮自动脱离序列 |
 

@@ -33,6 +33,7 @@ export type {
   PaginationItemProps,
   PaginationPageChangeDetails,
   PaginationPageSizeChangeDetails,
+  PaginationPressedKey,
   PaginationSchema,
   PaginationServices,
   PaginationTranslations,

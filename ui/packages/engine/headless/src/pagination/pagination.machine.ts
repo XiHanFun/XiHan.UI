@@ -8,7 +8,7 @@
 import type { PositionResult, PropFn, Service } from '@xihan-ui/core'
 import type { SelectSchema } from '../select'
 import type { PaginationEllipsisSide } from './pagination.range'
-import type { PaginationSchema, PaginationTranslations } from './pagination.types'
+import type { PaginationPressedKey, PaginationSchema, PaginationTranslations } from './pagination.types'
 import { setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
@@ -93,6 +93,8 @@ export const paginationMachine = createMachine({
       openEllipsis: cell<PaginationEllipsisSide | null>(() => ({ defaultValue: null })),
       // 定位结果由 trackPosition 回填
       position: cell<PositionResult | null>(() => ({ defaultValue: null })),
+      // 按压通道：正被按住的那一个（两端钮 / 页码 / 省略位），与翻页、摊开都无关
+      pressed: cell<PaginationPressedKey | null>(() => ({ defaultValue: null })),
       page: cell<number>(() => ({
         value: prop('page'),
         defaultValue: prop('defaultPage') ?? 1,
@@ -108,11 +110,14 @@ export const paginationMachine = createMachine({
   // 省略位的 Layer 与消解资源由根效应持有，逻辑关闭后等 Presence 真实退场再归还。
   effects: ['trackLayer'],
   // 翻页与省略位的浮层是两件正交的事：翻页在哪个态下都该生效，挂根上不逐态复制
+  // 按压通道同样挂根级：省略位按住途中面板会摊开 / 收起，按压面不能随状态丢
   on: {
     'PAGE.SET': { actions: ['setPage'] },
     'PAGE_SIZE.SET': { actions: ['setPageSize'] },
     'PAGE.PREV': { actions: ['goPrev'] },
     'PAGE.NEXT': { actions: ['goNext'] },
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     closed: {
@@ -134,10 +139,12 @@ export const paginationMachine = createMachine({
         'ELLIPSIS.CLOSE': { target: 'closed', actions: ['clearEllipsis'] },
       },
     },
-    // 复合态：两个子态下浮层都可见，定位与消解层挂在这一层
+    // 复合态：两个子态下浮层都可见，定位与消解层挂在这一层。
+    // 收起时松开按压：摊开面板里的页码被 Enter 按住的那一下把页翻了、面板随之关掉，不会再来 keyup
     visible: {
       initial: 'open',
       effects: ['trackPosition'],
+      exit: ['releasePress'],
       states: {
         open: {
           on: {
@@ -172,6 +179,11 @@ export const paginationMachine = createMachine({
       isSameEllipsis: ({ context, event }) => {
         const e = event.current()
         return e.type === 'ELLIPSIS.TOGGLE' && e.side === context.get('openEllipsis')
+      },
+      // 分页没有整组禁用；到边界的翻页钮是原生 disabled，那份事实由 connect 判定后随事件带入
+      canPress: ({ event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !e.disabled
       },
     },
     effects: {
@@ -239,6 +251,18 @@ export const paginationMachine = createMachine({
       }),
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个钮的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
       openEllipsis: ({ context, event }) => {
         const e = event.current()
         if ((e.type === 'ELLIPSIS.ENTER' || e.type === 'ELLIPSIS.TOGGLE') && e.side)
