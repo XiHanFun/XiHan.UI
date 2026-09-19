@@ -6,9 +6,9 @@
 // 提供 tag group 相关实现。
 
 import type { NavIntent, NormalizeProps, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
-import type { TagApi } from '../tag'
+import type { TagApi, TagPressPort } from '../tag'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNodeMeta, TagGroupSchema } from './tag-group.types'
-import { contains, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, mergeProps, navigateItems, navIntentFromKey, toggleSelectAll } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, mergeProps, navigateItems, navIntentFromKey, toggleSelectAll } from '@xihan-ui/core'
 import { connectStaticTag } from '../tag'
 import { tagGroupAnatomy, tagGroupItems, tagGroupItemText } from './tag-group.anatomy'
 
@@ -148,6 +148,25 @@ export function connectTagGroup<T extends PropTypes>(
     send({ type: 'ITEM.DELETE', value: item.value })
   }
 
+  // 按压通道：真源是机器 context 里「正被按住的那一枚的哪个部件」，经 connectStaticTag 的 press 入参交给静态标签，
+  // 标签本体（可选条目）与移除钮各自投影 data-pressed；指针按住由 :active 表出，皮肤两者同一档。
+  // 条目禁用、不可选、不可移除这些按不动的事实由这里判定后随 PRESS.START 带给机器的守卫，整组禁用与只读由机器按 prop 自己判
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const pressPort = (item: TagGroupItemProps): TagPressPort => ({
+    pressed: pressedValue === item.value ? pressedPart : null,
+    handlers: (part) => {
+      // 本体按不动：不参与选中或条目禁用；移除钮按不动：这一枚摘不掉或条目禁用
+      const inert = isDisabled(item) || (part === 'root' ? !selectable : !isDeletable(item))
+      return createPressTracker({
+        isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === item.value,
+        onChange: down => send(down
+          ? { type: 'PRESS.START', part, value: item.value, disabled: inert }
+          : { type: 'PRESS.END', part, value: item.value }),
+      })
+    },
+  })
+
   // 一枚标签套的是库里的 tag：三轴与只读从整组传下去，禁用与可摘逐枚定。
   // 显隐受控在这里——标签在不在由宿主的数据决定，不建机器。
   // 关闭钮即摘除钮：受控 open 下按它只发 onOpenChange，摘除从这里回到机器；
@@ -169,6 +188,7 @@ export function connectTagGroup<T extends PropTypes>(
     },
     { get: () => true, set: () => {} },
     normalize,
+    pressPort(item),
   )
 
   return {
