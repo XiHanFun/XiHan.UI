@@ -14,6 +14,10 @@
 // ④ outline / 缺省分支的 border 颜色位必须是 border-default / material-solid-border /
 //    border-control（字段）/ 浮层材质边（frosted / elevated），或淡底面的 transparent 占位边。
 // 私有槽在赋值点判：颜色位只写 var(--xh-_x) 的，找同部件基础块 / 同 variant 块里的赋值再判。
+// ⑤ 不限部件、不限状态：任何非条件规则里四边生效的 border 简写与 border-color 的颜色位（沿兜底链取最内层）
+//    不得是 --xh-border-subtle——它只作内部分隔线，只能出现在 border-block-start / -inline-end 类单边声明里；
+//    禁用态外边按 §7.2 第 9 条取 --xh-border-default（file-upload 条目、steps indicator、tag、table / transfer / tree
+//    内嵌勾选框曾在这里取 subtle，与独立 Checkbox / Switch 不同值）。
 //
 // 存量登在 family-backlog.json 的 edge 段，命中即放行、不命中判过期，表只减不增。
 import { openBacklog } from './lib/family-backlog.mjs'
@@ -74,12 +78,25 @@ function classify(branch, comp) {
   return { part, variant: variant ?? null }
 }
 
+/** ⑤ 四边生效的边色声明。 */
+const FOUR_SIDES = new Set(['border', 'border-color'])
+let fourSided = 0
+
 for (const { comp, file, rules } of await readSkins()) {
   /** 受管块：{ rule, part, variant, three: { border, bg, shadow }, slots }。 */
   const blocks = []
   for (const rule of rules) {
     if (conditional(rule))
       continue
+    // ⑤ 分隔色不上任何部件的四边：状态规则（[data-disabled] 等）与非根面部件（item / indicator / 勾选框）一并查
+    for (const decl of rule.decls) {
+      if (!FOUR_SIDES.has(decl.prop))
+        continue
+      fourSided++
+      const token = innermost(decl.prop === 'border' ? (colorPositionOf(decl.value) ?? '') : decl.value)
+      if (token === '--xh-border-subtle')
+        problems.push(`${file}:${decl.line}  ${comp}  ${rule.selector} 的 ${decl.prop} 颜色位落在 --xh-border-subtle——它只作内部分隔线，四边外边（含禁用态）取 --xh-border-default`)
+    }
     for (const branch of splitSelectors(rule.selector)) {
       const hit = classify(branch, comp)
       if (!hit)
@@ -207,4 +224,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-surface-edge] 通过：${managed} 块根面按三选一核过；backlog 待办 ${backlog.pending} 条，无过期豁免`)
+console.log(`[check-surface-edge] 通过：${managed} 块根面按三选一核过 · ${fourSided} 处四边边色没有落分隔色；backlog 待办 ${backlog.pending} 条，无过期豁免`)

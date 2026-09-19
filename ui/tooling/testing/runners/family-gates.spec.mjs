@@ -114,6 +114,29 @@ gateSuite('check-surface-edge.mjs', {
   redText: '它只作内部分隔',
 })
 
+describe('check-surface-edge.mjs ⑤ 四边边色', () => {
+  it('非根面部件的禁用态 border-color 落分隔色判红', () => {
+    const root = createFixture()
+    write(root, 'packages/design/styles/css/demo.css', LAYER(`
+  [data-scope='demo'][data-part='item-checkbox'][data-disabled] {
+    border-color: var(--xh-demo-checkbox-border-disabled, var(--xh-border-subtle));
+  }`))
+    const result = run('check-surface-edge.mjs', root)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('四边外边（含禁用态）取 --xh-border-default')
+  }, SPAWN_TIMEOUT)
+
+  it('单边分隔线仍放行', () => {
+    const root = createFixture()
+    write(root, 'packages/design/styles/css/demo.css', LAYER(`
+  [data-scope='demo'][data-part='item'] {
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-demo-row-border, var(--xh-border-subtle));
+  }`))
+    const result = run('check-surface-edge.mjs', root)
+    expect(result.status, String(result.stderr)).toBe(0)
+  }, SPAWN_TIMEOUT)
+})
+
 gateSuite('check-elevation-role.mjs', {
   section: 'edge',
   // edge 段由两条门禁共用：三选一管普通键，raised 登记管以 :raised 结尾的键
