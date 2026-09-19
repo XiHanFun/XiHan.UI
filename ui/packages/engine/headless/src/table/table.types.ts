@@ -392,6 +392,12 @@ export interface TableSchema extends MachineSchema {
     dropTarget: TableDropTarget | null
     /** 读屏播报文本。写入视觉隐藏的活动区域，不进入视觉版面。 */
     announcement: string
+    /**
+     * 按压通道：正被 Space / Enter 或触屏按住的那一个，按部件键记（见 TablePressedKey）；
+     * 没有按住时为 null。抬起、失焦或指针取消即清空，加载中由机器自行松开。
+     * 放在 context 而不是 refs：connect 要读它投影 data-pressed，refs 变了不触发重渲染。
+     */
+    pressed: TablePressedKey | null
   }
   computed: Record<string, never>
   refs: {
@@ -423,11 +429,6 @@ export interface TableSchema extends MachineSchema {
       /** 拖动源节点。拖动中用它测量版面整体移动的距离，见 snapshotDrift。 */
       source: HTMLElement | null
     } | null
-    /**
-     * 按压通道：正被 Space / Enter 或触屏按住的那一个，按部件键记（见 TablePressedKey）；
-     * 没有按住时为 null。抬起、失焦或指针取消即清空，加载中由机器自行松开。
-     */
-    pressed: TablePressedKey | null
   }
   /**
    * 排序、选中、展开与列偏好都不编码进状态：它们是随时可读可写的事实，不是过程。
