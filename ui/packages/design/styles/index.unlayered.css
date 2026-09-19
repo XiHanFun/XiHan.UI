@@ -18,349 +18,8 @@
    tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
 @import '@xihan-ui/tokens/tokens.css';
 
-/* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
-
-/* styles/focus.css */
-/*
- * 聚焦环的公共层：全库共用一份。
- *
- * 解剖给每个部件打上 data-scope 与 data-part，键盘焦点落在哪个部件上，环就由这里画：
- * 粗细取 --xh-ring-width，颜色取 --xh-_ring-color（默认 --xh-ring-focus），
- * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
- * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
- *
- * 环往内收之后，内侧紧挨着的是环压着的那块面。面是实心的那几档，环色与面同族、贴上去就
- * 看不出来；那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
- * 环随之取这块面配对的前景色——那一支色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
- * 取的是「面配对的前景色」，不是语气色：环仍然不随 data-tone 走，没有实心面的那些档
- * 一律是 --xh-ring-focus 这一支。
- *
- * 灌 currentColor 的档要同时成立三件事：
- *   一、面画在谁身上——画在祖先上（标签里那颗透空的关闭钮坐在标签那块实心底上）时
- *       规则写成后代选择器，槽仍然灌在拿焦点的那个节点上；
- *   二、部件得有 color——圆点、滑块这类没有字的部件先补一支与面配对的墨色，
- *       不补则 currentColor 取到继承下来的正文色或原生控件的 UA 前景色；
- *       只有一档要换的（开关选中的轨道）把那支色直接写进槽，不绕 currentColor；
- *   三、面被换走的档要退出——失效档把面换成置灰底、前景换成置灰色或透明，
- *       中性轻档把实心底换成灰底，currentColor 在这些档上会把环跟着糊掉甚至整条画成透明。
- *       靠收窄选择器退回本份的默认值，或把槽显式写回 var(--xh-ring-focus)。
- *
- * 槽在这里只留一个默认值，名单不收在本份里——谁的面是实心的由那份皮肤自己知道，
- * 也只有引了那份皮肤的人该为它付字节。
- * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
- *
- * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
- * [data-scope='x'][data-part='y']:focus-visible 同级，组件皮肤排在本份之后，
- * 要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
- * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
- *
- * 排在全部组件皮肤之前：组件不必为了换个环色把整条环重写一遍。
- */
-
-[data-scope][data-part]:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
-  outline-offset: var(--xh-ring-offset);
-}
-
-/* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
-
-/* styles/label.css */
-/*
- * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
- *
- * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
- * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
- * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
- * 槽名里带组件名，写不进一条共享规则。
- *
- * scope 逐个列出，不写成 [data-scope][data-part='label']：label 这个部件名在标签、
- * 统计、进度、推理、说明列表上指的是另一种文字（行内省略的标签正文、环内居中的数字、
- * 描述项的名字），通配规则会把行距按到它们头上。要接进来的组件把 scope 加进列表。
- *
- * 选择器停在两个属性（0,2,0）或三个属性（0,3,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
- * 要另写行距的组件照写即可压过。
- */
-
-/* 标签是单行短文，行距不留额外的行间空白，标签与控件之间只剩容器给的那一道间距。 */
-[data-scope='checkbox'][data-part='label'],
-[data-scope='checkbox-group'][data-part='label'],
-[data-scope='color-picker'][data-part='label'],
-[data-scope='date-field'][data-part='label'],
-[data-scope='editable'][data-part='label'],
-[data-scope='field'][data-part='label'],
-[data-scope='file-upload'][data-part='label'],
-[data-scope='number-field'][data-part='label'],
-[data-scope='password-input'][data-part='label'],
-[data-scope='pin-input'][data-part='label'],
-[data-scope='radio-group'][data-part='label'],
-[data-scope='rating'][data-part='label'],
-[data-scope='signature-pad'][data-part='label'],
-[data-scope='slider'][data-part='label'],
-[data-scope='switch'][data-part='label'],
-[data-scope='tags-input'][data-part='label'],
-[data-scope='text-field'][data-part='label'],
-[data-scope='time-field'][data-part='label'] {
-  line-height: var(--xh-leading-none);
-}
-
-/*
- * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
- * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
- */
-[data-scope='color-picker'][data-part='label'][data-disabled],
-[data-scope='rating'][data-part='label'][data-disabled],
-[data-scope='signature-pad'][data-part='label'][data-disabled],
-[data-scope='slider'][data-part='label'][data-disabled] {
-  color: var(--xh-fg-subtle);
-}
-
-/*
- * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
- * 自带标签的字段不得各画一套。
- *
- * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
- * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
- * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
- */
-[data-scope='field'][data-part='label'][data-required]::after,
-[data-scope='fieldset'][data-part='legend'][data-required]::after {
-  content: var(--xh-glyph-mark-required);
-  margin-inline-start: var(--xh-space-1);
-  color: var(--xh-fg-danger);
-}
-
-/*
- * 无效档的字色：标签跟着自己的 data-invalid 转警示色，没渲染错误文案的字段上这是唯一变化的东西。
- * 有 --xh-<组件>-label-fg-invalid 覆盖槽的组件在各自皮肤里另写一条 color 压过这里。
- */
-[data-scope='field'][data-part='label'][data-invalid],
-[data-scope='fieldset'][data-part='legend'][data-invalid] {
-  color: var(--xh-fg-danger);
-}
-
-/* 排在全部组件皮肤之前：字段族说明文字的公共层，无效时把说明让给错误文案。 */
-
-/* styles/description.css */
-/*
- * 字段族说明与错误文案的公共层，按 [data-part='description'] / [data-part='error-text']
- * 匹配下面逐个列出的 scope。
- *
- * 收在这里的是逐值相同的角色规则：说明 = --xh-text-secondary-size / --xh-fg-muted /
- * --xh-leading-normal；错误文案 = --xh-text-secondary-size / --xh-fg-danger / --xh-leading-normal；
- * 两者外边距归零，与控件的距离由字段根的 gap 给。挂了 --xh-<组件>-description-* /
- * --xh-<组件>-error-* 覆盖槽的组件在各自皮肤里只另写带槽的 color / font-size 压过这里，
- * margin 与 line-height 不再重写。
- *
- * 说明与错误文案落在控件下方的同一处：无效时收起说明，那一行只剩错误。两段同时在场
- * 会把辅助区撑成两行，整表的字段高度随之参差。
- *
- * 收起只收视觉。说明的 id 仍挂在控件的 aria-describedby 上，读屏两段都念得到——
- * 直接被 aria-describedby 指到的节点，隐藏与否都计入可及描述。
- *
- * scope 逐个列出，不写成 [data-part='description']：这个部件名在提示、气泡、
- * 空状态、说明列表上指的是另一段文字，通配规则会把它们在无效态下一并收起。
- * 要接进来的组件把自己的几条加进列表。
- *
- * 收起限定到直接子节点：字段集无效时收起的是它自己那段说明，不是组内各字段的说明。
- * 引入顺序排在全部组件皮肤之前，组件要另作安排照写同样的无效态限定即可压过。
- */
-
-[data-scope='field'][data-part='description'],
-[data-scope='fieldset'][data-part='description'] {
-  margin: 0;
-  font-size: var(--xh-text-secondary-size);
-  line-height: var(--xh-leading-normal);
-  color: var(--xh-fg-muted);
-}
-
-/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
-[data-scope='field'][data-part='error-text'],
-[data-scope='fieldset'][data-part='error-text'] {
-  margin: 0;
-  font-size: var(--xh-text-secondary-size);
-  line-height: var(--xh-leading-normal);
-  color: var(--xh-fg-danger);
-}
-
-[data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='description'],
-[data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='description'] {
-  display: none;
-}
-
-/* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
-
-/* styles/pointer.css */
-/*
- * 指针反馈的公共层：全库共用一份。
- *
- * 两件事写在这里。
- *
- * 一、触摸点按时浏览器画的那层高亮方块。它是继承属性，一条规则打在 [data-scope] 上就覆盖
- * 库里的每一个节点与它们的后代，不必逐个组件登记。
- *
- * 二、禁用态的光标。「这个控件不可用」在库里有三种条件拼写：解剖打出来的 data-disabled、
- * 原生表单控件的 :disabled、集合条目用的 aria-disabled——三者说的是同一件事，光标也是同一个。
- * 选择器停在两个属性加一个条件（0,3,0）：与组件皮肤里
- * [data-scope='x'][data-part='y'][data-disabled] 同级，本份排在全部组件皮肤之前，
- * 要另画的组件照写即可压过。
- *
- * 「在途」不在这里：它是另一件事，光标是 progress，挂在哪个部件上逐个组件不同，
- * 写成通配会盖到作者自己的内容上（列表外壳、快捷键展示、可调容器都带 data-loading / data-disabled，
- * 而它们身上的这两个标记说的是「这项行为关掉了」，不是「这个控件不可用」）。
- *
- * 排在全部组件皮肤之前：组件不必为了换一个光标把整条规则重写一遍。
- */
-
-[data-scope] {
-  -webkit-tap-highlight-color: transparent;
-}
-
-[data-scope][data-part][data-disabled],
-[data-scope][data-part]:disabled,
-[data-scope][data-part][aria-disabled='true'] {
-  cursor: not-allowed;
-}
-
-/* 其余按层归属排列。 */
-
-/* styles/affix.css */
-/* 定义 affix 样式。 */
-
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='affix'] {
-  --xh-affix-skin: 1;
-}
-
-/* 占位盒就是 content 在常规流里占的那块地方。
-   这里不声明 display，也不写高度：吸住时冻结的高度由连接层量好写进内联样式（它量得到，样式表量不到），
-   没吸住时高度就该跟着内容走。不给 display，UA 的 [hidden]{display:none} 也仍然压得住 */
-[data-scope='affix'][data-part='root'] {
-  /* 脱流后 content 不再撑开占位盒，宽度改从父级取 */
-  inline-size: 100%;
-}
-
-/* 没吸住时是常规流里普通的一块，不做任何定位 */
-[data-scope='affix'][data-part='content'] {
-  inline-size: 100%;
-}
-
-/*
- * 吸住：脱离常规流钉在视口上。
- * 四个落位数（top / bottom / left / width）由连接层写成内联样式——它们是照占位盒的矩形实测出来的
- * 物理量，换成逻辑属性会在 RTL 下贴反。这里只管「用哪种定位、压在第几层」。
- * 另一件必须提防的事：fixed 认的是视口，祖先上一旦出现
- * transform / filter / backdrop-filter / contain，包含块就被抢走，钉住的内容立刻贴错位置——
- * 所以别往覆盖钩子里加这几个属性。
- */
-[data-scope='affix'][data-part='content'][data-fixed] {
-  position: fixed;
-  z-index: var(--xh-affix-layer, var(--xh-layer-sticky));
-}
-
-@media print {
-  /* 打印：钉住的是作者自己的内容，不能收起；但保持 fixed 会让部分打印引擎每页重复一次，
-     所以只把它放回正常流。 */
-  [data-scope='affix'][data-part='content'][data-fixed] {
-    position: static;
-  }
-}
-
-/* styles/avatar-group.css */
-/* 定义 avatar group 样式。 */
-
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='avatar-group'] {
-  --xh-avatar-group-skin: 1;
-}
-
-/* 一排叠放的头像：后一枚压在前一枚上。
-   组内共用的直径与字号在容器上写一次，沿继承流给每一枚——包括自己写了档位的那一枚，
-   它的档位取值也读这两个槽，整排因此始终齐平。单独摆的头像取不到这两个槽，仍按自己的档走 */
-[data-scope='avatar-group'][data-part='root'] {
-  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
-     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
-  isolation: isolate;
-
-  /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
-  --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
-  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-md));
-  --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2_5));
-
-  /* 流给组内每一枚 */
-  --xh-avatar-size: var(--xh-_avatar-group-size);
-  --xh-avatar-font-size: var(--xh-_avatar-group-font-size);
-
-  display: inline-flex;
-  align-items: center;
-}
-
-/* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
-   不补的话作者给节点加 hidden 后它照样显示 */
-[data-scope='avatar-group'][data-part='root'][hidden] {
-  display: none;
-}
-
-/* —— 尺寸 —— */
-/* 三档对齐控件档位，缺省档写在上面的基础规则里；
-   字号与叠放量跟着直径一起缩放，小头像里回退字放得下、大头像里压住的那段也按比例长 */
-[data-scope='avatar-group'][data-part='root'][data-size='sm'] {
-  --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-sm));
-  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-sm));
-  --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2));
-}
-
-[data-scope='avatar-group'][data-part='root'][data-size='lg'] {
-  --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-lg));
-  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-lg));
-  --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-3));
-}
-
-/* —— 叠放 —— */
-/* 谁压在谁上面得能指定，所以每一枚都是定位元素；
-   再描一圈底色，被压住的那条边才与上一枚分得开 */
-[data-scope='avatar-group'][data-part='root'] > * {
-  position: relative;
-}
-
-[data-scope='avatar-group'][data-part='root'] > *,
-[data-scope='avatar-group'][data-part='root'] > * [data-scope='avatar'][data-part='root'] {
-  box-shadow: 0 0 0 var(--xh-stroke-thick) var(--xh-avatar-group-ring, var(--xh-bg-surface));
-}
-
-/* 后一枚往回挪一段，压在前一枚上 */
-[data-scope='avatar-group'][data-part='root'] > * + * {
-  margin-inline-start: calc(-1 * var(--xh-_avatar-group-overlap));
-}
-
-/* 指到哪一枚，哪一枚整个露出来 */
-[data-scope='avatar-group'][data-part='root'] > *:hover {
-  z-index: 1;
-}
-
-/* —— 溢出计数 —— */
-/* 「+N」是这一排里的又一枚：直径、形状与字号跟着组走，里面写什么由作者定 */
-[data-scope='avatar-group'][data-part='overflow-item'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-_avatar-group-size);
-  block-size: var(--xh-_avatar-group-size);
-  border-radius: var(--xh-avatar-group-radius, var(--xh-shape-circle));
-  background: var(--xh-avatar-group-overflow-item-bg, var(--xh-bg-muted));
-  color: var(--xh-avatar-group-overflow-item-fg, var(--xh-fg-muted));
-  font-size: var(--xh-_avatar-group-font-size);
-  font-weight: var(--xh-avatar-group-font-weight, var(--xh-font-weight-medium));
-  line-height: var(--xh-leading-none);
-  user-select: none;
-}
-
-[data-scope='avatar-group'][data-part='overflow-item'][hidden] {
-  display: none;
-}
-
-/* styles/back-top.css */
-/* 定义 back top 样式。 */
+/* Family Recipe 先于一切皮肤内联：拆层后配方与皮肤同档 (0,2,0)，只剩源序竞争，
+   皮肤对配方物理属性的直接覆盖只有配方先出现才成立，与有层产物里皮肤高一级即胜等价。 */
 
 /* family/action-control.css */
 /* AUTO-GENERATED by build/action-control-recipe.mjs — do not edit. */
@@ -841,6 +500,1585 @@
     border-style: dashed;
   }
 }
+
+/* family/field-chrome.css */
+/* AUTO-GENERATED by build/field-chrome-recipe.mjs — do not edit. */
+
+[data-scope][data-xh-field-chrome] {
+  display: inline-flex;
+  box-sizing: border-box;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: var(--xh-field-control-gap, var(--xh-_field-size-gap));
+  min-inline-size: min(var(--xh-field-control-min-inline-size, var(--xh-control-min-w)), 100%);
+  block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
+  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
+  padding-inline: var(--xh-field-control-padding-inline, var(--xh-_field-size-padding-inline));
+  padding-block: 0;
+  --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
+  --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
+  --xh-_field-variant-border-rest: var(--xh-border-control);
+  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+  --xh-_field-variant-border-hover: var(--xh-border-control-hover);
+  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+  --xh-_field-variant-border-disabled: var(--xh-border-default);
+  border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, var(--xh-_field-variant-border-rest));
+  border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
+  background-color: var(--xh-field-bg-rest, var(--xh-_field-variant-bg-rest));
+  color: var(--xh-field-fg-rest, var(--xh-fg-default));
+  box-shadow: var(--xh-field-shadow-rest, none);
+  cursor: var(--xh-field-cursor-rest, text);
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope][data-xh-field-chrome][data-variant='outline'] {
+  --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
+  --xh-_field-variant-border-rest: var(--xh-border-control);
+  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+  --xh-_field-variant-border-hover: var(--xh-border-control-hover);
+  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+  --xh-_field-variant-border-disabled: var(--xh-border-default);
+}
+
+[data-scope][data-xh-field-chrome][data-variant='subtle'] {
+  --xh-_field-variant-bg-rest: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_field-variant-border-rest: transparent;
+  --xh-_field-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_field-variant-border-hover: var(--xh-border-control);
+  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+  --xh-_field-variant-border-disabled: var(--xh-border-default);
+}
+
+[data-scope][data-xh-field-chrome][data-variant='ghost'] {
+  --xh-_field-variant-bg-rest: transparent;
+  --xh-_field-variant-border-rest: transparent;
+  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
+  --xh-_field-variant-border-hover: var(--xh-border-control);
+  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+  --xh-_field-variant-border-disabled: var(--xh-border-default);
+}
+
+[data-scope][data-xh-field-chrome][data-xh-field-size='sm'] {
+  --xh-_field-size-control-height: var(--xh-control-h-sm);
+  --xh-_field-size-padding-inline: var(--xh-control-px-sm);
+  --xh-_field-size-gap: var(--xh-control-gap-sm);
+  --xh-_field-size-font-size: var(--xh-control-font-sm);
+  --xh-_field-size-glyph-size: var(--xh-glyph-size-sm);
+}
+
+[data-scope][data-xh-field-chrome][data-xh-field-size='md'] {
+  --xh-_field-size-control-height: var(--xh-control-h-md);
+  --xh-_field-size-padding-inline: var(--xh-control-px-md);
+  --xh-_field-size-gap: var(--xh-control-gap-md);
+  --xh-_field-size-font-size: var(--xh-control-font-md);
+  --xh-_field-size-glyph-size: var(--xh-glyph-size-md);
+}
+
+[data-scope][data-xh-field-chrome][data-xh-field-size='lg'] {
+  --xh-_field-size-control-height: var(--xh-control-h-lg);
+  --xh-_field-size-padding-inline: var(--xh-control-px-lg);
+  --xh-_field-size-gap: var(--xh-control-gap-lg);
+  --xh-_field-size-font-size: var(--xh-control-font-lg);
+  --xh-_field-size-glyph-size: var(--xh-glyph-size-lg);
+}
+
+[data-scope][data-xh-field-chrome][data-xh-field-layout='single-line'],
+[data-scope][data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout='single-line']) {
+  align-items: center;
+  flex-wrap: nowrap;
+  block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
+  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
+  padding-block: 0;
+}
+
+[data-scope][data-xh-field-chrome][data-xh-field-layout='textarea'],
+[data-scope][data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout='textarea']) {
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  block-size: auto;
+  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
+  padding-block: 0;
+}
+
+[data-scope][data-xh-field-chrome][data-xh-field-layout='multi-tag'],
+[data-scope][data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout='multi-tag']) {
+  align-items: center;
+  flex-wrap: wrap;
+  block-size: auto;
+  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
+  padding-block: var(--xh-space-1);
+}
+
+[data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
+  background-color: var(--xh-field-bg-hover, var(--xh-_field-variant-bg-hover));
+  border-color: var(--xh-field-border-hover, var(--xh-_field-variant-border-hover));
+}
+
+[data-scope][data-xh-field-chrome]:focus-within:not([data-disabled]) {
+  border-color: var(--xh-field-border-focus, var(--xh-_field-variant-border-focus));
+  outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, var(--xh-ring-focus));
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope][data-xh-field-chrome][data-readonly] {
+  background-color: var(--xh-field-bg-read-only, var(--xh-_field-variant-bg-read-only));
+  cursor: var(--xh-field-cursor-read-only, default);
+}
+
+[data-scope][data-xh-field-chrome][data-loading] {
+  color: var(--xh-field-fg-loading, var(--xh-fg-muted));
+  cursor: var(--xh-field-cursor-loading, progress);
+}
+
+[data-scope][data-xh-field-chrome][data-invalid] {
+  border-color: var(--xh-field-border-invalid, var(--xh-_field-variant-border-invalid));
+}
+
+[data-scope][data-xh-field-chrome][data-invalid]:focus-within:not([data-disabled]) {
+  outline-color: var(--xh-field-ring-invalid, var(--xh-ring-invalid));
+}
+
+[data-scope][data-xh-field-chrome][data-disabled] {
+  background-color: var(--xh-field-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  color: var(--xh-field-fg-disabled, var(--xh-fg-disabled));
+  border-color: var(--xh-field-border-disabled, var(--xh-_field-variant-border-disabled));
+  cursor: var(--xh-field-cursor-disabled, not-allowed);
+}
+
+[data-xh-field-affix] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--xh-field-affix-fg, var(--xh-fg-muted));
+  font-size: var(--xh-field-affix-font-size, var(--xh-_field-size-font-size));
+  line-height: var(--xh-leading-none);
+  white-space: nowrap;
+}
+
+[data-xh-field-affix][data-disabled] {
+  color: var(--xh-field-affix-fg-disabled, var(--xh-fg-disabled));
+}
+
+[data-xh-field-input] {
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  min-inline-size: 0;
+  block-size: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  appearance: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--xh-field-input-fg, var(--xh-fg-default));
+  font-family: inherit;
+  font-size: var(--xh-field-input-font-size, var(--xh-_field-size-font-size));
+  line-height: var(--xh-leading-normal);
+  text-align: start;
+}
+
+[data-scope][data-xh-field-chrome] [data-xh-field-input]:focus-visible {
+  outline: none;
+}
+
+[data-scope][data-xh-field-chrome] [data-xh-action-profile='field-inset']:focus-visible {
+  outline: none;
+}
+
+[data-xh-field-input][data-disabled] {
+  color: var(--xh-field-input-fg-disabled, var(--xh-fg-disabled));
+}
+
+[data-xh-field-input]::placeholder {
+  color: var(--xh-field-placeholder-fg, var(--xh-fg-subtle));
+}
+
+[data-xh-field-input][data-xh-field-layout='textarea'] {
+  block-size: auto;
+  max-inline-size: 100%;
+  padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-2));
+  overflow: auto;
+  resize: vertical;
+}
+
+[data-xh-field-input][data-xh-field-layout='textarea'][data-xh-field-auto-size] {
+  overflow: hidden;
+  resize: none;
+}
+
+[data-xh-field-input]:autofill {
+  box-shadow: inset 0 0 0 100vmax var(--xh-field-autofill-bg, var(--xh-bg-canvas));
+  -webkit-text-fill-color: var(--xh-field-autofill-fg, var(--xh-fg-default));
+}
+
+[data-xh-field-input]:-webkit-autofill {
+  box-shadow: inset 0 0 0 100vmax var(--xh-field-autofill-bg, var(--xh-bg-canvas));
+  -webkit-text-fill-color: var(--xh-field-autofill-fg, var(--xh-fg-default));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scope][data-xh-field-chrome] {
+    transition: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope][data-xh-field-chrome] {
+  transition: none;
+}
+
+@media (forced-colors: active) {
+  [data-scope][data-xh-field-chrome] {
+    background-color: Canvas;
+    color: CanvasText;
+    border-color: ButtonText;
+    box-shadow: none;
+    opacity: 1;
+  }
+
+  [data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
+    border-color: Highlight;
+  }
+
+  [data-scope][data-xh-field-chrome]:focus-within:not([data-disabled]) {
+    border-color: Highlight;
+    outline-color: Highlight;
+  }
+
+  [data-scope][data-xh-field-chrome][data-readonly] {
+    border-color: GrayText;
+  }
+
+  [data-scope][data-xh-field-chrome][data-loading] {
+    border-style: dashed;
+  }
+
+  [data-scope][data-xh-field-chrome][data-invalid] {
+    border-color: Highlight;
+  }
+
+  [data-scope][data-xh-field-chrome][data-disabled] {
+    color: GrayText;
+    border-color: GrayText;
+  }
+
+  [data-xh-field-input]::placeholder {
+    color: GrayText;
+  }
+
+  [data-xh-field-input]:autofill {
+    box-shadow: inset 0 0 0 100vmax Canvas;
+    -webkit-text-fill-color: CanvasText;
+  }
+
+  [data-xh-field-input]:-webkit-autofill {
+    box-shadow: inset 0 0 0 100vmax Canvas;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
+
+/* family/collection-item.css */
+/* AUTO-GENERATED by build/collection-item-recipe.mjs — do not edit. */
+
+[data-scope][data-xh-collection-item] {
+  --xh-_collection-block-padding: var(--xh-list-option-py-md);
+  --xh-_collection-inline-padding: var(--xh-control-px-md);
+  --xh-_collection-gap: var(--xh-control-gap-md);
+  --xh-_collection-font-size: var(--xh-control-font-md);
+  --xh-_collection-glyph-size: var(--xh-glyph-size-md);
+  --xh-_collection-bg: var(--xh-collection-bg-rest, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-rest, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-rest, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-rest, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-rest, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-rest, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-rest, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-rest, 1);
+
+  --xh-icon-size: var(--xh-collection-glyph-size, var(--xh-_collection-glyph-size));
+
+  display: grid;
+  grid-template-columns:
+    [prefix] max-content
+    [text] minmax(0, 1fr)
+    [shortcut] max-content
+    [suffix] max-content
+    [indicator] max-content;
+  /* 第 2 行是说明行。各皮肤为了省略号给 text 槽写了 overflow: hidden，它因此成为滚动容器、自动最小尺寸
+     归 0；轨道尺寸算法里第 1 行的 base size 只有 0，处理跨两行的 prefix / indicator 等图标时会把图标高度
+     平均分给两行，没有说明的条目也长出半个图标高的第 2 行，图标随之整体下沉。minmax(0, max-content)
+     把第 2 行的最小尺寸钉在 0，它不再参与跨行项的最小高度分配，只在真有说明时按说明长；上限取 max-content
+     而不是 auto，皮肤给条目定死 block-size 时多余空间也不会被说明行分走。 */
+  grid-template-rows: auto minmax(0, max-content);
+  align-items: center;
+  min-inline-size: 0;
+  padding-block: var(--xh-collection-block-padding, var(--xh-_collection-block-padding));
+  padding-inline: var(--xh-collection-inline-padding, var(--xh-_collection-inline-padding));
+  border-radius: var(--xh-collection-radius, var(--xh-shape-control));
+  outline: var(--xh-ring-width) solid var(--xh-_collection-outline);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+  background-color: var(--xh-_collection-bg);
+  color: var(--xh-_collection-fg);
+  font-size: var(--xh-collection-font-size, var(--xh-_collection-font-size));
+  font-weight: var(--xh-_collection-font-weight);
+  line-height: var(--xh-leading-normal);
+  cursor: var(--xh-_collection-cursor);
+  opacity: var(--xh-_collection-opacity);
+  transition:
+    background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-size='sm'] {
+  --xh-_collection-block-padding: var(--xh-list-option-py-sm);
+  --xh-_collection-inline-padding: var(--xh-control-px-sm);
+  --xh-_collection-gap: var(--xh-control-gap-sm);
+  --xh-_collection-font-size: var(--xh-control-font-sm);
+  --xh-_collection-glyph-size: var(--xh-glyph-size-sm);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-size='md'] {
+  --xh-_collection-block-padding: var(--xh-list-option-py-md);
+  --xh-_collection-inline-padding: var(--xh-control-px-md);
+  --xh-_collection-gap: var(--xh-control-gap-md);
+  --xh-_collection-font-size: var(--xh-control-font-md);
+  --xh-_collection-glyph-size: var(--xh-glyph-size-md);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-size='lg'] {
+  --xh-_collection-block-padding: var(--xh-list-option-py-lg);
+  --xh-_collection-inline-padding: var(--xh-control-px-lg);
+  --xh-_collection-gap: var(--xh-control-gap-lg);
+  --xh-_collection-font-size: var(--xh-control-font-lg);
+  --xh-_collection-glyph-size: var(--xh-glyph-size-lg);
+}
+
+[data-xh-collection-slot='prefix'] {
+  grid-column: prefix;
+  grid-row: 1 / span 2;
+  margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+}
+
+[data-xh-collection-slot='text'] {
+  grid-column: text;
+  grid-row: 1;
+  min-inline-size: 0;
+}
+
+[data-xh-collection-slot='description'] {
+  grid-column: text;
+  grid-row: 2;
+  min-inline-size: 0;
+  color: var(--xh-_collection-description-fg);
+  font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
+}
+
+[data-xh-collection-slot='shortcut'] {
+  grid-column: shortcut;
+}
+
+[data-xh-collection-slot='suffix'] {
+  grid-column: suffix;
+}
+
+[data-xh-collection-slot='indicator'] {
+  grid-column: indicator;
+  color: var(--xh-_collection-indicator-fg);
+  visibility: hidden;
+}
+
+[data-xh-collection-slot='shortcut'],
+[data-xh-collection-slot='suffix'],
+[data-xh-collection-slot='indicator'] {
+  grid-row: 1 / span 2;
+  margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
+}
+
+/* page 上下文：对号是前导标记（leading），指示条（bar）挂在起始侧。 */
+[data-scope][data-xh-collection-item][data-xh-collection-context='page'] {
+  position: relative;
+  grid-template-columns:
+    [indicator] max-content
+    [prefix] max-content
+    [text] minmax(0, 1fr)
+    [shortcut] max-content
+    [suffix] max-content;
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
+  margin-inline-start: 0;
+  margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+}
+
+[data-scope][data-xh-collection-item][data-in-path] {
+  --xh-_collection-bg: var(--xh-collection-bg-open-path, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-open-path, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-open-path, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-open-path, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-open-path, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-open-path, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-open-path, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-open-path, 1);
+}
+
+[data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-hover, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-hover, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-hover, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-hover, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-hover, 1);
+}
+
+[data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-keyboard-highlight, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-keyboard-highlight, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-keyboard-highlight, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-keyboard-highlight, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-keyboard-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-keyboard-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-keyboard-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-keyboard-highlight, 1);
+}
+
+/* 按下段：pressed 面与按下时长、曲线一起给出；排在 hover 与高亮之后，同特指度才不会被它们盖掉。 */
+[data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-pressed, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-pressed, 1);
+
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-hover, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-hover, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-hover, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-hover, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-hover, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-highlight, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-highlight, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-highlight, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-highlight, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-pressed, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected, var(--xh-bg-brand-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-hover, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-hover, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-hover, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-highlight, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-highlight, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-brand-subtle-active));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-pressed, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current, var(--xh-bg-brand-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-current, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-current-hover, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-current-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-hover, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-hover, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current-highlight, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-current-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-highlight, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-highlight, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current-pressed, var(--xh-bg-brand-subtle-active));
+  --xh-_collection-fg: var(--xh-collection-fg-current-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-pressed, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'] {
+  --xh-_collection-bg: var(--xh-collection-bg-rest, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-rest, var(--xh-fg-muted));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-rest, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-rest, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-rest, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-rest, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-rest, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-rest, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-hover, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-hover, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-hover, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-hover, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-hover, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-keyboard-highlight, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-keyboard-highlight, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-keyboard-highlight, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-keyboard-highlight, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-keyboard-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-keyboard-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-keyboard-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-keyboard-highlight, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-pressed, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-pressed, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-pressed, 1);
+
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-in-path] {
+  --xh-_collection-bg: var(--xh-collection-bg-open-path, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-open-path, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-open-path, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-open-path, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-open-path, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-open-path, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-open-path, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-open-path, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-current, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-current-hover, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-current-hover, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-hover, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-hover, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-hover, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-hover, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current-highlight, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-current-highlight, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-highlight, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-highlight, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-highlight, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-highlight, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-current-pressed, var(--xh-fg-brand-strong));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-pressed, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-current-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-pressed, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-pressed, 1);
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current][data-xh-collection-terminal] {
+  --xh-_collection-bg: var(--xh-collection-bg-terminal, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-terminal, var(--xh-fg-default));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-terminal, var(--xh-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-terminal, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-terminal, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-terminal, var(--xh-font-weight-medium));
+  --xh-_collection-cursor: var(--xh-collection-cursor-terminal, default);
+  --xh-_collection-opacity: var(--xh-collection-opacity-terminal, 1);
+
+  cursor: var(--xh-_collection-cursor);
+}
+
+[data-scope][data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
+  visibility: visible;
+}
+
+[data-scope][data-xh-collection-item][data-state='checked'] {
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-checked, var(--xh-fg-brand));
+}
+
+[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]::before {
+  content: '';
+  position: absolute;
+  inset-block: var(--xh-space-1);
+  inset-inline-start: 0;
+  inline-size: var(--xh-stroke-thick);
+  border-radius: var(--xh-shape-pill);
+  background-color: var(--xh-_collection-indicator-fg);
+  pointer-events: none;
+}
+
+[data-scope][data-xh-collection-item][aria-disabled='true'] {
+  --xh-_collection-bg: var(--xh-collection-bg-disabled, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-disabled, var(--xh-fg-disabled));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-disabled, var(--xh-fg-disabled));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-disabled, var(--xh-fg-disabled));
+  --xh-_collection-outline: var(--xh-collection-outline-disabled, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-disabled, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-disabled, not-allowed);
+  --xh-_collection-opacity: var(--xh-collection-opacity-disabled, 1);
+}
+
+[data-scope][data-xh-collection-item][aria-busy='true'] {
+  --xh-_collection-bg: var(--xh-collection-bg-loading, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-loading, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-loading, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-loading, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-loading, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-loading, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-loading, progress);
+  --xh-_collection-opacity: var(--xh-collection-opacity-loading, 1);
+}
+
+[data-scope][data-xh-collection-item][data-error] {
+  --xh-_collection-bg: var(--xh-collection-bg-error, color-mix(in oklab, var(--xh-fg-danger) 10%, transparent));
+  --xh-_collection-fg: var(--xh-collection-fg-error, var(--xh-fg-danger));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-error, var(--xh-fg-danger));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-error, var(--xh-fg-danger));
+  --xh-_collection-outline: var(--xh-collection-outline-error, var(--xh-fg-danger));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-error, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-error, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-error, 1);
+}
+
+[data-scope][data-xh-collection-separator] {
+  block-size: var(--xh-stroke-thin);
+  margin-block: var(--xh-collection-separator-block-margin, var(--xh-space-1));
+  margin-inline: var(--xh-collection-separator-inline-margin, var(--xh-control-px-md));
+  border: 0;
+  background-color: var(--xh-collection-separator-color, var(--xh-material-frosted-separator));
+}
+
+[data-scope][data-xh-collection-item][hidden],
+[data-scope][data-xh-collection-separator][hidden] {
+  display: none;
+}
+
+:where([data-motion='reduce']) [data-scope][data-xh-collection-item] {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scope][data-xh-collection-item] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-scope][data-xh-collection-item] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
+  }
+
+  [data-scope][data-xh-collection-item][data-in-path] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: HighlightText;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: HighlightText;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-in-path] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current][data-xh-collection-terminal] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
+  }
+
+  [data-scope][data-xh-collection-item][data-state='checked'] {
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][aria-disabled='true'] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: GrayText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: GrayText;
+  }
+
+  [data-scope][data-xh-collection-item][aria-busy='true'] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-error] {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-separator] {
+    background-color: CanvasText;
+  }
+}
+
+/* family/swatch.css */
+/* AUTO-GENERATED by build/swatch-recipe.mjs — do not edit. */
+
+[data-scope][data-xh-swatch] {
+  --xh-_swatch-size: var(--xh-glyph-size-md);
+  --xh-_swatch-checker-tile: var(--xh-space-1);
+  --xh-_swatch-color: transparent;
+
+  display: inline-block;
+  flex: none;
+  box-sizing: border-box;
+  inline-size: var(--xh-swatch-size, var(--xh-_swatch-size));
+  block-size: var(--xh-swatch-size, var(--xh-_swatch-size));
+  border: var(--xh-stroke-thin) solid var(--xh-swatch-border, var(--xh-border-default));
+  border-radius: var(--xh-swatch-radius, var(--xh-shape-inset));
+  background-color: var(--xh-swatch-checker-base, var(--xh-bg-surface));
+  background-image:
+    linear-gradient(var(--xh-_swatch-color), var(--xh-_swatch-color)),
+    linear-gradient(45deg, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 75%);
+  background-position:
+    0 0,
+    0 0,
+    0 var(--xh-_swatch-checker-tile),
+    var(--xh-_swatch-checker-tile) calc(-1 * var(--xh-_swatch-checker-tile)),
+    calc(-1 * var(--xh-_swatch-checker-tile)) 0;
+  background-size:
+    100% 100%,
+    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2),
+    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2),
+    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2),
+    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2);
+  background-clip: padding-box;
+  print-color-adjust: exact;
+}
+
+[data-scope][data-xh-swatch][data-xh-swatch-size='sm'] {
+  --xh-_swatch-size: var(--xh-glyph-size-sm);
+  --xh-_swatch-checker-tile: var(--xh-space-1);
+}
+
+[data-scope][data-xh-swatch][data-xh-swatch-size='lg'] {
+  --xh-_swatch-size: var(--xh-glyph-size-lg);
+  --xh-_swatch-checker-tile: var(--xh-space-1_5);
+}
+
+@media (forced-colors: active) {
+  [data-scope][data-xh-swatch] {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+}
+
+/* family/motion.css */
+/* 定义 motion 样式。 */
+
+/* 共享关键帧的唯一真源（规范 §9.4 / §9.5）。
+ *
+ * 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+ * 动画会静默地整个不跑。所以引用这里任一名字的皮肤都 @import 本文件，单独引入那份皮肤时
+ * 关键帧仍在场；全量入口由 emit-unlayered 按物理文件去重，有层入口靠打包器对同一 URL 的
+ * @import 去重，同名同帧体即使重复插入也无副作用。
+ *
+ * 本文件只放跨皮肤共用的关键帧，皮肤内不得重定义这些名字（check-keyframe-refs 判红）；
+ * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm 与 --xh-motion-scale-enter /
+ * -exit，减弱动效档由令牌层把它们归零。四个方向槽 --xh-_overlay-enter-* 由浮层皮肤按
+ * placement 写在 positioner 上，四个都没写时位移退回 0。
+ */
+
+/* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
+   Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、
+   Date / Time picker、Tooltip */
+@keyframes xh-overlay-slide-in {
+  from {
+    opacity: 0;
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes xh-overlay-slide-out {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+}
+
+/* ── 锚定面板：从锚点那一侧冒出来，缩放叠短位移 ──
+   Popover、HoverCard、Popconfirm、Tour、Command。
+   起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+/* 退场只缩放淡出，不再沿方向退让；锚定面板与无锚定弹出共用 */
+@keyframes xh-pop-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: var(--xh-motion-scale-exit);
+  }
+}
+
+/* ── 无锚定弹出：原地缩放淡入，没有方向 ──
+   NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 */
+@keyframes xh-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* ── 遮罩与全屏面：只动不透明度 ──
+   Dialog / Drawer / ImageViewer / Tour / Command 的遮罩，Avatar / Image 的载入揭示，
+   Cascader 列项的淡入 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* 页内内容的上浮进场：淡入叠一小段向上位移。Command 的分组、EmptyState、QuestionFlow */
+@keyframes xh-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-sm);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ── Surface 级 disclosure：行高 0fr → 1fr，内缩同帧动 ──
+   Accordion、Collapsible、Reasoning、ToolCall 的 content。
+   内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净。
+   两端内缩由各皮肤在 content 上写进 --xh-_disclosure-pt / --xh-_disclosure-pb，
+   没写的那一端按 0 动（与该端本来就没有内缩的皮肤一致） */
+@keyframes xh-disclosure-expand {
+  from {
+    grid-template-rows: 0fr;
+    padding-block-start: 0;
+    padding-block-end: 0;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+    padding-block-start: var(--xh-_disclosure-pt, 0);
+    padding-block-end: var(--xh-_disclosure-pb, 0);
+  }
+}
+
+@keyframes xh-disclosure-collapse {
+  from {
+    grid-template-rows: 1fr;
+    padding-block-start: var(--xh-_disclosure-pt, 0);
+    padding-block-end: var(--xh-_disclosure-pb, 0);
+  }
+
+  to {
+    grid-template-rows: 0fr;
+    padding-block-start: 0;
+    padding-block-end: 0;
+  }
+}
+
+/* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
+
+/* styles/focus.css */
+/*
+ * 聚焦环的公共层：全库共用一份。
+ *
+ * 解剖给每个部件打上 data-scope 与 data-part，键盘焦点落在哪个部件上，环就由这里画：
+ * 粗细取 --xh-ring-width，颜色取 --xh-_ring-color（默认 --xh-ring-focus），
+ * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
+ * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
+ *
+ * 环往内收之后，内侧紧挨着的是环压着的那块面。面是实心的那几档，环色与面同族、贴上去就
+ * 看不出来；那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
+ * 环随之取这块面配对的前景色——那一支色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+ * 取的是「面配对的前景色」，不是语气色：环仍然不随 data-tone 走，没有实心面的那些档
+ * 一律是 --xh-ring-focus 这一支。
+ *
+ * 灌 currentColor 的档要同时成立三件事：
+ *   一、面画在谁身上——画在祖先上（标签里那颗透空的关闭钮坐在标签那块实心底上）时
+ *       规则写成后代选择器，槽仍然灌在拿焦点的那个节点上；
+ *   二、部件得有 color——圆点、滑块这类没有字的部件先补一支与面配对的墨色，
+ *       不补则 currentColor 取到继承下来的正文色或原生控件的 UA 前景色；
+ *       只有一档要换的（开关选中的轨道）把那支色直接写进槽，不绕 currentColor；
+ *   三、面被换走的档要退出——失效档把面换成置灰底、前景换成置灰色或透明，
+ *       中性轻档把实心底换成灰底，currentColor 在这些档上会把环跟着糊掉甚至整条画成透明。
+ *       靠收窄选择器退回本份的默认值，或把槽显式写回 var(--xh-ring-focus)。
+ *
+ * 槽在这里只留一个默认值，名单不收在本份里——谁的面是实心的由那份皮肤自己知道，
+ * 也只有引了那份皮肤的人该为它付字节。
+ * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
+ *
+ * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
+ * [data-scope='x'][data-part='y']:focus-visible 同级，组件皮肤排在本份之后，
+ * 要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
+ * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
+ *
+ * 排在全部组件皮肤之前：组件不必为了换个环色把整条环重写一遍。
+ */
+
+[data-scope][data-part]:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
+
+/* styles/label.css */
+/*
+ * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
+ *
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
+ * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
+ * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
+ * 槽名里带组件名，写不进一条共享规则。
+ *
+ * scope 逐个列出，不写成 [data-scope][data-part='label']：label 这个部件名在标签、
+ * 统计、进度、推理、说明列表上指的是另一种文字（行内省略的标签正文、环内居中的数字、
+ * 描述项的名字），通配规则会把行距按到它们头上。要接进来的组件把 scope 加进列表。
+ *
+ * 选择器停在两个属性（0,2,0）或三个属性（0,3,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
+ * 要另写行距的组件照写即可压过。
+ */
+
+/* 标签是单行短文，行距不留额外的行间空白，标签与控件之间只剩容器给的那一道间距。 */
+[data-scope='checkbox'][data-part='label'],
+[data-scope='checkbox-group'][data-part='label'],
+[data-scope='color-picker'][data-part='label'],
+[data-scope='date-field'][data-part='label'],
+[data-scope='editable'][data-part='label'],
+[data-scope='field'][data-part='label'],
+[data-scope='file-upload'][data-part='label'],
+[data-scope='number-field'][data-part='label'],
+[data-scope='password-input'][data-part='label'],
+[data-scope='pin-input'][data-part='label'],
+[data-scope='radio-group'][data-part='label'],
+[data-scope='rating'][data-part='label'],
+[data-scope='signature-pad'][data-part='label'],
+[data-scope='slider'][data-part='label'],
+[data-scope='switch'][data-part='label'],
+[data-scope='tags-input'][data-part='label'],
+[data-scope='text-field'][data-part='label'],
+[data-scope='time-field'][data-part='label'] {
+  line-height: var(--xh-leading-none);
+}
+
+/*
+ * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
+ * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
+ */
+[data-scope='color-picker'][data-part='label'][data-disabled],
+[data-scope='rating'][data-part='label'][data-disabled],
+[data-scope='signature-pad'][data-part='label'][data-disabled],
+[data-scope='slider'][data-part='label'][data-disabled] {
+  color: var(--xh-fg-subtle);
+}
+
+/*
+ * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
+ * 自带标签的字段不得各画一套。
+ *
+ * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
+ * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
+ * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
+ */
+[data-scope='field'][data-part='label'][data-required]::after,
+[data-scope='fieldset'][data-part='legend'][data-required]::after {
+  content: var(--xh-glyph-mark-required);
+  margin-inline-start: var(--xh-space-1);
+  color: var(--xh-fg-danger);
+}
+
+/*
+ * 无效档的字色：标签跟着自己的 data-invalid 转警示色，没渲染错误文案的字段上这是唯一变化的东西。
+ * 有 --xh-<组件>-label-fg-invalid 覆盖槽的组件在各自皮肤里另写一条 color 压过这里。
+ */
+[data-scope='field'][data-part='label'][data-invalid],
+[data-scope='fieldset'][data-part='legend'][data-invalid] {
+  color: var(--xh-fg-danger);
+}
+
+/* 排在全部组件皮肤之前：字段族说明文字的公共层，无效时把说明让给错误文案。 */
+
+/* styles/description.css */
+/*
+ * 字段族说明与错误文案的公共层，按 [data-part='description'] / [data-part='error-text']
+ * 匹配下面逐个列出的 scope。
+ *
+ * 收在这里的是逐值相同的角色规则：说明 = --xh-text-secondary-size / --xh-fg-muted /
+ * --xh-leading-normal；错误文案 = --xh-text-secondary-size / --xh-fg-danger / --xh-leading-normal；
+ * 两者外边距归零，与控件的距离由字段根的 gap 给。挂了 --xh-<组件>-description-* /
+ * --xh-<组件>-error-* 覆盖槽的组件在各自皮肤里只另写带槽的 color / font-size 压过这里，
+ * margin 与 line-height 不再重写。
+ *
+ * 说明与错误文案落在控件下方的同一处：无效时收起说明，那一行只剩错误。两段同时在场
+ * 会把辅助区撑成两行，整表的字段高度随之参差。
+ *
+ * 收起只收视觉。说明的 id 仍挂在控件的 aria-describedby 上，读屏两段都念得到——
+ * 直接被 aria-describedby 指到的节点，隐藏与否都计入可及描述。
+ *
+ * scope 逐个列出，不写成 [data-part='description']：这个部件名在提示、气泡、
+ * 空状态、说明列表上指的是另一段文字，通配规则会把它们在无效态下一并收起。
+ * 要接进来的组件把自己的几条加进列表。
+ *
+ * 收起限定到直接子节点：字段集无效时收起的是它自己那段说明，不是组内各字段的说明。
+ * 引入顺序排在全部组件皮肤之前，组件要另作安排照写同样的无效态限定即可压过。
+ */
+
+[data-scope='field'][data-part='description'],
+[data-scope='fieldset'][data-part='description'] {
+  margin: 0;
+  font-size: var(--xh-text-secondary-size);
+  line-height: var(--xh-leading-normal);
+  color: var(--xh-fg-muted);
+}
+
+/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
+[data-scope='field'][data-part='error-text'],
+[data-scope='fieldset'][data-part='error-text'] {
+  margin: 0;
+  font-size: var(--xh-text-secondary-size);
+  line-height: var(--xh-leading-normal);
+  color: var(--xh-fg-danger);
+}
+
+[data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='description'],
+[data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='description'] {
+  display: none;
+}
+
+/* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
+
+/* styles/pointer.css */
+/*
+ * 指针反馈的公共层：全库共用一份。
+ *
+ * 两件事写在这里。
+ *
+ * 一、触摸点按时浏览器画的那层高亮方块。它是继承属性，一条规则打在 [data-scope] 上就覆盖
+ * 库里的每一个节点与它们的后代，不必逐个组件登记。
+ *
+ * 二、禁用态的光标。「这个控件不可用」在库里有三种条件拼写：解剖打出来的 data-disabled、
+ * 原生表单控件的 :disabled、集合条目用的 aria-disabled——三者说的是同一件事，光标也是同一个。
+ * 选择器停在两个属性加一个条件（0,3,0）：与组件皮肤里
+ * [data-scope='x'][data-part='y'][data-disabled] 同级，本份排在全部组件皮肤之前，
+ * 要另画的组件照写即可压过。
+ *
+ * 「在途」不在这里：它是另一件事，光标是 progress，挂在哪个部件上逐个组件不同，
+ * 写成通配会盖到作者自己的内容上（列表外壳、快捷键展示、可调容器都带 data-loading / data-disabled，
+ * 而它们身上的这两个标记说的是「这项行为关掉了」，不是「这个控件不可用」）。
+ *
+ * 排在全部组件皮肤之前：组件不必为了换一个光标把整条规则重写一遍。
+ */
+
+[data-scope] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-scope][data-part][data-disabled],
+[data-scope][data-part]:disabled,
+[data-scope][data-part][aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+/* 其余按层归属排列。 */
+
+/* styles/affix.css */
+/* 定义 affix 样式。 */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='affix'] {
+  --xh-affix-skin: 1;
+}
+
+/* 占位盒就是 content 在常规流里占的那块地方。
+   这里不声明 display，也不写高度：吸住时冻结的高度由连接层量好写进内联样式（它量得到，样式表量不到），
+   没吸住时高度就该跟着内容走。不给 display，UA 的 [hidden]{display:none} 也仍然压得住 */
+[data-scope='affix'][data-part='root'] {
+  /* 脱流后 content 不再撑开占位盒，宽度改从父级取 */
+  inline-size: 100%;
+}
+
+/* 没吸住时是常规流里普通的一块，不做任何定位 */
+[data-scope='affix'][data-part='content'] {
+  inline-size: 100%;
+}
+
+/*
+ * 吸住：脱离常规流钉在视口上。
+ * 四个落位数（top / bottom / left / width）由连接层写成内联样式——它们是照占位盒的矩形实测出来的
+ * 物理量，换成逻辑属性会在 RTL 下贴反。这里只管「用哪种定位、压在第几层」。
+ * 另一件必须提防的事：fixed 认的是视口，祖先上一旦出现
+ * transform / filter / backdrop-filter / contain，包含块就被抢走，钉住的内容立刻贴错位置——
+ * 所以别往覆盖钩子里加这几个属性。
+ */
+[data-scope='affix'][data-part='content'][data-fixed] {
+  position: fixed;
+  z-index: var(--xh-affix-layer, var(--xh-layer-sticky));
+}
+
+@media print {
+  /* 打印：钉住的是作者自己的内容，不能收起；但保持 fixed 会让部分打印引擎每页重复一次，
+     所以只把它放回正常流。 */
+  [data-scope='affix'][data-part='content'][data-fixed] {
+    position: static;
+  }
+}
+
+/* styles/avatar-group.css */
+/* 定义 avatar group 样式。 */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='avatar-group'] {
+  --xh-avatar-group-skin: 1;
+}
+
+/* 一排叠放的头像：后一枚压在前一枚上。
+   组内共用的直径与字号在容器上写一次，沿继承流给每一枚——包括自己写了档位的那一枚，
+   它的档位取值也读这两个槽，整排因此始终齐平。单独摆的头像取不到这两个槽，仍按自己的档走 */
+[data-scope='avatar-group'][data-part='root'] {
+  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+  isolation: isolate;
+
+  /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
+  --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
+  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-md));
+  --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2_5));
+
+  /* 流给组内每一枚 */
+  --xh-avatar-size: var(--xh-_avatar-group-size);
+  --xh-avatar-font-size: var(--xh-_avatar-group-font-size);
+
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+   不补的话作者给节点加 hidden 后它照样显示 */
+[data-scope='avatar-group'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+/* 三档对齐控件档位，缺省档写在上面的基础规则里；
+   字号与叠放量跟着直径一起缩放，小头像里回退字放得下、大头像里压住的那段也按比例长 */
+[data-scope='avatar-group'][data-part='root'][data-size='sm'] {
+  --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-sm));
+  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-sm));
+  --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2));
+}
+
+[data-scope='avatar-group'][data-part='root'][data-size='lg'] {
+  --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-lg));
+  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-lg));
+  --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-3));
+}
+
+/* —— 叠放 —— */
+/* 谁压在谁上面得能指定，所以每一枚都是定位元素；
+   再描一圈底色，被压住的那条边才与上一枚分得开 */
+[data-scope='avatar-group'][data-part='root'] > * {
+  position: relative;
+}
+
+[data-scope='avatar-group'][data-part='root'] > *,
+[data-scope='avatar-group'][data-part='root'] > * [data-scope='avatar'][data-part='root'] {
+  box-shadow: 0 0 0 var(--xh-stroke-thick) var(--xh-avatar-group-ring, var(--xh-bg-surface));
+}
+
+/* 后一枚往回挪一段，压在前一枚上 */
+[data-scope='avatar-group'][data-part='root'] > * + * {
+  margin-inline-start: calc(-1 * var(--xh-_avatar-group-overlap));
+}
+
+/* 指到哪一枚，哪一枚整个露出来 */
+[data-scope='avatar-group'][data-part='root'] > *:hover {
+  z-index: 1;
+}
+
+/* —— 溢出计数 —— */
+/* 「+N」是这一排里的又一枚：直径、形状与字号跟着组走，里面写什么由作者定 */
+[data-scope='avatar-group'][data-part='overflow-item'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-_avatar-group-size);
+  block-size: var(--xh-_avatar-group-size);
+  border-radius: var(--xh-avatar-group-radius, var(--xh-shape-circle));
+  background: var(--xh-avatar-group-overflow-item-bg, var(--xh-bg-muted));
+  color: var(--xh-avatar-group-overflow-item-fg, var(--xh-fg-muted));
+  font-size: var(--xh-_avatar-group-font-size);
+  font-weight: var(--xh-avatar-group-font-weight, var(--xh-font-weight-medium));
+  line-height: var(--xh-leading-none);
+  user-select: none;
+}
+
+[data-scope='avatar-group'][data-part='overflow-item'][hidden] {
+  display: none;
+}
+
+/* styles/back-top.css */
+/* 定义 back top 样式。 */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='back-top'] {
@@ -1489,8 +2727,6 @@
 
 /* 独立皮肤同时传递引入折叠格按钮的动作控件配方；full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='diff-view'] {
   --xh-diff-view-skin: 1;
@@ -1909,8 +3145,6 @@
 /* styles/download-trigger.css */
 /* 定义 download trigger 样式。 */
 
-/* family/action-control.css */
-
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-download-trigger-rotate {
   to {
@@ -2076,8 +3310,6 @@
 /* 定义 field array 样式。 */
 
 /* FieldArray 独立皮肤同时传递引入把手的动作控件配方；full bundle 递归去重。 */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='field-array'] {
@@ -2478,171 +3710,7 @@
 /* styles/float-button.css */
 /* 定义 float button 样式。 */
 
-/* family/action-control.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
-/* 定义 motion 样式。 */
-
-/* 共享关键帧的唯一真源（规范 §9.4 / §9.5）。
- *
- * 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
- * 动画会静默地整个不跑。所以引用这里任一名字的皮肤都 @import 本文件，单独引入那份皮肤时
- * 关键帧仍在场；全量入口由 emit-unlayered 按物理文件去重，有层入口靠打包器对同一 URL 的
- * @import 去重，同名同帧体即使重复插入也无副作用。
- *
- * 本文件只放跨皮肤共用的关键帧，皮肤内不得重定义这些名字（check-keyframe-refs 判红）；
- * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm 与 --xh-motion-scale-enter /
- * -exit，减弱动效档由令牌层把它们归零。四个方向槽 --xh-_overlay-enter-* 由浮层皮肤按
- * placement 写在 positioner 上，四个都没写时位移退回 0。
- */
-
-/* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
-   Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、
-   Date / Time picker、Tooltip */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
-
-/* ── 锚定面板：从锚点那一侧冒出来，缩放叠短位移 ──
-   Popover、HoverCard、Popconfirm、Tour、Command。
-   起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-/* 退场只缩放淡出，不再沿方向退让；锚定面板与无锚定弹出共用 */
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
-
-/* ── 无锚定弹出：原地缩放淡入，没有方向 ──
-   NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 */
-@keyframes xh-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-/* ── 遮罩与全屏面：只动不透明度 ──
-   Dialog / Drawer / ImageViewer / Tour / Command 的遮罩，Avatar / Image 的载入揭示，
-   Cascader 列项的淡入 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-/* 页内内容的上浮进场：淡入叠一小段向上位移。Command 的分组、EmptyState、QuestionFlow */
-@keyframes xh-rise-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-/* ── Surface 级 disclosure：行高 0fr → 1fr，内缩同帧动 ──
-   Accordion、Collapsible、Reasoning、ToolCall 的 content。
-   内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净。
-   两端内缩由各皮肤在 content 上写进 --xh-_disclosure-pt / --xh-_disclosure-pb，
-   没写的那一端按 0 动（与该端本来就没有内缩的皮肤一致） */
-@keyframes xh-disclosure-expand {
-  from {
-    grid-template-rows: 0fr;
-    padding-block-start: 0;
-    padding-block-end: 0;
-  }
-
-  to {
-    grid-template-rows: 1fr;
-    padding-block-start: var(--xh-_disclosure-pt, 0);
-    padding-block-end: var(--xh-_disclosure-pb, 0);
-  }
-}
-
-@keyframes xh-disclosure-collapse {
-  from {
-    grid-template-rows: 1fr;
-    padding-block-start: var(--xh-_disclosure-pt, 0);
-    padding-block-end: var(--xh-_disclosure-pb, 0);
-  }
-
-  to {
-    grid-template-rows: 0fr;
-    padding-block-start: 0;
-    padding-block-end: 0;
-  }
-}
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='float-button'] {
@@ -2964,10 +4032,6 @@
 /* 定义 floating panel 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='floating-panel'] {
@@ -5375,8 +6439,6 @@
 
 /* 独立皮肤同时传递引入取下一页按钮的动作控件配方，full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='infinite-scroll'] {
   --xh-infinite-scroll-skin: 1;
@@ -6019,8 +7081,6 @@
 
 /* 独立皮肤传递引入折叠把手的动作控件配方，full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='layout'] {
   --xh-layout-skin: 1;
@@ -6483,8 +7543,6 @@
 /* 定义 log 样式。 */
 
 /* 独立皮肤同时传递引入回底钮的动作控件配方；full bundle 递归去重。 */
-
-/* family/action-control.css */
 
 /* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
    引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
@@ -7170,1027 +8228,7 @@
 /* styles/mention.css */
 /* Mention 独立皮肤同时传递引入字段视觉盒与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-/* AUTO-GENERATED by build/field-chrome-recipe.mjs — do not edit. */
-
-[data-scope][data-xh-field-chrome] {
-  display: inline-flex;
-  box-sizing: border-box;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: var(--xh-field-control-gap, var(--xh-_field-size-gap));
-  min-inline-size: min(var(--xh-field-control-min-inline-size, var(--xh-control-min-w)), 100%);
-  block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-  padding-inline: var(--xh-field-control-padding-inline, var(--xh-_field-size-padding-inline));
-  padding-block: 0;
-  --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
-  --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
-  --xh-_field-variant-border-rest: var(--xh-border-control);
-  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
-  --xh-_field-variant-border-hover: var(--xh-border-control-hover);
-  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
-  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
-  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
-  --xh-_field-variant-border-disabled: var(--xh-border-default);
-  border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, var(--xh-_field-variant-border-rest));
-  border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
-  outline: var(--xh-ring-width) solid transparent;
-  outline-offset: var(--xh-ring-offset);
-  background-color: var(--xh-field-bg-rest, var(--xh-_field-variant-bg-rest));
-  color: var(--xh-field-fg-rest, var(--xh-fg-default));
-  box-shadow: var(--xh-field-shadow-rest, none);
-  cursor: var(--xh-field-cursor-rest, text);
-  transition:
-    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-[data-scope][data-xh-field-chrome][data-variant='outline'] {
-  --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
-  --xh-_field-variant-border-rest: var(--xh-border-control);
-  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
-  --xh-_field-variant-border-hover: var(--xh-border-control-hover);
-  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
-  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
-  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
-  --xh-_field-variant-border-disabled: var(--xh-border-default);
-}
-
-[data-scope][data-xh-field-chrome][data-variant='subtle'] {
-  --xh-_field-variant-bg-rest: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_field-variant-border-rest: transparent;
-  --xh-_field-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_field-variant-border-hover: var(--xh-border-control);
-  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
-  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
-  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
-  --xh-_field-variant-border-disabled: var(--xh-border-default);
-}
-
-[data-scope][data-xh-field-chrome][data-variant='ghost'] {
-  --xh-_field-variant-bg-rest: transparent;
-  --xh-_field-variant-border-rest: transparent;
-  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
-  --xh-_field-variant-border-hover: var(--xh-border-control);
-  --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-  --xh-_field-variant-border-invalid: var(--xh-border-invalid);
-  --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
-  --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
-  --xh-_field-variant-border-disabled: var(--xh-border-default);
-}
-
-[data-scope][data-xh-field-chrome][data-xh-field-size='sm'] {
-  --xh-_field-size-control-height: var(--xh-control-h-sm);
-  --xh-_field-size-padding-inline: var(--xh-control-px-sm);
-  --xh-_field-size-gap: var(--xh-control-gap-sm);
-  --xh-_field-size-font-size: var(--xh-control-font-sm);
-  --xh-_field-size-glyph-size: var(--xh-glyph-size-sm);
-}
-
-[data-scope][data-xh-field-chrome][data-xh-field-size='md'] {
-  --xh-_field-size-control-height: var(--xh-control-h-md);
-  --xh-_field-size-padding-inline: var(--xh-control-px-md);
-  --xh-_field-size-gap: var(--xh-control-gap-md);
-  --xh-_field-size-font-size: var(--xh-control-font-md);
-  --xh-_field-size-glyph-size: var(--xh-glyph-size-md);
-}
-
-[data-scope][data-xh-field-chrome][data-xh-field-size='lg'] {
-  --xh-_field-size-control-height: var(--xh-control-h-lg);
-  --xh-_field-size-padding-inline: var(--xh-control-px-lg);
-  --xh-_field-size-gap: var(--xh-control-gap-lg);
-  --xh-_field-size-font-size: var(--xh-control-font-lg);
-  --xh-_field-size-glyph-size: var(--xh-glyph-size-lg);
-}
-
-[data-scope][data-xh-field-chrome][data-xh-field-layout='single-line'],
-[data-scope][data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout='single-line']) {
-  align-items: center;
-  flex-wrap: nowrap;
-  block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-  padding-block: 0;
-}
-
-[data-scope][data-xh-field-chrome][data-xh-field-layout='textarea'],
-[data-scope][data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout='textarea']) {
-  align-items: flex-start;
-  flex-wrap: nowrap;
-  block-size: auto;
-  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-  padding-block: 0;
-}
-
-[data-scope][data-xh-field-chrome][data-xh-field-layout='multi-tag'],
-[data-scope][data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout='multi-tag']) {
-  align-items: center;
-  flex-wrap: wrap;
-  block-size: auto;
-  min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-  padding-block: var(--xh-space-1);
-}
-
-[data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
-  background-color: var(--xh-field-bg-hover, var(--xh-_field-variant-bg-hover));
-  border-color: var(--xh-field-border-hover, var(--xh-_field-variant-border-hover));
-}
-
-[data-scope][data-xh-field-chrome]:focus-within:not([data-disabled]) {
-  border-color: var(--xh-field-border-focus, var(--xh-_field-variant-border-focus));
-  outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, var(--xh-ring-focus));
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope][data-xh-field-chrome][data-readonly] {
-  background-color: var(--xh-field-bg-read-only, var(--xh-_field-variant-bg-read-only));
-  cursor: var(--xh-field-cursor-read-only, default);
-}
-
-[data-scope][data-xh-field-chrome][data-loading] {
-  color: var(--xh-field-fg-loading, var(--xh-fg-muted));
-  cursor: var(--xh-field-cursor-loading, progress);
-}
-
-[data-scope][data-xh-field-chrome][data-invalid] {
-  border-color: var(--xh-field-border-invalid, var(--xh-_field-variant-border-invalid));
-}
-
-[data-scope][data-xh-field-chrome][data-invalid]:focus-within:not([data-disabled]) {
-  outline-color: var(--xh-field-ring-invalid, var(--xh-ring-invalid));
-}
-
-[data-scope][data-xh-field-chrome][data-disabled] {
-  background-color: var(--xh-field-bg-disabled, var(--xh-_field-variant-bg-disabled));
-  color: var(--xh-field-fg-disabled, var(--xh-fg-disabled));
-  border-color: var(--xh-field-border-disabled, var(--xh-_field-variant-border-disabled));
-  cursor: var(--xh-field-cursor-disabled, not-allowed);
-}
-
-[data-xh-field-affix] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  color: var(--xh-field-affix-fg, var(--xh-fg-muted));
-  font-size: var(--xh-field-affix-font-size, var(--xh-_field-size-font-size));
-  line-height: var(--xh-leading-none);
-  white-space: nowrap;
-}
-
-[data-xh-field-affix][data-disabled] {
-  color: var(--xh-field-affix-fg-disabled, var(--xh-fg-disabled));
-}
-
-[data-xh-field-input] {
-  flex: 1 1 auto;
-  box-sizing: border-box;
-  min-inline-size: 0;
-  block-size: 100%;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  appearance: none;
-  background: transparent;
-  box-shadow: none;
-  color: var(--xh-field-input-fg, var(--xh-fg-default));
-  font-family: inherit;
-  font-size: var(--xh-field-input-font-size, var(--xh-_field-size-font-size));
-  line-height: var(--xh-leading-normal);
-  text-align: start;
-}
-
-[data-scope][data-xh-field-chrome] [data-xh-field-input]:focus-visible {
-  outline: none;
-}
-
-[data-scope][data-xh-field-chrome] [data-xh-action-profile='field-inset']:focus-visible {
-  outline: none;
-}
-
-[data-xh-field-input][data-disabled] {
-  color: var(--xh-field-input-fg-disabled, var(--xh-fg-disabled));
-}
-
-[data-xh-field-input]::placeholder {
-  color: var(--xh-field-placeholder-fg, var(--xh-fg-subtle));
-}
-
-[data-xh-field-input][data-xh-field-layout='textarea'] {
-  block-size: auto;
-  max-inline-size: 100%;
-  padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-2));
-  overflow: auto;
-  resize: vertical;
-}
-
-[data-xh-field-input][data-xh-field-layout='textarea'][data-xh-field-auto-size] {
-  overflow: hidden;
-  resize: none;
-}
-
-[data-xh-field-input]:autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-field-autofill-bg, var(--xh-bg-canvas));
-  -webkit-text-fill-color: var(--xh-field-autofill-fg, var(--xh-fg-default));
-}
-
-[data-xh-field-input]:-webkit-autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-field-autofill-bg, var(--xh-bg-canvas));
-  -webkit-text-fill-color: var(--xh-field-autofill-fg, var(--xh-fg-default));
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-scope][data-xh-field-chrome] {
-    transition: none;
-  }
-}
-
-:where([data-motion='reduce']) [data-scope][data-xh-field-chrome] {
-  transition: none;
-}
-
-@media (forced-colors: active) {
-  [data-scope][data-xh-field-chrome] {
-    background-color: Canvas;
-    color: CanvasText;
-    border-color: ButtonText;
-    box-shadow: none;
-    opacity: 1;
-  }
-
-  [data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
-    border-color: Highlight;
-  }
-
-  [data-scope][data-xh-field-chrome]:focus-within:not([data-disabled]) {
-    border-color: Highlight;
-    outline-color: Highlight;
-  }
-
-  [data-scope][data-xh-field-chrome][data-readonly] {
-    border-color: GrayText;
-  }
-
-  [data-scope][data-xh-field-chrome][data-loading] {
-    border-style: dashed;
-  }
-
-  [data-scope][data-xh-field-chrome][data-invalid] {
-    border-color: Highlight;
-  }
-
-  [data-scope][data-xh-field-chrome][data-disabled] {
-    color: GrayText;
-    border-color: GrayText;
-  }
-
-  [data-xh-field-input]::placeholder {
-    color: GrayText;
-  }
-
-  [data-xh-field-input]:autofill {
-    box-shadow: inset 0 0 0 100vmax Canvas;
-    -webkit-text-fill-color: CanvasText;
-  }
-
-  [data-xh-field-input]:-webkit-autofill {
-    box-shadow: inset 0 0 0 100vmax Canvas;
-    -webkit-text-fill-color: CanvasText;
-  }
-}
-
-/* family/collection-item.css */
-/* AUTO-GENERATED by build/collection-item-recipe.mjs — do not edit. */
-
-[data-scope][data-xh-collection-item] {
-  --xh-_collection-block-padding: var(--xh-list-option-py-md);
-  --xh-_collection-inline-padding: var(--xh-control-px-md);
-  --xh-_collection-gap: var(--xh-control-gap-md);
-  --xh-_collection-font-size: var(--xh-control-font-md);
-  --xh-_collection-glyph-size: var(--xh-glyph-size-md);
-  --xh-_collection-bg: var(--xh-collection-bg-rest, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-rest, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-rest, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-rest, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-rest, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-rest, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-rest, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-rest, 1);
-
-  --xh-icon-size: var(--xh-collection-glyph-size, var(--xh-_collection-glyph-size));
-
-  display: grid;
-  grid-template-columns:
-    [prefix] max-content
-    [text] minmax(0, 1fr)
-    [shortcut] max-content
-    [suffix] max-content
-    [indicator] max-content;
-  /* 第 2 行是说明行。各皮肤为了省略号给 text 槽写了 overflow: hidden，它因此成为滚动容器、自动最小尺寸
-     归 0；轨道尺寸算法里第 1 行的 base size 只有 0，处理跨两行的 prefix / indicator 等图标时会把图标高度
-     平均分给两行，没有说明的条目也长出半个图标高的第 2 行，图标随之整体下沉。minmax(0, max-content)
-     把第 2 行的最小尺寸钉在 0，它不再参与跨行项的最小高度分配，只在真有说明时按说明长；上限取 max-content
-     而不是 auto，皮肤给条目定死 block-size 时多余空间也不会被说明行分走。 */
-  grid-template-rows: auto minmax(0, max-content);
-  align-items: center;
-  min-inline-size: 0;
-  padding-block: var(--xh-collection-block-padding, var(--xh-_collection-block-padding));
-  padding-inline: var(--xh-collection-inline-padding, var(--xh-_collection-inline-padding));
-  border-radius: var(--xh-collection-radius, var(--xh-shape-control));
-  outline: var(--xh-ring-width) solid var(--xh-_collection-outline);
-  outline-offset: calc(-1 * var(--xh-ring-width));
-  background-color: var(--xh-_collection-bg);
-  color: var(--xh-_collection-fg);
-  font-size: var(--xh-collection-font-size, var(--xh-_collection-font-size));
-  font-weight: var(--xh-_collection-font-weight);
-  line-height: var(--xh-leading-normal);
-  cursor: var(--xh-_collection-cursor);
-  opacity: var(--xh-_collection-opacity);
-  transition:
-    background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-size='sm'] {
-  --xh-_collection-block-padding: var(--xh-list-option-py-sm);
-  --xh-_collection-inline-padding: var(--xh-control-px-sm);
-  --xh-_collection-gap: var(--xh-control-gap-sm);
-  --xh-_collection-font-size: var(--xh-control-font-sm);
-  --xh-_collection-glyph-size: var(--xh-glyph-size-sm);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-size='md'] {
-  --xh-_collection-block-padding: var(--xh-list-option-py-md);
-  --xh-_collection-inline-padding: var(--xh-control-px-md);
-  --xh-_collection-gap: var(--xh-control-gap-md);
-  --xh-_collection-font-size: var(--xh-control-font-md);
-  --xh-_collection-glyph-size: var(--xh-glyph-size-md);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-size='lg'] {
-  --xh-_collection-block-padding: var(--xh-list-option-py-lg);
-  --xh-_collection-inline-padding: var(--xh-control-px-lg);
-  --xh-_collection-gap: var(--xh-control-gap-lg);
-  --xh-_collection-font-size: var(--xh-control-font-lg);
-  --xh-_collection-glyph-size: var(--xh-glyph-size-lg);
-}
-
-[data-xh-collection-slot='prefix'] {
-  grid-column: prefix;
-  grid-row: 1 / span 2;
-  margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
-}
-
-[data-xh-collection-slot='text'] {
-  grid-column: text;
-  grid-row: 1;
-  min-inline-size: 0;
-}
-
-[data-xh-collection-slot='description'] {
-  grid-column: text;
-  grid-row: 2;
-  min-inline-size: 0;
-  color: var(--xh-_collection-description-fg);
-  font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
-}
-
-[data-xh-collection-slot='shortcut'] {
-  grid-column: shortcut;
-}
-
-[data-xh-collection-slot='suffix'] {
-  grid-column: suffix;
-}
-
-[data-xh-collection-slot='indicator'] {
-  grid-column: indicator;
-  color: var(--xh-_collection-indicator-fg);
-  visibility: hidden;
-}
-
-[data-xh-collection-slot='shortcut'],
-[data-xh-collection-slot='suffix'],
-[data-xh-collection-slot='indicator'] {
-  grid-row: 1 / span 2;
-  margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
-}
-
-/* page 上下文：对号是前导标记（leading），指示条（bar）挂在起始侧。 */
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'] {
-  position: relative;
-  grid-template-columns:
-    [indicator] max-content
-    [prefix] max-content
-    [text] minmax(0, 1fr)
-    [shortcut] max-content
-    [suffix] max-content;
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
-  margin-inline-start: 0;
-  margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
-}
-
-[data-scope][data-xh-collection-item][data-in-path] {
-  --xh-_collection-bg: var(--xh-collection-bg-open-path, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-open-path, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-open-path, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-open-path, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-open-path, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-open-path, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-open-path, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-open-path, 1);
-}
-
-[data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-  --xh-_collection-bg: var(--xh-collection-bg-hover, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-hover, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-hover, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-hover, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-hover, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-hover, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-hover, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-hover, 1);
-}
-
-[data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-  --xh-_collection-bg: var(--xh-collection-bg-keyboard-highlight, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-keyboard-highlight, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-keyboard-highlight, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-keyboard-highlight, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-keyboard-highlight, var(--xh-ring-focus));
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-keyboard-highlight, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-keyboard-highlight, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-keyboard-highlight, 1);
-}
-
-/* 按下段：pressed 面与按下时长、曲线一起给出；排在 hover 与高亮之后，同特指度才不会被它们盖掉。 */
-[data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-  --xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-pressed, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-pressed, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-pressed, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-pressed, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-pressed, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-pressed, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-pressed, 1);
-
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-  --xh-_collection-bg: var(--xh-collection-bg-selected, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-  --xh-_collection-bg: var(--xh-collection-bg-selected-hover, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-selected-hover, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-hover, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-hover, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-selected-hover, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected-hover, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected-hover, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-  --xh-_collection-bg: var(--xh-collection-bg-selected-highlight, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-selected-highlight, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-highlight, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-highlight, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-selected-highlight, var(--xh-ring-focus));
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-highlight, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected-highlight, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-  --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-pressed, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-selected-pressed, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected-pressed, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected-pressed, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-  --xh-_collection-bg: var(--xh-collection-bg-selected, var(--xh-bg-brand-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-  --xh-_collection-bg: var(--xh-collection-bg-selected-hover, var(--xh-bg-brand-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-selected-hover, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-hover, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-hover, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-selected-hover, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected-hover, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected-hover, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-  --xh-_collection-bg: var(--xh-collection-bg-selected-highlight, var(--xh-bg-brand-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-selected-highlight, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-highlight, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-highlight, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-selected-highlight, var(--xh-ring-focus));
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-highlight, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected-highlight, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-  --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-brand-subtle-active));
-  --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-pressed, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-selected-pressed, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected-pressed, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected-pressed, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-  --xh-_collection-bg: var(--xh-collection-bg-current, var(--xh-bg-brand-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-current, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-current, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-  --xh-_collection-bg: var(--xh-collection-bg-current-hover, var(--xh-bg-brand-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-current-hover, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-hover, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-hover, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-current-hover, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-hover, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current-hover, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current-hover, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-  --xh-_collection-bg: var(--xh-collection-bg-current-highlight, var(--xh-bg-brand-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-current-highlight, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-highlight, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-highlight, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-current-highlight, var(--xh-ring-focus));
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-highlight, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current-highlight, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current-highlight, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-  --xh-_collection-bg: var(--xh-collection-bg-current-pressed, var(--xh-bg-brand-subtle-active));
-  --xh-_collection-fg: var(--xh-collection-fg-current-pressed, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-pressed, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-pressed, var(--xh-fg-on-brand-subtle));
-  --xh-_collection-outline: var(--xh-collection-outline-current-pressed, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-pressed, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current-pressed, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current-pressed, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav'] {
-  --xh-_collection-bg: var(--xh-collection-bg-rest, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-rest, var(--xh-fg-muted));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-rest, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-rest, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-rest, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-rest, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-rest, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-rest, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-  --xh-_collection-bg: var(--xh-collection-bg-hover, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-hover, var(--xh-fg-default));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-hover, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-hover, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-hover, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-hover, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-hover, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-hover, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-  --xh-_collection-bg: var(--xh-collection-bg-keyboard-highlight, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-keyboard-highlight, var(--xh-fg-default));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-keyboard-highlight, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-keyboard-highlight, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-keyboard-highlight, var(--xh-ring-focus));
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-keyboard-highlight, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-keyboard-highlight, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-keyboard-highlight, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-  --xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-pressed, var(--xh-fg-default));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-pressed, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-pressed, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-pressed, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-pressed, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-pressed, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-pressed, 1);
-
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-in-path] {
-  --xh-_collection-bg: var(--xh-collection-bg-open-path, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-open-path, var(--xh-fg-default));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-open-path, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-open-path, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-open-path, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-open-path, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-open-path, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-open-path, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-  --xh-_collection-bg: var(--xh-collection-bg-current, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-current, var(--xh-fg-brand-strong));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-current, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current, var(--xh-font-weight-medium));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-  --xh-_collection-bg: var(--xh-collection-bg-current-hover, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-current-hover, var(--xh-fg-brand-strong));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-hover, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-hover, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-current-hover, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-hover, var(--xh-font-weight-medium));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current-hover, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current-hover, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-  --xh-_collection-bg: var(--xh-collection-bg-current-highlight, var(--xh-bg-subtle));
-  --xh-_collection-fg: var(--xh-collection-fg-current-highlight, var(--xh-fg-brand-strong));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-highlight, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-highlight, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-current-highlight, var(--xh-ring-focus));
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-highlight, var(--xh-font-weight-medium));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current-highlight, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current-highlight, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-  --xh-_collection-bg: var(--xh-collection-bg-current-pressed, var(--xh-bg-subtle-hover));
-  --xh-_collection-fg: var(--xh-collection-fg-current-pressed, var(--xh-fg-brand-strong));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-pressed, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-pressed, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-current-pressed, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-pressed, var(--xh-font-weight-medium));
-  --xh-_collection-cursor: var(--xh-collection-cursor-current-pressed, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-current-pressed, 1);
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current][data-xh-collection-terminal] {
-  --xh-_collection-bg: var(--xh-collection-bg-terminal, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-terminal, var(--xh-fg-default));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-terminal, var(--xh-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-terminal, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-terminal, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-terminal, var(--xh-font-weight-medium));
-  --xh-_collection-cursor: var(--xh-collection-cursor-terminal, default);
-  --xh-_collection-opacity: var(--xh-collection-opacity-terminal, 1);
-
-  cursor: var(--xh-_collection-cursor);
-}
-
-[data-scope][data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
-  visibility: visible;
-}
-
-[data-scope][data-xh-collection-item][data-state='checked'] {
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-checked, var(--xh-fg-brand));
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]::before {
-  content: '';
-  position: absolute;
-  inset-block: var(--xh-space-1);
-  inset-inline-start: 0;
-  inline-size: var(--xh-stroke-thick);
-  border-radius: var(--xh-shape-pill);
-  background-color: var(--xh-_collection-indicator-fg);
-  pointer-events: none;
-}
-
-[data-scope][data-xh-collection-item][aria-disabled='true'] {
-  --xh-_collection-bg: var(--xh-collection-bg-disabled, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-disabled, var(--xh-fg-disabled));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-disabled, var(--xh-fg-disabled));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-disabled, var(--xh-fg-disabled));
-  --xh-_collection-outline: var(--xh-collection-outline-disabled, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-disabled, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-disabled, not-allowed);
-  --xh-_collection-opacity: var(--xh-collection-opacity-disabled, 1);
-}
-
-[data-scope][data-xh-collection-item][aria-busy='true'] {
-  --xh-_collection-bg: var(--xh-collection-bg-loading, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-loading, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-loading, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-loading, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-loading, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-loading, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-loading, progress);
-  --xh-_collection-opacity: var(--xh-collection-opacity-loading, 1);
-}
-
-[data-scope][data-xh-collection-item][data-error] {
-  --xh-_collection-bg: var(--xh-collection-bg-error, color-mix(in oklab, var(--xh-fg-danger) 10%, transparent));
-  --xh-_collection-fg: var(--xh-collection-fg-error, var(--xh-fg-danger));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-error, var(--xh-fg-danger));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-error, var(--xh-fg-danger));
-  --xh-_collection-outline: var(--xh-collection-outline-error, var(--xh-fg-danger));
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-error, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-error, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-error, 1);
-}
-
-[data-scope][data-xh-collection-separator] {
-  block-size: var(--xh-stroke-thin);
-  margin-block: var(--xh-collection-separator-block-margin, var(--xh-space-1));
-  margin-inline: var(--xh-collection-separator-inline-margin, var(--xh-control-px-md));
-  border: 0;
-  background-color: var(--xh-collection-separator-color, var(--xh-material-frosted-separator));
-}
-
-[data-scope][data-xh-collection-item][hidden],
-[data-scope][data-xh-collection-separator][hidden] {
-  display: none;
-}
-
-:where([data-motion='reduce']) [data-scope][data-xh-collection-item] {
-  transition: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-scope][data-xh-collection-item] {
-    transition: none;
-  }
-}
-
-@media (forced-colors: active) {
-  [data-scope][data-xh-collection-item] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: ButtonText;
-  }
-
-  [data-scope][data-xh-collection-item][data-in-path] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: HighlightText;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: HighlightText;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: ButtonText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-in-path] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: ButtonText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
-    --xh-_collection-bg: Highlight;
-    --xh-_collection-fg: HighlightText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: HighlightText;
-  }
-
-  [data-scope][data-xh-collection-item][data-xh-collection-context='nav'][data-current][data-xh-collection-terminal] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: ButtonText;
-  }
-
-  [data-scope][data-xh-collection-item][data-state='checked'] {
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item][aria-disabled='true'] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: GrayText;
-    --xh-_collection-outline: transparent;
-    --xh-_collection-indicator-fg: GrayText;
-  }
-
-  [data-scope][data-xh-collection-item][aria-busy='true'] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-item][data-error] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: Highlight;
-    --xh-_collection-indicator-fg: Highlight;
-  }
-
-  [data-scope][data-xh-collection-separator] {
-    background-color: CanvasText;
-  }
-}
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='mention'] {
@@ -8773,10 +8811,6 @@
 /* styles/password-input.css */
 /* PasswordInput 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='password-input'] {
   --xh-password-input-skin: 1;
@@ -9129,10 +9163,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* family/motion.css */
-
-/* family/action-control.css */
-
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-popconfirm-rotate {
   to {
@@ -9448,10 +9478,6 @@
 
 /* styles/prompt-input.css */
 /* PromptInput 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
-
-/* family/field-chrome.css */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='prompt-input'] {
@@ -9785,10 +9811,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
    独立皮肤同时传递引入开关的动作控件配方，full bundle 递归去重。 */
-
-/* family/motion.css */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='reasoning'] {
@@ -10620,8 +10642,6 @@
 
 /* styles/signature-pad.css */
 /* 定义 signature pad 样式。 */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='signature-pad'] {
@@ -11578,8 +11598,6 @@
 
 /* Timer 独立皮肤同时传递引入起停钮的动作控件配方；full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='timer'] {
   --xh-timer-skin: 1;
@@ -12414,8 +12432,6 @@
 
 /* Alert 独立皮肤同时传递引入关闭钮的动作控件配方；full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='alert'] {
   --xh-alert-skin: 1;
@@ -12598,8 +12614,6 @@
 /* 定义 empty state 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='empty-state'] {
@@ -13113,10 +13127,6 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
    独立皮肤同时传递引入标题栏的动作控件配方，full bundle 递归去重。 */
 
-/* family/motion.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='accordion'] {
   --xh-accordion-skin: 1;
@@ -13351,8 +13361,6 @@
 /* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
    本皮肤只映射桥接槽；指示条仍是 list 上的滑动 indicator 部件 */
 
-/* family/collection-item.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='anchor'] {
   --xh-anchor-skin: 1;
@@ -13511,8 +13519,6 @@
 /* 定义 approval 样式。 */
 
 /* 独立皮肤同时传递引入授权行与两颗钮的动作控件配方，full bundle 递归去重。 */
-
-/* family/action-control.css */
 
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
@@ -13967,8 +13973,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='avatar'] {
   --xh-avatar-skin: 1;
@@ -14259,8 +14263,6 @@
 /* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
    本皮肤只映射桥接槽；当前页由连接层投影 data-xh-collection-terminal，走家族的 terminal 态 */
 
-/* family/collection-item.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='breadcrumb'] {
   --xh-breadcrumb-skin: 1;
@@ -14423,8 +14425,6 @@
 /* styles/button.css */
 /* 独立 Button 皮肤与 full bundle 都从同一份 Family Recipe 取得布局、状态和命中区。 */
 
-/* family/action-control.css */
-
 /* 独立皮肤可单独引入，spinner 动画名不能依赖别的组件文件。 */
 @keyframes xh-spin {
   to {
@@ -14583,8 +14583,6 @@
 
 /* styles/calendar-picker.css */
 /* 定义 calendar picker 样式。 */
-
-/* family/action-control.css */
 
 /* css/scrollbar.css */
 /* 定义 scrollbar 样式。 */
@@ -15224,10 +15222,6 @@
 /* styles/calendar-range-picker.css */
 /* 定义 calendar range picker 样式。 */
 
-/* family/action-control.css */
-
-/* css/scrollbar.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='calendar-range-picker'] {
   --xh-calendar-range-picker-skin: 1;
@@ -15838,8 +15832,6 @@
 /* styles/carousel.css */
 /* 定义 carousel 样式。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='carousel'] {
   --xh-carousel-skin: 1;
@@ -16389,15 +16381,7 @@
 /* styles/cascader.css */
 /* Cascader 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='cascader'] {
@@ -17220,8 +17204,6 @@
 /* styles/checkbox.css */
 /* 定义 checkbox 样式。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='checkbox'] {
   --xh-checkbox-skin: 1;
@@ -17494,8 +17476,6 @@
 
 /* styles/checkbox-group.css */
 /* 定义 checkbox group 样式。 */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='checkbox-group'] {
@@ -17878,8 +17858,6 @@
 /* styles/clipboard.css */
 /* 定义 clipboard 样式。 */
 
-/* family/action-control.css */
-
 @keyframes xh-clipboard-rotate {
   to {
     rotate: 360deg;
@@ -18223,8 +18201,6 @@
 
 /* 独立皮肤同时传递引入折叠条的动作控件配方；full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='code-view'] {
   --xh-code-view-skin: 1;
@@ -18499,10 +18475,6 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
    独立皮肤同时传递引入触发器的动作控件配方，full bundle 递归去重。 */
 
-/* family/motion.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='collapsible'] {
   --xh-collapsible-skin: 1;
@@ -18650,65 +18622,6 @@
 /* styles/color-field.css */
 /* TextField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/swatch.css */
-/* AUTO-GENERATED by build/swatch-recipe.mjs — do not edit. */
-
-[data-scope][data-xh-swatch] {
-  --xh-_swatch-size: var(--xh-glyph-size-md);
-  --xh-_swatch-checker-tile: var(--xh-space-1);
-  --xh-_swatch-color: transparent;
-
-  display: inline-block;
-  flex: none;
-  box-sizing: border-box;
-  inline-size: var(--xh-swatch-size, var(--xh-_swatch-size));
-  block-size: var(--xh-swatch-size, var(--xh-_swatch-size));
-  border: var(--xh-stroke-thin) solid var(--xh-swatch-border, var(--xh-border-default));
-  border-radius: var(--xh-swatch-radius, var(--xh-shape-inset));
-  background-color: var(--xh-swatch-checker-base, var(--xh-bg-surface));
-  background-image:
-    linear-gradient(var(--xh-_swatch-color), var(--xh-_swatch-color)),
-    linear-gradient(45deg, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 75%);
-  background-position:
-    0 0,
-    0 0,
-    0 var(--xh-_swatch-checker-tile),
-    var(--xh-_swatch-checker-tile) calc(-1 * var(--xh-_swatch-checker-tile)),
-    calc(-1 * var(--xh-_swatch-checker-tile)) 0;
-  background-size:
-    100% 100%,
-    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2),
-    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2),
-    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2),
-    calc(var(--xh-_swatch-checker-tile) * 2) calc(var(--xh-_swatch-checker-tile) * 2);
-  background-clip: padding-box;
-  print-color-adjust: exact;
-}
-
-[data-scope][data-xh-swatch][data-xh-swatch-size='sm'] {
-  --xh-_swatch-size: var(--xh-glyph-size-sm);
-  --xh-_swatch-checker-tile: var(--xh-space-1);
-}
-
-[data-scope][data-xh-swatch][data-xh-swatch-size='lg'] {
-  --xh-_swatch-size: var(--xh-glyph-size-lg);
-  --xh-_swatch-checker-tile: var(--xh-space-1_5);
-}
-
-@media (forced-colors: active) {
-  [data-scope][data-xh-swatch] {
-    forced-color-adjust: none;
-    border-color: CanvasText;
-  }
-}
-
 [data-scope='color-field'] {
   --xh-color-field-skin: 1;
 }
@@ -18854,10 +18767,6 @@
 
 /* styles/color-picker.css */
 /* 定义 color picker 样式。 */
-
-/* family/swatch.css */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='color-picker'] {
@@ -19635,8 +19544,6 @@
 /* styles/color-swatch.css */
 /* 定义 color swatch 样式。 */
 
-/* family/swatch.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='color-swatch'] {
   --xh-color-swatch-skin: 1;
@@ -19664,8 +19571,6 @@
 
 /* styles/color-swatch-picker.css */
 /* 定义 color swatch picker 样式。 */
-
-/* family/swatch.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='color-swatch-picker'] {
@@ -19903,15 +19808,7 @@
 /* styles/combobox.css */
 /* Combobox 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='combobox'] {
@@ -20415,10 +20312,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，命令走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 
-/* family/collection-item.css */
-
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='command'] {
   --xh-command-skin: 1;
@@ -20811,10 +20704,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，条目走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 
-/* family/collection-item.css */
-
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='context-menu'] {
   --xh-context-menu-skin: 1;
@@ -21198,10 +21087,6 @@
 /* styles/date-field.css */
 /* DateField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='date-field'] {
   --xh-date-field-skin: 1;
@@ -21448,17 +21333,7 @@
 /* styles/date-picker.css */
 /* DatePicker 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
-/* css/scrollbar.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='date-picker'] {
@@ -22201,17 +22076,7 @@
 /* styles/date-range-picker.css */
 /* DateRangePicker 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
-/* css/scrollbar.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='date-range-picker'] {
@@ -22755,10 +22620,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* family/motion.css */
-
-/* family/action-control.css */
-
 /* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
    两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
 @keyframes xh-dialog-in {
@@ -23148,10 +23009,6 @@
 /* 定义 drawer 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
-
-/* family/action-control.css */
 
 /* 四条边各一对滑入/滑出。位移量用 translate 的百分比，参照的是面板自己的边框盒，
    所以不管 --xh-drawer-size 被改成多少，"正好推到视口外"这件事都成立。
@@ -23659,10 +23516,6 @@
 /* styles/editable.css */
 /* Editable 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='editable'] {
   --xh-editable-skin: 1;
@@ -23930,8 +23783,6 @@
 /* 定义 field 样式。 */
 
 /* Field 独立皮肤同时传递引入字段视觉盒；full bundle 递归去重。 */
-
-/* family/field-chrome.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='field'] {
@@ -24520,8 +24371,6 @@
 
 /* Form 独立皮肤同时传递引入提交 / 重置钮的动作控件配方；full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='form'] {
   --xh-form-skin: 1;
@@ -24869,8 +24718,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='hover-card'] {
   --xh-hover-card-skin: 1;
@@ -25196,8 +25043,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='image'] {
   --xh-image-skin: 1;
@@ -25269,11 +25114,7 @@
 /* styles/image-viewer.css */
 /* 定义 image viewer 样式。 */
 
-/* family/action-control.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='image-viewer'] {
@@ -25659,10 +25500,6 @@
 
 /* styles/listbox.css */
 /* 定义 listbox 样式。 */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='listbox'] {
@@ -26114,10 +25951,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，条目走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 
-/* family/collection-item.css */
-
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='menu'] {
   --xh-menu-skin: 1;
@@ -26454,10 +26287,6 @@
 /* 定义 menubar 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，条目走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
-
-/* family/collection-item.css */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='menubar'] {
@@ -26881,8 +26710,6 @@
 
 /* 独立皮肤同时传递引入回底钮的动作控件配方，full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
    引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
    幅度与缩放走令牌，减弱动效时由令牌层归零 */
@@ -27071,10 +26898,6 @@
 /* 定义 navigation menu 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，入口与面板里的链接都走 Collection Item 家族的 nav 语境；本皮肤 @import 它们，单独引入仍成立。 */
-
-/* family/collection-item.css */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='navigation-menu'] {
@@ -27382,8 +27205,6 @@
 /* 定义 notification 样式。 */
 
 /* Notification 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
-
-/* family/action-control.css */
 
 /*
  * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
@@ -27830,10 +27651,6 @@
 /* styles/number-field.css */
 /* NumberField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='number-field'] {
   --xh-number-field-skin: 1;
@@ -28056,10 +27873,6 @@
 /* 定义 pagination 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；四类格子接 Action Control 配方，同理 */
-
-/* family/motion.css */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='pagination'] {
@@ -28402,8 +28215,6 @@
 /* styles/pin-input.css */
 /* PinInput 独立皮肤传递引入字段视觉盒：每一格 input 自身就是 Field Chrome 的 chrome 节点；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='pin-input'] {
   --xh-pin-input-skin: 1;
@@ -28598,10 +28409,6 @@
 /* 定义 popover 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='popover'] {
@@ -29036,10 +28843,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
    独立皮肤同时传递引入选项行与四颗钮的动作控件配方，full bundle 递归去重。 */
-
-/* family/motion.css */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='question-flow'] {
@@ -29542,8 +29345,6 @@
 /* styles/radio-group.css */
 /* 定义 radio group 样式。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='radio-group'] {
   --xh-radio-group-skin: 1;
@@ -29776,8 +29577,6 @@
 
 /* styles/rating.css */
 /* 定义 rating 样式。 */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='rating'] {
@@ -30272,14 +30071,6 @@
 
 /* styles/select.css */
 /* Select 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
-
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='select'] {
@@ -30976,10 +30767,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，行走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 
-/* family/collection-item.css */
-
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='side-nav'] {
   --xh-side-nav-skin: 1;
@@ -31636,8 +31423,6 @@
 
 /* Sortable 独立皮肤同时传递引入把手的动作控件配方；full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='sortable'] {
   --xh-sortable-skin: 1;
@@ -31945,8 +31730,6 @@
 
 /* styles/steps.css */
 /* 定义 steps 样式。 */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='steps'] {
@@ -32342,8 +32125,6 @@
 /* styles/switch.css */
 /* 定义 switch 样式。 */
 
-/* family/action-control.css */
-
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-switch-rotate {
   to {
@@ -32706,10 +32487,6 @@
 
 /* styles/table.css */
 /* 定义 table 样式。 */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
 
 /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
 /* 一次呼吸自带来回：起止两端与中点各写一帧，声明的周期就是一次完整的明暗往返 */
@@ -33732,8 +33509,6 @@
 /* line 档的页签归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按
    家族角色（data-xh-collection-item / -size / -context）给，本皮肤只映射桥接槽；card / segment 档不归族，面与字仍写在本皮肤 */
 
-/* family/collection-item.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tabs'] {
   --xh-tabs-skin: 1;
@@ -34418,10 +34193,6 @@
 /* styles/tags-input.css */
 /* TagsInput 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tags-input'] {
   --xh-tags-input-skin: 1;
@@ -34695,10 +34466,6 @@
 /* styles/text-field.css */
 /* TextField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
 [data-scope='text-field'] {
   --xh-text-field-skin: 1;
 }
@@ -34866,10 +34633,6 @@
 
 /* styles/time-field.css */
 /* TimeField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
-
-/* family/field-chrome.css */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='time-field'] {
@@ -35120,17 +34883,7 @@
 /* styles/time-picker.css */
 /* TimePicker 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
-/* css/scrollbar.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='time-picker'] {
@@ -35738,17 +35491,7 @@
 /* styles/time-range-picker.css */
 /* TimeRangePicker 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
-/* css/scrollbar.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='time-range-picker'] {
@@ -36454,8 +36197,6 @@
 
 /* Toast 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 新条目从视口边缘外进入，同时落到自己的折叠层级。 */
 @keyframes xh-toast-in {
   from {
@@ -36945,8 +36686,6 @@
 /* styles/toggle.css */
 /* 定义 toggle 样式。 */
 
-/* family/action-control.css */
-
 [data-scope='toggle'] {
   --xh-toggle-skin: 1;
 }
@@ -37084,8 +36823,6 @@
 
 /* styles/toggle-group.css */
 /* 定义 toggle group 样式。 */
-
-/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='toggle-group'] {
@@ -37507,10 +37244,6 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
    独立皮肤同时传递引入开关的动作控件配方，full bundle 递归去重。 */
 
-/* family/motion.css */
-
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tool-call'] {
   --xh-tool-call-skin: 1;
@@ -37922,8 +37655,6 @@
 
 /* 独立皮肤传递引入条目的动作控件配方，full bundle 递归去重。 */
 
-/* family/action-control.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='toolbar'] {
   --xh-toolbar-skin: 1;
@@ -38185,8 +37916,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* family/motion.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tooltip'] {
   --xh-tooltip-skin: 1;
@@ -38387,10 +38116,6 @@
 /* 定义 tour 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
-
-/* family/action-control.css */
 
 /* 高亮框落定时那一下呼吸：换步时视线要跟着它走，纯位移太容易被漏看 */
 @keyframes xh-tour-spotlight-in {
@@ -38842,10 +38567,6 @@
 
 /* styles/transfer.css */
 /* 定义 transfer 样式。 */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='transfer'] {
@@ -39454,8 +39175,6 @@
 /* styles/tree.css */
 /* 定义 tree 样式。 */
 
-/* family/collection-item.css */
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tree'] {
   --xh-tree-skin: 1;
@@ -40009,15 +39728,7 @@
 /* styles/tree-select.css */
 /* TreeSelect 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 
-/* family/field-chrome.css */
-
-/* family/action-control.css */
-
-/* family/collection-item.css */
-
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tree-select'] {
