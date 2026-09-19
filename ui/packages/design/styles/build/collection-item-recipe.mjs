@@ -280,7 +280,12 @@ ${rest}
       [shortcut] max-content
       [suffix] max-content
       [indicator] max-content;
-    grid-template-rows: auto auto;
+    /* 第 2 行是说明行。各皮肤为了省略号给 text 槽写了 overflow: hidden，它因此成为滚动容器、自动最小尺寸
+       归 0；轨道尺寸算法里第 1 行的 base size 只有 0，处理跨两行的 prefix / indicator 等图标时会把图标高度
+       平均分给两行，没有说明的条目也长出半个图标高的第 2 行，图标随之整体下沉。minmax(0, max-content)
+       把第 2 行的最小尺寸钉在 0，它不再参与跨行项的最小高度分配，只在真有说明时按说明长；上限取 max-content
+       而不是 auto，皮肤给条目定死 block-size 时多余空间也不会被说明行分走。 */
+    grid-template-rows: auto minmax(0, max-content);
     align-items: center;
     min-inline-size: 0;
     padding-block: var(--xh-collection-block-padding, var(--xh-_collection-block-padding));
