@@ -10,4 +10,4 @@ export { connectStaticTag, connectTag, tagVariantForControl } from './tag.connec
 export { tagKeyboard } from './tag.keyboard'
 export { tagMachine } from './tag.machine'
 export { tagMeta } from './tag.meta'
-export type { TagApi, TagOpenChangeDetails, TagSchema, TagTranslations, TagVariant } from './tag.types'
+export type { TagApi, TagOpenChangeDetails, TagPressedPart, TagPressPort, TagSchema, TagTranslations, TagVariant } from './tag.types'

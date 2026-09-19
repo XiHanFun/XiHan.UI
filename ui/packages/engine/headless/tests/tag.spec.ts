@@ -231,3 +231,157 @@ describe('tagVariantForControl 控件面到标签形态', () => {
     expect(tagVariantForControl(undefined)).toBe('subtle')
   })
 })
+
+describe('按压通道', () => {
+  type Handlers = Record<string, unknown> & {
+    onKeyDown: (e: KeyboardEvent) => void
+    onKeyUp: (e: KeyboardEvent) => void
+    onBlur: () => void
+    onPointerDown: (e: PointerEvent) => void
+    onPointerUp: () => void
+    onPointerCancel: () => void
+  }
+  /** 键盘桩：只带跟踪器会读的三个字段（node 环境里没有 KeyboardEvent）。 */
+  const key = (name: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent =>
+    ({ key: name, repeat: false, isComposing: false, keyCode: 0, ...init } as KeyboardEvent)
+  const touch = { pointerType: 'touch' } as PointerEvent
+  const mouse = { pointerType: 'mouse' } as PointerEvent
+  const closeOf = (t: ReturnType<typeof makeTag>): Handlers => t.api().getCloseTriggerProps() as Handlers
+  const rootOf = (t: ReturnType<typeof makeTag>): Handlers => t.api().getRootProps() as Handlers
+
+  it('关闭钮：Space / Enter 按住投影 data-pressed，长按重复键不重报，抬起撤下；root 不跟着亮', () => {
+    const t = makeTag({ closable: true })
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+    closeOf(t).onKeyDown(key(' '))
+    expect(closeOf(t)['data-pressed']).toBe('')
+    expect(rootOf(t)['data-pressed']).toBeUndefined()
+    closeOf(t).onKeyDown(key(' ', { repeat: true }))
+    expect(closeOf(t)['data-pressed']).toBe('')
+    closeOf(t).onKeyUp(key(' '))
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+    closeOf(t).onKeyDown(key('Enter'))
+    expect(closeOf(t)['data-pressed']).toBe('')
+    // 另一个部件的抬起不串：root 的 keyup 松不开关闭钮
+    rootOf(t).onKeyUp(key('Enter'))
+    expect(closeOf(t)['data-pressed']).toBe('')
+    closeOf(t).onBlur()
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+    // 别的键不算按压
+    closeOf(t).onKeyDown(key('a'))
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+    expect(t.state()).toBe('open')
+  })
+
+  it('触屏按下进按压面，抬起或取消撤下；鼠标按下不走这一路。root 同一条通道', () => {
+    const t = makeTag({ closable: true })
+    closeOf(t).onPointerDown(mouse)
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+    closeOf(t).onPointerDown(touch)
+    expect(closeOf(t)['data-pressed']).toBe('')
+    closeOf(t).onPointerCancel()
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+    closeOf(t).onPointerDown(touch)
+    closeOf(t).onPointerUp()
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+
+    rootOf(t).onPointerDown(touch)
+    expect(rootOf(t)['data-pressed']).toBe('')
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+    rootOf(t).onPointerUp()
+    expect(rootOf(t)['data-pressed']).toBeUndefined()
+
+    // 关闭钮嵌在本体里，按在钮上那一下会冒泡到本体：先到的（钮）算数，本体那一下不进；钮抬起后本体的抬起也不串
+    closeOf(t).onPointerDown(touch)
+    rootOf(t).onPointerDown(touch)
+    expect(closeOf(t)['data-pressed']).toBe('')
+    expect(rootOf(t)['data-pressed']).toBeUndefined()
+    rootOf(t).onPointerUp()
+    expect(closeOf(t)['data-pressed']).toBe('')
+    closeOf(t).onPointerUp()
+    expect(closeOf(t)['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用与只读谁都不进；不给关闭钮时关闭钮不进而 root 照常', () => {
+    const disabled = makeTag({ closable: true, disabled: true })
+    closeOf(disabled).onKeyDown(key('Enter'))
+    rootOf(disabled).onPointerDown(touch)
+    expect(closeOf(disabled)['data-pressed']).toBeUndefined()
+    expect(rootOf(disabled)['data-pressed']).toBeUndefined()
+
+    const readOnly = makeTag({ closable: true, readOnly: true })
+    closeOf(readOnly).onKeyDown(key('Enter'))
+    rootOf(readOnly).onPointerDown(touch)
+    expect(closeOf(readOnly)['data-pressed']).toBeUndefined()
+    expect(rootOf(readOnly)['data-pressed']).toBeUndefined()
+
+    const plain = makeTag()
+    closeOf(plain).onKeyDown(key('Enter'))
+    expect(closeOf(plain)['data-pressed']).toBeUndefined()
+    rootOf(plain).onPointerDown(touch)
+    expect(rootOf(plain)['data-pressed']).toBe('')
+  })
+
+  it('按住途中转入禁用 / 只读、收回关闭钮即松开；按住 Enter 关掉标签那一下也松开，受控回写同样', () => {
+    const disabled = makeTag({ closable: true })
+    closeOf(disabled).onKeyDown(key('Enter'))
+    disabled.setProps({ disabled: true })
+    expect(closeOf(disabled)['data-pressed']).toBeUndefined()
+
+    const readOnly = makeTag({ closable: true })
+    closeOf(readOnly).onKeyDown(key('Enter'))
+    readOnly.setProps({ readOnly: true })
+    expect(closeOf(readOnly)['data-pressed']).toBeUndefined()
+
+    const revoked = makeTag({ closable: true })
+    closeOf(revoked).onKeyDown(key('Enter'))
+    rootOf(revoked).onPointerDown(touch)
+    revoked.setProps({ closable: false })
+    expect(closeOf(revoked)['data-pressed']).toBeUndefined()
+    // 收回的是关闭钮，root 上按着的那一下留着
+    revoked.setProps({ closable: true })
+    rootOf(revoked).onPointerDown(touch)
+    expect(rootOf(revoked)['data-pressed']).toBe('')
+    revoked.setProps({ closable: false })
+    expect(rootOf(revoked)['data-pressed']).toBe('')
+
+    const closed = makeTag({ closable: true })
+    closeOf(closed).onKeyDown(key('Enter'))
+    expect(closeOf(closed)['data-pressed']).toBe('')
+    press(closed.api().getCloseTriggerProps())
+    expect(closed.state()).toBe('closed')
+    expect(closeOf(closed)['data-pressed']).toBeUndefined()
+
+    const controlled = makeTag({ closable: true, open: true })
+    closeOf(controlled).onKeyDown(key('Enter'))
+    press(controlled.api().getCloseTriggerProps())
+    // 受控：只发意图，标签还开着，按压面留着；宿主写回收起时才松开
+    expect(controlled.state()).toBe('open')
+    expect(closeOf(controlled)['data-pressed']).toBe('')
+    controlled.setProps({ open: false })
+    expect(controlled.state()).toBe('closed')
+    expect(closeOf(controlled)['data-pressed']).toBeUndefined()
+  })
+
+  it('静态标签：宿主没供给按压通道时两个部件都不投影也不带处理器；供给了就按宿主说的投影', () => {
+    const bare = connectStaticTag({ closable: true, open: true }, { get: () => true, set: () => {} }, normalizeProps)
+    expect(bare.getRootProps()['data-pressed']).toBeUndefined()
+    expect(bare.getCloseTriggerProps()['data-pressed']).toBeUndefined()
+    expect((bare.getCloseTriggerProps() as Handlers).onKeyDown).toBeUndefined()
+
+    const seen: string[] = []
+    const handlers = (part: string): Handlers => ({
+      onKeyDown: () => seen.push(`${part}:down`),
+      onKeyUp: () => seen.push(`${part}:up`),
+      onBlur: () => {},
+      onPointerDown: () => {},
+      onPointerUp: () => {},
+      onPointerCancel: () => {},
+    })
+    const hosted = connectStaticTag({ closable: true, open: true }, { get: () => true, set: () => {} }, normalizeProps, { pressed: 'root', handlers })
+    expect(hosted.getRootProps()['data-pressed']).toBe('')
+    expect(hosted.getCloseTriggerProps()['data-pressed']).toBeUndefined()
+    ;(hosted.getRootProps() as Handlers).onKeyDown(key(' '))
+    ;(hosted.getCloseTriggerProps() as Handlers).onKeyUp(key(' '))
+    expect(seen).toEqual(['root:down', 'close-trigger:up'])
+  })
+})

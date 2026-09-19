@@ -61714,8 +61714,9 @@
         "background"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "not(:disabled)",
+        "pressed"
       ],
       "defaultToken": [
         "color-mix(in oklab, currentColor 22%, transparent)"

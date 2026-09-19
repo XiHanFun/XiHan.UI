@@ -6319,6 +6319,8 @@
       "TagGroupTranslations",
       "TagGroupValueChangeDetails",
       "TagOpenChangeDetails",
+      "TagPressPort",
+      "TagPressedPart",
       "TagSchema",
       "TagTranslations",
       "TagVariant",

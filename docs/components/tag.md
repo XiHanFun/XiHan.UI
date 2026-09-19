@@ -150,9 +150,9 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSED`
+**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSED` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled`
+**判据**：`isOpenControlled` · `canPress`
 
 ### connect API
 
@@ -177,6 +177,7 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus 在 close-trigger 上，且 closable 且未禁用、非只读 | 收起标签并通知 open=false；关闭按钮是原生 button，这两个键由平台转换为 click |
+| `Enter` / `Space` | held in close-trigger, closable 且未禁用、非只读 | 按住期间关闭按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中转入禁用 / 只读、收回关闭按钮或标签收起也撤下。root 由把标签当条目用的宿主（tag-group）接同一条通道 |
 
 ### ARIA
 
@@ -199,11 +200,13 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-pressed` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -216,7 +219,7 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 | `--xh-tag-bg-disabled` | `root` | `background` | `disabled`<br>`tone` | `--xh-bg-muted` | tag 的 root 部件 background 覆盖槽。 |
 | `--xh-tag-border` | `root` | `border`<br>`border-color` | `default`<br>`tone`<br>`variant=outline`<br>`variant=subtle` | `--xh-_tone-border-control`<br>`--xh-border-default`<br>`--xh-material-soft-border` | tag 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-tag-border-disabled` | `root` | `border-color` | `disabled`<br>`tone` | `--xh-border-default` | tag 的 root 部件 border-color 覆盖槽。 |
-| `--xh-tag-close-bg-active` | `close-trigger` | `background` | `active`<br>`not(:disabled)` | `color-mix(in oklab, currentColor 22%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-tag-close-bg-active` | `close-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed` | `color-mix(in oklab, currentColor 22%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-tag-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `color-mix(in oklab, currentColor 14%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-tag-close-fg` | `close-trigger` | `color` | `default` | `currentColor` | tag 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-tag-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-inset` | tag 的 close-trigger 部件 border-radius 覆盖槽。 |

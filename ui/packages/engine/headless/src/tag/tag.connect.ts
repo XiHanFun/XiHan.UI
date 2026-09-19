@@ -6,8 +6,8 @@
 // 提供 tag 相关实现。
 
 import type { ControlVariant, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TagApi, TagSchema, TagVariant } from './tag.types'
-import { dataAttr } from '@xihan-ui/core'
+import type { TagApi, TagPressedPart, TagPressPort, TagSchema, TagVariant } from './tag.types'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { tagAnatomy } from './tag.anatomy'
 
 const parts = tagAnatomy.build()
@@ -30,9 +30,16 @@ interface TagOpenPort {
   set: (open: boolean) => void
 }
 
+/** 没有宿主供给按压通道的静态标签：两个部件都不投影、也不合成处理器。 */
+const NO_PRESS: TagPressPort = {
+  pressed: null,
+  handlers: () => ({}) as never,
+}
+
 function buildTagApi<T extends PropTypes>(
   prop: <K extends keyof TagProps>(key: K) => TagProps[K],
   port: TagOpenPort,
+  press: TagPressPort,
   normalize: NormalizeProps<T>,
 ): TagApi<T> {
   const open = port.get()
@@ -62,6 +69,9 @@ function buildTagApi<T extends PropTypes>(
       'data-state': open ? 'open' : 'closed',
       'data-disabled': dataAttr(disabled),
       'hidden': !open || undefined,
+      // 按压通道：把标签当可选条目用的宿主（tag-group）按住这一枚时投影；与选中、显隐都无关
+      'data-pressed': dataAttr(press.pressed === 'root'),
+      ...press.handlers('root'),
     }),
 
     // 标签文字所在的块，横向空间不够时由皮肤截断
@@ -80,6 +90,9 @@ function buildTagApi<T extends PropTypes>(
       // 不开放关闭时连按钮一起收起，不留一个按不动的叉；
       // 只是禁用（closable 仍为真）时按钮留在原地，标签的宽度不会因禁用而跳变
       'hidden': !closable || undefined,
+      // Space / Enter 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active
+      'data-pressed': dataAttr(press.pressed === 'close-trigger'),
+      ...press.handlers('close-trigger'),
       'onClick': () => {
         // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
         if (!canClose)
@@ -94,12 +107,20 @@ export function connectTag<T extends PropTypes>(
   service: Service<TagSchema>,
   normalize: NormalizeProps<T>,
 ): TagApi<T> {
-  const { state, prop, send } = service
+  const { state, prop, send, context } = service
   return buildTagApi(
     prop as never,
     {
       get: () => state.get() === 'open',
       set: next => send({ type: next ? 'OPEN' : 'CLOSE' }),
+    },
+    {
+      // 真源在机器 context，跟踪器只把键盘与粗指针的按住翻成事件
+      pressed: context.get('pressed'),
+      handlers: (part: TagPressedPart) => createPressTracker({
+        isPressed: () => context.get('pressed') === part,
+        onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),
+      }),
     },
     normalize,
   )
@@ -115,10 +136,15 @@ export function connectTag<T extends PropTypes>(
  * 受控（open 给定）时 `store` 只管发意图，展开态每次都从 prop 现读；
  * 非受控时 `store` 是宿主自己的一个格子。两种语义与机器路逐条一致。
  */
+/**
+ * 没有机器的静态标签：显隐由宿主的 store 给。press 是宿主替它供给的按压通道（tag-group 按条目记按住的那一枚），
+ * 未提供时两个部件都不接按压。
+ */
 export function connectStaticTag<T extends PropTypes>(
   props: TagProps,
   store: TagOpenPort,
   normalize: NormalizeProps<T>,
+  press: TagPressPort = NO_PRESS,
 ): TagApi<T> {
   const controlled = props.open !== undefined
   return buildTagApi(
@@ -132,6 +158,7 @@ export function connectStaticTag<T extends PropTypes>(
         props.onOpenChange?.({ open: next })
       },
     },
+    press,
     normalize,
   )
 }
