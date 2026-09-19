@@ -164,6 +164,12 @@ export interface FormErrorSummaryItemProps {
   name: FormPath
 }
 
+/**
+ * 接了按压通道的部件，按 key 记住正被按住的那一个：提交钮、重置钮各一，
+ * 错误摘要里的条目按它指向的字段路径键（formPathKey）区分。
+ */
+export type FormPressedKey = 'submit' | 'reset' | `error:${string}`
+
 // 适配器在挂载前填入根元素 getter；纯逻辑测试与 SSR 下保持缺省，
 // 此时 DOM 相关的动作（落焦、按文档序排序）一律短路，状态照常转移。
 export interface FormRefs {
@@ -240,6 +246,11 @@ export interface FormSchema extends MachineSchema {
     validating: boolean
     /** 最近一次有效校验的执行异常；新校验、变值或重置时清除。 */
     validationError: FormValidationErrorDetails | null
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个部件，该部件投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦、指针取消，或异步校验开始 / 按住的摘要条目所指字段改好了时即撤下。
+     */
+    pressed: FormPressedKey | null
   }
   computed: Record<string, never>
   refs: FormRefs
@@ -272,8 +283,15 @@ export interface FormSchema extends MachineSchema {
     | { type: 'ERRORS.CLEAR' }
     /** 把焦点送进某个字段（错误摘要中的链接点击时发出）。 */
     | { type: 'ERROR.FOCUS', name: FormPath }
+    /**
+     * 按压通道（shared/press）：某个部件被 Space / Enter 或触屏按住，key 说的是哪一个；
+     * disabled 是该部件当下按不动（重置钮只读、条目所指字段没有错误），由 connect 随事件带来。
+     */
+    | { type: 'PRESS.START', key: FormPressedKey, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只收自己那一下。 */
+    | { type: 'PRESS.END', key: FormPressedKey }
   tag: never
-  guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent'
+  guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent' | 'canPress'
   action:
     | 'setFieldValue'
     | 'mutateFieldArray'
@@ -291,6 +309,9 @@ export interface FormSchema extends MachineSchema {
     | 'discardValidation'
     | 'discardStaleValidation'
     | 'syncRules'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 

@@ -164,9 +164,9 @@
 
 **状态**：`idle` · `invalid`
 
-**事件**：`SUBMIT` · `RESET` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.ARRAY.MUTATE` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS`
+**事件**：`SUBMIT` · `RESET` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.ARRAY.MUTATE` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isEnabled` · `isEditable` · `isValidationSnapshotCurrent`
+**判据**：`isEnabled` · `isEditable` · `isValidationSnapshotCurrent` · `canPress`
 
 ### connect API
 
@@ -209,7 +209,9 @@
 
 规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission)
 
-无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Enter` / `Space` | held on submit-trigger / reset-trigger / error-summary-item, not disabled, no async validation in flight | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，异步校验开跑（提交在途）或条目所指字段改好时一并撤下 |
 
 ### ARIA
 
@@ -226,6 +228,8 @@
 ### 皮肤
 
 `@xihan-ui/styles/form.css` 使用 `[data-scope="form"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -290,8 +294,13 @@
 | `--xh-form-summary-fg` | `error-summary` | `color` | `default` | `--xh-fg-danger` | form 的 error-summary 部件 color 覆盖槽。 |
 | `--xh-form-summary-font-size` | `error-summary` | `font-size` | `default` | `--xh-text-body-size` | form 的 error-summary 部件 font-size 覆盖槽。 |
 | `--xh-form-summary-gap` | `error-summary` | `gap` | `default` | `--xh-space-1_5` | form 的 error-summary 部件 gap 覆盖槽。 |
-| `--xh-form-summary-item-fg-hover` | `error-summary-item` | `color` | `hover` | `--xh-fg-danger-hover` | form 的 error-summary-item 部件 color 覆盖槽。 |
+| `--xh-form-summary-item-bg` | `error-summary-item` | `background` | `default` | `transparent` | form 的 error-summary-item 部件 background 覆盖槽。 |
+| `--xh-form-summary-item-bg-hover` | `error-summary-item` | `background` | `hover` | `--xh-bg-subtle` | form 的 error-summary-item 部件 background 覆盖槽。 |
+| `--xh-form-summary-item-bg-pressed` | `error-summary-item` | `background` | `is(:active, [data-pressed])`<br>`pressed` | `--xh-bg-subtle-hover` | form 的 error-summary-item 部件 background 覆盖槽。 |
+| `--xh-form-summary-item-fg-hover` | `error-summary-item` | `color` | `hover`<br>`is(:active, [data-pressed])`<br>`pressed` | `--xh-fg-danger-hover` | form 的 error-summary-item 部件 color 覆盖槽。 |
 | `--xh-form-summary-item-font-size` | `error-summary-item` | `font-size` | `default` | `--xh-text-secondary-size` | form 的 error-summary-item 部件 font-size 覆盖槽。 |
+| `--xh-form-summary-item-px` | `error-summary-item` | `padding-inline` | `default` | `--xh-space-1` | form 的 error-summary-item 部件 padding-inline 覆盖槽。 |
+| `--xh-form-summary-item-radius` | `error-summary-item` | `border-radius` | `default` | `--xh-shape-control` | form 的 error-summary-item 部件 border-radius 覆盖槽。 |
 | `--xh-form-summary-item-underline-offset` | `error-summary-item` | `text-underline-offset` | `default` | `--xh-space-0_5` | form 的 error-summary-item 部件 text-underline-offset 覆盖槽。 |
 | `--xh-form-summary-px` | `error-summary` | `padding-inline` | `default` | `--xh-control-px-md` | form 的 error-summary 部件 padding-inline 覆盖槽。 |
 | `--xh-form-summary-py` | `error-summary` | `padding-block` | `default` | `--xh-space-3` | form 的 error-summary 部件 padding-block 覆盖槽。 |
@@ -313,7 +322,7 @@
 
 ### 动效
 
-关键帧 `xh-form-summary-enter` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-form-summary-enter` 随皮肤自带，不引用别处文件里的名字；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

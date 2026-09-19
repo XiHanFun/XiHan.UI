@@ -5,10 +5,10 @@
 
 // 提供 form 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { FormPath } from './form.path'
-import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormSchema } from './form.types'
-import { contains, dataAttr } from '@xihan-ui/core'
+import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormPressedKey, FormSchema } from './form.types'
+import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
 import { FORM_FIELD_NAME_ATTR, formAnatomy, formFieldId } from './form.anatomy'
 import { formErrorNames } from './form.errors'
 import { formValidateOn } from './form.machine'
@@ -77,6 +77,26 @@ export function connectForm<T extends PropTypes>(
   const summaryVisible = submitFailed && invalid
 
   const fieldError = (name: FormPath): string | undefined => getFormPathValue(errors, name)
+
+  // 按压通道：三类可按部件各自合成一份跟踪器，真源是机器 context 里「正被按住的那一个」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 逐个部件的「按不动」（重置钮只读、条目所指字段没有错误）随 PRESS.START 带给守卫
+  const pressed = context.get('pressed')
+  const press = (key: FormPressedKey, pressDisabled: boolean): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled: pressDisabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
 
   return {
     values,
@@ -189,6 +209,9 @@ export function connectForm<T extends PropTypes>(
       'data-invalid': dataAttr(fieldError(item.name) !== undefined),
       // 作者一次把所有字段的条目都写上，这里按当下的错误表决定谁露面
       'hidden': fieldError(item.name) === undefined || undefined,
+      // Space / Enter 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；
+      // Enter 在 keydown 即把焦点送进字段，链接随即失焦、按压面跟着撤下
+      ...press(`error:${formPathKey(item.name)}`, fieldError(item.name) === undefined),
       'onClick': (event: MouseEvent) => {
         // 拦掉原生锚点跳转：它只滚动不搬焦点，还会往历史里塞一条哈希记录
         event.preventDefault()
@@ -210,6 +233,9 @@ export function connectForm<T extends PropTypes>(
       // 单体控件用原生 disabled（集合条目才用 aria-disabled）；家族按 data-disabled 给禁用面
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+      // 异步校验开跑（提交在途）时由机器松开并锁住，不重复给按压回执
+      ...press('submit', disabled),
     }),
 
     getResetTriggerProps: () => normalize.button({
@@ -224,6 +250,7 @@ export function connectForm<T extends PropTypes>(
       // 只读表单也重置不了，重置就是在写值
       'disabled': !editable || undefined,
       'data-disabled': dataAttr(!editable),
+      ...press('reset', !editable),
     }),
   }
 }

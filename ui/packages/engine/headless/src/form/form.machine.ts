@@ -8,7 +8,7 @@
 import type { Params } from '@xihan-ui/core'
 import type { FormErrors } from './form.errors'
 import type { FormArrayMutation, FormPath } from './form.path'
-import type { FormRules, FormSchema, FormValidateOn, FormValidationErrorDetails, FormValidationTask, FormValues } from './form.types'
+import type { FormPressedKey, FormRules, FormSchema, FormValidateOn, FormValidationErrorDetails, FormValidationTask, FormValues } from './form.types'
 import { focusFirst, focusSafely, getTabbables, queryItems, setup } from '@xihan-ui/core'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
@@ -276,6 +276,8 @@ export const formMachine = createMachine({
     })),
     validating: cell<boolean>(() => ({ defaultValue: false })),
     validationError: cell<FormValidationErrorDetails | null>(() => ({ defaultValue: null })),
+    // 按压通道：被 Space / Enter 或触屏按住的那一个部件（提交钮 / 重置钮 / 摘要条目），按 key 记
+    pressed: cell<FormPressedKey | null>(() => ({ defaultValue: null })),
   }),
   // 挂载即 idle：作者预置的 defaultErrors 不该让错误摘要一上来就显形
   initialState: () => 'idle',
@@ -283,6 +285,9 @@ export const formMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     track([context.dep('values'), () => prop('values')], () => action(['discardStaleValidation']))
     track([() => prop('rules')], () => action(['syncRules']))
+    // 按住途中转入禁用 / 只读、异步校验开跑（提交在途，锁定重复操作），或按住的摘要条目所指字段改好了
+    // （条目随之藏起）：不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('validating'), context.dep('errors')], () => action(['releaseWhenInert']))
   },
   on: {
     'FIELD.SET': [
@@ -301,6 +306,9 @@ export const formMachine = createMachine({
     'ERROR.SET': { actions: ['setFieldError'] },
     'ERRORS.CLEAR': { actions: ['clearErrors'] },
     'ERROR.FOCUS': { actions: ['focusField'] },
+    // 按压通道：两颗钮是原生 disabled、条目按错误表显隐，程序化派发由守卫再守一次；异步校验在途时不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -339,12 +347,44 @@ export const formMachine = createMachine({
     guards: {
       isEnabled: ({ prop }) => !prop('disabled'),
       isEditable: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      /**
+       * 按压守卫：整体禁用一律不进；异步校验在途（提交或逐字段）时锁定重复操作，也不进；
+       * 重置钮只读按不动、摘要条目所指字段没有错误这类逐个部件的「按不动」由 connect 随事件带来。
+       */
+      canPress: ({ prop, context, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !e.disabled && !prop('disabled') && !context.get('validating')
+      },
       isValidationSnapshotCurrent: ({ context, event }) => {
         const e = event.current()
         return (e.type === 'VALIDATION.PASS' || e.type === 'VALIDATION.FAIL') && sameFormValues(e.values, context.get('values'))
       },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      // 转入禁用、异步校验开跑一律松开；只读松开重置钮；摘要条目所指字段改好了（条目藏起）也松开
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressed')
+        if (pressed == null)
+          return
+        if (prop('disabled') || context.get('validating') || (pressed === 'reset' && prop('readOnly'))) {
+          context.set('pressed', null)
+          return
+        }
+        if (pressed.startsWith('error:') && !formErrorNames(context.get('errors')).some(name => `error:${formPathKey(name)}` === pressed))
+          context.set('pressed', null)
+      },
+
       discardValidation,
       syncRules: (params) => {
         void currentFormRules(params)

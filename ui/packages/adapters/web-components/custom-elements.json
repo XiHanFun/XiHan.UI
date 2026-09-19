@@ -24240,10 +24240,25 @@
               "name": "--xh-form-summary-gap"
             },
             {
+              "name": "--xh-form-summary-item-bg"
+            },
+            {
+              "name": "--xh-form-summary-item-bg-hover"
+            },
+            {
+              "name": "--xh-form-summary-item-bg-pressed"
+            },
+            {
               "name": "--xh-form-summary-item-fg-hover"
             },
             {
               "name": "--xh-form-summary-item-font-size"
+            },
+            {
+              "name": "--xh-form-summary-item-px"
+            },
+            {
+              "name": "--xh-form-summary-item-radius"
             },
             {
               "name": "--xh-form-summary-item-underline-offset"

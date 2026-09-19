@@ -207,14 +207,21 @@
     animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
-  /* 摘要里的每一条是一个真链接，指向对应字段容器 */
+  /* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行（§9.2）：悬停 / 按下只换面不缩放，
+     底面坐在摘要的 surface 白底上，走白底承载阶梯 100 → 200；换面走按压时间线，释放回 release 档 */
   [data-scope='form'][data-part='error-summary-item'] {
     display: block;
+    padding-inline: var(--xh-form-summary-item-px, var(--xh-space-1));
+    border-radius: var(--xh-form-summary-item-radius, var(--xh-shape-control));
+    background: var(--xh-form-summary-item-bg, transparent);
     color: inherit;
     font-size: var(--xh-form-summary-item-font-size, var(--xh-text-secondary-size));
     text-decoration: underline;
     text-underline-offset: var(--xh-form-summary-item-underline-offset, var(--xh-space-0_5));
     cursor: pointer;
+    transition:
+      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没有对应错误的条目由连接层给 hidden；上面那条 display 已把 UA 规则盖掉 */
@@ -274,7 +281,24 @@
   }
 
   [data-scope='form'][data-part='error-summary-item']:hover {
+    background: var(--xh-form-summary-item-bg-hover, var(--xh-bg-subtle));
     color: var(--xh-form-summary-item-fg-hover, var(--xh-fg-danger-hover));
+  }
+
+  /* 指针 :active 与 Headless 投影的 data-pressed（Space / Enter 与触屏按住）看见同一副按压面 */
+  [data-scope='form'][data-part='error-summary-item']:is(:active, [data-pressed]) {
+    background: var(--xh-form-summary-item-bg-pressed, var(--xh-bg-subtle-hover));
+    color: var(--xh-form-summary-item-fg-hover, var(--xh-fg-danger-hover));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  /* 高对比档里底色被系统换掉，按下那一档用系统高亮反色画回 */
+  @media (forced-colors: active) {
+    [data-scope='form'][data-part='error-summary-item']:is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 
   /* 两颗按钮是离散动作控件：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用面全由 Action Control 的 text 档给，
