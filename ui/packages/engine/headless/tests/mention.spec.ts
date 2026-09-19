@@ -1017,3 +1017,82 @@ describe('mention 浮层的层与消解', () => {
     expect(order).toEqual(['dismiss', 'layer'])
   })
 })
+
+describe('按压通道：触屏按住投影 data-pressed，按候选 value 记', () => {
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  it('触屏按下在场、抬起或取消撤下；另一条的抬起不把它松开；鼠标按下不走这一路', () => {
+    const m = mount()
+    type(m.input, '@')
+    expect(m.state()).toBe('open')
+    expect(pressed(m.item('lilei'))).toBe(false)
+    touch(m.item('lilei'), 'pointerdown')
+    expect(pressed(m.item('lilei'))).toBe(true)
+    expect(pressed(m.item('poly'))).toBe(false)
+    touch(m.item('poly'), 'pointerup')
+    expect(pressed(m.item('lilei'))).toBe(true)
+    touch(m.item('lilei'), 'pointerup')
+    expect(pressed(m.item('lilei'))).toBe(false)
+    touch(m.item('lilei'), 'pointerdown')
+    touch(m.item('lilei'), 'pointercancel')
+    expect(pressed(m.item('lilei'))).toBe(false)
+    m.item('lilei').dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true }))
+    expect(pressed(m.item('lilei'))).toBe(false)
+  })
+
+  it('键盘那一路没有中间帧：Enter 在同一次 keydown 里插入并收起，候选不投影 data-pressed', () => {
+    const m = mount()
+    type(m.input, '@')
+    expect(m.highlighted()).toBe('lilei')
+    press(m.input, 'Enter')
+    expect(m.state()).toBe('closed')
+    expect(pressed(m.item('lilei'))).toBe(false)
+  })
+
+  it('不进：禁用 / 只读 / 加载时不进；候选自身禁用（部件声明或 collection）不进', () => {
+    for (const inert of [{ readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const m = mount(inert)
+      type(m.input, '@')
+      touch(m.item('lilei'), 'pointerdown')
+      expect(pressed(m.item('lilei'))).toBe(false)
+    }
+    // 禁用时浮层展不开，候选常挂在文档里，程序化按下照样送得到
+    const disabled = mount({ disabled: true })
+    touch(disabled.item('lilei'), 'pointerdown')
+    expect(pressed(disabled.item('lilei'))).toBe(false)
+
+    const m = mount()
+    type(m.input, '@')
+    touch(m.item('ghost'), 'pointerdown')
+    expect(pressed(m.item('ghost'))).toBe(false)
+    const byCollection = mount({ collection: [{ value: 'lilei', disabled: true }, { value: 'poly' }] })
+    type(byCollection.input, '@')
+    const props = byCollection.api().getItemProps({ value: 'lilei' }) as Record<string, (e: unknown) => void>
+    props.onPointerDown!({ pointerType: 'touch' })
+    expect(byCollection.api().getItemProps({ value: 'lilei' })['data-pressed']).toBeUndefined()
+  })
+
+  it('浮层收起即松开：按住的候选随内容藏起，不会再来 pointerup，按压面由机器收', () => {
+    const m = mount()
+    type(m.input, '@')
+    touch(m.item('lilei'), 'pointerdown')
+    expect(pressed(m.item('lilei'))).toBe(true)
+    m.send({ type: 'CLOSE' })
+    expect(m.state()).toBe('closed')
+    expect(pressed(m.item('lilei'))).toBe(false)
+  })
+
+  it('按住途中转入禁用 / 只读 / 加载：按压面由机器自己收，不等 pointerup', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const m = mount()
+      type(m.input, '@')
+      touch(m.item('lilei'), 'pointerdown')
+      expect(pressed(m.item('lilei'))).toBe(true)
+      m.setProps(inert)
+      expect(pressed(m.item('lilei'))).toBe(false)
+    }
+  })
+})

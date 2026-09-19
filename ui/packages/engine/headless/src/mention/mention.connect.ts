@@ -5,9 +5,9 @@
 
 // 提供 mention 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { MentionApi, MentionInputEl, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
-import { contains, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { mentionAnatomy, mentionItemQuery, mentionItemText } from './mention.anatomy'
 import { MENTION_DEFAULT_PLACEMENT } from './mention.machine'
@@ -73,6 +73,15 @@ export function connectMention<T extends PropTypes>(
   const itemStateAttrs = (item: MentionItemProps): Record<string, string | undefined> => ({
     'data-highlighted': dataAttr(isHighlighted(item.value)),
     'data-disabled': dataAttr(itemDisabled(item)),
+  })
+
+  // 按压通道：真源是机器 context 里「正被按住的那一条」，每条候选合成一份跟踪器投影 data-pressed，
+  // 指针按住由 :active 表出，家族配方两者同一档。焦点恒在输入框、Enter 在同一次 keydown 里插入并收起，
+  // 键盘那一路没有可见的按住帧，候选只接触屏三件；候选自身的禁用随 PRESS.START 带给机器的 canPress 守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: MentionItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down ? { type: 'PRESS.START', value: item.value, disabled: itemDisabled(item) } : { type: 'PRESS.END', value: item.value }),
   })
 
   /**
@@ -321,34 +330,42 @@ export function connectMention<T extends PropTypes>(
 
     // 候选行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，
     // 提及即选即执行，没有持久选中，aria-selected 只标当前高亮那一条
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...itemStateAttrs(item),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      // 导航与提交都以此为候选身份
-      [ITEM_VALUE_ATTR]: item.value,
-      // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
-      'id': itemId(item.value),
-      'role': 'option',
-      // 提及没有"选中过的候选"这回事：列表里被标为 selected 的恒是当前高亮那一条
-      'aria-selected': isHighlighted(item.value) ? 'true' : 'false',
-      // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      // 不给 tabindex：焦点恒在输入框
-      'onClick': (event: MouseEvent) => {
-        const el = event.currentTarget as HTMLElement
-        if (disabled || itemDisabled(item) || el.hidden)
-          return
-        send({ type: 'ITEM.SELECT', value: item.value, label: mentionItemText(el) })
-      },
-      // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却插进了键盘高亮的 B
-      'onPointerMove': (event: PointerEvent) => {
-        if (!(event.currentTarget as HTMLElement).hidden && !disabled && !itemDisabled(item) && highlighted !== item.value)
-          send({ type: 'ITEM.HIGHLIGHT', value: item.value })
-      },
-    }),
+    getItemProps: (item) => {
+      const handlers = press(item)
+      return normalize.element({
+        ...parts.item.attrs,
+        ...itemStateAttrs(item),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // 导航与提交都以此为候选身份
+        [ITEM_VALUE_ATTR]: item.value,
+        // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
+        'id': itemId(item.value),
+        'role': 'option',
+        // 提及没有"选中过的候选"这回事：列表里被标为 selected 的恒是当前高亮那一条
+        'aria-selected': isHighlighted(item.value) ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        // 触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedValue === item.value),
+        // 不给 tabindex：焦点恒在输入框
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onClick': (event: MouseEvent) => {
+          const el = event.currentTarget as HTMLElement
+          if (disabled || itemDisabled(item) || el.hidden)
+            return
+          send({ type: 'ITEM.SELECT', value: item.value, label: mentionItemText(el) })
+        },
+        // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却插进了键盘高亮的 B
+        'onPointerMove': (event: PointerEvent) => {
+          if (!(event.currentTarget as HTMLElement).hidden && !disabled && !itemDisabled(item) && highlighted !== item.value)
+            send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+        },
+      })
+    },
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,

@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { mentionAnatomy, mentionKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 提及没有独立的 APG 模式：它是组合框那套「输入框 + aria-activedescendant」用在正文里，
 // 差别在于选中动作是把光标处那段查询串换掉，不是替换整个值。
@@ -486,6 +487,37 @@ export const mentionSuite: ConformanceSuite = {
             ],
           },
         },
+      ],
+    },
+    {
+      name: '触屏按下：候选投影 data-pressed，抬起或指针取消撤下；键盘那一路没有中间帧',
+      spec: { adr: 'press-channel' },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'type 步骤改不动输入框的值，而提及的入口正是原生 input 事件加那一刻的光标位置',
+          run: ({ doc, flush }) => typeInto(doc, '@', flush),
+        },
+        { kind: 'settle', until: { attr: { part: 'item[0]', name: 'data-highlighted', value: '' } } },
+        // 焦点恒在输入框，Enter 在同一次 keydown 里插入并收起：候选只接触屏
+        heldPress('mention', 'item', { value: 'lilei', keyboardHost: null }),
+      ],
+    },
+    {
+      name: '禁用候选按住不进入按压面；只读 / 加载时候选也不进',
+      spec: { adr: 'press-channel' },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'type 步骤改不动输入框的值，而提及的入口正是原生 input 事件加那一刻的光标位置',
+          run: ({ doc, flush }) => typeInto(doc, '@', flush),
+        },
+        { kind: 'settle', until: { attr: { part: 'item[0]', name: 'data-highlighted', value: '' } } },
+        heldPressIgnored('mention', 'item', '禁用候选不接受按压', { value: 'ghost', keyboardHost: null }),
+        { kind: 'setProps', props: { readOnly: true } },
+        heldPressIgnored('mention', 'item', '只读时候选插不进正文，不接受按压', { value: 'lilei', keyboardHost: null }),
+        { kind: 'setProps', props: { readOnly: false, loading: true } },
+        heldPressIgnored('mention', 'item', '加载中候选不接受按压', { value: 'lilei', keyboardHost: null }),
       ],
     },
   ],
