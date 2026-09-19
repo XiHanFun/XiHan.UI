@@ -56843,6 +56843,29 @@
       "description": "steps 的 indicator 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-steps-indicator-bg-current-pressed",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "pressed",
+        "state=current"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-steps-indicator-bg-disabled",
       "component": "steps",
       "part": [
@@ -56879,6 +56902,31 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-pressed",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "is([data-state='incomplete'], [data-state='completed'])",
+        "not([data-disabled])",
+        "pressed",
+        "state=completed",
+        "state=incomplete"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"

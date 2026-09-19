@@ -3,7 +3,7 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 4,
-  "ladder": 13,
+  "ladder": 12,
   "motion": 0,
   "press": 2,
   "scroll": 0,
@@ -36,7 +36,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "file-upload:trigger:hover",
   "file-upload:trigger:pressed",
   "pagination:jumper:hover",
-  "steps:indicator:hover",
 ]
 `;
 

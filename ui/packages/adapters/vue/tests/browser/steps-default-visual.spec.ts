@@ -85,6 +85,30 @@ describe('steps 默认视觉', () => {
     expect(pressed.transform).toBe('none')
   })
 
+  it('序号圆点随触发器按下按淡底容器阶梯换到 300 档，当前步换语气 active 档', () => {
+    const steps = mount()
+    // 断言读的是终值：按压与释放的过渡时长归零
+    host!.style.setProperty('--xh-motion-duration-micro', '0ms')
+    host!.style.setProperty('--xh-motion-duration-press', '0ms')
+    const token = (name: string): string => {
+      const probe = document.createElement('span')
+      probe.style.cssText = `color: var(${name})`
+      host!.append(probe)
+      const value = getComputedStyle(probe).color
+      probe.remove()
+      return value
+    }
+    const [completed, current, incomplete] = steps.items.map(item => item.querySelector<HTMLElement>('[data-part="trigger"]')!)
+    expect(getComputedStyle(steps.indicators[2]!).backgroundColor).toBe(token('--xh-bg-subtle'))
+    incomplete!.setAttribute('data-pressed', '')
+    expect(getComputedStyle(steps.indicators[2]!).backgroundColor).toBe(token('--xh-bg-subtle-active'))
+    completed!.setAttribute('data-pressed', '')
+    expect(getComputedStyle(steps.indicators[0]!).backgroundColor).toBe(token('--xh-bg-subtle-active'))
+    current!.setAttribute('data-pressed', '')
+    expect(getComputedStyle(steps.indicators[1]!).backgroundColor).toBe(token('--xh-bg-brand-active'))
+    expect(getComputedStyle(steps.indicators[1]!).scale).toBe('none')
+  })
+
   it('纵向连接线保持清晰长度并与标记同轴', () => {
     const steps = mount('vertical')
     const listStyle = getComputedStyle(steps.list)
