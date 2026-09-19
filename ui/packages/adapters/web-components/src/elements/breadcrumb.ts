@@ -6,10 +6,11 @@
 // 提供 breadcrumb 相关实现。
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { BreadcrumbNode, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
-import { breadcrumbAnatomy, breadcrumbMeta, connectBreadcrumb } from '@xihan-ui/headless'
+import type { BreadcrumbNode, BreadcrumbSchema, BreadcrumbTranslations } from '@xihan-ui/headless'
+import { breadcrumbAnatomy, breadcrumbMachine, breadcrumbMeta, connectBreadcrumb } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -22,10 +23,10 @@ function authorFlag(el: HTMLElement, name: string): boolean {
 }
 
 /**
- * `<xh-breadcrumb>`：面包屑行为宿主，无状态机，把 connectBreadcrumb 产出的 aria-* 接到角色节点上。
+ * `<xh-breadcrumb>`：面包屑行为宿主，把 connectBreadcrumb 产出的 aria-* 接到角色节点上；机器只承载按压通道（data-pressed）。
  *
  * 标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。
- * 运行期改写 link 上的 `current` 属性不触发重新接线，需作者自行 requestUpdate。
+ * 运行期改写 link 上的 `current` / `value` 属性不触发重新接线，需作者自行 requestUpdate。
  *
  * @customElement xh-breadcrumb
  * @attr {number} max-items - 最多展开的层数，超出的中间层由 api.items 折叠为一个省略位
@@ -35,7 +36,7 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  * @csspart root - nav 地标，承载 aria-label
  * @csspart list - ol 容器
  * @csspart item - li 条目
- * @csspart link - a 链接；写 current 属性的条目得到 aria-current="page" 并拦截点击
+ * @csspart link - a 链接；写 current 属性的条目得到 aria-current="page" 并拦截点击；value 是链接身份，按压通道按它记住正被按住的那一条，未写时按文档序派生
  * @csspart link-icon - 链接中的图标位，对读屏隐藏
  * @csspart separator - li 分隔符，对读屏隐藏
  * @csspart ellipsis - li 折叠占位，对读屏隐藏
@@ -62,8 +63,10 @@ export class XhBreadcrumbElement extends XhElement {
   declare size?: Size
   declare translations?: Partial<BreadcrumbTranslations>
 
-  protected wire(): void {
-    const props: BreadcrumbProps = {
+  private readonly ctrl = new MachineController<BreadcrumbSchema>(this, breadcrumbMachine, () => this.machineProps())
+
+  private machineProps(): Partial<BreadcrumbSchema['props']> {
+    return {
       collection: this.collection,
       maxItems: this.maxItems,
       dir: this.direction,
@@ -71,7 +74,10 @@ export class XhBreadcrumbElement extends XhElement {
       tone: this.tone,
       size: this.size,
     }
-    const api = connectBreadcrumb(this.configured('breadcrumb', props), wcNormalize)
+  }
+
+  protected wire(): void {
+    const api = connectBreadcrumb(this.ctrl.service, wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)
@@ -81,14 +87,15 @@ export class XhBreadcrumbElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
 
-    // 多实例 part 逐个打，link 的身份取作者写的 current。
+    // 多实例 part 逐个打，link 的当前页事实取作者写的 current；
+    // 身份取作者写的 value，没写就按文档序派生（只作按压通道的键，不写回 DOM）
     for (const el of this.getParts('item'))
       this.spreader.spread(el, api.getItemProps() as Record<string, unknown>)
 
-    for (const el of this.getParts('link')) {
-      const attrs = api.getLinkProps({ current: authorFlag(el, 'current') })
+    this.getParts('link').forEach((el, index) => {
+      const attrs = api.getLinkProps({ value: el.getAttribute('value') ?? `link:${index}`, current: authorFlag(el, 'current') })
       this.spreader.spread(el, attrs as Record<string, unknown>)
-    }
+    })
 
     for (const el of this.getParts('link-icon'))
       this.spreader.spread(el, api.getLinkIconProps() as Record<string, unknown>)

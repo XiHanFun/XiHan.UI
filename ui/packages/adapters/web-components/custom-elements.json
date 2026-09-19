@@ -2936,7 +2936,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-breadcrumb>`：面包屑行为宿主，无状态机，把 connectBreadcrumb 产出的 aria-* 接到角色节点上。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` 属性不触发重新接线，需作者自行 requestUpdate。",
+          "description": "`<xh-breadcrumb>`：面包屑行为宿主，把 connectBreadcrumb 产出的 aria-* 接到角色节点上；机器只承载按压通道（data-pressed）。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` / `value` 属性不触发重新接线，需作者自行 requestUpdate。",
           "name": "XhBreadcrumbElement",
           "cssParts": [
             {
@@ -2952,7 +2952,7 @@
               "name": "item"
             },
             {
-              "description": "a 链接；写 current 属性的条目得到 aria-current=\"page\" 并拦截点击",
+              "description": "a 链接；写 current 属性的条目得到 aria-current=\"page\" 并拦截点击；value 是链接身份，按压通道按它记住正被按住的那一条，未写时按文档序派生",
               "name": "link"
             },
             {
@@ -3028,6 +3028,23 @@
               "privacy": "public",
               "type": {
                 "text": "Partial<BreadcrumbTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<BreadcrumbSchema>(this, breadcrumbMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<BreadcrumbSchema['props']>"
+                }
               }
             },
             {

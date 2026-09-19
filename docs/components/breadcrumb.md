@@ -84,7 +84,7 @@
 | 自定义元素 | `<xh-breadcrumb>` |
 | Vue 组件 | `XhBreadcrumbEllipsis` `XhBreadcrumbItem` `XhBreadcrumbLink` `XhBreadcrumbLinkIcon` `XhBreadcrumbList` `XhBreadcrumbRoot` `XhBreadcrumbSeparator` |
 | 组合式函数 | `useBreadcrumb` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `breadcrumbMachine` |
 | 皮肤 | `@xihan-ui/styles/breadcrumb.css` |
 
 ### Props
@@ -92,11 +92,21 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `readonly BreadcrumbNode[]` |  | 层级数据，文字、链接与当前页的事实源。 未提供时回到层级逐个写成部件的方式。 |
-| `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `maxItems` | `number` |  | 最多展开的层数，超出的中间层折叠为一个省略位；未提供时全部列出。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
+| `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `translations` | `Partial<BreadcrumbTranslations>` |  |  |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+
+### 状态
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -123,6 +133,7 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` | focus in link, 非当前页 | 跟随链接（原生 &lt;a href&gt; 的激活行为，面包屑自己不监听按键） |
+| `Enter` / `Space` | held in link, 非当前页 | 按住期间该链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。跟随链接照旧由这一次按键（原生 &lt;a href&gt;）承担，当前页那条不进 |
 | `Tab` / `Shift+Tab` | focus in root | 逐条走过可点的链接；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序 |
 
 ### ARIA
@@ -131,7 +142,7 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations?.root |
+| `root` | `aria-label` | props.translations.root |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| 'false' |
 | `link-icon` | `aria-hidden` | 'true' |
@@ -153,6 +164,7 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `link` | `data-current` | ''（条件成立时才出现） |
+| `link` | `data-pressed` | ''（条件成立时才出现） |
 | `link` | `data-xh-collection-context` | 'nav' |
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |

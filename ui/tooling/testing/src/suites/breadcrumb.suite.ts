@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { breadcrumbAnatomy, breadcrumbKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/'
 
@@ -206,6 +207,21 @@ export const breadcrumbSuite: ConformanceSuite = {
           'link[1]': { 'aria-current': 'page', 'tabindex': '-1' },
         },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：非当前页链接投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['breadcrumb.kbd.press'],
+      // 链接身份由适配器派生（未写 value），按文档序取第一条与第二条；按压面只在按住的那一条上
+      steps: [
+        heldPress('breadcrumb', 'link', { selector: `${LINK}:not([aria-current])` }),
+        heldPress('breadcrumb', 'link', { selector: `${LINK}[href="/docs"]` }),
+      ],
+    },
+    {
+      name: '当前页那条是不可点的终点，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      steps: [heldPressIgnored('breadcrumb', 'link', '当前页链接不可点，不接受按压', { selector: `${LINK}[aria-current="page"]` })],
     },
   ],
 }

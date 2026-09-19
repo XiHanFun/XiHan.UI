@@ -8,7 +8,7 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideBreadcrumb, useBreadcrumbContext } from './context'
 import { useBreadcrumb } from './use-breadcrumb'
@@ -57,17 +57,22 @@ export const XhBreadcrumbItem = defineComponent({
   },
 })
 
-/** href 由作者写，这里只补当前页标记与点击守卫；当前页同样渲染为 `<a>`。 */
+/**
+ * href 由作者写，这里只补当前页标记与点击守卫；当前页同样渲染为 `<a>`。
+ * value 是链接身份，按压通道按它记住正被按住的那一条；未声明时派生一个实例内稳定的键。
+ */
 export const XhBreadcrumbLink = defineComponent({
   name: 'XhBreadcrumbLink',
   props: {
+    value: { type: String },
     current: Boolean,
   },
   setup(props, { slots }) {
     const ctx = useBreadcrumbContext()
+    const fallbackValue = useId()
     return () => h(
       'a',
-      ctx.api.value.getLinkProps({ current: props.current }) as Record<string, unknown>,
+      ctx.api.value.getLinkProps({ value: props.value ?? fallbackValue, current: props.current }) as Record<string, unknown>,
       slots.default?.(),
     )
   },
@@ -130,7 +135,7 @@ function renderItems(
     out.push(h(XhBreadcrumbItem, { key: node.value }, () => [
       h(
         XhBreadcrumbLink,
-        { current: node.current, href: node.href },
+        { value: node.value, current: node.current, href: node.href },
         () => [
           node.icon ? h(XhBreadcrumbLinkIcon, null, () => node.icon) : null,
           node.label,

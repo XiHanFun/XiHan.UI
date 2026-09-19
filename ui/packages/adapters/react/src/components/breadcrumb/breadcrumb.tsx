@@ -8,6 +8,7 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import { useId } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { BreadcrumbProvider, useBreadcrumbContext } from './context'
@@ -69,14 +70,17 @@ export function XhBreadcrumbItem({ children, ...rest }: XhBreadcrumbItemProps): 
 }
 
 export interface XhBreadcrumbLinkProps extends ComponentPropsWithRef<'a'> {
+  /** 链接身份，按压通道按它记住正被按住的那一条；未声明时派生一个实例内稳定的键。 */
+  value?: string
   /** 当前页的条目。 */
   current?: boolean
 }
 /** href 由作者写，这里只补当前页标记与点击守卫；当前页同样渲染为 `<a>`。 */
-export function XhBreadcrumbLink({ current, children, ...rest }: XhBreadcrumbLinkProps): ReactNode {
+export function XhBreadcrumbLink({ value, current, children, ...rest }: XhBreadcrumbLinkProps): ReactNode {
   const ctx = useBreadcrumbContext()
+  const fallbackValue = useId()
   return (
-    <a {...mergeReactProps(ctx.api.getLinkProps({ current }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <a {...mergeReactProps(ctx.api.getLinkProps({ value: value ?? fallbackValue, current }) as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
     </a>
   )
@@ -123,7 +127,7 @@ function DefaultTree(props: {
     const node = item.node
     out.push(
       <XhBreadcrumbItem key={node.value}>
-        <XhBreadcrumbLink current={node.current} href={node.href}>
+        <XhBreadcrumbLink value={node.value} current={node.current} href={node.href}>
           {node.icon ? <XhBreadcrumbLinkIcon>{node.icon}</XhBreadcrumbLinkIcon> : null}
           {node.label}
         </XhBreadcrumbLink>
