@@ -32,6 +32,12 @@ export const checkboxSuite: ConformanceSuite = {
             'aria-checked': 'false',
             'data-state': 'unchecked',
             'data-disabled': null,
+            // 方框接 Action Control 家族：icon 档、outline 形态、常显、字形档随 size（缺省 md）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
           indicator: { 'data-state': 'unchecked' },
         },

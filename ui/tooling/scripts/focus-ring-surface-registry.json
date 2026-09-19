@@ -188,27 +188,6 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "checkbox [data-part='root'][data-scope='checkbox'][data-state=:is(checked,indeterminate)]:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1.01,
-      "ring": "poured"
-    },
-    "checkbox [data-part='root'][data-scope='checkbox'][data-state='checked']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "checkbox [data-part='root'][data-scope='checkbox'][data-state='indeterminate']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "color-picker [data-part='eye-dropper-trigger'][data-scope='color-picker'][data-state='picking']": {
       "parts": [
         "eye-dropper-trigger"

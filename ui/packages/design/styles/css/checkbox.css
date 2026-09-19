@@ -5,6 +5,8 @@
 
 /* 定义 checkbox 样式。 */
 
+@import '../family/action-control.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='checkbox'] {
@@ -19,65 +21,76 @@
     /* 作者塞进指示符槽的图标和兜底字形共用盒比例；显式 icon-size 仍可覆盖。 */
     --xh-icon-size: var(--xh-checkbox-icon-size, var(--xh-_checkbox-glyph));
 
-    /* 粗指针一档的命中区外扩量：方框边长加两条它正好是 44px。
-       lg 档不另给一份——那一档的方框本来就更大，同一个外扩量下命中区只多不少 */
-    --xh-_checkbox-touch-inset: 14px;
-
     /* 选中态是小面积控件边界，使用保证 3:1 的语气 control 色；没写 tone 时退回品牌底。 */
     --xh-_checkbox-accent: var(--xh-_tone-border-control, var(--xh-bg-brand));
 
     /* 实心底上的勾与横杠，同样没写 data-tone 时退回原来的品牌底前景色 */
     --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    /* 方框是字段家族的控制盒（§8.3 字段静息形态）：canvas 底 + --xh-border-control 描边 + 无影，
-       不消费海拔与顶光；常态、勾中、按下与禁用只换这一支底色槽，控制盒尺寸始终不动 */
-    --xh-_checkbox-bg: var(--xh-checkbox-bg, var(--xh-bg-canvas));
 
-    position: relative;
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-_checkbox-box);
-    block-size: var(--xh-_checkbox-box);
+    /* 方框接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
+       焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值（§8.3）：canvas 底 +
+       --xh-border-control 描边 + 无影，不消费海拔与顶光；悬停只把描边升一档，底不动；按下换到 200 档中性面
+       （白底承载）；边长随 --xh-control-indicator-* 走，不取家族的 profile 尺寸。
+       常态 / 勾中 / 校验失败 / 只读只换下面四支私有槽，桥接槽的映射写一次 */
+    --xh-_checkbox-bg: var(--xh-checkbox-bg, var(--xh-bg-canvas));
+    --xh-_checkbox-bg-pressed: var(--xh-checkbox-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-_checkbox-border: var(--xh-checkbox-border, var(--xh-border-control));
+    --xh-_checkbox-border-hover: var(--xh-checkbox-border-hover, var(--xh-border-control-hover));
+
+    --xh-action-visual-size: var(--xh-_checkbox-box);
+    --xh-action-min-inline-size: var(--xh-_checkbox-box);
+    --xh-action-radius: var(--xh-checkbox-radius, var(--xh-shape-inset));
+    --xh-action-bg-rest: var(--xh-_checkbox-bg);
+    --xh-action-bg-hover: var(--xh-_checkbox-bg);
+    --xh-action-bg-pressed: var(--xh-_checkbox-bg-pressed);
+    --xh-action-bg-focus-visible: var(--xh-_checkbox-bg);
+    --xh-action-bg-disabled: var(--xh-checkbox-bg-disabled, var(--xh-bg-subtle));
+    --xh-action-border-rest: var(--xh-_checkbox-border);
+    --xh-action-border-hover: var(--xh-_checkbox-border-hover);
+    --xh-action-border-pressed: var(--xh-_checkbox-border-hover);
+    --xh-action-border-focus-visible: var(--xh-_checkbox-border);
+    --xh-action-border-disabled: var(--xh-checkbox-border-disabled, var(--xh-border-default));
+    --xh-action-fg-rest: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
+    --xh-action-fg-hover: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
+    --xh-action-fg-pressed: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
+    --xh-action-fg-focus-visible: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
+    --xh-action-fg-disabled: var(--xh-checkbox-fg-disabled, var(--xh-fg-disabled));
+    --xh-action-shadow-rest: var(--xh-checkbox-shadow, none);
+    --xh-action-shadow-hover: var(--xh-checkbox-shadow, none);
+    --xh-action-shadow-pressed: var(--xh-checkbox-shadow, none);
+    --xh-action-shadow-focus-visible: var(--xh-checkbox-shadow, none);
+    --xh-action-shadow-disabled: var(--xh-checkbox-shadow, none);
+
+    /* 家族的 icon 档不写 padding-block；UA 给 button 的 1px 上下内距会把 16px 盒里的勾挤扁 */
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-checkbox-border, var(--xh-border-control));
-    border-radius: var(--xh-checkbox-radius, var(--xh-shape-inset));
-    background-color: var(--xh-_checkbox-bg);
-    color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
-    box-shadow: var(--xh-checkbox-shadow, none);
-    cursor: pointer;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 半选与全选同样是「有值」，方框都得填上：
-     只填全选的话，半选那条横杠是实心底上的前景色，压在同色画布上等于没画 */
+     只填全选的话，半选那条横杠是实心底上的前景色，压在同色画布上等于没画。
+     面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     勾中的方框描边与底同色，悬停不换描边——填色本身已经在表达状态；按下换到语气的 active 档 */
   [data-scope='checkbox'][data-part='root'][data-state='checked'],
   [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
     --xh-_checkbox-bg: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
-
-    border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='checkbox'][data-part='root']:is([data-state='checked'], [data-state='indeterminate']):focus-visible {
-    --xh-_ring-color: currentColor;
+    --xh-_checkbox-bg-pressed: var(--xh-checkbox-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    --xh-_checkbox-border: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
+    --xh-_checkbox-border-hover: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 高对比轴把未选中边界提到 strong；有值两态仍由实心语气底与配对勾形表达。 */
   :where([data-contrast='more']) [data-scope='checkbox'][data-part='root'][data-state='unchecked'] {
-    border-color: var(--xh-checkbox-border, var(--xh-border-strong));
+    --xh-_checkbox-border: var(--xh-checkbox-border, var(--xh-border-strong));
   }
 
-  /* 校验失败：方框描边转警示色。未勾时只有描边，勾上后填充仍走语气色，
+  /* 校验失败：方框描边转警示色，悬停与按下都不换回控件边。未勾时只有描边，勾上后填充仍走语气色，
      两者不打架——描边压在 checked 规则之后，选择器同特指度靠书写顺序取胜 */
   [data-scope='checkbox'][data-part='root'][data-invalid],
   [data-scope='checkbox'][data-part='root'][data-state='checked'][data-invalid],
   [data-scope='checkbox'][data-part='root'][data-state='indeterminate'][data-invalid] {
-    border-color: var(--xh-checkbox-border-invalid, var(--xh-border-invalid));
+    --xh-_checkbox-border: var(--xh-checkbox-border-invalid, var(--xh-border-invalid));
+    --xh-_checkbox-border-hover: var(--xh-checkbox-border-invalid, var(--xh-border-invalid));
   }
 
   /* 文字随方框一起转警示色：给了默认插槽时外层是 <label>，方框自己的描边够不到那段文字 */
@@ -86,46 +99,29 @@
     color: var(--xh-checkbox-fg-invalid, var(--xh-fg-danger));
   }
 
-  /* 悬停标签文字时也让控制盒回应，整行可点不再只有移到 16px 小盒上才看得出来。
-     未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯，§8.3）；
-     勾中的方框描边与底同色，悬停不换描边——填色本身已经在表达状态 */
+  /* 悬停标签文字时也让控制盒回应，整行可点不再只有移到 16px 小盒上才看得出来：
+     指针落在方框上时由家族的悬停块换到 --xh-action-border-hover，落在标签文字上时这里补同一档；
+     未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯，§8.3），勾中 / 校验失败的方框由上面的映射钉住不换 */
   @media (hover: hover) {
-    [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-state='checked']):not([data-state='indeterminate']):hover,
-    [data-scope='checkbox'][data-part='label']:not([data-disabled]):not([data-readonly]):not([data-invalid]):hover
-      [data-scope='checkbox'][data-part='root']:not([data-state='checked']):not([data-state='indeterminate']) {
-      border-color: var(--xh-checkbox-border-hover, var(--xh-border-control-hover));
+    [data-scope='checkbox'][data-part='label']:not([data-disabled]):not([data-readonly]):hover
+      [data-scope='checkbox'][data-part='root'] {
+      border-color: var(--xh-_checkbox-border-hover);
     }
   }
 
-  /* 按下去要有回应：方框是定尺盒（§9.1），0.97 缩放并同时换底——未勾选的方框换到 200 档中性面
-     （白底承载），勾中 / 半选的换到语气的 active 档。缩的是方框这一个定尺盒，文字在外层 label 里，
-     整行排版不跟着动。只读与禁用不压 */
-  [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed]) {
-    --xh-_checkbox-bg: var(--xh-checkbox-bg-pressed, var(--xh-bg-subtle-hover));
-
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):is([data-state='checked'], [data-state='indeterminate']):is(:active, [data-pressed]) {
-    --xh-_checkbox-bg: var(--xh-checkbox-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
-  }
-
-  /* 禁用（§7.2）：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 字形，不靠 opacity；
-     勾中的禁用方框同样退回中性面，勾由置灰色画出，值仍读得出 */
-  [data-scope='checkbox'][data-part='root'][data-disabled] {
-    --xh-_checkbox-bg: var(--xh-checkbox-bg-disabled, var(--xh-bg-subtle));
-
-    border-color: var(--xh-checkbox-border-disabled, var(--xh-border-default));
-    color: var(--xh-checkbox-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
-  }
-
-  /* 只读改不动值，但不是禁用：颜色与不透明度都照常，只把"可点"这个暗示收回来。
+  /* 只读改不动值，但不是禁用：颜色与不透明度都照常，只把「可点」这个暗示与悬停 / 按下的回应一起收回来。
      方框与整行文字一起收——给了默认插槽时外层是 <label>，只收方框的话文字那半仍摆着手型。
-     排掉禁用是因为这条选择器权重高过禁用那两条，不排就会把 not-allowed 覆盖回 default */
-  [data-scope='checkbox'][data-part='root'][data-readonly]:not([data-disabled]),
+     排掉禁用是因为这条选择器权重高过禁用那条，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='checkbox'][data-part='root'][data-readonly]:not([data-disabled]) {
+    --xh-_checkbox-bg-pressed: var(--xh-_checkbox-bg);
+    --xh-_checkbox-border-hover: var(--xh-_checkbox-border);
+    --xh-action-scale-pressed: none;
+    --xh-action-cursor-rest: default;
+    --xh-action-cursor-hover: default;
+    --xh-action-cursor-pressed: default;
+    --xh-action-cursor-focus-visible: default;
+  }
+
   [data-scope='checkbox'][data-part='label'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
@@ -134,26 +130,19 @@
   /* 缺省档写在上面的基础规则里 */
   [data-scope='checkbox'][data-part='root'][data-size='sm'] {
     --xh-_checkbox-box: var(--xh-control-indicator-sm);
-    --xh-_checkbox-touch-inset: 16px;
   }
 
   [data-scope='checkbox'][data-part='root'][data-size='lg'] {
     --xh-_checkbox-box: var(--xh-control-indicator-lg);
   }
 
-  /* 手指与鼠标落点：方框只有一档指示符那么大，命中区靠一枚绝对定位的伪元素往外扩，
-     盒子本身一动不动——放大盒子会把并排的文字挤开。
-     常态外扩 6px，最小的 sm 档由 12px 到 24px；粗指针下按档位补到 44px。 */
+  /* 鼠标落点：方框只有一档指示符那么大，命中区靠一枚绝对定位的伪元素往外扩，
+     盒子本身一动不动——放大盒子会把并排的文字挤开。常态外扩 6px，最小的 sm 档由 12px 到 24px；
+     粗指针下的 44px 热区由家族 icon 档的 ::after 给，这里不再另写 */
   [data-scope='checkbox'][data-part='root']::after {
     content: '';
     position: absolute;
     inset: calc(-1 * var(--xh-space-1_5));
-  }
-
-  @media (pointer: coarse) {
-    [data-scope='checkbox'][data-part='root']::after {
-      inset: calc(-1 * var(--xh-_checkbox-touch-inset));
-    }
   }
 
   [data-scope='checkbox'][data-part='indicator'] {
