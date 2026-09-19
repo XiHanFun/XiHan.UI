@@ -137,6 +137,9 @@ function toPx(value, locals, depth = 0) {
   const v = value.trim()
   if (depth > 8)
     return null
+  // 不带单位的 0 也是 0px：桥接槽里「不要这一档」就写 0
+  if (v === '0')
+    return 0
   let m = /^(-?[\d.]+)px$/.exec(v)
   if (m)
     return Number(m[1])
@@ -182,9 +185,37 @@ function isUnconditionalPartSelector(branch) {
 function scanSkin(css, parts, actionParts) {
   const lineAt = lineCounter(css)
   const locals = new Map()
+  /**
+   * 按部件分开收的自定义属性：家族桥接槽（--xh-action-visual-size 一类）是逐部件赋值的，
+   * 同一份皮肤里勾选框钉 16px、排序把手钉 0，整份皮肤混着解会把别的部件的值套到这个部件上。
+   * 解某个部件的取值时先看它自己规则里的赋值，再退回整份皮肤。
+   */
+  const partLocals = new Map()
   for (const decl of declarations(css)) {
-    if (decl.prop.startsWith('--'))
-      locals.set(decl.prop, [...(locals.get(decl.prop) ?? []), decl.value])
+    if (!decl.prop.startsWith('--'))
+      continue
+    locals.set(decl.prop, [...(locals.get(decl.prop) ?? []), decl.value])
+    const selector = decl.selectors[decl.selectors.length - 1] ?? ''
+    for (const branch of splitTopLevel(selector)) {
+      const subject = subjectPart(branch)
+      if (subject == null)
+        continue
+      const own = partLocals.get(subject) ?? partLocals.set(subject, new Map()).get(subject)
+      own.set(decl.prop, [...(own.get(decl.prop) ?? []), decl.value])
+    }
+  }
+  const localsFor = (part) => {
+    const own = partLocals.get(part) ?? new Map()
+    const merged = new Map()
+    for (const [prop, values] of locals) {
+      // 桥接槽只认这个部件自己规则里的赋值：别的部件钉的尺寸不是它的
+      if (/^--xh-action-(?!host-)/.test(prop))
+        continue
+      merged.set(prop, values)
+    }
+    for (const [prop, values] of own)
+      merged.set(prop, [...values, ...(merged.get(prop) ?? []).filter(v => !values.includes(v))])
+    return merged
   }
 
   const box = new Map()
@@ -218,7 +249,7 @@ function scanSkin(css, parts, actionParts) {
 
       for (const part of matchedParts) {
         if (inCoarse) {
-          const px = toPx(decl.value, locals)
+          const px = toPx(decl.value, localsFor(part))
           coarseDecls.push({ part, prop: decl.prop, value: decl.value, line, pseudo, px })
           if (pseudo && REAL_TOUCH_MIN_PROPS.has(decl.prop) && px != null && px > 0) {
             const axis = decl.prop === 'min-inline-size' ? 'inline' : 'block'
@@ -249,7 +280,7 @@ function scanSkin(css, parts, actionParts) {
           const values = splitTopLevel(decl.value, ch => ch === ' ' || ch === '\t' || ch === '\n')
           let least = null
           for (const one of values) {
-            const px = toPx(one, locals)
+            const px = toPx(one, localsFor(part))
             if (px == null || px >= 0)
               continue
             least = least == null ? -px : Math.min(least, -px)
@@ -264,7 +295,7 @@ function scanSkin(css, parts, actionParts) {
         }
 
         if (BOX_PROPS.has(decl.prop) && !inCoarse) {
-          const px = toPx(decl.value, locals)
+          const px = toPx(decl.value, localsFor(part))
           if (px == null || px <= 0)
             continue
           const axis = decl.prop === 'inline-size' || decl.prop === 'width' ? 'inline' : 'block'
