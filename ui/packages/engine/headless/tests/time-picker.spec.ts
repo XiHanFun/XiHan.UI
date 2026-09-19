@@ -1084,3 +1084,159 @@ describe('快捷选项', () => {
     expect(tabs).toEqual([-1, 0])
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (el: HTMLElement, type: 'keydown' | 'keyup', k: string): void => {
+    el.dispatchEvent(new KeyboardEvent(type, { key: k, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): PointerEvent => {
+    const event = new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+    el.dispatchEvent(event)
+    return event
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+  /** 夹具不渲染快捷选项列，直接拿 getter 的处理器驱动。 */
+  type Handlers = Record<string, (e?: unknown) => void> & { 'data-pressed'?: string }
+  const presetProps = (h: Harness, value: string): Handlers => h.api().getPresetProps({ value }) as unknown as Handlers
+  const fakeKey = (k: string): KeyboardEventInit => ({ key: k, repeat: false, isComposing: false })
+
+  it('触发钮：keydown 在场、keyup 撤下；失焦撤下；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路；按住本身不开合', () => {
+    const h = open()
+    expect(pressed(h.trigger)).toBe(false)
+    key(h.trigger, 'keydown', ' ')
+    expect(pressed(h.trigger)).toBe(true)
+    key(h.trigger, 'keyup', ' ')
+    expect(pressed(h.trigger)).toBe(false)
+    key(h.trigger, 'keydown', 'Enter')
+    expect(pressed(h.trigger)).toBe(true)
+    h.trigger.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(h.trigger)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'touch')
+    expect(pressed(h.trigger)).toBe(true)
+    pointer(h.trigger, 'pointercancel', 'touch')
+    expect(pressed(h.trigger)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'touch')
+    expect(pressed(h.trigger)).toBe(true)
+    pointer(h.trigger, 'pointerup', 'touch')
+    expect(pressed(h.trigger)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'mouse')
+    expect(pressed(h.trigger)).toBe(false)
+    expect(h.state()).toBe('closed')
+  })
+
+  it('清空钮：按住投影且不清值，触屏按下仍拦掉默认聚焦', () => {
+    const h = open({ defaultValue: '09:30' })
+    key(h.clear, 'keydown', 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    expect(pressed(h.trigger)).toBe(false)
+    // 另一个部件的 keyup 松不开正按着的这个
+    key(h.trigger, 'keyup', 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    key(h.clear, 'keyup', 'Enter')
+    expect(pressed(h.clear)).toBe(false)
+    expect(pointer(h.clear, 'pointerdown', 'touch').defaultPrevented).toBe(true)
+    expect(pressed(h.clear)).toBe(true)
+    pointer(h.clear, 'pointerup', 'touch')
+    expect(pressed(h.clear)).toBe(false)
+    expect(h.value()).toBe('09:30')
+  })
+
+  it('时间格：按住投影，按 key 只亮那一格；Escape 收起浮层时一并撤下', async () => {
+    const h = open({ defaultValue: '09:30' })
+    h.trigger.click()
+    expect(h.state()).toBe('open')
+    // 消解层参与者延后一枚微任务武装，得让出一拍才收得到 Escape
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const nine = h.option('hour', '09')
+    const ten = h.option('hour', '10')
+    pointer(nine, 'pointerdown', 'touch')
+    expect(pressed(nine)).toBe(true)
+    expect(pressed(ten)).toBe(false)
+    pointer(nine, 'pointerup', 'touch')
+    expect(pressed(nine)).toBe(false)
+    // 键盘按住：keydown 冒泡到 content 会把焦点格写进段，选中不收起，按压面仍在
+    ten.focus()
+    key(ten, 'keydown', ' ')
+    expect(pressed(ten)).toBe(true)
+    expect(h.value()).toBe('10:30')
+    expect(h.state()).toBe('open')
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(h.state()).toBe('closed')
+    expect(pressed(ten)).toBe(false)
+  })
+
+  it('快捷选项：按住投影；Enter 写值收起后由展开态的 exit 松开', () => {
+    const h = open({ defaultOpen: true, presets: [{ value: '09:00', label: '上班' }, { value: '18:00', label: '下班' }] })
+    presetProps(h, '09:00').onKeyDown!(fakeKey('Enter'))
+    expect(presetProps(h, '09:00')['data-pressed']).toBe('')
+    expect(presetProps(h, '18:00')['data-pressed']).toBeUndefined()
+    presetProps(h, '09:00').onKeyUp!(fakeKey('Enter'))
+    expect(presetProps(h, '09:00')['data-pressed']).toBeUndefined()
+    presetProps(h, '09:00').onKeyDown!(fakeKey('Enter'))
+    presetProps(h, '09:00').onClick!()
+    expect(h.value()).toBe('09:00')
+    expect(h.state()).toBe('closed')
+    expect(presetProps(h, '09:00')['data-pressed']).toBeUndefined()
+  })
+
+  it('不进：整体禁用谁都不进；只读时清空钮、格与快捷选项不进（触发钮照常展开，照有回执）；越界的格与禁用的快捷选项不进', () => {
+    const disabled = open({ disabled: true, defaultValue: '09:30', defaultOpen: true, presets: [{ value: '09:00', label: '上班' }] })
+    key(disabled.trigger, 'keydown', ' ')
+    pointer(disabled.trigger, 'pointerdown', 'touch')
+    key(disabled.clear, 'keydown', ' ')
+    pointer(disabled.option('hour', '09'), 'pointerdown', 'touch')
+    presetProps(disabled, '09:00').onKeyDown!(fakeKey('Enter'))
+    expect(pressed(disabled.trigger)).toBe(false)
+    expect(pressed(disabled.clear)).toBe(false)
+    expect(pressed(disabled.option('hour', '09'))).toBe(false)
+    expect(presetProps(disabled, '09:00')['data-pressed']).toBeUndefined()
+
+    const readOnly = open({ readOnly: true, defaultValue: '09:30', defaultOpen: true, presets: [{ value: '09:00', label: '上班' }] })
+    key(readOnly.clear, 'keydown', ' ')
+    pointer(readOnly.option('hour', '09'), 'pointerdown', 'touch')
+    presetProps(readOnly, '09:00').onKeyDown!(fakeKey('Enter'))
+    expect(pressed(readOnly.clear)).toBe(false)
+    expect(pressed(readOnly.option('hour', '09'))).toBe(false)
+    expect(presetProps(readOnly, '09:00')['data-pressed']).toBeUndefined()
+    key(readOnly.trigger, 'keydown', ' ')
+    expect(pressed(readOnly.trigger)).toBe(true)
+    key(readOnly.trigger, 'keyup', ' ')
+
+    const bounded = open({ defaultOpen: true, min: '09:00', max: '18:00', presets: [{ value: '07:00', label: '界外' }, { value: '12:00', label: '午饭', disabled: true }] })
+    expect(bounded.option('hour', '08').getAttribute('aria-disabled')).toBe('true')
+    pointer(bounded.option('hour', '08'), 'pointerdown', 'touch')
+    expect(pressed(bounded.option('hour', '08'))).toBe(false)
+    presetProps(bounded, '07:00').onKeyDown!(fakeKey('Enter'))
+    presetProps(bounded, '12:00').onKeyDown!(fakeKey('Enter'))
+    expect(presetProps(bounded, '07:00')['data-pressed']).toBeUndefined()
+    expect(presetProps(bounded, '12:00')['data-pressed']).toBeUndefined()
+    // 没有值时清空钮藏着
+    key(bounded.clear, 'keydown', ' ')
+    expect(pressed(bounded.clear)).toBe(false)
+  })
+
+  it('按住途中转入禁用 / 只读或值被清空：部件随即失效，不会再来 keyup，按压面由机器自己收', () => {
+    const inert = open({ defaultValue: '09:30' })
+    key(inert.trigger, 'keydown', 'Enter')
+    expect(pressed(inert.trigger)).toBe(true)
+    // 只读不拦触发钮
+    inert.setProps({ readOnly: true })
+    expect(pressed(inert.trigger)).toBe(true)
+    inert.setProps({ disabled: true })
+    expect(pressed(inert.trigger)).toBe(false)
+
+    const readOnly = open({ defaultValue: '09:30', defaultOpen: true })
+    pointer(readOnly.option('hour', '09'), 'pointerdown', 'touch')
+    expect(pressed(readOnly.option('hour', '09'))).toBe(true)
+    readOnly.setProps({ readOnly: true })
+    expect(pressed(readOnly.option('hour', '09'))).toBe(false)
+
+    const cleared = open({ defaultValue: '09:30' })
+    key(cleared.clear, 'keydown', 'Enter')
+    expect(pressed(cleared.clear)).toBe(true)
+    cleared.api().clear()
+    expect(cleared.value()).toBe('')
+    expect(cleared.clear.hidden).toBe(true)
+    expect(pressed(cleared.clear)).toBe(false)
+  })
+})

@@ -5,10 +5,10 @@
 
 // 提供 time picker 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TimeSegmentType } from '../time-field'
-import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerSchema } from './time-picker.types'
-import { dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerPressedKey, TimePickerSchema } from './time-picker.types'
+import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import {
   appendSegmentDigit,
@@ -89,6 +89,26 @@ export function connectTimePicker<T extends PropTypes>(
   const dirty = value !== '' || draft.hour != null || draft.minute != null
     || draft.second != null || draft.dayPeriod != null
   const canClear = editable && dirty
+
+  // 按压通道：四类可按部件各自合成一份跟踪器，真源是机器 context 里「正被按住的那一个」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 逐条禁用（越界 / 作者禁用的快捷选项与格、清不了的清空钮）随 PRESS.START 带给机器的守卫
+  const pressed = context.get('pressed')
+  const press = (key: TimePickerPressedKey, disabled = false): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
 
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
@@ -478,82 +498,105 @@ export function connectTimePicker<T extends PropTypes>(
 
     // 展开钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200；
     // 常驻在场，有值时由皮肤按「清空钮在场」收起；打开中与悬停同档、不另上底，方向由浮层承担
-    getTriggerProps: () => normalize.button({
-      ...parts.trigger.attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'id': ids.trigger,
-      'type': 'button',
-      // 单体控件用原生 disabled：禁用的控件不该有键盘入口；只读不禁用，浮层仍可展开查看
-      'disabled': disabled || undefined,
-      // 展开的是几列并排的选择面板而不是列表，故报 dialog
-      'aria-haspopup': 'dialog',
-      'aria-expanded': open ? 'true' : 'false',
-      'aria-controls': ids.content,
-      // 图标按钮自己没有文字，名字借标题；作者写了 aria-label 会盖过这条
-      'aria-labelledby': ids.label,
-      'data-state': stateAttr,
-      'data-disabled': dataAttr(disabled),
-      // 原生 disabled 的按钮不派 click，但程序化派发的 click 照样送得到，故这里再守一次
-      'onClick': (event: MouseEvent) => {
-        if (disabled)
-          return
-        // 键盘激活的这一路要有可见落点；指针点开一路不补，展开那一刻不能有格子看着像被选中
-        const byKey = keyActivated.delete(event.currentTarget as Element)
-        send({ type: 'TOGGLE', focus: byKey ? 'first' : undefined, src: 'trigger' })
-      },
-      // 指针按下即撤掉键盘标记：这一次激活是指针的，之前那次按键没等来激活也就此作废
-      'onPointerDown': (event: PointerEvent) => {
-        keyActivated.delete(event.currentTarget as Element)
-      },
-      'onKeyDown': (event: KeyboardEvent) => {
-        if (open || disabled)
-          return
-        // 上下键直接展开，落点跟着方向走：下键落首格、上键落末格
-        const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
-        if (intent) {
-          event.preventDefault()
-          send({ type: 'OPEN', focus: intent === 'prev' ? 'last' : 'first', src: 'trigger' })
-          return
-        }
-        // Enter / Space 不在这里接，按钮默认激活会再合成一次 click，两处都收会一开一关；
-        // 这里只记下入口是键盘，那次 click 才认得出自己不是指针点的
-        if (event.key === 'Enter' || event.key === ' ')
-          keyActivated.add(event.currentTarget as Element)
-      },
-    }),
+    getTriggerProps: () => {
+      const triggerPress = press('trigger', disabled)
+      return normalize.button({
+        ...parts.trigger.attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'id': ids.trigger,
+        'type': 'button',
+        // 单体控件用原生 disabled：禁用的控件不该有键盘入口；只读不禁用，浮层仍可展开查看
+        'disabled': disabled || undefined,
+        // 展开的是几列并排的选择面板而不是列表，故报 dialog
+        'aria-haspopup': 'dialog',
+        'aria-expanded': open ? 'true' : 'false',
+        'aria-controls': ids.content,
+        // 图标按钮自己没有文字，名字借标题；作者写了 aria-label 会盖过这条
+        'aria-labelledby': ids.label,
+        'data-state': stateAttr,
+        'data-disabled': dataAttr(disabled),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressed === 'trigger'),
+        'onKeyUp': triggerPress.onKeyUp,
+        'onBlur': triggerPress.onBlur,
+        'onPointerUp': triggerPress.onPointerUp,
+        'onPointerCancel': triggerPress.onPointerCancel,
+        // 原生 disabled 的按钮不派 click，但程序化派发的 click 照样送得到，故这里再守一次
+        'onClick': (event: MouseEvent) => {
+          if (disabled)
+            return
+          // 键盘激活的这一路要有可见落点；指针点开一路不补，展开那一刻不能有格子看着像被选中
+          const byKey = keyActivated.delete(event.currentTarget as Element)
+          send({ type: 'TOGGLE', focus: byKey ? 'first' : undefined, src: 'trigger' })
+        },
+        // 指针按下即撤掉键盘标记：这一次激活是指针的，之前那次按键没等来激活也就此作废；触屏按下照进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          keyActivated.delete(event.currentTarget as Element)
+          triggerPress.onPointerDown(event)
+        },
+        'onKeyDown': (event: KeyboardEvent) => {
+          // 按压通道先过：展开中按住触发钮收起浮层也该有回执
+          triggerPress.onKeyDown(event)
+          if (open || disabled)
+            return
+          // 上下键直接展开，落点跟着方向走：下键落首格、上键落末格
+          const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
+          if (intent) {
+            event.preventDefault()
+            send({ type: 'OPEN', focus: intent === 'prev' ? 'last' : 'first', src: 'trigger' })
+            return
+          }
+          // Enter / Space 不在这里接，按钮默认激活会再合成一次 click，两处都收会一开一关；
+          // 这里只记下入口是键盘，那次 click 才认得出自己不是指针点的
+          if (event.key === 'Enter' || event.key === ' ')
+            keyActivated.add(event.currentTarget as Element)
+        },
+      })
+    },
 
     // 清空钮同走 field-inset ghost 档，按 has-value 显隐
-    getClearTriggerProps: () => normalize.button({
-      ...parts['clear-trigger'].attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'has-value',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'data-xh-action-has-value': dataAttr(canClear),
-      'type': 'button',
-      // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
-      'tabindex': -1,
-      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
-      // 没值就整个收起，不是禁用：有值才出现，出现即可用
-      'hidden': !canClear || undefined,
-      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      'onClick': (event: MouseEvent) => {
-        if (!canClear)
-          return
-        send({ type: 'VALUE.CLEAR' })
-        // pointerdown 已拦掉默认聚焦，键盘/程序化激活这一路则要主动把焦点送回首段
-        focusFirstSegment(event.currentTarget as HTMLElement)
-      },
-    }),
+    getClearTriggerProps: () => {
+      const clearPress = press('clear', !canClear)
+      return normalize.button({
+        ...parts['clear-trigger'].attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'has-value',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-xh-action-has-value': dataAttr(canClear),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressed === 'clear'),
+        'type': 'button',
+        // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
+        'tabindex': -1,
+        'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+        // 没值就整个收起，不是禁用：有值才出现，出现即可用
+        'hidden': !canClear || undefined,
+        // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里；触屏按下仍要进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+          clearPress.onPointerDown(event)
+        },
+        'onPointerUp': clearPress.onPointerUp,
+        'onPointerCancel': clearPress.onPointerCancel,
+        'onKeyDown': clearPress.onKeyDown,
+        'onKeyUp': clearPress.onKeyUp,
+        'onBlur': clearPress.onBlur,
+        'onClick': (event: MouseEvent) => {
+          if (!canClear)
+            return
+          send({ type: 'VALUE.CLEAR' })
+          // pointerdown 已拦掉默认聚焦，键盘/程序化激活这一路则要主动把焦点送回首段
+          focusFirstSegment(event.currentTarget as HTMLElement)
+        },
+      })
+    },
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
@@ -681,6 +724,8 @@ export function connectTimePicker<T extends PropTypes>(
         'data-disabled': dataAttr(presetDisabled),
         // roving tabindex：只有落点那一条留在 Tab 序列内，其余靠方向键到达
         'tabindex': presetAnchor === option ? 0 : -1,
+        // 按住的回执与写值同一道门：只读、逐条禁用都不进；Enter 写值收起后由展开态的 exit 松开
+        ...press(`preset:${option}`, presetDisabled || readOnly),
         'onClick': () => pickPreset(option),
       })
     },
@@ -729,6 +774,8 @@ export function connectTimePicker<T extends PropTypes>(
         'data-highlighted': dataAttr(focusedColumn === unit && focusedItem === option),
         // roving tabindex：每列只有锚点那一格留在 Tab 序列内
         'tabindex': anchorOf(unit) === option ? 0 : -1,
+        // 按住的回执与选中同一道门：只读、越界与作者钩子判不可选的都不进
+        ...press(`item:${unit}:${option}`, optionDisabled || readOnly),
         'onClick': () => {
           if (!optionDisabled)
             send({ type: 'ITEM.SELECT', unit, value: option })
