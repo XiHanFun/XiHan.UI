@@ -150,9 +150,9 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 
 **状态**：`off` · `on` · `indeterminate`
 
-**事件**：`TOGGLE` · `CHECK` · `UNCHECK` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `CONTROLLED.INDETERMINATE` · `FORM.RESET`
+**事件**：`TOGGLE` · `CHECK` · `UNCHECK` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `CONTROLLED.INDETERMINATE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isCheckedControlled` · `defaultsToChecked` · `defaultsToIndeterminate`
+**判据**：`isCheckedControlled` · `defaultsToChecked` · `defaultsToIndeterminate` · `canPress`
 
 ### connect API
 
@@ -177,6 +177,7 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 checked 状态 |
+| `Space` / `Enter` | held in root, not disabled, not readOnly | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中转入禁用或只读也撤下。与勾选态互相独立 |
 
 ### ARIA
 
@@ -207,6 +208,7 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-pressed` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
