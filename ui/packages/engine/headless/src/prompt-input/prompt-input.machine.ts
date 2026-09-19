@@ -22,6 +22,8 @@ export const promptInputMachine = createMachine({
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     isComposing: cell<boolean>(() => ({ defaultValue: false })),
+    // 按压通道：发送 / 停止按钮被 Space / Enter 或触屏按住
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   // 初值判空与 isValueEmpty 守卫同样使用 trim
   initialState: ({ prop }) => {
@@ -33,6 +35,10 @@ export const promptInputMachine = createMachine({
     track([() => prop('disabled')], () => action(['syncDisabled']))
     // 宿主直接改 value 不经过 VALUE.SET，这里补一次状态同步
     track([context.dep('value')], () => action(['syncValueState']))
+    // 按住途中按钮身份随 loading 切换（发送 ↔ 停止）：换了身份的按钮不该顶着上一个身份的按压面，一律松开
+    track([() => prop('loading')], () => action(['endPress']))
+    // 提交后清空 / 组合态使发送钮转禁用：不会再来 keyup，按压面由机器自己收
+    track([() => prop('allowEmptySubmit'), context.dep('value'), context.dep('isComposing')], () => action(['releaseWhenInert']))
   },
   // 组合态、提交与停止挂在根级，disabled 状态里再显式吃掉
   on: {
@@ -53,6 +59,9 @@ export const promptInputMachine = createMachine({
     ],
     'CONTROLLED.VALUE.EMPTY': { target: 'empty' },
     'CONTROLLED.VALUE.FILLED': { target: 'editing' },
+    // 按压通道：按钮在发送身份下按可否提交禁用、停止身份下恒可用，守卫与之同口径
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     empty: {
@@ -73,8 +82,9 @@ export const promptInputMachine = createMachine({
       },
     },
     disabled: {
-      // 进入禁用态即复位 isComposing，兜住组合期间被禁用而收不到 compositionend 的情况
-      entry: ['clearComposing'],
+      // 进入禁用态即复位 isComposing，兜住组合期间被禁用而收不到 compositionend 的情况；
+      // 按住途中转禁用不会再来 keyup，按压面一并收掉
+      entry: ['clearComposing', 'endPress'],
       // 显式声明空转移，避免事件落到根级的 on 上。
       // CONTROLLED.VALUE.* 这两条尤其不能漏：宿主在同一拍里既置 disabled 又清空 value
       // （提交后最常见的一拍），watch 顺序会把状态从 disabled 拽回 empty，输入框重新可编辑
@@ -87,6 +97,7 @@ export const promptInputMachine = createMachine({
         'VALUE.SET': {},
         'CONTROLLED.VALUE.EMPTY': {},
         'CONTROLLED.VALUE.FILLED': {},
+        'PRESS.START': {},
       },
     },
   },
@@ -97,6 +108,11 @@ export const promptInputMachine = createMachine({
         && !context.get('isComposing')
         && (prop('allowEmptySubmit') === true || context.get('value').trim() !== ''),
       isLoading: ({ prop }) => prop('loading') === true,
+      /**
+       * 按压守卫与按钮的可用性同口径：生成中按钮是停止钮、恒可用；否则要能提交才可按。
+       * 禁用态由 disabled 状态里的空转移吃掉，不落到这里
+       */
+      canPress: ({ prop, guard }) => prop('loading') === true || guard('canSubmit'),
       isValueEmpty: ({ context }) => context.get('value').trim() === '',
       // 判定 VALUE.SET 事件载荷里的新值是否为空
       isNextValueEmpty: ({ event }) => {
@@ -115,6 +131,13 @@ export const promptInputMachine = createMachine({
         if (prop('clearOnSubmit') === false)
           return
         context.set('value', '')
+      },
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      // 发送身份下转为不可提交（清空、组合中）即松开；停止身份恒可用，不动
+      releaseWhenInert: ({ context, prop, guard }) => {
+        if (context.get('pressed') && prop('loading') !== true && !guard('canSubmit'))
+          context.set('pressed', false)
       },
       setComposing: ({ context }) => {
         context.set('isComposing', true)

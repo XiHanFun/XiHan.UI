@@ -178,3 +178,117 @@ describe('connectPromptInput 属性输出', () => {
     expect(mount({ size: 'sm' }).trigger()['data-xh-action-size']).toBe('sm')
   })
 })
+
+describe('按压通道：发送 / 停止按钮 Space / Enter 与触屏按住投影 data-pressed', () => {
+  const touch = { pointerType: 'touch' }
+  const mouse = { pointerType: 'mouse' }
+  const pressed = (rig: Rig): boolean => rig.trigger()['data-pressed'] === ''
+
+  /** 与 mount 同一套接线，另留一个改 props 的口子。 */
+  function mountWithProps(initial: Props = {}): Rig & { setProps: (next: Props) => void } {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ ...initial })
+    const service = createService(promptInputMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const api = (): PromptInputApi => connectPromptInput(service, normalizeProps)
+    return {
+      service,
+      api,
+      input: () => api().getInputProps() as Dict,
+      trigger: () => api().getSubmitTriggerProps() as Dict,
+      value: () => service.context.get('value'),
+      setProps: next => props.set({ ...props.get(), ...next }),
+    }
+  }
+
+  it('发送身份：keydown 在场、keyup 撤下；失焦撤下；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路；按住本身不提交', () => {
+    const onSubmit = vi.fn()
+    const rig = mount({ defaultValue: '你好', onSubmit })
+    expect(pressed(rig)).toBe(false)
+    fire(rig.trigger(), 'onKeyDown', keyEvent(' '))
+    expect(pressed(rig)).toBe(true)
+    fire(rig.trigger(), 'onKeyUp', keyEvent(' '))
+    expect(pressed(rig)).toBe(false)
+    fire(rig.trigger(), 'onKeyDown', keyEvent('Enter'))
+    expect(pressed(rig)).toBe(true)
+    fire(rig.trigger(), 'onBlur')
+    expect(pressed(rig)).toBe(false)
+    fire(rig.trigger(), 'onPointerDown', touch)
+    expect(pressed(rig)).toBe(true)
+    fire(rig.trigger(), 'onPointerCancel')
+    expect(pressed(rig)).toBe(false)
+    fire(rig.trigger(), 'onPointerDown', touch)
+    expect(pressed(rig)).toBe(true)
+    fire(rig.trigger(), 'onPointerUp')
+    expect(pressed(rig)).toBe(false)
+    fire(rig.trigger(), 'onPointerDown', mouse)
+    expect(pressed(rig)).toBe(false)
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('提交后清空（Enter 在 keydown 即 click）：发送钮转禁用，按压面由机器松开', () => {
+    const rig = mount({ defaultValue: '你好' })
+    fire(rig.trigger(), 'onKeyDown', keyEvent('Enter'))
+    expect(pressed(rig)).toBe(true)
+    fire(rig.trigger(), 'onClick')
+    expect(rig.value()).toBe('')
+    expect(rig.trigger().disabled).toBe(true)
+    expect(pressed(rig)).toBe(false)
+  })
+
+  it('停止身份（loading）恒可用，按住同样有回执；身份随 loading 切换时松开', () => {
+    const rig = mountWithProps({ loading: true })
+    expect(rig.trigger()['data-mode']).toBe('stop')
+    expect(rig.trigger().disabled).toBeUndefined()
+    fire(rig.trigger(), 'onKeyDown', keyEvent('Enter'))
+    expect(pressed(rig)).toBe(true)
+    rig.setProps({ loading: false })
+    expect(rig.trigger()['data-mode']).toBe('send')
+    expect(pressed(rig)).toBe(false)
+
+    const sending = mountWithProps({ defaultValue: '你好' })
+    fire(sending.trigger(), 'onPointerDown', touch)
+    expect(pressed(sending)).toBe(true)
+    sending.setProps({ loading: true })
+    expect(pressed(sending)).toBe(false)
+  })
+
+  it('不进：禁用；空内容不可提交（按钮原生 disabled）；输入法组合中', () => {
+    const off = mount({ defaultValue: '你好', disabled: true })
+    fire(off.trigger(), 'onKeyDown', keyEvent(' '))
+    fire(off.trigger(), 'onPointerDown', touch)
+    expect(pressed(off)).toBe(false)
+
+    const empty = mount()
+    expect(empty.trigger().disabled).toBe(true)
+    fire(empty.trigger(), 'onKeyDown', keyEvent(' '))
+    expect(pressed(empty)).toBe(false)
+    // allowEmptySubmit 放开后空内容也可按
+    const allow = mount({ allowEmptySubmit: true })
+    fire(allow.trigger(), 'onKeyDown', keyEvent(' '))
+    expect(pressed(allow)).toBe(true)
+
+    const composing = mount({ defaultValue: '你好' })
+    fire(composing.input(), 'onCompositionStart')
+    fire(composing.trigger(), 'onPointerDown', touch)
+    expect(pressed(composing)).toBe(false)
+  })
+
+  it('按住途中转入禁用，或宿主把值清空 / 组合开始使发送钮转禁用：按压面由机器自己收', () => {
+    const rig = mountWithProps({ defaultValue: '你好' })
+    fire(rig.trigger(), 'onKeyDown', keyEvent('Enter'))
+    expect(pressed(rig)).toBe(true)
+    rig.setProps({ disabled: true })
+    expect(pressed(rig)).toBe(false)
+
+    const cleared = mountWithProps({ defaultValue: '你好' })
+    fire(cleared.trigger(), 'onKeyDown', keyEvent('Enter'))
+    cleared.api().setValue('')
+    expect(pressed(cleared)).toBe(false)
+
+    const composing = mountWithProps({ defaultValue: '你好' })
+    fire(composing.trigger(), 'onPointerDown', touch)
+    fire(composing.input(), 'onCompositionStart')
+    expect(pressed(composing)).toBe(false)
+  })
+})

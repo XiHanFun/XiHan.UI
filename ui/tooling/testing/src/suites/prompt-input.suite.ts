@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { promptInputAnatomy, promptInputKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 组件只额外接管 Enter，其余按键交给浏览器，故出处指向 APG 模式总览页。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/'
@@ -226,6 +227,60 @@ export const promptInputSuite: ConformanceSuite = {
           'submit-trigger': { disabled: '' },
         },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：发送钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不提交',
+      spec: { adr: 'press-channel' },
+      covers: ['prompt-input.kbd.press'],
+      props: { defaultValue: '你好' },
+      steps: [
+        heldPress('prompt-input', 'submit-trigger'),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'submit-trigger', name: 'data-pressed', value: null } },
+          expect: { parts: { 'submit-trigger': { 'data-mode': 'send', 'data-pressed': null } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '生成中的停止钮恒可用，按住同样有回执；身份随 loading 切回发送时松开',
+      spec: { adr: 'press-channel' },
+      covers: ['prompt-input.kbd.press'],
+      props: { loading: true, defaultValue: '这句还没发' },
+      steps: [
+        heldPress('prompt-input', 'submit-trigger'),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见，再在这一帧上翻转 loading',
+          run: async ({ doc, flush }: RawStepContext) => {
+            const trigger = doc.querySelector<HTMLElement>('[data-scope="prompt-input"][data-part="submit-trigger"]')!
+            trigger.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true, cancelable: true }))
+            await flush()
+            if (!trigger.hasAttribute('data-pressed'))
+              throw new Error('停止钮触屏按下后应投影 data-pressed')
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { loading: false },
+          expect: { parts: { 'submit-trigger': { 'data-mode': 'send', 'data-pressed': null } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '按不动的不进入按压面：禁用、空内容不可提交、输入法组合中',
+      spec: { adr: 'press-channel' },
+      props: { disabled: true, defaultValue: '发不出去' },
+      steps: [
+        heldPressIgnored('prompt-input', 'submit-trigger', '禁用时发送钮原生 disabled，不接受按压'),
+      ],
+    },
+    {
+      name: '空内容不可提交：发送钮原生 disabled，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      steps: [
+        heldPressIgnored('prompt-input', 'submit-trigger', '空内容不可提交，发送钮原生 disabled，不接受按压'),
+      ],
     },
     {
       name: 'Escape 不接管：留给叠在输入框上的浮层与页面',
