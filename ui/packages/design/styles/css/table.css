@@ -473,7 +473,7 @@
   [data-scope='table'][data-part='select-all-trigger'][data-disabled],
   [data-scope='table'][data-part='column-visibility-trigger'][data-disabled],
   [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
-    border-color: var(--xh-border-subtle);
+    border-color: var(--xh-border-default);
     background: var(--xh-bg-muted);
     color: transparent;
   }
