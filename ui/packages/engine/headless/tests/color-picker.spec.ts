@@ -930,3 +930,98 @@ describe('connectColorPicker 内嵌滑块的指针', () => {
     expect(api(s).dragging).toBe(false)
   })
 })
+
+describe('按压通道：取色按钮 Space / Enter 与触屏按住投影 data-pressed', () => {
+  type Handlers = Record<string, (e?: unknown) => void> & { 'data-pressed'?: string, 'disabled'?: boolean }
+  const keyEvent = (key: string): KeyboardEvent => ({ key, repeat: false, isComposing: false } as unknown as KeyboardEvent)
+  const touch = { pointerType: 'touch' } as unknown as PointerEvent
+  const mouse = { pointerType: 'mouse' } as unknown as PointerEvent
+  const trigger = (s: Service<ColorPickerSchema>): Handlers => api(s).getEyeDropperTriggerProps() as unknown as Handlers
+  const pressed = (s: Service<ColorPickerSchema>): boolean => trigger(s)['data-pressed'] === ''
+  const installEyeDropper = (): void => {
+    Reflect.set(window, 'EyeDropper', class {
+      open(): Promise<{ sRGBHex: string }> {
+        return new Promise(() => {})
+      }
+    })
+  }
+
+  it('keydown 在场、keyup 撤下；失焦撤下；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路；按住本身不开取色', () => {
+    installEyeDropper()
+    const s = makeService({ defaultOpen: true })
+    expect(pressed(s)).toBe(false)
+    trigger(s).onKeyDown!(keyEvent(' '))
+    expect(pressed(s)).toBe(true)
+    trigger(s).onKeyUp!(keyEvent(' '))
+    expect(pressed(s)).toBe(false)
+    trigger(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(s)).toBe(true)
+    trigger(s).onBlur!()
+    expect(pressed(s)).toBe(false)
+    trigger(s).onPointerDown!(touch)
+    expect(pressed(s)).toBe(true)
+    trigger(s).onPointerCancel!()
+    expect(pressed(s)).toBe(false)
+    trigger(s).onPointerDown!(touch)
+    expect(pressed(s)).toBe(true)
+    trigger(s).onPointerUp!()
+    expect(pressed(s)).toBe(false)
+    trigger(s).onPointerDown!(mouse)
+    expect(pressed(s)).toBe(false)
+    expect(s.state.matches('open.idle')).toBe(true)
+  })
+
+  it('屏幕取色一开就撤下（窗口随即失焦，不会再来 keyup）；取色途中按钮保持 picking 而不是 pressed', () => {
+    installEyeDropper()
+    const s = makeService({ defaultOpen: true })
+    trigger(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(s)).toBe(true)
+    // Enter 在 keydown 即 click
+    trigger(s).onClick!()
+    expect(s.state.matches('open.picking')).toBe(true)
+    expect(pressed(s)).toBe(false)
+    expect(trigger(s)['data-state']).toBe('picking')
+  })
+
+  it('浮层收起时随按钮一起离场，按压面一并撤下', () => {
+    installEyeDropper()
+    const s = makeService({ defaultOpen: true })
+    trigger(s).onPointerDown!(touch)
+    expect(pressed(s)).toBe(true)
+    s.send({ type: 'CLOSE' })
+    expect(s.state.matches('closed')).toBe(true)
+    expect(s.context.get('pressed')).toBe(false)
+  })
+
+  it('不进：禁用 / 只读，或环境没有 EyeDropper（按钮原生 disabled，程序化派发也被守卫拦下）', () => {
+    const none = makeService({ defaultOpen: true })
+    expect(trigger(none).disabled).toBe(true)
+    trigger(none).onKeyDown!(keyEvent(' '))
+    expect(pressed(none)).toBe(false)
+
+    installEyeDropper()
+    for (const props of [{ disabled: true }, { readOnly: true }]) {
+      const s = makeService({ defaultOpen: true, ...props })
+      expect(trigger(s).disabled).toBe(true)
+      trigger(s).onKeyDown!(keyEvent(' '))
+      trigger(s).onPointerDown!(touch)
+      expect(pressed(s)).toBe(false)
+    }
+  })
+
+  it('按住途中转入禁用 / 只读：按钮随即 disabled、不会再来 keyup，按压面由机器自己收', () => {
+    installEyeDropper()
+    for (const inert of [{ disabled: true }, { readOnly: true }]) {
+      // 夹具的 props 是普通对象，watch 只在 props 身份变化时复查，走 signal 才惊动它
+      const runtime = createVanillaRuntime()
+      const props = runtime.signal<Props>({ defaultOpen: true })
+      const s = attachSliders(createService(colorPickerMachine, { props: () => props.get(), runtime }), runtime)
+      runtime.start()
+      trigger(s).onKeyDown!(keyEvent('Enter'))
+      expect(pressed(s)).toBe(true)
+      props.set({ defaultOpen: true, ...inert })
+      expect(pressed(s)).toBe(false)
+      runtime.stop()
+    }
+  })
+})

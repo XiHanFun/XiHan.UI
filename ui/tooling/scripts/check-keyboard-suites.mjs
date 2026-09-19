@@ -60,6 +60,9 @@ const ROW_EXEMPT = {
   // 列设置区摆在 root 之外（root 是 grid 系角色，子节点只能是 row 与 rowgroup），
   // 而套件的 fixture 是一棵以 root 为树根的树，表达不出它的兄弟位
   'table.kbd.column-visibility': '列设置区在 root 之外，见 headless 的 tests/table-column-settings.spec.ts',
+  // 取色按钮在 jsdom 里自始禁用（环境没有 EyeDropper，机器挂载即按不支持禁掉），套件到不了按住那一帧；
+  // 三端只验「禁用不进」，按住 / 抬起 / 失焦 / 触屏与取色开始即撤下由装了 EyeDropper 的单测认领
+  'color-picker.kbd.press': 'jsdom 没有 EyeDropper，按钮自始禁用；见 headless 的 tests/color-picker.spec.ts 按压通道一节',
 }
 
 function camel(name) {

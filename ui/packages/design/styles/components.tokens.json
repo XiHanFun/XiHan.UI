@@ -13163,8 +13163,9 @@
         "background"
       ],
       "state": [
-        "active",
+        "is(:active, [data-pressed])",
         "not(:disabled)",
+        "pressed",
         "state=picking"
       ],
       "defaultToken": [

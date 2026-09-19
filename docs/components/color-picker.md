@@ -158,7 +158,7 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `FORM.RESET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `canInteract` · `canPick`
 
@@ -219,6 +219,7 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 | `Home` / `End` | focus in area-thumb, not disabled/readOnly | 饱和度取 0 / 100（与 aria-valuenow 报的是同一条轴） |
 | `Enter` | focus in channel-input | 收下框里的字；收不了就保留草稿并报告输入错误。一并拦住表单提交 |
 | `Escape` | open（本层在层栈顶） | 收起浮层，焦点归还触发器 |
+| `Enter` / `Space` | held on eye-dropper-trigger, not disabled | 按住期间取色按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，屏幕取色一开（窗口随即失焦）或浮层收起时一并撤下 |
 
 ### ARIA
 
@@ -284,6 +285,7 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 | `channel-input` | `data-channel` | channel |
 | `channel-input` | `data-invalid` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `eye-dropper-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-state` | 'picking' \| 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
@@ -294,7 +296,7 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-color-picker-action-bg` | `eye-dropper-trigger` | `background` | `default` | `transparent` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
-| `--xh-color-picker-action-bg-active` | `eye-dropper-trigger` | `background` | `active`<br>`not(:disabled)`<br>`state=picking` | `--xh-bg-subtle-active` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
+| `--xh-color-picker-action-bg-active` | `eye-dropper-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed`<br>`state=picking` | `--xh-bg-subtle-active` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
 | `--xh-color-picker-action-bg-hover` | `eye-dropper-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
 | `--xh-color-picker-action-border` | `eye-dropper-trigger` | `border` | `default` | `--xh-border-control` | color-picker 的 eye-dropper-trigger 部件 border 覆盖槽。 |
 | `--xh-color-picker-action-border-active` | `eye-dropper-trigger` | `border-color` | `state=picking` | `--xh-bg-brand` | color-picker 的 eye-dropper-trigger 部件 border-color 覆盖槽。 |

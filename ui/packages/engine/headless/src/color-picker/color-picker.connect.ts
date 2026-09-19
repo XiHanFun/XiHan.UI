@@ -18,6 +18,7 @@ import { connectColorSlider } from '../color-slider'
 import { connectColorSwatchPicker } from '../color-swatch-picker'
 import { colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { pressHandlers } from '../shared/press'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import { colorPickerInputText } from './color-picker.color'
 import { colorPickerPercent } from './color-picker.geometry'
@@ -85,6 +86,10 @@ export function connectColorPicker<T extends PropTypes>(
   const dragTarget = context.get('dragTarget')
   const eyeDropperSupported = context.get('eyeDropperSupported')
   const errors = context.get('errors')
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出。
+  // 只有取色按钮接这一路：control / trigger 是撑满字段的内容区，预设色板归 color-swatch-picker 自己的机器
+  const pressed = context.get('pressed')
+  const press = pressHandlers(services.root)
 
   const format = colorResolveFormat(prop('format') as string | undefined) ?? 'hex'
   const alpha = prop('alpha') ?? false
@@ -389,6 +394,15 @@ export function connectColorPicker<T extends PropTypes>(
       'disabled': !interactive || !eyeDropperSupported || undefined,
       'data-disabled': dataAttr(!interactive || !eyeDropperSupported),
       'data-state': picking ? 'picking' : stateAttr,
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+      // 屏幕取色一开窗口即失焦，机器在 picking 入口就撤下
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => {
         if (interactive && eyeDropperSupported)
           send({ type: 'EYE_DROPPER.OPEN' })
