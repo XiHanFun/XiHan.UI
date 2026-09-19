@@ -196,10 +196,6 @@
     transition: none;
   }
 
-  [data-scope='menu'][data-part='item']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   /* 条目里的文字载体：占满剩余宽度，长文本自己收省略号 */
   [data-scope='menu'][data-part='item-text'] {
     flex: 1;

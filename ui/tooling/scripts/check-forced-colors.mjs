@@ -172,8 +172,8 @@ const imports = [...entryCss.matchAll(/@import\s+'\.\/css\/([a-z0-9-]+\.css)'/g)
 if (imports.at(-1) !== SHARED) {
   problems.push(
     `${ENTRY} 里最后一条皮肤 @import 是 ${imports.at(-1) ?? '（一条都没有）'}，不是 ${SHARED}——`
-    + '公共补救层与组件皮肤同层同特指度，谁赢全看源序；排到前面去，组件里那条 '
-    + `\`:focus:not(:focus-visible) { outline: none }\` 就会把状态环压掉`,
+    + '公共补救层与组件皮肤同层同特指度，谁赢全看源序；排到前面去，组件皮肤里同特指度的 '
+    + 'outline 声明就会把状态环压掉',
   )
 }
 // 无层版是按同一份源序内联出来的：补救块必须落在最后一个皮肤标记之后

@@ -16707,10 +16707,6 @@
   transition: none;
 }
 
-[data-scope='cascader'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。落在家族网格的 suffix 列、跨两行居中。
    与菜单族的子菜单箭头同走字形令牌——此前这里是「描全边框再抹掉两条、把剩下的直角旋 45 度」，
    作者换掉标记时换不动它，RTL 还得再翻一次旋转角 */
@@ -16910,10 +16906,6 @@
   --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='cascader'][data-part='search-item']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 /* 自动生成的搜索结果复用 item-indicator 的尺寸、颜色和对号字形，不新增第二套作者槽。 */
@@ -20860,10 +20852,6 @@
   mask-image: var(--xh-glyph-mark-chevron-left);
 }
 
-[data-scope='context-menu'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 [data-scope='context-menu'][data-part='item-text'] {
   flex: 1;
   min-inline-size: 0;
@@ -21714,10 +21702,6 @@
   transition: none;
 }
 
-[data-scope='date-picker'][data-part='preset']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
 [data-scope='date-picker'][data-part='preset'][hidden] {
   display: none;
@@ -21834,10 +21818,6 @@
   --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='date-picker'][data-part='time-item']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 [data-scope='date-picker'][data-part='time-item']::after {
@@ -22463,10 +22443,6 @@
   --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='date-range-picker'][data-part='preset']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -25735,10 +25711,6 @@
   transition: none;
 }
 
-[data-scope='listbox'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 [data-scope='listbox'][data-part='item-text'] {
   /* 网格子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
   min-inline-size: 0;
@@ -26088,10 +26060,6 @@
   --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='menu'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 /* 条目里的文字载体：占满剩余宽度，长文本自己收省略号 */
@@ -26578,10 +26546,6 @@
 [dir='rtl'] [data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after {
   -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
   mask-image: var(--xh-glyph-mark-chevron-left);
-}
-
-[data-scope='menubar'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 [data-scope='menubar'][data-part='item-text'] {
@@ -30576,10 +30540,6 @@
   transition: none;
 }
 
-[data-scope='select'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 [data-scope='select'][data-part='item-text'] {
   /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
   min-inline-size: 0;
@@ -30938,11 +30898,6 @@
   --xh-collection-outline-current-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='side-nav'][data-part='branch-trigger']:focus:not(:focus-visible),
-[data-scope='side-nav'][data-part='link']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 [data-scope='side-nav'][data-part='branch-text'],
@@ -32754,10 +32709,6 @@
   transition: none;
 }
 
-[data-scope='table'][data-part='row']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 /* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器 */
 [data-scope='table']:is([data-part='header'], [data-part='body'], [data-part='footer']) > :not([hidden]) ~ [data-scope='table']:is([data-part='row'], [data-part='expanded-row']) {
   border-block-start: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
@@ -34098,10 +34049,6 @@
   background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle));
 }
 
-[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 /* 只读整组都改不动，但不是禁用：颜色照常，只把「可点」这个暗示收回来。
    排掉禁用项是因为这条选择器权重高过 pointer 层那条，不排就会把 not-allowed 覆盖回 default */
 [data-scope='tag-group'][data-part='root'][data-readonly]
@@ -35298,10 +35245,6 @@
   transition: none;
 }
 
-[data-scope='time-picker'][data-part='preset']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 /* 对号是 preset 自身的正式选中出口：全部条目恒留末端轨，不依赖作者补节点。 */
 [data-scope='time-picker'][data-part='preset']::after {
   content: '';
@@ -35424,10 +35367,6 @@
   --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='time-picker'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 /* 作者自己藏掉某几格时要让位，有 display 就得补这条 */
@@ -35963,10 +35902,6 @@
   transition: none;
 }
 
-[data-scope='time-range-picker'][data-part='preset']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 /* 对号是 preset 自身的正式选中出口：全部条目恒留末端轨，不依赖作者补节点。 */
 [data-scope='time-range-picker'][data-part='preset']::after {
   content: '';
@@ -36146,10 +36081,6 @@
   --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='time-range-picker'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 /* 作者自己藏掉某几格时要让位，有 display 就得补这条 */
@@ -38970,10 +38901,6 @@
   transition: none;
 }
 
-[data-scope='transfer'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 [data-scope='transfer'][data-part='item-text'] {
   flex: 1;
   min-inline-size: 0;
@@ -39481,10 +39408,6 @@
   --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
   transition: none;
-}
-
-[data-scope='tree'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled：叶子的禁用面由家族按 aria-disabled 给；
@@ -40306,10 +40229,6 @@
   transition: none;
 }
 
-[data-scope='tree-select'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
-}
-
 /* 分支行不是 treeitem 本体（aria-disabled 在 branch 上），禁用面按连接层的 data-disabled 映射到家族槽：
    字色降级、悬停 / 高亮 / 按下不换面、光标 not-allowed */
 [data-scope='tree-select'][data-part='branch-control'][data-disabled] {
@@ -40678,8 +40597,8 @@
  * 在各自皮肤里另有 forced-colors 块。
  *
  * 取值只用 system color keyword：这一档里 --xh-* 令牌已经不生效，写了是误导。
- * 排在全部组件皮肤之后：同特指度靠源序取胜，组件里那条 `:focus:not(:focus-visible) { outline: none }`
- * 才压不掉这里的状态环。选择器一律停在两个属性（0,2,0），组件的 :focus-visible 规则
+ * 排在全部组件皮肤之后：同特指度靠源序取胜，组件皮肤里任何与这里同特指度的 outline 声明
+ * 都压不掉这里的状态环。选择器一律停在两个属性（0,2,0），组件的 :focus-visible 规则
  * 特指度更高，聚焦环恒压在状态环之上。
  */
 

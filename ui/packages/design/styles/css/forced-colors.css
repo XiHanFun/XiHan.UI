@@ -15,8 +15,8 @@
  * 在各自皮肤里另有 forced-colors 块。
  *
  * 取值只用 system color keyword：这一档里 --xh-* 令牌已经不生效，写了是误导。
- * 排在全部组件皮肤之后：同特指度靠源序取胜，组件里那条 `:focus:not(:focus-visible) { outline: none }`
- * 才压不掉这里的状态环。选择器一律停在两个属性（0,2,0），组件的 :focus-visible 规则
+ * 排在全部组件皮肤之后：同特指度靠源序取胜，组件皮肤里任何与这里同特指度的 outline 声明
+ * 都压不掉这里的状态环。选择器一律停在两个属性（0,2,0），组件的 :focus-visible 规则
  * 特指度更高，聚焦环恒压在状态环之上。
  */
 @layer xihan.components {

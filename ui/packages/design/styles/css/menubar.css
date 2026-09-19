@@ -341,10 +341,6 @@
     mask-image: var(--xh-glyph-mark-chevron-left);
   }
 
-  [data-scope='menubar'][data-part='item']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   [data-scope='menubar'][data-part='item-text'] {
     flex: 1;
     min-inline-size: 0;

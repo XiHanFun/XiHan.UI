@@ -231,10 +231,6 @@
     transition: none;
   }
 
-  [data-scope='tree'][data-part='item']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   /* 禁用走 aria-disabled 而非原生 disabled：叶子的禁用面由家族按 aria-disabled 给；
      分支行不是 treeitem 本体（aria-disabled 在 branch 上），按连接层的 data-disabled 映射到家族槽：
      字色降级、光标 not-allowed，悬停 / 高亮 / 按下由家族守卫拦掉 */

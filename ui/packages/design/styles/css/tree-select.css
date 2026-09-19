@@ -491,10 +491,6 @@
     transition: none;
   }
 
-  [data-scope='tree-select'][data-part='item']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   /* 分支行不是 treeitem 本体（aria-disabled 在 branch 上），禁用面按连接层的 data-disabled 映射到家族槽：
      字色降级、悬停 / 高亮 / 按下不换面、光标 not-allowed */
   [data-scope='tree-select'][data-part='branch-control'][data-disabled] {

@@ -262,10 +262,6 @@
     transition: none;
   }
 
-  [data-scope='table'][data-part='row']:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   /* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器 */
   [data-scope='table']:is([data-part='header'], [data-part='body'], [data-part='footer']) > :not([hidden]) ~ [data-scope='table']:is([data-part='row'], [data-part='expanded-row']) {
     border-block-start: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
