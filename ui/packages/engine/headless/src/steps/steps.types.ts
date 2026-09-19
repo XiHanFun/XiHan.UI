@@ -119,6 +119,8 @@ export interface StepsSchema extends MachineSchema {
     value: number
     /** 焦点位于组内时的瞬态锚点，焦点离开组即清空。只服务 roving tabindex 与方向键起点。 */
     focusedStep: number | null
+    /** 按压通道：Space / Enter 或触屏按住的那一步的下标，该 trigger 投影 data-pressed。抬起、失焦或指针取消即清空，与步序、焦点锚点无关。 */
+    pressedStep: number | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -130,9 +132,21 @@ export interface StepsSchema extends MachineSchema {
     | { type: 'STEP.NEXT' }
     | { type: 'TRIGGER.FOCUS', step: number }
     | { type: 'LIST.BLUR' }
+    /** 某一步的 trigger 被 Space / Enter 或触屏按住；disabled 是该步自身的禁用事实（含 linear 未解锁），由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', step: number, disabled?: boolean }
+    /** 按住的那一步抬起、失焦或指针取消；只松开 step 对应的那一个。 */
+    | { type: 'PRESS.END', step: number }
   tag: never
-  guard: never
-  action: 'setValue' | 'goPrev' | 'goNext' | 'setFocusedStep' | 'clearFocusedStep'
+  guard: 'canPress'
+  action:
+    | 'setValue'
+    | 'goPrev'
+    | 'goNext'
+    | 'setFocusedStep'
+    | 'clearFocusedStep'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 

@@ -143,7 +143,9 @@
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `TRIGGER.FOCUS` · `LIST.BLUR`
+**事件**：`VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `TRIGGER.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -183,6 +185,7 @@
 | `Home` | focus in list | 焦点移到首个可停留 trigger |
 | `End` | focus in list | 焦点移到末个可停留 trigger |
 | `Enter` / `Space` | focus in trigger, 未禁用且已解锁 | 把当前步切到焦点所在的那一步 |
+| `Enter` / `Space` | held in trigger, 未禁用且已解锁、组未禁用 | 按住期间该 trigger 投影 data-pressed，与指针 :active 同一副按压面（行与圆点一起换面）；抬起或失焦撤下，按住途中整组转入禁用也撤下。切步与按压互相独立 |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底 |
 
 ### ARIA
@@ -233,6 +236,7 @@
 | `item` | `data-state` | s.status |
 | `item` | `data-tone` | s.tone |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | s.status |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |

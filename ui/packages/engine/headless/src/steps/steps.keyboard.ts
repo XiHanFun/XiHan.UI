@@ -20,6 +20,7 @@ export const stepsKeyboard: KeyboardTable = {
     { id: 'steps.kbd.first', keys: ['Home'], when: 'focus in list', does: '焦点移到首个可停留 trigger' },
     { id: 'steps.kbd.last', keys: ['End'], when: 'focus in list', does: '焦点移到末个可停留 trigger' },
     { id: 'steps.kbd.activate', keys: ['Enter', 'Space'], when: 'focus in trigger, 未禁用且已解锁', does: '把当前步切到焦点所在的那一步' },
+    { id: 'steps.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger, 未禁用且已解锁、组未禁用', does: '按住期间该 trigger 投影 data-pressed，与指针 :active 同一副按压面（行与圆点一起换面）；抬起或失焦撤下，按住途中整组转入禁用也撤下。切步与按压互相独立' },
     { id: 'steps.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in list', does: '整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底' },
   ],
 }

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import type { Service } from '@xihan-ui/core'
 import type { StepsApi, StepsSchema } from '../src/steps'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
@@ -42,6 +43,7 @@ function spread(el: HTMLElement, props: Dict): void {
 
 interface Harness {
   api: () => StepsApi
+  service: Service<StepsSchema>
   list: HTMLElement
   item: (index: number) => HTMLElement
   trigger: (index: number) => HTMLElement
@@ -121,6 +123,7 @@ function mount(initial: Partial<Props> = {}, authorDisabled: readonly number[] =
 
   return {
     api: () => connectSteps(service, normalizeProps),
+    service,
     list,
     item: i => items[i]!,
     trigger: i => triggers[i]!,
@@ -657,5 +660,92 @@ describe('stepsMeta', () => {
   it('必备 part 都在 anatomy 里', () => {
     const declared = new Set<string>(stepsAnatomy.parts)
     expect(stepsMeta.requiredParts.filter(p => !declared.has(p))).toEqual([])
+  })
+})
+
+describe('connectSteps 按压通道', () => {
+  const pressed = (h: Harness, i: number): boolean => h.trigger(i).hasAttribute('data-pressed')
+  const keyup = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType, bubbles: true, cancelable: true }))
+  }
+
+  it('机器收到 PRESS.START 后只有那一步的 trigger 投影 data-pressed，PRESS.END 撤下；另一步的 keyup 不串；步序不动', () => {
+    const h = mount({ defaultValue: 0 })
+    h.service.send({ type: 'PRESS.START', step: 1 })
+    expect(pressed(h, 1)).toBe(true)
+    expect(pressed(h, 0)).toBe(false)
+    expect(h.api().value).toBe(0)
+    h.service.send({ type: 'PRESS.END', step: 0 })
+    expect(pressed(h, 1)).toBe(true)
+    h.service.send({ type: 'PRESS.END', step: 1 })
+    expect(pressed(h, 1)).toBe(false)
+  })
+
+  it('enter / Space 按住经跟踪器进出并在 keydown 那一刻切步，长按重复键不重报，失焦即撤下', () => {
+    const h = mount({ defaultValue: 0 })
+    h.trigger(1).focus()
+    press(h.trigger(1), 'Enter')
+    expect(pressed(h, 1)).toBe(true)
+    expect(h.api().value).toBe(1)
+    press(h.trigger(1), 'Enter', { repeat: true })
+    expect(pressed(h, 1)).toBe(true)
+    keyup(h.trigger(1), 'Enter')
+    expect(pressed(h, 1)).toBe(false)
+    press(h.trigger(2), ' ')
+    expect(pressed(h, 2)).toBe(true)
+    expect(h.api().value).toBe(2)
+    h.trigger(2).dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(h, 2)).toBe(false)
+    expect(h.api().value).toBe(2)
+  })
+
+  it('触屏按下进按压面，抬起或指针取消撤下；鼠标按下不走这一路', () => {
+    const h = mount()
+    pointer(h.trigger(1), 'pointerdown', 'mouse')
+    expect(pressed(h, 1)).toBe(false)
+    pointer(h.trigger(1), 'pointerdown', 'touch')
+    expect(pressed(h, 1)).toBe(true)
+    pointer(h.trigger(1), 'pointercancel', 'touch')
+    expect(pressed(h, 1)).toBe(false)
+    pointer(h.trigger(1), 'pointerdown', 'touch')
+    expect(pressed(h, 1)).toBe(true)
+    pointer(h.trigger(1), 'pointerup', 'touch')
+    expect(pressed(h, 1)).toBe(false)
+  })
+
+  it('作者自报禁用的那一步、linear 未解锁的那一步与整组禁用都不进按压面', () => {
+    const author = mount({}, [1])
+    press(author.trigger(1), ' ')
+    pointer(author.trigger(1), 'pointerdown', 'touch')
+    expect(pressed(author, 1)).toBe(false)
+
+    const linear = mount({ linear: true, defaultValue: 0 })
+    press(linear.trigger(2), 'Enter')
+    expect(pressed(linear, 2)).toBe(false)
+    // 走过的与当前这一步照常可按
+    press(linear.trigger(0), 'Enter')
+    expect(pressed(linear, 0)).toBe(true)
+
+    const group = mount({ disabled: true })
+    press(group.trigger(0), ' ')
+    pointer(group.trigger(0), 'pointerdown', 'touch')
+    expect(pressed(group, 0)).toBe(false)
+  })
+
+  it('按住途中整组转入禁用：不会再来 keyup，机器自己撤下', () => {
+    // 夹具的 props 是普通对象，watch 的 track 要靠信号才复查：这里单独挂一台信号驱动的机器
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Partial<Props>>({ count: COUNT })
+    const service = createService(stepsMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const trigger = (): Dict => connectSteps(service, normalizeProps).getTriggerProps({ index: 0 }) as Dict
+    service.send({ type: 'PRESS.START', step: 0 })
+    expect(trigger()['data-pressed']).toBe('')
+    props.set({ count: COUNT, disabled: true })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    runtime.stop()
   })
 })
