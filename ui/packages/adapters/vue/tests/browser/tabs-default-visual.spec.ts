@@ -32,11 +32,14 @@ function resolveColor(token: string, scope: HTMLElement): string {
 
 function mount(variant?: 'card' | 'line' | 'segment'): { list: HTMLElement, active: HTMLElement, inactive: HTMLElement, indicator: HTMLElement } {
   host = document.createElement('div')
+  // line 档（含不写变体）的页签由连接层投影 Collection Item 的 nav 语境，选中项另投 data-current；
+  // card / segment 不归族，只带 activation 族的 data-state
+  const family = variant == null || variant === 'line' ? ' data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md"' : ''
   host.innerHTML = `
     <div data-scope="tabs" data-part="root" data-orientation="horizontal"${variant ? ` data-variant="${variant}"` : ''}>
       <div data-scope="tabs" data-part="list">
-        <button data-scope="tabs" data-part="trigger" data-state="active">概览</button>
-        <button data-scope="tabs" data-part="trigger" data-state="inactive">分析</button>
+        <button data-scope="tabs" data-part="trigger" data-state="active" data-current${family}>概览</button>
+        <button data-scope="tabs" data-part="trigger" data-state="inactive"${family}>分析</button>
         <span data-scope="tabs" data-part="indicator" data-orientation="horizontal" style="inset-inline-start:0;inline-size:40px"></span>
       </div>
     </div>`
@@ -115,21 +118,35 @@ describe('tabs 默认视觉', () => {
     expect(segment.active.offsetWidth).toBe(segment.inactive.offsetWidth)
   })
 
-  it('line 保持透明标签带，仅用文字与内侧指示条表达交互', async () => {
+  it('line 保持透明标签带：当前页透明面 + 品牌深字 + medium，未选中 muted + regular，悬停走白底承载 100 + default 字', async () => {
     const line = mount('line')
+    freezeMotion()
     const style = getComputedStyle(line.list)
-    const restColor = getComputedStyle(line.inactive).color
 
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
     expect(Number.parseFloat(style.borderBottomWidth)).toBe(0)
-    expect(getComputedStyle(line.active).boxShadow).toBe('none')
-    expect(getComputedStyle(line.active).color).not.toBe(restColor)
     expect(getComputedStyle(line.indicator).bottom).toBe('0px')
+    // 当前页（§7.3 导航当前页，Collection Item nav 语境）：透明面 + --xh-fg-brand-strong + medium
+    const active = getComputedStyle(line.active)
+    expect(active.boxShadow).toBe('none')
+    expect(active.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(active.color).toBe(resolveColor('--xh-fg-brand-strong', line.list))
+    expect(active.fontWeight).toBe('500')
+    // 未选中：muted + regular（与 Anchor / Breadcrumb / Menubar 同一档静息）
+    const rest = getComputedStyle(line.inactive)
+    expect(rest.color).toBe(resolveColor('--xh-fg-muted', line.list))
+    expect(rest.fontWeight).toBe('400')
+    expect(rest.cursor).toBe('pointer')
 
+    // 悬停：白底承载 hover 100（§7.2）+ default 字，不再只换前景
     await userEvent.hover(line.inactive)
-    expect(getComputedStyle(line.inactive).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(line.inactive).color).not.toBe(restColor)
+    expect(getComputedStyle(line.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
+    expect(getComputedStyle(line.inactive).color).toBe(resolveColor('--xh-fg-default', line.list))
+    // 当前页叠悬停：保留品牌深字，面走 100（§9.3）
+    await userEvent.hover(line.active)
+    expect(getComputedStyle(line.active).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
+    expect(getComputedStyle(line.active).color).toBe(resolveColor('--xh-fg-brand-strong', line.list))
   })
 
   it('card 只保留选中标签的卡片面', () => {
@@ -158,19 +175,16 @@ describe('tabs 默认视觉', () => {
     expect(getComputedStyle(segment.inactive).borderTopColor).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('按下只换面不缩放：line 换前景，card 换到 200，segment 换到 300，选中标签不叠按下面', async () => {
+  it('按下只换面不缩放：line 经家族换到 200，card 换到 200，segment 换到 300，选中标签不叠按下面', async () => {
     const line = mount('line')
     freezeMotion()
-    const lineRest = getComputedStyle(line.inactive).color
     await userEvent.hover(line.inactive)
-    const lineHover = getComputedStyle(line.inactive).color
-    expect(lineHover).not.toBe(lineRest)
+    expect(getComputedStyle(line.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
     await pressPointer(line.inactive)
     expect(line.inactive.matches(':active')).toBe(true)
     expect(getComputedStyle(line.inactive).scale).toBe('none')
-    expect(getComputedStyle(line.inactive).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(line.inactive).color).not.toBe(lineHover)
-    expect(getComputedStyle(line.inactive).color).toBe(getComputedStyle(line.active).color)
+    expect(getComputedStyle(line.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', line.list))
+    expect(getComputedStyle(line.inactive).color).toBe(resolveColor('--xh-fg-default', line.list))
     host!.remove()
 
     const card = mount('card')

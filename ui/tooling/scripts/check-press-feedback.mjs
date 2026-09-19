@@ -29,8 +29,8 @@
 //    disclosure trigger）靠两档专属的按压块 scale: none，其余 profile 的（共边相接的分段，缩放会把接缝拉开）
 //    必须在皮肤里给该部件写 --xh-action-scale-pressed: none，否则通用按压块的 0.97 缩放照样落下来。
 //    合同项可再带两个字段：target 指明换面落在该部件的哪个后代上（radio-group 的 item 按下时圆圈换底，
-//    整行本身没有面）；channel: 'color' 声明这一档无底、按下只换前景（§9.2「line 档无底时换前景」，
-//    tabs 缺省的 line 变体），此时 :active 块换 color 也算回执——没声明 channel 的仍只认换底。
+//    整行本身没有面）；channel: 'color' 声明这一档无底、按下只换前景，此时 :active 块换 color 也算回执——
+//    没声明 channel 的仍只认换底（当前没有成员：tabs line 档已接 Collection Item nav 语境，按下经家族换面）。
 // ④ 展示色底的缩放（登记成 { part, feedback: 'scale', channel: 'border' }）：这一格的底色就是它要展示的
 //    东西（色板的格子），按下换底等于把展示物盖掉，§9.1「同时换底」在这里落不下去；缩放仍走令牌，
 //    换面的第二通道落在描边上——:active 块必须改 border / outline、家族的 --xh-swatch-border 或本皮肤的描边私有槽。
@@ -52,6 +52,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { getterBody, getterProjectsOrSpreads } from './lib/connect-getters.mjs'
 import { openBacklog } from './lib/family-backlog.mjs'
+import { splitSelectors } from './lib/skin-rules.mjs'
 
 const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
@@ -188,9 +189,9 @@ const PRESSABLE = {
   'menubar': [{ part: 'trigger', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
   // 横排导航的入口是铺开的一段，按下只换面不缩放（§9.2）；面板里的链接走 Collection Item 的 overlay 语境
   'navigation-menu': [{ part: 'trigger', feedback: 'surface' }, { part: 'link', feedback: 'surface' }],
-  // 页签是铺开的一段（§9.2 Tabs trigger 归行级）：card / segment 档按下换底（200 / 300），缺省的 line 档无底，
-  // 按下只换前景
-  'tabs': [{ part: 'trigger', feedback: 'surface', channel: 'color' }],
+  // 页签是铺开的一段（§9.2 Tabs trigger 归行级）：card / segment 档在皮肤里按下换底（200 / 300），缺省的
+  // line 档接 Collection Item nav 语境，按下由家族换面（100 → 200）
+  'tabs': [{ part: 'trigger', feedback: 'surface' }],
   'toolbar': ['item'],
   // 表格里的勾选与展开把手（定尺方框，缩放并换底）；表体行走 Collection Item 的 page 语境只换面；
   // 排序把手撑满一格、表尾那颗「取下一页」接 Action Control row 档，都只换面不缩放（§9.2）
@@ -468,8 +469,8 @@ async function collectClickableParts() {
     for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
       if (!/cursor:\s*pointer/.test(rule[2]))
         continue
-      // 选择器可能是逗号分组，每条分支只收主体那个复合体
-      for (const branch of rule[1].split(',')) {
+      // 选择器可能是逗号分组，每条分支只收主体那个复合体；:is(a, b) 里的逗号不是分组
+      for (const branch of splitSelectors(rule[1])) {
         const compounds = splitCompounds(branch.trim().replace(/\s+/g, ' '))
         const subject = compounds[compounds.length - 1] ?? ''
         const part = /\[data-part='([a-z0-9-]+)'\]/.exec(subject)?.[1]

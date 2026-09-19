@@ -94,10 +94,15 @@ export const tabsSuite: ConformanceSuite = {
             'aria-disabled': 'false',
             'tabindex': '-1',
             'data-state': 'inactive',
+            'data-current': null,
             'data-value': 'one',
             'data-disabled': null,
             // reorderable 默认关：标签拖不动，这个标记就一个也不该出现
             'data-draggable': null,
+            // 缺省 line 档的页签归 Collection Item 导航当前：家族按 nav 语境给面、字与按压时间线
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'nav',
           },
           'trigger[2]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-value': 'three' },
           'tab-drag-trigger[0]': {
@@ -153,11 +158,24 @@ export const tabsSuite: ConformanceSuite = {
         parts: {
           // list 的 tabindex 只看焦点在不在组内：没有 trigger 认领 0 时由容器兜底
           'list': { tabindex: '0' },
-          'trigger[0]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-state': 'inactive' },
-          'trigger[1]': { 'aria-selected': 'true', 'tabindex': '0', 'data-state': 'active' },
-          'trigger[2]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-state': 'inactive' },
+          'trigger[0]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-state': 'inactive', 'data-current': null },
+          // 选中页签同时投 data-current：aria-selected 归 activation 族，当前页的面与字由家族按 data-current 给
+          'trigger[1]': { 'aria-selected': 'true', 'tabindex': '0', 'data-state': 'active', 'data-current': '' },
+          'trigger[2]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-state': 'inactive', 'data-current': null },
           'content[0]': { 'hidden': '', 'data-state': 'inactive' },
           'content[1]': { 'hidden': null, 'data-state': 'active' },
+        },
+      },
+    },
+    {
+      name: 'card 档不归 Collection Item：三个家族角色都不投影，data-current 照发',
+      spec: { apg: APG },
+      props: { defaultValue: 'two', variant: 'card' },
+      initial: {
+        parts: {
+          'root': { 'data-variant': 'card' },
+          'trigger[0]': { 'data-xh-collection-item': null, 'data-xh-collection-size': null, 'data-xh-collection-context': null, 'data-current': null },
+          'trigger[1]': { 'data-xh-collection-item': null, 'data-xh-collection-context': null, 'data-current': '', 'data-state': 'active' },
         },
       },
     },
