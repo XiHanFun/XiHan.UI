@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { toggleGroupAnatomy, toggleGroupKeyboard } from '@xihan-ui/headless'
 import { nativeActivation, singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/'
 
@@ -461,6 +462,27 @@ export const toggleGroupSuite: ConformanceSuite = {
             },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：条目投影 data-pressed，抬起、失焦或指针取消撤下；开关态与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['toggle-group.kbd.press'],
+      props: { multiple: true, defaultValue: ['left'] },
+      steps: [
+        // 已开与未开的条目都接按压；条目是原生 button，keydown / keyup 不经平台激活，jsdom 不翻成 click
+        heldPress('toggle-group', 'item', { value: 'left' }),
+        heldPress('toggle-group', 'item', { value: 'right' }),
+        { kind: 'settle', until: { attr: { part: 'item[2]', name: 'data-pressed', value: null } }, expect: { parts: { 'item[0]': { 'aria-pressed': 'true', 'data-state': 'on' }, 'item[2]': { 'aria-pressed': 'false', 'data-state': 'off' } } } },
+      ],
+    },
+    {
+      name: '禁用条目不进入按压面；整组禁用时所有条目都不进',
+      spec: { adr: 'press-channel' },
+      steps: [
+        heldPressIgnored('toggle-group', 'item', '禁用的条目不接受按压', { value: 'center' }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('toggle-group', 'item', '整组禁用时条目不接受按压', { value: 'left' }),
       ],
     },
   ],

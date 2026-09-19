@@ -165,7 +165,9 @@
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -200,6 +202,7 @@
 | `Home` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到首个可停留条目 |
 | `End` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到末个可停留条目 |
 | `Enter` / `Space` | focus on item, 条目未禁用 | 切换该条目；条目是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held on item, 条目未禁用且组未禁用 | 按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整组转入禁用也撤下。开关态与按压互相独立，切换照旧由平台把这一次按键翻成 click |
 
 ### ARIA
 
@@ -235,6 +238,7 @@
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'on' \| 'off' |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |

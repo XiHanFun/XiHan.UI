@@ -98,6 +98,8 @@ export interface ToggleGroupSchema extends MachineSchema {
     value: string[]
     /** 焦点位于组内时的瞬态锚点，焦点离开组即清空。 */
     focusedValue: string | null
+    /** 按压通道：Space / Enter 或触屏按住的条目 value。抬起、失焦或指针取消即清空，与开关态互相独立。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -110,9 +112,21 @@ export interface ToggleGroupSchema extends MachineSchema {
     | { type: 'GROUP.BLUR' }
     /** 所在表单被重置，选中集合回到 defaultValue。 */
     | { type: 'FORM.RESET' }
+    /** 条目被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 按住的条目抬起、失焦或指针取消；只松开 value 对应的那一个。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: never
-  action: 'setValue' | 'toggleItem' | 'setFocusedValue' | 'clearFocusedValue' | 'resetToDefault'
+  guard: 'canPress'
+  action:
+    | 'setValue'
+    | 'toggleItem'
+    | 'setFocusedValue'
+    | 'clearFocusedValue'
+    | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 
