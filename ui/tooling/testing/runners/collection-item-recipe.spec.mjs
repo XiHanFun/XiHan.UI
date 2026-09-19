@@ -22,20 +22,35 @@ function ruleBody(css, selector) {
   return css.slice(start, css.indexOf('}', start))
 }
 
+const PRESSED = ':is(:active, [data-pressed])'
+const HIGHLIGHT = ':is(:focus-visible, [data-highlighted])'
+/** nav 覆盖的基础态与 terminal 不带主体：与基础态规则同形只多一段 context。 */
+const BASE_SUFFIX = { 'rest': '', 'hover': `${GUARD}:hover`, 'keyboard-highlight': `${GUARD}${HIGHLIGHT}`, 'pressed': `${GUARD}${PRESSED}`, 'open-path': '[data-in-path]' }
+
 function contextSelector(context, subject, overlay) {
-  const suffix = { hover: ':hover', highlight: ':is(:focus-visible, [data-highlighted])', pressed: ':is(:active, [data-pressed])' }
+  const suffix = { hover: ':hover', highlight: HIGHLIGHT, pressed: PRESSED }
+  const item = `[data-xh-collection-item][data-xh-collection-context='${context}']`
+  if (subject in BASE_SUFFIX)
+    return `${item}${BASE_SUFFIX[subject]}`
+  if (subject === 'terminal')
+    return `${item}[data-current][data-xh-collection-terminal]`
   // selected 主体兼认 aria-selected 与分支行的 data-selected；current 只读 data-current
-  const base = `[data-xh-collection-item][data-xh-collection-context='${context}']${subject === 'selected' ? ':is([aria-selected=\'true\'], [data-selected])' : '[data-current]'}${GUARD}`
+  const base = `${item}${subject === 'selected' ? ':is([aria-selected=\'true\'], [data-selected])' : '[data-current]'}${GUARD}`
   return overlay ? `${base}${suffix[overlay]}` : base
 }
 
+/** 某条规则体里某支私有槽的兜底值（var(--xh-collection-<slot>-<state>, <fallback>) 的第二参）。 */
+function fallbackOf(body, slot) {
+  return body.match(new RegExp(`--xh-_collection-${slot}: var\\(--xh-collection-${slot}-[\\w-]+, (.+)\\);`))[1]
+}
+
 describe('collection Item recipe', () => {
-  it('固定三尺寸、六内容列、两上下文、九个基础态与上下文态', async () => {
+  it('固定三尺寸、六内容列、三上下文、九个基础态与上下文态', async () => {
     const recipe = await source()
     const css = compileCollectionItemRecipe(recipe)
     expect(recipe.sizes).toEqual(['sm', 'md', 'lg'])
     expect(recipe.columns).toEqual(['prefix', 'text', 'description', 'shortcut', 'suffix', 'indicator'])
-    expect(recipe.contexts).toEqual(['overlay', 'page'])
+    expect(recipe.contexts).toEqual(['overlay', 'page', 'nav'])
     expect(recipe.states).toEqual([
       'rest',
       'hover',
@@ -50,6 +65,7 @@ describe('collection Item recipe', () => {
     expect(recipe.contextStates).toEqual({
       overlay: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed'],
       page: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed', 'current', 'current+hover', 'current+highlight', 'current+pressed'],
+      nav: ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'current', 'current+hover', 'current+highlight', 'current+pressed', 'terminal'],
     })
     for (const size of recipe.sizes)
       expect(css).toContain(`[data-xh-collection-item][data-xh-collection-size='${size}']`)
@@ -58,6 +74,9 @@ describe('collection Item recipe', () => {
     expect(css).toContain(contextSelector('overlay', 'selected', 'highlight'))
     expect(css).toContain(contextSelector('page', 'selected'))
     expect(css).toContain(contextSelector('page', 'current'))
+    expect(css).toContain(contextSelector('nav', 'rest'))
+    expect(css).toContain(contextSelector('nav', 'current', 'pressed'))
+    expect(css).toContain(contextSelector('nav', 'terminal'))
     expect(css).toContain('[data-xh-collection-item][data-in-path]')
     expect(css).toContain('[data-xh-collection-item][data-state=\'checked\'] {')
     expect(css).toContain(':is([aria-selected=\'true\'], [data-state=\'checked\']) [data-xh-collection-slot=\'indicator\']')
@@ -122,6 +141,59 @@ describe('collection Item recipe', () => {
     expect(fallback(ruleBody(css, `[data-xh-collection-item]${GUARD}:hover`))).toBe('var(--xh-bg-subtle)')
   })
 
+  it('nav 语境自带白底承载阶梯：rest 透明面 + muted 字，hover 100 → pressed 200，open-path 与 hover 同档', async () => {
+    const css = compileCollectionItemRecipe(await source())
+    const rest = ruleBody(css, contextSelector('nav', 'rest'))
+    expect(fallbackOf(rest, 'bg')).toBe('transparent')
+    expect(fallbackOf(rest, 'fg')).toBe('var(--xh-fg-muted)')
+    expect(fallbackOf(rest, 'font-weight')).toBe('var(--xh-font-weight-regular)')
+    const hover = ruleBody(css, contextSelector('nav', 'hover'))
+    expect(fallbackOf(hover, 'bg')).toBe('var(--xh-bg-subtle)')
+    expect(fallbackOf(hover, 'fg')).toBe('var(--xh-fg-default)')
+    const pressed = ruleBody(css, contextSelector('nav', 'pressed'))
+    expect(fallbackOf(pressed, 'bg')).toBe('var(--xh-bg-subtle-hover)')
+    expect(pressed).toContain('transition-duration: var(--xh-motion-duration-press);')
+    expect(pressed).toContain('transition-timing-function: var(--xh-motion-ease-press);')
+    expect(pressed).not.toMatch(/scale|translate|transform/)
+    expect(fallbackOf(ruleBody(css, contextSelector('nav', 'open-path')), 'bg')).toBe(fallbackOf(hover, 'bg'))
+    // 覆盖基础态的源序与基础态一致：hover → highlight → pressed（同为 (0,4,0)）
+    expect(css.indexOf(contextSelector('nav', 'keyboard-highlight'))).toBeGreaterThan(css.indexOf(contextSelector('nav', 'hover')))
+    expect(css.indexOf(contextSelector('nav', 'pressed'))).toBeGreaterThan(css.indexOf(contextSelector('nav', 'keyboard-highlight')))
+    // nav 各态都排在对应基础态之后，同特指度下不会被基础态盖掉
+    expect(css.indexOf(contextSelector('nav', 'rest'))).toBeGreaterThan(css.indexOf(`[data-xh-collection-item]${GUARD}${PRESSED} {`))
+  })
+
+  it('nav 当前页 = 透明面 + 品牌深字 + medium，叠加 hover 100 / pressed 200；不读 aria-selected', async () => {
+    const css = compileCollectionItemRecipe(await source())
+    const current = ruleBody(css, contextSelector('nav', 'current'))
+    expect(fallbackOf(current, 'bg')).toBe('transparent')
+    expect(fallbackOf(current, 'fg')).toBe('var(--xh-fg-brand-strong)')
+    expect(fallbackOf(current, 'font-weight')).toBe('var(--xh-font-weight-medium)')
+    expect(fallbackOf(ruleBody(css, contextSelector('nav', 'current', 'hover')), 'bg')).toBe('var(--xh-bg-subtle)')
+    expect(fallbackOf(ruleBody(css, contextSelector('nav', 'current', 'pressed')), 'bg')).toBe('var(--xh-bg-subtle-hover)')
+    expect(fallbackOf(ruleBody(css, contextSelector('nav', 'current', 'highlight')), 'outline')).toBe('var(--xh-ring-focus)')
+    // Tabs trigger 自带 aria-selected：nav 段不能把它判成页内选中
+    const navRules = [...css.matchAll(/\[data-xh-collection-context='nav'\][^{]*\{/g)].map(m => m[0])
+    expect(navRules.length).toBeGreaterThan(0)
+    expect(navRules.some(selector => selector.includes('aria-selected'))).toBe(false)
+  })
+
+  it('nav terminal（不可点当前页）不带交互守卫：透明面 + --xh-fg-default + medium + cursor default', async () => {
+    const css = compileCollectionItemRecipe(await source())
+    const selector = contextSelector('nav', 'terminal')
+    expect(selector).not.toContain(':not(')
+    const terminal = ruleBody(css, selector)
+    expect(fallbackOf(terminal, 'bg')).toBe('transparent')
+    expect(fallbackOf(terminal, 'fg')).toBe('var(--xh-fg-default)')
+    expect(fallbackOf(terminal, 'font-weight')).toBe('var(--xh-font-weight-medium)')
+    expect(fallbackOf(terminal, 'cursor')).toBe('default')
+    // 没有 terminal 叠加态：hover / pressed 不会点亮不可点的当前页
+    expect(css).not.toContain(`${selector}:hover`)
+    expect(css).not.toContain(`${selector}${PRESSED}`)
+    // terminal 只属于 nav，且排在家族禁用面之前也无妨：(0,4,0) 压过 [aria-disabled='true'] 的 (0,2,0)
+    expect(css).not.toMatch(/context='(?:overlay|page)'\]\[data-current\]\[data-xh-collection-terminal\]/)
+  })
+
   it('每类标记有 forced-colors 映射，指示条只在 page', async () => {
     const css = compileCollectionItemRecipe(await source())
     const forced = css.slice(css.indexOf('@media (forced-colors: active)'))
@@ -129,6 +201,10 @@ describe('collection Item recipe', () => {
     expect(ruleBody(forced, contextSelector('overlay', 'selected'))).toContain('--xh-_collection-indicator-fg: Highlight;')
     expect(ruleBody(forced, contextSelector('page', 'selected'))).toContain('--xh-_collection-indicator-fg: HighlightText;')
     expect(ruleBody(forced, contextSelector('page', 'current'))).toContain('--xh-_collection-indicator-fg: HighlightText;')
+    // 导航当前页 forced = ButtonText（§7.3）：字重与组件自己的滑动 indicator 承担非颜色通道
+    expect(ruleBody(forced, contextSelector('nav', 'current'))).toContain('--xh-_collection-indicator-fg: ButtonText;')
+    expect(ruleBody(forced, contextSelector('nav', 'terminal'))).toContain('--xh-_collection-indicator-fg: ButtonText;')
+    expect(ruleBody(forced, contextSelector('nav', 'hover'))).toContain('--xh-_collection-bg: Highlight;')
     const bars = [...css.matchAll(/\[data-current\]::before/g)]
     expect(bars).toHaveLength(1)
     const bar = ruleBody(css, '[data-xh-collection-item][data-xh-collection-context=\'page\'][data-current]::before')
@@ -168,7 +244,22 @@ describe('collection Item recipe', () => {
     ['overlay 写了 current', (recipe) => { recipe.contextValues.overlay.current = { ...recipe.contextValues.page.current } }],
     ['缺少上下文', (recipe) => { delete recipe.contextValues.page }],
     ['forced 缺 markerColor', (recipe) => { delete recipe.forcedColors.pressed.markerColor }],
-    ['version 仍为 1', (recipe) => { recipe.version = 1 }],
+    ['nav 写了 selected', (recipe) => {
+      recipe.contextStates.nav.push('selected')
+      recipe.contextValues.nav.selected = { ...recipe.contextValues.overlay.selected }
+      recipe.forcedContextColors.nav.selected = { ...recipe.forcedContextColors.overlay.selected }
+    }],
+    ['page 写了 terminal', (recipe) => {
+      recipe.contextStates.page.push('terminal')
+      recipe.contextValues.page.terminal = { ...recipe.contextValues.nav.terminal }
+      recipe.forcedContextColors.page.terminal = { ...recipe.forcedContextColors.nav.terminal }
+    }],
+    ['nav 缺 terminal', (recipe) => {
+      recipe.contextStates.nav.pop()
+      delete recipe.contextValues.nav.terminal
+      delete recipe.forcedContextColors.nav.terminal
+    }],
+    ['version 仍为 2', (recipe) => { recipe.version = 2 }],
   ])('%s 会失败', async (_, mutate) => {
     const recipe = await source()
     mutate(recipe)

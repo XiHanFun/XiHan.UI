@@ -1,18 +1,20 @@
 {
-  "$description": "Collection Item 家族配方：尺寸节奏、内容列、上下文与状态矩阵只有这一份生成真源；组件只投影角色、上下文与状态事实。浮层集合（overlay）选中 = 透明底 + 行尾对号；页内持久集合（page）选中 = 品牌淡底行面 + 前导对号，导航当前页（current）= 品牌淡底行面 + 起始侧 2px 指示条。page 选中态的说明行保留 muted 前景，与正文维持层级；分类依据见设计真源 §7.2「浮层瞬态 vs 页内持久」。",
-  "version": 2,
+  "$description": "Collection Item 家族配方：尺寸节奏、内容列、上下文与状态矩阵只有这一份生成真源；组件只投影角色、上下文与状态事实。浮层集合（overlay）选中 = 透明底 + 行尾对号；页内持久集合（page）选中 = 品牌淡底行面 + 前导对号，导航当前页（current）= 品牌淡底行面 + 起始侧 2px 指示条；横向导航（nav：Tabs line trigger / Anchor link / Breadcrumb link / Menubar 与 NavigationMenu trigger）自带一整套白底承载阶梯：rest 透明面 + muted 字，hover 100 → pressed 200 只换面，open-path 与 hover 同档，current = 透明面 + --xh-fg-brand-strong + medium（指示条不由配方画），terminal = 不可点的当前页（--xh-fg-default + medium，无 hover / pressed）。page 选中态的说明行保留 muted 前景，与正文维持层级；分类依据见设计真源 §7.2「浮层瞬态 vs 页内持久」与 §7.3「导航当前页」。",
+  "version": 3,
   "sizes": ["sm", "md", "lg"],
   "columns": ["prefix", "text", "description", "shortcut", "suffix", "indicator"],
-  "contexts": ["overlay", "page"],
+  "contexts": ["overlay", "page", "nav"],
   "states": ["rest", "hover", "keyboard-highlight", "pressed", "open-path", "checked", "disabled", "loading", "error"],
   "contextStates": {
     "overlay": ["selected", "selected+hover", "selected+highlight", "selected+pressed"],
-    "page": ["selected", "selected+hover", "selected+highlight", "selected+pressed", "current", "current+hover", "current+highlight", "current+pressed"]
+    "page": ["selected", "selected+hover", "selected+highlight", "selected+pressed", "current", "current+hover", "current+highlight", "current+pressed"],
+    "nav": ["rest", "hover", "keyboard-highlight", "pressed", "open-path", "current", "current+hover", "current+highlight", "current+pressed", "terminal"]
   },
   "markers": {
-    "$description": "标记类型按上下文固定：overlay 对号在行尾；page 对号在行首（前导标记），current 另画起始侧 2px 品牌指示条。",
+    "$description": "标记类型按上下文固定：overlay 对号在行尾；page 对号在行首（前导标记），current 另画起始侧 2px 品牌指示条。nav 不画对号也不按条目画指示条：nav 的 2px 指示条是组件自己的滑动 indicator 部件（Tabs / Anchor / NavigationMenu），机器量几何、皮肤画在 list 上；无该部件时当前页只靠字色与字重；Breadcrumb / Menubar 无指示条。",
     "overlay": { "glyph": "trailing", "current": "none" },
     "page": { "glyph": "leading", "current": "bar" },
+    "nav": { "glyph": "none", "current": "none" },
     "bar": {
       "thickness": "var(--xh-stroke-thick)",
       "blockInset": "var(--xh-space-1)",
@@ -258,6 +260,108 @@
         "cursor": "pointer",
         "opacity": "1"
       }
+    },
+    "nav": {
+      "rest": {
+        "backgroundColor": "transparent",
+        "color": "var(--xh-fg-muted)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "hover": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "color": "var(--xh-fg-default)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "keyboard-highlight": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "color": "var(--xh-fg-default)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "var(--xh-ring-focus)",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "pressed": {
+        "backgroundColor": "var(--xh-bg-subtle-hover)",
+        "color": "var(--xh-fg-default)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "open-path": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "color": "var(--xh-fg-default)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current": {
+        "backgroundColor": "transparent",
+        "color": "var(--xh-fg-brand-strong)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-medium)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current+hover": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "color": "var(--xh-fg-brand-strong)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-medium)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current+highlight": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "color": "var(--xh-fg-brand-strong)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "var(--xh-ring-focus)",
+        "fontWeight": "var(--xh-font-weight-medium)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current+pressed": {
+        "backgroundColor": "var(--xh-bg-subtle-hover)",
+        "color": "var(--xh-fg-brand-strong)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-medium)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "terminal": {
+        "backgroundColor": "transparent",
+        "color": "var(--xh-fg-default)",
+        "descriptionColor": "var(--xh-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-medium)",
+        "cursor": "default",
+        "opacity": "1"
+      }
     }
   },
   "separator": {
@@ -305,6 +409,18 @@
       "current+hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
       "current+highlight": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "HighlightText", "markerColor": "HighlightText" },
       "current+pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" }
+    },
+    "nav": {
+      "rest": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent", "markerColor": "ButtonText" },
+      "hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "keyboard-highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" },
+      "pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "open-path": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" },
+      "current": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent", "markerColor": "ButtonText" },
+      "current+hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "current+highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" },
+      "current+pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "terminal": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent", "markerColor": "ButtonText" }
     }
   }
 }

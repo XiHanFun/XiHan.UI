@@ -10,11 +10,14 @@ const OUTPUT = join(ROOT, 'family', 'collection-item.css')
 
 const SIZES = ['sm', 'md', 'lg']
 const COLUMNS = ['prefix', 'text', 'description', 'shortcut', 'suffix', 'indicator']
-const CONTEXTS = ['overlay', 'page']
+const CONTEXTS = ['overlay', 'page', 'nav']
 const STATES = ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'checked', 'disabled', 'loading', 'error']
 const CONTEXT_STATES = {
   overlay: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed'],
   page: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed', 'current', 'current+hover', 'current+highlight', 'current+pressed'],
+  /** nav（横向导航）自带一整套基础态覆盖：白底承载阶梯 + muted 静息字；current 是透明面 + 品牌深字 + medium；
+   *  terminal 是不可点的当前页（Breadcrumb）。源序 rest → open-path → hover / highlight / pressed → current → current+* → terminal。 */
+  nav: ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'current', 'current+hover', 'current+highlight', 'current+pressed', 'terminal'],
 }
 const SIZE_FIELDS = ['blockPadding', 'inlinePadding', 'gap', 'fontSize', 'glyphSize']
 const STATE_FIELDS = ['backgroundColor', 'color', 'descriptionColor', 'indicatorColor', 'outlineColor', 'fontWeight', 'cursor', 'opacity']
@@ -30,11 +33,14 @@ const STATE_SLOT = {
   opacity: 'opacity',
   markerColor: 'indicator-fg',
 }
-const MARKER_GLYPHS = ['trailing', 'leading']
+const MARKER_GLYPHS = ['trailing', 'leading', 'none']
 const MARKER_CURRENTS = ['none', 'bar']
 /** 上下文态的主体：selected 读 aria 事实，行不是 ARIA 主体时（Tree / TreeSelect 的 branch-control，aria-selected 在
  *  branch 上）读连接层同步下来的 data-selected；current 读状态词汇表里的 data-current。:is 取最高特指度，仍是 (0,1,0)。 */
 const SUBJECT = { selected: ':is([aria-selected=\'true\'], [data-selected])', current: '[data-current]' }
+/** nav 的不可点当前页：连接层显式投影 data-xh-collection-terminal（不从 aria-current / href 推断——它同时带
+ *  aria-disabled，靠 (0,4,0) 压过家族禁用面），不带 GUARD 也不叠 hover / pressed。 */
+const TERMINAL = '[data-current][data-xh-collection-terminal]'
 /** 交互守卫：aria-disabled 与 data-disabled 同为禁用事实（分支行只带后者）；busy / error 行的换面由组件皮肤自行接回。 */
 const GUARD = ':not([aria-disabled=\'true\'], [data-disabled], [aria-busy=\'true\'], [data-error])'
 /** 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档（真源 §9.2）。 */
@@ -44,6 +50,14 @@ const OVERLAY_SUFFIX = {
   hover: ':hover',
   highlight: ':is(:focus-visible, [data-highlighted])',
   pressed: PRESSED,
+}
+/** nav 覆盖基础态时的后缀：与基础态规则同一组选择器，只多一段 context，特指度各高一级。 */
+const BASE_SUFFIX = {
+  'rest': '',
+  'hover': `${GUARD}:hover`,
+  'keyboard-highlight': `${GUARD}:is(:focus-visible, [data-highlighted])`,
+  'pressed': `${GUARD}${PRESSED}`,
+  'open-path': '[data-in-path]',
 }
 
 const stateName = state => state.replace('+', '-')
@@ -118,16 +132,22 @@ export function assertCollectionItemRecipe(source) {
     'forcedContextColors',
   ], 'root')
   assertString(source.$description, 'root.$description')
-  if (source.version !== 2)
-    fail('root.version 必须为 2')
+  if (source.version !== 3)
+    fail('root.version 必须为 3')
   assertList(source.sizes, SIZES, 'root.sizes')
   assertList(source.columns, COLUMNS, 'root.columns')
   assertList(source.contexts, CONTEXTS, 'root.contexts')
   assertList(source.states, STATES, 'root.states')
 
   assertExactKeys(source.contextStates, CONTEXTS, 'root.contextStates')
-  for (const context of CONTEXTS)
+  for (const context of CONTEXTS) {
     assertList(source.contextStates[context], CONTEXT_STATES[context], `contextStates.${context}`)
+    for (const state of source.contextStates[context]) {
+      // 基础态名与 terminal 只允许 nav 覆盖；overlay / page 只有 selected / current 及其叠加态
+      if (context !== 'nav' && (STATES.includes(state) || state === 'terminal'))
+        fail(`contextStates.${context} 不允许覆盖基础态 ${state}（只有 nav 语境自带基础态与 terminal）`)
+    }
+  }
 
   assertExactKeys(source.markers, ['$description', ...CONTEXTS, 'bar'], 'root.markers')
   assertString(source.markers.$description, 'markers.$description')
@@ -212,11 +232,25 @@ function sizeVars(source, size) {
   ].join('\n')
 }
 
-/** 上下文态选择器：基底 (0,4,0)，叠加 hover / highlight / pressed 各升一级并保持基础态的源序。 */
+/** 上下文态选择器：selected / current 基底 (0,4,0)，叠加 hover / highlight / pressed 各升一级并保持基础态的源序；
+ *  nav 覆盖的基础态与对应基础态同形只多一段 context（rest (0,2,0) → open-path (0,3,0) → hover / highlight / pressed (0,4,0)），
+ *  terminal (0,4,0) 高于 [aria-disabled='true'] 的禁用面 (0,2,0)。 */
 function contextSelector(context, state) {
+  const item = `[data-xh-collection-item][data-xh-collection-context='${context}']`
+  if (STATES.includes(state))
+    return `${item}${BASE_SUFFIX[state]}`
+  if (state === 'terminal')
+    return `${item}${TERMINAL}`
   const [subject, overlay] = state.split('+')
-  const base = `[data-xh-collection-item][data-xh-collection-context='${context}']${SUBJECT[subject]}${GUARD}`
+  const base = `${item}${SUBJECT[subject]}${GUARD}`
   return overlay ? `${base}${OVERLAY_SUFFIX[overlay]}` : base
+}
+
+/** 按下态（基础 pressed 与 nav 覆盖的 pressed）都带按下时长与曲线，与基础按下块同形。 */
+function pressTiming(source, state, indent) {
+  if (state !== 'pressed')
+    return ''
+  return `\n\n${indent}transition-duration: ${source.motion.pressDuration};\n${indent}transition-timing-function: ${source.motion.pressEasing};`
 }
 
 function contextRules(source, render) {
@@ -345,7 +379,7 @@ ${stateVars(source, 'pressed')}
   }
 
 ${contextRules(source, (context, state) => `  ${contextSelector(context, state)} {
-${contextStateVars(source, context, state)}
+${contextStateVars(source, context, state)}${pressTiming(source, state, '    ')}
   }`)}
 
   [data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
@@ -454,7 +488,11 @@ ${forcedStateVars(source, 'error')}
   if (/margin-(?:block|inline)(?:-start|-end)?:\s*-/.test(output))
     fail('separator 与列节奏不允许负 margin')
   if (/\[data-xh-collection-context='overlay'\]\[data-current\]/.test(output))
-    fail('current 只属于 page 上下文')
+    fail('current 只属于 page / nav 上下文')
+  if (/context='nav'\][^{]*aria-selected/.test(output))
+    fail('nav 不读 aria-selected（Tabs trigger 的 aria-selected 不是页内选中）')
+  if (/context='(?:overlay|page)'\]\[data-current\]\[data-xh-collection-terminal\]/.test(output))
+    fail('terminal 只属于 nav 上下文')
   return output
 }
 
