@@ -47,6 +47,14 @@ function resolveColor(element: Element, value: string): string {
   return color
 }
 
+/** 无顶光：家族的 highlight 通道是一层全透明的渐变，与不画 background-image 等价 */
+function noHighlight(style: CSSStyleDeclaration): boolean {
+  if (style.backgroundImage === 'none')
+    return true
+  const stops = /^linear-gradient\((.*)\)$/.exec(style.backgroundImage)?.[1]
+  return stops != null && stops.split(/, (?=rgba)/).every(stop => stop.startsWith('rgba(0, 0, 0, 0)'))
+}
+
 function box(id: string): HTMLElement {
   const element = document.querySelector<HTMLElement>(`[data-testid='${id}'][data-part='root']`)
   if (!element)
@@ -130,12 +138,19 @@ describe('checkbox 字段家族控制盒与三态', () => {
     expect(idle.backgroundColor).toBe(resolveColor(off, 'var(--xh-bg-canvas)'))
     expect(idle.borderColor).toBe(resolveColor(off, 'var(--xh-border-control)'))
     expect(idle.boxShadow).toBe('none')
-    expect(idle.backgroundImage).toBe('none')
+    expect(noHighlight(idle)).toBe(true)
     const on = getComputedStyle(labelledBox('on'))
     expect(on.backgroundColor).toBe(resolveColor(off, 'var(--xh-bg-brand)'))
     expect(on.borderColor).toBe(resolveColor(off, 'var(--xh-bg-brand)'))
     expect(on.boxShadow).toBe('none')
     expect(labelledBox('on').hasAttribute('data-variant')).toBe(false)
+    // 方框接 Action Control icon 档（§9.1 定尺方框）：家族给盒型与过渡，边长仍是 16px 指示符档
+    expect(off.getAttribute('data-xh-action-control')).toBe('')
+    expect(off.getAttribute('data-xh-action-profile')).toBe('icon')
+    expect(off.getAttribute('data-xh-action-variant')).toBe('outline')
+    expect(off.getBoundingClientRect().width).toBe(16)
+    expect(off.getBoundingClientRect().height).toBe(16)
+    expect(idle.transitionProperty.split(', ')).toContain('scale')
   })
 
   it.each(THEMES)('%s：六种 tone 的实体选中面、勾与半选横杠都保持 3:1', async (theme) => {
@@ -166,7 +181,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
 
     const off = getComputedStyle(box('brand-off'))
     expect(off.backgroundColor).toBe(resolveColor(box('brand-off'), 'var(--xh-bg-canvas)'))
-    expect(off.backgroundImage).toBe('none')
+    expect(noHighlight(off)).toBe(true)
     expect(off.boxShadow).toBe('none')
     expect(off.backdropFilter).toBe('none')
   })
@@ -227,6 +242,12 @@ describe('checkbox 字段家族控制盒与三态', () => {
     await finishMotion()
     expect(getComputedStyle(invalid).borderColor).toBe(invalidBorder)
 
+    // 指针直接落在方框上：家族悬停块把未勾方框的描边升一档，底不动（§8.3 字段静息 → hover）
+    await userEvent.hover(live)
+    await expect.poll(() => getComputedStyle(live).borderColor).toBe(resolveColor(live, 'var(--xh-border-control-hover)'))
+    expect(getComputedStyle(live).backgroundColor).toBe(resolveColor(live, 'var(--xh-bg-canvas)'))
+    await userEvent.unhover(live)
+
     await holdSpace(live)
     expect(getComputedStyle(live).scale).toBe('0.97')
     expect(getComputedStyle(live).backgroundColor).toBe(resolveColor(live, 'var(--xh-bg-subtle-hover)'))
@@ -234,6 +255,11 @@ describe('checkbox 字段家族控制盒与三态', () => {
     await holdSpace(on)
     expect(getComputedStyle(on).scale).toBe('0.97')
     expect(getComputedStyle(on).backgroundColor).toBe(resolveColor(on, 'var(--xh-bg-brand-active)'))
+    await releaseSpace()
+    // 只读：按住不缩放、底不换（家族的按压块被只读映射钉回静息面）
+    await holdSpace(readonly)
+    expect(getComputedStyle(readonly).scale).toBe('none')
+    expect(getComputedStyle(readonly).backgroundColor).toBe(resolveColor(readonly, 'var(--xh-bg-canvas)'))
     await releaseSpace()
 
     // 禁用面：border-default + bg-subtle + fg-disabled，不靠 opacity；勾中的禁用方框同样退回中性面，勾由置灰色画出
