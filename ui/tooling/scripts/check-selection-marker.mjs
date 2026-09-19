@@ -299,7 +299,9 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
         continue
       }
     }
-    if (onRecipe && kind !== 'open' && kind !== 'nav' && kind !== 'nav-terminal') {
+    // 登记了 within（形态限定）的语义类是那一档自己的身份：连接层按形态决定投不投家族角色（tabs 只在 line 档
+    // 投影，segment 档的滑块面写在皮肤里），②「接了配方皮肤不得再写」只核没有形态限定的登记
+    if (onRecipe && within == null && kind !== 'open' && kind !== 'nav' && kind !== 'nav-terminal') {
       for (const [name, token] of [['background', bg], ['color', color], ['font-weight', weight]]) {
         if (token != null)
           report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 ${name}: ${token}——选中标记由 collection-item 配方按 context 给`)

@@ -197,6 +197,38 @@ describe('标签页 · 条目禁用', () => {
   })
 })
 
+describe('标签页 · Collection Item 导航当前', () => {
+  it('缺省 line 档的页签投影家族角色与 nav 语境，选中项另投 data-current', () => {
+    const api = makeTabs({ defaultValue: 'overview', size: 'sm' }).api()
+    const selected = api.getTriggerProps({ value: 'overview' }) as Dict
+    const rest = api.getTriggerProps({ value: 'logs' }) as Dict
+    expect(selected['data-xh-collection-item']).toBe('')
+    expect(selected['data-xh-collection-size']).toBe('sm')
+    expect(selected['data-xh-collection-context']).toBe('nav')
+    // aria-selected 归 activation 族给 content 与 card / segment 皮肤；当前页的面与字由家族按 data-current 给
+    expect(selected['aria-selected']).toBe('true')
+    expect(selected['data-state']).toBe('active')
+    expect(selected['data-current']).toBe('')
+    expect(rest['data-current']).toBeUndefined()
+    expect(rest['data-xh-collection-context']).toBe('nav')
+  })
+
+  it('size 不写时家族尺寸档落 md', () => {
+    const api = makeTabs().api()
+    expect((api.getTriggerProps({ value: 'overview' }) as Dict)['data-xh-collection-size']).toBe('md')
+  })
+
+  it.each(['card', 'segment'] as const)('%s 档不归族：三个家族角色都不投影，data-current 照发', (variant) => {
+    const api = makeTabs({ defaultValue: 'overview', variant }).api()
+    const selected = api.getTriggerProps({ value: 'overview' }) as Dict
+    expect(selected['data-xh-collection-item']).toBeUndefined()
+    expect(selected['data-xh-collection-size']).toBeUndefined()
+    expect(selected['data-xh-collection-context']).toBeUndefined()
+    expect(selected['data-current']).toBe('')
+    expect(selected['data-state']).toBe('active')
+  })
+})
+
 describe('标签页 · 面板', () => {
   it('全部常挂，靠 hidden 显隐——面板内的滚动位置与表单态才留得住', () => {
     const t = makeTabs({ defaultValue: 'overview' })

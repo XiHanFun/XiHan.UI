@@ -162,7 +162,7 @@ border-left-color: oklch(0.708 0.005 258)
 min-height: auto
 font-size: 14px
 line-height: 14px
-font-weight: 500
+font-weight: 400
 color: oklch(0.708 0.005 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
@@ -176,9 +176,9 @@ outline-offset: 0px
 outline-color: oklch(0.708 0.005 258)
 
 [trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 12px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
@@ -197,15 +197,15 @@ border-left-color: rgba(0, 0, 0, 0)
 min-height: auto
 font-size: 14px
 line-height: 14px
-font-weight: 500
+font-weight: 400
 color: oklch(0.439 0.006 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: color, background-color, box-shadow
-transition-duration: 0.12s, 0.12s, 0.12s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
+transition-property: background-color, color, outline-color
+transition-duration: 0.2s, 0.12s, 0.12s
+transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
-outline-width: 3px
-outline-offset: 0px
-outline-color: oklch(0.439 0.006 258)
+outline-width: 2px
+outline-offset: -2px
+outline-color: rgba(0, 0, 0, 0)

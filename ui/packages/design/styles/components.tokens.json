@@ -60838,19 +60838,25 @@
       "name": "--xh-tabs-trigger-bg",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
-        "default"
+        "is([data-variant='card'], [data-variant='segment'])",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 background 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-bg-active",
@@ -60860,82 +60866,123 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
+        "current",
+        "disabled",
+        "error",
+        "is([data-variant='card'], [data-variant='segment'])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "state=active",
-        "variant=segment"
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-_tabs-trigger-bg-active",
-        "--xh-_tone-subtle"
+        "--xh-_tone-subtle",
+        "transparent"
       ],
       "visibility": "public",
-      "description": "tabs 的 root、trigger 部件 background 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-bg-active-hover",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
+        "current",
         "disabled",
+        "error",
         "hover",
+        "is([data-variant='card'], [data-variant='segment'])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "not([data-disabled])",
-        "state=active"
+        "state=active",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-_tabs-trigger-bg-active-hover"
+        "--xh-_tabs-trigger-bg-active-hover",
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 background 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-bg-hover",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "hover",
-        "not([data-disabled])"
+        "is([data-variant='card'], [data-variant='segment'])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "not([data-disabled])",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-_tabs-trigger-bg-hover"
+        "--xh-_tabs-trigger-bg-hover",
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 background 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-bg-pressed",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "is(:active, [data-pressed])",
+        "is([data-variant='card'], [data-variant='segment'])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "not([data-disabled])",
         "not([data-state='active'])",
         "pressed",
-        "state=active"
+        "state=active",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-_tabs-trigger-bg-pressed"
+        "--xh-_tabs-trigger-bg-pressed",
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 background 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-border",
@@ -60966,7 +61013,9 @@
         "border-color"
       ],
       "state": [
+        "is([data-variant='card'], [data-variant='segment'])",
         "state=active",
+        "variant=card",
         "variant=segment"
       ],
       "defaultToken": [
@@ -60980,37 +61029,52 @@
       "name": "--xh-tabs-trigger-fg",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "is([data-variant='card'], [data-variant='segment'])",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 color 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-fg-active",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "state=active"
+        "current",
+        "disabled",
+        "error",
+        "is([data-variant='card'], [data-variant='segment'])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "state=active",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-_tabs-accent-text"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 color 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-fg-hover",
@@ -61024,11 +61088,11 @@
       ],
       "state": [
         "disabled",
+        "error",
         "hover",
-        "not([data-disabled])",
-        "not([data-state='active'])",
-        "state=active",
-        "variant=line"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "variant=line",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -61048,15 +61112,15 @@
       ],
       "state": [
         "disabled",
+        "error",
         "is(:active, [data-pressed])",
-        "not([data-disabled])",
-        "not([data-state='active'])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
-        "state=active",
-        "variant=line"
+        "variant=line",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-_tabs-accent-text"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "tabs 的 root、trigger 部件 color 覆盖槽。"
@@ -61083,37 +61147,53 @@
       "name": "--xh-tabs-trigger-font-weight",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "font-weight"
       ],
       "state": [
-        "default"
+        "is([data-variant='card'], [data-variant='segment'])",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
+        "--xh-font-weight-regular",
         "--xh-text-label-weight"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 font-weight 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-font-weight-active",
       "component": "tabs",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
         "font-weight"
       ],
       "state": [
-        "state=active"
+        "current",
+        "disabled",
+        "error",
+        "is([data-variant='card'], [data-variant='segment'])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "state=active",
+        "variant=card",
+        "variant=line",
+        "variant=segment",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-font-weight-medium"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 font-weight 覆盖槽。"
+      "description": "tabs 的 root、trigger 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-gap",
@@ -61198,7 +61278,9 @@
         "box-shadow"
       ],
       "state": [
+        "is([data-variant='card'], [data-variant='segment'])",
         "state=active",
+        "variant=card",
         "variant=segment"
       ],
       "defaultToken": [

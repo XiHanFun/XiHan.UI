@@ -132,6 +132,9 @@ export function connectTabs<T extends PropTypes>(
 
   // 变体不写时显式落 line：皮肤基础规则即 line 取值，root 上始终带 data-variant 供子部件与自定义皮肤判定
   const variant = prop('variant') ?? 'line'
+  // 只有 line 档的页签归 Collection Item 导航当前（真源 §4.1）：card 是自成一张卡片的选中面、segment 是
+  // 有滑块开关，都不投家族角色；写成布尔再取值，'line' 不会被当成语境枚举
+  const nav = variant === 'line'
 
   return {
     value,
@@ -276,6 +279,12 @@ export function connectTabs<T extends PropTypes>(
       // roving tabindex：整组只有锚点条目留在 Tab 序列内
       'tabindex': anchor === item.value ? 0 : -1,
       'data-state': stateAttr(item.value),
+      // 导航当前页由家族按 data-current 给面与字；activation 族 data-state 与 aria-selected 保留给 content 与
+      // card / segment 皮肤
+      'data-current': dataAttr(item.value === value),
+      'data-xh-collection-item': dataAttr(nav),
+      'data-xh-collection-size': nav ? (prop('size') ?? 'md') : undefined,
+      'data-xh-collection-context': nav ? 'nav' : undefined,
       'data-disabled': dataAttr(itemDisabled(item)),
       'data-dragging': dataAttr(draggingTab === item.value),
       'data-drop': dropSide(item.value),
