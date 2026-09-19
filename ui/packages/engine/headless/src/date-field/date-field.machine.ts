@@ -537,6 +537,14 @@ function setOf(params: Params<DateFieldSchema>): DateSegmentType[] {
   return resolveSegmentSet(options.set, options.locale, options.granularity)
 }
 
+/** 清空按钮此刻可用：可编辑，且在用的段里填了哪怕一段（与 connect 里按钮的显隐同一口径）。 */
+function canClear(params: Params<DateFieldSchema>): boolean {
+  if (params.prop('disabled') || params.prop('readOnly'))
+    return false
+  const segments = params.context.get('segments')
+  return setOf(params).some(type => segments[type] != null)
+}
+
 function boundsOf(params: Params<DateFieldSchema>): { min: DateSegments | null, max: DateSegments | null } {
   return { min: parseBoundary(params.prop('min')), max: parseBoundary(params.prop('max')) }
 }
@@ -606,6 +614,8 @@ export const dateFieldMachine = createMachine({
     })),
     typing: cell<DateFieldSchema['context']['typing']>(() => ({ defaultValue: null })),
     focusedSegment: cell<DateSegmentType | null>(() => ({ defaultValue: null })),
+    // 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
   watch: ({ track, context, prop, action }) => {
@@ -614,11 +624,16 @@ export const dateFieldMachine = createMachine({
     // 段集换了（date-picker 按视图换段集）也要重派生：值没动，但要哪几块变了。
     // 指纹取归一后的段名串，作者每帧新建一个同内容的数组不该白惊动一次
     track([() => setKeyOf(prop('segments'))], () => action(['syncSegmentsFromSet']))
+    // 按住途中转入禁用 / 只读或段位被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('segments')], () => action(['releaseWhenInert']))
   },
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canEdit', actions: ['clearValue'] },
+    // 清空按钮的按压：清不了（禁用、只读或一段都没填）的按钮已经藏起，不该有按下的回执
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
     'SEGMENT.TYPE': { guard: 'canEdit', actions: ['typeSegment'] },
     'SEGMENT.CLEAR': { guard: 'canEdit', actions: ['clearSegment'] },
@@ -634,6 +649,8 @@ export const dateFieldMachine = createMachine({
     guards: {
       // 禁用时段位不可聚焦，只读时段位可聚焦但改不动；两条都由这一道挡住绕过 DOM 的调用
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      // 与 connect 里清空按钮的显隐同义：可编辑，且此刻在用的段里填了哪怕一段
+      canPress: params => canClear(params),
     },
     actions: {
       resetToDefault: (params) => {
@@ -681,6 +698,12 @@ export const dateFieldMachine = createMachine({
       clearValue: (params) => {
         params.context.set('typing', null)
         commitSegments(params, {})
+      },
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: (params) => {
+        if (!canClear(params))
+          params.context.set('pressed', false)
       },
       stepSegment: (params) => {
         const e = params.event.current()
