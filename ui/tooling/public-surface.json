@@ -5187,6 +5187,7 @@
       "CalendarPickerValueChangeDetails",
       "CalendarRangePickerApi",
       "CalendarRangePickerPress",
+      "CalendarRangePickerPressedKey",
       "CalendarRangePickerRefs",
       "CalendarRangePickerSchema",
       "CalendarRangePickerTranslations",
