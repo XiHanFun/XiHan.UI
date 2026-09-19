@@ -354,7 +354,7 @@ export const treeSelectSuite: ConformanceSuite = {
           },
           'branch-content[0]': { 'role': 'group', 'hidden': null, 'data-state': 'closed' },
           // 展开箭头与分支的左右方向键同义，退出可及树且不占 Tab 位
-          'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
+          'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1', 'data-xh-collection-slot': 'prefix' },
           'item[0]': {
             'role': 'treeitem',
             'aria-level': '2',
@@ -374,7 +374,6 @@ export const treeSelectSuite: ConformanceSuite = {
           },
           // 分支行与叶子行同一家族语境；对号槽落在行尾，箭头槽落在首列
           'branch-control[0]': { 'data-xh-collection-item': '', 'data-xh-collection-context': 'overlay', 'data-xh-collection-size': 'md', 'aria-selected': null },
-          'branch-trigger[0]': { 'data-xh-collection-slot': 'prefix' },
           'branch-text[0]': { 'data-xh-collection-slot': 'text' },
           'item-text[0]': { 'data-xh-collection-slot': 'text' },
           // 收起分支里的节点只是 hidden，层级属性照发
