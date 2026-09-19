@@ -268,6 +268,8 @@ export const colorPickerMachine = createMachine({
     dragTarget: cell<ColorPickerDragTarget | null>(() => ({ defaultValue: null })),
     eyeDropperSupported: cell<boolean>(() => ({ defaultValue: false })),
     errors: cell<ColorPickerErrors>(() => ({ defaultValue: emptyErrors() })),
+    // 按压通道：取色按钮被 Space / Enter 或触屏按住
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -289,6 +291,8 @@ export const colorPickerMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('value')], () => action(['syncValueError']))
     track([() => prop('format')], () => action(['syncFormatError']))
+    // 按住途中转入禁用 / 只读：按钮随即 disabled、不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
   },
   // 改值与开合无关，收起态下 api.setValue 同样要认
   on: {
@@ -302,6 +306,9 @@ export const colorPickerMachine = createMachine({
     'INPUT.CHANGE': { actions: ['setDraft'] },
     'INPUT.COMMIT': { actions: ['commitDraft'] },
     'ERROR.CLEAR': { actions: ['clearErrors'] },
+    // 按压通道：取色按钮是原生 disabled，程序化派发由 canPick 再守一次（禁用 / 只读 / 环境没有 EyeDropper 不进）
+    'PRESS.START': { guard: 'canPick', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     closed: {
@@ -322,8 +329,8 @@ export const colorPickerMachine = createMachine({
       initial: 'idle',
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
-      // 收起时丢掉没收下的草稿，再展开时输入框显示当前颜色
-      exit: ['clearDraft'],
+      // 收起时丢掉没收下的草稿，再展开时输入框显示当前颜色；取色按钮随浮层一起离场，按压面一并撤下
+      exit: ['clearDraft', 'endPress'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -351,6 +358,8 @@ export const colorPickerMachine = createMachine({
           },
         },
         picking: {
+          // 屏幕取色一开，窗口随即失焦、不会再来 keyup：按压面在这里就收，不等跟踪器的 onBlur
+          entry: ['endPress'],
           effects: ['runEyeDropper'],
           on: {
             'EYE_DROPPER.RESULT': { target: 'open.idle', actions: ['setValueFromEyeDropper'] },
@@ -392,6 +401,13 @@ export const colorPickerMachine = createMachine({
 
       syncValueError,
       syncFormatError,
+
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled') || prop('readOnly'))
+          context.set('pressed', false)
+      },
 
       syncEyeDropperSupport: ({ scope, context }) => {
         context.set('eyeDropperSupported', colorPickerHasEyeDropper(scope))

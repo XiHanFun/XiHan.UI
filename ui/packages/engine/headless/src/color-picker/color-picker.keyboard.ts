@@ -52,5 +52,11 @@ export const colorPickerKeyboard: KeyboardTable = {
       does: '收起浮层，焦点归还触发器',
       restoresFocus: true,
     },
+    {
+      id: 'color-picker.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held on eye-dropper-trigger, not disabled',
+      does: '按住期间取色按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，屏幕取色一开（窗口随即失焦）或浮层收起时一并撤下',
+    },
   ],
 }

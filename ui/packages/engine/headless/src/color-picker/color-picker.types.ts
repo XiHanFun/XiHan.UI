@@ -181,6 +181,11 @@ export interface ColorPickerSchema extends MachineSchema {
     eyeDropperSupported: boolean
     /** 格式、文本、颜色解析与屏幕取色四路错误。 */
     errors: ColorPickerErrors
+    /**
+     * 按压通道：取色按钮被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或屏幕取色开始（窗口随即失焦）、浮层收起时即撤下。
+     */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: ColorPickerRefs
@@ -217,6 +222,10 @@ export interface ColorPickerSchema extends MachineSchema {
     | { type: 'EYE_DROPPER.ERROR', cause: unknown }
     | { type: 'ERROR.CLEAR' }
     | { type: 'FORM.RESET' }
+    /** 按压通道（shared/press）：取色按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** 取色按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
   guard: 'isOpenControlled' | 'canInteract' | 'canPick'
   action:
@@ -242,6 +251,9 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'clearEyeDropperError'
     | 'clearErrors'
     | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper'
 }
 

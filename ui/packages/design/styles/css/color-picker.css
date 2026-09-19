@@ -412,8 +412,9 @@
   }
 
   /* 按下去要有回应：换底之外再压一档。取色是一次「点下去就交给系统」的操作，
-     松手那一刻浮层多半已经被系统的取色镜头盖住，按下的回执只有这一瞬看得见 */
-  [data-scope='color-picker'][data-part='eye-dropper-trigger']:active:not(:disabled) {
+     松手那一刻浮层多半已经被系统的取色镜头盖住，按下的回执只有这一瞬看得见。
+     指针 :active 与 Headless 投影的 data-pressed（Space / Enter 与触屏按住）看见同一副按压面 */
+  [data-scope='color-picker'][data-part='eye-dropper-trigger']:not(:disabled):is(:active, [data-pressed]) {
     background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
@@ -503,6 +504,12 @@
    * 触发钮里的色块归 Swatch 家族、两条滑块的轨道与色板的格子归各自那份皮，都已各自退出强制着色。
    */
   @media (forced-colors: active) {
+    /* 高对比档里底色被系统换掉，取色按钮按下那一档用系统高亮反色画回 */
+    [data-scope='color-picker'][data-part='eye-dropper-trigger']:not(:disabled):is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
+    }
+
     [data-scope='color-picker'][data-part='saturation-area'],
     [data-scope='color-picker'][data-part='saturation-area']::before {
       forced-color-adjust: none;

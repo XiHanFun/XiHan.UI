@@ -51,6 +51,9 @@ runConformance(
       // 列设置区摆在 root 之外，fixture 是一棵以 root 为树根的树，表达不出它的兄弟位；
       // 这一行由 headless 的 tests/table-column-settings.spec.ts 认领
       'table.kbd.column-visibility': '列设置区在 root 之外，fixture 表达不出它的兄弟位',
+      // 取色按钮在 jsdom 里自始禁用（环境没有 EyeDropper），套件到不了按住那一帧，只验「禁用不进」；
+      // 按住 / 抬起 / 失焦 / 触屏与取色开始即撤下由装了 EyeDropper 的 headless tests/color-picker.spec.ts 认领
+      'color-picker.kbd.press': 'jsdom 没有 EyeDropper，取色按钮自始禁用，按住帧演不出来',
       // dialog 与 drawer 不在这份清单里，它们连同各自的豁免一起住在 dialog-conformance.spec.ts
       'command.kbd.tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
       'popover.kbd.tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',

@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { colorPickerAnatomy, colorPickerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPressIgnored } from './shared/press-channel'
 
 // APG 没有取色器这一条模式：取色区按滑杆模式办，浮层部分按对话框模式办；
 // 色相 / 透明度两条滑块与预设色板是内嵌组件，各自的键盘归 color-slider 与 color-swatch-picker 那两份套件。
@@ -696,10 +697,11 @@ export const colorPickerSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '屏幕取色：环境不提供 EyeDropper 时按钮自始就是禁用的',
+      name: '屏幕取色：环境不提供 EyeDropper 时按钮自始就是禁用的，按住也不进入按压面',
       spec: { apg: APG_DIALOG },
       props: { defaultValue: '#3b82f6', defaultOpen: true },
-      // jsdom 不提供 EyeDropper，走的是环境不支持那一路
+      // jsdom 不提供 EyeDropper，走的是环境不支持那一路；按住帧（color-picker.kbd.press）由 headless 单测
+      // 装上 EyeDropper 后认领，见 check-keyboard-suites 的 ROW_EXEMPT
       initial: {
         parts: {
           'eye-dropper-trigger': {
@@ -710,6 +712,9 @@ export const colorPickerSuite: ConformanceSuite = {
           },
         },
       },
+      steps: [
+        heldPressIgnored('color-picker', 'eye-dropper-trigger', '环境没有 EyeDropper 时取色按钮原生 disabled，不接受按压'),
+      ],
     },
     {
       // 影子只在本用例的 fixture 里出现：作者不写这个部件就不该有它，
