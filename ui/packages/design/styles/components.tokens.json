@@ -60895,7 +60895,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 border-color 覆盖槽。"
