@@ -130,6 +130,8 @@ export interface MenuSchema extends MachineSchema {
     focusIntent: MenuFocusIntent
     /** 关闭时是否把焦点归还 trigger；Tab 关闭时为 false。 */
     returnFocus: boolean
+    /** 按压通道：Space / Enter 或触屏按住的条目 value；抬起、失焦或菜单收起即清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: MenuRefs
@@ -138,6 +140,10 @@ export interface MenuSchema extends MachineSchema {
     | { type: 'OPEN', focus?: MenuFocusIntent }
     | { type: 'TOGGLE', focus?: MenuFocusIntent }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' | 'hover' }
+    /** 条目被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 按住的条目抬起、失焦或指针取消；只松开 value 对应的那一条。 */
+    | { type: 'PRESS.END', value: string }
     // 受控回写：宿主改 open prop 后由 watch 派发
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -147,7 +153,7 @@ export interface MenuSchema extends MachineSchema {
     | { type: 'ITEM.LOST' }
     | { type: 'ITEM.SELECT', value: string }
   tag: never
-  guard: 'isOpenControlled'
+  guard: 'isOpenControlled' | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -159,6 +165,10 @@ export interface MenuSchema extends MachineSchema {
     | 'setInitialFocusedValue'
     | 'clearFocusedValue'
     | 'clearTypeahead'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenDisabled'
   effect: 'trackPosition' | 'trackLayer' | 'trackHover'
 }
 

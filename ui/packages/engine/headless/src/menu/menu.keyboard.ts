@@ -20,6 +20,7 @@ export const menuKeyboard: KeyboardTable = {
     { id: 'menu.kbd.first', keys: ['Home'], when: 'open, focus in content', does: '焦点移到首个可用条目' },
     { id: 'menu.kbd.last', keys: ['End'], when: 'open, focus in content', does: '焦点移到末个可用条目' },
     { id: 'menu.kbd.select', keys: ['Enter', 'Space'], when: 'focus in item, not disabled', does: '派发选中详情并关闭菜单，焦点归还 trigger', restoresFocus: true },
+    { id: 'menu.kbd.press', keys: ['Enter', 'Space'], when: 'held in item, not disabled', does: '按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或菜单收起撤下' },
     { id: 'menu.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭菜单并把焦点归还 trigger', restoresFocus: true },
     { id: 'menu.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '关闭菜单，焦点不归还 trigger，按 Tab 序列自然离开', restoresFocus: false },
   ],

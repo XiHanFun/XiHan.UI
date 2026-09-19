@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { menuAnatomy, menuKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/'
 
@@ -431,6 +432,21 @@ export const menuSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：条目投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['menu.kbd.press'],
+      // 受控展开：Enter / Space 按下即选中并发关闭意图，宿主不写回就仍开着，按住的中间帧才看得见
+      props: { open: true },
+      steps: [heldPress('menu', 'item')],
+    },
+    {
+      name: '禁用条目按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: () => menuTree('copy'),
+      props: { open: true },
+      steps: [heldPressIgnored('menu', 'item', '禁用条目不接受按压')],
     },
   ],
 }
