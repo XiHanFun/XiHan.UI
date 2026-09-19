@@ -6364,6 +6364,7 @@
       "TimePickerPreset",
       "TimePickerPresetProps",
       "TimePickerPresetState",
+      "TimePickerPressedKey",
       "TimePickerRefs",
       "TimePickerSchema",
       "TimePickerSegmentProps",

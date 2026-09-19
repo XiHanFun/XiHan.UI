@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { timePickerAnatomy, timePickerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 浮层里是几列并排的 listbox；输入行里的分段按 spinbutton 那一套。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
@@ -1165,6 +1166,76 @@ export const timePickerSuite: ConformanceSuite = {
             parts: { [HOUR_SEG]: { 'aria-valuenow': '10' }, [HOUR_10]: { 'aria-selected': 'true' } },
           },
         },
+      ],
+    },
+
+    {
+      name: 'Space / Enter 按住与触屏按下：触发钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不开合也不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['time-picker.kbd.press'],
+      props: { ...BASE, defaultValue: '09:30', name: 'start' },
+      steps: [
+        heldPress('time-picker', 'trigger'),
+        // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+        heldPress('time-picker', 'clear-trigger'),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } },
+          expect: { parts: { 'content': { hidden: '' }, 'trigger': { 'data-pressed': null }, 'clear-trigger': { hidden: null } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '展开后 Space / Enter 按住与触屏按下：时间格投影 data-pressed；快捷选项触屏按下投影（Enter 在 keydown 即写值收起，键盘那一路没有可见的按住帧）',
+      spec: { adr: 'press-channel' },
+      covers: ['time-picker.kbd.press'],
+      fixture: presetGroupFixture,
+      props: { ...BASE, presets: [...PRESETS] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        // 键盘按住会把这一格写进时段（选中不收起），按压面仍在；失焦落到列容器上，三家都只看见格子自己的 blur
+        heldPress('time-picker', 'item', { value: '09', blurTo: `${SCOPE}[data-part="column"][data-value="hour"]` }),
+        heldPress('time-picker', 'preset', { value: '10:30', keyboardHost: null }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'preset', name: 'data-pressed', value: null } },
+          expect: { parts: { content: { hidden: null }, [HOUR_09]: { 'aria-selected': 'true', 'data-pressed': null } } },
+        },
+      ],
+    },
+    {
+      name: '禁用时触发钮、清空钮、时间格与快捷选项都不进入按压面；只读时触发钮照常有回执，其余不进',
+      spec: { adr: 'press-channel' },
+      fixture: base => presetGroupFixture(base, PRESETS_MIXED),
+      props: { ...BASE, defaultValue: '09:30', presets: [...PRESETS_MIXED] },
+      steps: [
+        // 不用 defaultOpen 起手：那条路两个适配器的挂载落焦时序本就有差；先展开再转禁用，浮层留在原地
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        { kind: 'setProps', props: { disabled: true }, expect: { parts: { root: { 'data-disabled': '' } } } },
+        heldPressIgnored('time-picker', 'trigger', '禁用时触发钮原生 disabled，不接受按压'),
+        heldPressIgnored('time-picker', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        heldPressIgnored('time-picker', 'item', '禁用时格子 aria-disabled，不接受按压', { value: '09' }),
+        heldPressIgnored('time-picker', 'preset', '禁用时快捷选项 aria-disabled，不接受按压', { value: '09:00:30', keyboardHost: null }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true }, expect: { parts: { root: { 'data-readonly': '' } } } },
+        heldPressIgnored('time-picker', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        heldPressIgnored('time-picker', 'item', '只读时格子选不中，不接受按压', { value: '09' }),
+        heldPressIgnored('time-picker', 'preset', '只读时快捷选项写不了值，不接受按压', { value: '09:00:30', keyboardHost: null }),
+        heldPress('time-picker', 'trigger'),
+      ],
+    },
+    {
+      name: '按不下去的快捷选项与越界的格不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: base => presetGroupFixture(base, PRESETS_MIXED),
+      props: { ...BASE, defaultValue: '09:30', min: '09:00', max: '18:00', presets: [...PRESETS_MIXED] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        heldPressIgnored('time-picker', 'item', '被 min 裁掉的格 aria-disabled，不接受按压', { value: '08' }),
+        heldPressIgnored('time-picker', 'preset', '作者禁用的快捷选项不接受按压', { value: '08:30', keyboardHost: null }),
+        heldPressIgnored('time-picker', 'preset', '越界的快捷选项不接受按压', { value: '23:00', keyboardHost: null }),
       ],
     },
   ],

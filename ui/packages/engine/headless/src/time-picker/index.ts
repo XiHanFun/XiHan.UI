@@ -27,4 +27,4 @@ export {
 } from './time-picker.machine'
 export { timePickerMeta } from './time-picker.meta'
 export { timePickerPresetNow } from './time-picker.presets'
-export type { TimePickerApi, TimePickerColumn, TimePickerColumnProps, TimePickerColumnsOptions, TimePickerColumnUnit, TimePickerFocusIntent, TimePickerItemProps, TimePickerOpenChangeDetails, TimePickerPreset, TimePickerPresetProps, TimePickerPresetState, TimePickerRefs, TimePickerSchema, TimePickerSegmentProps, TimePickerTranslations, TimePickerValueChangeDetails } from './time-picker.types'
+export type { TimePickerApi, TimePickerColumn, TimePickerColumnProps, TimePickerColumnsOptions, TimePickerColumnUnit, TimePickerFocusIntent, TimePickerItemProps, TimePickerOpenChangeDetails, TimePickerPreset, TimePickerPresetProps, TimePickerPresetState, TimePickerPressedKey, TimePickerRefs, TimePickerSchema, TimePickerSegmentProps, TimePickerTranslations, TimePickerValueChangeDetails } from './time-picker.types'
