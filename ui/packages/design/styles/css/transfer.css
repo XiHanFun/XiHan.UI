@@ -451,44 +451,41 @@
     background: var(--xh-transfer-checkbox-bg-disabled, var(--xh-bg-muted));
   }
 
-  /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），
-     禁用因此写 :disabled，不写 data-disabled */
-  /* position 是给叠在方框上的那颗字形 ::after 当定位基准 */
+  /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），禁用同时打原生 disabled 与 data-disabled。
+     它是「方框 + 文案」的整行命中区（§9.2）：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面与过渡由家族给
+     （白底承载 hover 100 → pressed 200），按下只换面不缩放（--xh-action-scale-pressed: none），勾选回执落在方框上；
+     盒随内容收宽、高度取 xs 档的 24px 命中地板（方框 16px 居中其间），text 档的内距与最小宽度归零。
+     position 是给叠在方框上的那颗字形 ::after 当定位基准 */
   [data-scope='transfer'][data-part='select-all-trigger'] {
     /* 叠在方框上的那颗字形 ::after 与方框里的勾同一把尺 */
     --xh-icon-size: calc(var(--xh-transfer-checkbox-size, var(--xh-_transfer-box)) * 0.75);
 
-    position: relative;
-    display: inline-flex;
-    flex: none;
-    gap: var(--xh-transfer-select-all-gap, var(--xh-control-gap-sm));
-    align-items: center;
-    padding: 0;
-    border: 0;
+    --xh-action-min-inline-size: 0;
+    --xh-action-padding-inline: 0;
+    --xh-action-gap: var(--xh-transfer-select-all-gap, var(--xh-control-gap-sm));
     /* 全选格是嵌在面板头里的勾选小块：inset 档圆角（身份表登记） */
-    border-radius: var(--xh-transfer-select-all-radius, var(--xh-shape-inset));
-    background: none;
-    color: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
-    font-size: var(--xh-transfer-select-all-font-size, var(--xh-text-caption-size));
+    --xh-action-radius: var(--xh-transfer-select-all-radius, var(--xh-shape-inset));
+    --xh-action-bg-hover: var(--xh-transfer-select-all-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-transfer-select-all-bg-pressed, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
+    --xh-action-fg-pressed: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
+    --xh-action-fg-focus-visible: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
+    --xh-action-font-size: var(--xh-transfer-select-all-font-size, var(--xh-text-caption-size));
+    --xh-action-scale-pressed: none;
+
+    flex: none;
+    justify-content: start;
+    padding: 0;
     font-weight: var(--xh-font-weight-medium);
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  /* 全选是「方框 + 文案」的整行命中区（§9.2）：按下只换面不缩放，勾选回执落在方框上；白底承载 hover 100 → pressed 200 */
-  [data-scope='transfer'][data-part='select-all-trigger']:hover:not(:disabled) {
-    background: var(--xh-transfer-select-all-bg-hover, var(--xh-bg-subtle));
-  }
-
-  [data-scope='transfer'][data-part='select-all-trigger']:active:not(:disabled) {
-    background: var(--xh-transfer-select-all-bg-pressed, var(--xh-bg-subtle-hover));
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='transfer'][data-part='select-all-trigger']:disabled {
-    color: var(--xh-fg-disabled);
+  /* 家族 text 档在粗指针下用 ::after 扩热区，勾中 / 半选时这里的 ::after 是叠在方框上的字形：钉回原位、下限归零 */
+  @media (pointer: coarse) {
+    [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::after {
+      min-block-size: 0;
+      translate: none;
+    }
   }
 
   /* 两颗搬运钮是只有字形的离散动作钮：接 Action Control 的 icon 档、outline 形态（中性描边、透明底，

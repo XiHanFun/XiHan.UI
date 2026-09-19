@@ -13,6 +13,7 @@ import {
   XhTransferPanelHeader,
   XhTransferPanelTitle,
   XhTransferRoot,
+  XhTransferSelectAllTrigger,
   XhTransferSourcePanel,
   XhTransferTargetPanel,
   XhTransferToSourceTrigger,
@@ -63,7 +64,7 @@ async function mountTransfer(): Promise<void> {
   app = createApp({
     render: () => h(XhTransferRoot, { collection, defaultSelection: ['v0'] }, () => [
       h(XhTransferSourcePanel, null, () => [
-        h(XhTransferPanelHeader, null, () => [h(XhTransferPanelTitle, null, () => '待选')]),
+        h(XhTransferPanelHeader, null, () => [h(XhTransferSelectAllTrigger, null, () => '全选'), h(XhTransferPanelTitle, null, () => '待选')]),
         h(XhTransferList, null, items),
       ]),
       h(XhTransferToTargetTrigger),
@@ -106,6 +107,30 @@ describe('穿梭框的页内选中与按压反馈', () => {
     await releasePointer(plain)
     await userEvent.hover(checked)
     expect(getComputedStyle(checked).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-hover'))
+  })
+
+  it('全选格：text ghost 档，24px 命中地板里 16px 方框居中，悬停 100 / 按住 200 只换面不缩放', async () => {
+    await mountTransfer()
+    const trigger = host!.querySelector<HTMLElement>('[data-scope="transfer"][data-part="select-all-trigger"]')!
+    trigger.style.transition = 'none'
+    expect(trigger.getAttribute('data-xh-action-profile')).toBe('text')
+    expect(trigger.getAttribute('data-xh-action-variant')).toBe('ghost')
+    const rest = getComputedStyle(trigger)
+    expect(rest.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(rest.paddingInlineStart).toBe('0px')
+    expect(trigger.getBoundingClientRect().height).toBe(24)
+    const box = getComputedStyle(trigger, '::before')
+    expect(box.width).toBe('16px')
+    // v0 已勾中：源侧是半选，方框描边与底都是品牌色
+    expect(trigger.dataset.state).toBe('indeterminate')
+    expect(box.borderTopColor).toBe(resolve('--xh-bg-brand', 'color'))
+    expect(box.backgroundColor).toBe(resolve('--xh-bg-brand'))
+    await userEvent.hover(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle'))
+    await pressPointer(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
+    expect(getComputedStyle(trigger).scale).toBe('none')
+    await releasePointer(trigger)
   })
 
   it('搬运钮：icon outline 档，中性描边透明底、无抬升影；按住 0.97 并换到 200 档', async () => {
