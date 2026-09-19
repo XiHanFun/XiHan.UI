@@ -588,3 +588,89 @@ describe('connectToggleGroup 点击激活', () => {
     expect(g.items[1]!.hasAttribute('aria-pressed')).toBe(false)
   })
 })
+
+describe('connectToggleGroup 按压通道', () => {
+  const ITEMS: ToggleGroupItemProps[] = [{ value: 'a' }, { value: 'b', disabled: true }, { value: 'c' }]
+  const isPressed = (g: Group, i: number): boolean => {
+    g.render()
+    return g.items[i]!.hasAttribute('data-pressed')
+  }
+  const keyEvent = (type: 'keydown' | 'keyup', key: string, init: KeyboardEventInit = {}): KeyboardEvent =>
+    new KeyboardEvent(type, { key, bubbles: true, cancelable: true, ...init })
+  const pointerEvent = (type: string, pointerType: string): PointerEvent =>
+    new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+
+  it('PRESS.START 只让那一个条目投影 data-pressed，PRESS.END 撤下；另一条目的 keyup 不串；开关态与按压互相独立', () => {
+    const { service } = makeService({ defaultValue: 'a' })
+    const g = mountGroup(service, ITEMS)
+    service.send({ type: 'PRESS.START', value: 'c' })
+    expect(isPressed(g, 2)).toBe(true)
+    expect(isPressed(g, 0)).toBe(false)
+    expect(service.context.get('value')).toEqual(['a'])
+    expect(g.items[2]!.getAttribute('aria-checked')).toBe('false')
+    service.send({ type: 'PRESS.END', value: 'a' })
+    expect(isPressed(g, 2)).toBe(true)
+    service.send({ type: 'PRESS.END', value: 'c' })
+    expect(isPressed(g, 2)).toBe(false)
+  })
+
+  it('Space / Enter 按住经跟踪器进出，长按重复键不重报，失焦即撤下；方向键不是按压', () => {
+    const { service } = makeService()
+    const g = mountGroup(service, ITEMS)
+    for (const key of [' ', 'Enter']) {
+      g.items[2]!.dispatchEvent(keyEvent('keydown', key))
+      expect(isPressed(g, 2)).toBe(true)
+      g.items[2]!.dispatchEvent(keyEvent('keydown', key, { repeat: true }))
+      expect(isPressed(g, 2)).toBe(true)
+      g.items[2]!.dispatchEvent(keyEvent('keyup', key))
+      expect(isPressed(g, 2)).toBe(false)
+    }
+    g.items[2]!.dispatchEvent(keyEvent('keydown', 'Enter'))
+    expect(isPressed(g, 2)).toBe(true)
+    g.items[2]!.dispatchEvent(new FocusEvent('blur'))
+    expect(isPressed(g, 2)).toBe(false)
+    g.items[2]!.dispatchEvent(keyEvent('keydown', 'ArrowRight'))
+    expect(isPressed(g, 2)).toBe(false)
+  })
+
+  it('触屏按下进按压面，抬起或指针取消撤下；鼠标按下不走这一路', () => {
+    const { service } = makeService()
+    const g = mountGroup(service, ITEMS)
+    g.items[0]!.dispatchEvent(pointerEvent('pointerdown', 'mouse'))
+    expect(isPressed(g, 0)).toBe(false)
+    g.items[0]!.dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(isPressed(g, 0)).toBe(true)
+    g.items[0]!.dispatchEvent(pointerEvent('pointercancel', 'touch'))
+    expect(isPressed(g, 0)).toBe(false)
+    g.items[0]!.dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(isPressed(g, 0)).toBe(true)
+    g.items[0]!.dispatchEvent(pointerEvent('pointerup', 'touch'))
+    expect(isPressed(g, 0)).toBe(false)
+  })
+
+  it('禁用条目与整组禁用都不进按压面', () => {
+    const { service, setProps } = makeService()
+    const g = mountGroup(service, ITEMS)
+    g.items[1]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(isPressed(g, 1)).toBe(false)
+    setProps({ disabled: true })
+    g.render()
+    g.items[0]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(isPressed(g, 0)).toBe(false)
+    g.items[0]!.dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(isPressed(g, 0)).toBe(false)
+  })
+
+  it('按住途中整组转入禁用：不会再来 keyup，机器自己撤下', () => {
+    // 宿主的 props 要能唤醒 watch：用信号承载
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({})
+    const service = createService(toggleGroupMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const g = mountGroup(service, ITEMS)
+    g.items[0]!.dispatchEvent(keyEvent('keydown', ' '))
+    expect(isPressed(g, 0)).toBe(true)
+    props.set({ disabled: true })
+    expect(isPressed(g, 0)).toBe(false)
+  })
+})

@@ -21,5 +21,6 @@ export const toggleGroupKeyboard: KeyboardTable = {
     { id: 'toggle-group.kbd.first', keys: ['Home'], when: 'focus in group, 组未禁用且 rovingFocus 开启', does: '焦点移到首个可停留条目' },
     { id: 'toggle-group.kbd.last', keys: ['End'], when: 'focus in group, 组未禁用且 rovingFocus 开启', does: '焦点移到末个可停留条目' },
     { id: 'toggle-group.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus on item, 条目未禁用', does: '切换该条目；条目是原生 button，这两个键由平台翻成 click' },
+    { id: 'toggle-group.kbd.press', keys: ['Enter', 'Space'], when: 'held on item, 条目未禁用且组未禁用', does: '按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整组转入禁用也撤下。开关态与按压互相独立，切换照旧由平台把这一次按键翻成 click' },
   ],
 }

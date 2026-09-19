@@ -5,9 +5,9 @@
 
 // 提供 toggle group 相关实现。
 
-import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNodeMeta, ToggleGroupSchema } from './toggle-group.types'
-import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { toggleGroupAnatomy } from './toggle-group.anatomy'
 
 const parts = toggleGroupAnatomy.build()
@@ -46,6 +46,18 @@ export function connectToggleGroup<T extends PropTypes>(
 
   // roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则跟第一个选中值走。
   const anchor = focusedValue ?? value[0] ?? null
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（按 value 记），每个条目各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 开关态（aria-pressed / aria-checked）与按压互相独立；条目自身的禁用只有 connect 知道，随 PRESS.START
+  // 带给机器的守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: ToggleGroupItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', value: item.value, disabled: isDisabled(item) }
+      : { type: 'PRESS.END', value: item.value }),
+  })
 
   /** 条目的 Tab 停靠位。关掉 roving 后每个条目都自成一个停靠点。 */
   const itemTabIndex = (item: ToggleGroupItemProps): number => {
@@ -144,6 +156,7 @@ export function connectToggleGroup<T extends PropTypes>(
     getItemProps: (item) => {
       const selected = isSelected(item.value)
       const disabled = isDisabled(item)
+      const handlers = press(item)
       return normalize.button({
         ...parts.item.attrs,
         // 导航与选中都以此为条目身份
@@ -167,12 +180,20 @@ export function connectToggleGroup<T extends PropTypes>(
         'data-xh-action-display': 'always',
         'data-xh-action-size': prop('size') ?? 'md',
         'data-xh-action-variant': prop('variant') ?? 'subtle',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与开关态互相独立
+        'data-pressed': dataAttr(pressedValue === item.value),
         'onClick': () => {
           if (!disabled)
             send({ type: 'ITEM.TOGGLE', value: item.value })
         },
         // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
       })
     },
 
