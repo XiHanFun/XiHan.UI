@@ -126,6 +126,14 @@ export function connectCheckboxGroup<T extends PropTypes>(
       ...parts.item.attrs,
       ...stateAttrs(item),
       'role': 'checkbox',
+      // 整行是「方框 + 文案」的行级命中区（§9.2）：接 Action Control row 档、ghost 形态，row 档允许标签折行、
+      // 按下只换面不缩放；xs 的 24px 是命中地板，方框 12 / 16 / 20px 居中其间，字号与间距由皮肤按组档位映射，
+      // 与 transfer select-all-trigger 同理。方框是行内 aria-hidden 的标记，随行读宿主的 host 槽换面
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
       // 未选中显式输出 false
       'aria-checked': isChecked(item.value) ? 'true' : 'false',
       // 条目一律用 aria-disabled 而非原生 disabled，保持可聚焦
@@ -183,6 +191,13 @@ export function connectCheckboxGroup<T extends PropTypes>(
     getSelectAllTriggerProps: () => normalize.element({
       ...parts['select-all-trigger'].attrs,
       'role': 'checkbox',
+      // 与条目同形：整行接 Action Control row 档 ghost，xs 命中地板，按下只换面不缩放；方框由皮肤的 ::before 画，
+      // 随行读宿主的 host 槽换面
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
       // 自指的那一段要有落点
       'id': ids['select-all-trigger'],
       // 名字 = 组标题 + 全选格自己的文本：作者没写文本时由组标题兜住，
