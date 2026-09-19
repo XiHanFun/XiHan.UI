@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { buildMonthGrid, buildWeekDays, datePickerAnatomy, datePickerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/'
 
@@ -227,6 +228,48 @@ function presetGroupFixture(base: FixtureNode, presets: readonly { value: string
       }
     }),
   }
+}
+
+/**
+ * showTime 的时间面板与确认钮：Vue / React 的时间列整组自动铺（time-panel），Web Components 由作者自己写列与格，
+ * 两种写法在 DOM 里落成同一副 time-column / time-item 部件。只有用到它的那条用例派生这一份；
+ * 精度取缺省的 minute，只铺时、分两列（Vue 侧逐格重渲，列越多用例越慢）。
+ */
+function showTimeFixture(base: FixtureNode, options: { columns?: boolean } = {}): FixtureNode {
+  const timeColumn = (unit: string, values: readonly string[]): FixtureNode => ({
+    part: 'time-column',
+    attrs: { unit },
+    only: ['wc'],
+    children: values.map(value => ({ part: 'time-item', attrs: { value }, text: value })),
+  })
+  // 没开 showTime 时 Vue / React 的面板一列都不铺，而作者写的列会带 hidden 留在 DOM 里，三家对不齐：只铺确认钮
+  const columns: FixtureNode[] = options.columns === false
+    ? []
+    : [
+        { part: 'time-panel', only: ['vue', 'react'] },
+        timeColumn('hour', Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))),
+        timeColumn('minute', Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))),
+      ]
+  const extra: FixtureNode[] = [...columns, { part: 'confirm-trigger', tag: 'button', text: '确定' }]
+  return {
+    ...base,
+    children: base.children?.map((node) => {
+      if (node.part !== 'positioner')
+        return node
+      return {
+        ...node,
+        children: node.children?.map(content => ({
+          ...content,
+          children: [...(content.children ?? []), ...extra],
+        })),
+      }
+    }),
+  }
+}
+
+/** showTime 下某一列的一格：列按 data-unit 认、格按 data-value 认。 */
+function timeItemIn(unit: string, value: string): string {
+  return `[data-scope="date-picker"][data-part="time-column"][data-unit="${unit}"] [data-part="time-item"][data-value="${value}"]`
 }
 
 export const datePickerSuite: ConformanceSuite = {
@@ -906,6 +949,105 @@ export const datePickerSuite: ConformanceSuite = {
           },
           expect: { events: [] },
         },
+      ],
+    },
+
+    {
+      name: 'Space / Enter 按住与触屏按下：触发钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不开合也不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['date-picker.kbd.press'],
+      props: { ...BASE_PROPS },
+      steps: [
+        heldPress('date-picker', 'trigger'),
+        // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+        heldPress('date-picker', 'clear-trigger'),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } },
+          expect: { parts: { 'content': { hidden: '' }, 'trigger': { 'data-pressed': null }, 'clear-trigger': { hidden: null } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '展开后 Space / Enter 按住与触屏按下：时间格与确认钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['date-picker.kbd.press'],
+      fixture: showTimeFixture,
+      props: { ...BASE_PROPS, defaultValue: '2024-02-15T09:30', showTime: true },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        // 键盘按住会把这一格写进值（showTime 下不收起），按压面仍在；失焦落到所在列上，三家都只看见格子自己的 blur
+        heldPress('date-picker', 'time-item', { selector: timeItemIn('hour', '10'), blurTo: '[data-scope="date-picker"][data-part="time-column"][data-unit="hour"]' }),
+        // jsdom 不把 Enter / Space 翻成 click，确认钮的按住帧看得见（真机上 Enter 在 keydown 即激活收起，由展开态 exit 松开）；失焦落到时列上留在浮层里
+        heldPress('date-picker', 'confirm-trigger', { blurTo: '[data-scope="date-picker"][data-part="time-column"][data-unit="hour"]' }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'confirm-trigger', name: 'data-pressed', value: null } },
+          expect: { parts: { content: { hidden: null } } },
+        },
+      ],
+    },
+    {
+      name: '展开后快捷选项触屏按下投影 data-pressed，抬起或指针取消撤下（Enter 在 keydown 即写值收起，键盘那一路没有可见的按住帧）',
+      spec: { adr: 'press-channel' },
+      covers: ['date-picker.kbd.press'],
+      fixture: presetGroupFixture,
+      props: { ...BASE_PROPS, presets: [...PRESETS] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        heldPress('date-picker', 'preset', { value: '2024-02-29', keyboardHost: null }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'preset', name: 'data-pressed', value: null } },
+          expect: { parts: { content: { hidden: null } } },
+        },
+      ],
+    },
+    {
+      name: '禁用时触发钮、清空钮、时间格、快捷选项与确认钮都不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: base => showTimeFixture(presetGroupFixture(base, PRESETS_MIXED)),
+      props: { ...BASE_PROPS, defaultValue: '2024-02-15T09:30', showTime: true, presets: [...PRESETS_MIXED] },
+      steps: [
+        // 不用 defaultOpen 起手：那条路两个适配器的挂载落焦时序本就有差；先展开再转禁用，浮层留在原地
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        { kind: 'setProps', props: { disabled: true }, expect: { parts: { root: { 'data-disabled': '' } } } },
+        heldPressIgnored('date-picker', 'trigger', '禁用时触发钮原生 disabled，不接受按压'),
+        heldPressIgnored('date-picker', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        heldPressIgnored('date-picker', 'time-item', '禁用时时间格写不了值，不接受按压', { selector: timeItemIn('hour', '10') }),
+        heldPressIgnored('date-picker', 'preset', '禁用时快捷选项 aria-disabled，不接受按压', { value: '2024-02-15', keyboardHost: null }),
+        heldPressIgnored('date-picker', 'confirm-trigger', '禁用时确认钮不接受按压'),
+      ],
+    },
+    {
+      name: '只读时清空钮、时间格与快捷选项不进入按压面；触发钮与确认钮只管开合，照常有回执',
+      spec: { adr: 'press-channel' },
+      fixture: base => showTimeFixture(presetGroupFixture(base, PRESETS_MIXED)),
+      props: { ...BASE_PROPS, defaultValue: '2024-02-15T09:30', showTime: true, readOnly: true, presets: [...PRESETS_MIXED] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        heldPressIgnored('date-picker', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        heldPressIgnored('date-picker', 'time-item', '只读时时间格写不了值，不接受按压', { selector: timeItemIn('hour', '10') }),
+        heldPressIgnored('date-picker', 'preset', '只读时快捷选项写不了值，不接受按压', { value: '2024-02-15', keyboardHost: null }),
+        heldPress('date-picker', 'confirm-trigger', { blurTo: '[data-scope="date-picker"][data-part="time-column"][data-unit="hour"]' }),
+        heldPress('date-picker', 'trigger'),
+      ],
+    },
+    {
+      name: '按不下去的快捷选项（与模式不配、作者禁用）与藏起的确认钮不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: base => showTimeFixture(presetGroupFixture(base, PRESETS_MIXED), { columns: false }),
+      props: { ...BASE_PROPS, presets: [...PRESETS_MIXED] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        heldPressIgnored('date-picker', 'preset', '与单选模式不配的快捷选项按不下去，不接受按压', { value: '2024-02-01/2024-02-29', keyboardHost: null }),
+        heldPressIgnored('date-picker', 'preset', '作者禁用的快捷选项不接受按压', { value: '2024-02-29', keyboardHost: null }),
+        heldPressIgnored('date-picker', 'confirm-trigger', '没开 showTime 时确认钮藏着，不接受按压'),
       ],
     },
   ],

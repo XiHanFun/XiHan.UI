@@ -68,6 +68,12 @@ export interface DatePickerPresetProps {
 /** 内嵌时间面板的列单位：该面板恒为 24 小时制，没有上下午列。 */
 export type DatePickerTimeUnit = Exclude<TimePickerColumnUnit, 'dayPeriod'>
 
+/**
+ * 接了按压通道的部件，按 key 记住正被按住的那一个：
+ * 清空钮、触发钮、确认钮各一，快捷选项按其值、时间格按「列:值」。日历里的部件由 calendar-picker 自己的机器记。
+ */
+export type DatePickerPressedKey = 'clear' | 'trigger' | 'confirm' | `preset:${string}` | `time-item:${DatePickerTimeUnit}:${string}`
+
 /** 时间列声明自身的单位。 */
 export interface DatePickerTimeColumnProps {
   unit: DatePickerTimeUnit
@@ -231,6 +237,11 @@ export interface DatePickerSchema extends MachineSchema {
      * 点击输入行展开时为假：该操作的意图是编辑段位，移走焦点后无法输入。
      */
     moveFocusIn: boolean
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个，该部件投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦、指针取消或浮层收起时即撤下。
+     */
+    pressed: DatePickerPressedKey | null
   }
   computed: Record<string, never>
   refs: DatePickerRefs
@@ -251,9 +262,20 @@ export interface DatePickerSchema extends MachineSchema {
     /** 切换到另一层级：点击标题向上、点击格子向下，都由日历经它回到编排状态机。 */
     | { type: 'VIEW.SET', activeView: CalendarView }
     | { type: 'FORM.RESET' }
+    /**
+     * 按压通道（shared/press）：某个部件被 Space / Enter 或触屏按住，key 说的是哪一个；
+     * disabled 是 connect 按该部件自己的可按性（快捷选项的逐条禁用、清空钮的可清、确认钮的显隐）带来的事实。
+     */
+    | { type: 'PRESS.START', key: DatePickerPressedKey, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只收自己那一下。 */
+    | { type: 'PRESS.END', key: DatePickerPressedKey }
   tag: never
-  guard: 'isOpenControlled' | 'closesOnSelect'
+  guard: 'isOpenControlled' | 'closesOnSelect' | 'canPress'
   action:
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'

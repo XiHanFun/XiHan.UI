@@ -1568,3 +1568,168 @@ describe('层的拆除顺序', () => {
     expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (el: HTMLElement, type: 'keydown' | 'keyup', k: string): void => {
+    el.dispatchEvent(new KeyboardEvent(type, { key: k, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): PointerEvent => {
+    const event = new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+    el.dispatchEvent(event)
+    return event
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+  /** 夹具不渲染快捷选项列与确认钮，直接拿 getter 的处理器驱动。 */
+  type Handlers = Record<string, (e?: unknown) => void> & { 'data-pressed'?: string }
+  const presetProps = (h: Harness, value: string): Handlers => h.api().getPresetProps({ value }) as unknown as Handlers
+  const confirmProps = (h: Harness): Handlers => h.api().getConfirmTriggerProps() as unknown as Handlers
+  const fakeKey = (k: string): KeyboardEventInit => ({ key: k, repeat: false, isComposing: false })
+
+  it('触发钮：keydown 在场、keyup 撤下；失焦撤下；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路；按住本身不开合', () => {
+    const h = mount()
+    expect(pressed(h.trigger)).toBe(false)
+    key(h.trigger, 'keydown', ' ')
+    expect(pressed(h.trigger)).toBe(true)
+    key(h.trigger, 'keyup', ' ')
+    expect(pressed(h.trigger)).toBe(false)
+    key(h.trigger, 'keydown', 'Enter')
+    expect(pressed(h.trigger)).toBe(true)
+    h.trigger.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(h.trigger)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'touch')
+    expect(pressed(h.trigger)).toBe(true)
+    pointer(h.trigger, 'pointercancel', 'touch')
+    expect(pressed(h.trigger)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'touch')
+    expect(pressed(h.trigger)).toBe(true)
+    pointer(h.trigger, 'pointerup', 'touch')
+    expect(pressed(h.trigger)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'mouse')
+    expect(pressed(h.trigger)).toBe(false)
+    expect(h.state()).toBe('closed')
+  })
+
+  it('清空钮：按住投影且不清值，触屏按下仍拦掉默认聚焦', () => {
+    const h = mount({ defaultValue: '2026-07-28' })
+    key(h.clear, 'keydown', 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    expect(pressed(h.trigger)).toBe(false)
+    // 另一个部件的 keyup 松不开正按着的这个
+    key(h.trigger, 'keyup', 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    key(h.clear, 'keyup', 'Enter')
+    expect(pressed(h.clear)).toBe(false)
+    expect(pointer(h.clear, 'pointerdown', 'touch').defaultPrevented).toBe(true)
+    expect(pressed(h.clear)).toBe(true)
+    pointer(h.clear, 'pointerup', 'touch')
+    expect(pressed(h.clear)).toBe(false)
+    expect(h.value()).toEqual(['2026-07-28'])
+  })
+
+  it('时间格：按住投影，按列 + 值只亮那一格；Escape 收起浮层时一并撤下', async () => {
+    const h = await open({ showTime: true, defaultValue: '2026-08-17T09:30', timeGranularity: 'minute' })
+    const nine = h.timeColumn('hour').items.get('09')!
+    const ten = h.timeColumn('hour').items.get('10')!
+    pointer(nine, 'pointerdown', 'touch')
+    expect(pressed(nine)).toBe(true)
+    expect(pressed(ten)).toBe(false)
+    pointer(nine, 'pointerup', 'touch')
+    expect(pressed(nine)).toBe(false)
+    // 键盘按住：keydown 冒泡到列会把这一格写进值（showTime 下不收起），按压面仍在
+    ten.focus()
+    key(ten, 'keydown', ' ')
+    expect(pressed(ten)).toBe(true)
+    expect(h.value()).toEqual(['2026-08-17T10:30'])
+    expect(h.state()).toBe('open')
+    press(active(), 'Escape')
+    expect(h.state()).toBe('closed')
+    expect(pressed(ten)).toBe(false)
+  })
+
+  it('快捷选项与确认钮：按住投影；Enter 写值 / 确认收起后由展开态的 exit 松开', () => {
+    const h = mount({ defaultOpen: true, presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-20', label: '可用' }] })
+    presetProps(h, '2026-07-10').onKeyDown!(fakeKey('Enter'))
+    expect(presetProps(h, '2026-07-10')['data-pressed']).toBe('')
+    expect(presetProps(h, '2026-07-20')['data-pressed']).toBeUndefined()
+    presetProps(h, '2026-07-10').onKeyUp!(fakeKey('Enter'))
+    expect(presetProps(h, '2026-07-10')['data-pressed']).toBeUndefined()
+    presetProps(h, '2026-07-10').onKeyDown!(fakeKey('Enter'))
+    presetProps(h, '2026-07-10').onClick!()
+    expect(h.value()).toEqual(['2026-07-10'])
+    expect(h.state()).toBe('closed')
+    expect(presetProps(h, '2026-07-10')['data-pressed']).toBeUndefined()
+
+    const timed = mount({ defaultOpen: true, showTime: true, defaultValue: '2026-08-17T09:30' })
+    confirmProps(timed).onKeyDown!(fakeKey('Enter'))
+    expect(confirmProps(timed)['data-pressed']).toBe('')
+    confirmProps(timed).onClick!()
+    expect(timed.state()).toBe('closed')
+    expect(confirmProps(timed)['data-pressed']).toBeUndefined()
+  })
+
+  it('不进：整体禁用谁都不进；只读时清空钮、时间格与快捷选项不进（触发钮与确认钮只管开合，照有回执）；按不下去的快捷选项与藏起的确认钮不进', () => {
+    const disabled = mount({ disabled: true, defaultOpen: true, showTime: true, defaultValue: '2026-08-17T09:30', presets: [{ value: '2026-07-10', label: '某日' }] })
+    key(disabled.trigger, 'keydown', ' ')
+    pointer(disabled.trigger, 'pointerdown', 'touch')
+    key(disabled.clear, 'keydown', ' ')
+    pointer(disabled.timeColumn('hour').items.get('09')!, 'pointerdown', 'touch')
+    presetProps(disabled, '2026-07-10').onKeyDown!(fakeKey('Enter'))
+    confirmProps(disabled).onKeyDown!(fakeKey('Enter'))
+    expect(pressed(disabled.trigger)).toBe(false)
+    expect(pressed(disabled.clear)).toBe(false)
+    expect(pressed(disabled.timeColumn('hour').items.get('09')!)).toBe(false)
+    expect(presetProps(disabled, '2026-07-10')['data-pressed']).toBeUndefined()
+    expect(confirmProps(disabled)['data-pressed']).toBeUndefined()
+
+    const readOnly = mount({ readOnly: true, defaultOpen: true, showTime: true, defaultValue: '2026-08-17T09:30', presets: [{ value: '2026-07-10', label: '某日' }] })
+    key(readOnly.clear, 'keydown', ' ')
+    pointer(readOnly.timeColumn('hour').items.get('09')!, 'pointerdown', 'touch')
+    presetProps(readOnly, '2026-07-10').onKeyDown!(fakeKey('Enter'))
+    expect(pressed(readOnly.clear)).toBe(false)
+    expect(pressed(readOnly.timeColumn('hour').items.get('09')!)).toBe(false)
+    expect(presetProps(readOnly, '2026-07-10')['data-pressed']).toBeUndefined()
+    key(readOnly.trigger, 'keydown', ' ')
+    expect(pressed(readOnly.trigger)).toBe(true)
+    key(readOnly.trigger, 'keyup', ' ')
+    confirmProps(readOnly).onKeyDown!(fakeKey('Enter'))
+    expect(confirmProps(readOnly)['data-pressed']).toBe('')
+    confirmProps(readOnly).onKeyUp!(fakeKey('Enter'))
+
+    const bounded = mount({ defaultOpen: true, min: '2026-07-15', presets: [{ value: '2026-07-10', label: '界外' }, { value: '2026-07-20', label: '禁用', disabled: true }, { value: '2026-07-01/2026-07-31', label: '不配模式' }] })
+    for (const value of ['2026-07-10', '2026-07-20', '2026-07-01/2026-07-31']) {
+      presetProps(bounded, value).onKeyDown!(fakeKey('Enter'))
+      expect(presetProps(bounded, value)['data-pressed']).toBeUndefined()
+    }
+    // 没开 showTime 时确认钮藏着；没有值时清空钮藏着
+    confirmProps(bounded).onKeyDown!(fakeKey('Enter'))
+    expect(confirmProps(bounded)['data-pressed']).toBeUndefined()
+    key(bounded.clear, 'keydown', ' ')
+    expect(pressed(bounded.clear)).toBe(false)
+  })
+
+  it('按住途中转入禁用 / 只读或值被清空：部件随即失效，不会再来 keyup，按压面由机器自己收', () => {
+    const inert = mount({ defaultValue: '2026-07-28' })
+    key(inert.trigger, 'keydown', 'Enter')
+    expect(pressed(inert.trigger)).toBe(true)
+    // 只读不拦触发钮
+    inert.setProps({ readOnly: true })
+    expect(pressed(inert.trigger)).toBe(true)
+    inert.setProps({ disabled: true })
+    expect(pressed(inert.trigger)).toBe(false)
+
+    const readOnly = mount({ defaultOpen: true, showTime: true, defaultValue: '2026-08-17T09:30' })
+    const nine = readOnly.timeColumn('hour').items.get('09')!
+    pointer(nine, 'pointerdown', 'touch')
+    expect(pressed(nine)).toBe(true)
+    readOnly.setProps({ readOnly: true })
+    expect(pressed(nine)).toBe(false)
+
+    const cleared = mount({ defaultValue: '2026-07-28' })
+    key(cleared.clear, 'keydown', 'Enter')
+    expect(pressed(cleared.clear)).toBe(true)
+    cleared.api().clear()
+    expect(cleared.value()).toEqual([])
+    expect(cleared.clear.hidden).toBe(true)
+    expect(pressed(cleared.clear)).toBe(false)
+  })
+})
