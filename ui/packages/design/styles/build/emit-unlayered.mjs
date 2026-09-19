@@ -6,8 +6,12 @@
 // 没有反向操作——所以层化是使用者无法撤销的单向门，得由库这边提供不带层的一份。
 //
 // 拆层后规则改按特异性竞争，三档从低到高：reset 层全部 :where() 包住为 (0,0,0)，
-// Family Recipe 的根规则 [data-xh-action-control] 一类为 (0,1,0)，皮肤选择器
-// [data-scope=x][data-part=y] 从 (0,2,0) 起，都稳压宿主的 button（0,0,1）。
+// Family Recipe 的规则在这一份里由 [data-scope] 前缀抬到 (0,2,0)（源文件仍是
+// [data-xh-action-control] 一类的 (0,1,0)，有层产物靠层序不必抬），与皮肤选择器
+// [data-scope=x][data-part=y] 同档，都稳压宿主的 button（0,0,1）与 .article a（0,1,1）
+// 这类带类名的标签规则——配方直接写在 <a>、<li>、<td> 这些裸标签上的底与字，
+// 否则会被宿主的正文排版压掉（文档站的 .vp-doc a 正是这样把侧栏导航链接变回 UA 蓝）。
+// 家族属性只由 connect 写在角色节点上，角色节点必带 data-scope，前缀不改变命中范围。
 // 配方在产物里排在 reset 之前，reset 只有低一档才不会靠源序把配方的字号压掉，
 // 由 check-layer-order 门禁断言。motion 层装的是 @keyframes、不参与级联。
 //
@@ -24,6 +28,8 @@ import { applyFileHeader, stripFileHeader } from '../../../../tooling/file-heade
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const entry = path.join(pkgRoot, 'index.css')
 const outFile = path.join(pkgRoot, 'index.unlayered.css')
+const FAMILY_DIR = path.join(pkgRoot, 'family')
+const FAMILY_ROOT_ATTR = /\[data-xh-(?:action-control|field-chrome|collection-item|collection-separator|swatch)\]/g
 
 const source = stripFileHeader(fs.readFileSync(entry, 'utf8'))
 
@@ -78,7 +84,8 @@ function expandRelativeImports(file, stack) {
     return ''
   inlined.add(resolved)
 
-  const source = stripFileHeader(fs.readFileSync(resolved, 'utf8'))
+  const raw = stripFileHeader(fs.readFileSync(resolved, 'utf8'))
+  const source = isFamilyFile(resolved) ? raiseFamilySpecificity(raw) : raw
   const lines = []
   for (const line of source.split('\n')) {
     const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/)
@@ -91,6 +98,66 @@ function expandRelativeImports(file, stack) {
     lines.push(expandRelativeImports(child, [...stack, resolved]))
   }
   return lines.join('\n')
+}
+
+function isFamilyFile(file) {
+  return path.resolve(file).startsWith(FAMILY_DIR + path.sep)
+}
+
+/**
+ * 家族配方在无层产物里抬到 (0,2,0)：每个家族根属性前加 [data-scope]。
+ * 只改规则前导（选择器 / @ 规则头）里的属性名；声明块内容与注释原样保留——
+ * 注释里也写着这些属性名作示例，声明值里则不会出现它们。
+ * 逐字符扫描：注释与字符串跳过，样式规则的声明块整体照抄，@ 规则块递归处理其中的嵌套规则。
+ */
+function raiseFamilySpecificity(css) {
+  let out = ''
+  let prelude = ''
+  let i = 0
+  const flush = () => {
+    out += prelude.replace(FAMILY_ROOT_ATTR, m => `[data-scope]${m}`)
+    prelude = ''
+  }
+  while (i < css.length) {
+    const c = css[i]
+    if (c === '/' && css[i + 1] === '*') {
+      flush()
+      const end = css.indexOf('*/', i + 2)
+      const stop = end === -1 ? css.length : end + 2
+      out += css.slice(i, stop)
+      i = stop
+      continue
+    }
+    if (c === '"' || c === '\'') {
+      const end = skipString(css, i)
+      prelude += css.slice(i, end + 1)
+      i = end + 1
+      continue
+    }
+    if (c === ';' || c === '}') {
+      flush()
+      out += c
+      i++
+      continue
+    }
+    if (c === '{') {
+      const isAtRule = prelude.trimStart().startsWith('@')
+      flush()
+      const close = matchBrace(css, i)
+      if (close === -1) {
+        out += css.slice(i)
+        break
+      }
+      const body = css.slice(i + 1, close)
+      out += `{${isAtRule ? raiseFamilySpecificity(body) : body}}`
+      i = close + 1
+      continue
+    }
+    prelude += c
+    i++
+  }
+  flush()
+  return out
 }
 
 /** 逐个拆掉 `@layer <名字> { ... }` 外壳，保留块内内容；`@layer a, b;` 声明语句丢弃 */
