@@ -156,9 +156,9 @@
 
 **状态**：`preview` · `edit`
 
-**事件**：`EDIT.START` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `EDIT.LEAVE` · `VALUE.SET` · `CONTROLLED.EDIT` · `CONTROLLED.PREVIEW` · `FORM.RESET`
+**事件**：`EDIT.START` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `EDIT.LEAVE` · `VALUE.SET` · `CONTROLLED.EDIT` · `CONTROLLED.PREVIEW` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isEditControlled` · `canEdit` · `submitsOnLeave`
+**判据**：`isEditControlled` · `canEdit` · `submitsOnLeave` · `canPressEditTrigger` · `canPressEditControls`
 
 ### connect API
 
@@ -199,6 +199,7 @@
 | `Enter` | focus in input, submitMode 为 enter 或 both | 提交当下的值并回到预览态；其余模式不接管该键，交回给浏览器与外层表单 |
 | `Escape` | focus in input | 撤销回上一次提交的值并回到预览态 |
 | `Tab` / `Shift+Tab` | focus in input | 按 submitMode 收尾（blur/both 提交，enter/none 撤销）；不拦默认行为，焦点照常移出 |
+| `Enter` / `Space` | held on edit-trigger（预览态，not disabled/readOnly）或 submit-trigger / cancel-trigger（编辑态） | 按住期间这颗钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，进出编辑态后按钮藏起一并撤下 |
 
 ### ARIA
 

@@ -33,5 +33,11 @@ export const editableKeyboard: KeyboardTable = {
       when: 'focus in input',
       does: '按 submitMode 收尾（blur/both 提交，enter/none 撤销）；不拦默认行为，焦点照常移出',
     },
+    {
+      id: 'editable.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held on edit-trigger（预览态，not disabled/readOnly）或 submit-trigger / cancel-trigger（编辑态）',
+      does: '按住期间这颗钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，进出编辑态后按钮藏起一并撤下',
+    },
   ],
 }

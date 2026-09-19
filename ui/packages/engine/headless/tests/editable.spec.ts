@@ -753,3 +753,112 @@ describe('editableMachine 焦点搬运', () => {
     runtime.stop()
   })
 })
+
+describe('三颗钮的按压通道：Space / Enter 与触屏按住投影 data-pressed，进出编辑态一并撤下', () => {
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const touch = (): PointerEvent => ({ pointerType: 'touch', button: 0, preventDefault: vi.fn() } as unknown as PointerEvent)
+  const editBtn = (s: ReturnType<typeof makeService>): Dict => s.api().getEditTriggerProps() as Dict
+  const submitBtn = (s: ReturnType<typeof makeService>): Dict => s.api().getSubmitTriggerProps() as Dict
+  const cancelBtn = (s: ReturnType<typeof makeService>): Dict => s.api().getCancelTriggerProps() as Dict
+
+  it('预览态编辑钮：keydown 在场、keyup 撤下；失焦撤下；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路；按压不进编辑态', () => {
+    const s = makeService({ defaultValue: 'x' })
+    expect(editBtn(s)['data-pressed']).toBeUndefined()
+    fire(editBtn(s), 'onKeyDown', key(' '))
+    expect(editBtn(s)['data-pressed']).toBe('')
+    expect(s.state()).toBe('preview')
+    fire(editBtn(s), 'onKeyUp', key(' '))
+    expect(editBtn(s)['data-pressed']).toBeUndefined()
+    fire(editBtn(s), 'onKeyDown', key('Enter'))
+    expect(editBtn(s)['data-pressed']).toBe('')
+    fire(editBtn(s), 'onBlur')
+    expect(editBtn(s)['data-pressed']).toBeUndefined()
+    fire(editBtn(s), 'onPointerDown', touch())
+    expect(editBtn(s)['data-pressed']).toBe('')
+    fire(editBtn(s), 'onPointerCancel')
+    expect(editBtn(s)['data-pressed']).toBeUndefined()
+    fire(editBtn(s), 'onPointerDown', touch())
+    expect(editBtn(s)['data-pressed']).toBe('')
+    fire(editBtn(s), 'onPointerUp')
+    expect(editBtn(s)['data-pressed']).toBeUndefined()
+    fire(editBtn(s), 'onPointerDown', { pointerType: 'mouse', button: 0, preventDefault: vi.fn() })
+    expect(editBtn(s)['data-pressed']).toBeUndefined()
+    expect(s.state()).toBe('preview')
+  })
+
+  it('编辑态提交 / 撤销钮各自投影；另一颗钮的 keyup 松不开这颗；触屏按下仍把焦点摁在输入框里', () => {
+    const s = makeService({ defaultValue: 'x', defaultEdit: true })
+    fire(submitBtn(s), 'onKeyDown', key('Enter'))
+    expect(submitBtn(s)['data-pressed']).toBe('')
+    expect(cancelBtn(s)['data-pressed']).toBeUndefined()
+    fire(cancelBtn(s), 'onKeyUp', key('Enter'))
+    expect(submitBtn(s)['data-pressed']).toBe('')
+    fire(submitBtn(s), 'onKeyUp', key('Enter'))
+    expect(submitBtn(s)['data-pressed']).toBeUndefined()
+    const down = touch()
+    fire(cancelBtn(s), 'onPointerDown', down)
+    expect(down.preventDefault).toHaveBeenCalled()
+    expect(cancelBtn(s)['data-pressed']).toBe('')
+    fire(cancelBtn(s), 'onPointerUp')
+    expect(cancelBtn(s)['data-pressed']).toBeUndefined()
+    expect(s.state()).toBe('edit')
+  })
+
+  it('不进：预览态禁用 / 只读时编辑钮不投影；预览态里提交 / 撤销钮藏着不投影，编辑态里编辑钮藏着不投影', () => {
+    for (const props of [{ defaultValue: 'x', disabled: true }, { defaultValue: 'x', readOnly: true }] as Props[]) {
+      const s = makeService(props)
+      fire(editBtn(s), 'onKeyDown', key(' '))
+      fire(editBtn(s), 'onPointerDown', touch())
+      expect(editBtn(s)['data-pressed']).toBeUndefined()
+    }
+    const preview = makeService({ defaultValue: 'x' })
+    fire(submitBtn(preview), 'onKeyDown', key(' '))
+    fire(cancelBtn(preview), 'onKeyDown', key(' '))
+    expect(submitBtn(preview)['data-pressed']).toBeUndefined()
+    expect(cancelBtn(preview)['data-pressed']).toBeUndefined()
+    const editing = makeService({ defaultValue: 'x', defaultEdit: true })
+    fire(editBtn(editing), 'onKeyDown', key(' '))
+    expect(editBtn(editing)['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中进出编辑态：Enter 提交 / 撤销 / 进编辑后按钮藏起，不会再来 keyup，按压面随状态一起收', () => {
+    const entering = makeService({ defaultValue: 'x' })
+    fire(editBtn(entering), 'onKeyDown', key('Enter'))
+    expect(editBtn(entering)['data-pressed']).toBe('')
+    fire(editBtn(entering), 'onClick')
+    expect(entering.state()).toBe('edit')
+    expect(editBtn(entering)['data-pressed']).toBeUndefined()
+
+    const submitting = makeService({ defaultValue: 'x', defaultEdit: true })
+    fire(submitBtn(submitting), 'onKeyDown', key('Enter'))
+    fire(submitBtn(submitting), 'onClick')
+    expect(submitting.state()).toBe('preview')
+    expect(submitBtn(submitting)['data-pressed']).toBeUndefined()
+
+    const cancelling = makeService({ defaultValue: 'x', defaultEdit: true })
+    fire(cancelBtn(cancelling), 'onKeyDown', key(' '))
+    cancelling.service.send({ type: 'EDIT.CANCEL' })
+    expect(cancelling.state()).toBe('preview')
+    expect(cancelBtn(cancelling)['data-pressed']).toBeUndefined()
+
+    // 受控 edit：EDIT.START 只发意图不转移，按压面留着；宿主写回后才收
+    const controlled = makeService({ defaultValue: 'x', edit: false })
+    fire(editBtn(controlled), 'onKeyDown', key('Enter'))
+    fire(editBtn(controlled), 'onClick')
+    expect(controlled.state()).toBe('preview')
+    expect(editBtn(controlled)['data-pressed']).toBe('')
+    controlled.setProps({ edit: true })
+    expect(controlled.state()).toBe('edit')
+    expect(editBtn(controlled)['data-pressed']).toBeUndefined()
+  })
+
+  it('按住编辑钮途中转入禁用 / 只读：按钮 disabled 后不会再来 keyup，按压面由机器自己收', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Props[]) {
+      const s = makeService({ defaultValue: 'x' })
+      fire(editBtn(s), 'onKeyDown', key('Enter'))
+      expect(editBtn(s)['data-pressed']).toBe('')
+      s.setProps(inert)
+      expect(editBtn(s)['data-pressed']).toBeUndefined()
+    }
+  })
+})

@@ -60,6 +60,9 @@ export interface EditableRefs {
   getPreviewEl: () => HTMLElement | null
 }
 
+/** 接了按压通道的三颗钮，按 part 键记住正被按住的那颗。 */
+export type EditablePressedPart = 'edit-trigger' | 'submit-trigger' | 'cancel-trigger'
+
 export interface EditableSchema extends MachineSchema {
   props: {
     /** 受控值；提供后由宿主决定，状态机不自行修改（cell 原生受控，无影子事件）。 */
@@ -110,6 +113,8 @@ export interface EditableSchema extends MachineSchema {
     value: string
     /** 上一次提交的值，也是撤销的落点。进入编辑态时记录快照。 */
     committedValue: string
+    /** 按压通道：被 Space / Enter 或触屏按住的那颗钮；抬起、失焦、指针取消或进出编辑态时即撤下。 */
+    pressed: EditablePressedPart | null
   }
   computed: Record<string, never>
   refs: EditableRefs
@@ -130,10 +135,18 @@ export interface EditableSchema extends MachineSchema {
     | { type: 'CONTROLLED.EDIT' }
     | { type: 'CONTROLLED.PREVIEW' }
     | { type: 'FORM.RESET' }
+    /** 某颗钮被 Space / Enter 或触屏按住：预览态只认编辑钮（禁用 / 只读时拦截），编辑态只认提交 / 撤销钮。 */
+    | { type: 'PRESS.START', part: EditablePressedPart }
+    /** 按住的钮抬起、失焦或指针取消；只收自己那一下。 */
+    | { type: 'PRESS.END', part: EditablePressedPart }
   tag: never
-  guard: 'isEditControlled' | 'canEdit' | 'submitsOnLeave'
+  guard: 'isEditControlled' | 'canEdit' | 'submitsOnLeave' | 'canPressEditTrigger' | 'canPressEditControls'
   action:
     | 'setValue'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
     | 'snapshotValue'
     | 'commitValue'
     | 'revertValue'

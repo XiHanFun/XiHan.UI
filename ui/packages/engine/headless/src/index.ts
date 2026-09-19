@@ -91,7 +91,7 @@ export type { DownloadTriggerApi, DownloadTriggerCompleteDetails, DownloadTrigge
 export { connectDrawer, DRAWER_DEFAULT_SIDE, drawerAnatomy, drawerKeyboard, drawerMachine, drawerMeta } from './drawer'
 export type { DrawerApi, DrawerOpenChangeDetails, DrawerRefs, DrawerSchema, DrawerSide, DrawerTranslations } from './drawer'
 export { clampEditableValue, connectEditable, EDITABLE_DEFAULT_ACTIVATION_MODE, EDITABLE_DEFAULT_SUBMIT_MODE, editableAnatomy, editableInputSize, editableKeyboard, editableMachine, editableMeta, submitsOnEnter, submitsOnLeave } from './editable'
-export type { EditableActivationMode, EditableApi, EditableEditChangeDetails, EditableRefs, EditableSchema, EditableSubmitMode, EditableTranslations, EditableValueChangeDetails, EditableValueCommitDetails, EditableValueRevertDetails } from './editable'
+export type { EditableActivationMode, EditableApi, EditableEditChangeDetails, EditablePressedPart, EditableRefs, EditableSchema, EditableSubmitMode, EditableTranslations, EditableValueChangeDetails, EditableValueCommitDetails, EditableValueRevertDetails } from './editable'
 export { connectEmptyState, emptyStateAnatomy, emptyStateKeyboard, emptyStateMeta } from './empty-state'
 export type { EmptyStateApi, EmptyStateLive, EmptyStateProps, EmptyStateStatus, EmptyStateTranslations } from './empty-state'
 export { connectField, fieldAnatomy, fieldKeyboard, fieldMeta } from './field'
