@@ -88,7 +88,7 @@
 
   /* 投放区是 div，没有原生 disabled 可用，禁用态只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='file-upload'][data-part='dropzone'][data-disabled] {
-    border-color: var(--xh-border-subtle);
+    border-color: var(--xh-border-default);
     background: var(--xh-file-upload-dropzone-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
   }
@@ -183,7 +183,7 @@
     gap: var(--xh-file-upload-item-inner-gap, var(--xh-control-gap-md));
     padding-block: var(--xh-file-upload-item-py, var(--xh-space-2));
     padding-inline: var(--xh-file-upload-item-px, var(--xh-space-3));
-    border: var(--xh-stroke-thin) solid var(--xh-file-upload-item-border, var(--xh-border-subtle));
+    border: var(--xh-stroke-thin) solid var(--xh-file-upload-item-border, var(--xh-border-default));
     border-radius: var(--xh-file-upload-item-radius, var(--xh-shape-control));
     background: var(--xh-file-upload-item-bg, var(--xh-bg-surface));
     color: var(--xh-file-upload-item-fg, var(--xh-fg-default));
