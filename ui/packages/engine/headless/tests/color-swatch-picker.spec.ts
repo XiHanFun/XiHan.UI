@@ -161,3 +161,101 @@ describe('connectColorSwatchPicker 投影', () => {
     expect(api(s).value).toBe('#e11d48')
   })
 })
+
+describe('按压通道', () => {
+  type Handlers = Record<string, unknown> & {
+    onKeyDown: (e: KeyboardEvent) => void
+    onKeyUp: (e: KeyboardEvent) => void
+    onBlur: () => void
+    onPointerDown: (e: PointerEvent) => void
+    onPointerUp: () => void
+    onPointerCancel: () => void
+  }
+  const key = (name: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent =>
+    new KeyboardEvent('keydown', { key: name, cancelable: true, ...init })
+  const touch = { pointerType: 'touch' } as PointerEvent
+  const mouse = { pointerType: 'mouse' } as PointerEvent
+  const itemOf = (s: Service<ColorSwatchPickerSchema>, value: string): Handlers => api(s).getItemProps({ value }) as Handlers
+  const pressed = (s: Service<ColorSwatchPickerSchema>, value: string): boolean => itemOf(s, value)['data-pressed'] === ''
+
+  /** props 挂在 signal 上：途中转禁用那一路要靠 watch 的 track 复查，普通对象压根不会跑。 */
+  function makeReactive(initial: Props = {}): { service: Service<ColorSwatchPickerSchema>, setProps: (next: Props) => void } {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>(initial)
+    const service = createService(colorSwatchPickerMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    return { service, setProps: next => props.set({ ...props.get(), ...next }) }
+  }
+
+  it('按住 Space 投影 data-pressed 并在 keydown 那一刻选中，长按重复键不重报，抬起撤下；另一格的 keyup 不串；Enter 不是激活键', () => {
+    const s = makeService({ defaultValue: '#e11d48' })
+    const down = key(' ')
+    itemOf(s, COLORS[1]!).onKeyDown(down)
+    expect(down.defaultPrevented).toBe(true)
+    expect(pressed(s, COLORS[1]!)).toBe(true)
+    expect(pressed(s, COLORS[0]!)).toBe(false)
+    expect(api(s).value).toBe(COLORS[1])
+    itemOf(s, COLORS[1]!).onKeyDown(key(' ', { repeat: true }))
+    expect(pressed(s, COLORS[1]!)).toBe(true)
+    itemOf(s, COLORS[0]!).onKeyUp(key(' '))
+    expect(pressed(s, COLORS[1]!)).toBe(true)
+    itemOf(s, COLORS[1]!).onKeyUp(key(' '))
+    expect(pressed(s, COLORS[1]!)).toBe(false)
+
+    itemOf(s, COLORS[2]!).onKeyDown(key('Enter'))
+    expect(pressed(s, COLORS[2]!)).toBe(false)
+    expect(api(s).value).toBe(COLORS[1])
+
+    itemOf(s, COLORS[2]!).onKeyDown(key(' '))
+    expect(pressed(s, COLORS[2]!)).toBe(true)
+    itemOf(s, COLORS[2]!).onBlur()
+    expect(pressed(s, COLORS[2]!)).toBe(false)
+  })
+
+  it('触屏按下进按压面，抬起或取消撤下；鼠标按下不走这一路；按压不改选中', () => {
+    const s = makeService({ defaultValue: '#e11d48' })
+    itemOf(s, COLORS[1]!).onPointerDown(mouse)
+    expect(pressed(s, COLORS[1]!)).toBe(false)
+    itemOf(s, COLORS[1]!).onPointerDown(touch)
+    expect(pressed(s, COLORS[1]!)).toBe(true)
+    itemOf(s, COLORS[1]!).onPointerCancel()
+    expect(pressed(s, COLORS[1]!)).toBe(false)
+    itemOf(s, COLORS[1]!).onPointerDown(touch)
+    itemOf(s, COLORS[1]!).onPointerUp()
+    expect(pressed(s, COLORS[1]!)).toBe(false)
+    expect(api(s).value).toBe(COLORS[0])
+  })
+
+  it('禁用的格子不进；整组禁用或只读谁都不进', () => {
+    const item = makeService({ swatches: [{ value: COLORS[0]!, disabled: true }, { value: COLORS[1]! }] })
+    itemOf(item, COLORS[0]!).onKeyDown(key(' '))
+    itemOf(item, COLORS[0]!).onPointerDown(touch)
+    expect(pressed(item, COLORS[0]!)).toBe(false)
+    itemOf(item, COLORS[1]!).onPointerDown(touch)
+    expect(pressed(item, COLORS[1]!)).toBe(true)
+
+    const disabled = makeService({ disabled: true })
+    itemOf(disabled, COLORS[1]!).onKeyDown(key(' '))
+    itemOf(disabled, COLORS[1]!).onPointerDown(touch)
+    expect(pressed(disabled, COLORS[1]!)).toBe(false)
+
+    const readOnly = makeService({ readOnly: true })
+    itemOf(readOnly, COLORS[1]!).onKeyDown(key(' '))
+    itemOf(readOnly, COLORS[1]!).onPointerDown(touch)
+    expect(pressed(readOnly, COLORS[1]!)).toBe(false)
+  })
+
+  it('按住途中整组转入禁用或只读即松开', () => {
+    const disabled = makeReactive()
+    itemOf(disabled.service, COLORS[1]!).onPointerDown(touch)
+    expect(pressed(disabled.service, COLORS[1]!)).toBe(true)
+    disabled.setProps({ disabled: true })
+    expect(pressed(disabled.service, COLORS[1]!)).toBe(false)
+
+    const readOnly = makeReactive()
+    itemOf(readOnly.service, COLORS[1]!).onPointerDown(touch)
+    expect(pressed(readOnly.service, COLORS[1]!)).toBe(true)
+    readOnly.setProps({ readOnly: true })
+    expect(pressed(readOnly.service, COLORS[1]!)).toBe(false)
+  })
+})

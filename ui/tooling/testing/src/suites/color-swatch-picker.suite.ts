@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { colorSwatchPickerAnatomy, colorSwatchPickerKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/'
 
@@ -689,6 +690,45 @@ export const colorSwatchPickerSuite: ConformanceSuite = {
           why: 'checked 只落 DOM property，选中值迁移后要直接读 DOM 才验得到表单提交的是新值',
           run: ({ doc }) => assertHiddenInputs(doc, [['theme', RED, false], ['theme', GREEN, false], ['theme', BLUE, true]]),
         },
+      ],
+    },
+    {
+      name: 'Space 按住与触屏按下：格子投影 data-pressed，抬起、失焦或指针取消撤下；Enter 不是 radio 的激活键；选中与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['color-swatch-picker.kbd.press'],
+      props: { defaultValue: RED },
+      steps: [
+        // 选中的那一格也接按压；role=radio 只认 Space，Enter 那一路没有按压面
+        heldPress('color-swatch-picker', 'item', { value: RED, keys: [' '] }),
+        // 未选中的那一格：Space 在 keydown 那一刻就选中，按压面撤下后选中留在它身上
+        heldPress('color-swatch-picker', 'item', { value: BLUE, keys: [' '] }),
+        { kind: 'settle', until: { attr: { part: 'item[2]', name: 'data-pressed', value: null } }, expect: { parts: { 'item[0]': { 'aria-checked': 'false' }, 'item[2]': { 'aria-checked': 'true' } } } },
+        {
+          kind: 'raw',
+          why: 'Enter 不是 role=radio 的激活键，按住它不该有按压面',
+          run: async ({ doc, flush }) => {
+            const el = doc.querySelector<HTMLElement>(`[data-scope="color-swatch-picker"][data-part="item"][data-value="${BLUE}"]`)
+            if (!el)
+              throw new Error('找不到 color-swatch-picker.item[blue]')
+            el.focus()
+            el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (el.hasAttribute('data-pressed'))
+              throw new Error('Enter 按住投影了 data-pressed，但 Enter 不是 radio 的激活键')
+            el.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }))
+          },
+        },
+      ],
+    },
+    {
+      name: '禁用格不进入按压面；整组禁用或只读时所有格子都不进',
+      spec: { adr: 'press-channel' },
+      steps: [
+        heldPressIgnored('color-swatch-picker', 'item', '禁用的格子不接受按压', { value: GREEN }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('color-swatch-picker', 'item', '整组禁用时格子不接受按压', { value: RED }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('color-swatch-picker', 'item', '只读时格子不接受按压', { value: RED }),
       ],
     },
   ],
