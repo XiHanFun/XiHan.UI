@@ -165,7 +165,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.STEP` · `VALUE.TO_MIN` · `VALUE.TO_MAX` · `ITEM.SELECT` · `ITEM.FOCUS` · `ITEM.HOVER` · `HOVER.CLEAR` · `CONTROL.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `VALUE.STEP` · `VALUE.TO_MIN` · `VALUE.TO_MAX` · `ITEM.SELECT` · `ITEM.FOCUS` · `ITEM.HOVER` · `HOVER.CLEAR` · `CONTROL.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canInteract`
 
@@ -256,6 +256,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-half` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-action-control` | '' |

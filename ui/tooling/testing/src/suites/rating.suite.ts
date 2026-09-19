@@ -1,6 +1,7 @@
 import type { AttrExpectation, ConformanceSuite, FixtureNode } from '../conformance/types'
 import { ratingAnatomy, ratingKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 评分带对外报 radiogroup，角色与键盘契约对齐 radio 模式；半档是评分自己的约定。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/'
@@ -592,6 +593,31 @@ export const ratingSuite: ConformanceSuite = {
           why: '宿主写回后表单提交的也得是新值，value 只落 DOM property',
           run: ({ doc }) => expectSubmitted(doc, '4', '宿主把受控值翻到 4 之后'),
         },
+      ],
+    },
+    {
+      // 星是 role=radio 的 span：Space / Enter 在它上面什么都不做（评分靠方向键走档），键盘那一路没有按压面，只验触屏
+      name: '触屏按下：星投影 data-pressed，抬起或指针取消撤下；鼠标按下由 :active 表出；评分与悬停预览都不动',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: 2 },
+      steps: [
+        heldPress('rating', 'item', { value: '3', keyboardHost: null }),
+        heldPress('rating', 'item', { value: '2', keyboardHost: null }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'item[1]', name: 'data-pressed', value: null } },
+          expect: { parts: { 'item[1]': { 'aria-checked': 'true' }, 'item[2]': { 'aria-checked': 'false', 'data-highlighted': null } } },
+        },
+      ],
+    },
+    {
+      name: '禁用或只读时星不进按压面',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: 2, disabled: true },
+      steps: [
+        heldPressIgnored('rating', 'item', '禁用时星不接受按压', { value: '3', keyboardHost: null }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('rating', 'item', '只读时星不接受按压', { value: '3', keyboardHost: null }),
       ],
     },
   ],

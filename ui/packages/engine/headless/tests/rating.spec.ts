@@ -560,3 +560,89 @@ describe('评分 · 每颗星的名字', () => {
     expect(itemAttrs(service, 3)['aria-label']).toBe('4 分里的 3 分')
   })
 })
+
+describe('按压通道', () => {
+  type Handlers = Record<string, unknown> & {
+    onPointerDown: (e: PointerEvent) => void
+    onPointerUp: () => void
+    onPointerCancel: () => void
+  }
+  const touch = { pointerType: 'touch' } as PointerEvent
+  const mouse = { pointerType: 'mouse' } as PointerEvent
+  const star = (service: Service<RatingSchema>, index: number): Handlers => itemAttrs(service, index) as Handlers
+  const pressed = (service: Service<RatingSchema>, index: number): boolean => itemAttrs(service, index)['data-pressed'] === ''
+
+  /** props 挂在 signal 上：途中转禁用那一路要靠 watch 的 track 复查，普通对象压根不会跑。 */
+  function makeReactive(initial: Props = {}): { service: Service<RatingSchema>, setProps: (next: Props) => void } {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>(initial)
+    const service = createService(ratingMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    return { service, setProps: next => props.set({ ...props.get(), ...next }) }
+  }
+
+  it('触屏按下投影 data-pressed，只亮按住的那颗；抬起或取消撤下，另一颗的松开不串；鼠标按下不走这一路', () => {
+    const { service } = makeService({ defaultValue: 2 })
+    star(service, 3).onPointerDown(mouse)
+    expect(pressed(service, 3)).toBe(false)
+    star(service, 3).onPointerDown(touch)
+    expect(pressed(service, 3)).toBe(true)
+    expect(pressed(service, 2)).toBe(false)
+    expect(pressed(service, 4)).toBe(false)
+    star(service, 4).onPointerUp()
+    expect(pressed(service, 3)).toBe(true)
+    star(service, 3).onPointerUp()
+    expect(pressed(service, 3)).toBe(false)
+    star(service, 5).onPointerDown(touch)
+    expect(pressed(service, 5)).toBe(true)
+    star(service, 5).onPointerCancel()
+    expect(pressed(service, 5)).toBe(false)
+    // 评分与锚点纹丝不动
+    expect(service.context.get('value')).toBe(2)
+    expect(service.context.get('focusedValue') ?? null).toBeNull()
+  })
+
+  it('星上没有键盘激活键：处理器不带 onKeyDown / onKeyUp，Space 与 Enter 没有按压面', () => {
+    const { service } = makeService()
+    const attrs = itemAttrs(service, 1)
+    expect(attrs.onKeyDown).toBeUndefined()
+    expect(attrs.onKeyUp).toBeUndefined()
+  })
+
+  it('按压与悬停预览互相独立：按住途中预览照走，松开不清预览', () => {
+    const onHoverChange = vi.fn()
+    const { service } = makeService({ defaultValue: 1, onHoverChange })
+    star(service, 3).onPointerDown(touch)
+    service.send({ type: 'ITEM.HOVER', value: 4 })
+    expect(pressed(service, 3)).toBe(true)
+    expect(service.context.get('hoveredValue')).toBe(4)
+    expect(litPattern(service)).toBe('●●●●○')
+    star(service, 3).onPointerUp()
+    expect(pressed(service, 3)).toBe(false)
+    expect(service.context.get('hoveredValue')).toBe(4)
+    expect(onHoverChange).toHaveBeenCalledTimes(1)
+    service.send({ type: 'HOVER.CLEAR' })
+    expect(service.context.get('hoveredValue')).toBeNull()
+  })
+
+  it('禁用与只读不进；按住途中转入禁用或只读即松开', () => {
+    const disabled = makeService({ disabled: true })
+    star(disabled.service, 2).onPointerDown(touch)
+    expect(pressed(disabled.service, 2)).toBe(false)
+    const readOnly = makeService({ readOnly: true })
+    star(readOnly.service, 2).onPointerDown(touch)
+    expect(pressed(readOnly.service, 2)).toBe(false)
+
+    const toDisabled = makeReactive()
+    star(toDisabled.service, 2).onPointerDown(touch)
+    expect(pressed(toDisabled.service, 2)).toBe(true)
+    toDisabled.setProps({ disabled: true })
+    expect(pressed(toDisabled.service, 2)).toBe(false)
+
+    const toReadOnly = makeReactive()
+    star(toReadOnly.service, 2).onPointerDown(touch)
+    expect(pressed(toReadOnly.service, 2)).toBe(true)
+    toReadOnly.setProps({ readOnly: true })
+    expect(pressed(toReadOnly.service, 2)).toBe(false)
+  })
+})

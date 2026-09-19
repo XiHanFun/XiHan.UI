@@ -5,9 +5,9 @@
 
 // 提供 rating 相关实现。
 
-import type { Direction, ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { Direction, ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { RatingApi, RatingItemProps, RatingItemState, RatingSchema } from './rating.types'
-import { contains, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { ratingAnatomy } from './rating.anatomy'
 import { clampRating, ratingMax } from './rating.machine'
@@ -91,6 +91,16 @@ export function connectRating<T extends PropTypes>(
   const dir = prop('dir') ?? 'ltr'
   // 能否改值；能否聚焦另见 tabindex
   const interactive = !disabled && !readOnly
+
+  // 按压通道：真源是机器 context 里「正被按住的那颗星」（按序号记），每颗各自合成一份跟踪器；
+  // 触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档（icon ghost 档的换底与缩放由家族给）。
+  // 星是 role=radio 的 span，Space / Enter 在它上面什么都不做（评分靠方向键走档），键盘那一路不交给跟踪器：
+  // 什么都不发生的按键不该有按下的回执。悬停预览与按压互相独立，松开不清预览
+  const pressedValue = context.get('pressedValue')
+  const press = (item: RatingItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down ? { type: 'PRESS.START', value: item.value } : { type: 'PRESS.END', value: item.value }),
+  })
   const ids = scope.ids('rating', 'label')
 
   const value = clampRating(context.get('value'), count, allowHalf)
@@ -231,6 +241,7 @@ export function connectRating<T extends PropTypes>(
 
     getItemProps: (item) => {
       const s = getItemState(item)
+      const handlers = press(item)
       return normalize.element({
         ...parts.item.attrs,
         'role': 'radio',
@@ -257,6 +268,11 @@ export function connectRating<T extends PropTypes>(
         'data-readonly': dataAttr(readOnly),
         // 锚点条目独占 Tab 位；整体禁用时节点彻底不可聚焦
         'tabindex': disabled ? undefined : (anchor === item.value ? 0 : -1),
+        // 触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；与评分、预览互相独立
+        'data-pressed': dataAttr(pressedValue === item.value),
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
         'onClick': (e: MouseEvent) => {
           if (!interactive)
             return

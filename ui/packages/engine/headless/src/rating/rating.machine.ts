@@ -64,8 +64,14 @@ export const ratingMachine = createMachine({
     })),
     // 焦点锚点，不受控、不对外通知
     focusedValue: cell<number | null>(() => ({ defaultValue: null })),
+    // 按压通道：正被按住的星（序号），与评分、预览、锚点都无关
+    pressedValue: cell<number | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 按住途中转入禁用或只读：不会再来 pointerup，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
+  },
   // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法
   // 不看这两个标志，禁用的字段一样回落点；要拦是表单那侧 preventDefault 的事
   on: {
@@ -86,6 +92,9 @@ export const ratingMachine = createMachine({
         // 收起预览不设守卫，悬停途中被禁用也要收得回来
         'HOVER.CLEAR': { actions: ['clearHovered'] },
         'CONTROL.BLUR': { actions: ['clearFocused'] },
+        // 按压通道：星按序号记按住的那一颗；禁用或只读不进，松开不动预览
+        'PRESS.START': { guard: 'canInteract', actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
       },
     },
   },
@@ -94,6 +103,22 @@ export const ratingMachine = createMachine({
       canInteract: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一颗星的松开不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled') || prop('readOnly'))
+          context.set('pressedValue', null)
+      },
+
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('hoveredValue')
