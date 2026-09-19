@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SwitchApi, SwitchSchema } from './switch.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { switchAnatomy } from './switch.anatomy'
 
 const parts = switchAnatomy.build()
@@ -16,7 +17,7 @@ export function connectSwitch<T extends PropTypes>(
   service: Service<SwitchSchema>,
   normalize: NormalizeProps<T>,
 ): SwitchApi<T> {
-  const { state, prop, send } = service
+  const { state, prop, send, context } = service
   const checked = state.get() === 'on'
   const disabled = !!prop('disabled')
   const loading = !!prop('loading')
@@ -29,6 +30,10 @@ export function connectSwitch<T extends PropTypes>(
     if (next !== checked)
       send({ type: 'TOGGLE' })
   }
+
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档。轨道是原生按钮，
+  // Space 与 Enter 都是激活键（平台翻成 click），两键都进按压通道；与开关态互相独立
+  const press = pressHandlers(service)
 
   return {
     checked,
@@ -62,10 +67,17 @@ export function connectSwitch<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-required': dataAttr(required),
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => {
         if (!disabled && !loading && !readOnly)
           send({ type: 'TOGGLE' })
       },
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
     getThumbProps: () => normalize.element({
       ...parts.thumb.attrs,

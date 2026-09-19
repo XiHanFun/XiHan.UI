@@ -158,3 +158,96 @@ describe('switchMachine 表单重置', () => {
     withDefault.stop()
   })
 })
+
+describe('connectSwitch 按压通道', () => {
+  interface Handlers {
+    onClick: () => void
+    onKeyDown: (e: KeyboardEvent) => void
+    onKeyUp: (e: KeyboardEvent) => void
+    onBlur: () => void
+    onPointerDown: (e: PointerEvent) => void
+    onPointerUp: () => void
+    onPointerCancel: () => void
+  }
+  const handlers = (s: ReturnType<typeof makeSwitch>): Handlers => s.root() as unknown as Handlers
+  /** 键盘桩：只带跟踪器会读的三个字段。 */
+  const key = (name: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent =>
+    ({ key: name, repeat: false, isComposing: false, keyCode: 0, ...init } as KeyboardEvent)
+
+  it('机器收到 PRESS.START 后 root 投影 data-pressed，PRESS.END 撤下；开关态不受影响', () => {
+    const s = makeSwitch()
+    expect(s.root()['data-pressed']).toBeUndefined()
+    s.service.send({ type: 'PRESS.START' })
+    expect(s.root()['data-pressed']).toBe('')
+    expect(s.root()['aria-checked']).toBe('false')
+    s.service.send({ type: 'PRESS.END' })
+    expect(s.root()['data-pressed']).toBeUndefined()
+    s.stop()
+  })
+
+  it('键盘 Space 与 Enter 按住经跟踪器进出，长按重复键不重报，失焦即撤下；开着的轨道同样投影', () => {
+    const s = makeSwitch({ defaultChecked: true })
+    handlers(s).onKeyDown(key(' '))
+    expect(s.root()).toMatchObject({ 'aria-checked': 'true', 'data-state': 'checked', 'data-pressed': '' })
+    handlers(s).onKeyDown(key(' ', { repeat: true }))
+    expect(s.root()['data-pressed']).toBe('')
+    handlers(s).onKeyUp(key(' '))
+    expect(s.root()['data-pressed']).toBeUndefined()
+    handlers(s).onKeyDown(key('Enter'))
+    expect(s.root()['data-pressed']).toBe('')
+    handlers(s).onBlur()
+    expect(s.root()['data-pressed']).toBeUndefined()
+    expect(s.root()['data-state']).toBe('checked')
+    s.stop()
+  })
+
+  it('按住途中开关态翻转（Enter 在 keydown 那一刻 click）：按压面跨状态保住，直到 keyup', () => {
+    const s = makeSwitch()
+    handlers(s).onKeyDown(key('Enter'))
+    handlers(s).onClick()
+    expect(s.state()).toBe('on')
+    expect(s.root()['data-pressed']).toBe('')
+    handlers(s).onKeyUp(key('Enter'))
+    expect(s.root()['data-pressed']).toBeUndefined()
+    expect(s.root()['data-state']).toBe('checked')
+    s.stop()
+  })
+
+  it('触屏按下在场，抬起或指针取消撤下；鼠标按下不走这一路', () => {
+    const s = makeSwitch()
+    handlers(s).onPointerDown({ pointerType: 'mouse' } as PointerEvent)
+    expect(s.root()['data-pressed']).toBeUndefined()
+    handlers(s).onPointerDown({ pointerType: 'touch' } as PointerEvent)
+    expect(s.root()['data-pressed']).toBe('')
+    handlers(s).onPointerCancel()
+    expect(s.root()['data-pressed']).toBeUndefined()
+    handlers(s).onPointerDown({ pointerType: 'touch' } as PointerEvent)
+    expect(s.root()['data-pressed']).toBe('')
+    handlers(s).onPointerUp()
+    expect(s.root()['data-pressed']).toBeUndefined()
+    s.stop()
+  })
+
+  it('禁用、提交中与只读时按住不进入按压面', () => {
+    for (const props of [{ disabled: true }, { loading: true }, { readOnly: true }] as Props[]) {
+      const s = makeSwitch(props)
+      handlers(s).onKeyDown(key(' '))
+      expect(s.root()['data-pressed']).toBeUndefined()
+      handlers(s).onPointerDown({ pointerType: 'touch' } as PointerEvent)
+      expect(s.root()['data-pressed']).toBeUndefined()
+      s.stop()
+    }
+  })
+
+  it('按住途中转入禁用、提交中或只读：不会再来 keyup，机器自己撤下', () => {
+    const s = makeSwitch()
+    for (const props of [{ disabled: true }, { loading: true }, { readOnly: true }] as Props[]) {
+      handlers(s).onKeyDown(key(' '))
+      expect(s.root()['data-pressed']).toBe('')
+      s.setProps(props)
+      expect(s.root()['data-pressed']).toBeUndefined()
+      s.setProps({ disabled: false, loading: false, readOnly: false })
+    }
+    s.stop()
+  })
+})

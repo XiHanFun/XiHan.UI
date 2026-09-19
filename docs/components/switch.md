@@ -176,9 +176,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 
 **状态**：`off` · `on`
 
-**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `FORM.RESET`
+**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isCheckedControlled` · `defaultsToChecked`
+**判据**：`isCheckedControlled` · `defaultsToChecked` · `canPress`
 
 ### connect API
 
@@ -204,6 +204,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 checked 状态 |
+| `Space` / `Enter` | held in root, not disabled, not loading, not readOnly | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中转入禁用、提交中或只读也撤下。与开关态互相独立 |
 
 ### ARIA
 
@@ -235,6 +236,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-pressed` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
