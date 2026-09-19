@@ -623,3 +623,30 @@ describe('connectPagination 按压通道', () => {
     expect(ellipsis(s, 'end')['data-pressed']).toBeUndefined()
   })
 })
+
+describe('connectPagination 跳页输入框', () => {
+  type Jumper = Props & { onKeydown: (event: KeyboardEvent) => void }
+  const enter = (value: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent => ({
+    key: 'Enter',
+    isComposing: false,
+    keyCode: 13,
+    currentTarget: { value },
+    preventDefault: vi.fn(),
+    ...init,
+  } as unknown as KeyboardEvent)
+
+  it('回车按输入的页码跳页，越界值夹回合法区间；输入法组合中的回车是在选字，不跳', () => {
+    const s = makeService({ count: 100, pageSize: 10 })
+    const jumper = api(s).getJumperProps() as Jumper
+    jumper.onKeydown(enter('4'))
+    expect(api(s).page).toBe(4)
+    jumper.onKeydown(enter('99'))
+    expect(api(s).page).toBe(10)
+    const composing = enter('2', { isComposing: true })
+    jumper.onKeydown(composing)
+    expect(api(s).page).toBe(10)
+    expect(composing.preventDefault).not.toHaveBeenCalled()
+    jumper.onKeydown(enter('3', { keyCode: 229 }))
+    expect(api(s).page).toBe(10)
+  })
+})
