@@ -64,6 +64,8 @@ interface Harness {
 interface MountOptions {
   /** 这些条目每帧自报禁用，等价于作者写在条目部件上的 disabled 声明。 */
   disabledItems?: readonly string[]
+  /** props 挂在 signal 上：改 prop 要真的惊动 watch 的 track（途中转禁用自收那一路），普通对象压根不会跑。 */
+  reactive?: boolean
 }
 
 const mounted: HTMLElement[] = []
@@ -78,7 +80,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   }
   const disabledItems = new Set(options.disabledItems ?? [])
   const runtime = createVanillaRuntime()
-  const service = createService(tagGroupMachine, { props: () => props, runtime })
+  const signal = options.reactive ? runtime.signal<Partial<Props>>({ ...props }) : null
+  const service = createService(tagGroupMachine, { props: () => (signal ? signal.get() : props), runtime })
   runtime.start()
 
   const doc = document
@@ -128,6 +131,10 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     nodes: v => nodes.get(v)!,
     items: () => tagGroupItems(list),
     setProps: (next) => {
+      if (signal) {
+        signal.set({ ...signal.get(), ...next })
+        return
+      }
       Object.assign(props, next)
       render()
     },
@@ -343,5 +350,113 @@ describe('摘除钮是 tag 的 close-trigger', () => {
     expect(h.deletes).toEqual([{ value: 'angular' }])
     expect(document.activeElement).toBe(h.nodes('svelte').item)
     expect(h.api().focusedValue).toBe('svelte')
+  })
+})
+
+describe('按压通道', () => {
+  const keyup = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const pointerDown = (el: HTMLElement, pointerType = 'touch'): void => {
+    el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, pointerType }))
+  }
+  const pointerUp = (el: HTMLElement): void => {
+    el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, button: 0, pointerType: 'touch' }))
+  }
+  const has = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  it('标签本体：Space / Enter 按住投影 data-pressed（在 tag 的 root 上），抬起或失焦撤下；另一枚的 keyup 不串，选中与按压互相独立', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    const vue = h.nodes('vue').item
+    vue.focus()
+    keydown(vue, ' ')
+    expect(has(vue)).toBe(true)
+    expect(has(h.nodes('react').item)).toBe(false)
+    expect(has(h.nodes('vue').del)).toBe(false)
+    // keydown 那一刻就切换了选中，按压面不随选中丢
+    expect(h.api().value).toEqual(['vue'])
+    keyup(h.nodes('react').item, ' ')
+    expect(has(vue)).toBe(true)
+    keyup(vue, ' ')
+    expect(has(vue)).toBe(false)
+    keydown(vue, 'Enter')
+    expect(has(vue)).toBe(true)
+    vue.dispatchEvent(new FocusEvent('blur'))
+    expect(has(vue)).toBe(false)
+    expect(h.api().value).toEqual([])
+  })
+
+  it('触屏按下进按压面，抬起撤下；鼠标按下不走这一路。移除钮走同一条通道、按自己的部件记', () => {
+    const h = mount({ selectionMode: 'single', deletable: true })
+    const { item, del } = h.nodes('react')
+    pointerDown(item, 'mouse')
+    expect(has(item)).toBe(false)
+    pointerDown(item)
+    expect(has(item)).toBe(true)
+    expect(has(del)).toBe(false)
+    pointerUp(item)
+    expect(has(item)).toBe(false)
+
+    pointerDown(del)
+    expect(has(del)).toBe(true)
+    expect(has(item)).toBe(false)
+    // 本体的抬起松不开钮
+    pointerUp(item)
+    expect(has(del)).toBe(true)
+    pointerUp(del)
+    expect(has(del)).toBe(false)
+  })
+
+  it('不参与选中的一排本体不进；摘不掉的钮不进；条目禁用时两者都不进；整组禁用 / 只读谁都不进', () => {
+    const none = mount({ deletable: true })
+    pointerDown(none.nodes('vue').item)
+    expect(has(none.nodes('vue').item)).toBe(false)
+    pointerDown(none.nodes('vue').del)
+    expect(has(none.nodes('vue').del)).toBe(true)
+    pointerUp(none.nodes('vue').del)
+
+    const locked = mount({ selectionMode: 'single' })
+    pointerDown(locked.nodes('vue').del)
+    expect(has(locked.nodes('vue').del)).toBe(false)
+    pointerDown(locked.nodes('vue').item)
+    expect(has(locked.nodes('vue').item)).toBe(true)
+
+    const item = mount({ selectionMode: 'single', deletable: true }, { disabledItems: ['svelte'] })
+    pointerDown(item.nodes('svelte').item)
+    pointerDown(item.nodes('svelte').del)
+    expect(has(item.nodes('svelte').item)).toBe(false)
+    expect(has(item.nodes('svelte').del)).toBe(false)
+
+    const disabled = mount({ selectionMode: 'single', deletable: true, disabled: true })
+    keydown(disabled.nodes('vue').item, ' ')
+    pointerDown(disabled.nodes('vue').del)
+    expect(has(disabled.nodes('vue').item)).toBe(false)
+    expect(has(disabled.nodes('vue').del)).toBe(false)
+
+    const readOnly = mount({ selectionMode: 'single', deletable: true, readOnly: true })
+    keydown(readOnly.nodes('vue').item, ' ')
+    pointerDown(readOnly.nodes('vue').del)
+    expect(has(readOnly.nodes('vue').item)).toBe(false)
+    expect(has(readOnly.nodes('vue').del)).toBe(false)
+  })
+
+  it('按住途中整组转入禁用或只读即松开；摘掉正按着的那一枚也松开', () => {
+    const disabled = mount({ selectionMode: 'single' }, { reactive: true })
+    pointerDown(disabled.nodes('vue').item)
+    expect(has(disabled.nodes('vue').item)).toBe(true)
+    disabled.setProps({ disabled: true })
+    expect(has(disabled.nodes('vue').item)).toBe(false)
+
+    const readOnly = mount({ selectionMode: 'single' }, { reactive: true })
+    pointerDown(readOnly.nodes('vue').item)
+    readOnly.setProps({ readOnly: true })
+    expect(has(readOnly.nodes('vue').item)).toBe(false)
+
+    const deleted = mount({ deletable: true })
+    pointerDown(deleted.nodes('react').del)
+    expect(has(deleted.nodes('react').del)).toBe(true)
+    deleted.api().deleteItem('react')
+    expect(deleted.deletes).toEqual([{ value: 'react' }])
+    expect(has(deleted.nodes('react').del)).toBe(false)
   })
 })

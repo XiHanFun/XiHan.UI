@@ -1,5 +1,6 @@
 import type { AttrExpectation, ConformanceSuite, FixtureNode, SnapshotExpectation, StepWithExpect } from '../conformance/types'
 import { tagGroupAnatomy, tagGroupKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
@@ -552,6 +553,33 @@ export const tagGroupSuite: ConformanceSuite = {
       steps: [
         pressDeleteTrigger(3, { events: [{ type: 'item-delete', detail: { value: 'angular' } }] }),
         tags({ focused: 'outside' }),
+      ],
+    },
+    {
+      // 标签本体是 tag 的 root：Space / Enter 按住投影 data-pressed，keydown 那一刻切换的选中与按压面互相独立。
+      // 摘除钮不占 Tab 位（tabindex=-1），键盘那一路走 Delete / Backspace，按压只验触屏
+      name: 'Space / Enter 按住与触屏按下：标签本体投影 data-pressed（在 tag 的 root 上），抬起、失焦或指针取消撤下；摘除钮走同一条通道',
+      spec: { adr: 'press-channel' },
+      props: { selectionMode: 'multiple', deletable: true },
+      steps: [
+        heldPress('tag', 'root', { value: 'vue' }),
+        heldPress('tag', 'root', { value: 'svelte' }),
+        heldPress('tag', 'close-trigger', { selector: `${ITEM}[data-value="vue"] > [data-scope="tag-group"][data-part="cell"] > [data-scope="tag"][data-part="close-trigger"]`, keyboardHost: null }),
+      ],
+    },
+    {
+      name: '不参与选中的一排本体不进按压面；禁用的标签、整组禁用与只读谁都不进',
+      spec: { adr: 'press-channel' },
+      props: { deletable: true },
+      steps: [
+        heldPressIgnored('tag', 'root', '不参与选中的标签本体不接受按压', { value: 'vue' }),
+        heldPressIgnored('tag', 'root', '禁用的标签不接受按压', { value: 'react' }),
+        heldPressIgnored('tag', 'close-trigger', '禁用标签的摘除钮不接受按压', { selector: `${ITEM}[data-value="react"] > [data-scope="tag-group"][data-part="cell"] > [data-scope="tag"][data-part="close-trigger"]`, keyboardHost: null }),
+        { kind: 'setProps', props: { selectionMode: 'multiple', disabled: true } },
+        heldPressIgnored('tag', 'root', '整组禁用时标签本体不接受按压', { value: 'vue' }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('tag', 'root', '只读时标签本体不接受按压', { value: 'vue' }),
+        heldPressIgnored('tag', 'close-trigger', '只读时摘除钮不接受按压', { selector: `${ITEM}[data-value="vue"] > [data-scope="tag-group"][data-part="cell"] > [data-scope="tag"][data-part="close-trigger"]`, keyboardHost: null }),
       ],
     },
     {

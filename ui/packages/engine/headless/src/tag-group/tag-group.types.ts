@@ -6,7 +6,7 @@
 // 定义 tag group 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone, Typeahead } from '@xihan-ui/core'
-import type { TagVariant } from '../tag/tag.types'
+import type { TagPressedPart, TagVariant } from '../tag/tag.types'
 
 /**
  * 焦点模型：roving tabindex。焦点实际落在标签（tag 的 root）上，整组只保留一个 Tab 停靠点：
@@ -135,6 +135,14 @@ export interface TagGroupSchema extends MachineSchema {
     value: string[]
     /** 焦点位于组内时的瞬态锚点，焦点离开即清空。 */
     focusedValue: string | null
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的部件，root 是标签本体（可选条目）、
+     * close-trigger 是它的移除按钮；没有按住时为 null。整组禁用或只读时谁都不进，条目自身的禁用、
+     * 不可选与不可移除由 connect 判定后随事件带入。
+     */
+    pressedPart: TagPressedPart | null
+    /** 正被按住的那一枚标签的 value；没有按住时为 null。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: TagGroupRefs
@@ -152,9 +160,22 @@ export interface TagGroupSchema extends MachineSchema {
     | { type: 'ITEM.DELETE', value: string }
     /** 焦点离开整组，或持有焦点的条目被移出 DOM（后者由适配器上报）。 */
     | { type: 'LIST.BLUR' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part + value 说的是哪一枚的哪个部件；
+    // disabled 是该部件自身按不动的事实（条目禁用、不可选、不可移除），由 connect 判定后随事件带入
+    | { type: 'PRESS.START', part: TagPressedPart, value: string, disabled?: boolean }
+    | { type: 'PRESS.END', part: TagPressedPart, value: string }
   tag: never
-  guard: never
-  action: 'setValue' | 'selectItem' | 'toggleItem' | 'deleteItem' | 'setFocusedValue' | 'clearFocusedValue'
+  guard: 'canPress'
+  action:
+    | 'setValue'
+    | 'selectItem'
+    | 'toggleItem'
+    | 'deleteItem'
+    | 'setFocusedValue'
+    | 'clearFocusedValue'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 
