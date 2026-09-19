@@ -183,6 +183,94 @@ describe('卡片上的两颗钮', () => {
   })
 })
 
+// ══ 按压通道：卡片复用 toast 那台机器，pressed 记在它的 context 里，卡片按 part 键比对投影 ══
+
+type Dict = Record<string, unknown>
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+function makeItem(initial: ToastSchema['props']) {
+  const runtime = createVanillaRuntime()
+  const props = runtime.signal<ToastSchema['props']>(initial)
+  const service = createService(toastMachine, { props: () => props.get(), runtime })
+  runtime.start()
+  return {
+    service,
+    state: () => service.state.get(),
+    setProps: (next: ToastSchema['props']) => props.set({ ...props.get(), ...next }),
+    close: (): Dict => connectNotificationItem(service, normalizeProps).getItemCloseTriggerProps() as Dict,
+    action: (): Dict => connectNotificationItem(service, normalizeProps).getItemActionTriggerProps() as Dict,
+    stop: () => runtime.stop(),
+  }
+}
+
+describe('卡片按压通道：Space / Enter 与触屏按住投影 data-pressed，按住的是哪颗就只落在哪颗上', () => {
+  it('关闭钮：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const t = makeItem({ duration: 0 })
+    expect(t.close()['data-pressed']).toBeUndefined()
+    fire(t.close(), 'onKeyDown', key(' '))
+    expect(t.close()['data-pressed']).toBe('')
+    fire(t.close(), 'onKeyUp', key(' '))
+    expect(t.close()['data-pressed']).toBeUndefined()
+    fire(t.close(), 'onKeyDown', key('Enter'))
+    expect(t.close()['data-pressed']).toBe('')
+    fire(t.close(), 'onBlur', {})
+    expect(t.close()['data-pressed']).toBeUndefined()
+    fire(t.close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.close()['data-pressed']).toBe('')
+    fire(t.close(), 'onPointerCancel', {})
+    expect(t.close()['data-pressed']).toBeUndefined()
+    fire(t.close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.close()['data-pressed']).toBe('')
+    fire(t.close(), 'onPointerUp', {})
+    expect(t.close()['data-pressed']).toBeUndefined()
+    fire(t.close(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(t.close()['data-pressed']).toBeUndefined()
+    expect(t.state()).toBe('visible.running')
+    t.stop()
+  })
+
+  it('操作钮：只有按住的那颗带 data-pressed，另一颗的 keyup 不把它松开；加载中照有回执', () => {
+    const t = makeItem({ loading: true })
+    fire(t.action(), 'onKeyDown', key(' '))
+    expect(t.action()['data-pressed']).toBe('')
+    expect(t.close()['data-pressed']).toBeUndefined()
+    fire(t.close(), 'onKeyUp', key(' '))
+    expect(t.action()['data-pressed']).toBe('')
+    fire(t.action(), 'onKeyUp', key(' '))
+    expect(t.action()['data-pressed']).toBeUndefined()
+    t.stop()
+  })
+
+  it('进入退场即松开：按住 Enter 关掉卡片，按钮随卡片离场，按压面由机器收；退场后按住不进', () => {
+    const t = makeItem({ duration: 0 })
+    fire(t.close(), 'onKeyDown', key('Enter'))
+    expect(t.close()['data-pressed']).toBe('')
+    t.service.send({ type: 'TOAST.DISMISS' })
+    expect(t.state()).toBe('dismissing')
+    expect(t.close()['data-pressed']).toBeUndefined()
+    fire(t.action(), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.action()['data-pressed']).toBeUndefined()
+    t.stop()
+  })
+
+  it('closable=false：关闭钮按住不进；经 signal 转成不可关闭时按住的关闭钮自收', () => {
+    const off = makeItem({ duration: 0, closable: false })
+    fire(off.close(), 'onKeyDown', key(' '))
+    expect(off.close()['data-pressed']).toBeUndefined()
+    fire(off.close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(off.close()['data-pressed']).toBeUndefined()
+    off.stop()
+
+    const t = makeItem({ duration: 0 })
+    fire(t.close(), 'onKeyDown', key(' '))
+    expect(t.close()['data-pressed']).toBe('')
+    t.setProps({ closable: false })
+    expect(t.close()['data-pressed']).toBeUndefined()
+    t.stop()
+  })
+})
+
 describe('宿主按住整摞的计时', () => {
   function makeToast(initial: ToastSchema['props']) {
     const runtime = createVanillaRuntime()

@@ -285,6 +285,57 @@ describe('createNotificationService 的默认模板', () => {
     expect(card().getAttribute('data-tone')).toBe('success')
     notify.dispose()
   })
+
+  // 卡片进不了一致性夹具（WC 侧是另一个自定义元素），按压通道那一帧在这里守
+  it('按压通道：关闭钮与操作钮 Space / Enter 与触屏按住投影 data-pressed，抬起、失焦或指针取消撤下', async () => {
+    const notify = createNotificationService()
+    notify.info('有新的审批', { duration: 0, actionLabel: '查看' })
+    await tick()
+    for (const part of ['item-close-trigger', 'item-action-trigger'] as const) {
+      const el = partOf(part)!
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      el.focus()
+      el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+      await tick()
+      expect(el.hasAttribute('data-pressed')).toBe(true)
+      el.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+      await tick()
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+      await tick()
+      expect(el.hasAttribute('data-pressed')).toBe(true)
+      el.blur()
+      await tick()
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true }))
+      await tick()
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true, cancelable: true }))
+      await tick()
+      expect(el.hasAttribute('data-pressed')).toBe(true)
+      el.dispatchEvent(new PointerEvent('pointercancel', { pointerType: 'touch', bubbles: true }))
+      await tick()
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+    }
+    notify.dispose()
+  })
+
+  it('按压通道：按住 Enter 关掉卡片，按压面随退场由机器收', async () => {
+    const notify = createNotificationService()
+    // 服务级 dismiss 直接把记录摘出队列、卡片随之卸载；退场帧只在卡片自己走 TOAST.DISMISS 时才有
+    notify.info('有新的审批', { duration: 0 })
+    await tick()
+    const close = partOf('item-close-trigger')!
+    close.focus()
+    close.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+    await tick()
+    expect(close.hasAttribute('data-pressed')).toBe(true)
+    close.click()
+    await tick()
+    expect(card().getAttribute('data-state')).toBe('dismissing')
+    expect(close.hasAttribute('data-pressed')).toBe(false)
+    notify.dispose()
+  })
 })
 
 describe('createDialogService', () => {

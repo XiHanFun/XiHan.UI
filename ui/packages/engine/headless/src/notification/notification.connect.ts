@@ -10,6 +10,7 @@ import type { ToastSchema, ToastStatus } from '../toast'
 import type { NotificationApi, NotificationItemApi, NotificationPlacement, NotificationRecord, NotificationSchema, ResolvedNotification } from './notification.types'
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
 import { resolveToastDuration, resolveToastId } from '../toast'
+import { toastPressHandlers } from '../toast/toast.connect'
 import { notificationAnatomy } from './notification.anatomy'
 import {
   NOTIFICATION_GAP,
@@ -132,6 +133,10 @@ export function connectNotificationItem<T extends PropTypes>(
   const unmounted = status === 'unmounted'
   const duration = resolveToastDuration(loading, prop('duration'))
   const autoDismiss = Number.isFinite(duration)
+  // 按压通道：真源在 toast 机器 context 里「正被按住的那颗」，卡片按 part 键比对投影 data-pressed
+  const pressed = context.get('pressed')
+  const closePress = toastPressHandlers(service, 'close')
+  const actionPress = toastPressHandlers(service, 'action')
 
   return {
     id,
@@ -207,6 +212,14 @@ export function connectNotificationItem<T extends PropTypes>(
       'data-xh-action-variant': 'outline',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；进入退场由机器撤下
+      'data-pressed': dataAttr(pressed === 'action'),
+      'onKeyDown': actionPress.onKeyDown,
+      'onKeyUp': actionPress.onKeyUp,
+      'onBlur': actionPress.onBlur,
+      'onPointerDown': actionPress.onPointerDown,
+      'onPointerUp': actionPress.onPointerUp,
+      'onPointerCancel': actionPress.onPointerCancel,
       'onClick': () => send({ type: 'TOAST.ACTION' }),
     }),
 
@@ -236,6 +249,14 @@ export function connectNotificationItem<T extends PropTypes>(
       'data-disabled': dataAttr(!closable),
       // 不可关闭时连按钮一起收起，不留一个按不动的叉
       'hidden': !closable || undefined,
+      // Space / Enter 与触屏按住投影 data-pressed；不可关闭时机器守卫不进，进入退场由机器撤下
+      'data-pressed': dataAttr(pressed === 'close'),
+      'onKeyDown': closePress.onKeyDown,
+      'onKeyUp': closePress.onKeyUp,
+      'onBlur': closePress.onBlur,
+      'onPointerDown': closePress.onPointerDown,
+      'onPointerUp': closePress.onPointerUp,
+      'onPointerCancel': closePress.onPointerCancel,
       'onClick': () => {
         // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
         if (!closable)
