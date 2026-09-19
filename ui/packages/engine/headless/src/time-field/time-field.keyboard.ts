@@ -23,6 +23,7 @@ export const timeFieldKeyboard: KeyboardTable = {
     { id: 'time-field.kbd.last', keys: ['End'], when: 'focus in a segment, not disabled', does: '焦点移到末段' },
     { id: 'time-field.kbd.digit', keys: ['0-9'], when: 'focus in a 数字段, not disabled/readOnly', does: '把数字并进本段；本段再吃不下第二位时自动跳到下一段' },
     { id: 'time-field.kbd.clear', keys: ['Backspace', 'Delete'], when: 'focus in a segment, not disabled/readOnly', does: '清掉本段；小时被清时上下午段仍保留原来的上午/下午' },
+    { id: 'time-field.kbd.press', keys: ['Enter', 'Space'], when: 'held in clear-trigger, 有值, not disabled/readOnly', does: '按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面' },
     { id: 'time-field.kbd.period', keys: ['a', 'p'], when: 'focus in 上下午段, 12 小时制, not disabled/readOnly', does: 'a 取上午、p 取下午（不区分大小写）' },
   ],
 }

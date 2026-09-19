@@ -349,15 +349,24 @@ export const timeFieldMachine = createMachine({
     // 焦点锚点：不受控、不对外通知，服务 roving tabindex 与 data-focus 标记
     focusedSegment: cell<TimeSegmentType | null>(() => ({ defaultValue: null })),
     typeBuffer: cell<string>(() => ({ defaultValue: '' })),
+    // 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
-  // 只兜宿主侧的写入（受控回写、外部改 value）：内部提交当场就把缓冲一起更新过了
-  watch: ({ track, context, action }) => track([context.dep('value')], () => action(['syncDraft'])),
+  watch: ({ track, context, prop, action }) => {
+    // 只兜宿主侧的写入（受控回写、外部改 value）：内部提交当场就把缓冲一起更新过了
+    track([context.dep('value')], () => action(['syncDraft']))
+    // 按住途中转入禁用 / 只读或值被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value')], () => action(['releaseWhenInert']))
+  },
   // 这些事从哪个状态发出都一样（机器本来也只有一个状态），因此挂根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canEdit', actions: ['clearValue'] },
+    // 清空按钮的按压：清不了（禁用、只读或没有值）的按钮已经藏起，不该有按下的回执
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
     'SEGMENT.DIGIT': { guard: 'canEdit', actions: ['typeDigit'] },
     'SEGMENT.CLEAR': { guard: 'canEdit', actions: ['clearSegment'] },
@@ -372,6 +381,8 @@ export const timeFieldMachine = createMachine({
     guards: {
       // 只读仍可聚焦、可在段间走，只是改不动值；禁用连键都不该到这儿
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      // 与 connect 里清空按钮的显隐同义：可编辑且有值
+      canPress: ({ prop, context }) => !prop('disabled') && !prop('readOnly') && context.get('value') !== '',
     },
     actions: {
       resetToDefault: (params) => {
@@ -390,6 +401,12 @@ export const timeFieldMachine = createMachine({
       clearValue: (params) => {
         commitDraft(params, emptyTimeDraft())
         params.context.set('typeBuffer', '')
+      },
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled') || prop('readOnly') || context.get('value') === '')
+          context.set('pressed', false)
       },
       stepSegment: (params) => {
         const e = params.event.current()

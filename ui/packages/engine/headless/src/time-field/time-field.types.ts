@@ -90,6 +90,8 @@ export interface TimeFieldSchema extends MachineSchema {
     focusedSegment: TimeSegmentType | null
     /** 当前段已输入的数字串。换段、加减、清段都会清除它。 */
     typeBuffer: string
+    /** 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true；抬起、失焦、指针取消或清不了时即撤下。 */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -111,8 +113,12 @@ export interface TimeFieldSchema extends MachineSchema {
     | { type: 'SEGMENT.FOCUS', segment: TimeSegmentType }
     | { type: 'SEGMENT.BLUR' }
     | { type: 'FORM.RESET' }
+    /** 清空按钮被 Space / Enter 或触屏按住；清不了（禁用、只读或没有值）时被守卫拦截。 */
+    | { type: 'PRESS.START' }
+    /** 按住的清空按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'canEdit'
+  guard: 'canEdit' | 'canPress'
   action:
     | 'setValue'
     | 'clearValue'
@@ -123,6 +129,9 @@ export interface TimeFieldSchema extends MachineSchema {
     | 'setFocusedSegment'
     | 'clearFocusedSegment'
     | 'syncDraft'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
     | 'resetToDefault'
   effect: never
 }

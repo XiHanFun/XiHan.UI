@@ -164,9 +164,9 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canEdit`
+**判据**：`canEdit` · `canPress`
 
 ### connect API
 
@@ -212,6 +212,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `End` | focus in a segment, not disabled | 焦点移到末段 |
 | `0-9` | focus in a 数字段, not disabled/readOnly | 把数字并进本段；本段再吃不下第二位时自动跳到下一段 |
 | `Backspace` / `Delete` | focus in a segment, not disabled/readOnly | 清掉本段；小时被清时上下午段仍保留原来的上午/下午 |
+| `Enter` / `Space` | held in clear-trigger, 有值, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 | `a` / `p` | focus in 上下午段, 12 小时制, not disabled/readOnly | a 取上午、p 取下午（不区分大小写） |
 
 ### ARIA
@@ -274,6 +275,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `segment` | `data-invalid` | ''（条件成立时才出现） |
 | `segment` | `data-placeholder` | ''（条件成立时才出现） |
 | `segment` | `data-readonly` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |
 | `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
