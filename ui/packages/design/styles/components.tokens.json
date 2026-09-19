@@ -49903,6 +49903,25 @@
       "description": "radio-group 的 indicator 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-indicator-bg-disabled",
+      "component": "radio-group",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 indicator、item 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-indicator-bg-pressed",
       "component": "radio-group",
       "part": [
@@ -49921,7 +49940,7 @@
         "readonly"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_radio-group-host-bg-pressed"
       ],
       "visibility": "public",
       "description": "radio-group 的 indicator、item 部件 background 覆盖槽。"
@@ -49961,6 +49980,25 @@
       ],
       "visibility": "public",
       "description": "radio-group 的 indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-indicator-border-disabled",
+      "component": "radio-group",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 indicator、item 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-indicator-border-hover",
@@ -50027,6 +50065,50 @@
       "description": "radio-group 的 indicator 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-indicator-dot-disabled",
+      "component": "radio-group",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 indicator、item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-indicator-dot-pressed",
+      "component": "radio-group",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "pressed",
+        "readonly",
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 indicator、item 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-indicator-radius",
       "component": "radio-group",
       "part": [
@@ -50064,6 +50146,51 @@
       "description": "radio-group 的 indicator 部件 block-size、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-item-bg-hover",
+      "component": "radio-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-item-bg-pressed",
+      "component": "radio-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-item-fg",
       "component": "radio-group",
       "part": [
@@ -50073,7 +50200,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
