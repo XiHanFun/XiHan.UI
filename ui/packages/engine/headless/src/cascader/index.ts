@@ -42,6 +42,7 @@ export type {
   CascaderNode,
   CascaderNodeMeta,
   CascaderOpenChangeDetails,
+  CascaderPressedPart,
   CascaderRefs,
   CascaderSchema,
   CascaderSearchItemProps,

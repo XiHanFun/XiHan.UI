@@ -6,7 +6,7 @@
 // 提供 cascader 相关实现。
 
 import type { PositionResult } from '@xihan-ui/core'
-import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
+import type { CascaderFocusIntent, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -110,6 +110,9 @@ export const cascaderMachine = createMachine({
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     inputValue: cell<string>(() => ({ defaultValue: '' })),
     searchIndex: cell<number>(() => ({ defaultValue: 0 })),
+    // 按压通道：正被按住的那一个（条目按 value、候选按路径键记，清空按钮只记部件），与开合无关
+    pressedPart: cell<CascaderPressedPart | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -124,11 +127,17 @@ export const cascaderMachine = createMachine({
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 回写
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
+    // 值清空时清空按钮随之藏起，按住它的那一下不会再来 keyup：与禁用 / 只读 / 加载一道由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
+    track([context.dep('value')], () => action(['releaseWhenInert']))
   },
   // 与开合无关、两个状态都认的事件；展开态另行声明的 ITEM.SELECT 会盖过这里那一条
   on: {
+    // 按压通道：三个部件两个状态都认；禁用 / 只读 / 加载不进，清空按钮在清不了时不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
@@ -156,7 +165,8 @@ export const cascaderMachine = createMachine({
     open: {
       // 展开那一刻把列一路铺到选中路径上并挑好焦点锚点，全程纯计算
       entry: ['setInitialFocusedPath'],
-      exit: ['clearFocusedPath', 'clearInput'],
+      // 收起即松开：按住 Enter 选中叶子后浮层收起，条目随内容一起藏起，不会再来 keyup
+      exit: ['clearFocusedPath', 'clearInput', 'releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -195,8 +205,43 @@ export const cascaderMachine = createMachine({
           return false
         return !!cascaderNodeAt(prop('collection') ?? [], e.path)?.branch
       },
+      // 禁用、只读与加载都改不了值，一票否决；条目自身的禁用随事件带入；清空按钮没有值可清时不进
+      canPress: ({ prop, context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('disabled') || prop('readOnly') || prop('loading') || e.disabled)
+          return false
+        return e.part !== 'clear-trigger' || context.get('value').length > 0
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value ?? null)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== (e.value ?? null))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releasePress: ({ context }) => {
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const part = context.get('pressedPart')
+        const inert = prop('disabled') || prop('readOnly') || prop('loading')
+          || (part === 'clear-trigger' && context.get('value').length === 0)
+        if (!part || !inert)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       // 只还原表单值，保持当前浏览位置与实际 DOM 焦点，不擅自关闭受控浮层。
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),

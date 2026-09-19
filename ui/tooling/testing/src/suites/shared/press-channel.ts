@@ -3,6 +3,8 @@ import type { StepWithExpect } from '../../conformance/types'
 export interface PressTargetOptions {
   /** 多条目部件按 data-value 指定按哪一条；不给取文档序里第一个。 */
   value?: string
+  /** 条目身份不在 data-value 上（如 cascader 的检索候选）时，直接给出目标选择器；与 value 二选一。 */
+  selector?: string
   /**
    * 按住途中失焦的落点选择器；不给就 el.blur() 落到 body。
    * 浮层里的条目落到 body 时，React 的合成 focusout 沿组件树穿过 Portal 叫起根的 onFocusOut，而 Vue / WC 的
@@ -19,11 +21,15 @@ export interface PressTargetOptions {
 }
 
 function targetSelector(scope: string, part: string, options: PressTargetOptions): string {
+  if (options.selector !== undefined)
+    return options.selector
   const base = `[data-scope="${scope}"][data-part="${part}"]`
   return options.value === undefined ? base : `${base}[data-value="${options.value}"]`
 }
 
 function describeTarget(scope: string, part: string, options: PressTargetOptions): string {
+  if (options.selector !== undefined)
+    return `${scope}.${part}（${options.selector}）`
   return options.value === undefined ? `${scope}.${part}` : `${scope}.${part}[${options.value}]`
 }
 
@@ -89,8 +95,17 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
   }
 }
 
+export interface PressIgnoredOptions extends Pick<PressTargetOptions, 'value' | 'selector'> {
+  /**
+   * 键盘那一路从哪里派：不给就派到部件自己身上；给选择器即 aria-activedescendant 模型的输入框（派 Enter）；
+   * 给 null 表示键盘到不了这个部件（如从未被高亮的禁用候选），只验触屏——把按键硬派到它身上会冒泡到
+   * 容器的键盘处理器、激活焦点所在的另一个条目，验的就不是它了。
+   */
+  keyboardHost?: string | null
+}
+
 /** 禁用（或加载）时按住不进入按压面。 */
-export function heldPressIgnored(scope: string, part: string, why: string, options: PressTargetOptions = {}): StepWithExpect {
+export function heldPressIgnored(scope: string, part: string, why: string, options: PressIgnoredOptions = {}): StepWithExpect {
   const label = describeTarget(scope, part, options)
   return {
     kind: 'raw',
@@ -99,7 +114,15 @@ export function heldPressIgnored(scope: string, part: string, why: string, optio
       const el = doc.querySelector<HTMLElement>(targetSelector(scope, part, options))
       if (!el)
         throw new Error(`找不到 ${label} 部件`)
-      el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+      if (options.keyboardHost === undefined) {
+        el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+      }
+      else if (options.keyboardHost !== null) {
+        const host = doc.querySelector<HTMLElement>(options.keyboardHost)
+        if (!host)
+          throw new Error(`找不到键盘宿主 ${options.keyboardHost}`)
+        host.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+      }
       el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true, cancelable: true }))
       await flush()
       if (el.hasAttribute('data-pressed'))

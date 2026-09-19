@@ -5,9 +5,9 @@
 
 // 提供 cascader 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
-import { cascadeState, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { CascaderApi, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
+import { cascadeState, createPressTracker, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
@@ -182,6 +182,29 @@ export function connectCascader<T extends PropTypes>(
     ? -1
     : cascaderResolveSearchHighlight(searchResults, context.get('searchIndex'))
   const searchItemId = (key: string): string => scope.partId('cascader', `search-item-${key}`)
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（条目按 value、候选按路径键记，清空按钮只记部件），
+  // 各自合成一份跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 条目自身的禁用只有 connect 知道，随 PRESS.START 带给机器的 canPress 守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const press = (part: CascaderPressedPart, value?: string, disabled?: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === (value ?? null),
+    onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
+  })
+  // 检索视图里焦点恒在检索框，候选自己收不到按键：Enter 在检索框里按住时，由它替高亮候选进按压通道；
+  // 松开按 context 里记着的那一条，高亮在按住期间挪走也松得掉
+  const pressSearchHighlighted = (): void => {
+    const result = searchResults[searchHighlightIndex]
+    if (!result || context.get('pressedPart') === 'search-item')
+      return
+    send({ type: 'PRESS.START', part: 'search-item', value: result.key, disabled: result.disabled })
+  }
+  const releaseSearchHighlighted = (): void => {
+    const value = context.get('pressedValue')
+    if (context.get('pressedPart') === 'search-item' && value != null)
+      send({ type: 'PRESS.END', part: 'search-item', value })
+  }
 
   /** 搜索结果与列项复用同一份级联聚合；checkedStrategy 只改变值的收敛形态，不改变视觉状态。 */
   const searchItemState = (path: readonly string[]): 'checked' | 'indeterminate' | 'unchecked' => {
@@ -374,34 +397,45 @@ export function connectCascader<T extends PropTypes>(
     }),
 
     // 清空钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200，按 has-value 显隐
-    getClearTriggerProps: () => normalize.button({
-      ...parts['clear-trigger'].attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'has-value',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'data-xh-action-has-value': dataAttr(canClear),
-      'type': 'button',
-      // 整个控件只占一个 Tab 位（trigger），清空按钮不进 Tab 序，但保留可及名字给读屏
-      'tabindex': -1,
-      'aria-label': translations.clearTrigger,
-      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
-      // 用户分不清哪个能点。有值才出现，出现即可用
-      'hidden': !canClear || undefined,
-      // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个隐身按钮上
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      'onClick': () => {
-        if (!canClear)
-          return
-        send({ type: 'VALUE.CLEAR' })
-        // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger
-        refs.get('getAnchorEl')()?.focus()
-      },
-    }),
+    getClearTriggerProps: () => {
+      const handlers = press('clear-trigger')
+      return normalize.button({
+        ...parts['clear-trigger'].attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'has-value',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-xh-action-has-value': dataAttr(canClear),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'clear-trigger'),
+        'type': 'button',
+        // 整个控件只占一个 Tab 位（trigger），清空按钮不进 Tab 序，但保留可及名字给读屏
+        'tabindex': -1,
+        'aria-label': translations.clearTrigger,
+        // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
+        // 用户分不清哪个能点。有值才出现，出现即可用
+        'hidden': !canClear || undefined,
+        // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个隐身按钮上；触屏按下仍要进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+          handlers.onPointerDown(event)
+        },
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onClick': () => {
+          if (!canClear)
+            return
+          send({ type: 'VALUE.CLEAR' })
+          // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger
+          refs.get('getAnchorEl')()?.focus()
+        },
+      })
+    },
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
@@ -539,6 +573,12 @@ export function connectCascader<T extends PropTypes>(
       'onInput': (event: Event) => {
         send({ type: 'INPUT.CHANGE', value: (event.target as HTMLInputElement).value })
       },
+      // 焦点走了就没有「按住」可言：不会再来 keyup
+      'onBlur': releaseSearchHighlighted,
+      'onKeyUp': (event: KeyboardEvent) => {
+        if (event.key === 'Enter')
+          releaseSearchHighlighted()
+      },
       'onKeyDown': (event: KeyboardEvent) => {
         // 组合期间的按键属于输入法候选框，组件一律不接
         if (isComposingEvent(event))
@@ -603,6 +643,9 @@ export function connectCascader<T extends PropTypes>(
             return
           event.preventDefault()
           event.stopPropagation()
+          // 长按的重复 keydown 不再进；按住期间高亮候选投影 data-pressed，选中叶子收起时由机器松开
+          if (!event.repeat)
+            pressSearchHighlighted()
           selectSearchResult(searchResults[searchHighlightIndex])
         }
       },
@@ -627,6 +670,7 @@ export function connectCascader<T extends PropTypes>(
       const result = index >= 0 ? searchResults[index] : undefined
       const selectionState = searchItemState(path)
       const searchDisabled = disabled || !!result?.disabled
+      const handlers = press('search-item', key, !!result?.disabled)
       // 候选行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，选中只留行尾对号
       return normalize.element({
         ...parts['search-item'].attrs,
@@ -645,6 +689,12 @@ export function connectCascader<T extends PropTypes>(
         'hidden': !searching || index < 0 || undefined,
         'data-highlighted': dataAttr(index >= 0 && index === searchHighlightIndex),
         'data-disabled': dataAttr(searchDisabled),
+        // 触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+        // 键盘那一路由检索框代发（Enter 按住时高亮候选投影同一个属性），候选自己收不到按键
+        'data-pressed': dataAttr(pressedPart === 'search-item' && pressedValue === key),
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
         'onClick': () => selectSearchResult(result),
         'onPointerMove': () => {
           if (index >= 0 && index !== searchHighlightIndex && !searchDisabled)
@@ -726,6 +776,7 @@ export function connectCascader<T extends PropTypes>(
       const meta = metaOf(item.value)
       const visible = isVisible(item.value)
       const focused = !!focusedMeta && focusedMeta.value === item.value
+      const handlers = press('item', item.value, !!meta && isDisabled(meta))
       // 列内条目走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200、展开路径的中性面由家族给，
       // 选中只留行尾对号
       return normalize.element({
@@ -753,10 +804,18 @@ export function connectCascader<T extends PropTypes>(
         'aria-haspopup': meta?.branch ? 'listbox' : undefined,
         // 分支与否只驱动样式，不再进可及树
         'data-branch': dataAttr(!!meta?.branch),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === item.value),
         // roving tabindex：整个浮层只有锚点条目留在 Tab 序列内
         'tabindex': focused ? 0 : -1,
         // 这一轮不属于任何一列，常挂在 DOM 里只收起不占位
         'hidden': !visible || undefined,
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
         'onClick': () => {
           // 隐藏条目仍在文档中，程序化点击送得到，守卫写在这里值才改不动
           if (!meta || !visible)
