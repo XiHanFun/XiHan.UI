@@ -185,6 +185,10 @@ export interface MenubarSchema extends MachineSchema {
     returnFocus: boolean
     /** Presence 注册表变更版本，驱动行为资源控制器重新读取当前 owner。 */
     presenceVersion: number
+    /** 按压通道：Space / Enter 或触屏按住的那颗是哪类部件；trigger 与 item 各按 value 记。 */
+    pressedPart: 'trigger' | 'item' | null
+    /** 按压通道：按住的 trigger 或 item 的 value；抬起、失焦或（条目）菜单收起即清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: MenubarRefs
@@ -211,11 +215,15 @@ export interface MenubarSchema extends MachineSchema {
     /** 持有焦点的条目离开了 DOM：浏览器此时不派发 focusout，状态机无法感知，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
     | { type: 'ITEM.SELECT', value: string }
+    /** trigger 或条目被 Space / Enter 或触屏按住；disabled 是该部件自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', part: 'trigger' | 'item', value: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一颗。 */
+    | { type: 'PRESS.END', part: 'trigger' | 'item', value: string }
     // 状态同步影子事件，由 value 的 watch 派发
     | { type: 'SYNC.OPEN' }
     | { type: 'SYNC.CLOSE' }
   tag: never
-  guard: 'hasValue' | 'isCurrent' | 'shouldAbsorbToggle' | 'shouldSwitch'
+  guard: 'hasValue' | 'isCurrent' | 'shouldAbsorbToggle' | 'shouldSwitch' | 'canPress'
   action:
     | 'syncOpenState'
     | 'syncLayerOwner'
@@ -236,6 +244,10 @@ export interface MenubarSchema extends MachineSchema {
     | 'invokeOnSelect'
     | 'clearTypeahead'
     | 'reanchor'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseItemPress'
+    | 'releaseWhenDisabled'
   effect: 'trackPosition' | 'trackLayer'
 }
 

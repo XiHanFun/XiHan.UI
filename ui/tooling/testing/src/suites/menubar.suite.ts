@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { menubarAnatomy, menubarKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menubar/'
 
@@ -832,6 +833,24 @@ export const menubarSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：trigger 与条目各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['menubar.kbd.press'],
+      // 受控展开首张菜单：trigger 的 Enter / Space 只发切换意图不自改；条目 Enter / Space 选中并发收起意图，
+      // 宿主不写回就仍开着，按住的中间帧才看得见
+      props: { value: 'file' },
+      // 条目按 value 指定展开着那张菜单里的：WC 只把展开的浮层搬到落点，文档序里第一条不一定是它的
+      steps: [heldPress('menubar', 'trigger'), heldPress('menubar', 'item', { value: 'new' })],
+    },
+    {
+      name: '禁用的 trigger 与条目按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      // 文档序里第一个 trigger（file）与它菜单里的首条（new）都禁用；条目按 value 指定，WC 只把展开的浮层搬到落点
+      fixture: () => menubarTree({ disabledMenu: 'file', disabledItem: 'new' }),
+      props: { value: 'file' },
+      steps: [heldPressIgnored('menubar', 'trigger', '禁用入口不接受按压'), heldPressIgnored('menubar', 'item', '禁用条目不接受按压', { value: 'new' })],
     },
   ],
 }

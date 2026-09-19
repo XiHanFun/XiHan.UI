@@ -1177,3 +1177,108 @@ describe('menubar 浮层的层与焦点域', () => {
     expect(focused()).toBe('trigger:view')
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，trigger 与条目各按 value 记', () => {
+  type Dict = Record<string, unknown>
+  // trigger 的 keydown 会吞掉 Enter / Space，桩要带 preventDefault
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0, preventDefault: () => {} } as unknown as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+  const triggerProps = (h: Harness, value: string): Dict => h.api().getTriggerProps({ value }) as Dict
+  const itemProps = (h: Harness, value: string): Dict => h.api().getItemProps({ value }) as Dict
+
+  it('trigger：keydown 在场、keyup 撤下；触屏按下在场、抬起撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const h = mount()
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+    fire(triggerProps(h, 'file'), 'onKeyDown', key(' '))
+    expect(triggerProps(h, 'file')['data-pressed']).toBe('')
+    fire(triggerProps(h, 'file'), 'onKeyUp', key(' '))
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+    fire(triggerProps(h, 'file'), 'onPointerDown', { pointerType: 'touch' })
+    expect(triggerProps(h, 'file')['data-pressed']).toBe('')
+    fire(triggerProps(h, 'file'), 'onPointerUp', {})
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+    fire(triggerProps(h, 'file'), 'onKeyDown', key('Enter'))
+    expect(triggerProps(h, 'file')['data-pressed']).toBe('')
+    fire(triggerProps(h, 'file'), 'onBlur', {})
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+    fire(triggerProps(h, 'file'), 'onPointerDown', { pointerType: 'mouse' })
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+  })
+
+  it('trigger 的开合与按压互不影响：按住 Enter 展开、再按住收起，按压面都留到抬起', () => {
+    const h = mount()
+    const trigger = h.trigger('file')
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+    expect(h.value()).toBe('file')
+    expect(triggerProps(h, 'file')['data-pressed']).toBe('')
+    trigger.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }))
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+    expect(h.value()).toBeNull()
+    expect(triggerProps(h, 'file')['data-pressed']).toBe('')
+    trigger.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }))
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+  })
+
+  it('只落在按住的那颗上：同 value 的 trigger 与条目、另一颗的 keyup 都不把它松开', () => {
+    const h = mount({ defaultValue: 'file' })
+    fire(itemProps(h, 'new'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'new')['data-pressed']).toBe('')
+    expect(itemProps(h, 'open')['data-pressed']).toBeUndefined()
+    // trigger 与条目按 part 区分：value 撞名也不串
+    expect((h.api().getTriggerProps({ value: 'new' }) as Dict)['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'open'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'new')['data-pressed']).toBe('')
+    fire(h.api().getTriggerProps({ value: 'new' }) as Dict, 'onKeyUp', key(' '))
+    expect(itemProps(h, 'new')['data-pressed']).toBe('')
+    fire(itemProps(h, 'new'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'new')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'new'), 'onPointerDown', { pointerType: 'touch' })
+    expect(itemProps(h, 'new')['data-pressed']).toBe('')
+    fire(itemProps(h, 'new'), 'onPointerCancel', {})
+    expect(itemProps(h, 'new')['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用不进：整条菜单栏禁用、入口 / 条目自身禁用（部件声明或 collection）都不投影', () => {
+    const disabledBar = mount({ disabled: true, defaultValue: 'file' })
+    fire(triggerProps(disabledBar, 'file'), 'onKeyDown', key(' '))
+    expect(triggerProps(disabledBar, 'file')['data-pressed']).toBeUndefined()
+    fire(itemProps(disabledBar, 'new'), 'onKeyDown', key(' '))
+    expect(itemProps(disabledBar, 'new')['data-pressed']).toBeUndefined()
+
+    const h = mount({ defaultValue: 'file', collection: [{ value: 'file', disabled: true, items: [{ value: 'new', disabled: true }, { value: 'open' }] }] })
+    fire(triggerProps(h, 'file'), 'onKeyDown', key(' '))
+    expect(triggerProps(h, 'file')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'new'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'new')['data-pressed']).toBeUndefined()
+    fire(h.api().getItemProps({ value: 'open', disabled: true }) as Dict, 'onKeyDown', key(' '))
+    expect(itemProps(h, 'open')['data-pressed']).toBeUndefined()
+    fire(h.api().getTriggerProps({ value: 'edit', disabled: true }) as Dict, 'onKeyDown', key(' '))
+    expect(triggerProps(h, 'edit')['data-pressed']).toBeUndefined()
+    // 同一台机器上没禁用的照常进
+    fire(itemProps(h, 'open'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'open')['data-pressed']).toBe('')
+  })
+
+  it('菜单收起即松开条目：按住 Enter 选中后条目随菜单藏起，不会再来 keyup，按压面由机器收', () => {
+    const h = mount({ defaultValue: 'file' })
+    fire(itemProps(h, 'new'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'new')['data-pressed']).toBe('')
+    h.service.send({ type: 'ITEM.SELECT', value: 'new' })
+    expect(h.value()).toBeNull()
+    expect(itemProps(h, 'new')['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中整条菜单栏被禁用：按压面由机器自己收，不等 keyup', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Partial<Props>>({})
+    const service = createService(menubarMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const trigger = (): Dict => connectMenubar(service, normalizeProps).getTriggerProps({ value: 'file' }) as Dict
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    props.set({ disabled: true })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    runtime.stop()
+  })
+})

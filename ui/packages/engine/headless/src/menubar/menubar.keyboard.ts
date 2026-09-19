@@ -26,6 +26,7 @@ export const menubarKeyboard: KeyboardTable = {
     { id: 'menubar.kbd.across', keys: ['ArrowRight', 'ArrowLeft'], when: 'open, focus in content', does: '切到相邻菜单并保持展开，焦点落到那一项的 trigger 上' },
     { id: 'menubar.kbd.typeahead', keys: ['a-z', '0-9'], when: 'open, focus in content', does: '连打检索：焦点跳到首字母匹配的条目（同字符连打则在候选间轮换）' },
     { id: 'menubar.kbd.select', keys: ['Enter', 'Space'], when: 'focus in item, not disabled', does: '派发选中详情并收起菜单，焦点归还 trigger', restoresFocus: true },
+    { id: 'menubar.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger / item, not disabled', does: '按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，条目随菜单收起一并撤下' },
     { id: 'menubar.kbd.escape', keys: ['Escape'], when: 'open', does: '收起菜单并把焦点留在 trigger 上', restoresFocus: true },
     { id: 'menubar.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '收起菜单，焦点不被抢回 trigger，按 Tab 序列自然离开', restoresFocus: false },
   ],

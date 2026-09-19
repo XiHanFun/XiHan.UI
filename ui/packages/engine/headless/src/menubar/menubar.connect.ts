@@ -5,10 +5,11 @@
 
 // 提供 menubar 相关实现。
 
-import type { NavIntent, NormalizeProps, Orientation, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, Orientation, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { MenubarApi, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTriggerProps } from './menubar.types'
 import {
   contains,
+  createPressTracker,
   dataAttr,
   focusItem,
   indexOfValue,
@@ -83,6 +84,17 @@ export function connectMenubar<T extends PropTypes>(
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: MenubarItemProps): boolean =>
     item.disabled ?? itemMetaOf.get(item.value)?.disabled ?? false
+
+  // 按压通道：真源是机器 context 里「正被按住的那颗」（trigger / item 按 value 记），每颗各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 部件自身的禁用只有 connect 知道（部件声明或 collection），随 PRESS.START 带给机器的 canPress 守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const isPressed = (part: 'trigger' | 'item', value: string): boolean => pressedPart === part && pressedValue === value
+  const press = (part: 'trigger' | 'item', value: string, disabled: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === value,
+    onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
+  })
 
   const triggerId = (target: string): string => scope.partId(menubarAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(menubarAnatomy.name, `content:${target}`)
@@ -235,6 +247,7 @@ export function connectMenubar<T extends PropTypes>(
     getTriggerProps: (item) => {
       const isOpen = item.value === value
       const disabled = menubarDisabled || triggerDisabled(item)
+      const handlers = press('trigger', item.value, triggerDisabled(item))
       return normalize.button({
         ...parts.trigger.attrs,
         // 导航与配对的身份标记
@@ -256,6 +269,8 @@ export function connectMenubar<T extends PropTypes>(
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'nav',
         'data-in-path': dataAttr(isOpen),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与开合互不影响
+        'data-pressed': dataAttr(isPressed('trigger', item.value)),
         // roving tabindex：整条菜单栏只有锚点 trigger 留在 Tab 序列内
         'tabindex': focusedValue === item.value ? 0 : -1,
         /** 已有菜单展开时掠过即切换，并把焦点搬到被掠过的 trigger 上。 */
@@ -271,7 +286,13 @@ export function connectMenubar<T extends PropTypes>(
           if (!disabled)
             send({ type: 'TRIGGER.TOGGLE', value: item.value })
         },
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
         'onKeyDown': (event: KeyboardEvent) => {
+          handlers.onKeyDown(event)
           if (menubarDisabled)
             return
           // 主轴：在 trigger 之间移动，Home/End 跳首尾项
@@ -398,29 +419,40 @@ export function connectMenubar<T extends PropTypes>(
     // 条目走 Collection Item 的 overlay 语境（锚定浮层）：悬停 / 键盘高亮（data-highlighted）/ 按下面与禁用面
     // （aria-disabled）由家族给；菜单没有持久选中，浮层选中面永不命中。子菜单触发项由子层的 menu 机器
     // 合并同一批标记并按开合报 data-in-path
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...itemStateAttrs(item),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      // 导航、检索与选中的条目身份
-      [ITEM_VALUE_ATTR]: item.value,
-      'role': 'menuitem',
-      // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦、仍能当方向键起点
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      // roving tabindex：一张菜单里只有锚点条目留在 Tab 序列内
-      'tabindex': focusedItem === item.value ? 0 : -1,
-      'onClick': (event: MouseEvent) => {
-        // 子菜单入口的点击归它自己（展开/收起），不发选中
-        if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
-          return
-        if (!itemDisabled(item))
-          send({ type: 'ITEM.SELECT', value: item.value })
-      },
-      // 禁用条目被聚焦也记锚点，作为方向键起点
-      'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-    }),
+    getItemProps: (item) => {
+      const handlers = press('item', item.value, itemDisabled(item))
+      return normalize.element({
+        ...parts.item.attrs,
+        ...itemStateAttrs(item),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // 导航、检索与选中的条目身份
+        [ITEM_VALUE_ATTR]: item.value,
+        'role': 'menuitem',
+        // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦、仍能当方向键起点
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(isPressed('item', item.value)),
+        // roving tabindex：一张菜单里只有锚点条目留在 Tab 序列内
+        'tabindex': focusedItem === item.value ? 0 : -1,
+        'onClick': (event: MouseEvent) => {
+          // 子菜单入口的点击归它自己（展开/收起），不发选中
+          if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
+            return
+          if (!itemDisabled(item))
+            send({ type: 'ITEM.SELECT', value: item.value })
+        },
+        // 禁用条目被聚焦也记锚点，作为方向键起点
+        'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
