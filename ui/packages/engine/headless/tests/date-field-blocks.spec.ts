@@ -62,19 +62,19 @@ describe('季度与月互推', () => {
 
 describe('iSO 周与日期互推', () => {
   it('周序号 → 周首日；再推回去是同一个周号', () => {
-    expect(isoWeekStart(2026, 33, ZH).toString()).toBe('2026-08-10')
-    expect(isoWeekOf(isoWeekStart(2026, 33, ZH), ZH)).toBe(33)
+    expect(isoWeekStart(2026, 33).toString()).toBe('2026-08-10')
+    expect(isoWeekOf(isoWeekStart(2026, 33))).toBe(33)
   })
 
   it('一周之内的任何一天都算同一个周号', () => {
-    const start = isoWeekStart(2026, 33, ZH)
+    const start = isoWeekStart(2026, 33)
     for (let offset = 0; offset < 7; offset++)
-      expect(isoWeekOf(start.add({ days: offset }), ZH)).toBe(33)
+      expect(isoWeekOf(start.add({ days: offset }))).toBe(33)
   })
 
   it('第 1 周必定含 1 月 4 日', () => {
     for (const year of [2024, 2025, 2026, 2027]) {
-      const start = isoWeekStart(year, 1, ZH)
+      const start = isoWeekStart(year, 1)
       const end = start.add({ days: 6 })
       // 起点可能落在上一年（2026 第 1 周从 2025-12-29 起），不能拿 start.set 造 1 月 4 日
       const jan4 = new CalendarDate(year, 1, 4)
@@ -83,28 +83,25 @@ describe('iSO 周与日期互推', () => {
   })
 
   it('一年 52 周还是 53 周算得出来', () => {
-    // 周一起算（en-GB）时 2026 年是 53 周年：1 月 1 日是周四
-    expect(isoWeeksInYear(2026, 'en-GB')).toBe(53)
-    expect(isoWeeksInYear(2025, 'en-GB')).toBe(52)
+    // 2026 年是 53 周年：1 月 1 日是周四
+    expect(isoWeeksInYear(2026)).toBe(53)
+    expect(isoWeeksInYear(2025)).toBe(52)
     // 年还没填时给上界，免得把可选值先限死
-    expect(isoWeeksInYear(undefined, 'en-GB')).toBe(53)
+    expect(isoWeeksInYear(undefined)).toBe(53)
   })
 
-  it('周数随 locale 变：周首日不同，同一年跨的周数就不同', () => {
-    // 周日起算（en-US）与周一起算（en-GB / zh-CN）在同一年上给出的周数不同，
-    // 拿写死的口径算上界会让最后一周翻到下一年去
-    expect(isoWeeksInYear(2026, 'en-US')).toBe(52)
-    expect(isoWeeksInYear(2026, 'en-GB')).toBe(53)
-    expect(isoWeeksInYear(2025, 'en-US')).toBe(53)
-    expect(isoWeeksInYear(2025, 'en-GB')).toBe(52)
+  it('周数只由 ISO 周历决定：1 月 1 日是周四、或闰年且是周三的年份才有 53 周', () => {
+    // ISO 周固定周一起算，不随显示语言改变；周日起算的口径会把 2026 算成 52 周，那不是 ISO 周
+    expect(isoWeeksInYear(2020)).toBe(53)
+    expect(isoWeeksInYear(2021)).toBe(52)
+    expect(isoWeeksInYear(2015)).toBe(53)
+    expect(isoWeeksInYear(2016)).toBe(52)
   })
 
   it('上界与往返口径一致：末周推回去还是末周，不许翻到下一年', () => {
-    for (const locale of [ZH, 'en-GB', 'en-US']) {
-      for (const year of [2024, 2025, 2026, 2027]) {
-        const last = isoWeeksInYear(year, locale)
-        expect(isoWeekOf(isoWeekStart(year, last, locale), locale)).toBe(last)
-      }
+    for (const year of [2024, 2025, 2026, 2027]) {
+      const last = isoWeeksInYear(year)
+      expect(isoWeekOf(isoWeekStart(year, last))).toBe(last)
     }
   })
 })
@@ -263,9 +260,9 @@ describe('块的取值区间', () => {
     expect(blockRange('week', {}, opts(['year', 'week']))).toEqual({ min: 1, max: 53 })
   })
 
-  it('周的上界也随 locale 变', () => {
+  it('周的上界不随 locale 变：ISO 周固定周一起算', () => {
     expect(blockRange('week', { year: 2026 }, { set: ['year', 'week'], locale: 'en-US' }))
-      .toEqual({ min: 1, max: 52 })
+      .toEqual({ min: 1, max: 53 })
   })
 
   it('段集里带上下午时小时收 1-12，不带时不归块管', () => {
