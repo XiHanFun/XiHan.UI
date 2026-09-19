@@ -67,6 +67,8 @@ interface Harness {
   focusedValue: () => string | null
   /** 换掉锚点 / 浮层 ref，用来验它们缺席时不挂订阅。 */
   setRef: (key: 'getAnchorEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
+  /** 改 props，机器的 watch 随之触发。 */
+  setProps: (next: Partial<Props>) => void
 }
 
 interface MountOptions {
@@ -82,9 +84,10 @@ const runtimes: VanillaRuntime[] = []
 
 function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harness {
   const doc = document
-  const props: Partial<Props> = { ...initial }
   const runtime = createVanillaRuntime()
   runtimes.push(runtime)
+  // props 走信号：机器的 watch 才追得到 disabled 这类变化
+  const props = runtime.signal<Partial<Props>>({ ...initial })
 
   const idGen = createCounterIdGenerator()
   const scope = createScope(null, idGen)
@@ -105,7 +108,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     itemEls.set(item.value, el)
   }
 
-  const service = createService(menuMachine, { props: () => props, runtime, scope })
+  const service = createService(menuMachine, { props: () => props.get(), runtime, scope })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
   const presence = options.withPresence
@@ -162,6 +165,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     position: () => service.context.get('position'),
     focusedValue: () => service.context.get('focusedValue'),
     setRef: (key, value) => service.refs.set(key, value),
+    setProps: next => props.set({ ...props.get(), ...next }),
   }
 }
 
@@ -506,5 +510,81 @@ describe('menu 展开时的焦点', () => {
     h.send({ type: 'CLOSE', src: 'tab' })
     await frames()
     expect(document.activeElement).not.toBe(h.trigger)
+  })
+})
+
+describe('menu 按压通道：Space / Enter 与触屏按住投影 data-pressed，按住的是哪条就只落在哪条上', () => {
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+  const itemProps = (h: Harness, value: string): Dict => h.api().getItemProps({ value }) as Dict
+
+  it('条目：keydown 在场、keyup 撤下；触屏按下在场、抬起撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const h = mount({ defaultOpen: true })
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    fire(itemProps(h, 'copy'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onPointerDown', { pointerType: 'touch' })
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    fire(itemProps(h, 'copy'), 'onPointerUp', {})
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    fire(itemProps(h, 'copy'), 'onBlur', {})
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onPointerDown', { pointerType: 'mouse' })
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+  })
+
+  it('只落在按住的那条上：另一条的 keyup 不把它松开，pointercancel 撤下', () => {
+    const h = mount({ defaultOpen: true })
+    fire(itemProps(h, 'paste'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'paste')['data-pressed']).toBe('')
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'copy'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'paste')['data-pressed']).toBe('')
+    fire(itemProps(h, 'paste'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'paste')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'paste'), 'onPointerDown', { pointerType: 'touch' })
+    expect(itemProps(h, 'paste')['data-pressed']).toBe('')
+    fire(itemProps(h, 'paste'), 'onPointerCancel', {})
+    expect(itemProps(h, 'paste')['data-pressed']).toBeUndefined()
+  })
+
+  it('禁用不进：整张菜单禁用、部件声明禁用、collection 里禁用都不投影', () => {
+    const disabledMenu = mount({ defaultOpen: true, disabled: true })
+    fire(itemProps(disabledMenu, 'copy'), 'onKeyDown', key(' '))
+    expect(itemProps(disabledMenu, 'copy')['data-pressed']).toBeUndefined()
+
+    const h = mount({ defaultOpen: true, collection: [{ value: 'copy', disabled: true }, { value: 'paste' }] })
+    fire(itemProps(h, 'copy'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    const declared = h.api().getItemProps({ value: 'paste', disabled: true }) as Dict
+    fire(declared, 'onKeyDown', key(' '))
+    expect(itemProps(h, 'paste')['data-pressed']).toBeUndefined()
+    // 同一台机器上没禁用的条目照常进
+    fire(itemProps(h, 'paste'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'paste')['data-pressed']).toBe('')
+  })
+
+  it('菜单收起即松开：按住 Enter 选中后条目随内容藏起，不会再来 keyup，按压面由机器收', () => {
+    const h = mount({ defaultOpen: true })
+    fire(itemProps(h, 'copy'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    h.send({ type: 'ITEM.SELECT', value: 'copy' })
+    expect(h.state()).toBe('closed')
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+    // 重开后条目是干净的
+    h.send({ type: 'OPEN', focus: 'none' })
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中整张菜单被禁用：按压面由机器自己收，不等 keyup', () => {
+    const h = mount({ defaultOpen: true })
+    fire(itemProps(h, 'copy'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'copy')['data-pressed']).toBe('')
+    h.setProps({ disabled: true })
+    expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
   })
 })
