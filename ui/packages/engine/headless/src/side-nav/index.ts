@@ -15,6 +15,7 @@ export type {
   SideNavExpandedValueChangeDetails,
   SideNavNode,
   SideNavNodeProps,
+  SideNavPressedPart,
   SideNavSchema,
   SideNavTranslations,
   SideNavValueChangeDetails,

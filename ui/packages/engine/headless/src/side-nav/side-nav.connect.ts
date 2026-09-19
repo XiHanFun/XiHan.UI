@@ -5,9 +5,9 @@
 
 // 提供 side nav 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { SideNavApi, SideNavNode, SideNavSchema } from './side-nav.types'
-import { dataAttr, focusItem, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { SideNavApi, SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.types'
+import { createPressTracker, dataAttr, focusItem, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-nav.anatomy'
@@ -51,6 +51,18 @@ export function connectSideNav<T extends PropTypes>(
   const isSelected = (v: string): boolean => value === v
   const isExpanded = (v: string): boolean => !collapsed && expandedValue.includes(v)
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（入口按 value 记、链接行与分支行分开认），各自合成
+  // 一份跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 导航当前（aria-current）与按压互相独立；入口自身的禁用只有 connect 知道，随 PRESS.START 带给机器的守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const press = (part: SideNavPressedPart, value: string): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === value,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', part, value, disabled: isDisabled(value) }
+      : { type: 'PRESS.END', part, value }),
+  })
 
   // 选中项的祖先链：侧栏要一直亮着「当前在哪一枝」
   const activeChain = new Set<string>()
@@ -276,6 +288,7 @@ export function connectSideNav<T extends PropTypes>(
       const popoutTrigger = isPopoutTrigger(v)
       const staticOpen = popoutEnabled && !isTopLevel(v)
       const expandedAttr = popoutTrigger ? popoutValue === v : (staticOpen || isExpanded(v))
+      const handlers = press('branch-trigger', v)
       return normalize.button({
         ...parts['branch-trigger'].attrs,
         // 分支行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与展开路径的中性面
@@ -296,6 +309,8 @@ export function connectSideNav<T extends PropTypes>(
         // 原生 disabled 之外再报一遍 aria-disabled：家族的禁用面按它给
         'aria-disabled': isDisabled(v) ? 'true' : 'false',
         'disabled': isDisabled(v) || undefined,
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'branch-trigger' && pressedValue === v),
         'tabindex': anchor === v ? 0 : -1,
         'onClick': () => {
           if (popoutTrigger) {
@@ -326,7 +341,16 @@ export function connectSideNav<T extends PropTypes>(
             clearTimeout(popoutHoverTimer)
         },
         'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
-        'onKeydown': (event: KeyboardEvent) => onNodeKeydown(event, v),
+        // 同一个 keydown 先过跟踪器再走导航：React 把 onKeydown 与 onKeyDown 归成同一个合成事件，两个键会互相覆盖
+        'onKeydown': (event: KeyboardEvent) => {
+          handlers.onKeyDown(event)
+          onNodeKeydown(event, v)
+        },
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
       })
     },
 
@@ -416,34 +440,46 @@ export function connectSideNav<T extends PropTypes>(
 
     // 链接行走 Collection Item 的 page 语境：当前页（data-current）由家族给品牌淡底行面 + 淡底前景 +
     // 起始侧 2px 指示条，悬停 / 高亮 / 按下面与禁用面按 aria-disabled 给
-    getLinkProps: ({ value: v }) => normalize.element({
-      ...parts.link.attrs,
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'page',
-      'data-value': v,
-      'href': metaOf(v) ? (collectionHref(collection, v) ?? undefined) : undefined,
-      // 选中的那条就是「当前页」，读屏与皮肤都认它
-      'aria-current': isSelected(v) ? 'page' : undefined,
-      'data-current': dataAttr(isSelected(v)),
-      // 方向键锚定的那一行：皮肤据此画高亮
-      'data-highlighted': dataAttr(focusedValue === v),
-      'data-disabled': dataAttr(isDisabled(v)),
-      'aria-disabled': isDisabled(v) ? 'true' : undefined,
-      'tabindex': anchor === v ? 0 : -1,
-      'onClick': (event: MouseEvent) => {
-        if (isDisabled(v)) {
-          event.preventDefault()
-          return
-        }
-        send({ type: 'LINK.SELECT', value: v })
-      },
-      'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
-      'onKeydown': (event: KeyboardEvent) => {
-        // 链接上按 Enter 走原生激活；方向键交给共用处理
-        onNodeKeydown(event, v)
-      },
-    }),
+    getLinkProps: ({ value: v }) => {
+      const handlers = press('link', v)
+      return normalize.element({
+        ...parts.link.attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'page',
+        'data-value': v,
+        'href': metaOf(v) ? (collectionHref(collection, v) ?? undefined) : undefined,
+        // 选中的那条就是「当前页」，读屏与皮肤都认它
+        'aria-current': isSelected(v) ? 'page' : undefined,
+        'data-current': dataAttr(isSelected(v)),
+        // 方向键锚定的那一行：皮肤据此画高亮
+        'data-highlighted': dataAttr(focusedValue === v),
+        'data-disabled': dataAttr(isDisabled(v)),
+        'aria-disabled': isDisabled(v) ? 'true' : undefined,
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与当前页互相独立
+        'data-pressed': dataAttr(pressedPart === 'link' && pressedValue === v),
+        'tabindex': anchor === v ? 0 : -1,
+        'onClick': (event: MouseEvent) => {
+          if (isDisabled(v)) {
+            event.preventDefault()
+            return
+          }
+          send({ type: 'LINK.SELECT', value: v })
+        },
+        'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
+        // 同一个 keydown 先过跟踪器再走导航：React 把 onKeydown 与 onKeyDown 归成同一个合成事件，两个键会互相覆盖
+        'onKeydown': (event: KeyboardEvent) => {
+          handlers.onKeyDown(event)
+          // 链接上按 Enter 走原生激活；方向键交给共用处理
+          onNodeKeydown(event, v)
+        },
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     getLinkTextProps: () => normalize.element({
       ...parts['link-text'].attrs,

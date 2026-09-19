@@ -52,6 +52,9 @@ export interface SideNavNode {
   children?: SideNavNode[]
 }
 
+/** 接了按压通道的两个部件：链接行与分支行都按 node.value 记，同一个值在两个部件上分开认。 */
+export type SideNavPressedPart = 'link' | 'branch-trigger'
+
 export interface SideNavValueChangeDetails {
   /** 选中的叶子；尚未选中时为 null。 */
   value: string | null
@@ -112,6 +115,10 @@ export interface SideNavSchema extends MachineSchema {
     popoutIntent: 'first' | 'none'
     /** 弹出关闭时是否把焦点归还触发按钮；悬停离开与层外交互不归还。 */
     popoutReturnFocus: boolean
+    /** 按压通道：Space / Enter 或触屏按住的是链接行还是分支行。 */
+    pressedPart: SideNavPressedPart | null
+    /** 按压通道：按住的入口 value。抬起、失焦或指针取消即清空，弹出面板收起时一并清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: SideNavRefs
@@ -132,8 +139,12 @@ export interface SideNavSchema extends MachineSchema {
     | { type: 'POPOUT.CLOSE', src?: 'esc' | 'interact-outside' | 'hover' | 'select' | 'keyboard' }
     /** 适配器按顶层分支 value 注册或精确注销视觉 Presence。 */
     | { type: 'PRESENCE.SET', value: string, presence: PresenceHandle, connected: boolean }
+    /** 链接行或分支行被 Space / Enter 或触屏按住；disabled 是入口自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', part: SideNavPressedPart, value: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: SideNavPressedPart, value: string }
   tag: never
-  guard: 'canChange' | 'canPopout'
+  guard: 'canChange' | 'canPopout' | 'canPress'
   action:
     | 'setValue'
     | 'selectLink'
@@ -148,6 +159,10 @@ export interface SideNavSchema extends MachineSchema {
     | 'setPopoutReturnFocus'
     | 'syncCollapsed'
     | 'setPresence'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackPopoutSessions' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
 }
 
