@@ -19,7 +19,7 @@ function resolvedToken(name: string): string {
   return value
 }
 
-/** 目录的静态投影：第一节是当前节。 */
+/** 目录的静态投影：第一节是当前节。链接由连接层投影 Collection Item 的 nav 语境，面与字由家族给。 */
 function mount() {
   host = document.createElement('div')
   // 断言读的是终值：悬停、按压与释放的过渡时长归零
@@ -29,8 +29,8 @@ function mount() {
   host.innerHTML = `
     <nav data-scope="anchor" data-part="root">
       <ul data-scope="anchor" data-part="list">
-        <li data-scope="anchor" data-part="item"><a data-scope="anchor" data-part="link" data-current href="#a">概述</a></li>
-        <li data-scope="anchor" data-part="item"><a data-scope="anchor" data-part="link" href="#b">用法</a></li>
+        <li data-scope="anchor" data-part="item"><a data-scope="anchor" data-part="link" data-current data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#a">概述</a></li>
+        <li data-scope="anchor" data-part="item"><a data-scope="anchor" data-part="link" data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#b">用法</a></li>
       </ul>
     </nav>`
   document.body.append(host)
@@ -38,11 +38,17 @@ function mount() {
 }
 
 describe('anchor 导航当前页与阶梯', () => {
-  it('当前节字色 brand-strong + medium 字重，其余节 fg-muted', () => {
+  it('当前节字色 brand-strong + medium 字重，其余节 fg-muted + regular；当前节透明面、叠悬停 100', async () => {
     const [current, rest] = mount()
     expect(getComputedStyle(current!).color).toBe(resolvedToken('--xh-fg-brand-strong'))
     expect(getComputedStyle(current!).fontWeight).toBe('500')
+    expect(getComputedStyle(current!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(rest!).color).toBe(resolvedToken('--xh-fg-muted'))
+    expect(getComputedStyle(rest!).fontWeight).toBe('400')
+    // 当前节叠悬停（§9.3）：保留品牌深字，面走 100
+    await userEvent.hover(current!)
+    expect(getComputedStyle(current!).backgroundColor).toBe(resolvedToken('--xh-bg-subtle'))
+    expect(getComputedStyle(current!).color).toBe(resolvedToken('--xh-fg-brand-strong'))
   })
 
   it('白底承载的阶梯：hover 100 → pressed 200，只换面不缩放', async () => {
@@ -50,6 +56,7 @@ describe('anchor 导航当前页与阶梯', () => {
     expect(getComputedStyle(link!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     await userEvent.hover(link!)
     expect(getComputedStyle(link!).backgroundColor).toBe(resolvedToken('--xh-bg-subtle'))
+    expect(getComputedStyle(link!).color).toBe(resolvedToken('--xh-fg-default'))
     link!.setAttribute('data-pressed', '')
     expect(getComputedStyle(link!).backgroundColor).toBe(resolvedToken('--xh-bg-subtle-hover'))
     expect(getComputedStyle(link!).scale).toBe('none')

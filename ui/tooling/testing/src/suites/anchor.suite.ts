@@ -24,7 +24,7 @@ const anchorTree: FixtureNode = {
         ...VALUES.map((v): FixtureNode => ({
           part: 'item',
           tag: 'li',
-          children: [{ part: 'link', tag: 'a', text: `第 ${v} 节`, attrs: { value: v } }],
+          children: [{ part: 'link', tag: 'a', attrs: { value: v }, children: [{ part: 'link-text', tag: 'span', text: `第 ${v} 节` }] }],
         })),
         { part: 'indicator', tag: 'li' },
       ],
@@ -70,13 +70,16 @@ export const anchorSuite: ConformanceSuite = {
           'list',
           'item[0]',
           'link[0]',
+          'link-text[0]',
           'item[1]',
           'link[1]',
+          'link-text[1]',
           'item[2]',
           'link[2]',
+          'link-text[2]',
           'indicator',
         ],
-        counts: { root: 1, list: 1, item: 3, link: 3, indicator: 1 },
+        counts: { 'root': 1, 'list': 1, 'item': 3, 'link': 3, 'link-text': 3, 'indicator': 1 },
         parts: {
           // 作者没给 dir 时不输出 dir
           'root': { 'aria-label': 'Anchor navigation', 'data-orientation': 'vertical', 'dir': null },
@@ -86,7 +89,12 @@ export const anchorSuite: ConformanceSuite = {
             // 省略 aria-current 即非当前项
             'aria-current': null,
             'data-current': null,
+            // 链接归 Collection Item 导航当前：家族按 nav 语境给面、字与按压时间线
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'nav',
           },
+          'link-text[0]': { 'data-xh-collection-slot': 'text' },
           'link[2]': { 'data-value': 'usage' },
           // 无激活项时指示条整条收起
           'indicator': { 'aria-hidden': 'true', 'hidden': '' },

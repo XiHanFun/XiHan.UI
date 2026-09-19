@@ -176,6 +176,10 @@
 | `root` | `data-tone` | props.tone |
 | `list` | `data-orientation` | props.orientation |
 | `link` | `data-current` | ''（条件成立时才出现） |
+| `link` | `data-xh-collection-context` | 'nav' |
+| `link` | `data-xh-collection-item` | '' |
+| `link` | `data-xh-collection-size` | props.size |
+| `link-text` | `data-xh-collection-slot` | 'text' |
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | context.get('value') |
 
@@ -186,19 +190,19 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-anchor-fg` | `root` | `color` | `default` | `--xh-fg-muted` | anchor 的 root 部件 color 覆盖槽。 |
-| `--xh-anchor-font-size` | `root` | `font-size` | `default` | `--xh-_anchor-font-size` | anchor 的 root 部件 font-size 覆盖槽。 |
+| `--xh-anchor-fg` | `link`<br>`root` | `color` | `default`<br>`xh-collection-context=nav` | `--xh-fg-muted` | anchor 的 link、root 部件 color 覆盖槽。 |
+| `--xh-anchor-font-size` | `link`<br>`root` | `font-size` | `default` | `--xh-_anchor-font-size` | anchor 的 link、root 部件 font-size 覆盖槽。 |
 | `--xh-anchor-gap` | `list` | `gap` | `default` | `--xh-space-1` | anchor 的 list 部件 gap 覆盖槽。 |
 | `--xh-anchor-gap-horizontal` | `list` | `gap` | `orientation=horizontal` | `--xh-space-2` | anchor 的 list 部件 gap 覆盖槽。 |
 | `--xh-anchor-indicator-color` | `indicator` | `background` | `default` | `--xh-_anchor-accent` | anchor 的 indicator 部件 background 覆盖槽。 |
 | `--xh-anchor-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | anchor 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-anchor-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-start` | `default`<br>`orientation=horizontal` | `--xh-stroke-thick` | anchor 的 indicator 部件 block-size、inline-size、inset-block-end、inset-inline-start 覆盖槽。 |
-| `--xh-anchor-leading` | `root` | `line-height` | `default` | `--xh-leading-normal` | anchor 的 root 部件 line-height 覆盖槽。 |
-| `--xh-anchor-link-bg-hover` | `link` | `background` | `hover` | `--xh-bg-subtle` | anchor 的 link 部件 background 覆盖槽。 |
-| `--xh-anchor-link-bg-pressed` | `link` | `background` | `is(:active, [data-pressed])`<br>`pressed` | `--xh-bg-subtle-hover` | anchor 的 link 部件 background 覆盖槽。 |
-| `--xh-anchor-link-fg-current` | `link` | `color` | `current` | `--xh-_anchor-accent-text` | anchor 的 link 部件 color 覆盖槽。 |
-| `--xh-anchor-link-fg-hover` | `link` | `color` | `hover` | `--xh-fg-default` | anchor 的 link 部件 color 覆盖槽。 |
-| `--xh-anchor-link-font-weight-current` | `link` | `font-weight` | `current` | `--xh-font-weight-medium` | anchor 的 link 部件 font-weight 覆盖槽。 |
+| `--xh-anchor-leading` | `link`<br>`root` | `line-height` | `default` | `--xh-leading-normal` | anchor 的 link、root 部件 line-height 覆盖槽。 |
+| `--xh-anchor-link-bg-hover` | `link` | `background-color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | anchor 的 link 部件 background-color 覆盖槽。 |
+| `--xh-anchor-link-bg-pressed` | `link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | anchor 的 link 部件 background-color 覆盖槽。 |
+| `--xh-anchor-link-fg-current` | `link` | `color` | `current`<br>`disabled`<br>`error`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-_anchor-accent-text` | anchor 的 link 部件 color 覆盖槽。 |
+| `--xh-anchor-link-fg-hover` | `link` | `color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-fg-default` | anchor 的 link 部件 color 覆盖槽。 |
+| `--xh-anchor-link-font-weight-current` | `link` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-font-weight-medium` | anchor 的 link 部件 font-weight 覆盖槽。 |
 | `--xh-anchor-link-max-w` | `link` | `max-inline-size` | `default` | `--xh-nav-link-max-w` | anchor 的 link 部件 max-inline-size 覆盖槽。 |
 | `--xh-anchor-link-px` | `link` | `padding-inline` | `default` | `--xh-_anchor-link-px` | anchor 的 link 部件 padding-inline 覆盖槽。 |
 | `--xh-anchor-link-py` | `link` | `padding-block` | `default` | `--xh-space-1` | anchor 的 link 部件 padding-block 覆盖槽。 |
@@ -208,7 +212,7 @@
 
 ### 动效
 
-`background` · `block-size` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`block-size` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
