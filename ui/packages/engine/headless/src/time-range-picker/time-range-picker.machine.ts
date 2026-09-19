@@ -8,7 +8,7 @@
 import type { Params, PositionResult } from '@xihan-ui/core'
 import type { TimeDraft, TimeGranularity, TimeHourCycle } from '../time-field'
 import type { TimePickerColumn, TimePickerFocusIntent } from '../time-picker'
-import type { TimeRangePickerColumnRef, TimeRangePickerEndIndex, TimeRangePickerSchema, TimeRangePickerSegmentRef } from './time-range-picker.types'
+import type { TimeRangePickerColumnRef, TimeRangePickerEndIndex, TimeRangePickerPressedKey, TimeRangePickerSchema, TimeRangePickerSegmentRef } from './time-range-picker.types'
 import { canTakeFocus, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
@@ -199,6 +199,8 @@ export const timeRangePickerMachine = createMachine({
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     // 缺省搬：触发钮、键盘与命令式入口都要把焦点送进浮层
     moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
+    // 按压通道：被 Space / Enter 或触屏按住的那一个部件（清空钮 / 触发钮 / 快捷选项 / 时间格），按 key 记
+    pressed: cell<TimeRangePickerPressedKey | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -218,6 +220,8 @@ export const timeRangePickerMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     // 只兜宿主侧的写入，内部提交当场已把缓冲一起更新
     track([context.dep('value')], () => action(['syncDrafts']))
+    // 按住途中转入禁用 / 只读或值被清空：触发钮随即 disabled、清空钮藏起，不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value'), context.dep('drafts')], () => action(['releaseWhenInert']))
   },
   // 分段输入与值这几件事与开合无关，两个状态里都得认
   on: {
@@ -230,6 +234,9 @@ export const timeRangePickerMachine = createMachine({
     'SEGMENT.PERIOD': { guard: 'canEdit', actions: ['setPeriod'] },
     'SEGMENT.FOCUS': { actions: ['setFocusedSegment'] },
     'SEGMENT.BLUR': { actions: ['clearFocusedSegment'] },
+    // 按压通道：触发钮与清空钮在收起态按、快捷选项与时间格在展开态按，两个状态都认
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     closed: {
@@ -250,7 +257,8 @@ export const timeRangePickerMachine = createMachine({
     open: {
       // 锚点在进入展开态时就位：列是按当前值算出来的，不必等 DOM
       entry: ['setInitialFocusedItem'],
-      exit: ['clearFocusedItem'],
+      // 按住快捷选项途中收起（Enter 在 keydown 即写值收起）或按住格子时 Escape：浮层里的部件不会再来 keyup
+      exit: ['clearFocusedItem', 'releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -293,12 +301,53 @@ export const timeRangePickerMachine = createMachine({
         const e = event.current()
         return e.type === 'VALUE.SET' && e.src === 'preset'
       },
+      /**
+       * 按压守卫：整体禁用一律不进；触发钮只读仍可展开查看，照有回执；其余（清空钮、快捷选项、时间格）
+       * 与它们各自的写值同一道门——只读改不动值，逐条禁用（越界、作者禁用、清不了）的事实由 connect 随事件带来。
+       */
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || e.disabled || prop('disabled'))
+          return false
+        return e.key === 'trigger' || !prop('readOnly')
+      },
     },
     actions: {
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('drafts')
         params.context.reset('typeBuffer')
+      },
+
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      /**
+       * 转入禁用一律松开；只读松开触发钮以外的；清空钮在没东西可清时藏起，随之松开。
+       * 判据与 connect 里清空钮的显隐同一口径：两端的值与两份段缓冲都空才算清干净。
+       */
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressed')
+        if (pressed == null)
+          return
+        if (prop('disabled') || (prop('readOnly') && pressed !== 'trigger')) {
+          context.set('pressed', null)
+          return
+        }
+        const value = context.get('value')
+        const dirty = timeRangePickerEndAt(value, 0) !== '' || timeRangePickerEndAt(value, 1) !== ''
+          || context.get('drafts').some(draft => draft.hour != null || draft.minute != null || draft.second != null || draft.dayPeriod != null)
+        if (pressed === 'clear' && !dirty)
+          context.set('pressed', null)
       },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
