@@ -5,10 +5,10 @@
 
 // 提供 select 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TagApi } from '../tag'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
-import { contains, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { connectStaticTag, tagVariantForControl } from '../tag'
@@ -111,6 +111,16 @@ export function connectSelect<T extends PropTypes>(
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: SelectItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（条目按 value 记，清空按钮只记 part），各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 条目自身的禁用只有 connect 知道（部件声明或 collection），随 PRESS.START 带给机器的 canPress 守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const press = (part: 'item' | 'clear-trigger', value?: string, disabled?: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === (value ?? null),
+    onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
+  })
 
   // item / item-text / item-indicator 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: SelectItemProps): Record<string, string | undefined> => ({
@@ -307,36 +317,47 @@ export function connectSelect<T extends PropTypes>(
     getItemDeleteTriggerProps: ({ value: v }) => hostedTag(v).getCloseTriggerProps(),
     // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合；
     // 走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200，按 has-value 显隐
-    getClearTriggerProps: () => normalize.button({
-      ...parts['clear-trigger'].attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'has-value',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'data-xh-action-has-value': dataAttr(canClear),
-      'type': 'button',
-      // 整个控件只占一个 Tab 位（trigger）：清空钮不进 Tab 序，但仍对读屏可见
-      'tabindex': -1,
-      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
-      // 清不了就整个收起，不灰留位
-      'hidden': !canClear || undefined,
-      // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个按钮上
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      'onClick': (event: MouseEvent) => {
-        if (!canClear)
-          return
-        send({ type: 'VALUE.CLEAR' })
-        // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger；
-        // 适配器没挂锚点 ref 时按 id 在同一文档里找
-        const doc = (event.currentTarget as HTMLElement | null)?.ownerDocument
-        const trigger = refs.get('getAnchorEl')() ?? doc?.getElementById(ids.trigger) ?? null
-        trigger?.focus()
-      },
-    }),
+    getClearTriggerProps: () => {
+      const handlers = press('clear-trigger')
+      return normalize.button({
+        ...parts['clear-trigger'].attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'has-value',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-xh-action-has-value': dataAttr(canClear),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'clear-trigger'),
+        'type': 'button',
+        // 整个控件只占一个 Tab 位（trigger）：清空钮不进 Tab 序，但仍对读屏可见
+        'tabindex': -1,
+        'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+        // 清不了就整个收起，不灰留位
+        'hidden': !canClear || undefined,
+        // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个按钮上；触屏按下仍要进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+          handlers.onPointerDown(event)
+        },
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onClick': (event: MouseEvent) => {
+          if (!canClear)
+            return
+          send({ type: 'VALUE.CLEAR' })
+          // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger；
+          // 适配器没挂锚点 ref 时按 id 在同一文档里找
+          const doc = (event.currentTarget as HTMLElement | null)?.ownerDocument
+          const trigger = refs.get('getAnchorEl')() ?? doc?.getElementById(ids.trigger) ?? null
+          trigger?.focus()
+        },
+      })
+    },
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
@@ -458,59 +479,70 @@ export function connectSelect<T extends PropTypes>(
       ...parts['group-label'].attrs,
       id: groupLabelId(group.value),
     }),
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...itemStateAttrs(item),
-      // Collection Item 家族只读取稳定角色、上下文与状态事实；Select 的条目是浮层瞬态集合，选中只画行尾对号。
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      // 导航、检索与选中都以此为条目身份
-      [ITEM_VALUE_ATTR]: item.value,
-      'role': 'option',
-      // listbox 的选中语义是 aria-selected（不是 aria-checked）；未选中必须显式输出 false，
-      // 省略会让读屏无从区分「未选中」与「不是选项」
-      'aria-selected': value.includes(item.value) ? 'true' : 'false',
-      // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、也不派 click
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      // 高亮是键盘焦点所在，与选中互相独立：可以高亮着未选中的条目
-      'data-highlighted': dataAttr(highlighted === item.value),
-      // roving tabindex：整组只有高亮条目留在 Tab 序列内；收起态无锚点
-      'tabindex': highlighted === item.value ? 0 : -1,
-      'onClick': () => {
-        if (interactive && !itemDisabled(item))
-          send({ type: 'ITEM.SELECT', value: item.value })
-      },
-      // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
-      'onFocus': () => send({ type: 'ITEM.HIGHLIGHT', value: item.value }),
-      // 指针划过即把焦点连同高亮一起搬来：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B；
-      // 只聚焦不滚动，滚动留给键盘导航
-      'onPointerMove': (event: PointerEvent) => {
-        if (itemDisabled(item) || highlighted === item.value)
-          return
-        const el = event.currentTarget as HTMLElement
-        pointerHot.add(el)
-        focusSafely(el)
-        send({ type: 'ITEM.HIGHLIGHT', value: item.value })
-      },
-      // 指针离开列表层：收掉高亮、焦点还给列表，hover 不留漆。
-      // 判据是「还在不在 list 里」——条目之间有间距时，指针落在缝上，relatedTarget 是 list 本身；
-      // footer 是 list 的兄弟，指针挪到那儿仍按离开处理。
-      // 触摸 tap 序列里的 leave 不作数
-      'onPointerLeave': (event: PointerEvent) => {
-        const el = event.currentTarget as HTMLElement
-        if (event.pointerType === 'touch' || !pointerHot.delete(el))
-          return
-        if (highlighted !== item.value)
-          return
-        // list 认领着 listbox 的 id
-        const list = el.ownerDocument.getElementById(ids.content)
-        if (contains(list, event.relatedTarget as Node | null))
-          return
-        send({ type: 'HIGHLIGHT.CLEAR' })
-        list?.focus()
-      },
-    }),
+    getItemProps: (item) => {
+      const handlers = press('item', item.value, itemDisabled(item))
+      return normalize.element({
+        ...parts.item.attrs,
+        ...itemStateAttrs(item),
+        // Collection Item 家族只读取稳定角色、上下文与状态事实；Select 的条目是浮层瞬态集合，选中只画行尾对号。
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // 导航、检索与选中都以此为条目身份
+        [ITEM_VALUE_ATTR]: item.value,
+        'role': 'option',
+        // listbox 的选中语义是 aria-selected（不是 aria-checked）；未选中必须显式输出 false，
+        // 省略会让读屏无从区分「未选中」与「不是选项」
+        'aria-selected': value.includes(item.value) ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、也不派 click
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        // 高亮是键盘焦点所在，与选中互相独立：可以高亮着未选中的条目
+        'data-highlighted': dataAttr(highlighted === item.value),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === item.value),
+        // roving tabindex：整组只有高亮条目留在 Tab 序列内；收起态无锚点
+        'tabindex': highlighted === item.value ? 0 : -1,
+        'onClick': () => {
+          if (interactive && !itemDisabled(item))
+            send({ type: 'ITEM.SELECT', value: item.value })
+        },
+        // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
+        'onFocus': () => send({ type: 'ITEM.HIGHLIGHT', value: item.value }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        // 指针划过即把焦点连同高亮一起搬来：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B；
+        // 只聚焦不滚动，滚动留给键盘导航
+        'onPointerMove': (event: PointerEvent) => {
+          if (itemDisabled(item) || highlighted === item.value)
+            return
+          const el = event.currentTarget as HTMLElement
+          pointerHot.add(el)
+          focusSafely(el)
+          send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+        },
+        // 指针离开列表层：收掉高亮、焦点还给列表，hover 不留漆。
+        // 判据是「还在不在 list 里」——条目之间有间距时，指针落在缝上，relatedTarget 是 list 本身；
+        // footer 是 list 的兄弟，指针挪到那儿仍按离开处理。
+        // 触摸 tap 序列里的 leave 不作数
+        'onPointerLeave': (event: PointerEvent) => {
+          const el = event.currentTarget as HTMLElement
+          if (event.pointerType === 'touch' || !pointerHot.delete(el))
+            return
+          if (highlighted !== item.value)
+            return
+          // list 认领着 listbox 的 id
+          const list = el.ownerDocument.getElementById(ids.content)
+          if (contains(list, event.relatedTarget as Node | null))
+            return
+          send({ type: 'HIGHLIGHT.CLEAR' })
+          list?.focus()
+        },
+      })
+    },
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),

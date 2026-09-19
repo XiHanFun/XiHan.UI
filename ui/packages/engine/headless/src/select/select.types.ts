@@ -171,6 +171,10 @@ export interface SelectSchema extends MachineSchema {
     focusIntent: SelectFocusIntent
     /** 关闭时是否把焦点归还 trigger；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
+    /** 按压通道：Space / Enter 或触屏按住的是条目还是清空按钮。 */
+    pressedPart: 'item' | 'clear-trigger' | null
+    /** 按压通道：按住的条目 value；clear-trigger 没有 value，记 null。抬起、失焦或浮层收起即清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: SelectRefs
@@ -193,8 +197,12 @@ export interface SelectSchema extends MachineSchema {
     /** 清空全部选中（清空按钮、键盘 Delete 与 api.clear 都经过它）。 */
     | { type: 'VALUE.CLEAR' }
     | { type: 'FORM.RESET' }
+    /** 条目或清空按钮被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', part: 'item' | 'clear-trigger', value?: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: 'item' | 'clear-trigger', value?: string }
   tag: never
-  guard: 'isOpenControlled' | 'isMultiple' | 'isReadOnly'
+  guard: 'isOpenControlled' | 'isMultiple' | 'isReadOnly' | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -210,6 +218,10 @@ export interface SelectSchema extends MachineSchema {
     | 'clearHighlightedValue'
     | 'clearTypeahead'
     | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackPosition' | 'trackLayer'
 }
 

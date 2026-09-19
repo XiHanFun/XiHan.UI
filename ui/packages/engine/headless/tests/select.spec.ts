@@ -1173,3 +1173,101 @@ describe('selectSelect 标签删除钮：就是 tag 的 close-trigger', () => {
     expect(onValueChange).not.toHaveBeenCalled()
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，条目按 value 记、清空按钮只记部件', () => {
+  type Dict = Record<string, unknown>
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+  // 部件上写了 disabled 就压过 collection：不传时留空，collection 里的禁用才查得到
+  const itemProps = (h: Harness, value: string, disabled?: boolean): Dict => h.api().getItemProps(disabled === undefined ? { value } : { value, disabled }) as Dict
+  const clearProps = (h: Harness): Dict => h.api().getClearTriggerProps() as Dict
+
+  it('条目：keydown 在场、keyup 撤下；触屏按下在场、抬起撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const h = mount({ defaultOpen: true })
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+    fire(itemProps(h, 'apple'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onPointerDown', { pointerType: 'touch' })
+    expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+    fire(itemProps(h, 'apple'), 'onPointerUp', {})
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+    fire(itemProps(h, 'apple'), 'onBlur', {})
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onPointerDown', { pointerType: 'mouse' })
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+  })
+
+  it('清空按钮：有值可清时投影同一副按压面，与条目互不串；另一个的 keyup 不把它松开', () => {
+    const h = mount({ defaultOpen: true, defaultValue: 'apple' })
+    fire(clearProps(h), 'onKeyDown', key(' '))
+    expect(clearProps(h)['data-pressed']).toBe('')
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onKeyUp', key(' '))
+    expect(clearProps(h)['data-pressed']).toBe('')
+    fire(clearProps(h), 'onKeyUp', key(' '))
+    expect(clearProps(h)['data-pressed']).toBeUndefined()
+    // 触屏按下走的是带 preventDefault 的那份 pointerdown
+    fire(clearProps(h), 'onPointerDown', { pointerType: 'touch', button: 0, preventDefault: () => {} })
+    expect(clearProps(h)['data-pressed']).toBe('')
+    fire(clearProps(h), 'onPointerCancel', {})
+    expect(clearProps(h)['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'banana'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'banana')['data-pressed']).toBe('')
+    expect(clearProps(h)['data-pressed']).toBeUndefined()
+    fire(clearProps(h), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'banana')['data-pressed']).toBe('')
+  })
+
+  it('不进：禁用 / 只读时两者都不进；没有值可清时清空按钮不进；条目自身禁用（部件声明或 collection）不进', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Partial<Props>[]) {
+      const h = mount({ defaultOpen: true, defaultValue: 'apple', ...inert })
+      fire(itemProps(h, 'banana'), 'onKeyDown', key(' '))
+      fire(clearProps(h), 'onKeyDown', key(' '))
+      expect(itemProps(h, 'banana')['data-pressed']).toBeUndefined()
+      expect(clearProps(h)['data-pressed']).toBeUndefined()
+    }
+    const empty = mount({ defaultOpen: true })
+    fire(clearProps(empty), 'onKeyDown', key(' '))
+    expect(clearProps(empty)['data-pressed']).toBeUndefined()
+
+    const h = mount({ defaultOpen: true, collection: [{ value: 'apple', disabled: true }, { value: 'banana' }] })
+    fire(itemProps(h, 'apple'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'banana', true), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'banana')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'banana'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'banana')['data-pressed']).toBe('')
+  })
+
+  it('浮层收起即松开：按住 Enter 选中后条目随内容藏起，不会再来 keyup，按压面由机器收', () => {
+    const h = mount({ defaultOpen: true })
+    fire(itemProps(h, 'apple'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+    h.send({ type: 'ITEM.SELECT', value: 'apple' })
+    expect(h.state()).toBe('closed')
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    h.send({ type: 'OPEN' })
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中转入禁用 / 只读、或值被清空：按压面由机器自己收，不等 keyup', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Partial<Props>[]) {
+      const h = mount({ defaultOpen: true, defaultValue: 'apple' })
+      fire(itemProps(h, 'banana'), 'onKeyDown', key(' '))
+      expect(itemProps(h, 'banana')['data-pressed']).toBe('')
+      h.setProps(inert)
+      expect(itemProps(h, 'banana')['data-pressed']).toBeUndefined()
+    }
+    // 清空按钮：按住 Enter 清掉值，按钮随即藏起
+    const h = mount({ defaultValue: 'apple' })
+    fire(clearProps(h), 'onKeyDown', key('Enter'))
+    expect(clearProps(h)['data-pressed']).toBe('')
+    h.send({ type: 'VALUE.CLEAR' })
+    expect(h.value()).toEqual([])
+    expect(clearProps(h)['data-pressed']).toBeUndefined()
+  })
+})

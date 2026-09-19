@@ -25,6 +25,7 @@ export const selectKeyboard: KeyboardTable = {
     { id: 'select.kbd.last', keys: ['End'], when: 'open, focus in content', does: '高亮移到末个可用条目' },
     { id: 'select.kbd.typeahead', keys: ['单个可打印字符'], when: 'open, focus in content', does: '连打检索移动高亮，不改选中值' },
     { id: 'select.kbd.select', keys: ['Enter', 'Space'], when: 'open, 单选, 高亮条目未禁用', does: '选中高亮条目并关闭列表，焦点归还 trigger', restoresFocus: true },
+    { id: 'select.kbd.press', keys: ['Enter', 'Space'], when: 'held in item / clear-trigger, 未禁用、未只读', does: '按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，条目随浮层收起一并撤下；没有值可清时清空按钮不进' },
     { id: 'select.kbd.multi-select', keys: ['Enter', 'Space'], when: 'open, 多选, 高亮条目未禁用', does: '切换高亮条目的选中态，列表不收起、焦点留在条目上' },
     { id: 'select.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭列表并把焦点归还 trigger，选中值不变', restoresFocus: true },
     { id: 'select.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '关闭列表，焦点不归还 trigger，按 Tab 序列自然离开', restoresFocus: false },

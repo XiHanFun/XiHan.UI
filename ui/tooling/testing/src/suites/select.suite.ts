@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { selectAnatomy, selectKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
@@ -1450,6 +1451,37 @@ export const selectSuite: ConformanceSuite = {
           key: 'Backspace',
           expect: { parts: { 'trigger': { 'aria-expanded': 'false' }, 'item[1]': { 'aria-selected': 'true' } }, events: [] },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：条目投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['select.kbd.press'],
+      // 受控展开：单选下 Enter / Space 按下即选中并发收起意图，宿主不写回就仍开着，按住的中间帧才看得见
+      props: { open: true, name: 'fruit' },
+      steps: [heldPress('select', 'item')],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      fixture: withClearTrigger,
+      // 收起态按：清空钮不占 Tab 位，键盘到不了它，按压面只为触屏而设；展开态下 WC 会把浮层外的焦点补回高亮条目
+      props: { defaultValue: 'banana', name: 'fruit' },
+      steps: [heldPress('select', 'clear-trigger')],
+    },
+    {
+      name: '禁用条目按住不进入按压面；只读时条目与清空钮都不进；无值时清空钮不进',
+      spec: { adr: 'press-channel' },
+      // 文档序里第一条（apple）禁用：共享步骤取的是第一条
+      fixture: () => withClearTrigger(selectTree('apple')),
+      props: { open: true, defaultValue: 'banana', name: 'fruit' },
+      steps: [
+        heldPressIgnored('select', 'item', '禁用条目不接受按压'),
+        { kind: 'setProps', props: { readOnly: true } },
+        heldPressIgnored('select', 'item', '只读时条目改不了选中值，不接受按压'),
+        heldPressIgnored('select', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, value: [] } },
+        heldPressIgnored('select', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
       ],
     },
   ],
