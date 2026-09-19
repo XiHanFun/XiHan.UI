@@ -1,6 +1,7 @@
 import type { TableColumnDef, TableRowDef } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { tableAnatomy, tableKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/'
 
@@ -45,6 +46,25 @@ function mapColumnHeader(node: FixtureNode, part: string): FixtureNode {
   }
   return node.children?.length ? { ...node, children: node.children.map(child => mapColumnHeader(child, part)) } : node
 }
+
+/**
+ * 按压用例专用：在 root 末尾补一块列设置区（name 列的显隐把手）与取下一页按钮。
+ * 加进基准 fixture 会动到其余用例的 order 与 counts 断言，而它们跟按压没关系。
+ */
+function withPressExtras(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: [
+      ...(base.children ?? []),
+      { part: 'column-list', children: [{ part: 'column-visibility-trigger', tag: 'span', attrs: { value: 'name' }, text: 'Name' }] },
+      { part: 'load-more-trigger', tag: 'button', text: '加载更多' },
+    ],
+  }
+}
+
+// 排序把手不带 data-value，列身份在裹着它的列头上
+const SORT_NAME = '[data-scope="table"][data-part="column-header"][data-value="name"] [data-scope="table"][data-part="sort-trigger"]'
+const ROW_C = '[data-scope="table"][data-part="row"][data-value="c"]'
 
 /**
  * 行定义：a/c/d 可展开，b 是普通行；
@@ -1103,6 +1123,52 @@ export const tableSuite: ConformanceSuite = {
             },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：行、全选把手与排序把手投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['table.kbd.press'],
+      props: props({ selectionMode: 'multiple' }),
+      steps: [
+        { kind: 'focus', part: 'row[1]', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        heldPress('table', 'row', { value: 'a' }),
+        heldPress('table', 'select-all-trigger'),
+        heldPress('table', 'sort-trigger', { selector: SORT_NAME }),
+      ],
+    },
+    {
+      name: '触屏按下：行选把手与展开把手投影 data-pressed，与所在的行分开认；列显隐把手与取下一页按钮同一副按压面',
+      spec: { adr: 'press-channel' },
+      fixture: withPressExtras,
+      props: props({ selectionMode: 'multiple' }),
+      steps: [
+        // 两颗把手不占 Tab 位，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路
+        heldPress('table', 'row-select-trigger', { selector: '[data-scope="table"][data-part="row"][data-value="a"] [data-scope="table"][data-part="row-select-trigger"]' }),
+        heldPress('table', 'expand-trigger', { selector: '[data-scope="table"][data-part="row"][data-value="a"] [data-scope="table"][data-part="expand-trigger"]' }),
+        heldPress('table', 'column-visibility-trigger', { value: 'name' }),
+        heldPress('table', 'load-more-trigger'),
+      ],
+    },
+    {
+      name: '禁用行的行与两颗把手、不可展开行的展开把手、不可排序列的排序把手不进入按压面；选择关停与加载中一并不进',
+      spec: { adr: 'press-channel' },
+      fixture: withPressExtras,
+      props: props({ selectionMode: 'multiple' }),
+      steps: [
+        heldPressIgnored('table', 'row', '禁用行不接受按压', { value: 'c' }),
+        heldPressIgnored('table', 'row-select-trigger', '禁用行的行选把手不接受按压', { selector: `${ROW_C} [data-scope="table"][data-part="row-select-trigger"]` }),
+        heldPressIgnored('table', 'expand-trigger', '禁用行的展开把手不接受按压', { selector: `${ROW_C} [data-scope="table"][data-part="expand-trigger"]` }),
+        heldPressIgnored('table', 'expand-trigger', '不可展开的行没有展开把手可按', { selector: '[data-scope="table"][data-part="row"][data-value="b"] [data-scope="table"][data-part="expand-trigger"]' }),
+        { kind: 'setProps', props: { selectionMode: 'none' } },
+        heldPressIgnored('table', 'select-all-trigger', '选择关停时全选把手不接受按压'),
+        heldPressIgnored('table', 'row-select-trigger', '选择关停时行选把手不接受按压', { selector: '[data-scope="table"][data-part="row"][data-value="a"] [data-scope="table"][data-part="row-select-trigger"]' }),
+        { kind: 'setProps', props: { selectionMode: 'multiple', loading: true } },
+        heldPressIgnored('table', 'row', '加载中行不接受按压', { value: 'a' }),
+        heldPressIgnored('table', 'select-all-trigger', '加载中全选把手不接受按压'),
+        heldPressIgnored('table', 'sort-trigger', '加载中排序把手不接受按压', { selector: SORT_NAME }),
+        heldPressIgnored('table', 'column-visibility-trigger', '加载中列显隐把手不接受按压', { value: 'name' }),
+        heldPressIgnored('table', 'load-more-trigger', '加载中取下一页按钮不接受按压'),
       ],
     },
   ],

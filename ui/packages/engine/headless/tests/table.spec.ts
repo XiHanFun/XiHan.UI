@@ -105,13 +105,14 @@ interface Harness {
 }
 
 function mount(initial: Partial<Props> = {}): Harness {
-  const props: Partial<Props> = { columns: COLUMNS, rows: ROWS, ...initial }
+  const runtime = createVanillaRuntime()
+  // props 放进信号里：setProps 改写后机器的 watch 才看得见（按住途中转入加载要由它自收）
+  const props = runtime.signal<Partial<Props>>({ columns: COLUMNS, rows: ROWS, ...initial })
   // 作者标记镜像的是机器手上的那两份定义：不同源的话，摊平算出来的可见行在 DOM 里
   // 一个也找不到，用例会假绿
-  const columns = props.columns!
-  const rows = props.rows!
-  const runtime = createVanillaRuntime()
-  const service = createService(tableMachine, { props: () => props, runtime })
+  const columns = props.get().columns!
+  const rows = props.get().rows!
+  const service = createService(tableMachine, { props: () => props.get(), runtime })
   runtime.start()
 
   const doc = document
@@ -227,7 +228,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     emptyState,
     loadingState,
     setProps: (next) => {
-      Object.assign(props, next)
+      props.set({ ...props.get(), ...next })
       render()
     },
     sort: () => service.context.get('sort'),
@@ -1276,5 +1277,143 @@ describe('collection Item 与 Action Control 家族投影', () => {
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
     })
+  })
+})
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，七个可按部件共用一个机器、按部件键分开记', () => {
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  /** 六件全走一遍：keydown / keyup、Enter 后失焦、触屏按下 / 取消 / 抬起、鼠标不走这一路。 */
+  const cycle = (el: HTMLElement, host: HTMLElement = el): void => {
+    expect(pressed(el)).toBe(false)
+    press(host, ' ')
+    expect(pressed(el)).toBe(true)
+    keyUp(host, ' ')
+    expect(pressed(el)).toBe(false)
+    press(host, 'Enter')
+    expect(pressed(el)).toBe(true)
+    host.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(el)).toBe(false)
+    touch(el, 'pointerdown')
+    expect(pressed(el)).toBe(true)
+    touch(el, 'pointercancel')
+    expect(pressed(el)).toBe(false)
+    touch(el, 'pointerdown')
+    expect(pressed(el)).toBe(true)
+    touch(el, 'pointerup')
+    expect(pressed(el)).toBe(false)
+    el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true, button: 0 }))
+    expect(pressed(el)).toBe(false)
+  }
+
+  it('行：Space 按住投影，选中语义照旧由 body 承担；另一行的 keyup 不把它松开', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    const a = h.row('a').row
+    a.focus()
+    press(a, ' ')
+    expect(pressed(a)).toBe(true)
+    expect(h.selection()).toEqual(['a'])
+    keyUp(h.row('b').row, ' ')
+    expect(pressed(a)).toBe(true)
+    expect(pressed(h.row('b').row)).toBe(false)
+    keyUp(a, ' ')
+    expect(pressed(a)).toBe(false)
+    cycle(a)
+  })
+
+  it('全选把手、排序把手：keydown 在场且切换语义照旧；行选 / 展开把手只为触屏而设，键盘那一路也认', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    press(h.selectAll, ' ')
+    expect(pressed(h.selectAll)).toBe(true)
+    expect(h.selection()).toEqual(['a', 'b', 'd'])
+    keyUp(h.selectAll, ' ')
+    cycle(h.selectAll)
+    press(h.sortTrigger('name'), 'Enter')
+    expect(pressed(h.sortTrigger('name'))).toBe(true)
+    expect(h.sort()).toEqual([{ id: 'name', direction: 'asc' }])
+    keyUp(h.sortTrigger('name'), 'Enter')
+    cycle(h.sortTrigger('name'))
+    cycle(h.row('a').selectTrigger)
+    cycle(h.row('a').expandTrigger)
+    // 同一行的行选把手与行本身分开认
+    touch(h.row('a').selectTrigger, 'pointerdown')
+    expect(pressed(h.row('a').selectTrigger)).toBe(true)
+    expect(pressed(h.row('a').row)).toBe(false)
+    touch(h.row('a').selectTrigger, 'pointerup')
+  })
+
+  it('列显隐把手与取下一页按钮：接同一副按压面', () => {
+    const h = mount({ columnSettings: true })
+    const bind = (getter: () => Record<string, unknown>): HTMLElement => {
+      const el = document.createElement('button')
+      document.body.appendChild(el)
+      const sync = (): void => spread(el, getter())
+      sync()
+      for (const type of ['keydown', 'keyup', 'blur', 'pointerdown', 'pointerup', 'pointercancel'])
+        el.addEventListener(type, () => queueMicrotask(sync))
+      return el
+    }
+    const toggle = bind(() => h.api().getColumnVisibilityTriggerProps({ value: 'size' }) as Record<string, unknown>)
+    const loadMore = bind(() => h.api().getLoadMoreTriggerProps() as Record<string, unknown>)
+    const check = (el: HTMLElement): void => {
+      press(el, ' ')
+      spread(el, el === toggle ? h.api().getColumnVisibilityTriggerProps({ value: 'size' }) as Record<string, unknown> : h.api().getLoadMoreTriggerProps() as Record<string, unknown>)
+      expect(pressed(el)).toBe(true)
+      keyUp(el, ' ')
+      spread(el, el === toggle ? h.api().getColumnVisibilityTriggerProps({ value: 'size' }) as Record<string, unknown> : h.api().getLoadMoreTriggerProps() as Record<string, unknown>)
+      expect(pressed(el)).toBe(false)
+      touch(el, 'pointerdown')
+      spread(el, el === toggle ? h.api().getColumnVisibilityTriggerProps({ value: 'size' }) as Record<string, unknown> : h.api().getLoadMoreTriggerProps() as Record<string, unknown>)
+      expect(pressed(el)).toBe(true)
+      touch(el, 'pointercancel')
+      spread(el, el === toggle ? h.api().getColumnVisibilityTriggerProps({ value: 'size' }) as Record<string, unknown> : h.api().getLoadMoreTriggerProps() as Record<string, unknown>)
+      expect(pressed(el)).toBe(false)
+    }
+    check(toggle)
+    check(loadMore)
+  })
+
+  it('不进：禁用行的行 / 行选 / 展开把手、不可展开行的展开把手、不可排序列、选择关停时的全选与行选把手、加载中一律不进', () => {
+    const h = mount({ selectionMode: 'multiple', columns: [...COLUMNS, { id: 'kind', label: 'Kind' }] })
+    const c = h.row('c')
+    c.row.focus()
+    press(c.row, ' ')
+    touch(c.selectTrigger, 'pointerdown')
+    touch(c.expandTrigger, 'pointerdown')
+    expect(pressed(c.row)).toBe(false)
+    expect(pressed(c.selectTrigger)).toBe(false)
+    expect(pressed(c.expandTrigger)).toBe(false)
+    touch(h.row('b').expandTrigger, 'pointerdown')
+    expect(pressed(h.row('b').expandTrigger)).toBe(false)
+    press(h.sortTrigger('kind'), ' ')
+    expect(pressed(h.sortTrigger('kind'))).toBe(false)
+
+    const none = mount({ selectionMode: 'none' })
+    press(none.selectAll, ' ')
+    touch(none.row('a').selectTrigger, 'pointerdown')
+    expect(pressed(none.selectAll)).toBe(false)
+    expect(pressed(none.row('a').selectTrigger)).toBe(false)
+
+    const busy = mount({ selectionMode: 'multiple', loading: true })
+    press(busy.selectAll, ' ')
+    press(busy.sortTrigger('name'), ' ')
+    touch(busy.row('a').row, 'pointerdown')
+    expect(pressed(busy.selectAll)).toBe(false)
+    expect(pressed(busy.sortTrigger('name'))).toBe(false)
+    expect(pressed(busy.row('a').row)).toBe(false)
+  })
+
+  it('按住途中转入加载：按压面由机器自己收，不等 keyup', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    press(h.sortTrigger('name'), 'Enter')
+    expect(pressed(h.sortTrigger('name'))).toBe(true)
+    h.setProps({ loading: true })
+    expect(pressed(h.sortTrigger('name'))).toBe(false)
   })
 })

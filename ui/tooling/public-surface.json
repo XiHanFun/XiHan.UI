@@ -6270,6 +6270,7 @@
       "TableDropTarget",
       "TableExpandedValueChangeDetails",
       "TableFocusModel",
+      "TablePressedKey",
       "TableRowDef",
       "TableRowMove",
       "TableRowMoveDetails",

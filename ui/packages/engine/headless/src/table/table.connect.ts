@@ -5,11 +5,12 @@
 
 // 提供 table 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { MeasuredRow } from './table.drag'
-import type { TableApi, TableColumn, TableColumnDef, TableColumnSetting, TableSchema, TableVisibleRow } from './table.types'
+import type { TableApi, TableColumn, TableColumnDef, TableColumnSetting, TablePressedKey, TableSchema, TableVisibleRow } from './table.types'
 import {
   contains,
+  createPressTracker,
   dataAttr,
   focusItem,
   isComposingEvent,
@@ -398,6 +399,37 @@ export function connectTable<T extends PropTypes>(
     focusValue(rowElOf(el))
   }
 
+  // 按压通道：七个可按部件共用一个机器，真源是 context 里「正被按住的那一个」（按部件键记），各自合成一份
+  // 跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 部件自身的禁用（行禁用、列不可排序、全选无基数）只有 connect 知道，随 PRESS.START 带给机器的 canPress 守卫
+  const pressedKey = context.get('pressed')
+  const press = (key: TablePressedKey, disabled: boolean): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressedKey === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+
+  /**
+   * 行的按压只认落在行自己（含普通格子）上的事件：行选 / 展开把手各有自己的按压面，作者放进格子里的
+   * 控件按下去是要点它们，不是要按这一行。
+   */
+  const onRowItself = <E extends Event>(handler: (event: E) => void) => (event: E): void => {
+    const target = event.target as HTMLElement | null
+    if (target?.closest(`input,textarea,select,button,a,[contenteditable],[role="button"],[role="checkbox"],${parts['row-select-trigger'].selector},${parts['expand-trigger'].selector}`))
+      return
+    handler(event)
+  }
+
   /** 排序把手与全选把手共用：确认键要拦下默认行为。 */
   const isCommitKey = (event: KeyboardEvent): boolean =>
     (event.key === 'Enter' || event.key === ' ') && !event.ctrlKey && !event.metaKey && !event.altKey
@@ -522,8 +554,11 @@ export function connectTable<T extends PropTypes>(
       const def = settingDefs.get(column.value)
       const hidden = hiddenColumns.has(column.value)
       const toggleable = canToggleColumn(column.value)
+      const pressing = press(`column-visibility:${column.value}`, !toggleable)
       return normalize.element({
         ...parts['column-visibility-trigger'].attrs,
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        ...pressing,
         [ITEM_VALUE_ATTR]: column.value,
         // 显式给角色：作者常写成 <span>，读屏听不出这是个能勾的东西
         'role': 'checkbox',
@@ -547,6 +582,7 @@ export function connectTable<T extends PropTypes>(
             send({ type: 'COLUMN_PREF.PATCH', columnId: column.value, hidden: !hidden })
         },
         'onKeyDown': (event: KeyboardEvent) => {
+          pressing.onKeyDown(event)
           if (!isCommitKey(event) || !toggleable)
             return
           // 作者写成 <button> 时按键会被再合成一次 click，拦下默认行为，否则同一次按键切两回
@@ -715,9 +751,18 @@ export function connectTable<T extends PropTypes>(
     getRowProps: (row) => {
       const meta = metaOf(row.value)
       const selectable = mode !== 'none'
+      // 按压只记事实：Space 的选中语义仍由冒泡到 body 的处理器承担；禁用行不进
+      const pressing = press(`row:${row.value}`, isRowDisabled(row.value))
       return normalize.element({
         ...parts.row.attrs,
         ...rowState(row.value),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active。
+        // 行里的两颗把手与作者放进格子的控件各有自己的按压面：落在它们身上的按下与按键冒泡上来不算行的
+        ...pressing,
+        'onKeyDown': onRowItself(pressing.onKeyDown),
+        'onKeyUp': onRowItself(pressing.onKeyUp),
+        'onPointerUp': onRowItself(pressing.onPointerUp),
+        'onPointerCancel': onRowItself(pressing.onPointerCancel),
         // 表体行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与选中面（品牌淡底 +
         // 淡底前景）由家族按 aria-selected / aria-disabled 给出；标记由行首的勾选把手承担，行不投影子槽。
         // 表头 / 脚注行不投影：它们不是可选中的条目
@@ -750,8 +795,9 @@ export function connectTable<T extends PropTypes>(
         // 焦点是事实不是许可：禁用行被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'ROW.FOCUS', value: row.value }),
         // 整行都是拖动源，没有把手。按在行里的交互控件上不起拖：
-        // 那些地方按下去是要点它们，不是要搬这一行
+        // 那些地方按下去是要点它们，不是要搬这一行。触屏按下进按压通道，与起拖两路互不相干
         'onPointerDown': (event: PointerEvent) => {
+          onRowItself(pressing.onPointerDown)(event)
           // 只认主键：右键要弹上下文菜单，中键是自动滚动。
           // 触屏也不认：拖行是纵向的，而纵向手势在按下那一刻就归了浏览器滚动，
           // touch-action 事后改不回来。触屏那一路走 row-drag-trigger 把手。
@@ -846,43 +892,51 @@ export function connectTable<T extends PropTypes>(
     // 全选把手是三态的唯一载体；它不属于 roving 行组，自己占一个 Tab 位。
     // 名字无条件发：这一格默认没有内容，行内那颗把手又退出了可及树，
     // 缺了它读屏在整张表里找不到任何能操作选择的东西
-    getSelectAllTriggerProps: () => normalize.element({
-      ...parts['select-all-trigger'].attrs,
-      'role': 'checkbox',
-      // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'icon',
-      'data-xh-action-variant': 'outline',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'aria-label': label.selectAll,
-      'aria-checked': selectionState === 'checked' ? 'true' : selectionState === 'indeterminate' ? 'mixed' : 'false',
-      // 角色节点是普通元素而非原生控件，禁用后仍要能被聚焦
-      'aria-disabled': canSelectAll ? 'false' : 'true',
-      'tabindex': 0,
-      'data-state': selectionState,
-      'data-disabled': dataAttr(!canSelectAll),
-      'onClick': () => {
-        if (canSelectAll)
+    getSelectAllTriggerProps: () => {
+      const pressing = press('select-all', !canSelectAll)
+      return normalize.element({
+        ...parts['select-all-trigger'].attrs,
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；没有全选基数时不进
+        ...pressing,
+        'role': 'checkbox',
+        // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-variant': 'outline',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'aria-label': label.selectAll,
+        'aria-checked': selectionState === 'checked' ? 'true' : selectionState === 'indeterminate' ? 'mixed' : 'false',
+        // 角色节点是普通元素而非原生控件，禁用后仍要能被聚焦
+        'aria-disabled': canSelectAll ? 'false' : 'true',
+        'tabindex': 0,
+        'data-state': selectionState,
+        'data-disabled': dataAttr(!canSelectAll),
+        'onClick': () => {
+          if (canSelectAll)
+            send({ type: 'SELECTION.ALL_TOGGLE' })
+        },
+        'onKeyDown': (event: KeyboardEvent) => {
+          pressing.onKeyDown(event)
+          if (!isCommitKey(event) || !canSelectAll)
+            return
+          // 作者写成 <button> 时按键会被再合成一次 click，拦下默认行为，否则同一次按键切两回
+          event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'SELECTION.ALL_TOGGLE' })
-      },
-      'onKeyDown': (event: KeyboardEvent) => {
-        if (!isCommitKey(event) || !canSelectAll)
-          return
-        // 作者写成 <button> 时按键会被再合成一次 click，拦下默认行为，否则同一次按键切两回
-        event.preventDefault()
-        // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
-        if (event.repeat)
-          return
-        send({ type: 'SELECTION.ALL_TOGGLE' })
-      },
-    }),
+        },
+      })
+    },
 
     // 行内的两个把手退出可及树、不占 Tab 位：行自己已报 aria-selected 与 aria-expanded，
     // 每行多一个 Tab 位会让行级 roving 失效；键盘那一路由 Space 与左右方向键承担
     getRowSelectTriggerProps: row => normalize.element({
       ...parts['row-select-trigger'].attrs,
       ...rowState(row.value),
+      // 把手不占 Tab 位，按压面主要为触屏而设；选择关停或行禁用时不进
+      ...press(`row-select:${row.value}`, mode === 'none' || isRowDisabled(row.value)),
       // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
@@ -1099,9 +1153,12 @@ export function connectTable<T extends PropTypes>(
 
     getSortTriggerProps: (column) => {
       const sortable = !!columnOf(column.value)?.sortable
+      const pressing = press(`sort:${column.value}`, !sortable)
       return normalize.element({
         ...parts['sort-trigger'].attrs,
         ...sortState(column.value),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        ...pressing,
         // 显式给角色：作者常写成 <span>，读屏听不出能按。
         // 当前排序方向由祖先 column-header 的 aria-sort 报出，不在这儿重复
         'role': 'button',
@@ -1122,6 +1179,7 @@ export function connectTable<T extends PropTypes>(
             toggleSortOf(column.value, event.shiftKey)
         },
         'onKeyDown': (event: KeyboardEvent) => {
+          pressing.onKeyDown(event)
           if (!isCommitKey(event) || !sortable)
             return
           event.preventDefault()
@@ -1133,6 +1191,8 @@ export function connectTable<T extends PropTypes>(
     getExpandTriggerProps: row => normalize.element({
       ...parts['expand-trigger'].attrs,
       ...rowState(row.value),
+      // 把手不占 Tab 位，按压面主要为触屏而设；不可展开或行禁用时不进
+      ...press(`expand:${row.value}`, !metaOf(row.value)?.expandable || isRowDisabled(row.value)),
       // 定尺图标钮（§9.1）：接 Action Control icon 档、ghost 形态，面与按压由家族给，边长由皮肤钉在指示符档
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
@@ -1186,6 +1246,8 @@ export function connectTable<T extends PropTypes>(
     // 宽度由容器给、高度随内容、按下只换面不缩放；悬停 / 按下 / 禁用面与粗指针热区由家族给，档位随 size
     getLoadMoreTriggerProps: () => normalize.button({
       ...parts['load-more-trigger'].attrs,
+      // Space / Enter 与触屏按住投影 data-pressed；取数在途原生 disabled，机器守卫同步不进
+      ...press('load-more', loading),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'row',
       'data-xh-action-variant': 'ghost',
