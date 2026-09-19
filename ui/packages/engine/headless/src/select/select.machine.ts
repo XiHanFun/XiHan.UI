@@ -50,6 +50,9 @@ export const selectMachine = createMachine({
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
     focusIntent: cell<SelectFocusIntent>(() => ({ defaultValue: 'selected' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
+    // 按压通道：正被按住的那一个（条目按 value 记，清空按钮只记 part），与开合无关
+    pressedPart: cell<'item' | 'clear-trigger' | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -71,11 +74,16 @@ export const selectMachine = createMachine({
   // 值这一路的 watch 只兜宿主侧写入，内部选中当场已同步过文本。
   watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
-    track([context.dep('value')], () => action(['syncValueText']))
+    // 值清空时清空按钮随之藏起，按住它的那一下不会再来 keyup：与禁用 / 只读一道由机器自己收
+    track([context.dep('value')], () => action(['syncValueText', 'releaseWhenInert']))
     track([() => prop('multiple')], () => action(['normalizeValue']))
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
   },
   // 只改值不动开合，收起态连打与外部 setValue 两个状态都认；只读时值改不动
   on: {
+    // 按压通道：条目与清空按钮两个状态都认；禁用 / 只读不进，清空按钮在清不了时不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': [
       { guard: 'isReadOnly' },
@@ -105,8 +113,9 @@ export const selectMachine = createMachine({
     open: {
       // 锚点在进入展开态时就位；条目常挂，此刻查到的顺序即最终顺序。
       entry: ['setInitialHighlightedValue'],
-      // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串
-      exit: ['clearHighlightedValue', 'clearTypeahead'],
+      // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串。
+      // 收起即松开：按住 Enter 选中条目后浮层收起，条目随内容一起藏起，不会再来 keyup 或 blur
+      exit: ['clearHighlightedValue', 'clearTypeahead', 'releasePress'],
       // 定位只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -139,8 +148,42 @@ export const selectMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       isMultiple: ({ prop }) => !!prop('multiple'),
       isReadOnly: ({ prop }) => !!prop('readOnly'),
+      // 禁用与只读都改不了值，一票否决；条目自身的禁用随事件带入；清空按钮没有值可清时不进
+      canPress: ({ prop, context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('disabled') || prop('readOnly') || e.disabled)
+          return false
+        return e.part === 'item' || context.get('value').length > 0
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value ?? null)
+      },
+      // 只收自己那一下：另一个的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== (e.value ?? null))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releasePress: ({ context }) => {
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const part = context.get('pressedPart')
+        const inert = prop('disabled') || prop('readOnly') || (part === 'clear-trigger' && context.get('value').length === 0)
+        if (!part || !inert)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         // 与 VALUE.SET、ITEM.SELECT 一样显式跟一次：内部写值路径都自己同步文本，
