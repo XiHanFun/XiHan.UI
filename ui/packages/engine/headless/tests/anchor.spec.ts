@@ -641,7 +641,8 @@ describe('anchor 按压通道：Space / Enter 与触屏按住投影 data-pressed
     // 滚到 install 压线：观察器把它点亮
     c.scrollTo([-600, -20, 400])
     expect(c.value()).toBe('install')
-    const [intro, install] = c.links as [HTMLElement, HTMLElement]
+    const intro = c.links[0]!
+    const install = c.links[1]!
     intro.dispatchEvent(key('keydown'))
     expect(pressed(c, 'intro')).toBe(true)
     expect(pressed(c, 'install')).toBe(false)
