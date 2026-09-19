@@ -1349,7 +1349,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，七�
   })
 
   it('列显隐把手与取下一页按钮：接同一副按压面', () => {
-    const h = mount({ columnSettings: true })
+    const h = mount()
     const bind = (getter: () => Record<string, unknown>): HTMLElement => {
       const el = document.createElement('button')
       document.body.appendChild(el)
