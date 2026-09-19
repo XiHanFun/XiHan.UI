@@ -140,7 +140,7 @@ describe('sideNav Collection Item 家族投影', () => {
   it('链接与分支按钮投影 page 语境的行角色与尺寸，文字落 text 槽、箭头落 suffix 槽，分支按钮同报 aria-disabled', () => {
     const runtime = createVanillaRuntime()
     const service = createService(sideNavMachine, {
-      props: () => ({ collection: [...COLLECTION, { value: 'archive', disabled: true, children: [{ value: 'old' }] }], size: 'sm', defaultValue: 'product-a' }),
+      props: () => ({ collection: [...COLLECTION, { value: 'archive', disabled: true, children: [{ value: 'old' }] }], size: 'sm' as const, defaultValue: 'product-a' }),
       runtime,
     })
     runtime.start()
