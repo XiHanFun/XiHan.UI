@@ -5,7 +5,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 4,
   "ladder": 12,
   "motion": 0,
-  "press": 2,
+  "press": 1,
   "scroll": 0,
   "selection": 0,
   "shape": 0,
@@ -44,7 +44,6 @@ exports[`family-backlog 键集合 > motion 1`] = `[]`;
 exports[`family-backlog 键集合 > press 1`] = `
 [
   "*:data-pressed",
-  "form:error-summary-item",
 ]
 `;
 

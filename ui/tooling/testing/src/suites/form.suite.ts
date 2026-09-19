@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { formAnatomy, formKeyboard, formPathKey } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 表单没有对应的 APG 模式页：它是一堆原生表单控件加一层编排。
 // 可核对的规格是 HTML 的表单提交算法（提交为何一律要 preventDefault）
@@ -364,6 +365,56 @@ export const formSuite: ConformanceSuite = {
             },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：提交钮、重置钮与摘要条目投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不提交、不重置、不搬焦点',
+      spec: { adr: 'press-channel' },
+      covers: ['form.kbd.press'],
+      props: { validate: requireBoth },
+      steps: [
+        heldPress('form', 'submit-trigger'),
+        heldPress('form', 'reset-trigger'),
+        // 摘要要提交失败一次才显形：先按一下提交，再在露面的条目上按
+        {
+          kind: 'click',
+          part: 'submit-trigger',
+          expect: { parts: { 'error-summary': { hidden: null }, 'error-summary-item[0]': { hidden: null } } },
+        },
+        heldPress('form', 'error-summary-item', { selector: `${sel('error-summary-item')}[data-form-path='${formPathKey('password')}']` }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'error-summary-item[1]', name: 'data-pressed', value: null } },
+          expect: {
+            parts: {
+              'root': { 'data-state': 'invalid' },
+              'submit-trigger': { 'data-pressed': null },
+              'reset-trigger': { 'data-pressed': null },
+              'error-summary-item[0]': { 'data-pressed': null },
+              'error-summary-item[1]': { 'data-pressed': null },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '按不动的不进入按压面：disabled 时三类部件都不接受按压；藏着的摘要条目（所指字段没有错误）也不接受',
+      spec: { adr: 'press-channel' },
+      props: { disabled: true, defaultErrors: { email: '邮箱格式不正确' } },
+      steps: [
+        heldPressIgnored('form', 'submit-trigger', '禁用时提交钮原生 disabled，不接受按压'),
+        heldPressIgnored('form', 'reset-trigger', '禁用时重置钮原生 disabled，不接受按压'),
+        heldPressIgnored('form', 'error-summary-item', '禁用时摘要条目不接受按压', { selector: `${sel('error-summary-item')}[data-form-path='${formPathKey('email')}']` }),
+        heldPressIgnored('form', 'error-summary-item', '所指字段没有错误的条目藏着，不接受按压', { selector: `${sel('error-summary-item')}[data-form-path='${formPathKey('password')}']` }),
+      ],
+    },
+    {
+      name: 'readOnly：重置钮置灰不进入按压面，提交钮照常有回执',
+      spec: { adr: 'press-channel' },
+      props: { readOnly: true, validate: allPass },
+      steps: [
+        heldPressIgnored('form', 'reset-trigger', '只读时重置钮原生 disabled（重置就是在写值），不接受按压'),
+        heldPress('form', 'submit-trigger'),
       ],
     },
     {

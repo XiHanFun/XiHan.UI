@@ -31011,6 +31011,61 @@
       "description": "form 的 error-summary 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-form-summary-item-bg",
+      "component": "form",
+      "part": [
+        "error-summary-item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "form 的 error-summary-item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-summary-item-bg-hover",
+      "component": "form",
+      "part": [
+        "error-summary-item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "hover"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "form 的 error-summary-item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-summary-item-bg-pressed",
+      "component": "form",
+      "part": [
+        "error-summary-item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is(:active, [data-pressed])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "form 的 error-summary-item 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-form-summary-item-fg-hover",
       "component": "form",
       "part": [
@@ -31020,7 +31075,9 @@
         "color"
       ],
       "state": [
-        "hover"
+        "hover",
+        "is(:active, [data-pressed])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-danger-hover"
@@ -31045,6 +31102,42 @@
       ],
       "visibility": "public",
       "description": "form 的 error-summary-item 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-summary-item-px",
+      "component": "form",
+      "part": [
+        "error-summary-item"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "form 的 error-summary-item 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-summary-item-radius",
+      "component": "form",
+      "part": [
+        "error-summary-item"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "form 的 error-summary-item 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-form-summary-item-underline-offset",

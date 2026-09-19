@@ -922,3 +922,124 @@ describe('connectForm 摘要条目的落焦', () => {
     h.stop()
   })
 })
+
+// ——————————————————————————— 按压通道 ———————————————————————————
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  type Handlers = Record<string, (e?: unknown) => void> & { 'data-pressed'?: string }
+  const keyEvent = (key: string): KeyboardEvent => ({ key, repeat: false, isComposing: false } as unknown as KeyboardEvent)
+  const touch = { pointerType: 'touch' } as unknown as PointerEvent
+  const mouse = { pointerType: 'mouse' } as unknown as PointerEvent
+  type Svc = ReturnType<typeof makeService>
+  const submit = (s: Svc): Handlers => s.api().getSubmitTriggerProps() as unknown as Handlers
+  const reset = (s: Svc): Handlers => s.api().getResetTriggerProps() as unknown as Handlers
+  const item = (s: Svc, name: string): Handlers => s.api().getErrorSummaryItemProps({ name }) as unknown as Handlers
+  const pressed = (h: Handlers): boolean => h['data-pressed'] === ''
+
+  it('提交钮：keydown 在场、keyup 撤下；失焦撤下；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路；按住本身不提交', () => {
+    const onSubmit = vi.fn()
+    const s = makeService({ validate: () => ({}), onSubmit })
+    expect(pressed(submit(s))).toBe(false)
+    submit(s).onKeyDown!(keyEvent(' '))
+    expect(pressed(submit(s))).toBe(true)
+    submit(s).onKeyUp!(keyEvent(' '))
+    expect(pressed(submit(s))).toBe(false)
+    submit(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(submit(s))).toBe(true)
+    submit(s).onBlur!()
+    expect(pressed(submit(s))).toBe(false)
+    submit(s).onPointerDown!(touch)
+    expect(pressed(submit(s))).toBe(true)
+    submit(s).onPointerCancel!()
+    expect(pressed(submit(s))).toBe(false)
+    submit(s).onPointerDown!(touch)
+    expect(pressed(submit(s))).toBe(true)
+    submit(s).onPointerUp!()
+    expect(pressed(submit(s))).toBe(false)
+    submit(s).onPointerDown!(mouse)
+    expect(pressed(submit(s))).toBe(false)
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('三类部件按 key 各记各的：只亮正按着的那一个，别的部件的 keyup 松不开它', () => {
+    const s = makeService({ defaultErrors: { email: '格式不对', password: '太短' } })
+    reset(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(reset(s))).toBe(true)
+    expect(pressed(submit(s))).toBe(false)
+    expect(pressed(item(s, 'email'))).toBe(false)
+    submit(s).onKeyUp!(keyEvent('Enter'))
+    expect(pressed(reset(s))).toBe(true)
+    reset(s).onKeyUp!(keyEvent('Enter'))
+    expect(pressed(reset(s))).toBe(false)
+
+    item(s, 'email').onPointerDown!(touch)
+    expect(pressed(item(s, 'email'))).toBe(true)
+    expect(pressed(item(s, 'password'))).toBe(false)
+    item(s, 'email').onPointerUp!()
+    expect(pressed(item(s, 'email'))).toBe(false)
+  })
+
+  it('摘要条目：所指字段没有错误（条目藏着）不进；按住途中字段改好了由机器松开', () => {
+    const s = makeService({ defaultErrors: { email: '格式不对' } })
+    item(s, 'password').onKeyDown!(keyEvent('Enter'))
+    expect(pressed(item(s, 'password'))).toBe(false)
+    item(s, 'email').onKeyDown!(keyEvent('Enter'))
+    expect(pressed(item(s, 'email'))).toBe(true)
+    s.api().setFieldError('email')
+    expect(s.errors()).toEqual({})
+    expect(pressed(item(s, 'email'))).toBe(false)
+  })
+
+  it('不进：整体禁用时三类部件都不接受按压；只读时重置钮不进、提交钮照常', () => {
+    const off = makeService({ disabled: true, defaultErrors: { email: '格式不对' } })
+    submit(off).onKeyDown!(keyEvent(' '))
+    reset(off).onPointerDown!(touch)
+    item(off, 'email').onKeyDown!(keyEvent('Enter'))
+    expect(pressed(submit(off))).toBe(false)
+    expect(pressed(reset(off))).toBe(false)
+    expect(pressed(item(off, 'email'))).toBe(false)
+
+    const ro = makeService({ readOnly: true })
+    reset(ro).onKeyDown!(keyEvent(' '))
+    expect(pressed(reset(ro))).toBe(false)
+    submit(ro).onKeyDown!(keyEvent(' '))
+    expect(pressed(submit(ro))).toBe(true)
+  })
+
+  it('异步校验在途（提交在途）：按住途中开跑即松开，跑完前不再进；校验落定后又能进', async () => {
+    let settle: (errors: FormErrorPatch) => void = () => {}
+    const s = makeService({
+      validate: () => new Promise<FormErrorPatch>((resolve) => {
+        settle = resolve
+      }),
+    })
+    submit(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(submit(s))).toBe(true)
+    // Enter 在 keydown 即触发原生提交
+    s.service.send({ type: 'SUBMIT' })
+    expect(s.api().validating).toBe(true)
+    expect(pressed(submit(s))).toBe(false)
+    submit(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(submit(s))).toBe(false)
+    settle({})
+    // 校验 Promise 落定后再经一轮微任务写回 validating
+    await new Promise<void>(resolve => setTimeout(resolve, 0))
+    expect(s.api().validating).toBe(false)
+    submit(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(submit(s))).toBe(true)
+  })
+
+  it('按住途中转入禁用 / 只读：不会再来 keyup，按压面由机器自己收', () => {
+    const s = makeService()
+    submit(s).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(submit(s))).toBe(true)
+    s.setProps({ disabled: true })
+    expect(pressed(submit(s))).toBe(false)
+
+    const ro = makeService()
+    reset(ro).onKeyDown!(keyEvent('Enter'))
+    expect(pressed(reset(ro))).toBe(true)
+    ro.setProps({ readOnly: true })
+    expect(pressed(reset(ro))).toBe(false)
+  })
+})
