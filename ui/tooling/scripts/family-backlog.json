@@ -23,10 +23,7 @@
     "steps:indicator:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移"
   },
   "shape": {},
-  "scroll": {
-    "color-picker:content:size": "浮层宿主未传 size: 'sm'，随 color-picker 提交补",
-    "color-picker:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 color-picker 提交补"
-  },
+  "scroll": {},
   "press": {
     "*:data-pressed": "按压通道已落地（Core createPressTracker / pressHandlers，家族配方按压选择器已是 :is(:active, [data-pressed])），button / toggle 已投影 data-pressed；其余 PRESSABLE 部件（check-press-feedback ⑧）随各组件提交接入，全部接完删除这一条",
     "form:error-summary-item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；没把换面写进本部件的 transition；待本组件迁移"

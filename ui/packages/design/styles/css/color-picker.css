@@ -215,26 +215,16 @@
     padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
     max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
     overflow-y: auto;
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-material-frosted-border));
+    /* 浮层滚动面：滚到头不把页面一起带走（§6.6） */
+    overscroll-behavior: contain;
+    /* 面域 + 滑杆 + 通道输入的表单型多列面板，走 floating 材质（§8.4）——实体底 + --xh-border-default 描边 +
+       --xh-elevation-floating 落影，不透景、不画顶部边界光 */
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-overlay));
-    background: var(--xh-color-picker-content-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-color-picker-content-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-color-picker-content-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-color-picker-content-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-color-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+    background: var(--xh-color-picker-content-bg, var(--xh-bg-surface));
+    color: var(--xh-color-picker-content-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-color-picker-content-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
-  }
-
-  /* 顶光只覆盖壳的上沿，色域、轨道与色板保持原色，也不拦截指针。 */
-  [data-scope='color-picker'][data-part='content']::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    block-size: var(--xh-stroke-thin);
-    border-radius: inherit;
-    background: var(--xh-color-picker-content-highlight, var(--xh-material-frosted-highlight));
-    pointer-events: none;
   }
 
   /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
