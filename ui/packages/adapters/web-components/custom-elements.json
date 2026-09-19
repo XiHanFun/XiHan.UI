@@ -34534,6 +34534,41 @@
             },
             {
               "kind": "field",
+              "name": "linkValues",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, string>()",
+              "description": "链接身份：按压通道按它记按住的那一条。作者节点没有 value 这一说，升级后按节点分配一次、随节点存活。"
+            },
+            {
+              "kind": "field",
+              "name": "linkSeq",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "method",
+              "name": "linkValueOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "menuScope",
               "privacy": "private",
               "readonly": true

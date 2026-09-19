@@ -17,6 +17,7 @@ export type {
   NavigationMenuLinkProps,
   NavigationMenuNode,
   NavigationMenuNodeMeta,
+  NavigationMenuPressedPart,
   NavigationMenuRefs,
   NavigationMenuSchema,
   NavigationMenuTranslations,

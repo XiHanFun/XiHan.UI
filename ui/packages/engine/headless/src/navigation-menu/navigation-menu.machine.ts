@@ -6,7 +6,7 @@
 // 提供 navigation menu 相关实现。
 
 import type { Cleanup, Transition } from '@xihan-ui/core'
-import type { NavigationMenuIndicatorRect, NavigationMenuSchema } from './navigation-menu.types'
+import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
@@ -61,6 +61,9 @@ export const navigationMenuMachine = createMachine({
     indicator: cell<NavigationMenuIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
     // 逻辑关闭后，最后一个面板完成视觉退场之前仍须保留 viewport 与行为资源
     exitPending: cell<boolean>(() => ({ defaultValue: false })),
+    // 按压通道：正被按住的那一个（入口与链接各按 value 记、分开认），与开合无关
+    pressedPart: cell<NavigationMenuPressedPart | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getListEl: () => null,
@@ -79,14 +82,19 @@ export const navigationMenuMachine = createMachine({
   exit: ['dropLayer'],
   // 窗口尺寸变化时重量指示条
   effects: ['trackResize'],
-  watch: ({ track, context, action }) => {
-    // 展开项一变就重量一次，层的进出栈也跟着这一条走
-    track([context.dep('value')], () => action(['measureIndicator', 'syncLayer']))
+  watch: ({ track, context, prop, action }) => {
+    // 展开项一变就重量一次，层的进出栈也跟着这一条走；按住 Enter 激活链接后面板随之收起（或换到另一张），
+    // 链接藏进 inert 的面板里不会再来 keyup，按压面由机器收；入口仍在场，它的按压不动
+    track([context.dep('value')], () => action(['measureIndicator', 'syncLayer', 'releaseLinkPress']))
+    // 按住途中整套导航转入禁用：不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled')], () => action(['releaseWhenInert']))
   },
-  // 程序化改写在三个状态里都认，并收掉计时器
+  // 程序化改写在三个状态里都认，并收掉计时器；按压通道与计时无关，三个状态都认
   on: {
     'VALUE.SET': { target: 'idle', actions: ['setValue', 'clearPendingValue'] },
     'PRESENCE.SET': { actions: ['setPresence', 'syncLayer'] },
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -135,8 +143,40 @@ export const navigationMenuMachine = createMachine({
         const e = event.current()
         return e.type === 'TRIGGER.TOGGLE' && e.value === context.get('autoValue')
       },
+      // 整套导航禁用一票否决；入口自身的禁用随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !prop('disabled') && !e.disabled
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一个部件或另一条入口的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== e.value)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseLinkPress: ({ context }) => {
+        if (context.get('pressedPart') !== 'link')
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (context.get('pressedPart') == null || !prop('disabled'))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'TRIGGER.POINTER' && e.type !== 'TRIGGER.FOCUS' && e.type !== 'TRIGGER.TOGGLE' && e.type !== 'VALUE.SET')

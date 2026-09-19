@@ -129,9 +129,9 @@
 
 **状态**：`idle` · `opening` · `skipping`
 
-**事件**：`TRIGGER.POINTER` · `TRIGGER.FOCUS` · `TRIGGER.TOGGLE` · `DISMISS` · `VALUE.SET` · `PRESENCE.SET` · `after.delayDuration` · `after.skipDelayDuration`
+**事件**：`TRIGGER.POINTER` · `TRIGGER.FOCUS` · `TRIGGER.TOGGLE` · `DISMISS` · `VALUE.SET` · `PRESENCE.SET` · `after.delayDuration` · `after.skipDelayDuration` · `PRESS.START` · `PRESS.END`
 
-**判据**：`hasValue` · `isCurrent` · `shouldKeepOpen`
+**判据**：`hasValue` · `isCurrent` · `shouldKeepOpen` · `canPress`
 
 ### connect API
 
@@ -162,6 +162,7 @@
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Enter` / `Space` | held on trigger / link, 导航未禁用且入口未禁用 | 按住期间入口或面板链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，链接随面板收起一并撤下。开合与激活语义照旧由这一次按键承担 |
 | `ArrowRight` / `ArrowDown` | focus in trigger, 按键与 orientation 同轴 | 焦点移到下一个 trigger（禁用项跳过、尽头按 loop 回绕）；随后的自动展开走 delayDuration |
 | `ArrowLeft` / `ArrowUp` | focus in trigger, 按键与 orientation 同轴 | 焦点移到上一个 trigger |
 | `Home` | focus in trigger | 焦点移到首个可停留 trigger |
@@ -208,6 +209,7 @@
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `trigger` | `data-orientation` | props.orientation |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-collection-context` | 'nav' |
 | `trigger` | `data-xh-collection-item` | '' |
@@ -218,6 +220,7 @@
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `link` | `data-current` | ''（条件成立时才出现） |
+| `link` | `data-pressed` | ''（条件成立时才出现） |
 | `link` | `data-xh-collection-context` | 'nav' |
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |

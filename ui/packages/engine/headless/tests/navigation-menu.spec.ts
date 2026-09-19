@@ -107,8 +107,9 @@ function makeMenu(initial: Props = {}, disabled?: string) {
     contents.forEach((el, i) => {
       spread(el, api.getContentProps({ value: VALUES[i]! }) as Record<string, unknown>)
     })
-    for (const el of links)
-      spread(el, api.getLinkProps({}) as Record<string, unknown>)
+    links.forEach((el, i) => {
+      spread(el, api.getLinkProps({ value: `link-${VALUES[i]}` }) as Record<string, unknown>)
+    })
   }
   // 每次状态变化都重新接线，与适配器同构（属性与处理器都跟着最新状态走）
   runtime.subscribe(wire)
@@ -718,15 +719,15 @@ describe('connectNavigationMenu 输出', () => {
 
   it('链接：当前页那条报 aria-current=page，其余省略', () => {
     const api = makeMenu().api()
-    expect((api.getLinkProps({ current: true }) as Record<string, unknown>)['aria-current']).toBe('page')
-    expect((api.getLinkProps({}) as Record<string, unknown>)['aria-current']).toBeUndefined()
+    expect((api.getLinkProps({ value: 'l', current: true }) as Record<string, unknown>)['aria-current']).toBe('page')
+    expect((api.getLinkProps({ value: 'l' }) as Record<string, unknown>)['aria-current']).toBeUndefined()
   })
 
   it('链接投影 Collection Item 的 nav 语境与尺寸档，不报 aria-selected', () => {
-    const link = makeMenu({ size: 'sm' }).api().getLinkProps({ current: true }) as Record<string, unknown>
+    const link = makeMenu({ size: 'sm' }).api().getLinkProps({ value: 'l', current: true }) as Record<string, unknown>
     expect(link).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'sm', 'data-xh-collection-context': 'nav', 'data-current': '' })
     expect(link['aria-selected']).toBeUndefined()
-    expect((makeMenu().api().getLinkProps({}) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
+    expect((makeMenu().api().getLinkProps({ value: 'l' }) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
   })
 
   it('指示条：装饰、随展开项显隐，横排只写内联轴那一条', () => {
@@ -839,5 +840,80 @@ describe('navigationMenu 受控 value', () => {
     vi.advanceTimersByTime(500)
     // 计时器若没被撤掉，这里会被 pending 的 products 顶掉
     expect(c.value()).toBe('company')
+  })
+})
+
+describe('navigationMenu 按压通道：Space / Enter 与触屏按住投影 data-pressed，入口与面板链接按 value 分开记', () => {
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  it('入口：keydown 在场且开合语义照旧、keyup 撤下；失焦撤下；触屏按下 / 取消 / 抬起；鼠标不走这一路；另一入口的 keyup 不串', () => {
+    const c = makeMenu()
+    const t0 = c.triggers[0]!
+    expect(pressed(t0)).toBe(false)
+    c.press(t0, ' ')
+    expect(pressed(t0)).toBe(true)
+    expect(c.value()).toBe('products')
+    keyUp(c.triggers[1]!, ' ')
+    expect(pressed(t0)).toBe(true)
+    keyUp(t0, ' ')
+    expect(pressed(t0)).toBe(false)
+    // 再按一下收起：入口仍在场，按压面随 keyup 撤下而不是随 value 变化撤下
+    c.press(t0, 'Enter')
+    expect(pressed(t0)).toBe(true)
+    expect(c.value()).toBeNull()
+    t0.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(t0)).toBe(false)
+    touch(t0, 'pointerdown')
+    expect(pressed(t0)).toBe(true)
+    touch(t0, 'pointercancel')
+    expect(pressed(t0)).toBe(false)
+    touch(t0, 'pointerdown')
+    touch(t0, 'pointerup')
+    expect(pressed(t0)).toBe(false)
+    t0.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true, button: 0 }))
+    expect(pressed(t0)).toBe(false)
+  })
+
+  it('面板链接：按住投影，与同一张面板的入口分开认；激活后面板收起，链接藏进 inert 的面板里不会再来 keyup，由机器随 value 变化撤下', () => {
+    const c = makeMenu({ defaultValue: 'docs' })
+    const link = c.links[1]!
+    c.press(link, ' ')
+    expect(pressed(link)).toBe(true)
+    expect(pressed(c.triggers[1]!)).toBe(false)
+    keyUp(link, ' ')
+    expect(pressed(link)).toBe(false)
+    touch(link, 'pointerdown')
+    expect(pressed(link)).toBe(true)
+    touch(link, 'pointerup')
+    expect(pressed(link)).toBe(false)
+    c.press(link, 'Enter')
+    expect(pressed(link)).toBe(true)
+    // 原生激活合成的 click 收起导航
+    link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+    expect(c.value()).toBeNull()
+    expect(pressed(link)).toBe(false)
+  })
+
+  it('不进：禁用入口不进；整套导航禁用时入口与链接都不进；按住途中转入禁用由机器收', () => {
+    const c = makeMenu({}, 'docs')
+    c.press(c.triggers[1]!, ' ')
+    touch(c.triggers[1]!, 'pointerdown')
+    expect(pressed(c.triggers[1]!)).toBe(false)
+    const d = makeMenu({ disabled: true, defaultValue: 'products' })
+    c.press(d.triggers[0]!, ' ')
+    touch(d.links[0]!, 'pointerdown')
+    expect(pressed(d.triggers[0]!)).toBe(false)
+    expect(pressed(d.links[0]!)).toBe(false)
+    const e = makeMenu()
+    e.press(e.triggers[2]!, 'Enter')
+    expect(pressed(e.triggers[2]!)).toBe(true)
+    e.setProps({ disabled: true })
+    expect(pressed(e.triggers[2]!)).toBe(false)
   })
 })

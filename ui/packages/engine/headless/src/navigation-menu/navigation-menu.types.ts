@@ -59,9 +59,17 @@ export interface NavigationMenuContentProps {
 }
 
 export interface NavigationMenuLinkProps {
+  /**
+   * 链接身份：按压通道按它记按住的那一条（同一个面板里可以有多条链接）。
+   * 适配器按实例生成，作者不必提供；直接消费 connect 时给每条链接一个稳定且不重复的串。
+   */
+  value: string
   /** 指向当前页面的条目：输出 aria-current="page"。 */
   current?: boolean
 }
+
+/** 接了按压通道的两个部件：入口与面板链接都按各自的 value 记，同一个值在两个部件上分开认。 */
+export type NavigationMenuPressedPart = 'trigger' | 'link'
 
 /** 指示条相对 list 的位置与尺寸（px）；起始缘按逻辑方向计算，RTL 从右边缘测量。 */
 export interface NavigationMenuIndicatorRect {
@@ -131,6 +139,10 @@ export interface NavigationMenuSchema extends MachineSchema {
     indicator: NavigationMenuIndicatorRect | null
     /** 逻辑已经关闭，但最后一个面板仍在视觉退场。 */
     exitPending: boolean
+    /** 按压通道：Space / Enter 或触屏按住的是入口还是面板链接。 */
+    pressedPart: NavigationMenuPressedPart | null
+    /** 按压通道：按住的入口 value 或链接 value。抬起、失焦或指针取消即清空，链接随面板收起一并清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: NavigationMenuRefs
@@ -157,8 +169,12 @@ export interface NavigationMenuSchema extends MachineSchema {
     // 定时器到点，名称与对应的 delay prop 同名
     | { type: 'after.delayDuration' }
     | { type: 'after.skipDelayDuration' }
+    /** 入口或面板链接被 Space / Enter 或触屏按住；disabled 是入口自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', part: NavigationMenuPressedPart, value: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: NavigationMenuPressedPart, value: string }
   tag: never
-  guard: 'hasValue' | 'isCurrent' | 'shouldKeepOpen'
+  guard: 'hasValue' | 'isCurrent' | 'shouldKeepOpen' | 'canPress'
   action:
     | 'setValue'
     | 'clearValue'
@@ -170,6 +186,10 @@ export interface NavigationMenuSchema extends MachineSchema {
     | 'setPresence'
     | 'syncLayer'
     | 'dropLayer'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseLinkPress'
+    | 'releaseWhenInert'
   effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize'
 }
 

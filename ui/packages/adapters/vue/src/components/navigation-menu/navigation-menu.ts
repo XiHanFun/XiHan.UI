@@ -10,7 +10,7 @@ import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, nextTick, onMounted, ref } from 'vue'
+import { defineComponent, h, nextTick, onMounted, ref, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -177,9 +177,11 @@ export const XhNavigationMenuLink = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useNavigationMenuContext()
+    // 链接身份：按压通道按它记按住的那一条，按实例生成，作者不必提供
+    const value = useId()
     return () => h(
       'a',
-      ctx.api.value.getLinkProps({ current: props.current }) as Record<string, unknown>,
+      ctx.api.value.getLinkProps({ value, current: props.current }) as Record<string, unknown>,
       slots.default?.(),
     )
   },

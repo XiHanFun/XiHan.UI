@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { navigationMenuAnatomy, navigationMenuKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/'
 
@@ -476,6 +477,32 @@ export const navigationMenuSuite: ConformanceSuite = {
               throw new Error('面板须紧跟在同一项的 trigger 之后，否则 Tab 走不进去')
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：入口与面板链接投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['navigation-menu.kbd.press'],
+      props: { defaultValue: 'docs' },
+      steps: [
+        // 入口：Space / Enter 会开合面板，入口本身仍在场，按压面随 keyup 撤下；失焦落到另一个入口
+        heldPress('navigation-menu', 'trigger', { value: 'products', blurTo: '[data-scope="navigation-menu"][data-part="trigger"][data-value="company"]' }),
+        // 面板链接没有 data-value（身份由适配器按实例生成），按展开着的那张面板里的链接找；
+        // 链接上 Enter 走原生激活，jsdom 不合成 click，面板不会收起
+        heldPress('navigation-menu', 'link', { selector: '[data-scope="navigation-menu"][data-part="content"][data-state="open"] [data-scope="navigation-menu"][data-part="link"]', blurTo: '[data-scope="navigation-menu"][data-part="trigger"][data-value="docs"]' }),
+      ],
+    },
+    {
+      name: '禁用入口不进入按压面；整套导航禁用时入口与面板链接都不进',
+      spec: { adr: 'press-channel' },
+      fixture: () => menuTree('docs'),
+      props: { defaultValue: 'products' },
+      steps: [
+        heldPressIgnored('navigation-menu', 'trigger', '禁用入口不接受按压', { value: 'docs' }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('navigation-menu', 'trigger', '整套导航禁用时入口不接受按压', { value: 'products' }),
+        // 文档序首条链接就是展开着的 products 面板里的那条
+        heldPressIgnored('navigation-menu', 'link', '整套导航禁用时面板链接不接受按压'),
       ],
     },
   ],
