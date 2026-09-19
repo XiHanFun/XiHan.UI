@@ -127,10 +127,14 @@ Vue、React、Web Components 只负责：
 | Segmented / Tabs segment 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
 | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 选中 = 品牌淡底；见 §7.3 |
 | Tabs line trigger、Anchor link、SideNav link、NavigationMenu trigger | Collection Item（导航当前） | 当前 = 指示条 / 字色；见 §7.3 |
+| Breadcrumb link | Collection Item（导航当前） | 当前页是不可点位置：`aria-current="page"`，`--xh-fg-default` + medium，无指示条；见 §7.3 |
+| Menubar trigger | Collection Item（展开路径 / 打开中） | 没有当前态：open 与家族 hover 同档的中性面，不用品牌色、不加粗；见 §7.3 |
 | Pagination item、Steps indicator、Calendar cell | Action Control（格状当前） | 当前 = 实心品牌；见 §7.3 |
 | Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger | disclosure trigger | 只换面，不缩放；见 §9.2 |
 | FloatButton、BackTop、Carousel 翻页、Log/MessageFeed 回底、ImageViewer 翻页 | Action Control `floating` profile | 形状 circle；见 §6.3 |
 | Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
+
+- 刻意例外（须登记）：横向导航里的 Tabs trigger、Anchor link、NavigationMenu trigger、Menubar trigger、Breadcrumb link 归 Collection Item 家族，但 Collection Item 配方目前只有 overlay / page 两个语境——page 的 `data-current` 是 SideNav 那一档（品牌淡底行面 + 起始侧指示条），page 的 selected 读 `aria-selected`（Tabs trigger 自带 `aria-selected`，会被判成页内选中），与 §7.3「导航当前页」（透明面 + 指示条 / `--xh-fg-brand-strong` 字色）与「打开中」不同源。配方补 `nav` 语境并经专项评审前，这五个部件允许不投影 `data-xh-collection-item`，由皮肤按 §7.2 阶梯（白底承载 hover 100 → pressed 200，只换面）与 §7.3 标记自给；取值由 check-selection-marker 的 nav / nav-terminal / open 类与 check-state-ladder 逐成员核，SideNav link 仍投影 page 语境。
 
 ## 5. 样式确定方法
 
