@@ -21,5 +21,11 @@ export const textFieldKeyboard: KeyboardTable = {
       when: 'focus in input, clearable 且值非空, not disabled/readOnly',
       does: '清空值；三个条件缺一即不接管该键，交回给外层与浏览器',
     },
+    {
+      id: 'text-field.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in clear-trigger, clearable 且值非空, not disabled/readOnly',
+      does: '按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面',
+    },
   ],
 }

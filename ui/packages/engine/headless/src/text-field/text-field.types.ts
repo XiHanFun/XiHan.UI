@@ -70,6 +70,8 @@ export interface TextFieldSchema extends MachineSchema {
   }
   context: {
     value: string
+    /** 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true；抬起、失焦、指针取消或清不了时即撤下。 */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -81,9 +83,13 @@ export interface TextFieldSchema extends MachineSchema {
     /** 清空意图（Escape 或清空按钮）；不满足清空条件时整条被守卫拦截。 */
     | { type: 'VALUE.CLEAR' }
     | { type: 'FORM.RESET' }
+    /** 清空按钮被 Space / Enter 或触屏按住；清不了（未开 clearable、禁用、只读或没有值）时被守卫拦截。 */
+    | { type: 'PRESS.START' }
+    /** 按住的清空按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
   guard: 'canEdit' | 'canClear'
-  action: 'setValue' | 'clearValue' | 'resetToDefault'
+  action: 'setValue' | 'clearValue' | 'resetToDefault' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 

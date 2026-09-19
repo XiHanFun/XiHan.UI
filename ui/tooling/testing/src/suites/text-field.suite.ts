@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { textFieldAnatomy, textFieldKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 单行文本框没有对应的 APG 模式页（光标、选区、撤销本来就归浏览器管），
 // 可核对的规格是"控件必须有可及的名字"这条实践，以及 HTML 的文本输入状态。
@@ -344,6 +345,31 @@ export const textFieldSuite: ConformanceSuite = {
           why: 'value 是 property；写回后框里必须是宿主给的那串，而不是用户敲的',
           run: ({ doc }) => expectValue(doc, '小黑', '宿主写回后应盖掉用户敲进去的字'),
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：清空按钮投影 data-pressed，抬起、失焦或指针取消撤下；按住不清值',
+      spec: { adr: 'press-channel' },
+      covers: ['text-field.kbd.press'],
+      // 清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+      props: { defaultValue: '阿旺', clearable: true },
+      steps: [
+        heldPress('text-field', 'clear-trigger'),
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'root': { 'data-empty': null }, 'clear-trigger': { hidden: null } }, events: [] } },
+      ],
+    },
+    {
+      name: '没开 clearable、禁用、只读或没有值时清空按钮藏着，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: '阿旺' },
+      steps: [
+        heldPressIgnored('text-field', 'clear-trigger', '没开 clearable 时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { clearable: true, disabled: true } },
+        heldPressIgnored('text-field', 'clear-trigger', '禁用时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('text-field', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, value: '' } },
+        heldPressIgnored('text-field', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
       ],
     },
   ],
