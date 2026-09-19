@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { stepsAnatomy, stepsKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/tabs/'
 
@@ -133,6 +134,7 @@ export const stepsSuite: ConformanceSuite = {
             'tabindex': '0',
             'data-state': 'current',
             'data-value': '0',
+            'data-pressed': null,
           },
           'trigger[1]': {
             'aria-selected': 'false',
@@ -378,6 +380,36 @@ export const stepsSuite: ConformanceSuite = {
         { kind: 'focus', part: 'trigger[1]' },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
         { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+      ],
+    },
+    {
+      // trigger 是原生按钮，Space 与 Enter 都是激活键，两键都进按压面；切步在 list 的 keydown 里收口，keydown 那一刻就切
+      name: 'Space / Enter 按住与触屏按下：trigger 投影 data-pressed，抬起、失焦或指针取消撤下；切步与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['steps.kbd.press'],
+      props: { count: COUNT },
+      steps: [
+        // 当前步与未走到的一步都接按压；后者在 keydown 那一刻切成当前步，按压面撤下后步序留在它身上
+        heldPress('steps', 'trigger', { value: '0' }),
+        heldPress('steps', 'trigger', { value: '2' }),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'trigger[2]', name: 'data-pressed', value: null } },
+          expect: { parts: { 'trigger[0]': { 'aria-selected': 'false', 'data-pressed': null }, 'trigger[2]': { 'aria-selected': 'true', 'data-state': 'current' } } },
+        },
+      ],
+    },
+    {
+      name: '作者自报禁用的那一步、linear 未解锁的那一步与整组禁用都不进按压面',
+      spec: { adr: 'press-channel' },
+      fixture: () => stepsTree(1),
+      props: { count: COUNT },
+      steps: [
+        heldPressIgnored('steps', 'trigger', '作者自报禁用的那一步不接受按压', { value: '1' }),
+        { kind: 'setProps', props: { linear: true } },
+        heldPressIgnored('steps', 'trigger', 'linear 未解锁的那一步不接受按压', { value: '2' }),
+        { kind: 'setProps', props: { linear: false, disabled: true } },
+        heldPressIgnored('steps', 'trigger', '整组禁用时任一步都不接受按压', { value: '0' }),
       ],
     },
     {

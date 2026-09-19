@@ -5,9 +5,9 @@
 
 // 提供 steps 相关实现。
 
-import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { ItemQuery, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { StepNodeMeta, StepsApi, StepsItemProps, StepsItemState, StepsSchema } from './steps.types'
-import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { stepsAnatomy } from './steps.anatomy'
 import { clampStep, normalizeStepCount } from './steps.machine'
 
@@ -90,6 +90,18 @@ export function connectSteps<T extends PropTypes>(
     const found = items.find(el => itemValue(el) === String(anchor))
     focusItem(found ?? navigateItems(items, null, 'first', { loop: false }))
   }
+
+  // 按压通道：真源是机器 context 里「正被按住的那一步」（按下标记），每个 trigger 各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档（行换面、圆点随行读
+  // 宿主 host 槽换底）。trigger 是原生按钮，Space 与 Enter 都是激活键，两键都进按压通道；该步自身的禁用
+  // （含 linear 未解锁）只有 connect 知道，随 PRESS.START 带给机器的守卫
+  const pressedStep = context.get('pressedStep')
+  const press = (item: StepsItemProps, itemDisabled: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedStep') === item.index,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', step: item.index, disabled: itemDisabled }
+      : { type: 'PRESS.END', step: item.index }),
+  })
 
   /** 确认键：认焦点当下所在的 trigger，自报禁用的（含 linear 未解锁）不认。 */
   const activate = (event: KeyboardEvent): void => {
@@ -185,6 +197,7 @@ export function connectSteps<T extends PropTypes>(
 
     getTriggerProps: (item) => {
       const s = getItemState(item)
+      const handlers = press(item, s.disabled)
       return normalize.button({
         ...parts.trigger.attrs,
         [ITEM_VALUE_ATTR]: String(item.index),
@@ -212,11 +225,20 @@ export function connectSteps<T extends PropTypes>(
         'tabindex': disabled ? -1 : (anchor === item.index ? 0 : -1),
         'data-state': s.status,
         'data-disabled': dataAttr(s.disabled),
+        // Space / Enter 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；与步序互相独立
+        'data-pressed': dataAttr(pressedStep === item.index),
         'onClick': () => {
           if (!s.disabled)
             send({ type: 'VALUE.SET', value: item.index })
         },
         'onFocus': () => send({ type: 'TRIGGER.FOCUS', step: item.index }),
+        // 确认键的切步在 list 的 keydown 里收口；这里只把同一个 keydown 先交给跟踪器
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
       })
     },
 
