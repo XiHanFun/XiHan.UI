@@ -101,6 +101,12 @@ export interface SortableSchema extends MachineSchema {
     rootOrigin: DndDelta | null
     /** 送入 aria-live 的文案。 */
     announcement: string
+    /**
+     * 按压通道：正被 Space / Enter 或触屏手指按住的把手所属项的 id，该把手投影 data-pressed；没有按住时为 null。
+     * 抬起、失焦、指针取消即撤下；拖动一开始（键盘拾起、触屏走够激活距离）也撤下——拖动中的回执是 data-dragging，
+     * 不再叠着按压面。
+     */
+    pressedId: string | null
   }
   refs: SortableRefs
   state: 'idle' | 'pending' | 'dragging'
@@ -113,7 +119,14 @@ export interface SortableSchema extends MachineSchema {
     | { type: 'KEY.MOVE', step: number }
     | { type: 'KEY.DROP' }
     | { type: 'KEY.CANCEL' }
-  guard: 'canSort' | 'passedActivation'
+    /**
+     * 按压通道（shared/press）：某项的把手被 Space / Enter 或触屏按住；disabled 是该项自己的禁用，
+     * 由 connect 随事件带来。
+     */
+    | { type: 'PRESS.START', id: string, disabled?: boolean }
+    /** 按住的把手抬起、失焦或指针取消；只收自己那一下。 */
+    | { type: 'PRESS.END', id: string }
+  guard: 'canSort' | 'passedActivation' | 'canPress'
   action:
     | 'setPending'
     | 'clearSession'
@@ -124,6 +137,10 @@ export interface SortableSchema extends MachineSchema {
     | 'commit'
     | 'cancel'
     | 'invokeDragEnd'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackPointer' | 'trackAutoScroll'
   computed: Record<string, never>
   tag: string
