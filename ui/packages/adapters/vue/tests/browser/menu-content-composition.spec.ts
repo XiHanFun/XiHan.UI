@@ -141,7 +141,10 @@ async function mountFamily(family: Family, dir: 'ltr' | 'rtl'): Promise<void> {
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
   const item = byTestId(itemIds[family])
   item.style.transition = 'none'
+  // 模拟子层开着的打开路径：连接层按开合投影 data-in-path，家族据此给与悬停同档的中性面；
+  // data-state 只留给箭头朝向，单写它不会换面
   item.dataset.state = 'open'
+  item.dataset.inPath = ''
 }
 
 function unmountFamily(): void {
