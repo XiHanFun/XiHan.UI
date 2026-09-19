@@ -123,9 +123,9 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled`
+**判据**：`isOpenControlled` · `canPress`
 
 ### connect API
 
@@ -154,6 +154,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus 在 close-trigger 上且 closable | 收起提示并通知 open=false |
+| `Enter` / `Space` | held on close-trigger, closable | 按住期间关闭按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或提示收起撤下 |
 
 ### ARIA
 
@@ -186,6 +187,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

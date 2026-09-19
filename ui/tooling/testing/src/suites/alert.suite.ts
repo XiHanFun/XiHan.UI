@@ -1,6 +1,7 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { alertAnatomy, alertKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/alert/'
 
@@ -144,6 +145,35 @@ export const alertSuite: ConformanceSuite = {
           },
           events: [],
         }),
+        heldPressIgnored('alert', 'close-trigger', '不可关闭时关闭按钮原生 disabled，不接受按压'),
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：关闭钮投影 data-pressed，抬起、失焦或指针取消撤下；收起即撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['alert.kbd.press'],
+      steps: [
+        heldPress('alert', 'close-trigger'),
+        {
+          kind: 'raw',
+          why: '按住途中收起：keyup 不会再来，按压面要随 root 一起走，中间帧只能拆开派',
+          run: async ({ doc, flush }) => {
+            const close = doc.querySelector<HTMLElement>('[data-scope="alert"][data-part="close-trigger"]')!
+            close.focus()
+            close.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (!close.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时关闭按钮应投影 data-pressed')
+            close.click()
+          },
+          expect: {
+            parts: {
+              'root': { 'data-state': 'closed', 'hidden': '' },
+              'close-trigger': { 'data-pressed': null },
+            },
+            events: [{ type: 'open-change', detail: { open: false } }],
+          },
+        },
       ],
     },
     {

@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { AlertApi, AlertSchema } from './alert.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { alertAnatomy } from './alert.anatomy'
 
 const parts = alertAnatomy.build()
@@ -31,8 +32,11 @@ export function connectAlert<T extends PropTypes>(
   service: Service<AlertSchema>,
   normalize: NormalizeProps<T>,
 ): AlertApi<T> {
-  const { state, prop, send, scope } = service
+  const { state, prop, send, scope, context } = service
   const open = state.get() === 'open'
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
   const tone = prop('tone') ?? 'info'
   const closable = prop('closable') ?? true
   const ids = scope.ids('alert', 'title', 'description')
@@ -106,6 +110,14 @@ export function connectAlert<T extends PropTypes>(
       'data-disabled': dataAttr(!closable),
       // 不可关闭时连按钮一起收起，不留一个按不动的叉
       'hidden': !closable || undefined,
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；提示收起由机器撤下
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => {
         // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
         if (!closable)

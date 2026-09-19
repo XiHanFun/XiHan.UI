@@ -33,7 +33,13 @@ export interface AlertSchema extends MachineSchema {
     onOpenChange?: (details: AlertOpenChangeDetails) => void
     translations?: Partial<AlertTranslations>
   }
-  context: Record<string, never>
+  context: {
+    /**
+     * 按压通道：关闭按钮被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或提示收起（按钮随之隐藏）时撤下。
+     */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: 'open' | 'closed'
@@ -43,9 +49,13 @@ export interface AlertSchema extends MachineSchema {
     // 受控回写：宿主改 open 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
+    /** 按压通道（shared/press）：关闭按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** 关闭按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
+  guard: 'isOpenControlled' | 'canPress'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 
