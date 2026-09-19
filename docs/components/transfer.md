@@ -183,7 +183,9 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 **状态**：`idle`
 
-**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR`
+**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -239,6 +241,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Enter` / `Space` | held on 条目 / 全选格 / 搬运按钮, 未禁用、未只读、未加载且部件自身可用 | 按住期间条目、全选格或搬运按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，搬完后按钮失去可搬的条目时由机器撤下。勾选与搬运语义照旧由这一次按键承担 |
 | `Tab` / `Shift+Tab` | focus outside a list | 每一侧列表只占一个 Tab 位：焦点进入该侧锚点条目，无锚点时先落列表容器再由它转投；两个搬运按钮与两个全选格各自另占一位，禁用时自动退出 Tab 序列 |
 | `ArrowDown` | focus in a list | 焦点移到本侧下一个可停留条目（禁用项跳过、尽头按 loop 回绕）；不会走到对面那一侧去 |
 | `ArrowUp` | focus in a list | 焦点移到本侧上一个可停留条目 |

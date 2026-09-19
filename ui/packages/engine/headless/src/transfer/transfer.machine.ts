@@ -6,7 +6,7 @@
 // 提供 transfer 相关实现。
 
 import type { ContextFacade, Params, PropFn } from '@xihan-ui/core'
-import type { TransferSchema, TransferSide } from './transfer.types'
+import type { TransferPressedKey, TransferSchema, TransferSide } from './transfer.types'
 import { applySelection, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import {
@@ -56,6 +56,19 @@ function operableOn(params: SetParams, side: TransferSide): string[] {
   return transferOperableValues(visible)
 }
 
+/** 禁用、只读与加载：三者都改不了勾选、也搬不动，按压通道一律不进。 */
+function inert(prop: PropFn<TransferSchema>): boolean {
+  return !!prop('disabled') || !!prop('readOnly') || !!prop('loading')
+}
+
+/** 往 to 侧搬此刻是否可行：与 connect 的 canMove 同一口径（oneWay 封死往回搬，对面要有勾中的条目）。 */
+function canMoveTo(params: SetParams, to: TransferSide): boolean {
+  const { prop, context } = params
+  if (prop('disabled') || prop('readOnly') || (to === 'source' && prop('oneWay')))
+    return false
+  return transferCheckedValues(operableOn(params, transferOppositeSide(to)), context.get('selection')).length > 0
+}
+
 /** 整个控件禁用时用户改不动任何东西；程序化入口（VALUE.SET / SELECTION.SET）不受此限。 */
 function locked(prop: PropFn<TransferSchema>): boolean {
   return !!prop('disabled')
@@ -90,10 +103,21 @@ export const transferMachine = createMachine({
     targetQuery: cell<string>(() => ({ defaultValue: '' })),
     sourceFocusedValue: cell<string | null>(() => ({ defaultValue: null })),
     targetFocusedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 按压通道：正被按住的那一个，按部件键记；与勾选、搬运无关
+    pressed: cell<TransferPressedKey | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 按住途中转入禁用 / 只读 / 加载，或按住 Enter 搬完后按钮失去可搬的条目（原生 disabled 不再来 keyup）：
+  // 按压面由机器自己收
+  watch: ({ track, prop, context, action }) => {
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
+    track([context.dep('value'), context.dep('selection')], () => action(['releaseWhenInert']))
+  },
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
+    // 按压通道：禁用 / 只读 / 加载不进，部件自身的禁用随事件带入
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -111,7 +135,37 @@ export const transferMachine = createMachine({
     },
   },
   implementations: {
+    guards: {
+      // 禁用、只读与加载都改不了勾选也搬不动，一票否决；部件自身的禁用随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !inert(prop) && !e.disabled
+      },
+    },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releaseWhenInert: (params) => {
+        const { context, prop } = params
+        const pressed = context.get('pressed')
+        if (pressed == null)
+          return
+        // 搬运按钮：按住 Enter 搬完这一批后对面再没有勾中的条目，按钮转入原生 disabled，不会再来 keyup
+        const stranded = (pressed === 'to-target' || pressed === 'to-source')
+          && !canMoveTo(params, pressed === 'to-target' ? 'target' : 'source')
+        if (inert(prop) || stranded)
+          context.set('pressed', null)
+      },
+
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         resetDeclaredValue(params, 'selection', 'selection', 'defaultSelection')
