@@ -364,6 +364,21 @@ describe('connectSteps 属性', () => {
     expect(other.getAttribute('aria-current')).toBeNull()
   })
 
+  it('trigger 接 Action Control row 档 ghost：整块内容行按下只换面不缩放，size 随 prop、缺省 md', () => {
+    const t = mount().api().getTriggerProps({ index: 0 }) as Dict
+    expect(t).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
+    expect((mount({ size: 'sm' }).api().getTriggerProps({ index: 0 }) as Dict)['data-xh-action-size']).toBe('sm')
+    // 圆点是行内 aria-hidden 的标记，不投影配方，随触发器读宿主的 host 槽换面
+    const dot = mount().api().getIndicatorProps({ index: 0 }) as Dict
+    expect('data-xh-action-control' in dot).toBe(false)
+  })
+
   it('count 缺省时不写 posinset/setsize：写 setsize="0" 等于对读屏说"这个集合是空的"', () => {
     const t = mount({ count: undefined }).api().getTriggerProps({ index: 0 }) as Dict
     expect(t['aria-posinset']).toBeUndefined()

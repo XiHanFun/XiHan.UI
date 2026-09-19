@@ -1,3 +1,4 @@
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -9,6 +10,17 @@ afterEach(() => {
   host = null
 })
 
+/** 语义色令牌在夹具里解到的颜色。 */
+function token(name: string): string {
+  const probe = document.createElement('span')
+  probe.style.cssText = `color: var(${name})`
+  host!.append(probe)
+  const value = getComputedStyle(probe).color
+  probe.remove()
+  return value
+}
+
+/** 夹具是手写 DOM，不经 connect：触发器上的五个家族属性照 Headless 的投影手补，家族选择器才落得到。 */
 function mount(orientation: 'horizontal' | 'vertical' = 'horizontal') {
   const states = ['completed', 'current', 'incomplete']
   host = document.createElement('div')
@@ -17,7 +29,9 @@ function mount(orientation: 'horizontal' | 'vertical' = 'horizontal') {
       <div data-scope="steps" data-part="list" data-orientation="${orientation}">
         ${states.map((state, index) => `
           <div data-scope="steps" data-part="item" data-orientation="${orientation}" data-state="${state}">
-            <button data-scope="steps" data-part="trigger" data-state="${state}">
+            <button data-scope="steps" data-part="trigger" data-state="${state}"
+              data-xh-action-control data-xh-action-profile="row" data-xh-action-variant="ghost"
+              data-xh-action-display="always" data-xh-action-size="md">
               <span data-scope="steps" data-part="indicator" data-state="${state}">${index + 1}</span>
               <span data-scope="steps" data-part="title" data-state="${state}">步骤 ${index + 1}</span>
               <span data-scope="steps" data-part="description" data-state="${state}">步骤说明</span>
@@ -73,16 +87,22 @@ describe('steps 默认视觉', () => {
     expect(mark.backgroundColor).toBe(getComputedStyle(completed).color)
   })
 
-  it('触发器按下只换面不缩放', () => {
+  it('触发器接 row 档：坐画布走 hover 100 → pressed 200，按下只换面不缩放', async () => {
     const steps = mount()
+    // 断言读的是终值：悬停与按压的过渡时长归零
+    host!.style.setProperty('--xh-motion-duration-micro', '0ms')
+    host!.style.setProperty('--xh-motion-duration-press', '0ms')
     const trigger = steps.items[2]!.querySelector<HTMLElement>('[data-part="trigger"]')!
-    const rest = getComputedStyle(trigger).backgroundColor
+    expect(getComputedStyle(trigger).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    await userEvent.hover(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe(token('--xh-bg-subtle'))
     trigger.setAttribute('data-pressed', '')
     const pressed = getComputedStyle(trigger)
 
-    expect(pressed.backgroundColor).not.toBe(rest)
-    expect(pressed.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(pressed.backgroundColor).toBe(token('--xh-bg-subtle-hover'))
     expect(pressed.transform).toBe('none')
+    expect(pressed.scale).toBe('none')
+    await userEvent.unhover(trigger)
   })
 
   it('序号圆点随触发器按下按淡底容器阶梯换到 300 档，当前步换语气 active 档', () => {
@@ -90,14 +110,6 @@ describe('steps 默认视觉', () => {
     // 断言读的是终值：按压与释放的过渡时长归零
     host!.style.setProperty('--xh-motion-duration-micro', '0ms')
     host!.style.setProperty('--xh-motion-duration-press', '0ms')
-    const token = (name: string): string => {
-      const probe = document.createElement('span')
-      probe.style.cssText = `color: var(${name})`
-      host!.append(probe)
-      const value = getComputedStyle(probe).color
-      probe.remove()
-      return value
-    }
     const [completed, current, incomplete] = steps.items.map(item => item.querySelector<HTMLElement>('[data-part="trigger"]')!)
     expect(getComputedStyle(steps.indicators[2]!).backgroundColor).toBe(token('--xh-bg-subtle'))
     incomplete!.setAttribute('data-pressed', '')
