@@ -76,6 +76,8 @@ const PRESSABLE = {
   'anchor': [{ part: 'link', feedback: 'surface' }],
   // 面包屑的一层是随文铺开的一段链接（§9.2），按下只换面不缩放
   'breadcrumb': [{ part: 'link', feedback: 'surface' }],
+  // 序号 + 标题 + 说明的整块内容行：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档专属块归零；
+  // 圆点随触发器读宿主 host 槽换到 300 / 当前步 brand-active，不缩放（§9.2）
   'steps': [{ part: 'trigger', feedback: 'surface' }],
   // 圆圈 + 文字的整行条目：整行没有面，按下的回执落在圆圈上（圆圈坐在画布上，按下换到 200 档中性面），圆点不动
   'radio-group': [{ part: 'item', feedback: 'surface', target: 'indicator' }],

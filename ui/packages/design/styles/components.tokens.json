@@ -57176,7 +57176,7 @@
         "state=completed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_steps-host-bg-hover"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
@@ -57258,7 +57258,7 @@
         "state=incomplete"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_steps-host-bg-hover"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
@@ -57283,7 +57283,7 @@
         "state=incomplete"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_steps-host-bg-pressed"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
@@ -57844,18 +57844,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "steps 的 trigger 部件 background 覆盖槽。"
+      "description": "steps 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-trigger-bg-pressed",
@@ -57864,19 +57866,21 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
+        "loading",
         "not([data-disabled])",
+        "not([data-loading])",
         "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "steps 的 trigger 部件 background 覆盖槽。"
+      "description": "steps 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-trigger-gap",
@@ -57910,7 +57914,8 @@
       ],
       "state": [
         "default",
-        "orientation=vertical"
+        "orientation=vertical",
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-control-px-sm",

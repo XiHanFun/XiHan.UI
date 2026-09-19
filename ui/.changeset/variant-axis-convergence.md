@@ -1104,11 +1104,16 @@ Highlight 内环。三端 computed 快照里星多出家族的 1px 透明描边�
 改为即时；皮肤字形的点亮仍走 `::after` 的 clip-path 过渡）。皮肤体积基线 rating.css 6675 → 7907，涨在桥接槽映射与
 forced-colors 补救。
 
-**steps 序号圆点补按下换面，阶梯按淡底容器登记。** 圆点是格状当前的标记（§7.3），但它是 trigger 里 aria-hidden 的装饰子节点，
-激活落在 trigger 上（真源 §9.1 登记例外，不投影 Action Control）：悬停仍由 trigger 带动到 200，新增按下随 trigger 换到 300
-（`--xh-steps-indicator-bg-pressed`，缺省 `--xh-bg-subtle-active`），当前步按下换语气 active 档
-（`--xh-steps-indicator-bg-current-pressed`，缺省 `--xh-_tone-active` / `--xh-bg-brand-active`），不缩放；trigger 以
-`--xh-action-host-bg-hover / -pressed` 声明自己是圆点的淡底承载面（圆点静息就坐在 `--xh-bg-subtle` 上，阶梯 100 → 200 → 300）。
+**steps 触发器接入 Action Control row 档，序号圆点改读宿主 host 槽换面。** trigger 由 Headless 投影 `data-xh-action-control` +
+`data-xh-action-profile=row` + `data-xh-action-variant=ghost` + `data-xh-action-display=always` +
+`data-xh-action-size`（随 `size`，缺省 md）：序号 + 标题 + 说明的整块内容行按 §9.2 归行级，悬停 / 按下 / 禁用面、手型、过渡与
+焦点环改由家族给，按下只换面不缩放；悬停 / 按下面改经桥接槽（`--xh-steps-trigger-bg-hover / -bg-pressed` 名字与缺省不变：
+坐画布走 100 → 200）。圆点是格状当前的标记（§7.3），但不是激活宿主，不投影配方：trigger 以 `--xh-action-host-bg-hover / -pressed`
+向内声明自己是圆点的承载面（圆点静息就坐在 `--xh-bg-subtle` 上，阶梯 100 → 200 → 300），圆点在 trigger 的悬停 / 按压选择器下
+读 host 槽的同一来源换面：悬停 200（`--xh-steps-indicator-bg-hover / -bg-completed-hover` 缺省来源改为喂给 host 槽的私有槽
+`--xh-_steps-host-bg-hover`）、按下 300（`--xh-steps-indicator-bg-pressed`，缺省来源 `--xh-_steps-host-bg-pressed`），当前步按下
+换语气 active 档（`--xh-steps-indicator-bg-current-pressed`，缺省 `--xh-_tone-active` / `--xh-bg-brand-active`），不缩放。
+三端 computed 快照里 trigger 多出家族的过渡列表、`user-select: none` 与透明描边色位。
 
 **table 四颗把手接入 Action Control icon 档，排序把手接入 row 档。** select-all-trigger / row-select-trigger /
 column-visibility-trigger 由 Headless 投影 `data-xh-action-control` + `data-xh-action-profile='icon'` +

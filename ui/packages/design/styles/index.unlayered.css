@@ -31851,6 +31851,8 @@
 /* styles/steps.css */
 /* 定义 steps 样式。 */
 
+/* family/action-control.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='steps'] {
   --xh-steps-skin: 1;
@@ -31876,6 +31878,11 @@
   /* 走过的步里那枚对号：中性淡底上的品牌色标记，不用标题那档更深的字色 */
   --xh-_steps-accent-mark: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  /* 触发器是序号圆点的承载面：圆点静息就坐在 --xh-bg-subtle（100）的淡底上，阶梯按淡底容器走
+     （hover 200 → pressed 300，§7.2 第 3 条）。两支私有槽是这一档的唯一来源——触发器拿它们给
+     --xh-action-host-bg-* 赋值（桥接槽只写不读），圆点悬停 / 按下读同一支私有槽，即与宿主的 host 槽同源 */
+  --xh-_steps-host-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_steps-host-bg-pressed: var(--xh-bg-subtle-active);
   /* 走过的那几步是实心圆，顶边画一条极浅的内高光把它衬出厚度 */
   --xh-_steps-highlight: inset 0 var(--xh-stroke-thin) 0 0
     color-mix(in oklab, var(--xh-_steps-on-accent) 14%, transparent);
@@ -31971,46 +31978,48 @@
   align-items: flex-start;
 }
 
-/* 触发器排成两列：序号占左列并跨两行，标题与说明各占右列一行。
-   用 grid 而不是再包一层节点——解剖里没有那个包裹层，作者也不该被逼着多写一个 div。
-   只有说明缺席时右列的第二行是零高，不会留白 */
+/* 触发器是「序号 + 标题 + 说明」的整块内容行（§9.2）：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、
+   手型、过渡与焦点环由家族给，按下只换面不缩放（row 档专属按压块 scale: none）；这里只把使用者槽映射到桥接槽。
+   触发器既是 Action Control 又是圆点的承载面：自己坐画布走 hover 100 → pressed 200，由 --xh-action-bg-* 钉住；
+   --xh-action-host-bg-* 只对圆点生效（圆点自己是 100 的淡底，坐在触发器面上再上一档到 200 / 300）。
+   排成两列：序号占左列并跨两行，标题与说明各占右列一行。用 grid 而不是再包一层节点——解剖里没有那个包裹层，
+   作者也不该被逼着多写一个 div；只有说明缺席时右列的第二行是零高，不会留白 */
 [data-scope='steps'][data-part='trigger'] {
-  /* 触发器是序号圆点的承载面：圆点静息就坐在 --xh-bg-subtle（100）的淡底上，它的阶梯按淡底容器走
-     （hover 200 → pressed 300，§7.2 第 3 条），这两支 host 槽把这一点向内声明 */
-  --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
-  --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+  /* 纵向留一圈给悬停底色与焦点环，横向走控件内边距尺的小档；一个槽同时盖住两轴 */
+  --xh-action-padding-block: var(--xh-steps-trigger-p, var(--xh-space-1));
+  --xh-action-padding-inline: var(--xh-steps-trigger-p, var(--xh-control-px-sm));
+  --xh-action-radius: var(--xh-steps-trigger-radius, var(--xh-shape-control));
+  /* 列距仍由 column-gap 给：家族的 gap 会连 row-gap 一起把标题与说明撑开 */
+  --xh-action-gap: 0;
+  /* 高度由圆点 + 内距决定，不取 control-h 地板（同 table sort-trigger） */
+  --xh-action-visual-size: 0;
+  --xh-action-font-size: inherit;
+  /* 标题 / 说明 / 圆点各自着色，行本身不定字色 */
+  --xh-action-fg-rest: currentColor;
+  --xh-action-fg-hover: currentColor;
+  --xh-action-fg-pressed: currentColor;
+  --xh-action-fg-focus-visible: currentColor;
+  --xh-action-fg-disabled: currentColor;
+  --xh-action-bg-hover: var(--xh-steps-trigger-bg-hover, var(--xh-bg-subtle));
+  --xh-action-bg-pressed: var(--xh-steps-trigger-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-action-host-bg-hover: var(--xh-_steps-host-bg-hover);
+  --xh-action-host-bg-pressed: var(--xh-_steps-host-bg-pressed);
 
+  /* 皮肤规则排在 @import 之后，同特指度盖过 row 档的 display: flex */
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   column-gap: var(--xh-steps-trigger-gap, var(--xh-control-gap-md));
-  /* 纵向留一圈给悬停底色与焦点环，横向走控件内边距尺的小档；一个槽同时盖住两轴 */
-  padding-block: var(--xh-steps-trigger-p, var(--xh-space-1));
-  padding-inline: var(--xh-steps-trigger-p, var(--xh-control-px-sm));
-  border: 0;
-  border-radius: var(--xh-steps-trigger-radius, var(--xh-shape-control));
-  background: transparent;
-  color: inherit;
+  /* row 档铺满容器（inline-size: 100%）会把横排的连接线压到最小长度 */
+  inline-size: auto;
+  /* 纵向连接线的 margin-inline-start 按圆点半径 + trigger-p 对齐圆心，ghost 的 1px 透明边位会让它错 1px */
+  border-width: 0;
   font: inherit;
   text-align: start;
-  cursor: pointer;
-  /* 整块内容行（序号 + 标题 + 说明）按 §9.2 归行级：按下只换面不缩放，transition 里没有 scale */
-  transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='steps'][data-part='trigger'][hidden] {
   display: none;
-}
-
-/* 白底承载的阶梯（§7.2）：hover 100 → pressed 200 */
-[data-scope='steps'][data-part='trigger']:hover:not([data-disabled]) {
-  background: var(--xh-steps-trigger-bg-hover, var(--xh-bg-subtle));
-}
-
-[data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
-  background: var(--xh-steps-trigger-bg-pressed, var(--xh-bg-subtle-hover));
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='title'],
@@ -32047,23 +32056,24 @@
   display: none;
 }
 
-/* 圆点是格状当前的 Action Control 标记（§4.1），但它是 aria-hidden 的装饰子节点，激活落在触发器上（§9.1
-   登记例外）：悬停 / 按下由触发器带动，按淡底容器阶梯走——圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，
-   再上一档到 200 才与承载面分得开，按下到 300；当前步的实心面按下换语气 active 档 */
+/* 圆点是格状当前的标记（§4.1 / §7.3），但不是激活宿主：宿主是投影了 row 档的触发器；圆点在宿主的
+   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放（§9.2）——
+   圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
+   当前步的实心面按下换语气 active 档 */
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
   [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
-  background: var(--xh-steps-indicator-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-steps-indicator-bg-hover, var(--xh-_steps-host-bg-hover));
   color: var(--xh-steps-indicator-fg-hover, var(--xh-fg-default));
 }
 
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
   [data-scope='steps'][data-part='indicator'][data-state='completed'] {
-  background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-host-bg-hover));
 }
 
 [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed])
   [data-scope='steps'][data-part='indicator']:is([data-state='incomplete'], [data-state='completed']) {
-  background: var(--xh-steps-indicator-bg-pressed, var(--xh-bg-subtle-active));
+  background: var(--xh-steps-indicator-bg-pressed, var(--xh-_steps-host-bg-pressed));
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
@@ -32199,14 +32209,9 @@
 }
 
 @media (forced-colors: active) {
-  /* 按下：常态靠触发器底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
-  [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
-    background: Highlight;
-    color: HighlightText;
-  }
-
-  /* 标题与说明各自写了颜色，这一档里会被换成 CanvasText 压在高亮底上；按住时一起跟到反色 */
-  [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed])
+  /* 触发器的悬停 / 按下由家族 forced-colors 块涂成 Highlight / HighlightText；标题与说明各自写了颜色，
+     这一档里会被换成 CanvasText 压在高亮底上，悬停与按住时一起跟到反色 */
+  [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:hover, :active, [data-pressed])
     :is([data-scope='steps'][data-part='title'], [data-scope='steps'][data-part='description']) {
     color: HighlightText;
   }
