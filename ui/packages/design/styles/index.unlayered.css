@@ -7884,6 +7884,8 @@
   --xh-_collection-font-weight: var(--xh-collection-font-weight-terminal, var(--xh-font-weight-medium));
   --xh-_collection-cursor: var(--xh-collection-cursor-terminal, default);
   --xh-_collection-opacity: var(--xh-collection-opacity-terminal, 1);
+
+  cursor: var(--xh-_collection-cursor);
 }
 
 [data-scope][data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
