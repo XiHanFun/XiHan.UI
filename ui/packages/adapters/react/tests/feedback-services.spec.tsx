@@ -146,6 +146,50 @@ describe('通知服务', () => {
     notification.dispose()
     expect(() => notification.info('还在吗')).toThrow(/已卸载/)
   })
+
+  // 卡片进不了一致性夹具（WC 侧是另一个自定义元素），按压通道那一帧在这里守
+  it('按压通道：关闭钮与操作钮 Space / Enter 与触屏按住投影 data-pressed，抬起、失焦或指针取消撤下', async () => {
+    const notification = createNotificationService()
+    dispose.push(() => notification.dispose())
+    notification.info('有新消息', { duration: 0, actionLabel: '查看' })
+    await settle()
+    const card = cards()[0]!
+    for (const part of ['item-close-trigger', 'item-action-trigger'] as const) {
+      const el = card.querySelector<HTMLElement>(`[data-part="${part}"]`)!
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      el.focus()
+      await act(async () => { el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })) })
+      expect(el.hasAttribute('data-pressed')).toBe(true)
+      await act(async () => { el.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true })) })
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      await act(async () => { el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })) })
+      expect(el.hasAttribute('data-pressed')).toBe(true)
+      await act(async () => { el.blur() })
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      await act(async () => { el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true })) })
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+      await act(async () => { el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true, cancelable: true })) })
+      expect(el.hasAttribute('data-pressed')).toBe(true)
+      await act(async () => { el.dispatchEvent(new PointerEvent('pointercancel', { pointerType: 'touch', bubbles: true })) })
+      expect(el.hasAttribute('data-pressed')).toBe(false)
+    }
+  })
+
+  it('按压通道：按住 Enter 关掉卡片，按压面随退场由机器收', async () => {
+    const notification = createNotificationService()
+    dispose.push(() => notification.dispose())
+    // 服务级 dismiss 直接把记录摘出队列、卡片随之卸载；退场帧只在卡片自己走 TOAST.DISMISS 时才有
+    notification.info('有新消息', { duration: 0 })
+    await settle()
+    const close = cards()[0]!.querySelector<HTMLElement>('[data-part="item-close-trigger"]')!
+    close.focus()
+    await act(async () => { close.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })) })
+    expect(close.hasAttribute('data-pressed')).toBe(true)
+    await act(async () => { close.click() })
+    await settle()
+    expect(cards()[0]!.getAttribute('data-state')).toBe('dismissing')
+    expect(close.hasAttribute('data-pressed')).toBe(false)
+  })
 })
 
 describe('顶部进度条服务', () => {

@@ -217,6 +217,7 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 | `item` | `data-paused` | ''（条件成立时才出现） |
 | `item` | `data-state` | toStatus(state.get()) |
 | `item` | `data-tone` | props.tone |
+| `item-action-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `item-action-trigger` | `data-xh-action-control` | '' |
 | `item-action-trigger` | `data-xh-action-display` | 'always' |
 | `item-action-trigger` | `data-xh-action-profile` | 'text' |
@@ -224,6 +225,7 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 | `item-action-trigger` | `data-xh-action-variant` | 'outline' |
 | `item-progress` | `data-state` | toStatus(state.get()) |
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `item-close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `item-close-trigger` | `data-xh-action-control` | '' |
 | `item-close-trigger` | `data-xh-action-display` | 'always' |
 | `item-close-trigger` | `data-xh-action-profile` | 'icon' |
