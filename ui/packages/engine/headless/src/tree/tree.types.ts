@@ -117,6 +117,9 @@ export interface TreeRefs {
   typeahead: Typeahead
 }
 
+/** 接了按压通道的两个部件：叶子行与分支行都按 node.value 记，同一个值在两个部件上分开认。 */
+export type TreePressedPart = 'item' | 'branch-control'
+
 export interface TreeSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息的唯一事实源。默认为空树。 */
@@ -201,6 +204,10 @@ export interface TreeSchema extends MachineSchema {
     dropTarget: DropTarget | null
     /** 读屏播报文本。写入视觉隐藏的活动区域，不进入视觉版面。 */
     announcement: string
+    /** 按压通道：Space / Enter 或触屏按住的是叶子行还是分支行。 */
+    pressedPart: TreePressedPart | null
+    /** 按压通道：按住的节点 value。抬起、失焦或指针取消即清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: TreeRefs
@@ -230,8 +237,15 @@ export interface TreeSchema extends MachineSchema {
     | { type: 'NODE_DRAG.CANCEL' }
     /** 键盘换位：按一次即一次完整提交，不进入拖动态。 */
     | { type: 'NODE.MOVE_BY', value: string, target: DropTarget }
+    /**
+     * 叶子行或分支行被 Space / Enter 或触屏按住。分支行的键盘按压由 branch 代发（焦点落在 branch 上，
+     * branch-control 只是它里面的一层内容）；disabled 是节点自身的禁用事实，由 connect 判定后随事件带入。
+     */
+    | { type: 'PRESS.START', part: TreePressedPart, value: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: TreePressedPart, value: string }
   tag: never
-  guard: never
+  guard: 'canPress'
   action:
     | 'setExpanded'
     | 'expandBranch'
@@ -246,6 +260,9 @@ export interface TreeSchema extends MachineSchema {
     | 'endNodeDrag'
     | 'cancelNodeDrag'
     | 'moveNodeBy'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'trackPointer'
 }
 
