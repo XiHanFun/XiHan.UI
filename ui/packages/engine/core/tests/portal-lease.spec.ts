@@ -84,6 +84,42 @@ describe('portal 租约', () => {
     expect(lease.shell.isConnected).toBe(false)
   })
 
+  it('搬迁与归位都保住落在 root 里的焦点，root 外的焦点不动', () => {
+    const f = fixture()
+    const inside = document.createElement('button')
+    const outside = document.createElement('button')
+    f.first.append(inside)
+    document.body.append(outside)
+
+    inside.focus()
+    expect(document.activeElement).toBe(inside)
+    const lease = createPortalLease({ source: f.source, target: f.target, roots: [f.first, f.second] })
+    expect(f.first.parentNode).toBe(lease.shell)
+    expect(document.activeElement).toBe(inside)
+    lease.release()
+    expect(f.first.parentNode).toBe(f.firstParent)
+    expect(document.activeElement).toBe(inside)
+
+    outside.focus()
+    const again = createPortalLease({ source: f.source, target: f.target, roots: [f.first] })
+    expect(document.activeElement).toBe(outside)
+    again.release()
+    expect(document.activeElement).toBe(outside)
+  })
+
+  it('归位时 root 已藏起来就不把焦点放回去：浏览器里藏起来的元素接不住 focus()', () => {
+    const f = fixture()
+    const inside = document.createElement('button')
+    f.first.append(inside)
+    inside.focus()
+    const lease = createPortalLease({ source: f.source, target: f.target, roots: [f.first] })
+    expect(document.activeElement).toBe(inside)
+
+    f.first.hidden = true
+    lease.release()
+    expect(document.activeElement).toBe(document.body)
+  })
+
   it('拒绝跨 Document 目标，初始化前不改变作者 roots', () => {
     const f = fixture()
     const other = document.implementation.createHTMLDocument('other')

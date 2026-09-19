@@ -7,6 +7,7 @@
 
 import type { FocusableElement } from '../../kernel/types'
 import { isDocument, isHTMLElement, isShadowRoot } from '../../kernel/guards'
+import { isRendered } from '../../kernel/utils/rendered'
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 
@@ -22,24 +23,10 @@ const FOCUSABLE = [
   'video[controls]',
 ].join(',')
 
-function isVisible(el: FocusableElement): boolean {
-  const win = el.ownerDocument.defaultView
-  let node: Element | null = el
-  while (node) {
-    if (isHTMLElement(node) && node.hidden)
-      return false
-    const style = win?.getComputedStyle(node)
-    if (style && (style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse'))
-      return false
-    node = node.parentElement
-  }
-  return true
-}
-
 /** 容器内按 DOM 顺序排列的可 tab 元素。 */
 export function getTabbables(container: Element): FocusableElement[] {
   const els = Array.from(container.querySelectorAll<FocusableElement>(FOCUSABLE))
-  return els.filter(el => el.tabIndex >= 0 && isVisible(el))
+  return els.filter(el => el.tabIndex >= 0 && isRendered(el))
 }
 
 /** 过滤掉 <a> 元素。 */
