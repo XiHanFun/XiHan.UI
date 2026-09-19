@@ -3,6 +3,7 @@
 '@xihan-ui/vue': minor
 '@xihan-ui/react': minor
 '@xihan-ui/web-components': minor
+'@xihan-ui/styles': minor
 ---
 
 **Tag 关闭钮接入按压通道：Space / Enter 与触屏按住投影 `data-pressed`，与指针 `:active` 同一副按压面。** 机器 context
