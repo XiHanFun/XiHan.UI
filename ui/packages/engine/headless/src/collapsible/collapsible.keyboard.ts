@@ -14,5 +14,6 @@ export const collapsibleKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'collapsible.kbd.toggle', keys: ['Space', 'Enter'], when: 'focus in trigger, not disabled', does: '展开/收起 content' },
+    { id: 'collapsible.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger, not disabled', does: '按住期间 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或转禁用撤下' },
   ],
 }

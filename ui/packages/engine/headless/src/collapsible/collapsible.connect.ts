@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { CollapsibleApi, CollapsibleSchema } from './collapsible.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { collapsibleAnatomy } from './collapsible.anatomy'
 
 const parts = collapsibleAnatomy.build()
@@ -16,9 +17,12 @@ export function connectCollapsible<T extends PropTypes>(
   service: Service<CollapsibleSchema>,
   normalize: NormalizeProps<T>,
 ): CollapsibleApi<T> {
-  const { state, prop, send, scope } = service
+  const { state, prop, send, scope, context } = service
   const open = state.get() === 'open'
   const disabled = !!prop('disabled')
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
   const ids = scope.ids('collapsible', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
 
@@ -61,6 +65,15 @@ export function connectCollapsible<T extends PropTypes>(
       'disabled': disabled || undefined,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active（disclosure-trigger 只换面）；
+      // 与开合互相独立
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => {
         if (!disabled)
           send({ type: 'TOGGLE' })
