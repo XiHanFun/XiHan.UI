@@ -5,9 +5,9 @@
 
 // 提供 segmented 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { SegmentedApi, SegmentedItemProps, SegmentedNodeMeta, SegmentedSchema } from './segmented.types'
-import { anchorItem, contains, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { anchorItem, contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { segmentedAnatomy, segmentedItemQuery } from './segmented.anatomy'
 
 const parts = segmentedAnatomy.build()
@@ -59,6 +59,17 @@ export function connectSegmented<T extends PropTypes>(
     if (!isDisabled(item) && !readOnly)
       send({ type: 'ITEM.SELECT', value: item.value })
   }
+
+  // 按压通道：真源是机器 context 里「正被按住的那一段」（按 value 记），每段各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 选中与按压互相独立；段自身的禁用只有 connect 知道，随 PRESS.START 带给机器的守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: SegmentedItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', value: item.value, disabled: isDisabled(item) }
+      : { type: 'PRESS.END', value: item.value }),
+  })
 
   return {
     value,
@@ -135,6 +146,7 @@ export function connectSegmented<T extends PropTypes>(
 
     getItemProps: (item) => {
       const disabled = isDisabled(item)
+      const handlers = press(item)
       return normalize.button({
         ...parts.item.attrs,
         ...stateAttrs(item),
@@ -150,9 +162,17 @@ export function connectSegmented<T extends PropTypes>(
         'aria-disabled': disabled ? 'true' : 'false',
         // 锚点那一段独占 Tab 序列位
         'tabindex': anchor === item.value ? 0 : -1,
+        // Space / Enter 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；与选中互相独立
+        'data-pressed': dataAttr(pressedValue === item.value),
         'onClick': () => select(item),
         // 焦点是事实不是许可：禁用段被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
       })
     },
 

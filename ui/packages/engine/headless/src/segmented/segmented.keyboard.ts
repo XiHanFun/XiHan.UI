@@ -22,5 +22,6 @@ export const segmentedKeyboard: KeyboardTable = {
     { id: 'segmented.kbd.first', keys: ['Home'], when: 'focus in group, 组未禁用', does: '焦点移到首个可停留段并选中它；只读时只移焦点' },
     { id: 'segmented.kbd.last', keys: ['End'], when: 'focus in group, 组未禁用', does: '焦点移到末个可停留段并选中它；只读时只移焦点' },
     { id: 'segmented.kbd.select', keys: ['Enter', 'Space'], when: 'focus on item, 该段未禁用且组非只读', does: '选中当前段；段是原生 button，这两个键由平台翻成 click' },
+    { id: 'segmented.kbd.press', keys: ['Enter', 'Space'], when: 'held on item, 该段未禁用且组未禁用、非只读', does: '按住期间该段投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。选中与按压互相独立' },
   ],
 }

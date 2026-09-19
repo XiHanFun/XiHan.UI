@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { segmentedAnatomy, segmentedKeyboard } from '@xihan-ui/headless'
 import { nativeActivation, singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/'
 
@@ -425,6 +426,29 @@ export const segmentedSuite: ConformanceSuite = {
           },
         },
       },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：段投影 data-pressed，抬起、失焦或指针取消撤下；选中与按压互相独立',
+      spec: { adr: 'press-channel' },
+      covers: ['segmented.kbd.press'],
+      props: { defaultValue: 'day' },
+      steps: [
+        // 选中的那一段与未选中的那一段都接按压；段是原生 button，keydown / keyup 不经平台激活，jsdom 不翻成 click
+        heldPress('segmented', 'item', { value: 'day' }),
+        heldPress('segmented', 'item', { value: 'month' }),
+        { kind: 'settle', until: { attr: { part: 'item[2]', name: 'data-pressed', value: null } }, expect: { parts: { 'item[0]': { 'aria-checked': 'true' }, 'item[2]': { 'aria-checked': 'false' } } } },
+      ],
+    },
+    {
+      name: '禁用段不进入按压面；整组禁用或只读时所有段都不进',
+      spec: { adr: 'press-channel' },
+      steps: [
+        heldPressIgnored('segmented', 'item', '禁用的段不接受按压', { value: 'week' }),
+        { kind: 'setProps', props: { disabled: true } },
+        heldPressIgnored('segmented', 'item', '整组禁用时段不接受按压', { value: 'day' }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('segmented', 'item', '只读时段不接受按压', { value: 'day' }),
+      ],
     },
   ],
 }

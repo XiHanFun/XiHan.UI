@@ -162,7 +162,9 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `INDICATOR.MEASURE` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `INDICATOR.MEASURE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -198,6 +200,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `Home` | focus in group, 组未禁用 | 焦点移到首个可停留段并选中它；只读时只移焦点 |
 | `End` | focus in group, 组未禁用 | 焦点移到末个可停留段并选中它；只读时只移焦点 |
 | `Enter` / `Space` | focus on item, 该段未禁用且组非只读 | 选中当前段；段是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held on item, 该段未禁用且组未禁用、非只读 | 按住期间该段投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。选中与按压互相独立 |
 
 ### ARIA
 
@@ -243,6 +246,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `indicator` | `data-value` | context.get('value') |
 
 <!-- xh-component-tokens:start -->

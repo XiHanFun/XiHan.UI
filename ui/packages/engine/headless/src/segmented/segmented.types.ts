@@ -106,6 +106,8 @@ export interface SegmentedSchema extends MachineSchema {
     focusedValue: string | null
     /** 指示器的测量结果；没有选中项或无法测量时为 null。 */
     indicator: SegmentedIndicatorRect | null
+    /** 按压通道：Space / Enter 或触屏按住的段 value。抬起、失焦或指针取消即清空，与选中互相独立。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: SegmentedRefs
@@ -119,9 +121,21 @@ export interface SegmentedSchema extends MachineSchema {
     /** 重新测量指示器：尺寸观察器与使用者的 measure() 都发出它。 */
     | { type: 'INDICATOR.MEASURE' }
     | { type: 'FORM.RESET' }
+    /** 段被 Space / Enter 或触屏按住；disabled 是段自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 按住的段抬起、失焦或指针取消；只松开 value 对应的那一个。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: never
-  action: 'setValue' | 'setFocusedValue' | 'clearFocusedValue' | 'resetToDefault' | 'measureIndicator'
+  guard: 'canPress'
+  action:
+    | 'setValue'
+    | 'setFocusedValue'
+    | 'clearFocusedValue'
+    | 'resetToDefault'
+    | 'measureIndicator'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'trackIndicatorSize'
 }
 

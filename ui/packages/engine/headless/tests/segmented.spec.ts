@@ -594,3 +594,80 @@ describe('connectSegmented 指示器', () => {
     expect(h.root.getAttribute('data-orientation')).toBe('vertical')
   })
 })
+
+describe('connectSegmented 按压通道', () => {
+  const isPressed = (h: Harness, value: string): boolean => h.item(value).hasAttribute('data-pressed')
+  const keyEvent = (type: 'keydown' | 'keyup', key: string, init: KeyboardEventInit = {}): KeyboardEvent =>
+    new KeyboardEvent(type, { key, bubbles: true, cancelable: true, ...init })
+  const pointerEvent = (type: string, pointerType: string): PointerEvent =>
+    new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+
+  it('PRESS.START 只让那一段投影 data-pressed，PRESS.END 撤下；另一段的 keyup 不串；选中与按压互相独立', () => {
+    const h = mount({ defaultValue: 'day' })
+    h.service.send({ type: 'PRESS.START', value: 'month' })
+    expect(isPressed(h, 'month')).toBe(true)
+    expect(isPressed(h, 'day')).toBe(false)
+    expect(h.value()).toBe('day')
+    h.service.send({ type: 'PRESS.END', value: 'day' })
+    expect(isPressed(h, 'month')).toBe(true)
+    h.service.send({ type: 'PRESS.END', value: 'month' })
+    expect(isPressed(h, 'month')).toBe(false)
+  })
+
+  it('Space / Enter 按住经跟踪器进出，长按重复键不重报，失焦即撤下；方向键不是按压', () => {
+    const h = mount()
+    for (const key of [' ', 'Enter']) {
+      h.item('month').dispatchEvent(keyEvent('keydown', key))
+      expect(isPressed(h, 'month')).toBe(true)
+      h.item('month').dispatchEvent(keyEvent('keydown', key, { repeat: true }))
+      expect(isPressed(h, 'month')).toBe(true)
+      h.item('month').dispatchEvent(keyEvent('keyup', key))
+      expect(isPressed(h, 'month')).toBe(false)
+    }
+    h.item('month').dispatchEvent(keyEvent('keydown', 'Enter'))
+    expect(isPressed(h, 'month')).toBe(true)
+    h.item('month').dispatchEvent(new FocusEvent('blur'))
+    expect(isPressed(h, 'month')).toBe(false)
+    h.item('month').dispatchEvent(keyEvent('keydown', 'ArrowRight'))
+    expect(isPressed(h, 'month')).toBe(false)
+  })
+
+  it('触屏按下进按压面，抬起或指针取消撤下；鼠标按下不走这一路', () => {
+    const h = mount()
+    h.item('day').dispatchEvent(pointerEvent('pointerdown', 'mouse'))
+    expect(isPressed(h, 'day')).toBe(false)
+    h.item('day').dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(isPressed(h, 'day')).toBe(true)
+    h.item('day').dispatchEvent(pointerEvent('pointercancel', 'touch'))
+    expect(isPressed(h, 'day')).toBe(false)
+    h.item('day').dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(isPressed(h, 'day')).toBe(true)
+    h.item('day').dispatchEvent(pointerEvent('pointerup', 'touch'))
+    expect(isPressed(h, 'day')).toBe(false)
+  })
+
+  it('禁用段、整组禁用与只读都不进按压面', () => {
+    const h = mount()
+    h.item('week').dispatchEvent(keyEvent('keydown', ' '))
+    expect(isPressed(h, 'week')).toBe(false)
+    h.setProps({ disabled: true })
+    h.item('day').dispatchEvent(keyEvent('keydown', ' '))
+    expect(isPressed(h, 'day')).toBe(false)
+    h.setProps({ disabled: false, readOnly: true })
+    h.item('day').dispatchEvent(pointerEvent('pointerdown', 'touch'))
+    expect(isPressed(h, 'day')).toBe(false)
+  })
+
+  it('按住途中整组转入禁用或只读：不会再来 keyup，机器自己撤下', () => {
+    const h = mount()
+    h.item('day').dispatchEvent(keyEvent('keydown', ' '))
+    expect(isPressed(h, 'day')).toBe(true)
+    h.setProps({ disabled: true })
+    expect(isPressed(h, 'day')).toBe(false)
+    h.setProps({ disabled: false })
+    h.item('day').dispatchEvent(keyEvent('keydown', ' '))
+    expect(isPressed(h, 'day')).toBe(true)
+    h.setProps({ readOnly: true })
+    expect(isPressed(h, 'day')).toBe(false)
+  })
+})
