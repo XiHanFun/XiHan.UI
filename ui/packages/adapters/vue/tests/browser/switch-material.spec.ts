@@ -148,6 +148,21 @@ describe('switch 实体轨道与 raised 滑块', () => {
       h(XhSwitch, { 'data-testid': 'disabled-on', 'defaultChecked': true, 'disabled': true }),
     ])
     const rest = getComputedStyle(track('live')).backgroundColor
+    // 轨道接 Action Control text 档（§9.1 定尺轨道）：家族给按压与过渡，几何仍是 40 × 22 的轨道，滑块贴起始端
+    expect(track('live').getAttribute('data-xh-action-control')).toBe('')
+    expect(track('live').getAttribute('data-xh-action-profile')).toBe('text')
+    expect(track('live').getAttribute('data-xh-action-variant')).toBe('outline')
+    expect(track('live').getBoundingClientRect().width).toBe(40)
+    expect(track('live').getBoundingClientRect().height).toBe(22)
+    expect(getComputedStyle(track('live')).justifyContent).toBe('start')
+    expect(thumb('live').getBoundingClientRect().left - track('live').getBoundingClientRect().left).toBe(2)
+    expect(getComputedStyle(track('live')).borderTopWidth).toBe('0px')
+    expect(getComputedStyle(track('live')).transitionProperty.split(', ')).toContain('scale')
+    // 悬停不换面：阶梯只给按下（静息已是 300 档）
+    await userEvent.hover(track('live'))
+    await finishMotion()
+    expect(getComputedStyle(track('live')).backgroundColor).toBe(rest)
+    await userEvent.unhover(track('live'))
     await holdSpace(track('live'))
     expect(getComputedStyle(track('live')).scale).toBe('0.97')
     expect(getComputedStyle(track('live')).backgroundColor).toBe(rest)

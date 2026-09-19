@@ -57523,16 +57523,17 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default",
         "disabled",
+        "focus-visible",
+        "hover",
         "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-readonly])",
         "pressed",
         "readonly"
       ],
@@ -57540,7 +57541,7 @@
         "--xh-bg-subtle-active"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background 覆盖槽。"
+      "description": "switch 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-checked",
@@ -57549,15 +57550,16 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "focus-visible",
+        "hover",
         "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-readonly])",
         "pressed",
         "readonly",
         "state=checked"
@@ -57566,7 +57568,7 @@
         "--xh-_switch-accent"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background 覆盖槽。"
+      "description": "switch 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-checked-pressed",
@@ -57575,7 +57577,7 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
@@ -57583,16 +57585,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-readonly])",
         "pressed",
-        "readonly",
         "state=checked"
       ],
       "defaultToken": [
         "--xh-_tone-active"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background 覆盖槽。"
+      "description": "switch 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-checked-readonly",
@@ -57601,15 +57601,16 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "focus-visible",
+        "hover",
         "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-readonly])",
         "pressed",
         "readonly",
         "state=checked"
@@ -57618,7 +57619,7 @@
         "--xh-bg-subtle-active"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background 覆盖槽。"
+      "description": "switch 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-disabled",
@@ -57627,15 +57628,16 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "focus-visible",
+        "hover",
         "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-readonly])",
         "pressed",
         "readonly"
       ],
@@ -57643,7 +57645,7 @@
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background 覆盖槽。"
+      "description": "switch 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-pressed",
@@ -57652,7 +57654,7 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
@@ -57660,15 +57662,13 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-readonly])",
-        "pressed",
-        "readonly"
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_switch-track-bg"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background 覆盖槽。"
+      "description": "switch 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-border",
@@ -57682,6 +57682,14 @@
       "state": [
         "contrast=more",
         "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=unchecked",
         "where([data-contrast='more'])"
       ],
@@ -57702,6 +57710,14 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=checked"
       ],
       "defaultToken": [
@@ -57721,6 +57737,14 @@
       ],
       "state": [
         "contrast=more",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "readonly",
         "state=checked",
         "where([data-contrast='more'])"
@@ -57742,7 +57766,14 @@
         "box-shadow"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-border-default"
@@ -57760,7 +57791,15 @@
         "box-shadow"
       ],
       "state": [
-        "invalid"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "invalid",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-border-invalid"
@@ -57778,7 +57817,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -57796,6 +57843,14 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=checked"
       ],
       "defaultToken": [
@@ -57814,6 +57869,14 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "readonly",
         "state=checked"
       ],
@@ -57833,7 +57896,14 @@
         "color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-disabled"

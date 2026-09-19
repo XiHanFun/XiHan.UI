@@ -45,7 +45,14 @@ describe('connectSwitch 投影', () => {
       'data-state': 'checked',
       'data-tone': 'success',
       'data-size': 'sm',
+      // 轨道接 Action Control 家族：text 档、outline 形态、常显、字形档随 size
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
     })
+    expect(makeSwitch({}).root()['data-xh-action-size']).toBe('md')
     expect(s.root()['aria-busy']).toBeUndefined()
     expect(s.root().disabled).toBeUndefined()
     expect(s.api().getThumbProps()).toMatchObject({ 'data-state': 'checked' })
