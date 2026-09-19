@@ -100,11 +100,12 @@ interface Harness {
 }
 
 function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harness {
-  const props: Partial<Props> = { collection: ITEMS, ...initial }
-  // 作者标记镜像的是机器手上的那份 items：两侧都挂全集，不属于本侧的那一份由 connect 隐去
-  const collection = props.collection!
   const runtime = createVanillaRuntime()
-  const service = createService(transferMachine, { props: () => props, runtime })
+  // props 放进信号里：setProps 改写后机器的 watch 才看得见（按住途中转入禁用要由它自收）
+  const props = runtime.signal<Partial<Props>>({ collection: ITEMS, ...initial })
+  // 作者标记镜像的是机器手上的那份 items：两侧都挂全集，不属于本侧的那一份由 connect 隐去
+  const collection = props.get().collection!
+  const service = createService(transferMachine, { props: () => props.get(), runtime })
   runtime.start()
 
   const doc = document
@@ -192,7 +193,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     toTarget,
     toSource,
     setProps: (next) => {
-      Object.assign(props, next)
+      props.set({ ...props.get(), ...next })
       render()
     },
     value: () => service.context.get('value'),
@@ -1076,5 +1077,105 @@ describe('collection Item 家族投影', () => {
         xhActionSize: 'sm',
       })
     }
+  })
+})
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，四类部件共用一个机器、按部件键分开记', () => {
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  /** 六件全走一遍：keydown / keyup、Enter 后失焦、触屏按下 / 取消 / 抬起、鼠标不走这一路。 */
+  const cycle = (el: HTMLElement): void => {
+    expect(pressed(el)).toBe(false)
+    press(el, ' ')
+    expect(pressed(el)).toBe(true)
+    keyUp(el, ' ')
+    expect(pressed(el)).toBe(false)
+    press(el, 'Enter')
+    expect(pressed(el)).toBe(true)
+    el.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(el)).toBe(false)
+    touch(el, 'pointerdown')
+    expect(pressed(el)).toBe(true)
+    touch(el, 'pointercancel')
+    expect(pressed(el)).toBe(false)
+    touch(el, 'pointerdown')
+    expect(pressed(el)).toBe(true)
+    touch(el, 'pointerup')
+    expect(pressed(el)).toBe(false)
+    el.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true, button: 0 }))
+    expect(pressed(el)).toBe(false)
+  }
+
+  it('条目：Space 按住投影，勾选语义照旧由 list 承担；另一条目的 keyup 不把它松开；同一 value 只亮归属那一侧', () => {
+    const h = mount()
+    const apple = h.item('source', 'apple')
+    apple.focus()
+    press(apple, ' ')
+    expect(pressed(apple)).toBe(true)
+    expect(h.selection()).toEqual(['apple'])
+    expect(pressed(h.item('target', 'apple'))).toBe(false)
+    keyUp(h.item('source', 'cherry'), ' ')
+    expect(pressed(apple)).toBe(true)
+    keyUp(apple, ' ')
+    expect(pressed(apple)).toBe(false)
+    cycle(apple)
+  })
+
+  it('全选格与两颗搬运按钮：接同一副按压面', () => {
+    const h = mount({ defaultSelection: ['apple'] })
+    cycle(h.side('source').selectAll)
+    cycle(h.toTarget)
+    // 对面没有勾中的条目：往回搬的按钮原生 disabled，不进
+    press(h.toSource, ' ')
+    touch(h.toSource, 'pointerdown')
+    expect(pressed(h.toSource)).toBe(false)
+  })
+
+  it('不进：禁用条目、藏起的条目、无可操作条目的全选格；禁用 / 只读 / 加载时四类都不进', () => {
+    const h = mount({ defaultSelection: ['apple'] })
+    touch(h.item('source', 'banana'), 'pointerdown')
+    expect(pressed(h.item('source', 'banana'))).toBe(false)
+    touch(h.item('target', 'apple'), 'pointerdown')
+    expect(pressed(h.item('target', 'apple'))).toBe(false)
+    press(h.side('target').selectAll, ' ')
+    expect(pressed(h.side('target').selectAll)).toBe(false)
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const g = mount({ defaultSelection: ['apple'], ...inert })
+      const apple = g.item('source', 'apple')
+      apple.focus()
+      press(apple, ' ')
+      press(g.side('source').selectAll, ' ')
+      press(g.toTarget, ' ')
+      touch(g.toSource, 'pointerdown')
+      expect(pressed(apple)).toBe(false)
+      expect(pressed(g.side('source').selectAll)).toBe(false)
+      expect(pressed(g.toTarget)).toBe(false)
+      expect(pressed(g.toSource)).toBe(false)
+    }
+  })
+
+  it('按住途中转入禁用 / 只读 / 加载：按压面由机器自己收；按住 Enter 搬完后按钮失去可搬的条目也由机器收', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount()
+      const apple = h.item('source', 'apple')
+      apple.focus()
+      press(apple, ' ')
+      expect(pressed(apple)).toBe(true)
+      h.setProps(inert)
+      expect(pressed(apple)).toBe(false)
+    }
+    const h = mount({ defaultSelection: ['apple'] })
+    press(h.toTarget, 'Enter')
+    expect(pressed(h.toTarget)).toBe(true)
+    click(h.toTarget)
+    expect(h.value()).toEqual(['apple'])
+    expect(h.toTarget.hasAttribute('disabled')).toBe(true)
+    expect(pressed(h.toTarget)).toBe(false)
   })
 })

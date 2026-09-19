@@ -6463,6 +6463,7 @@
       "TransferMoveInput",
       "TransferMoveResult",
       "TransferPanelProps",
+      "TransferPressedKey",
       "TransferSchema",
       "TransferSelectionChangeDetails",
       "TransferSide",

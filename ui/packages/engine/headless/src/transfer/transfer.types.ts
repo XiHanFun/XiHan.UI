@@ -70,6 +70,17 @@ export interface TransferItemProps {
   side: TransferSide
 }
 
+/**
+ * 接了按压通道的部件键：两颗搬运按钮记部件名，条目带上所在侧与 value（同一个 value 两侧各挂一个节点），
+ * 全选格带上所在侧。
+ * 四类部件共用一个机器，同一时刻只有一个在按着，按键比对投影。
+ */
+export type TransferPressedKey
+  = | 'to-target'
+    | 'to-source'
+    | `item:${string}`
+    | `select-all:${TransferSide}`
+
 export interface TransferSchema extends MachineSchema {
   props: {
     /** 条目全集，元信息的唯一事实源。默认为空。 */
@@ -130,6 +141,12 @@ export interface TransferSchema extends MachineSchema {
      */
     sourceFocusedValue: string | null
     targetFocusedValue: string | null
+    /**
+     * 按压通道：正被 Space / Enter 或触屏按住的那一个，按部件键记（见 TransferPressedKey）；
+     * 没有按住时为 null。抬起、失焦或指针取消即清空；转入禁用 / 只读 / 加载，或搬运按钮失去可搬的
+     * 条目时由机器自行松开。
+     */
+    pressed: TransferPressedKey | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -151,8 +168,15 @@ export interface TransferSchema extends MachineSchema {
     | { type: 'ITEM.FOCUS', side: TransferSide, value: string }
     /** 焦点离开某一侧的列表，或持有焦点的条目被移出 DOM（浏览器此时不派发 focusout）。 */
     | { type: 'LIST.BLUR', side: TransferSide }
+    /**
+     * 某个可按部件被 Space / Enter 或触屏按住。disabled 是该部件自身的禁用事实（条目禁用或被藏起、
+     * 全选格无可操作条目、搬运按钮没有勾中的条目），由 connect 判定后随事件带入。
+     */
+    | { type: 'PRESS.START', key: TransferPressedKey, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开键对应的那一个。 */
+    | { type: 'PRESS.END', key: TransferPressedKey }
   tag: never
-  guard: never
+  guard: 'canPress'
   action:
     | 'resetToDefault'
     | 'setValue'
@@ -163,6 +187,9 @@ export interface TransferSchema extends MachineSchema {
     | 'setQuery'
     | 'setFocusedValue'
     | 'clearFocusedValue'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 

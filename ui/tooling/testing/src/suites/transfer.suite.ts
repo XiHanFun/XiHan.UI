@@ -2,6 +2,7 @@ import type { TransferItem, TransferSide } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { transferAnatomy, transferKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // Transfer 无对应 APG 模式，列表部分对齐 listbox 规格。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
@@ -58,6 +59,12 @@ const FIXTURE: FixtureNode = {
 
 /** 条目的标签与禁用只由 collection 决定，标记里没有第二份，每个用例都要给全集。 */
 const BASE = { collection: ITEMS }
+
+/** 某一侧的某个部件：两侧各挂一份同名部件，身份要连 side 一起算。 */
+function onSide(side: TransferSide, part: string, value?: string): string {
+  const base = `[data-scope="transfer"][data-part="${part}"][data-side="${side}"]`
+  return value === undefined ? base : `${base}[data-value="${value}"]`
+}
 
 /** 八个条目节点（左四右四）的期望；逐个写全才咬得住另一侧同值节点。 */
 function itemsOn(right: readonly string[], checked: readonly string[]): readonly AttrExpectation[] {
@@ -696,6 +703,45 @@ export const transferSuite: ConformanceSuite = {
           props: { value: ['durian', 'apple'] },
           expect: { parts: { item: itemsOn(['durian', 'apple'], []) } },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：条目、全选格与两颗搬运按钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['transfer.kbd.press'],
+      // apple 在右、cherry / durian 在左且都勾着：按住 cherry 的 Space 会把它勾掉，durian 留着让往右搬的按钮仍可用，
+      // 两个方向都有可搬的条目，两颗按钮都可用
+      props: { ...BASE, defaultValue: ['apple'], defaultSelection: ['apple', 'cherry', 'durian'] },
+      steps: [
+        { kind: 'focus', part: 'item[2]', expect: { activeElement: { part: 'item[2]', exact: true } } },
+        // 失焦落到本侧另一条目，焦点不离开列表
+        heldPress('transfer', 'item', { selector: onSide('source', 'item', 'cherry'), blurTo: onSide('source', 'item', 'durian') }),
+        heldPress('transfer', 'select-all-trigger', { selector: onSide('source', 'select-all-trigger') }),
+        // 按钮上 Enter 按住的中间帧：keydown 不触发原生 click（那要到 keyup），勾中的条目仍在
+        heldPress('transfer', 'to-target-trigger'),
+        heldPress('transfer', 'to-source-trigger'),
+      ],
+    },
+    {
+      name: '禁用条目、藏起的另一侧同值节点与无可操作条目的全选格不进入按压面；没有勾中的条目时搬运按钮不进；禁用 / 只读 / 加载一并不进',
+      spec: { adr: 'press-channel' },
+      props: { ...BASE, defaultSelection: ['apple'] },
+      steps: [
+        heldPressIgnored('transfer', 'item', '禁用条目不接受按压', { selector: onSide('source', 'item', 'banana') }),
+        heldPressIgnored('transfer', 'item', '不属于本侧的那一份藏着，不接受按压', { selector: onSide('target', 'item', 'apple') }),
+        heldPressIgnored('transfer', 'select-all-trigger', '本侧没有可操作条目时全选格不接受按压', { selector: onSide('target', 'select-all-trigger') }),
+        heldPressIgnored('transfer', 'to-source-trigger', '对面没有勾中的条目时往回搬的按钮不接受按压'),
+        { kind: 'setProps', props: { readOnly: true } },
+        heldPressIgnored('transfer', 'item', '只读时条目不接受按压', { selector: onSide('source', 'item', 'apple') }),
+        heldPressIgnored('transfer', 'select-all-trigger', '只读时全选格不接受按压', { selector: onSide('source', 'select-all-trigger') }),
+        heldPressIgnored('transfer', 'to-target-trigger', '只读时搬运按钮不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, loading: true } },
+        heldPressIgnored('transfer', 'item', '加载中条目不接受按压', { selector: onSide('source', 'item', 'apple') }),
+        heldPressIgnored('transfer', 'to-target-trigger', '加载中搬运按钮不接受按压'),
+        { kind: 'setProps', props: { loading: false, disabled: true } },
+        heldPressIgnored('transfer', 'item', '禁用时条目不接受按压', { selector: onSide('source', 'item', 'apple') }),
+        heldPressIgnored('transfer', 'select-all-trigger', '禁用时全选格不接受按压', { selector: onSide('source', 'select-all-trigger') }),
+        heldPressIgnored('transfer', 'to-target-trigger', '禁用时搬运按钮不接受按压'),
       ],
     },
   ],

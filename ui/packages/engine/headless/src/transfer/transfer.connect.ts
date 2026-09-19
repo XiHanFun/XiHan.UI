@@ -5,16 +5,17 @@
 
 // 提供 transfer 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type {
   TransferApi,
   TransferCheckState,
   TransferGroupProps,
   TransferItemProps,
+  TransferPressedKey,
   TransferSchema,
   TransferSide,
 } from './transfer.types'
-import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { transferAnatomy, transferItemQuery } from './transfer.anatomy'
 import { transferFocusKey, transferOppositeSide, transferQueryKey } from './transfer.machine'
 import {
@@ -103,6 +104,27 @@ export function connectTransfer<T extends PropTypes>(
     if (to === 'source' && oneWay)
       return false
     return checked[transferOppositeSide(to)].length > 0
+  }
+
+  // 按压通道：四类可按部件共用一个机器，真源是 context 里「正被按住的那一个」（按部件键记），各自合成一份
+  // 跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 部件自身的禁用（条目禁用或被藏起、全选格无可操作条目、搬运按钮没有勾中的条目）只有 connect 知道，
+  // 随 PRESS.START 带给机器的 canPress 守卫
+  const pressedKey = context.get('pressed')
+  const press = (key: TransferPressedKey, off: boolean): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled: off } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressedKey === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
   }
 
   /** 条目一系（item / item-text / item-checkbox）共用的状态标记。 */
@@ -380,6 +402,8 @@ export function connectTransfer<T extends PropTypes>(
       const off = !editable[panel.side] || operable[panel.side].length === 0
       return normalize.button({
         ...parts['select-all-trigger'].attrs,
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；无可操作条目时不进
+        ...press(`select-all:${panel.side}`, off),
         'type': 'button',
         'role': 'checkbox',
         // 「方框 + 文案」的整行命中区（§9.2）：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面由家族给，
@@ -445,6 +469,9 @@ export function connectTransfer<T extends PropTypes>(
       return normalize.element({
         ...parts.item.attrs,
         ...itemState(item),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+        // 按压只记事实，Space 的勾选语义仍由冒泡到 list 的处理器承担。藏起、禁用或本侧不可编辑时不进
+        ...press(`item:${item.side}:${item.value}`, !shown || locked || !editable[item.side]),
         // 条目走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与勾选行的选中面
         // （品牌淡底 + 淡底前景）由家族按 aria-selected / aria-disabled 给出，标记由行首的勾选方框承担
         'data-xh-collection-item': '',
@@ -500,6 +527,8 @@ export function connectTransfer<T extends PropTypes>(
     // 盒、悬停 / 按下与 0.97 按压、粗指针热区、禁用面由家族按这几位给；正方盒固定取 sm 档一个控件高
     getToTargetTriggerProps: () => normalize.button({
       ...parts['to-target-trigger'].attrs,
+      // Space / Enter 与触屏按住投影 data-pressed；没有勾中的条目时原生 disabled，机器守卫同步不进
+      ...press('to-target', !canMove('target')),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'outline',
@@ -521,6 +550,7 @@ export function connectTransfer<T extends PropTypes>(
 
     getToSourceTriggerProps: () => normalize.button({
       ...parts['to-source-trigger'].attrs,
+      ...press('to-source', !canMove('source')),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'outline',
