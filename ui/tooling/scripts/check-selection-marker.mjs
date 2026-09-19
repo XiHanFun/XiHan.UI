@@ -269,35 +269,27 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
     if (onRecipe && (kind === 'nav' || kind === 'nav-terminal')) {
       const body = await getterBody(comp, target) ?? ''
       const navContext = /'data-xh-collection-context':[^,\n]*'nav'/.test(body)
-      // 过渡：接了配方却投影 overlay 语境的导航部件（navigation-menu:link，随 navigation-menu 迁到 nav 语境时删除
-      // 这一支）沿用旧判法——皮肤按 data-current 画字色字重、走下面的 nav 档核，只有面不得再写
-      if (!navContext && kind === 'nav' && /'data-xh-collection-context':[^,\n]*'overlay'/.test(body)) {
-        if (bg != null)
-          report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 background: ${bg}——当前页只画字色与字重，面由家族给`)
+      const expected = NAV_EXPECTED[kind]
+      if (!navContext)
+        report(`${expected.label}接了 collection-item 配方却没投影 nav 语境——当前页由配方的 nav.${expected.state} 给，data-xh-collection-context 必须是 'nav'`)
+      for (const [name, token] of [['background', bg], ['color', color], ['font-weight', weight]]) {
+        if (token != null)
+          report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 ${name}: ${token}——${expected.label}三件由 collection-item 配方的 nav 语境给`)
       }
-      else {
-        const expected = NAV_EXPECTED[kind]
-        if (!navContext)
-          report(`${expected.label}接了 collection-item 配方却没投影 nav 语境——当前页由配方的 nav.${expected.state} 给，data-xh-collection-context 必须是 'nav'`)
-        for (const [name, token] of [['background', bg], ['color', color], ['font-weight', weight]]) {
-          if (token != null)
-            report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的 ${name}: ${token}——${expected.label}三件由 collection-item 配方的 nav 语境给`)
-        }
-        const mappings = collectionMappings(skin, target)
-        const fgMap = mappings.get(`--xh-collection-fg-${expected.state}`)
-        const weightMap = mappings.get(`--xh-collection-font-weight-${expected.state}`)
-        const recipe = RECIPE.contextValues.nav[expected.state]
-        const fg = fgMap ? tokenOf(fgMap, slots) : innermost(recipe.color)
-        const fw = weightMap ? tokenOf(weightMap, slots) : innermost(recipe.fontWeight)
-        const from = map => (map ? '映射的' : '配方 nav 缺省的')
-        if (fg !== expected.color)
-          report(`${expected.label}字色应为 ${expected.color}，${from(fgMap)} --xh-collection-fg-${expected.state} 解到底是 ${fg}`)
-        if (fw !== expected.weight)
-          report(`${expected.label}字重应为 ${expected.weight}，${from(weightMap)} --xh-collection-font-weight-${expected.state} 解到底是 ${fw}`)
-        if (!mappings.has(`--xh-collection-bg-${expected.state}`) && innermost(recipe.backgroundColor) !== 'transparent')
-          report(`${expected.label}是透明面，配方 nav.${expected.state} 的 backgroundColor 却是 ${recipe.backgroundColor}`)
-        continue
-      }
+      const mappings = collectionMappings(skin, target)
+      const fgMap = mappings.get(`--xh-collection-fg-${expected.state}`)
+      const weightMap = mappings.get(`--xh-collection-font-weight-${expected.state}`)
+      const recipe = RECIPE.contextValues.nav[expected.state]
+      const fg = fgMap ? tokenOf(fgMap, slots) : innermost(recipe.color)
+      const fw = weightMap ? tokenOf(weightMap, slots) : innermost(recipe.fontWeight)
+      const from = map => (map ? '映射的' : '配方 nav 缺省的')
+      if (fg !== expected.color)
+        report(`${expected.label}字色应为 ${expected.color}，${from(fgMap)} --xh-collection-fg-${expected.state} 解到底是 ${fg}`)
+      if (fw !== expected.weight)
+        report(`${expected.label}字重应为 ${expected.weight}，${from(weightMap)} --xh-collection-font-weight-${expected.state} 解到底是 ${fw}`)
+      if (!mappings.has(`--xh-collection-bg-${expected.state}`) && innermost(recipe.backgroundColor) !== 'transparent')
+        report(`${expected.label}是透明面，配方 nav.${expected.state} 的 backgroundColor 却是 ${recipe.backgroundColor}`)
+      continue
     }
     // 登记了 within（形态限定）的语义类是那一档自己的身份：连接层按形态决定投不投家族角色（tabs 只在 line 档
     // 投影，segment 档的滑块面写在皮肤里），②「接了配方皮肤不得再写」只核没有形态限定的登记

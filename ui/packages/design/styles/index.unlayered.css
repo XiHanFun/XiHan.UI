@@ -26987,7 +26987,7 @@
 /* styles/navigation-menu.css */
 /* 定义 navigation menu 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，面板里的链接走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，入口与面板里的链接都走 Collection Item 家族的 nav 语境；本皮肤 @import 它们，单独引入仍成立。 */
 
 /* family/collection-item.css */
 
@@ -27003,7 +27003,7 @@
 [data-scope='navigation-menu'][data-part='root'] {
   /* 尺寸档只换这五个私有槽，trigger 与面板里的链接都从 root 继承它们，
      换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
-     trigger 写的是 font: inherit，字号跟着 root 这一档走，不另立槽 */
+     trigger 的字号经家族桥接槽接回 root 这一档，不另立私有槽 */
   /* 入口里的方向标记按档取尺，缺省 md，随 data-size 换档；面板里链接内的字形由家族随
      data-xh-collection-size 下发（§6.5） */
   --xh-icon-size: var(--xh-navigation-menu-icon-size, var(--xh-glyph-size-md));
@@ -27090,56 +27090,35 @@
   display: none;
 }
 
+/* 入口归 Collection Item 展开路径 / 打开中（nav 语境）：几何、字号、面与字重全经家族桥接槽。静息 muted /
+   regular，悬停走白底承载 hover 100 + default 字；展开着的那一张由连接层投影 data-in-path，家族给与悬停同档的
+   中性面——打开中不是选中，不用品牌色、不加粗（横排的栏加粗会推挤相邻触发器），哪一张开着由指示条与转向的
+   箭头说明；按下 pressed 200 只换面不缩放（§9.2）；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
+   高度由 block-size 定，块向内边距归零。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 background / color /
+   font-weight / cursor；也不写 font: inherit（reset.css 已抹平按钮 UA 字体，再写会把家族给的字号字重一并盖掉） */
 [data-scope='navigation-menu'][data-part='trigger'] {
+  --xh-collection-block-padding: var(--xh-space-0);
+  --xh-collection-inline-padding: var(--xh-navigation-menu-trigger-px, var(--xh-_navigation-menu-trigger-px));
+  --xh-collection-radius: var(--xh-navigation-menu-trigger-radius, var(--xh-shape-control));
+  --xh-collection-font-size: var(--xh-navigation-menu-font-size, var(--xh-_navigation-menu-font-size));
+  --xh-collection-fg-rest: var(--xh-navigation-menu-trigger-fg, var(--xh-fg-muted));
+  --xh-collection-font-weight-rest: var(--xh-navigation-menu-trigger-font-weight, var(--xh-font-weight-regular));
+  --xh-collection-bg-hover: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
+  --xh-collection-bg-open-path: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-highlight-bg));
+  --xh-collection-bg-pressed: var(--xh-navigation-menu-trigger-bg-pressed, var(--xh-bg-subtle-hover));
+
   display: inline-flex;
   align-items: center;
   gap: var(--xh-navigation-menu-trigger-gap, var(--xh-_navigation-menu-trigger-gap));
   block-size: var(--xh-navigation-menu-trigger-h, var(--xh-_navigation-menu-trigger-h));
-  padding-inline: var(--xh-navigation-menu-trigger-px, var(--xh-_navigation-menu-trigger-px));
   border: 0;
-  border-radius: var(--xh-navigation-menu-trigger-radius, var(--xh-shape-control));
-  background: transparent;
-  color: var(--xh-navigation-menu-trigger-fg, var(--xh-fg-muted));
-  font: inherit;
-  font-weight: var(--xh-navigation-menu-trigger-font-weight, var(--xh-text-label-weight));
+  /* 行高压回 none：家族基础块给条目写了 leading-normal，入口的高度只由 block-size 定 */
   line-height: var(--xh-leading-none);
   white-space: nowrap;
-  cursor: pointer;
-  /* 入口是横排导航里铺开的一段，按下只换面不缩放（§9.2 disclosure trigger），过渡只管底色 */
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='navigation-menu'][data-part='trigger'][hidden] {
   display: none;
-}
-
-/* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
-   不挡掉的话置灰的那一项悬停仍会换底 */
-[data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):hover {
-  background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
-}
-
-/* 展开着的那一张是打开路径，与悬停同档的中性面：打开中不是选中，不用品牌色；哪一张开着由
-   指示条与转向的箭头说明。不加粗：横排的栏加粗会推挤相邻触发器。
-   必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档，
-   所以禁用守卫要与轻档那条一样带上，缺了它特指度就低一档、压不住 */
-[data-scope='navigation-menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
-  background: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-highlight-bg));
-}
-
-/* 按下去要有回应：白底承载 hover 100 → pressed 200，只换面（§7.2）；键盘与粗指针的按压由
-   Headless 投影 data-pressed 后走同一档。排在展开态之后：划过即展开，按下的那一张多半正开着，
-   同特指度靠书写顺序才压得过展开面 */
-[data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
-  background: var(--xh-navigation-menu-trigger-bg-pressed, var(--xh-bg-subtle-hover));
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 集合条目用 data-disabled，不用 :disabled：它带的是 aria-disabled，
-   仍可聚焦、仍是方向键的起点 */
-[data-scope='navigation-menu'][data-part='trigger'][data-disabled] {
-  color: var(--xh-fg-disabled);
 }
 
 /* 竖排：入口占满整项的宽度，面板才从入口右缘长出来 */
@@ -27196,9 +27175,11 @@
   box-shadow: none;
 }
 
-/* 面板里的链接走 Collection Item 的 overlay 语境：悬停 / 键盘高亮（白底承载 100）与按下（200）面由家族
-   按 :hover / :focus-visible / :active 给出，这里只把公开槽映射到桥接槽。面板是实色 floating 面，
-   常态字色取 --xh-fg-default 而非 frosted 前景。布局保持 flex：链接是一行文字，不用家族网格 */
+/* 面板里的链接归 Collection Item 导航当前（nav 语境）：悬停 / 键盘高亮（白底承载 100）与按下（200）面由家族
+   按 :hover / :focus-visible / :active 给出，指向当前页面的那一条（data-current）取 strong 档品牌字色 +
+   medium 字重（§7.3），字色不随语气、不加下划线（下划线是"可点"的信号，它已经在这儿了）；这里只把公开槽
+   映射到桥接槽。面板是实色 floating 面，常态字色取 --xh-fg-default 而非 nav 缺省的 muted。
+   布局保持 flex：链接是一行文字，不用家族网格 */
 [data-scope='navigation-menu'][data-part='link'] {
   --xh-collection-block-padding: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-py));
   --xh-collection-inline-padding: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-px));
@@ -27211,6 +27192,8 @@
   --xh-collection-bg-hover: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
   --xh-collection-bg-keyboard-highlight: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
   --xh-collection-bg-pressed: var(--xh-navigation-menu-link-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-fg-current: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand-strong));
+  --xh-collection-font-weight-current: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
 
   display: flex;
   align-items: center;
@@ -27219,14 +27202,6 @@
 
 [data-scope='navigation-menu'][data-part='link'][hidden] {
   display: none;
-}
-
-/* 指向当前页面的那一条：导航当前页取 strong 档品牌字色 + medium 字重（§7.3），不加下划线
-   （下划线是"可点"的信号，它已经在这儿了）。配方没有导航语境，这一档由皮肤按 data-current 画，
-   字色不随语气 */
-[data-scope='navigation-menu'][data-part='link'][data-current] {
-  color: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand-strong));
-  font-weight: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
 }
 
 /* 入口里表示"底下还有一张面板"的标记，排在入口文字之后，展开时转向 */
@@ -27318,14 +27293,6 @@
 [data-scope='navigation-menu'][data-part='viewport'][data-orientation='vertical'] {
   inset-block-start: 0;
   inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
-}
-
-@media (forced-colors: active) {
-  /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
-  [data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
-    background: Highlight;
-    color: HighlightText;
-  }
 }
 
 /* styles/notification.css */

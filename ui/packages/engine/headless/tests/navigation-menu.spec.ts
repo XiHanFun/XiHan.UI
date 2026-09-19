@@ -680,6 +680,9 @@ describe('connectNavigationMenu 输出', () => {
     expect(trigger['data-state']).toBe('closed')
     // 不做 roving tabindex：每个 trigger 都留在 Tab 序列里，面板才 Tab 得进去
     expect(trigger.tabindex).toBeUndefined()
+    // 入口归 Collection Item 展开路径 / 打开中：投影 nav 语境；收着的入口不在路径上
+    expect(trigger).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'md', 'data-xh-collection-context': 'nav' })
+    expect(trigger['data-in-path']).toBeUndefined()
 
     expect(content.role).toBe('group')
     expect(content['aria-labelledby']).toBe(trigger.id)
@@ -693,6 +696,9 @@ describe('connectNavigationMenu 输出', () => {
     expect(api.open).toBe(true)
     expect(api.isOpen('docs')).toBe(true)
     expect((api.getTriggerProps({ value: 'docs' }) as Record<string, unknown>)['aria-expanded']).toBe('true')
+    // 展开着的那一张投影 data-in-path，家族按它给与 hover 同档的中性面；其余不投
+    expect((api.getTriggerProps({ value: 'docs' }) as Record<string, unknown>)['data-in-path']).toBe('')
+    expect((api.getTriggerProps({ value: 'products' }) as Record<string, unknown>)['data-in-path']).toBeUndefined()
     expect((api.getContentProps({ value: 'docs' }) as Record<string, unknown>).hidden).toBeUndefined()
     expect((api.getContentProps({ value: 'products' }) as Record<string, unknown>).hidden).toBe(true)
     expect((api.getRootProps() as Record<string, unknown>)['data-state']).toBe('open')
@@ -716,9 +722,9 @@ describe('connectNavigationMenu 输出', () => {
     expect((api.getLinkProps({}) as Record<string, unknown>)['aria-current']).toBeUndefined()
   })
 
-  it('链接投影 Collection Item 的 overlay 语境与尺寸档，不报 aria-selected', () => {
+  it('链接投影 Collection Item 的 nav 语境与尺寸档，不报 aria-selected', () => {
     const link = makeMenu({ size: 'sm' }).api().getLinkProps({ current: true }) as Record<string, unknown>
-    expect(link).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'sm', 'data-xh-collection-context': 'overlay', 'data-current': '' })
+    expect(link).toMatchObject({ 'data-xh-collection-item': '', 'data-xh-collection-size': 'sm', 'data-xh-collection-context': 'nav', 'data-current': '' })
     expect(link['aria-selected']).toBeUndefined()
     expect((makeMenu().api().getLinkProps({}) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
   })
