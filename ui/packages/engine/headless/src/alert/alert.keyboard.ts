@@ -21,5 +21,11 @@ export const alertKeyboard: KeyboardTable = {
       when: 'focus 在 close-trigger 上且 closable',
       does: '收起提示并通知 open=false',
     },
+    {
+      id: 'alert.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held on close-trigger, closable',
+      does: '按住期间关闭按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或提示收起撤下',
+    },
   ],
 }

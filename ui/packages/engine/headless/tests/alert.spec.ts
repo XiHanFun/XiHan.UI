@@ -134,3 +134,86 @@ describe('connectAlert 关闭按钮', () => {
     expect(seen).toEqual([])
   })
 })
+
+// ══ 按压通道 ══
+
+type Dict = Record<string, unknown>
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('alertMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('关闭按钮：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const a = makeAlert()
+    const close = (): Dict => a.api().getCloseTriggerProps() as Dict
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onKeyDown', key(' '))
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onKeyUp', key(' '))
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onBlur', {})
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onPointerCancel', {})
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(close()['data-pressed']).toBe('')
+    fire(close(), 'onPointerUp', {})
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(close()['data-pressed']).toBeUndefined()
+    // 按住不等于按下：提示照旧显示
+    expect(a.state()).toBe('open')
+    a.stop()
+  })
+
+  it('收起即松开：按住 Enter 关掉提示，按钮随 root 藏起、不会再来 keyup，按压面由机器收；收起后按住不进', () => {
+    const a = makeAlert()
+    const close = (): Dict => a.api().getCloseTriggerProps() as Dict
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBe('')
+    press(close() as { onClick?: unknown })
+    expect(a.state()).toBe('closed')
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBeUndefined()
+    fire(close(), 'onPointerDown', { pointerType: 'touch' })
+    expect(close()['data-pressed']).toBeUndefined()
+    // 再次显示后照常可按
+    a.api().setOpen(true)
+    fire(close(), 'onKeyDown', key(' '))
+    expect(close()['data-pressed']).toBe('')
+    a.stop()
+  })
+
+  it('受控收起同样松开：宿主写回 open=false 那一刻按钮藏起', () => {
+    const a = makeAlert({ open: true })
+    const close = (): Dict => a.api().getCloseTriggerProps() as Dict
+    fire(close(), 'onKeyDown', key('Enter'))
+    expect(close()['data-pressed']).toBe('')
+    a.setProps({ open: false })
+    expect(a.state()).toBe('closed')
+    expect(close()['data-pressed']).toBeUndefined()
+    a.stop()
+  })
+
+  it('closable=false：按住不进；经 signal 转成不可关闭时按住的按钮自收', () => {
+    const off = makeAlert({ closable: false })
+    const offClose = (): Dict => off.api().getCloseTriggerProps() as Dict
+    fire(offClose(), 'onKeyDown', key(' '))
+    expect(offClose()['data-pressed']).toBeUndefined()
+    fire(offClose(), 'onPointerDown', { pointerType: 'touch' })
+    expect(offClose()['data-pressed']).toBeUndefined()
+    off.stop()
+
+    const a = makeAlert()
+    const close = (): Dict => a.api().getCloseTriggerProps() as Dict
+    fire(close(), 'onKeyDown', key(' '))
+    expect(close()['data-pressed']).toBe('')
+    a.setProps({ closable: false })
+    expect(close()['data-pressed']).toBeUndefined()
+    a.stop()
+  })
+})
