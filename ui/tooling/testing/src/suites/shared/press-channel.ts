@@ -10,6 +10,12 @@ export interface PressTargetOptions {
    * 三家都只看见条目自己的 blur。
    */
   blurTo?: string
+  /**
+   * aria-activedescendant 模型（combobox / mention / command）：焦点恒在输入框，条目自己收不到按键，
+   * Enter 按住时由这个选择器指向的输入框替高亮条目进按压通道。给了它，键盘与失焦都派到输入框上、
+   * 只测 Enter（Space 在输入框里是打字），按压面仍在条目上看；触屏那一路照旧派到条目自己身上。
+   */
+  keyboardHost?: string
 }
 
 function targetSelector(scope: string, part: string, options: PressTargetOptions): string {
@@ -34,7 +40,10 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
       const el = doc.querySelector<HTMLElement>(targetSelector(scope, part, options))
       if (!el)
         throw new Error(`找不到 ${label} 部件`)
-      el.focus()
+      const host = options.keyboardHost === undefined ? el : doc.querySelector<HTMLElement>(options.keyboardHost)
+      if (!host)
+        throw new Error(`找不到键盘宿主 ${options.keyboardHost}`)
+      host.focus()
       const expectPressed = async (pressed: boolean, phase: string): Promise<void> => {
         await flush()
         const actual = el.hasAttribute('data-pressed')
@@ -43,19 +52,19 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
       }
       await expectPressed(false, '静息')
 
-      for (const key of [' ', 'Enter']) {
-        el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+      for (const key of options.keyboardHost === undefined ? [' ', 'Enter'] : ['Enter']) {
+        host.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
         await expectPressed(true, `keydown ${JSON.stringify(key)} 之后`)
-        el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+        host.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
         await expectPressed(false, `keyup ${JSON.stringify(key)} 之后`)
       }
 
       // 按住途中失焦：不会再来 keyup，按压面得随焦点一起走。
       // 走真实的 blur()：浏览器派 blur 再派冒泡的 focusout，React 的 onBlur 挂的正是后者
-      el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+      host.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
       await expectPressed(true, '再次 keydown Enter 之后')
       if (options.blurTo === undefined) {
-        el.blur()
+        host.blur()
       }
       else {
         const next = doc.querySelector<HTMLElement>(options.blurTo)

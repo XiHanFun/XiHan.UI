@@ -1192,3 +1192,149 @@ describe('comboboxCombobox 浮层的层与消解', () => {
     expect(order).toEqual(['dismiss', 'layer'])
   })
 })
+
+describe('按压通道：Enter 与触屏按住投影 data-pressed，候选按 value 记、两个按钮只记部件', () => {
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const touch = (el: HTMLElement, type: 'pointerdown' | 'pointerup' | 'pointercancel'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', bubbles: true, cancelable: true, button: 0 }))
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+
+  it('候选：焦点恒在输入框，Enter 在输入框里按住即高亮候选在场、抬起撤下；触屏按下在场、抬起或取消撤下；鼠标按下不走这一路', () => {
+    // 受控展开：单选 Enter 即选中并发收起意图，宿主不写回就仍开着，按住的中间帧才看得见
+    const h = mount({ open: true, multiple: false })
+    press(h.input, 'ArrowDown')
+    expect(h.api().highlightedValue).toBe('apple')
+    expect(pressed(h.item('apple'))).toBe(false)
+    press(h.input, 'Enter')
+    expect(pressed(h.item('apple'))).toBe(true)
+    expect(pressed(h.item('cherry'))).toBe(false)
+    keyUp(h.input, 'Enter')
+    expect(pressed(h.item('apple'))).toBe(false)
+    // 长按的重复 keydown 不再进
+    press(h.input, 'Enter', { repeat: true })
+    expect(pressed(h.item('apple'))).toBe(false)
+
+    touch(h.item('cherry'), 'pointerdown')
+    expect(pressed(h.item('cherry'))).toBe(true)
+    touch(h.item('cherry'), 'pointerup')
+    expect(pressed(h.item('cherry'))).toBe(false)
+    touch(h.item('cherry'), 'pointerdown')
+    touch(h.item('cherry'), 'pointercancel')
+    expect(pressed(h.item('cherry'))).toBe(false)
+    h.item('cherry').dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'mouse', bubbles: true, cancelable: true }))
+    expect(pressed(h.item('cherry'))).toBe(false)
+  })
+
+  it('候选：按住 Enter 期间输入框失焦即撤下，不等 keyup', () => {
+    const h = mount({ open: true })
+    press(h.input, 'ArrowDown')
+    press(h.input, 'Enter')
+    expect(pressed(h.item('apple'))).toBe(true)
+    h.input.dispatchEvent(new FocusEvent('blur', { relatedTarget: document.body }))
+    expect(pressed(h.item('apple'))).toBe(false)
+  })
+
+  it('展开钮与清空钮：Space / Enter 与触屏按住投影同一副按压面，互不串；另一个的 keyup 不把它松开', async () => {
+    const h = mount({ defaultValue: 'apple' })
+    await tick()
+    press(h.trigger, ' ')
+    expect(pressed(h.trigger)).toBe(true)
+    expect(pressed(h.clear)).toBe(false)
+    keyUp(h.clear, ' ')
+    expect(pressed(h.trigger)).toBe(true)
+    keyUp(h.trigger, ' ')
+    expect(pressed(h.trigger)).toBe(false)
+    press(h.trigger, 'Enter')
+    expect(pressed(h.trigger)).toBe(true)
+    h.trigger.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(h.trigger)).toBe(false)
+
+    // 两个按钮的触屏按下走的都是带 preventDefault 的那份 pointerdown
+    touch(h.clear, 'pointerdown')
+    expect(pressed(h.clear)).toBe(true)
+    expect(pressed(h.trigger)).toBe(false)
+    touch(h.clear, 'pointercancel')
+    expect(pressed(h.clear)).toBe(false)
+    touch(h.trigger, 'pointerdown')
+    expect(pressed(h.trigger)).toBe(true)
+    touch(h.trigger, 'pointerup')
+    expect(pressed(h.trigger)).toBe(false)
+    press(h.clear, 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    keyUp(h.clear, 'Enter')
+    expect(pressed(h.clear)).toBe(false)
+  })
+
+  it('不进：禁用 / 只读 / 加载时三者都不进；没有东西可清时清空钮不进；候选自身禁用（部件声明或 collection）不进', async () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ open: true, defaultValue: 'apple', ...inert })
+      await tick()
+      touch(h.item('cherry'), 'pointerdown')
+      press(h.trigger, ' ')
+      press(h.clear, ' ')
+      expect(pressed(h.item('cherry'))).toBe(false)
+      expect(pressed(h.trigger)).toBe(false)
+      expect(pressed(h.clear)).toBe(false)
+    }
+    const empty = mount()
+    press(empty.clear, ' ')
+    touch(empty.clear, 'pointerdown')
+    expect(pressed(empty.clear)).toBe(false)
+    // 输入串非空、尚无选中值时清空钮同样可按
+    const typed = mount({ defaultInputValue: 'ap' })
+    press(typed.clear, ' ')
+    expect(pressed(typed.clear)).toBe(true)
+
+    // banana 由部件声明禁用
+    const h = mount({ open: true })
+    touch(h.item('banana'), 'pointerdown')
+    expect(pressed(h.item('banana'))).toBe(false)
+    const byCollection = mount({ open: true, collection: [{ value: 'apple', disabled: true }, { value: 'cherry' }] })
+    expect(byCollection.api().getItemProps({ value: 'apple' })['data-pressed']).toBeUndefined()
+    const props = byCollection.api().getItemProps({ value: 'apple' }) as Record<string, (e: unknown) => void>
+    props.onPointerDown!({ pointerType: 'touch' })
+    expect(byCollection.api().getItemProps({ value: 'apple' })['data-pressed']).toBeUndefined()
+  })
+
+  it('浮层收起即松开：按住 Enter 选中后候选随内容藏起，不会再来 keyup，按压面由机器收', () => {
+    const h = mount()
+    press(h.input, 'ArrowDown')
+    expect(h.state()).toBe('open')
+    expect(h.api().highlightedValue).toBe('apple')
+    press(h.input, 'Enter')
+    expect(h.state()).toBe('closed')
+    expect(h.value()).toEqual(['apple'])
+    expect(pressed(h.item('apple'))).toBe(false)
+    // 多选选完不收起，按住期间一直在场
+    const multi = mount({ multiple: true })
+    press(multi.input, 'ArrowDown')
+    press(multi.input, 'Enter')
+    expect(multi.state()).toBe('open')
+    expect(pressed(multi.item('apple'))).toBe(true)
+    keyUp(multi.input, 'Enter')
+    expect(pressed(multi.item('apple'))).toBe(false)
+  })
+
+  it('按住途中转入禁用 / 只读 / 加载、或值与输入串都被清空：按压面由机器自己收，不等 keyup', async () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount({ open: true, defaultValue: 'apple' })
+      await tick()
+      press(h.trigger, ' ')
+      expect(pressed(h.trigger)).toBe(true)
+      h.setProps(inert)
+      expect(pressed(h.trigger)).toBe(false)
+    }
+    // 清空钮：按住 Enter 清掉值，按钮随即藏起
+    const h = mount({ defaultValue: 'apple' })
+    await tick()
+    press(h.clear, 'Enter')
+    expect(pressed(h.clear)).toBe(true)
+    click(h.clear)
+    expect(h.value()).toEqual([])
+    expect(h.inputValue()).toBe('')
+    expect(pressed(h.clear)).toBe(false)
+  })
+})

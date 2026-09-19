@@ -102,6 +102,9 @@ export interface ComboboxGroupProps {
   value: string
 }
 
+/** 接了按压通道的三个部件：候选按 value 记，两个按钮只记部件。 */
+export type ComboboxPressedPart = 'item' | 'trigger' | 'clear-trigger'
+
 export interface ComboboxSchema extends MachineSchema {
   props: {
     /**
@@ -183,6 +186,10 @@ export interface ComboboxSchema extends MachineSchema {
     itemCount: number | null
     /** 本次展开的落点意图；受控回写经 CONTROLLED.OPEN 时也可读取。 */
     focusIntent: ComboboxFocusIntent
+    /** 按压通道：Enter 或触屏按住的是候选、展开按钮还是清空按钮。 */
+    pressedPart: ComboboxPressedPart | null
+    /** 按压通道：按住的候选 value；两个按钮没有 value，记 null。抬起、失焦或浮层收起即清空。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: ComboboxRefs
@@ -218,8 +225,15 @@ export interface ComboboxSchema extends MachineSchema {
      */
     | { type: 'ITEMS.SYNC' }
     | { type: 'FORM.RESET' }
+    /**
+     * 候选、展开按钮或清空按钮被 Enter 或触屏按住。候选的键盘按压由输入框代发（焦点恒在输入框，
+     * 高亮候选自己收不到按键）；disabled 是候选自身的禁用事实，由 connect 判定后随事件带入。
+     */
+    | { type: 'PRESS.START', part: ComboboxPressedPart, value?: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: ComboboxPressedPart, value?: string }
   tag: never
-  guard: 'isOpenControlled' | 'isMultiple' | 'hasHighlight'
+  guard: 'isOpenControlled' | 'isMultiple' | 'hasHighlight' | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -239,6 +253,10 @@ export interface ComboboxSchema extends MachineSchema {
     | 'clearValue'
     | 'reconcileInput'
     | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackPosition' | 'trackLayer'
 }
 

@@ -22,6 +22,7 @@ export const comboboxKeyboard: KeyboardTable = {
     { id: 'combobox.kbd.first', keys: ['Home'], when: 'open', does: '高亮移到首个可选候选；收起态不接管，光标照常跳到行首' },
     { id: 'combobox.kbd.last', keys: ['End'], when: 'open', does: '高亮移到末个可选候选；收起态不接管，光标照常跳到行尾' },
     { id: 'combobox.kbd.select', keys: ['Enter'], when: 'open, 有高亮且未禁用', does: '选中高亮候选：单选把输入串换成它的文本并收起，多选把它并入集合、清空输入串且不收起' },
+    { id: 'combobox.kbd.press', keys: ['Enter'], when: 'open, 有高亮且未禁用、未只读、未加载，按住', does: '按住期间高亮候选投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，候选随浮层收起一并撤下。展开钮与清空钮在焦点落到自己身上时由 Enter / Space 按住投影，没有东西可清时清空钮不进' },
     { id: 'combobox.kbd.custom', keys: ['Enter'], when: 'open, 无高亮且 allowCustomValue', does: '把输入串本身收成选中值' },
     { id: 'combobox.kbd.escape', keys: ['Escape'], when: 'open', does: '先清除高亮；高亮已空时才收起列表，选中值不变' },
     { id: 'combobox.kbd.close-alt', keys: ['Alt+ArrowUp'], when: 'open', does: '收起列表，选中值不变' },

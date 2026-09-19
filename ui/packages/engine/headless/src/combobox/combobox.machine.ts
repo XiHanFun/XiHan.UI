@@ -6,7 +6,7 @@
 // 提供 combobox 相关实现。
 
 import type { PositionResult } from '@xihan-ui/core'
-import type { ComboboxFocusIntent, ComboboxSchema } from './combobox.types'
+import type { ComboboxFocusIntent, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -47,6 +47,9 @@ export const comboboxMachine = createMachine({
     // null = 还没结算过。默认写 0 会让首帧（DOM 尚未就位）误判为「无匹配项」而闪一下空态
     itemCount: cell<number | null>(() => ({ defaultValue: null })),
     focusIntent: cell<ComboboxFocusIntent>(() => ({ defaultValue: 'none' })),
+    // 按压通道：正被按住的那一个（候选按 value 记，两个按钮只记部件），与开合无关
+    pressedPart: cell<ComboboxPressedPart | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -66,10 +69,16 @@ export const comboboxMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
-    // 这条 watch 只兜宿主侧的写入，内部选中当场就同步过文本
-    track([context.dep('value')], () => action(['syncValueText']))
+    // 这条 watch 只兜宿主侧的写入，内部选中当场就同步过文本。
+    // 值与输入串都空了清空按钮随之藏起，按住它的那一下不会再来 keyup：与禁用 / 只读 / 加载一道由机器自己收
+    track([context.dep('value')], () => action(['syncValueText', 'releaseWhenInert']))
+    track([context.dep('inputValue')], () => action(['releaseWhenInert']))
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
   },
   on: {
+    // 按压通道：候选与两个按钮两个状态都认；禁用 / 只读 / 加载不进，清空按钮在清不了时不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     // 这几件事与开合无关，两个状态里都得认
     'VALUE.SET': { actions: ['setValue', 'syncValueText'] },
@@ -102,7 +111,8 @@ export const comboboxMachine = createMachine({
     open: {
       // 先结算候选条数（空态节点据此显形），再按落点意图挑高亮
       entry: ['syncItems', 'setInitialHighlightedValue'],
-      exit: ['clearHighlightedValue'],
+      // 收起即松开：按住 Enter 选中候选后浮层收起，候选随内容一起藏起，不会再来 keyup
+      exit: ['clearHighlightedValue', 'releasePress'],
       // 定位只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -148,8 +158,43 @@ export const comboboxMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       isMultiple: ({ prop }) => !!prop('multiple'),
       hasHighlight: ({ context }) => context.get('highlightedValue') != null,
+      // 禁用、只读与加载都改不了值，一票否决；候选自身的禁用随事件带入；清空按钮没有东西可清时不进
+      canPress: ({ prop, context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('disabled') || prop('readOnly') || prop('loading') || e.disabled)
+          return false
+        return e.part !== 'clear-trigger' || context.get('value').length > 0 || context.get('inputValue') !== ''
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value ?? null)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== (e.value ?? null))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releasePress: ({ context }) => {
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const part = context.get('pressedPart')
+        const inert = prop('disabled') || prop('readOnly') || prop('loading')
+          || (part === 'clear-trigger' && context.get('value').length === 0 && context.get('inputValue') === '')
+        if (!part || !inert)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       // 值与输入串是两条独立受控轴，各判各的；高亮锚点指向的条目可能已被过滤掉
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')

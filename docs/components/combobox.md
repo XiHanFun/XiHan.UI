@@ -191,9 +191,9 @@
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `INPUT.SET` · `INPUT.BLUR` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `VALUE.COMMIT` · `VALUE.SET` · `VALUE.CLEAR` · `ITEMS.SYNC` · `FORM.RESET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `INPUT.SET` · `INPUT.BLUR` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `VALUE.COMMIT` · `VALUE.SET` · `VALUE.CLEAR` · `ITEMS.SYNC` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled` · `isMultiple` · `hasHighlight`
+**判据**：`isOpenControlled` · `isMultiple` · `hasHighlight` · `canPress`
 
 ### connect API
 
@@ -251,6 +251,7 @@
 | `Home` | open | 高亮移到首个可选候选；收起态不接管，光标照常跳到行首 |
 | `End` | open | 高亮移到末个可选候选；收起态不接管，光标照常跳到行尾 |
 | `Enter` | open, 有高亮且未禁用 | 选中高亮候选：单选把输入串换成它的文本并收起，多选把它并入集合、清空输入串且不收起 |
+| `Enter` | open, 有高亮且未禁用、未只读、未加载，按住 | 按住期间高亮候选投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，候选随浮层收起一并撤下。展开钮与清空钮在焦点落到自己身上时由 Enter / Space 按住投影，没有东西可清时清空钮不进 |
 | `Enter` | open, 无高亮且 allowCustomValue | 把输入串本身收成选中值 |
 | `Escape` | open | 先清除高亮；高亮已空时才收起列表，选中值不变 |
 | `Alt+ArrowUp` | open | 收起列表，选中值不变 |
@@ -324,12 +325,14 @@
 | `input` | `data-xh-field-input` | '' |
 | `input` | `data-xh-field-layout` | 'textarea' \| 'single-line' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'field-inset' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |
 | `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
@@ -345,6 +348,7 @@
 | `positioner` | `data-variant` | props.variant |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
