@@ -159,20 +159,6 @@
     "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
   },
   "solid": {
-    "calendar-range-picker [data-in-range][data-part='cell-trigger'][data-scope='calendar-range-picker']:not([data-outside-month]):is([data-range-start], [data-range-end])": {
-      "parts": [
-        "cell-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "calendar-range-picker [data-part='cell-trigger'][data-scope='calendar-range-picker'][data-selected]:not([data-in-range])": {
-      "parts": [
-        "cell-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "carousel [data-part='root'][data-scope='carousel']:not([data-autoplay]):not([data-paused]) [data-current][data-part='indicator'][data-scope='carousel']": {
       "parts": [
         "indicator"

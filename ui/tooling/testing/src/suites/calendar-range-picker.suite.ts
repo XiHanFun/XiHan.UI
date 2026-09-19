@@ -130,10 +130,17 @@ export const calendarRangePickerSuite: ConformanceSuite = {
             'data-dragging': null,
           },
           [`cell[${at(ANCHOR)}]`]: { 'role': 'gridcell', 'aria-selected': 'false', 'data-in-range': null },
+          // 方向钮接 Action Control icon ghost sm 档，日期格接 text ghost 档（几何由网格给）
+          'prev-trigger': { 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'sm' },
           [`cell-trigger[${at(ANCHOR)}]`]: {
             'role': 'button',
             'tabindex': '0',
             'data-focus': '',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
             'data-in-range': null,
             'data-range-start': null,
             'data-range-end': null,

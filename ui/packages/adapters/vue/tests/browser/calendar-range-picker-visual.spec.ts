@@ -137,7 +137,7 @@ afterEach(() => {
 })
 
 describe('范围日历轨道', () => {
-  it('已选区间连续铺底，起止圆帽完整，中间日期不叠加普通 hover 圆底', async () => {
+  it('已选区间连续铺底，起止圆帽完整，中间日期悬停走品牌淡底阶梯而不是普通 hover 圆底', async () => {
     await mountCalendar(['2026-09-07', '2026-09-11'])
     const start = getComputedStyle(cell('2026-09-07'), '::before')
     const middle = getComputedStyle(cell('2026-09-09'), '::before')
@@ -148,8 +148,14 @@ describe('范围日历轨道', () => {
     expect(Number.parseFloat(middle.borderStartStartRadius)).toBe(0)
     expect(Number.parseFloat(end.borderStartEndRadius)).toBeGreaterThan(0)
 
+    // 区间中段的格坐在品牌淡底的轨道上（§7.3 页内选中）：悬停换到 20% 的 brand-subtle-hover，不是白底格的 100 档
+    const probe = document.createElement('span')
+    probe.style.backgroundColor = 'var(--xh-bg-brand-subtle-hover)'
+    host!.append(probe)
+    const expected = getComputedStyle(probe).backgroundColor
+    probe.remove()
     await userEvent.hover(trigger('2026-09-09'))
-    expect(alpha(getComputedStyle(trigger('2026-09-09')).backgroundColor)).toBeLessThan(8)
+    await expect.poll(() => getComputedStyle(trigger('2026-09-09')).backgroundColor).toBe(expected)
   })
 
   it('并排月份只给各自当月日期铺选区背景，首尾邻月格保持透明', async () => {
