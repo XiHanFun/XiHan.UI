@@ -240,6 +240,14 @@ export function connectRating<T extends PropTypes>(
         'aria-checked': s.checked ? 'true' : 'false',
         // 用 aria-disabled 而非原生 disabled，保持可聚焦
         'aria-disabled': disabled ? 'true' : 'false',
+        // 星是定尺的独立动作控件（§9.1「星」）：接 Action Control icon 档、ghost 形态（静息透明），
+        // 按下 / 禁用面、0.97 缩放与换底、焦点环由家族配方给，皮肤只把使用者槽映射到桥接槽；
+        // 盒固定 24px（xs 档），字形随 size 由皮肤另给
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'xs',
         // 导航与聚焦都以此为条目身份
         [ITEM_VALUE_ATTR]: String(item.value),
         'data-state': s.checked ? 'checked' : 'unchecked',

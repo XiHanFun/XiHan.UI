@@ -9,16 +9,19 @@ afterEach(() => {
   host = null
 })
 
+/** 星接 Action Control icon 档，连接层投影的家族属性在静态夹具里照抄 */
+const STAR = 'data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="xs"'
+
 function mount(dir: 'ltr' | 'rtl' = 'ltr') {
   host = document.createElement('div')
   host.dir = dir
   host.innerHTML = `
     <div data-scope="rating" data-part="root">
       <div data-scope="rating" data-part="control">
-        <span data-scope="rating" data-part="item" data-highlighted></span>
-        <span data-scope="rating" data-part="item" data-highlighted data-half></span>
-        <span data-scope="rating" data-part="item"></span>
-        <span data-scope="rating" data-part="item"><svg viewBox="0 0 24 24"></svg></span>
+        <span data-scope="rating" data-part="item" ${STAR} data-highlighted></span>
+        <span data-scope="rating" data-part="item" ${STAR} data-highlighted data-half></span>
+        <span data-scope="rating" data-part="item" ${STAR}></span>
+        <span data-scope="rating" data-part="item" ${STAR}><svg viewBox="0 0 24 24"></svg></span>
       </div>
     </div>`
   document.body.append(host)

@@ -262,6 +262,12 @@ describe('connectRating', () => {
     expect(third['aria-setsize']).toBe(4)
     expect(third['data-value']).toBe('3')
     expect(api(service).items).toEqual([1, 2, 3, 4])
+    // 星接 Action Control 家族：icon 档、ghost 形态、常显、24px 的 xs 盒
+    expect(third['data-xh-action-control']).toBe('')
+    expect(third['data-xh-action-profile']).toBe('icon')
+    expect(third['data-xh-action-variant']).toBe('ghost')
+    expect(third['data-xh-action-display']).toBe('always')
+    expect(third['data-xh-action-size']).toBe('xs')
   })
 
   it('评 3 分：前三颗点亮，aria-checked 只落在第 3 颗上', () => {

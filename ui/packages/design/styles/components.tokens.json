@@ -49899,10 +49899,10 @@
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
+        "loading",
         "not([data-disabled])",
-        "not([data-readonly])",
-        "pressed",
-        "readonly"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
@@ -49924,9 +49924,17 @@
       "state": [
         "default",
         "dir(rtl)",
+        "disabled",
         "empty",
+        "focus-visible",
         "half",
-        "not(:empty)"
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not(:empty)",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -49948,10 +49956,18 @@
       "state": [
         "@media print",
         "dir(rtl)",
+        "disabled",
         "empty",
+        "focus-visible",
         "half",
         "highlighted",
-        "not(:empty)"
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not(:empty)",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_rating-accent"

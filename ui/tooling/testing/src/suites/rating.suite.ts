@@ -129,6 +129,12 @@ export const ratingSuite: ConformanceSuite = {
             'data-highlighted': null,
             'data-half': null,
             'tabindex': '-1',
+            // 星接 Action Control 家族：icon 档、ghost 形态、常显、24px 的 xs 盒
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
             // 集合条目不输出原生 disabled
             'disabled': null,
           })),
