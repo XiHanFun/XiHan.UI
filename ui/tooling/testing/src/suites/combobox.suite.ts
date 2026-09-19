@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { comboboxAnatomy, comboboxKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 
@@ -843,6 +844,47 @@ export const comboboxSuite: ConformanceSuite = {
           'hidden-input': { type: 'hidden', name: null },
         },
       },
+    },
+    {
+      name: 'Enter 在输入框里按住与触屏按下：高亮候选投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['combobox.kbd.press'],
+      // 受控展开：单选 Enter 即选中并发收起意图，宿主不写回就仍开着，按住的中间帧才看得见。
+      // 焦点恒在输入框，候选自己收不到按键：键盘那一路派到输入框上，看的仍是候选身上的属性
+      props: { open: true },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        { kind: 'key', key: 'ArrowDown', expect: { parts: { 'item[0]': { 'data-highlighted': '' } } } },
+        heldPress('combobox', 'item', { value: 'apple', keyboardHost: INPUT }),
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：展开钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      // 两个按钮都不占 Tab 位，键盘到不了它们，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路
+      props: { defaultValue: 'apple' },
+      steps: [
+        heldPress('combobox', 'trigger'),
+        heldPress('combobox', 'clear-trigger'),
+      ],
+    },
+    {
+      name: '禁用候选按住不进入按压面；只读 / 加载时三者都不进；没有东西可清时清空钮不进',
+      spec: { adr: 'press-channel' },
+      props: { open: true, defaultValue: 'apple' },
+      steps: [
+        heldPressIgnored('combobox', 'item', '禁用候选不接受按压', { value: 'banana' }),
+        { kind: 'setProps', props: { readOnly: true } },
+        heldPressIgnored('combobox', 'item', '只读时候选改不了选中值，不接受按压', { value: 'cherry' }),
+        heldPressIgnored('combobox', 'trigger', '只读时展开钮禁用，不接受按压'),
+        heldPressIgnored('combobox', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, loading: true } },
+        heldPressIgnored('combobox', 'item', '加载中候选不接受按压', { value: 'cherry' }),
+        heldPressIgnored('combobox', 'trigger', '加载中展开钮不接受按压'),
+        heldPressIgnored('combobox', 'clear-trigger', '加载中清空钮不接受按压'),
+        { kind: 'setProps', props: { loading: false, value: [], inputValue: '' } },
+        heldPressIgnored('combobox', 'clear-trigger', '没有东西可清时清空钮藏着，不接受按压'),
+      ],
     },
   ],
 }

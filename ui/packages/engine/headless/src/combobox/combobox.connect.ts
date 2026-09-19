@@ -5,9 +5,9 @@
 
 // 提供 combobox 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
-import { contains, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
+import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
@@ -99,6 +99,29 @@ export function connectCombobox<T extends PropTypes>(
    * 渲染期不得调用：那里 Vue 读到上一帧、WC 读到本帧。
    */
   const items = (): HTMLElement[] => queryItems(refs.get('getContentEl')(), comboboxItemQuery)
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（候选按 value 记，两个按钮只记部件），各自合成一份跟踪器；
+  // 触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 候选自身的禁用只有 connect 知道（部件声明或 collection），随 PRESS.START 带给机器的 canPress 守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const press = (part: ComboboxPressedPart, value?: string, disabled?: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === (value ?? null),
+    onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
+  })
+  // 焦点恒在输入框，候选自己收不到按键：Enter 在输入框里按住时，由输入框替高亮候选进按压通道；
+  // 松开按 context 里记着的那一条，高亮在按住期间挪走也松得掉
+  const pressHighlighted = (): void => {
+    if (highlighted == null || context.get('pressedPart') === 'item')
+      return
+    const el = items().find(item => itemValue(item) === highlighted)
+    send({ type: 'PRESS.START', part: 'item', value: highlighted, disabled: !el || isItemDisabled(el) })
+  }
+  const releaseHighlighted = (): void => {
+    const value = context.get('pressedValue')
+    if (context.get('pressedPart') === 'item' && value != null)
+      send({ type: 'PRESS.END', part: 'item', value })
+  }
 
   /** 移高亮。焦点不动，但列表要跟着滚，否则长列表里高亮会跑出可视区。 */
   const highlightEl = (el: HTMLElement | null): void => {
@@ -236,6 +259,8 @@ export function connectCombobox<T extends PropTypes>(
           send({ type: 'OPEN', focus: 'selected' })
       },
       'onBlur': (event: FocusEvent) => {
+        // 焦点走了就没有「按住」可言：不会再来 keyup
+        releaseHighlighted()
         const input = event.currentTarget as HTMLElement
         const root = input.closest<HTMLElement>(parts.root.selector)
         // 焦点还在组件内部（点了触发按钮之类）不算离场
@@ -297,6 +322,8 @@ export function connectCombobox<T extends PropTypes>(
           // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
           if (event.repeat)
             return
+          // 按住期间高亮候选投影 data-pressed；单选选中即收起，候选随浮层藏起时由机器松开
+          pressHighlighted()
           if (commitHighlighted())
             return
           // 没有高亮：允许自定义值就把输入串收成值，否则只收起
@@ -324,64 +351,93 @@ export function connectCombobox<T extends PropTypes>(
           send({ type: 'VALUE.SET', value: value.slice(0, -1) })
         }
       },
+      'onKeyUp': (event: KeyboardEvent) => {
+        if (event.key === 'Enter')
+          releaseHighlighted()
+      },
     }),
 
     // 展开钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200；
     // 常驻在场，有值时由皮肤按「清空钮在场」收起
-    getTriggerProps: () => normalize.button({
-      ...parts.trigger.attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'type': 'button',
-      // 整个组合框只占一个 Tab 位（输入框），按钮退出 Tab 序列
-      'tabindex': -1,
-      // 单体控件用原生 disabled（与候选条目的 aria-disabled 相反）
-      'disabled': !interactive || undefined,
-      // 钮里只有一枚箭头，名字只能从这里给；展开与否由输入框的 aria-expanded 说，名字不跟着变
-      'aria-label': prop('translations')?.trigger ?? 'Show suggestions',
-      'aria-controls': ids.content,
-      'data-state': stateAttr,
-      'data-disabled': dataAttr(!interactive),
-      'onPointerDown': keepFocus,
-      'onClick': () => {
-        if (!interactive)
-          return
-        send({ type: 'TOGGLE', focus: 'selected' })
-        // pointerdown 已拦掉默认聚焦，键盘激活这一路则要主动把焦点送回输入框
-        focusInput()
-      },
-    }),
+    getTriggerProps: () => {
+      const handlers = press('trigger')
+      return normalize.button({
+        ...parts.trigger.attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'trigger'),
+        'type': 'button',
+        // 整个组合框只占一个 Tab 位（输入框），按钮退出 Tab 序列
+        'tabindex': -1,
+        // 单体控件用原生 disabled（与候选条目的 aria-disabled 相反）
+        'disabled': !interactive || undefined,
+        // 钮里只有一枚箭头，名字只能从这里给；展开与否由输入框的 aria-expanded 说，名字不跟着变
+        'aria-label': prop('translations')?.trigger ?? 'Show suggestions',
+        'aria-controls': ids.content,
+        'data-state': stateAttr,
+        'data-disabled': dataAttr(!interactive),
+        // 按下不夺焦，触屏按下仍要进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          keepFocus(event)
+          handlers.onPointerDown(event)
+        },
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onClick': () => {
+          if (!interactive)
+            return
+          send({ type: 'TOGGLE', focus: 'selected' })
+          // pointerdown 已拦掉默认聚焦，键盘激活这一路则要主动把焦点送回输入框
+          focusInput()
+        },
+      })
+    },
 
     // 清空钮同走 field-inset ghost 档，按 has-value 显隐
-    getClearTriggerProps: () => normalize.button({
-      ...parts['clear-trigger'].attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'has-value',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'data-xh-action-has-value': dataAttr(canClear),
-      'type': 'button',
-      // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列；读屏按虚拟光标仍找得到它
-      'tabindex': -1,
-      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
-      // 没值就整个收起，不是禁用：有值才出现，出现即可用
-      'hidden': !canClear || undefined,
-      // 按下不夺焦：焦点留在输入框，aria-activedescendant 才不断
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      'onClick': () => {
-        if (!canClear)
-          return
-        send({ type: 'VALUE.CLEAR' })
-        refs.get('getInputEl')()?.focus()
-      },
-    }),
+    getClearTriggerProps: () => {
+      const handlers = press('clear-trigger')
+      return normalize.button({
+        ...parts['clear-trigger'].attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'has-value',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-xh-action-has-value': dataAttr(canClear),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'clear-trigger'),
+        'type': 'button',
+        // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列；读屏按虚拟光标仍找得到它
+        'tabindex': -1,
+        'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+        // 没值就整个收起，不是禁用：有值才出现，出现即可用
+        'hidden': !canClear || undefined,
+        // 按下不夺焦：焦点留在输入框，aria-activedescendant 才不断；触屏按下仍要进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+          handlers.onPointerDown(event)
+        },
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onClick': () => {
+          if (!canClear)
+            return
+          send({ type: 'VALUE.CLEAR' })
+          refs.get('getInputEl')()?.focus()
+        },
+      })
+    },
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
@@ -445,49 +501,58 @@ export function connectCombobox<T extends PropTypes>(
 
     // 候选行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，
     // 选中只留行尾对号（透明底、正文常规字重）
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...itemStateAttrs(item),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
-      // 导航与选中都以此为候选身份
-      [ITEM_VALUE_ATTR]: item.value,
-      // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
-      'id': itemId(item.value),
-      'role': 'option',
-      // listbox 的选中语义是 aria-selected；未选中也显式写 'false'
-      'aria-selected': isSelected(item.value) ? 'true' : 'false',
-      // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
-      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-      // 不给 tabindex：焦点恒在输入框
-      'onClick': (event: MouseEvent) => {
-        // 候选常挂在文档里（只是随 content 一起 hidden），程序化点击照样送得到，守卫必须写在这儿
-        if (!interactive || itemDisabled(item))
-          return
-        send({ type: 'ITEM.SELECT', value: item.value, label: comboboxItemText(event.currentTarget as HTMLElement) })
-      },
-      // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
-      'onPointerMove': (event: PointerEvent) => {
-        if (interactive && !itemDisabled(item) && highlighted !== item.value) {
-          pointerHot.add(event.currentTarget as Element)
-          send({ type: 'ITEM.HIGHLIGHT', value: item.value })
-        }
-      },
-      // 指针离开候选浮层：收掉高亮，hover 不留漆。
-      // 判据是「还在不在 content 里」——条目之间有间距时，指针落在缝上，relatedTarget 是 content 本身。
-      // 触摸 tap 序列里的 leave 不作数；打字建立的高亮被指针路过不受影响
-      'onPointerLeave': (event: PointerEvent) => {
-        const el = event.currentTarget as HTMLElement
-        if (event.pointerType === 'touch' || !pointerHot.delete(el))
-          return
-        if (!interactive || highlighted !== item.value)
-          return
-        if (contains(el.closest<HTMLElement>(parts.content.selector), event.relatedTarget as Node | null))
-          return
-        send({ type: 'HIGHLIGHT.CLEAR' })
-      },
-    }),
+    getItemProps: (item) => {
+      const handlers = press('item', item.value, itemDisabled(item))
+      return normalize.element({
+        ...parts.item.attrs,
+        ...itemStateAttrs(item),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        // 导航与选中都以此为候选身份
+        [ITEM_VALUE_ATTR]: item.value,
+        // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
+        'id': itemId(item.value),
+        'role': 'option',
+        // listbox 的选中语义是 aria-selected；未选中也显式写 'false'
+        'aria-selected': isSelected(item.value) ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
+        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+        // 触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+        // 键盘那一路由输入框代发（Enter 按住时高亮候选投影同一个属性），候选自己收不到按键
+        'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === item.value),
+        // 不给 tabindex：焦点恒在输入框
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onClick': (event: MouseEvent) => {
+          // 候选常挂在文档里（只是随 content 一起 hidden），程序化点击照样送得到，守卫必须写在这儿
+          if (!interactive || itemDisabled(item))
+            return
+          send({ type: 'ITEM.SELECT', value: item.value, label: comboboxItemText(event.currentTarget as HTMLElement) })
+        },
+        // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
+        'onPointerMove': (event: PointerEvent) => {
+          if (interactive && !itemDisabled(item) && highlighted !== item.value) {
+            pointerHot.add(event.currentTarget as Element)
+            send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+          }
+        },
+        // 指针离开候选浮层：收掉高亮，hover 不留漆。
+        // 判据是「还在不在 content 里」——条目之间有间距时，指针落在缝上，relatedTarget 是 content 本身。
+        // 触摸 tap 序列里的 leave 不作数；打字建立的高亮被指针路过不受影响
+        'onPointerLeave': (event: PointerEvent) => {
+          const el = event.currentTarget as HTMLElement
+          if (event.pointerType === 'touch' || !pointerHot.delete(el))
+            return
+          if (!interactive || highlighted !== item.value)
+            return
+          if (contains(el.closest<HTMLElement>(parts.content.selector), event.relatedTarget as Node | null))
+            return
+          send({ type: 'HIGHLIGHT.CLEAR' })
+        },
+      })
+    },
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
