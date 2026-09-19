@@ -5956,6 +5956,7 @@
       "NumberAnimationSchema",
       "NumberAnimationTranslations",
       "NumberFieldApi",
+      "NumberFieldPressedPart",
       "NumberFieldSchema",
       "NumberFieldTranslations",
       "NumberFieldValueChangeDetails",

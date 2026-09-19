@@ -305,3 +305,112 @@ describe('numberFieldMachine 受控与表单重置', () => {
     c.stop()
   })
 })
+
+describe('加减钮的按压通道：Space / Enter 与触屏按住投影 data-pressed，与连发互不牵连', () => {
+  type Dict = Record<string, unknown>
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const touch = (): PointerEvent => ({ pointerType: 'touch', button: 0, preventDefault: vi.fn() } as unknown as PointerEvent)
+  const fire = (props: Dict, name: string, event?: unknown): void => {
+    (props[name] as (e?: unknown) => void)(event)
+  }
+  const inc = (f: ReturnType<typeof makeField>): Dict => f.api().getIncrementTriggerProps() as Dict
+  const dec = (f: ReturnType<typeof makeField>): Dict => f.api().getDecrementTriggerProps() as Dict
+
+  it('keydown 在场、keyup 撤下；失焦撤下；键盘按住不走步进也不进 spinning；另一颗钮的 keyup 松不开这颗', () => {
+    const f = makeField({ defaultValue: '0' })
+    expect(inc(f)['data-pressed']).toBeUndefined()
+    fire(inc(f), 'onKeyDown', key(' '))
+    expect(inc(f)['data-pressed']).toBe('')
+    expect(dec(f)['data-pressed']).toBeUndefined()
+    expect(f.state()).toBe('idle')
+    expect(f.api().value).toBe('0')
+    fire(dec(f), 'onKeyUp', key(' '))
+    expect(inc(f)['data-pressed']).toBe('')
+    fire(inc(f), 'onKeyUp', key(' '))
+    expect(inc(f)['data-pressed']).toBeUndefined()
+    fire(dec(f), 'onKeyDown', key('Enter'))
+    expect(dec(f)['data-pressed']).toBe('')
+    fire(dec(f), 'onBlur')
+    expect(dec(f)['data-pressed']).toBeUndefined()
+    f.stop()
+  })
+
+  it('触屏按下同时进按压通道与连发：先走一步、投影 data-pressed；抬起 / 取消两路一起收；鼠标按下只连发不投影', () => {
+    vi.useFakeTimers()
+    const f = makeField({ defaultValue: '0' })
+    const down = touch()
+    fire(inc(f), 'onPointerDown', down)
+    expect(down.preventDefault).toHaveBeenCalled()
+    expect(inc(f)['data-pressed']).toBe('')
+    expect(f.state()).toBe('spinning')
+    expect(f.api().value).toBe('1')
+    fire(inc(f), 'onPointerUp')
+    expect(inc(f)['data-pressed']).toBeUndefined()
+    expect(f.state()).toBe('idle')
+    fire(dec(f), 'onPointerDown', touch())
+    expect(dec(f)['data-pressed']).toBe('')
+    expect(f.api().value).toBe('0')
+    fire(dec(f), 'onPointerCancel')
+    expect(dec(f)['data-pressed']).toBeUndefined()
+    expect(f.state()).toBe('idle')
+    fire(inc(f), 'onPointerDown', { pointerType: 'mouse', button: 0, preventDefault: vi.fn() })
+    expect(inc(f)['data-pressed']).toBeUndefined()
+    expect(f.state()).toBe('spinning')
+    fire(inc(f), 'onPointerUp')
+    f.stop()
+  })
+
+  it('不进：禁用、只读，或该侧已贴住端点时按住不投影；另一侧照常', () => {
+    for (const props of [{ defaultValue: '5', disabled: true }, { defaultValue: '5', readOnly: true }] as Props[]) {
+      const f = makeField(props)
+      fire(inc(f), 'onKeyDown', key(' '))
+      fire(dec(f), 'onPointerDown', touch())
+      expect(inc(f)['data-pressed']).toBeUndefined()
+      expect(dec(f)['data-pressed']).toBeUndefined()
+      f.stop()
+    }
+    const atMax = makeField({ defaultValue: '10', min: 0, max: 10 })
+    expect(inc(atMax).disabled).toBe(true)
+    fire(inc(atMax), 'onKeyDown', key('Enter'))
+    expect(inc(atMax)['data-pressed']).toBeUndefined()
+    fire(dec(atMax), 'onKeyDown', key('Enter'))
+    expect(dec(atMax)['data-pressed']).toBe('')
+    atMax.stop()
+    const atMin = makeField({ defaultValue: '0', min: 0, max: 10 })
+    fire(dec(atMin), 'onKeyDown', key('Enter'))
+    expect(dec(atMin)['data-pressed']).toBeUndefined()
+    fire(inc(atMin), 'onKeyDown', key('Enter'))
+    expect(inc(atMin)['data-pressed']).toBe('')
+    atMin.stop()
+    // 空值两个方向都还能走，也都能按
+    const empty = makeField({ min: 0, max: 10 })
+    fire(inc(empty), 'onKeyDown', key('Enter'))
+    expect(inc(empty)['data-pressed']).toBe('')
+    empty.stop()
+  })
+
+  it('按住途中值贴到端点、区间收紧或转入禁用 / 只读：按钮转 disabled 不会再来 keyup，按压面由机器自己收', () => {
+    const reached = makeField({ defaultValue: '9', min: 0, max: 10 })
+    fire(inc(reached), 'onKeyDown', key('Enter'))
+    expect(inc(reached)['data-pressed']).toBe('')
+    reached.service.send({ type: 'VALUE.STEP', direction: 1 })
+    expect(reached.api().value).toBe('10')
+    expect(inc(reached)['data-pressed']).toBeUndefined()
+    reached.stop()
+
+    const narrowed = makeField({ defaultValue: '5' })
+    fire(inc(narrowed), 'onKeyDown', key('Enter'))
+    narrowed.setProps({ max: 5 })
+    expect(inc(narrowed)['data-pressed']).toBeUndefined()
+    narrowed.stop()
+
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Props[]) {
+      const f = makeField({ defaultValue: '5' })
+      fire(dec(f), 'onKeyDown', key('Enter'))
+      expect(dec(f)['data-pressed']).toBe('')
+      f.setProps(inert)
+      expect(dec(f)['data-pressed']).toBeUndefined()
+      f.stop()
+    }
+  })
+})

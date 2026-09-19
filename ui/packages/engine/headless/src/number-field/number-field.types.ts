@@ -14,6 +14,9 @@ export interface NumberFieldValueChangeDetails {
   valueAsNumber: number
 }
 
+/** 接了按压通道的两颗钮，按 part 键记住正被按住的那颗。 */
+export type NumberFieldPressedPart = 'increment' | 'decrement'
+
 export interface NumberFieldSchema extends MachineSchema {
   props: {
     value?: string
@@ -58,6 +61,8 @@ export interface NumberFieldSchema extends MachineSchema {
   context: {
     value: string
     pressDirection: 1 | -1
+    /** 按压通道：被 Space / Enter 或触屏按住的那颗钮；抬起、失焦、指针取消或按不了时即撤下。 */
+    pressed: NumberFieldPressedPart | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -70,13 +75,19 @@ export interface NumberFieldSchema extends MachineSchema {
     | { type: 'VALUE.TO_MAX' }
     /** 失焦时把显示串规范化并夹回区间；输入途中不打断用户。 */
     | { type: 'INPUT.BLUR' }
+    /** 指针按住加减钮：先走一步，随后进入 spinning 连发。 */
     | { type: 'PRESS.START', direction: 1 | -1 }
+    /** 松开、移出或取消指针：停止连发。 */
     | { type: 'PRESS.END' }
     | { type: 'after.changeInterval' }
     | { type: 'FORM.RESET' }
+    /** 加减钮被 Space / Enter 或触屏按住：只投影按压面，不改步进；禁用、只读或该侧已贴住端点时被守卫拦截。 */
+    | { type: 'TRIGGER.PRESS.START', part: NumberFieldPressedPart }
+    /** 按住的加减钮抬起、失焦或指针取消。 */
+    | { type: 'TRIGGER.PRESS.END', part: NumberFieldPressedPart }
   tag: never
-  guard: 'canStep'
-  action: 'setValue' | 'stepValue' | 'toMin' | 'toMax' | 'normalize' | 'setDirection' | 'resetToDefault'
+  guard: 'canStep' | 'canPressTrigger'
+  action: 'setValue' | 'stepValue' | 'toMin' | 'toMax' | 'normalize' | 'setDirection' | 'resetToDefault' | 'startTriggerPress' | 'endTriggerPress' | 'releaseWhenInert'
   effect: 'spin'
 }
 

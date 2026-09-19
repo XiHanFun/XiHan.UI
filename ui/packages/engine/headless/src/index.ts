@@ -171,7 +171,7 @@ export type { FeedbackServiceController, FeedbackServiceControllerOptions, Feedb
 export { connectNumberAnimation, formatNumberAnimation, NUMBER_ANIMATION_DURATION, NUMBER_ANIMATION_PRECISION, NUMBER_ANIMATION_PRECISION_MAX, numberAnimationAnatomy, numberAnimationKeyboard, numberAnimationMachine, numberAnimationMeta, resolveNumberAnimationBound, resolveNumberAnimationDuration, resolveNumberAnimationPrecision } from './number-animation'
 export type { NumberAnimationApi, NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationLive, NumberAnimationPhase, NumberAnimationSchema, NumberAnimationTranslations } from './number-animation'
 export { connectNumberField, NUMBER_FIELD_CHANGE_DELAY, NUMBER_FIELD_CHANGE_INTERVAL, NUMBER_FIELD_STEP, numberFieldAnatomy, numberFieldKeyboard, numberFieldMachine, numberFieldMeta } from './number-field'
-export type { NumberFieldApi, NumberFieldSchema, NumberFieldTranslations, NumberFieldValueChangeDetails } from './number-field'
+export type { NumberFieldApi, NumberFieldPressedPart, NumberFieldSchema, NumberFieldTranslations, NumberFieldValueChangeDetails } from './number-field'
 export { connectPageHeader, pageHeaderAnatomy, pageHeaderKeyboard, pageHeaderMeta } from './page-header'
 export type { PageHeaderApi, PageHeaderProps, PageHeaderTranslations } from './page-header'
 export { buildPageItems, buildPageSequence, clampPage, connectPagination, normalizeCount, normalizePageSize, pageRangeOf, pageSizeOptionsOf, PAGINATION_PAGE_SIZE, PAGINATION_SIBLING_COUNT, paginationAnatomy, paginationKeyboard, paginationLabels, paginationMachine, paginationMeta, paginationPageSizeSelectProps, totalPagesOf } from './pagination'
