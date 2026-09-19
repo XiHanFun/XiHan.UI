@@ -109,11 +109,16 @@ export const navigationMenuSuite: ConformanceSuite = {
             'data-disabled': null,
             // 不做 roving tabindex：每个 trigger 都留在 Tab 序列里，面板才 Tab 得进去
             'tabindex': null,
+            // 入口归 Collection Item 展开路径 / 打开中：家族按 nav 语境给面与按压时间线；收着的入口不在路径上
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'nav',
+            'data-in-path': null,
           },
           'content[0]': { 'role': 'group', 'hidden': '', 'data-state': 'closed' },
           'content[2]': { hidden: '' },
-          // 面板里的链接走 Collection Item 的 overlay 语境；不报 aria-selected，当前页由皮肤按 data-current 画
-          'link[0]': { 'data-xh-collection-item': '', 'data-xh-collection-size': 'md', 'data-xh-collection-context': 'overlay', 'aria-current': null, 'data-current': null, 'aria-selected': null },
+          // 面板里的链接归 Collection Item 导航当前（nav 语境）；不报 aria-selected，当前页由家族按 data-current 画
+          'link[0]': { 'data-xh-collection-item': '', 'data-xh-collection-size': 'md', 'data-xh-collection-context': 'nav', 'aria-current': null, 'data-current': null, 'aria-selected': null },
           'indicator': { 'aria-hidden': 'true', 'hidden': '' },
           'viewport': { 'hidden': '', 'data-state': 'closed' },
         },
@@ -139,8 +144,9 @@ export const navigationMenuSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-state': 'open' },
-          'trigger[0]': { 'aria-expanded': 'false', 'data-state': 'closed' },
-          'trigger[1]': { 'aria-expanded': 'true', 'data-state': 'open' },
+          'trigger[0]': { 'aria-expanded': 'false', 'data-state': 'closed', 'data-in-path': null },
+          // 展开着的那一张投影 data-in-path，家族按它给与 hover 同档的中性面
+          'trigger[1]': { 'aria-expanded': 'true', 'data-state': 'open', 'data-in-path': '' },
           'content[0]': { hidden: '' },
           'content[1]': { 'hidden': null, 'data-state': 'open' },
           'content[2]': { hidden: '' },

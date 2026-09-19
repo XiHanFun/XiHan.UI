@@ -128,6 +128,13 @@ export function connectNavigationMenu<T extends PropTypes>(
         'data-state': stateAttr(isOpen),
         'data-orientation': orientation,
         'data-disabled': dataAttr(disabled),
+        // 入口归 Collection Item 展开路径 / 打开中（真源 §4.1）：面、字色、字重、光标与按压时间线由家族按 nav
+        // 语境给；展开着的那一张投影 data-in-path（与 menubar 同法），家族按它给与 hover 同档的中性面。
+        // data-state open / closed 仍保留给箭头、positioner 与 viewport
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'nav',
+        'data-in-path': dataAttr(isOpen),
         // 不做 roving tabindex，每个 trigger 都留在 Tab 序列里
         'onPointerenter': () => {
           if (!disabled)
@@ -187,13 +194,13 @@ export function connectNavigationMenu<T extends PropTypes>(
     },
 
     // 面板里的链接不拦默认行为，只把导航收起。
-    // 链接走 Collection Item 的 overlay 语境（面板是锚定浮层）：悬停 / 键盘高亮 / 按下面由家族给；
-    // 链接不报 aria-selected，overlay 的选中面永不命中，当前页的字色与字重由皮肤按 data-current 画
+    // 链接归 Collection Item 导航当前（真源 §4.1 / §7.3）：走 nav 语境，悬停 / 键盘高亮 / 按下面与当前页的
+    // 字色字重（data-current：透明面 + brand-strong + medium）都由家族给；nav 不读 aria-selected
     getLinkProps: link => normalize.element({
       ...parts.link.attrs,
       'data-xh-collection-item': '',
       'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'overlay',
+      'data-xh-collection-context': 'nav',
       // 非当前项省略 aria-current，不写 "false"
       'aria-current': link.current ? 'page' : undefined,
       'data-current': dataAttr(link.current),

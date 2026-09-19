@@ -41521,7 +41521,8 @@
       "name": "--xh-navigation-menu-font-size",
       "component": "navigation-menu",
       "part": [
-        "root"
+        "root",
+        "trigger"
       ],
       "property": [
         "font-size"
@@ -41533,7 +41534,7 @@
         "--xh-_navigation-menu-font-size"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 root 部件 font-size 覆盖槽。"
+      "description": "navigation-menu 的 root、trigger 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-gap",
@@ -41666,7 +41667,8 @@
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-_navigation-menu-highlight-bg"
@@ -41688,7 +41690,8 @@
         "error",
         "is(:active, [data-pressed])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed"
+        "pressed",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
@@ -41714,7 +41717,8 @@
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed"
+        "pressed",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -41732,7 +41736,11 @@
         "color"
       ],
       "state": [
-        "current"
+        "current",
+        "disabled",
+        "error",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-brand-strong"
@@ -41768,7 +41776,11 @@
         "font-weight"
       ],
       "state": [
-        "current"
+        "current",
+        "disabled",
+        "error",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-font-weight-medium"
@@ -41837,18 +41849,17 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled",
-        "not([data-disabled])",
-        "state=open"
+        "in-path",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-_navigation-menu-highlight-bg"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 trigger 部件 background 覆盖槽。"
+      "description": "navigation-menu 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-trigger-bg-hover",
@@ -41857,18 +41868,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "hover",
-        "not([data-disabled])"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-_navigation-menu-highlight-bg"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 trigger 部件 background 覆盖槽。"
+      "description": "navigation-menu 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-trigger-bg-pressed",
@@ -41877,19 +41890,21 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "is(:active, [data-pressed])",
-        "not([data-disabled])",
-        "pressed"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 trigger 部件 background 覆盖槽。"
+      "description": "navigation-menu 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-trigger-fg",
@@ -41901,7 +41916,8 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
         "--xh-fg-muted"
@@ -41919,10 +41935,11 @@
         "font-weight"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "navigation-menu 的 trigger 部件 font-weight 覆盖槽。"

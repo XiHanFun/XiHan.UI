@@ -74,13 +74,22 @@ describe('navigation-menu 入口与面板链接（真源 §7.2 / §7.3 / §9.2�
     await mountNav()
     const open = trigger('products')
     expect(open.dataset.state).toBe('open')
+    // 入口接 Collection Item 的 nav 语境：展开着的那一张投影 data-in-path，面由家族给；打开中不加粗、不用品牌字色
+    expect(open.getAttribute('data-xh-collection-context')).toBe('nav')
+    expect(open.hasAttribute('data-in-path')).toBe(true)
     expect(getComputedStyle(open).backgroundColor).toBe(resolve('--xh-bg-subtle'))
+    expect(getComputedStyle(open).fontWeight).toBe('400')
 
     const closed = trigger('docs')
+    expect(closed.hasAttribute('data-in-path')).toBe(false)
     expect(getComputedStyle(closed).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    // 指针划到另一个入口：悬停面与展开面同为 100（划过即切换展开项，两种状态叠在同一条上仍是同一档）
+    // 静息 muted / regular
+    expect(getComputedStyle(closed).color).toBe(resolve('--xh-fg-muted', 'color'))
+    expect(getComputedStyle(closed).fontWeight).toBe('400')
+    // 指针划到另一个入口：悬停面与展开面同为 100（划过即切换展开项，两种状态叠在同一条上仍是同一档），字色提到 default
     await userEvent.hover(closed)
     expect(getComputedStyle(closed).backgroundColor).toBe(resolve('--xh-bg-subtle'))
+    expect(getComputedStyle(closed).color).toBe(resolve('--xh-fg-default', 'color'))
 
     const before = closed.getBoundingClientRect()
     // :active 只能由真实指针进入：按住不放
@@ -98,7 +107,7 @@ describe('navigation-menu 入口与面板链接（真源 §7.2 / §7.3 / §9.2�
     await mountNav()
     const plain = link('#overview')
     const current = link('#pricing')
-    expect(plain.getAttribute('data-xh-collection-context')).toBe('overlay')
+    expect(plain.getAttribute('data-xh-collection-context')).toBe('nav')
     expect(getComputedStyle(plain).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(plain).color).toBe(resolve('--xh-fg-default', 'color'))
 
