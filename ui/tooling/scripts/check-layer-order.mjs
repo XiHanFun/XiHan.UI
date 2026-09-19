@@ -84,7 +84,9 @@ if (orders.layers && orders.tokens && orders.layers.join(',') !== orders.tokens.
 // 每条选择器剥去伪元素后必须整个由 :where() 包住。伪元素自身带 (0,0,1)，无法再低。
 const RESET = 'packages/design/styles/css/reset.css'
 const RESET_MARKER = '/* styles/reset.css */'
-const FAMILY_ROOTS = ['[data-xh-action-control]', '[data-xh-field-chrome]', '[data-xh-collection-item]']
+// 无层产物里的根规则形态：emit-unlayered 给家族属性加了 [data-scope] 前缀，抬到 (0,2,0)
+// 与皮肤同档，才压得住宿主 `.article a` 这类 (0,1,1) 的标签规则（源文件仍是 (0,1,0)）
+const FAMILY_ROOTS = ['[data-scope][data-xh-action-control]', '[data-scope][data-xh-field-chrome]', '[data-scope][data-xh-collection-item]']
 
 /** 去掉块注释，避免注释里的花括号与选择器示例混进解析。 */
 function stripComments(css) {
