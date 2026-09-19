@@ -138,7 +138,9 @@ size 改变条目间距与字号，不写即默认中档
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -169,6 +171,7 @@ size 改变条目间距与字号，不写即默认中档
 | `ArrowDown` / `ArrowRight` | focus in group, group not disabled | 焦点移到下一个可停留条目并选中，末项回绕到首项；dir=rtl 时改由 ArrowLeft 承担 |
 | `ArrowUp` / `ArrowLeft` | focus in group, group not disabled | 焦点移到上一个可停留条目并选中，首项回绕到末项；dir=rtl 时改由 ArrowRight 承担 |
 | `Space` | focus on item, item not disabled | 选中当前条目 |
+| `Space` | held on item, 条目未禁用且组未禁用、非只读 | 按住期间该条目投影 data-pressed，与指针 :active 同一副按压面（行与圆圈一起换面）；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。role=radio 只有 Space 是激活键，Enter 不进按压面；选中与按压互相独立 |
 
 ### ARIA
 
@@ -209,6 +212,7 @@ size 改变条目间距与字号，不写即默认中档
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'row' |

@@ -17,5 +17,6 @@ export const radioGroupKeyboard: KeyboardTable = {
     { id: 'radio-group.kbd.next', keys: ['ArrowDown', 'ArrowRight'], when: 'focus in group, group not disabled', does: '焦点移到下一个可停留条目并选中，末项回绕到首项；dir=rtl 时改由 ArrowLeft 承担' },
     { id: 'radio-group.kbd.prev', keys: ['ArrowUp', 'ArrowLeft'], when: 'focus in group, group not disabled', does: '焦点移到上一个可停留条目并选中，首项回绕到末项；dir=rtl 时改由 ArrowRight 承担' },
     { id: 'radio-group.kbd.select', keys: ['Space'], when: 'focus on item, item not disabled', does: '选中当前条目' },
+    { id: 'radio-group.kbd.press', keys: ['Space'], when: 'held on item, 条目未禁用且组未禁用、非只读', does: '按住期间该条目投影 data-pressed，与指针 :active 同一副按压面（行与圆圈一起换面）；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。role=radio 只有 Space 是激活键，Enter 不进按压面；选中与按压互相独立' },
   ],
 }

@@ -71,6 +71,8 @@ export interface RadioGroupSchema extends MachineSchema {
     value: string | null
     /** 焦点锚点，离开组时为 null。 */
     focusedValue: string | null
+    /** 按压通道：Space 或触屏按住的条目 value。抬起、失焦或指针取消即清空，与选中互相独立。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -81,9 +83,20 @@ export interface RadioGroupSchema extends MachineSchema {
     | { type: 'ITEM.FOCUS', value: string }
     | { type: 'GROUP.BLUR' }
     | { type: 'FORM.RESET' }
+    /** 条目被 Space 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 按住的条目抬起、失焦或指针取消；只松开 value 对应的那一个。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: never
-  action: 'setValue' | 'setFocusedValue' | 'clearFocusedValue' | 'resetToDefault'
+  guard: 'canPress'
+  action:
+    | 'setValue'
+    | 'setFocusedValue'
+    | 'clearFocusedValue'
+    | 'resetToDefault'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: never
 }
 
