@@ -143,9 +143,9 @@
 
 **状态**：`idle` · `open`
 
-**事件**：`TRIGGER.TOGGLE` · `TRIGGER.OPEN` · `TRIGGER.POINTER` · `TRIGGER.FOCUS` · `CLOSE` · `MENUBAR.BLUR` · `VALUE.SET` · `PRESENCE.SET` · `ITEM.FOCUS` · `ITEM.LOST` · `ITEM.SELECT` · `SYNC.OPEN` · `SYNC.CLOSE`
+**事件**：`TRIGGER.TOGGLE` · `TRIGGER.OPEN` · `TRIGGER.POINTER` · `TRIGGER.FOCUS` · `CLOSE` · `MENUBAR.BLUR` · `VALUE.SET` · `PRESENCE.SET` · `ITEM.FOCUS` · `ITEM.LOST` · `ITEM.SELECT` · `PRESS.START` · `PRESS.END` · `SYNC.OPEN` · `SYNC.CLOSE`
 
-**判据**：`hasValue` · `isCurrent` · `shouldAbsorbToggle` · `shouldSwitch`
+**判据**：`hasValue` · `isCurrent` · `shouldAbsorbToggle` · `shouldSwitch` · `canPress`
 
 ### connect API
 
@@ -196,6 +196,7 @@
 | `ArrowRight` / `ArrowLeft` | open, focus in content | 切到相邻菜单并保持展开，焦点落到那一项的 trigger 上 |
 | `a-z` / `0-9` | open, focus in content | 连打检索：焦点跳到首字母匹配的条目（同字符连打则在候选间轮换） |
 | `Enter` / `Space` | focus in item, not disabled | 派发选中详情并收起菜单，焦点归还 trigger |
+| `Enter` / `Space` | held in trigger / item, not disabled | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，条目随菜单收起一并撤下 |
 | `Escape` | open | 收起菜单并把焦点留在 trigger 上 |
 | `Tab` / `Shift+Tab` | open | 收起菜单，焦点不被抢回 trigger，按 Tab 序列自然离开 |
 
@@ -247,6 +248,7 @@
 | `root` | `data-tone` | props.tone |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-in-path` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-collection-context` | 'nav' |
 | `trigger` | `data-xh-collection-item` | '' |
@@ -260,6 +262,7 @@
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

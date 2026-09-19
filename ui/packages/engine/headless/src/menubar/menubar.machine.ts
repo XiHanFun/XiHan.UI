@@ -62,6 +62,9 @@ export const menubarMachine = createMachine({
     autoValue: cell<string | null>(() => ({ defaultValue: null })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     presenceVersion: cell<number>(() => ({ defaultValue: 0 })),
+    // 按压通道：正被按住的那颗（trigger 或 item，按 value 记），与哪张菜单开着无关
+    pressedPart: cell<'trigger' | 'item' | null>(() => ({ defaultValue: null })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: ({ prop }) => ({
     config: null,
@@ -85,10 +88,15 @@ export const menubarMachine = createMachine({
   // 一排菜单共用一份行为层，但退出等待按当前 owner 的 Presence 精确配对。
   effects: ['trackLayer'],
   // 展开项变化后统一重算状态跳转、定位重挂与条目锚点
-  watch: ({ track, context, action }) => {
+  watch: ({ track, context, prop, action }) => {
     track([context.dep('value')], () => action(['syncLayerOwner', 'syncOpenState']))
+    // 按住途中整条菜单栏被禁用：部件不再派 keyup，按压面由机器自己收
+    track([() => prop('disabled')], () => action(['releaseWhenDisabled']))
   },
   on: {
+    // 按压通道：trigger 与 item 都按 value 记，两个状态都认；trigger 开合与按压互不影响
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     // 收起的公共出口；已收起时 clearValue 是空操作
     'CLOSE': { actions: ['setReturnFocus', 'clearValue'] },
     'MENUBAR.BLUR': { actions: ['setReturnFocus', 'clearFocusedValue', 'clearValue'] },
@@ -109,8 +117,9 @@ export const menubarMachine = createMachine({
     open: {
       // 进入展开态时挑好条目锚点，由它认领 tabindex=0
       entry: ['setInitialFocusedItem'],
-      // 先把焦点归还给 focusedValue 指向的 trigger，再清锚点
-      exit: ['restoreTriggerFocus', 'clearFocusedItem', 'clearTypeahead'],
+      // 先把焦点归还给 focusedValue 指向的 trigger，再清锚点。
+      // 收起即松开条目：按住 Enter 选中后条目随菜单藏起，不会再来 keyup；trigger 的按压不受开合影响
+      exit: ['restoreTriggerFocus', 'clearFocusedItem', 'clearTypeahead', 'releaseItemPress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到当前 owner 真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -139,6 +148,11 @@ export const menubarMachine = createMachine({
   },
   implementations: {
     guards: {
+      // 整条菜单栏禁用一票否决，部件自身的禁用由 connect 判定后随事件带入
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        return !prop('disabled') && !(e.type === 'PRESS.START' && e.disabled)
+      },
       // cell 初值可能是 undefined，先归一再判
       hasValue: ({ context }) => (context.get('value') ?? null) != null,
       // 只认 autoValue，受控下 value 在宿主写回前仍是旧值
@@ -287,6 +301,33 @@ export const menubarMachine = createMachine({
           context.set('focusedItem', e.value)
       },
       clearFocusedItem: ({ context }) => context.set('focusedItem', null),
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START')
+          return
+        context.set('pressedPart', e.part)
+        context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一颗的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.END' || context.get('pressedPart') !== e.part || context.get('pressedValue') !== e.value)
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseItemPress: ({ context }) => {
+        if (context.get('pressedPart') !== 'item')
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
+      releaseWhenDisabled: ({ context, prop }) => {
+        if (!prop('disabled'))
+          return
+        context.set('pressedPart', null)
+        context.set('pressedValue', null)
+      },
       setInitialFocusedItem: ({ refs, context, state, flush }) => {
         const pick = (): void => {
           // 指针与点击入口不预先落焦，焦点留在 trigger 上
