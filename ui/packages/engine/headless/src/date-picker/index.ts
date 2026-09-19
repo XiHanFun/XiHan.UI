@@ -46,6 +46,7 @@ export type {
   DatePickerPreset,
   DatePickerPresetProps,
   DatePickerPresetState,
+  DatePickerPressedKey,
   DatePickerRefs,
   DatePickerSchema,
   DatePickerServices,

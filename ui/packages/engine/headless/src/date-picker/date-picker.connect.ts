@@ -5,7 +5,7 @@
 
 // 提供 date picker 相关实现。
 
-import type { Dict, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { Dict, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarPickerTranslations } from '../calendar-picker'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
 import type { TimePickerColumn } from '../time-picker'
@@ -13,11 +13,12 @@ import type {
   DatePickerApi,
   DatePickerFieldApi,
   DatePickerPresetState,
+  DatePickerPressedKey,
   DatePickerServices,
   DatePickerTimeUnit,
   DatePickerTranslations,
 } from './date-picker.types'
-import { dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
 import { connectCalendarPicker } from '../calendar-picker'
 import {
   applySegmentDigit,
@@ -78,6 +79,27 @@ export function connectDatePicker<T extends PropTypes>(
   const interactive = !disabled && !readOnly
   const canClear = interactive && value.length > 0
   const stateAttr = open ? 'open' : 'closed'
+
+  // 按压通道：五类可按部件各自合成一份跟踪器，真源是编排机器 context 里「正被按住的那一个」；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
+  // 日历里的翻页钮、标题与日期格由 calendar-picker 自己的机器记。
+  // 逐条禁用（作者禁用 / 不配模式 / 不可用的快捷选项、清不了的清空钮、藏起的确认钮）随 PRESS.START 带给守卫
+  const pressed = context.get('pressed')
+  const press = (key: DatePickerPressedKey, pressDisabled = false): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled: pressDisabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
   // connect 在 render 期求值，不得读 DOM：位置只读引擎写进 context 的结果
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? DATE_PICKER_DEFAULT_PLACEMENT
@@ -461,6 +483,8 @@ export function connectDatePicker<T extends PropTypes>(
       'aria-labelledby': ids.label,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      ...press('trigger', disabled),
       'onClick': () => {
         // 守卫防程序化派发（原生 disabled 不派 click）
         if (!disabled)
@@ -469,33 +493,44 @@ export function connectDatePicker<T extends PropTypes>(
     }),
 
     // 清空钮同走 field-inset ghost 档，按 has-value 显隐
-    getClearTriggerProps: () => normalize.button({
-      ...parts['clear-trigger'].attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'has-value',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'data-xh-action-has-value': dataAttr(canClear),
-      'type': 'button',
-      // 不进 Tab 序列：段位上按退格即可清值；读屏仍能按名字找到它
-      'tabindex': -1,
-      'aria-label': label.clearTrigger,
-      // 没值就整个收起：有值才出现，出现即可用
-      'hidden': !canClear || undefined,
-      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      'onClick': (event: MouseEvent) => {
-        if (!canClear)
-          return
-        send({ type: 'VALUE.CLEAR' })
-        // pointerdown 已拦掉默认聚焦，键盘/程序化激活这一路则要主动把焦点送回首段
-        focusFirstSegment(event.currentTarget as HTMLElement)
-      },
-    }),
+    getClearTriggerProps: () => {
+      const clearPress = press('clear', !canClear)
+      return normalize.button({
+        ...parts['clear-trigger'].attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'has-value',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-xh-action-has-value': dataAttr(canClear),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressed === 'clear'),
+        'type': 'button',
+        // 不进 Tab 序列：段位上按退格即可清值；读屏仍能按名字找到它
+        'tabindex': -1,
+        'aria-label': label.clearTrigger,
+        // 没值就整个收起：有值才出现，出现即可用
+        'hidden': !canClear || undefined,
+        // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里；触屏按下仍要进按压通道
+        'onPointerDown': (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+          clearPress.onPointerDown(event)
+        },
+        'onPointerUp': clearPress.onPointerUp,
+        'onPointerCancel': clearPress.onPointerCancel,
+        'onKeyDown': clearPress.onKeyDown,
+        'onKeyUp': clearPress.onKeyUp,
+        'onBlur': clearPress.onBlur,
+        'onClick': (event: MouseEvent) => {
+          if (!canClear)
+            return
+          send({ type: 'VALUE.CLEAR' })
+          // pointerdown 已拦掉默认聚焦，键盘/程序化激活这一路则要主动把焦点送回首段
+          focusFirstSegment(event.currentTarget as HTMLElement)
+        },
+      })
+    },
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
@@ -597,6 +632,8 @@ export function connectDatePicker<T extends PropTypes>(
         'data-disabled': dataAttr(presetDisabled),
         // roving tabindex：只有落点那一条留在 Tab 序列内，其余靠方向键到达
         'tabindex': presetAnchor === v ? 0 : -1,
+        // 按住的回执与写值同一道门：只读、逐条禁用都不进；Enter 写值收起后由展开态的 exit 松开
+        ...press(`preset:${v}`, presetDisabled || readOnly),
         'onClick': () => pickPreset(v),
       })
     },
@@ -680,6 +717,8 @@ export function connectDatePicker<T extends PropTypes>(
         'data-state': selected ? 'checked' : 'unchecked',
         // roving tabindex：每列只有落点那一格留在 Tab 序列内，其余靠方向键到达
         'tabindex': timeAnchorOf(unit) === v ? 0 : -1,
+        // 按住的回执与写值同一道门：只读不进
+        ...press(`time-item:${unit}:${v}`, readOnly),
         'onClick': () => pickTimeUnit(unit, v),
       })
     },
@@ -695,6 +734,8 @@ export function connectDatePicker<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'type': 'button',
       'hidden': !showTime || undefined,
+      // 藏起的确认钮不接受按压；只读仍可收口，照有回执。Enter 在 keydown 即收起浮层，随后由展开态的 exit 松开
+      ...press('confirm', !showTime),
       'onClick': () => send({ type: 'CLOSE' }),
     }),
   }

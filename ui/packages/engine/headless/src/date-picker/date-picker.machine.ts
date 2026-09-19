@@ -9,7 +9,7 @@ import type { PositionResult, Service } from '@xihan-ui/core'
 import type { CalendarPickerSchema, CalendarPickerSelectionMode } from '../calendar-picker'
 import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-field'
 import type { CalendarGranularity, CalendarView } from '../shared/calendar'
-import type { DatePickerSchema } from './date-picker.types'
+import type { DatePickerPressedKey, DatePickerSchema } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { canTakeFocus, itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { calendarPickerAnatomy } from '../calendar-picker'
@@ -208,6 +208,8 @@ export const datePickerMachine = createMachine({
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     // 缺省搬：触发钮、键盘与命令式入口都要把焦点送进浮层
     moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
+    // 按压通道：被 Space / Enter 或触屏按住的那一个部件（清空 / 触发 / 确认钮、快捷选项、时间格），按 key 记
+    pressed: cell<DatePickerPressedKey | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -223,8 +225,10 @@ export const datePickerMachine = createMachine({
   effects: ['trackLayer'],
   // 开合受控（给定 open prop）时用户事件只发意图、不自改状态；宿主写回 open 后由 watch
   // 派发 CONTROLLED.* 回写状态
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
+    // 按住途中转入禁用 / 只读或值被清空：触发钮随即 disabled、清空钮藏起，不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value')], () => action(['releaseWhenInert']))
   },
   // 两个状态都要认；展开态另行声明的 VALUE.SET 会盖过这里这一条
   on: {
@@ -233,6 +237,9 @@ export const datePickerMachine = createMachine({
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'FOCUSED.SET': { actions: ['setFocusedValue'] },
     'VIEW.SET': { actions: ['setActiveView'] },
+    // 按压通道：触发钮与清空钮在收起态按、快捷选项 / 时间格 / 确认钮在展开态按，两个状态都认
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     closed: {
@@ -252,6 +259,8 @@ export const datePickerMachine = createMachine({
     open: {
       // 焦点域靠这个值去活 DOM 里找落点格子；钻到哪一层也一并拨回作者要的那一档
       entry: ['focusSelectedDay', 'resetActiveView'],
+      // 按住快捷选项 / 确认钮途中收起（Enter 在 keydown 即写值 / 确认收起）：浮层里的部件不会再来 keyup
+      exit: ['releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -300,8 +309,41 @@ export const datePickerMachine = createMachine({
           return false
         return e.value.length >= 1
       },
+
+      /**
+       * 按压守卫：整体禁用一律不进；触发钮与确认钮只管开合，只读仍可展开查看 / 收口，照有回执；其余（清空钮、
+       * 快捷选项、时间格）与它们各自的写值同一道门——只读改不动值，逐条禁用的事实由 connect 随事件带来。
+       */
+      canPress: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || e.disabled || prop('disabled'))
+          return false
+        return !prop('readOnly') || e.key === 'trigger' || e.key === 'confirm'
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      // 转入禁用一律松开；只读松开触发钮与确认钮以外的；清空钮在值清空时藏起，随之松开（与 connect 的 canClear 同口径）
+      releaseWhenInert: ({ context, prop }) => {
+        const pressed = context.get('pressed')
+        if (pressed == null)
+          return
+        const readOnlyHit = prop('readOnly') && pressed !== 'trigger' && pressed !== 'confirm'
+        if (prop('disabled') || readOnlyHit || (pressed === 'clear' && context.get('value').length === 0))
+          context.set('pressed', null)
+      },
+
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('focusedValue')
