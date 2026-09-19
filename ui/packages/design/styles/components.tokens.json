@@ -28473,7 +28473,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "file-upload 的 item 部件 border 覆盖槽。"
