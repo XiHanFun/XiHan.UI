@@ -28185,8 +28185,9 @@
         "background"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "not(:disabled)",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
@@ -28350,8 +28351,9 @@
         "background"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "not(:disabled)",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
@@ -29357,8 +29359,9 @@
         "background"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "not(:disabled)",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"

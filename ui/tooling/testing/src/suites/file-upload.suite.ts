@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { fileUploadAnatomy, fileUploadKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
@@ -484,6 +485,45 @@ export const fileUploadSuite: ConformanceSuite = {
             },
           },
         },
+      ],
+    },
+
+    {
+      name: 'Space / Enter 按住与触屏按下：选择钮、删除钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不开框、不删、不清',
+      spec: { adr: 'press-channel' },
+      covers: ['file-upload.kbd.press'],
+      fixture: withItems(2),
+      props: { maxFiles: 3, defaultFiles: [PHOTO, NOTES] },
+      steps: [
+        // 选择钮打开系统文件框后窗口失焦、按压面随之撤下；jsdom 不把按键翻成 click，这里失焦走共享步骤的 el.blur()
+        heldPress('file-upload', 'trigger'),
+        heldPress('file-upload', 'item-delete-trigger', { selector: '[data-scope="file-upload"][data-part="item"]:first-child [data-part="item-delete-trigger"]' }),
+        heldPress('file-upload', 'clear-trigger'),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } },
+          expect: { counts: { item: 2 }, parts: { 'trigger': { 'data-pressed': null }, 'item-delete-trigger[0]': { 'data-pressed': null }, 'item-delete-trigger[1]': { 'data-pressed': null } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '空列表时清空钮照常在位、可按，按住照有回执',
+      spec: { adr: 'press-channel' },
+      covers: ['file-upload.kbd.press'],
+      steps: [
+        heldPress('file-upload', 'clear-trigger'),
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'clear-trigger': { 'data-empty': '' } }, events: [] } },
+      ],
+    },
+    {
+      name: '禁用时三种按钮都是原生 disabled，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      fixture: withItems(1),
+      props: { defaultFiles: [PHOTO], disabled: true },
+      steps: [
+        heldPressIgnored('file-upload', 'trigger', '禁用时选择钮原生 disabled，不接受按压'),
+        heldPressIgnored('file-upload', 'item-delete-trigger', '禁用时删除钮原生 disabled，不接受按压'),
+        heldPressIgnored('file-upload', 'clear-trigger', '禁用时清空钮原生 disabled，不接受按压'),
       ],
     },
   ],

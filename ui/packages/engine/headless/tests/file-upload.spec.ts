@@ -693,3 +693,122 @@ describe('connectFileUpload 拖拽', () => {
     expect(names(m)).toEqual([])
   })
 })
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const key = (el: HTMLElement, type: 'keydown' | 'keyup', k: string): void => {
+    el.dispatchEvent(new KeyboardEvent(type, { key: k, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): PointerEvent => {
+    const event = new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
+    el.dispatchEvent(event)
+    return event
+  }
+  const pressed = (el: HTMLElement): boolean => el.hasAttribute('data-pressed')
+  /** 条目节点每次重渲重建，删除钮要现取。 */
+  const del = (m: Mounted, index: number): HTMLElement => m.partIn(m.items()[index]!, 'item-delete-trigger')
+
+  it('选择钮：keydown 在场、keyup 撤下；失焦撤下（打开系统文件框即失焦）；触屏按下在场、抬起 / 取消撤下；鼠标不走这一路', () => {
+    const m = open()
+    expect(pressed(m.trigger)).toBe(false)
+    key(m.trigger, 'keydown', ' ')
+    expect(pressed(m.trigger)).toBe(true)
+    key(m.trigger, 'keyup', ' ')
+    expect(pressed(m.trigger)).toBe(false)
+    key(m.trigger, 'keydown', 'Enter')
+    expect(pressed(m.trigger)).toBe(true)
+    m.trigger.dispatchEvent(new FocusEvent('blur'))
+    expect(pressed(m.trigger)).toBe(false)
+    pointer(m.trigger, 'pointerdown', 'touch')
+    expect(pressed(m.trigger)).toBe(true)
+    pointer(m.trigger, 'pointercancel', 'touch')
+    expect(pressed(m.trigger)).toBe(false)
+    pointer(m.trigger, 'pointerdown', 'touch')
+    expect(pressed(m.trigger)).toBe(true)
+    pointer(m.trigger, 'pointerup', 'touch')
+    expect(pressed(m.trigger)).toBe(false)
+    pointer(m.trigger, 'pointerdown', 'mouse')
+    expect(pressed(m.trigger)).toBe(false)
+  })
+
+  it('清空钮：按住投影且不清列表；空列表时按钮照常在位，按住照有回执', () => {
+    const m = open({ maxFiles: 3, defaultFiles: [makeFile('a.txt')] })
+    key(m.clear, 'keydown', 'Enter')
+    expect(pressed(m.clear)).toBe(true)
+    expect(pressed(m.trigger)).toBe(false)
+    // 另一个按钮的 keyup 松不开正按着的这个
+    key(m.trigger, 'keyup', 'Enter')
+    expect(pressed(m.clear)).toBe(true)
+    key(m.clear, 'keyup', 'Enter')
+    expect(pressed(m.clear)).toBe(false)
+    expect(m.items()).toHaveLength(1)
+
+    const empty = open()
+    expect(empty.clear.getAttribute('data-empty')).toBe('')
+    pointer(empty.clear, 'pointerdown', 'touch')
+    expect(pressed(empty.clear)).toBe(true)
+    pointer(empty.clear, 'pointerup', 'touch')
+    expect(pressed(empty.clear)).toBe(false)
+  })
+
+  it('删除钮：按文件标识只亮那一颗；按住途中这一条被删掉（Enter 在 keydown 即删）由机器松开', () => {
+    const m = open({ maxFiles: 3, defaultFiles: [makeFile('a.txt'), makeFile('b.txt')] })
+    pointer(del(m, 0), 'pointerdown', 'touch')
+    expect(pressed(del(m, 0))).toBe(true)
+    expect(pressed(del(m, 1))).toBe(false)
+    pointer(del(m, 0), 'pointerup', 'touch')
+    expect(pressed(del(m, 0))).toBe(false)
+
+    key(del(m, 1), 'keydown', 'Enter')
+    expect(pressed(del(m, 1))).toBe(true)
+    del(m, 1).click()
+    expect(m.items()).toHaveLength(1)
+    expect(m.api().acceptedFiles.map(f => f.name)).toEqual(['a.txt'])
+    expect(pressed(del(m, 0))).toBe(false)
+    // 剩下那颗仍能进
+    key(del(m, 0), 'keydown', ' ')
+    expect(pressed(del(m, 0))).toBe(true)
+    key(del(m, 0), 'keyup', ' ')
+    expect(pressed(del(m, 0))).toBe(false)
+  })
+
+  it('远程附件的删除钮按 remote: 前缀的 id 记，删掉后同样松开', () => {
+    const m = open({ maxFiles: 3, defaultRemoteFiles: [{ id: 'r1', name: 'r.png', url: '/r.png' }], defaultFiles: [makeFile('a.txt')] })
+    const remoteDel = m.root.querySelector<HTMLElement>('[data-part="item"][data-remote] [data-part="item-delete-trigger"]')
+    // 夹具只渲染本地文件的条目：远程附件的删除钮直接拿 getter 的处理器驱动
+    expect(remoteDel).toBeNull()
+    type Handlers = Record<string, (e?: unknown) => void> & { 'data-pressed'?: string }
+    const props = (): Handlers => m.api().getItemDeleteTriggerProps({ file: m.api().remoteFiles[0]! }) as unknown as Handlers
+    props().onKeyDown!({ key: 'Enter', repeat: false, isComposing: false })
+    expect(props()['data-pressed']).toBe('')
+    expect(pressed(del(m, 0))).toBe(false)
+    m.api().deleteFile(m.api().remoteFiles[0]!)
+    expect(m.api().remoteFiles).toHaveLength(0)
+    const gone = m.api().getItemDeleteTriggerProps({ file: { id: 'r1', name: 'r.png', url: '/r.png' } }) as unknown as Handlers
+    expect(gone['data-pressed']).toBeUndefined()
+  })
+
+  it('不进：禁用时三种按钮都是原生 disabled，程序化派发也被守卫拦下', () => {
+    const m = open({ disabled: true, defaultFiles: [makeFile('a.txt')] })
+    key(m.trigger, 'keydown', ' ')
+    pointer(m.trigger, 'pointerdown', 'touch')
+    key(m.clear, 'keydown', ' ')
+    pointer(del(m, 0), 'pointerdown', 'touch')
+    expect(pressed(m.trigger)).toBe(false)
+    expect(pressed(m.clear)).toBe(false)
+    expect(pressed(del(m, 0))).toBe(false)
+  })
+
+  it('按住途中转入禁用：按钮随即 disabled、不会再来 keyup，按压面由机器自己收', () => {
+    // 夹具的 props 是普通对象，watch 只在 props 身份变化时复查，走 signal 才惊动它
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({})
+    const service = createService(fileUploadMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const api = (): Record<string, unknown> => connectFileUpload(service, normalizeProps).getTriggerProps() as Record<string, unknown>
+    ;(api().onKeyDown as (e: unknown) => void)({ key: 'Enter', repeat: false, isComposing: false })
+    expect(api()['data-pressed']).toBe('')
+    props.set({ disabled: true })
+    expect(api()['data-pressed']).toBeUndefined()
+    runtime.stop()
+  })
+})

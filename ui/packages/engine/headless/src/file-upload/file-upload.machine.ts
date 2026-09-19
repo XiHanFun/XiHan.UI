@@ -8,6 +8,8 @@
 import type { ActionFn, ContextFacade, PropFn } from '@xihan-ui/core'
 import type {
   FileRejectReason,
+  FileUploadFile,
+  FileUploadPressedKey,
   FileUploadRejection,
   FileUploadRemoteFile,
   FileUploadSchema,
@@ -184,6 +186,14 @@ export function sameRemoteFiles(a: readonly FileUploadRemoteFile[], b: readonly 
   return sameArray(a, b)
 }
 
+/**
+ * 按压通道里删除钮的 key：本地文件用机器发的内部 id，远程附件用 remote: 前缀加它的 id；
+ * connect 与机器（按住途中文件离开列表时松开）都按这一条算。
+ */
+export function fileUploadPressKey(refs: UploadActionParams['refs'], file: FileUploadFile): FileUploadPressedKey {
+  return `item-delete:${file instanceof File ? fileKeyOf(refs, file) : `remote:${file.id}`}`
+}
+
 /** 取（或发）文件的内部 id：文件对象是身份，同一个 File 恒拿同一个 id。 */
 function fileKeyOf(refs: UploadActionParams['refs'], file: File): string {
   const ids = refs.get('fileIds')
@@ -275,6 +285,8 @@ export const fileUploadMachine = createMachine({
       }
     }),
     uploads: cell<Record<string, FileUploadSnapshot>>(() => ({ defaultValue: {} })),
+    // 按压通道：被 Space / Enter 或触屏按住的那一个按钮（清空 / 选择 / 逐条删除），按 key 记
+    pressed: cell<FileUploadPressedKey | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     fileIds: new WeakMap<File, string>(),
@@ -282,9 +294,11 @@ export const fileUploadMachine = createMachine({
     uploadControllers: new Map<string, AbortController>(),
   }),
   initialState: () => 'idle',
-  watch: ({ track, context, action }) => {
+  watch: ({ track, prop, context, action }) => {
     // 列表变了要对齐传输：新收下的按 autoUpload 开传，移出的中止并清快照
     track([context.dep('acceptedFiles')], () => action(['syncUploads']))
+    // 按住途中转入禁用，或按住的删除钮随文件一起离开列表（Enter 在 keydown 即删）：不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled'), context.dep('acceptedFiles'), context.dep('remoteFiles')], () => action(['releaseWhenInert']))
   },
   // 传输的生命周期跟机器不跟状态位：拖拽切态不能打断在传的
   effects: ['trackUploads'],
@@ -298,6 +312,9 @@ export const fileUploadMachine = createMachine({
     'PICKER.OPEN': { guard: 'canChange', actions: ['openFilePicker'] },
     'UPLOAD.START': { guard: 'canChange', actions: ['startUpload'] },
     'REMOTE.DELETE': { guard: 'canChange', actions: ['deleteRemoteFile'] },
+    // 按压通道：三种按钮都是原生 disabled，禁用时不派事件；程序化派发由 canChange 再守一次
+    'PRESS.START': { guard: 'canChange', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -328,6 +345,33 @@ export const fileUploadMachine = createMachine({
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'acceptedFiles', 'files', 'defaultFiles')
         resetDeclaredValue(params, 'remoteFiles', 'remoteFiles', 'defaultRemoteFiles')
+      },
+
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个按钮的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      // 转入禁用一律松开；按住的删除钮所属文件不在列表里了（删掉、受控写回、重置）也松开
+      releaseWhenInert: ({ context, prop, refs }) => {
+        const pressed = context.get('pressed')
+        if (pressed == null)
+          return
+        if (prop('disabled')) {
+          context.set('pressed', null)
+          return
+        }
+        if (!pressed.startsWith('item-delete:'))
+          return
+        const files: FileUploadFile[] = [...context.get('remoteFiles'), ...context.get('acceptedFiles')]
+        if (!files.some(file => fileUploadPressKey(refs, file) === pressed))
+          context.set('pressed', null)
       },
 
       // 对齐传输与列表：移出的中止并清快照，在列的按 autoUpload 开传
