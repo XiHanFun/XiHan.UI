@@ -47,7 +47,7 @@ function resolve(token: string, property: 'background-color' | 'color' = 'backgr
   return value
 }
 
-async function mountTable(): Promise<HTMLElement[]> {
+async function mountTable(): Promise<[HTMLElement, HTMLElement, HTMLElement]> {
   host = document.createElement('div')
   // 表比容器宽：横向要滚，吸附列才有意义
   host.style.inlineSize = '360px'
@@ -82,7 +82,10 @@ async function mountTable(): Promise<HTMLElement[]> {
   const found = [...host.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="body"] > [data-scope="table"][data-part="row"]')]
   for (const row of found)
     row.style.transition = 'none'
-  return found
+  const [a, b, c] = found
+  if (!a || !b || !c || found.length !== rows.length)
+    throw new Error(`表体应渲染 ${rows.length} 行，实际 ${found.length} 行`)
+  return [a, b, c]
 }
 
 describe('表体行的 Collection Item 语境', () => {
@@ -117,8 +120,8 @@ describe('表体行的 Collection Item 语境', () => {
     // a 是选中行：行与吸附格同色（品牌淡底）；b 未选中：吸附格是实色 surface，不透明
     expect(getComputedStyle(a).backgroundColor).toBe(resolve('--xh-bg-brand-subtle'))
     expect(getComputedStyle(cellsA[1]!).backgroundColor).toBe(resolve('--xh-bg-brand-subtle'))
-    const cellsB = [...b!.querySelectorAll<HTMLElement>('[data-part="cell"]')]
-    expect(getComputedStyle(b!).backgroundColor).toBe(resolve('--xh-bg-surface'))
+    const cellsB = [...b.querySelectorAll<HTMLElement>('[data-part="cell"]')]
+    expect(getComputedStyle(b).backgroundColor).toBe(resolve('--xh-bg-surface'))
     expect(getComputedStyle(cellsB[1]!).backgroundColor).toBe(resolve('--xh-bg-surface'))
   })
 
@@ -126,15 +129,15 @@ describe('表体行的 Collection Item 语境', () => {
     const [a, b] = await mountTable()
     expect(a.getAttribute('aria-selected')).toBe('true')
     expect(getComputedStyle(a).color).toBe(resolve('--xh-fg-on-brand-subtle', 'color'))
-    const before = b!.getBoundingClientRect()
-    await userEvent.hover(b!)
-    expect(getComputedStyle(b!).backgroundColor).toBe(resolve('--xh-bg-subtle'))
-    await pressPointer(b!)
-    expect(b!.matches(':active')).toBe(true)
-    expect(getComputedStyle(b!).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
-    expect(getComputedStyle(b!).scale).toBe('none')
-    expect(b!.getBoundingClientRect().height).toBe(before.height)
-    await releasePointer(b!)
+    const before = b.getBoundingClientRect()
+    await userEvent.hover(b)
+    expect(getComputedStyle(b).backgroundColor).toBe(resolve('--xh-bg-subtle'))
+    await pressPointer(b)
+    expect(b.matches(':active')).toBe(true)
+    expect(getComputedStyle(b).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
+    expect(getComputedStyle(b).scale).toBe('none')
+    expect(b.getBoundingClientRect().height).toBe(before.height)
+    await releasePointer(b)
     await userEvent.hover(a)
     expect(getComputedStyle(a).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-hover'))
   })
