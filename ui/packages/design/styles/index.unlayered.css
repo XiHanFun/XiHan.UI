@@ -10995,7 +10995,8 @@
   background: var(--xh-tag-close-bg-hover, color-mix(in oklab, currentColor 14%, transparent));
 }
 
-[data-scope='tag'][data-part='close-trigger']:not(:disabled):active {
+/* 指针 :active 与 Headless 投影的 data-pressed（Space / Enter 与触屏按住）看见同一副按压面 */
+[data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
   background: var(--xh-tag-close-bg-active, color-mix(in oklab, currentColor 22%, transparent));
   scale: var(--xh-motion-scale-press);
   transition-duration: var(--xh-motion-duration-press);

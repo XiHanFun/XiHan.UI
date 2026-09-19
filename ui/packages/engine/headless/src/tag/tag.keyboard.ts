@@ -21,5 +21,11 @@ export const tagKeyboard: KeyboardTable = {
       when: 'focus 在 close-trigger 上，且 closable 且未禁用、非只读',
       does: '收起标签并通知 open=false；关闭按钮是原生 button，这两个键由平台转换为 click',
     },
+    {
+      id: 'tag.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in close-trigger, closable 且未禁用、非只读',
+      does: '按住期间关闭按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中转入禁用 / 只读、收回关闭按钮或标签收起也撤下。root 由把标签当条目用的宿主（tag-group）接同一条通道',
+    },
   ],
 }

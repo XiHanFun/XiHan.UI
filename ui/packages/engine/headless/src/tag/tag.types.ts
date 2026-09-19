@@ -5,10 +5,27 @@
 
 // 定义 tag 类型契约。
 
-import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { MachineSchema, PressHandlers, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 形态。取值与 tag.css 的选择器一一对应。 */
 export type TagVariant = 'ghost' | 'outline' | 'solid' | 'subtle'
+
+/**
+ * 按压通道里正被按住的部件：close-trigger 是自家的关闭钮；root 由把标签当条目用的宿主（tag-group 的可选行）按住，
+ * 单独使用的标签不接收焦点，root 只在触屏按下时进来。
+ */
+export type TagPressedPart = 'root' | 'close-trigger'
+
+/**
+ * 宿主替静态标签供给的按压通道：真源在宿主的机器里，标签只投影 data-pressed 并把处理器合成到部件上。
+ * connectStaticTag 未提供它时两个部件都不接按压。
+ */
+export interface TagPressPort {
+  /** 正被按住的部件；没有按住时为 null。 */
+  pressed: TagPressedPart | null
+  /** 合成到该部件 getter 上的处理器。 */
+  handlers: (part: TagPressedPart) => PressHandlers
+}
 
 export interface TagOpenChangeDetails {
   open: boolean
@@ -45,7 +62,13 @@ export interface TagSchema extends MachineSchema {
     onOpenChange?: (details: TagOpenChangeDetails) => void
     translations?: Partial<TagTranslations>
   }
-  context: Record<string, never>
+  context: {
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的部件，该部件投影 data-pressed；没有按住时为 null。
+     * 禁用与只读时谁都不进，关闭钮还要 closable；收起时一并松开（钮随标签一起 hidden，不会再来 keyup）。
+     */
+    pressed: TagPressedPart | null
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: 'open' | 'closed'
@@ -55,9 +78,12 @@ export interface TagSchema extends MachineSchema {
     // 受控回写：宿主改 open 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSED' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪一个部件
+    | { type: 'PRESS.START', part: TagPressedPart }
+    | { type: 'PRESS.END', part: TagPressedPart }
   tag: never
-  guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
+  guard: 'isOpenControlled' | 'canPress'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'releasePress'
   effect: never
 }
 

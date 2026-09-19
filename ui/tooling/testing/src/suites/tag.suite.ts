@@ -2,6 +2,7 @@ import type { ConformanceSuite } from '../conformance/types'
 import { tagAnatomy, tagKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
@@ -100,6 +101,30 @@ export const tagSuite: ConformanceSuite = {
       covers: ['tag.kbd.close'],
       props: { closable: true },
       steps: [nativeActivation('tag', 'close-trigger')],
+    },
+    {
+      // 关闭钮是原生按钮，Space 与 Enter 都是激活键；root 不接收焦点，只有触屏那一路（宿主把标签当条目用时才有意义）
+      name: 'Space / Enter 按住与触屏按下：关闭钮投影 data-pressed，抬起、失焦或指针取消撤下；root 同一条通道只走触屏',
+      spec: { adr: 'press-channel' },
+      covers: ['tag.kbd.press'],
+      props: { closable: true },
+      steps: [
+        heldPress('tag', 'close-trigger'),
+        heldPress('tag', 'root', { keyboardHost: null }),
+      ],
+    },
+    {
+      name: '禁用、只读或不给关闭钮时按住不进按压面',
+      spec: { adr: 'press-channel' },
+      props: { closable: true, disabled: true },
+      steps: [
+        heldPressIgnored('tag', 'close-trigger', '禁用的关闭钮不接受按压'),
+        heldPressIgnored('tag', 'root', '禁用的标签不接受按压', { keyboardHost: null }),
+        { kind: 'setProps', props: { disabled: false, readOnly: true } },
+        heldPressIgnored('tag', 'close-trigger', '只读的关闭钮不接受按压'),
+        { kind: 'setProps', props: { readOnly: false, closable: false } },
+        heldPressIgnored('tag', 'close-trigger', '收起的关闭钮不接受按压'),
+      ],
     },
     {
       name: '受控 open：点击只发 open-change 不自改 DOM，父写回 open 后才收起',

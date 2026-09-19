@@ -247,7 +247,7 @@ export type { MeasuredRow, TableApi, TableCellProps, TableColumn, TableColumnDef
 export { connectTabs, tabsAnatomy, tabsKeyboard, tabsMachine, tabsMeta, tabsTriggerQuery } from './tabs'
 export type { TabsActivationMode, TabsApi, TabsCloseDetails, TabsContentProps, TabsIndicatorRect, TabsMoveDetails, TabsNode, TabsNodeMeta, TabsSchema, TabsTranslations, TabsTriggerProps, TabsValueChangeDetails, TabsVariant } from './tabs'
 export { connectStaticTag, connectTag, tagAnatomy, tagKeyboard, tagMachine, tagMeta, tagVariantForControl } from './tag'
-export type { TagApi, TagOpenChangeDetails, TagSchema, TagTranslations, TagVariant } from './tag'
+export type { TagApi, TagOpenChangeDetails, TagPressedPart, TagPressPort, TagSchema, TagTranslations, TagVariant } from './tag'
 export { connectTagGroup, normalizeTagSelection, tagGroupAnatomy, tagGroupItems, tagGroupItemText, tagGroupKeyboard, tagGroupMachine, tagGroupMeta } from './tag-group'
 export type { TagGroupApi, TagGroupFocusModel, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupNodeMeta, TagGroupRefs, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails } from './tag-group'
 export { appendTags, connectTagsInput, isAtMax, isOverflow, normalizeTag, normalizeTags, sameTags, splitTags, TAGS_INPUT_DELIMITER, tagsDelimiter, tagsInputAnatomy, tagsInputEditInputId, tagsInputKeyboard, tagsInputMachine, tagsInputMeta } from './tags-input'
