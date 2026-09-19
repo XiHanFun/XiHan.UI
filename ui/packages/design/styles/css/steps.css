@@ -241,7 +241,7 @@
   }
 
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
-    border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-subtle));
+    border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-default));
     background: var(--xh-steps-indicator-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
     /* 这一步动不了，实心那档的内高光跟着收掉 */
