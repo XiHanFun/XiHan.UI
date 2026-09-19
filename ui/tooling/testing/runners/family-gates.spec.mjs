@@ -251,6 +251,19 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
     expect(result.status).toBe(1)
     expect(result.stderr).toContain('button 的 root 登记为可按，connect 的 getter 却没投影 data-pressed')
   }, SPAWN_TIMEOUT)
+
+  it('形态②按登记的 attr 判：context-menu 的 trigger 投影 data-pressing 即放行，摘掉即判红', () => {
+    const passing = createFixture()
+    dropPressedExcuse(passing)
+    expect(run('check-press-feedback.mjs', passing).stderr).not.toContain('context-menu 的 trigger')
+
+    const root = createFixture()
+    dropPressedExcuse(root)
+    rewriteConnect(root, 'context-menu', '\'data-pressing\': dataAttr(pressing),', '')
+    const result = run('check-press-feedback.mjs', root)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('context-menu 的 trigger 登记为可按，connect 的 getter 却没投影 data-pressing')
+  }, SPAWN_TIMEOUT)
 })
 
 gateSuite('check-text-role.mjs', {

@@ -21,6 +21,7 @@ export const contextMenuKeyboard: KeyboardTable = {
     { id: 'context-menu.kbd.last', keys: ['End'], when: 'open, focus in content', does: '焦点移到末个可用条目' },
     { id: 'context-menu.kbd.typeahead', keys: ['单个可打印字符'], when: 'open, typeahead 未关', does: '连打检索把焦点移到首字母匹配的条目，不选中它' },
     { id: 'context-menu.kbd.select', keys: ['Enter', 'Space'], when: 'focus in item, not disabled', does: '派发选中详情并关闭菜单，焦点归还触发区', restoresFocus: true },
+    { id: 'context-menu.kbd.press', keys: ['Enter', 'Space'], when: 'held in item, not disabled', does: '按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或菜单收起撤下' },
     { id: 'context-menu.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭菜单并把焦点归还触发区', restoresFocus: true },
     { id: 'context-menu.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '关闭菜单，焦点不归还触发区，按 Tab 序列自然离开', restoresFocus: false },
   ],
