@@ -29,6 +29,7 @@ function createFixture() {
   temporaryRoots.push(root)
   cpSync(join(ROOT, 'packages/design/styles/css'), join(root, 'packages/design/styles/css'), { recursive: true })
   cpSync(join(ROOT, 'packages/design/styles/family'), join(root, 'packages/design/styles/family'), { recursive: true })
+  cpSync(join(ROOT, 'packages/design/styles/recipes'), join(root, 'packages/design/styles/recipes'), { recursive: true })
   const headless = join(ROOT, 'packages/engine/headless/src')
   for (const comp of readdirSync(headless, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => e.name)) {
     for (const file of [`${comp}.connect.ts`, `${comp}.anatomy.ts`]) {
