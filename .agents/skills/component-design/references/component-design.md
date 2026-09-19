@@ -105,7 +105,7 @@ Vue、React、Web Components 只负责：
 | --- | --- | --- |
 | Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、Segmented item、Tabs trigger、各类 trigger | 高度、内边距、图标随档、缺省语气（§7.2）、按承载面的交互阶梯（§7.2）、按压（§9.1）、焦点、禁用、加载 |
 | Field Chrome | Input、Textarea、Select Trigger、Date/Time Field、Combobox、Cascader、TagsInput、PinInput、PromptInput | 静息描边外壳（§8.3）、`outline\|subtle\|ghost` 三档 × rest/hover/focus/invalid/disabled/readOnly/loading 七态、placeholder、前后缀、清空、标签与说明排版（§6.4） |
-| Collection Item | Menu Item、Listbox Item、Tree Node、Table Row、Transfer Item、SideNav Link | highlighted、按集合语境的 selected/current 标记（§7.3）、pressed 只换面（§9.2）、disabled、缩进、指示器 |
+| Collection Item | Menu Item、Listbox Item、Tree Node、Table Row、Transfer Item、SideNav Link、Tabs line trigger、Anchor link、Breadcrumb link、NavigationMenu / Menubar trigger | highlighted、按集合语境的 selected/current 标记（§7.3）、pressed 只换面（§9.2）、disabled、缩进、指示器 |
 | Surface | Card、Alert、Panel、CodeView、DiffView、Log、JsonViewer、ToolCall、Reasoning、Approval、QuestionFlow、Accordion/Toolbar/PageHeader 的 outline 档、Tree/Listbox/Transfer/List/Descriptions/Table 容器面 | 边界三选一（§8.3）、raised 逐部件登记（§8）、标题/说明排版（§6.4）、内衬只走 `--xh-surface-*`、层级 |
 | Overlay | Popover、Menu、Select content、Dialog、Drawer、Tooltip、NavigationMenu content、日期/时间面板 | Portal、定位、遮罩、材质按内容判定（§8.4）、进退场按锚定关系（§9.5）、浮层滚动面（§6.6）、焦点归还 |
 | Feedback | Toast、Notification、Progress、Skeleton | 状态语气、sheet 面描边（§8.4）、计时、暂停、消除、加载和即时反馈 |
@@ -126,15 +126,14 @@ Vue、React、Web Components 只负责：
 | Segmented / Tabs segment 的轨道 | Surface（淡底面） | 形状 surface；见 §6.3 |
 | Segmented / Tabs segment 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
 | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 选中 = 品牌淡底；见 §7.3 |
-| Tabs line trigger、Anchor link、SideNav link、NavigationMenu trigger | Collection Item（导航当前） | 当前 = 指示条 / 字色；见 §7.3 |
-| Breadcrumb link | Collection Item（导航当前） | 当前页是不可点位置：`aria-current="page"`，`--xh-fg-default` + medium，无指示条；见 §7.3 |
-| Menubar trigger | Collection Item（展开路径 / 打开中） | 没有当前态：open 与家族 hover 同档的中性面，不用品牌色、不加粗；见 §7.3 |
+| Tabs line trigger、Anchor link、SideNav link、NavigationMenu trigger / 面板 link | Collection Item（导航当前） | 当前 = 指示条 / 字色；SideNav link 投影 `data-xh-collection-context='page'`，其余投影 `'nav'`（Tabs 只在 line 档投影，另投 `data-current`；NavigationMenu trigger 展开时投影 `data-in-path`）；见 §7.3 |
+| Breadcrumb link | Collection Item（导航当前） | 当前页是不可点位置：`aria-current="page"`，`--xh-fg-default` + medium，无指示条；投影 `data-xh-collection-context='nav'`，当前页再投影 `data-xh-collection-terminal`（它同时带 `aria-disabled`，不显式标会被家族禁用面吃掉）；见 §7.3 |
+| Menubar trigger | Collection Item（展开路径 / 打开中） | 没有当前态：open 与家族 hover 同档的中性面，不用品牌色、不加粗；投影 `data-xh-collection-context='nav'`，展开时投影 `data-in-path`；见 §7.3 |
 | Pagination item、Steps indicator、Calendar cell | Action Control（格状当前） | 当前 = 实心品牌；见 §7.3 |
 | Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger | disclosure trigger | 只换面，不缩放；见 §9.2 |
 | FloatButton、BackTop、Carousel 翻页、Log/MessageFeed 回底、ImageViewer 翻页 | Action Control `floating` profile | 形状 circle；见 §6.3 |
 | Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
 
-- 刻意例外（须登记）：横向导航里的 Tabs trigger、Anchor link、NavigationMenu trigger、Menubar trigger、Breadcrumb link 归 Collection Item 家族，但 Collection Item 配方目前只有 overlay / page 两个语境——page 的 `data-current` 是 SideNav 那一档（品牌淡底行面 + 起始侧指示条），page 的 selected 读 `aria-selected`（Tabs trigger 自带 `aria-selected`，会被判成页内选中），与 §7.3「导航当前页」（透明面 + 指示条 / `--xh-fg-brand-strong` 字色）与「打开中」不同源。配方补 `nav` 语境并经专项评审前，这五个部件允许不投影 `data-xh-collection-item`，由皮肤按 §7.2 阶梯（白底承载 hover 100 → pressed 200，只换面）与 §7.3 标记自给；取值由 check-selection-marker 的 nav / nav-terminal / open 类与 check-state-ladder 逐成员核，SideNav link 仍投影 page 语境。
 
 ## 5. 样式确定方法
 
@@ -322,7 +321,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 1. 页面主体保持中性，品牌色只用于主要动作、选中 / 当前、焦点和关键进度。
 2. 缺省语气：只有 Button 缺省为品牌实心（`solid`）；其余按钮形触发器（Toggle、ToggleGroup item、Clipboard、DownloadTrigger、FloatButton、BackTop、Pagination 非当前、Toolbar item、Tabs trigger、Segmented item、Accordion / Collapsible / Menu / Menubar / NavigationMenu trigger、Carousel / Calendar / ImageViewer 控制、所有 field-inset 动作）缺省中性，只有写了 `data-tone` 才切到语气淡底。浮层里的确认 / 主线动作钮（Popconfirm confirm、Tour next）是该浮层的主要动作，与 Button 主动作同待遇，由连接层显式投影 `solid`；这不属缺省语气，同一浮层里的次要出口（Popconfirm cancel）仍是中性 `outline`。
-3. 交互阶梯按承载面而不是按家族：坐在 canvas / surface 白底上的控件 hover `--xh-bg-subtle`（100）→ pressed `--xh-bg-subtle-hover`（200）；坐在 subtle 淡底（轨道、淡底容器）上的控件 hover `--xh-bg-subtle-hover`（200）→ pressed `--xh-bg-subtle-active`（300）；300 只留给 pressed。承载面通过 `--xh-action-host-bg-hover / -pressed` 向内下发（Action Control 配方的 ghost / outline 悬停与按下面读这两支，缺省画布承载）；`--xh-action-bg-hover / -pressed` 是控件自身的桥接槽，控件皮肤在自己身上赋值，不能作容器下发口。
+3. 交互阶梯按承载面而不是按家族：坐在 canvas / surface 白底上的控件 hover `--xh-bg-subtle`（100）→ pressed `--xh-bg-subtle-hover`（200）；坐在 subtle 淡底（轨道、淡底容器）上的控件 hover `--xh-bg-subtle-hover`（200）→ pressed `--xh-bg-subtle-active`（300）；300 只留给 pressed。Collection Item 的 `nav` 语境固定按白底承载阶梯生成（rest 透明面 + `--xh-fg-muted` + regular，hover 100 + `--xh-fg-default`，pressed 200 只换面）。承载面通过 `--xh-action-host-bg-hover / -pressed` 向内下发（Action Control 配方的 ghost / outline 悬停与按下面读这两支，缺省画布承载）；`--xh-action-bg-hover / -pressed` 是控件自身的桥接槽，控件皮肤在自己身上赋值，不能作容器下发口。
 4. 品牌淡底上的阶梯：rest `--xh-bg-brand-subtle`（12%）→ hover `--xh-bg-brand-subtle-hover`（20%）→ pressed `--xh-bg-brand-subtle-active`（28%）；前景一律 `--xh-fg-on-brand-subtle`。
 5. 焦点边框一律 `--xh-border-control-focus`，不随 tone；焦点环 `--xh-ring-focus` 不随 tone。
 6. 状态色表达任务结果，不表达空间层级。
@@ -335,17 +334,17 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 ### 7.3 选中与当前态
 
-按语义分类，每类只允许一种标记；配方通过 `data-xh-collection-context='overlay|page'` 与 `data-current` 区分，皮肤只投影：
+按语义分类，每类只允许一种标记；配方通过 `data-xh-collection-context='overlay|page|nav'` 与 `data-current` 区分，皮肤只映射桥接槽、连接层只投影：
 
 | 语义 | 对象 | 唯一标记 | 叠加态 | forced-colors |
 | --- | --- | --- | --- | --- |
 | 浮层瞬态集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
 | 页内持久集合的选中 | Tree、Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle` + 前导勾选部件或 2px 指示条（`--xh-stroke-thick`，pill，`--xh-fg-brand`） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
-| 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；无指示条部件时只靠字色与字重；Breadcrumb 当前页为不可点位置，保留 `--xh-fg-default` + medium | — | ButtonText |
+| 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上），无该部件时只靠字色与字重；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
 | 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
 | 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起 indicator：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
 | 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` | `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle` | hover 20% → pressed 28%；`solid` 变体才允许品牌实心 | Highlight / HighlightText |
-| 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger open、Cascader in-path、SideNav in-path、Date / Time trigger open | 与所在家族 hover 同档的中性面，不用品牌色、不加粗；非颜色通道由 chevron 转向与子面板承担 | — | — |
+| 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger open、Cascader in-path、SideNav in-path、Date / Time trigger open | 与所在家族 hover 同档的中性面，不用品牌色、不加粗；非颜色通道由 chevron 转向与子面板承担。Menubar / NavigationMenu trigger 投影 `data-in-path`，`nav` 语境 open-path = `--xh-bg-subtle` | — | — |
 
 - `--xh-bg-brand-subtle` 退出 today、completed、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字；Steps completed 改中性面 + 品牌对号。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
@@ -423,11 +422,11 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 ### 9.2 行级与 disclosure trigger
 
-主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex 或高度随内容多行的部件——Menu Item、Listbox Item、Tree Node、Table Row、SideNav link、Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger、Tabs trigger、Segmented item、NavigationMenu / Menubar trigger、load-more trigger：
+主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex 或高度随内容多行的部件——Menu Item、Listbox Item、Tree Node、Table Row、SideNav link、Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger、Tabs trigger、Segmented item、NavigationMenu / Menubar trigger、Anchor / Breadcrumb link、load-more trigger：
 
 - 使用相同的 120ms 按下、200ms 释放节奏。
-- 只换面：active 背景（或 line 档无底时换前景），不缩放整个条目。
-- 集合行投影 `data-xh-collection-item`；铺满一行的独立动作条目（load-more trigger、审批项）登记 Action Control `row` profile，disclosure trigger 登记 `disclosure-trigger` profile。两档 `press: surface`、`fill: true`：宽度由容器给、高度随内容、按下 `scale: none` 只换面；不允许零反馈。
+- 只换面：active 背景，不缩放整个条目。
+- 集合行投影 `data-xh-collection-item`（Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger 投影 `nav` 语境）；铺满一行的独立动作条目（load-more trigger、审批项）登记 Action Control `row` profile，disclosure trigger 登记 `disclosure-trigger` profile。两档 `press: surface`、`fill: true`：宽度由容器给、高度随内容、按下 `scale: none` 只换面；不允许零反馈。
 - Space / Enter 与粗指针触屏由 Headless / pointer 会话投影 `data-pressed`，皮肤 `:is(:active, [data-pressed])`。
 
 ### 9.3 状态叠加
