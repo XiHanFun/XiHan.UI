@@ -58901,7 +58901,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -59639,18 +59647,20 @@
         "sort-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "table 的 sort-trigger 部件 background 覆盖槽。"
+      "description": "table 的 sort-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-sort-bg-pressed",
@@ -59659,18 +59669,21 @@
         "sort-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
         "disabled",
-        "not([data-disabled])"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "table 的 sort-trigger 部件 background 覆盖槽。"
+      "description": "table 的 sort-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-sort-fg",
@@ -59945,15 +59958,25 @@
       "component": "table",
       "part": [
         "column-visibility-trigger",
+        "expand-trigger",
         "row-select-trigger",
         "select-all-trigger"
       ],
       "property": [
-        "background",
+        "background-color",
+        "border",
         "border-color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
         "is([data-state='checked'], [data-state='indeterminate'])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "selected",
         "state=checked",
         "state=indeterminate"
@@ -59962,24 +59985,28 @@
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 background、border-color 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color、border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-bg-checked-pressed",
       "component": "table",
       "part": [
         "column-visibility-trigger",
+        "expand-trigger",
         "row-select-trigger",
         "select-all-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "is([data-state='checked'], [data-state='indeterminate'])",
+        "loading",
         "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "selected",
         "state=checked",
         "state=indeterminate"
@@ -59988,7 +60015,7 @@
         "--xh-bg-brand-active"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 background 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-bg-pressed",
@@ -60000,52 +60027,75 @@
         "select-all-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
         "disabled",
-        "not([data-disabled])"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-border",
       "component": "table",
       "part": [
         "column-visibility-trigger",
+        "expand-trigger",
         "row-select-trigger",
         "select-all-trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-border-control"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 border 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-border-checked",
       "component": "table",
       "part": [
         "column-visibility-trigger",
+        "expand-trigger",
         "row-select-trigger",
         "select-all-trigger"
       ],
       "property": [
+        "border",
         "border-color"
       ],
       "state": [
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
         "is([data-state='checked'], [data-state='indeterminate'])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "selected",
         "state=checked",
         "state=indeterminate"
@@ -60054,7 +60104,7 @@
         "--xh-table-trigger-bg-checked"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 border-color 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-fg",
@@ -60073,7 +60123,12 @@
         "default",
         "disabled",
         "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
         "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=indeterminate"
       ],
       "defaultToken": [
@@ -60118,16 +60173,20 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-block-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon",
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 block-size、inline-size、min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tabs-content-fg",
