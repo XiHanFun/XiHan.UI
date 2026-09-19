@@ -12956,25 +12956,6 @@
       "description": "color-picker 的 alpha-slider 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-content-backdrop",
-      "component": "color-picker",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "-webkit-backdrop-filter",
-        "backdrop-filter"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-frosted-backdrop"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
-    },
-    {
       "name": "--xh-color-picker-content-bg",
       "component": "color-picker",
       "part": [
@@ -12987,7 +12968,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 background 覆盖槽。"
@@ -13005,7 +12986,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 border 覆盖槽。"
@@ -13023,7 +13004,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 color 覆盖槽。"
@@ -13045,24 +13026,6 @@
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 gap 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-picker-content-highlight",
-      "component": "color-picker",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-frosted-highlight"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 content 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-content-px",
@@ -13131,7 +13094,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-elevation-floating"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 box-shadow 覆盖槽。"

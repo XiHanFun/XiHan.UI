@@ -73,8 +73,18 @@ afterEach(() => {
   host = null
 })
 
-describe('颜色选择器 M2 浮层', () => {
-  it.each(['light', 'dark'] as const)('%s：局部主题跨 Portal 生效，磨砂仅由浮层壳提供', async (theme) => {
+/** 同一棵子树里某个语义令牌解算出来的颜色：探针挂在面板旁边，主题与对比度轴一起继承 */
+function tokenColor(token: string): string {
+  const probe = document.createElement('div')
+  probe.style.setProperty('color', `var(${token})`)
+  part('positioner').append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
+describe('颜色选择器浮层：floating 实体面', () => {
+  it.each(['light', 'dark'] as const)('%s：局部主题跨 Portal 生效，面板是不透景的 floating 面（§8.4 多列面板）', async (theme) => {
     await mount(theme)
     part('content').getAnimations().forEach(animation => animation.finish())
     const control = getComputedStyle(part('control'))
@@ -82,13 +92,15 @@ describe('颜色选择器 M2 浮层', () => {
     expect(alpha(control.backgroundColor)).toBe(255)
     expect(control.backdropFilter).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
-    expect(content.backdropFilter).toContain('blur(16px)')
-    expect(alpha(content.backgroundColor)).toBeLessThan(255)
-    expect(alpha(content.backgroundColor)).toBeGreaterThan(220)
+    // floating：实体底 + --xh-border-default 描边 + --xh-elevation-floating 落影，不透景、不画顶部边界光
+    expect(content.backdropFilter).toBe('none')
+    expect(alpha(content.backgroundColor)).toBe(255)
+    expect(content.backgroundColor).toBe(tokenColor('--xh-bg-surface'))
+    expect(content.borderTopColor).toBe(tokenColor('--xh-border-default'))
+    expect(content.boxShadow).not.toBe('none')
     expect(content.opacity).toBe('1')
-    const highlight = getComputedStyle(part('content'), '::before')
-    expect(alpha(highlight.backgroundColor)).toBeGreaterThan(0)
-    expect(highlight.pointerEvents).toBe('none')
+    expect(content.overscrollBehaviorY).toBe('contain')
+    expect(getComputedStyle(part('content'), '::before').content).toBe('none')
     expect(getComputedStyle(part('saturation-area')).backgroundColor).toBe('rgb(255, 0, 0)')
     expect(swatchFaceColor()).toBe('rgb(0, 255, 0)')
     expect(getComputedStyle(part('saturation-area')).backdropFilter).toBe('none')
@@ -98,13 +110,13 @@ describe('颜色选择器 M2 浮层', () => {
     expect(alpha(getComputedStyle(part('channel-input')).backgroundColor)).toBe(255)
   })
 
-  it.each(['light', 'dark'] as const)('%s：增强对比度时壳使用实体表面，色板仍保留原色', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：增强对比度时壳仍是实体表面，色板仍保留原色', async (theme) => {
     await mount(theme)
     part('positioner').dataset.contrast = 'more'
     const content = getComputedStyle(part('content'))
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
-    expect(alpha(getComputedStyle(part('content'), '::before').backgroundColor)).toBe(0)
+    expect(content.borderTopColor).toBe(tokenColor('--xh-border-default'))
     expect(swatchFaceColor()).toBe('rgb(0, 255, 0)')
   })
 

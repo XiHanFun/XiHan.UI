@@ -6,7 +6,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "ladder": 13,
   "motion": 0,
   "press": 2,
-  "scroll": 2,
+  "scroll": 0,
   "selection": 0,
   "shape": 0,
   "text": 7,
@@ -49,12 +49,7 @@ exports[`family-backlog 键集合 > press 1`] = `
 ]
 `;
 
-exports[`family-backlog 键集合 > scroll 1`] = `
-[
-  "color-picker:content:overscroll",
-  "color-picker:content:size",
-]
-`;
+exports[`family-backlog 键集合 > scroll 1`] = `[]`;
 
 exports[`family-backlog 键集合 > selection 1`] = `[]`;
 
