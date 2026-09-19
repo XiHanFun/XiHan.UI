@@ -7,6 +7,8 @@
 
 import type { Cleanup } from '../types'
 import type { PortalVisualBridge } from './portal-visual-bridge'
+import { isHTMLElement } from '../guards'
+import { isRendered } from '../utils/rendered'
 import { createPortalVisualBridge } from './portal-visual-bridge'
 
 /**
@@ -88,8 +90,31 @@ function validate(options: PortalLeaseOptions): void {
   }
 }
 
-function restoreSlots(slots: readonly PortalSlot[]): unknown[] {
+/**
+ * 搬迁前记下落在 roots 里的焦点。节点被摘下再插回会失焦（浏览器与 jsdom 皆然），
+ * 而物理搬迁只是换个父节点，不该改变文档的焦点：default-open 时焦点域已在首轮渲染前
+ * 把焦点放进 content，首轮 portal 一搬就把它丢回 body，非模态浮层不会再拉回来。
+ */
+function focusWithin(doc: Document, roots: readonly HTMLElement[]): HTMLElement | null {
+  const active = doc.activeElement
+  if (!isHTMLElement(active) || !roots.some(root => root.contains(active)))
+    return null
+  return active
+}
+
+/**
+ * 搬迁完成后把焦点放回原元素。归位常发生在浮层已经收起之后，藏起来的元素在浏览器里
+ * focus() 是空操作，jsdom 却会照聚不误，还会派出一枚假的 focusin；按渲染判据一并跳过。
+ */
+function refocus(doc: Document, focused: HTMLElement | null): void {
+  if (!focused || !focused.isConnected || doc.activeElement === focused || !isRendered(focused))
+    return
+  focused.focus({ preventScroll: true })
+}
+
+function restoreSlots(doc: Document, slots: readonly PortalSlot[]): unknown[] {
   const errors: unknown[] = []
+  const focused = focusWithin(doc, slots.map(slot => slot.root))
   for (const slot of slots) {
     try {
       if (!slot.placeholder.parentNode)
@@ -100,6 +125,7 @@ function restoreSlots(slots: readonly PortalSlot[]): unknown[] {
       errors.push(error)
     }
   }
+  refocus(doc, focused)
   return errors
 }
 
@@ -130,8 +156,10 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
     target.appendChild(shell)
     bridge = createPortalVisualBridge({ source, shell })
     shellCleanup = options.onShellReady?.(shell) ?? null
+    const focused = focusWithin(doc, roots)
     for (const slot of slots)
       shell.appendChild(slot.root)
+    refocus(doc, focused)
   }
   catch (primary) {
     const rollbackErrors: unknown[] = []
@@ -141,7 +169,7 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
     catch (error) {
       rollbackErrors.push(error)
     }
-    rollbackErrors.push(...restoreSlots(slots))
+    rollbackErrors.push(...restoreSlots(doc, slots))
     try {
       shellCleanup?.()
     }
@@ -175,7 +203,7 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
       catch (error) {
         errors.push(error)
       }
-      errors.push(...restoreSlots(slots))
+      errors.push(...restoreSlots(doc, slots))
       try {
         shellCleanup?.()
       }
