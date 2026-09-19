@@ -9,6 +9,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ColorFieldApi, ColorFieldSchema, ColorFieldTranslations } from './color-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { colorCss, colorParse, colorToRgba } from '../shared/color'
+import { pressHandlers } from '../shared/press'
 import { colorFieldAnatomy } from './color-field.anatomy'
 
 const parts = colorFieldAnatomy.build()
@@ -47,6 +48,8 @@ export function connectColorField<T extends PropTypes>(
   const canClear = clearable && editable && !empty
   // 形态默认落 outline：不写时 root 与 control 都如实投影，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
+  // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   return {
     value,
@@ -188,6 +191,8 @@ export function connectColorField<T extends PropTypes>(
       'data-xh-action-display': 'has-value',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-has-value': dataAttr(!empty),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      'data-pressed': dataAttr(context.get('pressed')),
       'type': 'button',
       // 不占 Tab 位（键盘用户走 Escape），但读屏按虚拟光标仍找得到它
       'tabindex': -1,
@@ -195,12 +200,16 @@ export function connectColorField<T extends PropTypes>(
       // 没开 clearable 或此刻清不了时按钮收起而不是卸载，节点是作者写的
       'hidden': !canClear || undefined,
       'onPointerDown': (event: PointerEvent) => {
-        // 只认主键，右键留给上下文菜单
-        if (event.button !== 0)
-          return
-        // 焦点留在输入框，清完还能接着打字
-        event.preventDefault()
+        // 只认主键，右键留给上下文菜单；焦点留在输入框，清完还能接着打字。触屏按下仍要进按压通道
+        if (event.button === 0)
+          event.preventDefault()
+        press.onPointerDown(event)
       },
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
       'onClick': () => {
         if (!canClear)
           return
