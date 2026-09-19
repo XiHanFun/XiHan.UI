@@ -76,6 +76,11 @@ export interface ColorSwatchPickerSchema extends MachineSchema {
     value: string | null
     /** 焦点锚点，离开组时为 null。 */
     focusedValue: string | null
+    /**
+     * 按压通道：Space 或触屏手指按下到松开之间正被按住的格子（按颜色串记），该格投影 data-pressed；没有按住时为 null。
+     * 整组禁用或只读时谁都不进，格子自身的禁用由 connect 判定后随事件带入。
+     */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -86,9 +91,13 @@ export interface ColorSwatchPickerSchema extends MachineSchema {
     | { type: 'ITEM.FOCUS', value: string }
     | { type: 'GROUP.BLUR' }
     | { type: 'FORM.RESET' }
+    // 按压通道（shared/press）：Space 或触屏按住与松开，value 说的是哪一格；
+    // disabled 是该格自身的禁用事实，由 connect 判定后随事件带入
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: never
-  action: 'setValue' | 'setFocusedValue' | 'clearFocusedValue' | 'resetToDefault'
+  guard: 'canPress'
+  action: 'setValue' | 'setFocusedValue' | 'clearFocusedValue' | 'resetToDefault' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 

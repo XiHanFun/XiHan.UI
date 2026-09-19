@@ -5,9 +5,9 @@
 
 // 提供 color swatch picker 相关实现。
 
-import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema, ColorSwatchPickerTranslations } from './color-swatch-picker.types'
-import { anchorItem, contains, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { anchorItem, contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { colorCss, colorParse, colorSameColor } from '../shared/color'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { colorSwatchPickerAnatomy } from './color-swatch-picker.anatomy'
@@ -88,6 +88,17 @@ export function connectColorSwatchPicker<T extends PropTypes>(
 
   const isDisabled = (item: ColorSwatchPickerItemProps): boolean => groupDisabled || itemDisabled(item)
 
+  // 按压通道：真源是机器 context 里「正被按住的那一格」（按颜色串记），每格各自合成一份跟踪器；
+  // Space 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档（形态④：换描边并缩放）。
+  // 选中与按压互相独立；格子自身的禁用只有 connect 知道，随 PRESS.START 带给机器的守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: ColorSwatchPickerItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', value: item.value, disabled: isDisabled(item) }
+      : { type: 'PRESS.END', value: item.value }),
+  })
+
   // item / swatch / indicator / hidden-input 共用的状态标记
   const stateAttrs = (item: ColorSwatchPickerItemProps): Record<string, string | undefined> => ({
     'data-state': isSelected(item.value) ? 'checked' : 'unchecked',
@@ -167,30 +178,43 @@ export function connectColorSwatchPicker<T extends PropTypes>(
       'id': ids.label,
       'data-disabled': dataAttr(groupDisabled),
     }),
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...stateAttrs(item),
-      'role': 'radio',
-      // 未选中也显式输出 false：省略会让读屏无从区分"未选中"与"不是单选项"
-      'aria-checked': isSelected(item.value) ? 'true' : 'false',
-      // 用 aria-disabled 保持禁用格子可聚焦
-      'aria-disabled': isDisabled(item) ? 'true' : 'false',
-      // 格子上没有字，名字只能直给
-      'aria-label': itemLabel(item),
-      [ITEM_VALUE_ATTR]: item.value,
-      // 锚点格子独占 Tab 序列位
-      'tabindex': claimsAnchor(item.value) ? 0 : -1,
-      'onClick': () => select(item),
-      // 禁用格子被聚焦也记锚点
-      'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-      'onKeyDown': (e: KeyboardEvent) => {
-        // 禁用格子不认这个键，因此也不能吞掉它：Space 必须放行给页面滚动
-        if (e.key !== ' ' || isDisabled(item))
-          return
-        e.preventDefault()
-        select(item)
-      },
-    }),
+    getItemProps: (item) => {
+      const handlers = press(item)
+      return normalize.element({
+        ...parts.item.attrs,
+        ...stateAttrs(item),
+        'role': 'radio',
+        // 未选中也显式输出 false：省略会让读屏无从区分"未选中"与"不是单选项"
+        'aria-checked': isSelected(item.value) ? 'true' : 'false',
+        // 用 aria-disabled 保持禁用格子可聚焦
+        'aria-disabled': isDisabled(item) ? 'true' : 'false',
+        // 格子上没有字，名字只能直给
+        'aria-label': itemLabel(item),
+        [ITEM_VALUE_ATTR]: item.value,
+        // 锚点格子独占 Tab 序列位
+        'tabindex': claimsAnchor(item.value) ? 0 : -1,
+        // Space 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；与选中互相独立
+        'data-pressed': dataAttr(pressedValue === item.value),
+        'onClick': () => select(item),
+        // 禁用格子被聚焦也记锚点
+        'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+        'onKeyDown': (e: KeyboardEvent) => {
+          // role=radio 只有 Space 是激活键：Enter 在这里什么都不做，也就没有按压面可言
+          if (e.key !== 'Enter')
+            handlers.onKeyDown(e)
+          // 禁用格子不认这个键，因此也不能吞掉它：Space 必须放行给页面滚动
+          if (e.key !== ' ' || isDisabled(item))
+            return
+          e.preventDefault()
+          select(item)
+        },
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
     // 色块面：棋盘格、描边与尺寸档由 Swatch 家族画，这里只投影颜色；解析不出的串不画颜色层
     getSwatchProps: item => normalize.element({
       ...parts.swatch.attrs,

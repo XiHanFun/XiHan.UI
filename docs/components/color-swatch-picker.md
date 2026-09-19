@@ -140,7 +140,9 @@
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -172,6 +174,7 @@
 | `ArrowDown` / `ArrowRight` | focus in group, group not disabled | 焦点移到下一个可停留格并选中，末格回绕到首格；dir=rtl 时改由 ArrowLeft 承担 |
 | `ArrowUp` / `ArrowLeft` | focus in group, group not disabled | 焦点移到上一个可停留格并选中，首格回绕到末格；dir=rtl 时改由 ArrowRight 承担 |
 | `Space` | focus on item, item not disabled | 选中当前格 |
+| `Space` | held on item, 格子未禁用且组未禁用、非只读 | 按住期间该格投影 data-pressed，与指针 :active 同一副按压面（换描边并缩放）；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。Enter 不是 radio 的激活键，按住它没有按压面 |
 
 ### ARIA
 
@@ -219,6 +222,7 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `swatch` | `data-xh-swatch` | '' |
 | `swatch` | `data-xh-swatch-size` | props.size |
 
