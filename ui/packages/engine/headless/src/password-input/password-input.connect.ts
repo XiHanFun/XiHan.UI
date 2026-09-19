@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema } from './password-input.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { passwordInputAnatomy, passwordInputInputId } from './password-input.anatomy'
 
 const parts = passwordInputAnatomy.build()
@@ -41,6 +42,8 @@ export function connectPasswordInput<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const inputType = revealed ? 'text' : 'password'
+  // 切换按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   const translations = prop('translations')
   const label = {
@@ -175,7 +178,16 @@ export function connectPasswordInput<T extends PropTypes>(
       'disabled': disabled || undefined,
       'data-state': revealed ? 'visible' : 'hidden',
       'data-disabled': dataAttr(disabled),
-      // 不拦 pointerdown：焦点本就该落在按钮上，切完还能接着按第二下
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
+      // 按住途中明暗会翻（Enter 在 keydown 即 click），按压面不随 data-state 丢
+      'data-pressed': dataAttr(context.get('pressed')),
+      // 不拦 pointerdown：焦点本就该落在按钮上，切完还能接着按第二下。触屏按下照进按压通道
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
       'onClick': () => {
         if (!disabled)
           send({ type: 'REVEALED.TOGGLE' })

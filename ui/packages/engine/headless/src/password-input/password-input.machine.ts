@@ -55,8 +55,14 @@ export const passwordInputMachine = createMachine({
     })),
     // 大写锁定是 DOM 那侧的事实：不受控、不对外通知，只驱动提示部件
     capsLock: cell<boolean>(() => ({ defaultValue: false })),
+    // 按压通道：切换按钮被 Space / Enter 或触屏按住期间为 true
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
+  // 按住途中转入禁用：按钮随即 disabled，浏览器不再派 keyup，按压面由机器自己收
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled')], () => action(['releaseWhenInert']))
+  },
   // 只有一个状态，事件全挂根级；表单重置从任何时候发来都要认
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -64,6 +70,9 @@ export const passwordInputMachine = createMachine({
     'REVEALED.SET': { guard: 'canReveal', actions: ['setRevealed'] },
     'REVEALED.TOGGLE': { guard: 'canReveal', actions: ['toggleRevealed'] },
     'CAPS_LOCK.SET': { actions: ['setCapsLock'] },
+    // 切换按钮的按压与切换本身同一道守卫：只读不拦明暗，按钮照常可按，按压面也照常给
+    'PRESS.START': { guard: 'canReveal', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {},
@@ -104,6 +113,12 @@ export const passwordInputMachine = createMachine({
         if (e.type !== 'CAPS_LOCK.SET')
           return
         context.set('capsLock', e.on)
+      },
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled'))
+          context.set('pressed', false)
       },
     },
   },

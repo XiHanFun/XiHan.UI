@@ -410,3 +410,74 @@ describe('passwordInputMachine 表单重置', () => {
     expect(h.changes).toEqual([])
   })
 })
+
+describe('切换按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const keyDown = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+  }
+  const keyUp = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType: string): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType, button: 0, bubbles: true, cancelable: true }))
+  }
+  const pressed = (h: Harness): boolean => h.trigger.hasAttribute('data-pressed')
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；按压本身不翻明暗', () => {
+    const h = mount({ defaultValue: 'secret' })
+    expect(pressed(h)).toBe(false)
+    keyDown(h.trigger, ' ')
+    expect(pressed(h)).toBe(true)
+    keyUp(h.trigger, ' ')
+    expect(pressed(h)).toBe(false)
+    h.trigger.focus()
+    keyDown(h.trigger, 'Enter')
+    expect(pressed(h)).toBe(true)
+    h.trigger.blur()
+    expect(pressed(h)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'touch')
+    expect(pressed(h)).toBe(true)
+    pointer(h.trigger, 'pointercancel', 'touch')
+    expect(pressed(h)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'touch')
+    expect(pressed(h)).toBe(true)
+    pointer(h.trigger, 'pointerup', 'touch')
+    expect(pressed(h)).toBe(false)
+    pointer(h.trigger, 'pointerdown', 'mouse')
+    expect(pressed(h)).toBe(false)
+    expect(h.trigger.getAttribute('data-state')).toBe('hidden')
+    expect(h.revealedChanges).toEqual([])
+  })
+
+  it('按住途中明暗翻面：按压面不随 data-state 丢', () => {
+    const h = mount({ defaultValue: 'secret' })
+    keyDown(h.trigger, 'Enter')
+    expect(pressed(h)).toBe(true)
+    dispatchClick(h.trigger)
+    expect(h.trigger.getAttribute('data-state')).toBe('visible')
+    expect(pressed(h)).toBe(true)
+    keyUp(h.trigger, 'Enter')
+    expect(pressed(h)).toBe(false)
+  })
+
+  it('不进：禁用时按住不投影；只读不拦明暗，按压面照常给', () => {
+    const disabled = mount({ defaultValue: 'secret', disabled: true })
+    keyDown(disabled.trigger, ' ')
+    pointer(disabled.trigger, 'pointerdown', 'touch')
+    expect(pressed(disabled)).toBe(false)
+
+    const readOnly = mount({ defaultValue: 'secret', readOnly: true })
+    keyDown(readOnly.trigger, ' ')
+    expect(pressed(readOnly)).toBe(true)
+    keyUp(readOnly.trigger, ' ')
+    expect(pressed(readOnly)).toBe(false)
+  })
+
+  it('按住途中转入禁用：按钮 disabled 后不会再来 keyup，按压面由机器自己收', () => {
+    const h = mount({ defaultValue: 'secret' })
+    keyDown(h.trigger, 'Enter')
+    expect(pressed(h)).toBe(true)
+    h.setProps({ disabled: true })
+    expect(pressed(h)).toBe(false)
+  })
+})
