@@ -516,3 +516,110 @@ describe('内嵌的每页条数下拉', () => {
     expect((select.getPositionerProps() as Props).dir).toBe('rtl')
   })
 })
+
+// ── 按压通道 ────────────────────────────────────────────────────────
+
+describe('connectPagination 按压通道', () => {
+  interface Handlers {
+    onKeyDown: (e: KeyboardEvent) => void
+    onKeyUp: (e: KeyboardEvent) => void
+    onBlur: () => void
+    onPointerDown: (e: PointerEvent) => void
+    onPointerUp: () => void
+    onPointerCancel: () => void
+  }
+  /** 键盘桩：只带跟踪器会读的三个字段。 */
+  const key = (name: string, init: Partial<KeyboardEvent> = {}): KeyboardEvent =>
+    ({ key: name, repeat: false, isComposing: false, keyCode: 0, ...init } as KeyboardEvent)
+  const touch = { pointerType: 'touch' } as PointerEvent
+  const item = (s: ReturnType<typeof makeService>, page: number) => api(s).getItemProps({ page }) as Props & Handlers
+  const prev = (s: ReturnType<typeof makeService>) => api(s).getPrevTriggerProps() as Props & Handlers
+  const next = (s: ReturnType<typeof makeService>) => api(s).getNextTriggerProps() as Props & Handlers
+  const ellipsis = (s: ReturnType<typeof makeService>, side: 'start' | 'end') => api(s).getEllipsisTriggerProps({ side }) as Props & Handlers
+
+  it('机器收到 PRESS.START 后只有那一个格子投影 data-pressed，PRESS.END 撤下；另一个格子的 keyup 不串', () => {
+    const s = makeService({ count: 200, pageSize: 10, defaultPage: 5 })
+    s.send({ type: 'PRESS.START', key: 'item:5' })
+    expect(item(s, 5)['data-pressed']).toBe('')
+    expect(item(s, 4)['data-pressed']).toBeUndefined()
+    expect(prev(s)['data-pressed']).toBeUndefined()
+    expect(ellipsis(s, 'start')['data-pressed']).toBeUndefined()
+    s.send({ type: 'PRESS.END', key: 'item:4' })
+    expect(item(s, 5)['data-pressed']).toBe('')
+    s.send({ type: 'PRESS.END', key: 'item:5' })
+    expect(item(s, 5)['data-pressed']).toBeUndefined()
+  })
+
+  it('四类格子各走自己的键：两端钮、页码与省略位按住经跟踪器进出，长按重复键不重报，失焦即撤下', () => {
+    const s = makeService({ count: 200, pageSize: 10, defaultPage: 5 })
+    prev(s).onKeyDown(key(' '))
+    expect(prev(s)['data-pressed']).toBe('')
+    prev(s).onKeyDown(key(' ', { repeat: true }))
+    expect(prev(s)['data-pressed']).toBe('')
+    prev(s).onKeyUp(key(' '))
+    expect(prev(s)['data-pressed']).toBeUndefined()
+
+    next(s).onKeyDown(key('Enter'))
+    expect(next(s)['data-pressed']).toBe('')
+    next(s).onBlur()
+    expect(next(s)['data-pressed']).toBeUndefined()
+
+    item(s, 6).onKeyDown(key('Enter'))
+    expect(item(s, 6)['data-pressed']).toBe('')
+    expect(item(s, 5)['data-pressed']).toBeUndefined()
+    item(s, 6).onKeyUp(key('Enter'))
+    expect(item(s, 6)['data-pressed']).toBeUndefined()
+
+    ellipsis(s, 'end').onKeyDown(key(' '))
+    expect(ellipsis(s, 'end')['data-pressed']).toBe('')
+    expect(ellipsis(s, 'start')['data-pressed']).toBeUndefined()
+    ellipsis(s, 'end').onKeyUp(key(' '))
+    expect(ellipsis(s, 'end')['data-pressed']).toBeUndefined()
+  })
+
+  it('触屏按下在场，抬起或指针取消撤下；鼠标按下不走这一路', () => {
+    const s = makeService({ count: 100, pageSize: 10, defaultPage: 2 })
+    item(s, 3).onPointerDown({ pointerType: 'mouse' } as PointerEvent)
+    expect(item(s, 3)['data-pressed']).toBeUndefined()
+    item(s, 3).onPointerDown(touch)
+    expect(item(s, 3)['data-pressed']).toBe('')
+    item(s, 3).onPointerCancel()
+    expect(item(s, 3)['data-pressed']).toBeUndefined()
+    item(s, 3).onPointerDown(touch)
+    expect(item(s, 3)['data-pressed']).toBe('')
+    item(s, 3).onPointerUp()
+    expect(item(s, 3)['data-pressed']).toBeUndefined()
+  })
+
+  it('到边界的翻页钮不进按压面：首页的 prev、末页的 next', () => {
+    const first = makeService({ count: 30, pageSize: 10 })
+    prev(first).onKeyDown(key(' '))
+    prev(first).onPointerDown(touch)
+    expect(prev(first)['data-pressed']).toBeUndefined()
+    next(first).onKeyDown(key(' '))
+    expect(next(first)['data-pressed']).toBe('')
+
+    const last = makeService({ count: 30, pageSize: 10, defaultPage: 3 })
+    next(last).onPointerDown(touch)
+    expect(next(last)['data-pressed']).toBeUndefined()
+  })
+
+  it('摊开面板收起时松开：面板里的页码被按住期间面板关掉，不会再来 keyup', () => {
+    const s = makeService({ count: 200, pageSize: 10, defaultPage: 1 })
+    s.send({ type: 'ELLIPSIS.TOGGLE', side: 'end' })
+    expect(api(s).openEllipsis).toBe('end')
+    item(s, 8).onKeyDown(key('Enter'))
+    expect(item(s, 8)['data-pressed']).toBe('')
+    s.send({ type: 'ELLIPSIS.CLOSE' })
+    expect(api(s).openEllipsis).toBeNull()
+    expect(item(s, 8)['data-pressed']).toBeUndefined()
+    // 省略位自己按住途中把面板摊开再收起：按压面随收起一并撤下，之后的 keyup 落空也无妨
+    ellipsis(s, 'end').onKeyDown(key('Enter'))
+    s.send({ type: 'ELLIPSIS.TOGGLE', side: 'end' })
+    expect(ellipsis(s, 'end')['data-pressed']).toBe('')
+    s.send({ type: 'ELLIPSIS.TOGGLE', side: 'end' })
+    expect(ellipsis(s, 'end')['data-pressed']).toBeUndefined()
+    ellipsis(s, 'end').onKeyUp(key('Enter'))
+    expect(ellipsis(s, 'end')['data-pressed']).toBeUndefined()
+  })
+})

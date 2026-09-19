@@ -5978,6 +5978,7 @@
       "PaginationPageChangeDetails",
       "PaginationPageItem",
       "PaginationPageSizeChangeDetails",
+      "PaginationPressedKey",
       "PaginationSchema",
       "PaginationServices",
       "PaginationTranslations",

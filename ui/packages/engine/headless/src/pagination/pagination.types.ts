@@ -34,6 +34,12 @@ export interface PaginationEllipsisTriggerProps {
   side: PaginationEllipsisSide
 }
 
+/**
+ * 按压通道里「正被按住的那一个」的键：两端翻页钮、页码（按页号）与省略位（按侧）各占一个身份，
+ * 摊开面板里的页码与行里的页码同用 item:页号（同一页不会同时出现在两处）。
+ */
+export type PaginationPressedKey = 'prev' | 'next' | `item:${number}` | `ellipsis:${PaginationEllipsisSide}`
+
 /** 读屏文案。默认英文，与 dialog / popover 的 translations 写法一致。 */
 export interface PaginationTranslations {
   /** 根节点的 aria-label，用于区分同页的多个 nav 地标。 */
@@ -99,6 +105,11 @@ export interface PaginationSchema extends MachineSchema {
     openEllipsis: PaginationEllipsisSide | null
     /** 定位结果，由 trackPosition 回填。 */
     position: PositionResult | null
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个，该部件投影 data-pressed；没有按住时为 null。
+     * 面板收起时一并松开——摊开面板里的页码被按住期间面板关掉，不会再来 keyup。
+     */
+    pressed: PaginationPressedKey | null
   }
   computed: Record<string, never>
   refs: {
@@ -129,9 +140,22 @@ export interface PaginationSchema extends MachineSchema {
     | { type: 'ELLIPSIS.CLOSE' }
     | { type: 'after.openDelay' }
     | { type: 'after.closeDelay' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，key 说的是哪一个；
+    // disabled 是该部件自身的禁用事实（两端翻页钮到边界即原生 disabled），由 connect 判定后随事件带入
+    | { type: 'PRESS.START', key: PaginationPressedKey, disabled?: boolean }
+    | { type: 'PRESS.END', key: PaginationPressedKey }
   tag: never
-  action: 'setPage' | 'setPageSize' | 'goPrev' | 'goNext' | 'openEllipsis' | 'clearEllipsis'
-  guard: 'isSameEllipsis'
+  action:
+    | 'setPage'
+    | 'setPageSize'
+    | 'goPrev'
+    | 'goNext'
+    | 'openEllipsis'
+    | 'clearEllipsis'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+  guard: 'isSameEllipsis' | 'canPress'
   effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer'
 }
 
