@@ -1085,6 +1085,19 @@ describe('指针与表头把手', () => {
     const props = h.api().getSortTriggerProps({ value: 'select' }) as Record<string, unknown>
     expect(props.tabindex).toBe(-1)
     expect(props['aria-disabled']).toBe('true')
+    // 排序把手接 Action Control row 档（铺满一格只换面），四颗把手接 icon 档：三颗勾选框 outline、展开箭头 ghost
+    expect(props['data-xh-action-control']).toBe('')
+    expect(props['data-xh-action-profile']).toBe('row')
+    expect(props['data-xh-action-variant']).toBe('ghost')
+    const selectAll = h.api().getSelectAllTriggerProps() as Record<string, unknown>
+    expect(selectAll['data-xh-action-profile']).toBe('icon')
+    expect(selectAll['data-xh-action-variant']).toBe('outline')
+    expect(selectAll['data-xh-action-size']).toBe('md')
+    const expand = h.api().getExpandTriggerProps({ value: 'a' }) as Record<string, unknown>
+    expect(expand['data-xh-action-profile']).toBe('icon')
+    expect(expand['data-xh-action-variant']).toBe('ghost')
+    const rowSelect = h.api().getRowSelectTriggerProps({ value: 'a' }) as Record<string, unknown>
+    expect(rowSelect['data-xh-action-variant']).toBe('outline')
   })
 })
 

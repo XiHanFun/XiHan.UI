@@ -527,6 +527,12 @@ export function connectTable<T extends PropTypes>(
         [ITEM_VALUE_ATTR]: column.value,
         // 显式给角色：作者常写成 <span>，读屏听不出这是个能勾的东西
         'role': 'checkbox',
+        // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-variant': 'outline',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
         // 勾着＝这一列显示着。名字里说的也是「显示某列」，两者同向
         'aria-checked': hidden ? 'false' : 'true',
         'aria-label': label.columnVisibility(def?.label ?? column.value),
@@ -843,6 +849,12 @@ export function connectTable<T extends PropTypes>(
     getSelectAllTriggerProps: () => normalize.element({
       ...parts['select-all-trigger'].attrs,
       'role': 'checkbox',
+      // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'aria-label': label.selectAll,
       'aria-checked': selectionState === 'checked' ? 'true' : selectionState === 'indeterminate' ? 'mixed' : 'false',
       // 角色节点是普通元素而非原生控件，禁用后仍要能被聚焦
@@ -871,6 +883,12 @@ export function connectTable<T extends PropTypes>(
     getRowSelectTriggerProps: row => normalize.element({
       ...parts['row-select-trigger'].attrs,
       ...rowState(row.value),
+      // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {
@@ -1087,6 +1105,13 @@ export function connectTable<T extends PropTypes>(
         // 显式给角色：作者常写成 <span>，读屏听不出能按。
         // 当前排序方向由祖先 column-header 的 aria-sort 报出，不在这儿重复
         'role': 'button',
+        // 铺满一格的行级触发器（§9.2）：接 Action Control row 档、ghost 形态，按下只换面不缩放；
+        // 悬停 / 按下面按表头 host 槽下发的淡底阶梯走，内距与最小高度由皮肤归零（列头自己已给）
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'row',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
         // 排序把手不属于 roving 行组，自己占一个 Tab 位；不可排序的列退出 Tab 序列
         'tabindex': sortable ? 0 : -1,
         'aria-disabled': sortable ? 'false' : 'true',
@@ -1108,6 +1133,12 @@ export function connectTable<T extends PropTypes>(
     getExpandTriggerProps: row => normalize.element({
       ...parts['expand-trigger'].attrs,
       ...rowState(row.value),
+      // 定尺图标钮（§9.1）：接 Action Control icon 档、ghost 形态，面与按压由家族给，边长由皮肤钉在指示符档
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {

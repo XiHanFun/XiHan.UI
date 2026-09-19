@@ -32934,33 +32934,52 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 四个把手共用一副方形盒子，两种行的文字起点才对得齐；
-   列设置区那颗与表头里的选择框同款，一眼看得出是同一件事 */
+/* 四个把手共用一副方形盒子，两种行的文字起点才对得齐；列设置区那颗与表头里的选择框同款，一眼看得出是同一件事。
+   四颗都接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
+   配方给，这里只把使用者槽映射到桥接槽；边长仍按 --xh-control-indicator-size 走。三颗勾选框是 outline 形态
+   （字段静息形态：canvas 底 + --xh-border-control 描边），展开箭头是 ghost；空框与箭头坐在白底行上，
+   按下落 200 档，已勾选的品牌实心面按下派生 active 面 */
 [data-scope='table'][data-part='select-all-trigger'],
 [data-scope='table'][data-part='row-select-trigger'],
 [data-scope='table'][data-part='column-visibility-trigger'],
 [data-scope='table'][data-part='expand-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
-  cursor: pointer;
-  transition:
-    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-_table-trigger-bg: transparent;
+  --xh-_table-trigger-bg-pressed: var(--xh-table-trigger-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-_table-trigger-border: transparent;
+
+  --xh-action-visual-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
+  --xh-action-min-inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
+  --xh-action-bg-rest: var(--xh-_table-trigger-bg);
+  --xh-action-bg-hover: var(--xh-_table-trigger-bg);
+  --xh-action-bg-pressed: var(--xh-_table-trigger-bg-pressed);
+  --xh-action-bg-focus-visible: var(--xh-_table-trigger-bg);
+  --xh-action-border-rest: var(--xh-_table-trigger-border);
+  --xh-action-border-hover: var(--xh-_table-trigger-border);
+  --xh-action-border-pressed: var(--xh-_table-trigger-border);
+  --xh-action-border-focus-visible: var(--xh-_table-trigger-border);
+}
+
+/* 家族 icon 档在粗指针下用 ::after 扩热区到 44px：四颗把手密排在行首与列头里（coarse-target 登记的
+   A 档存量），外扩会与相邻把手和上下行叠上；热区不外扩，全选框的 ::after 又是半选那道横杠 */
+@media (pointer: coarse) {
+  [data-scope='table'][data-part='select-all-trigger']::after,
+  [data-scope='table'][data-part='row-select-trigger']::after,
+  [data-scope='table'][data-part='column-visibility-trigger']::after,
+  [data-scope='table'][data-part='expand-trigger']::after {
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
 }
 
 /* 勾选方框是嵌在行里的小块：inset 档圆角（身份表登记）；展开箭头与列设置那颗是 control 档 */
 [data-scope='table'][data-part='select-all-trigger'],
 [data-scope='table'][data-part='row-select-trigger'] {
-  border-radius: var(--xh-table-trigger-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-table-trigger-radius, var(--xh-shape-inset));
 }
 
 [data-scope='table'][data-part='column-visibility-trigger'],
 [data-scope='table'][data-part='expand-trigger'] {
-  border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
+  --xh-action-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
 }
 
 [data-scope='table'][data-part='select-all-trigger'][hidden],
@@ -32970,68 +32989,51 @@
   display: none;
 }
 
-/* 四个把手按下时缩一档并同时换底（§9.1 定尺控件缩放必换底）：缩放走 transform 通道不占版面，
-   行高与列宽都不动；空框与展开箭头坐在白底行上，按下落 200 档 */
-[data-scope='table'][data-part='select-all-trigger']:active:not([data-disabled]),
-[data-scope='table'][data-part='row-select-trigger']:active:not([data-disabled]),
-[data-scope='table'][data-part='column-visibility-trigger']:active:not([data-disabled]),
-[data-scope='table'][data-part='expand-trigger']:active:not([data-disabled]) {
-  scale: var(--xh-motion-scale-press);
-  background: var(--xh-table-trigger-bg-pressed, var(--xh-bg-subtle-hover));
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 已勾选的方框是品牌实心面，按下在它之上派生 active 面 */
-[data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):active:not([data-disabled]),
-[data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:active:not([data-disabled]),
-[data-scope='table'][data-part='row-select-trigger'][data-selected]:active:not([data-disabled]) {
-  background: var(--xh-table-trigger-bg-checked-pressed, var(--xh-bg-brand-active));
-}
-
-/* 三个勾选把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
+/* 三个勾选把手：未选中时只剩一个空框（描边画出的 canvas 底空框），勾选标记靠前景色显隐，
    切换选中不引起行宽抖动 */
 [data-scope='table'][data-part='select-all-trigger'],
 [data-scope='table'][data-part='row-select-trigger'],
 [data-scope='table'][data-part='column-visibility-trigger'] {
-  border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-control));
-  color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+  --xh-_table-trigger-bg: var(--xh-bg-canvas);
+  --xh-_table-trigger-border: var(--xh-table-trigger-border, var(--xh-border-control));
+  --xh-_table-trigger-fg: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+  --xh-action-fg-rest: var(--xh-_table-trigger-fg);
+  --xh-action-fg-hover: var(--xh-_table-trigger-fg);
+  --xh-action-fg-pressed: var(--xh-_table-trigger-fg);
+  --xh-action-fg-focus-visible: var(--xh-_table-trigger-fg);
+
   visibility: visible;
 }
 
+/* 已勾选的方框是品牌实心面，按下在它之上派生 active 面。
+   面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
 [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked'],
 [data-scope='table'][data-part='row-select-trigger'][data-selected] {
-  border-color: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
-  background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-   禁用档的前景是透明的（勾要藏起来），不在这一条里，环走公共层的默认色 */
-[data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]):focus-visible,
-[data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]):focus-visible {
-  --xh-_ring-color: currentColor;
+  --xh-_table-trigger-bg: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
+  --xh-_table-trigger-bg-pressed: var(--xh-table-trigger-bg-checked-pressed, var(--xh-bg-brand-active));
+  --xh-_table-trigger-border: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
+  --xh-action-ring-color-focus-visible: currentColor;
 }
 
 /* 半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 取到的是透明；
    环直接取面配对的那支前景色 */
-[data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']:not([data-disabled]):focus-visible {
-  --xh-_ring-color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+[data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate'] {
+  --xh-action-ring-color-focus-visible: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
 }
 
 /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
 [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
 [data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
 [data-scope='table'][data-part='row-select-trigger']:not([data-selected]) {
-  color: transparent;
+  --xh-_table-trigger-fg: transparent;
 }
 
 /* 半选换一枚横杠字形盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开。
    横杠与勾同走字形令牌，作者换掉标记时两态一起换 */
 [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate'] {
-  position: relative;
-  color: transparent;
+  --xh-_table-trigger-fg: transparent;
 }
 
 [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
@@ -33044,12 +33046,13 @@
   mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
+/* 禁用（§7.2 第 9 条）：--xh-border-default 描边 + --xh-bg-subtle 底，勾藏起来；家族的禁用块按映射给 */
 [data-scope='table'][data-part='select-all-trigger'][data-disabled],
 [data-scope='table'][data-part='column-visibility-trigger'][data-disabled],
 [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
-  border-color: var(--xh-border-default);
-  background: var(--xh-bg-muted);
-  color: transparent;
+  --xh-action-border-disabled: var(--xh-border-default);
+  --xh-action-bg-disabled: var(--xh-bg-subtle);
+  --xh-action-fg-disabled: transparent;
 }
 
 /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
@@ -33059,10 +33062,17 @@
 
 /* 展开箭头：收起时朝向行首、展开时转向下方，与逻辑书写方向一致 */
 [data-scope='table'][data-part='expand-trigger'] {
-  color: var(--xh-table-expand-fg, var(--xh-fg-subtle));
-  /* 这条整份改写上面那份共用过渡，按压的 scale 要一起带回来 */
+  --xh-action-fg-rest: var(--xh-table-expand-fg, var(--xh-fg-subtle));
+  --xh-action-fg-hover: var(--xh-table-expand-fg, var(--xh-fg-subtle));
+  --xh-action-fg-pressed: var(--xh-table-expand-fg, var(--xh-fg-subtle));
+  --xh-action-fg-focus-visible: var(--xh-table-expand-fg, var(--xh-fg-subtle));
+  --xh-action-bg-disabled: transparent;
+  --xh-action-border-disabled: transparent;
+
+  /* 这条整份改写家族的过渡列表，按压的 scale 与换底要一起带回来 */
   transition:
     rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
@@ -33080,7 +33090,7 @@
 }
 
 [data-scope='table'][data-part='expand-trigger'][data-disabled] {
-  color: var(--xh-fg-disabled);
+  --xh-action-fg-disabled: var(--xh-fg-disabled);
 }
 
 [data-scope='table'][data-part='expand-trigger']:focus-visible {
@@ -33088,33 +33098,43 @@
 }
 
 /* 排序把手撑满列标题：整块列标题都点得动，而不是只有那一小截文字。
-   它是铺满一格的行级触发器（§9.2）：按下只换面不缩放；坐在表头淡底上，走淡底阶梯 hover 200 → pressed 300 */
+   它是铺满一格的行级触发器（§9.2）：接 Action Control row 档、ghost 形态，按下只换面不缩放；
+   坐在表头淡底上，阶梯由 header 的 host 槽下发（hover 200 → pressed 300）。
+   列头自己已给内距与行高，把手不再叠 row 档的内距与最小高度；字继承列头的字号与字重 */
 [data-scope='table'][data-part='sort-trigger'] {
-  display: inline-flex;
+  --xh-action-gap: var(--xh-table-sort-gap, var(--xh-space-1));
+  --xh-action-padding-inline: 0;
+  --xh-action-padding-block: 0;
+  --xh-action-visual-size: 0;
+  --xh-action-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
+  --xh-action-bg-hover: var(--xh-table-sort-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-table-sort-bg-pressed, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: currentColor;
+  --xh-action-fg-hover: currentColor;
+  --xh-action-fg-pressed: currentColor;
+  --xh-action-fg-focus-visible: currentColor;
+  --xh-action-fg-disabled: currentColor;
+  --xh-action-font-size: inherit;
+
   flex: 1;
-  align-items: center;
-  gap: var(--xh-table-sort-gap, var(--xh-space-1));
+  inline-size: auto;
   min-inline-size: 0;
-  border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
-  color: inherit;
   font: inherit;
-  text-align: start;
-  cursor: pointer;
-  transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  line-height: inherit;
+  white-space: inherit;
+}
+
+/* 家族 row 档在粗指针下用 ::after 扩热区到 44px 高，这里的 ::after 是排序箭头字形：把它钉回行内位置 */
+@media (pointer: coarse) {
+  [data-scope='table'][data-part='sort-trigger']::after {
+    position: static;
+    min-block-size: 0;
+    translate: none;
+  }
 }
 
 [data-scope='table'][data-part='sort-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='table'][data-part='sort-trigger']:not([data-disabled]):hover {
-  background: var(--xh-table-sort-bg-hover, var(--xh-bg-subtle-hover));
-}
-
-[data-scope='table'][data-part='sort-trigger']:not([data-disabled]):active {
-  background: var(--xh-table-sort-bg-pressed, var(--xh-bg-subtle-active));
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 列宽把手贴在表头格的行尾侧。它压在相邻两列的接缝上，因此往外挪半个身位，

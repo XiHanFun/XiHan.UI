@@ -404,10 +404,16 @@ export const tableSuite: ConformanceSuite = {
             'aria-disabled': 'true',
             'tabindex': '0',
             'data-state': 'unchecked',
+            // 方框接 Action Control 家族：icon 档、outline 形态、常显、字形档随 size（缺省 md）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
-          // 行内三个把手都退出可及树与 Tab 序列
-          'row-select-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
-          'expand-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
+          // 行内三个把手都退出可及树与 Tab 序列；勾选框 outline、展开箭头 ghost，都是 icon 档
+          'row-select-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'outline' },
+          'expand-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost' },
           'row-drag-trigger[0]': {
             // 键盘换位由表体上的 Alt + 上下键承担，把手只管指针那一路
             'aria-hidden': 'true',
@@ -417,7 +423,8 @@ export const tableSuite: ConformanceSuite = {
             'data-disabled': '',
             'data-dragging': null,
           },
-          'sort-trigger[0]': { 'role': 'button', 'tabindex': '0', 'aria-disabled': 'false' },
+          // 排序把手铺满一格：Action Control row 档、ghost 形态
+          'sort-trigger[0]': { 'role': 'button', 'tabindex': '0', 'aria-disabled': 'false', 'data-xh-action-control': '', 'data-xh-action-profile': 'row', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
           'expanded-row': detailsShown(),
           // 详情行是所属数据行的下一层，那一层只有它自己
           'expanded-row[0]': {

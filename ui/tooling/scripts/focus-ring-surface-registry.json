@@ -3,7 +3,6 @@
   "declared": {
     "scrollbar [data-part='thumb'][data-scope='scrollbar']:not([data-disabled])": "滑块面为半透明中性色，聚焦环改取不透明的 currentColor，避免环色随滑块透明度一起变淡",
     "segmented [data-part='root'][data-scope='segmented']:has([data-scope='segmented'][data-part='indicator']:not([hidden])) [data-part='item'][data-scope='segmented'][data-state='checked']": "选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的指示器实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
-    "table [data-part='select-all-trigger'][data-scope='table'][data-state='indeterminate']:not([data-disabled])": "半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 会取到透明，这一条改取面配对的前景色；面那条规则把 checked 与 indeterminate 写在同一个 :is() 里，本脚本记成一档 [data-state=:is(checked,indeterminate)]，只写 indeterminate 的这条罩不上它",
     "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'] [data-part='close-trigger'][data-scope='tag']": "叉（tag 的 close-trigger）自己的面是透空的，环内侧是整颗标签（tag 的 root）换成当前项淡底后的语气面；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
     "tag [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": "关闭钮自己的面是透空的，环压着的是标签根那块实心语气底；本脚本按部件自己那条面规则算，看不到祖先铺的底",
     "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": "连接层给这颗把手发 aria-hidden: true，焦点落不上去，这条 :focus-visible 规则画不出来",
@@ -212,20 +211,6 @@
     "splitter [data-dragging][data-part='resize-trigger'][data-scope='splitter']": {
       "parts": [
         "resize-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "table [data-part='column-visibility-trigger'][data-scope='table'][data-state='checked']": {
-      "parts": [
-        "column-visibility-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "table [data-part='select-all-trigger'][data-scope='table'][data-state=:is(checked,indeterminate)]": {
-      "parts": [
-        "select-all-trigger"
       ],
       "ratio": 1,
       "ring": "poured"
