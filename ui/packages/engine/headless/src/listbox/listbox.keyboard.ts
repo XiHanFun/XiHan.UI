@@ -23,6 +23,7 @@ export const listboxKeyboard: KeyboardTable = {
     { id: 'listbox.kbd.toggle', keys: ['Space', 'Enter', 'Ctrl+Space'], when: 'focus on item, 可多选（multiple；extended 下须按住 Ctrl/Cmd）', does: '切换焦点条目的选中态，其余选中不动' },
     { id: 'listbox.kbd.extend', keys: ['Shift+ArrowDown', 'Shift+ArrowUp'], when: 'focus in listbox, 可多选', does: '焦点移到相邻条目并切换它的选中态；反向移动即取消刚扩展进来的条目' },
     { id: 'listbox.kbd.select-all', keys: ['Ctrl+A', 'Cmd+A'], when: 'focus in listbox, 可多选', does: '选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动）' },
+    { id: 'listbox.kbd.press', keys: ['Enter', 'Space'], when: 'held in item / load-more-trigger, interactive', does: '按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下；禁用、只读的条目与在途中的取下一页不进' },
     { id: 'listbox.kbd.typeahead', keys: ['单个可打印字符'], when: 'focus in listbox, typeahead 未关', does: '连打检索把焦点移到首字母匹配的条目，不改选中值' },
   ],
 }

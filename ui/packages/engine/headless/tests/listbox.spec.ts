@@ -60,9 +60,10 @@ interface Harness {
 }
 
 function mount(initial: Partial<Props> = {}): Harness {
-  const props: Partial<Props> = { ...initial }
   const runtime = createVanillaRuntime()
-  const service = createService(listboxMachine, { props: () => props, runtime })
+  // props 走信号：机器的 watch 才追得到 disabled / readOnly / loading 这类变化
+  const props = runtime.signal<Partial<Props>>({ ...initial })
+  const service = createService(listboxMachine, { props: () => props.get(), runtime })
   runtime.start()
 
   const doc = document
@@ -126,7 +127,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     groupEl: v => groupEls.get(v)!,
     groupLabel: v => groupLabels.get(v)!,
     setProps: (next) => {
-      Object.assign(props, next)
+      props.set({ ...props.get(), ...next })
       render()
     },
     render,
@@ -700,5 +701,101 @@ describe('集合相位三件套', () => {
     const decl = { value: 'apple' }
     expect((h.api().getItemTextProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
     expect((h.api().getItemIndicatorProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('indicator')
+  })
+})
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，条目按 value 记、取下一页只记部件', () => {
+  type Dict = Record<string, unknown>
+  const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+  const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+  // 部件上写了 disabled 就压过 collection：不传时留空，collection 里的禁用才查得到
+  const itemProps = (h: Harness, value: string, disabled?: boolean): Dict => h.api().getItemProps(disabled === undefined ? { value } : { value, disabled }) as Dict
+  const loadMore = (h: Harness): Dict => h.api().getLoadMoreTriggerProps() as Dict
+
+  it('条目：keydown 在场、keyup 撤下；触屏按下在场、抬起撤下；失焦撤下；鼠标按下不走这一路', () => {
+    const h = mount()
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+    fire(itemProps(h, 'apple'), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onPointerDown', { pointerType: 'touch' })
+    expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+    fire(itemProps(h, 'apple'), 'onPointerUp', {})
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onKeyDown', key('Enter'))
+    expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+    fire(itemProps(h, 'apple'), 'onBlur', {})
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onPointerDown', { pointerType: 'mouse' })
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+  })
+
+  it('取下一页：投影同一副按压面，与条目互不串；另一个的 keyup 不把它松开', () => {
+    const h = mount()
+    fire(loadMore(h), 'onKeyDown', key(' '))
+    expect(loadMore(h)['data-pressed']).toBe('')
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'apple'), 'onKeyUp', key(' '))
+    expect(loadMore(h)['data-pressed']).toBe('')
+    fire(loadMore(h), 'onKeyUp', key(' '))
+    expect(loadMore(h)['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'cherry'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'cherry')['data-pressed']).toBe('')
+    expect(loadMore(h)['data-pressed']).toBeUndefined()
+    fire(loadMore(h), 'onKeyUp', key(' '))
+    expect(itemProps(h, 'cherry')['data-pressed']).toBe('')
+    fire(itemProps(h, 'cherry'), 'onPointerCancel', {})
+    expect(itemProps(h, 'cherry')['data-pressed']).toBeUndefined()
+  })
+
+  it('不进：整列禁用两者都不进；只读的条目不进但取下一页照常；在途中的取下一页不进但条目照常；条目自身禁用不进', () => {
+    const disabled = mount({ disabled: true })
+    fire(itemProps(disabled, 'apple'), 'onKeyDown', key(' '))
+    fire(loadMore(disabled), 'onKeyDown', key(' '))
+    expect(itemProps(disabled, 'apple')['data-pressed']).toBeUndefined()
+    expect(loadMore(disabled)['data-pressed']).toBeUndefined()
+
+    const readOnly = mount({ readOnly: true })
+    fire(itemProps(readOnly, 'apple'), 'onKeyDown', key(' '))
+    expect(itemProps(readOnly, 'apple')['data-pressed']).toBeUndefined()
+    fire(loadMore(readOnly), 'onKeyDown', key(' '))
+    expect(loadMore(readOnly)['data-pressed']).toBe('')
+
+    const loading = mount({ loading: true })
+    fire(loadMore(loading), 'onKeyDown', key(' '))
+    expect(loadMore(loading)['data-pressed']).toBeUndefined()
+    fire(itemProps(loading, 'apple'), 'onKeyDown', key(' '))
+    expect(itemProps(loading, 'apple')['data-pressed']).toBe('')
+
+    const h = mount({ collection: [{ value: 'apple', disabled: true }, { value: 'cherry' }] })
+    fire(itemProps(h, 'apple'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'cherry', true), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'cherry')['data-pressed']).toBeUndefined()
+    fire(itemProps(h, 'cherry'), 'onKeyDown', key(' '))
+    expect(itemProps(h, 'cherry')['data-pressed']).toBe('')
+  })
+
+  it('按住途中整列被禁用 / 转只读 / 进入加载：按压面由机器自己收，不等 keyup', () => {
+    for (const inert of [{ disabled: true }, { readOnly: true }] as Partial<Props>[]) {
+      const h = mount()
+      fire(itemProps(h, 'apple'), 'onKeyDown', key(' '))
+      expect(itemProps(h, 'apple')['data-pressed']).toBe('')
+      h.setProps(inert)
+      expect(itemProps(h, 'apple')['data-pressed']).toBeUndefined()
+    }
+    for (const inert of [{ disabled: true }, { loading: true }] as Partial<Props>[]) {
+      const h = mount()
+      fire(loadMore(h), 'onKeyDown', key(' '))
+      expect(loadMore(h)['data-pressed']).toBe('')
+      h.setProps(inert)
+      expect(loadMore(h)['data-pressed']).toBeUndefined()
+    }
+    // 只读只管条目：按住的取下一页不受影响
+    const h = mount()
+    fire(loadMore(h), 'onKeyDown', key(' '))
+    h.setProps({ readOnly: true })
+    expect(loadMore(h)['data-pressed']).toBe('')
   })
 })

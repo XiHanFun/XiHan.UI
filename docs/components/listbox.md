@@ -140,7 +140,9 @@
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.CLEAR` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `LIST.BLUR`
+**事件**：`VALUE.SET` · `VALUE.CLEAR` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -189,6 +191,7 @@
 | `Space` / `Enter` / `Ctrl+Space` | focus on item, 可多选（multiple；extended 下须按住 Ctrl/Cmd） | 切换焦点条目的选中态，其余选中不动 |
 | `Shift+ArrowDown` / `Shift+ArrowUp` | focus in listbox, 可多选 | 焦点移到相邻条目并切换它的选中态；反向移动即取消刚扩展进来的条目 |
 | `Ctrl+A` / `Cmd+A` | focus in listbox, 可多选 | 选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动） |
+| `Enter` / `Space` | held in item / load-more-trigger, interactive | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下；禁用、只读的条目与在途中的取下一页不进 |
 | `单个可打印字符` | focus in listbox, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不改选中值 |
 
 ### ARIA
@@ -236,6 +239,7 @@
 | `content` | `data-invalid` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -247,6 +251,7 @@
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-xh-action-control` | '' |
 | `load-more-trigger` | `data-xh-action-display` | 'always' |
 | `load-more-trigger` | `data-xh-action-profile` | 'row' |

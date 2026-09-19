@@ -5,9 +5,9 @@
 
 // 提供 listbox 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
 import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } from './listbox.types'
-import { applySelection, contains, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'
+import { applySelection, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
 
 const parts = listboxAnatomy.build()
@@ -53,6 +53,16 @@ export function connectListbox<T extends PropTypes>(
   /** 条目禁用：整列禁用一票通过，其次看部件上写的，再没有就回 collection 里查。 */
   const isDisabled = (item: ListboxItemProps): boolean =>
     listDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（条目按 value 记，取下一页只记 part），各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 条目自身的禁用只有 connect 知道（部件声明或 collection），随 PRESS.START 带给机器的 canPress 守卫
+  const pressedPart = context.get('pressedPart')
+  const pressedValue = context.get('pressedValue')
+  const press = (part: 'item' | 'load-more-trigger', value?: string, disabled?: boolean): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedPart') === part && context.get('pressedValue') === (value ?? null),
+    onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
+  })
 
   // item / item-text / item-indicator 共用同一份状态标记
   const stateAttrs = (item: ListboxItemProps): Record<string, string | undefined> => ({
@@ -288,18 +298,29 @@ export function connectListbox<T extends PropTypes>(
     // 连接层只焊死「在途中与整列禁用点不动」。
     // 它是铺满一行的独立动作条目（§9.2 load-more trigger）：接 Action Control 的 row 档、ghost 形态，
     // 宽度由容器给、高度随内容、按下只换面不缩放；悬停 / 按下 / 禁用面与粗指针热区由家族给，档位随 size
-    getLoadMoreTriggerProps: () => normalize.button({
-      ...parts['load-more-trigger'].attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'row',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'type': 'button',
-      'disabled': loading || listDisabled || undefined,
-      'data-loading': dataAttr(loading),
-      'data-disabled': dataAttr(listDisabled),
-    }),
+    getLoadMoreTriggerProps: () => {
+      const handlers = press('load-more-trigger')
+      return normalize.button({
+        ...parts['load-more-trigger'].attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'row',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'type': 'button',
+        'disabled': loading || listDisabled || undefined,
+        'data-loading': dataAttr(loading),
+        'data-disabled': dataAttr(listDisabled),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'load-more-trigger'),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     getGroupProps: group => normalize.element({
       ...parts.group.attrs,
@@ -317,46 +338,57 @@ export function connectListbox<T extends PropTypes>(
 
     // 条目走 Collection Item 的 page 语境（页内持久集合）：网格、尺寸档、悬停 / 高亮 / 按下面与
     // 选中面（品牌淡底 + 前导对号）都由家族配方按 aria-selected / aria-disabled 给出，皮肤只映射公开槽
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...stateAttrs(item),
-      'data-xh-collection-item': '',
-      'data-xh-collection-size': prop('size') ?? 'md',
-      'data-xh-collection-context': 'page',
-      // 导航、检索与选中的条目身份
-      [ITEM_VALUE_ATTR]: item.value,
-      'role': 'option',
-      // 未选中也显式输出 false
-      'aria-selected': isSelected(item.value) ? 'true' : 'false',
-      // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦
-      'aria-disabled': isDisabled(item) ? 'true' : 'false',
-      // roving tabindex：整组只有锚点条目留在 Tab 序列内
-      'tabindex': anchor === item.value ? 0 : -1,
-      'onClick': (event: MouseEvent) => {
-        if (isDisabled(item) || !editable)
-          return
-        if (mode === 'single') {
-          send({ type: 'ITEM.SELECT', value: item.value })
-          return
-        }
-        if (mode === 'multiple') {
-          send({ type: 'ITEM.TOGGLE', value: item.value })
-          return
-        }
-        // extended：Shift 连选区间、Ctrl/Cmd 加选单个、裸点替换
-        if (event.shiftKey) {
-          const content = contentOf(event.currentTarget as HTMLElement)
-          if (content)
-            extendTo(content, item.value)
-          return
-        }
-        send(event.ctrlKey || event.metaKey
-          ? { type: 'ITEM.TOGGLE', value: item.value }
-          : { type: 'ITEM.SELECT', value: item.value })
-      },
-      // 禁用条目被聚焦也记锚点，作为方向键起点
-      'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-    }),
+    getItemProps: (item) => {
+      const handlers = press('item', item.value, isDisabled(item))
+      return normalize.element({
+        ...parts.item.attrs,
+        ...stateAttrs(item),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'page',
+        // 导航、检索与选中的条目身份
+        [ITEM_VALUE_ATTR]: item.value,
+        'role': 'option',
+        // 未选中也显式输出 false
+        'aria-selected': isSelected(item.value) ? 'true' : 'false',
+        // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦
+        'aria-disabled': isDisabled(item) ? 'true' : 'false',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === item.value),
+        // roving tabindex：整组只有锚点条目留在 Tab 序列内
+        'tabindex': anchor === item.value ? 0 : -1,
+        'onClick': (event: MouseEvent) => {
+          if (isDisabled(item) || !editable)
+            return
+          if (mode === 'single') {
+            send({ type: 'ITEM.SELECT', value: item.value })
+            return
+          }
+          if (mode === 'multiple') {
+            send({ type: 'ITEM.TOGGLE', value: item.value })
+            return
+          }
+          // extended：Shift 连选区间、Ctrl/Cmd 加选单个、裸点替换
+          if (event.shiftKey) {
+            const content = contentOf(event.currentTarget as HTMLElement)
+            if (content)
+              extendTo(content, item.value)
+            return
+          }
+          send(event.ctrlKey || event.metaKey
+            ? { type: 'ITEM.TOGGLE', value: item.value }
+            : { type: 'ITEM.SELECT', value: item.value })
+        },
+        // 禁用条目被聚焦也记锚点，作为方向键起点
+        'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,

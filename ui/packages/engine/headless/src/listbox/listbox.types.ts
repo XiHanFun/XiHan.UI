@@ -113,6 +113,10 @@ export interface ListboxSchema extends MachineSchema {
     focusedValue: string | null
     /** 区间连选的起点：最近一次非区间选中的条目。 */
     anchorValue: string | null
+    /** 按压通道：Space / Enter 或触屏按住的是条目还是列表尾的「取下一页」。 */
+    pressedPart: 'item' | 'load-more-trigger' | null
+    /** 按压通道：按住的条目 value；load-more-trigger 没有 value，记 null。 */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: ListboxRefs
@@ -131,9 +135,13 @@ export interface ListboxSchema extends MachineSchema {
     | { type: 'FOCUS.CLEAR' }
     /** 焦点离开列表，或持有焦点的条目被移出 DOM（后者由适配器上报）。 */
     | { type: 'LIST.BLUR' }
+    /** 条目或「取下一页」被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
+    | { type: 'PRESS.START', part: 'item' | 'load-more-trigger', value?: string, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
+    | { type: 'PRESS.END', part: 'item' | 'load-more-trigger', value?: string }
   tag: never
-  guard: never
-  action: 'setValue' | 'clearValue' | 'selectItem' | 'toggleItem' | 'setFocusedValue' | 'clearFocusedValue'
+  guard: 'canPress'
+  action: 'setValue' | 'clearValue' | 'selectItem' | 'toggleItem' | 'setFocusedValue' | 'clearFocusedValue' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 

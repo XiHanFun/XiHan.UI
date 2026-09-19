@@ -1,6 +1,7 @@
 import type { AttrExpectation, ConformanceSuite, FixtureNode } from '../conformance/types'
 import { listboxAnatomy, listboxKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
@@ -24,9 +25,15 @@ function item(value: string, text: string, disabled = false): FixtureNode {
   }
 }
 
-const FIXTURE: FixtureNode = {
-  part: 'root',
-  children: [
+interface FixtureOptions {
+  /** 把文档序里第一条（apple）也改成禁用，给「禁用条目不接受按压」用。 */
+  appleDisabled?: boolean
+  /** 在列表尾加一颗取下一页的按钮。 */
+  loadMore?: boolean
+}
+
+function fixture(options: FixtureOptions = {}): FixtureNode {
+  const children: FixtureNode[] = [
     { part: 'label', tag: 'span', text: '水果' },
     {
       part: 'content',
@@ -36,7 +43,7 @@ const FIXTURE: FixtureNode = {
           attrs: { value: 'common' },
           children: [
             { part: 'group-label', tag: 'span', text: '常见' },
-            item('apple', 'Apple'),
+            item('apple', 'Apple', options.appleDisabled),
             item('banana', 'Banana', true),
             item('cherry', 'Cherry'),
           ],
@@ -51,8 +58,14 @@ const FIXTURE: FixtureNode = {
         },
       ],
     },
-  ],
+  ]
+  // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
+  if (options.loadMore)
+    children.push({ part: 'load-more-trigger', tag: 'button', text: '加载更多' })
+  return { part: 'root', children }
 }
+
+const FIXTURE = fixture()
 
 /** 四个条目的 aria-selected 期望，逐个写全——只写关心的那个会漏掉"另一个也被选中了"。 */
 function selected(...values: readonly string[]): readonly AttrExpectation[] {
@@ -469,6 +482,36 @@ export const listboxSuite: ConformanceSuite = {
         // rtl 下 ArrowLeft 才是"下一个"
         { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'item[2]', exact: true } } },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'item[0]', exact: true } } },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：条目与取下一页各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['listbox.kbd.press'],
+      fixture: () => fixture({ loadMore: true }),
+      steps: [heldPress('listbox', 'item'), heldPress('listbox', 'load-more-trigger')],
+    },
+    {
+      name: '禁用条目按住不进入按压面；只读时条目不进、取下一页照常',
+      spec: { adr: 'press-channel' },
+      fixture: () => fixture({ appleDisabled: true, loadMore: true }),
+      steps: [
+        heldPressIgnored('listbox', 'item', '禁用条目不接受按压'),
+        { kind: 'setProps', props: { readOnly: true } },
+        heldPressIgnored('listbox', 'item', '只读时条目改不了选中值，不接受按压'),
+        heldPress('listbox', 'load-more-trigger'),
+      ],
+    },
+    {
+      name: '取数在途中取下一页不进入按压面；整列禁用时两者都不进',
+      spec: { adr: 'press-channel' },
+      fixture: () => fixture({ loadMore: true }),
+      props: { loading: true },
+      steps: [
+        heldPressIgnored('listbox', 'load-more-trigger', '取数在途中不接受按压'),
+        { kind: 'setProps', props: { loading: false, disabled: true } },
+        heldPressIgnored('listbox', 'item', '整列禁用不接受按压'),
+        heldPressIgnored('listbox', 'load-more-trigger', '整列禁用不接受按压'),
       ],
     },
   ],
