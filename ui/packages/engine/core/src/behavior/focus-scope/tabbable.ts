@@ -38,7 +38,8 @@ export interface FocusOptions {
   select?: boolean
 }
 
-function activeElementInRoot(el: FocusableElement): Element | null {
+/** 元素所在根（document 或 shadow root）此刻的 activeElement。 */
+export function activeElementInRoot(el: FocusableElement): Element | null {
   const root = el.getRootNode()
   return isDocument(root) || isShadowRoot(root)
     ? root.activeElement

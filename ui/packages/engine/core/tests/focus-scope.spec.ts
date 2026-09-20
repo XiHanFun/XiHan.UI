@@ -933,6 +933,39 @@ describe('卸载归还', () => {
     expect(document.activeElement).toBe(h.outside)
   })
 
+  it('创建前没人持有焦点（body）：归还落不下去就显式松手，焦点不留在关掉的层里', async () => {
+    const h = setup()
+    expect(document.activeElement).toBe(document.body)
+    const scope = open(h)
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[0])
+    // 收起态：容器 hidden + inert，jsdom 不做 focus fixup，焦点仍停在里面
+    h.container.hidden = true
+    h.container.setAttribute('inert', '')
+    expect(document.activeElement).toBe(h.buttons[0])
+    scope.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  it('归还落点在分支里时不误当作没落定', async () => {
+    const h = setup()
+    const branch = document.createElement('div')
+    const branchButton = document.createElement('button')
+    branch.appendChild(branchButton)
+    document.body.appendChild(branch)
+    branchButton.focus()
+    const scope = open(h, { branches: () => [branch] })
+    await frames(2)
+    // 分支算域内，挂载不抢；域内移动也不受干扰
+    expect(document.activeElement).toBe(branchButton)
+    h.buttons[0]!.focus()
+    expect(document.activeElement).toBe(h.buttons[0])
+    scope.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(branchButton)
+  })
+
   it('其他 document 的更新焦点域不阻止当前 document 归还', async () => {
     const h = setup()
     h.outside.focus()
