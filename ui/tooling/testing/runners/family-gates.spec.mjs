@@ -232,6 +232,25 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
       expect(result.stderr).not.toContain(line)
   }, SPAWN_TIMEOUT)
 
+  it('隔一层本地绑定或一层辅助的展开同样认作投影：table 先绑 pressing 再展开，editable 经 holdFocusThenPress 再展开 handlers', () => {
+    const root = createFixture()
+    dropPressedExcuse(root)
+    const result = run('check-press-feedback.mjs', root)
+    for (const line of ['table 的 row', 'table 的 sort-trigger', 'table 的 select-all-trigger', 'table 的 column-visibility-trigger', 'editable 的 submit-trigger', 'editable 的 cancel-trigger'])
+      expect(result.stderr).not.toContain(line)
+  }, SPAWN_TIMEOUT)
+
+  it('隔层解到底仍没写 data-pressed 判红：把 table 的 press 辅助里的键摘掉，经绑定展开的四个部件一并红', () => {
+    const root = createFixture()
+    dropPressedExcuse(root)
+    rewriteConnect(root, 'table', '\'data-pressed\': dataAttr(pressedKey === key),', '')
+    const result = run('check-press-feedback.mjs', root)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('table 的 row 登记为可按，connect 的 getter 却没投影 data-pressed')
+    expect(result.stderr).toContain('table 的 sort-trigger 登记为可按')
+    expect(result.stderr).toContain('table 的 select-all-trigger 登记为可按')
+  }, SPAWN_TIMEOUT)
+
   it('展开的本地辅助没写 data-pressed 判红', () => {
     const root = createFixture()
     dropPressedExcuse(root)

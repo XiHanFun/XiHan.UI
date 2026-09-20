@@ -43,17 +43,37 @@ export async function getterProjects(comp, part, attr, root = HEADLESS_SRC) {
  * 某部件的 getter 是否投影了这个属性：直接写成字典键，或经 `...helper(…)` 展开——helper 是同一份 connect 里
  * 定义的本地函数（`const press = (part) => ({ 'data-pressed': … })`，浮层多颗按钮按 part 键合成按压通道时
  * 就这样写），它返回的对象字面量里得写着这个键。展开的不是本地函数、或函数体里没有这个键，都不算投影。
+ *
+ * 展开也可以隔一层绑定或一层辅助：`const pressing = press(key); …pressing`（同一 getter 里先把结果绑到本地
+ * 名字再展开），或 `...holdFocusThenPress(part)` 的函数体里再 `const handlers = press(part); …handlers`——
+ * 顺着绑定与本地函数一路解到写着该键的对象字面量为止；解不到、或绑定的不是本地函数，都不算投影。
  */
 export async function getterProjectsOrSpreads(comp, part, attr, root = HEADLESS_SRC) {
   const body = await getterBody(comp, part, root)
   if (body == null)
     return false
+  const source = await connectSource(comp, root)
+  return spreadsProject(source, body, attr, new Set())
+}
+
+/** 一段函数体里有没有这个键：自己写着、或经 `...name(…)` / `...name`（本地绑定到一次本地调用）展开到的辅助里写着。 */
+function spreadsProject(source, body, attr, seen) {
   if (body.includes(`'${attr}':`))
     return true
-  const source = await connectSource(comp, root)
-  for (const m of body.matchAll(/\.\.\.([a-z_$][\w$]*)\(/gi)) {
-    const helper = helperBody(source, m[1])
-    if (helper != null && helper.includes(`'${attr}':`))
+  for (const m of body.matchAll(/\.\.\.([a-z_$][\w$]*)(\()?/gi)) {
+    let helperName = m[1]
+    if (!m[2]) {
+      // 展开的是本地绑定：只认「const 名字 = 本地调用(」这一种形态，绑到别处的不追
+      const bound = new RegExp(`(?:const|let)\\s+${m[1]}\\s*(?::[^=]+)?=\\s*([a-z_$][\\w$]*)\\(`, 'i').exec(body)
+      if (!bound)
+        continue
+      helperName = bound[1]
+    }
+    if (seen.has(helperName))
+      continue
+    seen.add(helperName)
+    const helper = helperBody(source, helperName)
+    if (helper != null && spreadsProject(source, helper, attr, seen))
       return true
   }
   return false
