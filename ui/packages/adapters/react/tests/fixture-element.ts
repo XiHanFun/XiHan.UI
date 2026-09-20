@@ -67,6 +67,23 @@ function rendersHere(node: FixtureNode): boolean {
   return node.only == null || node.only.includes('react')
 }
 
+/**
+ * 根节点的子节点按插槽分组：没写 slot 的是根组件的 children，写了的进同名 prop
+ * （table 的工具条由根组件渲成 role=grid 的兄弟）。具名的只在有节点时才给。
+ */
+export function renderFixtureSlots(nodes: readonly FixtureNode[] | undefined, component: string): { children: ReactElement[] | undefined, slots: Record<string, ReactElement[]> } {
+  const visible = nodes?.filter(rendersHere)
+  const children = visible?.filter(c => c.slot == null).map((c, i) => renderFixtureNode(c, component, i))
+  const slots: Record<string, ReactElement[]> = {}
+  for (const [i, node] of (visible ?? []).entries()) {
+    if (node.slot == null)
+      continue
+    slots[node.slot] ??= []
+    slots[node.slot]!.push(renderFixtureNode(node, component, i))
+  }
+  return { children, slots }
+}
+
 /** 一组子节点 → React 元素列表，本侧不渲的先剔掉、下标作 key；没有子节点给 undefined。 */
 export function renderFixtureChildren(nodes: readonly FixtureNode[] | undefined, component: string): ReactElement[] | undefined {
   return nodes?.filter(rendersHere).map((c, i) => renderFixtureNode(c, component, i))

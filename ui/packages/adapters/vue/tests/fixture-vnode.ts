@@ -30,6 +30,24 @@ function rendersHere(node: FixtureNode): boolean {
   return node.only == null || node.only.includes('vue')
 }
 
+/**
+ * 根节点的子节点按插槽分组成根组件的 slots：没写 slot 的进默认插槽，写了的进那个具名插槽
+ * （table 的工具条由根组件渲成 role=grid 的兄弟）。默认插槽总在，具名的只在有节点时才给。
+ */
+export function renderFixtureSlots(nodes: readonly FixtureNode[] | undefined, component: string): Record<string, () => VNode[]> {
+  const groups = new Map<string, FixtureNode[]>([['default', []]])
+  for (const node of nodes?.filter(rendersHere) ?? []) {
+    const name = node.slot ?? 'default'
+    const group = groups.get(name) ?? []
+    group.push(node)
+    groups.set(name, group)
+  }
+  const slots: Record<string, () => VNode[]> = {}
+  for (const [name, kids] of groups)
+    slots[name] = () => kids.map(c => renderFixtureNode(c, component))
+  return slots
+}
+
 /** 一组子节点 → VNode 列表，本侧不渲的先剔掉；没有子节点给 undefined。 */
 export function renderFixtureChildren(nodes: readonly FixtureNode[] | undefined, component: string): VNode[] | undefined {
   return nodes?.filter(rendersHere).map(c => renderFixtureNode(c, component))
