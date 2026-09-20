@@ -97,6 +97,8 @@ interface Tier {
 }
 
 const 表格根 = (inner: string) => `<div data-scope="table" data-part="root">${inner}</div>`
+// 全选与列显隐把手与连接层投影一致：Action Control 的 icon outline 档，勾选的品牌实心面与换环色规则挂在家族角色上
+const 表格把手 = 'data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="outline" data-xh-action-display="always" data-xh-action-size="md"'
 
 const 失效档: Tier[] = [
   {
@@ -110,13 +112,13 @@ const 失效档: Tier[] = [
   },
   {
     名: 'table/select-all-trigger 勾选且失效',
-    markup: 表格根(`<button data-scope="table" data-part="select-all-trigger"
+    markup: 表格根(`<button data-scope="table" data-part="select-all-trigger" ${表格把手}
       data-state="checked" data-disabled aria-disabled="true" data-anchor></button>`),
     达标: true,
   },
   {
     名: 'table/column-visibility-trigger 勾选且失效',
-    markup: 表格根(`<button data-scope="table" data-part="column-visibility-trigger"
+    markup: 表格根(`<button data-scope="table" data-part="column-visibility-trigger" ${表格把手}
       data-state="checked" data-disabled aria-disabled="true" data-anchor></button>`),
     达标: true,
   },
@@ -135,7 +137,7 @@ const 失效档: Tier[] = [
 const 实心档: Tier[] = [
   {
     名: 'table/select-all-trigger 勾选未失效',
-    markup: 表格根(`<button data-scope="table" data-part="select-all-trigger"
+    markup: 表格根(`<button data-scope="table" data-part="select-all-trigger" ${表格把手}
       data-state="checked" data-anchor></button>`),
     达标: true,
   },
