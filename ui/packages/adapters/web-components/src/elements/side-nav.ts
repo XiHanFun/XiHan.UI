@@ -8,7 +8,6 @@
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import type { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSideNav, sideNavAnatomy, sideNavMachine, sideNavMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
@@ -23,9 +22,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 分支一系的归属容器；嵌套分支各认最近的那个。 */
-const BRANCH_SELECTOR = '[data-xh-part="branch"]'
+const BRANCH = 'branch'
 /** 分组一系的归属容器。 */
-const GROUP_SELECTOR = '[data-xh-part="group"]'
+const GROUP = 'group'
+/** 链接自报身份。 */
+const LINK = 'link'
+/** 折叠态弹出面板的定位层。 */
+const POSITIONER_SELECTOR = '[data-xh-part="positioner"]'
 
 /**
  * `<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。
@@ -113,7 +116,21 @@ export class XhSideNavElement extends XhPortalHostElement {
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 每个弹出面板的定位层一份退场闸门：退场动画播完才真收。 */
-  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
+
+  /**
+   * 折叠态全部顶层分支的定位层共用一份租约：任一面板可见时整排搬到落点，逻辑来源是侧栏根。
+   * 与 Vue / React 相同——那两端把每张 positioner 都经 Portal 搬到落点、视觉环境取自根，
+   * 文档序始终是作者写的那一排；若只搬展开的那一张，它会排到还留在原位的兄弟之后，
+   * 部件序与 aria-controls 的配对随之乱掉。
+   */
+  private readonly portal = this.createPortalLeaseController({
+    name: 'SideNav popout',
+    config: () => this.config,
+    source: () => this.getPart('root'),
+    roots: () => this.getParts('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly ctrl = new MachineController<SideNavSchema>(
     this,
@@ -150,13 +167,13 @@ export class XhSideNavElement extends XhPortalHostElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return [...this.exits.values()].flatMap(entry => entry.portal.roots)
+    return this.portal.roots
   }
 
   /** 当前弹出分支名下的角色节点：按归属分支的 value 现查。 */
   private findPopoutPart(value: string, name: string): HTMLElement | null {
     for (const el of this.getParts(name)) {
-      if (this.nodeOf(el, BRANCH_SELECTOR).value === value)
+      if (this.nodeOf(el, BRANCH).value === value)
         return el
     }
     return null
@@ -193,9 +210,8 @@ export class XhSideNavElement extends XhPortalHostElement {
     this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence, connected })
   }
 
-  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit, portal: AnchoredPortalController }): void {
+  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit }): void {
     this.setPresence(entry.value, entry.gate.presence, false)
-    entry.portal.dispose()
     entry.gate.dispose()
     this.setPartHidden(el, true)
     this.exits.delete(el)
@@ -209,23 +225,28 @@ export class XhSideNavElement extends XhPortalHostElement {
     }
   }
 
-  private nodeOf(el: HTMLElement, selector: string): SideNavNodeProps {
-    const positioner = el.matches('[data-xh-part="positioner"]')
-      ? el
-      : el.closest<HTMLElement>('[data-xh-part="positioner"]')
+  /**
+   * 节点归属的分支 / 分组 / 链接身份：先按最近的归属容器认，它得是本宿主登记的角色节点
+   * （留在宿主里的，或随租约搬到落点的面板里的都算）。顶层分支的定位层与面板搬到落点后
+   * 上溯找不到那颗 branch，归属分支按闸门记账的 value 认；面板里的链接与嵌套分支各有
+   * 自己的归属容器，不沾顶层分支的身份。
+   */
+  private nodeOf(el: HTMLElement, part: typeof BRANCH | typeof GROUP | typeof LINK): SideNavNodeProps {
+    const owner = el.closest<HTMLElement>(`[data-xh-part="${part}"]`)
+    if (owner && this.getParts(part).includes(owner))
+      return { value: owner.getAttribute('value') ?? '' }
+    const positioner = el.matches(POSITIONER_SELECTOR) ? el : el.closest<HTMLElement>(POSITIONER_SELECTOR)
     const portaled = positioner ? this.exits.get(positioner) : undefined
     if (portaled)
       return { value: portaled.value }
-    const owner = el.closest<HTMLElement>(selector)
-    const source = owner && owner !== this && this.contains(owner) ? owner : el
-    return { value: source.getAttribute('value') ?? '' }
+    return { value: el.getAttribute('value') ?? '' }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    // 退场没播完就离场：立刻结清并收起
+    // 退场没播完就离场：立刻归位、结清并收起
+    this.portal.dispose()
     for (const [el, entry] of this.exits) {
-      entry.portal.dispose()
       entry.gate.dispose()
       this.setPartHidden(el, true)
     }
@@ -248,25 +269,25 @@ export class XhSideNavElement extends XhPortalHostElement {
       this.spreader.spread(el, api.getItemProps() as Record<string, unknown>)
 
     // 集合类 part 逐个 spread：身份由节点自报，不依赖下标，节点增删无需记账
-    const putAll = (name: string, selector: string, get: (node: SideNavNodeProps) => unknown): void => {
+    const putAll = (name: string, owner: typeof BRANCH | typeof GROUP | typeof LINK, get: (node: SideNavNodeProps) => unknown): void => {
       for (const el of this.getParts(name))
-        this.spreader.spread(el, get(this.nodeOf(el, selector)) as Record<string, unknown>)
+        this.spreader.spread(el, get(this.nodeOf(el, owner)) as Record<string, unknown>)
     }
-    putAll('group', GROUP_SELECTOR, node => api.getGroupProps(node))
-    putAll('group-label', GROUP_SELECTOR, node => api.getGroupLabelProps(node))
-    putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))
-    putAll('branch-trigger', BRANCH_SELECTOR, node => api.getBranchTriggerProps(node))
-    putAll('branch-indicator', BRANCH_SELECTOR, node => api.getBranchIndicatorProps(node))
+    putAll('group', GROUP, node => api.getGroupProps(node))
+    putAll('group-label', GROUP, node => api.getGroupLabelProps(node))
+    putAll('branch', BRANCH, node => api.getBranchProps(node))
+    putAll('branch-trigger', BRANCH, node => api.getBranchTriggerProps(node))
+    putAll('branch-indicator', BRANCH, node => api.getBranchIndicatorProps(node))
     for (const el of this.getParts('branch-text'))
       this.spreader.spread(el, api.getBranchTextProps() as Record<string, unknown>)
     for (const el of this.getParts('link-text'))
       this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
-    putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
+    putAll('branch-content', BRANCH, node => api.getBranchContentProps(node))
     // 弹出面板的定位层常挂，退场动画挂在面板上：收起从跟着 open 走改成跟着 presence 走。
     // 一个定位层一份闸门。必须排在两处 spread 之后——data-state 得先落进 DOM，探测器才读得到
     const popoutVisible = new Map<HTMLElement, boolean>()
     for (const el of this.getParts('positioner')) {
-      const value = this.nodeOf(el, BRANCH_SELECTOR).value
+      const value = this.nodeOf(el, BRANCH).value
       const props = api.getPopoutPositionerProps({ value }) as Record<string, unknown>
       this.spreader.spread(el, props)
       const open = props.hidden !== true
@@ -278,14 +299,7 @@ export class XhSideNavElement extends XhPortalHostElement {
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        const portal = this.createAnchoredPortalController({
-          name: `SideNav popout ${value}`,
-          config: () => this.config,
-          source: () => this.findPopoutPart(this.exits.get(el)?.value ?? value, 'branch-trigger'),
-          root: () => el,
-          onChange: () => this.requestUpdate(),
-        })
-        entry = { value, gate, portal }
+        entry = { value, gate }
         this.exits.set(el, entry)
         this.setPresence(value, gate.presence, true)
       }
@@ -307,10 +321,11 @@ export class XhSideNavElement extends XhPortalHostElement {
       entry.gate.update(open)
       el.toggleAttribute('hidden', !entry.gate.visible)
       this.setPartHidden(el, !entry.gate.visible)
-      entry.portal.sync(entry.gate.visible)
       popoutVisible.set(el, entry.gate.visible)
     }
-    putAll('link', '[data-xh-part="link"]', node => api.getLinkProps(node))
+    // 任一面板仍可见（含退场中）就持有租约、整排定位层都在落点；全部收起才精确归位
+    this.portal.sync([...popoutVisible.values()].some(Boolean))
+    putAll('link', LINK, node => api.getLinkProps(node))
 
     // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content；
     // 弹出面板的收起跟着它定位层的闸门走

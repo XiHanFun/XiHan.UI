@@ -146,6 +146,67 @@ describe('wc side-nav 物理 Portal', () => {
     expect(shell.isConnected).toBe(false)
   })
 
+  it('多个顶层分支共用一份租约：任一面板展开整排定位层都在落点、文档序保持作者那一排，全部收起才归位；面板里的链接自报身份', async () => {
+    const stage = document.createElement('section')
+    stage.style.cssText = 'contain:paint;overflow:hidden'
+    stage.innerHTML = `<xh-side-nav collapsed>
+      <nav data-xh-part="root"><ul data-xh-part="list">
+        <li data-xh-part="branch" value="products">
+          <button data-xh-part="branch-trigger">产品</button>
+          <div data-xh-part="positioner"><ul data-xh-part="branch-content"><li data-xh-part="item"><a data-xh-part="link" value="product-a">产品一</a></li></ul></div>
+        </li>
+        <li data-xh-part="branch" value="settings">
+          <button data-xh-part="branch-trigger">设置</button>
+          <div data-xh-part="positioner"><ul data-xh-part="branch-content"><li data-xh-part="item"><a data-xh-part="link" value="setting-a">设置一</a></li></ul></div>
+        </li>
+      </ul></nav>
+    </xh-side-nav>`
+    const element = stage.firstElementChild as SideNavElement
+    element.collection = [
+      { value: 'products', children: [{ value: 'product-a' }] },
+      { value: 'settings', children: [{ value: 'setting-a' }] },
+    ]
+    const [productsTrigger, settingsTrigger] = [...element.querySelectorAll<HTMLElement>('[data-xh-part="branch-trigger"]')]
+    const [productsPositioner, settingsPositioner] = [...element.querySelectorAll<HTMLElement>('[data-xh-part="positioner"]')]
+    const [productLink, settingLink] = [...element.querySelectorAll<HTMLElement>('[data-xh-part="link"]')]
+    const productsParent = productsPositioner!.parentNode
+    const settingsParent = settingsPositioner!.parentNode
+    document.body.append(stage)
+    await settle()
+
+    // 与 Vue / React 相同：一张展开，两张 positioner 都在同一个壳里、次序仍是作者那一排
+    productsTrigger!.click()
+    await settle()
+    const shell = expectPortaled(productsPositioner!, stage)
+    expect(settingsPositioner!.parentElement).toBe(shell)
+    expect(productsPositioner!.nextElementSibling).toBe(settingsPositioner)
+    expect(document.querySelectorAll('#xh-portal-root > [data-xh-portal-shell]')).toHaveLength(1)
+    expect(productsPositioner!.dataset.state).toBe('open')
+    expect(settingsPositioner!.dataset.state).toBe('closed')
+    expect(settingsPositioner!.hidden).toBe(true)
+    // 搬到落点的面板里，链接与面板各认自己的身份，不沾顶层分支的 value
+    expect(productLink!.dataset.value).toBe('product-a')
+    expect(productsPositioner!.querySelector<HTMLElement>('[data-part="branch-content"]')!.dataset.value).toBeUndefined()
+    expect(productsTrigger!.getAttribute('aria-controls')).toBe(productsPositioner!.querySelector('[data-part="branch-content"]')!.id)
+
+    // 换枝：旧面板收起、新面板展开，整排仍在同一个壳里
+    settingsTrigger!.click()
+    await settle()
+    expect(productsPositioner!.parentElement).toBe(shell)
+    expect(settingsPositioner!.parentElement).toBe(shell)
+    expect(settingsPositioner!.dataset.state).toBe('open')
+    expect(settingLink!.dataset.value).toBe('setting-a')
+    expect(document.querySelectorAll('#xh-portal-root > [data-xh-portal-shell]')).toHaveLength(1)
+
+    // 全部收起才精确归位
+    settingsTrigger!.click()
+    await settle()
+    expect(productsPositioner!.parentNode).toBe(productsParent)
+    expect(settingsPositioner!.parentNode).toBe(settingsParent)
+    expect(shell.isConnected).toBe(false)
+    expect(document.querySelectorAll('#xh-portal-root > [data-xh-portal-shell]')).toHaveLength(0)
+  })
+
   it('非折叠分支保持行内结构，不创建 Portal', async () => {
     const f = fixture(false)
     const originalParent = f.positioner.parentNode
