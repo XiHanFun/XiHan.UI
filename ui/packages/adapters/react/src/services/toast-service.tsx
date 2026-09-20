@@ -11,6 +11,7 @@
 // 因此这里没有对应的容器组件；队列本身跑的是 notification 那台队列机器，
 // 上限、挤条与合并计数全库一份实现。
 import type {
+  NotificationApi,
   NotificationDedupe,
   ToastOptions,
   ToastPlacement,
@@ -47,7 +48,7 @@ import {
 } from '../components/toast/toast'
 import { XhConfigProvider } from '../config/config'
 import { reactNormalize } from '../runtime/normalize-props'
-import { useMachine } from '../runtime/use-machine'
+import { createOwnedMachine, useOwnedMachine } from '../runtime/owned-machine'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -198,6 +199,25 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     onStateChange: notify,
   })
 
+  // 队列机器归服务持有、建好即 start，端口随即接上：宿主树何时提交不再影响命令能否入队。
+  // 从业务组件的 effect 里懒建本服务时 flushSync 只能排队，宿主要等那轮 effect 跑完才渲，
+  // 机器与端口若跟着宿主的渲染体走，createToastService() 之后紧接着那条命令就被当成宿主没挂而丢掉
+  const queue = createOwnedMachine(notificationMachine, () => ({
+    placement,
+    max,
+    dedupe,
+    duration: serviceDefaults.duration,
+    removeDelay: serviceDefaults.removeDelay,
+    pauseOnPageIdle: serviceDefaults.pauseOnPageIdle,
+  }), configSource.read)
+  const queueApi = (): NotificationApi => connectNotification(queue.service, reactNormalize)
+  controller.attach({
+    create: opts => queueApi().create(opts),
+    update: (id, opts) => queueApi().update(id, opts),
+    dismiss: id => queueApi().dismiss(id),
+    dismissAll: () => queueApi().dismissAll(),
+  })
+
   function Host(): ReactNode {
     useSyncExternalStore(subscribe, () => version, () => version)
     const stackRef = useRef<ReturnType<typeof createToastStackController> | null>(null)
@@ -212,23 +232,9 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
           })
         : null
     }, [])
-    const service = useMachine(notificationMachine, () => ({
-      placement,
-      max,
-      dedupe,
-      duration: serviceDefaults.duration,
-      removeDelay: serviceDefaults.removeDelay,
-      pauseOnPageIdle: serviceDefaults.pauseOnPageIdle,
-    }))
-    const api = connectNotification(service, reactNormalize)
+    const service = useOwnedMachine(queue)
     // 渲染读原始记录，保留 Toast 自己的标题计数与可选说明投影。
     const items = visibleNotifications(service.context.get('items'), max, placement)
-    controller.attach({
-      create: opts => api.create(opts),
-      update: (id, opts) => api.update(id, opts),
-      dismiss: id => api.dismiss(id),
-      dismissAll: () => api.dismissAll(),
-    })
     controller.syncItems(items.map(item => item.id))
     const translations = typeof toastTranslations === 'function' ? toastTranslations() : toastTranslations
     return (
@@ -264,8 +270,10 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   }
 
   const root: Root | null = mountServiceHost(holder, <Host />, 'toast')
-  if (!root)
+  if (!root) {
     controller.attach(null)
+    queue.dispose()
+  }
   const stopConfig = configSource.subscribe(notify)
 
   /** 入队一条；回调另存一张表，队列记录中只保留文案。 */
@@ -307,6 +315,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
       stopConfig()
       root?.unmount()
       controller.dispose()
+      queue.dispose()
       if (!target)
         holder.remove()
     },

@@ -21,7 +21,8 @@ import { createReactRuntime } from './create-react-runtime'
 // 生产构建里 isDev() 为 false，跳过。
 let devChecksStarted = false
 
-function ensureDevChecks(): void {
+/** 锁步版本检查与宿主登记，全进程只跑一次；服务自持的机器也从这里过。 */
+export function ensureDevChecks(): void {
   if (devChecksStarted)
     return
   devChecksStarted = true
@@ -34,10 +35,10 @@ function ensureDevChecks(): void {
 }
 
 // 服务端渲染没有提交，layout effect 换成永不执行的 useEffect，避开 React 的警告
-const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
+export const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 /** 服务端快照恒为初始版本号，与客户端首帧对齐。 */
-function getServerVersion(): number {
+export function getServerVersion(): number {
   return 0
 }
 
