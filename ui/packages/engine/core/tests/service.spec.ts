@@ -815,8 +815,8 @@ describe('effects 批量初始化事务', () => {
     expect(service.state.get()).toBe('closed')
     expect(order).toEqual([
       'setup:active',
-      'setup:root',
       'entry:active',
+      'setup:root',
       'cleanup:active',
       'setup:closed',
       'entry:closed',
@@ -825,13 +825,86 @@ describe('effects 批量初始化事务', () => {
     runtime.stop()
     expect(order).toEqual([
       'setup:active',
-      'setup:root',
       'entry:active',
+      'setup:root',
       'cleanup:active',
       'setup:closed',
       'entry:closed',
       'cleanup:closed',
       'cleanup:root',
+    ])
+  })
+
+  it('初态 entry 先于根 effect 挂载：根 effect 建起那一刻读到的是进入完毕的初态', () => {
+    interface RootAfterEntrySchema extends MachineSchema {
+      props: Record<string, never>
+      context: { anchor: string | null }
+      computed: Record<string, never>
+      refs: Record<string, never>
+      state: 'open'
+      event: { type: 'NOOP' }
+      tag: never
+      guard: never
+      action: 'machineEntry' | 'pickAnchor'
+      effect: 'stateResource' | 'rootResource'
+    }
+
+    const { createMachine } = setup<RootAfterEntrySchema>()
+    const order: string[] = []
+    let anchorSeenByRoot: string | null | undefined
+    const machine = createMachine({
+      name: 'effect-root-after-initial-entry',
+      context: ({ cell }) => ({
+        anchor: cell<string | null>(() => ({ defaultValue: null })),
+      }),
+      initialState: () => 'open',
+      entry: ['machineEntry'],
+      effects: ['rootResource'],
+      states: {
+        open: {
+          effects: ['stateResource'],
+          entry: ['pickAnchor'],
+        },
+      },
+      implementations: {
+        actions: {
+          machineEntry: () => order.push('entry:machine'),
+          pickAnchor: ({ context }) => {
+            order.push('entry:open')
+            context.set('anchor', 'first')
+          },
+        },
+        effects: {
+          stateResource: () => {
+            order.push('setup:open')
+            return () => order.push('cleanup:open')
+          },
+          // 根 effect 同步取行为资源（焦点域等），读锚点的那一刻初态 entry 必须已经跑完
+          rootResource: ({ context }) => {
+            order.push('setup:root')
+            anchorSeenByRoot = context.get('anchor')
+            return () => order.push('cleanup:root')
+          },
+        },
+      },
+    })
+    const runtime = createVanillaRuntime()
+    const service = createService(machine, { props: () => ({}), runtime })
+
+    runtime.start()
+
+    expect(service.state.get()).toBe('open')
+    expect(anchorSeenByRoot).toBe('first')
+    expect(order).toEqual(['setup:open', 'entry:machine', 'entry:open', 'setup:root'])
+
+    runtime.stop()
+    expect(order).toEqual([
+      'setup:open',
+      'entry:machine',
+      'entry:open',
+      'setup:root',
+      'cleanup:root',
+      'cleanup:open',
     ])
   })
 

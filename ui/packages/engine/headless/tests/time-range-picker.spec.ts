@@ -103,6 +103,8 @@ interface Harness {
 interface MountOptions {
   /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
   withPresence?: boolean
+  /** 先渲染再启动机器：Vue / React 宿主先渲出带 tabindex 的部件，再在 mounted 里跑效应。缺省与 WC 宿主同序。 */
+  renderFirst?: boolean
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -237,10 +239,17 @@ function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): H
       spread(el, current.getHiddenInputProps({ index }) as Record<string, unknown>)
   }
 
-  runtime.start()
-  // 任一 cell 变化就整体重打，与 WC 宿主的 wire() 同语义
-  runtime.subscribe(render)
-  render()
+  if (mountOptions.renderFirst) {
+    render()
+    runtime.subscribe(render)
+    runtime.start()
+  }
+  else {
+    runtime.start()
+    // 任一 cell 变化就整体重打，与 WC 宿主的 wire() 同语义
+    runtime.subscribe(render)
+    render()
+  }
 
   return {
     api,
@@ -275,8 +284,8 @@ function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): H
 }
 
 const mounted: Harness[] = []
-function open(props: Partial<Props> = {}): Harness {
-  const h = mount(props)
+function open(props: Partial<Props> = {}, mountOptions: MountOptions = {}): Harness {
+  const h = mount(props, mountOptions)
   mounted.push(h)
   return h
 }
@@ -478,6 +487,19 @@ describe('开合', () => {
     pressKey(seg, 'Enter')
     await flushFrames(1)
     expect(h.state()).toBe('closed')
+  })
+
+  it('挂载即展开且无值：先渲染后启动的宿主里，焦点挂载那一拍就落在起点时列的第一格，不停在列容器上', () => {
+    const h = open({ defaultOpen: true }, { renderFirst: true })
+    // 机器挂载是同步的：焦点域建起那一刻锚点已由 open 态 entry 挑好
+    expect(document.activeElement).toBe(h.option(0, 'hour', '00'))
+    expect(h.option(0, 'hour', '00').getAttribute('tabindex')).toBe('0')
+    expect(h.column(0, 'hour').getAttribute('tabindex')).toBe('-1')
+  })
+
+  it('挂载即展开且有值：先渲染后启动的宿主里，焦点挂载那一拍就落在起点已填的那一格', () => {
+    const h = open({ defaultOpen: true, defaultValue: ['09:30', '18:00'] }, { renderFirst: true })
+    expect(document.activeElement).toBe(h.option(0, 'hour', '09'))
   })
 
   it('禁用：触发器用原生 disabled，点不开', () => {
