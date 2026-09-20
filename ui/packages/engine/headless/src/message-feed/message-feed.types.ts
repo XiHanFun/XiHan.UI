@@ -85,6 +85,11 @@ export interface MessageFeedSchema extends MachineSchema {
     sticking: boolean
     /** roving tabindex 的锚点，也是 PageUp/PageDown 的起点。 */
     focusedId: string | null
+    /**
+     * 按压通道：回到底部按钮被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或按住途中视口回到底部（按钮随之收起）时撤下。
+     */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: MessageFeedRefs
@@ -98,9 +103,13 @@ export interface MessageFeedSchema extends MachineSchema {
     | { type: 'ITEM.FOCUS', id: string }
     /** 焦点离开整份消息流，清除锚点。 */
     | { type: 'FEED.BLUR' }
+    /** 按压通道（shared/press）：回到底部按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** 回到底部按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: never
-  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId'
+  guard: 'canPress'
+  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress'
   effect: 'trackStickToBottom'
 }
 

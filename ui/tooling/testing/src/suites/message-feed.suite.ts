@@ -1,9 +1,41 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { messageFeedAnatomy, messageFeedKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/feed/'
 
 const ROOT = '[data-scope="message-feed"][data-part="root"]'
+const VIEWPORT = '[data-scope="message-feed"][data-part="viewport"]'
+const TRIGGER = '[data-scope="message-feed"][data-part="scroll-to-end-trigger"]'
+
+/** 伪造的几何量：内容 1000px、可视 200px。 */
+const SCROLL_HEIGHT = 1000
+const CLIENT_HEIGHT = 200
+
+/** 伪造视口的滚动几何与 scrollTo，把滚动位置放在离底很远处并派发 scroll；jsdom 无布局，粘底状态只能这样驱动。 */
+function scrollAwayFromBottom({ doc }: RawStepContext): void {
+  const el = doc.querySelector<HTMLElement>(VIEWPORT)
+  if (!el)
+    throw new Error('找不到 message-feed 的 viewport 部件')
+  let scrollTop = 0
+  Object.defineProperty(el, 'scrollHeight', { configurable: true, get: () => SCROLL_HEIGHT })
+  Object.defineProperty(el, 'clientHeight', { configurable: true, get: () => CLIENT_HEIGHT })
+  Object.defineProperty(el, 'scrollTop', {
+    configurable: true,
+    get: () => scrollTop,
+    set: (next: number) => {
+      scrollTop = next
+    },
+  })
+  Object.defineProperty(el, 'scrollTo', {
+    configurable: true,
+    value: (options: { top: number }) => {
+      scrollTop = Math.min(options.top, SCROLL_HEIGHT - CLIENT_HEIGHT)
+    },
+  })
+  // 粘底原语只在 scroll 回调里读几何，改完须派发事件
+  el.dispatchEvent(new Event('scroll'))
+}
 
 function item(id: string, index: number, role: string, children?: readonly FixtureNode[]): FixtureNode {
   return {
@@ -223,6 +255,38 @@ export const messageFeedSuite: ConformanceSuite = {
           'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden', 'aria-label': 'Scroll to bottom', 'type': 'button', 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
         },
       },
+      steps: [heldPressIgnored('message-feed', 'scroll-to-end-trigger', '视口在底、按钮带 hidden，不可按')],
+    },
+    {
+      name: '离底后 Space / Enter 按住与触屏按下：按钮投影 data-pressed，抬起、失焦或指针取消撤下；按住途中回到底部即随按钮一起收起',
+      spec: { adr: 'press-channel' },
+      covers: ['message-feed.kbd.press'],
+      skipParity: 'jsdom 无布局，粘底状态由伪造几何驱动，两适配器的 RO 回调时机天然不同步',
+      steps: [
+        {
+          kind: 'raw',
+          why: 'jsdom 无布局，滚动几何恒为 0、视口永远判成在底，粘底状态只能由伪造几何驱动',
+          run: scrollAwayFromBottom,
+          expect: { parts: { 'scroll-to-end-trigger': { 'hidden': null, 'data-state': 'visible', 'data-pressed': null } } },
+        },
+        heldPress('message-feed', 'scroll-to-end-trigger'),
+        {
+          kind: 'raw',
+          why: 'Enter 在 keydown 即 click 滚回底部、按钮收起，不会再来 keyup；按压面得随贴底回报一并收',
+          run: async ({ doc, flush }: RawStepContext) => {
+            const trigger = doc.querySelector<HTMLElement>(TRIGGER)
+            if (!trigger)
+              throw new Error('找不到 message-feed 的 scroll-to-end-trigger 部件')
+            trigger.focus()
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (!trigger.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时 scroll-to-end-trigger 应投影 data-pressed')
+            trigger.click()
+          },
+          expect: { parts: { 'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden', 'data-pressed': null } } },
+        },
+      ],
     },
   ],
 }

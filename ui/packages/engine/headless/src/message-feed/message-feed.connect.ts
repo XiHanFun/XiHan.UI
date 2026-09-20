@@ -8,6 +8,7 @@
 import type { FocusableElement, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus } from './message-feed.types'
 import { contains, dataAttr, focusItem, getTabbables, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { messageFeedAnatomy, messageFeedItemQuery } from './message-feed.anatomy'
 
 const parts = messageFeedAnatomy.build()
@@ -21,6 +22,8 @@ export function connectMessageFeed<T extends PropTypes>(
 ): MessageFeedApi<T> {
   const { context, prop, send, refs, scope } = service
   const atBottom = context.get('atBottom')
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，家族配方两者同一档
+  const press = pressHandlers(service)
   const sticking = context.get('sticking')
   const focusedId = context.get('focusedId')
   const status: MessageFeedStatus = prop('status') ?? 'idle'
@@ -204,7 +207,15 @@ export function connectMessageFeed<T extends PropTypes>(
       'data-state': atBottom ? 'hidden' : 'visible',
       // 收起不卸载：按钮反复建删会让它的进场动画每次从头播
       'hidden': atBottom || undefined,
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；在底收起时不进
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'SCROLL_TO_BOTTOM' }),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
 
     // 一份会话只该有这一个活区：N 条消息各开一个会互相打断
