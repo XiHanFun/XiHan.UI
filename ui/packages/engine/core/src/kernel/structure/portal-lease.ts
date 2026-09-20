@@ -99,17 +99,27 @@ function validate(options: PortalLeaseOptions): void {
  * 搬迁前记下落在 roots 里的焦点。节点被摘下再插回会失焦（浏览器与 jsdom 皆然），
  * 而物理搬迁只是换个父节点，不该改变文档的焦点：default-open 时焦点域已在首轮渲染前
  * 把焦点放进 content，首轮 portal 一搬就把它丢回 body，非模态浮层不会再拉回来。
+ *
+ * 放不回去的焦点（元素已藏起来，见 refocus）在搬迁前显式松开。节点被摘下时派不派 blur 各家
+ * 不一：Chromium 派、规范的 focus fixup 不派、jsdom 也不派，靠 focusout 上报「焦点离开浮层」
+ * 的部件（菜单栏收起后清 roving 锚点）在后两者里会漏掉这一程。显式 blur() 在哪都派出
+ * focusout，relatedTarget 为 null，与 Chromium 摘下时派的那一枚同型。
  */
 function focusWithin(doc: Document, roots: readonly HTMLElement[]): HTMLElement | null {
   const active = doc.activeElement
   if (!isHTMLElement(active) || !roots.some(root => root.contains(active)))
     return null
+  if (!isRendered(active)) {
+    active.blur()
+    return null
+  }
   return active
 }
 
 /**
- * 搬迁完成后把焦点放回原元素。归位常发生在浮层已经收起之后，藏起来的元素在浏览器里
- * focus() 是空操作，jsdom 却会照聚不误，还会派出一枚假的 focusin；按渲染判据一并跳过。
+ * 搬迁完成后把焦点放回原元素。藏起来的元素在浏览器里 focus() 是空操作，jsdom 却会照聚不误，
+ * 还会派出一枚假的 focusin；按渲染判据一并跳过。搬迁前就藏着的已在 focusWithin 松开，
+ * 这里挡的是落点那一侧藏着的（归位到已收起的作者结构里）。
  */
 function refocus(doc: Document, focused: HTMLElement | null): void {
   if (!focused || !focused.isConnected || doc.activeElement === focused || !isRendered(focused))

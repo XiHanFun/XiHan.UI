@@ -120,6 +120,53 @@ describe('portal 租约', () => {
     expect(document.activeElement).toBe(document.body)
   })
 
+  it('归位时放不回去的焦点在搬迁前显式松开：focusout 派出且不带去向，摘下时再不会丢第二枚', () => {
+    const f = fixture()
+    const inside = document.createElement('button')
+    f.first.append(inside)
+    inside.focus()
+    const lease = createPortalLease({ source: f.source, target: f.target, roots: [f.first] })
+    const seen: { type: string, related: EventTarget | null, connected: boolean, parent: Node | null }[] = []
+    for (const type of ['blur', 'focusout']) {
+      inside.addEventListener(type, (event) => {
+        seen.push({ type, related: (event as FocusEvent).relatedTarget, connected: inside.isConnected, parent: f.first.parentNode })
+      })
+    }
+
+    f.first.hidden = true
+    lease.release()
+    expect(document.activeElement).toBe(document.body)
+    // 松开发生在搬迁前：事件里 root 仍挂在壳上，监听者顺 DOM 树还找得到浮层
+    expect(seen).toEqual([
+      { type: 'blur', related: null, connected: true, parent: lease.shell },
+      { type: 'focusout', related: null, connected: true, parent: lease.shell },
+    ])
+    expect(f.first.parentNode).toBe(f.firstParent)
+  })
+
+  it('搬迁时放不回去的焦点同样显式松开；放得回去的不派 focusout', () => {
+    const f = fixture()
+    const inside = document.createElement('button')
+    f.first.append(inside)
+    const focusouts: (EventTarget | null)[] = []
+    inside.addEventListener('focusout', event => focusouts.push((event as FocusEvent).relatedTarget))
+
+    inside.focus()
+    const kept = createPortalLease({ source: f.source, target: f.target, roots: [f.first] })
+    expect(document.activeElement).toBe(inside)
+    expect(focusouts).toEqual([])
+    kept.release()
+    expect(document.activeElement).toBe(inside)
+    expect(focusouts).toEqual([])
+
+    f.first.hidden = true
+    const dropped = createPortalLease({ source: f.source, target: f.target, roots: [f.first] })
+    expect(document.activeElement).toBe(document.body)
+    expect(focusouts).toEqual([null])
+    dropped.release()
+    expect(focusouts).toEqual([null])
+  })
+
   it('拒绝跨 Document 目标，初始化前不改变作者 roots', () => {
     const f = fixture()
     const other = document.implementation.createHTMLDocument('other')
