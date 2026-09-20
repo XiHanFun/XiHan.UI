@@ -131,7 +131,7 @@ states: {
 
 effect 执行前路径就已处于“挂载中”。setup 里同步重入宿主 mount 会在服务边界命中 `DUPLICATE_SERVICE_MOUNT`，并按崩溃停机释放当前全部资源；同一状态路径在机器内部非法重复挂载时才报告 `DUPLICATE_EFFECT_PATH`。setup 里同步停机后，该 effect 迟到返回的 cleanup 会当场按逆序释放，当次 choreography 立即终止，不会再运行后续 entry 或根 effect；这次紧急清理的异常仍会暴露。
 
-首次 mount 的完整 choreography 是一个不可重入的初始化边界。state effect、machine entry、根 effect 与 state entry 全部提交前，其中的 `send` 只会按调用顺序进入 FIFO；提交后先处理挂载前累积的 tracker，再统一消费事件队列。初始化失败或停机会清空该队列，不会用半提交的状态继续转移。初始化来源和根 effect 使用与用户状态路径不相交的内部标识，因此 `__init__` 是合法的用户状态名，也可以与根 effect 同时使用。
+首次 mount 的完整 choreography 是一个不可重入的初始化边界，顺序固定为 state effect → machine entry → state entry → 根 effect：根 effect 是整个生命周期的资源（层、焦点域、观察器），建起那一刻读到的是进入完毕的初态，初态 entry 挑好的锚点（高亮项、焦点格）对它可见。这四步全部提交前，其中的 `send` 只会按调用顺序进入 FIFO；提交后先处理挂载前累积的 tracker，再统一消费事件队列。初始化失败或停机会清空该队列，不会用半提交的状态继续转移。初始化来源和根 effect 使用与用户状态路径不相交的内部标识，因此 `__init__` 是合法的用户状态名，也可以与根 effect 同时使用。
 
 状态机允许 JavaScript 抛出任意值。`null`、`undefined` 和其他非 `Error` 值会使用安全格式化的崩溃信息，并在 `MachineError.cause` 中保留原值；即使单个 cleanup 或 exit 抛出 `undefined`，也会被记录为真实异常并向外抛出。抛出值自身无法转为文本时，诊断使用稳定的“无法格式化的异常”文案。
 

@@ -336,16 +336,18 @@ export function createService<T extends MachineSchema>(
         if (!mountEffects(item.path, item.node.effects))
           return
       }
-      if (initializing) {
+      if (initializing)
         runActions(machine.entry, currentEvent)
-        if (status === 'Stopped' || !mountEffects(ROOT_EFFECT_PATH, machine.effects))
-          return
-      }
       for (const item of entering) {
         runActions(item.node.entry, currentEvent)
         if (status === 'Stopped')
           return
       }
+      // 根 effect 最后挂：它是机器整个生命周期的资源（层、焦点域、观察器），建起那一刻
+      // 读到的必须是进入完毕的初态。焦点域一类会同步取锚点落焦，初态 entry 挑的锚点
+      // （高亮项、焦点格）若排在它之后，先渲染后跑效应的宿主里焦点就定死在容器上。
+      if (initializing && (status === 'Stopped' || !mountEffects(ROOT_EFFECT_PATH, machine.effects)))
+        return
       previousState = initializing ? undefined : (from as T['state'])
       currentState = to
       stateCell.set(to)

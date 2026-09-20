@@ -89,6 +89,8 @@ interface MountOptions {
   onLayerDispose?: () => void
   /** 用真实 Presence 驱动行为资源的退出租约。 */
   withPresence?: boolean
+  /** 先渲染再启动机器：Vue / React 宿主先渲出带 tabindex 的部件，再在 mounted 里跑效应。缺省与 WC 宿主同序。 */
+  renderFirst?: boolean
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -214,9 +216,16 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     }
   }
 
-  runtime.start()
-  runtime.subscribe(render)
-  render()
+  if (options.renderFirst) {
+    render()
+    runtime.subscribe(render)
+    runtime.start()
+  }
+  else {
+    runtime.start()
+    runtime.subscribe(render)
+    render()
+  }
 
   return {
     api: () => connectSelect(service, normalizeProps),
@@ -1091,6 +1100,15 @@ describe('selectSelect 展开时的焦点', () => {
     await frames()
     expect(h.highlighted()).toBe('banana')
     expect(document.activeElement).toBe(h.item('banana'))
+  })
+
+  it('挂载即展开且有选中值：先渲染后启动的宿主里，焦点挂载那一拍就落在选中条目上，不停在列表本体上', () => {
+    const h = mount({ defaultOpen: true, defaultValue: 'banana' }, { renderFirst: true })
+    // 机器挂载是同步的：焦点域建起那一刻锚点已由 open 态 entry 挑好
+    expect(h.highlighted()).toBe('banana')
+    expect(document.activeElement).toBe(h.item('banana'))
+    expect(h.item('banana').getAttribute('tabindex')).toBe('0')
+    expect(h.list.getAttribute('tabindex')).toBe('-1')
   })
 
   it('指针打开且无选中值：不落锚点，焦点歇在认领着 Tab 位的列表本体上', async () => {
