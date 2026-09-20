@@ -142,6 +142,10 @@ describe('mention 的只读手势', () => {
       const item = document.createElement('div')
       item.dataset.scope = 'mention'
       item.dataset.part = 'item'
+      // 与 connect 投影一致：手型由集合条目家族配方给，缺了家族标记只有裸盒的 auto
+      item.dataset.xhCollectionItem = ''
+      item.dataset.xhCollectionSize = 'md'
+      item.dataset.xhCollectionContext = 'overlay'
       if (disabled)
         item.dataset.disabled = ''
       positioner.append(item)
