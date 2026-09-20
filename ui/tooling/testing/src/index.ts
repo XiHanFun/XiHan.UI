@@ -34,7 +34,7 @@ export type {
 export { coveredRows, danglingCovers, missingKeyboardRows } from './machine/transition-coverage'
 export { collectDomSnapshot } from './snapshot/collect'
 export type { CollectOptions } from './snapshot/collect'
-export { collectComputedSnapshot, COMPUTED_PROPS, formatComputedSnapshot, runComputedSnapshot } from './snapshot/computed'
+export { collectComputedSnapshot, COMPUTED_PROPS, formatComputedSnapshot, PLATFORM_PAINTED, runComputedSnapshot } from './snapshot/computed'
 export type { ComputedCollectOptions, ComputedSnapshot, ComputedSnapshotOptions } from './snapshot/computed'
 export { normalizeAttrs } from './snapshot/normalize'
 export { accordionSuite } from './suites/accordion.suite'
