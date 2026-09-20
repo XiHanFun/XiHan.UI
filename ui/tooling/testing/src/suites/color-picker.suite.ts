@@ -700,8 +700,19 @@ export const colorPickerSuite: ConformanceSuite = {
       name: '屏幕取色：环境不提供 EyeDropper 时按钮自始就是禁用的，按住也不进入按压面',
       spec: { apg: APG_DIALOG },
       props: { defaultValue: '#3b82f6', defaultOpen: true },
-      // jsdom 不提供 EyeDropper，走的是环境不支持那一路；按住帧（color-picker.kbd.press）由 headless 单测
+      // 前提是环境没有 EyeDropper：jsdom 本就没有，Chromium 有，真机回放前把它摘掉、卸载后原样放回；
+      // 机器在挂载那一刻探测支持与否，所以要先于挂载。按住帧（color-picker.kbd.press）由 headless 单测
       // 装上 EyeDropper 后认领，见 check-keyboard-suites 的 ROW_EXEMPT
+      environment: (win) => {
+        const host = win as unknown as { EyeDropper?: unknown }
+        if (!('EyeDropper' in host))
+          return () => {}
+        const original = host.EyeDropper
+        delete host.EyeDropper
+        return () => {
+          host.EyeDropper = original
+        }
+      },
       initial: {
         parts: {
           'eye-dropper-trigger': {
