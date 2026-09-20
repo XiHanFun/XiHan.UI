@@ -136,8 +136,10 @@ async function hover(el: HTMLElement): Promise<void> {
 
 // —— 卡片：内容面、投影、节奏与说明文字 ——
 
+// 缺省 outline 档：描边、底与落影三件都由基础规则画，三个槽在这一档上都读得到；
+// subtle 与 ghost 的描边钉成透明占位边，不读 --xh-card-border
 function CARD(): unknown {
-  return h(XhCardRoot, { variant: 'subtle' }, () => [
+  return h(XhCardRoot, null, () => [
     h(XhCardHeader, null, () => [
       h(XhCardTitle, null, () => '标题'),
       h(XhCardDescription, null, () => '说明文字'),
