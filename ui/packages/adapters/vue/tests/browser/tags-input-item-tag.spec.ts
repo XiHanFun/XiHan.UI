@@ -242,12 +242,13 @@ describe('框里的标签就是库里的 tag', () => {
     expect(heights).toEqual([22, 26, 30])
   })
 
-  it('形态按控件的面派：缺省与 outline / ghost 控件里是淡底标签，subtle 控件里是描边标签', async () => {
+  it('形态按控件的面派：缺省与 outline / ghost 控件里是柔和淡底标签，subtle 控件里是描边标签', async () => {
     await mountTags({ tags: ['甲'] })
     const plain = getComputedStyle(pills()[0]!)
     expect(pills()[0]!.getAttribute('data-variant')).toBe('subtle')
-    expect(plain.backgroundColor).toBe(resolveColor('var(--xh-bg-subtle)'))
-    expect(plain.borderTopColor).toBe('rgba(0, 0, 0, 0)')
+    // tag 是 soft 材质的登记消费者（真源 §8）：无语气的 subtle 档取 --xh-material-soft-* 底与边
+    expect(plain.backgroundColor).toBe(resolveColor('var(--xh-material-soft-bg)'))
+    expect(plain.borderTopColor).toBe(resolveColor('var(--xh-material-soft-border)'))
     app?.unmount()
     host?.remove()
 
