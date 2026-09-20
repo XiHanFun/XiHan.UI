@@ -107,10 +107,11 @@ describe('日志的回到底部按钮画得出箭头', () => {
     expect(maskOf(part('log', 'scroll-to-end-trigger'))).toContain('data:image/svg')
   })
 
-  it('字形盒与作者塞的图标同一把尺：--xh-icon-size 在 root 上声明了', async () => {
+  it('字形盒与作者塞的图标同一把尺：--xh-icon-size 在按钮自己身上声明了', async () => {
     mountLog()
     await nextTick()
-    expect(getComputedStyle(part('log', 'root')).getPropertyValue('--xh-icon-size').trim()).not.toBe('')
+    // db788ca88 起这颗钮接 Action Control floating 档，尺子随字形档写在按钮上，不再挂在 root
+    expect(getComputedStyle(part('log', 'scroll-to-end-trigger')).getPropertyValue('--xh-icon-size').trim()).not.toBe('')
 
     const box = getComputedStyle(part('log', 'scroll-to-end-trigger'), '::before')
     expect(Number.parseFloat(box.inlineSize)).toBeGreaterThan(0)
