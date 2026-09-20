@@ -153,6 +153,12 @@ export interface ConformanceCase {
   readonly fixture?: (base: FixtureNode) => FixtureNode
   readonly props?: Readonly<Record<string, unknown>>
   readonly steps?: readonly StepWithExpect[]
+  /**
+   * 挂载前改造宿主环境、返回复原函数，卸载后复原。
+   * 给前提落在环境能力上的用例用（如「没有 EyeDropper 时取色钮禁用」）：jsdom 本就没有那项能力，
+   * 真机有；不显式摘掉，同一份用例在真机里放的就是另一条前提。复原必须把原值原样放回。
+   */
+  readonly environment?: (win: Window & typeof globalThis) => () => void
   /** 挂载后、任何步骤前的断言（第 0 帧）。 */
   readonly initial?: SnapshotExpectation
   /** 终态断言。 */
