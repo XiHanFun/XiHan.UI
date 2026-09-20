@@ -148,17 +148,17 @@ describe('toast 声音服务装饰器', () => {
       info: () => 'id',
       success: () => 'id',
       warning: () => 'id',
-      error: () => 'id',
+      danger: () => 'id',
       loading: () => 'id',
       dispose: () => order.push('service'),
     }
     const decorated = withToastSoundService(service, {
       player,
-      sounds: { success: 'complete', error: null },
+      sounds: { success: 'complete', danger: null },
       attachUnlock: () => () => order.push('unlock'),
     })
     decorated.success()
-    decorated.error()
+    decorated.danger()
     expect(player.played).toEqual(['complete'])
     decorated.dispose()
     expect(order).toEqual(['unlock', 'service'])
