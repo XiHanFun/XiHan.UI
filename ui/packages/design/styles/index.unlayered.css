@@ -11047,6 +11047,14 @@
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
+/* 按住的叉落着焦点（§9.3 focus-visible + pressed 保留焦点环）：按压面是从字色兑出的 22% 底，
+   压在淡底 / 选中面上把面往字色那头带了一档，默认环与这块混色面在浅色档上只剩 2.2–2.9。
+   环改取叉自己的字色：按压面正是从这支色兑出来的，字色压在它上面的对比与字压在标签面上同源，
+   六族语气与深浅两态都过 3:1；实心档本来就取字色，这条与它同一口径 */
+[data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]):focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='tag'][data-part='close-trigger']:disabled {
   color: var(--xh-fg-disabled);
 }
