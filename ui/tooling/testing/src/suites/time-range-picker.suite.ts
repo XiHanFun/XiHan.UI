@@ -545,10 +545,12 @@ export const timeRangePickerSuite: ConformanceSuite = {
       name: 'escape 收起并把焦点归还触发器，两端不变',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-range-picker.kbd.escape'],
-      props: { ...BASE, defaultValue: ['09:30', '10:30'] },
+      // 有值时皮肤把触发器让位给清空钮（display:none，接不住焦点），从它进出的这一路只在空值下成立；
+      // Escape 不写值这件事同样在空值下可证：时列里有一格锚点等着被提交
+      props: { ...BASE },
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: S_HOUR_09 } },
+        { kind: 'settle', until: { activeElement: S_HOUR_08 } },
         {
           kind: 'key',
           key: 'Escape',
@@ -561,7 +563,7 @@ export const timeRangePickerSuite: ConformanceSuite = {
         {
           kind: 'raw',
           why: '隐藏输入的 value 是 property',
-          run: ({ doc }) => expectHidden(doc, ['09:30', '10:30'], '收起不改值'),
+          run: ({ doc }) => expectHidden(doc, ['', ''], '收起不把锚点格写进值'),
         },
       ],
     },
@@ -890,9 +892,13 @@ export const timeRangePickerSuite: ConformanceSuite = {
       name: 'Space / Enter 按住与触屏按下：触发钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不开合也不清值',
       spec: { adr: 'press-channel' },
       covers: ['time-range-picker.kbd.press'],
-      props: { ...BASE, defaultValue: ['09:00', '10:30'] },
+      // 触发器与清空钮不同屏：有值时皮肤把触发器让位给清空钮（display:none，接不住焦点），
+      // 先在空值下按触发器，再由宿主写回值让清空钮上场
+      props: { ...BASE },
       steps: [
         heldPress('time-range-picker', 'trigger'),
+        { kind: 'setProps', props: { value: ['09:00', '10:30'] } },
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'hidden', value: null } } },
         // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
         heldPress('time-range-picker', 'clear-trigger'),
         {
