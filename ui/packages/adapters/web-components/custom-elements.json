@@ -46006,8 +46006,15 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()",
+              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit }>()",
               "description": "每个弹出面板的定位层一份退场闸门：退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true,
+              "description": "折叠态全部顶层分支的定位层共用一份租约：任一面板可见时整排搬到落点，逻辑来源是侧栏根。\n与 Vue / React 相同——那两端把每张 positioner 都经 Portal 搬到落点、视觉环境取自根，\n文档序始终是作者写的那一排；若只搬展开的那一张，它会排到还留在原位的兄弟之后，\n部件序与 aria-controls 的配对随之乱掉。"
             },
             {
               "kind": "field",
@@ -46145,7 +46152,7 @@
                 {
                   "name": "entry",
                   "type": {
-                    "text": "{ value: string, gate: OverlayExit, portal: AnchoredPortalController }"
+                    "text": "{ value: string, gate: OverlayExit }"
                   }
                 }
               ]
@@ -46185,12 +46192,13 @@
                   }
                 },
                 {
-                  "name": "selector",
+                  "name": "part",
                   "type": {
-                    "text": "string"
+                    "text": "typeof BRANCH | typeof GROUP | typeof LINK"
                   }
                 }
-              ]
+              ],
+              "description": "节点归属的分支 / 分组 / 链接身份：先按最近的归属容器认，它得是本宿主登记的角色节点\n（留在宿主里的，或随租约搬到落点的面板里的都算）。顶层分支的定位层与面板搬到落点后\n上溯找不到那颗 branch，归属分支按闸门记账的 value 认；面板里的链接与嵌套分支各有\n自己的归属容器，不沾顶层分支的身份。"
             },
             {
               "kind": "method",
