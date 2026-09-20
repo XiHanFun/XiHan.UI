@@ -5,9 +5,9 @@
 
 // 提供 carousel 相关实现。
 
-import type { Dict, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { CarouselApi, CarouselSchema } from './carousel.types'
-import { dataAttr, isHTMLElement, navIntentFromKey } from '@xihan-ui/core'
+import type { Dict, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { CarouselApi, CarouselPressedKey, CarouselSchema } from './carousel.types'
+import { createPressTracker, dataAttr, isHTMLElement, navIntentFromKey } from '@xihan-ui/core'
 import { carouselAnatomy } from './carousel.anatomy'
 import { resolveAutoplayInterval } from './carousel.machine'
 import {
@@ -102,6 +102,27 @@ export function connectCarousel<T extends PropTypes>(
 
   const setPage = (next: number): void => {
     send({ type: 'PAGE.SET', page: next })
+  }
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」，四类按钮各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 到边界的翻页钮与没配自动播放的开关是原生 disabled（不派 keydown / pointerdown），那份事实仍随 PRESS.START
+  // 带给机器的守卫
+  const pressed = context.get('pressed')
+  const press = (key: CarouselPressedKey, disabled = false): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
   }
 
   return {
@@ -241,6 +262,7 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      ...press('prev', !canScrollPrev),
       // 边界由机器守住，这里不再判一次 canScrollPrev
       'onClick': () => send({ type: 'PAGE.PREV' }),
     }),
@@ -259,6 +281,7 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      ...press('next', !canScrollNext),
       'onClick': () => send({ type: 'PAGE.NEXT' }),
     }),
 
@@ -284,6 +307,8 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      // 按住开关时计时会停 / 起（状态在 idle / playing 之间切），按压面与之无关
+      ...press('autoplay', autoplayInterval <= 0),
       // 三条出口各对一种停法：从没起播过要 START，被自己按住的要 RESUME，
       // 正在走的才是 PAUSE。只发 PAUSE / RESUME 的话，reduce 档下那条停在 idle 的
       // 轮播永远也播不起来
@@ -322,6 +347,8 @@ export function connectCarousel<T extends PropTypes>(
         'aria-current': current ? 'true' : 'false',
         'data-index': String(index),
         'data-current': dataAttr(current),
+        // 指示点没有禁用态，按页码记按住的那一颗
+        ...press(`indicator:${index}`),
         // 指示点各占一个 Tab 位，不做 roving tabindex
         'onClick': () => setPage(index),
       })

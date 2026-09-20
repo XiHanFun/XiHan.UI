@@ -6,7 +6,7 @@
 // 提供 carousel 相关实现。
 
 import type { PropFn } from '@xihan-ui/core'
-import type { CarouselPauseSource, CarouselSchema } from './carousel.types'
+import type { CarouselPauseSource, CarouselPressedKey, CarouselSchema } from './carousel.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { resolveMotionPreference } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
@@ -58,6 +58,24 @@ function isFlipped(prop: PropFn<CarouselSchema>): boolean {
 }
 
 /**
+ * 按住的那个按钮此刻是不是已经转成原生 disabled：到边界的翻页钮（不回绕）与没配自动播放的开关。
+ * 按住途中翻到末页、宿主关掉 loop 或改写 autoplay，按钮转禁用后不会再来 keyup，按压面得由机器收。
+ * 指示点没有禁用态。
+ */
+function pressedKeyInert(prop: PropFn<CarouselSchema>, page: number, key: CarouselPressedKey): boolean {
+  const total = pageCount(prop)
+  const loop = prop('loop') ?? false
+  const current = clampCarouselPage(page, total)
+  if (key === 'prev')
+    return !(total > 1 && (loop || current > 0))
+  if (key === 'next')
+    return !(total > 1 && (loop || current < total - 1))
+  if (key === 'autoplay')
+    return resolveAutoplayInterval(prop('autoplay')) <= 0
+  return false
+}
+
+/**
  * 走一步。先把当前页夹回合法区间再加减：slideCount 变小后内部值可能停在已不存在的页上，
  * 而界面显示的是夹过的页（connect 同样夹）。
  */
@@ -79,6 +97,8 @@ export const carouselMachine = createMachine({
     pausedBy: cell<CarouselPauseSource[]>(() => ({ defaultValue: [] })),
     dragStart: cell<number | null>(() => ({ defaultValue: null })),
     dragOffset: cell<number>(() => ({ defaultValue: 0 })),
+    // 按压通道：正被按住的那个按钮，与自动播放的开合互相独立（按住播放开关时计时会停 / 起，按压面不随之丢）
+    pressed: cell<CarouselPressedKey | null>(() => ({ defaultValue: null })),
   }),
   // 间隔为 0（没开自动播放）或用户要求减弱动效时不进 playing
   initialState: ({ prop }) => (startsOnItsOwn(prop) ? 'playing' : 'idle'),
@@ -88,8 +108,20 @@ export const carouselMachine = createMachine({
   refs: () => ({
     gesture: null,
   }),
-  // autoplay 被改写（关掉、打开、换间隔）都要重挂计时器
-  watch: ({ track, prop, action }) => track([() => prop('autoplay')], () => action(['syncAutoplay'])),
+  watch: ({ track, prop, context, action }) => {
+    // autoplay 被改写（关掉、打开、换间隔）都要重挂计时器
+    track([() => prop('autoplay')], () => action(['syncAutoplay']))
+    // 按住途中按钮转禁用：按住 Enter 翻到末页、宿主关掉 loop / 减少张数 / 改写 autoplay，
+    // 按钮原生 disabled 后不会再来 keyup，按压面由机器收
+    track([
+      context.dep('page'),
+      () => prop('loop'),
+      () => prop('slideCount'),
+      () => prop('slidesPerPage'),
+      () => prop('slidesPerMove'),
+      () => prop('autoplay'),
+    ], () => action(['releaseWhenInert']))
+  },
   on: {
     // 翻页与拖拽在三个状态里都得认；自动播放没开时它们同样要工作
     'PAGE.SET': { actions: ['setPage'] },
@@ -98,6 +130,9 @@ export const carouselMachine = createMachine({
     'DRAG.START': { actions: ['startDrag'] },
     'DRAG.MOVE': { actions: ['moveDrag'] },
     'DRAG.END': { actions: ['endDrag'] },
+    // 按压通道同样挂根级：按住播放开关时状态在 idle / playing 之间切，按压面不能随状态丢
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     // 没开自动播放：没有计时可按住，PAUSE / RESUME 在这里无事可做
@@ -163,8 +198,29 @@ export const carouselMachine = createMachine({
           return true
         return clampCarouselPage(context.get('page'), total) < total - 1
       },
+      // 轮播没有整组禁用；到边界的翻页钮与没配自动播放的开关是原生 disabled，那份事实由 connect 判定后随事件带入
+      canPress: ({ event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !e.disabled
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：别的按钮的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        const key = context.get('pressed')
+        if (key != null && pressedKeyInert(prop, context.get('page'), key))
+          context.set('pressed', null)
+      },
       // 越界页码在写入口就收口：受控宿主拿到的回调值永远是可用的页
       setPage: ({ context, prop, event }) => {
         const e = event.current()

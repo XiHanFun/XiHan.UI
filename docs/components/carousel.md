@@ -165,9 +165,9 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 **状态**：`idle` · `playing` · `playing.running` · `playing.paused`
 
-**事件**：`PAGE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `AUTOPLAY.START` · `AUTOPLAY.STOP` · `AUTOPLAY.PAUSE` · `AUTOPLAY.RESUME` · `after.autoplay` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END`
+**事件**：`PAGE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `AUTOPLAY.START` · `AUTOPLAY.STOP` · `AUTOPLAY.PAUSE` · `AUTOPLAY.RESUME` · `after.autoplay` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isLastPauseSource` · `canAdvance` · `hasAutoplay`
+**判据**：`isLastPauseSource` · `canAdvance` · `hasAutoplay` · `canPress`
 
 ### connect API
 
@@ -222,6 +222,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `End` | 焦点在轮播内 | 跳到最后一页 |
 | `Enter` / `Space` | 焦点在上一张 / 下一张按钮上 | 翻一页；由原生按钮的激活行为负责 |
 | `Enter` / `Space` | 焦点在指示点上 | 跳到该指示点对应的页；由原生按钮的激活行为负责 |
+| `Enter` / `Space` | held on prev-trigger / next-trigger / autoplay-trigger / indicator, 该按钮未禁用 | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或按住途中转禁用（翻到边界、关掉 loop、去掉 autoplay）撤下。翻页与播放 / 暂停照旧由这一次按键的原生激活承担 |
 | `Tab` / `Shift+Tab` | 任意时刻 | 在两端按钮与各指示点之间逐个停靠；到端点后禁用的按钮自动脱序 |
 | `方向键` | 焦点在幻灯片内的输入控件上 | 不接管：交还给控件自己做光标移动 |
 
@@ -309,10 +310,10 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `--xh-carousel-ease` | `list` | `transition` | `default` | `--xh-motion-ease-slide` | carousel 的 list 部件 transition 覆盖槽。 |
 | `--xh-carousel-icon-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `@media (pointer: coarse)`<br>`default` | `--xh-border-default` | carousel 的 indicator 部件 background 覆盖槽。 |
-| `--xh-carousel-indicator-bg-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`active`<br>`current`<br>`not([data-current])` | `--xh-fg-default` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`current`<br>`is(:active, [data-pressed])`<br>`not([data-current])`<br>`pressed` | `--xh-fg-default` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-hover` | `indicator` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-muted` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-selected` | `indicator`<br>`root` | `background` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`not([data-autoplay], [data-paused])`<br>`paused` | `--xh-bg-brand` | carousel 的 indicator、root 部件 background 覆盖槽。 |
-| `--xh-carousel-indicator-bg-selected-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`active`<br>`current` | `--xh-bg-brand-active` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-selected-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`current`<br>`is(:active, [data-pressed])`<br>`pressed` | `--xh-bg-brand-active` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-track` | `indicator`<br>`root` | `background` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-bg-brand-subtle` | carousel 的 indicator、root 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-fg-selected` | `indicator`<br>`root` | `color` | `autoplay`<br>`current`<br>`not([data-autoplay], [data-paused])`<br>`paused` | `--xh-fg-on-brand` | carousel 的 indicator、root 部件 color 覆盖槽。 |
 | `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-1` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
@@ -321,7 +322,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `--xh-carousel-indicator-radius-current` | `indicator`<br>`root` | `border-radius` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-shape-pill` | carousel 的 indicator、root 部件 border-radius 覆盖槽。 |
 | `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-2` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`orientation=vertical`<br>`paused` | `--xh-space-5` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-carousel-indicator-target-size` | `indicator`<br>`root` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)`<br>`active`<br>`autoplay`<br>`current`<br>`hover`<br>`not([data-autoplay], [data-paused])`<br>`not([data-current])`<br>`paused` | `44px` | carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-target-size` | `indicator`<br>`root` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`hover`<br>`is(:active, [data-pressed])`<br>`not([data-autoplay], [data-paused])`<br>`not([data-current])`<br>`paused`<br>`pressed` | `44px` | carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。 |
 | `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible` | `--xh-_carousel-trigger-bg`<br>`--xh-material-frosted-focus-surface` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-carousel-trigger-bg-active` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-carousel-trigger-bg-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |

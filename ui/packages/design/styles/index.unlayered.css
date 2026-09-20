@@ -16096,8 +16096,9 @@
   background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-muted));
 }
 
-/* 按下：点的颜色再压一档，同时缩一下（§9.1 同时换底） */
-[data-scope='carousel'][data-part='indicator']:active:not([data-current]) {
+/* 按下：点的颜色再压一档，同时缩一下（§9.1 同时换底）；指针按住由 :active 表出，
+   Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
+[data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current]) {
   background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
   scale: var(--xh-motion-scale-press);
   transition-duration: var(--xh-motion-duration-press);
@@ -16126,7 +16127,7 @@
   --xh-_ring-color: currentColor;
 }
 
-[data-scope='carousel'][data-part='indicator'][data-current]:active {
+[data-scope='carousel'][data-part='indicator'][data-current]:is(:active, [data-pressed]) {
   background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
   scale: var(--xh-motion-scale-press);
   transition-duration: var(--xh-motion-duration-press);
@@ -16244,6 +16245,13 @@
     border: var(--xh-stroke-thin) solid Highlight;
     background: Canvas;
   }
+
+  /* 按下：常态靠底色再压一档并缩一下表出，这一档里底色被钉成系统色、缩放又看不出来；
+     描一圈系统前景色把按住那一下画回来，粗指针下点画在 ::after 上，同一圈描到它身上 */
+  [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]),
+  [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed])::after {
+    border: var(--xh-stroke-thin) solid CanvasText;
+  }
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -16303,9 +16311,9 @@
   /* 盒子只管命中：四个状态的底色都从盒子上撤下来，落到 ::after 画的点上 */
   [data-scope='carousel'][data-part='indicator'],
   [data-scope='carousel'][data-part='indicator']:hover:not([data-current]),
-  [data-scope='carousel'][data-part='indicator']:active:not([data-current]),
+  [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current]),
   [data-scope='carousel'][data-part='indicator'][data-current],
-  [data-scope='carousel'][data-part='indicator'][data-current]:active,
+  [data-scope='carousel'][data-part='indicator'][data-current]:is(:active, [data-pressed]),
   [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
     [data-scope='carousel'][data-part='indicator'][data-current],
   [data-scope='carousel'][data-part='root'][data-autoplay]
@@ -16334,7 +16342,7 @@
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='carousel'][data-part='indicator']:active:not([data-current])::after {
+  [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current])::after {
     background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
   }
 
@@ -16348,7 +16356,7 @@
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
   }
 
-  [data-scope='carousel'][data-part='indicator'][data-current]:active::after {
+  [data-scope='carousel'][data-part='indicator'][data-current]:is(:active, [data-pressed])::after {
     background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
   }
 
