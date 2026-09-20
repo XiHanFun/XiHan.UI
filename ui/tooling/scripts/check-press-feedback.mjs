@@ -46,9 +46,9 @@
 //    press(part) 辅助都算；家族配方的按压选择器必须是 :is(:active, [data-pressed])。
 //    皮肤自己写的按压规则两种写法都认：:active（只有指针）与 :is(:active, [data-pressed])（三种输入同一档）。
 //    形态②（{ part, attr }）的按压面本就由 Headless 打的那个属性驱动，同一条规则按它登记的 attr 判。
-// 存量登 family-backlog.json press 段：⑤ 的 15 条、⑥ 只缩放不换底的、⑦ 皮肤还没有 :active 换面的行，
-// 以及 ⑧ 各组件接上 press-channel 之前的一条 *:data-pressed 总豁免（button / toggle 已接，其余随各组件
-// 提交接入，全部接完即删）；命中即放行、不命中判过期，表只减不增。
+// 存量登 family-backlog.json press 段：⑤ 的定尺 / 铺行判定、⑥ 只缩放不换底的、⑦ 皮肤还没有 :active
+// 换面的行；命中即放行、不命中判过期，表只减不增。⑧ 不设豁免：按压通道已铺满全部 PRESSABLE 部件，
+// 没投影 data-pressed 的 getter 与只认 :active 的家族按压选择器直接判红。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { getterBody, getterProjectsOrSpreads } from './lib/connect-getters.mjs'
@@ -284,8 +284,6 @@ const TRACK_SQUARE = {
 }
 
 const backlog = await openBacklog('press')
-/** 各组件接上 press-channel 之前 data-pressed 判据的总豁免键。 */
-const PRESSED_CHANNEL = '*:data-pressed'
 /** 按压选择器：皮肤自己写的两种写法都认；家族配方只认后一种（⑧）。 */
 const PRESS_SELECTOR = String.raw`(?::active|:is\(:active, \[data-pressed\]\))`
 const FAMILY_PRESS = String.raw`:is\(:active, \[data-pressed\]\)`
@@ -366,7 +364,7 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
     const pressedAttr = typeof part !== 'string' && 'attr' in part ? part.attr : 'data-pressed'
     const [scope, ownPart] = partName.includes('/') ? partName.split('/') : [name, partName]
     if (await getterBody(scope, ownPart) != null && !await getterProjectsOrSpreads(scope, ownPart, pressedAttr))
-      report(PRESSED_CHANNEL, `${name} 的 ${partName} 登记为可按，connect 的 getter 却没投影 ${pressedAttr}——键盘与粗指针的按压回执要由 Headless 给`)
+      problems.push(`${name} 的 ${partName} 登记为可按，connect 的 getter 却没投影 ${pressedAttr}——键盘与粗指针的按压回执要由 Headless 给`)
   }
 }
 
@@ -380,7 +378,7 @@ for (const [label, recipe] of [['action-control.css', actionRecipe], ['collectio
   for (const m of recipe.matchAll(/[^{}]*:active[^{]*\{/g)) {
     const selector = m[0].replace(/\s+/g, ' ').trim()
     if (!/:is\(:active, \[data-pressed\]\)/.test(selector))
-      report(PRESSED_CHANNEL, `family/${label}  ${selector.slice(0, 70)}  按压选择器只认 :active——要写成 :is(:active, [data-pressed])`)
+      problems.push(`family/${label}  ${selector.slice(0, 70)}  按压选择器只认 :active——要写成 :is(:active, [data-pressed])`)
   }
 }
 
