@@ -50,6 +50,8 @@ export const timerMachine = createMachine({
   name: 'timer',
   context: ({ cell }) => ({
     elapsed: cell<number>(() => ({ defaultValue: 0 })),
+    // 按压通道：起停钮被 Space / Enter 或触屏按住，与四段状态互相独立（Enter 在 keydown 即起停，按压面不能随之丢）
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({ baseElapsed: 0, startedAt: 0 }),
   // autoStart 只在这里读一次：它说的是「挂载时开不开跑」，不是一个能来回拨的开关。
@@ -63,6 +65,12 @@ export const timerMachine = createMachine({
     // 受控通道：剩余量改写即重新计时，开关翻转即停走
     track([() => prop('value')], () => action(['restartFromValue']))
     track([() => prop('active')], () => action(['syncActive']))
+  },
+  // 按压通道挂根级：同一颗起停钮在四段状态下都在场、语义随状态换，按压面不随起停翻转丢；
+  // 它没有禁用态，按住一律进，不设守卫
+  on: {
+    'PRESS.START': { actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     // 没起步。累计恒为 0，显示的就是起始值
@@ -117,6 +125,8 @@ export const timerMachine = createMachine({
       },
     },
     actions: {
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
       clearElapsed: ({ context }) => context.set('elapsed', 0),
       settleElapsed: ({ context, prop, refs, scope }) => {
         context.set('elapsed', timerElapsedAt(

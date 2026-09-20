@@ -2,6 +2,7 @@ import type { TimerSegments } from '@xihan-ui/headless'
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { timerAnatomy, timerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress } from './shared/press-channel'
 
 const SPEC = 'https://www.w3.org/TR/wai-aria-1.2/#timer'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction'
@@ -230,6 +231,23 @@ export const timerSuite: ConformanceSuite = {
       spec: { apg: APG },
       covers: ['timer.kbd.control'],
       steps: [nativeActivation('timer', 'control')],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：control 投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['timer.kbd.press'],
+      steps: [heldPress('timer', 'control')],
+    },
+    {
+      name: '同一颗钮在 running / paused 下语义不同，按压通道不受状态切换影响：起跑与暂停后照常可按',
+      spec: { adr: 'press-channel' },
+      skipParity: CLOCK_BOUND,
+      steps: [
+        { kind: 'click', part: 'control', expect: { parts: { control: { 'data-action': 'pause', 'data-pressed': null } } } },
+        heldPress('timer', 'control'),
+        { kind: 'click', part: 'control', expect: { parts: { control: { 'data-action': 'resume', 'data-pressed': null } } } },
+        heldPress('timer', 'control'),
+      ],
     },
   ],
 }

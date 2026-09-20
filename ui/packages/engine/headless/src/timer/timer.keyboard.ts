@@ -21,5 +21,11 @@ export const timerKeyboard: KeyboardTable = {
       when: 'focus on control',
       does: '按当前状态起停：没起步的开跑、在走的暂停、停在半路的接着走、走完的归零；control 是原生 button，这两个键由平台翻成 click',
     },
+    {
+      id: 'timer.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held on control',
+      does: '按住期间 control 投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起或失焦撤下。按钮没有禁用态，四段状态下都接，按住途中起停翻转按压面不丢',
+    },
   ],
 }

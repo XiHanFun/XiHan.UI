@@ -115,6 +115,12 @@ export interface TimerSchema extends MachineSchema {
      * 继续时从它接续计算，因此反复暂停继续也不会把中间的时间算丢或算重。
      */
     elapsed: number
+    /**
+     * 按压通道：control 被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦或指针取消时撤下；与四段状态互相独立：同一个按钮在 running / paused 下语义不同，
+     * 按住途中起停翻转，按压面不随之丢。按钮没有禁用态，按住一律进。
+     */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: {
@@ -139,9 +145,13 @@ export interface TimerSchema extends MachineSchema {
     | { type: 'CLOCK.SETTLE' }
     /** 起止值或间隔被改写，时钟按新的一轮重新挂载。 */
     | { type: 'CLOCK.SYNC' }
+    /** 按压通道（shared/press）：control 被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** control 抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
   guard: 'isSettled'
-  action: 'clearElapsed' | 'invokeComplete' | 'invokeTick' | 'restartFromValue' | 'settleElapsed' | 'syncActive' | 'syncClock'
+  action: 'clearElapsed' | 'endPress' | 'invokeComplete' | 'invokeTick' | 'restartFromValue' | 'settleElapsed' | 'startPress' | 'syncActive' | 'syncClock'
   effect: 'runClock'
 }
 

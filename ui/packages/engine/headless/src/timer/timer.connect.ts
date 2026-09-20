@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimerApi, TimerControlAction, TimerSchema, TimerSegments } from './timer.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { timerAnatomy } from './timer.anatomy'
 import { formatTimerText, isTimerControlled, quantizeTimer, resolveTimerPrecision, splitTimer, timerRunOf, timerSegmentText, timerValueAt } from './timer.format'
 
@@ -57,6 +58,9 @@ export function connectTimer<T extends PropTypes>(
     resolveTimerPrecision(prop('precision')),
   )
   const segments = splitTimer(value)
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
 
   const translations = prop('translations')
   const label = {
@@ -142,6 +146,14 @@ export function connectTimer<T extends PropTypes>(
       // 按钮里常常只有一个图标，名字得随这一下要做的事一起换
       'aria-label': label[controlAction],
       'data-action': controlAction,
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与起停翻转互相独立
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       // 受控时状态归 value / active 两个 prop，这一下不改状态；受控用法本就不该铺这颗钮
       'onClick': () => {
         if (!controlled)
