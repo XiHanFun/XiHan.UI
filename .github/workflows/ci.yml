@@ -40,11 +40,14 @@ jobs:
         run: pnpm typecheck
       - name: Build
         run: pnpm build
-      # 下面三步都吃构建产物，必须排在 Build 之后：
-      # 组件文档由 headless 产物与类型生成；公开面从各包已构建的 .d.ts 采集（产物才是
-      # 使用者拿到的那一份）；dependency-cruiser 按 exports 条件解析兄弟包，同样指向 dist。
+      # 下面四步都吃构建产物，必须排在 Build 之后：
+      # 组件文档由 headless 产物与类型生成；React 示例的类型判据要读 icons 的 dist（它没有
+      # TS 源码）；公开面从各包已构建的 .d.ts 采集（产物才是使用者拿到的那一份）；
+      # dependency-cruiser 按 exports 条件解析兄弟包，同样指向 dist。
       - name: Component docs in sync
         run: pnpm gate:docs
+      - name: React demo types
+        run: pnpm gate:demo-types
       - name: Public surface baseline
         run: pnpm gate:surface
       - name: Boundaries (dependency-cruiser)

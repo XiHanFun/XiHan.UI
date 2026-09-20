@@ -437,10 +437,11 @@ export function componentTokensByComponent(manifest) {
 export function renderComponentTokenTypes(manifest) {
   const names = sorted(manifest.tokens.map(token => token.name))
   const components = sorted(manifest.tokens.map(token => token.component))
-  const union = values => values.map(value => `  | '${value}'`).join('\n')
+  // 与 lint 的 style/operator-linebreak 同形：`=` 起行，首项跟在 `=` 后，其余缩进对齐
+  const union = values => values.map((value, i) => `${i === 0 ? '  = |' : '    |'} '${value}'`).join('\n')
   return applyFileHeader(
     COMPONENT_TOKEN_TYPES_PATH,
-    `// 由 component-token-manifest.mjs 生成，禁止手改。\n\nexport type ComponentTokenName =\n${union(names)}\n\nexport type ComponentTokenComponent =\n${union(components)}\n\nexport interface ComponentTokenDefinition {\n  readonly name: ComponentTokenName\n  readonly component: ComponentTokenComponent\n  readonly part: readonly string[]\n  readonly property: readonly string[]\n  readonly state: readonly string[]\n  readonly defaultToken: readonly string[]\n  readonly visibility: 'public'\n  readonly description: string\n}\n\nexport interface ComponentTokenManifest {\n  readonly version: ${TOKEN_VERSION}\n  readonly tokens: readonly ComponentTokenDefinition[]\n}\n`,
+    `// 由 component-token-manifest.mjs 生成，禁止手改。\n\nexport type ComponentTokenName\n${union(names)}\n\nexport type ComponentTokenComponent\n${union(components)}\n\nexport interface ComponentTokenDefinition {\n  readonly name: ComponentTokenName\n  readonly component: ComponentTokenComponent\n  readonly part: readonly string[]\n  readonly property: readonly string[]\n  readonly state: readonly string[]\n  readonly defaultToken: readonly string[]\n  readonly visibility: 'public'\n  readonly description: string\n}\n\nexport interface ComponentTokenManifest {\n  readonly version: ${TOKEN_VERSION}\n  readonly tokens: readonly ComponentTokenDefinition[]\n}\n`,
   )
 }
 
