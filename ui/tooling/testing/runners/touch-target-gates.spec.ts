@@ -20,10 +20,16 @@ function createFixture(css: string): string {
   const root = mkdtempSync(join(tmpdir(), 'xihan-touch-target-gate-'))
   temporaryRoots.push(root)
   write(root, 'packages/design/styles/css/demo.css', css)
-  // check-control-height 的正式例外表会反查 slider；夹具保留这条真实存在的不上尺声明。
+  // check-control-height 的正式例外表（OFF_SCALE）会反查登记过的皮肤与声明；
+  // 夹具按名单逐份保留真实存在的不上尺声明，名单增减时这里要跟着改
   write(root, 'packages/design/styles/css/slider.css', `
 [data-scope='slider'][data-part='control'] {
   block-size: 2px;
+}
+`)
+  write(root, 'packages/design/styles/css/color-slider.css', `
+[data-scope='color-slider'][data-part='control'] {
+  block-size: max(var(--xh-_thumb-size), var(--xh-_track-thickness));
 }
 `)
   write(root, 'packages/design/tokens/src/generated/tokens.ts', `
