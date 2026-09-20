@@ -20,6 +20,7 @@ export type {
   QuestionFlowNotes,
   QuestionFlowNotesChangeDetails,
   QuestionFlowOption,
+  QuestionFlowPressedKey,
   QuestionFlowQuestion,
   QuestionFlowQuestionProps,
   QuestionFlowRefs,

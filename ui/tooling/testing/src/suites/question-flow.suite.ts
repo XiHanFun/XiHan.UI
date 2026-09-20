@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { questionFlowAnatomy, questionFlowKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/#keyboardinteraction'
 
@@ -401,6 +402,85 @@ export const questionFlowSuite: ConformanceSuite = {
             parts: { root: { 'data-state': 'submitted' }, result: { hidden: null } },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：四颗钮各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['question-flow.kbd.press'],
+      // 停在第二题且已作答：上一题、下一题、跳过、继续四颗都可按
+      props: { questions: QUESTIONS, defaultIndex: 1, defaultAnswers: { checks: ['unit'] } },
+      steps: [
+        heldPress('question-flow', 'prev-trigger'),
+        heldPress('question-flow', 'next-trigger'),
+        heldPress('question-flow', 'skip-trigger'),
+        heldPress('question-flow', 'submit-trigger'),
+      ],
+    },
+    {
+      name: '选项：Space 按住与触屏按下投影 data-pressed；Enter 不是选项的激活键，不进按压面',
+      spec: { adr: 'press-channel' },
+      covers: ['question-flow.kbd.item-press'],
+      props: { questions: QUESTIONS, autoAdvance: false },
+      steps: [
+        heldPress('question-flow', 'item', { value: 'ui', keys: [' '] }),
+        {
+          kind: 'raw',
+          why: 'Enter 归选项组的前进：焦点在选项上按住 Enter，选项自己不该投影按压面',
+          run: async ({ doc, flush }: RawStepContext) => {
+            const item = doc.querySelector<HTMLElement>('[data-scope="question-flow"][data-part="item"][data-value="db"]')
+            if (!item)
+              throw new Error('找不到 question-flow 的 item[db] 部件')
+            item.focus()
+            item.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (item.hasAttribute('data-pressed'))
+              throw new Error('Enter 不是选项的激活键，按住不该投影 data-pressed')
+            item.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }))
+          },
+        },
+      ],
+    },
+    {
+      name: '边界与禁用不进按压面：首题的上一题、没答之前的继续、数据里标成禁用的选项',
+      spec: { adr: 'press-channel' },
+      props: { questions: DISABLED_QUESTIONS, autoAdvance: false },
+      steps: [
+        heldPressIgnored('question-flow', 'prev-trigger', '首题上上一题钮原生 disabled，不接受按压'),
+        heldPressIgnored('question-flow', 'submit-trigger', '没答之前继续钮原生 disabled，不接受按压'),
+        heldPressIgnored('question-flow', 'item', '数据里标成禁用的选项 aria-disabled，不接受按压', { value: 'api' }),
+      ],
+    },
+    {
+      name: '按住途中换题：Enter 在 keydown 即前进，按压面随换题收起；交卷后一律不进',
+      spec: { adr: 'press-channel' },
+      props: { questions: QUESTIONS, defaultIndex: 1, defaultAnswers: { checks: ['unit'], branch: ['main'] } },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'Enter 在 keydown 即 click 前进一题，随后换题的那一帧按压面得已经收起',
+          run: async ({ doc, flush }: RawStepContext) => {
+            const submit = doc.querySelector<HTMLElement>('[data-scope="question-flow"][data-part="submit-trigger"]')
+            if (!submit)
+              throw new Error('找不到 question-flow 的 submit-trigger 部件')
+            submit.focus()
+            submit.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (!submit.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时 submit-trigger 应投影 data-pressed')
+            submit.click()
+          },
+          expect: {
+            parts: { 'question[2]': { 'data-current': '' }, 'submit-trigger': { 'data-mode': 'send', 'data-pressed': null } },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'submit-trigger',
+          expect: { parts: { 'root': { 'data-state': 'submitted' }, 'submit-trigger': { disabled: '' } } },
+        },
+        heldPressIgnored('question-flow', 'submit-trigger', '交卷后继续钮原生 disabled，不接受按压'),
+        heldPressIgnored('question-flow', 'item', '交卷后选项一律 aria-disabled，不接受按压', { value: 'main' }),
       ],
     },
   ],

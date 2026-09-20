@@ -8,6 +8,7 @@
 import type {
   QuestionFlowAnswers,
   QuestionFlowNotes,
+  QuestionFlowPressedKey,
   QuestionFlowQuestion,
   QuestionFlowSchema,
   QuestionFlowViewport,
@@ -84,6 +85,12 @@ function cloneNotes(source: QuestionFlowNotes | undefined): QuestionFlowNotes {
  * 自动前进的计时器挂在 answering 上，重入即拆掉重挂：选中一项就重入一次，从整段延时重新计；
  * 手动翻页、跳过、提交都先把待办清掉再重入，计时器于是拆掉后不再挂起来。
  * 量测走根级效应，不随状态重入拆装。
+ *
+ * 另承载按压通道：Space / Enter 与触屏按住期间的 context.pressed（按部件键记，对应部件投影 data-pressed），
+ * 让键盘与触屏看见和指针 :active 同一副按压面。PRESS.START 只在答题态接、部件自身的禁用随事件带入守卫；
+ * 松开不挂 answering 的 exit——选中一项就重入一次，Space 在 keydown 即切换，挂在 exit 上按压面会在按住的
+ * 当刻就丢。改盯 index（换题）、questions（题目改写）与交卷入口：这些时刻被按住的部件要么转 inert、
+ * 要么原生 disabled，不会再来 keyup，按压面由机器自己收。
  */
 export const questionFlowMachine = createMachine({
   name: 'question-flow',
@@ -108,6 +115,7 @@ export const questionFlowMachine = createMachine({
     // 量测结果不受控、不对外通知
     viewport: cell<QuestionFlowViewport | null>(() => ({ defaultValue: null, isEqual: sameViewport })),
     pendingAdvance: cell<string | null>(() => ({ defaultValue: null })),
+    pressed: cell<QuestionFlowPressedKey | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getTrackEl: () => null,
@@ -118,13 +126,16 @@ export const questionFlowMachine = createMachine({
   effects: ['trackViewportSize'],
   watch: ({ track, prop, context, action }) => {
     track([() => prop('status')], () => action(['syncStatus']))
-    // 换题就把轨道挪过去、把视口高度换成新那一题的
-    track([context.dep('index')], () => action(['measureViewport']))
-    // 题目增删改写同样要重量：轨道里排的块变了，容器尺寸却可能一动不动
-    track([() => questionsKeyOf(prop('questions'))], () => action(['measureViewport']))
+    // 换题就把轨道挪过去、把视口高度换成新那一题的；被按住的选项随旧题转 inert、翻页钮可能到边界转禁用，一并松开
+    track([context.dep('index')], () => action(['measureViewport', 'releasePress']))
+    // 题目增删改写同样要重量：轨道里排的块变了，容器尺寸却可能一动不动；按住的选项可能已不在场，一并松开
+    track([() => questionsKeyOf(prop('questions'))], () => action(['measureViewport', 'releasePress']))
+    // 关掉跳过时跳过钮整颗收起，不会再来 keyup
+    track([() => prop('allowSkip')], () => action(['releaseSkipWhenHidden']))
   },
   on: {
     'VIEWPORT.MEASURE': { actions: ['measureViewport'] },
+    'PRESS.END': { actions: ['endPress'] },
     // 受控回写，只跳转不通知
     'CONTROLLED.ANSWERING': { target: 'answering' },
     'CONTROLLED.SUBMITTED': { target: 'submitted' },
@@ -156,9 +167,11 @@ export const questionFlowMachine = createMachine({
           { guard: 'isLastQuestion', actions: ['disarmAdvance'] },
           { target: 'answering', reenter: true, actions: ['disarmAdvance', 'goNext'] },
         ],
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
       },
     },
-    submitted: {},
+    // 交卷后选项与四颗钮全部禁用：被按住的那一个不会再来 keyup，进场即松开
+    submitted: { entry: ['releasePress'] },
   },
   implementations: {
     guards: {
@@ -174,6 +187,11 @@ export const questionFlowMachine = createMachine({
       canToggle: ({ prop, event }) => {
         const e = event.current()
         return e.type === 'OPTION.TOGGLE' && questionsOf(prop('questions')).some(q => q.id === e.questionId)
+      },
+      // 部件自身的禁用（边界题翻页钮、答不完整的提交钮、禁用选项）只有 connect 知道，随 PRESS.START 带进来
+      canPress: ({ event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && !e.disabled
       },
     },
     actions: {
@@ -212,6 +230,22 @@ export const questionFlowMachine = createMachine({
         context.set('index', clampQuestionIndex(clampQuestionIndex(context.get('index'), count) - 1, count))
       },
       disarmAdvance: ({ context }) => context.set('pendingAdvance', null),
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一个部件的 keyup 不该把正按着的这一个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      releaseSkipWhenHidden: ({ context, prop }) => {
+        if (prop('allowSkip') === false && context.get('pressed') === 'skip')
+          context.set('pressed', null)
+      },
       invokeSkip: ({ prop, context }) => {
         const list = questionsOf(prop('questions'))
         const index = clampQuestionIndex(context.get('index'), list.length)
