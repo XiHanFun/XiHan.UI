@@ -97,6 +97,9 @@ export function createReactHarness(): AdapterHarness {
     adapterName: 'react',
 
     async mount(fixture: Fixture) {
+      // 一个 harness 同时只挂一份：上一条轨迹超时后没走到卸载，它那份还挂着，先卸掉再挂新的
+      if (root)
+        await this.unmount()
       host = document.createElement('div')
       attachHost(host)
       props = { ...fixture.props }

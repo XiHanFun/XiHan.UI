@@ -27,6 +27,33 @@ export async function settleFrame(harness: AdapterHarness, doc: Document): Promi
   }
 }
 
+/**
+ * 卸载后的收尾：把这条轨迹排下的、还没跑的回调在本条轨迹里跑完，不带进下一条。
+ *
+ * 拆焦点域时 Core 把「归还焦点 / 显式松手」排在动画帧上；jsdom 把 input.select() 的 select 事件、
+ * 超链接的导航排成 0ms 定时器。用例之间没有人让出宏任务，这些回调会一直躺到后面某条轨迹第一次
+ * 等动画帧或 settle 轮询时才跑——跑在别人的文档状态上。逐帧对拍要的是每条轨迹只由自己的
+ * fixture 与步骤决定，所以卸载后先等排着的帧，再让事件循环转一整圈，把本条的尾巴收干净。
+ *
+ * 转一圈用两次 setImmediate 而不是 setTimeout(0)：Windows 上一次 0ms 定时器要等约 13ms，
+ * 两千多条轨迹会多出半分钟；两次 immediate 之间事件循环必经一次 timers 阶段，到期的 0ms
+ * 定时器在那里跑掉，代价不到 0.01ms。
+ */
+export async function settleTeardown(harness: AdapterHarness, doc: Document): Promise<void> {
+  await settleFrame(harness, doc)
+  const immediate = (globalThis as { setImmediate?: (callback: () => void) => unknown }).setImmediate
+  if (typeof immediate !== 'function')
+    throw new Error('settleTeardown：没有 setImmediate，一致性轨迹只在 Node 事件循环上录制')
+  await new Promise<void>(resolve => immediate(resolve))
+  await new Promise<void>(resolve => immediate(resolve))
+  await harness.flush()
+}
+
+/** 此刻还排着、没跑的动画帧回调数；只认 settleFrame 记过账的 window。 */
+export function pendingFrames(doc: Document): number {
+  return trackFrames(doc).pending
+}
+
 interface FrameTracker {
   readonly pending: number
   next: () => Promise<void>

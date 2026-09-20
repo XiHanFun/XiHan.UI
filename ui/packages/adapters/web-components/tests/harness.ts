@@ -135,6 +135,9 @@ export function createWcHarness(): AdapterHarness {
   return {
     adapterName: 'wc',
     async mount(fixture: Fixture) {
+      // 一个 harness 同时只挂一份：上一条轨迹超时后没走到卸载，它那份还挂着，先卸掉再挂新的
+      if (host)
+        await this.unmount()
       const el = document.createElement(`xh-${fixture.component}`) as Updatable
       el.appendChild(renderNode(fixture.tree, document))
       applyInputs(el, fixture.props as Record<string, unknown>)
