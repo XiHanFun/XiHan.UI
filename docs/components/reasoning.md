@@ -159,6 +159,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | 焦点在折叠开关上且未禁用 | 展开或收起思考正文，并把自动开合永久停用 |
+| `Enter` / `Space` | 按住折叠开关且未禁用 | 按住期间 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或转禁用撤下。思考中照常接 |
 
 ### ARIA
 
@@ -198,6 +199,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-streaming` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-action-control` | '' |
