@@ -1,8 +1,12 @@
 // 横向控件带排不下时不许顶出容器。
 //
-// tabs / toolbar / menubar / navigation-menu / toggle-group / segmented 六条带子都是一行 flex，
+// tabs / toolbar / menubar / navigation-menu / segmented 五条带子都是一行 flex，
 // 条目一律 white-space: nowrap，条目多了整条就从容器里顶出去——末尾几项既看不见也点不到。
 // 兜底是折行，一条规则同时管住窄视口与窄容器两种情形，不掺任何宽度查询。
+// toggle-group 与 button-group 是焊成一条的连续分段，不折行：窄容器由作者改竖排或全宽。
+//
+// 夹具手写连接层投影的标记：归族的条目（tabs line 页签、toggle-group 段、button）带上家族角色属性，
+// 几何才与真实组件一致——家族给的下限、内边距与高度都挂在这些属性上。
 //
 // 宿主视口固定在一个宽度上改不动，这里套 iframe：宽度由这边的 width 说了算，
 // 皮肤与令牌以 <style> 注入主文档，克隆一份进 iframe 的 head 才生效。
@@ -60,6 +64,16 @@ function rowsOf(doc: Document, part: string): number {
   return rows
 }
 
+/** 尺寸令牌在该文档里解到的像素值。 */
+function tokenPx(doc: Document, token: string): number {
+  const probe = doc.createElement('div')
+  probe.style.blockSize = `var(${token})`
+  doc.body.append(probe)
+  const value = probe.offsetHeight
+  probe.remove()
+  return value
+}
+
 /** 某个部件所有节点在给定边上的位置（取整到像素）。 */
 function edgesOf(doc: Document, part: string, edge: 'top' | 'left'): number[] {
   const nodes = [...doc.querySelectorAll(`[data-part="${part}"]`)] as HTMLElement[]
@@ -70,9 +84,9 @@ function items(labels: string[], render: (label: string) => string): string {
   return labels.map(render).join('')
 }
 
-const TABS = `<div data-scope="tabs" data-part="root" data-orientation="horizontal">
+const TABS = `<div data-scope="tabs" data-part="root" data-orientation="horizontal" data-variant="line">
   <div data-scope="tabs" data-part="list" role="tablist">
-    ${items(['概览', '账号设置', '通知偏好', '安全与隐私', '计费与订阅', '开发者选项'], t => `<button data-scope="tabs" data-part="trigger" role="tab">${t}</button>`)}
+    ${items(['概览', '账号设置', '通知偏好', '安全与隐私', '计费与订阅', '开发者选项'], t => `<button data-scope="tabs" data-part="trigger" role="tab" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="nav">${t}</button>`)}
   </div>
   <div data-scope="tabs" data-part="content">内容</div>
 </div>`
@@ -91,10 +105,6 @@ const NAVIGATION_MENU = `<nav data-scope="navigation-menu" data-part="root">
   </ul>
 </nav>`
 
-const TOGGLE_GROUP = `<div data-scope="toggle-group" data-part="root" data-orientation="horizontal" role="group">
-  ${items(['左对齐', '水平居中', '右对齐', '两端对齐', '分散对齐'], t => `<button data-scope="toggle-group" data-part="item">${t}</button>`)}
-</div>`
-
 const SEGMENTED = `<div data-scope="segmented" data-part="root" data-orientation="horizontal" role="radiogroup">
   ${items(['日视图', '周视图', '月视图', '季度视图', '年度视图'], t => `<label data-scope="segmented" data-part="item"><span data-scope="segmented" data-part="item-text">${t}</span></label>`)}
 </div>`
@@ -105,7 +115,6 @@ const BARS: [string, string, string][] = [
   ['toolbar', TOOLBAR, 'item'],
   ['menubar', MENUBAR, 'trigger'],
   ['navigation-menu', NAVIGATION_MENU, 'trigger'],
-  ['toggle-group', TOGGLE_GROUP, 'item'],
   ['segmented', SEGMENTED, 'item'],
 ]
 
@@ -147,9 +156,11 @@ describe('折行不改单行时的几何', () => {
     const segment = wide.querySelector('[data-scope="segmented"][data-part="item"]') as HTMLElement
     const trackHeight = track.offsetHeight
     const segmentHeight = segment.offsetHeight
-    // 一档控件高：min-block-size 与原先的 block-size 在这一档上逐值相同
-    expect(trackHeight).toBe(32)
-    expect(segmentHeight).toBe(26)
+    // 一档控件高：min-block-size 与原先的 block-size 在这一档上逐值相同；
+    // 段是轨道内侧的高度——去掉上下各一格衬距与一道透明占位边
+    const controlHeight = tokenPx(wide, '--xh-control-h-md')
+    expect(trackHeight).toBe(controlHeight)
+    expect(segmentHeight).toBe(controlHeight - 2 * tokenPx(wide, '--xh-space-0_5') - 2 * tokenPx(wide, '--xh-stroke-thin'))
 
     const narrow = mount(260, SEGMENTED)
     const segments = [...narrow.querySelectorAll('[data-scope="segmented"][data-part="item"]')] as HTMLElement[]
@@ -160,20 +171,31 @@ describe('折行不改单行时的几何', () => {
       .toBeGreaterThan(trackHeight)
   })
 
-  it('tabs 排得下时主标签带保持单行与完整内距', () => {
+  it('tabs 排得下时主标签带保持单行，line 档的标签带就是一档控件高', () => {
     const wide = mount(1280, TABS)
     const list = wide.querySelector('[data-scope="tabs"][data-part="list"]') as HTMLElement
-    expect(list.offsetHeight).toBe(44)
+    // line 档标签带不带衬距，高度只有标签自己的一档控件高
+    expect(list.offsetHeight).toBe(tokenPx(wide, '--xh-control-h-md'))
     expect(rowsOf(wide, 'trigger')).toBe(1)
+  })
+
+  it('tabs 归族后下限仍按文字算：等分带宽排不下时折行，不把标签压到文字之下', () => {
+    // 家族基础块给条目写了 min-inline-size: 0；标签横排按 flex: 1 1 0 等分带宽，
+    // 下限归零就只会被压扁再横向顶出去，永远等不到折行那一刻
+    const narrow = mount(260, TABS)
+    const triggers = [...narrow.querySelectorAll('[data-scope="tabs"][data-part="trigger"]')] as HTMLElement[]
+    for (const trigger of triggers)
+      expect(trigger.scrollWidth).toBeLessThanOrEqual(trigger.clientWidth)
+    expect(rowsOf(narrow, 'trigger')).toBeGreaterThan(1)
   })
 })
 
 describe('竖排不跟着折行', () => {
   const VERTICAL: [string, string][] = [
-    ['tabs', `<div data-scope="tabs" data-part="root" data-orientation="vertical"><div data-scope="tabs" data-part="list" role="tablist" aria-orientation="vertical" style="block-size:60px">${items(['概览', '账号设置', '通知偏好', '安全与隐私'], t => `<button data-scope="tabs" data-part="trigger" role="tab">${t}</button>`)}</div></div>`],
+    ['tabs', `<div data-scope="tabs" data-part="root" data-orientation="vertical"><div data-scope="tabs" data-part="list" role="tablist" aria-orientation="vertical" style="block-size:60px">${items(['概览', '账号设置', '通知偏好', '安全与隐私'], t => `<button data-scope="tabs" data-part="trigger" role="tab" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="nav">${t}</button>`)}</div></div>`],
     ['toolbar', `<div data-scope="toolbar" data-part="root" data-orientation="vertical" role="toolbar" style="block-size:60px">${items(['撤销', '重做', '加粗', '倾斜'], t => `<button data-scope="toolbar" data-part="item">${t}</button>`)}</div>`],
     ['menubar', `<div data-scope="menubar" data-part="root" data-orientation="vertical" role="menubar" style="block-size:60px">${items(['文件', '编辑', '选择', '视图'], t => `<button data-scope="menubar" data-part="trigger" role="menuitem">${t}</button>`)}</div>`],
-    ['toggle-group', `<div data-scope="toggle-group" data-part="root" data-orientation="vertical" role="group" style="block-size:60px">${items(['左对齐', '水平居中', '右对齐', '两端对齐'], t => `<button data-scope="toggle-group" data-part="item">${t}</button>`)}</div>`],
+    ['toggle-group', `<div data-scope="toggle-group" data-part="root" data-orientation="vertical" role="group" style="block-size:60px">${items(['左对齐', '水平居中', '右对齐', '两端对齐'], t => `<button data-scope="toggle-group" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle">${t}</button>`)}</div>`],
   ]
 
   // 竖排的主轴是块轴，容器被作者定高时 wrap 会把条目甩成好几列，
@@ -185,26 +207,35 @@ describe('竖排不跟着折行', () => {
   })
 })
 
-describe('按钮组不折行也不自己翻竖排', () => {
+describe('连续分段组不折行也不自己翻竖排', () => {
   // 段与段共边焊成一条，两端圆角只补在首末两段上：折了行，中间那两个角就是直角。
   // 皮肤自己翻竖排则会与 data-orientation 脱钩——合边收哪个轴、圆角补哪一对角、
   // 连接层给分隔线派的朝向，三处都由它决定。朝向是使用者的事。
   const BUTTON_GROUP = (orientation: string): string => `<div data-scope="button-group" data-part="root" data-orientation="${orientation}" role="group">
-    ${items(['新建文档', '从模板新建', '导入文件', '更多操作'], t => `<button data-scope="button" data-part="root">${t}</button>`)}
+    ${items(['新建文档', '从模板新建', '导入文件', '更多操作'], t => `<button data-scope="button" data-part="root" data-variant="solid" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="solid">${t}</button>`)}
+  </div>`
+  const TOGGLE_GROUP = (orientation: string): string => `<div data-scope="toggle-group" data-part="root" data-orientation="${orientation}" role="group">
+    ${items(['左对齐', '水平居中', '右对齐', '两端对齐', '分散对齐'], t => `<button data-scope="toggle-group" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle">${t}</button>`)}
   </div>`
 
-  it('横排在窄栏里仍是一条：段不换行、也没被翻成竖排', () => {
-    const doc = mount(1280, BUTTON_GROUP('horizontal'), 260)
-    const segments = [...doc.querySelectorAll('[data-scope="button"][data-part="root"]')] as HTMLElement[]
+  // [名字, 按朝向出标记, 段的选择器]
+  const GROUPS: [string, (orientation: string) => string, string][] = [
+    ['button-group', BUTTON_GROUP, '[data-scope="button"][data-part="root"]'],
+    ['toggle-group', TOGGLE_GROUP, '[data-scope="toggle-group"][data-part="item"]'],
+  ]
+
+  it.each(GROUPS)('%s 横排在窄栏里仍是一条：段不换行、也没被翻成竖排', (_name, markup, selector) => {
+    const doc = mount(1280, markup('horizontal'), 260)
+    const segments = [...doc.querySelectorAll(selector)] as HTMLElement[]
     expect(new Set(segments.map(seg => seg.offsetTop)).size).toBe(1)
     // 顶出窄栏是这一档的既定行为：收窄的出口是使用者显式改朝向
-    expect(boxOverflow(260, BUTTON_GROUP('horizontal'))).toBeGreaterThan(0)
+    expect(boxOverflow(260, markup('horizontal'))).toBeGreaterThan(0)
   })
 
-  it('使用者显式给竖排就收得住', () => {
-    expect(boxOverflow(260, BUTTON_GROUP('vertical'))).toBe(0)
-    const doc = mount(1280, BUTTON_GROUP('vertical'), 260)
-    const segments = [...doc.querySelectorAll('[data-scope="button"][data-part="root"]')] as HTMLElement[]
+  it.each(GROUPS)('%s 使用者显式给竖排就收得住', (_name, markup, selector) => {
+    expect(boxOverflow(260, markup('vertical'))).toBe(0)
+    const doc = mount(1280, markup('vertical'), 260)
+    const segments = [...doc.querySelectorAll(selector)] as HTMLElement[]
     expect(new Set(segments.map(seg => seg.offsetLeft)).size).toBe(1)
   })
 })
