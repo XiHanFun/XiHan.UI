@@ -510,6 +510,9 @@ export const imageViewerSuite: ConformanceSuite = {
           expect: { parts: { 'zoom-in-trigger': { 'disabled': '', 'data-disabled': '', 'data-pressed': null } } },
         },
         heldPressIgnored('image-viewer', 'zoom-in-trigger', '已在 maxScale 时放大钮原生 disabled，不接受按压'),
+        // 放大钮转禁用那一刻 Chromium 同步把焦点收回 body（jsdom 留着不动），End 要从明确的宿主派：
+        // content 是键盘的收口处，本就接这一键
+        { kind: 'focus', part: 'content' },
         { kind: 'key', key: 'End', expect: { parts: { 'next-trigger': { disabled: '' } } } },
         heldPressIgnored('image-viewer', 'next-trigger', '最后一张且不回绕时下一张原生 disabled，不接受按压'),
       ],
