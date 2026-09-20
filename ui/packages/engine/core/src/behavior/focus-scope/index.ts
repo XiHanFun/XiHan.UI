@@ -16,7 +16,7 @@ import {
   isShadowRoot,
 } from '../../kernel'
 import { acquireFocusGuards } from './focus-guards'
-import { focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
+import { activeElementInRoot, focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
 
 export interface FocusScopeOptions {
   config: RuntimeConfig
@@ -618,10 +618,14 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
         const back = explicit?.isConnected ? explicit : previouslyFocused
         if (back?.isConnected) {
           focusSafely(back, { select: true })
-          return
+          // 归还落定即完工；没落定的（创建前持有者是 body——挂载即展开、程序化打开都如此，
+          // body 不在各引擎一致的可聚焦集合里，focus() 是空操作）继续往下松手
+          if (activeElementInRoot(back) === back)
+            return
         }
-        // 原持有者已离场。不能靠 body.focus()——body 不在各引擎一致的可聚焦集合里，
-        // 那样焦点会留在这个已经关掉的层里（WC 侧节点常驻，尤其明显）。显式松手。
+        // 原持有者已离场或接不住焦点。不能靠 body.focus()，那样焦点会留在这个已经关掉的层里
+        // （WC 侧节点常驻，尤其明显；Vue 侧要等浏览器渲染更新末尾的 focus fixup 才收走，
+        // jsdom 则永远不收）。显式松手。
         const active = activeFocusWithinScope()
         if (active && isInScope(active))
           active.blur()
