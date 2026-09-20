@@ -185,8 +185,14 @@ export const wcDrawerSuite: ConformanceSuite = {
       name: 'Space / Enter 按住与触屏按下：触发器与关闭钮各自投影 data-pressed，抬起、失焦或指针取消撤下',
       spec: { adr: 'press-channel' },
       covers: ['drawer.kbd.press'],
-      props: { defaultOpen: true },
-      steps: [heldPress('drawer', 'trigger'), heldPress('drawer', 'close-trigger')],
+      // 模态打开期间触发器在 inert 的背景里（浏览器不让它接住焦点，jsdom 不实现 inert）：
+      // 先在收起态按触发器，再点开按关闭钮
+      steps: [
+        heldPress('drawer', 'trigger'),
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'data-state', value: 'open' } } },
+        heldPress('drawer', 'close-trigger'),
+      ],
     },
   ],
 }
