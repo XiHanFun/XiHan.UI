@@ -107,9 +107,13 @@ const STRING_LIST_CONVERTER = {
  * @csspart area-thumb - role=slider 的取色区拇指，两条轴的位置由连接层写为内联样式
  * @csspart hue-slider - 色相滑块的挂载点，同时是该滑块的根节点；其中写 color-slider 的 control / track / thumb
  * @csspart alpha-slider - 透明度滑块的挂载点，同上；alpha 关闭时整条禁用
+ * @csspart track - 颜色滑块的轨道（data-scope="color-slider"），写在 hue-slider / alpha-slider 挂载点中；渐变由元素写为内联 background-image
+ * @csspart thumb - 颜色滑块 role=slider 的拇指（data-scope="color-slider"），位置由元素写为内联样式
  * @csspart channel-input - 数值输入框，须是原生 input 且自带 channel 属性（hex / r / g / b / a）
  * @csspart eye-dropper-trigger - 屏幕取色按钮，须是原生 button；环境不支持时自动禁用
  * @csspart swatch-picker - 预设色板的挂载点，同时是色板的根节点（role=radiogroup）；其中写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性
+ * @csspart item - 色板中 role=radio 的一格（data-scope="color-swatch-picker"），须自带 value 属性声明颜色串
+ * @csspart indicator - 色板格子的选中标记（data-scope="color-swatch-picker"）
  * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者未编写该部件时不参与提交
  */
 export class XhColorPickerElement extends XhPortalHostElement {

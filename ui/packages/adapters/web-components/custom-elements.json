@@ -9756,6 +9756,14 @@
               "name": "alpha-slider"
             },
             {
+              "description": "颜色滑块的轨道（data-scope=\"color-slider\"），写在 hue-slider / alpha-slider 挂载点中；渐变由元素写为内联 background-image",
+              "name": "track"
+            },
+            {
+              "description": "颜色滑块 role=slider 的拇指（data-scope=\"color-slider\"），位置由元素写为内联样式",
+              "name": "thumb"
+            },
+            {
               "description": "数值输入框，须是原生 input 且自带 channel 属性（hex / r / g / b / a）",
               "name": "channel-input"
             },
@@ -9766,6 +9774,14 @@
             {
               "description": "预设色板的挂载点，同时是色板的根节点（role=radiogroup）；其中写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性",
               "name": "swatch-picker"
+            },
+            {
+              "description": "色板中 role=radio 的一格（data-scope=\"color-swatch-picker\"），须自带 value 属性声明颜色串",
+              "name": "item"
+            },
+            {
+              "description": "色板格子的选中标记（data-scope=\"color-swatch-picker\"）",
+              "name": "indicator"
             },
             {
               "description": "type=hidden 的表单出口，值是当前颜色串；作者未编写该部件时不参与提交",
