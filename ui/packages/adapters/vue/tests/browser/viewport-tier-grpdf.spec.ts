@@ -202,7 +202,13 @@ describe('field 横排标签收进自己那一列', () => {
 
   it('宽处仍是一行，标签宽度不受影响', () => {
     const el = mountBox(1280, FORM)
-    expect(label(el).height).toBeCloseTo(32, 0)
+    // 横排标签的块向内边距按控件高补齐，整条标签与旁边的控件同高
+    const probe = document.createElement('div')
+    probe.style.blockSize = 'var(--xh-control-h-md)'
+    el.append(probe)
+    const controlHeight = probe.offsetHeight
+    probe.remove()
+    expect(label(el).height).toBeCloseTo(controlHeight, 0)
     expect(label(el).width).toBeCloseTo(150.1, 0)
   })
 })
