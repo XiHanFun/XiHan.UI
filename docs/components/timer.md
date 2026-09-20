@@ -176,7 +176,7 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 
 **状态**：`idle` · `running` · `paused` · `completed`
 
-**事件**：`RUN.START` · `RUN.PAUSE` · `RUN.RESUME` · `RUN.RESET` · `CLOCK.TICK` · `CLOCK.SETTLE` · `CLOCK.SYNC`
+**事件**：`RUN.START` · `RUN.PAUSE` · `RUN.RESUME` · `RUN.RESET` · `CLOCK.TICK` · `CLOCK.SETTLE` · `CLOCK.SYNC` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isSettled`
 
@@ -218,6 +218,7 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus on control | 按当前状态起停：没起步的开跑、在走的暂停、停在半路的接着走、走完的归零；control 是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held on control | 按住期间 control 投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起或失焦撤下。按钮没有禁用态，四段状态下都接，按住途中起停翻转按压面不丢 |
 
 ### ARIA
 
@@ -256,6 +257,7 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 | `display` | `data-state` | 'idle' \| 'running' \| 'paused' \| 'completed' |
 | `item` | `data-unit` | item.unit |
 | `control` | `data-action` | 'pause' \| 'resume' \| 'reset' \| 'start' |
+| `control` | `data-pressed` | ''（条件成立时才出现） |
 | `control` | `data-xh-action-control` | '' |
 | `control` | `data-xh-action-display` | 'always' |
 | `control` | `data-xh-action-profile` | 'text' |

@@ -516,3 +516,94 @@ describe('timer 受控通道', () => {
     t.stop()
   })
 })
+
+// ── 按压通道 ────────────────────────────────────────────────────────
+
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('timerMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'performance', 'Date'] })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；状态不动', () => {
+    const t = makeTimer()
+    expect(t.control()['data-pressed']).toBeUndefined()
+    fire(t.control(), 'onKeyDown', key(' '))
+    expect(t.control()['data-pressed']).toBe('')
+    fire(t.control(), 'onKeyUp', key(' '))
+    expect(t.control()['data-pressed']).toBeUndefined()
+    fire(t.control(), 'onKeyDown', key('Enter'))
+    expect(t.control()['data-pressed']).toBe('')
+    fire(t.control(), 'onBlur', {})
+    expect(t.control()['data-pressed']).toBeUndefined()
+    fire(t.control(), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.control()['data-pressed']).toBe('')
+    fire(t.control(), 'onPointerCancel', {})
+    expect(t.control()['data-pressed']).toBeUndefined()
+    fire(t.control(), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.control()['data-pressed']).toBe('')
+    fire(t.control(), 'onPointerUp', {})
+    expect(t.control()['data-pressed']).toBeUndefined()
+    fire(t.control(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(t.control()['data-pressed']).toBeUndefined()
+    expect(t.state()).toBe('idle')
+    t.stop()
+  })
+
+  it('按住途中起停翻转：Enter 在 keydown 即开跑 / 暂停 / 继续 / 归零，按压面不随之丢，keyup 才撤下；四段状态都接', () => {
+    // 只用起始值不走受控通道：起停那一下由机器自己落态
+    const s = makeTimer({ startMs: 2 * SECOND, countdown: true, precision: 0 })
+    fire(s.control(), 'onKeyDown', key('Enter'))
+    expect(s.control()['data-pressed']).toBe('')
+    ;(s.control().onClick as () => void)()
+    expect(s.state()).toBe('running')
+    expect(s.control()['data-pressed']).toBe('')
+    fire(s.control(), 'onKeyUp', key('Enter'))
+    expect(s.control()['data-pressed']).toBeUndefined()
+
+    fire(s.control(), 'onPointerDown', { pointerType: 'touch' })
+    expect(s.control()['data-pressed']).toBe('')
+    ;(s.control().onClick as () => void)()
+    expect(s.state()).toBe('paused')
+    expect(s.control()['data-pressed']).toBe('')
+    fire(s.control(), 'onPointerUp', {})
+    expect(s.control()['data-pressed']).toBeUndefined()
+
+    fire(s.control(), 'onKeyDown', key(' '))
+    ;(s.control().onClick as () => void)()
+    expect(s.state()).toBe('running')
+    expect(s.control()['data-pressed']).toBe('')
+    // 按住途中走到终点：completed 态照样接着，抬起才撤下
+    vi.advanceTimersByTime(2 * SECOND)
+    expect(s.state()).toBe('completed')
+    expect(s.control()['data-pressed']).toBe('')
+    fire(s.control(), 'onKeyUp', key(' '))
+    expect(s.control()['data-pressed']).toBeUndefined()
+    fire(s.control(), 'onKeyDown', key(' '))
+    expect(s.control()['data-pressed']).toBe('')
+    ;(s.control().onClick as () => void)()
+    expect(s.state()).toBe('idle')
+    expect(s.control()['data-pressed']).toBe('')
+    fire(s.control(), 'onKeyUp', key(' '))
+    expect(s.control()['data-pressed']).toBeUndefined()
+    s.stop()
+  })
+
+  it('受控通道下起停钮不改状态，按钮仍是原生可用的，按压面照常进出', () => {
+    const t = makeTimer({ value: 5 * SECOND, active: false })
+    fire(t.control(), 'onKeyDown', key(' '))
+    expect(t.control()['data-pressed']).toBe('')
+    ;(t.control().onClick as () => void)()
+    expect(t.state()).toBe('idle')
+    expect(t.control()['data-pressed']).toBe('')
+    fire(t.control(), 'onKeyUp', key(' '))
+    expect(t.control()['data-pressed']).toBeUndefined()
+    t.stop()
+  })
+})
