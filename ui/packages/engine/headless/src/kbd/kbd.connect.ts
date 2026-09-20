@@ -72,6 +72,10 @@ export function connectKbd<T extends PropTypes>(props: KbdProps, normalize: Norm
     },
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 原生 kbd 对应的是 generic 角色，ARIA 禁止在它身上写 aria-label（读屏直接忽略，整组就没有名字了）。
+      // 视觉键帽各自 aria-hidden、整组只朗读一次，这副「若干字形合成一个可读名称」的结构就是 img 的语义，
+      // 由 img 承接名字：放进按钮或菜单项时，名字照常汇入宿主的可访问名称
+      'role': 'img',
       'aria-label': label,
       'data-platform': platform,
       'data-variant': props.variant ?? 'default',

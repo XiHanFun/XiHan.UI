@@ -67,6 +67,7 @@ describe('kbd 展示契约', () => {
       'data-part': 'root',
       'data-platform': 'other',
       'data-variant': 'default',
+      'role': 'img',
       'aria-label': 'Control + S',
     })
     expect(current.getKeyProps({ value: 'Mod' })).toMatchObject({

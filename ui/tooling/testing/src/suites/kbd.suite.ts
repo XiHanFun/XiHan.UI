@@ -18,6 +18,7 @@ export const kbdSuite: ConformanceSuite = {
         counts: { root: 1, key: 2 },
         parts: {
           root: {
+            'role': 'img',
             'aria-label': 'Control + K',
             'data-platform': 'other',
             'data-variant': 'default',
@@ -72,6 +73,8 @@ export const kbdSuite: ConformanceSuite = {
         why: '输入目标必须是活的原生表单控件',
         run: ({ root }) => {
           const input = document.createElement('input')
+          // 夹具里的输入框也要有可访问名，无障碍扫描连它一起扫
+          input.setAttribute('aria-label', '输入区')
           root.append(input)
           const event = new KeyboardEvent('keydown', { key: 's', bubbles: true, cancelable: true })
           input.dispatchEvent(event)
