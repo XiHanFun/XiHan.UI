@@ -3,6 +3,7 @@
 // 按不动的实心按钮也得换掉底色，只压暗字会让它变成一块看不出内容的色斑。
 // 判据全是级联算出来的取值——状态属性连接层一直都在发，缺的是皮肤这一头，
 // 皮肤不接就只有读屏能听出来，看得见的人从头到尾以为点得动。
+import type { CalendarDay } from '@xihan-ui/headless'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h } from 'vue'
@@ -104,7 +105,7 @@ describe('calendar-picker 的只读手势', () => {
       XhCalendarPickerRoot,
       { readOnly, locale: 'zh-CN', timeZone: 'UTC', defaultValue: '2026-07-15' },
       {
-        default: ({ weeks }: { weeks: Array<Array<{ value: string }>> }) => [
+        default: ({ weeks }: { weeks: CalendarDay[][] }) => [
           h(XhCalendarPickerGrid, null, () => [
             h(XhCalendarPickerGridBody, null, () => weeks.map(week =>
               h(XhCalendarPickerWeekRow, null, () => week.map(day =>

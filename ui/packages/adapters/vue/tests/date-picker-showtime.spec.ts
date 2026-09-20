@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // date-picker showTime：值升格为 datetime——选日保时不收起、时间列点选换单位、
 // 确认按钮收口；没开 showTime 的行为原样。
+import type { CalendarDay } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -43,7 +44,7 @@ function mountPicker(props: Record<string, unknown> = {}): { change: ReturnType<
   const app = createApp({
     setup: () => () =>
       h(XhDatePickerRoot, { 'showTime': true, 'onValue-change': change, ...props }, {
-        default: ({ weeks }: { weeks: Array<Array<{ value: string, day: number }>> }) => [
+        default: ({ weeks }: { weeks: CalendarDay[][] }) => [
           h(XhDatePickerControl, null, () => [
             h(XhDatePickerSegmentGroup, null, () => [
               h(XhDatePickerSegment, { index: 0 }),

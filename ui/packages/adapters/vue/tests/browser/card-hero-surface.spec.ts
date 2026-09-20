@@ -1,6 +1,6 @@
 // Card 的语义表面、统一节奏与部件布局依赖真实 CSS 计算值。
 import type { ControlVariant } from '@xihan-ui/core'
-import type { App } from 'vue'
+import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -24,7 +24,7 @@ afterEach(() => {
   host = null
 })
 
-function card(variant?: ControlVariant): unknown {
+function card(variant?: ControlVariant): VNode {
   return h(XhCardRoot, { variant }, () => [
     h(XhCardHeader, null, () => [
       h(XhCardTitle, null, () => '卡片标题'),

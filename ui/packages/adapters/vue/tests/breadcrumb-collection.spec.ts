@@ -20,11 +20,11 @@ describe('breadcrumb collection', () => {
       attachTo: document.body,
     })
 
-    const separators = [...wrapper.element.querySelectorAll<HTMLElement>('[data-scope="breadcrumb"][data-part="separator"]')]
+    const separators = wrapper.findAll('[data-scope="breadcrumb"][data-part="separator"]').map(item => item.element)
     expect(separators).toHaveLength(2)
     expect(separators.every(separator => separator.textContent === '')).toBe(true)
     expect(separators.every(separator => separator.getAttribute('aria-hidden') === 'true')).toBe(true)
-    expect(wrapper.element.querySelector('[data-part="link"][aria-current="page"]')?.textContent).toBe('面包屑')
+    expect(wrapper.find('[data-part="link"][aria-current="page"]').text()).toBe('面包屑')
     wrapper.unmount()
   })
 })
