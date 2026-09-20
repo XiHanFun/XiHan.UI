@@ -48,8 +48,9 @@ function templateOf(source) {
 
 /** 把模板拆成一个个起始标签（含属性），并记下行号。 */
 function* tags(template, offset) {
-  // 属性值里可能出现 >（箭头函数一类），按引号配对跳过
-  const re = /<([A-Za-z][\w-]*)((?:\s+(?:[^<>"']|"[^"]*"|'[^']*')*)?)\s*\/?>/g
+  // 属性值里可能出现 >（箭头函数一类），按引号配对跳过。
+  // 属性段的字符类本就含空白与 /，结尾不再另写 \s* 与 \/?：两处都能吃同一段空白，正则会二次回溯
+  const re = /<([A-Z][\w-]*)((?:\s(?:[^<>"']|"[^"]*"|'[^']*')*)?)>/gi
   for (const m of template.matchAll(re)) {
     const line = offset + template.slice(0, m.index).split('\n').length - 1
     yield { name: m[1], attrs: m[2] ?? '', line, index: m.index }
@@ -108,7 +109,7 @@ for (const file of files) {
 
     const style = styleOf(attrs)
     if (style) {
-      for (const m of style.matchAll(/(?:^|;)\s*((?:font-size|padding|gap|margin)[a-z-]*)\s*:\s*([^;]*\d+px[^;]*)/g))
+      for (const m of style.matchAll(/(?:^|;)\s*((?:font-size|padding|gap|margin)[a-z-]*)\s*:([^;]*\dpx[^;]*)/g))
         problems.push(`${where(line)}  ${m[1]}: ${m[2].trim()} —— 预览里的字号、内衬与间距只引令牌，不写 px 字面值`)
 
       if (/overflow(?:-x|-y)?\s*:\s*(?:auto|scroll)\b/.test(style) && !/\sdata-xh-scroll\b/.test(attrs) && !(hostsScrollbar && /\sref=/.test(attrs)))

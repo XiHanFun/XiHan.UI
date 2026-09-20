@@ -48,7 +48,7 @@ export const popoverSuite: ConformanceSuite = {
         order: ['trigger', 'positioner', 'content', 'arrow', 'title', 'description', 'close-trigger'],
         counts: { trigger: 1, positioner: 1, content: 1, arrow: 1 },
         parts: {
-          trigger: {
+          'trigger': {
             'type': 'button',
             'aria-haspopup': 'dialog',
             'aria-expanded': 'false',
@@ -62,7 +62,7 @@ export const popoverSuite: ConformanceSuite = {
             'data-xh-action-variant': 'outline',
             'data-pressed': null,
           },
-          content: {
+          'content': {
             'role': 'dialog',
             'tabindex': '-1',
             'aria-modal': 'false',
@@ -79,7 +79,7 @@ export const popoverSuite: ConformanceSuite = {
             'data-xh-action-variant': 'ghost',
             'data-pressed': null,
           },
-          positioner: {
+          'positioner': {
             'data-state': 'closed',
             'data-placement': 'bottom',
           },

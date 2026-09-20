@@ -3,19 +3,19 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 全局配置：locale、尺寸档与各组件内建文案的应用级默认值。
-// 取值优先级：元素上的 property > 最近一个 <xh-config> > 外层 <xh-config> > setXhConfig 的全局值 > 组件内建默认。
-//
 // 自定义元素拿不到 Vue 的 provide/inject，文案又是对象、只能走 property 不能走 attribute。
 // 这里给两条出口：setXhConfig 管整页，<xh-config> 管一棵子树，语义与 Vue 适配器的
 // provideXhConfig 对齐（那边是组件树，这边是 DOM 树）。
-import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type {
   VisualEnvironmentController,
   VisualEnvironmentControllerOptions,
 } from '@xihan-ui/core/visual-environment'
-import { mergeXhConfig as mergeBase, withXhConfigBase } from '@xihan-ui/headless'
+// 全局配置：locale、尺寸档与各组件内建文案的应用级默认值。
+// 取值优先级：元素上的 property > 最近一个 <xh-config> > 外层 <xh-config> > setXhConfig 的全局值 > 组件内建默认。
+//
+import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
+import { mergeXhConfig as mergeBase, withXhConfigBase } from '@xihan-ui/headless'
 
 export type { XhTranslationOverrides }
 

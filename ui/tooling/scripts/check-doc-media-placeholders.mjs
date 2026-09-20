@@ -12,7 +12,7 @@ const DOCS = '../docs'
 const ROOTS = [`${DOCS}/.vitepress`, `${DOCS}/index.md`, './README.md', './README_cn.md']
 const SKIP_DIRS = new Set(['node_modules', 'dist', 'cache', '.vitepress-cache'])
 const TEXT_EXTENSIONS = new Set(['.css', '.html', '.md', '.ts', '.tsx', '.vue'])
-const RASTER = /(?:\/images\/[^\s"'`)]+|https:\/\/example\.invalid\/[^\s"'`)]+|data:image\/)(?:[^\s"'`)]*\.)?(?:png|jpe?g|webp|gif|avif)\b/gi
+const RASTER = /(?:\/images\/|https:\/\/example\.invalid\/)[^\s"'`)]*\.(?:png|jpe?g|webp|gif|avif)\b|data:image\/(?:png|jpe?g|webp|gif|avif)\b/gi
 const RASTER_MARKDOWN = /!\[[^\]]*\]\([^)]*\.(?:png|jpe?g|webp|gif|avif)(?:[?#][^)]*)?\)/gi
 const STRUCTURAL_DEMOS = /\.vitepress\/demos\/(?:flex|grid|layout|masonry|resizable|scroll-area|sortable|splitter)\//
 const LEGACY_BLOCK_MARKER = /\bdata-(?:box|card|item|link|tag)\b/g
@@ -72,7 +72,7 @@ for (const root of ROOTS) {
         problems.push(`${name}:${lineOf(source, match.index)}  ${match[0]} —— 区块名称改为淡色空块与无障碍名称`)
     }
 
-    for (const match of source.matchAll(/<([a-z][\w-]*)\b(?=[^>]*\bdata-demo-block(?:=(?:"[^"]*"|'[^']*'))?)(?![^>]*\/\s*>)[^>]*>([^<]*)<\/\1>/gi)) {
+    for (const match of source.matchAll(/<([a-z][\w-]*)\b(?=[^>]*\bdata-demo-block)(?![^>]*\/\s*>)[^>]+>([^<]*)<\/\1>/gi)) {
       blocks += 1
       const visible = match[2]
         .replace(/<[^>]+>/g, '')

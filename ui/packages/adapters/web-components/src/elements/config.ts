@@ -6,7 +6,6 @@
 // 配置 config。
 
 import type { Size } from '@xihan-ui/core'
-import type { XhTranslationOverrides } from '@xihan-ui/headless'
 import type {
   BrandId,
   ColorMode,
@@ -18,6 +17,7 @@ import type {
   VisualEnvironmentPreference,
   VisualMotion,
 } from '@xihan-ui/core/visual-environment'
+import type { XhTranslationOverrides } from '@xihan-ui/headless'
 import type { XhConfig, XhConfigScope } from '../config'
 import type { PropertyValues } from '../reactive'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'

@@ -172,8 +172,8 @@ const BOX_AREA_PARTS = new Set(['control', 'input', 'trigger', 'value-text', 'se
  * 每条都要真被用来放行过一次，一次都没用上的会被下面的名单核验报出来。
  */
 const OUTSIDE_BOX = {
-  'list': 'select 的列表在浮层里撑满面板高度',
-  'empty': 'cascader 空态铺满面板',
+  list: 'select 的列表在浮层里撑满面板高度',
+  empty: 'cascader 空态铺满面板',
 }
 
 /**
@@ -243,7 +243,7 @@ function effectivePart(selector, comp) {
 
 const fieldChromeRules = parseRules(strip(await readFile(join(FAMILY_DIR, 'field-chrome.css'), 'utf8')))
 const actionControlSource = strip(await readFile(join(FAMILY_DIR, 'action-control.css'), 'utf8'))
-const actionControlHasInsetContract = actionControlSource.includes("[data-xh-action-control][data-xh-action-profile='field-inset']")
+const actionControlHasInsetContract = actionControlSource.includes('[data-xh-action-control][data-xh-action-profile=\'field-inset\']')
   && /\[data-xh-action-control\]\s*\{[\s\S]*?block-size:\s*var\(--xh-action-visual-size/.test(actionControlSource)
   && /\[data-xh-action-control\]\[data-xh-action-profile='field-inset'\]\s*\{[\s\S]*?flex:\s*none;[\s\S]*?inline-size:\s*var\(--xh-action-visual-size/.test(actionControlSource)
 
@@ -285,7 +285,7 @@ for (const comp of COMPONENTS) {
     : ''
 
   if (usesFieldChrome) {
-    if (!rawSrc.includes("@import '../family/field-chrome.css'"))
+    if (!rawSrc.includes('@import \'../family/field-chrome.css\''))
       report(comp, 'box-part', '登记为 Field Chrome 使用者却没有传递引入 field-chrome.css')
     if (!connectSource.includes(`'data-xh-field-chrome': ''`))
       report(comp, 'box-part', '连接层没有把 Field Chrome 的 chrome 稳定角色投影到解剖部件')
@@ -414,9 +414,9 @@ for (const comp of COMPONENTS) {
       if (action === 'trigger' && TRIGGER_IS_CONTENT.has(comp))
         continue
       if (family?.actionParts.has(action)) {
-        const hasActionImport = rawSrc.includes("@import '../family/action-control.css'")
-        const hasActionProjection = connectSource.includes("'data-xh-action-control': ''")
-          && connectSource.includes("'data-xh-action-profile': 'field-inset'")
+        const hasActionImport = rawSrc.includes('@import \'../family/action-control.css\'')
+        const hasActionProjection = connectSource.includes('\'data-xh-action-control\': \'\'')
+          && connectSource.includes('\'data-xh-action-profile\': \'field-inset\'')
         if (!hasActionImport || !hasActionProjection || !actionControlHasInsetContract)
           report(comp, 'action-size', `${action} 的 Action Control field-inset 家族接线不完整`)
         continue

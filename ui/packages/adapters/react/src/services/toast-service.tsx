@@ -16,8 +16,8 @@ import type {
   ToastPlacement,
   ToastRecord,
   ToastServiceDefaults,
-  ToastTranslations,
   ToastTone,
+  ToastTranslations,
 } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'

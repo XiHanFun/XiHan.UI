@@ -195,7 +195,7 @@ describe('浮层里的两组时列', () => {
 
     // 每组的末端必须由最后一列收口，不能在分钟列后再残留一段隐形列宽。
     for (const group of [first!, second!]) {
-      const columns = [...group.querySelectorAll<HTMLElement>("[data-part='column']:not([hidden])")]
+      const columns = [...group.querySelectorAll<HTMLElement>('[data-part=\'column\']:not([hidden])')]
       const lastColumn = columns.at(-1)!
       expect(group.getBoundingClientRect().right).toBeCloseTo(lastColumn.getBoundingClientRect().right, 0)
     }
@@ -234,19 +234,19 @@ describe('浮层里的两组时列', () => {
     await nextTick()
     const content = part('content')
     const before = content.getBoundingClientRect()
-    const startHour = parts('column-group')[0]!.querySelector<HTMLElement>("[data-part='column'][data-value='hour']")!
+    const startHour = parts('column-group')[0]!.querySelector<HTMLElement>('[data-part=\'column\'][data-value=\'hour\']')!
 
-    expect(startHour.querySelectorAll("[data-part='item']")).toHaveLength(12)
+    expect(startHour.querySelectorAll('[data-part=\'item\']')).toHaveLength(12)
     expect(item(0, 'hour', '04').getAttribute('aria-disabled')).toBe('true')
 
     await userEvent.click(item(0, 'hour', '03'))
     await nextTick()
-    expect(startHour.querySelectorAll("[data-part='item']")).toHaveLength(12)
+    expect(startHour.querySelectorAll('[data-part=\'item\']')).toHaveLength(12)
     expect(part('content').getBoundingClientRect().height).toBeCloseTo(before.height, 0)
 
     await userEvent.click(item(0, 'minute', '00'))
     await nextTick()
-    expect(parts('column-group')[1]!.querySelectorAll("[data-part='column'][data-value='hour'] [data-part='item']")).toHaveLength(12)
+    expect(parts('column-group')[1]!.querySelectorAll('[data-part=\'column\'][data-value=\'hour\'] [data-part=\'item\']')).toHaveLength(12)
     expect(item(1, 'hour', '02').getAttribute('aria-disabled')).toBe('true')
     const after = content.getBoundingClientRect()
     expect(after.width).toBeCloseTo(before.width, 0)

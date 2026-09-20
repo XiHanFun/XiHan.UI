@@ -64,7 +64,7 @@ export function XhToastRoot({
     title,
     description,
     tone,
-  loading,
+    loading,
     duration,
     removeDelay,
     closable,

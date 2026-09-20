@@ -69,8 +69,8 @@ export const dialogSuite: ConformanceSuite = {
           expect: {
             counts: { content: 1, backdrop: 1, positioner: 1 },
             parts: {
-              trigger: { 'aria-expanded': 'true', 'data-state': 'open' },
-              content: {
+              'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
+              'content': {
                 'role': 'dialog',
                 'aria-modal': 'true',
                 'tabindex': '-1',

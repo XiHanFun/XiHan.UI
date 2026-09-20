@@ -96,9 +96,9 @@ export const drawerSuite: ConformanceSuite = {
           expect: {
             counts: { content: 1, backdrop: 1, positioner: 1 },
             parts: {
-              root: { 'data-state': 'open' },
-              trigger: { 'aria-expanded': 'true', 'data-state': 'open' },
-              content: {
+              'root': { 'data-state': 'open' },
+              'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
+              'content': {
                 'role': 'dialog',
                 'aria-modal': 'true',
                 'tabindex': '-1',

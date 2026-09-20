@@ -5,7 +5,7 @@
 
 // 提供 drawer 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DialogPressedPart } from '../dialog'
 import type { DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
@@ -37,7 +37,7 @@ export function connectDrawer<T extends PropTypes>(
   // 按压通道：两颗按钮各自合成一份跟踪器，真源是（与对话框共用的）机器 context 里「正被按住的那颗」；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
   const pressed = context.get('pressed')
-  const press = (part: DialogPressedPart) => {
+  const press = (part: DialogPressedPart): PressHandlers & { 'data-pressed': '' | undefined } => {
     const handlers = createPressTracker({
       isPressed: () => context.get('pressed') === part,
       onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),

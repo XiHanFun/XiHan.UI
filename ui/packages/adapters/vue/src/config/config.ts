@@ -6,14 +6,14 @@
 // 全局配置注入：应用级默认值，实例上写了的以实例为准。
 // 取值优先级：实例 props > 最近一层注入 > 外层注入 > 组件内建默认（英文）。
 // 注入是可选的——不 provide 时组件走原路，零开销。
-import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type {
   VisualEnvironmentController,
   VisualEnvironmentControllerOptions,
 } from '@xihan-ui/core/visual-environment'
+import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, MaybeRefOrGetter } from 'vue'
-import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
+import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { computed, inject, onScopeDispose, provide, shallowRef, toValue, watch } from 'vue'
 
 export type { XhTranslationOverrides }

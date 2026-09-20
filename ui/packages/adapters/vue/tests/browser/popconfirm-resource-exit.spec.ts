@@ -58,7 +58,7 @@ describe('vue popconfirm 真实退场资源', () => {
 
     open.value = false
     await settle()
-    const content = document.querySelector<HTMLElement>("[data-scope='popconfirm'][data-part='content']")!
+    const content = document.querySelector<HTMLElement>('[data-scope=\'popconfirm\'][data-part=\'content\']')!
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
     expect(getLayerRegistry(document).list()).toHaveLength(1)

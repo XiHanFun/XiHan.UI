@@ -602,7 +602,7 @@ describe('connectSegmented 按压通道', () => {
   const pointerEvent = (type: string, pointerType: string): PointerEvent =>
     new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
 
-  it('PRESS.START 只让那一段投影 data-pressed，PRESS.END 撤下；另一段的 keyup 不串；选中与按压互相独立', () => {
+  it('机器收到 PRESS.START 后只让那一段投影 data-pressed，PRESS.END 撤下；另一段的 keyup 不串；选中与按压互相独立', () => {
     const h = mount({ defaultValue: 'day' })
     h.service.send({ type: 'PRESS.START', value: 'month' })
     expect(isPressed(h, 'month')).toBe(true)
@@ -614,7 +614,7 @@ describe('connectSegmented 按压通道', () => {
     expect(isPressed(h, 'month')).toBe(false)
   })
 
-  it('Space / Enter 按住经跟踪器进出，长按重复键不重报，失焦即撤下；方向键不是按压', () => {
+  it('按住 Space / Enter 经跟踪器进出，长按重复键不重报，失焦即撤下；方向键不是按压', () => {
     const h = mount()
     for (const key of [' ', 'Enter']) {
       h.item('month').dispatchEvent(keyEvent('keydown', key))
