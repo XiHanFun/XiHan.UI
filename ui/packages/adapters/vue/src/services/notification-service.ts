@@ -21,7 +21,7 @@ import type {
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createFeedbackServiceController, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
+import { connectNotification, createFeedbackServiceController, notificationMachine, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
 import { computed, createApp, defineComponent, Fragment, h, shallowRef, toValue } from 'vue'
 import {
   XhNotificationItem,
@@ -31,7 +31,8 @@ import {
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from '../components/notification/notification'
-import { useNotification } from '../components/notification/use-notification'
+import { vueNormalize } from '../runtime/normalize-props'
+import { useMachine } from '../runtime/use-machine'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -147,17 +148,25 @@ export function createNotificationService(options: NotificationServiceOptions = 
     name: 'XhNotificationServiceHost',
     setup() {
       configSource.provide()
-      // props 每帧现展开：文案是 getter 时才跟得上运行期切语言
-      const inner = useNotification(() => ({ ...queueProps, translations: toValue(queueProps.translations) }))
-      controller.attach({
-        create: opts => inner.create(opts),
-        update: (id, opts) => inner.update(id, opts),
-        dismiss: id => inner.dismiss(id),
-        dismissAll: () => inner.dismissAll(),
-      })
+      // props 每帧现展开：文案是 getter 时才跟得上运行期切语言。
+      // 队列机器在 setup 里当场 start：它没有 DOM 锚点，而端口紧接着就接上。
+      // 等 mounted 再 start 的话，从业务组件的 onMounted 懒建本服务时，宿主的 mounted
+      // 会排到调用方那条 post-flush 队列的队尾，调用方接着发的第一条命令就撞上 SEND_BEFORE_MOUNT
+      const service = useMachine(
+        notificationMachine,
+        () => ({ ...queueProps, translations: toValue(queueProps.translations) }),
+        undefined,
+        { start: 'setup' },
+      )
       // 部件不经 provide/inject 取队列：本服务自己收 status-change 把走完退场的那条删掉，
       // 卡片与队列之间因此没有第二条隐式链路
-      const api = computed(() => inner.api.value)
+      const api = computed(() => connectNotification(service, vueNormalize))
+      controller.attach({
+        create: opts => api.value.create(opts),
+        update: (id, opts) => api.value.update(id, opts),
+        dismiss: id => api.value.dismiss(id),
+        dismissAll: () => api.value.dismissAll(),
+      })
       return () => {
         const value = api.value
         controller.syncItems(value.visibleNotifications.map(item => item.id))

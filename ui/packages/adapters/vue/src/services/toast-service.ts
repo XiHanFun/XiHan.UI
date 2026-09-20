@@ -207,6 +207,9 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     name: 'XhToastServiceHost',
     setup() {
       configSource.provide()
+      // 队列机器在 setup 里当场 start：它没有 DOM 锚点，而端口紧接着就接上。
+      // 等 mounted 再 start 的话，从业务组件的 onMounted 懒建本服务时，宿主的 mounted
+      // 会排到调用方那条 post-flush 队列的队尾，调用方接着发的第一条命令就撞上 SEND_BEFORE_MOUNT
       const service = useMachine(notificationMachine, () => ({
         placement,
         max,
@@ -214,7 +217,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
         duration: serviceDefaults.duration,
         removeDelay: serviceDefaults.removeDelay,
         pauseOnPageIdle: serviceDefaults.pauseOnPageIdle,
-      }))
+      }), undefined, { start: 'setup' })
       const api = computed(() => connectNotification(service, vueNormalize))
       // 渲染读原始记录，保留 Toast 自己的标题计数与可选说明投影。
       const items = computed(() => visibleNotifications(service.context.get('items'), max, placement))
