@@ -22,5 +22,6 @@ export const messageFeedKeyboard: KeyboardTable = {
     { id: 'message-feed.kbd.tab', keys: ['Tab'], when: '焦点在消息流内外之间移动', does: '整份消息列表只占一个 Tab 停靠位：没有锚点时由根容器认领并把焦点转投给第一条，有锚点时那一条认领、根容器让位' },
     { id: 'message-feed.kbd.scroll', keys: ['ArrowUp', 'ArrowDown', 'Home', 'End'], when: '焦点落在某条消息上', does: '组件不接管，浏览器滚动最近的可滚动祖先' },
     { id: 'message-feed.kbd.scroll-to-end-trigger', keys: ['Enter', 'Space'], when: '焦点在回到底部按钮上', does: '滚回底部并恢复粘附（原生按钮激活）' },
+    { id: 'message-feed.kbd.press', keys: ['Enter', 'Space'], when: '按住回到底部按钮且视口不在底部', does: '按住期间 scroll-to-end-trigger 投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或回到底部（按钮收起）撤下' },
   ],
 }
