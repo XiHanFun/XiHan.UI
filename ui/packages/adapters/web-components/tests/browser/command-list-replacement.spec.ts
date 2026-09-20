@@ -7,11 +7,15 @@ import '@xihan-ui/styles'
 defineXhElements()
 let host: XhCommandElement | undefined
 
+/**
+ * 展开即把 content 整段搬进 Portal 落点，作者节点不再在宿主子树里；按升级后写入的 data-scope 加作者声明的
+ * data-xh-part 在整个文档里取，一次只挂一个宿主，取到的就是它的。
+ */
 function part(name: string): HTMLElement {
-  const result = host?.querySelector<HTMLElement>(`[data-xh-part='${name}']`)
-  if (!result)
-    throw new Error(`缺少命令部件 ${name}`)
-  return result
+  const matches = document.querySelectorAll<HTMLElement>(`[data-scope='command'][data-xh-part='${name}']`)
+  if (matches.length !== 1)
+    throw new Error(`找不到唯一的命令部件 ${name}，命中 ${matches.length} 个`)
+  return matches[0]!
 }
 
 async function settle(): Promise<void> {
