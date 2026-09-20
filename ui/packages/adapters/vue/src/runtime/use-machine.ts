@@ -7,6 +7,7 @@
 
 import type { MachineConfig, MachineSchema, Scope, Service } from '@xihan-ui/core'
 import type { MaybeRefOrGetter } from 'vue'
+import type { VueRuntimeOptions } from './create-vue-runtime'
 import { VERSION as CORE_VERSION, createService, isDev } from '@xihan-ui/core'
 import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/core/metadata'
 import { toValue } from 'vue'
@@ -32,10 +33,16 @@ function ensureDevChecks(): void {
   }
 }
 
+export interface UseMachineOptions {
+  /** 机器何时 start，见 VueRuntimeOptions.start；组件只用缺省的 'mounted'。 */
+  start?: VueRuntimeOptions['start']
+}
+
 export function useMachine<T extends MachineSchema>(
   machine: MachineConfig<T>,
   userProps: MaybeRefOrGetter<Partial<T['props']>> = {} as never,
   scope?: Scope,
+  options: UseMachineOptions = {},
 ): Service<T> {
   ensureDevChecks()
   // 全局配置在这一处并进来：所有跑机器的组件都从这里取 props，不必逐个接线。
@@ -44,7 +51,7 @@ export function useMachine<T extends MachineSchema>(
   const service = createService(machine, {
     // 每次展开成新对象，让 machine 的身份缓存失效
     props: () => applyXhConfigDefaults(machine.name, { ...toValue(userProps) }, config()) as never,
-    runtime: createVueRuntime(),
+    runtime: createVueRuntime({ start: options.start }),
     scope,
   })
   attachFormReset(service)
