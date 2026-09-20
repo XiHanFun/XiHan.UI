@@ -262,6 +262,13 @@
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
+  /* 悬停 / 按下的点是前景色阶梯上的两档（fg-muted → fg-default），落着焦点时默认环压在这块前景色的点上
+     没有对比（浅色档悬停面 neutral-500 与环 brand-600 同一明度，深色档按下面就是白点）；
+     环取这块面配对的那支——前景色的配对面是画布色，与实心面取配对前景同一口径 */
+  [data-scope='carousel'][data-part='indicator']:not([data-current]):is(:hover, :active, [data-pressed]):focus-visible {
+    --xh-_ring-color: var(--xh-bg-canvas);
+  }
+
   /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
      样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
      拉长成胶囊并换品牌色（格状当前 = 实心品牌，§7.3） */
