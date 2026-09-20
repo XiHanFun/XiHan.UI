@@ -5,10 +5,10 @@
 
 // 提供 diff view 相关实现。
 
-import type { CodeToken, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { CodeToken, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
 import type { DiffSide, DiffViewApi, DiffViewCellProps, DiffViewRow, DiffViewSchema, DiffViewSegment } from './diff-view.types'
-import { dataAttr } from '@xihan-ui/core'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { diffViewAnatomy } from './diff-view.anatomy'
 import { diffStats } from './diff-view.model'
 
@@ -126,6 +126,13 @@ export function connectDiffView<T extends PropTypes>(
   const expandedValue = context.get('expandedValue')
   const translations = prop('translations')
   const ids = scope.ids('diff-view', 'header')
+  // 按压通道：真源是机器 context 里「正被按住的那一格」（按折叠格 id 记），每格各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档
+  const pressedValue = context.get('pressedValue')
+  const press = (gapId: string): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === gapId,
+    onChange: down => send(down ? { type: 'PRESS.START', value: gapId } : { type: 'PRESS.END', value: gapId }),
+  })
 
   const rows = buildRows(model, prop('contextLines'), expandedValue)
   const rowAt = (rowIndex: number): DiffViewRow | undefined => rows[rowIndex - 1]
@@ -290,20 +297,31 @@ export function connectDiffView<T extends PropTypes>(
 
     // 折叠格整行都是展开按钮，是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，
     // ghost 形态，按下只换面不缩放（§9.2）；淡底承载的 hover 200 → pressed 300 由 gap 行经 host 槽下发；档位随 size 走
-    getGapTriggerProps: ({ gapId }) => normalize.button({
-      ...parts['gap-trigger'].attrs,
-      'type': 'button',
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'disclosure-trigger',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'aria-expanded': expandedValue.includes(gapId) ? 'true' : 'false',
-      // 按钮上写的是「⋯ 12」，读出来就是"⋯ 12"，什么都没说明；名字必须自带动作与量词
-      'aria-label': expandGapLabel(hiddenCountOf(gapId)),
-      'data-value': gapId,
-      'onClick': () => send({ type: expandedValue.includes(gapId) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id: gapId }),
-    }),
+    getGapTriggerProps: ({ gapId }) => {
+      const handlers = press(gapId)
+      return normalize.button({
+        ...parts['gap-trigger'].attrs,
+        'type': 'button',
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'disclosure-trigger',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'aria-expanded': expandedValue.includes(gapId) ? 'true' : 'false',
+        // 按钮上写的是「⋯ 12」，读出来就是"⋯ 12"，什么都没说明；名字必须自带动作与量词
+        'aria-label': expandGapLabel(hiddenCountOf(gapId)),
+        'data-value': gapId,
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedValue === gapId),
+        'onClick': () => send({ type: expandedValue.includes(gapId) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id: gapId }),
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     // 无变更时的占位。播报交给宿主，这里不开活区
     getEmptyProps: () => normalize.element({

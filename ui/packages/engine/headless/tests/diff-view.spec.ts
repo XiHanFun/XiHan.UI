@@ -9,12 +9,25 @@ type Props = DiffViewSchema['props']
 type Dict = Record<string, unknown>
 
 function makeDiffView(initial: Props = {}) {
+  return makeDiffViewService(initial).api()
+}
+
+/** 起一台机器并保留句柄：按压通道的用例要在同一台机器上反复取 api。 */
+function makeDiffViewService(initial: Props = {}) {
   const runtime = createVanillaRuntime()
   const props = runtime.signal<Props>(initial)
   const service = createService(diffViewMachine, { props: () => props.get(), runtime })
   runtime.start()
-  return connectDiffView(service, normalizeProps)
+  return {
+    api: () => connectDiffView(service, normalizeProps),
+    setProps: (next: Props) => props.set({ ...props.get(), ...next }),
+    stop: () => runtime.stop(),
+  }
 }
+
+/** 按压事件桩：只有 key 与 repeat / isComposing 参与判定。 */
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
 
 describe('diffViewSides', () => {
   it('unified 只投影旧侧，split 稳定投影旧侧再新侧', () => {
@@ -221,5 +234,76 @@ describe('connectDiffView 展开按钮', () => {
     // @ts-expect-error 名字要把行数念进去，固定串念不出这一格折了多少行
     makeDiffView({ model, contextLines: 2, translations: { expandGap: '展开' } })
     // 这一行的 @ts-expect-error 是判据本身：形状若又放宽回并集，它会因「没有错可期待」而报错
+  })
+})
+
+describe('connectDiffView 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  // 两处相隔够远的变更：中段折成一格，首尾各留上下文，另有两格折在两端之外
+  const before = Array.from({ length: 40 }, (_, i) => `line ${i}`).join('\n')
+  const after = before.replace('line 5', 'X').replace('line 35', 'Y')
+  const model = computeTextDiff(before, after, { contextLines: 30 })
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；展开集合不动', () => {
+    const h = makeDiffViewService({ model, contextLines: 2 })
+    const gapId = h.api().rows.find(row => row.kind === 'gap')!.gapId!
+    const trigger = (): Dict => h.api().getGapTriggerProps({ gapId }) as Dict
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerCancel', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    expect(h.api().expandedValue).toEqual([])
+    h.stop()
+  })
+
+  it('按 gapId 记住按住的那一格，另一格的 keyup 不把它松开', () => {
+    const h = makeDiffViewService({ model, contextLines: 2 })
+    const gaps = h.api().rows.filter(row => row.kind === 'gap').map(row => row.gapId!)
+    expect(gaps.length).toBeGreaterThan(1)
+    const trigger = (gapId: string): Dict => h.api().getGapTriggerProps({ gapId }) as Dict
+    fire(trigger(gaps[0]!), 'onKeyDown', key('Enter'))
+    expect(trigger(gaps[0]!)['data-pressed']).toBe('')
+    expect(trigger(gaps[1]!)['data-pressed']).toBeUndefined()
+    fire(trigger(gaps[1]!), 'onKeyUp', key('Enter'))
+    expect(trigger(gaps[0]!)['data-pressed']).toBe('')
+    fire(trigger(gaps[0]!), 'onKeyUp', key('Enter'))
+    expect(trigger(gaps[0]!)['data-pressed']).toBeUndefined()
+    h.stop()
+  })
+
+  it('按住途中那一格被展开：折叠格离开行序、不会再来 keyup，按压面由机器收；受控写回同样收', () => {
+    const h = makeDiffViewService({ model, contextLines: 2 })
+    const gapId = h.api().rows.find(row => row.kind === 'gap')!.gapId!
+    const trigger = (): Dict => h.api().getGapTriggerProps({ gapId }) as Dict
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    ;(trigger().onClick as () => void)()
+    expect(h.api().expandedValue).toContain(gapId)
+    expect(h.api().rows.some(row => row.kind === 'gap' && row.gapId === gapId)).toBe(false)
+    expect(trigger()['data-pressed']).toBeUndefined()
+    h.stop()
+
+    const controlled = makeDiffViewService({ model, contextLines: 2, expandedValue: [] })
+    const other = controlled.api().rows.find(row => row.kind === 'gap')!.gapId!
+    const held = (): Dict => controlled.api().getGapTriggerProps({ gapId: other }) as Dict
+    fire(held(), 'onPointerDown', { pointerType: 'touch' })
+    expect(held()['data-pressed']).toBe('')
+    controlled.setProps({ expandedValue: [other] })
+    expect(held()['data-pressed']).toBeUndefined()
+    controlled.stop()
   })
 })

@@ -145,8 +145,15 @@ export class XhDiffViewElement extends XhElement {
         ? `g${row.gapId}:${row.hiddenCount}:${api.expandedValue.includes(row.gapId!) ? 1 : 0}`
         : `l${row.rowIndex}:${row.line!.change}:${row.revealed === true ? 1 : 0}:${segmentKey(row.line!)}:${row.line!.text}`))
       .join('\n')}`
-    if (signature === this.#painted)
+    if (signature === this.#painted) {
+      // 行序没变就不重铺，但逐格的按压面（data-pressed）住在机器里、不进签名：把展开按钮的属性刷一遍
+      for (const trigger of host.querySelectorAll<HTMLElement>('[data-part="gap-trigger"]')) {
+        const gapId = trigger.getAttribute('data-value')
+        if (gapId !== null)
+          this.spreader.spread(trigger, api.getGapTriggerProps({ gapId }) as Record<string, unknown>)
+      }
       return
+    }
     this.#painted = signature
 
     const doc = host.ownerDocument
