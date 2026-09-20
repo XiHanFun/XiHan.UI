@@ -427,21 +427,28 @@
     visibility: visible;
   }
 
-  /* 已勾选的方框是品牌实心面，按下在它之上派生 active 面。
-     面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  /* 已勾选的方框是品牌实心面，按下在它之上派生 active 面 */
   [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
   [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked'],
   [data-scope='table'][data-part='row-select-trigger'][data-selected] {
     --xh-_table-trigger-bg: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
     --xh-_table-trigger-bg-pressed: var(--xh-table-trigger-bg-checked-pressed, var(--xh-bg-brand-active));
     --xh-_table-trigger-border: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     置灰那档不在其列：底已换成淡底、勾也藏成透明，currentColor 取到的是透明，环整个消失；
+     aria-disabled 的把手仍能落焦，环退回默认那一支 */
+  [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]),
+  [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]),
+  [data-scope='table'][data-part='row-select-trigger'][data-selected]:not([data-disabled]) {
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 取到的是透明；
      环直接取面配对的那支前景色 */
-  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate'] {
+  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']:not([data-disabled]) {
     --xh-action-ring-color-focus-visible: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
   }
 
