@@ -68,10 +68,14 @@ export const buttonSuite: ConformanceSuite = {
     {
       name: 'iconOnly：Action Control profile 由 Headless 统一投影',
       spec: { apg: APG },
-      props: { 'iconOnly': true, 'size': 'lg', 'aria-label': '关闭' },
+      props: { iconOnly: true, size: 'lg' },
+      // 纯图标钮的名字是作者写在根节点上的标注，不是组件 prop：写进 fixture 三端才同构
+      // （props 在 Vue / React 侧是组件入参、在 WC 侧落成宿主属性，根节点上就没有它）
+      fixture: base => ({ ...base, attrs: { 'aria-label': '关闭' } }),
       initial: {
         parts: {
           root: {
+            'aria-label': '关闭',
             'data-icon-only': '',
             'data-xh-action-profile': 'icon',
             'data-xh-action-size': 'lg',
