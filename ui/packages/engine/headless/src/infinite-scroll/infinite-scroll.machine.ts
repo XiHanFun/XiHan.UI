@@ -26,6 +26,10 @@ export function resolveInfiniteScrollPhase(disabled: boolean | undefined, loadin
  */
 export const infiniteScrollMachine = createMachine({
   name: 'infinite-scroll',
+  context: ({ cell }) => ({
+    // 按压通道：取下一页的按钮被 Space / Enter 或触屏按住
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
+  }),
   refs: () => ({
     getSentinelEl: () => null,
     getTargetEl: () => null,
@@ -40,6 +44,9 @@ export const infiniteScrollMachine = createMachine({
       { guard: 'isLoading', target: 'loading' },
       { target: 'idle' },
     ],
+    // 按压通道挂根级：按钮原生 disabled 时不派事件，程序化派发由 canPress 再守一次
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     idle: {
@@ -51,18 +58,23 @@ export const infiniteScrollMachine = createMachine({
         'LOAD': { actions: ['invokeOnLoad'] },
       },
     },
-    // 这两段都不挂观察器，哨兵进出可视区一律不响应
-    loading: {},
-    paused: {},
+    // 这两段都不挂观察器，哨兵进出可视区一律不响应。
+    // 进段即松开：按住 Enter 把「取下一页」报出去、宿主随即写回 loading，按钮转原生 disabled 不会再来 keyup
+    loading: { entry: ['releasePress'] },
+    paused: { entry: ['releasePress'] },
   },
   implementations: {
     guards: {
       isPaused: ({ prop }) => !!prop('disabled'),
       isLoading: ({ prop }) => !!prop('loading'),
+      canPress: ({ prop }) => !prop('disabled') && !prop('loading'),
     },
     actions: {
       syncMode: ({ send }) => send({ type: 'MODE.SYNC' }),
       invokeOnLoad: ({ prop }) => prop('onLoad')?.(),
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releasePress: ({ context }) => context.set('pressed', false),
     },
     effects: {
       /**

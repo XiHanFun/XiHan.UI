@@ -128,9 +128,9 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 **状态**：`idle` · `loading` · `paused`
 
-**事件**：`SENTINEL.ENTER` · `LOAD` · `MODE.SYNC`
+**事件**：`SENTINEL.ENTER` · `LOAD` · `MODE.SYNC` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isPaused` · `isLoading`
+**判据**：`isPaused` · `isLoading` · `canPress`
 
 ### connect API
 
@@ -151,7 +151,9 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
-无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Enter` / `Space` | held in load-more-trigger, 未关闭且未在取数 | 按住期间 load-more-trigger 投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起、失焦或进入取数 / 关闭撤下 |
 
 ### ARIA
 
@@ -178,6 +180,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-xh-action-control` | '' |
 | `load-more-trigger` | `data-xh-action-display` | 'always' |
 | `load-more-trigger` | `data-xh-action-profile` | 'row' |

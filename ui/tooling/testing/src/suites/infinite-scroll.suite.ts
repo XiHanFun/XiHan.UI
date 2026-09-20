@@ -1,5 +1,6 @@
 import type { ConformanceCase, ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { infiniteScrollAnatomy, infiniteScrollKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 触发的判据是「哨兵进没进可视区」，滚动走浏览器原生通路；APG 没有与之对应的交互模式。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/'
@@ -272,6 +273,34 @@ export const infiniteScrollSuite: ConformanceSuite = {
             parts: { 'load-more-trigger': { 'disabled': null, 'data-disabled': null } },
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：load-more-trigger 投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['infinite-scroll.kbd.press'],
+      steps: [heldPress('infinite-scroll', 'load-more-trigger')],
+    },
+    {
+      name: '按住途中进入取数：按钮原生 disabled、不会再来 keyup，按压面由机器收；取数中与关掉都不进',
+      spec: { adr: 'press-channel' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const trigger = doc.querySelector<HTMLElement>('[data-scope="infinite-scroll"][data-part="load-more-trigger"]')!
+            trigger.focus()
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!trigger.hasAttribute('data-pressed'))
+              throw new Error('按住 Space 时 load-more-trigger 应投影 data-pressed')
+          },
+        },
+        { kind: 'setProps', props: { loading: true }, expect: { parts: { 'load-more-trigger': { 'disabled': '', 'data-pressed': null } } } },
+        heldPressIgnored('infinite-scroll', 'load-more-trigger', '取数中按钮原生 disabled，不接受按压'),
+        { kind: 'setProps', props: { loading: false, disabled: true }, expect: { parts: { 'load-more-trigger': { 'disabled': '', 'data-pressed': null } } } },
+        heldPressIgnored('infinite-scroll', 'load-more-trigger', '关掉时按钮原生 disabled，不接受按压'),
       ],
     },
     observerWiringCase(),

@@ -33,7 +33,13 @@ export interface InfiniteScrollSchema extends MachineSchema {
     /** 应取下一页。 */
     onLoad?: () => void
   }
-  context: Record<string, never>
+  context: {
+    /**
+     * 按压通道：取下一页的按钮被 Space / Enter 或触屏手指按住期间为 true，该按钮投影 data-pressed。
+     * 抬起、失焦、指针取消，或按住途中进入取数 / 关闭两段时撤下。
+     */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: InfiniteScrollRefs
   /** idle 观察中等待触发；loading 正在取数；paused 已关闭。 */
@@ -45,9 +51,13 @@ export interface InfiniteScrollSchema extends MachineSchema {
     | { type: 'LOAD' }
     /** disabled / loading 被改写，重新落到对应的状态。 */
     | { type: 'MODE.SYNC' }
+    /** 按压通道（shared/press）：取下一页的按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** 该按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'isPaused' | 'isLoading'
-  action: 'syncMode' | 'invokeOnLoad'
+  guard: 'isPaused' | 'isLoading' | 'canPress'
+  action: 'syncMode' | 'invokeOnLoad' | 'startPress' | 'endPress' | 'releasePress'
   effect: 'observeSentinel'
 }
 

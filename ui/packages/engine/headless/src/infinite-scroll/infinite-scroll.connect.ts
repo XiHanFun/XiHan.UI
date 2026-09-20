@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { InfiniteScrollApi, InfiniteScrollSchema } from './infinite-scroll.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { infiniteScrollAnatomy } from './infinite-scroll.anatomy'
 
 const parts = infiniteScrollAnatomy.build()
@@ -16,11 +17,14 @@ export function connectInfiniteScroll<T extends PropTypes>(
   service: Service<InfiniteScrollSchema>,
   normalize: NormalizeProps<T>,
 ): InfiniteScrollApi<T> {
-  const { send, state } = service
+  const { send, state, context } = service
 
   const phase = state.get()
   const loading = phase === 'loading'
   const disabled = phase === 'paused'
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
 
   return {
     phase,
@@ -57,6 +61,14 @@ export function connectInfiniteScroll<T extends PropTypes>(
       'disabled': loading || disabled || undefined,
       'data-loading': dataAttr(loading),
       'data-disabled': dataAttr(disabled),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active（row 档只换面）
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => send({ type: 'LOAD' }),
     }),
   }
