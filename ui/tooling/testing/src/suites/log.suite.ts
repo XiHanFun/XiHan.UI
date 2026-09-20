@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { logAnatomy, logKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/structural-roles/'
 const LIVE = 'https://www.w3.org/WAI/ARIA/apg/practices/live-regions/'
@@ -264,6 +265,43 @@ export const logSuite: ConformanceSuite = {
             parts: { 'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden' } },
             events: [{ type: 'stick-change', detail: { atBottom: true, sticking: true } }],
           },
+        },
+      ],
+    },
+    {
+      name: '在底时按钮收起，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      initial: { parts: { 'scroll-to-end-trigger': { hidden: '' } } },
+      steps: [heldPressIgnored('log', 'scroll-to-end-trigger', '视口在底、按钮带 hidden，不可按')],
+    },
+    {
+      name: '离底后 Space / Enter 按住与触屏按下：按钮投影 data-pressed，抬起、失焦或指针取消撤下；按住途中回到底部即随按钮一起收起',
+      spec: { adr: 'press-channel' },
+      covers: ['log.kbd.press'],
+      skipParity: 'jsdom 无布局，粘底状态由伪造几何驱动，两适配器的 RO 回调时机天然不同步',
+      steps: [
+        {
+          kind: 'raw',
+          why: 'jsdom 无布局，滚动几何恒为 0、视口永远判成在底，粘底状态只能由伪造几何驱动',
+          run: scrollAwayFromBottom,
+          expect: { parts: { 'scroll-to-end-trigger': { 'hidden': null, 'data-pressed': null } } },
+        },
+        heldPress('log', 'scroll-to-end-trigger'),
+        {
+          kind: 'raw',
+          why: 'Enter 在 keydown 即 click 滚回底部、按钮收起，不会再来 keyup；按压面得随贴底回报一并收',
+          run: async (ctx: RawStepContext) => {
+            const trigger = ctx.doc.querySelector<HTMLElement>('[data-scope="log"][data-part="scroll-to-end-trigger"]')
+            if (!trigger)
+              throw new Error('找不到 log 的 scroll-to-end-trigger 部件')
+            trigger.focus()
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await ctx.flush()
+            if (!trigger.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时 scroll-to-end-trigger 应投影 data-pressed')
+            trigger.click()
+          },
+          expect: { parts: { 'scroll-to-end-trigger': { 'hidden': '', 'data-pressed': null } } },
         },
       ],
     },

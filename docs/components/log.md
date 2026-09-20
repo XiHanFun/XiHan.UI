@@ -148,7 +148,9 @@ loading 使日志区报告 aria-busy 并把指针换为忙碌态；正在拉取�
 
 **状态**：`idle`
 
-**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM`
+**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -179,6 +181,7 @@ loading 使日志区报告 aria-busy 并把指针换为忙碌态；正在拉取�
 | --- | --- | --- |
 | `Tab` | 焦点进入日志区 | 日志区自身可聚焦，方向键/PageUp/PageDown/Home/End 交给浏览器滚动，组件不接管 |
 | `Space` / `Enter` | 焦点在"回到底部"按钮上 | 滚回底部并重新粘附 |
+| `Space` / `Enter` | 按住"回到底部"按钮且视口不在底部 | 按住期间 scroll-to-end-trigger 投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或回到底部（按钮收起）撤下 |
 
 ### ARIA
 
@@ -216,6 +219,7 @@ loading 使日志区报告 aria-busy 并把指针换为忙碌态；正在拉取�
 | `root` | `data-size` | props.size |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
 | `line` | `data-level` | line?.level |
+| `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'visible' \| 'hidden' |
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |

@@ -27,5 +27,11 @@ export const logKeyboard: KeyboardTable = {
       when: '焦点在"回到底部"按钮上',
       does: '滚回底部并重新粘附',
     },
+    {
+      id: 'log.kbd.press',
+      keys: ['Space', 'Enter'],
+      when: '按住"回到底部"按钮且视口不在底部',
+      does: '按住期间 scroll-to-end-trigger 投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或回到底部（按钮收起）撤下',
+    },
   ],
 }

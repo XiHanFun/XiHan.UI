@@ -148,3 +148,70 @@ describe('logMachine 粘底', () => {
     l.stop()
   })
 })
+
+// ══ 按压通道 ══
+
+type Dict = Record<string, unknown>
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('logMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('离底后：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；粘底状态不动', async () => {
+    const l = makeLog()
+    await flush()
+    await l.scroll(800)
+    await l.scroll(300)
+    const trigger = (): Dict => l.api().getScrollToEndTriggerProps() as Dict
+    expect(trigger().hidden).toBeUndefined()
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerCancel', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    expect(l.api().atBottom).toBe(false)
+    expect(l.api().sticking).toBe(false)
+    l.stop()
+  })
+
+  it('在底时按钮带 hidden，按住不进；按住途中回到底部、按钮收起时自收；再离底后照常', async () => {
+    const l = makeLog({ threshold: 40 })
+    await flush()
+    const trigger = (): Dict => l.api().getScrollToEndTriggerProps() as Dict
+    expect(trigger().hidden).toBe(true)
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBeUndefined()
+
+    await l.scroll(800)
+    await l.scroll(300)
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    // Enter 在 keydown 即 click：滚回底部、按钮收起，不会再来 keyup
+    await l.scroll(770)
+    expect(l.api().atBottom).toBe(true)
+    expect(trigger().hidden).toBe(true)
+    expect(trigger()['data-pressed']).toBeUndefined()
+
+    await l.scroll(300)
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    l.stop()
+  })
+})
