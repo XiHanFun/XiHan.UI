@@ -3,8 +3,8 @@
 // 这一份钉三档：环压着的那块面，现成的档位表都推不出来。
 //   · 开关的选中轨道 —— 轨道是 <button>，皮肤不写 color 时 currentColor 取到的是 UA 的
 //     buttontext，不是面上的前景色；那是一支不随主题也不随语气走的色
-//   · 气泡确认的取消钮 —— 常态的淡底过线吃默认环，悬停与按下两档的底更深才灌 currentColor；
-//     :hover 用真实指针悬上去、:active 按住空格键，两档都是真的伪类，不用令牌去估
+//   · 气泡确认的取消钮 —— outline 档的中性次要出口：常态透空、悬停 100、按下 200 三档都吃默认环，
+//     底最深的按下档也得过线；:hover 用真实指针悬上去、:active 按住空格键，两档都是真的伪类，不用令牌去估
 //   · 标签输入的删除叉 —— 叉自己的面透明，环内侧是整颗标签反白之后的实心语气底
 //
 // 每一档量两样：环色与面按 WCAG 2.2 SC 1.4.11 的非文本对比要过 3:1；
@@ -122,11 +122,16 @@ function ringVsFace(el: HTMLElement): { ratio: number, ring: string, face: strin
 
 const 组合 = THEMES.flatMap(theme => TONES.map(tone => ({ theme, tone })))
 
+// 与连接层投影一致的家族标记：轨道与取消钮都是 Action Control 的 outline 档，
+// 面、前景与环色规则都挂在这几位家族角色上，裸节点只有 UA 的样子
+const SWITCH_TRACK = 'data-xh-action-control data-xh-action-profile="text" data-xh-action-variant="outline" data-xh-action-display="always" data-xh-action-size="md"'
+const CANCEL_TRIGGER = 'data-xh-action-control data-xh-action-profile="text" data-xh-action-variant="outline" data-xh-action-display="always" data-xh-action-size="sm"'
+
 describe('实心面上的环取面自己的前景色', () => {
   describe('开关的选中轨道', () => {
     it.each(组合)('$theme · $tone', async ({ theme, tone }) => {
       const stage = mount(
-        `<div data-tone="${tone}"><button data-scope="switch" data-part="root" data-state="checked"></button></div>`,
+        `<div data-tone="${tone}"><button data-scope="switch" data-part="root" ${SWITCH_TRACK} data-state="checked"></button></div>`,
         theme,
       )
       const track = stage.querySelector<HTMLElement>('[data-part=\'root\']')!
@@ -141,7 +146,7 @@ describe('实心面上的环取面自己的前景色', () => {
 
     it.each(THEMES)('%s · 只读的选中轨道换成中性底，环仍读得出', async (theme) => {
       const stage = mount(
-        '<div data-tone="warning"><button data-scope="switch" data-part="root" data-state="checked" data-readonly></button></div>',
+        `<div data-tone="warning"><button data-scope="switch" data-part="root" ${SWITCH_TRACK} data-state="checked" data-readonly></button></div>`,
         theme,
       )
       const track = stage.querySelector<HTMLElement>('[data-part=\'root\']')!
@@ -154,7 +159,7 @@ describe('实心面上的环取面自己的前景色', () => {
   describe('气泡确认的取消钮', () => {
     const 取消钮 = (theme: string) => {
       const stage = mount(
-        '<div data-scope="popconfirm" data-part="content"><button data-scope="popconfirm" data-part="cancel-trigger">取消</button></div>',
+        `<div data-scope="popconfirm" data-part="content"><button data-scope="popconfirm" data-part="cancel-trigger" ${CANCEL_TRIGGER}>取消</button></div>`,
         theme,
       )
       return stage.querySelector<HTMLElement>('[data-part=\'cancel-trigger\']')!
@@ -176,7 +181,7 @@ describe('实心面上的环取面自己的前景色', () => {
       expect(ratio, `环 ${ring}｜面 ${face}`).toBeGreaterThanOrEqual(3)
     })
 
-    it.each(THEMES)('%s · 悬停档的底更深，环取这颗钮自己的前景色', async (theme) => {
+    it.each(THEMES)('%s · 悬停档的底更深（100），默认环仍读得出', async (theme) => {
       const cancel = 取消钮(theme)
       await userEvent.hover(cancel)
       await focus(cancel)
@@ -184,7 +189,7 @@ describe('实心面上的环取面自己的前景色', () => {
         expect(cancel.matches(':hover'), '真实指针没悬上去').toBe(true)
         expect(cancel.matches(':focus-visible'), '焦点没落上去').toBe(true)
         const { ratio, ring, face } = ringVsFace(cancel)
-        expect(ring, '环色要与这颗钮自己的前景色同值').toBe(getComputedStyle(cancel).color)
+        expect(ring, '悬停面仍是淡底，环不换色').toBe(resolveIn(cancel, 'var(--xh-ring-focus)'))
         expect(ratio, `环 ${ring}｜面 ${face}`).toBeGreaterThanOrEqual(3)
       }
       finally {
@@ -192,7 +197,7 @@ describe('实心面上的环取面自己的前景色', () => {
       }
     })
 
-    it.each(THEMES)('%s · 按下档的底最深，环取这颗钮自己的前景色', async (theme) => {
+    it.each(THEMES)('%s · 按下档的底最深（200），默认环仍读得出', async (theme) => {
       const cancel = 取消钮(theme)
       await focus(cancel)
       await userEvent.keyboard('{Space>}')
@@ -200,7 +205,7 @@ describe('实心面上的环取面自己的前景色', () => {
         expect(cancel.matches(':active'), '按住空格键没让钮进入按下态').toBe(true)
         expect(cancel.matches(':focus-visible'), '焦点没落上去').toBe(true)
         const { ratio, ring, face } = ringVsFace(cancel)
-        expect(ring, '环色要与这颗钮自己的前景色同值').toBe(getComputedStyle(cancel).color)
+        expect(ring, '按下面仍是淡底，环不换色').toBe(resolveIn(cancel, 'var(--xh-ring-focus)'))
         expect(ratio, `环 ${ring}｜面 ${face}`).toBeGreaterThanOrEqual(3)
       }
       finally {
