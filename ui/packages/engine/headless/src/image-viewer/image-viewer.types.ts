@@ -38,6 +38,19 @@ export interface ImageViewerTranslations {
 /** 当前大图的加载相位：进入浮层与切换图片都从 loading 起算。 */
 export type ImageViewerImageStatus = 'loading' | 'loaded' | 'error'
 
+/** 按压通道里「正被按住的那一颗」：关闭钮、工具条七颗与两端翻页钮共用一台机器，按住的只能是其中一颗。 */
+export type ImageViewerPressedPart
+  = | 'close-trigger'
+    | 'zoom-in-trigger'
+    | 'zoom-out-trigger'
+    | 'rotate-left-trigger'
+    | 'rotate-right-trigger'
+    | 'flip-horizontal-trigger'
+    | 'flip-vertical-trigger'
+    | 'reset-trigger'
+    | 'prev-trigger'
+    | 'next-trigger'
+
 /** 当前图的变换：缩放、旋转（度）、翻转与平移（px）。 */
 export interface ImageViewerTransform {
   scale: number
@@ -121,6 +134,11 @@ export interface ImageViewerSchema extends MachineSchema {
     panning: boolean
     /** 当前大图的加载相位。切换图片与重新打开都回到 loading。 */
     imageStatus: ImageViewerImageStatus
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那颗按钮，该部件投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦、指针取消，浮层收起，或按住途中该按钮转为禁用时撤下。
+     */
+    pressed: ImageViewerPressedPart | null
   }
   computed: Record<string, never>
   refs: ImageViewerRefs
@@ -152,8 +170,15 @@ export interface ImageViewerSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
+    /**
+     * 按压通道（shared/press）：某颗按钮被 Space / Enter 或触屏按住，part 说的是哪一颗；
+     * 贴住缩放端点的缩放钮与到边界的翻页钮是原生 disabled，那份事实只有 connect 知道，随事件带给守卫。
+     */
+    | { type: 'PRESS.START', part: ImageViewerPressedPart, disabled?: boolean }
+    /** 该按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END', part: ImageViewerPressedPart }
   tag: never
-  guard: 'isOpenControlled'
+  guard: 'isOpenControlled' | 'canPress'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -174,6 +199,10 @@ export interface ImageViewerSchema extends MachineSchema {
     | 'resetImageStatus'
     | 'setImageLoaded'
     | 'setImageError'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackOverlay' | 'trackPointers'
 }
 

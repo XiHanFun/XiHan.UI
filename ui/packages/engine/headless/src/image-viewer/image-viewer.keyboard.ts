@@ -24,5 +24,6 @@ export const imageViewerKeyboard: KeyboardTable = {
     { id: 'image-viewer.kbd.zoom-in', keys: ['+', '='], when: 'open', does: '放大一档（zoomStep），到 maxScale 停住' },
     { id: 'image-viewer.kbd.zoom-out', keys: ['-'], when: 'open', does: '缩小一档，到 minScale 停住' },
     { id: 'image-viewer.kbd.reset', keys: ['0'], when: 'open', does: '缩放、旋转、翻转与平移一并复位' },
+    { id: 'image-viewer.kbd.press', keys: ['Enter', 'Space'], when: 'open, held on close-trigger / 工具条七颗 / prev-trigger / next-trigger, 该按钮未禁用', does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦、浮层收起或按住途中转禁用（贴住缩放端点、翻到边界）撤下。缩放、旋转、翻转、复位、翻页与关闭照旧由这一次按键的原生激活承担' },
   ],
 }

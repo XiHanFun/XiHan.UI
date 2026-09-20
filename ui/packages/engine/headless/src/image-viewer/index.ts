@@ -25,6 +25,7 @@ export type {
   ImageViewerIndexChangeDetails,
   ImageViewerItem,
   ImageViewerOpenChangeDetails,
+  ImageViewerPressedPart,
   ImageViewerRefs,
   ImageViewerSchema,
   ImageViewerTransform,

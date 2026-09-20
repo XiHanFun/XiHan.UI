@@ -5,9 +5,9 @@
 
 // 提供 image viewer 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ImageViewerApi, ImageViewerSchema } from './image-viewer.types'
-import { dataAttr } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { ImageViewerApi, ImageViewerPressedPart, ImageViewerSchema } from './image-viewer.types'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { imageViewerAnatomy } from './image-viewer.anatomy'
 import {
   clampImageViewerIndex,
@@ -56,11 +56,31 @@ export function connectImageViewer<T extends PropTypes>(
     counter: translations?.counter ?? ((i: number, n: number) => `${i} / ${n}`),
   }
 
+  // 按压通道：十颗按钮共用一台机器，真源是机器 context 里「正被按住的那颗」，各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 贴住端点的缩放钮与到边界的翻页钮是原生 disabled（不派 keydown / pointerdown），那份事实仍随 PRESS.START 带给守卫
+  const pressed = context.get('pressed')
+  const press = (part: ImageViewerPressedPart, disabled = false): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === part,
+      onChange: down => send(down ? { type: 'PRESS.START', part, disabled } : { type: 'PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+
   /**
    * 工具条按钮共用的骨架：type / 禁用与关闭态一次给齐。
-   * Action Control 的档位（data-xh-action-*）由各 getter 自己写成字面量：门禁按 getter 切片认家族归属。
+   * Action Control 的档位（data-xh-action-*）与按压通道的展开由各 getter 自己写：门禁按 getter 切片认家族归属与投影。
    */
-  const toolButton = (part: keyof typeof parts, aria: string, onClick: () => void, disabled: boolean, action: Record<string, string>): T['button'] =>
+  const toolButton = (part: keyof typeof parts, aria: string, onClick: () => void, disabled: boolean, action: Record<string, unknown>): T['button'] =>
     normalize.button({
       ...parts[part].attrs,
       'type': 'button',
@@ -247,6 +267,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press('zoom-in-trigger', transform.scale >= maxScale),
     }),
     getZoomOutTriggerProps: () => toolButton('zoom-out-trigger', label.zoomOut, () => send({ type: 'ZOOM.BY', delta: -1 }), transform.scale <= minScale, {
       // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
@@ -254,6 +275,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press('zoom-out-trigger', transform.scale <= minScale),
     }),
     getRotateLeftTriggerProps: () => toolButton('rotate-left-trigger', label.rotateLeft, () => send({ type: 'ROTATE.BY', delta: -90 }), false, {
       // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
@@ -261,6 +283,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press('rotate-left-trigger'),
     }),
     getRotateRightTriggerProps: () => toolButton('rotate-right-trigger', label.rotateRight, () => send({ type: 'ROTATE.BY', delta: 90 }), false, {
       // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
@@ -268,6 +291,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press('rotate-right-trigger'),
     }),
     getFlipHorizontalTriggerProps: () => toolButton('flip-horizontal-trigger', label.flipHorizontal, () => send({ type: 'FLIP', axis: 'x' }), false, {
       // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
@@ -275,6 +299,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press('flip-horizontal-trigger'),
     }),
     getFlipVerticalTriggerProps: () => toolButton('flip-vertical-trigger', label.flipVertical, () => send({ type: 'FLIP', axis: 'y' }), false, {
       // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
@@ -282,6 +307,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press('flip-vertical-trigger'),
     }),
     getResetTriggerProps: () => toolButton('reset-trigger', label.reset, () => send({ type: 'TRANSFORM.RESET' }), false, {
       // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
@@ -289,6 +315,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      ...press('reset-trigger'),
     }),
     getPrevTriggerProps: () => toolButton('prev-trigger', label.prev, () => send({ type: 'INDEX.PREV' }), !canPrev, {
       // 浮在图上的翻页圆钮：接 Action Control floating 档 md（48px 圆形），面由皮肤桥接到自家深色 chrome
@@ -296,6 +323,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      ...press('prev-trigger', !canPrev),
     }),
     getNextTriggerProps: () => toolButton('next-trigger', label.next, () => send({ type: 'INDEX.NEXT' }), !canNext, {
       // 浮在图上的翻页圆钮：接 Action Control floating 档 md（48px 圆形），面由皮肤桥接到自家深色 chrome
@@ -303,6 +331,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      ...press('next-trigger', !canNext),
     }),
 
     getCounterProps: () => normalize.element({
@@ -320,6 +349,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'lg',
+      ...press('close-trigger'),
     }),
   }
 }
