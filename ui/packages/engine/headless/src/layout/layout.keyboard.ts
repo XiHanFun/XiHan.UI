@@ -22,6 +22,12 @@ export const layoutKeyboard: KeyboardTable = {
       does: '折叠/展开 sider',
     },
     {
+      id: 'layout.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in sider-trigger',
+      does: '按住期间 sider-trigger 投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起或失焦撤下。把手没有禁用态',
+    },
+    {
       id: 'layout.kbd.dismiss-sider-sheet',
       keys: ['Escape'],
       when: 'sider 按覆盖档盖在内容之上',

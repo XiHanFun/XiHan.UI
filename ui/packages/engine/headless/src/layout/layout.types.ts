@@ -76,6 +76,11 @@ export interface LayoutSchema extends MachineSchema {
   context: {
     /** 视口是否窄于 siderBreakpoint 档；未提供断点时恒为 false。 */
     siderNarrow: boolean
+    /**
+     * 按压通道：sider-trigger 被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦或指针取消时撤下；与折叠态互相独立。把手没有禁用态，按住一律进。
+     */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: LayoutRefs
@@ -87,9 +92,13 @@ export interface LayoutSchema extends MachineSchema {
     // 受控回写：宿主改 siderCollapsed 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.COLLAPSE' }
     | { type: 'CONTROLLED.EXPAND' }
+    /** 按压通道（shared/press）：sider-trigger 被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** sider-trigger 抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
   guard: 'isSiderCollapsedControlled'
-  action: 'invokeOnCollapse' | 'invokeOnExpand' | 'syncSiderCollapsed'
+  action: 'invokeOnCollapse' | 'invokeOnExpand' | 'syncSiderCollapsed' | 'startPress' | 'endPress'
   effect: 'trackSiderBreakpoint' | 'dismissSiderSheet'
 }
 

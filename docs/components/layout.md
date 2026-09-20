@@ -120,7 +120,7 @@
 
 **状态**：`expanded` · `collapsed`
 
-**事件**：`SIDER.COLLAPSE` · `SIDER.EXPAND` · `SIDER.TOGGLE` · `CONTROLLED.COLLAPSE` · `CONTROLLED.EXPAND`
+**事件**：`SIDER.COLLAPSE` · `SIDER.EXPAND` · `SIDER.TOGGLE` · `CONTROLLED.COLLAPSE` · `CONTROLLED.EXPAND` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isSiderCollapsedControlled`
 
@@ -150,6 +150,7 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in sider-trigger | 折叠/展开 sider |
+| `Enter` / `Space` | held in sider-trigger | 按住期间 sider-trigger 投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起或失焦撤下。把手没有禁用态 |
 | `Escape` | sider 按覆盖档盖在内容之上 | 收起 sider |
 
 ### ARIA
@@ -188,6 +189,7 @@
 | `sider` | `data-placement` | props.siderPlacement |
 | `sider` | `data-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
 | `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
+| `sider-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `sider-trigger` | `data-xh-action-control` | '' |
 | `sider-trigger` | `data-xh-action-display` | 'always' |
 | `sider-trigger` | `data-xh-action-profile` | 'text' |
