@@ -84,16 +84,23 @@ interface Block {
   plain: Declaration[]
 }
 
-/** 把 `:where([data-theme='dark'][data-contrast='more'])` 这样一条拆成轴要求。 */
+/**
+ * 把 `:where([data-theme='dark'][data-contrast='more'])` 这样一条拆成轴要求。
+ * 只写属性名不写值的 `[data-theme]` 是「任一主题边界」：矩阵里每个组合都带主题，无条件命中。
+ */
 function toMatcher(selector: string): Partial<Record<Axis, string>> {
   const req: Partial<Record<Axis, string>> = {}
-  for (const [, attr, value] of selector.matchAll(/\[([\w-]+)=['"]([^'"]+)['"]\]/g)) {
+  let anyBoundary = false
+  for (const [, attr, value] of selector.matchAll(/\[([\w-]+)(?:=['"]([^'"]+)['"])?\]/g)) {
     const axis = ATTR_TO_AXIS[attr!]
     if (!axis)
       throw new Error(`tokens.css 里的 ${attr} 不在本文件的轴表里：${selector}`)
-    req[axis] = value!
+    if (value === undefined)
+      anyBoundary = true
+    else
+      req[axis] = value
   }
-  if (Object.keys(req).length === 0 && !selector.includes(':root'))
+  if (Object.keys(req).length === 0 && !anyBoundary && !selector.includes(':root'))
     throw new Error(`认不出的选择器：${selector}`)
   return req
 }

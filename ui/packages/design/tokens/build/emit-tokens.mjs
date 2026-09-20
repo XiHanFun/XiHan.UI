@@ -132,8 +132,10 @@ async function main() {
       routes.set(name, `var(--xh-_contrast-use-default, ${choices[0]}) var(--xh-_contrast-use-more, ${choices[1]})`)
   }
   const darkByName = new Map(darkAll.map(entry => [entry.name, entry]))
-  // Recipe 真源里跨主题完全相同、且不参与 contrast 路由的材质通道只写一次。
-  // 值仍保留 var() 引用，在最终消费作用域解析，所以嵌套 theme 不会冻结为根主题。
+  // Recipe 真源里跨主题完全相同、且不参与 contrast 路由的材质通道只写一份声明。
+  // 它们的值是指向 fg / bg / border 语义的 var() 引用，而自定义属性里的 var() 在声明它的那个元素上
+  // 就求值：写在 :root 上会冻结成根主题的取值，嵌套的主题边界只继承到这份冻结值。所以这一块同时
+  // 挂在每个 [data-theme] 边界上，引用在边界自己的主题里解析（与 contrast 路由重写在边界上同理）。
   const sharedMaterial = lightAll.filter((entry) => {
     const darkEntry = darkByName.get(entry.name)
     return entry.name.startsWith('--xh-material-')
@@ -142,7 +144,10 @@ async function main() {
       && darkEntry.value === entry.value
   })
   const sharedMaterialNames = new Set(sharedMaterial.map(entry => entry.name))
-  const semanticBase = [...base, ...sharedMaterial]
+  // M0 实体材质写在 base 真源里，同样是指向主题语义的引用，与上面一起挂到主题边界上
+  const isMaterial = entry => entry.name.startsWith('--xh-material-')
+  const boundaryMaterial = [...base.filter(isMaterial), ...sharedMaterial]
+  const basePlain = base.filter(entry => !isMaterial(entry))
   const light = lightAll.filter(entry => !sharedMaterialNames.has(entry.name))
   const dark = darkAll.filter(entry => !sharedMaterialNames.has(entry.name))
   const selection = [...routes].map(([name, value]) => `    ${name}: ${value};`).join('\n')
@@ -164,7 +169,13 @@ ${await declarations(primitive)}
 
   /* 非模式语义（密度等轴的基线合并写法） */
   :where(:root), :where([data-density='comfortable']) {
-${await declarations(semanticBase)}
+${await declarations(basePlain)}
+  }
+
+  /* 材质里跨主题同源的通道：值是指向主题语义的 var() 引用，自定义属性在声明处求值，
+     只写在 :root 上会冻结成根主题的取值；同时挂在每个主题边界上，引用才在该边界自己的主题里解析 */
+  :where(:root), :where([data-theme]) {
+${await declarations(boundaryMaterial)}
   }
 
   /* density 轴 · compact 档：只覆盖收紧的盒尺寸。排在基线合并块之后，

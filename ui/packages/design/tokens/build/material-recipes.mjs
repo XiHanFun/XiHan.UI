@@ -114,7 +114,7 @@ function compileTheme(source, theme) {
 function compileBase(source) {
   const profile = source.profiles.solid
   return {
-    $description: `${profile.id} 是主题无关的语义别名；引用在最终消费作用域解析。`,
+    $description: `${profile.id} 是主题无关的语义别名；声明挂在每个主题边界上，引用在该边界自己的主题里解析。`,
     solid: compileRecipe(profile.light, `${profile.id} · ${profile.description}`, true),
   }
 }
