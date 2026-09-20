@@ -18,10 +18,15 @@ function queryViewport({ doc }: RawStepContext): HTMLElement {
   return el
 }
 
-/** 伪造视口的滚动几何与 scrollTo，把滚动位置放在离底很远处并派发 scroll。 */
+/**
+ * 伪造视口的滚动几何与 scrollTo，先落到底再上滚到离底很远处，各派一次 scroll。
+ * 必须真的上滚一次（scrollTop 变小）：粘底原语只把「scrollTop 变小」认作用户上滚、解除粘附意图；
+ * 直接把位置摆在离底处，意图仍是粘底，Chromium 首次排版后的 ResizeObserver 回调会照意图把视口
+ * 写回底部、按钮随即收起（jsdom 没有 ResizeObserver，看不见这一拍）。
+ */
 function scrollAwayFromBottom(ctx: RawStepContext): void {
   const el = queryViewport(ctx)
-  let scrollTop = 0
+  let scrollTop = SCROLL_HEIGHT - CLIENT_HEIGHT
   Object.defineProperty(el, 'scrollHeight', { configurable: true, get: () => SCROLL_HEIGHT })
   Object.defineProperty(el, 'clientHeight', { configurable: true, get: () => CLIENT_HEIGHT })
   Object.defineProperty(el, 'scrollTop', {
@@ -37,7 +42,9 @@ function scrollAwayFromBottom(ctx: RawStepContext): void {
       scrollTop = Math.min(options.top, SCROLL_HEIGHT - CLIENT_HEIGHT)
     },
   })
-  // 粘底原语只在 scroll 回调里读几何，改完须派发事件
+  // 粘底原语只在 scroll 回调里读几何，改完须派发事件：先认下「在底」，再上滚离开
+  el.dispatchEvent(new Event('scroll'))
+  scrollTop = 0
   el.dispatchEvent(new Event('scroll'))
 }
 
@@ -226,7 +233,7 @@ export const logSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '用户上滚：根上的在底标记落下，粘附意图仍留着，状态如实报给宿主',
+      name: '用户上滚：根上的在底标记落下，粘附意图随之解除，状态如实报给宿主',
       spec: { apg: APG },
       skipParity: 'jsdom 无布局，粘底状态由伪造几何驱动，两适配器的 RO 回调时机天然不同步',
       steps: [
@@ -236,9 +243,9 @@ export const logSuite: ConformanceSuite = {
           run: scrollAwayFromBottom,
           expect: {
             parts: {
-              root: { 'data-at-bottom': null, 'data-sticking': '' },
+              root: { 'data-at-bottom': null, 'data-sticking': null },
             },
-            events: [{ type: 'stick-change', detail: { atBottom: false, sticking: true } }],
+            events: [{ type: 'stick-change', detail: { atBottom: false, sticking: false } }],
           },
         },
       ],
@@ -255,7 +262,7 @@ export const logSuite: ConformanceSuite = {
           run: scrollAwayFromBottom,
           expect: {
             parts: { 'scroll-to-end-trigger': { 'hidden': null, 'data-state': 'visible' } },
-            events: [{ type: 'stick-change', detail: { atBottom: false, sticking: true } }],
+            events: [{ type: 'stick-change', detail: { atBottom: false, sticking: false } }],
           },
         },
         {
