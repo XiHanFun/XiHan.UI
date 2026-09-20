@@ -562,7 +562,9 @@ export const dateRangePickerSuite: ConformanceSuite = {
       name: 'Escape 收起并把焦点还给 trigger，两端不变',
       spec: { apg: `${APG}#kbd_label` },
       covers: ['date-range-picker.kbd.escape'],
-      props: BASE_PROPS,
+      // 有值时皮肤把日历钮让位给清空钮（display:none，接不住焦点），从它进出的这一路只在空值下成立；
+      // Escape 不写值这件事同样在空值下可证：日历里有一格「今天」等着被提交
+      props: { locale: LOCALE, timeZone: 'UTC' },
       steps: [
         { kind: 'focus', part: 'trigger' },
         { kind: 'click', part: 'trigger' },
@@ -583,7 +585,7 @@ export const dateRangePickerSuite: ConformanceSuite = {
         {
           kind: 'raw',
           why: '值没动这件事要看隐藏输入的 value（property，进不了快照）',
-          run: ({ doc }) => expectRange(doc, START, END, 'Escape 只收起浮层，不该动值'),
+          run: ({ doc }) => expectRange(doc, '', '', 'Escape 只收起浮层，不该把日历里的当前格写进值'),
         },
       ],
     },
@@ -1091,9 +1093,13 @@ export const dateRangePickerSuite: ConformanceSuite = {
       name: 'Space / Enter 按住与触屏按下：触发钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不开合也不清值',
       spec: { adr: 'press-channel' },
       covers: ['date-range-picker.kbd.press'],
-      props: { ...BASE_PROPS },
+      // 日历钮与清空钮不同屏：有值时皮肤把日历钮让位给清空钮（display:none，接不住焦点），
+      // 先在空值下按日历钮，再由宿主写回值让清空钮上场
+      props: { locale: LOCALE, timeZone: 'UTC' },
       steps: [
         heldPress('date-range-picker', 'trigger'),
+        { kind: 'setProps', props: { value: [START, END] } },
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'hidden', value: null } } },
         // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
         heldPress('date-range-picker', 'clear-trigger'),
         {
