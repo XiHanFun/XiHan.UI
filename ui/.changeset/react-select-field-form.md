@@ -1,6 +1,5 @@
 ---
 "@xihan-ui/react": minor
-"@xihan-ui/testing": patch
 ---
 
 **React 侧再铺三个组件：`select`、`field`、`form`。已铺 5/126。**

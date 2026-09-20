@@ -11,6 +11,12 @@ stylelint-config）不发布、不计版。
 的包表以及三个平台的 issue / PR 模板同样要一起加；`check-package-manifests` 逐张对账，
 少一个包或多一个已退役的包都判失败，包缺 README 也判失败。
 
+changeset 的头部只写会发布的包。`config.json` 的 `ignore` 表登记了不计版的私有包（目前是
+`@xihan-ui/testing`），头部一旦写上它们：与发布包混写的那份让 `changeset version` 直接报
+Mixed changesets，只写它的那份整份被丢掉、正文进不了任何 CHANGELOG。测试套件的变化写进正文
+作说明即可；头部一行不剩就留成空头部（两行 `---` 之间什么都不写，即 `changeset add --empty`
+的产物）。`check-changeset-packages` 在 `pnpm gate` 里逐份核对，不依赖 git 基线。
+
 ## 职责划分
 
 | 动作 | 由谁做 |
