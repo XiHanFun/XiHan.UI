@@ -1280,6 +1280,30 @@ describe('卸载归还', () => {
     expect(document.activeElement).toBe(gone.outside)
   })
 
+  // 子菜单按方向键收起后归还帧还没到，祖先层就被 Escape 收掉：落点（子菜单触发条目）此刻
+  // 藏在祖先 hidden 的 content 里。浏览器对藏起来的元素 focus() 是空操作；jsdom 会照聚不误并
+  // 派出一枚假 focusin，消解层据此把祖先层当成「焦点落到层外」一并收掉
+  it('归还帧到来前落点已藏进 hidden 祖先：不聚焦它、不派假 focusin，显式松手', async () => {
+    const h = setup()
+    const wrapper = document.createElement('div')
+    const trigger = document.createElement('button')
+    wrapper.appendChild(trigger)
+    document.body.appendChild(wrapper)
+    trigger.focus()
+    const scope = open(h, { restoreTarget: () => trigger })
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[0])
+    const focusIn = vi.fn()
+    document.addEventListener('focusin', focusIn, true)
+    cleanups.push(() => document.removeEventListener('focusin', focusIn, true))
+
+    scope.dispose()
+    wrapper.hidden = true
+    await frames(2)
+    expect(focusIn).not.toHaveBeenCalled()
+    expect(document.activeElement).toBe(document.body)
+  })
+
   it('restoreFocus 为假时 restoreTarget 也不出面：交接式出口不抢焦点', async () => {
     const h = setup()
     const trigger = document.createElement('button')
