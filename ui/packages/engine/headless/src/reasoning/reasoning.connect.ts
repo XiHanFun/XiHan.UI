@@ -9,6 +9,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolCallSchema } from '../tool-call'
 import type { ReasoningApi, ReasoningProps } from './reasoning.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { reasoningAnatomy } from './reasoning.anatomy'
 import { reasoningDuration, reasoningStatusText } from './reasoning.types'
 
@@ -26,9 +27,13 @@ export function connectReasoning<T extends PropTypes>(
   props: ReasoningProps,
   normalize: NormalizeProps<T>,
 ): ReasoningApi<T> {
-  const { state, prop, send, scope } = service
+  const { state, prop, send, scope, context } = service
   const open = state.get().endsWith('.expanded')
   const disabled = !!prop('disabled')
+  // 按压通道：真源在 tool-call 机器的 context.pressed，跟踪器只把 Space / Enter 与触屏按住翻成事件；
+  // 指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
   const streaming = !!props.streaming
   const ids = scope.ids('reasoning', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
@@ -78,6 +83,15 @@ export function connectReasoning<T extends PropTypes>(
       'data-state': stateAttr,
       'data-streaming': dataAttr(streaming),
       'data-disabled': dataAttr(disabled),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active（disclosure-trigger 只换面）；
+      // 与开合、在不在想互相独立：思考中 trigger 照常可点，按压面同样照有
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => {
         if (!disabled)
           send({ type: 'TOGGLE' })

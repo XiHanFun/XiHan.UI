@@ -142,3 +142,83 @@ describe('connectReasoning 开合', () => {
     r.stop()
   })
 })
+
+// ══ 按压通道 ══
+
+type Dict = Record<string, unknown>
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('connectReasoning 按压通道：读 tool-call 机器的 pressed，Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；开合不动', () => {
+    const r = makeReasoning()
+    const trigger = (): Dict => r.api().getTriggerProps() as Dict
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerCancel', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    expect(r.state()).toBe('auto.collapsed')
+    expect(r.changes).toEqual([])
+    r.stop()
+  })
+
+  it('按住途中翻面并锁存：Enter 在 keydown 即切换开合，按压面不随之丢；思考中照常可按，想完自动收起按压面不丢', () => {
+    const r = makeReasoning()
+    const trigger = (): Dict => r.api().getTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    ;(trigger().onClick as () => void)()
+    expect(r.state()).toBe('held.expanded')
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key('Enter'))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    r.stop()
+
+    const s = makeReasoning({ running: true })
+    const streaming = (): Dict => s.api({ streaming: true }).getTriggerProps() as Dict
+    expect(s.state()).toBe('auto.expanded')
+    fire(streaming(), 'onPointerDown', { pointerType: 'touch' })
+    expect(streaming()['data-pressed']).toBe('')
+    s.setProps({ running: false })
+    expect(s.state()).toBe('auto.collapsed')
+    expect(streaming()['data-pressed']).toBe('')
+    fire(streaming(), 'onPointerUp', {})
+    expect(streaming()['data-pressed']).toBeUndefined()
+    s.stop()
+  })
+
+  it('disabled：按住不进；经 signal 转禁用时按住的 trigger 自收；解禁后照常', () => {
+    const off = makeReasoning({ disabled: true })
+    const offTrigger = (): Dict => off.api().getTriggerProps() as Dict
+    fire(offTrigger(), 'onKeyDown', key(' '))
+    expect(offTrigger()['data-pressed']).toBeUndefined()
+    fire(offTrigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(offTrigger()['data-pressed']).toBeUndefined()
+    off.stop()
+
+    const r = makeReasoning()
+    const trigger = (): Dict => r.api().getTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    r.setProps({ disabled: true })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    r.setProps({ disabled: false })
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    r.stop()
+  })
+})
