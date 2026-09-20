@@ -143,21 +143,26 @@ describe('radio-group：横排摆不下就换行，不压条目', () => {
 })
 
 describe('alert：图标、文本列、叉恒在同一行', () => {
+  // 关闭钮与连接层投影一致带上 Action Control 家族标记：正方盒与行内盒都由家族给，裸按钮没有几何
   const markup = `<div data-scope="alert" data-part="root" data-tone="info">
     <span data-scope="alert" data-part="indicator"></span>
     <div data-scope="alert" data-part="content">
       <div data-scope="alert" data-part="title">磁盘快满了</div>
       <div data-scope="alert" data-part="description">这台机器的系统盘只剩下不到一成的空间，构建产物再堆几次就会写不进去，建议先清一遍缓存目录。</div>
     </div>
-    <button data-scope="alert" data-part="close-trigger"></button>
+    <button data-scope="alert" data-part="close-trigger" data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="sm"></button>
   </div>`
 
   // 说明越长，content 那条伸缩基准取 auto 时撑得越宽；三档窄视口都要压得住
-  it.each([375, 414, 480])('%ipx 下三件都在首行', (width) => {
+  it.each([375, 414, 480])('%ipx 下三件都在同一行', (width) => {
     const doc = mount(width, markup)
-    const top = (part: string): number => Math.round(doc.querySelector(`[data-part="${part}"]`)!.getBoundingClientRect().top)
-    expect(top('content')).toBe(top('indicator'))
-    expect(top('close-trigger')).toBe(top('indicator'))
+    const rect = (part: string): DOMRect => doc.querySelector(`[data-part="${part}"]`)!.getBoundingClientRect()
+    expect(Math.round(rect('content').top)).toBe(Math.round(rect('indicator').top))
+    // 叉在这一行里居中（align-self: center），没掉到内容下方：中线与 root 的中线重合、左沿在文本列右沿之外
+    const root = rect('root')
+    const close = rect('close-trigger')
+    expect(Math.abs((close.top + close.bottom) / 2 - (root.top + root.bottom) / 2)).toBeLessThanOrEqual(1)
+    expect(close.left).toBeGreaterThanOrEqual(rect('content').right)
   })
 
   it('叉恒在行尾而不是掉到内容下方', () => {
