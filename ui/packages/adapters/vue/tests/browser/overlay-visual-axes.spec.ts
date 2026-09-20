@@ -253,7 +253,8 @@ const CASES: Record<string, Case> = {
 
   'time-picker': {
     sizePart: 'item',
-    sizeProp: 'padding-inline-start',
+    // 时间格两侧是定宽的对号轨（64f56feec 起不随档），尺寸档落在格子的字号上
+    sizeProp: 'font-size',
     tonePart: 'item',
     toneProp: 'font-size',
     render: axes => h(XhTimePickerRoot, { ...axes, open: true, value: '09:30' }, () => [
