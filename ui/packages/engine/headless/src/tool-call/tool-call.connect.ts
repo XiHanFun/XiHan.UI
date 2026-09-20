@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolCallApi, ToolCallProps, ToolCallSchema } from './tool-call.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { toolCallAnatomy } from './tool-call.anatomy'
 import { isToolCallErrored, isToolCallRunning, isToolCallSettled, toolCallDuration, toolCallStatusText } from './tool-call.types'
 
@@ -22,9 +23,12 @@ export function connectToolCall<T extends PropTypes>(
   props: ToolCallProps,
   normalize: NormalizeProps<T>,
 ): ToolCallApi<T> {
-  const { state, prop, send, scope } = service
+  const { state, prop, send, scope, context } = service
   const open = state.get().endsWith('.expanded')
   const disabled = !!prop('disabled')
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
   const phase = props.phase ?? 'input-available'
   const running = isToolCallRunning(phase)
   const settled = isToolCallSettled(phase)
@@ -85,6 +89,15 @@ export function connectToolCall<T extends PropTypes>(
       'disabled': disabled || undefined,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active（disclosure-trigger 只换面）；
+      // 与开合、阶段互相独立：运行中 trigger 照常可点，按压面同样照有
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => {
         if (!disabled)
           send({ type: 'TOGGLE' })

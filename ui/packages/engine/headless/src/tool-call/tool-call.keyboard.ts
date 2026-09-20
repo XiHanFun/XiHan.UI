@@ -15,5 +15,6 @@ export const toolCallKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'tool-call.kbd.toggle', keys: ['Enter', 'Space'], when: '焦点在折叠开关上且未禁用', does: '展开或收起详情，并把自动开合永久停用' },
+    { id: 'tool-call.kbd.press', keys: ['Enter', 'Space'], when: '按住折叠开关且未禁用', does: '按住期间 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或转禁用撤下。运行中照常接' },
   ],
 }
