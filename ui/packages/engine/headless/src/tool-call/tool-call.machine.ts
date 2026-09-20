@@ -23,6 +23,10 @@ const { createMachine, guards } = setup<ToolCallSchema>()
  */
 export const toolCallMachine = createMachine({
   name: 'tool-call',
+  context: ({ cell }) => ({
+    // 按压通道：trigger 被 Space / Enter 或触屏按住，与开合、阶段互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
+  }),
   initialState: ({ prop }) => {
     const explicit = prop('open') ?? prop('defaultOpen')
     if (explicit !== undefined)
@@ -33,6 +37,14 @@ export const toolCallMachine = createMachine({
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('running')], () => action(['syncRunning']))
+    // 按住途中转禁用：trigger 随即原生 disabled、不会再来 keyup，按压面由机器自己收
+    track([() => prop('disabled')], () => action(['releaseWhenInert']))
+  },
+  // 按压通道挂根级：没有 target，不受「根级相对路径解不出」的限制；trigger 在四个叶态都在场。
+  // 原生 disabled，程序化派发由 canPress 再守一次；运行中 trigger 照常可点、家族照给 :active 面，按压面同样照有
+  on: {
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     auto: {
@@ -113,8 +125,15 @@ export const toolCallMachine = createMachine({
       isAutoAllowed: ({ prop }) => prop('autoDisclosure') !== false,
       // 走组合子而不是裸内联函数：createMachine 的自检会把裸函数直接拦下
       isAutoEnabled: guards.and(guards.not('isOpenControlled'), 'isAutoAllowed'),
+      canPress: ({ prop }) => !prop('disabled'),
     },
     actions: {
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled'))
+          context.set('pressed', false)
+      },
       invokeOnUserOpen: ({ prop }) => prop('onOpenChange')?.({ open: true, source: 'user' }),
       invokeOnUserClose: ({ prop }) => prop('onOpenChange')?.({ open: false, source: 'user' }),
       invokeOnAutoOpen: ({ prop }) => prop('onOpenChange')?.({ open: true, source: 'auto' }),

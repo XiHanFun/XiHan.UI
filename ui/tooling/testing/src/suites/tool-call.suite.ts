@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { toolCallAnatomy, toolCallKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/'
 
@@ -218,6 +219,38 @@ export const toolCallSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { disabled: true },
       initial: { parts: { trigger: { disabled: '' } } },
+      steps: [heldPressIgnored('tool-call', 'trigger', '禁用时 trigger 原生 disabled，不接受按压')],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：trigger 投影 data-pressed，抬起、失焦或指针取消撤下；展开锁存后照常可按',
+      spec: { adr: 'press-channel' },
+      covers: ['tool-call.kbd.press'],
+      steps: [
+        heldPress('tool-call', 'trigger'),
+        { kind: 'click', part: 'trigger', expect: { parts: { trigger: { 'aria-expanded': 'true', 'data-pressed': null } } } },
+        heldPress('tool-call', 'trigger'),
+      ],
+    },
+    {
+      name: '运行中 trigger 照常可点、按压面照有；按住途中转禁用：trigger 原生 disabled、不会再来 keyup，按压面由机器收',
+      spec: { adr: 'press-channel' },
+      props: { phase: 'input-streaming' },
+      steps: [
+        heldPress('tool-call', 'trigger'),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const trigger = doc.querySelector<HTMLElement>(TRIGGER)!
+            trigger.focus()
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!trigger.hasAttribute('data-pressed'))
+              throw new Error('按住 Space 时 trigger 应投影 data-pressed')
+          },
+        },
+        { kind: 'setProps', props: { phase: 'input-streaming', disabled: true }, expect: { parts: { trigger: { 'disabled': '', 'data-pressed': null } } } },
+      ],
     },
   ],
 }
