@@ -56,8 +56,16 @@ function withPressExtras(base: FixtureNode): FixtureNode {
     ...base,
     children: [
       ...(base.children ?? []),
-      { part: 'column-list', children: [{ part: 'column-visibility-trigger', tag: 'span', attrs: { value: 'name' }, text: 'Name' }] },
-      { part: 'load-more-trigger', tag: 'button', text: '加载更多' },
+      // 列设置区与取下一页钮都不是 row / rowgroup，写在 root 里会破坏 role=grid 的子节点约束：
+      // 与真实用法一样放进工具条，它由根组件渲成 root 的兄弟（toolbar 插槽）
+      {
+        part: 'toolbar',
+        slot: 'toolbar',
+        children: [
+          { part: 'column-list', children: [{ part: 'column-visibility-trigger', tag: 'span', attrs: { value: 'name' }, text: 'Name' }] },
+          { part: 'load-more-trigger', tag: 'button', text: '加载更多' },
+        ],
+      },
     ],
   }
 }
