@@ -166,6 +166,10 @@
     font-size: var(--xh-tabs-trigger-font-size, var(--xh-_tabs-trigger-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
+    /* 家族基础块给条目写了 min-inline-size: 0（菜单条目要能收窄给文字省略号用）；标签不省略号，
+       横排时又按 flex: 1 1 0 等分带宽，下限归零后排不下的标签只会被压到文字之下再横向顶出去，
+       上面 list 的 flex-wrap 永远等不到折行那一刻。收回 auto：下限按文字算，排不下就折行 */
+    min-inline-size: auto;
   }
 
   /* line 档（§7.3 导航当前页）：把公开槽映射到 Collection Item 的 nav 语境桥接槽。静息 muted / regular，
