@@ -570,3 +570,90 @@ describe('connectToolbar 单一 Tab 位与焦点进出', () => {
     expect(bar.focusedIndex()).toBe(2)
   })
 })
+
+// ══ 按压通道 ══
+
+type Dict = Record<string, unknown>
+const keyEvent = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+/** 按压通道要盯 disabled 的 watch，props 走 signal 才会复查。 */
+function makePressable(initial: Props = {}) {
+  const runtime = createVanillaRuntime()
+  const props = runtime.signal<Props>({ ...initial })
+  const service = createService(toolbarMachine, { props: () => props.get(), runtime })
+  runtime.start()
+  return {
+    service,
+    item: (item: ToolbarItemProps) => connectToolbar(service, normalizeProps).getItemProps(item) as Dict,
+    setProps: (next: Props) => props.set({ ...props.get(), ...next }),
+    stop: () => runtime.stop(),
+  }
+}
+
+describe('connectToolbar 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；锚点不动', () => {
+    const t = makePressable()
+    const bold = { value: 'bold' }
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    fire(t.item(bold), 'onKeyDown', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBe('')
+    fire(t.item(bold), 'onKeyUp', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    fire(t.item(bold), 'onKeyDown', keyEvent('Enter'))
+    expect(t.item(bold)['data-pressed']).toBe('')
+    fire(t.item(bold), 'onBlur', {})
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    fire(t.item(bold), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.item(bold)['data-pressed']).toBe('')
+    fire(t.item(bold), 'onPointerCancel', {})
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    fire(t.item(bold), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.item(bold)['data-pressed']).toBe('')
+    fire(t.item(bold), 'onPointerUp', {})
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    fire(t.item(bold), 'onPointerDown', { pointerType: 'mouse' })
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    // 按压只记事实，不碰焦点锚点
+    expect(t.service.context.get('focusedValue') ?? null).toBeNull()
+    t.stop()
+  })
+
+  it('只亮按住的那一条：别的条目的 keyup 松不开它，锚点移走按压面也不跟着走', () => {
+    const t = makePressable()
+    const bold = { value: 'bold' }
+    const left = { value: 'left' }
+    fire(t.item(bold), 'onKeyDown', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBe('')
+    expect(t.item(left)['data-pressed']).toBeUndefined()
+    fire(t.item(left), 'onKeyUp', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBe('')
+    t.service.send({ type: 'ITEM.FOCUS', value: 'left' })
+    expect(t.item(bold)['data-pressed']).toBe('')
+    expect(t.item(left)['data-pressed']).toBeUndefined()
+    fire(t.item(bold), 'onKeyUp', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    t.stop()
+  })
+
+  it('禁用不进：条目自己禁用、整条禁用都不投影；按住途中经 signal 转整条禁用自收，解禁后照常', () => {
+    const t = makePressable()
+    const italic = { value: 'italic', disabled: true }
+    fire(t.item(italic), 'onKeyDown', keyEvent(' '))
+    expect(t.item(italic)['data-pressed']).toBeUndefined()
+    fire(t.item(italic), 'onPointerDown', { pointerType: 'touch' })
+    expect(t.item(italic)['data-pressed']).toBeUndefined()
+
+    const bold = { value: 'bold' }
+    fire(t.item(bold), 'onKeyDown', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBe('')
+    t.setProps({ disabled: true })
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    fire(t.item(bold), 'onKeyDown', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBeUndefined()
+    t.setProps({ disabled: false })
+    fire(t.item(bold), 'onKeyDown', keyEvent(' '))
+    expect(t.item(bold)['data-pressed']).toBe('')
+    t.stop()
+  })
+})

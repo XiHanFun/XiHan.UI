@@ -20,6 +20,7 @@ export const toolbarKeyboard: KeyboardTable = {
     { id: 'toolbar.kbd.prev', keys: ['ArrowLeft', 'ArrowUp'], when: '焦点在条内且未整条禁用；横排收 ArrowLeft、竖排收 ArrowUp', does: '焦点移到上一个可停留条目（禁用项跳过、尽头按 loop 回绕）；dir=rtl 时水平主轴改由 ArrowRight 承担' },
     { id: 'toolbar.kbd.first', keys: ['Home'], when: '焦点在条内且未整条禁用', does: '焦点移到首个可停留条目' },
     { id: 'toolbar.kbd.last', keys: ['End'], when: '焦点在条内且未整条禁用', does: '焦点移到末个可停留条目' },
+    { id: 'toolbar.kbd.press', keys: ['Enter', 'Space'], when: 'held on item, 整条未禁用且条目未禁用', does: '按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或转禁用撤下。激活语义仍归条目自身（原生 button 的 click）' },
     { id: 'toolbar.kbd.cross-axis', keys: ['交叉轴的两个方向键'], when: '焦点在条内（横排按上下、竖排按左右）', does: '不归工具条管：原样放行给页面滚动与读屏，绝不 preventDefault' },
   ],
 }

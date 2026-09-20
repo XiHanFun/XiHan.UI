@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { toolbarAnatomy, toolbarKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/'
 const KBD = `${APG}#keyboardinteraction`
@@ -321,6 +322,56 @@ export const toolbarSuite: ConformanceSuite = {
             events: [],
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：条目投影 data-pressed，抬起、失焦或指针取消撤下；只亮按住的那一条',
+      spec: { adr: 'press-channel' },
+      covers: ['toolbar.kbd.press'],
+      steps: [
+        heldPress('toolbar', 'item', { value: 'bold' }),
+        // 分组里的条目同一条通路
+        heldPress('toolbar', 'item', { value: 'left' }),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const bold = doc.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="item"][data-value="bold"]')!
+            const left = doc.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="item"][data-value="left"]')!
+            bold.focus()
+            bold.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!bold.hasAttribute('data-pressed') || left.hasAttribute('data-pressed'))
+              throw new Error('按住 bold 时只有它该投影 data-pressed')
+            bold.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (bold.hasAttribute('data-pressed'))
+              throw new Error('keyup 之后 bold 应撤下 data-pressed')
+          },
+        },
+      ],
+    },
+    {
+      name: '禁用条目按住不进入按压面；整条 disabled 时全部不进，按住途中转禁用即撤下',
+      spec: { adr: 'press-channel' },
+      steps: [
+        heldPressIgnored('toolbar', 'item', '条目 aria-disabled，不接受按压', { value: 'italic' }),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const bold = doc.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="item"][data-value="bold"]')!
+            bold.focus()
+            bold.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!bold.hasAttribute('data-pressed'))
+              throw new Error('按住 Space 时 bold 应投影 data-pressed')
+          },
+        },
+        // 条目只是 aria-disabled、仍有焦点，不会再来 keyup，按压面由机器收
+        { kind: 'setProps', props: { disabled: true }, expect: { parts: { item: [{ 'aria-disabled': 'true', 'data-pressed': null }] } } },
+        heldPressIgnored('toolbar', 'item', '整条禁用时条目不接受按压', { value: 'bold' }),
+        heldPressIgnored('toolbar', 'item', '整条禁用时分组里的条目也不接受按压', { value: 'left' }),
       ],
     },
   ],
