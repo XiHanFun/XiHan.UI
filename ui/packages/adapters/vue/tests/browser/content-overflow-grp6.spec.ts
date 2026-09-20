@@ -187,11 +187,12 @@ describe('内容撑破行', () => {
     })
   })
 
+  // 盒型与内衬由 Action Control 家族配方按 data-xh-action-* 给，夹具带齐 connect 投影的那几个属性
   describe('download-trigger', () => {
     it.each([200, 320])('%ipx 的栏里：长文案不把按钮撑出那一栏', (w) => {
       const doc = mount(375, `
         <div style="inline-size: ${w}px" id="host">
-          <button data-scope="download-trigger" data-part="root" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
+          <button data-scope="download-trigger" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
         </div>`)
       const host = pick(doc, '#host')
       const root = pick(doc, '#root')
@@ -204,7 +205,7 @@ describe('内容撑破行', () => {
     it('裁的是文案末尾，开头仍排在按钮的行首内衬处', () => {
       const doc = mount(375, `
         <div style="inline-size: 200px">
-          <button data-scope="download-trigger" data-part="root" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
+          <button data-scope="download-trigger" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
         </div>`)
       const root = pick(doc, '#root')
       const label = pick(doc, '#label')
