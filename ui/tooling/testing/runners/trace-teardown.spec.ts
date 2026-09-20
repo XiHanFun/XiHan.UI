@@ -84,6 +84,8 @@ describe('轨迹收尾', () => {
     it(`${harness.adapterName}：超时的轨迹醒来后停在原地，不碰下一条的宿主`, async () => {
       const stuck: ConformanceCase = {
         name: '睡过去',
+        // 这是 harness 自身的回归用例，不对应任何组件规格
+        spec: {},
         steps: [{ kind: 'raw', why: '模拟超时后仍在跑的步骤', run: () => new Promise<void>(resolve => setTimeout(resolve, 200)) }],
       }
       const first = recordTrace(harness, menubarSuite, stuck)

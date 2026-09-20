@@ -51,14 +51,16 @@ export const kbdSuite: ConformanceSuite = {
           },
         },
       },
-      steps: [
-        {
-          kind: 'key',
-          key: 'Escape',
-          on: 'root',
-          expect: { defaultPrevented: true },
+      steps: [{
+        kind: 'raw',
+        why: '归一化快照没有 defaultPrevented 通道，只能直接看事件对象：显式注册的热键要把 keydown 接管掉',
+        run: ({ root }) => {
+          const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+          root.dispatchEvent(event)
+          if (!event.defaultPrevented)
+            throw new Error('显式注册的 Escape 热键必须被 Kbd 接管')
         },
-      ],
+      }],
     },
     {
       name: '普通按键不接管输入区',
