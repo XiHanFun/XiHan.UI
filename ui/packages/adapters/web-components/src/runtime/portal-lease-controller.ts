@@ -39,6 +39,15 @@ export class PortalLeaseController {
     return this.lease?.roots ?? []
   }
 
+  /**
+   * 某个根在作者结构里的落点：未搬迁时就是它自己，搬迁中是租约留在原位的占位节点。
+   * 宿主自己生成、要排在浮层之前的节点（表单出口）按它定位，浮层归位后顺序不变。
+   */
+  homeOf(root: HTMLElement): Node {
+    const index = this.lease?.roots.indexOf(root) ?? -1
+    return index >= 0 ? this.lease!.placeholders[index]! : root
+  }
+
   /** Presence 仍可见时持有租约；退场完成或必要节点缺席时精确归位。 */
   sync(active: boolean): void {
     const source = this.options.source()

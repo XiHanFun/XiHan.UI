@@ -32,7 +32,7 @@ export interface AnchoredPortalControllerOptions {
 export class AnchoredPortalController {
   private readonly portal: PortalLeaseController
 
-  constructor(options: AnchoredPortalControllerOptions) {
+  constructor(private readonly options: AnchoredPortalControllerOptions) {
     this.portal = new PortalLeaseController({
       ...options,
       roots: () => {
@@ -45,6 +45,12 @@ export class AnchoredPortalController {
   /** XhElement 用它继续发现已经迁移到宿主外的全部角色节点。 */
   get roots(): readonly HTMLElement[] {
     return this.portal.roots
+  }
+
+  /** positioner 在作者结构里的落点：未搬迁时是它自己，搬迁中是占位节点；缺席时为 null。 */
+  home(): Node | null {
+    const root = this.options.root()
+    return root ? this.portal.homeOf(root) : null
   }
 
   /** Presence 仍可见时持有租约；退场完成或必要节点缺席时精确归位。 */

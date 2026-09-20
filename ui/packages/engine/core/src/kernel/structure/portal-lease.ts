@@ -39,6 +39,11 @@ export interface PortalLease {
   readonly source: Element
   readonly target: Element
   readonly roots: readonly HTMLElement[]
+  /**
+   * 与 roots 一一对应的占位节点：租约期间留在各根的作者原位，归位时被根替换。
+   * 适配器要把自己生成的节点排在浮层的作者位置之前时，以它为落点。
+   */
+  readonly placeholders: readonly Comment[]
   /** 本租约独占的无盒壳，承接视觉桥和适配器逻辑所有权。 */
   readonly shell: HTMLElement
   /** 幂等地停止视觉桥、原位归还所有 roots，并删除壳。 */
@@ -190,6 +195,7 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
     source,
     target,
     roots: Object.freeze([...roots]),
+    placeholders: Object.freeze(slots.map(slot => slot.placeholder)),
     shell,
     release() {
       if (released)
