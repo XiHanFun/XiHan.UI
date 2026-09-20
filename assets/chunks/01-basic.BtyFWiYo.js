@@ -1,0 +1,10 @@
+const a=`<!-- 基础用法 | 构建应用页面骨架 -->
+<xh-layout split sider-breakpoint="sm" aria-label="应用页面布局占位区块" style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <div data-xh-part="header"><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 112px"></span></div>
+    <div data-xh-part="sider"><div style="display: grid; gap: 12px"><span data-demo-block="line" data-tone="brand"></span><span data-demo-block="line" data-tone="info"></span><span data-demo-block="line" data-tone="success"></span></div></div>
+    <div data-xh-part="content"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 112px"></span></div>
+    <div data-xh-part="footer"><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px"></span></div>
+  </div>
+</xh-layout>
+`;export{a as default};

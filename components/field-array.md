@@ -492,8 +492,8 @@ function patch(index: number, key: keyof Header, next: string) {
 
 ### 组合
 
-- 每一行里放[表单字段](./field)，行内多个字段用行布局排开；整组挂在[表单](./form)下由它迁移值、规则与错误。
-- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 只给上移、下移两颗按钮。
+- 每一行放[表单字段](./field)，行内多个字段用行布局排列；整组挂在[表单](./form)下由它迁移值、规则与错误。
+- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 只提供上移、下移两个按钮。
 
 ### 最佳实践
 
@@ -522,16 +522,16 @@ function patch(index: number, key: keyof Header, next: string) {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `unknown[]` |  | 受控数据数组；给了就由宿主说了算，机器不自改，只发 onValueChange。 |
+| `value` | `unknown[]` |  | 受控数据数组；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 |
 | `defaultValue` | `unknown[]` |  | 非受控初始数据数组。 |
-| `min` | `number` |  | 最少几行。到了这个数，删除把手就按不动了。缺省 0。 |
-| `max` | `number` |  | 最多几行。到了这个数，新增把手就按不动了。缺省不限。 |
-| `createItem` | `() => unknown` |  | 新增一行时造一个空项。不给就插一个 null。 |
-| `movable` | `boolean` |  | 出不出换序把手。关（默认）时两个换序把手一律收起。 |
-| `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都按不动。 |
-| `readOnly` | `boolean` |  | 只读：行数改不动（新增、删除、换序都按不动），行里的控件仍由作者自己置只读。 |
-| `invalid` | `boolean` |  | 校验失败标注：落到根与每一行上。 |
-| `name` | `FormPath` |  | 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源； 每一行经 `item.name` 拿到显式数组 FormPath，绝不拼接字符串下标。 |
+| `min` | `number` |  | 最少行数。到达该数值时删除把手不可按下。默认 0。 |
+| `max` | `number` |  | 最多行数。到达该数值时新增把手不可按下。默认不限。 |
+| `createItem` | `() => unknown` |  | 新增一行时创建一个空项。未提供时插入 null。 |
+| `movable` | `boolean` |  | 是否显示换序把手。关闭（默认）时两个换序把手一律收起。 |
+| `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都不可按下。 |
+| `readOnly` | `boolean` |  | 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 |
+| `invalid` | `boolean` |  | 校验失败标注：写在根与每一行上。 |
+| `name` | `FormPath` |  | 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源； 每一行经 `item.name` 获得显式数组 FormPath，不拼接字符串下标。 |
 | `translations` | `Partial<FieldArrayTranslations>` |  |  |
 | `onValueChange` | `(details: FieldArrayValueChangeDetails) => void` |  |  |
 
@@ -557,9 +557,9 @@ function patch(index: number, key: keyof Header, next: string) {
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canAdd` · `canRemove` · `canMove`
+**判据**：`canAdd` · `canRemove` · `canMove` · `canPress`
 
 ### connect API
 
@@ -575,8 +575,8 @@ function patch(index: number, key: keyof Header, next: string) {
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `movable` | `boolean` |  |
-| `atMin` | `boolean` | 已到下限：再删就少于 min 了。 |
-| `atMax` | `boolean` | 已到上限：再加就多于 max 了。 |
+| `atMin` | `boolean` | 已到下限：再删除会少于 min。 |
+| `atMax` | `boolean` | 已到上限：再新增会多于 max。 |
 | `canAdd` | `boolean` |  |
 | `setValue` | `(next: unknown[]) => void` | 整份替换，不受 min / max 约束。 |
 | `add` | `() => void` |  |
@@ -586,7 +586,7 @@ function patch(index: number, key: keyof Header, next: string) {
 | `moveDown` | `(index: number) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(item: FieldArrayItemProps) => T['element']` |  |
-| `getItemLabelProps` | `(item: FieldArrayItemProps) => T['element']` | 行前那一小段行号或名目；纯标注，不与行里的控件建立 for 关联。 |
+| `getItemLabelProps` | `(item: FieldArrayItemProps) => T['element']` | 行前的行号或名目：纯标注，不与行内的控件建立 for 关联。 |
 | `getItemContentProps` | `(item: FieldArrayItemProps) => T['element']` |  |
 | `getItemActionProps` | `(item: FieldArrayItemProps) => T['element']` |  |
 | `getAddTriggerProps` | `() => T['button']` |  |
@@ -600,7 +600,9 @@ function patch(index: number, key: keyof Header, next: string) {
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
-无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Enter` / `Space` | held on add-trigger / item-delete-trigger / move-up-trigger / move-down-trigger, not aria-disabled | 按住期间该把手投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，删除 / 换序落地后把手随行离场或换位时一并撤下 |
 
 ### ARIA
 
@@ -631,54 +633,105 @@ function patch(index: number, key: keyof Header, next: string) {
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-movable` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-at-max` | ''（条件成立时才出现） |
+| `item` | `data-at-min` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-first` | ''（条件成立时才出现） |
+| `item` | `data-index` | String(item.index) |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-last` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
+| `item-label` | `data-at-max` | ''（条件成立时才出现） |
+| `item-label` | `data-at-min` | ''（条件成立时才出现） |
+| `item-label` | `data-disabled` | ''（条件成立时才出现） |
+| `item-label` | `data-index` | String(item.index) |
+| `item-label` | `data-invalid` | ''（条件成立时才出现） |
+| `item-label` | `data-readonly` | ''（条件成立时才出现） |
+| `item-content` | `data-at-max` | ''（条件成立时才出现） |
+| `item-content` | `data-at-min` | ''（条件成立时才出现） |
+| `item-content` | `data-disabled` | ''（条件成立时才出现） |
+| `item-content` | `data-index` | String(item.index) |
+| `item-content` | `data-invalid` | ''（条件成立时才出现） |
+| `item-content` | `data-readonly` | ''（条件成立时才出现） |
+| `item-action` | `data-at-max` | ''（条件成立时才出现） |
+| `item-action` | `data-at-min` | ''（条件成立时才出现） |
+| `item-action` | `data-disabled` | ''（条件成立时才出现） |
+| `item-action` | `data-index` | String(item.index) |
+| `item-action` | `data-invalid` | ''（条件成立时才出现） |
+| `item-action` | `data-readonly` | ''（条件成立时才出现） |
 | `add-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `add-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `add-trigger` | `data-xh-action-control` | '' |
+| `add-trigger` | `data-xh-action-display` | 'always' |
+| `add-trigger` | `data-xh-action-profile` | 'text' |
+| `add-trigger` | `data-xh-action-size` | 'md' |
+| `add-trigger` | `data-xh-action-variant` | 'outline' |
+| `item-delete-trigger` | `data-at-max` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-at-min` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-index` | String(item.index) |
+| `item-delete-trigger` | `data-invalid` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-xh-action-control` | '' |
+| `item-delete-trigger` | `data-xh-action-display` | 'always' |
+| `item-delete-trigger` | `data-xh-action-profile` | 'icon' |
+| `item-delete-trigger` | `data-xh-action-size` | 'xs' |
+| `item-delete-trigger` | `data-xh-action-variant` | 'ghost' |
+| `move-up-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `move-up-trigger` | `data-xh-action-control` | '' |
+| `move-up-trigger` | `data-xh-action-display` | 'always' |
+| `move-up-trigger` | `data-xh-action-profile` | 'icon' |
+| `move-up-trigger` | `data-xh-action-size` | 'xs' |
+| `move-up-trigger` | `data-xh-action-variant` | 'ghost' |
+| `move-down-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `move-down-trigger` | `data-xh-action-control` | '' |
+| `move-down-trigger` | `data-xh-action-display` | 'always' |
+| `move-down-trigger` | `data-xh-action-profile` | 'icon' |
+| `move-down-trigger` | `data-xh-action-size` | 'xs' |
+| `move-down-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-field-array-action-gap` | `add-trigger`<br>`item-action` | `gap` | `default` | `--xh-space-1` | field-array 的 add-trigger、item-action 部件 gap 覆盖槽。 |
-| `--xh-field-array-add-bg` | `add-trigger` | `background` | `default` | `transparent` | field-array 的 add-trigger 部件 background 覆盖槽。 |
-| `--xh-field-array-add-bg-active` | `add-trigger` | `background` | `active`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-active` | field-array 的 add-trigger 部件 background 覆盖槽。 |
-| `--xh-field-array-add-bg-hover` | `add-trigger` | `background` | `hover`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-hover` | field-array 的 add-trigger 部件 background 覆盖槽。 |
-| `--xh-field-array-add-border` | `add-trigger` | `border` | `default` | `--xh-border-control` | field-array 的 add-trigger 部件 border 覆盖槽。 |
-| `--xh-field-array-add-border-disabled` | `add-trigger` | `border-color` | `default` | `--xh-border-subtle` | field-array 的 add-trigger 部件 border-color 覆盖槽。 |
-| `--xh-field-array-add-border-hover` | `add-trigger` | `border-color` | `hover`<br>`not([aria-disabled='true'])` | `--xh-border-control-hover` | field-array 的 add-trigger 部件 border-color 覆盖槽。 |
-| `--xh-field-array-add-fg` | `add-trigger` | `color` | `default` | `--xh-fg-brand` | field-array 的 add-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-add-bg` | `add-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-add-bg-active` | `add-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-add-bg-hover` | `add-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-add-border` | `add-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | field-array 的 add-trigger 部件 border 覆盖槽。 |
+| `--xh-field-array-add-border-disabled` | `add-trigger` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | field-array 的 add-trigger 部件 border-color 覆盖槽。 |
+| `--xh-field-array-add-border-hover` | `add-trigger` | `border-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-border-hover` | field-array 的 add-trigger 部件 border-color 覆盖槽。 |
+| `--xh-field-array-add-fg` | `add-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-brand` | field-array 的 add-trigger 部件 color 覆盖槽。 |
 | `--xh-field-array-add-font-size` | `add-trigger` | `font-size` | `default` | `--xh-text-label-size` | field-array 的 add-trigger 部件 font-size 覆盖槽。 |
-| `--xh-field-array-add-height` | `add-trigger` | `block-size` | `default` | `--xh-control-h-md` | field-array 的 add-trigger 部件 block-size 覆盖槽。 |
-| `--xh-field-array-add-px` | `add-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | field-array 的 add-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-field-array-add-height` | `add-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | field-array 的 add-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-field-array-add-px` | `add-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | field-array 的 add-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-field-array-add-radius` | `add-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 add-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-field-array-content-gap` | `item-content` | `gap` | `default` | `--xh-space-2` | field-array 的 item-content 部件 gap 覆盖槽。 |
 | `--xh-field-array-gap` | `root` | `gap` | `default` | `--xh-space-2` | field-array 的 root 部件 gap 覆盖槽。 |
-| `--xh-field-array-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | field-array 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-field-array-item-delete-fg-hover` | `item-delete-trigger` | `color` | `hover`<br>`not([aria-disabled='true'])` | `--xh-fg-danger-hover` | field-array 的 item-delete-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-icon-size` | `add-trigger`<br>`item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | field-array 的 add-trigger、item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-field-array-item-delete-fg-hover` | `item-delete-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-danger-hover` | field-array 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-field-array-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | field-array 的 item 部件 gap 覆盖槽。 |
 | `--xh-field-array-item-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-label 部件 color 覆盖槽。 |
 | `--xh-field-array-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background` | `default` | `transparent` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。 |
-| `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background` | `active`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-active` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。 |
-| `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background` | `hover`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-hover` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。 |
+| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-trigger-fg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
-| `--xh-field-array-trigger-fg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `hover`<br>`not([aria-disabled='true'])` | `--xh-fg-default` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-trigger-fg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
 | `--xh-field-array-trigger-font-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 font-size 覆盖槽。 |
 | `--xh-field-array-trigger-radius` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-field-array-trigger-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-field-array-trigger-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

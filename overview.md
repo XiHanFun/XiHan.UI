@@ -2,7 +2,7 @@
 
 # 架构总览
 
-XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一件事：**让「组件的行为」独立于「渲染它的框架」存在**。
+XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个目标：让组件的行为独立于渲染它的框架存在。
 
 ## 一个组件的五份产物
 
@@ -20,7 +20,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 
 ## 分层与依赖矩阵
 
-层级越低越基础，只能向下依赖。这套拓扑写在 `tooling/eslint-config/src/layers.json` 里，由 dependency-cruiser 在 `pnpm boundaries` 时强制，不靠自觉。
+层级越低越基础，只能向下依赖。拓扑写在 `tooling/eslint-config/src/layers.json`，由 dependency-cruiser 在 `pnpm boundaries` 时强制执行。
 
 | 层 | 包 | 可依赖 |
 | --- | --- | --- |
@@ -44,13 +44,13 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 
 除分层外还有三条硬规则，同样由门禁执行：
 
-- **库包的运行时代码不得引第三方。** 唯一登记在案的例外是 `@internationalized/date`，只有 `headless` 的日期族在用。
-- **`styles` 是纯 CSS。** 它不依赖任何 JS 包，因此可以脱离整个 JS 层单独使用。
-- **依赖版本只从 workspace catalog 取。** 包内一律写 `catalog:` 或 `workspace:` 协议引用，不得内联版本号。
+- 库包的运行时代码不引入第三方依赖。唯一登记的例外是 `@internationalized/date`，只有 `headless` 的日期族使用。
+- `styles` 是纯 CSS。它不依赖任何 JS 包，可以脱离整个 JS 层单独使用。
+- 依赖版本只从 workspace catalog 取。包内一律使用 `catalog:` 或 `workspace:` 协议引用，不内联版本号。
 
 ## 一次交互经过哪些层
 
-以「点击对话框的触发器」为例：
+以点击对话框的触发器为例：
 
 ```
 用户点击
@@ -74,7 +74,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 皮肤按 [data-state='open'] 命中新规则，动画播放      （styles）
 ```
 
-关键在于中间那三步与框架无关。Vue、React 与 Web Components 适配器各自负责最外两步。
+中间三步与框架无关，Vue、React 与 Web Components 适配器各自负责首尾两步。
 
 ## 包一览
 
@@ -112,12 +112,12 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | --- | --- |
 | `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核，增量切块 + 稳定 key |
-| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器；适配器的可选 peer，不装就渲纯文本 |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器；适配器的可选 peer，未安装时渲染纯文本 |
 | `@xihan-ui/backgrounds` | WebGL2 背景效果与数据驱动粒子点云 |
 | `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 
-`tooling/*` 下还有构建、lint、tsconfig、测试与门禁脚本等内部包，一律不发布。
+`tooling/*` 下的构建、lint、tsconfig、测试与门禁脚本等内部包一律不发布。
 
 ## 目录结构
 
@@ -125,9 +125,9 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 XiHan.UI/
 ├── ui/                      # 组件库工作区（pnpm workspace）
 │   ├── packages/            # 对外发布的库包，按角色分四组
-│   │   ├── adapters/        # vue · react · web-components——按宿主选择
-│   │   ├── design/          # tokens · styles · icons——外观
-│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight——按需自选
+│   │   ├── adapters/        # vue · react · web-components，按宿主选择
+│   │   ├── design/          # tokens · styles · icons，外观
+│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight，按需选用
 │   │   └── engine/          # core · motion · pointer · position · headless
 │   └── tooling/             # 内部构建与质量工具
 │       ├── build/           # 打包配置与 exports 回写
@@ -135,7 +135,7 @@ XiHan.UI/
 │       ├── stylelint-config/
 │       ├── testing/         # 一致性 / 无障碍 / 定位三套判据的运行时
 │       └── scripts/         # 门禁脚本
-└── docs/                    # 文档站（VitePress），按 link: 指回上面的库包
+└── docs/                    # 文档站（VitePress），通过 link: 引用上述库包
 ```
 
 文档站提供 Vue、React 与自定义元素的真实组件示例；示例源文件在 `docs/.vitepress/demos/<组件>/` 下。各框架覆盖由 `check-demo-frameworks` 核对，不适用项和缺席项分别登记。
@@ -154,6 +154,6 @@ XiHan.UI/
 
 ## 下一步
 
-- [安装与接入](./installation)：先把它跑起来
-- [快速上手](./quickstart)：三种用法各写一遍
-- [解剖与部件契约](./guide/anatomy)：理解 `data-scope` / `data-part` 这套约定
+- [安装与接入](./installation)：完成接入并运行
+- [快速上手](./quickstart)：三种用法的最小示例
+- [解剖与部件契约](./guide/anatomy)：`data-scope` / `data-part` 约定

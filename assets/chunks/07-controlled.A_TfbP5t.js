@@ -1,0 +1,55 @@
+const n=`<!-- 受控通道 | 提供 value 与 active 后进入受控分支：value 改写即重新计时，active 切换为假停在当前剩余量、切换为真继续运行 -->
+<xh-timer id="timer-controlled" value="5000" precision="1" format="s.S">
+  <div data-xh-part="root">
+    <div data-xh-part="display">
+      <span data-xh-part="item" unit="seconds"></span>
+      <span data-xh-part="separator">.</span>
+      <span data-xh-part="item" unit="milliseconds"></span>
+    </div>
+  </div>
+</xh-timer>
+<span> 秒</span>
+
+<xh-button variant="outline">
+  <button data-xh-part="root" id="timer-controlled-toggle">暂停</button>
+</xh-button>
+
+<xh-button variant="solid">
+  <button data-xh-part="root" id="timer-controlled-restart">
+    重新计时（5 秒 / 8 秒 交替）
+  </button>
+</xh-button>
+
+<span id="timer-controlled-done" style="display: none">到点了</span>
+
+<script type="module">
+  // 两个时长交替：value 变了才重新计时，同一个值再写一遍不算换了一轮
+  const rounds = [5000, 8000];
+  const timer = document.getElementById("timer-controlled");
+  const toggle = document.getElementById("timer-controlled-toggle");
+  const done = document.getElementById("timer-controlled-done");
+  let at = 0;
+  let running = true;
+
+  timer.addEventListener("complete", () => {
+    done.style.display = "";
+  });
+
+  toggle.addEventListener("click", () => {
+    running = !running;
+    timer.active = running;
+    toggle.textContent = running ? "暂停" : "继续";
+  });
+
+  document
+    .getElementById("timer-controlled-restart")
+    .addEventListener("click", () => {
+      at = (at + 1) % rounds.length;
+      timer.value = rounds[at];
+      done.style.display = "none";
+      running = true;
+      timer.active = true;
+      toggle.textContent = "暂停";
+    });
+<\/script>
+`;export{n as default};

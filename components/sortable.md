@@ -22,18 +22,20 @@ import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhS
 import { ref } from "vue";
 
 const ids = ref(["规划", "设计", "实现", "发布"]);
+const tones = ["brand", "info", "success", "warning"] as const;
 </script>
 
 <template>
   <XhSortableRoot v-model:ids="ids" style="inline-size: min(360px, 100%)">
     <XhSortableItem
-      v-for="id in ids"
+      v-for="(id, index) in ids"
       :key="id"
       :item-id="id"
+      :aria-label="id"
       style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
     >
       <XhSortableItemDragTrigger :item-id="id" />
-      <span>{{ id }}</span>
+      <span data-demo-block="line" :data-tone="tones[index]" />
     </XhSortableItem>
     <XhSortableDropIndicator />
     <XhSortableLiveRegion />
@@ -47,10 +49,10 @@ const ids = ref(["规划", "设计", "实现", "发布"]);
 </style>
 <xh-sortable id="sortable-basic" ids="规划,设计,实现,发布" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(360px, 100%)">
-    <div data-xh-part="item" item-id="规划"><button data-xh-part="item-drag-trigger" item-id="规划"></button><span>规划</span></div>
-    <div data-xh-part="item" item-id="设计"><button data-xh-part="item-drag-trigger" item-id="设计"></button><span>设计</span></div>
-    <div data-xh-part="item" item-id="实现"><button data-xh-part="item-drag-trigger" item-id="实现"></button><span>实现</span></div>
-    <div data-xh-part="item" item-id="发布"><button data-xh-part="item-drag-trigger" item-id="发布"></button><span>发布</span></div>
+    <div data-xh-part="item" item-id="规划" aria-label="规划"><button data-xh-part="item-drag-trigger" item-id="规划"></button><span data-demo-block="line" data-tone="brand"></span></div>
+    <div data-xh-part="item" item-id="设计" aria-label="设计"><button data-xh-part="item-drag-trigger" item-id="设计"></button><span data-demo-block="line" data-tone="info"></span></div>
+    <div data-xh-part="item" item-id="实现" aria-label="实现"><button data-xh-part="item-drag-trigger" item-id="实现"></button><span data-demo-block="line" data-tone="success"></span></div>
+    <div data-xh-part="item" item-id="发布" aria-label="发布"><button data-xh-part="item-drag-trigger" item-id="发布"></button><span data-demo-block="line" data-tone="warning"></span></div>
     <div data-xh-part="drop-indicator"></div>
     <div data-xh-part="live-region"></div>
   </div>
@@ -83,18 +85,20 @@ import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhS
 import { ref } from "vue";
 
 const ids = ref(["概览", "订单", "库存", "报表"]);
+const tones = ["brand", "info", "success", "warning"] as const;
 </script>
 
 <template>
   <XhSortableRoot v-model:ids="ids" orientation="horizontal">
     <XhSortableItem
-      v-for="id in ids"
+      v-for="(id, index) in ids"
       :key="id"
       :item-id="id"
+      :aria-label="id"
       style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle)"
     >
       <XhSortableItemDragTrigger :item-id="id" />
-      <span>{{ id }}</span>
+      <span data-demo-block="line" :data-tone="tones[index]" style="--xh-demo-block-inline-size: 48px" />
     </XhSortableItem>
     <XhSortableDropIndicator />
     <XhSortableLiveRegion />
@@ -108,10 +112,10 @@ const ids = ref(["概览", "订单", "库存", "报表"]);
 </style>
 <xh-sortable id="sortable-horizontal" ids="概览,订单,库存,报表" orientation="horizontal" style="display: contents">
   <div data-xh-part="root">
-    <div data-xh-part="item" item-id="概览"><button data-xh-part="item-drag-trigger" item-id="概览"></button><span>概览</span></div>
-    <div data-xh-part="item" item-id="订单"><button data-xh-part="item-drag-trigger" item-id="订单"></button><span>订单</span></div>
-    <div data-xh-part="item" item-id="库存"><button data-xh-part="item-drag-trigger" item-id="库存"></button><span>库存</span></div>
-    <div data-xh-part="item" item-id="报表"><button data-xh-part="item-drag-trigger" item-id="报表"></button><span>报表</span></div>
+    <div data-xh-part="item" item-id="概览" aria-label="概览"><button data-xh-part="item-drag-trigger" item-id="概览"></button><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 48px"></span></div>
+    <div data-xh-part="item" item-id="订单" aria-label="订单"><button data-xh-part="item-drag-trigger" item-id="订单"></button><span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 48px"></span></div>
+    <div data-xh-part="item" item-id="库存" aria-label="库存"><button data-xh-part="item-drag-trigger" item-id="库存"></button><span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 48px"></span></div>
+    <div data-xh-part="item" item-id="报表" aria-label="报表"><button data-xh-part="item-drag-trigger" item-id="报表"></button><span data-demo-block="line" data-tone="warning" style="--xh-demo-block-inline-size: 48px"></span></div>
     <div data-xh-part="drop-indicator"></div><div data-xh-part="live-region"></div>
   </div>
 </xh-sortable>
@@ -135,18 +139,20 @@ import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhS
 import { ref } from "vue";
 
 const ids = ref(["颜色", "排版", "间距", "圆角", "阴影", "动效"]);
+const tones = ["brand", "info", "success", "warning", "danger", "neutral"] as const;
 </script>
 
 <template>
   <XhSortableRoot v-model:ids="ids" orientation="both" style="max-inline-size: 340px">
     <XhSortableItem
-      v-for="id in ids"
+      v-for="(id, index) in ids"
       :key="id"
       :item-id="id"
+      :aria-label="id"
       style="display: flex; align-items: center; gap: 6px; inline-size: 104px; block-size: 72px; padding: 10px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
     >
       <XhSortableItemDragTrigger :item-id="id" />
-      <span>{{ id }}</span>
+      <span data-demo-block :data-tone="tones[index]" style="--xh-demo-block-block-size: 40px" />
     </XhSortableItem>
     <XhSortableDropIndicator />
     <XhSortableLiveRegion />
@@ -160,12 +166,12 @@ const ids = ref(["颜色", "排版", "间距", "圆角", "阴影", "动效"]);
 </style>
 <xh-sortable id="sortable-grid" ids="颜色,排版,间距,圆角,阴影,动效" orientation="both" style="display: contents">
   <div data-xh-part="root" style="max-inline-size: 340px">
-    <div data-xh-part="item" item-id="颜色"><button data-xh-part="item-drag-trigger" item-id="颜色"></button><span>颜色</span></div>
-    <div data-xh-part="item" item-id="排版"><button data-xh-part="item-drag-trigger" item-id="排版"></button><span>排版</span></div>
-    <div data-xh-part="item" item-id="间距"><button data-xh-part="item-drag-trigger" item-id="间距"></button><span>间距</span></div>
-    <div data-xh-part="item" item-id="圆角"><button data-xh-part="item-drag-trigger" item-id="圆角"></button><span>圆角</span></div>
-    <div data-xh-part="item" item-id="阴影"><button data-xh-part="item-drag-trigger" item-id="阴影"></button><span>阴影</span></div>
-    <div data-xh-part="item" item-id="动效"><button data-xh-part="item-drag-trigger" item-id="动效"></button><span>动效</span></div>
+    <div data-xh-part="item" item-id="颜色" aria-label="颜色"><button data-xh-part="item-drag-trigger" item-id="颜色"></button><span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 40px"></span></div>
+    <div data-xh-part="item" item-id="排版" aria-label="排版"><button data-xh-part="item-drag-trigger" item-id="排版"></button><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 40px"></span></div>
+    <div data-xh-part="item" item-id="间距" aria-label="间距"><button data-xh-part="item-drag-trigger" item-id="间距"></button><span data-demo-block data-tone="success" style="--xh-demo-block-block-size: 40px"></span></div>
+    <div data-xh-part="item" item-id="圆角" aria-label="圆角"><button data-xh-part="item-drag-trigger" item-id="圆角"></button><span data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 40px"></span></div>
+    <div data-xh-part="item" item-id="阴影" aria-label="阴影"><button data-xh-part="item-drag-trigger" item-id="阴影"></button><span data-demo-block data-tone="danger" style="--xh-demo-block-block-size: 40px"></span></div>
+    <div data-xh-part="item" item-id="动效" aria-label="动效"><button data-xh-part="item-drag-trigger" item-id="动效"></button><span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 40px"></span></div>
     <div data-xh-part="drop-indicator"></div><div data-xh-part="live-region"></div>
   </div>
 </xh-sortable>
@@ -189,19 +195,21 @@ import { XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSort
 import { ref } from "vue";
 
 const ids = ref(["固定项", "设计", "实现", "发布"]);
+const tones = ["neutral", "info", "success", "warning"] as const;
 </script>
 
 <template>
   <XhSortableRoot v-model:ids="ids" style="inline-size: min(360px, 100%)">
     <XhSortableItem
-      v-for="id in ids"
+      v-for="(id, index) in ids"
       :key="id"
       :item-id="id"
       :disabled="id === '固定项'"
+      :aria-label="id"
       style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
     >
       <XhSortableItemDragTrigger :item-id="id" :disabled="id === '固定项'" />
-      <span>{{ id }}</span>
+      <span data-demo-block="line" :data-tone="tones[index]" />
     </XhSortableItem>
     <XhSortableLiveRegion />
   </XhSortableRoot>
@@ -214,10 +222,10 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 </style>
 <xh-sortable id="sortable-disabled" ids="固定项,设计,实现,发布" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(360px, 100%)">
-    <div data-xh-part="item" item-id="固定项" disabled><button data-xh-part="item-drag-trigger" item-id="固定项" disabled></button><span>固定项</span></div>
-    <div data-xh-part="item" item-id="设计"><button data-xh-part="item-drag-trigger" item-id="设计"></button><span>设计</span></div>
-    <div data-xh-part="item" item-id="实现"><button data-xh-part="item-drag-trigger" item-id="实现"></button><span>实现</span></div>
-    <div data-xh-part="item" item-id="发布"><button data-xh-part="item-drag-trigger" item-id="发布"></button><span>发布</span></div>
+    <div data-xh-part="item" item-id="固定项" disabled aria-label="固定项"><button data-xh-part="item-drag-trigger" item-id="固定项" disabled></button><span data-demo-block="line" data-tone="neutral"></span></div>
+    <div data-xh-part="item" item-id="设计" aria-label="设计"><button data-xh-part="item-drag-trigger" item-id="设计"></button><span data-demo-block="line" data-tone="info"></span></div>
+    <div data-xh-part="item" item-id="实现" aria-label="实现"><button data-xh-part="item-drag-trigger" item-id="实现"></button><span data-demo-block="line" data-tone="success"></span></div>
+    <div data-xh-part="item" item-id="发布" aria-label="发布"><button data-xh-part="item-drag-trigger" item-id="发布"></button><span data-demo-block="line" data-tone="warning"></span></div>
     <div data-xh-part="live-region"></div>
   </div>
 </xh-sortable>
@@ -259,11 +267,11 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 
 - 拖拽手柄放在项目的固定位置，与项目内的其他控件分开。
 - 拖放结束后立刻持久化 `ids`，失败时回滚并提示。
-- 项目高度尽量一致，让位动画才读得出落点。
+- 项目高度保持一致，让位动画才能表达落点。
 
 ### 反模式
 
-- 用整个项目当手柄，项目里的按钮与链接就点不到了。
+- 用整个项目作为手柄，项目内的按钮与链接将无法点击。
 - 拖动中改变列表长度或过滤条件。
 
 ## API 参考
@@ -282,14 +290,14 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `ids` | `string[]` | 是 | 项的稳定标识，数组顺序就是当前顺序。这是顺序的唯一真源。 DOM 里项的先后必须与它一致——几何按 DOM 量，回调按它算。 |
-| `orientation` | `SortableAxis` |  | 排序沿哪根轴走。换行网格用 `both`。 |
+| `ids` | `string[]` | 是 | 项的稳定标识，数组顺序即当前顺序。这是顺序的唯一真源。 DOM 中项的先后必须与它一致：几何按 DOM 测量，回调按它计算。 |
+| `orientation` | `SortableAxis` |  | 排序沿哪根轴进行。换行网格使用 `both`。 |
 | `disabled` | `boolean` |  |  |
-| `activationDistance` | `number` |  | 按下之后走多远才算开始拖，默认 5px。给 0 表示按下即拖。 |
-| `autoScroll` | `boolean` |  | 拖到容器边缘时自动滚动，默认开。 |
+| `activationDistance` | `number` |  | 按下之后移动多远才视为开始拖动，默认 5px。提供 0 表示按下即拖动。 |
+| `autoScroll` | `boolean` |  | 拖到容器边缘时自动滚动，默认开启。 |
 | `dir` | `Direction` |  |  |
 | `translations` | `Partial<SortableTranslations>` |  |  |
-| `onSort` | `(details: SortableSortDetails) => void` |  | 顺序变化意图。取消的那次不发。 |
+| `onSort` | `(details: SortableSortDetails) => void` |  | 顺序变化意图。取消的一次不发出。 |
 | `onDragStart` | `(details: SortableDragStartDetails) => void` |  |  |
 | `onDragEnd` | `(details: SortableDragEndDetails) => void` |  |  |
 
@@ -299,7 +307,7 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sort` | `SortableSortDetails` | 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排好 |
+| `sort` | `SortableSortDetails` | 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排 |
 | `drag-start` | `SortableDragStartDetails` | 拾起；detail 为 `{ id, from, mode }` |
 | `drag-end` | `SortableDragEndDetails` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }` |
 
@@ -319,9 +327,9 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 
 **状态**：`idle` · `pending` · `dragging`
 
-**事件**：`ITEM.POINTER_DOWN` · `POINTER.MOVE` · `POINTER.END` · `POINTER.CANCEL` · `ITEM.PICKUP` · `KEY.MOVE` · `KEY.DROP` · `KEY.CANCEL`
+**事件**：`ITEM.POINTER_DOWN` · `POINTER.MOVE` · `POINTER.END` · `POINTER.CANCEL` · `ITEM.PICKUP` · `KEY.MOVE` · `KEY.DROP` · `KEY.CANCEL` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canSort` · `passedActivation`
+**判据**：`canSort` · `passedActivation` · `canPress`
 
 ### connect API
 
@@ -338,7 +346,7 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SortableItemProps) => T['element']` |  |
 | `getItemDragTriggerProps` | `(props: SortableItemProps) => T['element']` |  |
-| `getDropIndicatorProps` | `() => T['element']` | 落点线：拖动中且落点与起点不同一位时才在场，位置由内联样式给出。 |
+| `getDropIndicatorProps` | `() => T['element']` | 落点线：拖动中且落点与起点不同位时才存在，位置由内联样式给出。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -354,6 +362,7 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 | `ArrowUp` / `ArrowLeft` | 键盘拖动中 | 往前挪一位，规则同上；rtl 下左右两键对调，语义恒是「往前 / 往后」 |
 | `Space` / `Enter` | 键盘拖动中 | 放下，按当前位置提交顺序并播报落点 |
 | `Escape` | 键盘拖动中 | 取消，顺序回到拾起前，播报已取消与原位置 |
+| `Enter` / `Space` | held on item-drag-trigger, not disabled | 按住期间把手投影 data-pressed，与指针 :active 同一副按压面；拾起转拖动那一下即撤下（拖动中的回执是 data-dragging），抬起或失焦撤下 |
 
 ### ARIA
 
@@ -397,29 +406,37 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 | `item` | `data-index` | String(item?.index ?? -1) |
 | `item-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-xh-action-control` | '' |
+| `item-drag-trigger` | `data-xh-action-display` | 'always' |
+| `item-drag-trigger` | `data-xh-action-profile` | 'icon' |
+| `item-drag-trigger` | `data-xh-action-size` | 'xs' |
+| `item-drag-trigger` | `data-xh-action-variant` | 'ghost' |
 | `drop-indicator` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-sortable-drag-bg-hover` | `item-drag-trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | sortable 的 item-drag-trigger 部件 background 覆盖槽。 |
+| `--xh-sortable-drag-bg-active` | `item-drag-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | sortable 的 item-drag-trigger 部件 background-color 覆盖槽。 |
+| `--xh-sortable-drag-bg-hover` | `item-drag-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | sortable 的 item-drag-trigger 部件 background-color 覆盖槽。 |
 | `--xh-sortable-drag-fg` | `item-drag-trigger` | `color` | `default` | `--xh-fg-muted` | sortable 的 item-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-sortable-drag-fg-disabled` | `item-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | sortable 的 item-drag-trigger 部件 color 覆盖槽。 |
-| `--xh-sortable-drag-fg-hover` | `item-drag-trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | sortable 的 item-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-sortable-drag-fg-hover` | `item-drag-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | sortable 的 item-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-sortable-drag-grip-h` | `item-drag-trigger` | `block-size` | `empty` | `--xh-space-3` | sortable 的 item-drag-trigger 部件 block-size 覆盖槽。 |
 | `--xh-sortable-drag-grip-w` | `item-drag-trigger` | `inline-size` | `empty` | `--xh-space-1` | sortable 的 item-drag-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-sortable-drag-icon-size` | `item-drag-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | sortable 的 item-drag-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-sortable-drag-radius` | `item-drag-trigger` | `border-radius` | `default` | `--xh-shape-control` | sortable 的 item-drag-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-sortable-drag-size` | `item-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | sortable 的 item-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-sortable-drag-size` | `item-drag-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | sortable 的 item-drag-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-sortable-drop-indicator-bg` | `drop-indicator` | `background` | `default` | `--xh-bg-brand` | sortable 的 drop-indicator 部件 background 覆盖槽。 |
 | `--xh-sortable-drop-indicator-radius` | `drop-indicator` | `border-radius` | `default` | `--xh-shape-pill` | sortable 的 drop-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-sortable-drop-indicator-size` | `drop-indicator` | `block-size`<br>`inline-size` | `orientation=both`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | sortable 的 drop-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-sortable-gap` | `root` | `gap` | `default` | `--xh-space-2` | sortable 的 root 部件 gap 覆盖槽。 |
 | `--xh-sortable-item-opacity-dragging` | `item` | `opacity` | `dragging` | `0.9` | sortable 的 item 部件 opacity 覆盖槽。 |
-| `--xh-sortable-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-raised` | sortable 的 item 部件 box-shadow 覆盖槽。 |
+| `--xh-sortable-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | sortable 的 item 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

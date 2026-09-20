@@ -2,7 +2,7 @@
 
 # Popover 气泡卡片 `alpha`
 
-由点击触发、贴着触发器的一小块浮层，里面可以放任意内容与交互。
+由点击触发、贴着触发器的一小块浮层，可以放任意内容与交互。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/popover" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-点击展开，Escape 或点外部关闭；positioner 负责摆位，content 才是浮层本体
+点击展开，Escape 或点击外部关闭；positioner 负责定位，content 才是浮层本体
 
 ```vue
 <script setup lang="ts">
@@ -78,7 +78,7 @@ import {
 
 ### 朝向与间距
 
-placement 是请求值，空间不够时定位引擎会自动翻面；offset 调的是浮层与触发器的距离
+placement 是请求值，空间不足时定位引擎会自动翻面；offset 调整浮层与触发器的距离
 
 ```vue
 <script setup lang="ts">
@@ -156,7 +156,7 @@ const cases = [
 
 ### 受控
 
-传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起
+传入 open 后由宿主决定；这里额外关闭点击外部关闭，只有按钮与 Escape 能收起
 
 ```vue
 <script setup lang="ts">
@@ -246,7 +246,7 @@ const open = ref(false);
 
 ### 尺寸
 
-三档换的是浮层的内边距与字号，不写 size 即缺省档；逐个点开触发器看差别
+三档改变浮层的内边距与字号，不写 size 即默认档；逐个点开触发器查看差别
 
 ```vue
 <script setup lang="ts">
@@ -330,7 +330,7 @@ const sizes = [
 
 ### 确认气泡
 
-标题、说明与两颗按钮拼成一次就地确认；两颗按钮按下后都只是把浮层收起
+标题、说明与两个按钮组成一次就地确认；两个按钮按下后都只是收起浮层
 
 ```vue
 <script setup lang="ts">
@@ -424,7 +424,7 @@ function confirm(setOpen: (next: boolean) => void) {
 
 ### 长内容滚动
 
-浮层自己不限高，给里面的容器设上限并开滚动，标题与关闭按钮就不跟着滚
+浮层自身不限高，为内部容器设置上限并开启滚动，标题与关闭按钮就不随内容滚动
 
 ```vue
 <script setup lang="ts">
@@ -450,7 +450,7 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
     <XhPopoverPositioner>
       <XhPopoverContent>
         <XhPopoverTitle>历史版本</XhPopoverTitle>
-        <div style="max-block-size: 160px; overflow: auto">
+        <div data-xh-scroll style="max-block-size: 160px; overflow: auto">
           <p
             v-for="v in versions"
             :key="v.id"
@@ -477,7 +477,7 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <h3 data-xh-part="title">历史版本</h3>
-      <div style="max-block-size: 160px; overflow: auto">
+      <div data-xh-scroll style="max-block-size: 160px; overflow: auto">
         <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.18 更新了若干细节</p>
         <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.17 更新了若干细节</p>
         <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.16 更新了若干细节</p>
@@ -511,7 +511,7 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
 
 ### 模态浮层
 
-modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点
+modal 使焦点限制在浮层内：Tab 到末尾回绕，旁边的按钮此时无法获得焦点
 
 ```vue
 <script setup lang="ts">
@@ -611,7 +611,7 @@ const picked = ref("收件箱");
 
 ### 事件
 
-open-change 带一份 { open }，报的是这次要落到的状态；非受控时内部开合也照发一次
+open-change 带一份 { open }，报告的是本次要进入的状态；非受控时内部开合也照常触发一次
 
 ```vue
 <script setup lang="ts">
@@ -683,7 +683,7 @@ function onOpenChange(details: { open: boolean }) {
 
 ### 浮层与触发器同宽
 
-量出触发器的实际宽度写进 content 的行内样式，同时解掉最大宽度上限；触发器换了文案宽度也跟着走
+测量触发器的实际宽度写进 content 的行内样式，同时解除最大宽度上限；触发器更换文案后宽度随之变化
 
 ```vue
 <script setup lang="ts">
@@ -902,7 +902,7 @@ const dir = ref<"ltr" | "rtl">("rtl");
 
 ### 落在指针位置
 
-触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点
+触发器缩为一个像素、按点击坐标固定放置，浮层就固定在刚点击的位置；再点一次更换落点
 
 ```vue
 <script setup lang="ts">
@@ -1056,38 +1056,38 @@ function pin(event: MouseEvent): void {
 
 ### 何时使用
 
-- 补充信息或一小组操作，不值得为它开对话框。
-- 内容里有可聚焦元素（按钮、输入框）——这是它与[文字提示](./tooltip)的分界线。
+- 补充信息或一小组操作，不需要为此打开对话框。
+- 内容中有可聚焦元素（按钮、输入框），这是它与[文字提示](./tooltip)的分界。
 
 ### 何时不用
 
-- 只是一句纯文字说明：用[文字提示](./tooltip)。
-- 悬停即出、不需要点击：用[悬浮卡片](./hover-card)。
-- 内容是一列命令：用[菜单](./menu)。
+- 只有一句纯文字说明时，使用[文字提示](./tooltip)。
+- 悬停即出、不需要点击时，使用[悬浮卡片](./hover-card)。
+- 内容是一列命令时，使用[菜单](./menu)。
 
 ### 特性
 
-- `placement` 只是首选位，空间不够时定位引擎自动翻面。
-- `modal` 可选：需要锁住下层时打开；展开期间可动态切换，模态档会锁住页面滚动并让背景失活。
+- `placement` 只是首选位置，空间不足时定位引擎自动翻面。
+- `modal` 可选：需要锁定下层时开启；展开期间可动态切换，模态档会锁定页面滚动并让背景失活。
 - 可以与触发器同宽，也可以落在指针位置。
-- `end` 这类对齐是逻辑方向，跟着书写方向走，不是左右。
+- `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
 
-默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。关闭按钮键盘聚焦时立即铺实体隔离底，确保内收焦点环有稳定对比。系统减少透明度、高对比与强制颜色时，原位置切换为实体表面，打印时收起交互浮层。
+默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。说明文字为 13px 说明档。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
 
 ### 组合
 
-- 触发器用[按钮](./button)；长内容套[滚动区域](./scroll-area)。
+- 触发器使用[按钮](./button)；长内容使用[滚动区域](./scroll-area)。
 
 ### 最佳实践
 
-- 打开后焦点进浮层，Escape 关闭并归还焦点。
-- 模态浮层关闭时，滚动锁与背景失活会保留到真实退场动画结束；退场内容自身立即退出焦点与交互树。
-- 内容控制在一屏内，需要滚动就说明该换[抽屉](./drawer)了。
+- 打开后焦点进入浮层，Escape 关闭并归还焦点。
+- 模态浮层关闭时，滚动锁与背景失活保留到真实退场动画结束；退场内容自身立即退出焦点与交互树。
+- 内容控制在一屏内，需要滚动时应改用[抽屉](./drawer)。
 
 ### 反模式
 
-- 悬停触发却里面有按钮：指针移过去的路上就关了。
-- 气泡里再弹气泡。
+- 悬停触发却内含按钮：指针移动过去的途中就会关闭。
+- 气泡内再弹出气泡。
 
 ## API 参考
 
@@ -1108,9 +1108,9 @@ function pin(event: MouseEvent): void {
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `modal` | `boolean` |  | 模态浮层陷住焦点；默认 false（非模态，Tab 可离开）。 |
+| `modal` | `boolean` |  | 模态浮层陷入焦点；默认 false（非模态，Tab 可离开）。 |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `translations` | `Partial<PopoverTranslations>` |  |  |
@@ -1147,7 +1147,7 @@ function pin(event: MouseEvent): void {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled`
 
@@ -1179,6 +1179,7 @@ function pin(event: MouseEvent): void {
 | `Escape` | open | 关闭并把焦点还给 trigger |
 | `Tab` | open 且 modal | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open 且 modal | 在 content 内向前循环焦点 |
+| `Enter` / `Space` | held in trigger / close-trigger | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或浮层收起撤下 |
 
 ### ARIA
 
@@ -1201,7 +1202,7 @@ function pin(event: MouseEvent): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/popover.css` 使用 `[data-scope="popover"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/popover.css` 使用 `[data-scope="popover"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -1211,7 +1212,13 @@ function pin(event: MouseEvent): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'text' |
+| `trigger` | `data-xh-action-size` | 'md' |
+| `trigger` | `data-xh-action-variant` | 'outline' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -1219,37 +1226,44 @@ function pin(event: MouseEvent): void {
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `close-trigger` | `data-xh-action-control` | '' |
+| `close-trigger` | `data-xh-action-display` | 'always' |
+| `close-trigger` | `data-xh-action-profile` | 'icon' |
+| `close-trigger` | `data-xh-action-size` | 'sm' |
+| `close-trigger` | `data-xh-action-variant` | 'ghost' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-popover-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | popover 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
 | `--xh-popover-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | popover 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-popover-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | popover 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-popover-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | popover 的 arrow、content 部件 border 覆盖槽。 |
-| `--xh-popover-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-bg-subtle-active` | popover 的 close-trigger 部件 background 覆盖槽。 |
-| `--xh-popover-close-bg-focus` | `close-trigger` | `background` | `focus-visible` | `--xh-material-frosted-focus-surface` | popover 的 close-trigger 部件 background 覆盖槽。 |
-| `--xh-popover-close-bg-hover` | `close-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | popover 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-popover-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | popover 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-popover-close-bg-focus` | `close-trigger` | `background-color` | `focus-visible` | `--xh-_action-variant-bg-focus-visible` | popover 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-popover-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | popover 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-popover-close-fg` | `close-trigger` | `color` | `default` | `--xh-material-frosted-fg-muted` | popover 的 close-trigger 部件 color 覆盖槽。 |
-| `--xh-popover-close-fg-focus` | `close-trigger` | `color` | `focus-visible` | `--xh-material-frosted-fg` | popover 的 close-trigger 部件 color 覆盖槽。 |
-| `--xh-popover-close-fg-hover` | `close-trigger` | `color` | `hover` | `--xh-fg-default` | popover 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-popover-close-fg-focus` | `close-trigger` | `color` | `focus-visible` | `--xh-popover-close-fg-hover` | popover 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-popover-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed` | popover 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-popover-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | popover 的 close-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-popover-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='popover'][data-part='close-trigger'])` | `--xh-control-h-sm` | popover 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
-| `--xh-popover-description-fg` | `description` | `color` | `default` | `--xh-material-frosted-fg-muted` | popover 的 description 部件 color 覆盖槽。 |
+| `--xh-popover-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='popover'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | popover 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-popover-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | popover 的 description 部件 color 覆盖槽。 |
+| `--xh-popover-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | popover 的 description 部件 font-size 覆盖槽。 |
 | `--xh-popover-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 content 部件 color 覆盖槽。 |
 | `--xh-popover-gap` | `content` | `gap` | `default` | `--xh-space-2` | popover 的 content 部件 gap 覆盖槽。 |
-| `--xh-popover-icon-size` | `content` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | popover 的 content 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-popover-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | popover 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-popover-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popover 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-popover-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | popover 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-popover-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popover-max-w` | popover 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | popover 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | popover 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-popover-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | popover 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-popover-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 title 部件 color 覆盖槽。 |
 | `--xh-popover-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popover 的 title 部件 font-size 覆盖槽。 |
@@ -1258,15 +1272,11 @@ function pin(event: MouseEvent): void {
 
 ### 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

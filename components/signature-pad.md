@@ -2,7 +2,7 @@
 
 # SignaturePad 签名板 `alpha`
 
-一块用指针写字的画布：按下落笔、移动成迹、抬笔收一笔，画出来的是可缩放、可直接提交的 SVG。
+用指针书写的画布：按下落笔、移动成迹、抬起收笔，输出可缩放、可直接提交的 SVG。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/signature-pad" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-一块画布加一条笔迹路径就够了：按下落笔、移动成迹、抬笔收一笔
+一块画布加一条笔迹路径即可：按下落笔、移动成迹、抬起收笔
 
 ```vue
 <script setup lang="ts">
@@ -52,7 +52,7 @@ import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@
 
 ### 标题、基准线与清空
 
-基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏念的是 translations 里那句
+基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏朗读的是 translations 中的文案
 
 ```vue
 <script setup lang="ts">
@@ -104,7 +104,7 @@ import {
 
 ### 参与表单
 
-给了 name 就带上表单影子，提交的是一份独立 SVG；表单重置会把画布清回空
+提供 name 后带上表单影子，提交的是一份独立 SVG；表单重置会把画布清空
 
 ```vue
 <script setup lang="ts">
@@ -184,7 +184,7 @@ import {
 
 ### 笔迹外形
 
-drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simulatePressure 决定压感取设备值还是按速度算
+drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，simulatePressure 决定压感取设备值还是按速度计算
 
 ```vue
 <script setup lang="ts">
@@ -241,7 +241,7 @@ import { XhSignaturePadControl, XhSignaturePadGuide, XhSignaturePadPath, XhSigna
 
 ### 只读与禁用
 
-只读画好的还看得见但改不动，禁用连清空按钮都按不动；两者都走原生 disabled，不是灰一层了事
+只读时已绘制的笔迹可见但不可修改，禁用时连清空按钮都不可按下；两者都使用原生 disabled，不只是视觉置灰
 
 ```vue
 <script setup lang="ts">
@@ -304,7 +304,7 @@ import {
 
 ### 取出签名
 
-签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端
+签名定稿时 draw-end 带上一份可直接入库的 SVG；提交前用 empty 拦截一次，空签名不应离开客户端
 
 ```vue
 <script setup lang="ts">
@@ -373,60 +373,63 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 
 ### 何时使用
 
-- 承诺书、回执、验收单上要留一笔手写签名。
-- 交付确认、上门服务签收这类要留下"人到过、看过"的痕迹的场景。
+- 承诺书、回执、验收单上需要手写签名。
+- 交付确认、上门服务签收等需要留下确认痕迹的场景。
 
 ### 何时不用
 
-- 要的是一份已有的签名图片：那是上传，用[文件上传](./file-upload)。
-- 要的是打字签名或姓名核对：那是一行文本，用[文本字段](./text-field)。
-- 要的是在图片上圈画批注：本组件只画自己那块画布，不承载底图。
+- 需要已有的签名图片时，属于上传，使用[文件上传](./file-upload)。
+- 需要打字签名或姓名核对时，属于一行文本，使用[文本字段](./text-field)。
+- 需要在图片上圈画批注时，本组件只绘制自己的画布，不承载底图。
 
 ### 特性
 
-- 笔迹是 SVG 填充路径，放大不糊；每一笔是同一条路径上的一条子路径。
-- 第一笔落下时量一次画布并把这套坐标钉住，画布的 `viewBox` 与导出的 SVG 都写它：容器变宽变窄时，已有笔迹跟着缩放而不是留在原像素上错位。清空后重新量。
-- `drawing` 一组选项调笔画外形：`size` 定粗细，`thinning` 让粗细随压感变，`simulatePressure` 决定压感是取设备值还是按落笔速度算。
-- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会把画布清回空。
-- 笔迹变了就发 `draw`，签名定稿就发 `draw-end`——抬笔、点清空、表单重置这三条路径都发。照 `draw-end` 缓存待提交的 SVG 不会拿到过期的那一版。
-- 手划出画布甚至划出窗口都跟手，抬手即收笔；落笔那根指针被捕获，手掌与第二根手指的移动不会被续进这一笔。
+- 笔迹是 SVG 填充路径，放大不模糊；每一笔是同一条路径上的一条子路径。
+- 第一笔落下时测量一次画布并固定这套坐标，画布的 `viewBox` 与导出的 SVG 都使用它：容器变宽变窄时，已有笔迹跟随缩放而不是停留在原像素上错位。清空后重新测量。
+- `drawing` 一组选项调整笔画外形：`size` 决定粗细，`thinning` 让粗细随压感变化，`simulatePressure` 决定压感取设备值还是按落笔速度计算。
+- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会清空画布。
+- 笔迹变化时发出 `draw`，签名定稿时发出 `draw-end`：抬笔、点击清空、表单重置三条路径都发出。按 `draw-end` 缓存待提交的 SVG 不会取到过期版本。
+- 指针划出画布甚至划出窗口都持续跟随，抬起即收笔；落笔的指针被捕获，手掌与第二根手指的移动不会续进这一笔。
+- 画布是一块字段外壳：静息 `--xh-bg-canvas` 底 + `--xh-border-control` 描边 + 4px 控件圆角、无影；落笔时描边加深，只读只换淡底，禁用退到 `--xh-border-default` + `--xh-bg-subtle`。画布按宽高比撑高，吃不下字段家族配方钉死的控件行高，因此外壳按同一套字段规则自绘。
+- 标签走字段标签档（14 / 500 / `--xh-fg-default`），贴画布 `--xh-space-1`；状态句是说明角色（13 / `--xh-fg-muted`）。
+- 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下缩放并换底；空画布时只把静息前景压淡，按钮照常可按。
 
 ### 组合
 
-- 与[表单字段](./field)搭配：标题、说明与错误提示交给字段，签名板只管画布。
-- 放进[表单](./form)里，`name` 一给就跟着提交与重置走。
-- 与[对话框](./dialog)搭配做"签名确认"：确认按钮的可用状态读 `empty`。
+- 与[表单字段](./field)搭配：标题、说明与错误提示交给字段，签名板只负责画布。
+- 放入[表单](./form)，提供 `name` 后随表单提交与重置。
+- 与[对话框](./dialog)搭配做签名确认：确认按钮的可用状态读取 `empty`。
 
 ### 节点形状是硬约束
 
-画布这一族部件必须落在特定标签上，写错了不会报错，只是一笔都画不出来：
+画布这一族部件必须落在特定标签上，写错不报错，但无法绘制：
 
 - `control` 必须是 `<svg>`；
-- `guide` 必须是 `control` 里面的 `<line>`；
-- `path` 必须是 `control` 里面的 `<path>`；
+- `guide` 必须是 `control` 内的 `<line>`；
+- `path` 必须是 `control` 内的 `<path>`；
 - `clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
 
-`viewBox` 由组件自己写，作者不要在 `control` 上再写一个。
+`viewBox` 由组件写入，作者不要在 `control` 上再写。
 
 ### 两个适配器的分工
 
-- **Vue**：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自己拿。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 里面——SVG 命名空间由那棵子树带下去，挪出去就成了 HTML 元素，画不出东西。
-- **Web Components**：结构由作者自己写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`toSvg()` 与只读的 `empty`；提交前取签名用 `toSvg()`，不必去缓存上一次 `draw-end`。
-- 两边的 `status` 部件里都不必自己写字：节点为空时由适配器填内建文案；写了字就以作者写的为准。
+- Vue：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自行获取。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 内：SVG 命名空间由该子树带下，移出后会成为 HTML 元素，无法绘制。
+- Web Components：结构由作者编写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`toSvg()` 与只读的 `empty`；提交前取签名用 `toSvg()`，不需要缓存上一次 `draw-end`。
+- 两侧的 `status` 部件内都不需要自行写文字：节点为空时由适配器填入内建文案；写了文字则以作者的为准。
 
 ### 最佳实践
 
-- 给清空按钮留一句可见文字或稳定的图标语义，别只靠一个叉。
-- **清空之后要把焦点安顿好**：按钮被禁用或被收起时焦点会掉回 `<body>`，键盘用户每清一次就丢一次位置。要么让按钮始终可按（本组件的默认做法），要么清空后显式把焦点交给下一个落点。
-- 提交前用 `empty` 拦一道：空签名与"签了但很潦草"是两回事，前者应该在客户端就挡住。
-- 要缓存待提交的 SVG 就照 `draw-end` 缓存：清空与表单重置同样会发它，缓存不会停在旧的那一版。不要去嗅探清空按钮的点击。
-- 存的是 SVG 文本，不是位图。要生成位图请在服务端渲染，别在前端截屏。
+- 给清空按钮一句可见文字或稳定的图标语义，不只依靠一个叉。
+- 清空之后安置焦点：按钮被禁用或收起时焦点会回到 `<body>`，键盘用户每清空一次就丢失一次位置。要么让按钮始终可按（本组件的默认做法），要么清空后显式把焦点交给下一个落点。
+- 提交前用 `empty` 拦截：空签名与潦草签名是两回事，前者应在客户端拦截。
+- 需要缓存待提交的 SVG 时按 `draw-end` 缓存：清空与表单重置同样会发出它，缓存不会停留在旧版本。不要嗅探清空按钮的点击。
+- 存储的是 SVG 文本，不是位图。需要位图时在服务端渲染，不在前端截屏。
 
 ### 反模式
 
-- 把画布做成小小一条：手写需要面积，太窄的画布只会逼人写出自己都认不出的字。
-- 让签名成为唯一的确认方式，却不给替代路径——这是可达性问题，不是体验问题。
-- 拿签名图当身份凭证。它证明的是"有人在这块画布上划过"，不是"谁划的"。
+- 把画布做得很窄：手写需要面积，过窄的画布只会产生无法辨认的字迹。
+- 让签名成为唯一的确认方式却不提供替代路径，这是可达性问题。
+- 把签名图当作身份凭证。它证明的是有人在画布上书写过，不是书写者的身份。
 
 ## API 参考
 
@@ -444,15 +447,15 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `disabled` | `boolean` |  | 整块不可交互：落笔不认，清空按钮也按不动。 |
-| `readOnly` | `boolean` |  | 只读：画好的签名照常显示，但改不动。 |
+| `disabled` | `boolean` |  | 整块不可交互：不响应落笔，清空按钮也不可按下。 |
+| `readOnly` | `boolean` |  | 只读：已绘制的签名照常显示，但不可修改。 |
 | `required` | `boolean` |  |  |
-| `invalid` | `boolean` |  | 校验未通过的标记，只改外观与表单影子上的 aria-invalid。 |
-| `name` | `string` |  | 表单字段名；给了表单影子才带 name 并参与提交。 |
-| `drawing` | `SignaturePadDrawingOptions` |  | 笔迹外形。缺省即 4px 恒定粗细。 |
+| `invalid` | `boolean` |  | 校验未通过的标记，只改变外观与表单影子上的 aria-invalid。 |
+| `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
+| `drawing` | `SignaturePadDrawingOptions` |  | 笔迹外形。默认为 4px 恒定粗细。 |
 | `translations` | `Partial<SignaturePadTranslations>` |  |  |
 | `onDraw` | `(details: SignaturePadDrawDetails) => void` |  | 每收进一个点通知一次，清空与表单重置时也通知一次（路径为空）。 |
-| `onDrawEnd` | `(details: SignaturePadDrawEndDetails) => void` |  | 签名定稿时通知一次并带上可直接提交的 SVG：抬笔、清空、表单重置这三条路径都发。 |
+| `onDrawEnd` | `(details: SignaturePadDrawEndDetails) => void` |  | 签名定稿时通知一次并附带可直接提交的 SVG：抬笔、清空、表单重置三条路径都发出。 |
 
 ### 事件
 
@@ -460,8 +463,8 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `draw` | `SignaturePadDrawDetails` | 笔迹变了就通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }` |
-| `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接落库 |
+| `draw` | `SignaturePadDrawDetails` | 笔迹变化时通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }` |
+| `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储 |
 
 ### 插槽
 
@@ -477,9 +480,9 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 
 **状态**：`drawing` · `idle`
 
-**事件**：`DRAW.START` · `DRAW.MOVE` · `DRAW.END` · `STROKES.CLEAR` · `FORM.RESET`
+**事件**：`DRAW.START` · `DRAW.MOVE` · `DRAW.END` · `STROKES.CLEAR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canDraw`
+**判据**：`canDraw` · `canPress`
 
 ### connect API
 
@@ -488,11 +491,11 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `paths` | `readonly string[]` | 逐笔的填充轮廓 d 串，按落笔先后排列。 |
-| `empty` | `boolean` | 一笔都没画。 |
+| `empty` | `boolean` | 没有任何笔迹。 |
 | `drawing` | `boolean` | 笔正落在画布上。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `statusText` | `string` | 签没签的那句话，写进 status 部件；适配器在作者没自己写文字时把它填进节点。 |
+| `statusText` | `string` | 是否已签名的文案，写入 status 部件；适配器在作者未自行编写文字时把它填入节点。 |
 | `toSvg` | `() => string` | 当前签名的独立 SVG 文档，与表单影子提交的是同一份；空签名为空串。 |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -501,7 +504,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | `getGuideProps` | `() => T['element']` |  |
 | `getPathProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
-| `getStatusProps` | `() => T['element']` | 状态出口：一块 role=status 的活区域，签上与清空都会播报一次。 |
+| `getStatusProps` | `() => T['element']` | 状态出口：一块 role=status 的活区域，签名与清空都会播报一次。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份视觉隐藏的原生输入，随表单提交当前签名。 |
 
 ## 无障碍
@@ -513,6 +516,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus on clear-trigger, 未禁用且非只读 | 清空整块画布；按钮是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held in clear-trigger, 未禁用且非只读 | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
 
 ### ARIA
 
@@ -531,12 +535,12 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | `hidden-input` | `aria-hidden` | 'true' |
 | `hidden-input` | `aria-invalid` | 'true' \| 'false' |
 
-- **签名天然依赖指针，用键盘和读屏做不出来。凡是要求签名的流程，必须同时提供一条不依赖指针的替代路径**——打字签名、上传签名图、或线下核验。只放一块画布就等于把这些用户挡在流程之外。
-- 画布报的是 `role="img"`，不是控件：它不接键盘、不进 Tab 序列，把它伪装成控件只会让读屏用户走进一个走不通的地方。
-- 画布的名字来自 `label` 部件；没渲染标题时退回 `translations.label`。
-- **签没签靠 `status` 部件播报**。画布是 `role="img"`，名字恒定，签上、清空、表单重置之后读屏念出来都是同一句话，用户无从确认自己那一笔留住了没有。`status` 是一块 `role="status"` 的活区域，值变一次播报一次，文案走 `translations.statusEmpty` / `translations.statusSigned`。要求签名的表单请把它渲染出来。
-- 基准线是纯画面，带 `aria-hidden`，读屏不会念它。没有 `translations.guide` 这条文案：给一条装饰线起名字只会让读屏多念一句没有信息量的话。
-- 清空按钮是原生 `<button>`，Enter / Space 由平台激活；按钮里只放图标时读屏念的是 `translations.clearTrigger`。
+- 签名天然依赖指针，键盘和读屏无法完成。凡是要求签名的流程，必须同时提供一条不依赖指针的替代路径：打字签名、上传签名图或线下核验。只放一块画布等于把这些用户挡在流程之外。
+- 画布报告为 `role="img"`，不是控件：它不接受键盘、不进入 Tab 序列，伪装成控件只会让读屏用户进入无法操作的位置。
+- 画布的名称来自 `label` 部件；未渲染标题时退回 `translations.label`。
+- 是否已签名由 `status` 部件播报。画布是 `role="img"`，名称固定，签名、清空、表单重置后读屏读出的都是同一句，用户无法确认笔迹是否保留。`status` 是 `role="status"` 的活动区域，值每变一次播报一次，文案使用 `translations.statusEmpty` / `translations.statusSigned`。要求签名的表单请渲染它。
+- 基准线是纯画面，带 `aria-hidden`，读屏不读。没有 `translations.guide` 文案：给装饰线命名只会增加无信息量的播报。
+- 清空按钮是原生 `<button>`，Enter / Space 由平台激活；按钮内只有图标时读屏读 `translations.clearTrigger`。
 
 ## 样式参考
 
@@ -565,59 +569,73 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | `path` | `data-empty` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-control` | '' |
+| `clear-trigger` | `data-xh-action-display` | 'always' |
+| `clear-trigger` | `data-xh-action-profile` | 'text' |
+| `clear-trigger` | `data-xh-action-size` | 'sm' |
+| `clear-trigger` | `data-xh-action-variant` | 'outline' |
 | `status` | `data-empty` | ''（条件成立时才出现） |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-signature-pad-aspect-ratio` | `control` | `aspect-ratio` | `default` | `5 / 2` | signature-pad 的 control 部件 aspect-ratio 覆盖槽。 |
-| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-surface` | signature-pad 的 control 部件 background 覆盖槽。 |
-| `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-muted` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-canvas` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |
+| `--xh-signature-pad-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-default` | signature-pad 的 control 部件 border-color 覆盖槽。 |
 | `--xh-signature-pad-border-drawing` | `control` | `border-color` | `drawing` | `--xh-border-control-hover` | signature-pad 的 control 部件 border-color 覆盖槽。 |
-| `--xh-signature-pad-clear-bg` | `clear-trigger` | `background` | `default` | `--xh-bg-surface` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-bg-active` | `clear-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `background` | `disabled` | `--xh-bg-muted` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-bg-hover` | `clear-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-signature-pad-clear-border` | `clear-trigger` | `border` | `default` | `--xh-border-control` | signature-pad 的 clear-trigger 部件 border 覆盖槽。 |
-| `--xh-signature-pad-clear-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-default` | signature-pad 的 clear-trigger 部件 color 覆盖槽。 |
-| `--xh-signature-pad-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-control-gap-sm` | signature-pad 的 clear-trigger 部件 gap 覆盖槽。 |
-| `--xh-signature-pad-clear-h` | `clear-trigger` | `block-size` | `default` | `--xh-control-h-sm` | signature-pad 的 clear-trigger 部件 block-size 覆盖槽。 |
-| `--xh-signature-pad-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | signature-pad 的 clear-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-signature-pad-clear-bg` | `clear-trigger` | `background-color` | `default`<br>`focus-visible` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-border` | `clear-trigger` | `border`<br>`border-color` | `default`<br>`focus-visible` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest` | signature-pad 的 clear-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-signature-pad-clear-border-hover` | `clear-trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed` | signature-pad 的 clear-trigger 部件 border-color 覆盖槽。 |
+| `--xh-signature-pad-clear-fg` | `clear-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | signature-pad 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-signature-pad-clear-fg-empty` | `clear-trigger` | `color` | `empty` | `--xh-fg-muted` | signature-pad 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-signature-pad-clear-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | signature-pad 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-signature-pad-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-_action-profile-gap` | signature-pad 的 clear-trigger 部件 gap 覆盖槽。 |
+| `--xh-signature-pad-clear-h` | `clear-trigger` | `block-size` | `default` | `--xh-_action-profile-visual-size` | signature-pad 的 clear-trigger 部件 block-size 覆盖槽。 |
+| `--xh-signature-pad-clear-icon-size` | `clear-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | signature-pad 的 clear-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-signature-pad-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | signature-pad 的 clear-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-signature-pad-clear-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | signature-pad 的 clear-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-signature-pad-clear-shadow-hover` | `clear-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | signature-pad 的 clear-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-signature-pad-clear-shadow-hover` | `clear-trigger` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | signature-pad 的 clear-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-signature-pad-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | signature-pad 的 control 部件 border-color 覆盖槽。 |
-| `--xh-signature-pad-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | signature-pad 的 root 部件 gap 覆盖槽。 |
+| `--xh-signature-pad-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-2` | signature-pad 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-signature-pad-guide-stroke` | `guide` | `stroke` | `default` | `--xh-border-control` | signature-pad 的 guide 部件 stroke 覆盖槽。 |
 | `--xh-signature-pad-ink` | `path` | `fill` | `default` | `--xh-fg-default` | signature-pad 的 path 部件 fill 覆盖槽。 |
-| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | signature-pad 的 label 部件 color 覆盖槽。 |
 | `--xh-signature-pad-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 label 部件 font-size 覆盖槽。 |
 | `--xh-signature-pad-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | signature-pad 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-signature-pad-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | signature-pad 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-signature-pad-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | signature-pad 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-signature-pad-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | signature-pad 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-signature-pad-status-fg` | `status` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 status 部件 color 覆盖槽。 |
-| `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |
+| `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-secondary-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
 - 画布宽度铺满外层容器，高度由宽高比（`--xh-signature-pad-aspect-ratio`，默认 5 / 2）决定，窄屏上自动变矮。
-- 签到一半转屏、拖动面板改宽度，已有笔迹按 `viewBox` 整体缩放，接着写下去的新笔与它落在同一套坐标里。
-- 触摸设备上画布关掉了浏览器的滚动与缩放手势，否则手指一划页面就滚走了。
+- 签名过程中转屏、拖动面板改变宽度时，已有笔迹按 `viewBox` 整体缩放，后续新笔与它落在同一套坐标。
+- 触摸设备上画布关闭浏览器的滚动与缩放手势，避免手指划动时页面滚动。
 
 ### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
-- 画布与基准线不分左右：笔迹按落笔坐标记录，方向由写的人决定。
-- 标题与清空按钮的排布跟着文档方向走，皮肤全用逻辑属性。
+- 画布与基准线不区分左右：笔迹按落笔坐标记录，方向由书写者决定。
+- 标题与清空按钮的排布跟随文档方向，皮肤全部使用逻辑属性。

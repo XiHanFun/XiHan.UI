@@ -2,7 +2,7 @@
 
 # PinInput 分格输入 `alpha`
 
-把一串短码拆成几个格子，一格一个字符。
+把一串短码拆成若干格子，一格一个字符。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/pin-input" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-每格都是原生输入框，敲一个字符自动跳下一格；粘贴整串会从落点那一格起按格铺开
+每格都是原生输入框，输入一个字符自动跳到下一格；粘贴整串会从落点格起按格铺开
 
 ```vue
 <script setup lang="ts">
@@ -57,7 +57,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ### 一次性验证码
 
-otp 补上 autocomplete=one-time-code，隐藏输入把拼好的整串交给表单，填满那一刻发 value-complete
+otp 补上 autocomplete=one-time-code，隐藏输入把拼接后的整串交给表单，填满时发出 value-complete
 
 ```vue
 <script setup lang="ts">
@@ -121,7 +121,7 @@ const submitted = ref("");
 
 ### 遮蔽与字符类别
 
-mask 把每格转成密码框，type 决定哪类字符进得来，其余按键既不进值也不留在框里
+mask 把每格转为密码框，type 决定哪类字符可以输入，其余按键既不进入值也不留在框中
 
 ```vue
 <script setup lang="ts">
@@ -173,7 +173,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ### 禁用与校验失败
 
-disabled 让每格都带原生 disabled 且不参与提交，invalid 只做标注、照样能改
+disabled 使每格都带原生 disabled 且不参与提交，invalid 只做标注、照常可以修改
 
 ```vue
 <script setup lang="ts">
@@ -225,7 +225,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ### 变体
 
-variant 只改每格的颜色槽位，跳格与粘贴铺开的行为三档一致
+variant 只改变每格的颜色槽位，跳格与粘贴铺开的行为三档一致
 
 ```vue
 <script setup lang="ts">
@@ -292,7 +292,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查看语气的差别
 
 ```vue
 <script setup lang="ts">
@@ -466,7 +466,7 @@ const sizes = [
 
 ### 分组排布
 
-格子由作者逐个写出，中间插什么都行；下标接着排，跳格与整串粘贴仍按文档序走
+格子由作者逐个写出，中间可插入任意内容；下标接续排列，跳格与整串粘贴仍按文档序进行
 
 ```vue
 <script setup lang="ts">
@@ -504,7 +504,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ### 填满才可提交
 
-每格都有字才算填满，作者据此点亮提交按钮；重填一次清空整组
+每格都有字符才算填满，作者据此启用提交按钮；重填一次清空整组
 
 ```vue
 <script setup lang="ts">
@@ -584,7 +584,7 @@ function reset(clear: () => void) {
 
 ### 只读
 
-格子带上原生 readonly，值走受控且宿主不回写：能聚焦、能选中复制，改不动
+格子带上原生 readonly，值受控且宿主不回写：可聚焦、可选中复制，不可修改
 
 ```vue
 <script setup lang="ts">
@@ -633,7 +633,7 @@ const box = "background: var(--xh-bg-subtle)";
 
 ### 自定义准入字符
 
-pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 的准入表
+pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回 type 的准入表
 
 ```vue
 <script setup lang="ts">
@@ -695,37 +695,36 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ### 何时使用
 
-- 一次性验证码、支付密码、邀请码这类定长的短串。
+- 一次性验证码、支付密码、邀请码等定长的短串。
 
 ### 何时不用
 
-- 长度不固定或较长：用[文本字段](./text-field)。
-- 输入的是密码：用 `type="password"` 的文本输入，密码管理器认得它。
+- 长度不固定或较长时，使用[文本字段](./text-field)。
+- 输入密码时，使用 `type="password"` 的文本输入，密码管理器能识别它。
 
 ### 特性
 
-- `otp` 一开就接上平台的验证码自动填充。
-- 按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；
-  往回改已填的格子照走，填满之后哪一格都能改。`readOnly` 与 `disabled` 不设这道限。
-- 粘贴一整串会按格拆开填进去。
-- `mask` 遮蔽字符、`type` 与 `pattern` 限制可输入字符类别。
-- `onValueComplete` 在填满那一刻发一次，用来自动提交。
-- `group` 与 `separator` 把格子分段排（123-456），下标仍按文档序算。
-- `readOnly` 让格子只能看与复制，`required` 给每格补上原生必填。
+- `otp` 开启后接入平台的验证码自动填充。
+- 按顺序录入：焦点落在第一个空格上，尚未轮到的格子既不可点击、也不是 Tab 停靠点；回退修改已填的格子照常可用，填满之后任一格都可修改。`readOnly` 与 `disabled` 不设此限制。
+- 粘贴整串时按格拆开填入。
+- `mask` 遮蔽字符，`type` 与 `pattern` 限制可输入的字符类别。
+- `onValueComplete` 在填满时发出一次，用于自动提交。
+- `group` 与 `separator` 把格子分段排列（123-456），下标仍按文档序计算。
+- `readOnly` 让格子只能查看与复制，`required` 为每格补上原生必填。
 
 ### 组合
 
-- 与[表单](./form)配合，填满才允许提交。
+- 与[表单](./form)配合，填满后才允许提交。
 
 ### 最佳实践
 
-- 验证码务必开 `otp`，否则短信里的码要用户手打。
-- 填满后自动提交，别让用户再找一次按钮。
+- 验证码务必开启 `otp`，否则短信中的码需要用户手动输入。
+- 填满后自动提交，不让用户再寻找按钮。
 
 ### 反模式
 
-- 格数超过八个：视觉上就不再是"一串短码"了。
-- 遮蔽验证码：用户看不见自己输错在哪一位。
+- 格数超过八个，视觉上不再是一串短码。
+- 遮蔽验证码，用户无法看到输错的位置。
 
 ## API 参考
 
@@ -743,26 +742,26 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string[]` |  | 逐格的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `value` | `string[]` |  | 逐格的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
-| `length` | `number` |  | 格数，默认 6。值的长度恒被归一到它。 |
-| `type` | `PinInputType` |  | 接受的字符类别，默认 numeric。同时决定移动端弹哪种键盘。 |
-| `pattern` | `string` |  | 自定义准入：一段正则源码，逐个字符整格匹配（内部自动加首尾锚与 u 标志， 所以写 `[0-9A-Fa-f]` 即可，不必自己写 `^...$`）。给了它就盖过 type 的准入表。 弹哪种键盘仍由 type 说了算——准入放宽到字母时记得把 type 一并改掉， 否则移动端弹的还是数字键盘，用户敲不进那些字符。 写坏了（编不成正则）退回 type 的准入表，不抛。 |
-| `mask` | `boolean` |  | 遮蔽显示：输入框转 type=password。 |
-| `otp` | `boolean` |  | 一次性验证码：补 autocomplete=one-time-code，短信验证码才能被系统自动填入。 |
+| `length` | `number` |  | 格数，默认 6。值的长度恒归一到它。 |
+| `type` | `PinInputType` |  | 接受的字符类别，默认 numeric。同时决定移动端弹出的键盘类型。 |
+| `pattern` | `string` |  | 自定义准入：一段正则源码，逐个字符整格匹配（内部自动加首尾锚与 u 标志， 因此写 `[0-9A-Fa-f]` 即可，不必自行写 `^...$`）。提供后覆盖 type 的准入表。 弹出的键盘类型仍由 type 决定：准入放宽到字母时需要把 type 一并修改， 否则移动端弹出的仍是数字键盘，用户无法输入这些字符。 无法编译为正则时回退为 type 的准入表，不抛错。 |
+| `mask` | `boolean` |  | 遮蔽显示：输入框改为 type=password。 |
+| `otp` | `boolean` |  | 一次性验证码：补充 autocomplete=one-time-code，短信验证码才能被系统自动填入。 |
 | `placeholder` | `string` |  | 空格子的占位字符。 |
 | `disabled` | `boolean` |  | 禁用：每格都带原生 disabled（不可聚焦、不可输入），隐藏输入不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：每格仍可聚焦、可复制，写不进；隐藏输入照常参与提交。 |
+| `readOnly` | `boolean` |  | 只读：每格仍可聚焦、可复制，不可写入；隐藏输入照常参与提交。 |
 | `required` | `boolean` |  | 必填标注：每格都带原生 required。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
-| `blurOnComplete` | `boolean` |  | 填满即把焦点撤走，常用于"填满就自动提交"的表单。 |
-| `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，整串值随表单一并提交。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `blurOnComplete` | `boolean` |  | 填满即移走焦点，常用于填满后自动提交的表单。 |
+| `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，整串值随表单一并提交。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<PinInputTranslations>` |  |  |
-| `onValueChange` | `(details: PinInputValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
-| `onValueComplete` | `(details: PinInputValueChangeDetails) => void` |  | 每格都填满的那一刻触发；值没真变时不重复触发。 |
+| `onValueChange` | `(details: PinInputValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValueComplete` | `(details: PinInputValueChangeDetails) => void` |  | 每格都填满时触发；值未实际变化时不重复触发。 |
 
 ### 事件
 
@@ -799,9 +798,9 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | --- | --- | --- |
 | `value` | `string[]` | 逐格的值，长度恒等于 length。 |
 | `valueAsString` | `string` |  |
-| `complete` | `boolean` | 每格都填满了。作者据此点亮提交按钮。 |
+| `complete` | `boolean` | 每格都已填满。作者据此启用提交按钮。 |
 | `length` | `number` |  |
-| `focusedIndex` | `number` | 焦点该落在哪一格；焦点在组外时为 -1。按顺序录入时它不会越过第一个空格。 |
+| `focusedIndex` | `number` | 焦点应落在哪一格；焦点在组外时为 -1。按顺序录入时它不会越过第一个空格。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
@@ -809,10 +808,10 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getGroupProps` | `() => T['element']` | 连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算。 |
+| `getGroupProps` | `() => T['element']` | 相邻的几格划为一段（123-456 这类分段写法）；纯排版，不参与下标计算。 |
 | `getInputProps` | `(props: PinInputInputProps) => T['input']` |  |
-| `getSeparatorProps` | `() => T['element']` | 段与段之间的分隔；对读屏隐藏，念出来只会打断验证码。 |
-| `getHiddenInputProps` | `() => T['input']` | 整份验证码的表单出口：一份 type=hidden 的原生输入，随表单提交拼好的串。 |
+| `getSeparatorProps` | `() => T['element']` | 段与段之间的分隔；对读屏隐藏，朗读只会打断验证码。 |
+| `getHiddenInputProps` | `() => T['input']` | 整份验证码的表单出口：一份 type=hidden 的原生输入，随表单提交拼接后的串。 |
 
 ## 无障碍
 
@@ -869,36 +868,39 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `input` | `data-index` | String(index) |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
+| `input` | `data-variant` | props.variant |
+| `input` | `data-xh-field-chrome` | '' |
+| `input` | `data-xh-field-size` | props.size |
 | `separator` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-pin-input-box-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | pin-input 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-pin-input-box-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | pin-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-pin-input-box-bg` | `input` | `background` | `default` | `--xh-_pin-input-box-bg` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_pin-input-box-bg-hover` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-bg-readonly` | `input` | `background` | `readonly` | `--xh-bg-subtle` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-border` | `input` | `border` | `default` | `--xh-_pin-input-box-border` | pin-input 的 input 部件 border 覆盖槽。 |
+| `--xh-pin-input-box-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-bg-disabled` | `input` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-bg-readonly` | `input` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-border` | `input` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | pin-input 的 input 部件 border 覆盖槽。 |
 | `--xh-pin-input-box-border-complete` | `input`<br>`root` | `border-color` | `complete`<br>`invalid`<br>`not([data-invalid], :disabled)` | `--xh-_pin-input-accent` | pin-input 的 input、root 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-border-focus` | `input` | `border-color` | `focus`<br>`focus-visible` | `--xh-_tone` | pin-input 的 input 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_pin-input-box-border-hover` | pin-input 的 input 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | pin-input 的 input 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-fg` | `input` | `color` | `default` | `--xh-fg-default` | pin-input 的 input 部件 color 覆盖槽。 |
+| `--xh-pin-input-box-border-focus` | `input` | `border-color` | `disabled`<br>`focus`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | pin-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-pin-input-box-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | pin-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-pin-input-box-border-invalid` | `input` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | pin-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-pin-input-box-fg` | `input` | `color` | `xh-field-chrome` | `--xh-fg-default` | pin-input 的 input 部件 color 覆盖槽。 |
 | `--xh-pin-input-box-font-size` | `input` | `font-size` | `default` | `--xh-_pin-input-box-font-size` | pin-input 的 input 部件 font-size 覆盖槽。 |
 | `--xh-pin-input-box-gap` | `input` | `margin-inline-start` | `default` | `--xh-_pin-input-box-gap` | pin-input 的 input 部件 margin-inline-start 覆盖槽。 |
-| `--xh-pin-input-box-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | pin-input 的 input 部件 border-radius 覆盖槽。 |
-| `--xh-pin-input-box-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_pin-input-box-shadow` | pin-input 的 input 部件 box-shadow 覆盖槽。 |
-| `--xh-pin-input-box-size` | `input` | `block-size`<br>`inline-size` | `default` | `--xh-_pin-input-box-size` | pin-input 的 input 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-pin-input-box-radius` | `input` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | pin-input 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-pin-input-box-shadow` | `input` | `box-shadow` | `xh-field-chrome` | `none` | pin-input 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-pin-input-box-size` | `input` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_pin-input-box-size` | pin-input 的 input 部件 block-size、inline-size、min-block-size 覆盖槽。 |
 | `--xh-pin-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | pin-input 的 root 部件 gap 覆盖槽。 |
 | `--xh-pin-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | pin-input 的 label 部件 color 覆盖槽。 |
 | `--xh-pin-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | pin-input 的 label 部件 color 覆盖槽。 |
-| `--xh-pin-input-label-font-size` | `label` | `font-size` | `default` | `--xh-_pin-input-label-font-size` | pin-input 的 label 部件 font-size 覆盖槽。 |
+| `--xh-pin-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | pin-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-pin-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | pin-input 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-pin-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | pin-input 的 input 部件 color 覆盖槽。 |
 | `--xh-pin-input-separator-fg` | `separator` | `color` | `default` | `--xh-fg-muted` | pin-input 的 separator 部件 color 覆盖槽。 |
@@ -909,9 +911,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ### 动效
 
-`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

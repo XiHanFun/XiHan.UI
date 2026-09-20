@@ -92,7 +92,7 @@ const lastCommand = ref("（无）");
 </script>
 
 <template>
-  <XhLayoutRoot bordered class="shell">
+  <XhLayoutRoot split class="shell">
     <XhLayoutHeader class="shell__header">
       <XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger>
       <strong class="shell__brand">曦寒控制台</strong>
@@ -117,7 +117,7 @@ const lastCommand = ref("（无）");
         <!-- 触发器是作者写的内容，菜单只接管展开与键盘 -->
         <XhMenuRoot :collection="account" @select="lastCommand = `账户 · ${$event.value}`">
           <template #trigger>
-            <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+            <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
               <XhAvatarImage />
               <XhAvatarFallback>曦</XhAvatarFallback>
             </XhAvatarRoot>
@@ -194,7 +194,7 @@ const lastCommand = ref("（无）");
       </XhToolbarRoot>
 
       <div class="shell__cards">
-        <XhCardRoot variant="secondary">
+        <XhCardRoot variant="subtle">
           <XhCardHeader>
             <XhCardTitle>待发货</XhCardTitle>
           </XhCardHeader>
@@ -206,7 +206,7 @@ const lastCommand = ref("（无）");
           </XhCardContent>
         </XhCardRoot>
 
-        <XhCardRoot variant="secondary">
+        <XhCardRoot variant="subtle">
           <XhCardHeader>
             <XhCardTitle>待退款</XhCardTitle>
           </XhCardHeader>
@@ -365,7 +365,7 @@ const lastCommand = ref("（无）");
   }
 </style>
 
-<xh-layout id="admin-shell" bordered>
+<xh-layout id="admin-shell" split>
   <div data-xh-part="root" data-shell="root">
     <div data-xh-part="header" data-shell="header">
       <button data-xh-part="sider-trigger">菜单</button>
@@ -398,7 +398,7 @@ const lastCommand = ref("（无）");
         <!-- 触发器是作者写的内容，菜单只接管展开与键盘 -->
         <xh-menu id="admin-shell-account">
           <button data-xh-part="trigger" data-shell="account">
-            <xh-avatar src="/images/logo.png" alt="曦寒">
+            <xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
               <span data-xh-part="root">
                 <img data-xh-part="image" />
                 <span data-xh-part="fallback">曦</span>
@@ -510,7 +510,7 @@ const lastCommand = ref("（无）");
       </xh-toolbar>
 
       <div data-shell="cards">
-        <xh-card variant="secondary">
+        <xh-card variant="subtle">
           <div data-xh-part="root">
             <div data-xh-part="header">
               <div data-xh-part="title">待发货</div>
@@ -526,7 +526,7 @@ const lastCommand = ref("（无）");
           </div>
         </xh-card>
 
-        <xh-card variant="secondary">
+        <xh-card variant="subtle">
           <div data-xh-part="root">
             <div data-xh-part="header">
               <div data-xh-part="title">待退款</div>

@@ -20,42 +20,24 @@
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
-const cellStyle
-  = "min-inline-size: 0; padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)";
-
-const metrics = [
-  { label: "活跃用户", value: "12,860" },
-  { label: "转化率", value: "8.4%" },
-  { label: "订单", value: "1,294" },
-];
+const tones = ["brand", "info", "success"] as const;
 </script>
 
 <template>
-  <XhGridRoot :cols="3" gap="md" style="inline-size: min(600px, 100%)">
-    <XhGridItem v-for="metric in metrics" :key="metric.label" :style="cellStyle">
-      <div style="color: var(--xh-fg-muted); font-size: 13px">{{ metric.label }}</div>
-      <strong style="display: block; margin-block-start: 8px; font-size: 24px">{{ metric.value }}</strong>
+  <XhGridRoot :cols="3" gap="md" aria-label="三列等宽占位区块" style="inline-size: min(600px, 100%)">
+    <XhGridItem v-for="tone in tones" :key="tone">
+      <span data-demo-block :data-tone="tone" style="--xh-demo-block-block-size: 96px" />
     </XhGridItem>
   </XhGridRoot>
 </template>
 ```
 
 ```html
-<style>
-  #grid-basic [data-card] {
-    min-inline-size: 0;
-    padding: 16px;
-    border-radius: var(--xh-shape-surface);
-    background: var(--xh-bg-subtle);
-  }
-  #grid-basic [data-label] { color: var(--xh-fg-muted); font-size: 13px; }
-  #grid-basic strong { display: block; margin-block-start: 8px; font-size: 24px; }
-</style>
-<xh-grid id="grid-basic" cols="3" gap="md" style="display: contents">
+<xh-grid id="grid-basic" cols="3" gap="md" aria-label="三列等宽占位区块" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(600px, 100%)">
-    <div data-xh-part="item" data-card><div data-label>活跃用户</div><strong>12,860</strong></div>
-    <div data-xh-part="item" data-card><div data-label>转化率</div><strong>8.4%</strong></div>
-    <div data-xh-part="item" data-card><div data-label>订单</div><strong>1,294</strong></div>
+    <div data-xh-part="item"><span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 96px"></span></div>
+    <div data-xh-part="item"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 96px"></span></div>
+    <div data-xh-part="item"><span data-demo-block data-tone="success" style="--xh-demo-block-block-size: 96px"></span></div>
   </div>
 </xh-grid>
 ```
@@ -76,34 +58,37 @@ const metrics = [
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
-const features = ["无头内核", "Vue", "React", "Web Components", "设计令牌", "无障碍"];
+const features = [
+  { id: 1, tone: "brand" },
+  { id: 2, tone: "info" },
+  { id: 3, tone: "success" },
+  { id: 4, tone: "warning" },
+  { id: 5, tone: "danger" },
+  { id: 6, tone: "neutral" },
+] as const;
 </script>
 
 <template>
   <XhGridRoot min-col-width="sm" gap="sm" style="inline-size: min(640px, 100%)">
     <XhGridItem
       v-for="feature in features"
-      :key="feature"
-      style="padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
-    >
-      {{ feature }}
-    </XhGridItem>
+      :key="feature.id"
+      data-demo-block
+      :data-tone="feature.tone"
+    />
   </XhGridRoot>
 </template>
 ```
 
 ```html
-<style>
-  #grid-adaptive [data-card] { padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
-</style>
 <xh-grid id="grid-adaptive" min-col-width="sm" gap="sm" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(640px, 100%)">
-    <div data-xh-part="item" data-card>无头内核</div>
-    <div data-xh-part="item" data-card>Vue</div>
-    <div data-xh-part="item" data-card>React</div>
-    <div data-xh-part="item" data-card>Web Components</div>
-    <div data-xh-part="item" data-card>设计令牌</div>
-    <div data-xh-part="item" data-card>无障碍</div>
+    <div data-xh-part="item" data-demo-block data-tone="brand"></div>
+    <div data-xh-part="item" data-demo-block data-tone="info"></div>
+    <div data-xh-part="item" data-demo-block data-tone="success"></div>
+    <div data-xh-part="item" data-demo-block data-tone="warning"></div>
+    <div data-xh-part="item" data-demo-block data-tone="danger"></div>
+    <div data-xh-part="item" data-demo-block data-tone="neutral"></div>
   </div>
 </xh-grid>
 ```
@@ -115,32 +100,27 @@ const features = ["无头内核", "Vue", "React", "Web Components", "设计令�
 ```vue
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
-
-const itemStyle = "padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)";
 </script>
 
 <template>
   <XhGridRoot :cols="4" gap="sm" style="inline-size: min(640px, 100%)">
-    <XhGridItem :span="3" :style="itemStyle">项目概览</XhGridItem>
-    <XhGridItem :style="itemStyle">动态</XhGridItem>
-    <XhGridItem :span="2" :style="itemStyle">任务</XhGridItem>
-    <XhGridItem :span="2" :style="itemStyle">成员</XhGridItem>
-    <XhGridItem :offset="1" :span="2" style="padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">居中区域</XhGridItem>
+    <XhGridItem :span="3" data-demo-block data-tone="brand" />
+    <XhGridItem data-demo-block data-tone="info" />
+    <XhGridItem :span="2" data-demo-block data-tone="success" />
+    <XhGridItem :span="2" data-demo-block data-tone="warning" />
+    <XhGridItem :offset="1" :span="2" data-demo-block data-tone="danger" />
   </XhGridRoot>
 </template>
 ```
 
 ```html
-<style>
-  #grid-span [data-card] { padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
-</style>
 <xh-grid id="grid-span" cols="4" gap="sm" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(640px, 100%)">
-    <div data-xh-part="item" span="3" data-card>项目概览</div>
-    <div data-xh-part="item" data-card>动态</div>
-    <div data-xh-part="item" span="2" data-card>任务</div>
-    <div data-xh-part="item" span="2" data-card>成员</div>
-    <div data-xh-part="item" offset="1" span="2" data-card style="background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">居中区域</div>
+    <div data-xh-part="item" span="3" data-demo-block data-tone="brand"></div>
+    <div data-xh-part="item" data-demo-block data-tone="info"></div>
+    <div data-xh-part="item" span="2" data-demo-block data-tone="success"></div>
+    <div data-xh-part="item" span="2" data-demo-block data-tone="warning"></div>
+    <div data-xh-part="item" offset="1" span="2" data-demo-block data-tone="danger"></div>
   </div>
 </xh-grid>
 ```
@@ -168,7 +148,9 @@ const groups = [
         <XhGridItem
           v-for="item in 3"
           :key="item"
-          style="block-size: 32px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle)"
+          data-demo-block
+          data-tone="brand"
+          style="block-size: 32px; --xh-demo-block-radius: var(--xh-shape-control)"
         />
       </XhGridRoot>
     </div>
@@ -180,12 +162,11 @@ const groups = [
 <style>
   #grid-gap { display: grid; gap: 16px; inline-size: min(480px, 100%); }
   #grid-gap [data-label] { margin-block-end: 6px; color: var(--xh-fg-muted); font-size: 13px; }
-  #grid-gap [data-box] { block-size: 32px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle); }
 </style>
 <div id="grid-gap">
-  <div><div data-label>紧凑</div><xh-grid cols="3" gap="sm" style="display: contents"><div data-xh-part="root"><div data-xh-part="item" data-box></div><div data-xh-part="item" data-box></div><div data-xh-part="item" data-box></div></div></xh-grid></div>
-  <div><div data-label>标准</div><xh-grid cols="3" gap="md" style="display: contents"><div data-xh-part="root"><div data-xh-part="item" data-box></div><div data-xh-part="item" data-box></div><div data-xh-part="item" data-box></div></div></xh-grid></div>
-  <div><div data-label>宽松</div><xh-grid cols="3" gap="lg" style="display: contents"><div data-xh-part="root"><div data-xh-part="item" data-box></div><div data-xh-part="item" data-box></div><div data-xh-part="item" data-box></div></div></xh-grid></div>
+  <div><div data-label>紧凑</div><xh-grid cols="3" gap="sm" style="display: contents"><div data-xh-part="root"><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div></div></xh-grid></div>
+  <div><div data-label>标准</div><xh-grid cols="3" gap="md" style="display: contents"><div data-xh-part="root"><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div></div></xh-grid></div>
+  <div><div data-label>宽松</div><xh-grid cols="3" gap="lg" style="display: contents"><div data-xh-part="root"><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div><div data-xh-part="item" data-demo-block data-tone="brand" style="block-size: 32px"></div></div></xh-grid></div>
 </div>
 ```
 
@@ -197,32 +178,33 @@ const groups = [
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
-const sections = ["概览", "分析", "报告", "设置"];
+const sections = [
+  { id: 1, tone: "brand" },
+  { id: 2, tone: "info" },
+  { id: 3, tone: "success" },
+  { id: 4, tone: "warning" },
+] as const;
 </script>
 
 <template>
   <XhGridRoot :cols="{ base: 1, sm: 2, lg: 4 }" gap="sm" style="inline-size: min(720px, 100%)">
     <XhGridItem
       v-for="section in sections"
-      :key="section"
-      style="padding: 20px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); text-align: center"
-    >
-      {{ section }}
-    </XhGridItem>
+      :key="section.id"
+      data-demo-block
+      :data-tone="section.tone"
+    />
   </XhGridRoot>
 </template>
 ```
 
 ```html
-<style>
-  #grid-responsive [data-card] { padding: 20px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); text-align: center; }
-</style>
 <xh-grid id="grid-responsive" cols='{"base":1,"sm":2,"lg":4}' gap="sm" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(720px, 100%)">
-    <div data-xh-part="item" data-card>概览</div>
-    <div data-xh-part="item" data-card>分析</div>
-    <div data-xh-part="item" data-card>报告</div>
-    <div data-xh-part="item" data-card>设置</div>
+    <div data-xh-part="item" data-demo-block data-tone="brand"></div>
+    <div data-xh-part="item" data-demo-block data-tone="info"></div>
+    <div data-xh-part="item" data-demo-block data-tone="success"></div>
+    <div data-xh-part="item" data-demo-block data-tone="warning"></div>
   </div>
 </xh-grid>
 ```
@@ -275,14 +257,14 @@ const sections = ["概览", "分析", "报告", "设置"];
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `GridAlign` |  | 每一项在自己那格里的块向对齐：start / center / end / stretch / baseline，不写则铺满格高。 |
-| `cols` | `GridCols` |  | 列数：1 至 12 的整数，不写按一列排；范围外的值也按一列排。 各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 |
-| `columnGap` | `GridGap` |  | 只改列间距，档位同 gap；不写则跟着 gap 走。 |
-| `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
-| `justifyItems` | `GridJustifyItems` |  | 每一项在自己那格里的行内对齐：start / center / end / stretch，不写则铺满格宽。 |
-| `minColWidth` | `GridMinColWidth` |  | 每列最少多宽：xs / sm / md / lg 四档，各指一个列宽下限令牌。写了它，列数改由容器宽度 除以这个下限得出（放得下几列就几列），`cols` 那条轨道表不再生效。不收裸像素值。 |
-| `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；不写则跟着 gap 走。 |
-| `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，不写则行数由内容自己撑出来；范围外的值也按不写算。 写了就把这几行排成显式轨道，超出的项落进隐式行。 |
+| `align` | `GridAlign` |  | 每一项在所在格中的块向对齐：start / center / end / stretch / baseline，未提供时铺满格高。 |
+| `cols` | `GridCols` |  | 列数：1 至 12 的整数，未提供时按一列排列；范围外的值也按一列排列。 各列等宽，且每列的下限是 0，长内容不会把所在列撑宽。 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。 |
+| `columnGap` | `GridGap` |  | 只改列间距，档位同 gap；未提供时跟随 gap。 |
+| `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 |
+| `justifyItems` | `GridJustifyItems` |  | 每一项在所在格中的行内对齐：start / center / end / stretch，未提供时铺满格宽。 |
+| `minColWidth` | `GridMinColWidth` |  | 每列的最小宽度：xs / sm / md / lg 四档，各对应一个列宽下限令牌。提供后列数改由容器宽度 除以该下限得出（放得下几列即几列），`cols` 的轨道表不再生效。不接受裸像素值。 |
+| `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；未提供时跟随 gap。 |
+| `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，未提供时行数由内容撑出；范围外的值按未提供处理。 提供后把这几行排为显式轨道，超出的项落入隐式行。 |
 
 ### connect API
 
@@ -339,9 +321,9 @@ const sections = ["概览", "分析", "报告", "设置"];
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-grid-column-gap` | `root` | `column-gap` | `column-gap=lg`<br>`column-gap=md`<br>`column-gap=sm`<br>`column-gap=xl`<br>`column-gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs` | grid 的 root 部件 column-gap 覆盖槽。 |
 | `--xh-grid-columns` | `root` | `grid-template-columns` | `default`<br>`min-col` | `--xh-_grid-col-min`<br>`--xh-_grid-cols` | grid 的 root 部件 grid-template-columns 覆盖槽。 |

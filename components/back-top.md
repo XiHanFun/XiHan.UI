@@ -29,6 +29,7 @@ const scrollEl = ref<HTMLElement | null>(null);
   <div style="position: relative; inline-size: min(560px, 100%)">
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         block-size: 240px;
         overflow: auto;
@@ -58,6 +59,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <div style="position: relative; inline-size: min(560px, 100%)">
   <div
     id="back-top-basic-scroll"
+    data-xh-scroll
     style="
       block-size: 240px;
       overflow: auto;
@@ -117,6 +119,7 @@ const scrollEl = ref<HTMLElement | null>(null);
   <div style="position: relative; inline-size: min(560px, 100%)">
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         block-size: 220px;
         overflow: auto;
@@ -146,6 +149,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <div style="position: relative; inline-size: min(560px, 100%)">
   <div
     id="back-top-threshold-scroll"
+    data-xh-scroll
     style="
       block-size: 220px;
       overflow: auto;
@@ -199,6 +203,7 @@ const autoEl = ref<HTMLElement | null>(null);
     <div style="position: relative">
       <div
         ref="smoothEl"
+        data-xh-scroll
         style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
       >
         <p v-for="section in sections" :key="section" style="min-block-size: 64px">平滑 · {{ section }}</p>
@@ -217,6 +222,7 @@ const autoEl = ref<HTMLElement | null>(null);
     <div style="position: relative">
       <div
         ref="autoEl"
+        data-xh-scroll
         style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
       >
         <p v-for="section in sections" :key="section" style="min-block-size: 64px">立即 · {{ section }}</p>
@@ -238,7 +244,7 @@ const autoEl = ref<HTMLElement | null>(null);
 ```html
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; inline-size: min(640px, 100%)">
   <div style="position: relative">
-    <div id="back-top-smooth-scroll" style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+    <div id="back-top-smooth-scroll" data-xh-scroll style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
       <p style="min-block-size: 64px">平滑 · 概览</p><p style="min-block-size: 64px">平滑 · 配置</p><p style="min-block-size: 64px">平滑 · 接口</p><p style="min-block-size: 64px">平滑 · 发布</p>
     </div>
     <template id="back-top-smooth-template">
@@ -247,7 +253,7 @@ const autoEl = ref<HTMLElement | null>(null);
   </div>
 
   <div style="position: relative">
-    <div id="back-top-auto-scroll" style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+    <div id="back-top-auto-scroll" data-xh-scroll style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
       <p style="min-block-size: 64px">立即 · 概览</p><p style="min-block-size: 64px">立即 · 配置</p><p style="min-block-size: 64px">立即 · 接口</p><p style="min-block-size: 64px">立即 · 发布</p>
     </div>
     <template id="back-top-auto-template">
@@ -275,9 +281,8 @@ const autoEl = ref<HTMLElement | null>(null);
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 
 const variants = [
-  { label: "默认", value: undefined },
+  { label: "线框（默认）", value: "outline" },
   { label: "实心", value: "solid" },
-  { label: "线框", value: "outline" },
   { label: "幽灵", value: "ghost" },
 ] as const;
 </script>
@@ -305,16 +310,12 @@ const variants = [
 ```html
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 12px; inline-size: min(640px, 100%)">
   <div style="position: relative; block-size: 120px; padding: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
-    <span style="color: var(--xh-fg-muted)">默认</span>
-    <xh-back-top visibility-height="0"><div data-xh-part="root" style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"><button data-xh-part="trigger"></button></div></xh-back-top>
+    <span style="color: var(--xh-fg-muted)">线框（默认）</span>
+    <xh-back-top variant="outline" visibility-height="0"><div data-xh-part="root" style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"><button data-xh-part="trigger"></button></div></xh-back-top>
   </div>
   <div style="position: relative; block-size: 120px; padding: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <span style="color: var(--xh-fg-muted)">实心</span>
     <xh-back-top variant="solid" visibility-height="0"><div data-xh-part="root" style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"><button data-xh-part="trigger"></button></div></xh-back-top>
-  </div>
-  <div style="position: relative; block-size: 120px; padding: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
-    <span style="color: var(--xh-fg-muted)">线框</span>
-    <xh-back-top variant="outline" visibility-height="0"><div data-xh-part="root" style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"><button data-xh-part="trigger"></button></div></xh-back-top>
   </div>
   <div style="position: relative; block-size: 120px; padding: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <span style="color: var(--xh-fg-muted)">幽灵</span>
@@ -327,7 +328,7 @@ const variants = [
 
 ### 何时使用
 
-- 用于长页面或独立滚动区域。
+- 长页面或独立滚动区域。
 
 ### 何时不用
 
@@ -338,7 +339,7 @@ const variants = [
 
 - `visibilityHeight` 设置显示阈值。
 - `behavior` 支持平滑或立即返回。
-- 默认使用悬浮玻璃表面，也可通过 `variant` 调整外观。
+- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，也可通过 `variant` 切换为 solid / subtle / ghost。
 - 减少动效、减少透明度与强制色模式会自动降级。
 
 ### 组合
@@ -348,11 +349,11 @@ const variants = [
 ### 最佳实践
 
 - 避开固定工具条和移动端手势区。
-- 保持默认的按需显示，不要在页面顶部常驻。
+- 保持默认的按需显示，不在页面顶部常驻。
 
 ### 反模式
 
-- 不要在短页面或已有返回入口的位置重复使用。
+- 在短页面或已有返回入口的位置重复使用。
 
 ## API 参考
 
@@ -370,13 +371,13 @@ const variants = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `visibilityHeight` | `number` |  | 滚过这么多像素按钮才露面，默认 200。 |
+| `visibilityHeight` | `number` |  | 滚动超过该像素数后按钮才显示，默认 200。 |
 | `behavior` | `BackTopBehavior` |  | 滚回顶部的方式，默认 smooth。 |
 | `translations` | `Partial<BackTopTranslations>` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 露面与否变化时回调。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（40 / 48 / 56px）。 |
+| `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 显隐变化时回调。 |
 
 ### 事件
 
@@ -384,7 +385,7 @@ const variants = [
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `visibility-change` | `BackTopVisibilityChangeDetails` | 露面与否变化；detail 为 `{ visible: boolean }` |
+| `visibility-change` | `BackTopVisibilityChangeDetails` | 显隐变化；detail 为 `{ visible: boolean }` |
 
 ### 插槽
 
@@ -407,7 +408,7 @@ const variants = [
 
 **状态**：`hidden` · `visible`
 
-**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK`
+**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK` · `PRESS.START` · `PRESS.END`
 
 **判据**：`shouldShow` · `shouldHide`
 
@@ -417,8 +418,8 @@ const variants = [
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `visible` | `boolean` | 按钮此刻露不露面。 |
-| `scrollToTop` | `() => void` | 程序化滚回顶部，与点按钮走同一条路。 |
+| `visible` | `boolean` | 按钮当前是否显示。 |
+| `scrollToTop` | `() => void` | 程序化滚回顶部，与点击按钮走同一路径。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 
@@ -431,6 +432,7 @@ const variants = [
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in trigger | 滚回顶部；按 behavior 决定是一步到位还是平滑滚过去 |
+| `Enter` / `Space` | held in trigger | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
 | `Tab` / `Shift+Tab` | trigger 露面时 | 走到按钮上；收起时整个 root 带 hidden，按钮不在 Tab 序列里 |
 
 ### ARIA
@@ -457,39 +459,39 @@ const variants = [
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'visible' \| 'hidden' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'floating' |
+| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-back-top-bg` | `trigger` | `background-color` | `default` | `--xh-_back-top-bg` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-bg-active` | `trigger` | `background-color` | `active` | `--xh-_back-top-bg-active` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-bg-hover` | `trigger` | `background-color` | `@media (hover: hover)`<br>`hover` | `--xh-_back-top-bg-hover` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-border` | `trigger` | `border` | `default` | `--xh-_back-top-border` | back-top 的 trigger 部件 border 覆盖槽。 |
-| `--xh-back-top-border-hover` | `trigger` | `border-color` | `@media (hover: hover)`<br>`hover` | `--xh-_back-top-border-hover` | back-top 的 trigger 部件 border-color 覆盖槽。 |
-| `--xh-back-top-fg` | `trigger` | `color` | `default` | `--xh-_back-top-fg` | back-top 的 trigger 部件 color 覆盖槽。 |
-| `--xh-back-top-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | back-top 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-back-top-bg` | `root`<br>`trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_back-top-bg`<br>`--xh-material-frosted-focus-surface` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-bg-active` | `trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | back-top 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | back-top 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-border` | `root`<br>`trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline` | `--xh-_action-variant-border-disabled`<br>`--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-_back-top-border` | back-top 的 root、trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-back-top-border-hover` | `root`<br>`trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_back-top-border` | back-top 的 root、trigger 部件 border-color 覆盖槽。 |
+| `--xh-back-top-fg` | `root`<br>`trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-_back-top-fg` | back-top 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-back-top-icon-size` | `trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | back-top 的 trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-back-top-inset-block` | `root` | `inset-block-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-block-end 覆盖槽。 |
 | `--xh-back-top-inset-inline` | `root` | `inset-inline-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-inline-end 覆盖槽。 |
 | `--xh-back-top-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | back-top 的 root 部件 z-index 覆盖槽。 |
-| `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-pill` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
-| `--xh-back-top-shadow` | `trigger` | `box-shadow` | `default` | `--xh-_back-top-shadow` | back-top 的 trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_back-top-size` | back-top 的 trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_back-top-shadow`<br>`none` | back-top 的 root、trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | back-top 的 trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

@@ -1,0 +1,8 @@
+const e=`<!-- 换行与行内 | 换行排列或随文字排布 -->
+<xh-flex id="flex-wrap" orientation="vertical" gap="lg" style="display: contents">
+  <div data-xh-part="root">
+    <xh-flex wrap gap="sm" style="display: contents"><div data-xh-part="root" style="max-inline-size: 280px"><span data-demo-block data-tone="brand" style="--xh-demo-block-inline-size: 56px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="info" style="--xh-demo-block-inline-size: 72px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="success" style="--xh-demo-block-inline-size: 64px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="warning" style="--xh-demo-block-inline-size: 80px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="danger" style="--xh-demo-block-inline-size: 68px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span></div></xh-flex>
+    <xh-flex inline gap="xs" aria-label="行内占位区块" style="display: contents"><div data-xh-part="root"><span data-demo-block data-tone="brand" style="--xh-demo-block-inline-size: 68px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="success" style="--xh-demo-block-inline-size: 60px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span></div></xh-flex>
+  </div>
+</xh-flex>
+`;export{e as default};

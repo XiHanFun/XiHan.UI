@@ -162,7 +162,7 @@ const value = ref("13:45");
 
 ### 精度到秒
 
-granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步
+granularity=second 使秒段显示并参与值，空段按上下键从该段边界起步
 
 ```vue
 <script setup lang="ts">
@@ -228,7 +228,7 @@ const value = ref("");
 
 ### 禁用与越界
 
-禁用整组退出 Tab 序；越界只做标注，08:00 原样留着不被改写
+禁用整组退出 Tab 序列；越界只做标注，08:00 原样保留不被改写
 
 ```vue
 <script setup lang="ts">
@@ -300,7 +300,7 @@ import {
 
 ### 变体
 
-variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变
+variant 只改变分段框的底色与描边用法，分段结构与键盘行为都不变
 
 ```vue
 <script setup lang="ts">
@@ -376,7 +376,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
+tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，只查看语气这一轴
 
 ```vue
 <script setup lang="ts">
@@ -491,7 +491,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 
 ### 尺寸
 
-不传 size 即默认档；行高、内边距与字号一起换档，标题也跟着变
+不传 size 即默认档；行高、内边距与字号一起换档，标题也随之变化
 
 ```vue
 <script setup lang="ts">
@@ -571,7 +571,7 @@ const sizes = [
 
 ### 外部写值与清空
 
-值由宿主持有，按钮直接写值；框内自带清空钮，有值才显形，点完焦点回到第一段
+值由宿主持有，按钮直接写值；框内自带清空按钮，有值时才显示，点击后焦点回到第一段
 
 ```vue
 <script setup lang="ts">
@@ -692,7 +692,7 @@ function now() {
 
 ### 可选值白名单
 
-值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上
+值交给宿主持有，写回的时间被吸附到清单中的一格，上下键与数字键因此都落在清单上
 
 ```vue
 <script setup lang="ts">
@@ -789,36 +789,36 @@ function snap(next: string) {
 
 ### 何时使用
 
-- 用户知道确切时间，打字比翻列表快。
+- 用户知道确切时间，键入比浏览列表更快。
 - 需要 12 小时制并带上下午段位。
 
 ### 何时不用
 
-- 需要从固定的整点或半点里挑：用[时间选择器](./time-picker)。
-- 需要日期：用[日期字段](./date-field)。
+- 需要从固定的整点或半点中选择时，使用[时间选择器](./time-picker)。
+- 需要日期时，使用[日期字段](./date-field)。
 
 ### 特性
 
-- `hourCycle` 切 12 / 24 小时制，12 小时制时自动多一个上下午段位。
+- `hourCycle` 切换 12 / 24 小时制，12 小时制时自动增加上下午段位。
 - `granularity` 决定精确到分还是到秒。
 - `min` / `max` 越界时只标注不改写。
 - 标准组合包含标签、输入框、时间段和隐藏表单输入；聚焦只强调正在编辑的时间段。
-- 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
+- 框内自带清空按钮（`clear-trigger`）：有值时才显示，点击后焦点回到第一段。
 - 聚焦环、边框和当前段位使用同一段短过渡，焦点进入与离开不会瞬时跳变。
 
 ### 组合
 
-- 外面套[表单字段](./field)；与[日期字段](./date-field)并排组成日期时间。
+- 外层放[表单字段](./field)；与[日期字段](./date-field)并排组成日期时间。
 
 ### 最佳实践
 
-- 明确时区归属：组件处理的是墙上时间，时区换算是宿主的事。
+- 明确时区归属：组件处理的是本地时间，时区换算由宿主负责。
 - 给参与表单提交的字段设置 `name`，并渲染隐藏输入部件。
-- 12 小时制下上下午段位不能省，否则用户输入的时间有二义。
+- 12 小时制下上下午段位不能省略，否则用户输入的时间有歧义。
 
 ### 反模式
 
-- 用文本输入收时间再解析。
+- 用文本输入接收时间再解析。
 
 ## API 参考
 
@@ -836,23 +836,23 @@ function snap(next: string) {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 受控值，ISO 时间串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `value` | `string` |  | 受控值，ISO 时间串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
-| `min` | `string` |  | 下界（含）。只用来标注越界，不改写用户填进去的东西。 |
+| `min` | `string` |  | 下界（含）。只用于标注越界，不改写用户填写的内容。 |
 | `max` | `string` |  | 上界（含）。同上。 |
-| `locale` | `string` |  | BCP 47 语言标记。决定上午/下午的文字，以及未显式给 hourCycle 时的小时制。 |
-| `hourCycle` | `TimeHourCycle` |  | 小时制。不给则按 locale 推断，locale 也没有时用 24。 |
+| `locale` | `string` |  | BCP 47 语言标记。决定上午 / 下午的文字，以及未显式提供 hourCycle 时的小时制。 |
+| `hourCycle` | `TimeHourCycle` |  | 小时制。未提供时按 locale 推断，locale 也没有时使用 24。 |
 | `granularity` | `TimeGranularity` |  | 值精确到哪一段，默认 minute。 |
 | `disabled` | `boolean` |  | 禁用：段整体退出 Tab 序列、键盘一概不响应，隐藏输入不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：仍可聚焦、可用左右键在段间走，但改不动值。 |
+| `readOnly` | `boolean` |  | 只读：仍可聚焦、可用左右键在段间移动，但不可修改值。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
-| `required` | `boolean` |  | 必填标注（落到每段的 aria-required 上）。 |
-| `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，值随表单一并提交。 |
+| `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
+| `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
 | `placeholder` | `string` |  | 空段的占位字符（单字符），按段宽重复，默认 '-'。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；不给就用内置英文语义名。 |
+| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
 
 ### 事件
@@ -877,9 +877,9 @@ function snap(next: string) {
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canEdit`
+**判据**：`canEdit` · `canPress`
 
 ### connect API
 
@@ -887,26 +887,26 @@ function snap(next: string) {
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string` | ISO 时间串；任一必填段为空时是空串。 |
-| `empty` | `boolean` | 值为空串（还没填全）。作者据此点亮提交按钮或显示提示。 |
-| `outOfRange` | `boolean` | 已填全但落在 min/max 之外。只是标注，不改写值。 |
+| `value` | `string` | ISO 时间串；任一必填段为空时为空串。 |
+| `empty` | `boolean` | 值为空串（尚未填全）。作者据此启用提交按钮或显示提示。 |
+| `outOfRange` | `boolean` | 已填全但落在 min / max 之外。只是标注，不改写值。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `canClear` | `boolean` | 有值且可编辑（既不 disabled 也不 readOnly）；清空按钮据此显隐。 |
-| `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 没给时由 locale 推出来的那个）。 |
+| `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 未提供时由 locale 推断的值）。 |
 | `granularity` | `TimeGranularity` |  |
-| `segments` | `TimeSegmentType[]` | 此刻参与显示的段，文档序。未列入的段由 connect 打上 hidden 收起。 |
+| `segments` | `TimeSegmentType[]` | 当前参与显示的段，文档序。未列入的段由 connect 写上 hidden 收起。 |
 | `focusedSegment` | `TimeSegmentType \| null` | 焦点所在段；焦点在组外时为 null。 |
-| `getSegmentText` | `(props: TimeFieldSegmentProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
+| `getSegmentText` | `(props: TimeFieldSegmentProps) => string` | 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `setValue` | `(next: string) => void` |  |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒里剩下的宽度，把清空钮顶到框内末端。 |
+| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒内剩余宽度，把清空按钮推到框内末端。 |
 | `getSegmentProps` | `(props: TimeFieldSegmentProps) => T['element']` |  |
-| `getClearTriggerProps` | `() => T['button']` | 清空按钮：有值才显形，不占 Tab 位，点完焦点回到第一段。 |
+| `getClearTriggerProps` | `() => T['button']` | 清空按钮：有值才显示，不占 Tab 位，点击后焦点回到第一段。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
 
 ## 无障碍
@@ -925,6 +925,7 @@ function snap(next: string) {
 | `End` | focus in a segment, not disabled | 焦点移到末段 |
 | `0-9` | focus in a 数字段, not disabled/readOnly | 把数字并进本段；本段再吃不下第二位时自动跳到下一段 |
 | `Backspace` / `Delete` | focus in a segment, not disabled/readOnly | 清掉本段；小时被清时上下午段仍保留原来的上午/下午 |
+| `Enter` / `Space` | held in clear-trigger, 有值, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 | `a` / `p` | focus in 上下午段, 12 小时制, not disabled/readOnly | a 取上午、p 取下午（不区分大小写） |
 
 ### ARIA
@@ -976,6 +977,9 @@ function snap(next: string) {
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-variant` | props.variant |
+| `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
@@ -984,48 +988,55 @@ function snap(next: string) {
 | `segment` | `data-invalid` | ''（条件成立时才出现） |
 | `segment` | `data-placeholder` | ''（条件成立时才出现） |
 | `segment` | `data-readonly` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-control` | '' |
+| `clear-trigger` | `data-xh-action-display` | 'has-value' |
+| `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-profile` | 'field-inset' |
+| `clear-trigger` | `data-xh-action-size` | props.size |
+| `clear-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-time-field-action-bg` | `clear-trigger` | `background` | `default` | `transparent` | time-field 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-time-field-action-bg-active` | `clear-trigger` | `background` | `active` | `--xh-bg-subtle-active` | time-field 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-time-field-action-bg-hover` | `clear-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | time-field 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-time-field-action-bg` | `clear-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-time-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-time-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-time-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
-| `--xh-time-field-action-fg-hover` | `clear-trigger` | `color` | `hover` | `--xh-fg-default` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-time-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-time-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | time-field 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-time-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | time-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-time-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | time-field 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-time-field-control-bg` | `control` | `background` | `default` | `--xh-_time-field-control-bg` | time-field 的 control 部件 background 覆盖槽。 |
-| `--xh-time-field-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | time-field 的 control 部件 background 覆盖槽。 |
-| `--xh-time-field-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_time-field-control-bg-hover` | time-field 的 control 部件 background 覆盖槽。 |
-| `--xh-time-field-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | time-field 的 control 部件 background 覆盖槽。 |
-| `--xh-time-field-control-border` | `control` | `border` | `default` | `--xh-_time-field-control-border` | time-field 的 control 部件 border 覆盖槽。 |
-| `--xh-time-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | time-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-time-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_time-field-control-border-hover` | time-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-time-field-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | time-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-time-field-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | time-field 的 control 部件 color 覆盖槽。 |
-| `--xh-time-field-control-gap` | `control` | `gap` | `default` | `--xh-_time-field-gap` | time-field 的 control 部件 gap 覆盖槽。 |
-| `--xh-time-field-control-h` | `control` | `block-size` | `default` | `--xh-_time-field-control-h` | time-field 的 control 部件 block-size 覆盖槽。 |
-| `--xh-time-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | time-field 的 control、root 部件 min-inline-size 覆盖槽。 |
-| `--xh-time-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_time-field-control-px` | time-field 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-time-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | time-field 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-time-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_time-field-control-shadow` | time-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-time-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | time-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-time-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
+| `--xh-time-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | time-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-time-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | time-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-time-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | time-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-time-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | time-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-time-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | time-field 的 control 部件 border 覆盖槽。 |
+| `--xh-time-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | time-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-time-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | time-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-time-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | time-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-time-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | time-field 的 control 部件 color 覆盖槽。 |
+| `--xh-time-field-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_time-field-gap` | time-field 的 control 部件 gap 覆盖槽。 |
+| `--xh-time-field-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_time-field-control-h` | time-field 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-time-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | time-field 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-time-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_time-field-control-px` | time-field 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-time-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | time-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-time-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-field-font-size` | `control` | `font-size` | `default` | `--xh-_time-field-font-size` | time-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-field 的 root 部件 gap 覆盖槽。 |
-| `--xh-time-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-field 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-time-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-time-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | time-field 的 label 部件 color 覆盖槽。 |
 | `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-field 的 label 部件 color 覆盖槽。 |
-| `--xh-time-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_time-field-label-font-size` | time-field 的 label 部件 font-size 覆盖槽。 |
+| `--xh-time-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-time-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-field 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-time-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-field 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-field-segment-bg-focus` | `segment` | `background` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])` | `--xh-_time-field-segment-bg` | time-field 的 segment 部件 background 覆盖槽。 |
-| `--xh-time-field-segment-bg-hover` | `segment` | `background` | `disabled`<br>`focus`<br>`hover`<br>`not([data-focus], [data-disabled])` | `--xh-bg-subtle-hover` | time-field 的 segment 部件 background 覆盖槽。 |
+| `--xh-time-field-segment-bg-hover` | `segment` | `background` | `disabled`<br>`focus`<br>`hover`<br>`not([data-focus], [data-disabled])` | `--xh-bg-subtle` | time-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-field-segment-bg-invalid-focus` | `segment` | `background` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-bg-subtle` | time-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-field-segment-fg-focus` | `segment` | `color` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])`<br>`placeholder` | `--xh-_time-field-segment-fg` | time-field 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-field-segment-fg-invalid` | `segment` | `color` | `invalid` | `--xh-fg-danger` | time-field 的 segment 部件 color 覆盖槽。 |
@@ -1037,7 +1048,7 @@ function snap(next: string) {
 
 ### 动效
 
-`background` · `border-color` · `color` · `outline-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

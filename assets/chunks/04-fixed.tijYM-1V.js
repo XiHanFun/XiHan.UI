@@ -1,0 +1,15 @@
+const a=`<!-- 固定区域 | 固定页头和侧栏 -->
+<div data-xh-scroll style="inline-size: min(640px, 100%); block-size: 260px; overflow: auto; border-radius: var(--xh-shape-surface); background: var(--xh-bg-page)">
+  <xh-layout header-fixed sider-fixed split style="display: contents">
+    <div data-xh-part="root" style="--xh-layout-scrollport-h: 260px">
+      <div data-xh-part="header"><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px"></span></div>
+      <div data-xh-part="sider"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span></div>
+      <div data-xh-part="content">
+        <span data-demo-block="line" data-tone="brand" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="info" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="success" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="warning" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="danger" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="neutral" style="margin-block: 16px"></span>
+        <span data-demo-block="line" data-tone="brand" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="info" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="success" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="warning" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="danger" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="neutral" style="margin-block: 16px"></span>
+      </div>
+      <div data-xh-part="footer"><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px"></span></div>
+    </div>
+  </xh-layout>
+</div>
+`;export{a as default};

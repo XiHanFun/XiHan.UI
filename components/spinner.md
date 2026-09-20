@@ -14,7 +14,7 @@
 
 ## 用法
 
-root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么
+root 是 role=status 的活区，旋转图形由皮肤绘制在伪元素上；label 给出该处在等待什么
 
 ```vue
 <script setup lang="ts">
@@ -42,7 +42,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 
 ### 尺寸
 
-size 只换直径，缺省档 md 不输出 data-size
+size 只改变直径，默认档 md 不输出 data-size
 
 ```vue
 <script setup lang="ts">
@@ -70,7 +70,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 
 ### 可见文案
 
-label 部件不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字
+label 部件未写内容时显示解析后的 label，屏幕上看到的与读屏朗读的因此是同一段文字
 
 ```vue
 <script setup lang="ts">
@@ -125,7 +125,7 @@ import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 
 ### 颜色
 
-tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
+tone 只更换圆环起始边一段的颜色，轨道保持中性描边，旋转时才能看出差别
 
 ```vue
 <script setup lang="ts">
@@ -187,9 +187,9 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 </span>
 ```
 
-### 盖住等待中的内容
+### 覆盖等待中的内容
 
-转圈浮在内容上方，容器同时报 aria-busy，看得见的与念得出的是同一件事
+旋转指示浮在内容上方，容器同时报告 aria-busy，可见的与可朗读的是同一件事
 
 ```vue
 <script setup lang="ts">
@@ -321,32 +321,32 @@ import { XhSpinner } from "@xihan-ui/vue";
 ### 何时使用
 
 - 时长未知且没有版面可占位。
-- 局部区域在取数据，或按钮上的在途标记。
+- 局部区域正在获取数据，或按钮上的在途标记。
 
 ### 何时不用
 
-- 版面可预测：用[骨架屏](./skeleton)，它让用户提前看到结构。
-- 进度确定：用[进度条](./progress)。
-- 整页导航：用[加载条](./loading-bar)。
+- 版面可预测时，使用[骨架屏](./skeleton)，它让用户提前看到结构。
+- 进度确定时，使用[进度条](./progress)。
+- 整页导航时，使用[加载条](./loading-bar)。
 
 ### 特性
 
-- 可以配可见文案，也可以只靠 `translations` 给读屏用。
+- 可以配可见文案，也可以只通过 `translations` 提供给读屏。
 - 可以与宿主遮罩组合，盖住等待中的内容。
 - 默认使用渐隐弧；也可显式选择整圈轨道或三点。
 
 ### 组合
 
-- 放进[按钮](./button)的 `indicator` 部件；盖住[卡片](./card)或[表格](./table)。
+- 放入[按钮](./button)的 `indicator` 部件；覆盖[卡片](./card)或[表格](./table)。
 
 ### 最佳实践
 
-- 等待超过几秒就配上文字说明在做什么。
-- 遮罩形态下要挡住交互，否则用户会重复点击。
+- 等待超过几秒时配上文字说明正在做什么。
+- 遮罩形态下阻止交互，否则用户会重复点击。
 
 ### 反模式
 
-- 一个页面里同时转好几个圈。
+- 一个页面内同时显示多个加载指示器。
 - 用它代替可预测版面的骨架屏。
 
 ## API 参考
@@ -364,9 +364,9 @@ import { XhSpinner } from "@xihan-ui/vue";
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` |  | 这一处的可及名字，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会盖过节点里的文字，两者不一致时 读屏念的与屏幕上看到的就对不上了。 |
-| `size` | `Size` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `label` | `string` |  | 该处的可及名，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会覆盖节点中的文字，两者不一致时 读屏朗读的与屏幕上看到的不匹配。 |
+| `size` | `Size` |  | 直径档位，默认 md；默认档不输出 data-size。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
 | `variant` | `SpinnerVariant` |  | 形态，默认 arc。 |
 
@@ -419,16 +419,16 @@ import { XhSpinner } from "@xihan-ui/vue";
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-spinner-duration` | `root` | `animation` | `default`<br>`variant=dots` | `--xh-spin-duration` | spinner 的 root 部件 animation 覆盖槽。 |
 | `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`currentColor` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
 | `--xh-spinner-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | spinner 的 root 部件 gap 覆盖槽。 |
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
-| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-pill` | spinner 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-lg` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
 | `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |

@@ -1,1 +1,0 @@
-import{fE as e}from"./theme.C4bpqV2W.js";import{d as o,b as r,k as t,o as a}from"./framework.DkvuVDKz.js";const _=o({__name:"timer",setup(n){return(s,m)=>(a(),r(t(e),{value:754e3}))}});export{_ as default};

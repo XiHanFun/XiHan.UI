@@ -1,0 +1,22 @@
+const t=`<!-- 水平排序 | 调整标签顺序 -->
+<style>
+  #sortable-horizontal [data-xh-part="item"] { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); }
+</style>
+<xh-sortable id="sortable-horizontal" ids="概览,订单,库存,报表" orientation="horizontal" style="display: contents">
+  <div data-xh-part="root">
+    <div data-xh-part="item" item-id="概览" aria-label="概览"><button data-xh-part="item-drag-trigger" item-id="概览"></button><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 48px"></span></div>
+    <div data-xh-part="item" item-id="订单" aria-label="订单"><button data-xh-part="item-drag-trigger" item-id="订单"></button><span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 48px"></span></div>
+    <div data-xh-part="item" item-id="库存" aria-label="库存"><button data-xh-part="item-drag-trigger" item-id="库存"></button><span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 48px"></span></div>
+    <div data-xh-part="item" item-id="报表" aria-label="报表"><button data-xh-part="item-drag-trigger" item-id="报表"></button><span data-demo-block="line" data-tone="warning" style="--xh-demo-block-inline-size: 48px"></span></div>
+    <div data-xh-part="drop-indicator"></div><div data-xh-part="live-region"></div>
+  </div>
+</xh-sortable>
+<script type="module">
+  const host = document.getElementById("sortable-horizontal");
+  const root = host.querySelector('[data-xh-part="root"]');
+  host.addEventListener("sort", (event) => {
+    host.ids = event.detail.ids;
+    for (const id of event.detail.ids) root.insertBefore(root.querySelector(\`[data-xh-part="item"][item-id="\${id}"]\`), root.querySelector('[data-xh-part="drop-indicator"]'));
+  });
+<\/script>
+`;export{t as default};

@@ -1,0 +1,1 @@
+import{ga as o}from"./theme.CgoFSkOP.js";import{d as a,o as e,b as t,k as r}from"./framework.DxrHb2fb.js";const _=a({__name:"01-basic",setup(s){return(n,c)=>(e(),t(r(o),{"auto-start":""}))}});export{_ as default};

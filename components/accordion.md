@@ -2,7 +2,7 @@
 
 # Accordion 手风琴 `alpha`
 
-一列可展开的区块，标题常驻、内容按需展开。
+一列可展开的区块，标题常驻，内容按需展开。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/accordion" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护
+默认单开：展开一项即收起其余，defaultValue 只提供初始值，之后由组件自行维护
 
 ```vue
 <script setup lang="ts">
@@ -107,7 +107,7 @@ const items = [
 
 ### 多项展开
 
-multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可拿到它
+multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可获取它
 
 ```vue
 <script setup lang="ts">
@@ -189,9 +189,9 @@ const panels = ref<string[]>(["basic", "size"]);
 </script>
 ```
 
-### 允许全收
+### 允许全部收起
 
-单开模式下最后一项默认收不起来，加 collapsible 才能把它也收上
+单开模式下最后一项默认无法收起，加 collapsible 后才能收起
 
 ```vue
 <script setup lang="ts">
@@ -260,7 +260,7 @@ const items = [
 
 ### 指示器与禁用
 
-indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳过它
+indicator 的朝向由 data-state 驱动，禁用项不可点击、方向键也跳过它
 
 ```vue
 <script setup lang="ts">
@@ -549,7 +549,7 @@ const tones = [
 
 ### 尺寸
 
-size 换的是标题栏的高度、内边距与字号，三档并排对照
+size 改变标题栏的高度、内边距与字号，三档并排对照
 
 ```vue
 <script setup lang="ts">
@@ -705,7 +705,7 @@ const groups = [
 
 ### 嵌套
 
-content 里再放一组手风琴，内外两组各自维护展开集合，方向键也各管各的
+content 中再放一组手风琴，内外两组各自维护展开集合，方向键也各自独立
 
 ```vue
 <script setup lang="ts">
@@ -837,7 +837,7 @@ import {
 
 ### 标题栏附加信息
 
-标题栏里的节点全归作者，把计数与指示器包成一组排在末尾
+标题栏中的节点全部归作者，把计数与指示器包为一组排在末尾
 
 ```vue
 <script setup lang="ts">
@@ -941,7 +941,7 @@ const groups = [
 
 ### 指示器在前
 
-指示器写在标题之前就落到起始缘，标题拿 auto 外边距吃掉余量
+指示器写在标题之前即落到起始缘，标题用 auto 外边距占据余量
 
 ```vue
 <script setup lang="ts">
@@ -1130,7 +1130,7 @@ const items = [
 
 ### 自定义展开图标
 
-indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自己画
+indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自行绘制
 
 ```vue
 <script setup lang="ts">
@@ -1233,7 +1233,7 @@ const panels = ref<string[]>(["shipping"]);
 
 ### 变体
 
-plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只改怎么与页面分开
+ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档只改变与页面分开的方式
 
 ```vue
 <script setup lang="ts">
@@ -1248,7 +1248,7 @@ const panels = [
 <template>
   <div style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))">
     <XhAccordionRoot
-      v-for="variant in ['plain', 'surface', 'bordered']"
+      v-for="variant in ['ghost', 'outline', 'subtle']"
       :key="variant"
       :variant="variant"
       :collection="panels"
@@ -1263,7 +1263,7 @@ const panels = [
   id="accordion-variants"
   style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"
 >
-  <xh-accordion variant="plain">
+  <xh-accordion variant="ghost">
     <div data-xh-part="root">
       <div data-xh-part="item" value="shipping">
         <h3 data-xh-part="header">
@@ -1286,7 +1286,7 @@ const panels = [
     </div>
   </xh-accordion>
 
-  <xh-accordion variant="surface">
+  <xh-accordion variant="outline">
     <div data-xh-part="root">
       <div data-xh-part="item" value="shipping">
         <h3 data-xh-part="header">
@@ -1309,7 +1309,7 @@ const panels = [
     </div>
   </xh-accordion>
 
-  <xh-accordion variant="bordered">
+  <xh-accordion variant="subtle">
     <div data-xh-part="root">
       <div data-xh-part="item" value="shipping">
         <h3 data-xh-part="header">
@@ -1349,33 +1349,33 @@ const panels = [
 
 ### 何时使用
 
-- 常见问题、设置分组这类"标题足以判断要不要看"的内容。
-- 内容很长，一次全铺开会让页面失去结构。
+- 常见问题、设置分组等由标题即可判断是否需要展开的内容。
+- 内容较长，一次全部铺开会使页面失去结构。
 
 ### 何时不用
 
-- 只有一块内容：用[折叠区域](./collapsible)。
-- 各块内容需要对照着看：直接铺开。
-- 各块是并列视图、同时只看一个：用[标签页](./tabs)。
+- 只有一块内容时，使用[折叠区域](./collapsible)。
+- 各块内容需要对照阅读时，直接铺开。
+- 各块是并列视图且同一时间只看一个时，使用[标签页](./tabs)。
 
 ### 特性
 
-- `multiple` 决定能不能同时展开多项，`collapsible` 决定能不能全部收起。
-- 指示器可以放前也可以放后，图形自定。
-- 可以嵌套；触发区大小由作者决定。
+- `multiple` 决定能否同时展开多项，`collapsible` 决定能否全部收起。
+- 指示器可置于标题前或标题后，图形可自定义。
+- 支持嵌套；触发区大小由作者决定。
 
 ### 组合
 
-- 标题栏里可以挂附加信息（计数、状态[徽标](./badge)）。
+- 标题栏可以放置附加信息，如计数或状态[徽标](./badge)。
 
 ### 最佳实践
 
-- 标题写清楚里面是什么，用户不该靠展开来发现。
-- 默认展开第一项，让用户看见内容长什么样。
+- 标题应说明区块内容，不依赖展开来发现。
+- 默认展开第一项，让用户看到内容的形态。
 
 ### 反模式
 
-- 把关键信息藏进折叠：用户不会逐个点开。
+- 将关键信息放进折叠区块，用户不会逐个展开。
 - 展开时页面下方内容大幅跳动而没有滚动补偿。
 
 ## API 参考
@@ -1394,16 +1394,16 @@ const panels = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `AccordionNode[]` |  | 条目数据，标题文本、正文与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本写在部件里、禁用写在条目上」的老路。 |
-| `value` | `string[]` |  | 展开集合，给定即受控。 |
+| `collection` | `AccordionNode[]` |  | 条目数据，标题文本、正文与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本写在部件中、禁用写在条目上的方式。 |
+| `value` | `string[]` |  | 展开集合，提供即受控。 |
 | `defaultValue` | `string[]` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时展开；false 时展开一项即收起其余。 |
-| `collapsible` | `boolean` |  | 允许把最后一个展开项收起，默认 false。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 false。 |
-| `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上写的 disabled 只能更严不能放宽。 |
-| `variant` | `AccordionVariant` |  | 变体：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 |
+| `collapsible` | `boolean` |  | 允许收起最后一个展开项，默认 false。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 false。 |
+| `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上的 disabled 只能收紧不能放宽。 |
+| `variant` | `ControlVariant` |  | 形态：ghost 条目直接相邻不画容器（默认），outline 为单一连续表面，subtle 为淡底。默认 ghost。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft / ArrowRight 的语义。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
@@ -1432,7 +1432,9 @@ const panels = [
 
 **状态**：`idle`
 
-**事件**：`ITEM.TOGGLE` · `VALUE.SET`
+**事件**：`ITEM.TOGGLE` · `VALUE.SET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -1441,7 +1443,7 @@ const panels = [
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 当前展开集合，单开模式下长度 ≤ 1。 |
-| `collection` | `readonly AccordionNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly AccordionNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `setValue` | `(next: string[]) => void` |  |
 | `isOpen` | `(value: string) => boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -1466,6 +1468,7 @@ const panels = [
 | `Home` | focus in trigger | 焦点移到首个 trigger |
 | `End` | focus in trigger | 焦点移到末个 trigger |
 | `Tab` / `Shift+Tab` | focus in trigger | 按文档序进出：每个 trigger 都是独立 Tab 停靠点，无 roving tabindex |
+| `Enter` / `Space` | held in trigger, not disabled | 按住期间该 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或整组转禁用撤下 |
 
 ### ARIA
 
@@ -1505,7 +1508,13 @@ const panels = [
 | `header` | `data-disabled` | ''（条件成立时才出现） |
 | `header` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
+| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-variant` | 'ghost' |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
@@ -1513,37 +1522,38 @@ const panels = [
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-accordion-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | accordion 的 root 部件 border 覆盖槽。 |
 | `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | accordion 的 content 部件 color 覆盖槽。 |
 | `--xh-accordion-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | accordion 的 content 部件 font-size 覆盖槽。 |
-| `--xh-accordion-content-pb` | `*`<br>`content` | `padding-block-end` | `@keyframes xh-accordion-collapse`<br>`@keyframes xh-accordion-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 *、content 部件 padding-block-end 覆盖槽。 |
+| `--xh-accordion-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 content 部件 padding-block-end 覆盖槽。 |
 | `--xh-accordion-content-px` | `content` | `padding-inline` | `default` | `--xh-_accordion-content-px` | accordion 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-accordion-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | accordion 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-accordion-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | accordion 的 root、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-accordion-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | accordion 的 indicator 部件 color 覆盖槽。 |
-| `--xh-accordion-item-bg` | `root` | `background` | `variant=surface` | `--xh-bg-surface` | accordion 的 root 部件 background 覆盖槽。 |
-| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=bordered`<br>`variant=surface` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border、border-block-start、border-inline-start 覆盖槽。 |
-| `--xh-accordion-item-gap` | `root` | `gap` | `variant=bordered` | `--xh-space-2` | accordion 的 root 部件 gap 覆盖槽。 |
-| `--xh-accordion-item-radius` | `item`<br>`root` | `border-radius` | `variant=bordered`<br>`variant=surface` | `--xh-shape-surface` | accordion 的 item、root 部件 border-radius 覆盖槽。 |
-| `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=surface` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-accordion-trigger-bg` | `trigger` | `background` | `default` | `transparent` | accordion 的 trigger 部件 background 覆盖槽。 |
-| `--xh-accordion-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='open'])`<br>`state=open` | `--xh-bg-subtle-hover` | accordion 的 trigger 部件 background 覆盖槽。 |
-| `--xh-accordion-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | accordion 的 trigger 部件 color 覆盖槽。 |
-| `--xh-accordion-trigger-fg-open` | `trigger` | `color` | `state=open` | `--xh-_accordion-open-fg` | accordion 的 trigger 部件 color 覆盖槽。 |
-| `--xh-accordion-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_accordion-trigger-font-size` | accordion 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-accordion-item-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | accordion 的 root 部件 background 覆盖槽。 |
+| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`is([data-variant='outline'], [data-variant='subtle'])`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-accordion-item-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | accordion 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=outline`<br>`variant=subtle` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-accordion-trigger-bg` | `trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | accordion 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-accordion-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | accordion 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-accordion-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | accordion 的 trigger 部件 color 覆盖槽。 |
+| `--xh-accordion-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` | accordion 的 trigger 部件 color 覆盖槽。 |
+| `--xh-accordion-trigger-fg-open` | `trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=open` | `--xh-_accordion-open-fg` | accordion 的 trigger 部件 color 覆盖槽。 |
+| `--xh-accordion-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | accordion 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | accordion 的 trigger 部件 font-weight 覆盖槽。 |
-| `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_accordion-trigger-gap` | accordion 的 trigger 部件 gap 覆盖槽。 |
-| `--xh-accordion-trigger-h` | `trigger` | `min-block-size` | `default` | `--xh-_accordion-trigger-h` | accordion 的 trigger 部件 min-block-size 覆盖槽。 |
-| `--xh-accordion-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_accordion-trigger-px` | accordion 的 trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-accordion-trigger-py` | `trigger` | `padding-block` | `default` | `--xh-_accordion-trigger-py` | accordion 的 trigger 部件 padding-block 覆盖槽。 |
-| `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | accordion 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_action-profile-gap` | accordion 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-accordion-trigger-h` | `trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_action-profile-visual-size` | accordion 的 trigger 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-accordion-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | accordion 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-accordion-trigger-py` | `trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-_action-profile-padding-block` | accordion 的 trigger 部件 padding-block 覆盖槽。 |
+| `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | accordion 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

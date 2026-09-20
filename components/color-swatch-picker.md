@@ -2,9 +2,7 @@
 
 # ColorSwatchPicker 颜色色块选择器 `alpha`
 
-从一组固定颜色里挑一个：主题色、标签色、高亮色。
-每格是一颗 `role=radio` 的色块，整组是一个 `radiogroup`——它就是一个把选项画成颜色的[单选组](./radio-group)。
-只想自由调出任意颜色时用[颜色选择器](./color-picker)；它内嵌的预设色板用的就是这一件。
+从一组固定颜色中选择一个：主题色、标签色、高亮色。每格是一个 `role=radio` 的色块，整组是一个 `radiogroup`，即把选项绘制为颜色的[单选组](./radio-group)。需要自由调出任意颜色时使用[颜色选择器](./color-picker)，它内嵌的预设色板使用的就是本组件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-swatch-picker" target="_blank" rel="noreferrer">Headless</a>
@@ -16,7 +14,7 @@
 
 ## 用法
 
-交一组颜色数据就自动铺开；每格是一颗 radio，方向键在格子间移动并选中
+提供一组颜色数据即自动铺开；每格是一个 radio，方向键在格子间移动并选中
 
 ```vue
 <script setup lang="ts">
@@ -111,7 +109,7 @@ const swatches = [
 
 ### 手写格子
 
-不交数据也行：每格自己报 value，名字与禁用写在格子上；半透明颜色铺在棋盘格上
+不提供数据也可以：每格自行声明 value，名字与禁用写在格子上；半透明颜色铺在棋盘格上
 
 ```vue
 <script setup lang="ts">
@@ -179,7 +177,7 @@ const value = ref<string | null>("rgb(225, 29, 72)");
 
 ### 状态
 
-禁用整组置灰、只读只挡落值不挡焦点、无效把描边转成警示色
+禁用整组置灰、只读只阻止落值不阻止焦点、无效把描边转为警示色
 
 ```vue
 <script setup lang="ts">
@@ -286,7 +284,7 @@ const swatches = [
 
 ### 尺寸与语气
 
-格子边长跟着控件行高走三档；tone 决定选中环与选中标记用哪族颜色
+格子边长跟随控件行高分三档；tone 决定选中描边与选中徽标使用哪族颜色
 
 ```vue
 <script setup lang="ts">
@@ -386,46 +384,46 @@ const swatches = [
 
 ### 何时使用
 
-- 可选的颜色是有限的一组，且每个颜色都有它的含义（品牌色、状态色、日历分类色）。
-- 想让人一眼看到全部选项再挑，不用打开浮层。
-- 表单里要提交一个颜色串，且不需要自由调色。
+- 可选颜色是有限的一组，且每个颜色都有含义（品牌色、状态色、日历分类色）。
+- 需要一次看到全部选项再挑选，不打开浮层。
+- 表单需要提交一个颜色串，且不需要自由调色。
 
 ### 何时不用
 
-- 要自由调出任意颜色：用[颜色选择器](./color-picker)，它把这一组色板和取色面装在一起。
-- 只是展示一个颜色、不接选择：用[颜色色块](./color-swatch)。
-- 让人手输颜色串：用[颜色字段](./color-field)。
-- 选项不是颜色而是文字：那是[单选组](./radio-group)。
+- 需要自由调出任意颜色时，使用[颜色选择器](./color-picker)，它把色板与取色面组合在一起。
+- 只展示一个颜色、不接受选择时，使用[颜色色块](./color-swatch)。
+- 需要手动输入颜色串时，使用[颜色字段](./color-field)。
+- 选项不是颜色而是文字时，使用[单选组](./radio-group)。
 
 ### 特性
 
-- 选中按颜色比不按串比：`rgb(255, 0, 0)` 与 `#ff0000` 是同一格，受控 `value` 用哪种写法都能对上格子。
-- 与单选组同一套 roving tabindex：整组只占一个 Tab 位，四个方向键在格子间移焦点并选中，走到尽头回绕，禁用格跳过；Space 选中当前格。
-- 焦点从组外进来时落在已选中的那一格，一个都没选才落第一格。
-- `swatches` 给数据：可及名字与禁用从数据里查，格子部件只需报 `value`；不写默认内容时按数据自动铺开。
-- 每格的色块面由 Swatch 家族画：解析不出的串只剩棋盘格，半透明颜色铺在棋盘格上。
-- `readOnly` 时方向键照常移焦点但不落值；`disabled` 整组置灰，格子仍可聚焦。
-- 尺寸 sm / md / lg 三档：格子边长跟着控件行高走，与旁边的按钮、字段齐高。
-- 选中环与选中标记随 `data-tone` 走；标记自带一圈画布色描边，落在任何颜色上都看得出来。
-- 高对比模式下色块保住原色，选中环与标记换系统高亮色；打印时标记改画成实边。
+- 选中按颜色比较而不按字符串比较：`rgb(255, 0, 0)` 与 `#ff0000` 是同一格，受控 `value` 使用任一写法都能匹配。
+- 与单选组同一套 roving tabindex：整组只占一个 Tab 位，四个方向键在格子间移动焦点并选中，到末端回绕，禁用格跳过；Space 选中当前格。
+- 焦点从组外进入时落在已选中的格子，没有选中时落在第一格。
+- `swatches` 提供数据：可访问名称与禁用从数据中读取，格子部件只需报告 `value`；不写默认内容时按数据自动铺开。
+- 每格的色块面由 Swatch 家族绘制：无法解析的串只显示棋盘格，半透明颜色铺在棋盘格上。
+- `readOnly` 时方向键照常移动焦点但不取值；`disabled` 整组置灰，格子仍可聚焦。
+- 尺寸 sm / md / lg 三档：格子边长跟随控件行高，与旁边的按钮、字段等高。
+- 选中徽标与色块的品牌描边随 `data-tone` 变化；徽标自带一圈画布色描边，落在任何颜色上都可见。
+- 高对比模式下色块保留原色，选中描边与徽标换用系统高亮色；打印时徽标改为实边。
 
 ### 组合
 
-- 内嵌在[颜色选择器](./color-picker)的浮层里当预设色板。
-- 与[颜色字段](./color-field)并排：色板挑常用色，字段手输精确值。
-- 放进[表单字段](./field)里承接标题、说明与错误信息，`disabled` / `readOnly` / `invalid` / `required` 随字段下发。
+- 内嵌在[颜色选择器](./color-picker)的浮层中作为预设色板。
+- 与[颜色字段](./color-field)并排：色板选择常用色，字段输入精确值。
+- 放入[表单字段](./field)承接标题、说明与错误信息，`disabled` / `readOnly` / `invalid` / `required` 随字段下发。
 
 ### 最佳实践
 
-- 每格给名字（`swatches[].label` 或部件的 `label`），读屏用户听到的应是「品牌红」而不是 `#e11d48`。
-- 色板的颜色数量控制在一眼能扫完的范围，再多就该换[颜色选择器](./color-picker)。
-- 选中值有初始值时用 `defaultValue`，让焦点进组时直接落在它上面。
+- 每格提供名称（`swatches[].label` 或部件的 `label`），读屏用户听到的应是“品牌红”而不是 `#e11d48`。
+- 色板的颜色数量控制在一眼可扫完的范围，更多时改用[颜色选择器](./color-picker)。
+- 有初始值时使用 `defaultValue`，焦点进组时直接落在该格。
 
 ### 反模式
 
-- 拿它做多选：一格只能选中一个，要多选颜色请用[复选框组](./checkbox-group)配[颜色色块](./color-swatch)。
-- 把颜色写成 `red` 这类关键字：它们不在支持的写法里，那一格只会画成棋盘格。
-- 同一组里放两格同一个颜色的不同写法：它们会同时算作选中。
+- 用它做多选：一格只能选中一个；需要多选颜色时使用[复选框组](./checkbox-group)配合[颜色色块](./color-swatch)。
+- 把颜色写成 `red` 等关键字：不在支持的写法内，该格只显示棋盘格。
+- 同一组内放同一颜色的不同写法：它们会同时算作选中。
 
 ## API 参考
 
@@ -443,17 +441,17 @@ const swatches = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `swatches` | `ColorSwatchPickerNode[]` |  | 格子数据，可及名字与禁用的事实源。给了它，格子部件只需报 value。 缺省即回到「名字与禁用都写在格子部件上」的老路。 |
-| `value` | `string \| null` |  | 选中的颜色串。给定即受控：写只发 onValueChange 不落内部值。写法不同的同一个颜色也算选中。 |
+| `swatches` | `ColorSwatchPickerNode[]` |  | 格子数据，可及名与禁用的事实源。提供后格子部件只需声明 value。 未提供时回到名字与禁用都写在格子部件上的方式。 |
+| `value` | `string \| null` |  | 选中的颜色串。提供即受控：写入只发 onValueChange 不落内部值。写法不同的同一颜色也视为选中。 |
 | `defaultValue` | `string \| null` |  |  |
 | `disabled` | `boolean` |  |  |
-| `readOnly` | `boolean` |  | 只读：选不动，但仍可聚焦、方向键照常移焦点，对比度不降。 |
-| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
-| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
-| `dir` | `Direction` |  | 文字方向，缺省 'ltr'；只改写左右两键的语义。 |
+| `readOnly` | `boolean` |  | 只读：不可选择，但仍可聚焦、方向键照常移动焦点，对比度不降低。 |
+| `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起使用，只发无障碍属性，不自行拦截提交。 |
+| `dir` | `Direction` |  | 文字方向，默认 'ltr'；只改写左右两键的语义。 |
 | `name` | `string` |  | 表单字段名。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，换的是格子的边长与间距。 |
-| `tone` | `Tone` |  | 语气：决定选中环与选中标记用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，影响格子的边长与间距。 |
+| `tone` | `Tone` |  | 语气：决定选中环与选中标记使用哪族颜色。 |
 | `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
 
@@ -476,11 +474,22 @@ const swatches = [
 
 ### 状态
 
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `swatch` | 'checked' \| 'unchecked' |
+| `indicator` | 'checked' \| 'unchecked' |
+| `hidden-input` | 'checked' \| 'unchecked' |
+
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -489,14 +498,14 @@ const swatches = [
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` |  |
-| `swatches` | `readonly ColorSwatchPickerNodeMeta[]` | swatches 推出的格子元信息，按数据顺序排列；没给 swatches 即空数组。 |
+| `swatches` | `readonly ColorSwatchPickerNodeMeta[]` | 由 swatches 推导的格子元信息，按数据顺序排列；未提供 swatches 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
-| `isSelected` | `(value: string) => boolean` | 某个颜色串是不是当前选中的那一格：写法不同（`#f00` 与 `rgb(255,0,0)`）也算同一个。 |
+| `isSelected` | `(value: string) => boolean` | 某个颜色串是否为当前选中的格：写法不同（`#f00` 与 `rgb(255,0,0)`）也视为同一颜色。 |
 | `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 一格：role=radio，颜色串是它的身份。 |
-| `getSwatchProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 格里的色块面：走 Swatch 家族画颜色，纯装饰。 |
+| `getSwatchProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 格内的色块面：使用 Swatch 家族绘制颜色，纯装饰。 |
 | `getIndicatorProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 选中标记（对号），纯装饰。 |
 | `getHiddenInputProps` | `(props: ColorSwatchPickerItemProps) => T['input']` | 格子对应的隐藏原生 radio 输入，用于表单提交。 |
 
@@ -512,6 +521,7 @@ const swatches = [
 | `ArrowDown` / `ArrowRight` | focus in group, group not disabled | 焦点移到下一个可停留格并选中，末格回绕到首格；dir=rtl 时改由 ArrowLeft 承担 |
 | `ArrowUp` / `ArrowLeft` | focus in group, group not disabled | 焦点移到上一个可停留格并选中，首格回绕到末格；dir=rtl 时改由 ArrowRight 承担 |
 | `Space` | focus on item, item not disabled | 选中当前格 |
+| `Space` | held on item, 格子未禁用且组未禁用、非只读 | 按住期间该格投影 data-pressed，与指针 :active 同一副按压面（换描边并缩放）；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。Enter 不是 radio 的激活键，按住它没有按压面 |
 
 ### ARIA
 
@@ -533,10 +543,10 @@ const swatches = [
 | `indicator` | `aria-hidden` | 'true' |
 | `hidden-input` | `aria-hidden` | 'true' |
 
-- 根是 `role=radiogroup`，名字取 label 部件，没放时读 `translations.group`。
-- 每格是 `role=radio` 并显式输出 `aria-checked`；名字按 `label` → `swatches` 里的 `label` → `translations.swatch(value)` 依次取，光看颜色串听不出含义时务必给名字。
-- 禁用格用 `aria-disabled` 表达，仍可聚焦、仍是方向键的起点。
-- 每格内一份 `inert` 的隐藏原生 radio 承接表单提交，不进焦点序列与可访问树。
+- 根是 `role=radiogroup`，名称取 label 部件，未提供时读 `translations.group`。
+- 每格是 `role=radio` 并显式输出 `aria-checked`；名称依次取 `label`、`swatches` 中的 `label`、`translations.swatch(value)`，颜色串无法表达含义时务必提供名称。
+- 禁用格用 `aria-disabled` 表达，仍可聚焦，仍是方向键的起点。
+- 每格内有一个 `inert` 的隐藏原生 radio 承接表单提交，不进入焦点序列与可访问树。
 
 ## 样式参考
 
@@ -558,31 +568,52 @@ const swatches = [
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `swatch` | `data-disabled` | ''（条件成立时才出现） |
+| `swatch` | `data-invalid` | ''（条件成立时才出现） |
+| `swatch` | `data-readonly` | ''（条件成立时才出现） |
+| `swatch` | `data-state` | 'checked' \| 'unchecked' |
 | `swatch` | `data-xh-swatch` | '' |
 | `swatch` | `data-xh-swatch-size` | props.size |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-invalid` | ''（条件成立时才出现） |
+| `indicator` | `data-readonly` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
+| `hidden-input` | `data-invalid` | ''（条件成立时才出现） |
+| `hidden-input` | `data-readonly` | ''（条件成立时才出现） |
+| `hidden-input` | `data-state` | 'checked' \| 'unchecked' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-color-swatch-picker-gap` | `root` | `gap` | `default` | `--xh-_color-swatch-picker-gap` | color-swatch-picker 的 root 部件 gap 覆盖槽。 |
+| `--xh-color-swatch-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-_color-swatch-picker-gap` | color-swatch-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-color-swatch-picker-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_color-swatch-picker-mark` | color-swatch-picker 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-bg` | `indicator` | `background` | `default` | `--xh-_color-swatch-picker-accent` | color-swatch-picker 的 indicator 部件 background 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-border` | `indicator` | `border` | `default` | `--xh-bg-canvas` | color-swatch-picker 的 indicator 部件 border 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-fg` | `indicator` | `background-color`<br>`color` | `default`<br>`empty` | `--xh-_tone-on` | color-swatch-picker 的 indicator 部件 background-color、color 覆盖槽。 |
 | `--xh-color-swatch-picker-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-indicator` | color-swatch-picker 的 indicator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-color-swatch-picker-item-radius` | `item`<br>`swatch` | `--xh-swatch-radius`<br>`border-radius` | `default` | `--xh-shape-control` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。 |
+| `--xh-color-swatch-picker-item-radius` | `item`<br>`swatch` | `--xh-swatch-radius`<br>`border-radius` | `default` | `--xh-shape-inset` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。 |
 | `--xh-color-swatch-picker-item-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-cell` | color-swatch-picker 的 item 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-color-swatch-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-_color-swatch-picker-font-size` | color-swatch-picker 的 label 部件 font-size 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-swatch-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-swatch-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-swatch-picker 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-color-swatch-picker-ring` | `item` | `outline` | `state=checked` | `--xh-_color-swatch-picker-accent` | color-swatch-picker 的 item 部件 outline 覆盖槽。 |
-| `--xh-color-swatch-picker-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
-| `--xh-color-swatch-picker-swatch-border-hover` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-border-strong` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | color-swatch-picker 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-color-swatch-picker-ring` | `item`<br>`swatch` | `--xh-swatch-border` | `state=checked` | `--xh-_tone` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border` | `item`<br>`swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border-hover` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly], [data-state='checked'])`<br>`readonly`<br>`state=checked` | `--xh-border-control-hover` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
 | `--xh-color-swatch-picker-swatch-border-invalid` | `swatch` | `--xh-swatch-border` | `invalid` | `--xh-border-invalid` | color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border-pressed` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled], [data-readonly])`<br>`pressed`<br>`readonly` | `--xh-_tone` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -593,7 +624,7 @@ const swatches = [
 
 ### 响应式
 
-- 格子排成可换行的网格，一行摆不下时落到下一行；粗指针下命中区就是整格。
+- 格子排成可换行的网格，一行放不下时换行；粗指针下命中区是整格。
 
 ### RTL
 

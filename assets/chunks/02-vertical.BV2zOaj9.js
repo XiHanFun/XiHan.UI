@@ -1,0 +1,16 @@
+const t=`<!-- 垂直布局 | 用于侧栏式内容导航 -->
+<xh-tabs default-value="account" orientation="vertical">
+  <div data-xh-part="root" style="inline-size: 420px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="账户设置">
+      <button data-xh-part="trigger" value="account">账户</button>
+      <button data-xh-part="trigger" value="security">安全</button>
+      <button data-xh-part="trigger" value="notifications">通知</button>
+      <div data-xh-part="indicator"></div>
+    </div>
+
+    <div data-xh-part="content" value="account">管理账户资料与偏好。</div>
+    <div data-xh-part="content" value="security">配置密码与登录验证。</div>
+    <div data-xh-part="content" value="notifications">设置消息通知方式。</div>
+  </div>
+</xh-tabs>
+`;export{t as default};

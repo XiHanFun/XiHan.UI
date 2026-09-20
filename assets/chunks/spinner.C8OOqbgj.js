@@ -1,1 +1,0 @@
-import{eE as a,eF as n}from"./theme.C4bpqV2W.js";import{d as r,b as t,w as o,k as e,o as s,E as p}from"./framework.DkvuVDKz.js";const m=r({__name:"spinner",setup(c){return(_,i)=>(s(),t(e(n),{label:"加载中"},{default:o(()=>[p(e(a))]),_:1}))}});export{m as default};

@@ -2,7 +2,7 @@
 
 # Segmented 分段控制器 `alpha`
 
-一排连在一起的互斥选项，选中的那一段底下有一块会滑动的指示器。它是单选组，参与表单提交。
+一排连在一起的互斥选项，选中的一段下方有一块滑动的指示器：淡底轨道里一块带描边的白色抬起面。它是单选组，参与表单提交。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/segmented" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
+一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都可移动
 
 ```vue
 <script setup lang="ts">
@@ -67,7 +67,7 @@ const ranges = [
 
 ### 受控
 
-传了 value 就由宿主说了算；值可以是 null，表示一段都没选中
+传入 value 后由宿主决定；值可以是 null，表示没有任何一段选中
 
 ```vue
 <script setup lang="ts">
@@ -131,7 +131,7 @@ const views = [
 
 ### 撑满行宽
 
-block 让整组占满一行，各段等分剩余空间，长短不一的文字也排得齐
+block 使整组占满一行，各段等分剩余空间，长短不一的文字也能对齐
 
 ```vue
 <script setup lang="ts">
@@ -178,7 +178,7 @@ const modes = [
 
 ### 竖排
 
-orientation 只改视觉排布，四个方向键与 Home/End 照样都能走
+orientation 只改变视觉排布，四个方向键与 Home/End 照常可用
 
 ```vue
 <script setup lang="ts">
@@ -221,7 +221,7 @@ const densities = [
 
 ### 禁用
 
-单段禁用仍可聚焦、仍是方向键的起点，只是走不到它上面；整组禁用则谁都改不动
+单段禁用仍可聚焦、仍是方向键的起点，只是无法选中它；整组禁用则全部不可修改
 
 ```vue
 <script setup lang="ts">
@@ -290,7 +290,7 @@ const plans = [
 
 ### 颜色
 
-tone 决定指示器与选中段文字用哪族颜色，六种语气各一组
+tone 决定指示器与选中段文字使用哪族颜色，六种语气各一组
 
 ```vue
 <script setup lang="ts">
@@ -403,7 +403,7 @@ const answers = [
 
 ### 尺寸
 
-size 换的是段的高度、内边距与字号，指示器跟着量出来的段走
+size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 ```vue
 <script setup lang="ts">
@@ -483,7 +483,7 @@ const aligns = [
 
 ### 表单
 
-给了 name 才带上隐藏输入参与提交；宿主表单点重置，选中值回落到 default-value
+提供 name 后才带上隐藏输入参与提交；宿主表单重置时，选中值回落到 default-value
 
 ```vue
 <script setup lang="ts">
@@ -561,41 +561,41 @@ function onSubmit(event: Event) {
 ### 何时使用
 
 - 二到五个平级选项之间切换：视图模式（列表 / 网格）、时间粒度（日 / 周 / 月）、排序方式。
-- 选项少、名字短，且值得一直摊开给用户看——分段控件的价值就在于不用点开就知道有哪几个。
-- 需要随表单一起提交这个选择。
+- 选项少、名称短，且值得始终展开：分段控制器的价值在于不需要打开即可看到全部选项。
+- 需要随表单一起提交该选择。
 
 ### 何时不用
 
-- 选项超过六个，或选项文字长短悬殊：改用[单选组](./radio-group)竖排，或[选择器](./select)收进浮层。
-- 需要多选，或表达的是按钮的按下态而不是一个字段值：用[切换按钮组](./toggle-group)——它没有 `name`、不参与表单，也没有滑动指示器。
-- 切换的是同一块区域的几屏内容：那是[标签页](./tabs)，它管的是面板的显隐，不是一个值。
+- 选项超过六个，或选项文字长短悬殊时，改用[单选组](./radio-group)竖排，或[选择器](./select)收进浮层。
+- 需要多选，或表达的是按钮的按下状态而不是一个字段值时，使用[切换按钮组](./toggle-group)：它没有 `name`、不参与表单，也没有滑动指示器。
+- 切换的是同一块区域的几屏内容时，使用[标签页](./tabs)，它管理面板的显隐，不是一个值。
 
 ### 特性
 
-- 集合入口：给 `collection` 就只交数据，条目文本与禁用都以数据为准；要改结构再写部件。
-- 受控与非受控两态齐全：`value` 给了即受控，只发 `onValueChange` 不自改。
-- 参与表单：给 `name` 后隐藏输入才带上它；宿主表单点重置，选中值回落到 `defaultValue`。隐藏输入只在「只交 `collection`、由组件铺开结构」时自动铺；自己写默认插槽排版的话，得记得放一个隐藏输入部件，否则给了 `name` 也没有任何东西参与提交。
-- 指示器位置由组件量出来，横排竖排、ltr 与 rtl 都是同一条规则。
-- 语气 · 尺寸两轴与其余组件同源；`block` 让整组撑满行宽、各段等分。
+- 集合入口：提供 `collection` 即只传数据，条目文本与禁用都以数据为准；需要改结构时再写部件。
+- 受控与非受控两态齐全：提供 `value` 即受控，只发 `onValueChange` 不自行修改。
+- 参与表单：提供 `name` 后隐藏输入才带上它；宿主表单重置时选中值回落到 `defaultValue`。隐藏输入只在只传 `collection`、由组件铺开结构时自动铺出；自行编写默认插槽排版时需要放一个隐藏输入部件，否则提供 `name` 也没有内容参与提交。
+- 指示器位置由组件测量，横排竖排、ltr 与 rtl 使用同一条规则。
+- 语气与尺寸两轴与其他组件同源；`block` 让整组撑满行宽、各段等分。
 
 ### 组合
 
-- 放进[表单字段](./field)里，让标签、说明与错误文案一并接上。
-- 与[标签页](./tabs)搭：分段控件切数据口径，标签页切内容面板，两者不要互相顶替。
+- 放入[表单字段](./field)，让标签、说明与错误文案一并接入。
+- 与[标签页](./tabs)搭配：分段控制器切换数据口径，标签页切换内容面板，两者不互相替代。
 
 ### 最佳实践
 
-- 各段文字长度尽量接近：长短悬殊时指示器一滑，整排宽度会跟着跳。
-- 段数固定下来再上：分段控件不适合数量会变的选项集。
-- 选中态别只靠指示器的颜色区分，文字色也要跟着变，色觉障碍的用户才分得出。
-- 段的文字不走 `collection` 而是自己手写、且会在运行期改动时，改完叫一次 `measure()`：指示器只跟着选中值、集合与根的尺寸走，段内文字撑宽了它看不见。
-- 动态摘掉正持有焦点的那一段（比如按权限过滤掉它）之后，焦点会掉回 `<body>`。组件只保证 Tab 位退回容器、键盘还进得来；要不丢位置，得由页面自己把焦点挪到相邻的那一段上。
+- 各段文字长度尽量接近：长短悬殊时指示器滑动，整排宽度会跟着跳动。
+- 段数固定后再使用：分段控制器不适合数量会变化的选项集。
+- 选中态不只依靠指示器的颜色区分，文字色也要跟随变化，色觉障碍的用户才能分辨。
+- 段的文字不走 `collection` 而是手写、且会在运行期改动时，改动后调用一次 `measure()`：指示器只跟随选中值、集合与根的尺寸变化，段内文字撑宽时它无法感知。
+- 动态移除正持有焦点的段（例如按权限过滤）之后，焦点会回到 `<body>`。组件只保证 Tab 位退回容器、键盘可以再次进入；需要保持位置时由页面把焦点移到相邻的段。
 
 ### 反模式
 
-- 把它当按钮组用：段是一个值的几个取值，不是几个动作。要触发动作用[按钮组](./button-group)。
-- 一行里塞七八段：那已经是个下拉框了，还占着整行宽度。
-- 用它切换整页内容却不改地址：用户刷新一次就回到了第一段。
+- 把它当按钮组使用：段是一个值的几个取值，不是几个动作。触发动作使用[按钮组](./button-group)。
+- 一行放七八段：那已经是下拉框，还占着整行宽度。
+- 用它切换整页内容却不改地址：用户刷新后回到第一段。
 
 ## API 参考
 
@@ -613,21 +613,21 @@ function onSubmit(event: Event) {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `SegmentedNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `value` | `string \| null` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
+| `collection` | `SegmentedNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `value` | `string \| null` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `string \| null` |  |  |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
-| `readOnly` | `boolean` |  | 只读：选不动，但仍可聚焦、方向键照常移焦点，对比度不降。 |
-| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
-| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
-| `name` | `string` |  | 表单字段名。给定后隐藏输入才带 name 并参与提交。 |
+| `readOnly` | `boolean` |  | 只读：不可选择，但仍可聚焦、方向键照常移动焦点，对比度不降低。 |
+| `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起使用，只发无障碍属性，不自行拦截提交。 |
+| `name` | `string` |  | 表单字段名。提供后隐藏输入才带 name 并参与提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
-| `dir` | `Direction` |  | 文字方向，只改写左右方向键的语义与指示器的起始缘，上下键与之无关。 不给即从根节点的计算样式现读（祖先链上的 dir 与 CSS direction 都算），给了就以它为准。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `dir` | `Direction` |  | 文字方向，只改写左右方向键的语义与指示器的起始缘，上下键与之无关。 未提供时从根节点的计算样式读取（祖先链上的 dir 与 CSS direction 都计入），提供后以它为准。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `block` | `boolean` |  | 撑满行宽，各段等分剩余空间。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onValueChange` | `(details: SegmentedValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: SegmentedValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -648,11 +648,20 @@ function onSubmit(event: Event) {
 
 ### 状态
 
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
+
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `INDICATOR.MEASURE` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `INDICATOR.MEASURE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -660,14 +669,14 @@ function onSubmit(event: Event) {
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` | 当前选中值；一个都没选中时为 null。 |
-| `collection` | `readonly SegmentedNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `value` | `string \| null` | 当前选中值；没有选中任何项时为 null。 |
+| `collection` | `readonly SegmentedNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string \| null) => void` |  |
-| `measure` | `() => void` | 重量一遍指示器。选中值变化与 collection 增删改名都会自动重量，根的尺寸变化由尺寸观察器接住； 剩下这一类要手动叫：段的文字由部件手写（没走 collection）而后改动，或字体加载完把段撑宽了。 |
+| `measure` | `() => void` | 重新测量指示器。选中值变化与 collection 增删改名都会自动重新测量，根的尺寸变化由尺寸观察器接管； 以下情况需要手动调用：段的文字由部件手写（未经 collection）而后修改，或字体加载完成把段撑宽。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SegmentedItemProps) => T['button']` |  |
 | `getItemTextProps` | `(props: SegmentedItemProps) => T['element']` |  |
@@ -688,6 +697,7 @@ function onSubmit(event: Event) {
 | `Home` | focus in group, 组未禁用 | 焦点移到首个可停留段并选中它；只读时只移焦点 |
 | `End` | focus in group, 组未禁用 | 焦点移到末个可停留段并选中它；只读时只移焦点 |
 | `Enter` / `Space` | focus on item, 该段未禁用且组非只读 | 选中当前段；段是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held on item, 该段未禁用且组未禁用、非只读 | 按住期间该段投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整组转入禁用或只读也撤下。选中与按压互相独立 |
 
 ### ARIA
 
@@ -705,17 +715,19 @@ function onSubmit(event: Event) {
 | `item` | `role` | 'radio' |
 | `indicator` | `aria-hidden` | 'true' |
 
-- 根节点是 `radiogroup`，每一段是 `radio` 并显式报 `aria-checked`。
-- 整组只占一个 Tab 位，组内靠方向键走，Home/End 直达首末段；焦点进组落在已选中的那一段上。
-- 禁用的段用 `aria-disabled` 而不是原生 `disabled`：它仍然可以聚焦、仍然是方向键的起点。
-- 组本身没有可见标题，请自己给根节点写 `aria-label` 或 `aria-labelledby`，否则读屏只会念"单选组"。
-- 指示器是纯装饰，对读屏隐藏；"当前是哪一段"靠段自己的选中态表达，指示器不渲染也读得出来。
+- 根节点是 `radiogroup`，每一段是 `radio` 并显式报告 `aria-checked`。
+- 整组只占一个 Tab 位，组内靠方向键移动，Home / End 直达首末段；焦点进组时落在已选中的一段。
+- 禁用的段使用 `aria-disabled` 而不是原生 `disabled`：它仍可聚焦，仍是方向键的起点。
+- 组本身没有可见标题，需要为根节点提供 `aria-label` 或 `aria-labelledby`，否则读屏只读出“单选组”。
+- 指示器是纯装饰，对读屏隐藏；当前段由段自身的选中态表达，指示器不渲染也能读出。
 
 ## 样式参考
 
 ### 皮肤
 
 `@xihan-ui/styles/segmented.css` 使用 `[data-scope="segmented"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -731,26 +743,37 @@ function onSubmit(event: Event) {
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-invalid` | ''（条件成立时才出现） |
+| `item-text` | `data-readonly` | ''（条件成立时才出现） |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `indicator` | `data-value` | context.get('value') |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-segmented-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | segmented 的 root 部件 background 覆盖槽。 |
 | `--xh-segmented-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | segmented 的 root 部件 background 覆盖槽。 |
-| `--xh-segmented-border` | `root` | `border` | `default` | `--xh-border-subtle` | segmented 的 root 部件 border 覆盖槽。 |
+| `--xh-segmented-border` | `root` | `border` | `default` | `transparent` | segmented 的 root 部件 border 覆盖槽。 |
 | `--xh-segmented-border-invalid` | `root` | `border-color` | `invalid` | `--xh-border-invalid` | segmented 的 root 部件 border-color 覆盖槽。 |
 | `--xh-segmented-font-size` | `root` | `font-size` | `default` | `--xh-_segmented-font-size` | segmented 的 root 部件 font-size 覆盖槽。 |
 | `--xh-segmented-h` | `item`<br>`root` | `min-block-size` | `orientation=horizontal` | `--xh-_segmented-h` | segmented 的 item、root 部件 min-block-size 覆盖槽。 |
 | `--xh-segmented-indicator-bg` | `indicator` | `background` | `default` | `--xh-_segmented-indicator-bg` | segmented 的 indicator 部件 background 覆盖槽。 |
+| `--xh-segmented-indicator-border` | `indicator`<br>`root` | `border`<br>`border-color` | `default`<br>`tone` | `--xh-_tone`<br>`--xh-border-default` | segmented 的 indicator、root 部件 border、border-color 覆盖槽。 |
 | `--xh-segmented-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-segmented-indicator-shadow` | `indicator` | `box-shadow` | `default` | `--xh-elevation-raised` | segmented 的 indicator 部件 box-shadow 覆盖槽。 |
 | `--xh-segmented-indicator-shadow-disabled` | `indicator`<br>`root` | `box-shadow` | `disabled` | `none` | segmented 的 indicator、root 部件 box-shadow 覆盖槽。 |
 | `--xh-segmented-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-bg-subtle-hover` | segmented 的 item 部件 background-color 覆盖槽。 |
+| `--xh-segmented-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-bg-subtle-active` | segmented 的 item 部件 background-color 覆盖槽。 |
 | `--xh-segmented-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | segmented 的 item 部件 color 覆盖槽。 |
 | `--xh-segmented-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
 | `--xh-segmented-item-fg-checked-disabled` | `item` | `color` | `disabled`<br>`state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
@@ -758,27 +781,26 @@ function onSubmit(event: Event) {
 | `--xh-segmented-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | segmented 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-segmented-item-gap` | `item` | `gap` | `default` | `--xh-_segmented-gap` | segmented 的 item 部件 gap 覆盖槽。 |
 | `--xh-segmented-item-h` | `item` | `block-size` | `default` | `--xh-_segmented-h` | segmented 的 item 部件 block-size 覆盖槽。 |
-| `--xh-segmented-item-press-scale` | `item` | `scale` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`readonly` | `--xh-motion-scale-press` | segmented 的 item 部件 scale 覆盖槽。 |
 | `--xh-segmented-item-px` | `item` | `padding-inline` | `default` | `--xh-_segmented-px` | segmented 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-segmented-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-segmented-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | segmented 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-segmented-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | segmented 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-segmented-track-padding` | `item`<br>`root` | `min-block-size`<br>`padding` | `default`<br>`orientation=horizontal` | `--xh-space-0_5` | segmented 的 item、root 部件 min-block-size、padding 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
-- 方向从 DOM 现读：整页或某个祖先声明了 `dir='rtl'`（或 CSS `direction`），左右方向键的语义与指示器的起始缘就一起翻过来，不必再给组件传一遍。上下键不受影响。
-- `dir` 属性是显式覆盖：给了就以它为准，用在「整页 ltr、局部一块 rtl」这类场合。
-- 指示器的偏移按逻辑起始缘量，rtl 下自动从右缘算起，不必另写一套样式。
+- 方向从 DOM 读取：整页或某个祖先声明了 `dir='rtl'`（或 CSS `direction`），左右方向键的语义与指示器的起始缘一起翻转，不需要再向组件传递。上下键不受影响。
+- `dir` 属性是显式覆盖：提供后以它为准，用于整页 ltr、局部 rtl 的场合。
+- 指示器的偏移按逻辑起始缘计算，rtl 下自动从右缘计算，不需要另写样式。

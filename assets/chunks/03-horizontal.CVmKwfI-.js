@@ -1,0 +1,61 @@
+const n=`<!-- 横向排列 | 在内容上方显示章节导航 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: min(640px, 100%)">
+  <template id="anchor-h-nav">
+    <xh-anchor orientation="horizontal" smooth>
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-h-overview">概览</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-h-props">属性</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-h-events">事件</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-h-slots">插槽</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </template>
+
+  <div
+    id="anchor-h-scroll"
+    data-xh-scroll
+    style="
+      block-size: 220px;
+      overflow: auto;
+      padding-inline: 12px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <div id="anchor-h-overview" style="block-size: 170px; padding-block: 12px">
+      <strong>概览</strong>
+      <p style="color: var(--xh-fg-muted)">概览相关内容</p>
+    </div>
+    <div id="anchor-h-props" style="block-size: 170px; padding-block: 12px">
+      <strong>属性</strong>
+      <p style="color: var(--xh-fg-muted)">属性相关内容</p>
+    </div>
+    <div id="anchor-h-events" style="block-size: 170px; padding-block: 12px">
+      <strong>事件</strong>
+      <p style="color: var(--xh-fg-muted)">事件相关内容</p>
+    </div>
+    <div id="anchor-h-slots" style="block-size: 170px; padding-block: 12px">
+      <strong>插槽</strong>
+      <p style="color: var(--xh-fg-muted)">插槽相关内容</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const template = document.getElementById("anchor-h-nav");
+  const anchor = template.content.firstElementChild;
+  anchor.scrollElement = document.getElementById("anchor-h-scroll");
+  template.replaceWith(anchor);
+<\/script>
+`;export{n as default};

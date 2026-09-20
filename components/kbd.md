@@ -198,7 +198,7 @@ const count = ref(0);
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `hot-key` | `KbdTriggerDetails` | 组合被按出；detail 为 `{ keys: string[], event: KeyboardEvent }` |
+| `hot-key` | `KbdTriggerDetails` | 组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }` |
 
 ### connect API
 
@@ -235,9 +235,10 @@ const count = ref(0);
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | props.translations?.hotkey?.(names) |
+| `root` | `role` | 'img' |
 | `key` | `aria-hidden` | 'true' |
 
-- 整组只通过根元素的 `aria-label` 朗读一次，视觉键名不重复进入无障碍树。
+- 根元素取 `role="img"` 并通过 `aria-label` 把整组朗读一次；原生 `kbd` 是 generic 角色，直接写 `aria-label` 会被读屏忽略。视觉键名不重复进入无障碍树。
 - 普通字符快捷键落在输入区时不会接管输入；带 Ctrl、Meta 或 Alt 的命令组合仍可响应。
 
 ## 样式参考
@@ -263,16 +264,16 @@ const count = ref(0);
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-kbd-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | kbd 的 root 部件 background 覆盖槽。 |
 | `--xh-kbd-border` | `root` | `border` | `default` | `transparent` | kbd 的 root 部件 border 覆盖槽。 |
 | `--xh-kbd-fg` | `root` | `color` | `default` | `--xh-fg-muted` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-disabled` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-font` | `root` | `font-family` | `default` | `inherit` | kbd 的 root 部件 font-family 覆盖槽。 |
-| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | kbd 的 root 部件 font-size 覆盖槽。 |
+| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-text-caption-size` | kbd 的 root 部件 font-size 覆盖槽。 |
 | `--xh-kbd-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | kbd 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-kbd-gap` | `root` | `gap` | `default` | `--xh-space-1` | kbd 的 root 部件 gap 覆盖槽。 |
 | `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-space-6` | kbd 的 root 部件 block-size 覆盖槽。 |

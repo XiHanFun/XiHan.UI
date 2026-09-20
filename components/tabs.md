@@ -81,7 +81,7 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="account" orientation="vertical" variant="line" style="inline-size: 420px; max-inline-size: 100%">
+  <XhTabsRoot default-value="account" orientation="vertical" style="inline-size: 420px; max-inline-size: 100%">
     <XhTabsList aria-label="账户设置">
       <XhTabsTrigger value="account">账户</XhTabsTrigger>
       <XhTabsTrigger value="security">安全</XhTabsTrigger>
@@ -97,7 +97,7 @@ import {
 ```
 
 ```html
-<xh-tabs default-value="account" orientation="vertical" variant="line">
+<xh-tabs default-value="account" orientation="vertical">
   <div data-xh-part="root" style="inline-size: 420px; max-inline-size: 100%">
     <div data-xh-part="list" aria-label="账户设置">
       <button data-xh-part="trigger" value="account">账户</button>
@@ -113,15 +113,14 @@ import {
 </xh-tabs>
 ```
 
-### 次级变体
+### 分段变体
 
-使用下划线表示当前标签
+使用浅色标签带与浮起的选中面
 
 ```vue
 <script setup lang="ts">
 import {
   XhTabsContent,
-  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -129,12 +128,11 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="overview" variant="line" style="inline-size: 360px; max-inline-size: 100%">
+  <XhTabsRoot default-value="overview" variant="segment" style="inline-size: 360px; max-inline-size: 100%">
     <XhTabsList aria-label="数据视图">
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="analytics">分析</XhTabsTrigger>
       <XhTabsTrigger value="reports">报告</XhTabsTrigger>
-      <XhTabsIndicator />
     </XhTabsList>
     <XhTabsContent value="overview">查看项目概览。</XhTabsContent>
     <XhTabsContent value="analytics">查看项目分析。</XhTabsContent>
@@ -144,13 +142,12 @@ import {
 ```
 
 ```html
-<xh-tabs default-value="overview" variant="line">
+<xh-tabs default-value="overview" variant="segment">
   <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
     <div data-xh-part="list" aria-label="数据视图">
       <button data-xh-part="trigger" value="overview">概览</button>
       <button data-xh-part="trigger" value="analytics">分析</button>
       <button data-xh-part="trigger" value="reports">报告</button>
-      <div data-xh-part="indicator"></div>
     </div>
     <div data-xh-part="content" value="overview">查看项目概览。</div>
     <div data-xh-part="content" value="analytics">查看项目分析。</div>
@@ -325,8 +322,8 @@ import {
 
 ### 特性
 
-- 默认 `segment` 变体使用浅色标签带与浮起选中项。
-- `line` 用于次级导航，`card` 用于文档式标签。
+- 默认 `line` 变体使用透明标签带与底部指示条，当前页由品牌字色与指示条表达；`segment` 提供浅色标签带，选中项为带描边的白色抬起面。
+- `card` 用于文档式标签。
 - 支持水平、垂直、禁用与手动激活模式。
 - 面板常驻并通过 `hidden` 切换，内部状态不会丢失。
 - `reorderable` 支持指针拖动与 Alt + 方向键换位。
@@ -362,22 +359,22 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `TabsNode[]` |  | 条目数据，标签文本与禁用的事实源。给了它，trigger 部件只需报 value。 缺省即回到「文本与禁用都写在 trigger 上」的老路。 |
-| `value` | `string \| null` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
+| `collection` | `TabsNode[]` |  | 条目数据，标签文本与禁用的事实源。提供后 trigger 部件只需声明 value。 未提供时回到文本与禁用都写在 trigger 上的方式。 |
+| `value` | `string \| null` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 |
-| `activationMode` | `TabsActivationMode` |  | 方向键移动焦点时是否顺带切换选中，默认 automatic。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
-| `variant` | `TabsVariant` |  | 变体：line / card / segment，决定选中态怎么画。缺省是 segment。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft / ArrowRight 的前后语义。 |
+| `activationMode` | `TabsActivationMode` |  | 方向键移动焦点时是否同时切换选中，默认 automatic。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
+| `variant` | `TabsVariant` |  | 变体：line / card / segment，决定选中态的绘制方式。默认 line。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `reorderable` | `boolean` |  | 标签可以拖着换位。整个标签都是拖动源，不另出把手。 顺序不进机器：collection 是 prop，库没有一份自己的标签序可写，只发 onTabMove。 |
+| `reorderable` | `boolean` |  | 标签可以拖动换位。整个标签都是拖动源，不另设把手。 顺序不进入状态机：collection 是 prop，库没有自己的标签序可写，只发 onTabMove。 |
 | `onTabMove` | `(details: TabsMoveDetails) => void` |  |  |
-| `closable` | `boolean` |  | 标签可关闭：trigger 上按 Delete / Backspace 即发 onTabClose。 库不持有标签序，只发意图，删不删由数据源那边决定。 |
+| `closable` | `boolean` |  | 标签可关闭：trigger 上按 Delete / Backspace 即发 onTabClose。 库不持有标签序，只发意图，是否删除由数据源决定。 |
 | `onTabClose` | `(details: TabsCloseDetails) => void` |  | 标签被关闭。 |
 | `translations` | `Partial<TabsTranslations>` |  |  |
-| `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -386,8 +383,8 @@ import {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TabsValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
-| `tab-move` | `TabsMoveDetails` | 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序 |
-| `tab-close` | `TabsCloseDetails` | 标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序 |
+| `tab-move` | `TabsMoveDetails` | 标签换位；detail 为 `{ value, from, to, values }`，values 是重排后的整份标签序 |
+| `tab-close` | `TabsCloseDetails` | 标签被关闭；detail 为 `{ value, values }`，values 是关闭该标签之后剩余的标签序 |
 
 ### 状态
 
@@ -402,9 +399,9 @@ import {
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE`
+**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isAutomatic`
+**判据**：`isAutomatic` · `canPress`
 
 ### connect API
 
@@ -413,18 +410,18 @@ import {
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` |  |
-| `collection` | `readonly TabsNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly TabsNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
-| `dropTarget` | `DropTarget \| null` | 此刻的落点；松手就落在这儿。没落在任何标签上时是 null。 |
-| `announcement` | `string` | 读屏播报文本。渲进 live-region，不进视觉版面。 |
-| `setValue` | `(next: string \| null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 |
+| `dropTarget` | `DropTarget \| null` | 当前的落点；松手即落在此处。未落在任何标签上时为 null。 |
+| `announcement` | `string` | 读屏播报文本。渲染进 live-region，不进入视觉版面。 |
+| `setValue` | `(next: string \| null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达无选中，写入侧同样接受。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: TabsTriggerProps) => T['button']` |  |
-| `getIndicatorProps` | `() => T['element']` | 选中标签下的滑条；位置由机器量好写成内联样式，没有选中项时 hidden。 |
+| `getIndicatorProps` | `() => T['element']` | 选中标签下的滑条；位置由状态机测量后写为内联样式，没有选中项时 hidden。 |
 | `getSeparatorProps` | `() => T['element']` | 标签之间的细分隔线，纯装饰。 |
 | `getContentProps` | `(props: TabsContentProps) => T['element']` |  |
-| `getTabDragTriggerProps` | `(props: TabsTriggerProps) => T['element']` | 标签拖动把手。触屏那一路唯一的入口，不占 Tab 位。 常挂即可：reorderable 关着或这个标签禁用时它自报 data-disabled、也不再让出滚动， 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。 |
+| `getTabDragTriggerProps` | `(props: TabsTriggerProps) => T['element']` | 标签拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：reorderable 关闭或该标签禁用时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -440,8 +437,9 @@ import {
 | `Home` | focus in list | 焦点移到首个可停留 trigger |
 | `End` | focus in list | 焦点移到末个可停留 trigger |
 | `Enter` / `Space` | focus in trigger, not disabled | 把选中切到焦点所在 trigger（manual 模式的确认键） |
+| `Enter` / `Space` | held in trigger, not disabled | 按住期间该 trigger 投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与按压互相独立，确认语义照旧由这一次按键承担 |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项 |
-| `Alt+ArrowLeft` / `Alt+ArrowRight` / `Alt+ArrowUp` / `Alt+ArrowDown` | focus in list, reorderable 开着, 按键与 orientation 同轴 | 把焦点标签在标签带里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻、rtl 下左右两键对调，竖排的上下两键不对调；已是首位 / 末位就不动，也不回绕；标签序不进库，只报一次重排好的新顺序。裸方向键仍是导航、Enter/Space 仍是确认 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` / `Alt+ArrowUp` / `Alt+ArrowDown` | focus in list, reorderable 开启, 按键与 orientation 同轴 | 把焦点标签在标签带里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻、rtl 下左右两键对调，竖排的上下两键不对调；已是首位 / 末位就不动，也不回绕；标签序不进库，只报一次重排好的新顺序。裸方向键仍是导航、Enter/Space 仍是确认 |
 
 ### ARIA
 
@@ -483,11 +481,16 @@ import {
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `trigger` | `data-closable` | ''（条件成立时才出现） |
+| `trigger` | `data-current` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-draggable` | ''（条件成立时才出现） |
 | `trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `trigger` | `data-drop` | 'before' \| 'after' |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'active' \| 'inactive' |
+| `trigger` | `data-xh-collection-context` | 'nav' \| undefined |
+| `trigger` | `data-xh-collection-item` | ''（条件成立时才出现） |
+| `trigger` | `data-xh-collection-size` | props.size \| undefined |
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | item.value |
 | `separator` | `data-orientation` | props.orientation |
@@ -498,9 +501,9 @@ import {
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tabs-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | tabs 的 content 部件 color 覆盖槽。 |
 | `--xh-tabs-content-py` | `content` | `padding-block` | `default` | `--xh-stack-gap-md` | tabs 的 content 部件 padding-block 覆盖槽。 |
@@ -519,7 +522,7 @@ import {
 | `--xh-tabs-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-tabs-indicator-thickness` | `indicator` | `block-size`<br>`inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | tabs 的 indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tabs-list-bg` | `list` | `background` | `default` | `--xh-_tabs-list-bg` | tabs 的 list 部件 background 覆盖槽。 |
-| `--xh-tabs-list-border` | `list` | `border-block-end`<br>`border-inline-end` | `default` | `--xh-border-default` | tabs 的 list 部件 border-block-end、border-inline-end 覆盖槽。 |
+| `--xh-tabs-list-border` | `list`<br>`root` | `border`<br>`border-block-end`<br>`border-inline-end` | `default`<br>`variant=segment` | `--xh-border-default`<br>`transparent` | tabs 的 list、root 部件 border、border-block-end、border-inline-end 覆盖槽。 |
 | `--xh-tabs-list-gap` | `list` | `gap` | `default` | `--xh-_tabs-list-gap` | tabs 的 list 部件 gap 覆盖槽。 |
 | `--xh-tabs-list-p` | `list` | `padding` | `default` | `--xh-_tabs-list-p` | tabs 的 list 部件 padding 覆盖槽。 |
 | `--xh-tabs-list-radius` | `list` | `border-radius` | `default` | `--xh-_tabs-list-radius` | tabs 的 list 部件 border-radius 覆盖槽。 |
@@ -527,33 +530,36 @@ import {
 | `--xh-tabs-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-tabs-separator-size` | `separator` | `block-size` | `default` | `--xh-space-4` | tabs 的 separator 部件 block-size 覆盖槽。 |
 | `--xh-tabs-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thin` | tabs 的 separator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-tabs-trigger-bg` | `trigger` | `background` | `default` | `transparent` | tabs 的 trigger 部件 background 覆盖槽。 |
-| `--xh-tabs-trigger-bg-active` | `trigger` | `background` | `state=active` | `--xh-_tabs-trigger-bg-active` | tabs 的 trigger 部件 background 覆盖槽。 |
-| `--xh-tabs-trigger-bg-active-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=active` | `--xh-_tabs-trigger-bg-active-hover` | tabs 的 trigger 部件 background 覆盖槽。 |
-| `--xh-tabs-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | tabs 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tabs-trigger-bg` | `root`<br>`trigger` | `background`<br>`background-color` | `is([data-variant='card'], [data-variant='segment'])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `transparent` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
+| `--xh-tabs-trigger-bg-active` | `root`<br>`trigger` | `background`<br>`background-color` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-active`<br>`--xh-_tone-subtle`<br>`transparent` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
+| `--xh-tabs-trigger-bg-active-hover` | `root`<br>`trigger` | `background`<br>`background-color` | `current`<br>`disabled`<br>`error`<br>`hover`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-active-hover`<br>`--xh-bg-subtle` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
+| `--xh-tabs-trigger-bg-hover` | `root`<br>`trigger` | `background`<br>`background-color` | `disabled`<br>`error`<br>`hover`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-hover`<br>`--xh-bg-subtle` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
+| `--xh-tabs-trigger-bg-pressed` | `root`<br>`trigger` | `background`<br>`background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`not([data-state='active'])`<br>`pressed`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-pressed`<br>`--xh-bg-subtle-hover` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-tabs-trigger-border` | `trigger` | `border` | `default` | `--xh-_tabs-trigger-border` | tabs 的 trigger 部件 border 覆盖槽。 |
-| `--xh-tabs-trigger-border-active` | `trigger` | `border-color` | `state=active` | `--xh-_tabs-trigger-border-active` | tabs 的 trigger 部件 border-color 覆盖槽。 |
-| `--xh-tabs-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-muted` | tabs 的 trigger 部件 color 覆盖槽。 |
-| `--xh-tabs-trigger-fg-active` | `trigger` | `color` | `state=active` | `--xh-_tabs-accent-text` | tabs 的 trigger 部件 color 覆盖槽。 |
-| `--xh-tabs-trigger-fg-hover` | `root`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`variant=line` | `--xh-_tabs-accent-text` | tabs 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-border-active` | `root`<br>`trigger` | `border-color` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-border-active`<br>`--xh-_tone-border` | tabs 的 root、trigger 部件 border-color 覆盖槽。 |
+| `--xh-tabs-trigger-fg` | `root`<br>`trigger` | `color` | `is([data-variant='card'], [data-variant='segment'])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-fg-muted` | tabs 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-fg-active` | `root`<br>`trigger` | `color` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-accent-text` | tabs 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-fg-hover` | `root`<br>`trigger` | `color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`variant=line`<br>`xh-collection-context=nav` | `--xh-fg-default` | tabs 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-fg-pressed` | `root`<br>`trigger` | `color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`variant=line`<br>`xh-collection-context=nav` | `--xh-fg-default` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_tabs-trigger-font-size` | tabs 的 trigger 部件 font-size 覆盖槽。 |
-| `--xh-tabs-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | tabs 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-tabs-trigger-font-weight` | `root`<br>`trigger` | `font-weight` | `is([data-variant='card'], [data-variant='segment'])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-font-weight-regular`<br>`--xh-text-label-weight` | tabs 的 root、trigger 部件 font-weight 覆盖槽。 |
+| `--xh-tabs-trigger-font-weight-active` | `root`<br>`trigger` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-font-weight-medium` | tabs 的 root、trigger 部件 font-weight 覆盖槽。 |
 | `--xh-tabs-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | tabs 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-tabs-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_tabs-trigger-h` | tabs 的 trigger 部件 block-size 覆盖槽。 |
 | `--xh-tabs-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_tabs-trigger-px` | tabs 的 trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-tabs-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_tabs-trigger-radius` | tabs 的 trigger 部件 border-radius 覆盖槽。 |
-| `--xh-tabs-trigger-shadow-active` | `trigger` | `box-shadow` | `state=active` | `--xh-_tabs-trigger-shadow-active` | tabs 的 trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-tabs-trigger-shadow-active` | `root`<br>`trigger` | `box-shadow` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-shadow-active`<br>`--xh-elevation-raised` | tabs 的 root、trigger 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

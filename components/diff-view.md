@@ -14,7 +14,7 @@
 
 ## 用法
 
-两个入口归一到同一个模型：这里用新旧两版全文算，着色在建模时一次算好
+两个入口归一到同一个模型：这里用新旧两版全文计算，着色在建模时一次算好
 
 ```vue
 <script setup lang="ts">
@@ -92,7 +92,7 @@ const model = computed(() =>
 
 ### 并排与折叠
 
-并排两列都发格子，空的那一侧照发；远离变更的连续上下文折成一格，点开即展开
+并排两列都发出格子，空的一侧照发；远离变更的连续上下文折为一格，点击即展开
 
 ```vue
 <script setup lang="ts">
@@ -311,7 +311,7 @@ const expanded = ref<string[]>([]);
 
 ### 长行换行与词级差异
 
-开 wrap 让长行原地折行；配对的删改行之间再比一次词，只有真正动过的那几段上底色
+开启 wrap 使长行原地折行；配对的删改行之间再比较一次词，只有真正改动的片段上底色
 
 ```vue
 <script setup lang="ts">
@@ -434,7 +434,7 @@ const model = computed(() =>
 
 ### 超长差异的截断提示
 
-超过 maxLines 的部分被砍掉，提示条把砍了多少行说给读的人
+超过 maxLines 的部分被截去，提示条向读者说明截去了多少行
 
 ```vue
 <script setup lang="ts">
@@ -509,7 +509,7 @@ const model = computed(() => computeTextDiff(before, after, { maxLines: 6 }));
 
 ### 尺寸
 
-size 换字号、行高与行号槽的宽度，三档并列对照
+size 改变字号、行高与行号槽的宽度，三档并列对照
 
 ```vue
 <script setup lang="ts">
@@ -600,50 +600,41 @@ const model = computed(() => computeTextDiff(before, after));
 ### 何时使用
 
 - 展示 AI 提议的代码改动，或两版文本的对比。
-- 手里有一份统一格式的补丁，或者有新旧两版全文。
+- 已有统一格式的补丁，或有新旧两版全文。
 
 ### 何时不用
 
-- 只展示一段代码：用[代码视图](./code-view)。
-- 展示的是「AI 提议的数据编辑逐条取舍」：那是一张带多选的[表格](./table)。
+- 只展示一段代码时，使用[代码视图](./code-view)。
+- 展示 AI 提议的数据编辑并逐条取舍时，使用带多选的[表格](./table)。
 
 ### 特性
 
-- **两个入口归一到同一个模型**：`computeTextDiff(before, after)` 拿两版全文算，
-  `parseUnifiedPatch(patch)` 解析补丁；组件只认模型。
+- 两个入口归一到同一个模型：`computeTextDiff(before, after)` 用两版全文计算，`parseUnifiedPatch(patch)` 解析补丁；组件只接受模型。
 - 自定义渲染器可调用 `diffViewSides(view)` 取得列序：单栏为旧侧，分栏按旧侧、新侧排列。
-- **着色在建模时一次算好**，不在连接层跑：`computeTextDiff` 手里有完整文本，
-  整体切一次再按行取，跨行的块注释与多行字符串才不会着错色。
-  `parseUnifiedPatch` 拿不到完整文件，因此**一律不填着色**——宁可不着色也不错着色。
-- **词级差异**：配对的一条删除行与一条新增行之间再比一次词，只有真正动过的那几段上底色，
-  整行改写与超长行不比（比出来满行都在闪，等于没有重点）。两个入口都产出，`wordDiff: false` 关掉。
-- `contextLines` 把 hunk 内远离变更的连续上下文折成一格，点开即展开。
-  展开集合可受控，好让「全部展开」这类操作统一持有。
-- `wrap` 让长行原地折行，卡片不再横向滚动；窄栏与并排视图下尤其有用。
-- 头部自带增删统计位 `summary`，增删各一个，数字取自模型、着色跟着变更类型走。
-- `maxLines` 是必须有的上限：AI 会吐超大文件，新旧两侧各自超出即从尾部砍掉。
-  砍掉几行由模型带出来，`truncation` 提示条把这个数说给读的人。
-- 行号与列号一律从模型算，**绝不从 DOM 反推**。
+- 着色在建模时一次计算，不在连接层执行：`computeTextDiff` 持有完整文本，整体切分一次再按行取用，跨行的块注释与多行字符串才不会着错色。`parseUnifiedPatch` 拿不到完整文件，因此一律不着色。
+- 词级差异：配对的一条删除行与一条新增行之间再比较一次词，只有实际变动的片段加底色；整行改写与超长行不比较。两个入口都产出，`wordDiff: false` 关闭。
+- `contextLines` 把 hunk 内远离变更的连续上下文折成一格，点击展开。展开集合可受控，便于“全部展开”等操作统一持有。
+- `wrap` 让长行原地折行，容器不再横向滚动；窄栏与并排视图下尤其有用。
+- 头部自带增删统计位 `summary`，增删各一个，数字取自模型，着色跟随变更类型。
+- `maxLines` 是必需的上限：AI 可能输出超大文件，新旧两侧各自超出时从尾部截断。截断行数由模型带出，`truncation` 提示条向读者说明。
+- 行号与列号一律从模型计算，不从 DOM 反推。
 
 ### 组合
 
-- 单栏与并排的切换用[切换按钮组](./toggle-group)；增删统计已有成品位，不必再自己拼
-  （只要数字不要版式时仍可用 `diffStats(model)`）。
-- 装进[工具调用](./tool-call)的详情区，展示这次调用改了什么。
-- 要做「AI 提议的编辑逐条取舍 + 应用」：用[表格](./table)的选择机制承载行级取舍，
-  单元格里放[复选框](./checkbox)，页脚的计数与「应用」用[按钮](./button)。
-  差异视图本身只读，不接这套交互。
+- 单栏与并排的切换使用[切换按钮组](./toggle-group)；增删统计已有成品位（只需要数字时可用 `diffStats(model)`）。
+- 放入[工具调用](./tool-call)的详情区，展示本次调用的改动。
+- 需要对 AI 提议的编辑逐条取舍并应用时，使用[表格](./table)的选择机制承载行级取舍，单元格内放[复选框](./checkbox)，页脚的计数与“应用”使用[按钮](./button)。差异视图本身只读，不接这套交互。
 
 ### 最佳实践
 
-- 并排视图给足宽度：两列各自还要横向滚动，窄栏下单栏更好读，或者开 `wrap` 让长行折下来。
-- 折叠阈值取三到五行：再少就一直在点展开，再多就等于没折。
+- 并排视图给足宽度：两列各自还要横向滚动；窄栏下单栏更易读，或开启 `wrap` 让长行折行。
+- 折叠阈值取三到五行：过少时需要频繁展开，过多时折叠失去意义。
 
 ### 反模式
 
-- 截断了却不渲 `truncation`：断掉的差异看着仍像一份完整差异，评审的人会以为自己看完了。
-- 拿补丁算出来的差异去着色：那份文本是残缺的，跨行的记号一定切错。
-- 用颜色作为变更类型的唯一线索：色觉障碍与高对比度模式下它就消失了。
+- 截断后不渲染 `truncation`：截断的差异看起来仍像完整差异，评审者会误以为已经看完。
+- 对补丁计算出的差异着色：文本不完整，跨行的记号必然切错。
+- 用颜色作为变更类型的唯一线索：色觉障碍与高对比度模式下会失效。
 
 ## API 参考
 
@@ -663,10 +654,10 @@ const model = computed(() => computeTextDiff(before, after));
 | --- | --- | --- | --- |
 | `model` | `DiffModel` |  | 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 |
 | `view` | `DiffViewMode` |  |  |
-| `contextLines` | `number` |  | 变更两侧各露几行上下文，其余折起来；不给或非有限值即不折叠。 |
-| `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，给了即受控。 |
+| `contextLines` | `number` |  | 变更两侧各显示的上下文行数，其余折叠；未提供或非有限值时不折叠。 |
+| `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，提供即受控。 |
 | `defaultExpandedValue` | `readonly string[]` |  |  |
-| `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关。 |
+| `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关闭。 |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<DiffViewTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: DiffViewExpandedValueChangeDetails) => void` |  |  |
@@ -695,7 +686,7 @@ const model = computed(() => computeTextDiff(before, after));
 
 **状态**：`idle`
 
-**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET`
+**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isExpandedControlled`
 
@@ -706,13 +697,13 @@ const model = computed(() => computeTextDiff(before, after));
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `view` | `DiffViewMode` |  |
-| `rows` | `readonly DiffViewRow[]` | 折叠后的可见行序，含折起来的那些格。 |
+| `rows` | `readonly DiffViewRow[]` | 折叠后的可见行序，含折叠的格。 |
 | `expandedValue` | `string[]` |  |
-| `stats` | `{ added: number, removed: number }` | 增删各多少行。 |
+| `stats` | `{ added: number, removed: number }` | 增删的行数。 |
 | `truncated` | `boolean` | 模型被上限截断过。 |
-| `truncatedLines` | `number` | 被上限砍掉、压根没进这份模型的源文本行数；没截断就是 0。 |
-| `truncationText` | `string` | 截断提示条的文字，已把行数代进去；没截断时是空串。 |
-| `isEmpty` | `boolean` | 一条变更都没有。 |
+| `truncatedLines` | `number` | 被上限截断、未进入模型的源文本行数；未截断时为 0。 |
+| `truncationText` | `string` | 截断提示条的文字，已代入行数；未截断时为空串。 |
+| `isEmpty` | `boolean` | 没有任何变更。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `toggleGap` | `(id: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -730,12 +721,12 @@ const model = computed(() => computeTextDiff(before, after));
 | `getGapCellProps` | `() => T['element']` |  |
 | `getGapTriggerProps` | `(props: DiffViewGapProps) => T['button']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
-| `getTruncationProps` | `() => T['element']` | 截断提示条；没截断时带 hidden。 |
-| `changeLabel` | `(change: DiffChange) => string` | 变更类型对应的读屏文字，写进视觉隐藏的那一格。 |
-| `cellText` | `(props: DiffViewCellProps) => string \| undefined` | 这一行在这一侧的文本；split 下空侧为 undefined。 |
-| `cellNumber` | `(props: DiffViewCellProps) => number \| undefined` | 这一行在这一侧的行号；没有就是 undefined。 |
-| `cellTokens` | `(props: DiffViewCellProps) => readonly CodeToken[]` | 这一行在这一侧的着色片段；不着色或空侧时为空数组。 |
-| `cellSegments` | `(props: DiffViewCellProps) => readonly DiffViewSegment[]` | 这一行在这一侧的词级片段，着色记号已按片段边界切好。 没算词级差异时为空数组，此时照 cellTokens / cellText 铺。 |
+| `getTruncationProps` | `() => T['element']` | 截断提示条；未截断时带 hidden。 |
+| `changeLabel` | `(change: DiffChange) => string` | 变更类型对应的读屏文字，写入视觉隐藏的格。 |
+| `cellText` | `(props: DiffViewCellProps) => string \| undefined` | 该行在该侧的文本；split 下空侧为 undefined。 |
+| `cellNumber` | `(props: DiffViewCellProps) => number \| undefined` | 该行在该侧的行号；不存在时为 undefined。 |
+| `cellTokens` | `(props: DiffViewCellProps) => readonly CodeToken[]` | 该行在该侧的着色片段；不着色或空侧时为空数组。 |
+| `cellSegments` | `(props: DiffViewCellProps) => readonly DiffViewSegment[]` | 该行在该侧的词级片段，着色记号已按片段边界切分。 未计算词级差异时为空数组，此时按 cellTokens / cellText 铺设。 |
 
 ## 无障碍
 
@@ -747,6 +738,7 @@ const model = computed(() => computeTextDiff(before, after));
 | --- | --- | --- |
 | `Tab` | 差异视图在 Tab 序列中 | 滚动容器自身可聚焦，随后方向键的横纵滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在展开按钮上 | 展开该处折起来的上下文行；组件只接 click，按键走原生 button 的默认行为 |
+| `Enter` / `Space` | 按住展开按钮 | 按住期间该格的 gap-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或该格展开撤下 |
 
 ### ARIA
 
@@ -770,13 +762,11 @@ const model = computed(() => computeTextDiff(before, after));
 | `gap-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `gap-trigger` | `aria-label` | expandGapLabel(hiddenCountOf(gapId)) |
 
-- 表格语义：`role=table` 配 `role=row` 与 `role=cell`，带 `aria-rowcount` / `aria-rowindex` /
-  `aria-colcount` / `aria-colindex`。列数只数**真正暴露的内容列**——行号不算列。
-- 每一行都带一段视觉隐藏的变更类型文字：**变更不能只靠颜色传达**。
-- 变更行还有一条非颜色线索：新增画实心色条，删除画同宽的斜纹条，灰度与高对比度下也分得开。
-- 行号对读屏隐藏，由皮肤用 `attr()` 画出来，因此复制差异不会带上行号。
-- **刻意不采表格那套行级 roving**：只读差异不是网格，给每份差异一个吞方向键的焦点组
-  会把页面滚动抢走，而读屏本来就有表格浏览模式。这是显式裁决，不是遗漏。
+- 表格语义：`role=table` 配 `role=row` 与 `role=cell`，带 `aria-rowcount` / `aria-rowindex` / `aria-colcount` / `aria-colindex`。列数只计算实际暴露的内容列，行号不算列。
+- 每一行都带一段视觉隐藏的变更类型文字，变更不只靠颜色传达。
+- 变更行还有一条非颜色线索：新增绘制实心色条，删除绘制同宽的斜纹条，灰度与高对比度下也可区分。
+- 行号对读屏隐藏，由皮肤用 `attr()` 绘制，复制差异不会带上行号。
+- 不采用表格的行级 roving：只读差异不是网格，吞掉方向键的焦点组会抢走页面滚动，读屏本身也有表格浏览模式。这是显式决定。
 
 ## 样式参考
 
@@ -810,37 +800,44 @@ const model = computed(() => computeTextDiff(before, after));
 | `token` | `data-kind` | token.kind |
 | `gap` | `data-expanded` | ''（条件成立时才出现） |
 | `gap` | `data-value` | hunkIndex:0 |
+| `gap-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `gap-trigger` | `data-value` | hunkIndex:0 |
+| `gap-trigger` | `data-xh-action-control` | '' |
+| `gap-trigger` | `data-xh-action-display` | 'always' |
+| `gap-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
+| `gap-trigger` | `data-xh-action-size` | props.size |
+| `gap-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-diff-view-added-bg` | `row` | `background` | `change=added` | `--xh-diff-added-bg` | diff-view 的 row 部件 background 覆盖槽。 |
 | `--xh-diff-view-added-fg` | `inline-change`<br>`line-content`<br>`line-number`<br>`row`<br>`summary` | `background`<br>`box-shadow`<br>`color` | `change=added` | `--xh-diff-added-fg` | diff-view 的 inline-change、line-content、line-number、row、summary 部件 background、box-shadow、color 覆盖槽。 |
 | `--xh-diff-view-bg` | `root` | `background` | `default` | `--xh-bg-surface` | diff-view 的 root 部件 background 覆盖槽。 |
-| `--xh-diff-view-border` | `header`<br>`line-number`<br>`root` | `border`<br>`border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 1024px)`<br>`default`<br>`side=new`<br>`view=split` | `--xh-border-subtle` | diff-view 的 header、line-number、root 部件 border、border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-diff-view-border` | `root` | `border` | `default` | `--xh-border-default` | diff-view 的 root 部件 border 覆盖槽。 |
 | `--xh-diff-view-change-bar` | `row` | `background`<br>`box-shadow` | `change=added`<br>`change=removed` | `--xh-stroke-thick` | diff-view 的 row 部件 background、box-shadow 覆盖槽。 |
 | `--xh-diff-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-divider` | `header`<br>`line-number`<br>`root` | `border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 1024px)`<br>`default`<br>`side=new`<br>`view=split` | `--xh-border-subtle` | diff-view 的 header、line-number、root 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-diff-view-empty-bg` | `line-content` | `background` | `empty` | `--xh-bg-subtle` | diff-view 的 line-content 部件 background 覆盖槽。 |
 | `--xh-diff-view-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | diff-view 的 empty 部件 color 覆盖槽。 |
 | `--xh-diff-view-font` | `body`<br>`header` | `font-family` | `default` | `--xh-font-family-mono` | diff-view 的 body、header 部件 font-family 覆盖槽。 |
-| `--xh-diff-view-font-size` | `body` | `font-size` | `default` | `--xh-_diff-view-font-size` | diff-view 的 body 部件 font-size 覆盖槽。 |
+| `--xh-diff-view-font-size` | `body`<br>`gap-trigger` | `font-size` | `default` | `--xh-_diff-view-font-size` | diff-view 的 body、gap-trigger 部件 font-size 覆盖槽。 |
 | `--xh-diff-view-gap-bg` | `gap` | `background` | `default` | `--xh-bg-subtle` | diff-view 的 gap 部件 background 覆盖槽。 |
-| `--xh-diff-view-gap-bg-hover` | `gap-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | diff-view 的 gap-trigger 部件 background 覆盖槽。 |
+| `--xh-diff-view-gap-bg-hover` | `gap-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | diff-view 的 gap-trigger 部件 background-color 覆盖槽。 |
 | `--xh-diff-view-gap-fg` | `gap-trigger` | `color` | `default` | `--xh-fg-muted` | diff-view 的 gap-trigger 部件 color 覆盖槽。 |
 | `--xh-diff-view-gutter` | `line-number` | `inline-size` | `default` | `4ch` | diff-view 的 line-number 部件 inline-size 覆盖槽。 |
 | `--xh-diff-view-header-fg` | `header` | `color` | `default` | `--xh-fg-muted` | diff-view 的 header 部件 color 覆盖槽。 |
 | `--xh-diff-view-header-font-size` | `empty`<br>`header`<br>`truncation` | `font-size` | `default` | `--xh-text-secondary-size` | diff-view 的 empty、header、truncation 部件 font-size 覆盖槽。 |
 | `--xh-diff-view-header-gap` | `header` | `gap` | `default` | `--xh-space-2` | diff-view 的 header 部件 gap 覆盖槽。 |
-| `--xh-diff-view-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | diff-view 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-diff-view-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | diff-view 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-diff-view-inline-change-radius` | `inline-change` | `border-radius` | `change` | `--xh-shape-inset` | diff-view 的 inline-change 部件 border-radius 覆盖槽。 |
 | `--xh-diff-view-keyword-fg` | `token` | `color` | `kind=keyword` | `--xh-syntax-keyword` | diff-view 的 token 部件 color 覆盖槽。 |
 | `--xh-diff-view-keyword-weight` | `token` | `font-weight` | `kind=keyword` | `--xh-font-weight-semibold` | diff-view 的 token 部件 font-weight 覆盖槽。 |
-| `--xh-diff-view-line-height` | `body`<br>`gap`<br>`row` | `line-height`<br>`min-block-size` | `default` | `--xh-text-code-leading` | diff-view 的 body、gap、row 部件 line-height、min-block-size 覆盖槽。 |
+| `--xh-diff-view-line-height` | `body`<br>`gap`<br>`gap-trigger`<br>`row` | `block-size`<br>`line-height`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-text-code-leading` | diff-view 的 body、gap、gap-trigger、row 部件 block-size、line-height、min-block-size 覆盖槽。 |
 | `--xh-diff-view-max-h` | `viewport` | `max-block-size` | `default` | `--xh-viewport-max-h` | diff-view 的 viewport 部件 max-block-size 覆盖槽。 |
 | `--xh-diff-view-number-fg` | `line-number` | `color` | `default` | `--xh-fg-subtle` | diff-view 的 line-number 部件 color 覆盖槽。 |
 | `--xh-diff-view-number-token-fg` | `token` | `color` | `kind=number` | `--xh-syntax-number` | diff-view 的 token 部件 color 覆盖槽。 |
@@ -850,7 +847,7 @@ const model = computed(() => computeTextDiff(before, after));
 | `--xh-diff-view-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | diff-view 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-diff-view-removed-bg` | `row` | `background` | `change=removed` | `--xh-diff-removed-bg` | diff-view 的 row 部件 background 覆盖槽。 |
 | `--xh-diff-view-removed-fg` | `inline-change`<br>`line-content`<br>`line-number`<br>`row`<br>`summary` | `background`<br>`color` | `change=removed` | `--xh-diff-removed-fg` | diff-view 的 inline-change、line-content、line-number、row、summary 部件 background、color 覆盖槽。 |
-| `--xh-diff-view-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | diff-view 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-diff-view-shadow` | `root` | `box-shadow` | `default` | `none` | diff-view 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-diff-view-string-fg` | `token` | `color` | `kind=string` | `--xh-syntax-string` | diff-view 的 token 部件 color 覆盖槽。 |
 | `--xh-diff-view-truncation-bg` | `truncation` | `background` | `default` | `--xh-fg-warning` | diff-view 的 truncation 部件 background 覆盖槽。 |
 | `--xh-diff-view-truncation-border` | `truncation` | `border-block-start` | `default` | `--xh-border-subtle` | diff-view 的 truncation 部件 border-block-start 覆盖槽。 |
@@ -860,7 +857,7 @@ const model = computed(() => computeTextDiff(before, after));
 
 ### 动效
 
-关键帧 `xh-diff-view-reveal` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-diff-view-reveal` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -1,9 +1,0 @@
-const d=`<!-- 间距 | 设置列与项目之间的间距 -->
-<style>
-  #masonry-gap [data-card] { border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); }
-</style>
-<div id="masonry-gap" style="display: flex; flex-wrap: wrap; gap: 24px">
-  <div style="inline-size: min(280px, 100%)"><div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">sm</div><xh-masonry columns="2" gap="sm" style="display: contents"><div data-xh-part="root"><div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="item"><div data-card style="padding: 12px">设计</div></div><div data-xh-part="item"><div data-card style="padding: 17px 12px">开发</div></div><div data-xh-part="item"><div data-card style="padding: 22px 12px">测试</div></div><div data-xh-part="item"><div data-card style="padding: 27px 12px">发布</div></div></div></xh-masonry></div>
-  <div style="inline-size: min(280px, 100%)"><div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">lg</div><xh-masonry columns="2" gap="lg" style="display: contents"><div data-xh-part="root"><div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="item"><div data-card style="padding: 12px">设计</div></div><div data-xh-part="item"><div data-card style="padding: 17px 12px">开发</div></div><div data-xh-part="item"><div data-card style="padding: 22px 12px">测试</div></div><div data-xh-part="item"><div data-card style="padding: 27px 12px">发布</div></div></div></xh-masonry></div>
-</div>
-`;export{d as default};

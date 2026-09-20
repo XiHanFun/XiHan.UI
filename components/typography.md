@@ -310,9 +310,9 @@ const html = `
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `TypographyAlign` |  | 对齐：start / center / end / justify，整块正文跟着换。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距跟着换档。 |
-| `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，整块正文跟着换。 |
+| `align` | `TypographyAlign` |  | 对齐：start / center / end / justify，整块正文随之变化。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距随之换档。 |
+| `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，整块正文随之变化。 |
 
 ### connect API
 
@@ -325,7 +325,7 @@ const html = `
 | `getParagraphProps` | `() => T['element']` |  |
 | `getTextProps` | `(props?: TypographyTextProps) => T['element']` |  |
 | `getLinkProps` | `() => T['element']` |  |
-| `getProseProps` | `() => T['element']` | 富文本容器：外来的 HTML（Markdown 渲染结果）铺进来，样式按标签给。 |
+| `getProseProps` | `() => T['element']` | 富文本容器：外来的 HTML（Markdown 渲染结果）铺入其中，样式按标签提供。 |
 
 ## 无障碍
 
@@ -358,9 +358,9 @@ const html = `
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-typography-block-gap` | `heading`<br>`paragraph` | `margin-block-start` | `is([data-part='heading'], [data-part='paragraph'])` | `--xh-_typography-block-gap` | typography 的 heading、paragraph 部件 margin-block-start 覆盖槽。 |
 | `--xh-typography-code-bg` | `prose`<br>`text` | `background` | `variant=code`<br>`where(code)` | `--xh-bg-subtle` | typography 的 prose、text 部件 background 覆盖槽。 |
@@ -426,7 +426,7 @@ const html = `
 
 ### 响应式
 
-皮肤另按输入能力分档：`hover: hover`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

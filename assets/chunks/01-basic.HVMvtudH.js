@@ -1,0 +1,13 @@
+const t=`<!-- 基础用法 | 显示标题、说明与页面操作 -->
+<xh-page-header variant="outline">
+  <div data-xh-part="root" style="inline-size: min(720px, 100%)">
+    <button data-xh-part="back-trigger" type="button" aria-label="返回订单列表" style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="M10 6L4 12L10 18"/></svg></button>
+    <div data-xh-part="title">订单 SO-20260731-004</div>
+    <div data-xh-part="description">由赵一创建 · 今天 14:32 更新</div>
+    <div data-xh-part="extra">
+      <xh-button variant="subtle"><button data-xh-part="root">归档</button></xh-button>
+      <xh-button><button data-xh-part="root">编辑订单</button></xh-button>
+    </div>
+  </div>
+</xh-page-header>
+`;export{t as default};

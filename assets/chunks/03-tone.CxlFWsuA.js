@@ -1,0 +1,40 @@
+const a=`<!-- 语气 | tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中 -->
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+  <xh-checkbox tone="brand" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+      <span data-xh-part="text">brand</span>
+    </label>
+  </xh-checkbox>
+  <xh-checkbox tone="neutral" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+      <span data-xh-part="text">neutral</span>
+    </label>
+  </xh-checkbox>
+  <xh-checkbox tone="success" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+      <span data-xh-part="text">success</span>
+    </label>
+  </xh-checkbox>
+  <xh-checkbox tone="warning" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+      <span data-xh-part="text">warning</span>
+    </label>
+  </xh-checkbox>
+  <xh-checkbox tone="danger" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+      <span data-xh-part="text">danger</span>
+    </label>
+  </xh-checkbox>
+  <xh-checkbox tone="info" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+      <span data-xh-part="text">info</span>
+    </label>
+  </xh-checkbox>
+</div>
+`;export{a as default};

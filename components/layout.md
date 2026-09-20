@@ -19,30 +19,37 @@
 ```vue
 <script setup lang="ts">
 import { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@xihan-ui/vue";
+
+const tones = ["brand", "info", "success"] as const;
 </script>
 
 <template>
-  <XhLayoutRoot bordered sider-breakpoint="sm" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
-    <XhLayoutHeader><strong>XiHan Admin</strong></XhLayoutHeader>
+  <XhLayoutRoot split sider-breakpoint="sm" aria-label="应用页面布局占位区块" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <XhLayoutHeader>
+      <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 112px" />
+    </XhLayoutHeader>
     <XhLayoutSider>
-      <div style="display: grid; gap: 12px"><span>概览</span><span>用户</span><span>设置</span></div>
+      <div style="display: grid; gap: 12px">
+        <span v-for="tone in tones" :key="tone" data-demo-block="line" :data-tone="tone" />
+      </div>
     </XhLayoutSider>
     <XhLayoutContent>
-      <strong>欢迎回来</strong>
-      <p style="color: var(--xh-fg-muted)">这里是今日的项目概览。</p>
+      <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 112px" />
     </XhLayoutContent>
-    <XhLayoutFooter>© 2026 XiHan.UI</XhLayoutFooter>
+    <XhLayoutFooter>
+      <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px" />
+    </XhLayoutFooter>
   </XhLayoutRoot>
 </template>
 ```
 
 ```html
-<xh-layout bordered sider-breakpoint="sm" style="display: contents">
+<xh-layout split sider-breakpoint="sm" aria-label="应用页面布局占位区块" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
-    <div data-xh-part="header"><strong>XiHan Admin</strong></div>
-    <div data-xh-part="sider"><div style="display: grid; gap: 12px"><span>概览</span><span>用户</span><span>设置</span></div></div>
-    <div data-xh-part="content"><strong>欢迎回来</strong><p style="color: var(--xh-fg-muted)">这里是今日的项目概览。</p></div>
-    <div data-xh-part="footer">© 2026 XiHan.UI</div>
+    <div data-xh-part="header"><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 112px"></span></div>
+    <div data-xh-part="sider"><div style="display: grid; gap: 12px"><span data-demo-block="line" data-tone="brand"></span><span data-demo-block="line" data-tone="info"></span><span data-demo-block="line" data-tone="success"></span></div></div>
+    <div data-xh-part="content"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 112px"></span></div>
+    <div data-xh-part="footer"><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px"></span></div>
   </div>
 </xh-layout>
 ```
@@ -65,20 +72,25 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutS
 </script>
 
 <template>
-  <XhLayoutRoot bordered style="inline-size: min(640px, 100%); block-size: 240px; border-radius: var(--xh-shape-surface); overflow: hidden">
-    <XhLayoutHeader><XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger><strong>控制台</strong></XhLayoutHeader>
-    <XhLayoutSider><div style="display: grid; gap: 12px"><span>概览</span><span>收藏</span><span>回收站</span></div></XhLayoutSider>
-    <XhLayoutContent>项目动态</XhLayoutContent>
+  <XhLayoutRoot split style="inline-size: min(640px, 100%); block-size: 240px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <XhLayoutHeader>
+      <XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger>
+      <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px" />
+    </XhLayoutHeader>
+    <XhLayoutSider>
+      <div style="display: grid; gap: 12px"><span data-demo-block="line" data-tone="brand" /><span data-demo-block="line" data-tone="info" /><span data-demo-block="line" data-tone="success" /></div>
+    </XhLayoutSider>
+    <XhLayoutContent><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 96px" /></XhLayoutContent>
   </XhLayoutRoot>
 </template>
 ```
 
 ```html
-<xh-layout bordered style="display: contents">
+<xh-layout split style="display: contents">
   <div data-xh-part="root" style="inline-size: min(640px, 100%); block-size: 240px; border-radius: var(--xh-shape-surface); overflow: hidden">
-    <div data-xh-part="header"><button data-xh-part="sider-trigger">菜单</button><strong>控制台</strong></div>
-    <div data-xh-part="sider"><div style="display: grid; gap: 12px"><span>概览</span><span>收藏</span><span>回收站</span></div></div>
-    <div data-xh-part="content">项目动态</div>
+    <div data-xh-part="header"><button data-xh-part="sider-trigger">菜单</button><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px"></span></div>
+    <div data-xh-part="sider"><div style="display: grid; gap: 12px"><span data-demo-block="line" data-tone="brand"></span><span data-demo-block="line" data-tone="info"></span><span data-demo-block="line" data-tone="success"></span></div></div>
+    <div data-xh-part="content"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 96px"></span></div>
   </div>
 </xh-layout>
 ```
@@ -94,11 +106,11 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@x
 
 <template>
   <div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
-    <XhLayoutRoot bordered style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
-      <XhLayoutHeader>行首侧栏</XhLayoutHeader><XhLayoutSider>导航</XhLayoutSider><XhLayoutContent>正文</XhLayoutContent>
+    <XhLayoutRoot split aria-label="行首侧栏布局" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
+      <XhLayoutHeader><span data-demo-block="line" data-tone="brand" /></XhLayoutHeader><XhLayoutSider><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%" /></XhLayoutSider><XhLayoutContent><span data-demo-block data-tone="success" style="--xh-demo-block-block-size: 100%" /></XhLayoutContent>
     </XhLayoutRoot>
-    <XhLayoutRoot sider-placement="end" bordered style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
-      <XhLayoutHeader>行尾侧栏</XhLayoutHeader><XhLayoutSider>属性</XhLayoutSider><XhLayoutContent>正文</XhLayoutContent>
+    <XhLayoutRoot sider-placement="end" split aria-label="行尾侧栏布局" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
+      <XhLayoutHeader><span data-demo-block="line" data-tone="warning" /></XhLayoutHeader><XhLayoutSider><span data-demo-block data-tone="danger" style="--xh-demo-block-block-size: 100%" /></XhLayoutSider><XhLayoutContent><span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%" /></XhLayoutContent>
     </XhLayoutRoot>
   </div>
 </template>
@@ -106,8 +118,8 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@x
 
 ```html
 <div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
-  <xh-layout bordered style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header">行首侧栏</div><div data-xh-part="sider">导航</div><div data-xh-part="content">正文</div></div></xh-layout>
-  <xh-layout sider-placement="end" bordered style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header">行尾侧栏</div><div data-xh-part="sider">属性</div><div data-xh-part="content">正文</div></div></xh-layout>
+  <xh-layout split aria-label="行首侧栏布局" style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header"><span data-demo-block="line" data-tone="brand"></span></div><div data-xh-part="sider"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%"></span></div><div data-xh-part="content"><span data-demo-block data-tone="success" style="--xh-demo-block-block-size: 100%"></span></div></div></xh-layout>
+  <xh-layout sider-placement="end" split aria-label="行尾侧栏布局" style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header"><span data-demo-block="line" data-tone="warning"></span></div><div data-xh-part="sider"><span data-demo-block data-tone="danger" style="--xh-demo-block-block-size: 100%"></span></div><div data-xh-part="content"><span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%"></span></div></div></xh-layout>
 </div>
 ```
 
@@ -119,32 +131,33 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@x
 <script setup lang="ts">
 import { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@xihan-ui/vue";
 
-const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index + 1).padStart(2, "0")}`);
+const tones = ["brand", "info", "success", "warning", "danger", "neutral"] as const;
+const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: tones[index % tones.length] }));
 </script>
 
 <template>
-  <div style="inline-size: min(640px, 100%); block-size: 260px; overflow: auto; border-radius: var(--xh-shape-surface); background: var(--xh-bg-page)">
-    <XhLayoutRoot header-fixed sider-fixed bordered style="--xh-layout-scrollport-h: 260px">
-      <XhLayoutHeader><strong>控制台</strong></XhLayoutHeader>
-      <XhLayoutSider>导航</XhLayoutSider>
-      <XhLayoutContent><p v-for="row in rows" :key="row" style="margin-block: 0 16px">{{ row }}</p></XhLayoutContent>
-      <XhLayoutFooter>© 2026 XiHan.UI</XhLayoutFooter>
+  <div data-xh-scroll style="inline-size: min(640px, 100%); block-size: 260px; overflow: auto; border-radius: var(--xh-shape-surface); background: var(--xh-bg-page)">
+    <XhLayoutRoot header-fixed sider-fixed split style="--xh-layout-scrollport-h: 260px">
+      <XhLayoutHeader><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px" /></XhLayoutHeader>
+      <XhLayoutSider><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" /></XhLayoutSider>
+      <XhLayoutContent><span v-for="row in rows" :key="row.id" data-demo-block="line" :data-tone="row.tone" style="margin-block: 16px" /></XhLayoutContent>
+      <XhLayoutFooter><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px" /></XhLayoutFooter>
     </XhLayoutRoot>
   </div>
 </template>
 ```
 
 ```html
-<div style="inline-size: min(640px, 100%); block-size: 260px; overflow: auto; border-radius: var(--xh-shape-surface); background: var(--xh-bg-page)">
-  <xh-layout header-fixed sider-fixed bordered style="display: contents">
+<div data-xh-scroll style="inline-size: min(640px, 100%); block-size: 260px; overflow: auto; border-radius: var(--xh-shape-surface); background: var(--xh-bg-page)">
+  <xh-layout header-fixed sider-fixed split style="display: contents">
     <div data-xh-part="root" style="--xh-layout-scrollport-h: 260px">
-      <div data-xh-part="header"><strong>控制台</strong></div>
-      <div data-xh-part="sider">导航</div>
+      <div data-xh-part="header"><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px"></span></div>
+      <div data-xh-part="sider"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span></div>
       <div data-xh-part="content">
-        <p>内容区 01</p><p>内容区 02</p><p>内容区 03</p><p>内容区 04</p><p>内容区 05</p><p>内容区 06</p>
-        <p>内容区 07</p><p>内容区 08</p><p>内容区 09</p><p>内容区 10</p><p>内容区 11</p><p>内容区 12</p>
+        <span data-demo-block="line" data-tone="brand" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="info" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="success" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="warning" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="danger" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="neutral" style="margin-block: 16px"></span>
+        <span data-demo-block="line" data-tone="brand" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="info" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="success" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="warning" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="danger" style="margin-block: 16px"></span><span data-demo-block="line" data-tone="neutral" style="margin-block: 16px"></span>
       </div>
-      <div data-xh-part="footer">© 2026 XiHan.UI</div>
+      <div data-xh-part="footer"><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px"></span></div>
     </div>
   </xh-layout>
 </div>
@@ -200,18 +213,18 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `siderCollapsed` | `boolean` |  | 受控折叠态：给了值就由宿主说了算。 |
+| `siderCollapsed` | `boolean` |  | 受控折叠态：提供后由宿主决定。 |
 | `defaultSiderCollapsed` | `boolean` |  | 非受控初始折叠态。 |
-| `siderWidth` | `string` |  | 展开时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
-| `siderCollapsedWidth` | `string` |  | 折叠时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
-| `siderPlacement` | `LayoutSiderPlacement` |  | 侧栏挂在行首还是行尾，缺省 start。 |
-| `siderBreakpoint` | `LayoutBreakpoint` |  | 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。 运行期换档会重绑媒体查询；需要所属 Window.matchMedia 与对应断点令牌。 |
-| `siderPresentation` | `LayoutSiderPresentation` |  | 侧栏呈现形态，缺省 inline（在骨架里占一列）。 sheet 是覆盖档：侧栏移出画外，展开时盖在内容之上并铺一层遮罩，内容因此占满整宽。 同时写了 siderBreakpoint 时它只在未达那一档时成立——宽屏照旧占一列，窄屏才覆盖， 且跨档时侧栏跟着开合（进覆盖档收起、回占位档展开），走的是 siderCollapsed 那条通道。 覆盖档不锁焦点、不把背后的内容标成惰性：它是骨架里的一段，不是模态浮层。 |
-| `headerFixed` | `boolean` |  | 头吸顶：滚动时头钉在滚动容器的上沿。只落标记，钉住的实现归皮肤。 |
-| `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条。只落标记，钉住的实现归皮肤。 |
-| `bordered` | `boolean` |  | 在头、侧栏、脚与内容之间画分隔线。 |
-| `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
-| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 断点跨过去时发一次，挂载或更换档位时也发一次当前值。 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。 |
+| `siderWidth` | `string` |  | 展开时侧栏的宽度，任意 CSS 长度；未提供时使用皮肤中的档位。 |
+| `siderCollapsedWidth` | `string` |  | 折叠时侧栏的宽度，任意 CSS 长度；未提供时使用皮肤中的档位。 |
+| `siderPlacement` | `LayoutSiderPlacement` |  | 侧栏挂在行首还是行尾，默认 start。 |
+| `siderBreakpoint` | `LayoutBreakpoint` |  | 侧栏的自适应断点：视口窄于该档时侧栏按折叠宽显示。 只切换宽度不改变折叠态：折叠态归 siderCollapsed 通道，两者互不干扰。 运行期更换档位会重新绑定媒体查询；需要所属 Window.matchMedia 与对应断点令牌。 |
+| `siderPresentation` | `LayoutSiderPresentation` |  | 侧栏呈现形态，默认 inline（在骨架中占一列）。 sheet 是覆盖档：侧栏移出画外，展开时覆盖在内容之上并铺一层遮罩，内容因此占满整宽。 同时提供 siderBreakpoint 时它只在未达该档时成立：宽屏仍占一列，窄屏才覆盖， 且跨档时侧栏随之开合（进入覆盖档收起、回到占位档展开），经 siderCollapsed 通道。 覆盖档不锁定焦点、不把背后的内容标记为惰性：它是骨架中的一段，不是模态浮层。 |
+| `headerFixed` | `boolean` |  | 头部吸顶：滚动时头部固定在滚动容器的上沿。只写标记，固定的实现归皮肤。 |
+| `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏固定在滚动容器的上沿，头部也吸顶时让开头部的高度。只写标记，固定的实现归皮肤。 |
+| `split` | `boolean` |  | 在头部、侧栏、脚部与内容之间绘制分隔线。 |
+| `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 跨过断点时发出一次，挂载或更换档位时也发出一次当前值。 窄屏需要把侧栏换成抽屉时接入该回调：组件自身只切换宽度。 |
 
 ### 事件
 
@@ -220,7 +233,7 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sider-collapsed-change` | `LayoutSiderCollapsedChangeDetails` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
-| `sider-breakpoint` | `LayoutSiderBreakpointDetails` | 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }` |
+| `sider-breakpoint` | `LayoutSiderBreakpointDetails` | 跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }` |
 
 ### 状态
 
@@ -228,7 +241,7 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 
 **状态**：`expanded` · `collapsed`
 
-**事件**：`SIDER.COLLAPSE` · `SIDER.EXPAND` · `SIDER.TOGGLE` · `CONTROLLED.COLLAPSE` · `CONTROLLED.EXPAND`
+**事件**：`SIDER.COLLAPSE` · `SIDER.EXPAND` · `SIDER.TOGGLE` · `CONTROLLED.COLLAPSE` · `CONTROLLED.EXPAND` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isSiderCollapsedControlled`
 
@@ -239,11 +252,11 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `siderCollapsed` | `boolean` | 侧栏当前是否折叠。 |
-| `siderPresentation` | `LayoutSiderPresentation` | 已解析的侧栏呈现形态：写了断点时，覆盖档只在未达那一档时成立。 |
+| `siderPresentation` | `LayoutSiderPresentation` | 已解析的侧栏呈现形态：提供断点时，覆盖档只在未达该档时成立。 |
 | `setSiderCollapsed` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
-| `getSiderBackdropProps` | `() => T['element']` | 覆盖档铺在内容之上的那一层遮罩：点它收起侧栏。 占位档下它带 hidden，不占位也不吃指针。渲染时排在侧栏之前——两层同一个层号，谁盖谁看文档序。 |
+| `getSiderBackdropProps` | `() => T['element']` | 覆盖档铺在内容之上的遮罩：点击它收起侧栏。 占位档下它带 hidden，不占位也不接收指针。渲染时排在侧栏之前：两层同一个层号，覆盖顺序按文档序。 |
 | `getSiderProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
@@ -258,6 +271,7 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in sider-trigger | 折叠/展开 sider |
+| `Enter` / `Space` | held in sider-trigger | 按住期间 sider-trigger 投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起或失焦撤下。把手没有禁用态 |
 | `Escape` | sider 按覆盖档盖在内容之上 | 收起 sider |
 
 ### ARIA
@@ -282,13 +296,13 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-bordered` | ''（条件成立时才出现） |
 | `root` | `data-collapsed` | ''（条件成立时才出现） |
 | `root` | `data-header-fixed` | ''（条件成立时才出现） |
 | `root` | `data-sider-breakpoint` | props.siderBreakpoint |
 | `root` | `data-sider-fixed` | ''（条件成立时才出现） |
 | `root` | `data-sider-placement` | props.siderPlacement |
 | `root` | `data-sider-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
+| `root` | `data-split` | ''（条件成立时才出现） |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `sider-backdrop` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider` | `data-collapsed` | ''（条件成立时才出现） |
@@ -296,16 +310,22 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 | `sider` | `data-placement` | props.siderPlacement |
 | `sider` | `data-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
 | `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
+| `sider-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `sider-trigger` | `data-xh-action-control` | '' |
+| `sider-trigger` | `data-xh-action-display` | 'always' |
+| `sider-trigger` | `data-xh-action-profile` | 'text' |
+| `sider-trigger` | `data-xh-action-size` | 'sm' |
+| `sider-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-layout-bg` | `root` | `background` | `default` | `--xh-bg-page` | layout 的 root 部件 background 覆盖槽。 |
-| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `bordered`<br>`placement=end`<br>`placement=start` | `--xh-border-default` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `placement=end`<br>`placement=start`<br>`presentation=sheet`<br>`split` | `--xh-border-default`<br>`--xh-material-elevated-border` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-layout-content-padding` | `content` | `padding` | `default` | `--xh-space-4` | layout 的 content 部件 padding 覆盖槽。 |
 | `--xh-layout-fg` | `root` | `color` | `default` | `--xh-fg-default` | layout 的 root 部件 color 覆盖槽。 |
 | `--xh-layout-footer-bg` | `footer` | `background` | `default` | `--xh-bg-surface` | layout 的 footer 部件 background 覆盖槽。 |
@@ -318,24 +338,24 @@ const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index 
 | `--xh-layout-scrollport-h` | `sider` | `max-block-size` | `fixed`<br>`presentation=sheet` | `100dvh`<br>`100vh` | layout 的 sider 部件 max-block-size 覆盖槽。 |
 | `--xh-layout-sider-backdrop-bg` | `sider-backdrop` | `background` | `default` | `--xh-bg-overlay` | layout 的 sider-backdrop 部件 background 覆盖槽。 |
 | `--xh-layout-sider-backdrop-layer` | `sider-backdrop` | `z-index` | `default` | `--xh-layer-drawer` | layout 的 sider-backdrop 部件 z-index 覆盖槽。 |
-| `--xh-layout-sider-bg` | `sider` | `background` | `default` | `--xh-bg-subtle` | layout 的 sider 部件 background 覆盖槽。 |
+| `--xh-layout-sider-bg` | `sider` | `background` | `default`<br>`presentation=sheet` | `--xh-bg-subtle`<br>`--xh-material-elevated-bg` | layout 的 sider 部件 background 覆盖槽。 |
 | `--xh-layout-sider-collapsed-w` | `root`<br>`sider` | `inline-size` | `collapsed`<br>`sider-breakpoint` | `4rem` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
 | `--xh-layout-sider-layer` | `sider` | `z-index` | `presentation=sheet` | `--xh-layer-drawer` | layout 的 sider 部件 z-index 覆盖槽。 |
 | `--xh-layout-sider-padding` | `sider` | `padding`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`presentation=sheet` | `--xh-space-3` | layout 的 sider 部件 padding、padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
-| `--xh-layout-sider-shadow` | `sider` | `box-shadow` | `presentation=sheet` | `--xh-elevation-sheet` | layout 的 sider 部件 box-shadow 覆盖槽。 |
-| `--xh-layout-sider-trigger-bg` | `sider-trigger` | `background` | `default` | `transparent` | layout 的 sider-trigger 部件 background 覆盖槽。 |
-| `--xh-layout-sider-trigger-bg-active` | `sider-trigger` | `background` | `active` | `--xh-bg-subtle-active` | layout 的 sider-trigger 部件 background 覆盖槽。 |
-| `--xh-layout-sider-trigger-bg-hover` | `sider-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | layout 的 sider-trigger 部件 background 覆盖槽。 |
-| `--xh-layout-sider-trigger-fg` | `sider-trigger` | `color` | `default` | `--xh-fg-default` | layout 的 sider-trigger 部件 color 覆盖槽。 |
-| `--xh-layout-sider-trigger-gap` | `sider-trigger` | `gap` | `default` | `--xh-control-gap-sm` | layout 的 sider-trigger 部件 gap 覆盖槽。 |
-| `--xh-layout-sider-trigger-px` | `sider-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | layout 的 sider-trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-layout-sider-trigger-radius` | `sider-trigger` | `border-radius` | `default` | `--xh-shape-control` | layout 的 sider-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-layout-sider-shadow` | `sider` | `box-shadow` | `presentation=sheet` | `--xh-material-elevated-shadow` | layout 的 sider 部件 box-shadow 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg` | `sider-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | layout 的 sider-trigger 部件 background-color 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg-active` | `sider-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | layout 的 sider-trigger 部件 background-color 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg-hover` | `sider-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | layout 的 sider-trigger 部件 background-color 覆盖槽。 |
+| `--xh-layout-sider-trigger-fg` | `sider-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | layout 的 sider-trigger 部件 color 覆盖槽。 |
+| `--xh-layout-sider-trigger-gap` | `sider-trigger` | `gap` | `default` | `--xh-_action-profile-gap` | layout 的 sider-trigger 部件 gap 覆盖槽。 |
+| `--xh-layout-sider-trigger-px` | `sider-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | layout 的 sider-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-layout-sider-trigger-radius` | `sider-trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | layout 的 sider-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-layout-sider-w` | `root`<br>`sider` | `inline-size` | `@media (min-width: 1024px)`<br>`@media (min-width: 1280px)`<br>`@media (min-width: 640px)`<br>`@media (min-width: 768px)`<br>`default`<br>`presentation=sheet`<br>`sider-breakpoint=lg`<br>`sider-breakpoint=md`<br>`sider-breakpoint=sm`<br>`sider-breakpoint=xl` | `15rem` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `inline-size` · `opacity` · `scale` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`inline-size` · `opacity` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

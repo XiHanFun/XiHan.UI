@@ -21,43 +21,38 @@
 import { XhMasonry } from "@xihan-ui/vue";
 
 const cards = [
-  { title: "快速上手", description: "几分钟完成安装并渲染第一个组件。" },
-  { title: "无头内核", description: "行为、状态和无障碍逻辑独立于视图层，可在多个框架中复用。" },
-  { title: "设计令牌", description: "统一颜色、间距和动效。" },
-  { title: "多端适配", description: "同时支持 Vue、React 和 Web Components。" },
-  { title: "无障碍", description: "内置键盘导航与语义属性。" },
-  { title: "主题系统", description: "支持浅色、深色、高对比度和自定义品牌主题。" },
-];
+  { id: 1, tone: "brand", height: "88px" },
+  { id: 2, tone: "info", height: "136px" },
+  { id: 3, tone: "success", height: "104px" },
+  { id: 4, tone: "warning", height: "128px" },
+  { id: 5, tone: "danger", height: "80px" },
+  { id: 6, tone: "neutral", height: "116px" },
+] as const;
 </script>
 
 <template>
-  <XhMasonry :columns="3" gap="md" style="inline-size: min(680px, 100%)">
+  <XhMasonry :columns="3" gap="md" aria-label="瀑布流占位区块" style="inline-size: min(680px, 100%)">
     <article
       v-for="card in cards"
-      :key="card.title"
-      style="padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
-    >
-      <strong>{{ card.title }}</strong>
-      <p style="margin-block-end: 0; color: var(--xh-fg-muted)">{{ card.description }}</p>
-    </article>
+      :key="card.id"
+      data-demo-block
+      :data-tone="card.tone"
+      :style="{ '--xh-demo-block-block-size': card.height }"
+    />
   </XhMasonry>
 </template>
 ```
 
 ```html
-<style>
-  #masonry-basic article { padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
-  #masonry-basic p { margin-block-end: 0; color: var(--xh-fg-muted); }
-</style>
-<xh-masonry id="masonry-basic" columns="3" gap="md" style="display: contents">
+<xh-masonry id="masonry-basic" columns="3" gap="md" aria-label="瀑布流占位区块" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(680px, 100%)">
     <div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="column"></div>
-    <div data-xh-part="item"><article><strong>快速上手</strong><p>几分钟完成安装并渲染第一个组件。</p></article></div>
-    <div data-xh-part="item"><article><strong>无头内核</strong><p>行为、状态和无障碍逻辑独立于视图层，可在多个框架中复用。</p></article></div>
-    <div data-xh-part="item"><article><strong>设计令牌</strong><p>统一颜色、间距和动效。</p></article></div>
-    <div data-xh-part="item"><article><strong>多端适配</strong><p>同时支持 Vue、React 和 Web Components。</p></article></div>
-    <div data-xh-part="item"><article><strong>无障碍</strong><p>内置键盘导航与语义属性。</p></article></div>
-    <div data-xh-part="item"><article><strong>主题系统</strong><p>支持浅色、深色、高对比度和自定义品牌主题。</p></article></div>
+    <div data-xh-part="item"><article data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 88px"></article></div>
+    <div data-xh-part="item"><article data-demo-block data-tone="info" style="--xh-demo-block-block-size: 136px"></article></div>
+    <div data-xh-part="item"><article data-demo-block data-tone="success" style="--xh-demo-block-block-size: 104px"></article></div>
+    <div data-xh-part="item"><article data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 128px"></article></div>
+    <div data-xh-part="item"><article data-demo-block data-tone="danger" style="--xh-demo-block-block-size: 80px"></article></div>
+    <div data-xh-part="item"><article data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 116px"></article></div>
   </div>
 </xh-masonry>
 ```
@@ -78,18 +73,23 @@ const cards = [
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const items = ["概览", "组件", "主题", "发布"];
+const items = [
+  { id: 1, tone: "brand", height: "64px" },
+  { id: 2, tone: "info", height: "76px" },
+  { id: 3, tone: "success", height: "88px" },
+  { id: 4, tone: "warning", height: "100px" },
+] as const;
 </script>
 
 <template>
   <XhMasonry :columns="{ base: 1, sm: 2, md: 3 }" gap="sm" style="inline-size: min(720px, 100%)">
     <div
-      v-for="(item, index) in items"
-      :key="item"
-      :style="`padding: ${16 + index * 6}px 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)`"
-    >
-      {{ item }}
-    </div>
+      v-for="item in items"
+      :key="item.id"
+      data-demo-block
+      :data-tone="item.tone"
+      :style="{ '--xh-demo-block-block-size': item.height }"
+    />
   </XhMasonry>
 </template>
 ```
@@ -98,10 +98,10 @@ const items = ["概览", "组件", "主题", "发布"];
 <xh-masonry columns='{"base":1,"sm":2,"md":3}' gap="sm" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(720px, 100%)">
     <div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="column"></div>
-    <div data-xh-part="item"><div style="padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">概览</div></div>
-    <div data-xh-part="item"><div style="padding: 22px 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">组件</div></div>
-    <div data-xh-part="item"><div style="padding: 28px 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">主题</div></div>
-    <div data-xh-part="item"><div style="padding: 34px 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">发布</div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 64px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="info" style="--xh-demo-block-block-size: 76px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="success" style="--xh-demo-block-block-size: 88px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 100px"></div></div>
   </div>
 </xh-masonry>
 ```
@@ -114,7 +114,12 @@ const items = ["概览", "组件", "主题", "发布"];
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const items = ["设计", "开发", "测试", "发布"];
+const items = [
+  { id: 1, tone: "brand", height: "48px" },
+  { id: 2, tone: "info", height: "58px" },
+  { id: 3, tone: "success", height: "68px" },
+  { id: 4, tone: "warning", height: "78px" },
+] as const;
 const gaps = ["sm", "lg"] as const;
 </script>
 
@@ -124,12 +129,12 @@ const gaps = ["sm", "lg"] as const;
       <div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">{{ gap }}</div>
       <XhMasonry :columns="2" :gap="gap">
         <div
-          v-for="(item, index) in items"
-          :key="item"
-          :style="`padding: ${12 + index * 5}px 12px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)`"
-        >
-          {{ item }}
-        </div>
+          v-for="item in items"
+          :key="item.id"
+          data-demo-block
+          :data-tone="item.tone"
+          :style="{ '--xh-demo-block-block-size': item.height, '--xh-demo-block-radius': 'var(--xh-shape-control)' }"
+        />
       </XhMasonry>
     </div>
   </div>
@@ -137,12 +142,9 @@ const gaps = ["sm", "lg"] as const;
 ```
 
 ```html
-<style>
-  #masonry-gap [data-card] { border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); }
-</style>
 <div id="masonry-gap" style="display: flex; flex-wrap: wrap; gap: 24px">
-  <div style="inline-size: min(280px, 100%)"><div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">sm</div><xh-masonry columns="2" gap="sm" style="display: contents"><div data-xh-part="root"><div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="item"><div data-card style="padding: 12px">设计</div></div><div data-xh-part="item"><div data-card style="padding: 17px 12px">开发</div></div><div data-xh-part="item"><div data-card style="padding: 22px 12px">测试</div></div><div data-xh-part="item"><div data-card style="padding: 27px 12px">发布</div></div></div></xh-masonry></div>
-  <div style="inline-size: min(280px, 100%)"><div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">lg</div><xh-masonry columns="2" gap="lg" style="display: contents"><div data-xh-part="root"><div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="item"><div data-card style="padding: 12px">设计</div></div><div data-xh-part="item"><div data-card style="padding: 17px 12px">开发</div></div><div data-xh-part="item"><div data-card style="padding: 22px 12px">测试</div></div><div data-xh-part="item"><div data-card style="padding: 27px 12px">发布</div></div></div></xh-masonry></div>
+  <div style="inline-size: min(280px, 100%)"><div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">sm</div><xh-masonry columns="2" gap="sm" style="display: contents"><div data-xh-part="root"><div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="item"><div data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 48px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div><div data-xh-part="item"><div data-demo-block data-tone="info" style="--xh-demo-block-block-size: 58px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div><div data-xh-part="item"><div data-demo-block data-tone="success" style="--xh-demo-block-block-size: 68px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div><div data-xh-part="item"><div data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 78px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div></div></xh-masonry></div>
+  <div style="inline-size: min(280px, 100%)"><div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">lg</div><xh-masonry columns="2" gap="lg" style="display: contents"><div data-xh-part="root"><div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="item"><div data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 48px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div><div data-xh-part="item"><div data-demo-block data-tone="info" style="--xh-demo-block-block-size: 58px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div><div data-xh-part="item"><div data-demo-block data-tone="success" style="--xh-demo-block-block-size: 68px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div><div data-xh-part="item"><div data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 78px; --xh-demo-block-radius: var(--xh-shape-control)"></div></div></div></xh-masonry></div>
 </div>
 ```
 
@@ -154,37 +156,39 @@ const gaps = ["sm", "lg"] as const;
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const steps = ["创建项目", "配置主题", "添加组件", "连接数据", "运行测试", "发布应用"];
+const steps = [
+  { id: 1, tone: "brand", height: "56px" },
+  { id: 2, tone: "info", height: "72px" },
+  { id: 3, tone: "success", height: "88px" },
+  { id: 4, tone: "warning", height: "56px" },
+  { id: 5, tone: "danger", height: "72px" },
+  { id: 6, tone: "neutral", height: "88px" },
+] as const;
 </script>
 
 <template>
   <XhMasonry :columns="3" gap="sm" sequential style="inline-size: min(640px, 100%)">
     <div
-      v-for="(step, index) in steps"
-      :key="step"
-      :style="`padding: ${14 + (index % 3) * 8}px 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)`"
-    >
-      <strong>{{ index + 1 }}</strong>
-      <div style="margin-block-start: 6px">{{ step }}</div>
-    </div>
+      v-for="step in steps"
+      :key="step.id"
+      data-demo-block
+      :data-tone="step.tone"
+      :style="{ '--xh-demo-block-block-size': step.height }"
+    />
   </XhMasonry>
 </template>
 ```
 
 ```html
-<style>
-  #masonry-sequential [data-card] { padding: 18px 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
-  #masonry-sequential [data-card] div { margin-block-start: 6px; }
-</style>
 <xh-masonry id="masonry-sequential" columns="3" gap="sm" sequential style="display: contents">
   <div data-xh-part="root" style="inline-size: min(640px, 100%)">
     <div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="column"></div>
-    <div data-xh-part="item"><div data-card><strong>1</strong><div>创建项目</div></div></div>
-    <div data-xh-part="item"><div data-card><strong>2</strong><div>配置主题</div></div></div>
-    <div data-xh-part="item"><div data-card><strong>3</strong><div>添加组件</div></div></div>
-    <div data-xh-part="item"><div data-card><strong>4</strong><div>连接数据</div></div></div>
-    <div data-xh-part="item"><div data-card><strong>5</strong><div>运行测试</div></div></div>
-    <div data-xh-part="item"><div data-card><strong>6</strong><div>发布应用</div></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 56px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="info" style="--xh-demo-block-block-size: 72px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="success" style="--xh-demo-block-block-size: 88px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 56px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="danger" style="--xh-demo-block-block-size: 72px"></div></div>
+    <div data-xh-part="item"><div data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 88px"></div></div>
   </div>
 </xh-masonry>
 ```
@@ -239,9 +243,9 @@ const steps = ["创建项目", "配置主题", "添加组件", "连接数据", "
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `columns` | `MasonryColumns` |  | 分几列，不写按三列。也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数， 没写的档沿用比它窄的那一档。换档看的是容器自身的宽度，不是视口宽度。 |
-| `gap` | `MasonryGap` |  | 列与列、项与项之间的间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
-| `sequential` | `boolean` |  | 按文档序逐列填：项成段落进各列，读起来仍是「先走完左列，再走下一列」。 不写则最短列优先，视觉上更齐平，但相邻的两项未必挨着。 |
+| `columns` | `MasonryColumns` |  | 列数，未提供时按三列。也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数， 未写的档沿用更窄的一档。换档依据容器自身的宽度，不是视口宽度。 |
+| `gap` | `MasonryGap` |  | 列与列、项与项之间的间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 |
+| `sequential` | `boolean` |  | 按文档序逐列填充：项分段落入各列，阅读顺序仍是先走完左列，再走下一列。 未提供时最短列优先，视觉上更齐平，但相邻的两项未必相邻。 |
 
 ### connect API
 
@@ -286,9 +290,9 @@ const steps = ["创建项目", "配置主题", "添加组件", "连接数据", "
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-masonry-gap` | `column`<br>`root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | masonry 的 column、root 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->

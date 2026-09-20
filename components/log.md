@@ -2,7 +2,7 @@
 
 # Log 日志 `alpha`
 
-一块等宽排版的滚动区域，一行一条，可以自动跟到底部。
+等宽排版的滚动区域，一行一条，可以自动跟随到底部。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/log" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-root / viewport / content / line 四层；一行写什么由作者定，组件只给身份与等宽排版
+root / viewport / content / line 四层；一行写什么由作者决定，组件只提供身份与等宽排版
 
 ```vue
 <script setup lang="ts">
@@ -76,7 +76,7 @@ const lines = [
 
 ### 按行数定高
 
-rows 定的是「看得见几行」，一行有多高归皮肤，改 --xh-log-line-height 两边一起变
+rows 决定可见几行，一行的高度归皮肤，修改 --xh-log-line-height 两者一起变化
 
 ```vue
 <script setup lang="ts">
@@ -166,9 +166,9 @@ const lines = Array.from(
 </script>
 ```
 
-### 自动跟到底部
+### 自动跟随到底部
 
-新行进来时视口自己跟着走；往上滚一段就停住跟随，组件报出的 atBottom 与 scrollToBottom 够自己画一条回到最新
+新行进入时视口自动跟随；向上滚动一段即停止跟随，组件报告的 atBottom 与 scrollToBottom 足以自行绘制一条回到最新
 
 ```vue
 <script setup lang="ts">
@@ -324,7 +324,7 @@ onUnmounted(() => window.clearInterval(timer));
 
 ### 取行中
 
-loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取」那一行是作者自己渲的
+loading 使日志区报告 aria-busy 并把指针换为忙碌态；正在拉取那一行由作者自行渲染
 
 ```vue
 <script setup lang="ts">
@@ -492,9 +492,9 @@ const entries = raw.map(entry => ({
 </xh-log>
 ```
 
-### 换成自绘滚动条
+### 换为自绘滚动条
 
-视口给个 id，用滚动条的 controls 挂上去；条子浮在内容之上，不占宽度也不留空道
+视口提供一个 id，用滚动条的 controls 挂载；滚动条浮在内容之上，不占宽度也不留空道
 
 ```vue
 <script setup lang="ts">
@@ -576,7 +576,7 @@ const lines = Array.from(
 
 ### 回到底部与播报
 
-往上翻一段，右下角那颗钮自己冒出来，按下去归位并重新粘附；输出跑完在播报区念一句结论
+向上翻一段，右下角的按钮自动显示，按下后归位并重新粘附；输出结束后在播报区朗读一句结论
 
 ```vue
 <script setup lang="ts">
@@ -693,40 +693,37 @@ onUnmounted(() => window.clearTimeout(timer));
 ### 何时使用
 
 - 构建输出、运行日志、命令行回显。
-- 任意会从底部往下长、希望一直跟到底的内容：内容不必分得出「第几条、谁说的」，
-  一整段往里追加就行。
+- 任何从底部持续增长、需要始终跟随到底的内容：内容不需要区分条目身份，整段追加即可。
 
 ### 何时不用
 
-- 内容是一段会话，条目有身份、要能逐条遍历：用[消息流](./message-feed)。
-- 展示的是结构化记录、需要筛选排序：用[表格](./table)。
-- 是一段代码：用[代码视图](./code-view)。
+- 内容是会话、条目有身份且需要逐条遍历时，使用[消息流](./message-feed)。
+- 展示结构化记录、需要筛选排序时，使用[表格](./table)。
+- 展示一段代码时，使用[代码视图](./code-view)。
 
 ### 特性
 
-- 骨架四层：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
-  另有两个可缺省的部件：`scroll-to-end-trigger` 与 `live-region`。
+- 结构四层：`root` · `viewport` · `content` · `line`；每行内容由作者决定，组件只提供身份与等宽排版。另有两个可选部件：`scroll-to-end-trigger` 与 `live-region`。
 - `rows` 按行数定高。
-- 自动跟到底部；用户往上翻时停住跟随，回到底部再恢复。
-- 内置「回到底部」：离底时冒出来，按下去归位并重新粘附。留空时皮肤画一枚向下的字形，
-  往按钮里塞节点即换成自己的图形。
+- 自动跟随到底部；用户向上翻时停止跟随，回到底部后恢复。
+- 内置“回到底部”：离开底部时出现，按下后归位并重新粘附。留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
 - 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
 
 ### 组合
 
 - 行内可以用[文本高亮](./highlight)标出关键词。
-- 给视口一个 id，把[滚动条](./scrollbar)的 `controls` 指过去，条子与视口平级摆在 `root` 里：它浮在内容之上，不占宽度。没挂自绘滚动条时视口自己留一条空道，原生滚动条出现与消失不会推动文字。
+- 给视口一个 id，把[滚动条](./scrollbar)的 `controls` 指向它，滚动条与视口平级放在 `root` 内：它浮在内容之上，不占宽度。未挂自绘滚动条时视口自行预留一条通道，原生滚动条出现与消失不会推动文字。
 
 ### 最佳实践
 
-- 用户往上翻时不要强行拉回底部，那是最恼人的行为之一。
-- 行数很大时截断或虚拟化，别把十万行全挂上去。
+- 用户向上翻时不强行拉回底部。
+- 行数很大时截断或虚拟化，不把十万行全部挂载。
 
 ### 反模式
 
-- 每来一行就整块重渲。
-- 不给复制或下载全部日志的入口。
-- 把每一行都写进播报区：读屏会被逐行打断，什么也听不清。
+- 每到一行就整块重渲。
+- 不提供复制或下载全部日志的入口。
+- 把每一行都写进播报区，读屏会被逐行打断。
 
 ## API 参考
 
@@ -744,11 +741,11 @@ onUnmounted(() => window.clearTimeout(timer));
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `threshold` | `number` |  | 距底多少 px 视为在底，缺省用粘底原语的默认值。 |
-| `onStickChange` | `(details: LogStickChangeDetails) => void` |  | 粘底状态变化时通知宿主。 |
-| `loading` | `boolean` |  | 行还在路上：日志区报 aria-busy，根落 data-loading。 |
-| `rows` | `number` |  | 视口按多少行定高；缺省时高度由皮肤给。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。改的是行文字号与内衬，行高不随档变。 |
+| `threshold` | `number` |  | 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 |
+| `onStickChange` | `(details: LogStickChangeDetails) => void` |  | 贴底状态变化时通知宿主。 |
+| `loading` | `boolean` |  | 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 |
+| `rows` | `number` |  | 视口按多少行定高；未提供时高度由皮肤决定。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
 
 ### 事件
@@ -757,7 +754,7 @@ onUnmounted(() => window.clearTimeout(timer));
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `stick-change` | `LogStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+| `stick-change` | `LogStickChangeDetails` | 贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
 
 ### 插槽
 
@@ -779,7 +776,9 @@ onUnmounted(() => window.clearTimeout(timer));
 
 **状态**：`idle`
 
-**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM`
+**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -790,9 +789,9 @@ onUnmounted(() => window.clearTimeout(timer));
 | `rows` | `number \| undefined` | 取整后的行数；rows 缺席或不是正数时为 undefined。 |
 | `loading` | `boolean` |  |
 | `atBottom` | `boolean` | 当前滚动位置是否落在底部阈值内。 |
-| `sticking` | `boolean` | 新行进来时是否自动跟到底。 |
+| `sticking` | `boolean` | 新行到达时是否自动跟随到底部。 |
 | `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮，不在底部时为 true。 |
-| `scrollToBottom` | `() => void` | 滚到底部并恢复粘附。 |
+| `scrollToBottom` | `() => void` | 滚动到底部并恢复贴附。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
@@ -810,6 +809,7 @@ onUnmounted(() => window.clearTimeout(timer));
 | --- | --- | --- |
 | `Tab` | 焦点进入日志区 | 日志区自身可聚焦，方向键/PageUp/PageDown/Home/End 交给浏览器滚动，组件不接管 |
 | `Space` / `Enter` | 焦点在"回到底部"按钮上 | 滚回底部并重新粘附 |
+| `Space` / `Enter` | 按住"回到底部"按钮且视口不在底部 | 按住期间 scroll-to-end-trigger 投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或回到底部（按钮收起）撤下 |
 
 ### ARIA
 
@@ -826,11 +826,9 @@ onUnmounted(() => window.clearTimeout(timer));
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
 
-- 视口是 `role=log`，但它隐含的 `aria-live` 被显式关掉：一行来一句地念，连成串的输出
-  就成了读屏里的噪声。
-- 播报走独立的 `live-region`：宿主决定念哪一句、什么时候念，例如一段输出跑完之后念结论
-  与错误条数。别把每一行原样写进去，那就等于把关掉的逐行播报又打开了一遍。
-- 成批取行期间视口报 `aria-busy`；播报区是视口的兄弟节点，不受它压制。
+- 视口是 `role=log`，但其隐含的 `aria-live` 被显式关闭：逐行读出连续输出会成为读屏噪声。
+- 播报使用独立的 `live-region`：宿主决定读哪一句、何时读，例如一段输出结束后读出结论与错误条数。不要把每一行原样写入，否则等于重新打开逐行播报。
+- 成批取行期间视口报告 `aria-busy`；播报区是视口的兄弟节点，不受其影响。
 
 ## 样式参考
 
@@ -849,22 +847,28 @@ onUnmounted(() => window.clearTimeout(timer));
 | `root` | `data-size` | props.size |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
 | `line` | `data-level` | line?.level |
+| `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'visible' \| 'hidden' |
+| `scroll-to-end-trigger` | `data-xh-action-control` | '' |
+| `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
+| `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
+| `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
+| `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-log-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | log 的 root 部件 background 覆盖槽。 |
+| `--xh-log-bg` | `root` | `background` | `default` | `--xh-bg-surface` | log 的 root 部件 background 覆盖槽。 |
 | `--xh-log-border` | `root` | `border` | `default` | `--xh-border-default` | log 的 root 部件 border 覆盖槽。 |
 | `--xh-log-content-px` | `content` | `padding-inline` | `default` | `--xh-_log-content-px` | log 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-log-fg` | `root` | `color` | `default` | `--xh-fg-default` | log 的 root 部件 color 覆盖槽。 |
 | `--xh-log-font` | `content` | `font-family` | `default` | `--xh-font-family-mono` | log 的 content 部件 font-family 覆盖槽。 |
 | `--xh-log-font-size` | `content` | `font-size` | `default` | `--xh-_log-font-size` | log 的 content 部件 font-size 覆盖槽。 |
-| `--xh-log-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | log 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-log-icon-size` | `scroll-to-end-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | log 的 scroll-to-end-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-log-level-debug-fg` | `line` | `color` | `level=debug` | `--xh-fg-subtle` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-error-fg` | `line` | `color` | `level=error` | `--xh-fg-danger` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-info-fg` | `line` | `color` | `level=info` | `--xh-fg-default` | log 的 line 部件 color 覆盖槽。 |
@@ -872,20 +876,21 @@ onUnmounted(() => window.clearTimeout(timer));
 | `--xh-log-line-height` | `line`<br>`root`<br>`viewport` | `block-size`<br>`line-height` | `default` | `1.25rem` | log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。 |
 | `--xh-log-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | log 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-log-rows` | `viewport` | `block-size` | `default` | `16` | log 的 viewport 部件 block-size 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background` | `default` | `--xh-bg-surface-raised` | log 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | log 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border` | `default` | `--xh-border-default` | log 的 scroll-to-end-trigger 部件 border 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-fg-default` | log 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background-color` | `default` | `--xh-material-frosted-bg` | log 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | log 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-border` | log 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-material-frosted-fg` | log 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
 | `--xh-log-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-3` | log 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-pill` | log 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default` | `--xh-elevation-raised` | log 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | log 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-circle` | log 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-shadow` | log 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | log 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-log-shadow` | `root` | `box-shadow` | `default` | `none` | log 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-log-tab-size` | `line` | `tab-size` | `default` | `4` | log 的 line 部件 tab-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-log-button-in` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-log-button-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

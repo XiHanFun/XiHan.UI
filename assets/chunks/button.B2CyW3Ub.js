@@ -1,1 +1,0 @@
-import{F as e}from"./theme.C4bpqV2W.js";import{d as o,b as a,w as n,k as r,o as s,a as u}from"./framework.DkvuVDKz.js";const l=o({__name:"button",setup(p){return(f,t)=>(s(),a(r(e),null,{default:n(()=>[...t[0]||(t[0]=[u("按钮",-1)])]),_:1}))}});export{l as default};

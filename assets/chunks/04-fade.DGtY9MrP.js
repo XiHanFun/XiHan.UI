@@ -1,0 +1,14 @@
+const a=`<!-- 边缘渐隐 | 提示还有更多内容 -->
+<xh-scroll-area variant="fade" size="lg" style="display: contents">
+  <div data-xh-part="root" style="block-size: 180px; inline-size: min(320px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content" style="padding: 12px 16px">
+        <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 56%; margin-block: 15px"></span><span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 64%; margin-block: 15px"></span><span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 72%; margin-block: 15px"></span><span data-demo-block="line" data-tone="warning" style="--xh-demo-block-inline-size: 80%; margin-block: 15px"></span>
+        <span data-demo-block="line" data-tone="danger" style="--xh-demo-block-inline-size: 56%; margin-block: 15px"></span><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 64%; margin-block: 15px"></span><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 72%; margin-block: 15px"></span><span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 80%; margin-block: 15px"></span>
+        <span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 56%; margin-block: 15px"></span><span data-demo-block="line" data-tone="warning" style="--xh-demo-block-inline-size: 64%; margin-block: 15px"></span><span data-demo-block="line" data-tone="danger" style="--xh-demo-block-inline-size: 72%; margin-block: 15px"></span><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80%; margin-block: 15px"></span>
+      </div>
+    </div>
+    <div data-xh-part="scrollbar" orientation="vertical"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div>
+  </div>
+</xh-scroll-area>
+`;export{a as default};

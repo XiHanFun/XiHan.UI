@@ -1,0 +1,18 @@
+const t=`<!-- 大写锁定提示 | 打开大写锁定后在框中输入一个字符：提示显示，读屏也会朗读一次；焦点离开输入框即消失 -->
+<xh-password-input id="password-input-caps" placeholder="打开大写锁定再敲一个字">
+  <div data-xh-part="root">
+    <label data-xh-part="label">密码</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" style="inline-size: 220px" />
+      <!-- 节点留空：区里的文字由元素写，写的就是 translations.capsLockOn -->
+      <span data-xh-part="caps-lock-indicator"></span>
+      <button data-xh-part="visibility-trigger"></button>
+    </div>
+  </div>
+</xh-password-input>
+
+<script type="module">
+  // 文案是对象，进不了 HTML 属性，只能作为 property 赋
+  document.getElementById("password-input-caps").translations = { capsLockOn: "大写锁定已打开" };
+<\/script>
+`;export{t as default};

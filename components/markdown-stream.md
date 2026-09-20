@@ -2,7 +2,7 @@
 
 # MarkdownStream 流式正文 `alpha`
 
-把已经渲好的 Markdown 块列表投影成带稳定 key 的正文结构，按块的种类分流。
+把已渲染的 Markdown 块列表投影为带稳定 key 的正文结构，按块的种类分流。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/markdown-stream" target="_blank" rel="noreferrer">Headless</a>
@@ -84,7 +84,7 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 
 ### 流式增长
 
-只有生长中的那一块每帧重渲，定型的块 key 不变、节点原地留着，选区与滚动位置才保得住
+只有生长中的块每帧重渲，定型的块 key 不变、节点原地保留，选区与滚动位置才能保持
 
 ```vue
 <script setup lang="ts">
@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
 
 ### 代码块交给代码视图
 
-markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同一段代码出现两次
+markdown 块铺设 html，代码块取 source 交出：按 html 渲染会使同一段代码出现两次
 
 ```vue
 <script setup lang="ts">
@@ -271,7 +271,7 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 
 ### 流式光标
 
-一块都还没来的时候光标就已经在了，caret 设成 false 可以整个关掉
+尚未收到任何块时光标就已存在，caret 设为 false 可以整个关闭
 
 ```vue
 <script setup lang="ts">
@@ -344,7 +344,7 @@ const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }
 
 ### 尺寸
 
-size 换正文字号与块间距，三档共用同一份块列表
+size 改变正文字号与块间距，三档共用同一份块列表
 
 ```vue
 <script setup lang="ts">
@@ -420,44 +420,37 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 
 ### 何时使用
 
-- 展示 AI 回复的正文，且正文是边生成边显示的。
-- 正文里混着代码块与公式，需要各自交给专门的组件渲染。
+- 展示 AI 回复的正文，且正文边生成边显示。
+- 正文中混有代码块与公式，需要分别交给专门的组件渲染。
 
 ### 何时不用
 
-- 正文是一次性拿到的静态文档：直接渲染就好，不必经过流式内核。
-- 只是一段纯文本：用[排印](./typography)。
+- 正文是一次性获取的静态文档时，直接渲染，不经过流式内核。
+- 只是一段纯文本时，使用[排印](./typography)。
 
 ### 特性
 
-- **组件不解析 Markdown，也不持有渲染器。** 块列表由宿主调 `@xihan-ui/markdown` 的
-  `createStreamRenderer().render(全文)` 得到后传进来；渲染器是有状态的，谁持有谁负责。
-- 块的 `key` 是稳定的：生长中的那一块 key 恒定，定型的块 key 不再变化。
-  框架据此复用同一份 DOM 只改文本，用户每收到一个字都被重建节点的话，选区与滚动位置全丢。
-- **`html` 只对 markdown 块有效。** 代码块拿 `source` 交给[代码视图](./code-view)，
-  公式块拿 `source` 交给宿主自选的公式引擎；不接管的降级结果是把原文当正文显示。
-- 流式光标是皮肤的 `::after`，不做成组件。它画在带 `data-caret` 的那一格上：
-  正文在长的时候是生长的那一块，一块都还没来的时候是外壳，所以请求刚发出去、
-  一个字都没到的那一段，页面上也有东西。`caret` 设成 `false` 时两处都不发这个属性。
-- 光标在等第一个字的时候闪，出字之后停在实心：正文自己在动，再闪一下只是噪声。
+- 组件不解析 Markdown，也不持有渲染器。块列表由宿主调用 `@xihan-ui/markdown` 的 `createStreamRenderer().render(全文)` 得到后传入；渲染器有状态，由持有方负责。
+- 块的 `key` 稳定：生长中的块 key 不变，定型的块 key 不再变化。框架据此复用同一份 DOM 只更新文本；每收到一个字就重建节点会丢失选区与滚动位置。
+- `html` 只对 markdown 块有效。代码块取 `source` 交给[代码视图](./code-view)，公式块取 `source` 交给宿主选择的公式引擎；不接管时的降级结果是把原文作为正文显示。
+- 流式光标是皮肤的 `::after`，不做成组件。它绘制在带 `data-caret` 的部件上：正文增长时是生长中的块，尚无任何块时是外壳，因此请求刚发出、尚无内容时页面上也有反馈。`caret` 设为 `false` 时两处都不发该属性。
+- 光标在等待第一个字时闪烁，出字后停为实心：正文本身在变化，继续闪烁只是噪声。
 
 ### 组合
 
-- 代码块交给[代码视图](./code-view)，整段正文放进[消息流](./message-feed)的一条消息里。
-- 逐字吐字的节奏由使用者驱动：`@xihan-ui/chat-stream` 的 `visibleLength` 是纯函数，
-  时间原点与 rAF 循环由持有它的那一方写。
-- 正文里要嵌行内来源角标、脚注这类节点：用 `block` 插槽接管那一块自己渲。
-  组件不往已消毒的 html 里插节点，这条插槽就是留给这类需求的位置。
+- 代码块交给[代码视图](./code-view)，整段正文放入[消息流](./message-feed)的一条消息。
+- 逐字输出的节奏由使用者驱动：`@xihan-ui/chat-stream` 的 `visibleLength` 是纯函数，时间原点与 rAF 循环由持有方编写。
+- 正文中需要嵌入行内来源角标、脚注等节点时，用 `block` 插槽接管该块自行渲染。组件不向已消毒的 html 中插入节点，这个插槽就是为此保留的位置。
 
 ### 最佳实践
 
-- 块列表整份传进来，别在外面切片：稳定 key 靠的就是整份列表的下标与内容。
-- 代码块交出去时把 `complete` 一起带上，代码组件据此决定要不要着色。
+- 块列表整份传入，不在外部切片：稳定 key 依赖整份列表的下标与内容。
+- 交出代码块时一并传递 `complete`，代码组件据此决定是否着色。
 
 ### 反模式
 
-- 每帧新建一个渲染器：缓存作废，长回复到后面会肉眼可见地卡。
-- 把代码块的 `html` 与交给代码组件的那份同时渲出来：同一段代码会出现两次。
+- 每帧新建渲染器：缓存失效，长回复后段会明显卡顿。
+- 同时渲染代码块的 `html` 与交给代码组件的内容：同一段代码会出现两次。
 
 ## API 参考
 
@@ -475,11 +468,11 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `announce` | `'off' \| 'polite' \| 'assertive'` |  | 播报档位，默认 off——会话级播报区在消息流那一层，别在每条回复里各开一个。 |
-| `blocks` | `readonly MarkdownBlock[]` | 是 | 已渲染好的块列表。 |
-| `caret` | `boolean` |  | 画不画流式光标，默认画。设成 false 时 data-caret 一处都不发。 |
+| `announce` | `'off' \| 'polite' \| 'assertive'` |  | 播报档位，默认 off：会话级播报区在消息流层，不在每条回复中各开一个。 |
+| `blocks` | `readonly MarkdownBlock[]` | 是 | 已渲染完成的块列表。 |
+| `caret` | `boolean` |  | 是否绘制流式光标，默认绘制。设为 false 时不发出任何 data-caret。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `streaming` | `boolean` |  | 这一段正文是否仍在增长，只落 data-streaming。 |
+| `streaming` | `boolean` |  | 该段正文是否仍在增长，只写 data-streaming。 |
 | `translations` | `Partial<MarkdownStreamTranslations>` |  |  |
 
 ### 插槽
@@ -507,7 +500,7 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 | --- | --- | --- |
 | `blocks` | `readonly MarkdownBlock[]` |  |
 | `streaming` | `boolean` |  |
-| `announcement` | `string \| undefined` | 播报文本；announce 为 off、或正文还在增长时为 undefined。 |
+| `announcement` | `string \| undefined` | 播报文本；announce 为 off、或正文仍在增长时为 undefined。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getBlockProps` | `(props: { block: MarkdownBlock }) => T['element']` |  |
@@ -533,9 +526,8 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 | `live-region` | `aria-live` | 'assertive' \| 'polite' |
 | `live-region` | `role` | 'alert' \| 'status' |
 
-- 正文不套 role，也不做成活区——每来一个 token 播报一次会把读屏刷爆。
-- 要在一段回复写完时播报一句，把 `announce` 设成 `polite` 并渲出播报区。
-  一个会话里只该有一个活区，多开会互相打断。
+- 正文不加 role，也不做成活动区域：每个 token 播报一次会淹没读屏。
+- 需要在一段回复完成时播报一句，把 `announce` 设为 `polite` 并渲染播报区。一个会话中只应有一个活动区域，多个会互相打断。
 
 ## 样式参考
 
@@ -561,9 +553,9 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-markdown-stream-caret-bg` | `block`<br>`root` | `background` | `caret` | `--xh-fg-default` | markdown-stream 的 block、root 部件 background 覆盖槽。 |
 | `--xh-markdown-stream-caret-duration` | `root` | `animation` | `caret` | `--xh-caret-duration` | markdown-stream 的 root 部件 animation 覆盖槽。 |

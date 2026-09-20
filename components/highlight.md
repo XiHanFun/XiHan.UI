@@ -2,7 +2,7 @@
 
 # Highlight 文本高亮 `alpha`
 
-把一段文本里命中关键词的片段标出来。
+标出一段文本中命中关键词的片段。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/highlight" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-命中关键词的片段渲染成 `&lt;mark>`，其余是纯文本；整段文本原样拼得回来
+命中关键词的片段渲染为 `&lt;mark>`，其余是纯文本；整段文本可原样拼接还原
 
 ```vue
 <script setup lang="ts">
@@ -48,7 +48,7 @@ const text = "曦寒 UI 是一套框架无关的设计系统运行时，组件�
 
 ### 一组关键词
 
-传数组即可；同一处多个关键词都命中时取最长的那个，重叠只切出一段
+传入数组即可；同一位置多个关键词都命中时取最长的一个，重叠只切出一段
 
 ```vue
 <script setup lang="ts">
@@ -99,7 +99,7 @@ const overlapping = ["设计", "设计系统"];
 
 ### 区分大小写
 
-缺省不区分，开了 case-sensitive 就按写法比
+默认不区分，开启 case-sensitive 后按写法比较
 
 ```vue
 <script setup lang="ts">
@@ -132,9 +132,9 @@ const text = "XiHan UI 与 xihan ui 是同一个名字的两种写法。";
 </div>
 ```
 
-### 跟着输入高亮
+### 跟随输入高亮
 
-关键词逐字符比对、不拼进正则，敲进 . * ( 这些字符也只当普通字符找
+关键词逐字符比对、不拼入正则，输入 . * ( 等字符也只作为普通字符查找
 
 ```vue
 <script setup lang="ts">
@@ -192,7 +192,7 @@ const rows = [
 
 ### 颜色
 
-tone 决定命中片段用哪族颜色，没命中的文本不受影响
+tone 决定命中片段使用哪族颜色，未命中的文本不受影响
 
 ```vue
 <script setup lang="ts">
@@ -270,32 +270,32 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 ### 何时使用
 
-- 搜索结果、候选列表里标出为什么这一条被选出来。
+- 在搜索结果、候选列表中标出命中原因。
 
 ### 何时不用
 
-- 需要富文本或代码着色：用[代码视图](./code-view)。
-- 想强调一段固定的话：直接写[排印](./typography)的 `strong`。
+- 需要富文本或代码着色时，使用[代码视图](./code-view)。
+- 强调一段固定内容时，使用[排印](./typography)的 `strong`。
 
 ### 特性
 
-- `text` 收单个词或一组词。
+- `text` 接受单个词或一组词。
 - `caseSensitive` 决定是否区分大小写。
 - 命中片段落在 `mark` 部件上，样式归皮肤。
-- `tone` 换命中片段用哪族颜色，落在 `root` 上——一段里有好几个命中，语气是整段的属性。
+- `tone` 决定命中片段的颜色族，落在 `root` 上：一段内有多个命中，语气是整段的属性。
 
 ### 组合
 
-- 放进[组合框](./combobox)的候选、[表格](./table)的单元格、[列表](./list)的条目标题。
+- 放入[组合框](./combobox)的候选、[表格](./table)的单元格、[列表](./list)的条目标题。
 
 ### 最佳实践
 
-- 高亮只用底色，别同时改字色与字重——一句话里到处是重音就读不下去了。
-- 关键词很短（一两个字符）时考虑不高亮，命中会散得到处都是。
+- 高亮只用底色，不同时改字色与字重，避免一句话中出现过多重音。
+- 关键词很短（一两个字符）时考虑不高亮，命中会过于分散。
 
 ### 反模式
 
-- 用它做正文重点标注：那是内容的事，不是检索反馈。
+- 用它做正文重点标注：那属于内容，不是检索反馈。
 
 ## API 参考
 
@@ -312,10 +312,10 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `caseSensitive` | `boolean` |  | 区分大小写，缺省不区分。 |
-| `keyword` | `string \| readonly string[]` |  | 关键词，一个或一组。空串会被丢掉。 |
-| `text` | `string` |  | 要显示的整段文本。命中位置按这个串逐字符算出来。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定命中片段用哪族颜色。 |
+| `caseSensitive` | `boolean` |  | 区分大小写，默认不区分。 |
+| `keyword` | `string \| readonly string[]` |  | 关键词，一个或一组。空串会被丢弃。 |
+| `text` | `string` |  | 要显示的整段文本。命中位置按该串逐字符计算。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定命中片段使用哪族颜色。 |
 
 ### connect API
 
@@ -323,10 +323,10 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `text` | `string` | 解析后的文本；没给时是空串。 |
-| `segments` | `readonly HighlightSegment[]` | 切好的片段，依次拼回去恒等于 text。 |
+| `text` | `string` | 解析后的文本；未提供时为空串。 |
+| `segments` | `readonly HighlightSegment[]` | 切分后的片段，依次拼接恒等于 text。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getMarkProps` | `() => T['element']` | 铺到每个命中片段上的属性；每段都一样，命中的是哪个关键词不落到 DOM 上。 |
+| `getMarkProps` | `() => T['element']` | 铺到每个命中片段上的属性；每段相同，命中的是哪个关键词不写入 DOM。 |
 
 ## 无障碍
 
@@ -354,9 +354,9 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-highlight-mark-bg` | `mark`<br>`root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-brand-subtle` | highlight 的 mark、root 部件 background 覆盖槽。 |
 | `--xh-highlight-mark-fg` | `mark`<br>`root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-brand-strong` | highlight 的 mark、root 部件 color 覆盖槽。 |

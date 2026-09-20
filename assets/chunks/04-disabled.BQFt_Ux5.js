@@ -1,0 +1,33 @@
+const a=`<!-- 禁用 | 单项禁用后不可点击，方向键也跳过它；整组禁用则每一项都随之禁用 -->
+<xh-radio-group default-value="free">
+  <div data-xh-part="root">
+    <span data-xh-part="label">单项禁用</span>
+    <div data-xh-part="item" value="free">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">免费版</span>
+    </div>
+    <div data-xh-part="item" value="pro" aria-disabled="true">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">专业版</span>
+    </div>
+  </div>
+</xh-radio-group>
+
+<xh-radio-group default-value="free" disabled>
+  <div data-xh-part="root">
+    <span data-xh-part="label">整组禁用</span>
+    <div data-xh-part="item" value="free">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">免费版</span>
+    </div>
+    <div data-xh-part="item" value="pro">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">专业版</span>
+    </div>
+  </div>
+</xh-radio-group>
+`;export{a as default};

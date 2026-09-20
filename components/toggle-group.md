@@ -384,8 +384,8 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 ### 组合
 
-- 每一项就是一枚[切换按钮](./toggle)；放进[工具栏](./toolbar)与其他按钮组成一排。
-- 需要面板关联的换[标签页](./tabs)；样式上更像分段控件的换[分段控制器](./segmented)。
+- 每一项就是一个[切换按钮](./toggle)；放入[工具栏](./toolbar)与其他按钮组成一排。
+- 需要面板关联时使用[标签页](./tabs)；需要分段控件形态时使用[分段控制器](./segmented)。
 
 ### 最佳实践
 
@@ -414,23 +414,23 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ToggleGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `value` | `ToggleGroupValue` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
+| `collection` | `ToggleGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `value` | `ToggleGroupValue` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `ToggleGroupValue` |  |  |
-| `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即挤掉其余。 |
+| `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即替换其余。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
-| `disallowEmpty` | `boolean` |  | 不许把值清空：单选模式下点当前选中项不再取消它，多选模式下摘不掉最后一个。 默认 false（可以点成无选中）。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 |
+| `disallowEmpty` | `boolean` |  | 不允许清空值：单选模式下点击当前选中项不再取消它，多选模式下不可移除最后一个。 默认 false（可以点击为无选中）。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
 | `separators` | `boolean` |  | 是否自动在相邻条目之间插入分隔线，默认 true。 |
-| `name` | `string` |  | 表单字段名。给定后隐藏输入才带 name 并参与提交。 |
+| `name` | `string` |  | 表单字段名。提供后隐藏输入才带 name 并参与提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
-| `rovingFocus` | `boolean` |  | roving tabindex，默认开启：整组只占一个 Tab 位，组内靠方向键走。 关掉后每个条目自成一个 Tab 停靠点，方向键不再接管。 |
-| `onValueChange` | `(details: ToggleGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
+| `rovingFocus` | `boolean` |  | roving tabindex，默认开启：整组只占一个 Tab 位，组内依靠方向键移动。 关闭后每个条目自成一个 Tab 停靠点，方向键不再接管。 |
+| `onValueChange` | `(details: ToggleGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -438,7 +438,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态跟着 multiple 走） |
+| `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态随 multiple 决定） |
 
 ### 状态
 
@@ -452,7 +452,9 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -461,17 +463,17 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 当前选中集合，恒为数组（单选时长度 ≤ 1）。 |
-| `collection` | `readonly ToggleGroupNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly ToggleGroupNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `orientation` | `Orientation` |  |
 | `separators` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
-| `setValue` | `(next: ToggleGroupValue) => void` | 传单值 / 数组 / null 皆可，内部按 multiple 归一。 |
+| `setValue` | `(next: ToggleGroupValue) => void` | 传单值 / 数组 / null 均可，内部按 multiple 归一。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: ToggleGroupItemProps) => T['button']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的就是当前选中值。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的即当前选中值。 |
 
 ## 无障碍
 
@@ -487,6 +489,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | `Home` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到首个可停留条目 |
 | `End` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到末个可停留条目 |
 | `Enter` / `Space` | focus on item, 条目未禁用 | 切换该条目；条目是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held on item, 条目未禁用且组未禁用 | 按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，按住途中整组转入禁用也撤下。开关态与按压互相独立，切换照旧由平台把这一次按键翻成 click |
 
 ### ARIA
 
@@ -522,38 +525,44 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'on' \| 'off' |
+| `item` | `data-xh-action-control` | '' |
+| `item` | `data-xh-action-display` | 'always' |
+| `item` | `data-xh-action-profile` | 'text' |
+| `item` | `data-xh-action-size` | props.size |
+| `item` | `data-xh-action-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toggle-group-item-bg` | `item` | `background` | `default` | `--xh-_toggle-group-item-bg` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-bg-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-_toggle-group-item-bg-active` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-bg-disabled` | `item` | `background` | `disabled` | `--xh-bg-muted` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-bg-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_toggle-group-item-bg-hover` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-bg-on` | `item` | `background` | `state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-bg-on-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`state=on` | `--xh-_toggle-group-item-bg-on-active` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-bg-on-disabled` | `item` | `background` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-bg-on-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=on` | `--xh-_toggle-group-item-bg-on-hover` | toggle-group 的 item 部件 background 覆盖槽。 |
-| `--xh-toggle-group-item-border` | `item` | `border` | `default` | `--xh-_toggle-group-item-border` | toggle-group 的 item 部件 border 覆盖槽。 |
-| `--xh-toggle-group-item-border-disabled` | `item` | `border` | `disabled` | `--xh-border-subtle` | toggle-group 的 item 部件 border 覆盖槽。 |
-| `--xh-toggle-group-item-border-on` | `item` | `border` | `state=on` | `--xh-_toggle-group-item-border-on` | toggle-group 的 item 部件 border 覆盖槽。 |
-| `--xh-toggle-group-item-border-on-disabled` | `item` | `border` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-border-on` | toggle-group 的 item 部件 border 覆盖槽。 |
-| `--xh-toggle-group-item-fg` | `item` | `color` | `default` | `--xh-_toggle-group-item-fg` | toggle-group 的 item 部件 color 覆盖槽。 |
+| `--xh-toggle-group-item-bg` | `item` | `background-color` | `default`<br>`focus-visible` | `--xh-_toggle-group-item-bg` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_toggle-group-item-bg-active` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-disabled` | `item` | `background-color` | `disabled` | `--xh-bg-muted` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_toggle-group-item-bg-hover` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on` | `item` | `background-color` | `focus-visible`<br>`state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-bg-on-active` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on-disabled` | `item` | `background-color` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_toggle-group-item-bg-on-hover` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-border` | `item` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_toggle-group-item-border` | toggle-group 的 item 部件 border、border-color 覆盖槽。 |
+| `--xh-toggle-group-item-border-disabled` | `item` | `border-color` | `disabled` | `--xh-border-subtle` | toggle-group 的 item 部件 border-color 覆盖槽。 |
+| `--xh-toggle-group-item-border-on` | `item` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-border-on` | toggle-group 的 item 部件 border、border-color 覆盖槽。 |
+| `--xh-toggle-group-item-border-on-disabled` | `item` | `border-color` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-border-on` | toggle-group 的 item 部件 border-color 覆盖槽。 |
+| `--xh-toggle-group-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_toggle-group-item-fg` | toggle-group 的 item 部件 color 覆盖槽。 |
 | `--xh-toggle-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | toggle-group 的 item 部件 color 覆盖槽。 |
-| `--xh-toggle-group-item-fg-on` | `item` | `color` | `state=on` | `--xh-_toggle-group-item-fg-on` | toggle-group 的 item 部件 color 覆盖槽。 |
+| `--xh-toggle-group-item-fg-on` | `item` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-fg-on` | toggle-group 的 item 部件 color 覆盖槽。 |
 | `--xh-toggle-group-item-fg-on-disabled` | `item` | `color` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-fg-on` | toggle-group 的 item 部件 color 覆盖槽。 |
 | `--xh-toggle-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_toggle-group-font-size` | toggle-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toggle-group-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toggle-group 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toggle-group-item-gap` | `item` | `gap` | `default` | `--xh-_toggle-group-gap` | toggle-group 的 item 部件 gap 覆盖槽。 |
 | `--xh-toggle-group-item-h` | `item` | `block-size` | `default` | `--xh-_toggle-group-h` | toggle-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-toggle-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_toggle-group-px` | toggle-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-pill` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `state=on` | `--xh-_toggle-group-highlight` | toggle-group 的 item 部件 box-shadow 覆盖槽。 |
+| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-control` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-highlight-on` | toggle-group 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-toggle-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` | toggle-group 的 root 部件 border 覆盖槽。 |
 | `--xh-toggle-group-separator-color` | `root` | `background` | `xh-toggle-group-separator` | `--xh-fg-default` | toggle-group 的 root 部件 background 覆盖槽。 |
 | `--xh-toggle-group-separator-color-disabled` | `root` | `background` | `disabled`<br>`xh-toggle-group-separator` | `--xh-border-subtle` | toggle-group 的 root 部件 background 覆盖槽。 |
@@ -566,13 +575,9 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

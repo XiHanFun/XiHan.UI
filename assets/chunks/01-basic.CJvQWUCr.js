@@ -1,0 +1,27 @@
+const a=`<!-- 基础用法 | 取色面选择饱和度与明度，下方一条色相滑块；滑块是内嵌的颜色滑块组件，Vue / React 的挂载点不写子节点即自动铺开 -->
+<!-- 自定义元素不替作者建节点：挂载点里写的是 color-slider 自己的 control / track / thumb -->
+<xh-color-picker default-value="#00a98e">
+  <div data-xh-part="root">
+    <label data-xh-part="label">品牌色</label>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="saturation-area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="hue-slider">
+          <div data-xh-part="control">
+            <div data-xh-part="track"></div>
+            <div data-xh-part="thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+`;export{a as default};

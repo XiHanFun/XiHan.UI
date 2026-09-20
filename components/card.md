@@ -2,7 +2,7 @@
 
 # Card 卡片
 
-一块用于组织相关内容与操作的中性表面。
+用于组织相关内容与操作的中性表面。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/card" target="_blank" rel="noreferrer">Headless</a>
@@ -52,15 +52,15 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 
 ## 示例
 
-### 层级
+### 变体
 
-default、secondary、tertiary 逐级增强表面，transparent 用于嵌套内容
+outline 为默认卡面，subtle 淡底嵌入，ghost 用于嵌套
 
 ```vue
 <script setup lang="ts">
 import { XhCardContent, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 
-const variants = ["default", "secondary", "tertiary", "transparent"] as const;
+const variants = ["outline", "subtle", "ghost"] as const;
 </script>
 
 <template>
@@ -77,37 +77,28 @@ const variants = ["default", "secondary", "tertiary", "transparent"] as const;
 
 ```html
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
-  <xh-card variant="default">
+  <xh-card variant="outline">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">default</div>
+        <div data-xh-part="title">outline</div>
       </div>
       <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 
-  <xh-card variant="secondary">
+  <xh-card variant="subtle">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">secondary</div>
+        <div data-xh-part="title">subtle</div>
       </div>
       <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 
-  <xh-card variant="tertiary">
+  <xh-card variant="ghost">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">tertiary</div>
-      </div>
-      <div data-xh-part="content">一段用来看表面层级的正文。</div>
-    </div>
-  </xh-card>
-
-  <xh-card variant="transparent">
-    <div data-xh-part="root" style="inline-size: 200px">
-      <div data-xh-part="header">
-        <div data-xh-part="title">transparent</div>
+        <div data-xh-part="title">ghost</div>
       </div>
       <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
@@ -176,7 +167,7 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 </script>
 
 <template>
-  <XhCardRoot variant="secondary" style="max-inline-size: 300px">
+  <XhCardRoot variant="subtle" style="max-inline-size: 300px">
     <div
       aria-hidden="true"
       style="block-size: 120px; border-radius: var(--xh-shape-surface); background: linear-gradient(135deg, var(--xh-bg-brand), var(--xh-bg-surface))"
@@ -191,7 +182,7 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 ```
 
 ```html
-<xh-card variant="secondary">
+<xh-card variant="subtle">
   <div data-xh-part="root" style="max-inline-size: 300px">
     <div
       aria-hidden="true"
@@ -215,14 +206,14 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 
 ### 何时不用
 
-- 页面上每一块都套卡片：边界失效，只剩噪音。
-- 只是要一条分隔：用[分隔线](./separator)。
+- 页面上每一块都使用卡片会使边界失效。
+- 只需要一条分隔时，使用[分隔线](./separator)。
 
 ### 特性
 
 - root 必需；header、title、description、content、footer 按内容组合。
-- `default`、`secondary`、`tertiary` 表达逐级增强的表面层级，`transparent` 用于嵌套内容。
-- 根统一提供 16px 内边距、12px 段间距和高层圆角；横向布局与媒体比例由使用场景决定。
+- `outline` 是默认卡面，`subtle` 用淡底嵌在别的面里，`ghost` 用于嵌套内容不再画面。
+- 根统一提供 16px 内边距、12px 段间距和 surface 圆角；横向布局与媒体比例由使用场景决定。
 
 ### 组合
 
@@ -230,13 +221,13 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 
 ### 最佳实践
 
-- 整卡可点时要有明显的悬停与聚焦反馈，并让整卡进 Tab 序列。
+- 整卡可点时提供明显的悬停与聚焦反馈，并让整卡进入 Tab 序列。
 - 同组卡片保持相同宽度和内容节奏。
 
 ### 反模式
 
-- 卡片套卡片：两层边界互相削弱。
-- 整卡可点的同时卡内还有别的按钮：点哪里会发生什么不可预期。
+- 卡片嵌套卡片，两层边界互相削弱。
+- 整卡可点的同时卡内还有其他按钮，点击结果不可预期。
 
 ## API 参考
 
@@ -253,7 +244,7 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `CardVariant` |  | 语义层级：default / secondary / tertiary / transparent，默认 default。 |
+| `variant` | `ControlVariant` |  | 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 |
 
 ### connect API
 
@@ -287,27 +278,27 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-card-bg` | `root` | `background` | `default`<br>`variant=secondary`<br>`variant=tertiary` | `--xh-bg-subtle`<br>`--xh-bg-subtle-hover`<br>`--xh-bg-surface` | card 的 root 部件 background 覆盖槽。 |
-| `--xh-card-border` | `root` | `border` | `default` | `transparent` | card 的 root 部件 border 覆盖槽。 |
+| `--xh-card-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | card 的 root 部件 background 覆盖槽。 |
+| `--xh-card-border` | `root` | `border` | `default` | `--xh-border-default` | card 的 root 部件 border 覆盖槽。 |
 | `--xh-card-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | card 的 content 部件 gap 覆盖槽。 |
 | `--xh-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | card 的 description 部件 color 覆盖槽。 |
-| `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-label-size` | card 的 description 部件 font-size 覆盖槽。 |
-| `--xh-card-description-leading` | `description` | `line-height` | `default` | `--xh-text-body-leading` | card 的 description 部件 line-height 覆盖槽。 |
+| `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | card 的 description 部件 font-size 覆盖槽。 |
+| `--xh-card-description-leading` | `description` | `line-height` | `default` | `--xh-leading-normal` | card 的 description 部件 line-height 覆盖槽。 |
 | `--xh-card-fg` | `root` | `color` | `default` | `--xh-fg-default` | card 的 root 部件 color 覆盖槽。 |
 | `--xh-card-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | card 的 root 部件 font-size 覆盖槽。 |
 | `--xh-card-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | card 的 footer 部件 gap 覆盖槽。 |
 | `--xh-card-gap` | `root` | `gap` | `default` | `--xh-space-3` | card 的 root 部件 gap 覆盖槽。 |
 | `--xh-card-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | card 的 root 部件 line-height 覆盖槽。 |
-| `--xh-card-p` | `root` | `padding` | `default` | `--xh-space-4` | card 的 root 部件 padding 覆盖槽。 |
-| `--xh-card-radius` | `root` | `border-radius` | `default` | `--xh-shape-overlay` | card 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=transparent` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-p` | `root` | `padding` | `default` | `--xh-surface-pad-lg` | card 的 root 部件 padding 覆盖槽。 |
+| `--xh-card-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | card 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=ghost`<br>`variant=subtle` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | card 的 title 部件 color 覆盖槽。 |
 | `--xh-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | card 的 title 部件 font-size 覆盖槽。 |
-| `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | card 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | card 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-card-title-leading` | `title` | `line-height` | `default` | `--xh-leading-relaxed` | card 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

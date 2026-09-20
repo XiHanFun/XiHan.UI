@@ -1,1 +1,0 @@
-import{aQ as o}from"./theme.C4bpqV2W.js";import{d as l,b as a,k as n,o as i}from"./framework.DkvuVDKz.js";const p=l({__name:"combobox",setup(t){const e=[{value:"beijing",label:"Beijing 北京"},{value:"berlin",label:"Berlin 柏林"}];return(r,c)=>(i(),a(n(o),{collection:e,"default-value":["beijing"],label:"城市",placeholder:"搜索城市",style:{"inline-size":"220px"}}))}});export{p as default};

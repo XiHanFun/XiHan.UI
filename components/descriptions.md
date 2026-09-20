@@ -14,7 +14,7 @@
 
 ## 用法
 
-标签与取值的配对靠 dl / dt / dd 表达，组件只给身份与排版；不传 columns 即每行一组
+标签与取值的配对依靠 dl / dt / dd 表达，组件只提供身份与排版；不传 columns 即每行一组
 
 ```vue
 <script setup lang="ts">
@@ -71,7 +71,7 @@ const order = [
 
 ### 列数
 
-columns 决定每行摆几组，一到六列；排版走 CSS Grid，不用表格
+columns 决定每行排几组，一到六列；排版使用 CSS Grid，不使用表格
 
 ```vue
 <script setup lang="ts">
@@ -211,7 +211,7 @@ const placements = [
 
 ### 外框
 
-bordered 画一圈描边，并在格与格之间补上网格线
+variant="outline" 绘制一圈描边，并在格与格之间补上网格线
 
 ```vue
 <script setup lang="ts">
@@ -231,7 +231,7 @@ const rows = [
 </script>
 
 <template>
-  <XhDescriptionsRoot bordered :columns="2" placement="left">
+  <XhDescriptionsRoot variant="outline" :columns="2" placement="left">
     <XhDescriptionsItem v-for="row in rows" :key="row.label">
       <XhDescriptionsLabel>{{ row.label }}</XhDescriptionsLabel>
       <XhDescriptionsValue>{{ row.value }}</XhDescriptionsValue>
@@ -241,7 +241,7 @@ const rows = [
 ```
 
 ```html
-<xh-descriptions bordered columns="2" placement="left">
+<xh-descriptions variant="outline" columns="2" placement="left">
   <dl data-xh-part="root">
     <div data-xh-part="item">
       <dt data-xh-part="label">商品</dt>
@@ -265,7 +265,7 @@ const rows = [
 
 ### 尺寸
 
-size 换的是每格的内边距、组与组的间距与整体字号，不传 size 即默认档
+size 改变每格的内边距、组与组的间距与整体字号，不传 size 即默认档
 
 ```vue
 <script setup lang="ts">
@@ -295,7 +295,7 @@ const sizes = [
       v-for="s in sizes"
       :key="s.label"
       :size="s.size"
-      bordered
+      variant="outline"
       :columns="2"
       placement="left"
     >
@@ -310,7 +310,7 @@ const sizes = [
 
 ```html
 <div style="display: flex; flex-direction: column; gap: 16px">
-  <xh-descriptions size="sm" bordered columns="2" placement="left">
+  <xh-descriptions size="sm" variant="outline" columns="2" placement="left">
     <dl data-xh-part="root">
       <div data-xh-part="item">
         <dt data-xh-part="label">小 · 状态</dt>
@@ -324,7 +324,7 @@ const sizes = [
   </xh-descriptions>
 
   <!-- 中间这一档不写 size -->
-  <xh-descriptions bordered columns="2" placement="left">
+  <xh-descriptions variant="outline" columns="2" placement="left">
     <dl data-xh-part="root">
       <div data-xh-part="item">
         <dt data-xh-part="label">默认 · 状态</dt>
@@ -337,7 +337,7 @@ const sizes = [
     </dl>
   </xh-descriptions>
 
-  <xh-descriptions size="lg" bordered columns="2" placement="left">
+  <xh-descriptions size="lg" variant="outline" columns="2" placement="left">
     <dl data-xh-part="root">
       <div data-xh-part="item">
         <dt data-xh-part="label">大 · 状态</dt>
@@ -367,7 +367,7 @@ import {
 </script>
 
 <template>
-  <XhDescriptionsRoot :columns="3" bordered style="max-inline-size: 720px">
+  <XhDescriptionsRoot :columns="3" variant="outline" style="max-inline-size: 720px">
     <XhDescriptionsItem>
       <XhDescriptionsLabel>订单号</XhDescriptionsLabel>
       <XhDescriptionsValue>XH-20260810-0042</XhDescriptionsValue>
@@ -400,7 +400,7 @@ import {
 ```
 
 ```html
-<xh-descriptions columns="3" bordered>
+<xh-descriptions columns="3" variant="outline">
   <dl data-xh-part="root" style="max-inline-size: 720px">
     <div data-xh-part="item">
       <dt data-xh-part="label">订单号</dt>
@@ -441,30 +441,30 @@ import {
 
 ### 何时不用
 
-- 数据是多行同构的记录：用[表格](./table)。
-- 只有一两对：直接写。
+- 数据是多行同构的记录时，使用[表格](./table)。
+- 只有一两对时，直接书写。
 
 ### 特性
 
-- 语义是 `dt` / `dd`，组件只给身份与排版。
-- `columns` 决定每行几组，不传即每行一组。
-- 标签位置可以在值的上方或左侧；`bordered` 给出外框。
-- 每一格可以写 `span` 横跨几列，上限是当前列数；窄档一行只摆一组时不认这个数。
+- 语义是 `dt` / `dd`，组件只提供身份与排版。
+- `columns` 决定每行几组，不传时每行一组。
+- 标签位置可以在值的上方或左侧；`variant="outline"` 提供外框与网格线。
+- 每一格可以通过 `span` 横跨多列，上限是当前列数；窄档一行只放一组时忽略该值。
 
 ### 组合
 
-- 放进[卡片](./card)或[页头](./page-header)的页脚。
+- 放入[卡片](./card)或[页头](./page-header)的页脚。
 
 ### 最佳实践
 
-- 值为空时写"—"，别留空白——用户分不清是没有还是没加载出来。
-- 标签左置时给它们统一宽度，值才对得齐。
-- 长文本字段写 `span` 占满整行，别为它另开一份描述列表。
+- 值为空时写“—”，不留空白，避免用户无法区分没有值与未加载。
+- 标签左置时给它们统一宽度，值才能对齐。
+- 长文本字段用 `span` 占满整行，不为它另开一份描述列表。
 
 ### 反模式
 
-- 用它排版一张表格。
-- 标签写得比值还长。
+- 用它排版表格。
+- 标签比值更长。
 
 ## API 参考
 
@@ -481,10 +481,10 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 外框：给整份描述画一圈描边，并在格与格之间画网格线。 |
-| `columns` | `DescriptionsColumns` |  | 每行摆几组，一到六列；不写即每行一组。 |
-| `placement` | `DescriptionsPlacement` |  | 标签的位置：top / left；不写即标签在上。 |
+| `columns` | `DescriptionsColumns` |  | 每行放置几组，一到六列；未提供时每行一组。 |
+| `placement` | `DescriptionsPlacement` |  | 标签的位置：top / left；未提供时标签在上。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `variant` | `ControlVariant` |  | 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 |
 
 ### connect API
 
@@ -514,24 +514,24 @@ import {
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-descriptions-bg` | `root` | `background` | `bordered` | `--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
-| `--xh-descriptions-border` | `root` | `border` | `bordered` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
-| `--xh-descriptions-divider` | `item`<br>`root` | `border-block-start`<br>`border-inline-start` | `bordered` | `--xh-border-subtle` | descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-descriptions-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
+| `--xh-descriptions-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
+| `--xh-descriptions-divider` | `item`<br>`root` | `border-block-start`<br>`border-inline-start` | `variant=outline` | `--xh-border-subtle` | descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-descriptions-fg` | `root` | `color` | `default` | `--xh-fg-default` | descriptions 的 root 部件 color 覆盖槽。 |
 | `--xh-descriptions-font-size` | `root` | `font-size` | `default` | `--xh-_descriptions-font-size` | descriptions 的 root 部件 font-size 覆盖槽。 |
 | `--xh-descriptions-gap` | `root` | `gap` | `default` | `--xh-_descriptions-gap` | descriptions 的 root 部件 gap 覆盖槽。 |
-| `--xh-descriptions-item-px` | `item`<br>`root` | `padding-inline` | `bordered` | `--xh-_descriptions-px` | descriptions 的 item、root 部件 padding-inline 覆盖槽。 |
-| `--xh-descriptions-item-py` | `item`<br>`root` | `padding-block` | `bordered` | `--xh-_descriptions-py` | descriptions 的 item、root 部件 padding-block 覆盖槽。 |
+| `--xh-descriptions-item-px` | `item`<br>`root` | `padding-inline` | `variant=outline` | `--xh-_descriptions-px` | descriptions 的 item、root 部件 padding-inline 覆盖槽。 |
+| `--xh-descriptions-item-py` | `item`<br>`root` | `padding-block` | `variant=outline` | `--xh-_descriptions-py` | descriptions 的 item、root 部件 padding-block 覆盖槽。 |
 | `--xh-descriptions-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | descriptions 的 label 部件 color 覆盖槽。 |
 | `--xh-descriptions-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | descriptions 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-descriptions-label-gap` | `item`<br>`root` | `column-gap` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-gap` | descriptions 的 item、root 部件 column-gap 覆盖槽。 |
 | `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-descriptions-pair-gap` | `item` | `gap` | `default` | `--xh-_descriptions-pair-gap` | descriptions 的 item 部件 gap 覆盖槽。 |
-| `--xh-descriptions-radius` | `root` | `border-radius` | `bordered` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-descriptions-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-descriptions-value-fg` | `value` | `color` | `default` | `--xh-fg-default` | descriptions 的 value 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

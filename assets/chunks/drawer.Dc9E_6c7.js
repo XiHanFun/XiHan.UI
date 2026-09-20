@@ -1,1 +1,0 @@
-import{bl as t,bm as o}from"./theme.C4bpqV2W.js";import{d as s,b as n,w as a,k as r,o as l,E as d,a as f}from"./framework.DkvuVDKz.js";const c=s({__name:"drawer",setup(m){return(p,e)=>(l(),n(r(o),{translations:{close:"关闭"}},{default:a(()=>[d(r(t),null,{default:a(()=>[...e[0]||(e[0]=[f("打开抽屉",-1)])]),_:1})]),_:1}))}});export{c as default};

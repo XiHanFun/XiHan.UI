@@ -1,0 +1,1 @@
+import{ga as e}from"./theme.CgoFSkOP.js";import{d as o,b as r,k as a,o as t}from"./framework.DxrHb2fb.js";const _=o({__name:"timer",setup(n){return(s,m)=>(t(),r(a(e),{value:754e3}))}});export{_ as default};

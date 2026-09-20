@@ -1,0 +1,29 @@
+const a=`<!-- 上限与溢出计数 | 放置到上限为止，其余收为一个「+N」；截到几个、N 写多少由作者决定，组件只提供该项的身份与位置 -->
+<xh-avatar-group max="4">
+  <div data-xh-part="root">
+    <xh-avatar>
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">曦</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">寒</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">懿</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">承</span>
+      </span>
+    </xh-avatar>
+
+    <!-- 计数那一枚没有图，写什么都行 -->
+    <span data-xh-part="overflow-item">+2</span>
+  </div>
+</xh-avatar-group>
+`;export{a as default};

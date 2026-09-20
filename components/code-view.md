@@ -14,7 +14,7 @@
 
 ## 用法
 
-代码原文由宿主给，组件切出逐行结构并铺记号；渲了文件名它就成为代码块的可访问名
+代码原文由宿主提供，组件切出逐行结构并铺设记号；渲染文件名后它即成为代码块的可访问名
 
 ```vue
 <script setup lang="ts">
@@ -110,7 +110,7 @@ const sample = `export function createTicker(intervalTime: number) {
 
 ### 行号与高亮行
 
-行号由皮肤画上去，复制代码不会带上它；高亮行按行号写，与 startLine 对齐
+行号由皮肤绘制，复制代码不会带上它；高亮行按行号写，与 startLine 对齐
 
 ```vue
 <script setup lang="ts">
@@ -174,7 +174,7 @@ const sample = `function resolve(input: string) {
 
 ### 折叠超长代码
 
-clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让「全部展开」这类操作统一持有
+clamped 是纯受控的：组件只发意图，是否落实由宿主决定，便于全部展开这类操作统一持有
 
 ```vue
 <script setup lang="ts">
@@ -287,7 +287,7 @@ const step24 = pipeline.at(23)</code></pre>
 
 ### 流式追加
 
-代码还在写的时候默认不着色：半截代码的词法本来就不稳，每来一个字符整块变色比不着色更糟
+代码仍在写入时默认不着色：不完整代码的词法本就不稳定，每来一个字符整块变色比不着色更差
 
 ```vue
 <script setup lang="ts">
@@ -366,7 +366,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 ### 头部内建复制
 
-复制交给剪贴板：把它放进头部条，用几个槽把描边按钮压成安静形态，1500 毫秒后自己回落
+复制交给剪贴板：把它放进头部条，用几个槽把描边按钮压为安静形态，1500 毫秒后自动回落
 
 ```vue
 <script setup lang="ts">
@@ -497,7 +497,7 @@ const sample = `export function createStore(reduce: Reducer, initial: State) {
 
 ### 着色端口
 
-着色是可换的端口：认不出的语言退回纯文本，接自己的实现组件侧一行不用改，传 null 则整个关掉
+着色是可替换的端口：无法识别的语言退回纯文本，接入自己的实现时组件侧无需修改，传 null 则整个关闭
 
 ```vue
 <script setup lang="ts">
@@ -645,7 +645,7 @@ env:
 
 ### 流式期间也着色
 
-未闭合默认不着色；真要看着色就打开 highlight-while-streaming，同一段半截代码的两种呈现摆在一起
+未闭合默认不着色；确需着色时开启 highlight-while-streaming，同一段不完整代码的两种呈现并排对照
 
 ```vue
 <script setup lang="ts">
@@ -730,7 +730,7 @@ const partial = `const stream = await client.chat({
 
 ### 尺寸
 
-size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
+size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变化
 
 ```vue
 <script setup lang="ts">
@@ -837,48 +837,40 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 
 ### 何时使用
 
-- AI 回复、文档、评审意见里展示一段代码，需要行号或要点出某几行。
-- 代码是流式生成的，需要边来边渲，闭合之后再着色。
-- 一段代码很长，默认只想露出前若干行。
+- 在 AI 回复、文档、评审意见中展示代码，需要行号或需要指出某几行。
+- 代码是流式生成的，需要边接收边渲染，闭合之后再着色。
+- 代码较长，默认只显示前若干行。
 
 ### 何时不用
 
-- 只是一小段行内标识：用[排印](./typography)的 `code` 形态。
-- 展示的是运行日志：用[日志](./log)。
-- 要展示改动前后：用[差异视图](./diff-view)。
+- 只是一小段行内标识时，使用[排印](./typography)的 `code` 形态。
+- 展示运行日志时，使用[日志](./log)。
+- 展示改动前后时，使用[差异视图](./diff-view)。
 
 ### 特性
 
-- 逐行切分在连接层完成。一个记号可以横跨多行（未闭合的字符串与块注释就是这样），
-  所以行号与高亮行不是皮肤能反推出来的东西。
-- `complete` 标出这段代码是否已经写完。未闭合时默认不着色——半截代码的词法本来就不稳，
-  每来一个字符整块变一次色比不着色更糟。
-- `highlighter` 是一个着色端口，接哪个着色器由宿主决定；它返回 `null` 是合法结果，退回纯文本。
-  适配器默认接 `@xihan-ui/code-highlight`，那是可选 peer：装了它自动着色，没装就一路纯文本。
-  适配器显式传 `null` 时不会请求默认模块；只有明确的模块缺席会回到纯文本，已安装模块的加载或初始化异常照常抛出。
-- 行号由皮肤用 `attr()` 画出来，因此**复制代码不会带上行号**，读屏也不会逐行念数字。
-- `clamped` 是纯受控的：折叠态通常由外部「全部展开 / 全部折叠」统一持有，内建一份只会跟它打架。
+- 逐行切分在连接层完成。一个记号可以横跨多行（未闭合的字符串与块注释），因此行号与高亮行不能由皮肤反推。
+- `complete` 标记这段代码是否已经写完。未闭合时默认不着色：半截代码的词法不稳定，逐字符变色比不着色更差。
+- `highlighter` 是着色端口，由宿主决定接入哪个着色器；返回 `null` 是合法结果，回到纯文本。适配器默认接 `@xihan-ui/code-highlight`，它是可选 peer：已安装时自动着色，未安装时保持纯文本。适配器显式传 `null` 时不请求默认模块；只有模块缺席才回到纯文本，已安装模块的加载或初始化异常照常抛出。
+- 行号由皮肤用 `attr()` 绘制，复制代码不会带上行号，读屏也不会逐行读出数字。
+- `clamped` 是纯受控的：折叠状态通常由外部“全部展开 / 全部折叠”统一持有，内建状态会与之冲突。
 
 ### 组合
 
-- 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠区域](./collapsible)。
-  把剪贴板三件放进 `header`，再用 `--xh-clipboard-copy-trigger-border: transparent`、
-  `--xh-clipboard-copy-trigger-bg: transparent`、`--xh-clipboard-copy-trigger-h: var(--xh-control-h-sm)`
-  三个槽把按钮压成头部里的安静形态。
-- 内建词法只分注释、字符串、数字、关键字、标点五档。要区分函数名、类型名、属性名这类精度，
-  就自己实现 `highlighter` 端口（同步纯函数，接 Shiki 之类）传进来，皮肤按记号种类上色的那套照旧生效。
-- 放进 AI 回复正文时由[流式正文](./markdown-stream)把代码块交过来。
+- 与[剪贴板](./clipboard)配合提供复制；需要非受控折叠时放入[折叠区域](./collapsible)。把剪贴板的三个部件放进 `header`，再用 `--xh-clipboard-copy-trigger-border: transparent`、`--xh-clipboard-copy-trigger-bg: transparent`、`--xh-clipboard-copy-trigger-h: var(--xh-control-h-sm)` 三个槽把按钮调整为头部内的低强调形态。
+- 内建词法只区分注释、字符串、数字、关键字、标点五档。需要区分函数名、类型名、属性名时，自行实现 `highlighter` 端口（同步纯函数，可接 Shiki 等）传入，皮肤按记号种类上色的规则不变。
+- 放进 AI 回复正文时由[流式正文](./markdown-stream)交付代码块。
 
 ### 最佳实践
 
-- 标出语言：读者与着色器都需要它。
-- 高亮行用来点出「看这里」，不要一次点亮半屏。
-- 折叠阈值取十几行：再少读者每次都要展开，再多就失去了折叠的意义。
+- 标出语言，读者与着色器都需要它。
+- 高亮行用于指出重点，不一次点亮半屏。
+- 折叠阈值取十几行：过少时读者每次都要展开，过多时折叠失去意义。
 
 ### 反模式
 
-- 把代码放进普通段落里：空白与换行会被折叠掉。
-- 用行号当锚点做跳转：它是画上去的，DOM 里选不中。
+- 把代码放进普通段落，空白与换行会被折叠。
+- 用行号作为跳转锚点，它是绘制上去的，DOM 中不可选中。
 
 ## API 参考
 
@@ -889,29 +881,29 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | 自定义元素 | `<xh-code-view>` |
 | Vue 组件 | `XhCodeViewCode` `XhCodeViewFilename` `XhCodeViewFoldTrigger` `XhCodeViewHeader` `XhCodeViewLangLabel` `XhCodeViewPre` `XhCodeViewRoot` |
 | 组合式函数 | `useCodeView` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `codeViewMachine` |
 | 皮肤 | `@xihan-ui/styles/code-view.css` |
 
 ### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `clamp` | `number` |  | 超过这么多行才算可折叠。 |
-| `clamped` | `boolean` |  | 折叠态，纯受控——没有 defaultClamped，要非受控就套 collapsible。 |
 | `code` | `string` | 是 |  |
+| `lang` | `string` |  | 围栏语言标注，空白一律落为 plaintext。 |
+| `filename` | `string` |  | 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 |
+| `labelled` | `boolean` |  | 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。 |
 | `complete` | `boolean` |  | 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 |
-| `filename` | `string` |  | 文件名，渲染在 header 里；渲染出来之后它就是 pre 的可访问名。 |
-| `highlighter` | `HighlighterPort` |  | 着色实现。不给就是纯文本，给了也允许它返回 null（语言不认识之类），同样退回纯文本。 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。 |
-| `highlightLines` | `string \| readonly number[]` |  | 要高亮的行号，写成 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 |
-| `highlightWhileStreaming` | `boolean` |  | 块还没闭合时也着色，默认 false。 默认关是因为半截代码的词法本来就不稳——引号、括号随时会配上， 每来一个 token 整块变一次色，看着比不着色更糟。 |
-| `labelled` | `boolean` |  | 作者渲染了 filename 部件时置真，由适配器统计而不是看 filename 有没有值。 为假时 pre 用 translations.code 兜底——指向一个没渲出来的 id 会让读屏读空。 |
-| `lang` | `string` |  | 围栏语言标注，空白一律落 plaintext。 |
+| `wrap` | `boolean` |  | 长行自动换行，默认关闭（长行横向滚动）。 |
 | `lineNumbers` | `boolean` |  | 渲染行号槽。 |
-| `onClampToggle` | `(details: CodeViewClampToggleDetails) => void` |  | 折叠态翻面的意图回调；clamped 是纯受控的，落不落由宿主决定。 |
+| `startLine` | `number` |  | 首行的行号，默认 1；摘录与 patch 片段需要使用。 |
+| `highlightLines` | `string \| readonly number[]` |  | 要高亮的行号，写为 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 |
+| `clamp` | `number` |  | 超过该行数才视为可折叠。 |
+| `clamped` | `boolean` |  | 折叠态，纯受控：没有 defaultClamped，需要非受控时套用 collapsible。 |
+| `highlighter` | `HighlighterPort` |  | 着色实现。未提供时为纯文本，提供后也允许返回 null（语言未识别等），同样回退为纯文本。 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。 |
+| `highlightWhileStreaming` | `boolean` |  | 块尚未闭合时也着色，默认 false。 默认关闭是因为未闭合代码的词法本身不稳定：引号、括号随时会配对， 每到一个 token 整块变一次色，比不着色更差。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `startLine` | `number` |  | 首行的行号，默认 1；摘录与 patch 片段要用。 |
 | `translations` | `Partial<CodeViewTranslations>` |  |  |
-| `wrap` | `boolean` |  | 长行自动换行，默认关（长行横向滚动）。 |
+| `onClampToggle` | `(details: CodeViewClampToggleDetails) => void` |  | 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 |
 
 ### 事件
 
@@ -919,7 +911,7 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `clamp-toggle` | `CustomEvent` | 折叠态翻面的意图；detail 为 `{ clamped: boolean }` |
+| `clamp-toggle` | `CustomEvent` | 折叠态切换的意图；detail 为 `{ clamped: boolean }` |
 
 ### 插槽
 
@@ -938,6 +930,14 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | --- | --- |
 | `fold-trigger` | 'closed' \| 'open' |
 
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。
@@ -946,12 +946,12 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | --- | --- | --- |
 | `lang` | `string` |  |
 | `lineCount` | `number` |  |
-| `lines` | `readonly CodeLine[]` | 逐行切好的文本与记号片段。 |
+| `lines` | `readonly CodeLine[]` | 逐行切分后的文本与记号片段。 |
 | `lineNumberAt` | `(index: number) => number` | 每行的行号，与 lines 同序。 |
-| `lineNumbers` | `boolean` | 是否渲染行号槽；适配器据此决定要不要建那个节点。 |
-| `foldable` | `boolean` | 折叠可用：给了正数 clamp 且行数确实超过它。 |
+| `lineNumbers` | `boolean` | 是否渲染行号槽；适配器据此决定是否创建该节点。 |
+| `foldable` | `boolean` | 折叠可用：提供了正数 clamp 且行数确实超过它。 |
 | `clamped` | `boolean` |  |
-| `setClamped` | `(next: boolean) => void` | 发一次折叠意图；与当前态相同时不发。 |
+| `setClamped` | `(next: boolean) => void` | 发出一次折叠意图；与当前态相同时不发。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
 | `getFilenameProps` | `() => T['element']` |  |
@@ -974,6 +974,7 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | --- | --- | --- |
 | `Tab` | 代码块在 Tab 序列中 | &lt;pre&gt; 自身可聚焦，随后方向键的横向滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在折叠按钮上 | 翻面折叠态并发出意图；组件只接 click，按键走原生 button 的默认行为 |
+| `Enter` / `Space` | 按住折叠按钮且代码可折叠 | 按住期间 fold-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或折叠条收起撤下 |
 
 ### ARIA
 
@@ -986,11 +987,11 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | `line-number` | `aria-hidden` | 'true' |
 | `fold-trigger` | `aria-controls` | `pre` 部件的 id |
 | `fold-trigger` | `aria-expanded` | 'false' \| 'true' |
-| `fold-trigger` | `aria-label` | props.translations?.expand \| props.translations?.collapse |
+| `fold-trigger` | `aria-label` | translations?.expand \| translations?.collapse |
 
-- `pre` 可聚焦并带可访问名：渲了文件名就指向它，没渲就用 `translations.code` 兜底。
+- `pre` 可聚焦并带可访问名称：渲染了文件名时指向它，否则使用 `translations.code`。
 - 折叠按钮带 `aria-expanded` 与 `aria-controls`，指向 `pre`。
-- 语言角标与行号槽都对读屏隐藏，它们是装饰不是内容。
+- 语言角标与行号槽都对读屏隐藏，它们是装饰而非内容。
 
 ## 样式参考
 
@@ -1008,36 +1009,48 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | `root` | `data-complete` | ''（条件成立时才出现） |
 | `root` | `data-digits` | String(Math.min( String(lineNumberAt(lineCount - 1)).… |
 | `root` | `data-foldable` | ''（条件成立时才出现） |
-| `root` | `data-lang` | props.lang?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
+| `root` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `root` | `data-line-numbers` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `pre` | `data-complete` | ''（条件成立时才出现） |
 | `pre` | `data-wrap` | ''（条件成立时才出现） |
-| `code` | `data-lang` | props.lang?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
+| `code` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `code` | `data-wrap` | ''（条件成立时才出现） |
+| `line` | `data-highlighted` | ''（条件成立时才出现） |
+| `line` | `data-line-number` | String(lineNumberAt(index)) |
+| `line-number` | `data-highlighted` | ''（条件成立时才出现） |
+| `line-number` | `data-line-number` | String(lineNumberAt(index)) |
+| `line-content` | `data-highlighted` | ''（条件成立时才出现） |
+| `line-content` | `data-line-number` | String(lineNumberAt(index)) |
 | `token` | `data-kind` | token.kind |
+| `fold-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `fold-trigger` | `data-state` | 'closed' \| 'open' |
+| `fold-trigger` | `data-xh-action-control` | '' |
+| `fold-trigger` | `data-xh-action-display` | 'always' |
+| `fold-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
+| `fold-trigger` | `data-xh-action-size` | props.size |
+| `fold-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-code-view-bg` | `root` | `background` | `default` | `--xh-bg-surface` | code-view 的 root 部件 background 覆盖槽。 |
 | `--xh-code-view-border` | `root` | `border` | `default` | `--xh-border-default` | code-view 的 root 部件 border 覆盖槽。 |
 | `--xh-code-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | code-view 的 token 部件 color 覆盖槽。 |
 | `--xh-code-view-fg` | `root` | `color` | `default` | `--xh-fg-muted` | code-view 的 root 部件 color 覆盖槽。 |
 | `--xh-code-view-filename-fg` | `filename` | `color` | `default` | `--xh-fg-default` | code-view 的 filename 部件 color 覆盖槽。 |
-| `--xh-code-view-fold-bg-hover` | `fold-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | code-view 的 fold-trigger 部件 background 覆盖槽。 |
+| `--xh-code-view-fold-bg-hover` | `fold-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | code-view 的 fold-trigger 部件 background-color 覆盖槽。 |
 | `--xh-code-view-fold-fg` | `fold-trigger` | `color` | `default` | `--xh-fg-muted` | code-view 的 fold-trigger 部件 color 覆盖槽。 |
-| `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `default` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
+| `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-font` | `code`<br>`filename` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename 部件 font-family 覆盖槽。 |
 | `--xh-code-view-font-size` | `root` | `font-size` | `default` | `--xh-_code-view-font-size` | code-view 的 root 部件 font-size 覆盖槽。 |
 | `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-default` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
 | `--xh-code-view-gutter-gap` | `line-number` | `padding-inline-end` | `default` | `--xh-space-1` | code-view 的 line-number 部件 padding-inline-end 覆盖槽。 |
-| `--xh-code-view-header-border` | `fold-trigger`<br>`header` | `border-block-end`<br>`border-block-start` | `default` | `--xh-border-subtle` | code-view 的 fold-trigger、header 部件 border-block-end、border-block-start 覆盖槽。 |
+| `--xh-code-view-header-border` | `fold-trigger`<br>`header` | `border`<br>`border-block-end`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-subtle` | code-view 的 fold-trigger、header 部件 border、border-block-end、border-color 覆盖槽。 |
 | `--xh-code-view-header-fg` | `header` | `color` | `default` | `--xh-fg-muted` | code-view 的 header 部件 color 覆盖槽。 |
 | `--xh-code-view-header-font-size` | `fold-trigger`<br>`header` | `font-size` | `default` | `--xh-text-secondary-size` | code-view 的 fold-trigger、header 部件 font-size 覆盖槽。 |
 | `--xh-code-view-header-gap` | `header` | `gap` | `default` | `--xh-space-2` | code-view 的 header 部件 gap 覆盖槽。 |
@@ -1059,13 +1072,13 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | `--xh-code-view-px` | `fold-trigger`<br>`line`<br>`line-content`<br>`line-number`<br>`root` | `padding-inline`<br>`padding-inline-end`<br>`padding-inline-start` | `default`<br>`line-numbers`<br>`not([data-line-numbers])` | `--xh-space-3` | code-view 的 fold-trigger、line、line-content、line-number、root 部件 padding-inline、padding-inline-end、padding-inline-start 覆盖槽。 |
 | `--xh-code-view-py` | `pre` | `padding-block` | `default` | `--xh-space-3` | code-view 的 pre 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | code-view 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-code-view-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | code-view 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-code-view-shadow` | `root` | `box-shadow` | `default` | `none` | code-view 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-code-view-string-fg` | `token` | `color` | `kind=string` | `--xh-syntax-string` | code-view 的 token 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -1,0 +1,23 @@
+const e=`<!-- 全部边缘 | 从任意边缘或角点调整尺寸 -->
+<script setup lang="ts">
+import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const dimensions = ref({ width: 240, height: 120 });
+const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
+<\/script>
+
+<template>
+  <XhResizableRoot
+    v-model:dimensions="dimensions"
+    :edges="[...EDGES]"
+    :min-width="120"
+    :min-height="80"
+    aria-label="支持全部边缘的占位区块"
+    style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
+  >
+    <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" />
+    <XhResizableHandle v-for="edge in EDGES" :key="edge" :edge="edge" />
+  </XhResizableRoot>
+</template>
+`;export{e as default};

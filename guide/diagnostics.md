@@ -2,11 +2,11 @@
 
 # 诊断通道
 
-组件在运行期发现「这里不对」时不直接 `console.warn`，而是往**诊断通道**投递一条结构化记录。宿主订阅后自行决定打印、收集还是上报。
+组件在运行期发现契约问题时不直接 `console.warn`，而是向诊断通道投递一条结构化记录。宿主订阅后自行决定打印、收集还是上报。
 
-## 为什么不直接打日志
+## 不直接打日志的原因
 
-因为契约违约需要被**处理**，不只是被看见。`wc.missing-part` 这类问题在开发时该显眼地报出来，在测试里该让用例失败，在生产环境该静默——同一条记录，三种归宿。写死 `console.warn` 只满足第一种。
+契约违约需要被处理，不只是被看见。`wc.missing-part` 这类问题在开发时应明显报出，在测试中应使用例失败，在生产环境应静默：同一条记录，三种归宿。写死 `console.warn` 只满足第一种。
 
 ## 记录的形状
 
@@ -23,7 +23,7 @@ interface DiagnosticRecord {
 }
 ```
 
-**`code` 稳定，`message` 不稳定。** 订阅方按码分流，不要匹配文案。
+`code` 稳定，`message` 不稳定。订阅方按码分流，不匹配文案。
 
 ## 现有的码
 
@@ -48,13 +48,13 @@ export const DIAGNOSTIC_CODES = {
 };
 ```
 
-这份清单与 `@xihan-ui/core` 里的码表逐条对账，不会漏码，可以直接照它写分流。
+这份清单与 `@xihan-ui/core` 中的码表逐条对账，不会遗漏，可以直接据此编写分流。
 
 `machine.error` 的 `detail.machineCode` 是状态机错误码。机器崩溃或正常停机清理失败时，`detail.reason` 保留实际上报的原始或聚合异常对象；同时发生 cleanup 与 exit 异常时，它与调用方捕获的 `AggregateError` 是同一个对象，可以继续读取 `errors` 与 `cause`。
 
 状态机实现引用属于执行前置条件。`UNKNOWN_ACTION`、`UNKNOWN_GUARD`、`UNKNOWN_EFFECT` 在创建机器时拒绝静态缺项；动态列表或实现内部引用缺项时使用 `MISSING_ACTION`、`MISSING_GUARD`、`MISSING_EFFECT`。后三种错误在开发与生产都会先投递 `machine.error`；没有其他停机异常时，其 `detail.reason` 与随后抛出的 `MachineError` 是同一个对象，存在其他停机异常时则由后续崩溃记录携带聚合结果。服务同时进入 `Stopped`。诊断阈值只控制记录是否送达，不会把错误改成继续执行、guard 的 `false` 或部分 effect。
 
-三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
+三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最常遇到的三条：手写 DOM 时遗漏一个 `data-xh-part` 或写错名字，通道会明确指出节点与部件。
 
 ## 用法
 
@@ -70,16 +70,16 @@ const off = onDiagnostic((record) => {
 // 调阈值：'error' | 'warn' | 'silent'
 setDiagnosticsLevel("warn");
 
-// 关掉内建 console 输出，只走自己的订阅
+// 关闭内建 console 输出，只使用自己的订阅
 setDiagnosticsConsoleOutput(false);
 ```
 
-其余可用的口子：
+其余可用的接口：
 
 | 函数 | 作用 |
 | --- | --- |
-| `getDiagnostics()` | 拿到通道对象本身 |
-| `reportDiagnostic(record)` | 投递一条（自定义组件里用） |
+| `getDiagnostics()` | 获取通道对象本身 |
+| `reportDiagnostic(record)` | 投递一条（自定义组件中使用） |
 | `setDiagnosticsDedupe(on)` | 同一 `code + scope + instanceId + part + message` 是否只报一次 |
 | `resetDiagnostics()` | 清空订阅者、去重记录与全部开关 |
 
@@ -90,18 +90,18 @@ setDiagnosticsConsoleOutput(false);
 | 开发 | `warn` | 开 | 开 |
 | 生产 | `silent` | 关 | 开 |
 
-生产默认 `silent`，投递直接被丢弃，不产生任何开销。要在生产收集，显式调 `setDiagnosticsLevel('error')` 并挂自己的订阅。
+生产默认 `silent`，投递直接被丢弃，不产生任何开销。需要在生产收集时，显式调用 `setDiagnosticsLevel('error')` 并挂载自己的订阅。
 
-去重键包含 message——同一个码下不同文案是不同的问题，只有逐帧重复的同一条才该被压掉。去重集有容量上限，超出即整体清空，长跑进程不会无界增长。
+去重键包含 message：同一个码下不同文案是不同的问题，只有逐帧重复的同一条才应被压缩。去重集有容量上限，超出即整体清空，长时间运行的进程不会无界增长。
 
 ## 隔离性
 
-- 通道挂在全局，同一页面里多份 `@xihan-ui/core` 副本共用一条通道；
-- **订阅方抛错不会回流进组件**——你的上报逻辑炸了不会连累界面。
+- 通道挂在全局，同一页面中多份 `@xihan-ui/core` 副本共用一条通道；
+- 订阅方抛错不会回流进组件：上报逻辑出错不影响界面。
 
-## 在测试里用
+## 在测试中使用
 
-把阈值调到 `warn` 并订阅，就能把契约违约变成用例失败：
+把阈值调到 `warn` 并订阅，即可把契约违约变为用例失败：
 
 ```ts
 import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from "@xihan-ui/core";
@@ -123,4 +123,4 @@ it("不应有契约违约", () => {
 
 - [解剖与部件契约](./anatomy)：部件契约校验的内容
 - [Web Components 适配器](../adapters/web-components)：三条 `wc.*` 码的来源
-- [版本与兼容性政策](./versioning)：名字怎么改、怎么删
+- [版本与兼容性政策](./versioning)：名字的变更与移除规则

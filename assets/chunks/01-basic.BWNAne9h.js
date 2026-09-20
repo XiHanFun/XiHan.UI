@@ -1,0 +1,26 @@
+const a=`<!-- 基础用法 | 一排叠放的头像：后一个压在前一个上，被压住的边由一圈底色分开 -->
+<xh-avatar-group>
+  <div data-xh-part="root">
+    <xh-avatar tone="brand">
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">曦</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar tone="success">
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">寒</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar tone="warning">
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">懿</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar tone="info">
+      <span data-xh-part="root">
+        <span data-xh-part="fallback">承</span>
+      </span>
+    </xh-avatar>
+  </div>
+</xh-avatar-group>
+`;export{a as default};

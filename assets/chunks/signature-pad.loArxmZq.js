@@ -1,1 +1,0 @@
-import{en as n,eo as o,ep as r}from"./theme.C4bpqV2W.js";import{d as s,b as i,w as a,k as e,o as u,E as t}from"./framework.DkvuVDKz.js";const f=s({__name:"signature-pad",setup(p){return(d,l)=>(u(),i(e(r),{style:{"inline-size":"240px"}},{default:a(()=>[t(e(o),null,{default:a(()=>[t(e(n))]),_:1})]),_:1}))}});export{f as default};

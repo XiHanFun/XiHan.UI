@@ -178,11 +178,11 @@ import { XhSeparator } from "@xihan-ui/vue";
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `SeparatorAlign` |  | 分节文字落在哪一侧，缺省居中；缺省档不输出 data-align。 |
-| `dashed` | `boolean` |  | 画成虚线；实线段与空白段的长度走 --xh-separator-dash-length / -dash-gap 两个槽。 |
+| `align` | `SeparatorAlign` |  | 分节文字的位置，默认居中；默认档不输出 data-align。 |
+| `dashed` | `boolean` |  | 绘制为虚线；实线段与空白段的长度使用 --xh-separator-dash-length / -dash-gap 两个槽。 |
 | `decorative` | `boolean` |  | 装饰性分隔：仅视觉分组，root 通过 role=none + aria-hidden 完整退出无障碍树。 |
 | `orientation` | `'horizontal' \| 'vertical'` |  |  |
-| `variant` | `SeparatorVariant` |  | 线怎么画，缺省 default；缺省档不输出 data-variant。 |
+| `variant` | `SeparatorVariant` |  | 线的绘制方式，默认 default；默认档不输出 data-variant。 |
 
 ### connect API
 
@@ -234,9 +234,9 @@ import { XhSeparator } from "@xihan-ui/vue";
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-separator-align-length` | `line`<br>`root` | `flex` | `align=end`<br>`align=start`<br>`first-child`<br>`last-child` | `--xh-space-6` | separator 的 line、root 部件 flex 覆盖槽。 |
 | `--xh-separator-color` | `line`<br>`root` | `background` | `dashed`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=strong`<br>`variant=subtle` | `--xh-border-strong`<br>`--xh-material-frosted-separator`<br>`--xh-material-soft-separator` | separator 的 line、root 部件 background 覆盖槽。 |

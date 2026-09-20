@@ -1,0 +1,12 @@
+const a=`<!-- 基础用法 | 从右侧、底部或右下角调整尺寸 -->
+<div style="padding: 12px">
+  <xh-resizable default-dimensions="260x140" edges="e,s,se" min-width="120" min-height="80" max-width="480" aria-label="可调整尺寸的占位区块">
+    <div data-xh-part="root" style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px">
+      <span data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span>
+      <span data-xh-part="handle" edge="e"></span>
+      <span data-xh-part="handle" edge="s"></span>
+      <span data-xh-part="handle" edge="se"></span>
+    </div>
+  </xh-resizable>
+</div>
+`;export{a as default};

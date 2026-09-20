@@ -1,0 +1,6 @@
+const a=`<!-- 侧栏位置 | 将侧栏放在行首或行尾 -->
+<div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
+  <xh-layout split aria-label="行首侧栏布局" style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header"><span data-demo-block="line" data-tone="brand"></span></div><div data-xh-part="sider"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%"></span></div><div data-xh-part="content"><span data-demo-block data-tone="success" style="--xh-demo-block-block-size: 100%"></span></div></div></xh-layout>
+  <xh-layout sider-placement="end" split aria-label="行尾侧栏布局" style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header"><span data-demo-block="line" data-tone="warning"></span></div><div data-xh-part="sider"><span data-demo-block data-tone="danger" style="--xh-demo-block-block-size: 100%"></span></div><div data-xh-part="content"><span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%"></span></div></div></xh-layout>
+</div>
+`;export{a as default};

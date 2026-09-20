@@ -1,0 +1,13 @@
+const a=`<!-- 倒计时 | countdown 使它从起始值递减，终点默认是 0；到达终点即停在该处不再递减 -->
+<xh-timer countdown start-ms="120000" auto-start>
+  <div data-xh-part="root">
+    <div data-xh-part="display">
+      <span data-xh-part="item" unit="hours"></span>
+      <span data-xh-part="separator">:</span>
+      <span data-xh-part="item" unit="minutes"></span>
+      <span data-xh-part="separator">:</span>
+      <span data-xh-part="item" unit="seconds"></span>
+    </div>
+  </div>
+</xh-timer>
+`;export{a as default};

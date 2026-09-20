@@ -1,1 +1,0 @@
-import{cq as o}from"./theme.C4bpqV2W.js";import{d as s,b as t,k as a,o as n}from"./framework.DkvuVDKz.js";const _=s({__name:"json-viewer",setup(r){const e={name:"曦寒视图",stars:128,active:!0,tags:["框架无关","跨端"]};return(c,i)=>(n(),t(a(o),{value:e,style:{"inline-size":"240px","font-size":"12px"}}))}});export{_ as default};

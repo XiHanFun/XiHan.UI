@@ -1,1 +1,0 @@
-import{fE as o}from"./theme.C4bpqV2W.js";import{d as t,o as e,b as n,k as r}from"./framework.DkvuVDKz.js";const s=2*60*1e3,_=t({__name:"02-countdown",setup(a){return(c,m)=>(e(),n(r(o),{countdown:"","start-ms":s,"auto-start":""}))}});export{_ as default};

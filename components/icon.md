@@ -236,13 +236,13 @@ import { XhIcon } from "@xihan-ui/vue";
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `flip` | `IconFlip` |  | 翻转轴：horizontal / vertical / both，不翻就不写。旋转与翻转同写时两者叠加。 |
-| `icon` | `IconRecord` |  | 要画的图标。传的是记录本身而不是名字： 名字要走运行期查表，查表就必须把全表静态引进来，摇树全废。 |
-| `label` | `string` |  | 可及名字。 给了非空白文本 = 这个图标是页面上唯一说出这件事的东西，输出 role="img" + aria-label； 缺席或全空白 = 装饰，输出 aria-hidden="true"。没有第三种形态。 |
-| `rotate` | `IconRotate \| string` |  | 旋转档位：90 / 180 / 270，不转就不写。 收字符串是因为 WC 那侧的档位来自 DOM 属性；不是这三档的值一律不写出。 |
-| `size` | `IconSize` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
+| `flip` | `IconFlip` |  | 翻转轴：horizontal / vertical / both，不翻转时不写。旋转与翻转同时提供时两者叠加。 |
+| `icon` | `IconRecord` |  | 要绘制的图标。传入的是记录本身而不是名字： 名字需要运行期查表，查表就必须把全表静态引入，摇树完全失效。 |
+| `label` | `string` |  | 可及名。 提供非空白文本 = 该图标是页面上唯一表达该信息的元素，输出 role="img" + aria-label； 缺席或全空白 = 装饰，输出 aria-hidden="true"。没有第三种形态。 |
+| `rotate` | `IconRotate \| string` |  | 旋转档位：90 / 180 / 270，不旋转时不写。 接受字符串是因为 WC 侧的档位来自 DOM 属性；不是这三档的值一律不写出。 |
+| `size` | `IconSize` |  | 直径档位，默认 md；默认档不输出 data-size。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
-| `weight` | `IconWeight` |  | 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 |
+| `weight` | `IconWeight` |  | 描边粗细档位，默认 regular；默认档不输出 data-weight。 |
 
 ### connect API
 
@@ -250,10 +250,10 @@ import { XhIcon } from "@xihan-ui/vue";
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `label` | `string \| undefined` | 解析后的可及名字；装饰态为 undefined。 |
-| `decorative` | `boolean` | 是否装饰态（label 没给或全空白）。 |
-| `nodes` | `readonly IconNode[]` | 要铺进 glyph 的图元树；没传 icon 时是空数组。 |
-| `content` | `IconRecord \| undefined` | 当前铺设内容的身份。就是 icon 本身：记录是模块级常量，引用相等即内容相等。 不用字符串签名——签名要遍历整棵树再拼串，每次 wire 都付一遍。 |
+| `label` | `string \| undefined` | 解析后的可及名；装饰态为 undefined。 |
+| `decorative` | `boolean` | 是否装饰态（label 未提供或全空白）。 |
+| `nodes` | `readonly IconNode[]` | 要铺进 glyph 的图元树；未传 icon 时为空数组。 |
+| `content` | `IconRecord \| undefined` | 当前铺设内容的身份。即 icon 本身：记录是模块级常量，引用相等即内容相等。 不用字符串签名：签名要遍历整棵树再拼串，每次 wire 都要付出一次。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getGlyphProps` | `() => T['element']` |  |
 
@@ -297,13 +297,13 @@ import { XhIcon } from "@xihan-ui/vue";
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-icon-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`currentColor` | icon 的 root 部件 color 覆盖槽。 |
 | `--xh-icon-shift` | `root` | `vertical-align` | `default` | `--xh-glyph-baseline-shift` | icon 的 root 部件 vertical-align 覆盖槽。 |
-| `--xh-icon-size` | `autoplay-trigger`<br>`branch-checkbox`<br>`branch-indicator`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-visibility-trigger`<br>`control`<br>`decrement-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-checkbox`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`row-select-trigger`<br>`scroll-to-end-trigger`<br>`select-all-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `@media (min-width: 640px)`<br>`branch`<br>`default`<br>`direction`<br>`empty`<br>`indeterminate`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not([aria-busy='true'])`<br>`not([data-selected])`<br>`selected`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=checked`<br>`state=completed`<br>`state=done`<br>`state=error`<br>`state=indeterminate`<br>`state=paused`<br>`state=running`<br>`state=visible` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-icon-size` | `autoplay-trigger`<br>`branch-checkbox`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-visibility-trigger`<br>`control`<br>`decrement-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-checkbox`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`row-select-trigger`<br>`scroll-to-end-trigger`<br>`select-all-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start`<br>`padding-inline-start` | `@media (min-width: 640px)`<br>`branch`<br>`default`<br>`direction`<br>`empty`<br>`indeterminate`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`not([aria-busy='true'])`<br>`not([data-selected])`<br>`orientation=vertical`<br>`selected`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=checked`<br>`state=completed`<br>`state=done`<br>`state=error`<br>`state=indeterminate`<br>`state=paused`<br>`state=running`<br>`state=visible` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-checkbox、branch-control、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start、padding-inline-start 覆盖槽。 |
 | `--xh-icon-stroke` | `root` | `stroke-width` | `default`<br>`weight=bold`<br>`weight=light` | `--xh-glyph-stroke-bold`<br>`--xh-glyph-stroke-light`<br>`--xh-glyph-stroke-regular` | icon 的 root 部件 stroke-width 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

@@ -1,0 +1,38 @@
+const t=`<!-- 基础用法 | 滚动后显示回到顶部按钮 -->
+<div style="position: relative; inline-size: min(560px, 100%)">
+  <div
+    id="back-top-basic-scroll"
+    data-xh-scroll
+    style="
+      block-size: 240px;
+      overflow: auto;
+      padding-inline: 16px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>概览</strong><p style="color: var(--xh-fg-muted)">概览相关内容</p></section>
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>安装</strong><p style="color: var(--xh-fg-muted)">安装相关内容</p></section>
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>主题</strong><p style="color: var(--xh-fg-muted)">主题相关内容</p></section>
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>发布</strong><p style="color: var(--xh-fg-muted)">发布相关内容</p></section>
+  </div>
+
+  <template id="back-top-basic-template">
+    <xh-back-top visibility-height="120">
+      <div
+        data-xh-part="root"
+        style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
+      >
+        <button data-xh-part="trigger"></button>
+      </div>
+    </xh-back-top>
+  </template>
+</div>
+
+<script type="module">
+  const template = document.getElementById("back-top-basic-template");
+  const backTop = template.content.firstElementChild;
+  backTop.target = document.getElementById("back-top-basic-scroll");
+  template.replaceWith(backTop);
+<\/script>
+`;export{t as default};

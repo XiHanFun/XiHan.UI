@@ -2,7 +2,7 @@
 
 # Avatar 头像 `alpha`
 
-一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
+表示一个人或一个组织的圆形标识：优先显示图片，无法加载时回退到文字或图标。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/avatar" target="_blank" rel="noreferrer">Headless</a>
@@ -22,7 +22,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+  <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
     <XhAvatarImage />
     <XhAvatarFallback>曦</XhAvatarFallback>
   </XhAvatarRoot>
@@ -35,7 +35,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 ```
 
 ```html
-<xh-avatar src="/images/logo.png" alt="曦寒">
+<xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
   <span data-xh-part="root">
     <img data-xh-part="image" />
     <span data-xh-part="fallback">曦</span>
@@ -68,7 +68,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhAvatarRoot src="/images/does-not-exist.png" alt="取不到的图">
+  <XhAvatarRoot src="/images/does-not-exist.svg" alt="取不到的图">
     <XhAvatarImage />
     <XhAvatarFallback>回退</XhAvatarFallback>
   </XhAvatarRoot>
@@ -81,7 +81,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 ```
 
 ```html
-<xh-avatar src="/images/does-not-exist.png" alt="取不到的图">
+<xh-avatar src="/images/does-not-exist.svg" alt="取不到的图">
   <span data-xh-part="root">
     <img data-xh-part="image" />
     <span data-xh-part="fallback">回退</span>
@@ -98,7 +98,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 ### 尺寸
 
-size 三档只换直径，回退字的字号跟着一起缩放；缺省档不输出 data-size
+size 三档只改变直径，回退文字的字号随之缩放；默认档不输出 data-size
 
 ```vue
 <script setup lang="ts">
@@ -108,15 +108,15 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 <template>
   <!-- 有图的一行：图片铺满 root，跟着三档一起缩放 -->
   <div style="display: flex; align-items: center; gap: 12px">
-    <XhAvatarRoot size="sm" src="/images/logo.png" alt="曦寒">
+    <XhAvatarRoot size="sm" src="/images/demo-avatar.svg" alt="曦寒">
       <XhAvatarImage />
       <XhAvatarFallback>曦</XhAvatarFallback>
     </XhAvatarRoot>
-    <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+    <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
       <XhAvatarImage />
       <XhAvatarFallback>曦</XhAvatarFallback>
     </XhAvatarRoot>
-    <XhAvatarRoot size="lg" src="/images/logo.png" alt="曦寒">
+    <XhAvatarRoot size="lg" src="/images/demo-avatar.svg" alt="曦寒">
       <XhAvatarImage />
       <XhAvatarFallback>曦</XhAvatarFallback>
     </XhAvatarRoot>
@@ -145,19 +145,19 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 ```html
 <!-- 有图的一行：图片铺满 root，跟着三档一起缩放 -->
 <div style="display: flex; align-items: center; gap: 12px">
-  <xh-avatar size="sm" src="/images/logo.png" alt="曦寒">
+  <xh-avatar size="sm" src="/images/demo-avatar.svg" alt="曦寒">
     <span data-xh-part="root">
       <img data-xh-part="image" />
       <span data-xh-part="fallback">曦</span>
     </span>
   </xh-avatar>
-  <xh-avatar src="/images/logo.png" alt="曦寒">
+  <xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
     <span data-xh-part="root">
       <img data-xh-part="image" />
       <span data-xh-part="fallback">曦</span>
     </span>
   </xh-avatar>
-  <xh-avatar size="lg" src="/images/logo.png" alt="曦寒">
+  <xh-avatar size="lg" src="/images/demo-avatar.svg" alt="曦寒">
     <span data-xh-part="root">
       <img data-xh-part="image" />
       <span data-xh-part="fallback">曦</span>
@@ -192,7 +192,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 ### 形状
 
-圆角是一个组件令牌，整圆、圆角方、直角都是同一个槽位换值；图片的圆角从根继承，不用另设
+圆角是一个组件令牌，整圆、圆角方、直角都是同一个槽位换值；图片的圆角从根继承，不必另设
 
 ```vue
 <script setup lang="ts">
@@ -201,13 +201,13 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 <template>
   <div style="display: flex; align-items: center; gap: 12px">
-    <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+    <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
       <XhAvatarImage />
       <XhAvatarFallback>曦</XhAvatarFallback>
     </XhAvatarRoot>
 
     <XhAvatarRoot
-      src="/images/logo.png"
+      src="/images/demo-avatar.svg"
       alt="曦寒"
       style="--xh-avatar-radius: var(--xh-radius-md)"
     >
@@ -216,7 +216,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
     </XhAvatarRoot>
 
     <XhAvatarRoot
-      src="/images/logo.png"
+      src="/images/demo-avatar.svg"
       alt="曦寒"
       style="--xh-avatar-radius: var(--xh-radius-none)"
     >
@@ -249,21 +249,21 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 ```html
 <div style="display: flex; align-items: center; gap: 12px">
-  <xh-avatar src="/images/logo.png" alt="曦寒">
+  <xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
     <span data-xh-part="root">
       <img data-xh-part="image" />
       <span data-xh-part="fallback">曦</span>
     </span>
   </xh-avatar>
 
-  <xh-avatar src="/images/logo.png" alt="曦寒">
+  <xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
     <span data-xh-part="root" style="--xh-avatar-radius: var(--xh-radius-md)">
       <img data-xh-part="image" />
       <span data-xh-part="fallback">曦</span>
     </span>
   </xh-avatar>
 
-  <xh-avatar src="/images/logo.png" alt="曦寒">
+  <xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
     <span data-xh-part="root" style="--xh-avatar-radius: var(--xh-radius-none)">
       <img data-xh-part="image" />
       <span data-xh-part="fallback">曦</span>
@@ -298,9 +298,9 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 </div>
 ```
 
-### 图标当回退
+### 图标作为回退
 
-fallback 是普通插槽，放图标和放缩写字一样；没有名字可写时用图标表示「某位用户」
+fallback 是普通插槽，放图标与放缩写文字一样；没有名字可写时用图标表示某位用户
 
 ```vue
 <script setup lang="ts">
@@ -414,7 +414,7 @@ const UserIcon = {
 
 ### 自定义直径与配色
 
-三档之外的直径、底色、字色各是一个组件令牌；按人名分配颜色就是逐个实例覆盖
+三档之外的直径、底色、字色各是一个组件令牌；按人名分配颜色即逐个实例覆盖
 
 ```vue
 <script setup lang="ts">
@@ -432,7 +432,7 @@ const people = [
   <!-- 直径与字号一起给，回退字才不会在大头像里显小 -->
   <div style="display: flex; align-items: center; gap: 12px">
     <XhAvatarRoot
-      src="/images/logo.png"
+      src="/images/demo-avatar.svg"
       alt="曦寒"
       style="--xh-avatar-size: 56px; --xh-avatar-font-size: 20px"
     >
@@ -466,7 +466,7 @@ const people = [
 ```html
 <!-- 直径与字号一起给，回退字才不会在大头像里显小 -->
 <div style="display: flex; align-items: center; gap: 12px">
-  <xh-avatar src="/images/logo.png" alt="曦寒">
+  <xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
     <span
       data-xh-part="root"
       style="--xh-avatar-size: 56px; --xh-avatar-font-size: 20px"
@@ -524,7 +524,7 @@ const people = [
 
 ### 加载状态
 
-status-change 在状态落位时通知，过渡态 idle 不通知；没给地址等同于取不到，直接落 error 让回退接管
+status-change 在状态落位时通知，过渡态 idle 不通知；未提供地址等同于无法获取，直接落为 error 由回退接管
 
 ```vue
 <script setup lang="ts">
@@ -532,8 +532,8 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const cases = [
-  { key: "ok", src: "/images/logo.png", alt: "曦寒", text: "曦", note: "地址有效" },
-  { key: "bad", src: "/images/does-not-exist.png", alt: "取不到的图", text: "回退", note: "地址取不到" },
+  { key: "ok", src: "/images/demo-avatar.svg", alt: "曦寒", text: "曦", note: "地址有效" },
+  { key: "bad", src: "/images/does-not-exist.svg", alt: "取不到的图", text: "回退", note: "地址取不到" },
   { key: "none", src: undefined, alt: undefined, text: "无图", note: "没给地址" },
 ];
 
@@ -564,7 +564,7 @@ function record(key: string, details: { status: string }) {
 ```html
 <div id="avatar-status" style="display: grid; gap: 10px">
   <div style="display: flex; align-items: center; gap: 10px">
-    <xh-avatar src="/images/logo.png" alt="曦寒">
+    <xh-avatar src="/images/demo-avatar.svg" alt="曦寒">
       <span data-xh-part="root">
         <img data-xh-part="image" />
         <span data-xh-part="fallback">曦</span>
@@ -574,7 +574,7 @@ function record(key: string, details: { status: string }) {
   </div>
 
   <div style="display: flex; align-items: center; gap: 10px">
-    <xh-avatar src="/images/does-not-exist.png" alt="取不到的图">
+    <xh-avatar src="/images/does-not-exist.svg" alt="取不到的图">
       <span data-xh-part="root">
         <img data-xh-part="image" />
         <span data-xh-part="fallback">回退</span>
@@ -607,7 +607,7 @@ function record(key: string, details: { status: string }) {
 
 ### 颜色
 
-tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径与字号都不受影响
+tone 改变淡底与回退文字的配色组；不写 tone 即中性默认，直径与字号都不受影响
 
 ```vue
 <script setup lang="ts">
@@ -697,33 +697,33 @@ const tones = [
 
 ### 何时使用
 
-- 列表、评论、成员选择里标识身份。
+- 在列表、评论、成员选择中标识身份。
 
 ### 何时不用
 
-- 标识的是一个功能或分类：用[图标块](./icon-wrapper)。
-- 就是一张图：用[图片](./image)。
+- 标识功能或分类时，使用[图标块](./icon-wrapper)。
+- 只是展示一张图片时，使用[图片](./image)。
 
 ### 特性
 
-- 加载状态会回调；失败时自动落到 `fallback`。
-- 直径与配色都是组件令牌，可以逐实例覆盖。
-- `tone` 换淡底与回退字的配色族；没写它时用中性缺省。
-- 状态点与角标由作者挂在外面，组件不预设。
+- 加载状态通过回调通知；失败时自动显示 `fallback`。
+- 直径与配色都是组件令牌，可逐实例覆盖。
+- `tone` 切换淡底与回退文字的配色族；未设置时使用中性默认值。
+- 状态点与角标由作者挂在外部，组件不预设。
 
 ### 组合
 
-- 成组时套[头像组](./avatar-group)；角标用[徽标](./badge)。
+- 成组展示时使用[头像组](./avatar-group)；角标使用[徽标](./badge)。
 
 ### 最佳实践
 
-- 回退内容要有意义：姓名缩写比一个通用小人图标信息量大得多。
-- `alt` 写人名，别写"头像"。
+- 回退内容应有意义：姓名缩写比通用人形图标携带更多信息。
+- `alt` 写人名，不写“头像”。
 
 ### 反模式
 
-- 只靠图片、不给回退：图挂了就是一个空洞。
-- 用头像颜色编码身份而不给文字。
+- 只提供图片、不提供回退：图片失效后会留下空洞。
+- 只用头像颜色编码身份而不提供文字。
 
 ## API 参考
 
@@ -743,9 +743,9 @@ const tones = [
 | --- | --- | --- | --- |
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
-| `size` | `Size` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
-| `tone` | `Tone` |  | 颜色：决定底色与回退字使用哪组状态色；缺席即不输出 data-tone，走皮肤的中性缺省 |
-| `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落位时通知，过渡态 idle 不通知。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；默认档不输出 data-size |
+| `tone` | `Tone` |  | 颜色：决定底色与回退字使用哪组状态色；未提供时不输出 data-tone，使用皮肤的中性默认 |
+| `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落定时通知，过渡态 idle 不通知。 |
 
 ### 事件
 
@@ -797,7 +797,7 @@ const tones = [
 
 ### 皮肤
 
-`@xihan-ui/styles/avatar.css` 使用 `[data-scope="avatar"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/avatar.css` 使用 `[data-scope="avatar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -814,20 +814,20 @@ const tones = [
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-avatar-bg` | `root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-subtle` | avatar 的 root 部件 background 覆盖槽。 |
 | `--xh-avatar-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-muted` | avatar 的 root 部件 color 覆盖槽。 |
 | `--xh-avatar-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-caption-lg`<br>`--xh-control-caption-sm`<br>`--xh-text-secondary-size` | avatar 的 root 部件 font-size 覆盖槽。 |
 | `--xh-avatar-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | avatar 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-avatar-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | avatar 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-avatar-radius` | `root` | `border-radius` | `default` | `--xh-shape-circle` | avatar 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-avatar-size` | `root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | avatar 的 root 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-fade-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

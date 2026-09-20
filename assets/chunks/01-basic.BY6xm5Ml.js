@@ -1,0 +1,13 @@
+const a=`<!-- 基础用法 | 调整侧栏和编辑区域的比例 -->
+<xh-splitter
+  panels='[{"id":"aside","min":20,"max":60},{"id":"main","min":25}]'
+  aria-label="可调整比例的占位区块"
+  style="display: contents"
+>
+  <div data-xh-part="root" style="inline-size: min(640px, 100%); block-size: 180px">
+    <div data-xh-part="panel" index="0" style="padding: 16px"><span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span></div>
+    <div data-xh-part="resize-trigger" index="0"></div>
+    <div data-xh-part="panel" index="1" style="padding: 16px"><span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span></div>
+  </div>
+</xh-splitter>
+`;export{a as default};

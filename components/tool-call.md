@@ -2,7 +2,7 @@
 
 # ToolCall 工具调用 `alpha`
 
-一次工具调用的卡片：阶段、参数与结果，跑起来自动展开、结束自动收起，用户动手过一次就不再自动。
+一次工具调用的卡片：阶段、参数与结果，运行时自动展开、结束后自动收起，用户手动操作过一次后不再自动开合。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tool-call" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-等人批准不是在跑：闸门常驻在开关与详情之间，不会被折叠藏起来
+等待批准不是运行中：闸门常驻在开关与详情之间，不会被折叠隐藏
 
 ```vue
 <script setup lang="ts">
@@ -136,7 +136,7 @@ const phases: ToolCallPhase[] = [
 
 ### 自动开合与锁存
 
-跑起来自动展开、结束自动收起；你手动开合过一次之后，阶段怎么变都不再自动
+运行时自动展开、结束时自动收起；用户手动开合过一次之后，阶段如何变化都不再自动开合
 
 ```vue
 <script setup lang="ts">
@@ -247,7 +247,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 ### 摘要与耗时
 
-详情收起时也看得见查了什么、跑了多久；两个时刻由宿主给，组件自己不读时钟
+详情收起时也能看到查询内容与运行时长；两个时刻由宿主提供，组件自身不读取时钟
 
 ```vue
 <script setup lang="ts">
@@ -348,7 +348,7 @@ const calls = [
 
 ### 多次调用分组
 
-外面套一层手风琴当分组头：计数用等宽数位，整组开合归手风琴，卡片各管各的
+外层套一层手风琴作为分组头：计数使用等宽数位，整组开合归手风琴，卡片各自独立
 
 ```vue
 <script setup lang="ts">
@@ -488,7 +488,7 @@ const calls = [
 
 ### 形态、语气与尺寸
 
-三轴只改这块壳怎么与正文分开，阶段与展开逻辑不受影响
+三轴只改变该外壳与正文分开的方式，阶段与展开逻辑不受影响
 
 ```vue
 <script setup lang="ts">
@@ -632,52 +632,43 @@ import {
 
 ### 何时使用
 
-- Agent 界面里展示「它正在做什么」：查了什么、传了什么参数、拿回了什么。
-- 一次调用要先经人批准才能执行。
+- Agent 界面中展示正在执行的操作：查询了什么、传了什么参数、返回了什么。
+- 一次调用需要先经用户批准才能执行。
 
 ### 何时不用
 
-- 展示的是「思考过程」而不是一次调用：用[思考过程](./reasoning)，两者共用同一台机器但正文形态不同。
-- 只想要一个状态色块：用[徽标](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
-- 多次调用要一次只展开一张：外面套[手风琴](./accordion)，每格里装一张。
+- 展示思考过程而不是一次调用时，使用[思考过程](./reasoning)，两者共用同一台状态机但正文形态不同。
+- 只需要一个状态色块时，使用[徽标](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
+- 多次调用一次只展开一张时，外层使用[手风琴](./accordion)，每格放一张。
 
 ### 特性
 
-- 五档阶段：参数在传、参数齐了、等人批准、已完成、出错了。
-  **「等人批准」不是「在跑」**——协议层的审批只改审批状态、不改工具状态，
-  没有这一档的话等人的调用会被当成在跑。
-- **自动开合的锁存靠转移的放置位置，不靠一个布尔位**：用户点过一次之后，
-  阶段变化在结构上就够不着任何转移，自动开合永久停用。
-- 审批闸门常驻在开关与详情之间，不会被折叠藏起来。
-- 收起走 `hidden` + `inert`：退场动画播完之前内容还在渲染，`inert` 把这段窗口挡在读屏与 Tab 序之外。
-- 开关那一行留了摘要位与耗时位：详情收起时也看得见「查了什么」与「跑了多久」。
-- 耗时由宿主给两个时刻，`toolCallDuration(startTime, endTime)` 折出毫秒数；
-  **组件自己不读时钟也不起定时器**，秒数要跳就由宿主驱动。
+- 五档阶段：参数传输中、参数完整、等待批准、已完成、出错。等待批准不是运行中：协议层的审批只改变审批状态、不改变工具状态，没有这一档时等待中的调用会被视为运行中。
+- 自动开合的锁存依靠转移的放置位置，不依靠布尔位：用户点击过一次之后，阶段变化在结构上无法到达任何转移，自动开合永久停用。
+- 审批闸门常驻在开关与详情之间，不会被折叠隐藏。
+- 收起使用 `hidden` + `inert`：退场动画完成前内容仍在渲染，`inert` 把这段窗口挡在读屏与 Tab 序列之外。
+- 开关行保留摘要位与耗时位：详情收起时也能看到查询内容与运行时长。
+- 耗时由宿主提供两个时刻，`toolCallDuration(startTime, endTime)` 计算毫秒数；组件自身不读时钟也不启动定时器，秒数跳动由宿主驱动。
 
 ### 组合
 
-- 参数与结果用[代码视图](./code-view)：参数在流式期是半截 JSON，把 `complete` 接成
-  「阶段不是参数在传」即可。富文本结果走[流式正文](./markdown-stream)。
-- 结果是代码改动时，详情那一格装[差异视图](./diff-view)；收起态的摘要取它的 `stats`
-  折成 `+{added} −{removed} 文件名` 写进摘要位，减号用 U+2212 而不是连字符。
-  摘要要能悬停看全文就套[悬浮卡片](./hover-card)，别自己往 body 上挂节点。
-- 审批那一格装[审批](./approval)。
-- 复制不内建，与[剪贴板](./clipboard)组合；多张并排要方向键跳卡片就套[工具栏](./toolbar)。
-- 一轮里跑了好几次工具时，外面套一层[手风琴](./accordion)当分组：
-  手风琴的开关里写「跑了 N 个工具」，计数那一段加 `font-variant-numeric: tabular-nums`
-  免得数字跳动时左右挪；整组的开合由手风琴的 `aria-expanded` 承担，卡片各自只管自己那一张。
+- 参数与结果使用[代码视图](./code-view)：参数在流式期是不完整的 JSON，把 `complete` 接为“阶段不是参数传输中”即可。富文本结果使用[流式正文](./markdown-stream)。
+- 结果是代码改动时，详情区放[差异视图](./diff-view)；收起态的摘要取它的 `stats` 组成 `+{added} −{removed} 文件名` 写进摘要位，减号使用 U+2212 而不是连字符。摘要需要悬停查看全文时使用[悬浮卡片](./hover-card)，不自行向 body 挂载节点。
+- 审批区放[审批](./approval)。
+- 复制不内建，与[剪贴板](./clipboard)组合；多张并排需要方向键跳转时外层使用[工具栏](./toolbar)。
+- 一轮中运行多次工具时，外层使用[手风琴](./accordion)分组：手风琴的开关写“运行了 N 个工具”，计数段加 `font-variant-numeric: tabular-nums` 避免数字跳动时左右移动；整组的开合由手风琴的 `aria-expanded` 承担，卡片各自只管理自身。
 
 ### 最佳实践
 
-- 工具名与状态都写在开关里：它们会自然构成开关的可访问名（「搜索，已完成」）。
-- 出错态要容忍没有错误文本：流被中止时未拿到结果的调用会被收尾成出错，但拿不到原因。
-- 摘要位只放一句能一眼读完的参数（查询词、文件路径），整个 JSON 留给详情里的代码视图。
-- 耗时文案走 `translations.ranFor` 模板串，秒数由宿主现场代入；`endTime` 缺席时别渲染这一格。
+- 工具名与状态都写在开关内，它们自然构成开关的可访问名称（“搜索，已完成”）。
+- 出错态要容忍没有错误文本：流被中止时未获得结果的调用会被收尾为出错，但没有原因。
+- 摘要位只放一句可一眼读完的参数（查询词、文件路径），完整 JSON 留给详情内的代码视图。
+- 耗时文案使用 `translations.ranFor` 模板串，秒数由宿主代入；`endTime` 缺席时不渲染该位。
 
 ### 反模式
 
-- 每张卡各开一个 `aria-live`：一屏五张卡就是五个活区互相打断。
-- 用禁用表达「还不能展开」：读屏用户连它存在都听不到。
+- 每张卡各开一个 `aria-live`：一屏五张卡就是五个活动区域互相打断。
+- 用禁用表达“暂不能展开”：读屏用户无法得知它的存在。
 
 ## API 参考
 
@@ -695,19 +686,19 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `running` | `boolean` |  | 这次调用正在跑。适配器用 isToolCallRunning(phase) 折出来，作者只写 phase。 |
+| `running` | `boolean` |  | 本次调用正在运行。适配器用 isToolCallRunning(phase) 折叠得出，作者只写 phase。 |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
-| `autoDisclosure` | `boolean` |  | 跑起来自动展开、结束自动收起，默认开；用户手动开合过一次即永久停用。 |
+| `autoDisclosure` | `boolean` |  | 运行时自动展开、结束时自动收起，默认开启；用户手动开合过一次即永久停用。 |
 | `disabled` | `boolean` |  |  |
 | `onOpenChange` | `(details: ToolCallOpenChangeDetails) => void` |  |  |
-| `endTime` | `number` |  | 这次调用结束的时刻。**可能缺席**：还在跑，或者流被中止时兜底收尾不写这一个。 |
-| `phase` | `ToolCallPhase` |  | 这次调用走到哪一步，默认 input-available。 |
+| `endTime` | `number` |  | 本次调用结束的时刻。可能缺席：仍在运行，或流被中止时兜底收尾不写该字段。 |
+| `phase` | `ToolCallPhase` |  | 本次调用所处的阶段，默认 input-available。 |
 | `size` | `Size` |  |  |
-| `startTime` | `number` |  | 这次调用开始的时刻，毫秒时间戳。 |
+| `startTime` | `number` |  | 本次调用开始的时刻，毫秒时间戳。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ToolCallTranslations>` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 
 ### 事件
 
@@ -748,9 +739,9 @@ import {
 
 **状态**：`auto.collapsed` · `auto.expanded` · `held.collapsed` · `held.expanded`
 
-**事件**：`TOGGLE` · `OPEN` · `CLOSE` · `PHASE.ACTIVE` · `PHASE.SETTLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`TOGGLE` · `OPEN` · `CLOSE` · `PHASE.ACTIVE` · `PHASE.SETTLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled` · `isAutoAllowed` · `isAutoEnabled`
+**判据**：`isOpenControlled` · `isAutoAllowed` · `isAutoEnabled` · `canPress`
 
 ### connect API
 
@@ -760,12 +751,12 @@ import {
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `phase` | `ToolCallPhase` |  |
-| `running` | `boolean` | 这一档算不算在跑。 |
-| `settled` | `boolean` | 这一档算不算已经落定：跑完了，或者跑砸了。 |
-| `errored` | `boolean` | 这一档算不算跑砸了。 |
+| `running` | `boolean` | 该档是否视为运行中。 |
+| `settled` | `boolean` | 该档是否视为已落定：运行完成，或失败。 |
+| `errored` | `boolean` | 该档是否视为失败。 |
 | `disabled` | `boolean` |  |
-| `statusText` | `string` | 读屏用的一句话，由宿主写进会话级的那一个播报区。 |
-| `durationMs` | `number \| undefined` | 跑了多久，毫秒；两个时刻任一缺席即 undefined。 |
+| `statusText` | `string` | 读屏文案，由宿主写入会话级的播报区。 |
+| `durationMs` | `number \| undefined` | 运行时长，毫秒；两个时刻任一缺席即 undefined。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
@@ -789,6 +780,7 @@ import {
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | 焦点在折叠开关上且未禁用 | 展开或收起详情，并把自动开合永久停用 |
+| `Enter` / `Space` | 按住折叠开关且未禁用 | 按住期间 trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或转禁用撤下。运行中照常接 |
 
 ### ARIA
 
@@ -804,9 +796,8 @@ import {
 | `content` | `role` | 'region' |
 
 - 开关带 `aria-expanded` 与 `aria-controls`，详情区是 `role=region` 且由开关命名。
-- 出错时开关才补 `aria-describedby` 指向错误区——无条件挂会指向一个作者根本没渲的节点。
-- 卡片自己不开活区：一屏若干张卡各开一个会互相打断。播报文本由 `statusText` 交出去，
-  由宿主写进会话级的那一个播报区。
+- 出错时开关才补 `aria-describedby` 指向错误区，无条件挂载会指向作者未渲染的节点。
+- 卡片自身不开活动区域：一屏多张卡各开一个会互相打断。播报文本由 `statusText` 交出，由宿主写进会话级的播报区。
 
 ## 样式参考
 
@@ -831,7 +822,13 @@ import {
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
+| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-variant` | 'ghost' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `label` | `data-state` | props.phase |
 | `summary` | `data-state` | props.phase |
@@ -847,24 +844,25 @@ import {
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tool-call-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tool-call 的 root 部件 background 覆盖槽。 |
-| `--xh-tool-call-border` | `approval`<br>`content`<br>`root` | `border`<br>`border-block-start` | `default` | `--xh-border-subtle` | tool-call 的 approval、content、root 部件 border、border-block-start 覆盖槽。 |
+| `--xh-tool-call-border` | `root` | `border` | `default` | `--xh-border-default` | tool-call 的 root 部件 border 覆盖槽。 |
 | `--xh-tool-call-border-error` | `root` | `border-color` | `errored`<br>`has([data-scope='tool-call'][data-state='output-error'])`<br>`state=output-error` | `--xh-border-invalid` | tool-call 的 root 部件 border-color 覆盖槽。 |
 | `--xh-tool-call-content-gap` | `content` | `gap` | `default` | `--xh-space-2` | tool-call 的 content 部件 gap 覆盖槽。 |
+| `--xh-tool-call-divider` | `approval`<br>`content` | `border-block-start` | `default` | `--xh-border-subtle` | tool-call 的 approval、content 部件 border-block-start 覆盖槽。 |
 | `--xh-tool-call-duration-fg` | `duration` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 duration 部件 color 覆盖槽。 |
 | `--xh-tool-call-error-fg` | `error` | `color` | `default` | `--xh-fg-danger` | tool-call 的 error 部件 color 覆盖槽。 |
 | `--xh-tool-call-font-size` | `trigger` | `font-size` | `default` | `--xh-_tool-call-font-size` | tool-call 的 trigger 部件 font-size 覆盖槽。 |
-| `--xh-tool-call-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tool-call 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tool-call-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | tool-call 的 root、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tool-call-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 indicator 部件 color 覆盖槽。 |
 | `--xh-tool-call-label-font` | `label`<br>`summary` | `font-family` | `default` | `--xh-font-family-mono` | tool-call 的 label、summary 部件 font-family 覆盖槽。 |
 | `--xh-tool-call-px` | `approval`<br>`content`<br>`trigger` | `padding-inline` | `default` | `--xh-_tool-call-px` | tool-call 的 approval、content、trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-tool-call-py` | `*`<br>`approval`<br>`content`<br>`trigger` | `padding-block` | `@keyframes xh-tool-call-collapse`<br>`@keyframes xh-tool-call-expand`<br>`default` | `--xh-_tool-call-py` | tool-call 的 *、approval、content、trigger 部件 padding-block 覆盖槽。 |
+| `--xh-tool-call-py` | `approval`<br>`content`<br>`trigger` | `padding-block`<br>`padding-block-end`<br>`padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_tool-call-py` | tool-call 的 approval、content、trigger 部件 padding-block、padding-block-end、padding-block-start 覆盖槽。 |
 | `--xh-tool-call-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | tool-call 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-tool-call-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `--xh-elevation-raised` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-tool-call-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `0 0 0 transparent`<br>`none` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-tool-call-shimmer-duration` | `root`<br>`status` | `animation` | `loading` | `--xh-shimmer-duration` | tool-call 的 root、status 部件 animation 覆盖槽。 |
 | `--xh-tool-call-status-bg-approval` | `status` | `background` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 background 覆盖槽。 |
 | `--xh-tool-call-status-bg-done` | `status` | `background` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 background 覆盖槽。 |
@@ -886,7 +884,7 @@ import {
 | `--xh-tool-call-summary-radius` | `summary` | `border-radius` | `default` | `--xh-shape-control` | tool-call 的 summary 部件 border-radius 覆盖槽。 |
 | `--xh-tool-call-tone-bar` | `root` | `box-shadow` | `tone` | `--xh-stroke-thick` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-tool-call-tone-fg` | `root` | `box-shadow` | `tone` | `--xh-_tone-soft` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-tool-call-trigger-bg-hover` | `trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | tool-call 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tool-call-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tool-call 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-tool-call-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | tool-call 的 trigger 部件 color 覆盖槽。 |
 | `--xh-tool-call-trigger-gap` | `trigger` | `gap` | `default` | `--xh-space-2` | tool-call 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-tool-call-trigger-radius` | `root`<br>`trigger` | `border-radius` | `variant=ghost` | `--xh-shape-control` | tool-call 的 root、trigger 部件 border-radius 覆盖槽。 |
@@ -894,7 +892,7 @@ import {
 
 ### 动效
 
-关键帧 `xh-tool-call-collapse` · `xh-tool-call-enter` · `xh-tool-call-expand` · `xh-tool-call-shimmer` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-tool-call-enter` · `xh-tool-call-shimmer` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

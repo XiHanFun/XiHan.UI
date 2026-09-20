@@ -1,0 +1,38 @@
+const t=`<!-- 显示阈值 | 提前显示回到顶部按钮 -->
+<div style="position: relative; inline-size: min(560px, 100%)">
+  <div
+    id="back-top-threshold-scroll"
+    data-xh-scroll
+    style="
+      block-size: 220px;
+      overflow: auto;
+      padding-inline: 16px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <section style="min-block-size: 88px; padding-block: 14px"><strong>快速开始</strong><p style="color: var(--xh-fg-muted)">快速开始相关内容</p></section>
+    <section style="min-block-size: 88px; padding-block: 14px"><strong>基础配置</strong><p style="color: var(--xh-fg-muted)">基础配置相关内容</p></section>
+    <section style="min-block-size: 88px; padding-block: 14px"><strong>主题定制</strong><p style="color: var(--xh-fg-muted)">主题定制相关内容</p></section>
+    <section style="min-block-size: 88px; padding-block: 14px"><strong>部署</strong><p style="color: var(--xh-fg-muted)">部署相关内容</p></section>
+  </div>
+
+  <template id="back-top-threshold-template">
+    <xh-back-top visibility-height="48">
+      <div
+        data-xh-part="root"
+        style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
+      >
+        <button data-xh-part="trigger"></button>
+      </div>
+    </xh-back-top>
+  </template>
+</div>
+
+<script type="module">
+  const template = document.getElementById("back-top-threshold-template");
+  const backTop = template.content.firstElementChild;
+  backTop.target = document.getElementById("back-top-threshold-scroll");
+  template.replaceWith(backTop);
+<\/script>
+`;export{t as default};

@@ -1,1 +1,0 @@
-import{fZ as a,f_ as r}from"./theme.C4bpqV2W.js";import{d as s,b as l,w as t,k as e,o as n,E as p,a as f}from"./framework.DkvuVDKz.js";const m=s({__name:"tooltip",setup(i){return(u,o)=>(n(),l(e(r),null,{default:t(()=>[p(e(a),null,{default:t(()=>[...o[0]||(o[0]=[f("保存",-1)])]),_:1})]),_:1}))}});export{m as default};

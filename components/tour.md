@@ -591,6 +591,9 @@ const translations = {
 - 无目标步骤在视口中居中，适合开场与结束。
 - `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
 - 支持受控步序、完成和跳过回调。
+- 气泡走 M4 sheet 三件套（1px 描边、不透明底、投影），与对话框同源；边界由描边承担，不只靠影分层。锚定步从贴着目标的那条边涨开入场，退场按 exit 档收拢。
+- 末行三颗按钮与角落的关闭按钮走 Action Control 家族配方：下一步是整条引导的主线动作，显式 solid 品牌实心；上一步为中性描边，跳过为无壳 ghost；关闭按钮为 icon 档 ghost 面。悬停与按下沿画布承载阶梯换底并 0.97 缩放，Space / Enter 与触屏按住期间投影 `data-pressed`。
+- 标题为 heading-3，说明文字为 13px 说明档；说明区是气泡里唯一让步的滚动面，滚到头不带动页面。进度圆点是 8px 正圆，当前那颗拉成 20px 胶囊。
 
 ### 组合
 
@@ -624,24 +627,24 @@ const translations = {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `steps` | `TourStep[]` |  | 步骤清单。它同时是步序的上界与读屏"第 m 步，共 n 步"的分母。 |
-| `value` | `number` |  | 当前步序（0 起）。给定即受控：内部不再自改，只发 onValueChange。 |
+| `steps` | `TourStep[]` |  | 步骤清单。它同时是步序的上界与读屏「第 m 步，共 n 步」的分母。 |
+| `value` | `number` |  | 当前步序（0 起）。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `number` |  | 非受控初值，默认 0。 |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  | 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖。 |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  | 浮层与目标的间距（px）。 |
 | `closeOnEscape` | `boolean` |  |  |
-| `closeOnInteractOutside` | `boolean` |  | 层外交互关闭，默认 false：引导要退出得走 skip 或 close 这两个明确出口。 |
-| `showBackdrop` | `boolean` |  | 画遮罩，默认 true。 |
+| `closeOnInteractOutside` | `boolean` |  | 层外交互关闭，默认 false：引导需经 skip 或 close 两个明确出口退出。 |
+| `showBackdrop` | `boolean` |  | 绘制遮罩，默认 true。 |
 | `spotlightPadding` | `number` |  | 高亮框在目标四周留出的空白（px），默认 8。 |
 | `autoScroll` | `boolean` |  | 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 |
 | `translations` | `Partial<TourTranslations>` |  |  |
-| `onValueChange` | `(details: TourValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: TourValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: TourOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
-| `onComplete` | `(details: TourCompleteDetails) => void` |  | 末步再按"下一步"：先发它，再按 onOpenChange 关闭。 |
-| `onSkip` | `(details: TourSkipDetails) => void` |  | 用户主动放弃（skip-trigger 或 Escape）：先发它，再按 onOpenChange 关闭。 |
+| `onComplete` | `(details: TourCompleteDetails) => void` |  | 末步再按下一步：先发它，再经 onOpenChange 关闭。 |
+| `onSkip` | `(details: TourSkipDetails) => void` |  | 用户主动放弃（skip-trigger 或 Escape）：先发它，再经 onOpenChange 关闭。 |
 
 ### 事件
 
@@ -681,9 +684,9 @@ const translations = {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled`
+**判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled` · `canPress`
 
 ### connect API
 
@@ -696,15 +699,15 @@ const translations = {
 | `count` | `number` |  |
 | `currentStep` | `TourStep \| null` | 当前步的声明；清单为空时为 null。 |
 | `firstStep` | `boolean` | 停在首步：上一步按钮据此禁用。 |
-| `lastStep` | `boolean` | 停在末步：下一步按钮据此改文案（"完成"）。 |
-| `anchored` | `boolean` | 这一步锚定了页面元素：居中步为 false，此时不画高亮框也不出箭头。 |
-| `progressText` | `string` | "第 m 步，共 n 步"。作者没写 progress-text 的内容时由适配器填上。 |
+| `lastStep` | `boolean` | 停在末步：下一步按钮据此更换文案（完成）。 |
+| `anchored` | `boolean` | 该步锚定了页面元素：居中步为 false，此时不绘制高亮框也不显示箭头。 |
+| `progressText` | `string` | 「第 m 步，共 n 步」。作者未编写 progress-text 的内容时由适配器填入。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count - 1]。 |
-| `goToNextStep` | `() => void` | 末步再走一步 = 完成：先发 onComplete，再关闭。 |
+| `goToNextStep` | `() => void` | 末步再前进一步 = 完成：先发 onComplete，再关闭。 |
 | `goToPrevStep` | `() => void` |  |
 | `skip` | `() => void` | 放弃引导：先发 onSkip，再关闭。 |
-| `remeasure` | `() => void` | 重量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调它校准。 |
+| `remeasure` | `() => void` | 重新测量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调用它校准。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
 | `getSpotlightProps` | `() => T['element']` |  |
@@ -733,6 +736,7 @@ const translations = {
 | `Escape` | open 且 closeOnEscape | 放弃引导（发 onSkip）并关闭 |
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | open | 一概不接管：既不换步也不阻止默认行为，留给页面滚动与读屏浏览 |
 | `Tab` / `Shift+Tab` | open | 焦点陷在 content 内循环，跑出去会被拉回来 |
+| `Enter` / `Space` | held in prev-trigger / next-trigger / skip-trigger / close-trigger | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或气泡收起撤下 |
 
 ### ARIA
 
@@ -787,41 +791,66 @@ const translations = {
 | `progress-dot` | `data-complete` | ''（条件成立时才出现） |
 | `progress-dot` | `data-current` | ''（条件成立时才出现） |
 | `progress-dot` | `data-index` | String(index) |
+| `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-state` | 'open' \| 'closed' |
+| `prev-trigger` | `data-xh-action-control` | '' |
+| `prev-trigger` | `data-xh-action-display` | 'always' |
+| `prev-trigger` | `data-xh-action-profile` | 'text' |
+| `prev-trigger` | `data-xh-action-size` | 'sm' |
+| `prev-trigger` | `data-xh-action-variant` | 'outline' |
 | `next-trigger` | `data-last` | ''（条件成立时才出现） |
+| `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-state` | 'open' \| 'closed' |
+| `next-trigger` | `data-xh-action-control` | '' |
+| `next-trigger` | `data-xh-action-display` | 'always' |
+| `next-trigger` | `data-xh-action-profile` | 'text' |
+| `next-trigger` | `data-xh-action-size` | 'sm' |
+| `next-trigger` | `data-xh-action-variant` | 'solid' |
+| `skip-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `skip-trigger` | `data-state` | 'open' \| 'closed' |
+| `skip-trigger` | `data-xh-action-control` | '' |
+| `skip-trigger` | `data-xh-action-display` | 'always' |
+| `skip-trigger` | `data-xh-action-profile` | 'text' |
+| `skip-trigger` | `data-xh-action-size` | 'sm' |
+| `skip-trigger` | `data-xh-action-variant` | 'ghost' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `close-trigger` | `data-xh-action-control` | '' |
+| `close-trigger` | `data-xh-action-display` | 'always' |
+| `close-trigger` | `data-xh-action-profile` | 'icon' |
+| `close-trigger` | `data-xh-action-size` | 'sm' |
+| `close-trigger` | `data-xh-action-variant` | 'ghost' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tour-action-radius` | `next-trigger`<br>`prev-trigger`<br>`skip-trigger` | `border-radius` | `default` | `--xh-shape-control` | tour 的 next-trigger、prev-trigger、skip-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tour-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | tour 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
 | `--xh-tour-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-bg-overlay` | tour 的 backdrop 部件 background 覆盖槽。 |
 | `--xh-tour-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | tour 的 backdrop 部件 z-index 覆盖槽。 |
-| `--xh-tour-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-bg-surface` | tour 的 arrow、content 部件 background 覆盖槽。 |
-| `--xh-tour-border` | `arrow`<br>`content` | `border` | `default` | `--xh-border-default` | tour 的 arrow、content 部件 border 覆盖槽。 |
-| `--xh-tour-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-bg-subtle-active` | tour 的 close-trigger 部件 background 覆盖槽。 |
-| `--xh-tour-close-bg-hover` | `close-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | tour 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-tour-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-elevated-bg` | tour 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-tour-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-elevated-border` | tour 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-tour-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | tour 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tour-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tour 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tour-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | tour 的 close-trigger 部件 color 覆盖槽。 |
-| `--xh-tour-close-fg-hover` | `close-trigger` | `color` | `hover` | `--xh-fg-default` | tour 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-tour-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed` | tour 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-tour-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | tour 的 close-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-tour-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='tour'][data-part='close-trigger'])` | `--xh-control-h-sm` | tour 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-tour-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='tour'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | tour 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-tour-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | tour 的 description 部件 color 覆盖槽。 |
-| `--xh-tour-fg` | `content`<br>`root` | `color` | `default` | `--xh-fg-default` | tour 的 content、root 部件 color 覆盖槽。 |
+| `--xh-tour-fg` | `content`<br>`root` | `color` | `default` | `--xh-fg-default`<br>`--xh-material-elevated-fg` | tour 的 content、root 部件 color 覆盖槽。 |
 | `--xh-tour-gap` | `content` | `gap` | `default` | `--xh-space-2` | tour 的 content 部件 gap 覆盖槽。 |
-| `--xh-tour-icon-size` | `content`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tour 的 content、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tour-icon-size` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`root`<br>`skip-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | tour 的 close-trigger、content、next-trigger、prev-trigger、root、skip-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tour-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | tour 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-tour-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w-lg` | tour 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-tour-next-bg` | `next-trigger` | `background` | `default` | `--xh-bg-brand` | tour 的 next-trigger 部件 background 覆盖槽。 |
-| `--xh-tour-next-bg-hover` | `next-trigger` | `background` | `hover` | `--xh-bg-brand-hover` | tour 的 next-trigger 部件 background 覆盖槽。 |
-| `--xh-tour-next-fg` | `next-trigger` | `color` | `default` | `--xh-fg-on-brand` | tour 的 next-trigger 部件 color 覆盖槽。 |
-| `--xh-tour-next-shadow` | `next-trigger` | `box-shadow` | `default` | `--xh-_tour-next-highlight` | tour 的 next-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-tour-next-bg` | `next-trigger` | `background-color` | `default`<br>`focus-visible` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | tour 的 next-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tour-next-bg-hover` | `next-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tour 的 next-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tour-next-fg` | `next-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | tour 的 next-trigger 部件 color 覆盖槽。 |
+| `--xh-tour-next-shadow` | `next-trigger` | `box-shadow` | `default` | `none` | tour 的 next-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-positioner-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | tour 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-tour-positioner-padding` | `positioner` | `padding` | `position=center` | `--xh-space-4` | tour 的 positioner 部件 padding 覆盖槽。 |
 | `--xh-tour-progress-dot-bg` | `progress-dot` | `background` | `default` | `--xh-border-default` | tour 的 progress-dot 部件 background 覆盖槽。 |
@@ -832,9 +861,9 @@ const translations = {
 | `--xh-tour-progress-indicator-gap` | `progress-indicator` | `gap` | `default` | `--xh-space-1` | tour 的 progress-indicator 部件 gap 覆盖槽。 |
 | `--xh-tour-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | tour 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-py` | `content` | `padding-block` | `default` | `--xh-surface-py-md` | tour 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-tour-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | tour 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-tour-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-sheet` | tour 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-tour-skip-trigger-px` | `next-trigger`<br>`prev-trigger`<br>`skip-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | tour 的 next-trigger、prev-trigger、skip-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-tour-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | tour 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-tour-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | tour 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tour-skip-trigger-px` | `next-trigger`<br>`prev-trigger`<br>`skip-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | tour 的 next-trigger、prev-trigger、skip-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-spotlight-layer` | `spotlight` | `z-index` | `default` | `--xh-_layer` | tour 的 spotlight 部件 z-index 覆盖槽。 |
 | `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-_tour-spotlight-radius` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
 | `--xh-tour-spotlight-ring` | `spotlight` | `box-shadow` | `default` | `--xh-ring-focus` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
@@ -846,15 +875,11 @@ const translations = {
 
 ### 动效
 
-关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `block-size` · `border-radius` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

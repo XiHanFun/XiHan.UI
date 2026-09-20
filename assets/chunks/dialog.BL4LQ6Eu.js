@@ -1,1 +1,0 @@
-import{be as t,bf as r}from"./theme.C4bpqV2W.js";import{d as s,b as n,w as a,k as o,o as l,E as i,a as f}from"./framework.DkvuVDKz.js";const c=s({__name:"dialog",setup(d){return(p,e)=>(l(),n(o(r),{translations:{close:"关闭"}},{default:a(()=>[i(o(t),null,{default:a(()=>[...e[0]||(e[0]=[f("打开对话框",-1)])]),_:1})]),_:1}))}});export{c as default};

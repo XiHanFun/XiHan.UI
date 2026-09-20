@@ -1,6 +1,0 @@
-const d=`<!-- 侧栏位置 | 将侧栏放在行首或行尾 -->
-<div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
-  <xh-layout bordered style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header">行首侧栏</div><div data-xh-part="sider">导航</div><div data-xh-part="content">正文</div></div></xh-layout>
-  <xh-layout sider-placement="end" bordered style="display: contents"><div data-xh-part="root" style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden"><div data-xh-part="header">行尾侧栏</div><div data-xh-part="sider">属性</div><div data-xh-part="content">正文</div></div></xh-layout>
-</div>
-`;export{d as default};

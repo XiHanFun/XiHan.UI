@@ -1,1 +1,0 @@
-import{H as e}from"./theme.C4bpqV2W.js";import{d as a,o,b as r,k as s}from"./framework.DkvuVDKz.js";const m=a({__name:"01-basic",setup(t){return(n,c)=>(o(),r(s(e),{value:"XH-2026-0915"}))}});export{m as default};

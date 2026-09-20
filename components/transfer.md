@@ -2,7 +2,7 @@
 
 # Transfer 穿梭框 `alpha`
 
-左右两栏，把条目从一边搬到另一边。
+左右两栏，把条目从一侧移到另一侧。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/transfer" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-collection 是条目全集的唯一事实源，value 只装落在右侧的那批
+collection 是条目全集的唯一事实源，value 只承载落在右侧的一批
 
 ```vue
 <script setup lang="ts">
@@ -211,7 +211,7 @@ const value = ref<string[]>(["read"]);
 
 ### 搜索过滤
 
-searchable 给每侧配一个搜索框，筛剩下的才参与方向键、全选与搬运
+searchable 为每侧配一个搜索框，筛选后剩余的才参与方向键、全选与移动
 
 ```vue
 <script setup lang="ts">
@@ -432,7 +432,7 @@ function filter(item: { value: string; label: string }, query: string) {
 
 ### 条目禁用
 
-禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点
+禁用写在 items 上：不可勾选也不可移动，但仍可聚焦、仍是方向键的起点
 
 ```vue
 <script setup lang="ts">
@@ -586,9 +586,9 @@ const value = ref<string[]>(["owner"]);
 </script>
 ```
 
-### 单向搬运
+### 单向移动
 
-oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的按钮也就不必写
+oneWay 把向回移动的路径整个封闭，右侧不再接受勾选，向回的按钮也不必编写
 
 ```vue
 <script setup lang="ts">
@@ -751,7 +751,7 @@ const value = ref<string[]>([]);
 
 ### 条目自定义内容
 
-条目里长什么样归作者：勾选格与文本各就各位，前后再各加一段自己的标记
+条目的外观归作者：勾选格与文本各就各位，前后再各加一段自己的标记
 
 ```vue
 <script setup lang="ts">
@@ -987,7 +987,7 @@ const value = ref<string[]>(["he"]);
 
 ### 列表分组
 
-本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运
+本侧当前可见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不进入方向键也不参与移动
 
 ```vue
 <script setup lang="ts">
@@ -1207,9 +1207,9 @@ const value = ref<string[]>(["list"]);
 </script>
 ```
 
-### 范围选
+### 范围选择
 
-按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
+按住 Shift 点击某一项，选中锚点到它的一段；锚点跨到另一侧时退化为普通勾选
 
 ```vue
 <script setup lang="ts">
@@ -1401,9 +1401,9 @@ const value = ref<string[]>(["read"]);
 </script>
 ```
 
-### 一万条只渲可视区
+### 一万条只渲染可视区
 
-面板插槽给的是本侧此刻看得见的全集，作者按滚动位置切一段挂出来，上下各留一个撑高块；全选、计数与搬运不读 DOM，照样管到窗口外
+面板插槽给出的是本侧当前可见的全集，作者按滚动位置切一段挂载，上下各留一个撑高块；全选、计数与移动不读 DOM，照常管理到窗口外
 
 ```vue
 <script setup lang="ts">
@@ -1671,7 +1671,7 @@ const value = ref<string[]>(["sku-3"]);
 
 ### 整块换档
 
-面板高度、表头、条目行、勾选格与搬运按钮各是一个令牌，写在根上整块一起换档
+面板高度、表头、条目行、勾选格与移动按钮各是一个令牌，写在根上整块一起换档
 
 ```vue
 <script setup lang="ts">
@@ -2005,7 +2005,7 @@ const loose = ref<string[]>(["read"]);
 
 ### 语气与尺寸
 
-tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两轴打在根上，两侧面板一起走
+tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档；两轴写在根上，两侧面板一起变化
 
 ```vue
 <script setup lang="ts">
@@ -2284,19 +2284,20 @@ const rows = [
 
 ### 何时使用
 
-- 从一份候选里挑出一个子集，且用户需要同时看见"没选的"和"已选的"。
+- 从一份候选中选出一个子集，且用户需要同时看到未选与已选。
 - 已选项的顺序或数量需要一目了然（分配权限、选人）。
 
 ### 何时不用
 
-- 候选很少：用[复选框组](./checkbox-group)。
-- 只需要选中不需要对照：用[选择器](./select)的多选。
+- 候选很少时，使用[复选框组](./checkbox-group)。
+- 只需要选中不需要对照时，使用[选择器](./select)的多选。
 
 ### 特性
 
 - 两栏都可搜索，`filter` 可自定义匹配规则。
-- `oneWay` 单向搬运：只能往目标搬，搬完不再退回。
-- 一万条时只渲可视区。
+- 勾中的条目铺品牌淡底行面并由行首的方框标记，与表格选中行同一副外观；两侧定高列表挂自绘滚动条。
+- `oneWay` 单向移动：只能移向目标，不可退回。
+- 万级条目时只渲染可视区。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
 - 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
 - 值内逗号保留原样，使用 `new FormData(form).getAll(name)` 读取数组；目标为空时没有该字段，显式选中的空字符串则是一个有效字段值。
@@ -2309,13 +2310,13 @@ const rows = [
 
 ### 最佳实践
 
-- 两栏都显示计数，用户才知道还剩多少没挑。
-- 候选很大时把搜索做成远端过滤，别把全量灌进前端。
+- 两栏都显示计数，用户才知道剩余数量。
+- 候选很大时把搜索做成远端过滤，不把全量数据载入前端。
 
 ### 反模式
 
-- 在窄屏上用它：两栏加中间的按钮列放不下。
-- 搬运后不保留滚动位置，用户每搬一条都要重新找位置。
+- 在窄屏上使用：两栏加中间的按钮列放不下。
+- 移动后不保留滚动位置，用户每移动一条都要重新定位。
 
 ## API 参考
 
@@ -2333,24 +2334,24 @@ const rows = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。缺省为空。 |
-| `value` | `string[]` |  | 落在 target 侧的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。默认为空。 |
+| `value` | `string[]` |  | 落在 target 侧的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `name` | `string` |  | 原生表单字段名；目标侧每个值提交一个同名字段。 |
 | `form` | `string` |  | 原生表单 ID；显式指定时覆盖祖先表单归属。 |
-| `selection` | `string[]` |  | 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 |
+| `selection` | `string[]` |  | 两侧合计被勾选的值（用于移动）。提供即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
-| `searchable` | `boolean` |  | 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden，且搜索串一律按空处理。 |
-| `filter` | `TransferFilter` |  | 自定义匹配规则；缺省是标签大小写不敏感包含。 |
-| `disabled` | `boolean` |  | 整个控件禁用：条目转 aria-disabled，三个按钮与搜索框用原生 disabled。 |
-| `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动。禁用还额外收走键盘入口。 |
-| `invalid` | `boolean` |  | 校验失败：两侧列表报 aria-invalid，各角色节点带 data-invalid。 |
-| `loading` | `boolean` |  | 条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 |
+| `searchable` | `boolean` |  | 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden，且搜索串一律按空处理。 |
+| `filter` | `TransferFilter` |  | 自定义匹配规则；默认为标签大小写不敏感包含。 |
+| `disabled` | `boolean` |  | 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 |
+| `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 |
+| `invalid` | `boolean` |  | 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 |
+| `loading` | `boolean` |  | 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目与勾选格的几何档位。 |
-| `oneWay` | `boolean` |  | 只能往右不能往回：往回搬那条路整个封死，target 侧也不再接受勾选。 |
-| `loop` | `boolean` |  | 列表内方向键走到尽头是否回绕，默认 true。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 |
+| `oneWay` | `boolean` |  | 只能向右不能向回：向回移动的路径整体关闭，target 侧也不再接受勾选。 |
+| `loop` | `boolean` |  | 列表内方向键到达末尾是否回绕，默认 true。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；决定列表内哪个横向方向键是移向对面。 |
 | `translations` | `Partial<TransferTranslations>` |  |  |
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
@@ -2378,13 +2379,18 @@ const rows = [
 
 | 部件 | 取值 |
 | --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
+| `item-checkbox` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | checkStates[panel.side] |
 
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
-**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR`
+**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -2392,27 +2398,27 @@ const rows = [
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `collection` | `readonly TransferItem[]` | 条目全集（作者给的那份，原样透出）。 |
+| `collection` | `readonly TransferItem[]` | 条目全集（作者提供的数据，原样透出）。 |
 | `value` | `string[]` | 落在 target 侧的值。 |
-| `selection` | `string[]` | 两侧合起来被勾中的值。 |
+| `selection` | `string[]` | 两侧合计被勾选的值。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
-| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
-| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧此刻真正勾中的值（只算可见且未禁用的那些，与三态、搬运同一口径）。 |
+| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
+| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧当前实际勾选的值（只计可见且未禁用的条目，与三态、移动同一口径）。 |
 | `checkState` | `(side: TransferSide) => TransferCheckState` |  |
 | `query` | `(side: TransferSide) => string` |  |
-| `canMove` | `(to: TransferSide) => boolean` | 往 to 侧搬此刻可不可行：对面有勾中的可操作条目，且这条路没被 oneWay 封死。 |
+| `canMove` | `(to: TransferSide) => boolean` | 向 to 侧移动当前是否可行：对面有勾选的可操作条目，且该路径未被 oneWay 关闭。 |
 | `isChecked` | `(value: string) => boolean` |  |
 | `sideOf` | `(value: string) => TransferSide` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `setSelection` | `(next: string[]) => void` |  |
 | `setQuery` | `(side: TransferSide, query: string) => void` |  |
-| `toggle` | `(value: string, options?: { extend?: boolean }) => void` | 切换某一项的勾选。extend 为真时选中锚点到这一项那一段（同侧才成立）。 |
+| `toggle` | `(value: string, options?: { extend?: boolean }) => void` | 切换某一项的勾选。extend 为真时选中锚点到该项的范围（同侧才成立）。 |
 | `toggleAll` | `(side: TransferSide) => void` |  |
-| `move` | `(to: TransferSide) => void` | 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 |
+| `move` | `(to: TransferSide) => void` | 程序化移动；焦点安排不在这里处理，那需要知道触发的节点。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 |
 | `getPanelProps` | `(props: TransferPanelProps) => T['element']` |  |
@@ -2422,10 +2428,10 @@ const rows = [
 | `getSearchProps` | `(props: TransferPanelProps) => T['input']` |  |
 | `getListProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getSelectAllTriggerProps` | `(props: TransferPanelProps) => T['button']` |  |
-| `getEmptyProps` | `(props: TransferPanelProps) => T['element']` | 空态占位：放在面板里、list 的兄弟；本侧一条可见条目都没有时露面，其余时候带 hidden。 |
-| `getLoadingProps` | `(props: TransferPanelProps) => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 |
-| `getGroupProps` | `(props: TransferGroupProps) => T['element']` | 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 |
-| `getGroupLabelProps` | `(props: TransferGroupProps) => T['element']` | 分组标题：不是选项、不进导航，只作为本组的可及名字。 |
+| `getEmptyProps` | `(props: TransferPanelProps) => T['element']` | 空态占位：放在面板中、list 的兄弟；本侧没有任何可见条目时显示，其余时候带 hidden。 |
+| `getLoadingProps` | `(props: TransferPanelProps) => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 |
+| `getGroupProps` | `(props: TransferGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
+| `getGroupLabelProps` | `(props: TransferGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemCheckboxProps` | `(props: TransferItemProps) => T['element']` |  |
@@ -2440,15 +2446,16 @@ const rows = [
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Enter` / `Space` | held on 条目 / 全选格 / 搬运按钮, 未禁用、未只读、未加载且部件自身可用 | 按住期间条目、全选格或搬运按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，搬完后按钮失去可搬的条目时由机器撤下。勾选与搬运语义照旧由这一次按键承担 |
 | `Tab` / `Shift+Tab` | focus outside a list | 每一侧列表只占一个 Tab 位：焦点进入该侧锚点条目，无锚点时先落列表容器再由它转投；两个搬运按钮与两个全选格各自另占一位，禁用时自动退出 Tab 序列 |
 | `ArrowDown` | focus in a list | 焦点移到本侧下一个可停留条目（禁用项跳过、尽头按 loop 回绕）；不会走到对面那一侧去 |
 | `ArrowUp` | focus in a list | 焦点移到本侧上一个可停留条目 |
 | `Home` | focus in a list | 焦点移到本侧首个可停留条目 |
 | `End` | focus in a list | 焦点移到本侧末个可停留条目 |
 | `Space` / `Enter` / `Ctrl+Space` | focus on item, 本侧可勾选 | 切换焦点条目的勾选态，其余勾选不动；条目禁用、或已被搜索藏起来则不认 |
-| `Shift+ArrowDown` / `Shift+ArrowUp` | focus in a list, 本侧可勾选 | 焦点移到相邻条目并切换它的勾选态；往回走即把刚扩进来的那个摘掉 |
+| `Shift+ArrowDown` / `Shift+ArrowUp` | focus in a list, 本侧可勾选 | 焦点移到相邻条目并切换它的勾选态；反向移动即取消刚扩展进来的条目 |
 | `Ctrl+A` / `Cmd+A` | focus in a list, 本侧可勾选 | 勾中本侧全部可操作条目（可见且未禁用）；已经全勾则一并取消 |
-| `ArrowRight` / `ArrowLeft` | focus in a list, 该方向指向对面且对面搬得动 | 把本侧勾中的条目搬到对面（dir=rtl 时左右语义对调）；搬完焦点落到目的地那一侧的列表上。方向指向本侧、或此刻搬不动时这个键放行给页面 |
+| `ArrowRight` / `ArrowLeft` | focus in a list, 该方向指向对面且可以移动 | 把本侧勾选的条目移动到对面（dir=rtl 时左右语义对调）；移动完成后焦点落到目标侧的列表上。方向指向本侧、或当前无法移动时该键放行给页面 |
 | `Enter` / `Space` | focus on to-target-trigger / to-source-trigger | 把对面勾中的条目搬过来（原生按钮的激活行为）；搬完按钮多半随即变禁用，焦点改落到目的地那一侧的列表上 |
 | `Enter` / `Space` | focus on select-all-trigger | 全选/取消全选该侧可操作条目（原生按钮的激活行为）；三态经 aria-checked 上报，半选时是 mixed |
 
@@ -2515,35 +2522,71 @@ const rows = [
 | `group` | `data-side` | group.side |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-side` | group.side |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-side` | item.side |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-xh-collection-context` | 'page' |
+| `item` | `data-xh-collection-item` | '' |
+| `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-side` | item.side |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
+| `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-checkbox` | `data-disabled` | ''（条件成立时才出现） |
+| `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-checkbox` | `data-side` | item.side |
+| `item-checkbox` | `data-state` | 'checked' \| 'unchecked' |
+| `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-side` | panel.side |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-side` | panel.side |
 | `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `to-target-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `to-target-trigger` | `data-xh-action-control` | '' |
+| `to-target-trigger` | `data-xh-action-display` | 'always' |
+| `to-target-trigger` | `data-xh-action-profile` | 'icon' |
+| `to-target-trigger` | `data-xh-action-size` | 'sm' |
+| `to-target-trigger` | `data-xh-action-variant` | 'outline' |
 | `to-source-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `to-source-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `to-source-trigger` | `data-xh-action-control` | '' |
+| `to-source-trigger` | `data-xh-action-display` | 'always' |
+| `to-source-trigger` | `data-xh-action-profile` | 'icon' |
+| `to-source-trigger` | `data-xh-action-size` | 'sm' |
+| `to-source-trigger` | `data-xh-action-variant` | 'outline' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-side` | panel.side |
 | `select-all-trigger` | `data-state` | checkStates[panel.side] |
+| `select-all-trigger` | `data-xh-action-control` | '' |
+| `select-all-trigger` | `data-xh-action-display` | 'always' |
+| `select-all-trigger` | `data-xh-action-profile` | 'text' |
+| `select-all-trigger` | `data-xh-action-size` | 'xs' |
+| `select-all-trigger` | `data-xh-action-variant` | 'ghost' |
 | `panel` | `data-disabled` | ''（条件成立时才出现） |
 | `panel` | `data-side` | panel.side |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-transfer-checkbox-bg` | `item-checkbox`<br>`select-all-trigger` | `background` | `default` | `--xh-bg-canvas` | transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-bg-checked` | `item-checkbox`<br>`select-all-trigger` | `background` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-accent` | transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-bg-disabled` | `item-checkbox` | `background` | `disabled` | `--xh-bg-muted` | transfer 的 item-checkbox 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-border` | `item-checkbox`<br>`select-all-trigger` | `border` | `default` | `--xh-border-control` | transfer 的 item-checkbox、select-all-trigger 部件 border 覆盖槽。 |
 | `--xh-transfer-checkbox-border-checked` | `item-checkbox`<br>`select-all-trigger` | `border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-accent` | transfer 的 item-checkbox、select-all-trigger 部件 border-color 覆盖槽。 |
-| `--xh-transfer-checkbox-border-disabled` | `item-checkbox` | `border-color` | `disabled` | `--xh-border-subtle` | transfer 的 item-checkbox 部件 border-color 覆盖槽。 |
+| `--xh-transfer-checkbox-border-disabled` | `item-checkbox` | `border-color` | `disabled` | `--xh-border-default` | transfer 的 item-checkbox 部件 border-color 覆盖槽。 |
 | `--xh-transfer-checkbox-fg` | `item-checkbox`<br>`select-all-trigger` | `background-color`<br>`color` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-on-accent` | transfer 的 item-checkbox、select-all-trigger 部件 background-color、color 覆盖槽。 |
 | `--xh-transfer-checkbox-font-size` | `item-checkbox`<br>`select-all-trigger` | `font-size` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-checkbox-radius` | `item-checkbox`<br>`select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item-checkbox、select-all-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-icon-size、block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-transfer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | transfer 的 empty 部件 color 覆盖槽。 |
 | `--xh-transfer-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-transfer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 empty 部件 padding-inline 覆盖槽。 |
@@ -2557,9 +2600,12 @@ const rows = [
 | `--xh-transfer-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | transfer 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-1_5` | transfer 的 group 部件 margin-block-start 覆盖槽。 |
-| `--xh-transfer-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | transfer 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-transfer-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | transfer 的 item 部件 background 覆盖槽。 |
-| `--xh-transfer-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | transfer 的 item 部件 color 覆盖槽。 |
+| `--xh-transfer-icon-size` | `item`<br>`root`<br>`to-source-trigger`<br>`to-target-trigger` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_action-profile-glyph-size`<br>`--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | transfer 的 item、root、to-source-trigger、to-target-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-transfer-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | transfer 的 item 部件 background-color 覆盖槽。 |
+| `--xh-transfer-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | transfer 的 item 部件 background-color 覆盖槽。 |
+| `--xh-transfer-item-bg-selected` | `item` | `background-color` | `disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | transfer 的 item 部件 background-color 覆盖槽。 |
+| `--xh-transfer-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-fg-default` | transfer 的 item 部件 color 覆盖槽。 |
+| `--xh-transfer-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | transfer 的 item 部件 color 覆盖槽。 |
 | `--xh-transfer-item-font-size` | `item` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 item 部件 font-size 覆盖槽。 |
 | `--xh-transfer-item-gap` | `item` | `gap` | `default` | `--xh-_transfer-gap` | transfer 的 item 部件 gap 覆盖槽。 |
 | `--xh-transfer-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | transfer 的 item 部件 line-height 覆盖槽。 |
@@ -2586,39 +2632,43 @@ const rows = [
 | `--xh-transfer-panel-radius` | `source-panel`<br>`target-panel` | `border-radius` | `default` | `--xh-shape-surface` | transfer 的 source-panel、target-panel 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-panel-title-fg` | `panel-title` | `color` | `default` | `--xh-fg-default` | transfer 的 panel-title 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-title-font-size` | `panel-title` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 panel-title 部件 font-size 覆盖槽。 |
-| `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-text-label-weight` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
+| `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
 | `--xh-transfer-search-bg` | `search` | `background` | `default` | `transparent` | transfer 的 search 部件 background 覆盖槽。 |
 | `--xh-transfer-search-border` | `search` | `border-block-end` | `default` | `--xh-border-control` | transfer 的 search 部件 border-block-end 覆盖槽。 |
 | `--xh-transfer-search-fg` | `search` | `color` | `default` | `--xh-fg-default` | transfer 的 search 部件 color 覆盖槽。 |
 | `--xh-transfer-search-font-size` | `search` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 search 部件 font-size 覆盖槽。 |
 | `--xh-transfer-search-h` | `search` | `block-size` | `default` | `--xh-control-h-sm` | transfer 的 search 部件 block-size 覆盖槽。 |
 | `--xh-transfer-search-px` | `search` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 search 部件 padding-inline 覆盖槽。 |
-| `--xh-transfer-select-all-fg` | `select-all-trigger` | `color` | `default` | `--xh-fg-muted` | transfer 的 select-all-trigger 部件 color 覆盖槽。 |
+| `--xh-transfer-select-all-bg-hover` | `select-all-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-select-all-bg-pressed` | `select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-select-all-fg` | `select-all-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-muted` | transfer 的 select-all-trigger 部件 color 覆盖槽。 |
 | `--xh-transfer-select-all-font-size` | `select-all-trigger` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-select-all-gap` | `select-all-trigger` | `gap` | `default` | `--xh-control-gap-sm` | transfer 的 select-all-trigger 部件 gap 覆盖槽。 |
-| `--xh-transfer-select-all-radius` | `select-all-trigger` | `border-radius` | `default` | `--xh-shape-control` | transfer 的 select-all-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-trigger-bg` | `to-source-trigger`<br>`to-target-trigger` | `background` | `default` | `--xh-bg-subtle` | transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-trigger-bg-active` | `to-source-trigger`<br>`to-target-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-trigger-bg-hover` | `to-source-trigger`<br>`to-target-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-trigger-border` | `to-source-trigger`<br>`to-target-trigger` | `border` | `default` | `--xh-border-default` | transfer 的 to-source-trigger、to-target-trigger 部件 border 覆盖槽。 |
-| `--xh-transfer-trigger-fg` | `to-source-trigger`<br>`to-target-trigger` | `color` | `default` | `--xh-fg-default` | transfer 的 to-source-trigger、to-target-trigger 部件 color 覆盖槽。 |
+| `--xh-transfer-select-all-radius` | `select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 select-all-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-transfer-trigger-bg` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-trigger-bg-active` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-trigger-bg-hover` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-trigger-border` | `to-source-trigger`<br>`to-target-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_action-variant-border-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-transfer-trigger-fg` | `to-source-trigger`<br>`to-target-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 color 覆盖槽。 |
 | `--xh-transfer-trigger-font-size` | `to-source-trigger`<br>`to-target-trigger` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 to-source-trigger、to-target-trigger 部件 font-size 覆盖槽。 |
-| `--xh-transfer-trigger-px` | `to-source-trigger`<br>`to-target-trigger` | `padding-inline` | `default` | `--xh-space-2` | transfer 的 to-source-trigger、to-target-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-transfer-trigger-px` | `to-source-trigger`<br>`to-target-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | transfer 的 to-source-trigger、to-target-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-trigger-radius` | `to-source-trigger`<br>`to-target-trigger` | `border-radius` | `default` | `--xh-shape-control` | transfer 的 to-source-trigger、to-target-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-trigger-shadow-active` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `active`<br>`not(:disabled)` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-transfer-trigger-shadow-hover` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-transfer-trigger-size` | `to-source-trigger`<br>`to-target-trigger` | `block-size`<br>`min-inline-size` | `default` | `--xh-control-h-sm` | transfer 的 to-source-trigger、to-target-trigger 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-transfer-trigger-shadow-active` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-transfer-trigger-shadow-hover` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-transfer-trigger-size` | `to-source-trigger`<br>`to-target-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | transfer 的 to-source-trigger、to-target-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
 皮肤按视口分档：`min-width: 640px`。
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

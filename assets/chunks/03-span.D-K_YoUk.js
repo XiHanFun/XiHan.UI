@@ -1,0 +1,11 @@
+const a=`<!-- 跨列与错列 | 控制内容占用的列 -->
+<xh-grid id="grid-span" cols="4" gap="sm" style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(640px, 100%)">
+    <div data-xh-part="item" span="3" data-demo-block data-tone="brand"></div>
+    <div data-xh-part="item" data-demo-block data-tone="info"></div>
+    <div data-xh-part="item" span="2" data-demo-block data-tone="success"></div>
+    <div data-xh-part="item" span="2" data-demo-block data-tone="warning"></div>
+    <div data-xh-part="item" offset="1" span="2" data-demo-block data-tone="danger"></div>
+  </div>
+</xh-grid>
+`;export{a as default};

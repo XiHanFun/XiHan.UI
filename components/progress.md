@@ -2,7 +2,7 @@
 
 # Progress 进度条 `alpha`
 
-表示一件事完成了多少。线形、环形与仪表盘三种画法。
+表示一件事的完成程度。线形、环形与仪表盘三种形态。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/progress" target="_blank" rel="noreferrer">Headless</a>
@@ -68,7 +68,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 配文字说明
 
-进度条自身只画轨道与进度，百分比文字由使用者摆
+进度条自身只绘制轨道与进度，百分比文字由使用者放置
 
 ```vue
 <script setup lang="ts">
@@ -263,7 +263,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 
 ### 尺寸
 
-size 只改轨道厚度，不写即缺省中档
+size 只改变轨道厚度，不写即默认中档
 
 ```vue
 <script setup lang="ts">
@@ -327,7 +327,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 自定义外观
 
-轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都塞得进去
+轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都可以使用
 
 ```vue
 <script setup lang="ts">
@@ -393,7 +393,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 环形
 
-variant="circle" 把同一份进度画成环，尺寸档改的是直径
+variant="circle" 把同一份进度绘制为环，尺寸档改变的是直径
 
 ```vue
 <script setup lang="ts">
@@ -442,7 +442,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 仪表盘
 
-variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定它多大、朝哪
+variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定缺口大小与朝向
 
 ```vue
 <script setup lang="ts">
@@ -501,7 +501,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 环心文字
 
-组件只负责把内容摆到环心，写什么由使用者决定
+组件只负责把内容放置到环心，写什么由使用者决定
 
 ```vue
 <script setup lang="ts">
@@ -570,7 +570,7 @@ import { XhIcon, XhProgress } from "@xihan-ui/vue";
 
 ### 环的外观
 
-直径、颜色与端点走令牌，线宽走 strokeWidth：它改的是几何，半径跟着往里收
+直径、颜色与端点经令牌，线宽经 strokeWidth：它改变的是几何，半径随之向内收缩
 
 ```vue
 <script setup lang="ts">
@@ -643,20 +643,20 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 何时使用
 
-- 上传、导出、批处理这类有确定完成度的过程。
-- 用容量、配额这类比例值。
+- 上传、导出、批处理等有确定完成度的过程。
+- 容量、配额等比例值。
 
 ### 何时不用
 
-- 完成度未知：用[加载指示器](./spinner)或[加载条](./loading-bar)的爬升模式。
-- 表示的是步骤而不是比例：用[步骤条](./steps)。
+- 完成度未知时，使用[加载指示器](./spinner)或[加载条](./loading-bar)的爬升模式。
+- 表示步骤而不是比例时，使用[步骤条](./steps)。
 
 ### 特性
 
 - `variant` 三档：线形、环形、仪表盘；仪表盘的缺口角度与位置可调。
-- `indeterminate` 表达"进行中但不知道还剩多少"。
-- `valueText` 决定读屏念出的是什么——"3 个文件中的第 2 个"比"66%"有用得多。
-- 环心可以放文字。
+- `indeterminate` 表达进行中但剩余量未知。
+- `valueText` 决定读屏读出的内容：“3 个文件中的第 2 个”比“66%”更有用。
+- 环心可以放置文字。
 
 ### 组合
 
@@ -664,12 +664,12 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 最佳实践
 
-- 长任务给出剩余时间或剩余数量，光有百分比很难判断还要等多久。
-- 到 100% 后要有明确的完成态，别停在满格不动。
+- 长任务给出剩余时间或剩余数量，只有百分比难以判断等待时长。
+- 到 100% 后要有明确的完成态，不停留在满格。
 
 ### 反模式
 
-- 进度会倒退。
+- 进度倒退。
 - 用假进度条掩盖未知的等待。
 
 ## API 参考
@@ -689,15 +689,15 @@ import { XhProgress } from "@xihan-ui/vue";
 | --- | --- | --- | --- |
 | `gapDegree` | `number` |  | 缺口角度，默认 75。只对 dashboard 生效。 |
 | `gapPosition` | `ProgressGapPosition` |  | 缺口朝向，默认 bottom。只对 dashboard 生效。 |
-| `indeterminate` | `boolean` |  | 进度未知：条子改为往复动画，读屏那侧不报数。 置真时 aria-valuenow 整个不发——ARIA 规定不确定进度以该属性缺席表达。 |
-| `max` | `number` |  | 满值上限，默认 100；非有限值或不为正时回落 100。 |
-| `semantics` | `ProgressSemantics` |  | 报的是进度还是量，默认 progress。meter 档发 role="meter"，且 indeterminate 不再生效。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。线形改轨道厚度，环形改直径 |
-| `strokeWidth` | `number` |  | 环的线宽，走 viewBox 单位（整个环画在 100×100 里），默认 6。 只对 circle / dashboard 生效——它改的是几何（半径跟着往里收），所以是 prop 不是令牌； 线形的厚度仍走 --xh-progress-thickness。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `indeterminate` | `boolean` |  | 进度未知：进度条改为往复动画，读屏侧不报数。 置真时 aria-valuenow 整体不发出：ARIA 规定不确定进度以该属性缺席表达。 |
+| `max` | `number` |  | 满值上限，默认 100；非有限值或不为正时回退为 100。 |
+| `semantics` | `ProgressSemantics` |  | 报告的是进度还是量，默认 progress。meter 档发出 role="meter"，且 indeterminate 不再生效。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。线形影响轨道厚度，环形影响直径 |
+| `strokeWidth` | `number` |  | 环的线宽，使用 viewBox 单位（整个环绘制在 100×100 中），默认 6。 只对 circle / dashboard 生效：它修改的是几何（半径随之向内收缩），因此是 prop 而不是令牌； 线形的厚度仍使用 --xh-progress-thickness。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `value` | `number` |  | 当前进度值，越界会被夹到 [0, max]；非有限值按 0 处理。 |
-| `valueText` | `string` |  | 读屏播报的文字，覆盖默认的数值播报（进度不是百分比时用，如「第 3 步，共 8 步」）。 |
-| `variant` | `ProgressVariant` |  | 形态，默认 line。circle 画整环，dashboard 在环上留一个缺口。 |
+| `valueText` | `string` |  | 读屏播报的文字，覆盖默认的数值播报（进度不是百分比时使用，如「第 3 步，共 8 步」）。 |
+| `variant` | `ProgressVariant` |  | 形态，默认 line。circle 绘制整环，dashboard 在环上留出一个缺口。 |
 
 ### 状态
 
@@ -722,7 +722,7 @@ import { XhProgress } from "@xihan-ui/vue";
 | `getCanvasProps` | `() => T['element']` | 承载环的 &lt;svg&gt;；线形不渲染它。 |
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
-| `getLabelProps` | `() => T['element']` | 环心那一块：落位归皮肤，写什么归作者。线形用不到。 |
+| `getLabelProps` | `() => T['element']` | 环心区域：落位归皮肤，内容归作者。线形不使用。 |
 
 ## 无障碍
 
@@ -771,9 +771,9 @@ import { XhProgress } from "@xihan-ui/vue";
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-progress-indeterminate-duration` | `range` | `animation` | `state=indeterminate` | `--xh-shimmer-duration` | progress 的 range 部件 animation 覆盖槽。 |
 | `--xh-progress-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | progress 的 label 部件 color 覆盖槽。 |

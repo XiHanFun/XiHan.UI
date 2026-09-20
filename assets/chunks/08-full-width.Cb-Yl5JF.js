@@ -1,1 +1,0 @@
-import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as r}from"./button.Bfk2xk7S.js";import"./jsx-runtime.DVGPA3uI.js";import"./theme.C4bpqV2W.js";import"./framework.DkvuVDKz.js";import"./config.CIinjCLh.js";import"./index.CVfUds7h.js";import"./native-events.29TdJGw2.js";function f(){return t.jsx(r,{fullWidth:!0,children:"继续"})}export{f as default};

@@ -345,17 +345,17 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ContextMenuNode[]` |  | 条目数据，显示文本、禁用、标记位与分组的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用全写在条目部件上」的老路。 |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `collection` | `ContextMenuNode[]` |  | 条目数据，显示文本、禁用、标记位与分组的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用全部写在条目部件上的方式。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `placement` | `Placement` |  | 相对光标那一点的首选放置位，默认 bottom-start。 |
-| `offset` | `number` |  | 浮层与光标的间距（px），默认 0——右键菜单要贴着光标。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `placement` | `Placement` |  | 相对光标位置的首选放置位，默认 bottom-start。 |
+| `offset` | `number` |  | 浮层与光标的间距（px），默认 0：右键菜单需要贴近光标。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `typeahead` | `boolean` |  | 连打检索，默认开。关掉后可打印字符一律放行给页面。 |
-| `translations` | `Partial<ContextMenuTranslations>` |  | 读屏用的文案，默认英文。 |
-| `longPressDelay` | `number` |  | 触摸端长按多久算触发（ms），默认 700。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位用哪族颜色。 |
+| `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
+| `translations` | `Partial<ContextMenuTranslations>` |  | 读屏文案，默认英文。 |
+| `longPressDelay` | `number` |  | 触摸端长按多久视为触发（ms），默认 700。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `onOpenChange` | `(details: ContextMenuOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onSelect` | `(details: ContextMenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
@@ -395,9 +395,9 @@ import {
 
 **状态**：`closed` · `pressing` · `open`
 
-**事件**：`CONTEXT.MENU` · `OPEN` · `CLOSE` · `PRESS.START` · `PRESS.MOVE` · `PRESS.END` · `after.longPressDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `ITEM.LOST` · `ITEM.SELECT`
+**事件**：`CONTEXT.MENU` · `OPEN` · `CLOSE` · `PRESS.START` · `PRESS.MOVE` · `PRESS.END` · `after.longPressDelay` · `ITEM.PRESS.START` · `ITEM.PRESS.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `ITEM.LOST` · `ITEM.SELECT`
 
-**判据**：`isOpenControlled` · `movedBeyondTolerance`
+**判据**：`isOpenControlled` · `movedBeyondTolerance` · `canPressItem`
 
 ### connect API
 
@@ -406,11 +406,11 @@ import {
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly ContextMenuNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
-| `pressing` | `boolean` | 长按计时进行中；触发区据此给按压反馈。 |
-| `point` | `ContextMenuPoint \| null` | 当前锚点坐标；一次都没打开过时为 null。 |
+| `collection` | `readonly ContextMenuNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `pressing` | `boolean` | 长按计时进行中；触发区据此提供按压反馈。 |
+| `point` | `ContextMenuPoint \| null` | 当前锚点坐标；从未打开过时为 null。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
-| `setOpen` | `(next: boolean) => void` | 收起走 CLOSE；展开沿用最近一次锚点坐标，从未有过坐标时锚在触发区的起始角上。 |
+| `setOpen` | `(next: boolean) => void` | 收起经 CLOSE；展开沿用最近一次锚点坐标，从未有过坐标时锚定在触发区的起始角。 |
 | `openAt` | `(x: number, y: number) => void` | 命令式展开到指定视口坐标。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['element']` |  |
@@ -440,6 +440,7 @@ import {
 | `End` | open, focus in content | 焦点移到末个可用条目 |
 | `单个可打印字符` | open, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不选中它 |
 | `Enter` / `Space` | focus in item, not disabled | 派发选中详情并关闭菜单，焦点归还触发区 |
+| `Enter` / `Space` | held in item, not disabled | 按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或菜单收起撤下 |
 | `Escape` | open | 关闭菜单并把焦点归还触发区 |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还触发区，按 Tab 序列自然离开 |
 
@@ -491,14 +492,30 @@ import {
 | `positioner` | `data-tone` | props.tone |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-xh-collection-context` | 'overlay' |
+| `item` | `data-xh-collection-item` | '' |
+| `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-xh-collection-slot` | 'prefix' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-context-menu-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | context-menu 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
 | `--xh-context-menu-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | context-menu 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
@@ -508,7 +525,7 @@ import {
 | `--xh-context-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 content 部件 gap 覆盖槽。 |
 | `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | context-menu 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | context-menu 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | context-menu 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-context-menu-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 group 部件 gap 覆盖槽。 |
 | `--xh-context-menu-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 group-label 部件 color 覆盖槽。 |
@@ -517,17 +534,17 @@ import {
 | `--xh-context-menu-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_context-menu-item-px` | context-menu 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | context-menu 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-context-menu-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | context-menu 的 content 部件 background 覆盖槽。 |
-| `--xh-context-menu-icon-size` | `content`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | context-menu 的 content、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-context-menu-item-bg-active` | `item` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-bg-subtle` | context-menu 的 item 部件 background 覆盖槽。 |
-| `--xh-context-menu-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | context-menu 的 item 部件 background 覆盖槽。 |
-| `--xh-context-menu-item-bg-pressed` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | context-menu 的 item 部件 background 覆盖槽。 |
+| `--xh-context-menu-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | context-menu 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-context-menu-item-bg-active` | `item` | `background-color` | `in-path` | `--xh-bg-subtle` | context-menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-context-menu-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | context-menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-context-menu-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | context-menu 的 item 部件 background-color 覆盖槽。 |
 | `--xh-context-menu-item-description-fg` | `item-description` | `color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 item-description 部件 color 覆盖槽。 |
 | `--xh-context-menu-item-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-caption-size` | context-menu 的 item-description 部件 font-size 覆盖槽。 |
-| `--xh-context-menu-item-fg` | `item` | `color` | `default` | `--xh-material-frosted-fg` | context-menu 的 item 部件 color 覆盖槽。 |
+| `--xh-context-menu-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-material-frosted-fg` | context-menu 的 item 部件 color 覆盖槽。 |
 | `--xh-context-menu-item-font-size` | `item` | `font-size` | `default` | `--xh-_context-menu-font-size` | context-menu 的 item 部件 font-size 覆盖槽。 |
 | `--xh-context-menu-item-gap` | `item` | `gap` | `default` | `--xh-_context-menu-item-gap` | context-menu 的 item 部件 gap 覆盖槽。 |
 | `--xh-context-menu-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | context-menu 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-context-menu-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | context-menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-context-menu-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-icon-size` | context-menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-context-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | context-menu 的 item 部件 line-height 覆盖槽。 |
 | `--xh-context-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_context-menu-item-px` | context-menu 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_context-menu-item-py` | context-menu 的 item 部件 padding-block 覆盖槽。 |
@@ -546,7 +563,7 @@ import {
 
 ### 动效
 
-关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

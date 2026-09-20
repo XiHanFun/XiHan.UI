@@ -1,0 +1,30 @@
+const a=`<!-- 形态 | outline 为默认卡面，subtle 淡底嵌入，ghost 用于嵌套 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <xh-card variant="outline">
+    <div data-xh-part="root" style="inline-size: 200px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">outline</div>
+      </div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
+    </div>
+  </xh-card>
+
+  <xh-card variant="subtle">
+    <div data-xh-part="root" style="inline-size: 200px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">subtle</div>
+      </div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
+    </div>
+  </xh-card>
+
+  <xh-card variant="ghost">
+    <div data-xh-part="root" style="inline-size: 200px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">ghost</div>
+      </div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
+    </div>
+  </xh-card>
+</div>
+`;export{a as default};

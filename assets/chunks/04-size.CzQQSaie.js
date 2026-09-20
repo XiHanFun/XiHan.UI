@@ -1,1 +1,0 @@
-import{bT as a,bU as n,bV as r}from"./theme.C4bpqV2W.js";import{d as i,o as c,c as l,B as m,E as t,w as u,k as e,F as p}from"./framework.DkvuVDKz.js";const F=i({__name:"04-size",setup(_){const o=["sm","md","lg"];return(d,f)=>(c(),l(p,null,m(o,s=>t(e(r),{key:s,style:{position:"static"},size:s},{default:u(()=>[t(e(a)),t(e(n))]),_:1},8,["size"])),64))}});export{F as default};

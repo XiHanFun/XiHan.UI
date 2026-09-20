@@ -27,6 +27,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <template>
   <div
     ref="scrollEl"
+    data-xh-scroll
     style="
       block-size: 240px;
       inline-size: min(420px, 100%);
@@ -59,6 +60,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 ```html
 <div
   id="affix-basic-scroll"
+  data-xh-scroll
   style="
     block-size: 240px;
     inline-size: min(420px, 100%);
@@ -122,6 +124,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <template>
   <div
     ref="scrollEl"
+    data-xh-scroll
     style="
       position: relative;
       block-size: 240px;
@@ -170,6 +173,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 ```html
 <div
   id="affix-offset-top-scroll"
+  data-xh-scroll
   style="
     position: relative;
     block-size: 240px;
@@ -241,6 +245,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <template>
   <div
     ref="scrollEl"
+    data-xh-scroll
     style="
       block-size: 240px;
       inline-size: min(420px, 100%);
@@ -276,6 +281,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 ```html
 <div
   id="affix-offset-bottom-scroll"
+  data-xh-scroll
   style="
     block-size: 240px;
     inline-size: min(420px, 100%);
@@ -335,6 +341,7 @@ const scrollEl = ref<HTMLElement | null>(null);
   <div style="display: grid; gap: 12px; inline-size: min(420px, 100%)">
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         block-size: 220px;
         overflow: auto;
@@ -363,6 +370,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <div style="display: grid; gap: 12px; inline-size: min(420px, 100%)">
   <div
     id="affix-change-scroll"
+    data-xh-scroll
     style="
       block-size: 220px;
       overflow: auto;
@@ -452,8 +460,8 @@ const scrollEl = ref<HTMLElement | null>(null);
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `offsetTop` | `number` |  | 吸住后距滚动容器可视区上边的距离（px）。 |
-| `offsetBottom` | `number` |  | 吸住后距滚动容器可视区下边的距离（px）；给了它就改贴下边。 |
+| `offsetTop` | `number` |  | 吸附后距滚动容器可视区上边的距离（px）。 |
+| `offsetBottom` | `number` |  | 吸附后距滚动容器可视区下边的距离（px）；提供后改为贴靠下边。 |
 | `onAffixChange` | `(details: AffixChangeDetails) => void` |  | 吸附状态变化回调。 |
 
 ### 事件
@@ -488,7 +496,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `affixed` | `boolean` | 此刻是不是吸住了。 |
+| `affixed` | `boolean` | 当前是否处于吸附状态。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 
@@ -517,9 +525,9 @@ const scrollEl = ref<HTMLElement | null>(null);
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-affix-layer` | `content` | `z-index` | `fixed` | `--xh-layer-sticky` | affix 的 content 部件 z-index 覆盖槽。 |
 <!-- xh-component-tokens:end -->

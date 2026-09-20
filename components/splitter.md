@@ -31,10 +31,14 @@ const panels = [
 </script>
 
 <template>
-  <XhSplitterRoot :panels="panels" style="inline-size: min(640px, 100%); block-size: 180px">
-    <XhSplitterPanel :index="0" style="padding: 16px; background: var(--xh-bg-subtle)">文件</XhSplitterPanel>
+  <XhSplitterRoot :panels="panels" aria-label="可调整比例的占位区块" style="inline-size: min(640px, 100%); block-size: 180px">
+    <XhSplitterPanel :index="0" style="padding: 16px">
+      <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" />
+    </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
-    <XhSplitterPanel :index="1" style="padding: 16px; background: var(--xh-bg-brand-subtle)">编辑器</XhSplitterPanel>
+    <XhSplitterPanel :index="1" style="padding: 16px">
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" />
+    </XhSplitterPanel>
   </XhSplitterRoot>
 </template>
 ```
@@ -42,12 +46,13 @@ const panels = [
 ```html
 <xh-splitter
   panels='[{"id":"aside","min":20,"max":60},{"id":"main","min":25}]'
+  aria-label="可调整比例的占位区块"
   style="display: contents"
 >
   <div data-xh-part="root" style="inline-size: min(640px, 100%); block-size: 180px">
-    <div data-xh-part="panel" index="0" style="padding: 16px; background: var(--xh-bg-subtle)">文件</div>
+    <div data-xh-part="panel" index="0" style="padding: 16px"><span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span></div>
     <div data-xh-part="resize-trigger" index="0"></div>
-    <div data-xh-part="panel" index="1" style="padding: 16px; background: var(--xh-bg-brand-subtle)">编辑器</div>
+    <div data-xh-part="panel" index="1" style="padding: 16px"><span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span></div>
   </div>
 </xh-splitter>
 ```
@@ -86,15 +91,15 @@ const panels = [
     style="inline-size: min(480px, 100%); block-size: 240px"
   >
     <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">预览</p>
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
     <XhSplitterPanel :index="1" style="background: var(--xh-bg-brand-subtle)">
-      <p style="padding: 12px">编辑器</p>
+      <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="1" />
     <XhSplitterPanel :index="2" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">控制台</p>
+      <span data-demo-block data-tone="success" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
   </XhSplitterRoot>
 </template>
@@ -108,15 +113,15 @@ const panels = [
 >
   <div data-xh-part="root" style="inline-size: min(480px, 100%); block-size: 240px">
     <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">预览</p>
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
     </div>
     <div data-xh-part="resize-trigger" index="0"></div>
     <div data-xh-part="panel" index="1" style="background: var(--xh-bg-brand-subtle)">
-      <p style="padding: 12px">编辑器</p>
+      <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
     </div>
     <div data-xh-part="resize-trigger" index="1"></div>
     <div data-xh-part="panel" index="2" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">控制台</p>
+      <span data-demo-block data-tone="success" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
     </div>
   </div>
 </xh-splitter>
@@ -144,11 +149,11 @@ const panels = [{ id: "aside" }, { id: "main" }];
     style="inline-size: min(480px, 100%); block-size: 140px"
   >
     <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">侧栏</p>
+      <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
     <XhSplitterPanel :index="1" style="background: var(--xh-bg-brand-subtle)">
-      <p style="padding: 12px">正文</p>
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
   </XhSplitterRoot>
 </template>
@@ -162,11 +167,11 @@ const panels = [{ id: "aside" }, { id: "main" }];
 >
   <div data-xh-part="root" style="inline-size: min(480px, 100%); block-size: 140px">
     <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">侧栏</p>
+      <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
     </div>
     <div data-xh-part="resize-trigger" index="0"></div>
     <div data-xh-part="panel" index="1" style="background: var(--xh-bg-brand-subtle)">
-      <p style="padding: 12px">正文</p>
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
     </div>
   </div>
 </xh-splitter>
@@ -197,7 +202,7 @@ const inner = [
 <template>
   <XhSplitterRoot :panels="outer" style="inline-size: min(640px, 100%); block-size: 240px">
     <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">文件</p>
+      <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
     <XhSplitterPanel :index="1">
@@ -207,11 +212,11 @@ const inner = [
         style="inline-size: 100%; block-size: 100%"
       >
         <XhSplitterPanel :index="0" style="background: var(--xh-bg-brand-subtle)">
-          <p style="padding: 12px">编辑器</p>
+          <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
         </XhSplitterPanel>
         <XhSplitterResizeTrigger :index="0" />
         <XhSplitterPanel :index="1" style="background: var(--xh-bg-subtle)">
-          <p style="padding: 12px">控制台</p>
+          <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
         </XhSplitterPanel>
       </XhSplitterRoot>
     </XhSplitterPanel>
@@ -226,7 +231,7 @@ const inner = [
 >
   <div data-xh-part="root" style="inline-size: min(640px, 100%); block-size: 240px">
     <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">文件</p>
+      <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
     </div>
     <div data-xh-part="resize-trigger" index="0"></div>
     <div data-xh-part="panel" index="1">
@@ -237,11 +242,11 @@ const inner = [
       >
         <div data-xh-part="root" style="inline-size: 100%; block-size: 100%">
           <div data-xh-part="panel" index="0" style="background: var(--xh-bg-brand-subtle)">
-            <p style="padding: 12px">编辑器</p>
+            <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
           </div>
           <div data-xh-part="resize-trigger" index="0"></div>
           <div data-xh-part="panel" index="1" style="background: var(--xh-bg-subtle)">
-            <p style="padding: 12px">控制台</p>
+            <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
           </div>
         </div>
       </xh-splitter>
@@ -299,17 +304,17 @@ const inner = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `sizes` | `number[]` |  | 每块面板的百分比。给定即受控：内部不再自改，只发 onSizesChange。 |
-| `defaultSizes` | `number[]` |  | 非受控初值；不给就按面板数等分。 |
+| `sizes` | `number[]` |  | 每块面板的百分比。提供即受控：内部不再自行修改，只发 onSizesChange。 |
+| `defaultSizes` | `number[]` |  | 非受控初值；未提供时按面板数等分。 |
 | `panels` | `SplitterPanelProps[]` |  | 逐块的约束；数组长度同时决定面板块数。 |
-| `orientation` | `Orientation` |  | 面板的排布轴，默认 horizontal（并排，拖左右）；vertical 是上下堆叠，拖上下。 |
+| `orientation` | `Orientation` |  | 面板的排布轴，默认 horizontal（并排，左右拖动）；vertical 是上下堆叠，上下拖动。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调水平排布下的左右两键与指针位移的正负。 |
-| `disabled` | `boolean` |  | 禁用：分隔条退出 Tab 序列、拖不动也推不动。 |
+| `disabled` | `boolean` |  | 禁用：分隔条退出 Tab 序列、不可拖动也不可推动。 |
 | `step` | `number` |  | 方向键的步长（百分比），默认 1。 |
 | `largeStep` | `number` |  | Shift + 方向键的步长（百分比），默认 10。 |
 | `translations` | `Partial<SplitterTranslations>` |  |  |
-| `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
-| `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
+| `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发出；拖动过程中连续发出。 |
+| `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于保存布局。 |
 
 ### 事件
 
@@ -317,8 +322,8 @@ const inner = [
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }` |
-| `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }` |
+| `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中连续发出）；detail 为 `{ sizes: number[] }` |
+| `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾时发出一次；detail 为 `{ sizes: number[], index: number }` |
 
 ### 插槽
 
@@ -348,14 +353,14 @@ const inner = [
 | `panels` | `SplitterPanelState[]` |  |
 | `dragging` | `boolean` |  |
 | `disabled` | `boolean` |  |
-| `setSizes` | `(next: number[]) => void` | 整份赋值：逐块夹进约束、总和归位到 100 之后才落地。 |
-| `setPanelSize` | `(index: number, next: number) => void` | 把第 index 块调到 next，缺的那部分从它后面的面板里取。 最后一块没有属于自己的分隔条，它的尺寸是其余面板的余数，调不动。 |
+| `setSizes` | `(next: number[]) => void` | 整份赋值：逐块夹进约束、总和归位到 100 之后才落定。 |
+| `setPanelSize` | `(index: number, next: number) => void` | 把第 index 块调整为 next，差额从它后面的面板中获取。 最后一块没有属于自己的分隔条，它的尺寸是其余面板的余数，不可调整。 |
 | `collapsePanel` | `(index: number) => void` |  |
 | `expandPanel` | `(index: number) => void` |  |
-| `togglePanel` | `(index: number) => void` | 折叠着就展开、展开着就折叠；不可折叠的面板上是空操作。 |
+| `togglePanel` | `(index: number) => void` | 折叠时展开、展开时折叠；不可折叠的面板上是空操作。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getPanelProps` | `(index: number) => T['element']` |  |
-| `getResizeTriggerProps` | `(index: number) => T['element']` | 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。 |
+| `getResizeTriggerProps` | `(index: number) => T['element']` | 第 index 条分隔条位于第 index 与第 index+1 块面板之间，调整的是前一块。 |
 
 ## 无障碍
 
@@ -405,24 +410,32 @@ const inner = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
 | `panel` | `data-collapsed` | ''（条件成立时才出现） |
+| `panel` | `data-disabled` | ''（条件成立时才出现） |
+| `panel` | `data-dragging` | ''（条件成立时才出现） |
 | `panel` | `data-index` | String(panel.index) |
+| `panel` | `data-orientation` | props.orientation |
+| `resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-index` | String(boundary) |
+| `resize-trigger` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-splitter-disabled-opacity` | `root` | `opacity` | `disabled` | `0.6` | splitter 的 root 部件 opacity 覆盖槽。 |
 | `--xh-splitter-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | splitter 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-splitter-trigger-bg` | `resize-trigger` | `background` | `default` | `--xh-border-default` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-splitter-trigger-bg-disabled` | `resize-trigger` | `background` | `disabled` | `--xh-border-subtle` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-splitter-trigger-bg-dragging` | `resize-trigger` | `background` | `dragging` | `--xh-bg-brand` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
-| `--xh-splitter-trigger-bg-hover` | `resize-trigger` | `background` | `hover` | `--xh-bg-subtle-active` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-splitter-trigger-bg-hover` | `resize-trigger` | `background` | `hover` | `--xh-border-control` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-splitter-trigger-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | splitter 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

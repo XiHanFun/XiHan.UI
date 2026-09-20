@@ -2,7 +2,7 @@
 
 # Statistic 统计数值 `alpha`
 
-一个带标签的关键数字，可以配前后缀。
+带标签的关键数字，可以配前后缀。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/statistic" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-标签在上、数值在下；数值由你自己格式化好再塞进来，组件不做千分位也不做换算
+标签在上、数值在下；数值由使用者格式化后放入，组件不做千分位也不做换算
 
 ```vue
 <script setup lang="ts">
@@ -118,7 +118,7 @@ import {
 
 ### 尺寸
 
-size 换的是标签、数值与前后缀的字号，不传 size 即默认档
+size 改变标签、数值与前后缀的字号，不传 size 即默认档
 
 ```vue
 <script setup lang="ts">
@@ -178,7 +178,7 @@ const sizes = [
 
 ### 颜色
 
-tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
+tone 决定数值与前后缀使用哪族颜色，标签始终保持弱前景
 
 ```vue
 <script setup lang="ts">
@@ -267,7 +267,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 
 ### 等宽数字
 
-数值用等宽数字排版，反复换数时字宽不变，后面的单位不会左右挪
+数值使用等宽数字排版，反复更换数值时字宽不变，后面的单位不会左右移动
 
 ```vue
 <script setup lang="ts">
@@ -327,7 +327,7 @@ function reroll() {
 
 ### 涨跌
 
-trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正交——跌也可以是好事
+trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone 正交：下跌也可以是正向语气
 
 ```vue
 <script setup lang="ts">
@@ -402,28 +402,28 @@ const cards = [
 
 ### 何时不用
 
-- 多个指标需要按维度对照：用[表格](./table)。
-- 表达的是完成比例：用[进度条](./progress)。
+- 多个指标需要按维度对照时，使用[表格](./table)。
+- 表达完成比例时，使用[进度条](./progress)。
 
 ### 特性
 
 - 标签、值、前缀、后缀各占一段。
-- 数字用等宽字形，位数变化时不会左右晃。
-- `trend` 给出涨跌方向，箭头由皮肤画；它与 `tone` 正交——跌也可以是好事。
+- 数字使用等宽字形，位数变化时不会左右晃动。
+- `trend` 给出涨跌方向，箭头由皮肤绘制；它与 `tone` 正交，下跌也可以是正向语气。
 
 ### 组合
 
-- 值位放[数值动画](./number-animation)；整块放进[卡片](./card)；一排指标用[栅格](./grid)。
+- 值位放[数值动画](./number-animation)；整块放入[卡片](./card)；一排指标使用[栅格](./grid)。
 
 ### 最佳实践
 
-- 单位写进后缀而不是揉进数字里，数字才对得齐。
-- 给出对比基准（同比、环比），单独一个数字读者判断不了好坏。
+- 单位写进后缀而不是混入数字，数字才能对齐。
+- 给出对比基准（同比、环比），单独一个数字无法判断好坏。
 
 ### 反模式
 
-- 一屏里十几个同等大小的指标：没有重点。
-- 用它显示精确到分的金额却不给货币符号。
+- 一屏内十几个同等大小的指标，没有重点。
+- 显示精确到分的金额却不提供货币符号。
 
 ## API 参考
 
@@ -440,9 +440,9 @@ const cards = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `Size` |  | 尺寸：sm / md / lg，只落成 root 的 data-size。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
-| `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，落成 trend 部件的 data-direction，皮肤据它出兜底箭头。 与 tone 正交，方向与颜色互不联动——跌也可以是好事（差错率、退货率）。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，只写为 root 的 data-size。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 |
+| `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，写为 trend 部件的 data-direction，皮肤据此绘制兜底箭头。 与 tone 正交，方向与颜色互不联动：下跌也可以是正面信息（差错率、退货率）。 |
 
 ### connect API
 
@@ -450,7 +450,7 @@ const cards = [
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `trend` | `StatisticTrend` | 当前涨跌方向；没给即 undefined。 |
+| `trend` | `StatisticTrend` | 当前涨跌方向；未提供时为 undefined。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getValueProps` | `() => T['element']` |  |
@@ -485,14 +485,15 @@ const cards = [
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-statistic-affix-fg` | `prefix`<br>`suffix` | `color` | `default` | `--xh-_tone-fg` | statistic 的 prefix、suffix 部件 color 覆盖槽。 |
 | `--xh-statistic-affix-font-size` | `prefix`<br>`suffix` | `font-size` | `default` | `--xh-_statistic-affix-size` | statistic 的 prefix、suffix 部件 font-size 覆盖槽。 |
 | `--xh-statistic-fg` | `root` | `color` | `default` | `--xh-fg-default` | statistic 的 root 部件 color 覆盖槽。 |
 | `--xh-statistic-gap` | `root` | `column-gap` | `default` | `--xh-space-0` | statistic 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-statistic-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_statistic-icon-size` | statistic 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-statistic-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | statistic 的 label 部件 color 覆盖槽。 |
 | `--xh-statistic-label-font-size` | `label` | `font-size` | `default` | `--xh-_statistic-label-size` | statistic 的 label 部件 font-size 覆盖槽。 |
 | `--xh-statistic-row-gap` | `root` | `row-gap` | `default` | `--xh-_statistic-row-gap` | statistic 的 root 部件 row-gap 覆盖槽。 |

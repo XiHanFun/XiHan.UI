@@ -1,0 +1,69 @@
+const n=`<!-- 基础用法 | 跟随滚动高亮当前章节 -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: minmax(112px, 140px) minmax(0, 1fr);
+    gap: 20px;
+    inline-size: min(640px, 100%);
+    align-items: start;
+  "
+>
+  <template id="anchor-basic-nav">
+    <xh-anchor smooth>
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-overview">概览</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-theme">主题</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-release">发布</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </template>
+
+  <div
+    id="anchor-basic-scroll"
+    data-xh-scroll
+    style="
+      block-size: 240px;
+      overflow: auto;
+      padding-inline: 12px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <div id="anchor-basic-overview" style="block-size: 160px; padding-block: 12px">
+      <strong>概览</strong>
+      <p style="color: var(--xh-fg-muted)">概览相关内容</p>
+    </div>
+    <div id="anchor-basic-install" style="block-size: 160px; padding-block: 12px">
+      <strong>安装</strong>
+      <p style="color: var(--xh-fg-muted)">安装相关内容</p>
+    </div>
+    <div id="anchor-basic-theme" style="block-size: 160px; padding-block: 12px">
+      <strong>主题</strong>
+      <p style="color: var(--xh-fg-muted)">主题相关内容</p>
+    </div>
+    <div id="anchor-basic-release" style="block-size: 160px; padding-block: 12px">
+      <strong>发布</strong>
+      <p style="color: var(--xh-fg-muted)">发布相关内容</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const template = document.getElementById("anchor-basic-nav");
+  const anchor = template.content.firstElementChild;
+  anchor.scrollElement = document.getElementById("anchor-basic-scroll");
+  template.replaceWith(anchor);
+<\/script>
+`;export{n as default};

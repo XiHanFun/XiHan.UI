@@ -1,0 +1,66 @@
+const a=`<!-- 尺寸 | 直径、字号与叠放量在组上写一次，沿自定义属性下发给组内每个头像，「+N」随之更换 -->
+<div style="display: grid; gap: 16px; justify-items: start">
+  <xh-avatar-group size="sm" max="3">
+    <div data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">寒</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">懿</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="overflow-item">+3</span>
+    </div>
+  </xh-avatar-group>
+
+  <xh-avatar-group size="md" max="3">
+    <div data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">寒</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">懿</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="overflow-item">+3</span>
+    </div>
+  </xh-avatar-group>
+
+  <xh-avatar-group size="lg" max="3">
+    <div data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">寒</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">懿</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="overflow-item">+3</span>
+    </div>
+  </xh-avatar-group>
+</div>
+`;export{a as default};

@@ -9,57 +9,57 @@
 - [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 177 页正文，示例已内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 135 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 29 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 419 支设计令牌的名字、类型与缺省取值
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 418 支设计令牌的名字、类型与缺省取值
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/components/button.md
 
 ## 开始
 
 - [更新日志 · XiHan.UI](https://ui.docs.xihanfun.com/changelog): 本文件记录 XiHan.UI 各版本的变更。
-- [常见问题](https://ui.docs.xihanfun.com/faq): BasicApp 的前端建在 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的前端整体用这套库重建。
+- [常见问题](https://ui.docs.xihanfun.com/faq): BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的前端整体使用本库重建。
 - [曦寒视图组件](https://ui.docs.xihanfun.com/): 快速 轻量 高效 用心的框架无关跨端组件库
 - [安装与接入](https://ui.docs.xihanfun.com/installation): XiHan.UI 的 17 个公开包都已发布到 npm，同属一个版本组、始终同号。
-- [XiHan.UI 视图组件](https://ui.docs.xihanfun.com/introduction): XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑沉在无头内核里，每个前端框架只得到一层薄适配器。
+- [XiHan.UI 视图组件](https://ui.docs.xihanfun.com/introduction): XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑位于无头内核，每个前端框架只有一层薄适配器。
 - [包与依赖关系](https://ui.docs.xihanfun.com/npm-package-dependency): XiHan.UI 是一个 pnpm workspace。
 - [架构总览](https://ui.docs.xihanfun.com/overview): XiHan.UI 是一个 pnpm + turbo 的 monorepo。
-- [快速上手](https://ui.docs.xihanfun.com/quickstart): 同一个对话框，写三遍。
+- [快速上手](https://ui.docs.xihanfun.com/quickstart): 同一个对话框的三种写法。
 
 ## 核心概念
 
-- [无障碍与键盘规格](https://ui.docs.xihanfun.com/guide/a11y): 无障碍在 XiHan.UI 里不是「尽量做到」，它是判据：每个组件都有一份机读的键盘规格表，它同时是测试的分母。
-- [AI 对话内核](https://ui.docs.xihanfun.com/guide/ai): 做流式对话界面要解决的问题有三个：读流、收敛状态、增量渲染。
-- [解剖与部件契约](https://ui.docs.xihanfun.com/guide/anatomy): 「解剖」（anatomy）是 XiHan.UI 的地基约定：把一个组件拆成若干具名部件（part），每个部件在 DOM 上由 `data-scope` + `data-part` 两个属性唯一标识。
-- [动画层](https://ui.docs.xihanfun.com/guide/animations): `@xihan-ui/animations` 是现成的动效：11 个进场预设、6 个注意预设，外加错开起播与文字拆分。
+- [无障碍与键盘规格](https://ui.docs.xihanfun.com/guide/a11y): 无障碍在 XiHan.UI 中是判据：每个组件都有一份机读的键盘规格表，它同时是测试的分母。
+- [AI 对话内核](https://ui.docs.xihanfun.com/guide/ai): 流式对话界面要解决三个问题：读流、收敛状态、增量渲染。
+- [解剖与部件契约](https://ui.docs.xihanfun.com/guide/anatomy): 解剖（anatomy）是 XiHan.UI 的基础约定：把一个组件拆成若干具名部件（part），每个部件在 DOM 上由 `data-scope` + `data-part` 两个属性唯一标识。
+- [动画层](https://ui.docs.xihanfun.com/guide/animations): `@xihan-ui/animations` 提供现成的动效：11 个进场预设、6 个注意预设，外加错开起播与文字拆分。
 - [背景层](https://ui.docs.xihanfun.com/guide/backgrounds): `@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。
-- [行为原语](https://ui.docs.xihanfun.com/guide/behavior): `@xihan-ui/core` 里的行为原语收的是跨组件复用的交互机制：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片……它们的差别在触发方式和视觉，但「点外面要关」「焦点要陷住」「背景不能滚」这些是同一套东西。
+- [行为原语](https://ui.docs.xihanfun.com/guide/behavior): `@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。
 - [connect 与属性产出](https://ui.docs.xihanfun.com/guide/connect): `connect` 是无头内核的出口：输入是服务与归一化器，输出是一组 props-getter。
-- [诊断通道](https://ui.docs.xihanfun.com/guide/diagnostics): 组件在运行期发现「这里不对」时不直接 `console.warn`，而是往诊断通道投递一条结构化记录。
-- [表单参与与重置](https://ui.docs.xihanfun.com/guide/forms): 复合控件的值攥在自己的机器里，浏览器看不见。
-- [国际化](https://ui.docs.xihanfun.com/guide/i18n): 开箱行为一句话：组件里写死的那部分文本是英文，其余全部跟着 `locale` 走，而 `locale` 不给就跟着宿主浏览器走。
-- [图标集](https://ui.docs.xihanfun.com/guide/icons): `@xihan-ui/icons` 是一套结构化数据，不是 SVG 字符串、也不是字体。
-- [状态机运行时](https://ui.docs.xihanfun.com/guide/machine): `@xihan-ui/core` 里的状态机是一台薄的有限状态机运行时：零第三方运行时依赖。
-- [框架元数据](https://ui.docs.xihanfun.com/guide/metadata): 框架名称、版本、版权与运行时信息的单一事实源在 `@xihan-ui/core` 的 `XIHAN_UI_METADATA` 里，与 XiHan.Framework 的 `XiHanMetadata` 同构：常量集中维护在一份文件里，版本从 package.json 派生，运行时信息由适配器登记。
-- [动效原语](https://ui.docs.xihanfun.com/guide/motion): `@xihan-ui/motion` 是动效的地基层：缓动曲线与时长常量、不持有计时器的纯补间、逐帧循环、减弱动效偏好，以及解析解弹簧与 Web Animations 的薄封装。
-- [指针原语](https://ui.docs.xihanfun.com/guide/pointer): `@xihan-ui/pointer` 收的是指针交互里「写对了才不出事」的那部分公共几何与生命周期。
-- [浮层定位](https://ui.docs.xihanfun.com/guide/position): `@xihan-ui/position` 负责一件事：把一个浮层放到锚点旁边正确的位置，并在页面变化时持续跟住。
+- [诊断通道](https://ui.docs.xihanfun.com/guide/diagnostics): 组件在运行期发现契约问题时不直接 `console.warn`，而是向诊断通道投递一条结构化记录。
+- [表单参与与重置](https://ui.docs.xihanfun.com/guide/forms): 复合控件的值保存在自己的状态机中，浏览器不可见。
+- [国际化](https://ui.docs.xihanfun.com/guide/i18n): 默认行为：组件内建的文本是英文，其余全部跟随 `locale`，`locale` 未提供时跟随宿主浏览器。
+- [图标集](https://ui.docs.xihanfun.com/guide/icons): `@xihan-ui/icons` 是一套结构化数据，不是 SVG 字符串，也不是字体。
+- [状态机运行时](https://ui.docs.xihanfun.com/guide/machine): `@xihan-ui/core` 中的状态机是一台轻量的有限状态机运行时：零第三方运行时依赖。
+- [框架元数据](https://ui.docs.xihanfun.com/guide/metadata): 框架名称、版本、版权与运行时信息的单一事实源在 `@xihan-ui/core` 的 `XIHAN_UI_METADATA` 中，与 XiHan.Framework 的 `XiHanMetadata` 同构：常量集中维护在一份文件中，版本从 package.json 派生，运行时信息由适配器登记。
+- [动效原语](https://ui.docs.xihanfun.com/guide/motion): `@xihan-ui/motion` 是动效的基础层：缓动曲线与时长常量、不持有计时器的纯补间、逐帧循环、减弱动效偏好，以及解析解弹簧与 Web Animations 的薄封装。
+- [指针原语](https://ui.docs.xihanfun.com/guide/pointer): `@xihan-ui/pointer` 收纳指针交互中容易出错的公共几何与生命周期。
+- [浮层定位](https://ui.docs.xihanfun.com/guide/position): `@xihan-ui/position` 负责一件事：把浮层放到锚点旁的正确位置，并在页面变化时持续跟随。
 - [声音层](https://ui.docs.xihanfun.com/guide/sound): `@xihan-ui/sound` 是一层纯 Web Audio 的程序化 UI 音效：零音频文件、零第三方依赖、框架无关。
 - [皮肤与样式分层](https://ui.docs.xihanfun.com/guide/styling): `@xihan-ui/styles` 是纯 CSS 包：不依赖任何 JS 包，也不被任何 JS 包依赖。
-- [测试与质量门禁](https://ui.docs.xihanfun.com/guide/testing): 一个「框架无关」的组件库最容易出的问题是：两套适配器悄悄跑偏了。
-- [设计令牌与主题](https://ui.docs.xihanfun.com/guide/theme): `@xihan-ui/tokens` 装两样东西：设计令牌（一份 CSS 自定义属性产物）与主题运行时（把用户偏好折算成根元素上的属性）。
-- [版本与兼容性政策](https://ui.docs.xihanfun.com/guide/versioning): 这一页回答一个问题：升级到下一个 `1.x` 小版本，我依赖的东西会不会变。
+- [测试与质量门禁](https://ui.docs.xihanfun.com/guide/testing): 框架无关的组件库最常见的问题是各适配器逐渐偏离。
+- [设计令牌与主题](https://ui.docs.xihanfun.com/guide/theme): `@xihan-ui/tokens` 提供两部分能力：设计令牌（一份 CSS 自定义属性产物）与主题运行时（将用户偏好解析为根元素上的属性）。
+- [版本与兼容性政策](https://ui.docs.xihanfun.com/guide/versioning): 本页回答一个问题：升级到下一个 `1.x` 小版本时，已依赖的公开面是否会变化。
 
 ## 适配器
 
 - [React 适配器](https://ui.docs.xihanfun.com/adapters/react): `@xihan-ui/react` 是无头内核的 React 外壳。
 - [Vue 适配器](https://ui.docs.xihanfun.com/adapters/vue): `@xihan-ui/vue` 是无头内核的 Vue 3 外壳。
-- [Web Components 适配器](https://ui.docs.xihanfun.com/adapters/web-components): `@xihan-ui/web-components` 把同一套无头内核包成原生自定义元素。
+- [Web Components 适配器](https://ui.docs.xihanfun.com/adapters/web-components): `@xihan-ui/web-components` 把同一套无头内核封装为原生自定义元素。
 
 ## 服务与运行时
 
 - [代码着色](https://ui.docs.xihanfun.com/runtime/code-highlight): `@xihan-ui/code-highlight` 是 `HighlighterPort` 的自研实现：粗粒度词法着色，零第三方依赖。
-- [全局配置](https://ui.docs.xihanfun.com/runtime/config): 组件的内建文案默认是英文，日期时间系组件另收一个 `locale`，尺寸档缺省是 `md`，浮层默认挂在 portal 落点上。
-- [服务与运行时](https://ui.docs.xihanfun.com/runtime/): 组件册收的是有解剖、有部件、能摆在页面上的东西。
-- [流式 Markdown](https://ui.docs.xihanfun.com/runtime/markdown): `@xihan-ui/markdown` 解决的是一个很具体的问题：AI 一个 token 一个 token 地吐 Markdown，你要边收边渲染，而且不能每帧重建整段 DOM——重建一次，用户的选区和滚动位置就没了。
-- [命令式服务](https://ui.docs.xihanfun.com/runtime/services): 有些东西写成模板反而绕：删除前问一句、保存完提示一下——这些没有"挂在哪"的问题，就该一次调用弹出来。
+- [全局配置](https://ui.docs.xihanfun.com/runtime/config): 组件的内建文案默认是英文，日期时间类组件另接受 `locale`，尺寸档默认为 `md`，浮层默认挂在 portal 落点上。
+- [服务与运行时](https://ui.docs.xihanfun.com/runtime/): 组件册收录有解剖、有部件、可放置在页面上的组件。
+- [流式 Markdown](https://ui.docs.xihanfun.com/runtime/markdown): `@xihan-ui/markdown` 解决一个具体问题：AI 逐 token 输出 Markdown，需要边接收边渲染，且不能每帧重建整段 DOM：重建一次，用户的选区和滚动位置即丢失。
+- [命令式服务](https://ui.docs.xihanfun.com/runtime/services): 部分反馈不适合写成模板：删除前确认、保存后提示，这类反馈没有挂载位置的问题，适合一次调用弹出。
 
 ## 场景
 
@@ -71,138 +71,138 @@
 
 ## 组件
 
-- [Accordion 手风琴](https://ui.docs.xihanfun.com/components/accordion): 一列可展开的区块，标题常驻、内容按需展开。
+- [Accordion 手风琴](https://ui.docs.xihanfun.com/components/accordion): 一列可展开的区块，标题常驻，内容按需展开。
 - [Affix 固钉](https://ui.docs.xihanfun.com/components/affix): 在滚动超过指定位置后固定内容。
-- [Alert 警告提示](https://ui.docs.xihanfun.com/components/alert): 页面里常驻的一条提示：说明一件与当前上下文有关的事。
+- [Alert 警告提示](https://ui.docs.xihanfun.com/components/alert): 页面内常驻的一条提示，说明一件与当前上下文有关的事。
 - [Anchor 锚点](https://ui.docs.xihanfun.com/components/anchor): 根据滚动位置高亮当前章节的目录。
-- [Approval 审批](https://ui.docs.xihanfun.com/components/approval): 危险动作执行前的人在环闸门：批准、拒绝，超时按拒绝收口，可带勾选式的授权范围。
-- [AvatarGroup 头像组](https://ui.docs.xihanfun.com/components/avatar-group): 把若干头像叠成一排，超出上限的收成一个计数。
-- [Avatar 头像](https://ui.docs.xihanfun.com/components/avatar): 一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
+- [Approval 审批](https://ui.docs.xihanfun.com/components/approval): 危险操作执行前的人工闸门：批准或拒绝，超时按拒绝处理，可附带勾选式的授权范围。
+- [AvatarGroup 头像组](https://ui.docs.xihanfun.com/components/avatar-group): 将若干头像叠成一排，超出上限的部分收为一个计数。
+- [Avatar 头像](https://ui.docs.xihanfun.com/components/avatar): 表示一个人或一个组织的圆形标识：优先显示图片，无法加载时回退到文字或图标。
 - [BackTop 回到顶部](https://ui.docs.xihanfun.com/components/back-top): 滚动超过指定距离后显示返回入口。
-- [Badge 徽标](https://ui.docs.xihanfun.com/components/badge): 提醒你注意某个东西：它有几条未读、处在什么状态、是不是新的。
-- [BarCode 条形码](https://ui.docs.xihanfun.com/components/bar-code): 把一段文本画成一维条形码，`format` 选码制。
+- [Badge 徽标](https://ui.docs.xihanfun.com/components/badge): 提示某个对象有需要注意的变化：未读数量、当前状态、是否为新。
+- [BarCode 条形码](https://ui.docs.xihanfun.com/components/bar-code): 将一段文本绘制为一维条形码，`format` 选择码制。
 - [Breadcrumb 面包屑](https://ui.docs.xihanfun.com/components/breadcrumb): 显示当前页面在信息层级中的位置。
 - [ButtonGroup 按钮组](https://ui.docs.xihanfun.com/components/button-group): 将一组相关操作组合为连续的按钮控件。
 - [Button 按钮](https://ui.docs.xihanfun.com/components/button): 用于触发即时操作。
 - [CalendarPicker 日历选择器](https://ui.docs.xihanfun.com/components/calendar-picker): 以天、周、月、季度或年为周期浏览并选择一个或多个日期，也可以在日期格中展示日程内容。
-- [CalendarRangePicker 日历范围选择器](https://ui.docs.xihanfun.com/components/calendar-range-picker): 在日历网格里先落起点再落终点，挑出一段连续的天、周、月、季度或年。
-- [Card 卡片](https://ui.docs.xihanfun.com/components/card): 一块用于组织相关内容与操作的中性表面。
-- [Carousel 走马灯](https://ui.docs.xihanfun.com/components/carousel): 在同一块区域里轮播若干张内容，一次显示一屏。
+- [CalendarRangePicker 日历范围选择器](https://ui.docs.xihanfun.com/components/calendar-range-picker): 在日历网格中先选起点再选终点，选出一段连续的天、周、月、季度或年。
+- [Card 卡片](https://ui.docs.xihanfun.com/components/card): 用于组织相关内容与操作的中性表面。
+- [Carousel 走马灯](https://ui.docs.xihanfun.com/components/carousel): 在同一块区域内轮播若干张内容，一次显示一屏。
 - [Cascader 级联选择](https://ui.docs.xihanfun.com/components/cascader): 用于从多层分类中选择完整路径。
 - [CheckboxGroup 复选框组](https://ui.docs.xihanfun.com/components/checkbox-group): 从一组选项中选择任意多项。
 - [Checkbox 复选框](https://ui.docs.xihanfun.com/components/checkbox): 用于选择一个或多个独立选项。
 - [Clipboard 剪贴板](https://ui.docs.xihanfun.com/components/clipboard): 用于复制纯文本并反馈复制状态。
 - [CodeView 代码视图](https://ui.docs.xihanfun.com/components/code-view): 一段代码的逐行呈现：行号、指定行高亮、超长折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
-- [Collapsible 折叠区域](https://ui.docs.xihanfun.com/components/collapsible): 一块可以展开收起的内容，只有一块。
-- [ColorField 颜色字段](https://ui.docs.xihanfun.com/components/color-field): 一个能手打颜色串的单行框：旁边一块当前颜色的色块，框里的字是草稿，回车或失焦收下，收下后按 `format` 重写成规范写法。
-- [ColorPicker 颜色选择器](https://ui.docs.xihanfun.com/components/color-picker): 在色域里自由挑一个颜色：触发钮里一块当前色，浮层里是取色面、色相与透明度两条滑块、数值框、屏幕取色与预设色板。
-- [ColorSlider 颜色滑块](https://ui.docs.xihanfun.com/components/color-slider): 一条只推颜色某一路的滑杆：色相、饱和度、明度、透明度，或红、绿、蓝。
-- [ColorSwatchPicker 颜色色块选择器](https://ui.docs.xihanfun.com/components/color-swatch-picker): 从一组固定颜色里挑一个：主题色、标签色、高亮色。
-- [ColorSwatch 颜色色块](https://ui.docs.xihanfun.com/components/color-swatch): 把一个颜色画成一小块给人看：主题色一览、图例里的一格、当前选中的颜色。
+- [Collapsible 折叠区域](https://ui.docs.xihanfun.com/components/collapsible): 一块可以展开与收起的单块内容。
+- [ColorField 颜色字段](https://ui.docs.xihanfun.com/components/color-field): 可以手动输入颜色串的单行框，旁边显示当前颜色的色块。
+- [ColorPicker 颜色选择器](https://ui.docs.xihanfun.com/components/color-picker): 在色域中自由选取一个颜色：触发按钮显示当前色，浮层内包含取色面、色相与透明度两条滑块、数值框、屏幕取色与预设色板。
+- [ColorSlider 颜色滑块](https://ui.docs.xihanfun.com/components/color-slider): 只调整颜色某一个通道的滑杆：色相、饱和度、明度、透明度，或红、绿、蓝。
+- [ColorSwatchPicker 颜色色块选择器](https://ui.docs.xihanfun.com/components/color-swatch-picker): 从一组固定颜色中选择一个：主题色、标签色、高亮色。
+- [ColorSwatch 颜色色块](https://ui.docs.xihanfun.com/components/color-swatch): 把一个颜色绘制为一小块用于展示：主题色一览、图例中的一格、当前选中的颜色。
 - [Combobox 组合框](https://ui.docs.xihanfun.com/components/combobox): 将输入框与候选列表结合，用于搜索并选择选项。
-- [Command 命令面板](https://ui.docs.xihanfun.com/components/command): 一块盖在页面上的检索面板：打字筛出命令，方向键选，回车执行。
+- [Command 命令面板](https://ui.docs.xihanfun.com/components/command): 覆盖在页面上的检索面板：输入筛选命令，方向键选择，回车执行。
 - [ContextMenu 右键菜单](https://ui.docs.xihanfun.com/components/context-menu): 通过右键或长按在指针位置打开命令菜单。
 - [DateField 日期字段](https://ui.docs.xihanfun.com/components/date-field): 按年、月、日逐段输入日期，适合已经知道目标日期、无需浏览日历的场景。
 - [DatePicker 日期选择器](https://ui.docs.xihanfun.com/components/date-picker): 将可键入的分段日期框、日历触发器和选择浮层组合成一个字段。
 - [DateRangePicker 日期范围选择器](https://ui.docs.xihanfun.com/components/date-range-picker): 将起止两组可键入的分段日期框、范围分隔符、日历触发器和范围日历浮层组合成一个字段。
 - [Descriptions 描述列表](https://ui.docs.xihanfun.com/components/descriptions): 成对的标签与值，按列排开。
-- [Dialog 对话框](https://ui.docs.xihanfun.com/components/dialog): 浮在页面之上的一层，通常需要用户处理完才能回到下面。
+- [Dialog 对话框](https://ui.docs.xihanfun.com/components/dialog): 浮在页面之上的一层，通常需要用户处理完成后才能回到页面。
 - [DiffView 差异视图](https://ui.docs.xihanfun.com/components/diff-view): 一份改动的逐行呈现：并排或单栏、双侧行号、变更类型的读屏文字，以及远离变更处的折叠。
 - [DownloadTrigger 下载触发器](https://ui.docs.xihanfun.com/components/download-trigger): 用于将文本或 Blob 保存为本地文件。
 - [Drawer 抽屉](https://ui.docs.xihanfun.com/components/drawer): 从屏幕某一边滑出的面板。
 - [Editable 就地编辑](https://ui.docs.xihanfun.com/components/editable): 用于在当前位置查看和编辑短文本。
-- [EmptyState 空状态](https://ui.docs.xihanfun.com/components/empty-state): 没有数据时那一块：说清楚为什么空，以及可以做什么。
+- [EmptyState 空状态](https://ui.docs.xihanfun.com/components/empty-state): 没有数据时的占位区域：说明为什么为空，以及可以做什么。
 - [FieldArray 字段数组](https://ui.docs.xihanfun.com/components/field-array): 用于管理可添加、删除和排序的重复字段。
 - [Field 表单字段](https://ui.docs.xihanfun.com/components/field): 为表单控件提供标签、说明、错误信息和状态关联。
-- [Fieldset 字段集](https://ui.docs.xihanfun.com/components/fieldset): 把若干相关字段收成一组，组标题由 `legend` 给，禁用与无效沿这一组下发。
-- [FileUpload 文件上传](https://ui.docs.xihanfun.com/components/file-upload): 选择文件、拖放文件，并把已选与已传的文件列出来。
+- [Fieldset 字段集](https://ui.docs.xihanfun.com/components/fieldset): 把若干相关字段收成一组，组标题由 `legend` 提供，禁用与无效沿这一组下发。
+- [FileUpload 文件上传](https://ui.docs.xihanfun.com/components/file-upload): 选择文件、拖放文件，并列出已选与已上传的文件。
 - [Flex 弹性布局](https://ui.docs.xihanfun.com/components/flex): 沿水平或垂直方向排列内容。
 - [FloatButton 浮动按钮](https://ui.docs.xihanfun.com/components/float-button): 用于在视口边缘提供持续可见的操作入口。
-- [FloatingPanel 浮动面板](https://ui.docs.xihanfun.com/components/floating-panel): 一块浮在页面上、能搬走、能改大小、能收拢与铺满的非模态面板。
+- [FloatingPanel 浮动面板](https://ui.docs.xihanfun.com/components/floating-panel): 浮在页面上、可移动、可调整大小、可收拢与铺满的非模态面板。
 - [Form 表单](https://ui.docs.xihanfun.com/components/form): 管理一组字段的值、校验、提交和重置。
 - [GradientText 渐变文字](https://ui.docs.xihanfun.com/components/gradient-text): 用于为短文本添加渐变色强调。
 - [Grid 栅格](https://ui.docs.xihanfun.com/components/grid): 按行列排列内容。
-- [Heatmap 热力图](https://ui.docs.xihanfun.com/components/heatmap): 按网格铺开的强度图：一格是一个观测点，颜色深浅表示它的数值落在第几档。
-- [Highlight 文本高亮](https://ui.docs.xihanfun.com/components/highlight): 把一段文本里命中关键词的片段标出来。
-- [HoverCard 悬浮卡片](https://ui.docs.xihanfun.com/components/hover-card): 指针停留一会儿才出现的信息卡：预览一个对象，不打断当前动作。
+- [Heatmap 热力图](https://ui.docs.xihanfun.com/components/heatmap): 按网格铺开的强度图：一格是一个观测点，颜色深浅表示数值所在的档位。
+- [Highlight 文本高亮](https://ui.docs.xihanfun.com/components/highlight): 标出一段文本中命中关键词的片段。
+- [HoverCard 悬浮卡片](https://ui.docs.xihanfun.com/components/hover-card): 指针停留后出现的信息卡：预览一个对象，不打断当前操作。
 - [IconWrapper 图标块](https://ui.docs.xihanfun.com/components/icon-wrapper): 为图标提供统一的背景容器。
 - [Icon 图标](https://ui.docs.xihanfun.com/components/icon): 用于显示矢量图标。
 - [ImageCropper 图片裁切](https://ui.docs.xihanfun.com/components/image-cropper): 用于选择图片中需要保留的区域。
-- [ImageViewer 图片预览](https://ui.docs.xihanfun.com/components/image-viewer): 点开看大图：全屏浮层里可以缩放、旋转、翻转与翻页。
-- [Image 图片](https://ui.docs.xihanfun.com/components/image): 一张图，带加载状态与失败回退。
+- [ImageViewer 图片预览](https://ui.docs.xihanfun.com/components/image-viewer): 查看大图：全屏浮层内可以缩放、旋转、翻转与翻页。
+- [Image 图片](https://ui.docs.xihanfun.com/components/image): 显示一张图片，带加载状态与失败回退。
 - [组件总览](https://ui.docs.xihanfun.com/components/): 浏览 XiHan.UI 提供的组件。
-- [InfiniteScroll 无限滚动](https://ui.docs.xihanfun.com/components/infinite-scroll): 取下一页的通用触发器，滚动只是默认的触发方式。
+- [InfiniteScroll 无限滚动](https://ui.docs.xihanfun.com/components/infinite-scroll): 获取下一页的通用触发器，滚动只是默认的触发方式。
 - [InputGroup 输入组](https://ui.docs.xihanfun.com/components/input-group): 用于在同一输入表面中组合前缀、输入控件和后缀。
-- [JsonViewer JSON 视图](https://ui.docs.xihanfun.com/components/json-viewer): 把一份 JSON 摊成可展开的树：键名、值与值类型各自成一块，对象与数组可以逐层收起。
+- [JsonViewer JSON 视图](https://ui.docs.xihanfun.com/components/json-viewer): 把一份 JSON 展开为可折叠的树：键名、值与值类型各自成块，对象与数组可以逐层收起。
 - [Kbd 键盘按键](https://ui.docs.xihanfun.com/components/kbd): 显示单个键或快捷键组合；需要实际响应按键时，显式开启 `register`。
 - [Layout 布局](https://ui.docs.xihanfun.com/components/layout): 用于构建带页头、侧栏、内容和页脚的页面骨架。
 - [List 列表](https://ui.docs.xihanfun.com/components/list): 一列同构的条目，每条可以有媒体位、标题、描述与操作位。
 - [Listbox 列表框](https://ui.docs.xihanfun.com/components/listbox): 用于展示一组常驻选项，并允许用户选择其中一项或多项。
-- [LoadingBar 加载条](https://ui.docs.xihanfun.com/components/loading-bar): 页面顶部那条细进度线：表示"正在去往别处"或"正在取数据"。
-- [Log 日志](https://ui.docs.xihanfun.com/components/log): 一块等宽排版的滚动区域，一行一条，可以自动跟到底部。
-- [MarkdownStream 流式正文](https://ui.docs.xihanfun.com/components/markdown-stream): 把已经渲好的 Markdown 块列表投影成带稳定 key 的正文结构，按块的种类分流。
+- [LoadingBar 加载条](https://ui.docs.xihanfun.com/components/loading-bar): 页面顶部的细进度线，表示正在导航或正在获取数据。
+- [Log 日志](https://ui.docs.xihanfun.com/components/log): 等宽排版的滚动区域，一行一条，可以自动跟随到底部。
+- [MarkdownStream 流式正文](https://ui.docs.xihanfun.com/components/markdown-stream): 把已渲染的 Markdown 块列表投影为带稳定 key 的正文结构，按块的种类分流。
 - [Marquee 跑马灯](https://ui.docs.xihanfun.com/components/marquee): 内容沿一条轴循环滚动。
 - [Masonry 瀑布流](https://ui.docs.xihanfun.com/components/masonry): 将等宽、不等高的内容排列为瀑布流。
-- [MatrixCode 二维码](https://ui.docs.xihanfun.com/components/matrix-code): 把一段文本画成二维码，`format` 选码制。
-- [Mention 提及](https://ui.docs.xihanfun.com/components/mention): 在正文里打一个前缀字符就弹出候选，选中后把引用插进文本。
+- [MatrixCode 二维码](https://ui.docs.xihanfun.com/components/matrix-code): 将一段文本绘制为二维码，`format` 选择码制。
+- [Mention 提及](https://ui.docs.xihanfun.com/components/mention): 在正文中输入前缀字符后弹出候选，选中后把引用插入文本。
 - [Menu 菜单](https://ui.docs.xihanfun.com/components/menu): 从触发器打开一组操作命令。
 - [Menubar 菜单栏](https://ui.docs.xihanfun.com/components/menubar): 用于桌面应用的横向命令菜单栏。
 - [MessageFeed 消息流](https://ui.docs.xihanfun.com/components/message-feed): 一段会话的消息序列：粘底跟随、条目集合语义、键盘遍历与一个统一的播报区。
 - [NavigationMenu 导航菜单](https://ui.docs.xihanfun.com/components/navigation-menu): 用于站点顶部的多级导航菜单。
-- [Notification 通知](https://ui.docs.xihanfun.com/components/notification): 主动推给用户的一条消息：有标题、有正文，可以带操作按钮。
+- [Notification 通知](https://ui.docs.xihanfun.com/components/notification): 主动推送给用户的一条消息：有标题、有正文，可以带操作按钮。
 - [NumberAnimation 数值动画](https://ui.docs.xihanfun.com/components/number-animation): 数字从一个值滚动到另一个值。
 - [NumberField 数字字段](https://ui.docs.xihanfun.com/components/number-field): 带加减与区间约束的数值输入。
 - [PageHeader 页头](https://ui.docs.xihanfun.com/components/page-header): 统一呈现页面标题、说明、导航和主要操作。
 - [Pagination 分页](https://ui.docs.xihanfun.com/components/pagination): 用于在分页结果之间导航。
-- [PasswordInput 密码输入](https://ui.docs.xihanfun.com/components/password-input): 一格密码框，带明暗切换钮，并在大写锁定开着时给出提示。
-- [PinInput 分格输入](https://ui.docs.xihanfun.com/components/pin-input): 把一串短码拆成几个格子，一格一个字符。
-- [Popconfirm 弹出确认](https://ui.docs.xihanfun.com/components/popconfirm): 贴着触发器的一句确认：比对话框轻，但仍拦住一次误操作。
-- [Popover 气泡卡片](https://ui.docs.xihanfun.com/components/popover): 由点击触发、贴着触发器的一小块浮层，里面可以放任意内容与交互。
-- [Progress 进度条](https://ui.docs.xihanfun.com/components/progress): 表示一件事完成了多少。
-- [PromptInput 提示输入框](https://ui.docs.xihanfun.com/components/prompt-input): 会话界面的输入框：值、输入法、能不能提交，以及发送与停止共用的那一颗按钮。
-- [QuestionFlow 澄清问卷](https://ui.docs.xihanfun.com/components/question-flow): 动手之前先问几句：一次一题，人逐题作答，答完一起提交。
-- [RadioGroup 单选组](https://ui.docs.xihanfun.com/components/radio-group): 一组互斥选项共一个值，所有选项同时可见。
+- [PasswordInput 密码输入](https://ui.docs.xihanfun.com/components/password-input): 一格密码框，带明暗切换按钮，并在大写锁定开启时给出提示。
+- [PinInput 分格输入](https://ui.docs.xihanfun.com/components/pin-input): 把一串短码拆成若干格子，一格一个字符。
+- [Popconfirm 弹出确认](https://ui.docs.xihanfun.com/components/popconfirm): 贴着触发器的一句确认：比对话框轻，但仍能拦住一次误操作。
+- [Popover 气泡卡片](https://ui.docs.xihanfun.com/components/popover): 由点击触发、贴着触发器的一小块浮层，可以放任意内容与交互。
+- [Progress 进度条](https://ui.docs.xihanfun.com/components/progress): 表示一件事的完成程度。
+- [PromptInput 提示输入框](https://ui.docs.xihanfun.com/components/prompt-input): 会话界面的输入框：值、输入法、能否提交，以及发送与停止共用的按钮。
+- [QuestionFlow 澄清问卷](https://ui.docs.xihanfun.com/components/question-flow): 执行前先提问：一次一题，逐题作答，答完一起提交。
+- [RadioGroup 单选组](https://ui.docs.xihanfun.com/components/radio-group): 一组互斥选项共用一个值，所有选项同时可见。
 - [Rating 评分](https://ui.docs.xihanfun.com/components/rating): 用一排图案表示一个离散的分值。
-- [Reasoning 思考过程](https://ui.docs.xihanfun.com/components/reasoning): 模型「想」的那一段：默认跟着写入自动展开，想完自动收起，用户动手过一次就不再自动。
+- [Reasoning 思考过程](https://ui.docs.xihanfun.com/components/reasoning): 模型的推理片段：默认随写入自动展开，完成后自动收起，用户手动操作过一次后不再自动开合。
 - [Resizable 可调容器](https://ui.docs.xihanfun.com/components/resizable): 通过拖拽或键盘调整内容区域的尺寸。
 - [ScrollArea 滚动区域](https://ui.docs.xihanfun.com/components/scroll-area): 提供带自定义滚动条的内容区域。
 - [Scrollbar 滚动条](https://ui.docs.xihanfun.com/components/scrollbar): 为现有滚动容器提供一致的滚动条样式。
-- [Segmented 分段控制器](https://ui.docs.xihanfun.com/components/segmented): 一排连在一起的互斥选项，选中的那一段底下有一块会滑动的指示器。
-- [Select 选择器](https://ui.docs.xihanfun.com/components/select): 从一份已知清单里选一个或多个值，选项收在浮层里。
+- [Segmented 分段控制器](https://ui.docs.xihanfun.com/components/segmented): 一排连在一起的互斥选项，选中的一段下方有一块滑动的指示器：淡底轨道里一块带描边的白色抬起面。
+- [Select 选择器](https://ui.docs.xihanfun.com/components/select): 从已知清单中选择一个或多个值，选项收在浮层内。
 - [Separator 分隔线](https://ui.docs.xihanfun.com/components/separator): 分隔相关内容或内容分组。
 - [SideNav 侧栏导航](https://ui.docs.xihanfun.com/components/side-nav): 用于组织应用的主要导航入口。
-- [SignaturePad 签名板](https://ui.docs.xihanfun.com/components/signature-pad): 一块用指针写字的画布：按下落笔、移动成迹、抬笔收一笔，画出来的是可缩放、可直接提交的 SVG。
-- [Skeleton 骨架屏](https://ui.docs.xihanfun.com/components/skeleton): 内容还没到时，先按最终版面占位。
-- [Slider 滑块](https://ui.docs.xihanfun.com/components/slider): 在一个连续或离散的区间里拖出一个值或一段范围。
+- [SignaturePad 签名板](https://ui.docs.xihanfun.com/components/signature-pad): 用指针书写的画布：按下落笔、移动成迹、抬起收笔，输出可缩放、可直接提交的 SVG。
+- [Skeleton 骨架屏](https://ui.docs.xihanfun.com/components/skeleton): 内容尚未到达时，按最终版面占位。
+- [Slider 滑块](https://ui.docs.xihanfun.com/components/slider): 在连续或离散的区间内拖出一个值或一段范围。
 - [Sortable 排序](https://ui.docs.xihanfun.com/components/sortable): 通过拖拽或键盘重新排列内容。
 - [Spinner 加载指示器](https://ui.docs.xihanfun.com/components/spinner): 一个不确定时长的等待标记。
 - [Splitter 分栏](https://ui.docs.xihanfun.com/components/splitter): 将内容区域拆分为可调整大小的面板。
-- [Statistic 统计数值](https://ui.docs.xihanfun.com/components/statistic): 一个带标签的关键数字，可以配前后缀。
+- [Statistic 统计数值](https://ui.docs.xihanfun.com/components/statistic): 带标签的关键数字，可以配前后缀。
 - [Steps 步骤条](https://ui.docs.xihanfun.com/components/steps): 用于展示多步骤流程的进度。
-- [Switch 开关](https://ui.docs.xihanfun.com/components/switch): 一项设置的开与关，翻过去立即生效。
+- [Switch 开关](https://ui.docs.xihanfun.com/components/switch): 一项设置的开与关，切换后立即生效。
 - [Table 表格](https://ui.docs.xihanfun.com/components/table): 多行同构记录按列排开，支持排序、选择、展开与吸顶。
 - [Tabs 标签页](https://ui.docs.xihanfun.com/components/tabs): 用于在同一区域内切换并列内容。
-- [TagGroup 标签组](https://ui.docs.xihanfun.com/components/tag-group): 一排标签当作一件东西来操作：方向键在标签之间走，整组只占一个 Tab 停靠点， 标签可以选中、也可以被摘掉，摘完焦点有去处。
-- [Tag 标签](https://ui.docs.xihanfun.com/components/tag): 告诉你这是什么：一个分类、一项技能、一个筛选条件。
-- [TagsInput 标签输入](https://ui.docs.xihanfun.com/components/tags-input): 在一个输入框里录入一串标签：回车或分隔符成词，每个词是一枚可删的标签。
+- [TagGroup 标签组](https://ui.docs.xihanfun.com/components/tag-group): 把一排标签作为一个整体操作：方向键在标签之间移动，整组只占一个 Tab 停靠点，标签可以选中、也可以移除，移除后焦点有去处。
+- [Tag 标签](https://ui.docs.xihanfun.com/components/tag): 表示一个对象是什么：一个分类、一项技能、一个筛选条件。
+- [TagsInput 标签输入](https://ui.docs.xihanfun.com/components/tags-input): 在一个输入框内录入一串标签：回车或分隔符成词，每个词是一个可删除的标签。
 - [TextField 文本字段](https://ui.docs.xihanfun.com/components/text-field): 单行或多行的自由文本输入。
 - [TimeField 时间字段](https://ui.docs.xihanfun.com/components/time-field): 按时、分、秒逐段输入时间，适合已经知道目标时间、无需打开选择面板的场景。
 - [TimePicker 时间选择器](https://ui.docs.xihanfun.com/components/time-picker): 将可键入的分段时间框、时钟触发器和分列选择浮层组合成一个字段。
 - [TimeRangePicker 时间范围选择器](https://ui.docs.xihanfun.com/components/time-range-picker): 将起止两组可键入的分段时间框、范围分隔符、时钟触发器和两组并排的分列选择浮层组合成一个字段。
-- [Timeline 时间线](https://ui.docs.xihanfun.com/components/timeline): 按时间顺序排开的一串事件，每条有标记、连接线与内容。
-- [Timer 计时器](https://ui.docs.xihanfun.com/components/timer): 一段可正可倒的计时：能起、能停、能接着走、能归零。
+- [Timeline 时间线](https://ui.docs.xihanfun.com/components/timeline): 按时间顺序排列的一串事件，每条有标记、连接线与内容。
+- [Timer 计时器](https://ui.docs.xihanfun.com/components/timer): 一段可正计时或倒计时的时长：可启动、暂停、继续、归零。
 - [Timestamp 时间戳](https://ui.docs.xihanfun.com/components/timestamp): 把一个时刻渲染成文本，绝对或相对。
-- [Toast 轻提示](https://ui.docs.xihanfun.com/components/toast): 一条会自己消失的短反馈：状态字形、标题与可选的一行补充说明。
+- [Toast 轻提示](https://ui.docs.xihanfun.com/components/toast): 一条会自动消失的短反馈：状态字形、标题与可选的一行补充说明。
 - [ToggleGroup 切换按钮组](https://ui.docs.xihanfun.com/components/toggle-group): 将多个切换按钮组合为单选或多选控件。
 - [Toggle 切换按钮](https://ui.docs.xihanfun.com/components/toggle): 在按下和未按下状态之间切换的按钮。
-- [ToolCall 工具调用](https://ui.docs.xihanfun.com/components/tool-call): 一次工具调用的卡片：阶段、参数与结果，跑起来自动展开、结束自动收起，用户动手过一次就不再自动。
+- [ToolCall 工具调用](https://ui.docs.xihanfun.com/components/tool-call): 一次工具调用的卡片：阶段、参数与结果，运行时自动展开、结束后自动收起，用户手动操作过一次后不再自动开合。
 - [Toolbar 工具栏](https://ui.docs.xihanfun.com/components/toolbar): 用于组织一组相关的操作控件。
 - [Tooltip 文字提示](https://ui.docs.xihanfun.com/components/tooltip): 悬停或聚焦时出现的一句纯文字说明。
 - [Tour 引导](https://ui.docs.xihanfun.com/components/tour): 用于逐步介绍界面中的关键功能。
-- [Transfer 穿梭框](https://ui.docs.xihanfun.com/components/transfer): 左右两栏，把条目从一边搬到另一边。
-- [TreeSelect 树选择](https://ui.docs.xihanfun.com/components/tree-select): 浮层里放一棵树的选择器：层级不规整、深浅不一时用它。
+- [Transfer 穿梭框](https://ui.docs.xihanfun.com/components/transfer): 左右两栏，把条目从一侧移到另一侧。
+- [TreeSelect 树选择](https://ui.docs.xihanfun.com/components/tree-select): 浮层内放一棵树的选择器，适用于层级不规整、深浅不一的数据。
 - [Tree 树](https://ui.docs.xihanfun.com/components/tree): 层级数据的展开与选择：分支可展开，节点可选。
 - [Truncate 文本截断](https://ui.docs.xihanfun.com/components/truncate): 用于在有限空间内省略过长文本。
 - [Typography 排印](https://ui.docs.xihanfun.com/components/typography): 用于组织标题、正文和富文本内容。
-- [Virtualizer 虚拟滚动](https://ui.docs.xihanfun.com/components/virtualizer): 只渲染窗口内的条目，列表再长也只画那几十个。
+- [Virtualizer 虚拟滚动](https://ui.docs.xihanfun.com/components/virtualizer): 只渲染窗口内的条目，列表再长也只绘制可见的几十条。
 - [Watermark 水印](https://ui.docs.xihanfun.com/components/watermark): 在内容区域上重复显示文字或图片水印。

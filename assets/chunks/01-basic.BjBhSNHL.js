@@ -1,0 +1,13 @@
+const a=`<!-- 基础用法 | 水平排列内容 -->
+<xh-flex align="center" gap="sm" aria-label="水平排列占位区块" style="display: contents">
+  <div data-xh-part="root">
+    <span data-demo-block="square" data-tone="brand"></span>
+    <xh-flex orientation="vertical" gap="xs" style="display: contents">
+      <div data-xh-part="root">
+        <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 96px"></span>
+        <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 64px"></span>
+      </div>
+    </xh-flex>
+  </div>
+</xh-flex>
+`;export{a as default};

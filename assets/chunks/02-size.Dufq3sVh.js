@@ -1,0 +1,11 @@
+const n=`<!-- 尺寸 | size 只改变直径，默认档 md 不输出 data-size -->
+<xh-spinner size="sm" label="加载中">
+  <span data-xh-part="root"></span>
+</xh-spinner>
+<xh-spinner label="加载中">
+  <span data-xh-part="root"></span>
+</xh-spinner>
+<xh-spinner size="lg" label="加载中">
+  <span data-xh-part="root"></span>
+</xh-spinner>
+`;export{n as default};

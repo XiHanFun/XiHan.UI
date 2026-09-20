@@ -22,24 +22,24 @@ import { XhFlex } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhFlex align="center" gap="sm">
-    <span style="display: grid; inline-size: 40px; block-size: 40px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">林</span>
+  <XhFlex align="center" gap="sm" aria-label="水平排列占位区块">
+    <span data-demo-block="square" data-tone="brand" />
     <XhFlex orientation="vertical" gap="xs">
-      <strong>林晓</strong>
-      <span style="color: var(--xh-fg-muted); font-size: 13px">产品设计师</span>
+      <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 96px" />
+      <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 64px" />
     </XhFlex>
   </XhFlex>
 </template>
 ```
 
 ```html
-<xh-flex align="center" gap="sm" style="display: contents">
+<xh-flex align="center" gap="sm" aria-label="水平排列占位区块" style="display: contents">
   <div data-xh-part="root">
-    <span style="display: grid; inline-size: 40px; block-size: 40px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">林</span>
+    <span data-demo-block="square" data-tone="brand"></span>
     <xh-flex orientation="vertical" gap="xs" style="display: contents">
       <div data-xh-part="root">
-        <strong>林晓</strong>
-        <span style="color: var(--xh-fg-muted); font-size: 13px">产品设计师</span>
+        <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 96px"></span>
+        <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 64px"></span>
       </div>
     </xh-flex>
   </div>
@@ -62,30 +62,30 @@ import { XhFlex } from "@xihan-ui/vue";
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const items = ["设计", "开发", "测试"];
-const itemStyle = "padding: 8px 14px; border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle)";
+const items = [
+  { id: "设计", tone: "brand" },
+  { id: "开发", tone: "info" },
+  { id: "测试", tone: "success" },
+] as const;
 </script>
 
 <template>
   <XhFlex orientation="vertical" gap="lg">
     <XhFlex gap="sm">
-      <span v-for="item in items" :key="item" :style="itemStyle">{{ item }}</span>
+      <span v-for="item in items" :key="item.id" data-demo-block :data-tone="item.tone" style="--xh-demo-block-inline-size: 72px" />
     </XhFlex>
     <XhFlex orientation="vertical" gap="sm" style="inline-size: 120px">
-      <span v-for="item in items" :key="item" :style="itemStyle">{{ item }}</span>
+      <span v-for="item in items" :key="item.id" data-demo-block :data-tone="item.tone" />
     </XhFlex>
   </XhFlex>
 </template>
 ```
 
 ```html
-<style>
-  #flex-direction [data-item] { padding: 8px 14px; border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle); }
-</style>
 <xh-flex id="flex-direction" orientation="vertical" gap="lg" style="display: contents">
   <div data-xh-part="root">
-    <xh-flex gap="sm" style="display: contents"><div data-xh-part="root"><span data-item>设计</span><span data-item>开发</span><span data-item>测试</span></div></xh-flex>
-    <xh-flex orientation="vertical" gap="sm" style="display: contents"><div data-xh-part="root" style="inline-size: 120px"><span data-item>设计</span><span data-item>开发</span><span data-item>测试</span></div></xh-flex>
+    <xh-flex gap="sm" style="display: contents"><div data-xh-part="root"><span data-demo-block data-tone="brand" style="--xh-demo-block-inline-size: 72px"></span><span data-demo-block data-tone="info" style="--xh-demo-block-inline-size: 72px"></span><span data-demo-block data-tone="success" style="--xh-demo-block-inline-size: 72px"></span></div></xh-flex>
+    <xh-flex orientation="vertical" gap="sm" style="display: contents"><div data-xh-part="root" style="inline-size: 120px"><span data-demo-block data-tone="brand"></span><span data-demo-block data-tone="info"></span><span data-demo-block data-tone="success"></span></div></xh-flex>
   </div>
 </xh-flex>
 ```
@@ -103,27 +103,31 @@ import { XhFlex } from "@xihan-ui/vue";
   <XhFlex
     align="center"
     justify="between"
+    aria-label="两端对齐占位区块"
     style="inline-size: min(360px, 100%); padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
   >
     <XhFlex align="center" gap="sm">
-      <span style="display: grid; inline-size: 36px; block-size: 36px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">周</span>
-      <XhFlex orientation="vertical" gap="xs"><strong>周宁</strong><small style="color: var(--xh-fg-muted)">在线</small></XhFlex>
+      <span data-demo-block="square" data-tone="brand" />
+      <XhFlex orientation="vertical" gap="xs">
+        <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 88px" />
+        <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 48px" />
+      </XhFlex>
     </XhFlex>
-    <span style="color: var(--xh-fg-brand)">项目负责人</span>
+    <span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 64px" />
   </XhFlex>
 </template>
 ```
 
 ```html
-<xh-flex align="center" justify="between" style="display: contents">
+<xh-flex align="center" justify="between" aria-label="两端对齐占位区块" style="display: contents">
   <div data-xh-part="root" style="inline-size: min(360px, 100%); padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <xh-flex align="center" gap="sm" style="display: contents">
       <div data-xh-part="root">
-        <span style="display: grid; inline-size: 36px; block-size: 36px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">周</span>
-        <xh-flex orientation="vertical" gap="xs" style="display: contents"><div data-xh-part="root"><strong>周宁</strong><small style="color: var(--xh-fg-muted)">在线</small></div></xh-flex>
+        <span data-demo-block="square" data-tone="brand"></span>
+        <xh-flex orientation="vertical" gap="xs" style="display: contents"><div data-xh-part="root"><span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 88px"></span><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 48px"></span></div></xh-flex>
       </div>
     </xh-flex>
-    <span style="color: var(--xh-fg-brand)">项目负责人</span>
+    <span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 64px"></span>
   </div>
 </xh-flex>
 ```
@@ -148,7 +152,7 @@ const groups = [
     <XhFlex v-for="group in groups" :key="group.gap" align="center" gap="md">
       <span style="inline-size: 48px; color: var(--xh-fg-muted)">{{ group.label }}</span>
       <XhFlex :gap="group.gap">
-        <span v-for="item in 3" :key="item" style="inline-size: 28px; block-size: 28px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle)" />
+        <span v-for="item in 3" :key="item" data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px" />
       </XhFlex>
     </XhFlex>
   </XhFlex>
@@ -157,12 +161,6 @@ const groups = [
 
 ```html
 <style>
-  #flex-gap [data-box] {
-    inline-size: 28px;
-    block-size: 28px;
-    border-radius: var(--xh-shape-control);
-    background: var(--xh-bg-brand-subtle);
-  }
   #flex-gap [data-label] {
     inline-size: 48px;
     color: var(--xh-fg-muted);
@@ -171,13 +169,13 @@ const groups = [
 <xh-flex id="flex-gap" orientation="vertical" gap="md" style="display: contents">
   <div data-xh-part="root">
     <xh-flex align="center" gap="md" style="display: contents">
-      <div data-xh-part="root"><span data-label>紧凑</span><xh-flex gap="sm" style="display: contents"><div data-xh-part="root"><span data-box></span><span data-box></span><span data-box></span></div></xh-flex></div>
+      <div data-xh-part="root"><span data-label>紧凑</span><xh-flex gap="sm" style="display: contents"><div data-xh-part="root"><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span></div></xh-flex></div>
     </xh-flex>
     <xh-flex align="center" gap="md" style="display: contents">
-      <div data-xh-part="root"><span data-label>标准</span><xh-flex gap="md" style="display: contents"><div data-xh-part="root"><span data-box></span><span data-box></span><span data-box></span></div></xh-flex></div>
+      <div data-xh-part="root"><span data-label>标准</span><xh-flex gap="md" style="display: contents"><div data-xh-part="root"><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span></div></xh-flex></div>
     </xh-flex>
     <xh-flex align="center" gap="md" style="display: contents">
-      <div data-xh-part="root"><span data-label>宽松</span><xh-flex gap="lg" style="display: contents"><div data-xh-part="root"><span data-box></span><span data-box></span><span data-box></span></div></xh-flex></div>
+      <div data-xh-part="root"><span data-label>宽松</span><xh-flex gap="lg" style="display: contents"><div data-xh-part="root"><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span><span data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px"></span></div></xh-flex></div>
     </xh-flex>
   </div>
 </xh-flex>
@@ -191,34 +189,39 @@ const groups = [
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const tags = ["前端", "组件库", "无障碍", "设计令牌", "键盘导航"];
-const tagStyle = "padding: 4px 10px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-size: 13px";
+const tags = [
+  { id: 1, tone: "brand", width: "56px" },
+  { id: 2, tone: "info", width: "72px" },
+  { id: 3, tone: "success", width: "64px" },
+  { id: 4, tone: "warning", width: "80px" },
+  { id: 5, tone: "danger", width: "68px" },
+] as const;
 </script>
 
 <template>
   <XhFlex orientation="vertical" gap="lg">
     <XhFlex wrap gap="sm" style="max-inline-size: 280px">
-      <span v-for="tag in tags" :key="tag" :style="tagStyle">{{ tag }}</span>
+      <span
+        v-for="tag in tags"
+        :key="tag.id"
+        data-demo-block
+        :data-tone="tag.tone"
+        :style="{ '--xh-demo-block-inline-size': tag.width, '--xh-demo-block-block-size': '24px', '--xh-demo-block-radius': 'var(--xh-shape-pill)' }"
+      />
     </XhFlex>
-    <div>
-      当前筛选：
-      <XhFlex inline gap="xs">
-        <span :style="tagStyle">近 7 天</span>
-        <span :style="tagStyle">已完成</span>
-      </XhFlex>
-    </div>
+    <XhFlex inline gap="xs" aria-label="行内占位区块">
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-inline-size: 68px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)" />
+      <span data-demo-block data-tone="success" style="--xh-demo-block-inline-size: 60px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)" />
+    </XhFlex>
   </XhFlex>
 </template>
 ```
 
 ```html
-<style>
-  #flex-wrap [data-tag] { padding: 4px 10px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-size: 13px; }
-</style>
 <xh-flex id="flex-wrap" orientation="vertical" gap="lg" style="display: contents">
   <div data-xh-part="root">
-    <xh-flex wrap gap="sm" style="display: contents"><div data-xh-part="root" style="max-inline-size: 280px"><span data-tag>前端</span><span data-tag>组件库</span><span data-tag>无障碍</span><span data-tag>设计令牌</span><span data-tag>键盘导航</span></div></xh-flex>
-    <div>当前筛选：<xh-flex inline gap="xs" style="display: contents"><div data-xh-part="root"><span data-tag>近 7 天</span><span data-tag>已完成</span></div></xh-flex></div>
+    <xh-flex wrap gap="sm" style="display: contents"><div data-xh-part="root" style="max-inline-size: 280px"><span data-demo-block data-tone="brand" style="--xh-demo-block-inline-size: 56px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="info" style="--xh-demo-block-inline-size: 72px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="success" style="--xh-demo-block-inline-size: 64px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="warning" style="--xh-demo-block-inline-size: 80px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="danger" style="--xh-demo-block-inline-size: 68px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span></div></xh-flex>
+    <xh-flex inline gap="xs" aria-label="行内占位区块" style="display: contents"><div data-xh-part="root"><span data-demo-block data-tone="brand" style="--xh-demo-block-inline-size: 68px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span><span data-demo-block data-tone="success" style="--xh-demo-block-inline-size: 60px; --xh-demo-block-block-size: 24px; --xh-demo-block-radius: var(--xh-shape-pill)"></span></div></xh-flex>
   </div>
 </xh-flex>
 ```
@@ -231,11 +234,11 @@ const tagStyle = "padding: 4px 10px; border-radius: var(--xh-shape-pill); backgr
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const linkStyle = "color: var(--xh-fg-brand); cursor: pointer";
 const ruleStyle
   = "display: block; inline-size: 1px; block-size: 1em; background: var(--xh-border-default)";
 
 const actions = ["编辑", "复制", "归档", "删除"];
+const tones = ["brand", "info", "success", "danger"] as const;
 </script>
 
 <template>
@@ -243,17 +246,20 @@ const actions = ["编辑", "复制", "归档", "删除"];
     <template #split>
       <span :style="ruleStyle" />
     </template>
-    <span v-for="a in actions" :key="a" :style="linkStyle">{{ a }}</span>
+    <span
+      v-for="(action, index) in actions"
+      :key="action"
+      data-demo-block="line"
+      :data-tone="tones[index]"
+      :aria-label="action"
+      style="--xh-demo-block-inline-size: 48px"
+    />
   </XhFlex>
 </template>
 ```
 
 ```html
 <style>
-  #flex-split [data-link] {
-    color: var(--xh-fg-brand);
-    cursor: pointer;
-  }
   #flex-split [data-rule] {
     display: block;
     inline-size: 1px;
@@ -264,13 +270,13 @@ const actions = ["编辑", "复制", "归档", "删除"];
 
 <xh-flex id="flex-split" gap="sm" style="display: contents">
   <div data-xh-part="root">
-    <span data-link>编辑</span>
+    <span data-demo-block="line" data-tone="brand" aria-label="编辑" style="--xh-demo-block-inline-size: 48px"></span>
     <span data-xh-part="split"><span data-rule></span></span>
-    <span data-link>复制</span>
+    <span data-demo-block="line" data-tone="info" aria-label="复制" style="--xh-demo-block-inline-size: 48px"></span>
     <span data-xh-part="split"><span data-rule></span></span>
-    <span data-link>归档</span>
+    <span data-demo-block="line" data-tone="success" aria-label="归档" style="--xh-demo-block-inline-size: 48px"></span>
     <span data-xh-part="split"><span data-rule></span></span>
-    <span data-link>删除</span>
+    <span data-demo-block="line" data-tone="danger" aria-label="删除" style="--xh-demo-block-inline-size: 48px"></span>
   </div>
 </xh-flex>
 ```
@@ -326,12 +332,12 @@ const actions = ["编辑", "复制", "归档", "删除"];
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `FlexAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，不写则横排按中线对齐、竖排拉伸。 |
-| `gap` | `FlexGap` |  | 子项间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
-| `inline` | `boolean` |  | 容器按行内盒排版，宽度收到内容。 |
-| `justify` | `FlexJustify` |  | 主轴分布：start / center / end / between / around / evenly，不写则子项从主轴起点排起。 |
-| `orientation` | `Orientation` |  | 主轴方向：horizontal 横排、vertical 竖排，缺省 horizontal。 |
-| `wrap` | `boolean` |  | 一行放不下时折行。 |
+| `align` | `FlexAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，未提供时横向按中线对齐、纵向拉伸。 |
+| `gap` | `FlexGap` |  | 子项间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 |
+| `inline` | `boolean` |  | 容器按行内盒排版，宽度收缩到内容。 |
+| `justify` | `FlexJustify` |  | 主轴分布：start / center / end / between / around / evenly，未提供时子项从主轴起点排列。 |
+| `orientation` | `Orientation` |  | 主轴方向：horizontal 横向、vertical 纵向，默认 horizontal。 |
+| `wrap` | `boolean` |  | 一行放不下时换行。 |
 
 ### 插槽
 
@@ -339,8 +345,8 @@ const actions = ["编辑", "复制", "归档", "删除"];
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhFlex` | `default` | — | 子项，按写进来的顺序排开。 |
-| `XhFlex` | `split` | — | 分隔符的内容：写了它，组件在每两个子项之间各铺一个分隔符部件，逐缝重新求值一次。 |
+| `XhFlex` | `default` | — | 子项，按写入的顺序排列。 |
+| `XhFlex` | `split` | — | 分隔符的内容：写了它，组件在每两个子项之间各铺设一个分隔符部件，逐缝隙重新求值一次。 |
 
 ### connect API
 
@@ -349,7 +355,7 @@ const actions = ["编辑", "复制", "归档", "删除"];
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
-| `getSplitProps` | `() => T['element']` | 分隔符节点。它是装饰件，恒带 aria-hidden：一排里夹着的竖线被逐条念出来只会打断内容。 |
+| `getSplitProps` | `() => T['element']` | 分隔符节点。它是装饰件，恒带 aria-hidden：一排中夹杂的竖线被逐条朗读只会打断内容。 |
 
 ## 无障碍
 
@@ -392,9 +398,9 @@ const actions = ["编辑", "复制", "归档", "删除"];
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-flex-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | flex 的 root 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->

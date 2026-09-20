@@ -1,1 +1,0 @@
-import{bW as o,bX as n}from"./theme.C4bpqV2W.js";import{d as r,b as l,w as a,k as t,o as s,E as f,a as i}from"./framework.DkvuVDKz.js";const m=r({__name:"floating-panel",setup(p){return(u,e)=>(s(),l(t(n),null,{default:a(()=>[f(t(o),null,{default:a(()=>[...e[0]||(e[0]=[i("打开面板",-1)])]),_:1})]),_:1}))}});export{m as default};

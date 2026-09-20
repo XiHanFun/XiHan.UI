@@ -1,1 +1,0 @@
-import{cr as e}from"./theme.C4bpqV2W.js";import{d as r,o as s,c as n,E as t,k as a}from"./framework.DkvuVDKz.js";const o={style:{display:"flex",gap:"12px"}},l=r({__name:"02-variant",setup(c){return(p,i)=>(s(),n("div",o,[t(a(e),{keys:["Enter"]}),t(a(e),{keys:["Enter"],variant:"light"})]))}});export{l as default};

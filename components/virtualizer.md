@@ -2,7 +2,7 @@
 
 # Virtualizer 虚拟滚动 `alpha`
 
-只渲染窗口内的条目，列表再长也只画那几十个。
+只渲染窗口内的条目，列表再长也只绘制可见的几十条。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/virtualizer" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-一万条只渲可视区那几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自己写
+一万条只渲染可视区内的几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自行编写
 
 ```vue
 <script setup lang="ts">
@@ -114,7 +114,7 @@ import {
 
 ### 动态高度
 
-条目开了 measure 就把真实尺寸回喂给内核，estimateSize 只是首帧的起点，滚过一遍就收敛
+条目开启 measure 后把真实尺寸回传给内核，estimateSize 只是首帧的起点，滚动一遍后即收敛
 
 ```vue
 <script setup lang="ts">
@@ -221,9 +221,9 @@ const rows = Array.from({ length: 500 }, (_, i) => ({
 </script>
 ```
 
-### 滚到指定条目
+### 滚动到指定条目
 
-scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿，越界下标由内核夹住
+scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿，越界下标由内核夹取
 
 ```vue
 <script setup lang="ts">
@@ -340,7 +340,7 @@ import {
 
 ### 横向列表
 
-horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由作者写，gap 由内核直接算进位移
+horizontal 把主轴换为行内轴：位移改写进行首侧，条目宽度由作者编写，gap 由内核直接计入位移
 
 ```vue
 <script setup lang="ts">
@@ -436,9 +436,9 @@ import {
 </script>
 ```
 
-### 挂自绘滚动条
+### 挂载自绘滚动条
 
-滚动容器是视口，给它一个 id 交给滚动条即可；虚拟滚动只管渲哪几条，滚动条只管画滚动位置
+滚动容器是视口，提供一个 id 交给滚动条即可；虚拟滚动只管理渲染哪几条，滚动条只负责绘制滚动位置
 
 ```vue
 <script setup lang="ts">
@@ -537,9 +537,9 @@ import {
 </script>
 ```
 
-### 与无限滚动合成一条长列表
+### 与无限滚动组成一条长列表
 
-哨兵摆在内容层之后而不是条目之间：窗口外的条目根本没渲染，摆进去的哨兵永远进不了可视区
+哨兵放置在内容层之后而不是条目之间：窗口外的条目根本没有渲染，放在其中的哨兵永远无法进入可视区
 
 ```vue
 <script setup lang="ts">
@@ -753,30 +753,30 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 ### 何时不用
 
-- 条目只有几十上百条：虚拟化带来的复杂度不值得。
-- 需要浏览器的页内查找命中所有条目：没渲染的条目搜不到。
+- 条目只有几十上百条时，虚拟化带来的复杂度不值得。
+- 需要浏览器的页内查找命中所有条目时，未渲染的条目无法被搜索。
 
 ### 特性
 
-- 支持动态高度（量出来而不是猜）、横向列表与多列。
-- `overscan` 决定窗口外多渲几个，滚动时不露白。
+- 支持动态高度（测量而非估算）、横向列表与多列。
+- `overscan` 决定窗口外多渲染的条数，滚动时不露白。
 - 可以滚到指定条目。
 
 ### 组合
 
 - 与[列表](./list)、[表格](./table)、[选择器](./select)的长选项列表、[穿梭框](./transfer)配合。
-- 与[无限滚动](./infinite-scroll)合成一条边滚边取的长列表：哨兵摆在内容层之后，取数目标指向视口那一层。
+- 与[无限滚动](./infinite-scroll)组合为边滚边取的长列表：哨兵放在内容层之后，取数目标指向视口层。
 
 ### 最佳实践
 
-- 条目高度差异大时用动态高度模式，别用估值硬撑。
-- 提供"滚到某条"的入口，否则用户永远找不回刚才看的位置。
+- 条目高度差异大时使用动态高度模式，不依赖估值。
+- 提供滚动到指定条目的入口，否则用户无法找回之前的位置。
 
 ### 反模式
 
-- 在虚拟列表里放高度会突变的内容（图片没预留宽高比），滚动时位置乱跳。
+- 在虚拟列表内放高度会突变的内容（图片未预留宽高比），滚动时位置跳动。
 - 依赖 Ctrl + F 查找。
-- 把[无限滚动](./infinite-scroll)的哨兵摆进条目之间：窗口外的条目不渲染，哨兵跟着一起不渲染，第二页永远取不到。
+- 把[无限滚动](./infinite-scroll)的哨兵放进条目之间：窗口外的条目不渲染，哨兵也不渲染，第二页无法获取。
 
 ## API 参考
 
@@ -795,16 +795,16 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `count` | `number` |  | 总条数，默认 0。 |
-| `estimateSize` | `number \| ((index: number) => number)` |  | 每条的估算主轴尺寸（px）。等高列表可以直接给一个数字。 不给按 0 算：所有条目都会落进窗口，先渲出来再靠 measureElement 回喂真实尺寸。 |
-| `overscan` | `number` |  | 可视区前后各多渲几条，默认 5。 |
+| `estimateSize` | `number \| ((index: number) => number)` |  | 每条的估算主轴尺寸（px）。等高列表可以直接提供一个数字。 未提供时按 0 计算：所有条目都会落进窗口，先渲染出来再依靠 measureElement 回填真实尺寸。 |
+| `overscan` | `number` |  | 可视区前后各多渲染的条数，默认 5。 |
 | `horizontal` | `boolean` |  | 横向列表（主轴是行内轴），默认 false。 |
-| `gap` | `number` |  | 相邻两条之间的主轴间距（px），默认 0。位移由内核直接算进去，不靠外边距。 |
-| `getItemKey` | `(index: number) => string \| number` |  | 条目身份。默认即下标；列表会增删时给稳定 key，测量缓存才跟得住条目。 |
-| `onRangeChange` | `(details: VirtualizerRangeChangeDetails) => void` |  | 该渲的区间变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 |
-| `scrollMargin` | `number` |  | 列表起点距滚动容器起点的距离（px），默认 0。 列表上方还有别的内容（页头、筛选栏）时给它，否则区间会整体偏掉那一截。 |
-| `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计进总长，第一条从 paddingStart 处起算。 |
+| `gap` | `number` |  | 相邻两条之间的主轴间距（px），默认 0。位移由内核直接计算，不依靠外边距。 |
+| `getItemKey` | `(index: number) => string \| number` |  | 条目身份。默认即下标；列表会增删时提供稳定 key，测量缓存才能跟随条目。 |
+| `onRangeChange` | `(details: VirtualizerRangeChangeDetails) => void` |  | 应渲染的区间变化。只在快照实际变化时回调，滚动但可见区间未变不会触发。 |
+| `scrollMargin` | `number` |  | 列表起点距滚动容器起点的距离（px），默认 0。 列表上方还有其他内容（页头、筛选栏）时提供它，否则区间会整体偏移该段距离。 |
+| `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计入总长，第一条从 paddingStart 处起算。 |
 | `paddingEnd` | `number` |  |  |
-| `lanes` | `number` |  | 多列网格的列数，默认 1（单列）。条目按下标轮流落到各道上。 |
+| `lanes` | `number` |  | 多列网格的列数，默认 1（单列）。条目按下标轮流落到各列上。 |
 
 ### 事件
 
@@ -812,7 +812,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `range-change` | `VirtualizerRangeChangeDetails` | 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
+| `range-change` | `VirtualizerRangeChangeDetails` | 应渲染的区间变化；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
 
 ### 插槽
 
@@ -836,16 +836,16 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `virtualItems` | `readonly VirtualizerItemState[]` | 此刻该渲染哪些下标，以及它们的位移与尺寸。 |
+| `virtualItems` | `readonly VirtualizerItemState[]` | 当前应渲染的下标，以及它们的位移与尺寸。 |
 | `totalSize` | `number` | 整份列表的主轴总长（px）。 |
-| `startIndex` | `number \| null` | 可视区首条下标（不含过扫描）；一条都排不下时为 null。 |
-| `endIndex` | `number \| null` | 可视区末条下标（不含过扫描）；一条都排不下时为 null。 |
+| `startIndex` | `number \| null` | 可视区首条下标（不含过扫描）；没有任何条目可容纳时为 null。 |
+| `endIndex` | `number \| null` | 可视区末条下标（不含过扫描）；没有任何条目可容纳时为 null。 |
 | `horizontal` | `boolean` |  |
 | `lanes` | `number` |  |
-| `scrolling` | `boolean` | 手正在滚。 |
-| `scrollToIndex` | `(index: number, options?: VirtualizerScrollToOptions) => void` | 滚到第几条。越界下标由内核夹住。 |
-| `measureElement` | `(element: HTMLElement \| null) => void` | 把条目节点的真实尺寸回喂给内核（动态高度用）。传 null 无副作用。 |
-| `measure` | `() => void` | 丢掉全部实测尺寸重新按估算值排。视口换了一种排版时用得上。 |
+| `scrolling` | `boolean` | 正在滚动。 |
+| `scrollToIndex` | `(index: number, options?: VirtualizerScrollToOptions) => void` | 滚动到某一条。越界下标由内核夹取。 |
+| `measureElement` | `(element: HTMLElement \| null) => void` | 把条目节点的真实尺寸回填给内核（动态高度使用）。传 null 无副作用。 |
+| `measure` | `() => void` | 丢弃全部实测尺寸重新按估算值排列。视口更换排版时使用。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |

@@ -2,7 +2,7 @@
 
 # LoadingBar 加载条 `alpha`
 
-页面顶部那条细进度线：表示"正在去往别处"或"正在取数据"。
+页面顶部的细进度线，表示正在导航或正在获取数据。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/loading-bar" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-条子贴在视口顶边（往页面最上方看）；不给 value 就是不确定进度，宽度自行往前爬，loading 翻 false 才冲到头并淡出
+进度条贴在视口顶边（见页面最上方）；不提供 value 即为不确定进度，宽度自行向前爬升，loading 切换为 false 后才到达终点并淡出
 
 ```vue
 <script setup lang="ts">
@@ -94,7 +94,7 @@ const value = ref(0);
 
 ### 确定进度
 
-传了 value 就由宿主说了算，宽度照它显示，内部爬升不再插手；loading 仍然负责露面与收起
+传入 value 后由宿主决定，宽度按它显示，内部爬升不再介入；loading 仍然负责显示与收起
 
 ```vue
 <script setup lang="ts">
@@ -187,7 +187,7 @@ function advance(): void {
 
 ### 厚度
 
-height 数字按像素、字符串按任意 CSS 长度；进度段的颜色走语气或皮肤槽，不走内联
+height 数字按像素、字符串按任意 CSS 长度；进度段的颜色经语气或皮肤槽，不使用内联
 
 ```vue
 <script setup lang="ts">
@@ -248,9 +248,9 @@ const loading = ref(false);
 </script>
 ```
 
-### 关掉爬升
+### 关闭爬升
 
-trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾
+trickle 为 false 时进度条停在起步值 minimum 不动，向前推进全部由宿主收尾
 
 ```vue
 <script setup lang="ts">
@@ -318,7 +318,7 @@ const loading = ref(false);
 
 ### 颜色
 
-tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边
+tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，这里改写为 absolute 并配一个相对定位的容器，六条才留在示例中而不是叠到页面顶边
 
 ```vue
 <script setup lang="ts">
@@ -460,7 +460,7 @@ const frameStyle: CSSProperties = {
 
 ### 挂在局部
 
-条子默认贴视口顶边，改写成 absolute 再套一个相对定位的框子，它就只贴这块卡片的上沿
+进度条默认贴视口顶边，改写为 absolute 再套一个相对定位的容器，它就只贴该卡片的上沿
 
 ```vue
 <script setup lang="ts">
@@ -554,32 +554,32 @@ function reload(): void {
 
 ### 何时使用
 
-- 路由切换、整页数据刷新这类用户无需等待具体百分比的过程。
+- 路由切换、整页数据刷新等用户不需要具体百分比的过程。
 
 ### 何时不用
 
-- 进度是确定的且用户关心具体数值：用[进度条](./progress)。
-- 局部区域在加载：用[骨架屏](./skeleton)或[加载指示器](./spinner)。
+- 进度确定且用户关心具体数值时，使用[进度条](./progress)。
+- 局部区域加载时，使用[骨架屏](./skeleton)或[加载指示器](./spinner)。
 
 ### 特性
 
-- 不给确定进度时自动爬升（`trickle`）：先快后慢，永远不到 100%，收到完成信号才补满。
-- `minimum` 是起跳位置，让用户立刻看到反应。
-- 可以挂在局部容器上而不只是页面顶部。
+- 未提供确定进度时自动爬升（`trickle`）：先快后慢，不到 100%，收到完成信号后补满。
+- `minimum` 是起始位置，让用户立即看到反应。
+- 可以挂在局部容器上，不限于页面顶部。
 
 ### 组合
 
-- 与路由守卫配合：进入时启动，完成或失败时收掉。
+- 与路由守卫配合：进入时启动，完成或失败时收起。
 
 ### 最佳实践
 
-- 失败也要收掉：留在页面上的半截进度条比什么都没有更糟。
-- 极快的请求可以延迟一点再显示，否则只会闪一下。
+- 失败时也要收起，停留在页面上的半截进度条比没有更差。
+- 极快的请求可以延迟显示，避免闪烁。
 
 ### 反模式
 
-- 爬升到 100% 却还没加载完：用户以为卡死了。
-- 同时挂好几条。
+- 爬升到 100% 却尚未加载完成，用户会以为卡住。
+- 同时挂多条。
 
 ## API 参考
 
@@ -597,17 +597,17 @@ function reload(): void {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number` |  | 受控进度值（0-100）。给了它就是确定进度：宽度照它显示，内部爬升停止。 |
-| `defaultValue` | `number` |  | 非受控初值，缺省 0。 |
-| `loading` | `boolean` |  | 加载开关：true 开始，false 结束（冲到 100 再淡出归零）。只由宿主写入，无配套回调。 |
-| `height` | `string \| number` |  | 条子厚度：数字按像素，字符串按任意 CSS 长度。缺省 2px。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。要用别的颜色改皮肤槽 --xh-loading-bar-range。 |
-| `trickle` | `boolean` |  | 不确定进度时自行往前爬，默认开。关掉即停在起步值等宿主收尾。 |
-| `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关掉爬升。 |
-| `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到这里。 |
-| `fadeDuration` | `number` |  | 冲到 100 之后留给淡出的窗口毫秒，默认 200。窗口走完才归零并收起。 |
+| `value` | `number` |  | 受控进度值（0-100）。提供后即为确定进度：宽度按它显示，内部爬升停止。 |
+| `defaultValue` | `number` |  | 非受控初值，默认 0。 |
+| `loading` | `boolean` |  | 加载开关：true 开始，false 结束（到达 100 后淡出归零）。只由宿主写入，无配套回调。 |
+| `height` | `string \| number` |  | 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 2px。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段使用哪族颜色。需要其他颜色时修改皮肤槽 --xh-loading-bar-range。 |
+| `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
+| `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
+| `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到该值。 |
+| `fadeDuration` | `number` |  | 到达 100 之后留给淡出的窗口毫秒，默认 200。窗口结束才归零并收起。 |
 | `translations` | `Partial<LoadingBarTranslations>` |  |  |
-| `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬一步、冲到 100、归零各通知一次。 |
+| `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 |
 
 ### 事件
 
@@ -650,12 +650,12 @@ function reload(): void {
 | --- | --- | --- |
 | `phase` | `LoadingBarPhase` |  |
 | `value` | `number` | 当前显示的进度值（0-100，已夹取），也是 range 的宽度百分比。 |
-| `visible` | `boolean` | 条子是否露面：idle 之外都露面。 |
-| `indeterminate` | `boolean` | 不确定进度：没给 value，宽度自行爬升，不输出 aria-valuenow。 |
+| `visible` | `boolean` | 进度条是否显示：idle 之外都显示。 |
+| `indeterminate` | `boolean` | 不确定进度：未提供 value，宽度自行爬升，不输出 aria-valuenow。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
-| `getPegProps` | `() => T['element']` | 进度段末端那道亮边。纯装饰，作者不渲染它时条子照旧成立。 |
+| `getPegProps` | `() => T['element']` | 进度段末端的亮边。纯装饰，作者不渲染它时进度条照常成立。 |
 
 ## 无障碍
 
@@ -700,9 +700,9 @@ function reload(): void {
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-loading-bar-fade` | `root` | `transition` | `default` | `--xh-motion-duration-exit` | loading-bar 的 root 部件 transition 覆盖槽。 |
 | `--xh-loading-bar-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | loading-bar 的 root 部件 z-index 覆盖槽。 |

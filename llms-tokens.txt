@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 419 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 418 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -30,6 +30,7 @@
 | `--xh-color-neutral-500` | color | `oklch(0.556 0.006 258)` | — |
 | `--xh-color-neutral-550` | color | `oklch(0.52 0.006 258)` | — |
 | `--xh-color-neutral-600` | color | `oklch(0.439 0.006 258)` | — |
+| `--xh-color-neutral-650` | color | `oklch(0.4 0.006 258)` | — |
 | `--xh-color-neutral-700` | color | `oklch(0.371 0.006 258)` | — |
 | `--xh-color-neutral-750` | color | `oklch(0.28 0.006 258)` | — |
 | `--xh-color-neutral-800` | color | `oklch(0.269 0.006 258)` | — |
@@ -144,6 +145,7 @@
 | --- | --- | --- | --- |
 | `--xh-stroke-thin` | dimension | `1px` | — |
 | `--xh-stroke-thick` | dimension | `2px` | — |
+| `--xh-stroke-strong` | dimension | `3px` | — |
 
 ## z
 
@@ -320,9 +322,10 @@
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
 | `--xh-shape-inset` | dimension | `var(--xh-radius-sm)` | — |
-| `--xh-shape-control` | dimension | `var(--xh-radius-md)` | — |
-| `--xh-shape-surface` | dimension | `var(--xh-radius-lg)` | — |
-| `--xh-shape-overlay` | dimension | `calc(var(--xh-radius-lg) * 2)` | — |
+| `--xh-shape-control` | dimension | `var(--xh-radius-sm)` | — |
+| `--xh-shape-surface` | dimension | `var(--xh-radius-md)` | — |
+| `--xh-shape-overlay` | dimension | `var(--xh-radius-lg)` | — |
+| `--xh-shape-circle` | dimension | `50%` | — |
 | `--xh-shape-pill` | dimension | `var(--xh-radius-full)` | — |
 
 ## ring
@@ -359,6 +362,8 @@
 | `--xh-motion-duration-micro` | duration | `var(--xh-duration-fast)` | reduce |
 | `--xh-motion-duration-slide` | duration | `var(--xh-duration-slow)` | reduce |
 | `--xh-motion-duration-nudge` | duration | `var(--xh-duration-normal)` | reduce |
+| `--xh-motion-duration-press` | duration | `var(--xh-duration-fast)` | reduce |
+| `--xh-motion-duration-release` | duration | `var(--xh-duration-normal)` | reduce |
 | `--xh-motion-stagger-step` | duration | `calc(var(--xh-duration-normal) / 5)` | reduce |
 | `--xh-motion-ease-continuous` | cubicBezier | `var(--xh-ease-standard)` | — |
 | `--xh-motion-ease-loop` | cubicBezier | `linear` | — |
@@ -367,6 +372,8 @@
 | `--xh-motion-ease-exit` | cubicBezier | `var(--xh-ease-in)` | — |
 | `--xh-motion-ease-slide` | cubicBezier | `var(--xh-ease-out-fluid)` | — |
 | `--xh-motion-ease-sweep` | cubicBezier | `var(--xh-ease-in-out)` | — |
+| `--xh-motion-ease-press` | cubicBezier | `var(--xh-ease-standard)` | — |
+| `--xh-motion-ease-release` | cubicBezier | `var(--xh-ease-out-strong)` | — |
 | `--xh-motion-ease-settle` | cubicBezier | `var(--xh-ease-out-back)` | — |
 | `--xh-motion-distance-sm` | dimension | `var(--xh-space-1)` | reduce |
 | `--xh-motion-distance-md` | dimension | `var(--xh-space-2)` | reduce |
@@ -541,24 +548,15 @@
 | `--xh-material-solid-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-solid-fg-muted` |  | `var(--xh-fg-muted)` | — |
 | `--xh-material-solid-focus-surface` |  | `var(--xh-bg-surface)` | — |
-| `--xh-material-elevated-bg` |  | `oklch(0.99 0.003 258 / var(--xh-alpha-ultra-high))` | — |
-| `--xh-material-elevated-backdrop` |  | `blur(var(--xh-blur-xl)) saturate(108%)` | — |
+| `--xh-material-elevated-bg` |  | `oklch(0.99 0.003 258)` | — |
+| `--xh-material-elevated-backdrop` |  | `none` | — |
 | `--xh-material-elevated-border` |  | `oklch(0.145 0.005 258 / 0.28)` | — |
-| `--xh-material-elevated-highlight` |  | `oklch(1 0 0 / 0.32)` | — |
+| `--xh-material-elevated-highlight` |  | `oklch(0 0 0 / 0)` | — |
 | `--xh-material-elevated-shadow` |  | `0 2px 4px -2px oklch(0.145 0.005 258 / 0.12), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16), 0 32px 64px -20px oklch(0.145 0.005 258 / 0.18)` | — |
 | `--xh-material-elevated-separator` |  | `oklch(0.145 0.005 258 / 0.2)` | — |
 | `--xh-material-elevated-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-elevated-fg-muted` |  | `var(--xh-color-neutral-700)` | — |
 | `--xh-material-elevated-focus-surface` |  | `var(--xh-bg-surface)` | — |
-| `--xh-material-glass-bg` |  | `oklch(0.99 0.003 258 / var(--xh-alpha-medium))` | — |
-| `--xh-material-glass-backdrop` |  | `blur(var(--xh-blur-lg)) saturate(112%)` | — |
-| `--xh-material-glass-border` |  | `oklch(0.145 0.005 258 / 0.24)` | — |
-| `--xh-material-glass-highlight` |  | `oklch(1 0 0 / 0.3)` | — |
-| `--xh-material-glass-shadow` |  | `0 3px 6px -3px oklch(0.145 0.005 258 / 0.12), 0 16px 40px -14px oklch(0.145 0.005 258 / 0.18)` | — |
-| `--xh-material-glass-separator` |  | `oklch(0.145 0.005 258 / 0.18)` | — |
-| `--xh-material-glass-fg` |  | `var(--xh-fg-default)` | — |
-| `--xh-material-glass-fg-muted` |  | `var(--xh-color-neutral-700)` | — |
-| `--xh-material-glass-focus-surface` |  | `var(--xh-bg-surface)` | — |
 | `--xh-material-soft-bg` |  | `oklch(0.995 0.001 258)` | — |
 | `--xh-material-soft-backdrop` |  | `none` | — |
 | `--xh-material-soft-border` |  | `var(--xh-border-subtle)` | — |
@@ -596,7 +594,7 @@
 | `--xh-bg-brand` | color | `var(--xh-color-brand-600)` | dark |
 | `--xh-bg-brand-hover` | color | `var(--xh-color-brand-700)` | dark |
 | `--xh-bg-brand-active` | color | `var(--xh-color-brand-800)` | dark |
-| `--xh-bg-brand-subtle` | color | `var(--xh-color-brand-100)` | dark |
+| `--xh-bg-brand-subtle` | color | `color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface))` | dark |
 | `--xh-bg-brand-subtle-hover` | color | `color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))` | dark |
 | `--xh-bg-brand-subtle-active` | color | `color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))` | dark |
 | `--xh-bg-overlay` | color | `oklch(0 0 0 / 0.45)` | dark |
@@ -611,6 +609,7 @@
 | `--xh-fg-subtle` | color | `var(--xh-color-neutral-550)` | dark |
 | `--xh-fg-disabled` | color | `var(--xh-color-neutral-400)` | dark |
 | `--xh-fg-on-brand` | color | `var(--xh-color-neutral-0)` | dark |
+| `--xh-fg-on-brand-subtle` | color | `color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default))` | dark |
 | `--xh-fg-brand` | color | `var(--xh-color-brand-600)` | dark |
 | `--xh-fg-brand-strong` | color | `var(--xh-color-brand-700)` | dark |
 | `--xh-fg-success` | color | `var(--xh-color-success-700)` | dark |

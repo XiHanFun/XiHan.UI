@@ -1,1 +1,0 @@
-import{cT as e}from"./theme.C4bpqV2W.js";import{d as a,b as o,k as r,o as t}from"./framework.DkvuVDKz.js";const p=a({__name:"matrix-code",setup(n){return(s,c)=>(t(),o(r(e),{value:"https://ui.xihanfun.com","pixel-size":64,margin:1}))}});export{p as default};

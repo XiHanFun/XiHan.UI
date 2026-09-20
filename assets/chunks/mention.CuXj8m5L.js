@@ -1,1 +1,0 @@
-import{cU as n}from"./theme.C4bpqV2W.js";import{d as o,b as t,k as a,o as l}from"./framework.DkvuVDKz.js";const m=o({__name:"mention",setup(i){const e=[{value:"lilei",label:"李雷"},{value:"hanmeimei",label:"韩梅梅"}];return(s,c)=>(l(),t(a(n),{collection:e,"default-value":"这个问题交给 @李雷 跟进",translations:{input:"正文",content:"提及谁"},style:{"inline-size":"230px"}}))}});export{m as default};

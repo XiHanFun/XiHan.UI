@@ -1,1 +1,0 @@
-import{dx as a,dy as r}from"./theme.C4bpqV2W.js";import{d as s,b as n,w as o,k as t,o as p,E as l,a as d}from"./framework.DkvuVDKz.js";const _=s({__name:"popover",setup(m){return(c,e)=>(p(),n(t(r),{placement:"bottom-start",translations:{close:"关闭"}},{default:o(()=>[l(t(a),null,{default:o(()=>[...e[0]||(e[0]=[d("订阅设置",-1)])]),_:1})]),_:1}))}});export{_ as default};

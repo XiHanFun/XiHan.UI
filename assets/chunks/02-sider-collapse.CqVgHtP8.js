@@ -1,0 +1,9 @@
+const a=`<!-- 折叠侧栏 | 保留侧栏节点并切换宽度 -->
+<xh-layout split style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(640px, 100%); block-size: 240px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <div data-xh-part="header"><button data-xh-part="sider-trigger">菜单</button><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px"></span></div>
+    <div data-xh-part="sider"><div style="display: grid; gap: 12px"><span data-demo-block="line" data-tone="brand"></span><span data-demo-block="line" data-tone="info"></span><span data-demo-block="line" data-tone="success"></span></div></div>
+    <div data-xh-part="content"><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 96px"></span></div>
+  </div>
+</xh-layout>
+`;export{a as default};

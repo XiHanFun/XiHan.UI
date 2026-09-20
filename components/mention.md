@@ -2,7 +2,7 @@
 
 # Mention 提及 `alpha`
 
-在正文里打一个前缀字符就弹出候选，选中后把引用插进文本。
+在正文中输入前缀字符后弹出候选，选中后把引用插入文本。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/mention" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动
+在正文中输入 @ 才打开候选，选中的条目被插入光标处，前后文不变
 
 ```vue
 <script setup lang="ts">
@@ -118,7 +118,7 @@ const filtered = computed(() => {
 
 ### 多种前缀
 
-@ 提人、# 打标签共用一个输入框，query-change 会报回是哪个前缀触发的
+@ 提及成员、# 添加标签共用一个输入框，query-change 会报告是哪个前缀触发的
 
 ```vue
 <script setup lang="ts">
@@ -231,9 +231,9 @@ function onQuery(details: { query: string | null; prefix: string | null }): void
 </script>
 ```
 
-### 候选里的自定义内容
+### 候选中的自定义内容
 
-手写各部件即可在候选行里放头像与职位；插回正文的那段字取自 item-text
+手写各部件即可在候选行中放置头像与职位；插回正文的文字取自 item-text
 
 ```vue
 <script setup lang="ts">
@@ -353,7 +353,7 @@ const filtered = computed(() => {
 
 ### 受控正文与选中回调
 
-正文由宿主持有，select 事件报回插进去的是哪一条，用来攒收件人名单
+正文由宿主持有，select 事件报告插入的是哪一条，用于收集收件人名单
 
 ```vue
 <script setup lang="ts">
@@ -478,7 +478,7 @@ function reset(): void {
 
 ### 异步候选
 
-查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面
+查询串每次变化都重新向远端查询，加载、空结果和候选共用一张浮层表面
 
 ```vue
 <script setup lang="ts">
@@ -622,7 +622,7 @@ function onQuery(details: { query: string | null }): void {
 
 ### 变体
 
-variant 换正文框的描边与底色，候选面板不受影响
+variant 更换正文框的描边与底色，候选面板不受影响
 
 ```vue
 <script setup lang="ts">
@@ -729,45 +729,44 @@ const filtered = computed(() => {
 
 ### 何时使用
 
-- 评论、聊天、任务描述里 @ 某个人或 # 某个条目。
-- 需要多种前缀各带一份候选。
+- 评论、聊天、任务描述中 @ 某个人或 # 某个条目。
+- 需要多种前缀各自对应一份候选。
 
 ### 何时不用
 
-- 整个输入框的值就是选中项：用[组合框](./combobox)。
-- 只是补全普通词汇：用[组合框](./combobox)或原生自动补全。
-- 正文本身要跨行：本组件的输入框是单行的，不提供多行形态。
+- 整个输入框的值就是选中项时，使用[组合框](./combobox)。
+- 只补全普通词汇时，使用[组合框](./combobox)或原生自动补全。
+- 正文需要跨行时，本组件的输入框是单行的，不提供多行形态。
 
 ### 特性
 
-- 单行输入框，与其它输入控件同一档行高与内衬。
+- 单行输入框，与其他输入控件使用同一档行高与内衬。
 - 多种前缀各自映射一份候选。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
-- `label` 部件给输入框一个点得动的标题；给了 `translations.input` 时仍走 `aria-label`。
-- 给了 `collection` 却一条都不剩时显出 `empty` 部件。
-- `content` 是候选、空态与加载态共用的唯一浮层表面；`empty`/`loading` 保持为 listbox 外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留既有 `No results`，手写结构没有状态文案时不画空框。
-- 候选还在取且当前没有可见项时由 `loading` 顶上来，空态让位；已有候选时列表保持可见可操作，只由 `aria-busy` 报后台刷新。
-- 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后会清掉 `aria-activedescendant`，不会提交不可见旧项。
+- `label` 部件为输入框提供可点击的标题；提供 `translations.input` 时仍使用 `aria-label`。
+- 提供 `collection` 但没有任何候选时显示 `empty` 部件。
+- `content` 是候选、空态与加载态共用的唯一浮层表面；`empty` / `loading` 是 listbox 之外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留 `No results`，手写结构没有状态文案时不绘制空框。
+- 候选仍在加载且当前没有可见项时由 `loading` 显示，空态让位；已有候选时列表保持可见可操作，只通过 `aria-busy` 报告后台刷新。
+- 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后清除 `aria-activedescendant`，不提交不可见的旧项。
 - `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
-- 正文输入保持实体，唯一候选面使用 M2 磨砂与细顶光；空态和加载文字位于材质上方，不另画框。
-  浮层使用四向短位移，不缩放文字；增强对比度切为实体，减弱动效取消位移。
+- 输入框投影 Field Chrome，描边式静息无影，唯一候选面使用 M2 磨砂面与细顶光；空态和加载文字位于材质之上，不另绘框。浮层使用四向短位移，不缩放文字；增强对比度时切为实体，减弱动效时取消位移。
 
 ### 组合
 
 - 正文只有一行，与[文本字段](./text-field)的单行档并排时等高。
-- 要在多行正文里 @ 人：本库现在给不出这样的组件。
+- 在多行正文中 @ 人的场景，本库当前没有对应组件。
 
 ### 最佳实践
 
-- 候选按最近使用排序：@ 的对象高度重复。
-- 插入后的引用要能整体删除，别让用户一个字一个字退。
-- 异步示例应显式组合 `empty` 与 `loading`，不要用外部文字代替浮层内的正式状态，也不要把状态伪造成 option。
+- 候选按最近使用排序，@ 的对象高度重复。
+- 插入后的引用应能整体删除，不让用户逐字退格。
+- 异步示例应显式组合 `empty` 与 `loading`，不用外部文字代替浮层内的正式状态，也不把状态伪装成 option。
 
 ### 反模式
 
-- 候选异步且没有在途反馈：用户以为没人可 @。
-- 前缀字符在正文里本来就常用（比如 `#` 在代码里），却不给退出方式。
+- 候选异步且没有在途反馈，用户会以为没有可 @ 的对象。
+- 前缀字符在正文中本就常用（如代码中的 `#`）却不提供退出方式。
 
 ## API 参考
 
@@ -785,27 +784,27 @@ const filtered = computed(() => {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `triggerPrefix` | `string \| string[]` |  | 开候选的前缀字符，缺省 '@'。给数组即多种前缀并存，宿主按 onQueryChange 报回的 prefix 分流。 前缀必须紧跟在行首或空白之后，邮箱地址里的 @ 因此不会误触发。 |
-| `collection` | `MentionNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍归调用方：交进来的就是此刻该显示的那几条。 组件不管怎么筛，它只负责把查询串交出去。 |
-| `value` | `string` |  | 整段正文。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `triggerPrefix` | `string \| string[]` |  | 打开候选的前缀字符，默认 '@'。提供数组即多种前缀并存，宿主按 onQueryChange 报回的 prefix 分流。 前缀必须紧跟在行首或空白之后，邮箱地址中的 @ 因此不会误触发。 |
+| `collection` | `MentionNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 组件不负责筛选，只负责交出查询串。 |
+| `value` | `string` |  | 整段正文。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
-| `disabled` | `boolean` |  | 整个控件禁用：输入框用原生 disabled，候选一概不开。 |
-| `readOnly` | `boolean` |  | 只读：正文仍可聚焦与复制，改不动，候选也不开。 |
-| `invalid` | `boolean` |  | 校验失败标注：描边与聚焦环换成失败色，同时经 aria-invalid 上报。 |
-| `loading` | `boolean` |  | 候选还在取：候选面板报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `placeholder` | `string` |  | 输入框占位文字。不给就整条不输出，作者写在 input 部件上的那份因此留得住。 |
-| `name` | `string` |  | 表单字段名；给了输入框才带 name，整段正文随表单一并提交。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `disabled` | `boolean` |  | 整个控件禁用：输入框使用原生 disabled，候选一概不打开。 |
+| `readOnly` | `boolean` |  | 只读：正文仍可聚焦与复制，不可修改，候选也不打开。 |
+| `invalid` | `boolean` |  | 校验失败标注：描边与聚焦环换为失败色，同时经 aria-invalid 上报。 |
+| `loading` | `boolean` |  | 候选加载中：候选面板报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `placeholder` | `string` |  | 输入框占位文字。未提供时整条不输出，作者写在 input 部件上的声明因此得以保留。 |
+| `name` | `string` |  | 表单字段名；提供后输入框才带 name，整段正文随表单一并提交。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `placement` | `Placement` |  |  |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `translations` | `MentionTranslations` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮用哪族颜色。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色使用方式。默认 outline。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框内边距与字号档位。 |
 | `onValueChange` | `(details: MentionValueChangeDetails) => void` |  | 正文变化回调；受控时是唯一出口。 |
-| `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报 null。 |
-| `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插进正文时回调，带上是哪一条。 |
+| `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报告 null。 |
+| `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
 | `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
 
 ### 事件
@@ -815,8 +814,8 @@ const filtered = computed(() => {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `MentionValueChangeDetails` | 正文变化；detail 为 `{ value: string }` |
-| `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报 null |
-| `select` | `MentionSelectDetails` | 候选被插进正文；detail 为 `{ value, label, prefix }` |
+| `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null |
+| `select` | `MentionSelectDetails` | 候选被插入正文；detail 为 `{ value, label, prefix }` |
 | `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -827,7 +826,7 @@ const filtered = computed(() => {
 | --- | --- | --- | --- |
 | `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
-| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态里那句话；不写走内建英文。 |
+| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
 
 ### 状态
 
@@ -846,7 +845,9 @@ const filtered = computed(() => {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `CARET.SYNC` · `VALUE.SET` · `ITEM.HIGHLIGHT` · `ITEM.SELECT` · `ITEMS.SYNC` · `FORM.RESET`
+**事件**：`OPEN` · `CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `CARET.SYNC` · `VALUE.SET` · `ITEM.HIGHLIGHT` · `ITEM.SELECT` · `ITEMS.SYNC` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -855,23 +856,23 @@ const filtered = computed(() => {
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly MentionNodeMeta[]` | collection 推出的候选元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly MentionNodeMeta[]` | 由 collection 推导的候选元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `value` | `string` | 整段正文。 |
 | `query` | `string \| null` | 当前查询串；没有触发时为 null。 |
 | `activePrefix` | `string \| null` | 触发本次查询的前缀；没有触发时为 null。 |
 | `highlightedValue` | `string \| null` | 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 |
 | `disabled` | `boolean` |  |
-| `empty` | `boolean` | 没有候选可显：给了 collection 且一条都不剩。作者据此显出空态部件。 |
+| `empty` | `boolean` | 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 |
 | `isHighlighted` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string) => void` | 整段改写正文，浮层随之收起。 |
 | `close` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
-| `getLabelProps` | `() => T['label']` | 标题；`for` 恒写向 input，故须是原生 `&lt;label&gt;`。 |
-| `getInputProps` | `() => T['input']` | 单行输入框；正文就写在它身上。 |
+| `getLabelProps` | `() => T['label']` | 标题；`for` 恒指向 input，因此须是原生 `&lt;label&gt;`。 |
+| `getInputProps` | `() => T['input']` | 单行输入框；正文写在它身上。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getEmptyProps` | `() => T['element']` | 一条候选都没有时显出的空态；有候选时带 hidden 收起。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 同样是 content 的兄弟，不进 role=listbox。 |
+| `getEmptyProps` | `() => T['element']` | 没有任何候选时显示的空态；有候选时带 hidden 收起。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 同样是 content 的兄弟，不进入 role=listbox。 |
 | `getItemProps` | `(props: MentionItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: MentionItemProps) => T['element']` |  |
 
@@ -922,7 +923,7 @@ const filtered = computed(() => {
 
 ### 皮肤
 
-`@xihan-ui/styles/mention.css` 使用 `[data-scope="mention"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/mention.css` 使用 `[data-scope="mention"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -941,7 +942,12 @@ const filtered = computed(() => {
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-readonly` | ''（条件成立时才出现） |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-variant` | props.variant |
+| `input` | `data-xh-field-chrome` | '' |
+| `input` | `data-xh-field-layout` | 'single-line' |
+| `input` | `data-xh-field-size` | props.size |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -954,13 +960,22 @@ const filtered = computed(() => {
 | `content` | `data-state` | 'open' \| 'closed' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-xh-collection-context` | 'overlay' |
+| `item` | `data-xh-collection-item` | '' |
+| `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-xh-collection-slot` | 'text' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-mention-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | mention 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-mention-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | mention 的 content 部件 background 覆盖槽。 |
@@ -974,7 +989,7 @@ const filtered = computed(() => {
 | `--xh-mention-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | mention 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-mention-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | mention 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | mention 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-mention-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | mention 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-mention-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | mention 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-mention-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | mention 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-mention-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 empty 部件 color 覆盖槽。 |
 | `--xh-mention-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 empty 部件 font-size 覆盖槽。 |
@@ -982,32 +997,33 @@ const filtered = computed(() => {
 | `--xh-mention-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | mention 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-mention-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | mention 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-mention-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | mention 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-mention-input-bg` | `input` | `background` | `default` | `--xh-_mention-input-bg` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-bg-hover` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-bg-readonly` | `input` | `background` | `default` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-border` | `input` | `border` | `default` | `--xh-_mention-input-border` | mention 的 input 部件 border 覆盖槽。 |
-| `--xh-mention-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-_tone` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
+| `--xh-mention-input-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-disabled` | `input` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-readonly` | `input` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-border` | `input` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | mention 的 input 部件 border 覆盖槽。 |
+| `--xh-mention-input-border-focus` | `input` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-fg` | `input` | `color` | `xh-field-chrome` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
 | `--xh-mention-input-font-size` | `input` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 input 部件 font-size 覆盖槽。 |
-| `--xh-mention-input-h` | `input` | `block-size` | `default` | `--xh-_mention-h` | mention 的 input 部件 block-size 覆盖槽。 |
-| `--xh-mention-input-min-w` | `input`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | mention 的 input、root 部件 min-inline-size 覆盖槽。 |
-| `--xh-mention-input-px` | `input` | `padding-inline` | `default` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
-| `--xh-mention-input-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
-| `--xh-mention-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_mention-input-shadow` | mention 的 input 部件 box-shadow 覆盖槽。 |
-| `--xh-mention-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-bg-subtle` | mention 的 item 部件 background 覆盖槽。 |
-| `--xh-mention-item-fg` | `item` | `color` | `default` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
+| `--xh-mention-input-h` | `input` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_mention-h` | mention 的 input 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-mention-input-min-w` | `input`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | mention 的 input、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-mention-input-px` | `input` | `padding-inline` | `xh-field-chrome` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-input-radius` | `input` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-mention-input-shadow` | `input` | `box-shadow` | `xh-field-chrome` | `none` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | mention 的 item 部件 background-color 覆盖槽。 |
+| `--xh-mention-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | mention 的 item 部件 background-color 覆盖槽。 |
+| `--xh-mention-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
 | `--xh-mention-item-font-size` | `item` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 item 部件 font-size 覆盖槽。 |
-| `--xh-mention-item-gap` | `item` | `gap` | `default` | `--xh-_mention-gap` | mention 的 item 部件 gap 覆盖槽。 |
+| `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
 | `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-item-py` | `item` | `padding-block` | `default` | `--xh-_mention-item-py` | mention 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | mention 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | mention 的 label 部件 color 覆盖槽。 |
 | `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | mention 的 label 部件 color 覆盖槽。 |
-| `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 label 部件 font-size 覆盖槽。 |
+| `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | mention 的 label 部件 font-size 覆盖槽。 |
 | `--xh-mention-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | mention 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | mention 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-mention-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | mention 的 positioner 部件 z-index 覆盖槽。 |
@@ -1020,7 +1036,7 @@ const filtered = computed(() => {
 
 ### 动效
 
-关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

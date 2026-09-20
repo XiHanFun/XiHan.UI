@@ -1,1 +1,0 @@
-import{cr as e}from"./theme.C4bpqV2W.js";import{d as o,b as r,k as a,o as s}from"./framework.DkvuVDKz.js";const m=o({__name:"kbd",setup(t){return(n,c)=>(s(),r(a(e),{keys:["Mod","K"]}))}});export{m as default};

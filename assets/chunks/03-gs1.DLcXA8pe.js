@@ -1,0 +1,15 @@
+const s=`<!-- GS1-128 | gs1 开启后起始符后放置 FNC1；定长 AI 直接连写，变长 AI 后面用 GS（U+001D）与下一个隔开 -->
+<div style="display: grid; gap: 6px; justify-items: start">
+  <xh-bar-code id="bar-code-gs1" gs1 label="GS1-128 物流标签">
+    <svg data-xh-part="root"></svg>
+  </xh-bar-code>
+  <span style="font-size: 12px">(01)09501101530003 (17)250630 (10)ABC123 (21)SN001</span>
+</div>
+
+<script type="module">
+  // GS 是控制字符，写不进 HTML 特性，走 property 赋值
+  // (01) GTIN 定长 14 位、(17) 有效期定长 6 位、(10) 批号变长——它后面才需要分隔，(21) 序列号收尾
+  const host = document.getElementById("bar-code-gs1");
+  host.value = ["0109501101530003", "17250630", "10ABC123", "\\u001D", "21SN001"].join("");
+<\/script>
+`;export{s as default};

@@ -2,7 +2,7 @@
 
 # Timeline 时间线 `alpha`
 
-按时间顺序排开的一串事件，每条有标记、连接线与内容。
+按时间顺序排列的一串事件，每条有标记、连接线与内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timeline" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-一条竖向的事件流：每条一个圆点，圆点之间连一截线，末条的线自动收掉
+一条竖向的事件流：每条一个圆点，圆点之间连一段线，末条的线自动收起
 
 ```vue
 <script setup lang="ts">
@@ -112,7 +112,7 @@ const events = [
 
 ### 逐条语气
 
-tone 写在条目上，只给这一条的圆点上色；不写 tone 的条目是中性圆点
+tone 写在条目上，只为该条的圆点上色；不写 tone 的条目是中性圆点
 
 ```vue
 <script setup lang="ts">
@@ -205,9 +205,9 @@ const events = [
 </xh-timeline>
 ```
 
-### 内容在哪一侧
+### 内容所在的一侧
 
-placement 决定内容落在线的哪一侧；alternate 是逐条交替，线走中间
+placement 决定内容落在线的哪一侧；alternate 是逐条交替，线位于中间
 
 ```vue
 <script setup lang="ts">
@@ -357,7 +357,7 @@ const events = [
 
 ### 横排
 
-orientation="horizontal" 把事件从左往右摆，连线随之转成横的一条
+orientation="horizontal" 把事件从左向右排列，连线随之转为横向
 
 ```vue
 <script setup lang="ts">
@@ -434,7 +434,7 @@ const events = [
 
 ### 尺寸
 
-size 换的是圆点直径、条目间距与字号，不传 size 即默认档
+size 改变圆点直径、条目间距与字号，不传 size 即默认档
 
 ```vue
 <script setup lang="ts">
@@ -559,7 +559,7 @@ const events = [
 
 ### 坐标列
 
-label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不跟着内容左右横跳
+label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不随内容左右跳动
 
 ```vue
 <script setup lang="ts">
@@ -638,29 +638,29 @@ const releases = [
 
 ### 何时不用
 
-- 表达"还要走几步"：用[步骤条](./steps)——时间线是回顾，步骤条是前瞻。
-- 事件之间没有时间关系：用[列表](./list)。
+- 表达后续步骤时，使用[步骤条](./steps)：时间线是回顾，步骤条是前瞻。
+- 事件之间没有时间关系时，使用[列表](./list)。
 
 ### 特性
 
 - 逐条可以有自己的语气（成功 / 失败 / 进行中）。
 - 内容可以固定在一侧，也可以左右交替。
 - 支持横排。
-- `label` 是与内容对置的那一列，装这一条的坐标（日期、版本号）；逐条交替排布时时间戳因此不跟着内容左右横跳。
+- `label` 是与内容对置的一列，承载该条的坐标（日期、版本号）；逐条交替排布时时间戳不随内容左右跳动。
 
 ### 组合
 
-- 时间位放[时间戳](./timestamp)；内容里放[卡片](./card)或[描述列表](./descriptions)。
+- 时间位放[时间戳](./timestamp)；内容内放[卡片](./card)或[描述列表](./descriptions)。
 
 ### 最佳实践
 
-- 顺序保持一致：要么恒为最新在上，要么恒为最早在上，别混。
-- 每条都写清楚时刻，只写"刚刚"在回溯时没有价值。
+- 顺序保持一致：始终最新在上，或始终最早在上，不混用。
+- 每条写明时刻，只写“刚刚”在回溯时没有价值。
 
 ### 反模式
 
-- 条数很多却不折叠：一条时间线拉出十屏。
-- 用颜色区分事件类型却不给文字。
+- 条数很多却不折叠，一条时间线占据十屏。
+- 用颜色区分事件类型却不提供文字。
 
 ## API 参考
 
@@ -677,8 +677,8 @@ const releases = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `orientation` | `Orientation` |  | 事件排列方向：vertical 自上而下、horizontal 自起点向终点，缺省 vertical。 |
-| `placement` | `TimelinePlacement` |  | 内容在线的哪一侧：start / end / alternate，不写则内容落在结束侧。 |
+| `orientation` | `Orientation` |  | 事件排列方向：vertical 自上而下、horizontal 自起点向终点，默认 vertical。 |
+| `placement` | `TimelinePlacement` |  | 内容位于线的哪一侧：start / end / alternate，未提供时内容落在结束侧。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定圆点直径、条目间距与字号。 |
 
 ### connect API
@@ -689,7 +689,7 @@ const releases = [
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
-| `getLabelProps` | `() => T['element']` | 与内容对置的那一列，装这一条的坐标；排布随整条线的方向与侧别走。 |
+| `getLabelProps` | `() => T['element']` | 与内容对置的一列，放置该条的坐标；排布随整条线的方向与侧别变化。 |
 | `getIndicatorProps` | `(props: TimelineItemProps) => T['element']` | 圆点的语气取自它所属的条目。 |
 | `getConnectorProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
@@ -741,9 +741,9 @@ const releases = [
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-timeline-connector-bg` | `connector` | `background` | `default` | `--xh-border-default` | timeline 的 connector 部件 background 覆盖槽。 |
 | `--xh-timeline-connector-min-length` | `connector`<br>`item`<br>`label` | `min-block-size`<br>`min-inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-4` | timeline 的 connector、item、label 部件 min-block-size、min-inline-size 覆盖槽。 |
@@ -753,13 +753,13 @@ const releases = [
 | `--xh-timeline-content-pb` | `content`<br>`item` | `padding-block-end` | `@media (min-width: 768px)`<br>`nth-child(even)`<br>`orientation=horizontal`<br>`placement=alternate`<br>`placement=start` | `--xh-space-2` | timeline 的 content、item 部件 padding-block-end 覆盖槽。 |
 | `--xh-timeline-content-pt` | `content`<br>`item`<br>`label` | `padding-block-start` | `@media (min-width: 768px)`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-2` | timeline 的 content、item、label 部件 padding-block-start 覆盖槽。 |
 | `--xh-timeline-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | timeline 的 description 部件 color 覆盖槽。 |
-| `--xh-timeline-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | timeline 的 description 部件 font-size 覆盖槽。 |
+| `--xh-timeline-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | timeline 的 description 部件 font-size 覆盖槽。 |
 | `--xh-timeline-fg` | `root` | `color` | `default` | `--xh-fg-default` | timeline 的 root 部件 color 覆盖槽。 |
 | `--xh-timeline-gutter` | `item` | `column-gap` | `default` | `--xh-_timeline-gutter` | timeline 的 item 部件 column-gap 覆盖槽。 |
 | `--xh-timeline-indicator-bg` | `indicator` | `background` | `default` | `--xh-_tone-soft` | timeline 的 indicator 部件 background 覆盖槽。 |
 | `--xh-timeline-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-on` | timeline 的 indicator 部件 color 覆盖槽。 |
 | `--xh-timeline-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_timeline-caption-font-size` | timeline 的 indicator 部件 font-size 覆盖槽。 |
-| `--xh-timeline-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | timeline 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-timeline-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | timeline 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-timeline-indicator-size` | `indicator`<br>`item` | `block-size`<br>`inline-size`<br>`margin-block-start` | `default` | `--xh-_timeline-dot-size` | timeline 的 indicator、item 部件 block-size、inline-size、margin-block-start 覆盖槽。 |
 | `--xh-timeline-item-gap` | `content`<br>`item`<br>`label` | `padding-block-end`<br>`padding-inline-end` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-_timeline-item-gap` | timeline 的 content、item、label 部件 padding-block-end、padding-inline-end 覆盖槽。 |
 | `--xh-timeline-label-fg` | `label` | `color` | `default` | `--xh-fg-subtle` | timeline 的 label 部件 color 覆盖槽。 |

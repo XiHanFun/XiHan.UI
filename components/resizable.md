@@ -32,10 +32,10 @@ const EDGES = ["e", "s", "se"] as const;
       :min-width="120"
       :min-height="80"
       :max-width="480"
+      aria-label="可调整尺寸的占位区块"
       style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
     >
-      <strong>预览区域</strong>
-      <p style="color: var(--xh-fg-muted)">拖动边缘调整画布大小。</p>
+      <span data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" />
       <XhResizableHandle v-for="edge in EDGES" :key="edge" :edge="edge" />
     </XhResizableRoot>
   </div>
@@ -44,10 +44,9 @@ const EDGES = ["e", "s", "se"] as const;
 
 ```html
 <div style="padding: 12px">
-  <xh-resizable default-dimensions="260x140" edges="e,s,se" min-width="120" min-height="80" max-width="480">
+  <xh-resizable default-dimensions="260x140" edges="e,s,se" min-width="120" min-height="80" max-width="480" aria-label="可调整尺寸的占位区块">
     <div data-xh-part="root" style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px">
-      <strong>预览区域</strong>
-      <p style="color: var(--xh-fg-muted)">拖动边缘调整画布大小。</p>
+      <span data-demo-block data-tone="warning" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span>
       <span data-xh-part="handle" edge="e"></span>
       <span data-xh-part="handle" edge="s"></span>
       <span data-xh-part="handle" edge="se"></span>
@@ -83,18 +82,19 @@ const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
     :edges="[...EDGES]"
     :min-width="120"
     :min-height="80"
+    aria-label="支持全部边缘的占位区块"
     style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
-    <span>从任意边缘调整</span>
+    <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" />
     <XhResizableHandle v-for="edge in EDGES" :key="edge" :edge="edge" />
   </XhResizableRoot>
 </template>
 ```
 
 ```html
-<xh-resizable default-dimensions="240x120" min-width="120" min-height="80">
+<xh-resizable default-dimensions="240x120" min-width="120" min-height="80" aria-label="支持全部边缘的占位区块">
   <div data-xh-part="root" style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px">
-    <span>从任意边缘调整</span>
+    <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span>
     <span data-xh-part="handle" edge="n"></span><span data-xh-part="handle" edge="ne"></span>
     <span data-xh-part="handle" edge="e"></span><span data-xh-part="handle" edge="se"></span>
     <span data-xh-part="handle" edge="s"></span><span data-xh-part="handle" edge="sw"></span>
@@ -222,21 +222,22 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
   <XhResizableRoot
     disabled
     :default-dimensions="{ width: 240, height: 120 }"
+    aria-label="已锁定尺寸的占位区块"
     style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
-    <span>尺寸锁定</span>
+    <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" />
     <XhResizableHandle v-for="edge in ['e', 's', 'se']" :key="edge" :edge="edge as never" />
   </XhResizableRoot>
 </template>
 ```
 
 ```html
-<xh-resizable disabled default-dimensions="240x120">
+<xh-resizable disabled default-dimensions="240x120" aria-label="已锁定尺寸的占位区块">
   <div
     data-xh-part="root"
     style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
-    <span>尺寸锁定</span>
+    <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%"></span>
     <span data-xh-part="handle" edge="e"></span>
     <span data-xh-part="handle" edge="s"></span>
     <span data-xh-part="handle" edge="se"></span>
@@ -260,7 +261,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 ### 特性
 
 - 支持八个方向的调整把手。
-- 把手附着在容器内部，边缘显示为短条，角部形状继承容器圆角。
+- 把手命中区附着在容器内部，边缘指示条贴住容器边框，角部形状继承容器圆角。
 - 支持最小/最大尺寸、宽高比和步进约束。
 - 支持方向键、Home、End 和 Escape。
 - 调整中和调整结束分别提供回调。
@@ -271,14 +272,14 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 ### 最佳实践
 
-- 给出合理的最小与最大尺寸，别让内容被压到不可读。
+- 提供合理的最小与最大尺寸，避免内容被压到不可读。
 - 记住用户调整后的尺寸，下次打开时还原。
-- 把手要留足命中区，粗指针下用伪元素扩展。
+- 把手留足命中区，粗指针下用伪元素扩展。
 
 ### 反模式
 
-- 每一帧调整都去请求服务端或重排整页。
-- 把手只在悬停时才出现，键盘用户找不到入口。
+- 每一帧调整都请求服务端或重排整页。
+- 把手只在悬停时出现，键盘用户无法找到入口。
 
 ## API 参考
 
@@ -296,22 +297,22 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `dimensions` | `ResizableDimensions` |  | 受控尺寸。给了就由外面说了算，内部只发意图。 |
+| `dimensions` | `ResizableDimensions` |  | 受控尺寸。提供后由外部决定，内部只发意图。 |
 | `defaultDimensions` | `ResizableDimensions` |  |  |
 | `minWidth` | `number` |  |  |
 | `minHeight` | `number` |  |  |
 | `maxWidth` | `number` |  |  |
 | `maxHeight` | `number` |  |  |
-| `aspectRatio` | `number` |  | 宽高比（宽 ÷ 高）。给了就锁死；四条边各按自己那一轴算另一轴，四个角以宽为准。 |
+| `aspectRatio` | `number` |  | 宽高比（宽 ÷ 高）。提供后锁定；四条边各按自身的轴计算另一轴，四个角以宽为准。 |
 | `step` | `number` |  | 吸附步进：宽高各自落到最近的整数倍。 |
-| `keyboardStep` | `number` |  | 方向键一次推多远（px），默认 8。 |
+| `keyboardStep` | `number` |  | 方向键一次推动的距离（px），默认 8。 |
 | `keyboardLargeStep` | `number` |  | 按住 Shift 时的步长（px），默认 40。 |
-| `edges` | `ResizeEdge[]` |  | 允许哪几条边可调，默认八向全开。 只给东南两向就是「只能往右下角撑大」，那是文档流里最常见的形态。 |
+| `edges` | `ResizeEdge[]` |  | 允许调整的边，默认八向全部开启。 只提供东南两向即只能向右下角撑大，那是文档流中最常见的形态。 |
 | `disabled` | `boolean` |  |  |
 | `dir` | `Direction` |  |  |
 | `translations` | `Partial<ResizableTranslations>` |  |  |
-| `onDimensionsChange` | `(details: ResizableDimensionsChangeDetails) => void` |  | 尺寸变化意图。拖动途中连着发。 |
-| `onDimensionsChangeEnd` | `(details: ResizableDimensionsChangeEndDetails) => void` |  | 一次调整收尾发一次。存尺寸用它，别用 onDimensionsChange。 |
+| `onDimensionsChange` | `(details: ResizableDimensionsChangeDetails) => void` |  | 尺寸变化意图。拖动途中连续发出。 |
+| `onDimensionsChangeEnd` | `(details: ResizableDimensionsChangeEndDetails) => void` |  | 一次调整收尾时发出一次。保存尺寸使用它，不使用 onDimensionsChange。 |
 
 ### 事件
 
@@ -319,8 +320,8 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }` |
-| `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾发一次；detail 为 `{ dimensions, edge }` |
+| `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中连续发出）；detail 为 `{ dimensions }` |
+| `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾时发出一次；detail 为 `{ dimensions, edge }` |
 
 ### 插槽
 
@@ -349,11 +350,11 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | --- | --- | --- |
 | `dimensions` | `ResizableDimensions` |  |
 | `offset` | `ResizableOffset` |  |
-| `resizing` | `boolean` | 正在调整（拖动中）。键盘推一步不算。 |
+| `resizing` | `boolean` | 正在调整（拖动中）。键盘推动一步不计。 |
 | `activeEdge` | `ResizeEdge \| null` |  |
 | `disabled` | `boolean` |  |
-| `edgeEnabled` | `(edge: ResizeEdge) => boolean` | 这条边是否开放。 |
-| `setDimensions` | `(dimensions: ResizableDimensions) => void` | 整份赋值：先过约束再落地。 |
+| `edgeEnabled` | `(edge: ResizeEdge) => boolean` | 该边是否开放。 |
+| `setDimensions` | `(dimensions: ResizableDimensions) => void` | 整份赋值：先经约束再落定。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHandleProps` | `(props: { edge: ResizeEdge }) => T['element']` |  |
 
@@ -365,11 +366,11 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `ArrowRight` / `ArrowDown` | focus in handle, not disabled | 按屏幕方向推这条边一步（默认 8px）——推东边是变宽、推西边是变窄，与拖动同义。按的是屏幕方向，rtl 下两键不对调——那时改由「行尾侧」这条边落在屏幕左边来体现 |
+| `ArrowRight` / `ArrowDown` | focus in handle, not disabled | 按屏幕方向推动该边一步（默认 8px）：推东边是变宽、推西边是变窄，与拖动同义。按的是屏幕方向，rtl 下两键不对调：此时改由行尾侧的边落在屏幕左边来体现 |
 | `ArrowLeft` / `ArrowUp` | focus in handle, not disabled | 往反方向推一步，规则同上 |
 | `Shift+ArrowRight` / `Shift+ArrowLeft` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus in handle, not disabled | 按大步长推（默认 40px） |
 | `Home` | focus in handle, not disabled | 把这条边推到它眼下能到的最小尺寸 |
-| `End` | focus in handle, not disabled | 推到最大尺寸；没给上限时不动 |
+| `End` | focus in handle, not disabled | 推到最大尺寸；未提供上限时不动 |
 | `Escape` | 调整中 | 放弃这一次调整，尺寸与位移退回按下那一刻；收尾回调不发 |
 
 ### ARIA
@@ -410,20 +411,20 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-resizable-corner` | `handle` | `block-size`<br>`inline-size` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-4` | resizable 的 handle 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-resizable-corner-inset` | `handle` | `inset` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-space-1` | resizable 的 handle 部件 inset 覆盖槽。 |
+| `--xh-resizable-corner-inset` | `handle` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `0` | resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
 | `--xh-resizable-handle-bg` | `handle` | `background`<br>`border` | `default`<br>`edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-fg-default` | resizable 的 handle 部件 background、border 覆盖槽。 |
 | `--xh-resizable-handle-bg-active` | `handle` | `background`<br>`border` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])`<br>`resizing` | `--xh-bg-brand` | resizable 的 handle 部件 background、border 覆盖槽。 |
 | `--xh-resizable-handle-bg-hover` | `handle` | `background`<br>`border` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`hover`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-fg-default` | resizable 的 handle 部件 background、border 覆盖槽。 |
 | `--xh-resizable-handle-radius` | `handle` | `border-radius` | `default` | `--xh-shape-pill` | resizable 的 handle 部件 border-radius 覆盖槽。 |
-| `--xh-resizable-indicator-inset` | `handle` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-0_5` | resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-resizable-indicator-inset` | `handle` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `0` | resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-resizable-indicator-length` | `handle` | `block-size`<br>`inline-size` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w`<br>`is([data-edge='e'], [data-edge='w'])`<br>`is([data-edge='n'], [data-edge='s'])` | `--xh-space-8` | resizable 的 handle 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-resizable-indicator-thickness` | `handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `edge=e`<br>`edge=n`<br>`edge=ne`<br>`edge=nw`<br>`edge=s`<br>`edge=se`<br>`edge=sw`<br>`edge=w`<br>`is([data-edge='e'], [data-edge='w'])`<br>`is([data-edge='n'], [data-edge='s'])` | `--xh-stroke-thick` | resizable 的 handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
+| `--xh-resizable-indicator-thickness` | `handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `edge=e`<br>`edge=n`<br>`edge=ne`<br>`edge=nw`<br>`edge=s`<br>`edge=se`<br>`edge=sw`<br>`edge=w`<br>`is([data-edge='e'], [data-edge='w'])`<br>`is([data-edge='n'], [data-edge='s'])` | `--xh-stroke-strong` | resizable 的 handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

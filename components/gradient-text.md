@@ -221,9 +221,9 @@ const tones = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `direction` | `GradientTextDirection` |  | 渐变走向档位，缺省 to-right。 |
-| `from` | `string` |  | 起点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
-| `to` | `string` |  | 终点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
+| `direction` | `GradientTextDirection` |  | 渐变走向档位，默认 to-right。 |
+| `from` | `string` |  | 起点颜色，写为 CSS 变量交给皮肤；未提供时使用品牌色族。 |
+| `to` | `string` |  | 终点颜色，写为 CSS 变量交给皮肤；未提供时使用品牌色族。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info；显式 from / to 优先。 |
 
 ### connect API
@@ -260,9 +260,9 @@ const tones = [
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-gradient-text-from` | `root` | `background-image` | `default` | `--xh-_gradient-text-from` | gradient-text 的 root 部件 background-image 覆盖槽。 |
 | `--xh-gradient-text-to` | `root` | `background-image` | `default` | `--xh-_gradient-text-to` | gradient-text 的 root 部件 background-image 覆盖槽。 |

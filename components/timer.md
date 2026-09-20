@@ -2,7 +2,7 @@
 
 # Timer 计时器 `alpha`
 
-一段可正可倒的计时：能起、能停、能接着走、能归零。
+一段可正计时或倒计时的时长：可启动、暂停、继续、归零。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timer" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-一个自己往上走的秒表：不写内容时组件铺开时、分、秒三段，auto-start 让它挂载即开跑
+一个自动递增的秒表：不写内容时组件铺设时、分、秒三段，auto-start 使它挂载即开始运行
 
 ```vue
 <script setup lang="ts">
@@ -48,9 +48,9 @@ import { XhTimerRoot } from "@xihan-ui/vue";
 
 ## 示例
 
-### 倒着走
+### 倒计时
 
-countdown 让它从起始值往下走，终点缺省是 0；走到终点就停在那里不再往下
+countdown 使它从起始值递减，终点默认是 0；到达终点即停在该处不再递减
 
 ```vue
 <script setup lang="ts">
@@ -80,7 +80,7 @@ const twoMinutes = 2 * 60 * 1000;
 
 ### 起停与归零
 
-自己写部件：control 是一个原生按钮，按一下就按当前状态走一步（开始 / 暂停 / 继续 / 重来）
+自行编写部件：control 是一个原生按钮，按一下即按当前状态前进一步（开始 / 暂停 / 继续 / 重来）
 
 ```vue
 <script setup lang="ts">
@@ -120,7 +120,7 @@ import {
 
 ### 带天数的长计时
 
-时满 24 会进位到天，超过一天的计时要自己写一段 days，只写时分秒会把整天数丢掉
+小时满 24 会进位到天，超过一天的计时要自行编写一段 days，只写时分秒会丢失整天数
 
 ```vue
 <script setup lang="ts">
@@ -238,9 +238,9 @@ const oneMinute = 60 * 1000;
 </div>
 ```
 
-### 每一拍与到点
+### 每一拍与到期
 
-tick 每过一个 interval 发一次，complete 只在走到终点那一刻发一次；到点那一拍不再发 tick
+tick 每过一个 interval 触发一次，complete 只在到达终点时触发一次；到期的一拍不再触发 tick
 
 ```vue
 <script setup lang="ts">
@@ -328,7 +328,7 @@ function restart(): void {
 
 ### 受控通道
 
-给了 value 与 active 就走受控分支：value 改写即重新计时，active 翻假停在当前剩余量、翻真接着走
+提供 value 与 active 后进入受控分支：value 改写即重新计时，active 切换为假停在当前剩余量、切换为真继续运行
 
 ```vue
 <script setup lang="ts">
@@ -430,56 +430,56 @@ function restart(): void {
 
 ### 何时使用
 
-- 秒表、答题计时、专注计时这类需要用户自己控制起停的场景。
+- 秒表、答题计时、专注计时等需要用户自行控制起停的场景。
 - 会议或直播的已进行时长。
-- 需要倒着走、并且要在中途暂停的限时任务。
-- 验证码重发倒计时、限时活动、会话即将过期提醒这类只倒数、不需要按钮的场景：走受控通道，只给一个剩余时长。
+- 需要倒计时且中途可暂停的限时任务。
+- 验证码重发倒计时、限时活动、会话即将过期提醒等只倒数、不需要按钮的场景：使用受控通道，只提供剩余时长。
 
 ### 何时不用
 
-- 展示的是一个时刻而不是一段时长：用[时间戳](./timestamp)。
-- 表达任务完成到哪一步：用[进度条](./progress)。
+- 展示一个时刻而不是一段时长时，使用[时间戳](./timestamp)。
+- 表达任务完成到哪一步时，使用[进度条](./progress)。
 
 ### 特性
 
-- 正着走还是倒着走由 `countdown` 决定，起点 `startMs` 与终点 `targetMs` 两个方向共用。
-- `start` / `pause` / `resume` / `reset` 四个动作齐全，`control` 部件把它们收成一个按钮，按当前状态自动换语义。
-- 时间只从单调时钟的两个时刻相减而来，一拍都不累加，所以停停走走也不会越走越偏。
-- `interval` 只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。
-- 每一段数字是一个 `item` 部件，`unit` 说明它是天、时、分、秒还是毫秒，排版完全交给作者。
-- **受控通道**：给了 `value`（剩余毫秒）或 `active` 即进受控分支——`value` 就是起点、方向锁成倒着走、终点锁成 0，改写它即从新值重新计时；`active` 翻假停在当前值、翻真接着走。受控时起停按钮不再改状态（根上落 `data-controlled`），状态归这两个 prop。
-- `format` 把当前值铺成一串字（`api.text`），`precision` 决定取到哪一位：`0` 到秒、`3` 到毫秒，缺省 `3` 即不量化。
-- `live` 决定时间区的读屏播报档位，缺省 `off`。
+- 正计时或倒计时由 `countdown` 决定，起点 `startMs` 与终点 `targetMs` 两个方向共用。
+- `start` / `pause` / `resume` / `reset` 四个动作齐全，`control` 部件把它们收成一个按钮，按当前状态自动切换语义。
+- 时间只由单调时钟的两个时刻相减得出，不逐拍累加，因此频繁起停也不会累积偏差。
+- `interval` 只决定数字的刷新频率；到点由另一个精确落在终点的定时器判定，终点不在整拍上也不会走过头。
+- 每一段数字是一个 `item` 部件，`unit` 说明它是天、时、分、秒还是毫秒，排版完全由作者决定。
+- 受控通道：提供 `value`（剩余毫秒）或 `active` 即进入受控分支。`value` 即起点，方向锁定为倒计时，终点锁定为 0，改写它即从新值重新计时；`active` 为假时停在当前值，为真时继续。受控时起停按钮不再改变状态（根上落 `data-controlled`），状态由这两个 prop 决定。
+- `format` 把当前值格式化为字符串（`api.text`），`precision` 决定精确到哪一位：`0` 到秒、`3` 到毫秒，默认 `3` 即不量化。
+- `live` 决定时间区的读屏播报档位，默认 `off`。
 
 ### 组合
 
-- 与[按钮](./button)配合做「开始 / 暂停 / 重来」一排控制。
-- 与[进度条](./progress)并排，一个说还剩多久、一个说走了几成。
-- 走完后用[警告提示](./alert)或[轻提示](./toast)告诉用户下一步做什么。
+- 与[按钮](./button)配合组成“开始 / 暂停 / 重来”一排控制。
+- 与[进度条](./progress)并排，一个表示剩余时长，一个表示完成比例。
+- 结束后用[警告提示](./alert)或[轻提示](./toast)告知用户下一步。
 
 ### 最佳实践
 
-- 计时超过一天要自己加一段 `days`：`hours` 满 24 会进位到天，只写时分秒会把整天数丢掉。
-- 数字用等宽字形，位数变化时分隔符才不会左右挪动，皮肤已经这样做了，自定义排版时别丢掉。
-- 嵌在一句话里或摆在别人的数值槽里时把 `--xh-timer-digit-font-size` 写成 `inherit`，数字就跟着上下文的字号走，不再自带展示档字号。
-- 精确到秒的倒计时别开成高频播报：读屏用户会被打断得没法做事。
-- 每一段的数字恒由组件写进条目里，作者只声明这一段是哪个单位；写在条目里的内容留不住，下一拍就会被新的数字盖掉。要在数字旁边加字（「时」「分」）请写进记号部件。
-- 起停按钮的名字（读屏念的那个）恒由组件按当前状态给，换语言走 `translations`，别硬编码。按钮里显示的那行字两个适配器不一样，见下一条。
-- 两个适配器的差别只有三处，写标记前先对一眼：
-  - **默认结构**：Vue 的根组件不写内容时会自动铺开「时:分:秒」；Web Components 侧元素不生成任何结构，root 与 display 一个都不能少，每一段与记号都要作者自己写出来。
-  - **按钮里的字**：Vue 的起停按钮不写内容时填当前动作的名字（Start / Pause / Resume / Reset）；Web Components 侧那行字归作者写（按钮里多半是个图标），元素只换按钮的 `data-action` 与读屏名字。
-  - **记号的缺省**：Vue 的记号部件不写内容时是一个冒号；Web Components 侧记号里的字一律归作者写。
-- Web Components 侧条目上的 `unit` 是作者的声明、不是元素写回的状态，改它本身不会另排一次接线：停着的时候改完要等下一次属性变更或起跑才生效（跑起来时每一拍都会重接一次，自然跟上）。
-- 走完之后要有明确的去处：或者归零重来，或者跳去下一步，别停在 00:00 就不动了。
+- 计时超过一天时自行增加 `days` 段：`hours` 满 24 会进位到天，只写时分秒会丢失整天数。
+- 数字使用等宽字形，位数变化时分隔符才不会左右移动；皮肤已经如此处理，自定义排版时保留。
+- 嵌在一句话内或放在其他数值槽中时把 `--xh-timer-digit-font-size` 写为 `inherit`，数字跟随上下文字号，不再使用展示档字号。
+- 精确到秒的倒计时不开启高频播报，读屏用户会被持续打断。
+- 每一段的数字始终由组件写入条目，作者只声明该段的单位；写在条目内的内容不会保留，下一拍会被新的数字覆盖。需要在数字旁加字（“时”“分”）时写进记号部件。
+- 起停按钮的名称（读屏读出的）始终由组件按当前状态提供，切换语言使用 `translations`，不硬编码。按钮内显示的文字两个适配器不同，见下一条。
+- 两个适配器的差别只有三处，编写标记前先核对：
+  - 默认结构：Vue 的根组件不写内容时自动铺开“时:分:秒”；Web Components 侧元素不生成任何结构，root 与 display 缺一不可，每一段与记号都由作者编写。
+  - 按钮内的文字：Vue 的起停按钮不写内容时填当前动作的名称（Start / Pause / Resume / Reset）；Web Components 侧的文字由作者编写（多为图标），元素只切换按钮的 `data-action` 与读屏名称。
+  - 记号的默认值：Vue 的记号部件不写内容时是冒号；Web Components 侧记号内的文字一律由作者编写。
+- Web Components 侧条目上的 `unit` 是作者的声明、不是元素写回的状态，改动它本身不会触发重新接线：停止时改动需要等下一次属性变更或启动后才生效（运行时每一拍都会重新接线）。
+- 结束后要有明确的去处：归零重来，或跳转到下一步，不停留在 00:00。
 
 ### 反模式
 
-- 用它显示当前时刻：它只认时长，不认日历也不认时区。
-- 只给终点不给起点做倒计时：起点缺省是 0，倒着走会一开跑就到点，屏幕上恒是 00:00。要倒计多久写进 `startMs`。
-- 挂载后再改 `autoStart` 指望它开跑：那个 prop 只在挂载那一刻读一次，起停请用动作或 `control`。
-- 走完了不发生任何事，用户白等一场。
-- 走完之后停在 00:00 就不动了，既不归零也不给下一步。
-- 页面切到后台后计时漂移却不校正：时间只从单调时钟的两个时刻相减，别自己按拍累加。
+- 用它显示当前时刻：它只处理时长，不处理日历与时区。
+- 只提供终点而不提供起点做倒计时：起点默认为 0，倒计时一启动就到点，屏幕上始终是 00:00。倒计时长需要写进 `startMs`。
+- 挂载后再改 `autoStart` 期望它启动：该 prop 只在挂载时读取一次，起停请使用动作或 `control`。
+- 结束后没有任何反馈。
+- 结束后停在 00:00，既不归零也不提供下一步。
+- 页面切到后台后计时漂移却不校正：时间只由单调时钟的两个时刻相减，不自行按拍累加。
 
 ## API 参考
 
@@ -497,20 +497,20 @@ function restart(): void {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `startMs` | `number` |  | 起始值毫秒，缺省 0。正计时从它往上走，倒计时从它往下走。 |
-| `targetMs` | `number` |  | 终点值毫秒。倒计时缺省 0；正计时不给它就一直走下去，没有终点也不会通知走完。 终点落在起点的反方向（倒计时给了比起点还大的终点）时这一轮长度为 0： 显示值停在起点上，一开跑就到点。 |
-| `countdown` | `boolean` |  | 倒着走，缺省假。 |
-| `value` | `number` |  | 受控剩余毫秒。给了它即进受控通道：它就是起点，方向锁成倒着走、终点锁成 0， startMs / targetMs / countdown 三个不再参与；改写它即把累计清零并从新值重新计时。 |
-| `active` | `boolean` |  | 受控开关，缺省真。给了它即进受控通道：翻假停在当前累计值，翻真从那里接着走。 受控时起停按钮不再改状态——状态由这个 prop 说了算。 |
-| `autoStart` | `boolean` |  | 挂载即开跑，缺省假。它只在挂载那一刻读一次，之后改它不再有作用。 |
-| `interval` | `number` |  | 刷新间隔毫秒，缺省 1000，下限一帧。 它只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，不受它影响。 |
-| `format` | `string` |  | 文本模板，缺省 `HH:mm:ss`。D 天、H 时、m 分、s 秒、S 毫秒，重复字母的个数即最少位数。 |
-| `precision` | `number` |  | 取值粒度：0 到秒、1 到十分之一秒、2 到百分之一秒、3 到毫秒。缺省 3，即不量化。 |
-| `live` | `TimerLive` |  | 读屏播报档位，缺省 off。 |
+| `startMs` | `number` |  | 起始值毫秒，默认 0。正计时从它向上走，倒计时从它向下走。 |
+| `targetMs` | `number` |  | 终点值毫秒。倒计时默认 0；正计时未提供时持续运行，没有终点也不会通知完成。 终点落在起点的反方向（倒计时提供了比起点更大的终点）时本轮长度为 0： 显示值停在起点上，一开始运行即到期。 |
+| `countdown` | `boolean` |  | 倒计时，默认假。 |
+| `value` | `number` |  | 受控剩余毫秒。提供后即进入受控通道：它就是起点，方向锁定为倒计时、终点锁定为 0， startMs / targetMs / countdown 三者不再参与；改写它即把累计清零并从新值重新计时。 |
+| `active` | `boolean` |  | 受控开关，默认真。提供后即进入受控通道：变为假时停在当前累计值，变为真时从该处继续。 受控时起停按钮不再改变状态：状态由该 prop 决定。 |
+| `autoStart` | `boolean` |  | 挂载即开始运行，默认假。它只在挂载时读取一次，之后修改不再生效。 |
+| `interval` | `number` |  | 刷新间隔毫秒，默认 1000，下限一帧。 它只决定数字的跳动间隔；到期由另一个精确落在终点上的定时器判定，不受它影响。 |
+| `format` | `string` |  | 文本模板，默认 `HH:mm:ss`。D 天、H 时、m 分、s 秒、S 毫秒，重复字母的个数即最少位数。 |
+| `precision` | `number` |  | 取值粒度：0 到秒、1 到十分之一秒、2 到百分之一秒、3 到毫秒。默认 3，即不量化。 |
+| `live` | `TimerLive` |  | 读屏播报档位，默认 off。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TimerTranslations>` |  |  |
-| `onTick` | `(details: TimerTickDetails) => void` |  | 每一拍通知一次。到点那一拍只发 onComplete。 |
-| `onComplete` | `(details: TimerCompleteDetails) => void` |  | 走到终点通知一次；中途被暂停或归零不通知。 |
+| `onTick` | `(details: TimerTickDetails) => void` |  | 每一拍通知一次。到期的一拍只发 onComplete。 |
+| `onComplete` | `(details: TimerCompleteDetails) => void` |  | 到达终点时通知一次；中途被暂停或归零不通知。 |
 
 ### 事件
 
@@ -518,8 +518,8 @@ function restart(): void {
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `tick` | `TimerTickDetails` | 走过一拍；detail 为 `{ value: number, elapsed: number }` |
-| `complete` | `TimerCompleteDetails` | 走到终点；detail 为 `{ value: number, elapsed: number }` |
+| `tick` | `TimerTickDetails` | 经过一拍；detail 为 `{ value: number, elapsed: number }` |
+| `complete` | `TimerCompleteDetails` | 到达终点；detail 为 `{ value: number, elapsed: number }` |
 
 ### 插槽
 
@@ -542,7 +542,7 @@ function restart(): void {
 
 **状态**：`idle` · `running` · `paused` · `completed`
 
-**事件**：`RUN.START` · `RUN.PAUSE` · `RUN.RESUME` · `RUN.RESET` · `CLOCK.TICK` · `CLOCK.SETTLE` · `CLOCK.SYNC`
+**事件**：`RUN.START` · `RUN.PAUSE` · `RUN.RESUME` · `RUN.RESET` · `CLOCK.TICK` · `CLOCK.SETTLE` · `CLOCK.SYNC` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isSettled`
 
@@ -553,22 +553,22 @@ function restart(): void {
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `phase` | `TimerPhase` |  |
-| `value` | `number` | 当前该显示的毫秒，已夹在起点与终点之间并按 precision 量化。 |
-| `text` | `string` | 按模板铺好的文本，也就是不自己排每一段时该显示的字。 |
-| `controlled` | `boolean` | 走的是受控通道吗：给了 value 或 active 即是，此时起停按钮不改状态。 |
-| `elapsed` | `number` | 累计走了多少毫秒，与方向和起始值无关。 |
+| `value` | `number` | 当前应显示的毫秒，已夹在起点与终点之间并按 precision 量化。 |
+| `text` | `string` | 按模板格式化的文本，即不自行排列各段时应显示的文字。 |
+| `controlled` | `boolean` | 是否使用受控通道：提供了 value 或 active 即是，此时起停按钮不改变状态。 |
+| `elapsed` | `number` | 累计经过的毫秒，与方向和起始值无关。 |
 | `running` | `boolean` |  |
 | `paused` | `boolean` |  |
 | `completed` | `boolean` |  |
 | `countdown` | `boolean` |  |
 | `segments` | `TimerSegments` | 显示值拆开的五段。 |
 | `segmentText` | `(unit: TimerUnit) => string` | 某一段补零后的字面：天不补零，时分秒两位，毫秒三位。 |
-| `controlAction` | `TimerControlAction` | 起停按钮这一下要做的事。 |
-| `controlLabel` | `string` | 起停按钮的读屏名字，也是按钮里没写内容时该显示的字。 |
-| `start` | `() => void` | 从头开跑。 |
+| `controlAction` | `TimerControlAction` | 起停按钮本次的动作。 |
+| `controlLabel` | `string` | 起停按钮的读屏名字，也是按钮内未写内容时应显示的文字。 |
+| `start` | `() => void` | 从头开始运行。 |
 | `pause` | `() => void` |  |
 | `resume` | `() => void` |  |
-| `reset` | `() => void` | 归零并停下。 |
+| `reset` | `() => void` | 归零并停止。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getDisplayProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TimerItemProps) => T['element']` |  |
@@ -584,6 +584,7 @@ function restart(): void {
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus on control | 按当前状态起停：没起步的开跑、在走的暂停、停在半路的接着走、走完的归零；control 是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held on control | 按住期间 control 投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起或失焦撤下。按钮没有禁用态，四段状态下都接，按住途中起停翻转按压面不丢 |
 
 ### ARIA
 
@@ -598,10 +599,10 @@ function restart(): void {
 | `separator` | `aria-hidden` | 'true' |
 | `control` | `aria-label` | label[controlAction] |
 
-- 时间区带着整段时间的读屏名字，里面的数字与记号对读屏是隐藏的。
-- 内建的那个名字恒按「时 分 秒」念（天数大于 0 时前面再加一段天）。屏幕上只摆了其中几段（例如只有分和秒）时它会多念一段，请用 `translations.time` 自己按摆出来的段数给名字。
-- 内建名字是英文，换语言同样走 `translations.time`。
-- 缺省不播报。要播报的场景（会话到期提醒这类）把 `live` 开到 `polite` 或 `assertive`，或者自己在外层另起一个 live 区，只在关口上说一句：每秒都在变的数字按 polite 播报，一分钟就是六十条打断。
+- 时间区带有整段时间的读屏名称，其中的数字与记号对读屏隐藏。
+- 内建名称始终按“时 分 秒”读出（天数大于 0 时前面再加天）。屏幕上只放了其中几段（例如只有分和秒）时会多读一段，请用 `translations.time` 按实际段数提供名称。
+- 内建名称是英文，切换语言同样使用 `translations.time`。
+- 默认不播报。需要播报的场景（会话到期提醒等）把 `live` 设为 `polite` 或 `assertive`，或在外层另起一个 live 区域，只在关键节点播报一句：每秒变化的数字按 polite 播报，一分钟就是六十次打断。
 
 ## 样式参考
 
@@ -622,34 +623,41 @@ function restart(): void {
 | `display` | `data-state` | 'idle' \| 'running' \| 'paused' \| 'completed' |
 | `item` | `data-unit` | item.unit |
 | `control` | `data-action` | 'pause' \| 'resume' \| 'reset' \| 'start' |
+| `control` | `data-pressed` | ''（条件成立时才出现） |
+| `control` | `data-xh-action-control` | '' |
+| `control` | `data-xh-action-display` | 'always' |
+| `control` | `data-xh-action-profile` | 'text' |
+| `control` | `data-xh-action-size` | props.size |
+| `control` | `data-xh-action-variant` | 'outline' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-timer-completed-fg` | `display` | `color` | `state=completed` | `--xh-fg-muted` | timer 的 display 部件 color 覆盖槽。 |
-| `--xh-timer-control-bg` | `control` | `background` | `default` | `--xh-bg-surface` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-bg-active` | `control` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-muted` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-bg-hover` | `control` | `background` | `hover` | `--xh-bg-subtle-hover` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-border` | `control` | `border` | `default` | `--xh-border-control` | timer 的 control 部件 border 覆盖槽。 |
-| `--xh-timer-control-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-subtle` | timer 的 control 部件 border-color 覆盖槽。 |
-| `--xh-timer-control-border-focus` | `control` | `border-color` | `focus-visible` | `--xh-_tone` | timer 的 control 部件 border-color 覆盖槽。 |
-| `--xh-timer-control-border-hover` | `control` | `border-color` | `hover` | `--xh-border-control-hover` | timer 的 control 部件 border-color 覆盖槽。 |
-| `--xh-timer-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | timer 的 control 部件 color 覆盖槽。 |
-| `--xh-timer-control-gap` | `control` | `gap` | `default` | `--xh-_timer-control-gap` | timer 的 control 部件 gap 覆盖槽。 |
-| `--xh-timer-control-h` | `control` | `block-size` | `default` | `--xh-_timer-control-h` | timer 的 control 部件 block-size 覆盖槽。 |
-| `--xh-timer-control-px` | `control` | `padding-inline` | `default` | `--xh-_timer-control-px` | timer 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-timer-control-bg` | `control` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg-active` | `control` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg-disabled` | `control` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-border` | `control` | `border` | `default` | `--xh-_action-variant-border-rest` | timer 的 control 部件 border 覆盖槽。 |
+| `--xh-timer-control-border-disabled` | `control` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-border-focus` | `control` | `border-color` | `focus-visible` | `--xh-_action-variant-border-focus-visible` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-fg` | `control` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | timer 的 control 部件 color 覆盖槽。 |
+| `--xh-timer-control-gap` | `control` | `gap` | `default` | `--xh-_action-profile-gap` | timer 的 control 部件 gap 覆盖槽。 |
+| `--xh-timer-control-h` | `control` | `block-size` | `default` | `--xh-_action-profile-visual-size` | timer 的 control 部件 block-size 覆盖槽。 |
+| `--xh-timer-control-px` | `control` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | timer 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-timer-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | timer 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-timer-control-shadow-active` | `control` | `box-shadow` | `active`<br>`not(:disabled)` | `none` | timer 的 control 部件 box-shadow 覆盖槽。 |
-| `--xh-timer-control-shadow-hover` | `control` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | timer 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-timer-control-shadow-active` | `control` | `box-shadow` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | timer 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-timer-control-shadow-hover` | `control` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | timer 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-timer-digit-font-size` | `display` | `font-size` | `default` | `--xh-_timer-digit-size` | timer 的 display 部件 font-size 覆盖槽。 |
 | `--xh-timer-display-fg` | `display` | `color` | `default` | `--xh-fg-default` | timer 的 display 部件 color 覆盖槽。 |
 | `--xh-timer-fg` | `root` | `color` | `default` | `--xh-fg-default` | timer 的 root 部件 color 覆盖槽。 |
 | `--xh-timer-gap` | `root` | `gap` | `default` | `--xh-_timer-gap` | timer 的 root 部件 gap 覆盖槽。 |
+| `--xh-timer-icon-size` | `control` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | timer 的 control 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-timer-item-fg` | `item` | `color` | `default` | `inherit` | timer 的 item 部件 color 覆盖槽。 |
 | `--xh-timer-separator-fg` | `separator` | `color` | `default` | `--xh-fg-subtle` | timer 的 separator 部件 color 覆盖槽。 |
 | `--xh-timer-separator-px` | `separator` | `padding-inline` | `default` | `--xh-space-0_5` | timer 的 separator 部件 padding-inline 覆盖槽。 |
@@ -657,17 +665,13 @@ function restart(): void {
 
 ### 动效
 
-`background` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
-- 时间区的排列方向钉成从左到右，`<html dir="rtl">` 下时分秒不会倒过来排——时间串的读序两个方向都一样。
-- 起停按钮相对时间区的位置、以及整个组件在页面里的排布，照常跟随文字方向。
+- 时间区的排列方向固定为从左到右，`<html dir="rtl">` 下时分秒不会倒序排列，时间串的读序在两个方向相同。
+- 起停按钮相对时间区的位置，以及整个组件在页面内的排布，照常跟随文字方向。

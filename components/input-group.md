@@ -116,7 +116,7 @@ import {
 
 ### 变体
 
-使用主要或次级输入表面
+outline 画描边输入面，subtle 用淡底嵌入已有表面
 
 ```vue
 <script setup lang="ts">
@@ -131,20 +131,20 @@ import {
 
 <template>
   <div style="display: flex; flex-wrap: wrap; gap: 12px">
-    <XhInputGroupRoot variant="primary">
+    <XhInputGroupRoot variant="outline">
       <XhInputGroupItem>¥</XhInputGroupItem>
-      <XhTextFieldRoot placeholder="主要表面">
+      <XhTextFieldRoot placeholder="描边表面">
         <XhTextFieldControl>
-          <XhTextFieldInput inputmode="decimal" aria-label="主要金额" />
+          <XhTextFieldInput inputmode="decimal" aria-label="描边金额" />
         </XhTextFieldControl>
       </XhTextFieldRoot>
     </XhInputGroupRoot>
 
-    <XhInputGroupRoot variant="secondary">
+    <XhInputGroupRoot variant="subtle">
       <XhInputGroupItem>¥</XhInputGroupItem>
-      <XhTextFieldRoot placeholder="次级表面">
+      <XhTextFieldRoot placeholder="淡底表面">
         <XhTextFieldControl>
-          <XhTextFieldInput inputmode="decimal" aria-label="次要金额" />
+          <XhTextFieldInput inputmode="decimal" aria-label="淡底金额" />
         </XhTextFieldControl>
       </XhTextFieldRoot>
     </XhInputGroupRoot>
@@ -154,26 +154,26 @@ import {
 
 ```html
 <div style="display: flex; flex-wrap: wrap; gap: 12px">
-  <xh-input-group variant="primary">
+  <xh-input-group variant="outline">
     <div data-xh-part="root">
       <span data-xh-part="item">¥</span>
-      <xh-text-field placeholder="主要表面">
+      <xh-text-field placeholder="描边表面">
         <div data-xh-part="root">
           <div data-xh-part="control">
-            <input data-xh-part="input" inputmode="decimal" aria-label="主要金额" />
+            <input data-xh-part="input" inputmode="decimal" aria-label="描边金额" />
           </div>
         </div>
       </xh-text-field>
     </div>
   </xh-input-group>
 
-  <xh-input-group variant="secondary">
+  <xh-input-group variant="subtle">
     <div data-xh-part="root">
       <span data-xh-part="item">¥</span>
-      <xh-text-field placeholder="次级表面">
+      <xh-text-field placeholder="淡底表面">
         <div data-xh-part="root">
           <div data-xh-part="control">
-            <input data-xh-part="input" inputmode="decimal" aria-label="次要金额" />
+            <input data-xh-part="input" inputmode="decimal" aria-label="淡底金额" />
           </div>
         </div>
       </xh-text-field>
@@ -235,20 +235,20 @@ import {
 
 ### 何时不用
 
-- 组合并列操作：使用[按钮组](./button-group)。
-- 仅用于排列控件：使用布局组件。
+- 组合并列操作时，使用[按钮组](./button-group)。
+- 仅排列控件时，使用布局组件。
 
 ### 特性
 
 - 所有内容共享一个背景、外轮廓和焦点环。
-- 支持 `primary` 与 `secondary` 两种视觉变体。
+- 支持 `outline`、`subtle` 与 `ghost` 三种形态，与组内字段同一套词。
 - 前后缀不参与交互，控件保留自身语义。
 - 支持 `sm`、`md` 和 `lg` 三种尺寸。
 
 ### 组合
 
 - 中间放[文本字段](./text-field)、[数字字段](./number-field)或[选择器](./select)这类单一控件，前后缀是静态的 `item`。
-- 紧邻的动作用[按钮](./button)放在组尾；整组放进[表单字段](./field)获得标签与错误信息。
+- 紧邻的动作使用[按钮](./button)放在组尾；整组放入[表单字段](./field)获得标签与错误信息。
 
 ### 最佳实践
 
@@ -276,8 +276,8 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `Size` |  | 尺寸：sm / md / lg，落到根上供皮肤写进 item 的高度、内衬与字号槽位。 不写时档位由组内控件自己的 data-size 决定，组里没有带档的控件就走 md。 |
-| `variant` | `InputGroupVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，写入根上供皮肤填入 item 的高度、内衬与字号槽位。 未提供时档位由组内控件自身的 data-size 决定，组内没有带档位的控件时使用 md。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，与组内字段同一套词。默认 outline。 |
 
 ### connect API
 
@@ -316,9 +316,9 @@ import {
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-input-group-bg` | `root` | `background` | `default` | `--xh-_input-group-bg` | input-group 的 root 部件 background 覆盖槽。 |
 | `--xh-input-group-bg-hover` | `root` | `background` | `disabled`<br>`hover`<br>`not(:has([data-disabled])` | `--xh-_input-group-bg-hover` | input-group 的 root 部件 background 覆盖槽。 |
@@ -330,7 +330,7 @@ import {
 | `--xh-input-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_input-group-font-size` | input-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-input-group-item-h` | `item` | `block-size` | `default` | `--xh-_input-group-h` | input-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-input-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_input-group-px` | input-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control`<br>`--xh-shape-surface` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-input-group-ring-focus` | `root` | `outline` | `focus-within` | `--xh-ring-focus` | input-group 的 root 部件 outline 覆盖槽。 |
 | `--xh-input-group-ring-invalid` | `root` | `outline-color` | `focus-within`<br>`has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-ring-invalid` | input-group 的 root 部件 outline-color 覆盖槽。 |
 | `--xh-input-group-shadow` | `root` | `box-shadow` | `default` | `--xh-_input-group-shadow` | input-group 的 root 部件 box-shadow 覆盖槽。 |

@@ -2,7 +2,7 @@
 
 # BarCode 条形码 `alpha`
 
-把一段文本画成一维条形码，`format` 选码制。
+将一段文本绘制为一维条形码，`format` 选择码制。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/bar-code" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-给 value 就画码，缺省 Code 128，任意 ASCII 都收；人读文字印在条下
+提供 value 即绘制码，默认 Code 128，接受任意 ASCII；人读文字印在条下
 
 ```vue
 <script setup lang="ts">
@@ -42,7 +42,7 @@ import { XhBarCode } from "@xihan-ui/vue";
 
 ### 码制
 
-零售商品用 EAN / UPC，外箱用 ITF-14，工业标签用 Code 39；定长数字码制的校验位可省，组件补上
+零售商品用 EAN / UPC，外箱用 ITF-14，工业标签用 Code 39；定长数字码制的校验位可省略，组件补齐
 
 ```vue
 <script setup lang="ts">
@@ -112,7 +112,7 @@ const samples: { format: BarCodeFormat; value: string; name: string }[] = [
 
 ### GS1-128
 
-gs1 打开后起始符后放 FNC1；定长 AI 直接连写，变长 AI 后面用 GS（U+001D）隔开下一个
+gs1 开启后起始符后放置 FNC1；定长 AI 直接连写，变长 AI 后面用 GS（U+001D）与下一个隔开
 
 ```vue
 <script setup lang="ts">
@@ -201,7 +201,7 @@ const value = "SIZE";
 
 ### 人读文字
 
-text 关掉只剩条；EAN 的守卫条照规范比数据条长 5X，不随文字走
+text 关闭后只剩条；EAN 的守卫条按规范比数据条长 5X，不随文字变化
 
 ```vue
 <script setup lang="ts">
@@ -241,7 +241,7 @@ import { XhBarCode } from "@xihan-ui/vue";
 
 ### 换色
 
-颜色不是 props，写两个 CSS 变量即可：条必须比底色深且对比要足，反相码扫不出来
+颜色不是 props，写两个 CSS 变量即可：条必须比底色深且对比充足，反相码无法扫描
 
 ```vue
 <script setup lang="ts">
@@ -295,39 +295,39 @@ import { XhBarCode } from "@xihan-ui/vue";
 
 ### 何时使用
 
-- 货号、运单号、序列号要让扫描枪一枪读出。
+- 货号、运单号、序列号需要被扫描枪一次读出。
 - 商品零售码（EAN / UPC）、外箱码（ITF-14）、GS1 物流标签（GS1-128）。
 
 ### 何时不用
 
-- 内容超过几十个字符、或含非 ASCII：一维码会拉得很长，改用[二维码](./matrix-code)。
-- 用户就在这台设备上：给一条可点的链接或可复制的文本。
+- 内容超过几十个字符或含非 ASCII 字符时，一维码会过长，改用[二维码](./matrix-code)。
+- 用户就在当前设备上时，提供可点击的链接或可复制的文本。
 
 ### 特性
 
-- `format` 七种码制：`code128`（缺省）、`ean13` / `ean8` / `upca` / `upce`、`itf14`、`code39`；给了不认识的值不画码，根落到 error 态。
-- 定长数字码制收不带校验位的长度（补上）与带校验位的长度（核对），对不上就不画。
-- `gs1` 把 Code 128 变成 GS1-128：起始符后放 FNC1，内容里的 GS（U+001D）编成变长 AI 之间的分隔。
-- `text` 控制条下的人读文字；EAN / UPC 的数字逐位落在自己那格下面，守卫条按规范延长。
-- `barWidth` 是最窄条的像素宽，整张码等比放大；`height` 是条高；`margin` 是静区，缺省按码制的规范值。
-- `itf14` 缺省带上下承载条；`code39` 可选 mod 43 校验字符。
+- `format` 支持七种码制：`code128`（默认）、`ean13` / `ean8` / `upca` / `upce`、`itf14`、`code39`；未知值不绘制，根进入 error 状态。
+- 定长数字码制接受不带校验位的长度（自动补齐）与带校验位的长度（自动核对），不匹配时不绘制。
+- `gs1` 把 Code 128 变为 GS1-128：起始符后放 FNC1，内容中的 GS（U+001D）编码为变长 AI 之间的分隔符。
+- `text` 控制条下的人读文字；EAN / UPC 的数字逐位落在对应条的下方，守卫条按规范延长。
+- `barWidth` 是最窄条的像素宽，整张码等比放大；`height` 是条高；`margin` 是静区，默认取码制的规范值。
+- `itf14` 默认带上下承载条；`code39` 可选 mod 43 校验字符。
 
 ### 组合
 
-- 外面套[卡片](./card)；旁边配[剪贴板](./clipboard)给出文本形式的同一内容。
+- 外层放[卡片](./card)；旁边配[剪贴板](./clipboard)提供同一内容的文本形式。
 
 ### 最佳实践
 
-- 静区不能省，贴边的条码扫不出来；缺省值就是规范值，非要压缩也别低于码制要求。
-- 屏幕上 `barWidth` 至少 2：1 像素宽的条在缩放过的屏幕上会糊成灰。
-- 旁边同时给出文本：不是所有人都能扫。
-- 内容里有小写或标点就用 `code128`；`code39` 只认大写字母、数字与七个符号。
+- 保留静区，贴边的条码无法扫描；默认值即规范值，压缩时不低于码制要求。
+- 屏幕上 `barWidth` 至少为 2：1 像素宽的条在缩放后的屏幕上会模糊。
+- 同时给出文本，不是所有人都能扫描。
+- 内容含小写或标点时使用 `code128`；`code39` 只支持大写字母、数字与七个符号。
 
 ### 反模式
 
-- 深色主题下直接反色：读码器按深条浅底取样，反相码扫不出来。
-- 用 `height` 把条压得很矮：扫描线一歪就出了条的范围。
-- 把校验位自己算错再传进来：组件会拒画，直接传不带校验位的长度让它补。
+- 深色主题下直接反色：读码器按深条浅底取样，反相码无法扫描。
+- 用 `height` 把条压得过矮，扫描线稍有倾斜就会超出条的范围。
+- 自行计算错误的校验位再传入：组件会拒绝绘制，应传不带校验位的长度由组件补齐。
 
 ## API 参考
 
@@ -344,16 +344,16 @@ import { XhBarCode } from "@xihan-ui/vue";
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `barWidth` | `number` |  | 最窄条的像素宽（X 尺寸），缺省 2；整张码的宽度由它乘模块数得出。 |
-| `bearerBars` | `boolean` |  | 上下承载条：itf14 印在瓦楞纸上防止短读的两根横条，缺省画； 只对 itf14 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
-| `checksum` | `boolean` |  | 附 mod 43 校验字符。只对 code39 有意义——其余码制的校验位是规范必带的， 给了会往诊断通道报一条警告，按没给处理。 |
-| `format` | `BarCodeFormat` |  | 码制，缺省 code128。给了不认识的值不画码，根落到 `error` 态。 |
-| `gs1` | `boolean` |  | GS1-128：起始符后放 FNC1，内容里的 GS（U+001D）编成变长 AI 之间的分隔。 只对 code128 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
-| `height` | `number` |  | 条的像素高，缺省 64；不含守卫条的延长段、人读文字与承载条。 |
-| `label` | `string` |  | 可及名字，缺省用 value；给了全空白的名字等于没给。 |
-| `margin` | `number` |  | 两侧静区，单位是模块数；缺省按码制的规范值（code128 / itf14 / code39 10，ean13 11，upca / upce 9，ean8 7）。 |
-| `text` | `boolean` |  | 条下面是否印人读文字，缺省印。 |
-| `value` | `string` |  | 要编码的内容；空串不画码。定长数字码制收不带或带校验位的两种长度，带了就核对。 |
+| `barWidth` | `number` |  | 最窄条的像素宽度（X 尺寸），默认 2；整张码的宽度由它乘以模块数得出。 |
+| `bearerBars` | `boolean` |  | 上下承载条：itf14 印在瓦楞纸上防止短读的两根横条，默认绘制； 只对 itf14 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
+| `checksum` | `boolean` |  | 附加 mod 43 校验字符。只对 code39 有意义：其余码制的校验位是规范必带的， 提供时向诊断通道报告一条警告，按未提供处理。 |
+| `format` | `BarCodeFormat` |  | 码制，默认 code128。提供未知值时不绘制，根落到 `error` 态。 |
+| `gs1` | `boolean` |  | GS1-128：起始符后放置 FNC1，内容中的 GS（U+001D）编码为变长 AI 之间的分隔。 只对 code128 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
+| `height` | `number` |  | 条的像素高度，默认 64；不含守卫条的延长段、人读文字与承载条。 |
+| `label` | `string` |  | 可及名，默认使用 value；提供全空白的名字等同于未提供。 |
+| `margin` | `number` |  | 两侧静区，单位为模块数；默认按码制的规范值（code128 / itf14 / code39 10，ean13 11，upca / upce 9，ean8 7）。 |
+| `text` | `boolean` |  | 条下方是否打印人读文字，默认打印。 |
+| `value` | `string` |  | 要编码的内容；空串不绘制。定长数字码制接受不带或带校验位的两种长度，带校验位时校验。 |
 
 ### 状态
 
@@ -369,20 +369,20 @@ import { XhBarCode } from "@xihan-ui/vue";
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `format` | `BarCodeFormat` | 解析后的码制。给了不认识的值时保持原样透出，好让错误信息与 data-format 都指着那个值。 |
-| `runs` | `readonly number[]` | 条空交替的宽度（模块），首元素是条；没画出码时是空数组。 |
-| `modules` | `number` | 不含静区的模块数；没画出码时为 0。 |
-| `encoded` | `string` | 实际编进码里的内容，含补上的校验位；没画出码时是空串。 |
-| `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
+| `format` | `BarCodeFormat` | 解析后的码制。提供未知值时原样透出，使错误信息与 data-format 都指向该值。 |
+| `runs` | `readonly number[]` | 条空交替的宽度（模块），首元素为条；未绘制时为空数组。 |
+| `modules` | `number` | 不含静区的模块数；未绘制时为 0。 |
+| `encoded` | `string` | 实际编入码中的内容，含补齐的校验位；未绘制时为空串。 |
+| `margin` | `number` | 解析后的静区宽度，单位为模块数。 |
 | `pixelWidth` | `number` | 根的像素宽高，也是 viewBox 的尺寸。 |
 | `pixelHeight` | `number` |  |
 | `viewBox` | `string` | 根的 viewBox。 |
-| `path` | `string` | 全部条（含守卫条的延长段与承载条）合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 |
-| `text` | `readonly BarCodeTextRun[]` | 人读文字，每段一个 `&lt;text&gt;`；关了 `text` 或没画出码时是空数组。 |
+| `path` | `string` | 全部条（含守卫条的延长段与承载条）合成的 `&lt;path&gt;` 的 d；未绘制时为空串，此时不应生成 path 节点。 |
+| `text` | `readonly BarCodeTextRun[]` | 人读文字，每段一个 `&lt;text&gt;`；关闭 `text` 或未绘制时为空数组。 |
 | `fontSize` | `number` | 人读文字的字号，像素。 |
 | `state` | `BarCodeState` | 当前状态。 |
 | `error` | `string \| undefined` | 编码失败的原因；其余状态为 undefined。 |
-| `label` | `string \| undefined` | 解析后的可及名字；没给名字时为 undefined，此时根退出无障碍树。 |
+| `label` | `string \| undefined` | 解析后的可及名；未提供名字时为 undefined，此时根退出无障碍树。 |
 | `getRootProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -422,9 +422,9 @@ import { XhBarCode } from "@xihan-ui/vue";
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-bar-code-bg` | `root` | `background` | `default` | `--xh-color-neutral-0` | bar-code 的 root 部件 background 覆盖槽。 |
 | `--xh-bar-code-fg` | `root` | `color` | `default` | `--xh-color-neutral-950` | bar-code 的 root 部件 color 覆盖槽。 |
