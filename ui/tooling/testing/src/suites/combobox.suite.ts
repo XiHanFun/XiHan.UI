@@ -861,10 +861,13 @@ export const comboboxSuite: ConformanceSuite = {
     {
       name: 'Space / Enter 按住与触屏按下：展开钮与清空钮投影 data-pressed，抬起、失焦或指针取消撤下',
       spec: { adr: 'press-channel' },
-      // 两个按钮都不占 Tab 位，键盘到不了它们，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路
-      props: { defaultValue: 'apple' },
+      // 两个按钮都不占 Tab 位，键盘到不了它们，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路。
+      // 两颗钮不同屏：有值时皮肤把展开钮让位给清空钮（display:none，接不住焦点），
+      // 先在空值下按展开钮，再由宿主写回值让清空钮上场
       steps: [
         heldPress('combobox', 'trigger'),
+        { kind: 'setProps', props: { value: 'apple' } },
+        { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'hidden', value: null } } },
         heldPress('combobox', 'clear-trigger'),
       ],
     },
