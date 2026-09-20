@@ -8,7 +8,6 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import type { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
@@ -77,7 +76,25 @@ export class XhMenubarElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
-  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
+
+  /**
+   * 整排菜单的定位层共用一份租约：任一张可见时全部搬到落点，逻辑来源是菜单栏根。
+   * 与 Vue / React 相同——那两端把每张 positioner 都经 Portal 搬到落点、视觉环境取自根，
+   * 文档序始终是作者写的那一排；若只搬展开的那一张，它会排到还留在原位的兄弟之后，
+   * 部件序与 aria-controls 的配对随之乱掉。
+   */
+  private readonly portal = this.createPortalLeaseController({
+    name: 'Menubar',
+    config: () => this.config,
+    source: () => this.getPart('root'),
+    roots: () => this.getParts('positioner'),
+    onShellReady: (shell) => {
+      setMenuSubmenuOwner(shell, this.submenuOwner)
+      return () => setMenuSubmenuOwner(shell, null)
+    },
+    onChange: () => this.requestUpdate(),
+  })
 
   /**
    * 最近展开过的那张菜单。一次只开一张，自绘条只配给它；收起后仍指向它——
@@ -263,21 +280,7 @@ export class XhMenubarElement extends XhPortalHostElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return [...this.exits.values()].flatMap(entry => entry.portal.roots)
-  }
-
-  private createPortal(value: string): AnchoredPortalController {
-    return this.createAnchoredPortalController({
-      name: `Menubar ${value}`,
-      config: () => this.config,
-      source: () => this.partFor('trigger', value),
-      root: () => this.partFor('positioner', value),
-      onShellReady: (shell) => {
-        setMenuSubmenuOwner(shell, this.submenuOwner)
-        return () => setMenuSubmenuOwner(shell, null)
-      },
-      onChange: () => this.requestUpdate(),
-    })
+    return this.portal.roots
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
@@ -372,7 +375,6 @@ export class XhMenubarElement extends XhPortalHostElement {
       if (entry && entry.value !== value) {
         this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
         entry.gate.dispose()
-        entry.portal.dispose()
         this.exits.delete(el)
         entry = undefined
       }
@@ -382,7 +384,7 @@ export class XhMenubarElement extends XhPortalHostElement {
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        entry = { value, gate, portal: this.createPortal(value) }
+        entry = { value, gate }
         this.exits.set(el, entry)
         this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence: gate.presence, connected: true })
       }
@@ -390,15 +392,15 @@ export class XhMenubarElement extends XhPortalHostElement {
       gate.track(el)
       gate.update(open)
       this.setPartHidden(el, !gate.visible)
-      entry.portal.sync(gate.visible)
     }
+    // 任一张菜单仍可见（含退场中）就持有租约；全部收起才精确归位
+    this.portal.sync([...this.exits.values()].some(entry => entry.gate.visible))
     // 作者运行期移除 content 时精确注销；若它正是退场 owner，Headless 会立即释放行为资源。
     for (const [el, entry] of this.exits) {
       if (liveContents.has(el))
         continue
       this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
       entry.gate.dispose()
-      entry.portal.dispose()
       this.exits.delete(el)
     }
 
@@ -444,9 +446,9 @@ export class XhMenubarElement extends XhPortalHostElement {
     setMenuSubmenuOwner(this, null)
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起
+    this.portal.dispose()
     for (const [el, entry] of this.exits) {
       entry.gate.dispose()
-      entry.portal.dispose()
       this.setPartHidden(el, true)
     }
     this.exits.clear()
