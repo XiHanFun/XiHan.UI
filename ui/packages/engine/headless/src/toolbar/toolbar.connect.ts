@@ -5,9 +5,9 @@
 
 // 提供 toolbar 相关实现。
 
-import type { NormalizeProps, Orientation, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, Orientation, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarItemProps, ToolbarSchema } from './toolbar.types'
-import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { toolbarAnatomy, toolbarItemQuery } from './toolbar.anatomy'
 
 const parts = toolbarAnatomy.build()
@@ -28,6 +28,17 @@ export function connectToolbar<T extends PropTypes>(
 
   // 整条禁用向下传导到每个条目；条目也能单独禁用
   const isDisabled = (item: ToolbarItemProps): boolean => toolbarDisabled || !!item.disabled
+
+  // 按压通道：每个条目各自合成一份跟踪器，真源是机器 context 里「正被按住的那个」的 value；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 条目是 aria-disabled（仍可聚焦、仍派事件），禁用事实随 PRESS.START 带给机器的守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (item: ToolbarItemProps): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === item.value,
+    onChange: down => send(down
+      ? { type: 'PRESS.START', value: item.value, disabled: isDisabled(item) }
+      : { type: 'PRESS.END', value: item.value }),
+  })
 
   /**
    * 条目集合只在事件处理器里查活 DOM，顺序即文档序，分组里与直接挂在 root 下的条目同链。
@@ -115,23 +126,35 @@ export function connectToolbar<T extends PropTypes>(
     // 这里只发与导航相关的三样：身份标记、Tab 停靠位、禁用声明，外加家族标记——
     // 默认条目是一枚定尺工具按钮，接 Action Control 的 text 档，ghost 形态，档位随工具条 size 走；
     // 承载面的阶梯由根按 variant / 分组经 host 槽下发
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      // 导航以此为条目身份
-      [ITEM_VALUE_ATTR]: item.value,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'text',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
-      'aria-disabled': isDisabled(item) ? 'true' : 'false',
-      'data-disabled': dataAttr(isDisabled(item)),
-      // roving tabindex：整条只有锚点条目留在 Tab 序列内
-      'tabindex': focusedValue === item.value ? 0 : -1,
-      // 禁用条目被点到也记锚点，方向键才知道从哪儿起步；这里只记锚点、不接管激活
-      'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-    }),
+    getItemProps: (item) => {
+      const handlers = press(item)
+      return normalize.element({
+        ...parts.item.attrs,
+        // 导航以此为条目身份
+        [ITEM_VALUE_ATTR]: item.value,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'text',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
+        'aria-disabled': isDisabled(item) ? 'true' : 'false',
+        'data-disabled': dataAttr(isDisabled(item)),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与焦点锚点互相独立
+        'data-pressed': dataAttr(pressedValue === item.value),
+        // roving tabindex：整条只有锚点条目留在 Tab 序列内
+        'tabindex': focusedValue === item.value ? 0 : -1,
+        // 禁用条目被点到也记锚点，方向键才知道从哪儿起步；这里只记锚点、不接管激活
+        'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+        // 按压只记事实、不拦键：激活语义归条目自己（原生 button 的 click），方向键归 root
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     getSeparatorProps: () => normalize.element({
       ...parts.separator.attrs,

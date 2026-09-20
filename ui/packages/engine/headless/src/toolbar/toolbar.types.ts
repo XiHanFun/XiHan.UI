@@ -42,6 +42,11 @@ export interface ToolbarSchema extends MachineSchema {
      * 锚点为空时由 root 兜底进入 Tab 序列，它的 onFocus 再把焦点转交给第一个可停留条目。
      */
     focusedValue: string | null
+    /**
+     * 按压通道：正被 Space / Enter 或触屏手指按住的条目的 value，该条目投影 data-pressed；没有按住时为 null。
+     * 抬起、失焦、指针取消，或按住途中整条转为禁用时撤下；与焦点锚点互相独立。
+     */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -52,9 +57,13 @@ export interface ToolbarSchema extends MachineSchema {
     | { type: 'ITEM.FOCUS', value: string }
     /** 焦点离开整条工具条，或持有焦点的条目被移出 DOM（浏览器此时不派发 focusout，由适配器如实上报）。 */
     | { type: 'TOOLBAR.BLUR' }
+    /** 按压通道（shared/press）：某个条目被 Space / Enter 或触屏按住；条目自身的禁用只有 connect 知道，随事件带给守卫。 */
+    | { type: 'PRESS.START', value: string, disabled?: boolean }
+    /** 该条目抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
-  guard: never
-  action: 'setFocusedValue' | 'clearFocusedValue'
+  guard: 'canPress'
+  action: 'setFocusedValue' | 'clearFocusedValue' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 
