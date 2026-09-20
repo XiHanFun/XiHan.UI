@@ -46,11 +46,15 @@ async function mountPop(controlled = false): Promise<PopconfirmElement> {
   return host
 }
 
+/**
+ * 浮层展开即把 positioner 整段搬进 Portal 目标（body 末尾的 portal 落点），content 及其中的
+ * 按钮不再在宿主子树里；按 scope + part 在整个文档里取，一次只挂一个宿主，取到的就是它的。
+ */
 function part(host: HTMLElement, name: string): HTMLElement {
-  const element = host.querySelector<HTMLElement>(`[data-part="${name}"]`)
-  if (!element)
-    throw new Error(`找不到 ${name}`)
-  return element
+  const matches = host.ownerDocument.querySelectorAll<HTMLElement>(`[data-scope="popconfirm"][data-part="${name}"]`)
+  if (matches.length !== 1)
+    throw new Error(`找不到唯一的 ${name}，命中 ${matches.length} 个`)
+  return matches[0]!
 }
 
 afterEach(() => {
