@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { LogApi, LogLineProps, LogProps, LogSchema } from './log.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { logAnatomy } from './log.anatomy'
 
 const parts = logAnatomy.build()
@@ -42,6 +43,8 @@ export function connectLog<T extends PropTypes>(
   }
   // 只按 atBottom 判定，不看粘附意图
   const showScrollToEndTrigger = !atBottom
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，家族配方两者同一档
+  const press = pressHandlers(service)
 
   return {
     rows,
@@ -98,7 +101,15 @@ export function connectLog<T extends PropTypes>(
       'aria-label': label.scrollToBottom,
       'data-state': showScrollToEndTrigger ? 'visible' : 'hidden',
       'hidden': !showScrollToEndTrigger || undefined,
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；在底收起时不进
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'SCROLL_TO_BOTTOM' }),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
 
     /** 播报区，aria-atomic 为 true，宿主往里写整句要念的话，比如一段输出的收尾结论。 */

@@ -52,18 +52,27 @@ export interface LogSchema extends MachineSchema {
     atBottom: boolean
     /** 内容增长时是否自动跟随到底部，用户上滚后为 false。 */
     sticking: boolean
+    /**
+     * 按压通道：回到底部按钮被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或按住途中视口回到底部（按钮随之收起）时撤下。
+     */
+    pressed: boolean
   }
   computed: Record<string, never>
   refs: LogRefs
   state: 'idle'
   event:
-    /** 句柄回报的贴底状态变化，是 context 中两个布尔的唯一写入口。 */
+    /** 句柄回报的贴底状态变化，是 atBottom / sticking 的唯一写入口。 */
     | { type: 'STICK.CHANGE', atBottom: boolean, sticking: boolean }
     /** 滚动到底部并恢复贴附。 */
     | { type: 'SCROLL_TO_BOTTOM' }
+    /** 按压通道（shared/press）：回到底部按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** 回到底部按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
   tag: never
-  guard: never
-  action: 'setStickState' | 'invokeScrollToBottom'
+  guard: 'canPress'
+  action: 'setStickState' | 'invokeScrollToBottom' | 'startPress' | 'endPress'
   effect: 'trackStickToBottom'
 }
 
