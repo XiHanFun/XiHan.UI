@@ -15,6 +15,7 @@ import {
   isElement,
   isShadowRoot,
 } from '../../kernel'
+import { isRendered } from '../../kernel/utils/rendered'
 import { acquireFocusGuards } from './focus-guards'
 import { activeElementInRoot, focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
 
@@ -64,6 +65,11 @@ const focusScopesByDocument = createPerDocumentRegistry<FocusScopeDocumentState>
   live: new Set<number>(),
   ownershipListeners: new Set<() => void>(),
 }))
+
+/** 元素仍在文档里且处于渲染树里，浏览器才会让它接住 focus()。 */
+function canReceiveFocus(el: FocusableElement): boolean {
+  return el.isConnected && isRendered(el)
+}
 
 /** 有比 seq 更晚建立、且此刻仍在场的焦点域吗。 */
 function hasNewerScope(state: FocusScopeDocumentState, seq: number): boolean {
@@ -615,8 +621,12 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
         // restoreTarget 是用户代码，也可能同步建立并聚焦更新域；写焦点前必须重新表决。
         if (hasNewerScope(documentScopes, mountSeq))
           return
-        const back = explicit?.isConnected ? explicit : previouslyFocused
-        if (back?.isConnected) {
+        // 落点要在场且处于渲染树里：归还帧到来前祖先层可能已收起（子菜单按方向键收回、随即
+        // Escape 收掉父层），落点藏在 hidden 的 content 里。浏览器对藏起来的元素 focus() 是
+        // 空操作；jsdom 会照聚不误并派出一枚假 focusin，消解层据此把父层当成焦点落到层外
+        // 一并收掉。按渲染判据一并跳过，与 portal 租约归位时的 refocus 同一口径
+        const back = explicit && canReceiveFocus(explicit) ? explicit : previouslyFocused
+        if (back && canReceiveFocus(back)) {
           focusSafely(back, { select: true })
           // 归还落定即完工；没落定的（创建前持有者是 body——挂载即展开、程序化打开都如此，
           // body 不在各引擎一致的可聚焦集合里，focus() 是空操作）继续往下松手
