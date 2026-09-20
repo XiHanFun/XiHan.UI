@@ -6926,8 +6926,9 @@
   user-select: none;
 }
 
-/* 按下只换面不缩放：白底承载 hover 100 → pressed 200（§7.2 / §9.2 集合行不允许零反馈） */
-[data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):active {
+/* 按下只换面不缩放：白底承载 hover 100 → pressed 200（§7.2 / §9.2 集合行不允许零反馈）；
+   指针按住由 :active 表出，Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
+[data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) {
   background: var(--xh-json-viewer-row-bg-active, var(--xh-bg-subtle-hover));
 }
 
@@ -7074,6 +7075,24 @@
 
 [data-scope='json-viewer'][data-part='empty'][hidden] {
   display: none;
+}
+
+/*
+ * 高对比档：分支行的按压面常态靠底色深一档表出，这一档里底色被统一换成 Canvas，
+ * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来，行里的键名、摘要与箭头跟着换成反色前景
+ */
+@media (forced-colors: active) {
+  [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) [data-scope='json-viewer'][data-part='branch-text'],
+  [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) [data-scope='json-viewer'][data-part='branch-text']::after,
+  [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) [data-scope='json-viewer'][data-part='preview'],
+  [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) [data-scope='json-viewer'][data-part='branch-indicator'] {
+    color: HighlightText;
+  }
 }
 
 /* styles/layout.css */

@@ -170,7 +170,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 **状态**：`idle`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END`
 
 ### connect API
 
@@ -224,6 +224,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `ArrowRight` | focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的对象/数组就地展开；已展开则把焦点移到首个子行；标量行什么都不做且不吞键 |
 | `ArrowLeft` | focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的对象/数组就地收起；收起的分支与标量行则把焦点移到父行；根行什么都不做 |
 | `Enter` / `Space` | focus on branch | 切换该分支的展开态；焦点在标量行上时不吞这两个键 |
+| `Enter` / `Space` | held on branch | 按住期间该分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面（行只换面不缩放）；抬起或失焦撤下。展开态的切换照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开的不动）；同级没有可展开的分支时不吞这个键 |
 
 ### ARIA
@@ -255,6 +256,8 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 `@xihan-ui/styles/json-viewer.css` 使用 `[data-scope="json-viewer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -264,6 +267,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `root` | `data-size` | props.size |
 | `root` | `data-variant` | props.variant |
 | `root` | `data-view` | props.view |
+| `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -297,7 +301,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `--xh-json-viewer-px` | `text`<br>`tree` | `padding-inline` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-inline 覆盖槽。 |
 | `--xh-json-viewer-py` | `text`<br>`tree` | `padding-block` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-radius` | `empty`<br>`text`<br>`tree` | `border-radius` | `default` | `--xh-shape-surface` | json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。 |
-| `--xh-json-viewer-row-bg-active` | `branch-control` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | json-viewer 的 branch-control 部件 background 覆盖槽。 |
+| `--xh-json-viewer-row-bg-active` | `branch-control` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed` | `--xh-bg-subtle-hover` | json-viewer 的 branch-control 部件 background 覆盖槽。 |
 | `--xh-json-viewer-row-bg-hover` | `branch-control`<br>`item` | `background` | `highlighted`<br>`is(:hover, [data-highlighted])` | `--xh-bg-subtle` | json-viewer 的 branch-control、item 部件 background 覆盖槽。 |
 | `--xh-json-viewer-row-gap` | `branch-control`<br>`item` | `gap` | `default` | `--xh-space-1` | json-viewer 的 branch-control、item 部件 gap 覆盖槽。 |
 | `--xh-json-viewer-row-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-space-1` | json-viewer 的 branch-control、item 部件 padding-inline 覆盖槽。 |

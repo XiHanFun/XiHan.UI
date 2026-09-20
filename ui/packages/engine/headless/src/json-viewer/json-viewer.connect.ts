@@ -5,9 +5,9 @@
 
 // 提供 json viewer 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema } from './json-viewer.types'
-import { contains, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
 import { flattenJson, jsonSeedExpanded, jsonText } from './json-viewer.machine'
 
@@ -125,6 +125,20 @@ export function connectJsonViewer<T extends PropTypes>(
 
   /** 行部件里的处理器拿不到 branch 容器，就地往上找最近的那个（嵌套分支各认各的）。 */
   const branchElOf = (el: HTMLElement): HTMLElement | null => el.closest<HTMLElement>(parts.branch.selector)
+
+  // 按压通道：真源是机器 context 里「正被按住的那一行」的路径，每个分支行各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档（行只换面）。
+  // 键盘在 tree 容器上收口（切换展开态），按压只记事实、不拦键；视图没有禁用态，没有守卫
+  const pressedValue = context.get('pressedValue')
+  const press = (value: string): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressedValue') === value,
+    onChange: down => send(down ? { type: 'PRESS.START', value } : { type: 'PRESS.END', value }),
+  })
+  /** 只认落在自己身上的事件：branch 裹着整棵子层，子行上的按键与失焦会冒泡（React 的 onBlur 挂 focusout）上来。 */
+  const onSelf = <E extends Event>(handler: (event: E) => void) => (event: E): void => {
+    if (event.target === event.currentTarget)
+      handler(event)
+  }
 
   const focusValue = (el: HTMLElement | null): void => {
     const next = itemValue(el)
@@ -310,6 +324,9 @@ export function connectJsonViewer<T extends PropTypes>(
 
     getBranchProps: (props) => {
       const node = nodeOf(props.value)
+      // 焦点落在 branch 上、按压面画在 branch-control 上：键盘那一路由这里替行代发，
+      // 只认落在自己身上的按键与失焦（子层里的会冒泡上来）
+      const handlers = press(props.value)
       return normalize.element({
         ...parts.branch.attrs,
         ...nodeAttrs(node, props.value),
@@ -318,20 +335,32 @@ export function connectJsonViewer<T extends PropTypes>(
         // 分支裹着整棵子层，从内容算名字会把所有子孙的文字一并念出来，必须显式给
         'aria-label': node ? branchLabel(node) : undefined,
         'onFocus': () => send({ type: 'NODE.FOCUS', value: props.value }),
+        'onKeyDown': onSelf(handlers.onKeyDown),
+        'onKeyUp': onSelf(handlers.onKeyUp),
+        'onBlur': onSelf<FocusEvent>(handlers.onBlur),
       })
     },
 
-    getBranchControlProps: props => normalize.element({
-      ...parts['branch-control'].attrs,
-      ...branchState(nodeOf(props.value), props.value),
-      onClick: (event: MouseEvent) => {
-        // 分支行只是 treeitem 里的一层内容，焦点该落在 branch 上
-        const branchEl = branchElOf(event.currentTarget as HTMLElement)
-        if (branchEl)
-          focusValue(branchEl)
-        send({ type: 'BRANCH.TOGGLE', value: props.value })
-      },
-    }),
+    getBranchControlProps: (props) => {
+      const handlers = press(props.value)
+      return normalize.element({
+        ...parts['branch-control'].attrs,
+        ...branchState(nodeOf(props.value), props.value),
+        // 触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；
+        // 键盘那一路由 branch 代发（焦点落在它身上），行自己只接触屏。与展开态互相独立
+        'data-pressed': dataAttr(pressedValue === props.value),
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onClick': (event: MouseEvent) => {
+          // 分支行只是 treeitem 里的一层内容，焦点该落在 branch 上
+          const branchEl = branchElOf(event.currentTarget as HTMLElement)
+          if (branchEl)
+            focusValue(branchEl)
+          send({ type: 'BRANCH.TOGGLE', value: props.value })
+        },
+      })
+    },
 
     getBranchTriggerProps: props => normalize.element({
       ...parts['branch-trigger'].attrs,

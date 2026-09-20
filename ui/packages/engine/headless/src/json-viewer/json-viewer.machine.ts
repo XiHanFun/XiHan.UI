@@ -294,6 +294,8 @@ export const jsonViewerMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     // 焦点在不在树内单独记：锚点要跨 Tab 往返留着，高亮不能留
     focusWithin: cell<boolean>(() => ({ defaultValue: false })),
+    // 按压通道：正被按住的分支行，与展开集合互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
   states: {
@@ -306,6 +308,9 @@ export const jsonViewerMachine = createMachine({
         'BRANCH.TOGGLE': { actions: ['toggleBranch'] },
         'NODE.FOCUS': { actions: ['setFocusedValue'] },
         'VIEWER.BLUR': { actions: ['clearFocusWithin'] },
+        // 按压通道：视图没有禁用态，没有守卫；分支行只是内容的一行，按住只记事实
+        'PRESS.START': { actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
       },
     },
   },
@@ -352,6 +357,17 @@ export const jsonViewerMachine = createMachine({
       },
       // 焦点离场只落下高亮：锚点留着，Tab 回来才落得回上次那一行
       clearFocusWithin: ({ context }) => context.set('focusWithin', false),
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：别的分支行的 keyup 不该把正按着的这一行松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
     },
   },
 })

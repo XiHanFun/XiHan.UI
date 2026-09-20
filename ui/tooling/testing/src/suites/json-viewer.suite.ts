@@ -1,5 +1,6 @@
 import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
 import { jsonViewerAnatomy, jsonViewerKeyboard } from '@xihan-ui/headless'
+import { heldPress } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/treeview/'
 
@@ -472,6 +473,40 @@ export const jsonViewerSuite: ConformanceSuite = {
         { kind: 'focus', part: 'branch[1]' },
         { kind: 'key', key: 'ArrowLeft', expect: { parts: { 'branch[1]': { 'aria-expanded': 'true' } } } },
         { kind: 'key', key: 'ArrowRight', expect: { parts: { 'branch[1]': { 'aria-expanded': 'false' } } } },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：分支行投影 data-pressed，键盘由 branch 代发、触屏按在行上；只亮按住的那一行',
+      spec: { adr: 'press-channel' },
+      props: props(),
+      covers: ['json-viewer.kbd.press'],
+      steps: [
+        { kind: 'focus', part: 'branch[1]', expect: { activeElement: { part: 'branch[1]', exact: true } } },
+        // 焦点落在 branch 上、按压面画在 branch-control 上：键盘与失焦派到 branch，看的是行身上的属性。
+        // 确认键在 keydown 即切换展开态，按住途中子层来回收放，按压面不随之丢
+        heldPress('json-viewer', 'branch-control', {
+          selector: `[data-scope="json-viewer"][data-part="branch"][data-value='${TAGS}'] > [data-scope="json-viewer"][data-part="branch-control"]`,
+          keyboardHost: `[data-scope="json-viewer"][data-part="branch"][data-value='${TAGS}']`,
+          keys: [' ', 'Enter'],
+        }),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const branch = doc.querySelector<HTMLElement>(`[data-scope="json-viewer"][data-part="branch"][data-value='${TAGS}']`)!
+            const own = branch.querySelector<HTMLElement>('[data-scope="json-viewer"][data-part="branch-control"]')!
+            const other = doc.querySelector<HTMLElement>(`[data-scope="json-viewer"][data-part="branch"][data-value='${META}'] > [data-scope="json-viewer"][data-part="branch-control"]`)!
+            branch.focus()
+            branch.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!own.hasAttribute('data-pressed') || other.hasAttribute('data-pressed'))
+              throw new Error('按住 tags 分支时只有它的 branch-control 该投影 data-pressed')
+            branch.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (own.hasAttribute('data-pressed'))
+              throw new Error('keyup 之后 tags 分支应撤下 data-pressed')
+          },
+        },
       ],
     },
   ],

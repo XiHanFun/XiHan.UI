@@ -35092,9 +35092,10 @@
         "background"
       ],
       "state": [
-        "active",
         "disabled",
-        "not([data-disabled])"
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
