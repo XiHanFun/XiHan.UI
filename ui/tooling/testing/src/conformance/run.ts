@@ -3,7 +3,7 @@ import type { AdapterHarness, ConformanceCase, ConformanceSuite, DomSnapshot, Te
 import { danglingCovers, missingKeyboardRows } from '../machine/transition-coverage'
 import { collectDomSnapshot } from '../snapshot/collect'
 import { applyStep } from './apply-step'
-import { settleFrame } from './frame'
+import { pendingFrames, settleFrame, settleTeardown } from './frame'
 import { checkExpectation } from './match'
 
 export interface RunOptions {
@@ -20,15 +20,43 @@ function snap(ctx: ApplyContext, harness: AdapterHarness): DomSnapshot {
   })
 }
 
-function assertScopeCleared(doc: Document, component: string, adapter: string): void {
+function describeElement(el: Element): string {
+  const attrs = Array.from(el.attributes)
+    .filter(a => a.name.startsWith('data-') || a.name === 'id')
+    .map(a => `${a.name}="${a.value}"`)
+    .join(' ')
+  return `<${el.tagName.toLowerCase()}${attrs ? ` ${attrs}` : ''}>`
+}
+
+/**
+ * 卸载并收尾之后，文档必须回到这条轨迹开始前的样子：没有残留的 scope 节点，没有还排着的动画帧，
+ * 焦点不落在任何元素上。三条里任何一条不成立，下一条轨迹就跑在这一条的尾巴上。
+ */
+function assertTraceCleared(doc: Document, component: string, adapter: string): void {
   const left = doc.querySelectorAll(`[data-scope="${component}"]`).length
   if (left)
     throw new Error(`${adapter}: 卸载后文档内仍残留 ${left} 个 ${component} scope 节点`)
+  const frames = pendingFrames(doc)
+  if (frames)
+    throw new Error(`${adapter}: ${component} 卸载后仍有 ${frames} 个动画帧回调排着，会跑进下一条轨迹`)
+  const active = doc.activeElement
+  if (active && active !== doc.body)
+    throw new Error(`${adapter}: ${component} 卸载后焦点仍在 ${describeElement(active)} 上`)
 }
+
+/**
+ * 每个 harness 此刻归哪条轨迹。
+ *
+ * 用例超时后测试框架转去跑下一条，超时那条却没有被停下：它的 settle 还在轮询、步骤还在往下走，
+ * 走到 finally 还会卸载——卸的是宿主上当下挂着的、属于下一条的那个实例，下一条从此按在一具空壳上。
+ * 挂载即登记归属，每一步和收尾前都核对：归属换了人，这条就停在原地，不再碰宿主。
+ */
+const traceOwners = new WeakMap<AdapterHarness, object>()
 
 /**
  * 一个用例在一个 harness 上的完整轨迹：第 0 帧是挂载后，第 i+1 帧是第 i 步之后。
  * 每一帧都等到动画帧过去再采样（见 settleFrame），采的是能画到屏幕上的那个状态。
+ * 卸载后把这条轨迹排下的回调收干净（见 settleTeardown）再核对文档，下一条轨迹从干净的文档起步。
  */
 export async function recordTrace(
   harness: AdapterHarness,
@@ -41,6 +69,13 @@ export async function recordTrace(
     props: { ...suite.defaultProps, ...c.props },
     tree,
   })
+  const owner = {}
+  traceOwners.set(harness, owner)
+  const owned = (): boolean => traceOwners.get(harness) === owner
+  const assertOwned = (): void => {
+    if (!owned())
+      throw new Error(`${harness.adapterName}: ${suite.component} 这条轨迹已超时，宿主归下一条了，不再往下跑`)
+  }
   const ctx: ApplyContext = {
     harness,
     root,
@@ -51,16 +86,23 @@ export async function recordTrace(
   const frames: DomSnapshot[] = []
   try {
     await settleFrame(harness, ctx.doc)
+    assertOwned()
     frames.push(snap(ctx, harness))
     for (const step of c.steps ?? []) {
+      assertOwned()
       await applyStep(ctx, step)
       await settleFrame(harness, ctx.doc)
+      assertOwned()
       frames.push(snap(ctx, harness))
     }
   }
   finally {
-    await harness.unmount()
-    assertScopeCleared(ctx.doc, suite.component, harness.adapterName)
+    // 归属已换的轨迹不卸载：宿主上挂着的已经是别人的实例
+    if (owned()) {
+      await harness.unmount()
+      await settleTeardown(harness, ctx.doc)
+      assertTraceCleared(ctx.doc, suite.component, harness.adapterName)
+    }
   }
   return frames
 }

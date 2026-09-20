@@ -83,6 +83,9 @@ export function createVueHarness(): AdapterHarness {
   return {
     adapterName: 'vue',
     async mount(fixture: Fixture) {
+      // 一个 harness 同时只挂一份：上一条轨迹超时后没走到卸载，它那份还挂着，先卸掉再挂新的
+      if (app)
+        await this.unmount()
       host = document.createElement('div')
       attachHost(host)
       for (const k of Object.keys(props)) delete props[k]
