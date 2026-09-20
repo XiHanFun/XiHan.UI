@@ -339,7 +339,7 @@ describe('password-input 大写锁定提示的槽按部件取名', () => {
   })
 })
 
-/** 两枚并排：前一枚有 control（盒画在它身上），后一枚只有 input（盒画在输入框上）。 */
+/** 两枚并排：前一枚有 control（盒画在它身上），后一枚只有 input（e40ac90fc 起不再画独立外壳）。 */
 function PASSWORD_TWO_FORMS(): unknown {
   return [
     h(XhPasswordInputRoot, null, () => [
@@ -350,13 +350,15 @@ function PASSWORD_TWO_FORMS(): unknown {
 }
 
 describe('password-input 的一体式盒有自己的圆角槽', () => {
-  it('两档各调各的：input 槽不改一体式盒，control 槽不改独立输入框', async () => {
+  it('control 槽只改一体式盒；没有 control 的独立输入框不画盒，摘掉的 input 圆角槽一点效果都没有', async () => {
     setSlot('--xh-password-input-input-radius', '11px')
     setSlot('--xh-password-input-control-radius', '3px')
     await mount(PASSWORD_TWO_FORMS)
 
     expect(styleOf(part('password-input', 'control'), 'border-top-left-radius')).toBe('3px')
-    expect(styleOf(part('password-input', 'input', 1), 'border-top-left-radius')).toBe('11px')
+    const standalone = part('password-input', 'input', 1)
+    expect(styleOf(standalone, 'border-top-style')).toBe('none')
+    expect(styleOf(standalone, 'border-top-left-radius')).toBe('0px')
   })
 
   it('设 --xh-password-input-input-radius 时一体式盒与什么都不写同值', async () => {
