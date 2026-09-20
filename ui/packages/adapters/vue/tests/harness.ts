@@ -2,7 +2,7 @@ import type { AdapterEvent, AdapterHarness, Fixture } from '@xihan-ui/testing'
 import type { App, Component } from 'vue'
 import { attachHost } from '@xihan-ui/testing'
 import { createApp, h, nextTick, reactive } from 'vue'
-import { renderFixtureChildren, resolveRoot } from './fixture-vnode'
+import { renderFixtureSlots, resolveRoot } from './fixture-vnode'
 
 const PUBLIC_EVENTS = {
   'checked-change': 'onCheckedChange',
@@ -112,9 +112,7 @@ export function createVueHarness(): AdapterHarness {
       // setAttribute 到角色节点上，Vue 侧经透传落到根组件渲染出的那个元素上
       app = createApp({
         setup: () => () =>
-          h(Root, { ...fixture.tree.attrs, ...props, ...listeners }, {
-            default: () => renderFixtureChildren(fixture.tree.children, fixture.component) ?? [],
-          }),
+          h(Root, { ...fixture.tree.attrs, ...props, ...listeners }, renderFixtureSlots(fixture.tree.children, fixture.component)),
       })
       app.config.warnHandler = (message) => {
         throw new Error(`[Vue warn]: ${message}`)

@@ -29,7 +29,8 @@ function renderNode(node: FixtureNode, doc: Document, ns?: string): HTMLElement 
   if (node.part)
     el.dataset.xhPart = node.part
   for (const [k, v] of Object.entries(node.attrs ?? {})) el.setAttribute(k, v)
-  const kids = node.children?.filter(rendersHere)
+  // 写进具名插槽的子节点由 mount 摆到 root 之前，这里不再渲一遍
+  const kids = node.children?.filter(rendersHere).filter(c => c.slot == null)
   if (kids?.length) {
     for (const c of kids) {
       if (c.text != null && c.tag == null && c.part == null && c.children == null)
@@ -139,6 +140,10 @@ export function createWcHarness(): AdapterHarness {
       if (host)
         await this.unmount()
       const el = document.createElement(`xh-${fixture.component}`) as Updatable
+      // 写进具名插槽的节点没有插槽可进：按文档序摆在 root 之前，仍是宿主的直接子节点
+      // （table 的工具条在三侧都渲成 role=grid 的兄弟）
+      for (const slotted of fixture.tree.children?.filter(c => rendersHere(c) && c.slot != null) ?? [])
+        el.appendChild(renderNode(slotted, document))
       el.appendChild(renderNode(fixture.tree, document))
       applyInputs(el, fixture.props as Record<string, unknown>)
       for (const t of PUBLIC_EVENTS) el.addEventListener(t, onEvent)

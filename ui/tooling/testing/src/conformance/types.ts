@@ -34,6 +34,12 @@ export interface FixtureNode {
    * 给「一侧由作者手写、另一侧由部件自渲」的节点用，同一份夹具因此能喂给每一侧。
    */
   readonly only?: readonly AdapterName[]
+  /**
+   * 只对根节点的直接子节点有效：这个节点写进根组件的这个具名插槽，而不是默认插槽。
+   * Vue 侧进 slots[slot]、React 侧进同名 prop，两侧都由根组件决定它渲在哪（如 table 的工具条
+   * 渲成 role=grid 的兄弟）；WC 侧没有插槽，节点按文档序摆在 root 之前、仍是宿主的直接子节点。
+   */
+  readonly slot?: string
 }
 
 export interface Fixture {
