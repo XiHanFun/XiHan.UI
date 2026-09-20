@@ -1528,6 +1528,15 @@ describe('cascader 展开时的焦点', () => {
     expect(document.activeElement).toBe(h.column(0))
   })
 
+  it('一个条目都没有：根列让位给占位面，焦点落在兜底进 Tab 序列的 content 上', async () => {
+    const h = mount({ collection: [] })
+    h.send({ type: 'OPEN' })
+    await frames()
+    expect(h.focusedPath()).toBeNull()
+    expect(h.content.getAttribute('tabindex')).toBe('0')
+    expect(document.activeElement).toBe(h.content)
+  })
+
   it('关掉之后焦点归还 trigger——展开之前焦点在 body 上也一样', async () => {
     const h = mount({ defaultValue: ['macau'] })
     expect(document.activeElement).toBe(document.body)

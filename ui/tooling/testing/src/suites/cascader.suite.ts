@@ -1551,7 +1551,8 @@ export const cascaderSuite: ConformanceSuite = {
         },
       },
       // 与本套件的键盘用例一样从收起态进入，等焦点域完成挂载再比较稳定状态。
-      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }, {
+      // 一个条目都没有时根列让位给占位面，焦点落在兜底进 Tab 序列的 content 上
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'content' } }, {
         kind: 'raw',
         why: '状态文案不进属性快照，直接读取唯一 Loading 的可见文本',
         run: ({ doc }) => {
@@ -1570,7 +1571,7 @@ export const cascaderSuite: ConformanceSuite = {
         counts: { empty: 1, loading: 1 },
         parts: { loading: { role: 'status', hidden: null } },
       },
-      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }, {
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'content' } }, {
         kind: 'raw',
         why: '作者内容不进属性快照，直接证明它没有被默认 Loading 替换或并排重复',
         run: ({ doc }) => {
