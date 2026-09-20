@@ -2,6 +2,7 @@
 // 面板号写在日历上一处：面板内的标题、网格与格子跟着它走，自己写了仍按自己写的算。
 // 一律用 defaultOpen 挂：展开态初值为真时，浮层的焦点域在编排机挂载那一刻就把焦点
 // 送进格子，而日历那台机器排在它后面才挂载——这几条同时钉住那一下不再抛。
+import type { CalendarPanel } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -19,9 +20,6 @@ import {
   XhDatePickerSegmentGroup,
   XhDatePickerWeekRow,
 } from '../src'
-
-interface Day { value: string, day: number }
-interface Panel { index: number, weeks: Day[][] }
 
 let cleanup: Array<() => void> = []
 
@@ -56,7 +54,7 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
         defaultValue: ['2026-07-01', '2026-08-05'],
         ...props,
       }, {
-        default: ({ panels }: { panels: Panel[] }) => [
+        default: ({ panels }: { panels: CalendarPanel[] }) => [
           h(XhDatePickerControl, null, () => [
             h(XhDatePickerSegmentGroup, null, () => [h(XhDatePickerSegment, { index: 0 })]),
           ]),
@@ -131,7 +129,7 @@ describe('双面板的面板号写在日历上', () => {
           defaultOpen: true,
           defaultValue: ['2026-07-01', '2026-08-05'],
         }, {
-          default: ({ panels }: { panels: Panel[] }) => [
+          default: ({ panels }: { panels: CalendarPanel[] }) => [
             h(XhDatePickerControl, null, () => [
               h(XhDatePickerSegmentGroup, null, () => [h(XhDatePickerSegment, { index: 0 })]),
             ]),
