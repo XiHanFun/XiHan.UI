@@ -65,6 +65,10 @@ describe('web components Clipboard 浏览器合同', () => {
     await settle()
     expect(state(root)).toBe('copied')
     expect(button.getBoundingClientRect().width).toBeCloseTo(width, 4)
+    // 新侧立即参与淡入，旧侧等淡出完成后才隐藏；切换首帧不能两侧同时不可见
+    expect(indicators.map(indicator => getComputedStyle(indicator).visibility)).toEqual(['visible', 'visible'])
+    const duration = Number.parseFloat(getComputedStyle(indicators[0]!).transitionDuration) * 1000
+    await new Promise(resolve => setTimeout(resolve, duration + 40))
     expect(indicators.map(indicator => getComputedStyle(indicator).visibility)).toEqual(['hidden', 'visible'])
   })
 
