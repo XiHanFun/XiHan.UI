@@ -31,6 +31,17 @@ function finite(node: HTMLElement): Animation[] {
   return node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
 }
 
+/**
+ * 浮层展开即把 positioner 整段搬进 Portal 目标（body 末尾的 portal 落点），content / branch-content
+ * 不再在宿主子树里；按 scope + part（外加调用方给的限定）在整个文档里取，一次只挂一个宿主，取到的就是它的。
+ */
+function portalPart(scope: 'pagination' | 'side-nav', part: 'content' | 'branch-content', qualifier = ''): HTMLElement {
+  const matches = document.querySelectorAll<HTMLElement>(`[data-scope="${scope}"][data-part="${part}"]${qualifier}`)
+  if (matches.length !== 1)
+    throw new Error(`找不到唯一的 ${scope} ${part}${qualifier}，命中 ${matches.length} 个`)
+  return matches[0]!
+}
+
 afterEach(() => {
   document.body.innerHTML = ''
 })
@@ -55,7 +66,7 @@ describe('wc 特殊浮层真实退场资源', () => {
 
     trigger.click()
     await settle()
-    const content = host.querySelector<HTMLElement>('[data-xh-part="content"]')!
+    const content = portalPart('pagination', 'content')
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
     expect(getLayerRegistry(document).list()).toHaveLength(1)
@@ -94,7 +105,7 @@ describe('wc 特殊浮层真实退场资源', () => {
 
     docsTrigger.click()
     await settle()
-    const products = element.querySelector<HTMLElement>('[data-part="branch-content"][id$="content-products"]')!
+    const products = portalPart('side-nav', 'branch-content', '[id$="content-products"]')
     expect(products.inert).toBe(true)
     expect(products.getAttribute('aria-hidden')).toBe('true')
     expect(getLayerRegistry(document).list()).toHaveLength(2)
@@ -104,7 +115,7 @@ describe('wc 特殊浮层真实退场资源', () => {
 
     docsTrigger.click()
     await settle()
-    const docs = element.querySelector<HTMLElement>('[data-part="branch-content"][id$="content-docs"]')!
+    const docs = portalPart('side-nav', 'branch-content', '[id$="content-docs"]')
     expect(docs.inert).toBe(true)
     finite(docs)[0]!.finish()
     await settle()
