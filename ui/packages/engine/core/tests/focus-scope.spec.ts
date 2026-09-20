@@ -210,6 +210,66 @@ describe('挂载自动聚焦', () => {
     expect(document.activeElement).toBe(h.buttons[0])
   })
 
+  it('flush 回调到来前域已释放：不再碰容器 getter', () => {
+    const h = setup()
+    let ready = false
+    const pending: Array<() => void> = []
+    const container = vi.fn(() => (ready ? h.container : null))
+    const scope = createFocusScope({
+      config: h.config,
+      layer: h.layer,
+      container,
+      trapped: () => true,
+      flush: fn => pending.push(fn),
+    })
+    cleanups.push(() => scope.dispose())
+    const calls = container.mock.calls.length
+    // 宿主在提交前就卸了：补试不该再向已失效的宿主要容器
+    scope.dispose()
+    ready = true
+    pending.shift()!()
+    expect(container).toHaveBeenCalledTimes(calls)
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  it('flush 补试时容器 getter 抛错：原样从 flush 抛出并回滚资源，后续 rAF 不再补试', async () => {
+    const h = setup()
+    h.outside.focus()
+    let attempts = 0
+    const pending: Array<() => void> = []
+    const remove = vi.spyOn(document, 'removeEventListener')
+    const scope = createFocusScope({
+      config: h.config,
+      layer: h.layer,
+      // 建域那一次容器未就位；宿主提交后再问，宿主自己抛了错
+      container: () => {
+        attempts += 1
+        if (attempts === 1)
+          return null
+        if (attempts === 2)
+          throw new Error('宿主容器解析失败')
+        return h.container
+      },
+      trapped: () => true,
+      flush: fn => pending.push(fn),
+    })
+    cleanups.push(() => scope.dispose())
+    expect(document.querySelectorAll(`[${DATA_FOCUS_GUARD}]`)).not.toHaveLength(0)
+    // 真实错误不被吞掉：从 flush 那一路原样抛出
+    expect(() => pending.shift()!()).toThrow('宿主容器解析失败')
+    // 域随之释放：哨兵、监听器都撤走
+    expect(document.querySelectorAll(`[${DATA_FOCUS_GUARD}]`)).toHaveLength(0)
+    const removedTypes = remove.mock.calls.map(call => call[0])
+    expect(removedTypes).toEqual(expect.arrayContaining(['focusin', 'focusout', 'keydown']))
+    remove.mockRestore()
+    // 排着的 rAF 兜底不再向宿主要容器，也不再抢焦点
+    await frames(3)
+    expect(attempts).toBe(2)
+    expect(document.activeElement).toBe(h.outside)
+    // 重复释放是空操作
+    expect(() => scope.dispose()).not.toThrow()
+  })
+
   it('焦点已经在容器后代里就不再抢', async () => {
     const h = setup()
     h.buttons[1]!.focus()
