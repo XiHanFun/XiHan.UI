@@ -428,12 +428,6 @@
     background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='color-picker'][data-part='eye-dropper-trigger'][data-state='picking']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:disabled {
     color: var(--xh-fg-disabled);
   }
