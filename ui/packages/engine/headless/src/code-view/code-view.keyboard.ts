@@ -16,5 +16,6 @@ export const codeViewKeyboard: KeyboardTable = {
   rows: [
     { id: 'code-view.kbd.pre-focus', keys: ['Tab'], when: '代码块在 Tab 序列中', does: '<pre> 自身可聚焦，随后方向键的横向滚动交给浏览器，组件不接管' },
     { id: 'code-view.kbd.fold', keys: ['Enter', 'Space'], when: '焦点在折叠按钮上', does: '翻面折叠态并发出意图；组件只接 click，按键走原生 button 的默认行为' },
+    { id: 'code-view.kbd.press', keys: ['Enter', 'Space'], when: '按住折叠按钮且代码可折叠', does: '按住期间 fold-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或折叠条收起撤下' },
   ],
 }

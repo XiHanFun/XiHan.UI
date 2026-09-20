@@ -114,29 +114,29 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | 自定义元素 | `<xh-code-view>` |
 | Vue 组件 | `XhCodeViewCode` `XhCodeViewFilename` `XhCodeViewFoldTrigger` `XhCodeViewHeader` `XhCodeViewLangLabel` `XhCodeViewPre` `XhCodeViewRoot` |
 | 组合式函数 | `useCodeView` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `codeViewMachine` |
 | 皮肤 | `@xihan-ui/styles/code-view.css` |
 
 ### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `code` | `string` | 是 |  |
+| `lang` | `string` |  | 围栏语言标注，空白一律落为 plaintext。 |
+| `filename` | `string` |  | 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 |
+| `labelled` | `boolean` |  | 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。 |
+| `complete` | `boolean` |  | 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 |
+| `wrap` | `boolean` |  | 长行自动换行，默认关闭（长行横向滚动）。 |
+| `lineNumbers` | `boolean` |  | 渲染行号槽。 |
+| `startLine` | `number` |  | 首行的行号，默认 1；摘录与 patch 片段需要使用。 |
+| `highlightLines` | `string \| readonly number[]` |  | 要高亮的行号，写为 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 |
 | `clamp` | `number` |  | 超过该行数才视为可折叠。 |
 | `clamped` | `boolean` |  | 折叠态，纯受控：没有 defaultClamped，需要非受控时套用 collapsible。 |
-| `code` | `string` | 是 |  |
-| `complete` | `boolean` |  | 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 |
-| `filename` | `string` |  | 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 |
 | `highlighter` | `HighlighterPort` |  | 着色实现。未提供时为纯文本，提供后也允许返回 null（语言未识别等），同样回退为纯文本。 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。 |
-| `highlightLines` | `string \| readonly number[]` |  | 要高亮的行号，写为 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 |
 | `highlightWhileStreaming` | `boolean` |  | 块尚未闭合时也着色，默认 false。 默认关闭是因为未闭合代码的词法本身不稳定：引号、括号随时会配对， 每到一个 token 整块变一次色，比不着色更差。 |
-| `labelled` | `boolean` |  | 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。 |
-| `lang` | `string` |  | 围栏语言标注，空白一律落为 plaintext。 |
-| `lineNumbers` | `boolean` |  | 渲染行号槽。 |
-| `onClampToggle` | `(details: CodeViewClampToggleDetails) => void` |  | 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `startLine` | `number` |  | 首行的行号，默认 1；摘录与 patch 片段需要使用。 |
 | `translations` | `Partial<CodeViewTranslations>` |  |  |
-| `wrap` | `boolean` |  | 长行自动换行，默认关闭（长行横向滚动）。 |
+| `onClampToggle` | `(details: CodeViewClampToggleDetails) => void` |  | 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 |
 
 ### 事件
 
@@ -162,6 +162,14 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | 部件 | 取值 |
 | --- | --- |
 | `fold-trigger` | 'closed' \| 'open' |
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -199,6 +207,7 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | --- | --- | --- |
 | `Tab` | 代码块在 Tab 序列中 | &lt;pre&gt; 自身可聚焦，随后方向键的横向滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在折叠按钮上 | 翻面折叠态并发出意图；组件只接 click，按键走原生 button 的默认行为 |
+| `Enter` / `Space` | 按住折叠按钮且代码可折叠 | 按住期间 fold-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或折叠条收起撤下 |
 
 ### ARIA
 
@@ -211,7 +220,7 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `line-number` | `aria-hidden` | 'true' |
 | `fold-trigger` | `aria-controls` | `pre` 部件的 id |
 | `fold-trigger` | `aria-expanded` | 'false' \| 'true' |
-| `fold-trigger` | `aria-label` | props.translations?.expand \| props.translations?.collapse |
+| `fold-trigger` | `aria-label` | translations?.expand \| translations?.collapse |
 
 - `pre` 可聚焦并带可访问名称：渲染了文件名时指向它，否则使用 `translations.code`。
 - 折叠按钮带 `aria-expanded` 与 `aria-controls`，指向 `pre`。
@@ -233,14 +242,15 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `root` | `data-complete` | ''（条件成立时才出现） |
 | `root` | `data-digits` | String(Math.min( String(lineNumberAt(lineCount - 1)).… |
 | `root` | `data-foldable` | ''（条件成立时才出现） |
-| `root` | `data-lang` | props.lang?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
+| `root` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `root` | `data-line-numbers` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `pre` | `data-complete` | ''（条件成立时才出现） |
 | `pre` | `data-wrap` | ''（条件成立时才出现） |
-| `code` | `data-lang` | props.lang?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
+| `code` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `code` | `data-wrap` | ''（条件成立时才出现） |
 | `token` | `data-kind` | token.kind |
+| `fold-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `fold-trigger` | `data-state` | 'closed' \| 'open' |
 | `fold-trigger` | `data-xh-action-control` | '' |
 | `fold-trigger` | `data-xh-action-display` | 'always' |

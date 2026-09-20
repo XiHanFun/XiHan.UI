@@ -10,12 +10,14 @@ export { connectCodeView } from './code-view.connect'
 export { createCodeViewHighlighterResource, isCodeViewHighlighterUnavailable } from './code-view.highlighter'
 export type { CodeViewHighlighterLoader, CodeViewHighlighterModule, CodeViewHighlighterResource } from './code-view.highlighter'
 export { codeViewKeyboard } from './code-view.keyboard'
+export { codeViewMachine } from './code-view.machine'
 export { codeViewMeta } from './code-view.meta'
 export {
   CODE_VIEW_FALLBACK_LANG,
   CODE_VIEW_MAX_DIGITS,
   CODE_VIEW_MAX_HIGHLIGHT_LINES,
   countCodeViewLines,
+  isCodeViewFoldable,
   parseLineRanges,
   splitCodeLines,
 } from './code-view.types'
@@ -25,5 +27,6 @@ export type {
   CodeViewClampToggleDetails,
   CodeViewLineProps,
   CodeViewProps,
+  CodeViewSchema,
   CodeViewTranslations,
 } from './code-view.types'

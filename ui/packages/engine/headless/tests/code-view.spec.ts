@@ -1,16 +1,34 @@
 import type { CodeToken, HighlighterPort } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewProps } from '../src/code-view'
-import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 // 直接从组件目录导入，不经包主入口
-import { connectCodeView, parseLineRanges, splitCodeLines } from '../src/code-view'
+import { codeViewMachine, connectCodeView, isCodeViewFoldable, parseLineRanges, splitCodeLines } from '../src/code-view'
 
 type Dict = Record<string, unknown>
 
-function api(props: CodeViewProps): CodeViewApi {
+/** 起一台机器：代码块的机器只承载按压通道，属性仍由 props 决定。 */
+function makeCodeView(initial: CodeViewProps) {
+  const runtime = createVanillaRuntime()
+  const props = runtime.signal<CodeViewProps>(initial)
   const scope = createScope(null, createCounterIdGenerator())
-  return connectCodeView(props, scope, normalizeProps)
+  const service = createService(codeViewMachine, { props: () => props.get(), runtime, scope })
+  runtime.start()
+  return {
+    api: (): CodeViewApi => connectCodeView(service, normalizeProps),
+    setProps: (next: Partial<CodeViewProps>) => props.set({ ...props.get(), ...next }),
+    stop: () => runtime.stop(),
+  }
 }
+
+function api(props: CodeViewProps): CodeViewApi {
+  return makeCodeView(props).api()
+}
+
+/** 按压事件桩：只有 key 与 repeat / isComposing 参与判定。 */
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
 
 /** 把整段代码切成 kind 交替的记号，用来验跨行切分。 */
 function tokensOf(pieces: readonly [string, CodeToken['kind']][]): readonly CodeToken[] {
@@ -218,5 +236,86 @@ describe('折叠', () => {
     const onClampToggle = vi.fn()
     api({ code: 'a\nb\nc', clamp: 2, onClampToggle }).setClamped(false)
     expect(onClampToggle).not.toHaveBeenCalled()
+  })
+})
+
+describe('isCodeViewFoldable', () => {
+  it('正数 clamp 且行数超过它才可折叠；非正数、非有限值与刚好等于都不算', () => {
+    expect(isCodeViewFoldable('a\nb\nc', 2)).toBe(true)
+    expect(isCodeViewFoldable('a\nb', 2)).toBe(false)
+    expect(isCodeViewFoldable('a\nb\nc', 0)).toBe(false)
+    expect(isCodeViewFoldable('a\nb\nc', -1)).toBe(false)
+    expect(isCodeViewFoldable('a\nb\nc', Number.NaN)).toBe(false)
+    expect(isCodeViewFoldable('a\nb\nc', undefined)).toBe(false)
+    // 小数向下取整，与 connect 的 clamp 归一同口径
+    expect(isCodeViewFoldable('a\nb\nc', 2.7)).toBe(true)
+  })
+})
+
+describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；折叠意图不动', () => {
+    const onClampToggle = vi.fn()
+    const h = makeCodeView({ code: 'a\nb\nc', clamp: 2, onClampToggle })
+    const trigger = (): Dict => h.api().getFoldTriggerProps() as Dict
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerCancel', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    expect(onClampToggle).not.toHaveBeenCalled()
+    h.stop()
+  })
+
+  it('按住途中宿主写回折叠态：按钮翻面，按压面不随之丢，keyup 才撤下', () => {
+    const h = makeCodeView({ code: 'a\nb\nc', clamp: 2 })
+    const trigger = (): Dict => h.api().getFoldTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    h.setProps({ clamped: true })
+    expect(trigger()['aria-expanded']).toBe('false')
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key('Enter'))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    h.stop()
+  })
+
+  it('不可折叠时折叠条带 hidden，按住不进；按住途中代码缩短到阈值以内、折叠条收起时自收；再度可折叠后照常', () => {
+    const off = makeCodeView({ code: 'a\nb', clamp: 5 })
+    const offTrigger = (): Dict => off.api().getFoldTriggerProps() as Dict
+    expect(offTrigger().hidden).toBe(true)
+    fire(offTrigger(), 'onKeyDown', key(' '))
+    expect(offTrigger()['data-pressed']).toBeUndefined()
+    fire(offTrigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(offTrigger()['data-pressed']).toBeUndefined()
+    off.stop()
+
+    const h = makeCodeView({ code: 'a\nb\nc', clamp: 2 })
+    const trigger = (): Dict => h.api().getFoldTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    h.setProps({ code: 'a\nb' })
+    expect(trigger().hidden).toBe(true)
+    expect(trigger()['data-pressed']).toBeUndefined()
+    h.setProps({ code: 'a\nb\nc\nd' })
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    // 阈值抬高到行数之上同样收起
+    h.setProps({ clamp: 10 })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    h.stop()
   })
 })

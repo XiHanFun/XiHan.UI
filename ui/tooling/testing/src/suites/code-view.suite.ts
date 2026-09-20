@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { codeViewAnatomy, codeViewKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 出处：可滚动内容须有键盘通路。
 const WCAG = 'https://www.w3.org/WAI/WCAG21/Techniques/general/G202'
@@ -219,6 +220,24 @@ export const codeViewSuite: ConformanceSuite = {
           run: expectKeysNotSwallowed,
         },
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：折叠条投影 data-pressed，抬起、失焦或指针取消撤下；宿主写回折叠态后照常可按',
+      spec: { adr: 'press-channel' },
+      covers: ['code-view.kbd.press'],
+      props: { code: 'a\nb\nc\nd', clamp: 2 },
+      steps: [
+        heldPress('code-view', 'fold-trigger'),
+        { kind: 'setProps', props: { code: 'a\nb\nc\nd', clamp: 2, clamped: true }, expect: { parts: { 'fold-trigger': { 'aria-expanded': 'false', 'data-pressed': null } } } },
+        heldPress('code-view', 'fold-trigger'),
+      ],
+    },
+    {
+      name: '不可折叠时折叠条带 hidden，按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { code: 'a\nb', clamp: 5 },
+      initial: { parts: { 'fold-trigger': { hidden: '' } } },
+      steps: [heldPressIgnored('code-view', 'fold-trigger', '代码没超过阈值，折叠条收起、不可按')],
     },
   ],
 }

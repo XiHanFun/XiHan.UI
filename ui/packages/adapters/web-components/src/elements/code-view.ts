@@ -6,11 +6,12 @@
 // 提供 code view 相关实现。
 
 import type { HighlighterPort, IdGenerator } from '@xihan-ui/core'
-import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewProps, CodeViewTranslations } from '@xihan-ui/headless'
+import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewProps, CodeViewSchema, CodeViewTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { codeViewAnatomy, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
+import { codeViewAnatomy, codeViewMachine, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
 
 const defaultHighlighter = createCodeViewHighlighterResource(() => import('@xihan-ui/code-highlight'))
 
@@ -22,8 +23,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-code-view>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectCodeView 的产出，
- * 接到作者编写的角色节点上，并把逐行结构铺进 code 角色节点。
+ * `<xh-code-view>`：Light-DOM 行为宿主，wire 时计算 connectCodeView 的产出，
+ * 接到作者编写的角色节点上，并把逐行结构铺进 code 角色节点；机器只承载按压通道（fold-trigger 的 data-pressed）。
  *
  * 行是计算得出的派生数据，作者无法编写 N 个节点，因此 code 部件的内容由本元素接管；
  * 其余各处一律不替作者生成节点。复制按钮由 `<xh-clipboard>` 组合提供。
@@ -52,7 +53,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart line-number - 行号槽，皮肤用 attr() 绘制，对读屏隐藏
  * @csspart line-content - 该行的正文与记号
  * @csspart token - 着色生效时的一个记号，承载 data-kind
- * @csspart fold-trigger - 展开或收起，承载 aria-expanded / aria-controls
+ * @csspart fold-trigger - 展开或收起，承载 aria-expanded / aria-controls；Space / Enter 与触屏按住投影 data-pressed
  */
 export class XhCodeViewElement extends XhElement {
   static override partContract = { anatomy: codeViewAnatomy, meta: codeViewMeta }
@@ -97,6 +98,7 @@ export class XhCodeViewElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly codeViewScope = createScope(null, this.idGen)
+  private readonly ctrl = new MachineController<CodeViewSchema>(this, codeViewMachine, () => this.viewProps(), { scope: this.codeViewScope })
 
   /** 上一次铺进 code 部件的那份逐行结构，用来判断要不要重铺。 */
   #painted?: string
@@ -113,12 +115,15 @@ export class XhCodeViewElement extends XhElement {
     super.disconnectedCallback()
   }
 
+  /**
+   * 只读不请求：机器挂载时就会读一遍 props，可选包的加载不能挂在这条读路径上，
+   * 否则作者在连接之后才写下的 highlighter: null 已经晚了一步。请求放在 wire 里。
+   */
   private resolvedHighlighter(): HighlighterPort | undefined {
     if (this.highlighter === null)
       return undefined
     if (this.highlighter !== undefined)
       return this.highlighter
-    defaultHighlighter.request()
     return defaultHighlighter.read() ?? undefined
   }
 
@@ -147,7 +152,10 @@ export class XhCodeViewElement extends XhElement {
   }
 
   protected wire(): void {
-    const api = connectCodeView(this.configured('code-view', this.viewProps()), this.codeViewScope, wcNormalize)
+    // 作者没给着色实现才去请求默认的可选包；模块到达后经 subscribe 重渲一轮
+    if (this.highlighter === undefined)
+      defaultHighlighter.request()
+    const api = connectCodeView(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
