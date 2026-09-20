@@ -342,6 +342,11 @@
     --xh-surface-pad-md: var(--xh-space-3);
     --xh-surface-pad-lg: var(--xh-space-4);
     --xh-surface-action-inset: var(--xh-space-3);
+  }
+
+  /* 材质里跨主题同源的通道：值是指向主题语义的 var() 引用，自定义属性在声明处求值，
+     只写在 :root 上会冻结成根主题的取值；同时挂在每个主题边界上，引用才在该边界自己的主题里解析 */
+  :where(:root), :where([data-theme]) {
     --xh-material-solid-bg: var(--xh-bg-surface);
     --xh-material-solid-backdrop: none;
     --xh-material-solid-border: var(--xh-border-default);
