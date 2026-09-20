@@ -7,6 +7,7 @@
 // info/success 等命令在任意模块作用域可调（推送回调、请求拦截器），
 // 不要求调用点在组件树内。
 import type {
+  NotificationApi,
   NotificationDedupe,
   NotificationOptions,
   NotificationPlacement,
@@ -17,7 +18,7 @@ import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createFeedbackServiceController, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
+import { connectNotification, createFeedbackServiceController, notificationMachine, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
 import { Fragment, useSyncExternalStore } from 'react'
 import {
   XhNotificationItem,
@@ -27,8 +28,9 @@ import {
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from '../components/notification/notification'
-import { useNotification } from '../components/notification/use-notification'
 import { XhConfigProvider } from '../config/config'
+import { reactNormalize } from '../runtime/normalize-props'
+import { createOwnedMachine, useOwnedMachine } from '../runtime/owned-machine'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -155,19 +157,28 @@ export function createNotificationService(options: NotificationServiceOptions = 
   const readTranslations = (): Partial<NotificationTranslations> | undefined =>
     typeof queueProps.translations === 'function' ? queueProps.translations() : queueProps.translations
 
+  // 队列机器归服务持有、建好即 start，端口随即接上：宿主树何时提交不再影响命令能否入队。
+  // 从业务组件的 effect 里懒建本服务时 flushSync 只能排队，宿主要等那轮 effect 跑完才渲，
+  // 机器与端口若跟着宿主的渲染体走，createNotificationService() 之后紧接着那条命令就被当成宿主没挂而丢掉。
+  // props 每次现展开：文案是取值函数时才跟得上运行期切语言
+  const queue = createOwnedMachine(
+    notificationMachine,
+    () => ({ ...queueProps, translations: readTranslations() }),
+    configSource.read,
+  )
+  const queueApi = (): NotificationApi => connectNotification(queue.service, reactNormalize)
+  controller.attach({
+    create: opts => queueApi().create(opts),
+    update: (id, opts) => queueApi().update(id, opts),
+    dismiss: id => queueApi().dismiss(id),
+    dismissAll: () => queueApi().dismissAll(),
+  })
+
   function Host(): ReactNode {
     useSyncExternalStore(subscribe, () => version, () => version)
-    // props 每帧现展开：文案是取值函数时才跟得上运行期切语言
-    const inner = useNotification({ ...queueProps, translations: readTranslations() })
-    controller.attach({
-      create: opts => inner.create(opts),
-      update: (id, opts) => inner.update(id, opts),
-      dismiss: id => inner.dismiss(id),
-      dismissAll: () => inner.dismissAll(),
-    })
     // 部件不经上下文取队列：本服务自己收 status-change 把走完退场的那条删掉，
     // 卡片与队列之间因此没有第二条隐式链路
-    const api = inner.api
+    const api = connectNotification(useOwnedMachine(queue), reactNormalize)
     controller.syncItems(api.visibleNotifications.map(item => item.id))
     return (
       <XhConfigProvider config={configSource.read()}>
@@ -194,8 +205,10 @@ export function createNotificationService(options: NotificationServiceOptions = 
   }
 
   const root: Root | null = mountServiceHost(holder, <Host />, 'notification')
-  if (!root)
+  if (!root) {
     controller.attach(null)
+    queue.dispose()
+  }
   const stopConfig = configSource.subscribe(notify)
 
   /** 入队一条；回调另存一张表，队列记录中只保留文案。 */
@@ -224,6 +237,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
       stopConfig()
       root?.unmount()
       controller.dispose()
+      queue.dispose()
       if (!target)
         holder.remove()
     },
