@@ -1,5 +1,6 @@
 import type { Anatomy } from '@xihan-ui/core'
 import type { AdapterHarness, ModifierKey, PartRef, SettleCondition, Step } from './types'
+import { moveFocusInTabSequence } from './tab-sequence'
 
 export interface ApplyContext {
   readonly harness: AdapterHarness
@@ -51,12 +52,28 @@ function keyInit(key: string, mods?: readonly ModifierKey[], composing?: boolean
   return composing ? { ...init, isComposing: true, keyCode: 229 } : init
 }
 
-function dispatchKey(target: EventTarget, key: string, mods?: readonly ModifierKey[], composing?: boolean): void {
+/**
+ * 派一次按键：keydown、平台默认动作、keyup。
+ *
+ * 合成事件没有浏览器的默认动作，Tab 的那一条（焦点按文档 Tab 序移动）这里补上：keydown 没被
+ * preventDefault 时，从按下那一刻的焦点元素起找下一个（Shift 反向为上一个）可 tab 元素，
+ * 越界到 body。浏览器在监听器返回后先过微任务检查点再做默认动作，框架把 DOM 提交排在
+ * 微任务上，所以先等宿主把这一轮提交完再数——Tab 序数的是处理器改完之后的文档。keyup 派给
+ * 此刻持有焦点的元素，与浏览器一致。组合期间（keyCode 229）输入法吃掉了这一下，既无默认动作
+ * 也不派 keyup。
+ */
+async function dispatchKey(ctx: ApplyContext, target: EventTarget, key: string, mods?: readonly ModifierKey[], composing?: boolean): Promise<void> {
   const init = keyInit(key, mods, composing)
-  target.dispatchEvent(new KeyboardEvent('keydown', init))
-  // 组合期间浏览器不派 keyup，照实模拟
-  if (!composing)
-    target.dispatchEvent(new KeyboardEvent('keyup', init))
+  const from = ctx.doc.activeElement ?? ctx.doc.body
+  const proceed = target.dispatchEvent(new KeyboardEvent('keydown', init))
+  if (composing)
+    return
+  if (key === 'Tab' && proceed) {
+    await ctx.harness.flush()
+    moveFocusInTabSequence(ctx.doc, from, init.shiftKey === true)
+  }
+  const up = key === 'Tab' ? ctx.doc.activeElement ?? ctx.doc.body : target
+  up.dispatchEvent(new KeyboardEvent('keyup', init))
 }
 
 function checkSettle(ctx: ApplyContext, cond: SettleCondition): boolean {
@@ -153,12 +170,12 @@ export async function applyStep(ctx: ApplyContext, step: Step): Promise<void> {
     // 每一下都重新取当下持有焦点的元素
     case 'key': {
       for (let i = 0; i < (step.repeat ?? 1); i++)
-        dispatchKey(ctx.doc.activeElement ?? ctx.doc.body, step.key, step.modifiers, step.composing)
+        await dispatchKey(ctx, ctx.doc.activeElement ?? ctx.doc.body, step.key, step.modifiers, step.composing)
       break
     }
     case 'type': {
       for (const ch of step.text)
-        dispatchKey(ctx.doc.activeElement ?? ctx.doc.body, ch)
+        await dispatchKey(ctx, ctx.doc.activeElement ?? ctx.doc.body, ch)
       break
     }
     case 'focus': {
@@ -179,7 +196,7 @@ export async function applyStep(ctx: ApplyContext, step: Step): Promise<void> {
         body.focus?.()
       }
       else {
-        dispatchKey(body, step.key ?? 'Escape')
+        await dispatchKey(ctx, body, step.key ?? 'Escape')
       }
       break
     }

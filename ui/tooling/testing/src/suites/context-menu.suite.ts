@@ -632,13 +632,14 @@ export const contextMenuSuite: ConformanceSuite = {
             events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }],
           },
         },
+        // Tab 的默认动作把焦点按文档序带出浮层：夹具里浮层之后没有别的停靠点，落到 body
         {
           kind: 'raw',
-          why: '焦点归还排在焦点域拆除后的下一帧；等过这两帧才证得了 Tab 关闭没把焦点抢回触发区',
+          why: '焦点归还排在焦点域拆除后的下一帧；等过这两帧焦点仍在 body 才证得了 Tab 关闭没把焦点抢回触发区',
           run: () => new Promise<void>((resolve) => {
             requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
           }),
-          expect: { activeElement: { part: 'item[0]', exact: true }, events: [] },
+          expect: { activeElement: null, parts: { content: { hidden: '' } }, events: [] },
         },
       ],
     },
