@@ -12,12 +12,17 @@ const TRIGGER = '[data-scope="message-feed"][data-part="scroll-to-end-trigger"]'
 const SCROLL_HEIGHT = 1000
 const CLIENT_HEIGHT = 200
 
-/** 伪造视口的滚动几何与 scrollTo，把滚动位置放在离底很远处并派发 scroll；jsdom 无布局，粘底状态只能这样驱动。 */
+/**
+ * 伪造视口的滚动几何与 scrollTo，先落到底再上滚到离底很远处，各派一次 scroll；jsdom 无布局，粘底状态只能这样驱动。
+ * 必须真的上滚一次（scrollTop 变小）：粘底原语只把「scrollTop 变小」认作用户上滚、解除粘附意图；
+ * 直接把位置摆在离底处，意图仍是粘底，Chromium 首次排版后的 ResizeObserver 回调会照意图把视口
+ * 写回底部、按钮随即收起（jsdom 没有 ResizeObserver，看不见这一拍）。
+ */
 function scrollAwayFromBottom({ doc }: RawStepContext): void {
   const el = doc.querySelector<HTMLElement>(VIEWPORT)
   if (!el)
     throw new Error('找不到 message-feed 的 viewport 部件')
-  let scrollTop = 0
+  let scrollTop = SCROLL_HEIGHT - CLIENT_HEIGHT
   Object.defineProperty(el, 'scrollHeight', { configurable: true, get: () => SCROLL_HEIGHT })
   Object.defineProperty(el, 'clientHeight', { configurable: true, get: () => CLIENT_HEIGHT })
   Object.defineProperty(el, 'scrollTop', {
@@ -33,7 +38,9 @@ function scrollAwayFromBottom({ doc }: RawStepContext): void {
       scrollTop = Math.min(options.top, SCROLL_HEIGHT - CLIENT_HEIGHT)
     },
   })
-  // 粘底原语只在 scroll 回调里读几何，改完须派发事件
+  // 粘底原语只在 scroll 回调里读几何，改完须派发事件：先认下「在底」，再上滚离开
+  el.dispatchEvent(new Event('scroll'))
+  scrollTop = 0
   el.dispatchEvent(new Event('scroll'))
 }
 
