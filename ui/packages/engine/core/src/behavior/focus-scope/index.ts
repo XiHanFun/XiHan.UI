@@ -40,6 +40,16 @@ export interface FocusScopeOptions {
    * 契约里承诺焦点归还触发器的层，把触发器显式交到这里。
    */
   restoreTarget?: () => FocusableElement | null
+  /**
+   * 等宿主把容器提交到 DOM 的排期，取机器的 flush。
+   *
+   * 各家「渲染」与「机器效应」的先后不同：Vue / React 先渲染出带 tabindex 的部件再跑效应，
+   * 建域那一刻同步聚焦即落定；行为宿主（Web Components）先把机器 mount 起来才有属性可写，
+   * 建域时容器还没接线、initialFocus 也还是 null，同步那一次落不上。给了它就在宿主提交
+   * 之后先补试一次，不等到下一帧——挂载帧里焦点落点因此与先渲染后跑效应的框架一致。
+   * 逐帧 rAF 重试仍在，作为容器更晚就位时的兜底。
+   */
+  flush?: (fn: () => void) => void
 }
 
 interface FocusScopeDocumentState {
@@ -296,19 +306,22 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
       focusSettled = true
     }
   }
+  function retryMountFocus(lastChance: boolean): void {
+    if (focusSettled || disposed)
+      return
+    try {
+      tryMountFocus(lastChance)
+    }
+    catch (error) {
+      disposed = true
+      releaseResources()
+      throw error
+    }
+  }
   function scheduleFocus(remaining: number): void {
     win.requestAnimationFrame(() => {
-      if (focusSettled || disposed)
-        return
-      try {
-        tryMountFocus(remaining <= 1)
-      }
-      catch (error) {
-        disposed = true
-        releaseResources()
-        throw error
-      }
-      if (!focusSettled && remaining > 1)
+      retryMountFocus(remaining <= 1)
+      if (!focusSettled && !disposed && remaining > 1)
         scheduleFocus(remaining - 1)
     })
   }
@@ -549,8 +562,11 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
         schedulePendingRecovery()
     })
     tryMountFocus(false)
-    if (!focusSettled)
+    if (!focusSettled) {
+      // 宿主提交 DOM 后先补试一次，逐帧 rAF 仍作兜底
+      o.flush?.(() => retryMountFocus(false))
       scheduleFocus(3)
+    }
   }
   catch (error) {
     disposed = true

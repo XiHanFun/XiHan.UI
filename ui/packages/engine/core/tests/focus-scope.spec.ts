@@ -165,6 +165,51 @@ describe('挂载自动聚焦', () => {
     expect(document.activeElement).toBe(h.buttons[0])
   })
 
+  it('给了 flush：宿主提交 DOM 后立刻补试一次，不等下一帧；rAF 仍作兜底', async () => {
+    const h = setup()
+    // 行为宿主的形态：建域那一刻容器还没接线，initialFocus 要等宿主提交后才有落点
+    let ready = false
+    const pending: Array<() => void> = []
+    const scope = createFocusScope({
+      config: h.config,
+      layer: h.layer,
+      container: () => (ready ? h.container : null),
+      trapped: () => true,
+      initialFocus: () => (ready ? h.buttons[1]! : null),
+      flush: fn => pending.push(fn),
+    })
+    cleanups.push(() => scope.dispose())
+    expect(document.activeElement).toBe(document.body)
+    expect(pending).toHaveLength(1)
+    // 宿主提交：同一拍里焦点就位，没有经过任何一帧
+    ready = true
+    pending.shift()!()
+    expect(document.activeElement).toBe(h.buttons[1])
+    // 之后的 rAF 重试不再改动焦点
+    h.buttons[2]!.focus()
+    await frames(3)
+    expect(document.activeElement).toBe(h.buttons[2])
+  })
+
+  it('给了 flush 但宿主提交时容器仍没就位：留给 rAF 兜底', async () => {
+    const h = setup()
+    let ready = false
+    const pending: Array<() => void> = []
+    const scope = createFocusScope({
+      config: h.config,
+      layer: h.layer,
+      container: () => (ready ? h.container : null),
+      trapped: () => true,
+      flush: fn => pending.push(fn),
+    })
+    cleanups.push(() => scope.dispose())
+    pending.shift()!()
+    expect(document.activeElement).toBe(document.body)
+    ready = true
+    await frames(3)
+    expect(document.activeElement).toBe(h.buttons[0])
+  })
+
   it('焦点已经在容器后代里就不再抢', async () => {
     const h = setup()
     h.buttons[1]!.focus()
