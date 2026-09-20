@@ -446,7 +446,7 @@ export const cascaderMachine = createMachine({
       }),
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
-      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+      trackLayer: ({ refs, context, send, flush, scope, state, track, prop }) => {
         let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
           presence: refs.get('presence'),
@@ -484,6 +484,10 @@ export const cascaderMachine = createMachine({
                 // 本轮该有锚点却还没挑出来：返回 null 让焦点域重试，别滑到列上定死
                 if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
                   return null
+                // 一个条目都没有：根列让位给占位面（皮肤把它 display:none，浏览器不让它接住 focus()），
+                // Tab 位由 content 兜底（见 getContentProps），焦点也直接落到它身上，不等焦点域逐帧重试到最后一帧
+                if ((prop('collection') ?? []).length === 0)
+                  return content
                 // 确实不该有锚点（指针打开且无选中值）：焦点落到根列，它是 role=listbox 且认领着 Tab 位
                 return content.querySelector<HTMLElement>(`${cascaderAnatomy.build().column.selector}[data-level='0']`)
               },
