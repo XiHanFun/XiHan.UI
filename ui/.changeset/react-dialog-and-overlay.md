@@ -1,6 +1,5 @@
 ---
 "@xihan-ui/react": minor
-"@xihan-ui/testing": patch
 ---
 
 **React 侧铺上第二个组件 `dialog`，浮层族的接线模板随之定形。**

@@ -2,7 +2,6 @@
 '@xihan-ui/core': minor
 '@xihan-ui/headless': major
 '@xihan-ui/styles': patch
-'@xihan-ui/testing': minor
 '@xihan-ui/vue': minor
 '@xihan-ui/react': minor
 '@xihan-ui/web-components': minor
