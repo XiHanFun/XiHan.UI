@@ -553,6 +553,67 @@ describe('menubar roving tabindex', () => {
   })
 })
 
+/**
+ * 浮层在三个适配器里都被搬去了 portal 落点：条目的 focusout 走 DOM 树到不了 root，
+ * 「焦点离开整条菜单栏即收起」得由 content 自己上报。这里把 positioner 真的搬出 root 来验。
+ */
+describe('menubar 浮层里的离场', () => {
+  function mountPortaled(initial: Partial<Props> = {}): Harness {
+    const c = mount(initial)
+    for (const menu of MENUS)
+      document.body.appendChild(c.positioner(menu.value))
+    return c
+  }
+
+  it('浮层条目失焦到 body（Alt+Tab / 程序化 blur，relatedTarget 为 null）：整条收起、锚点清空、不夺回焦点', () => {
+    const c = mountPortaled()
+    c.trigger('file').focus()
+    press(c.trigger('file'), 'ArrowDown')
+    c.item('file', 'new').focus()
+    expect(c.root.contains(c.item('file', 'new'))).toBe(false)
+    c.item('file', 'new').blur()
+    expect(c.value()).toBeNull()
+    expect(c.api().focusedValue).toBeNull()
+    expect(c.root.getAttribute('tabindex')).toBe('0')
+    expect(c.valueChanges).toEqual([{ value: 'file' }, { value: null }])
+    expect(focused()).toBeNull()
+  })
+
+  it('浮层条目失焦落到相邻 trigger 或同张菜单的别的条目：还在菜单栏里，不算离场', () => {
+    const c = mountPortaled({ defaultValue: 'file' })
+    c.item('file', 'new').focus()
+    // 落到相邻 trigger 是换张，不是收起
+    c.trigger('edit').focus()
+    expect(c.value()).toBe('edit')
+    c.item('edit', 'cut').focus()
+    c.item('edit', 'copy').focus()
+    expect(c.value()).toBe('edit')
+    expect(c.api().focusedItem).toBe('copy')
+    expect(c.valueChanges).toEqual([{ value: 'edit' }])
+  })
+
+  it('浮层条目失焦落到菜单栏外的可聚焦节点：同样收起', () => {
+    const c = mountPortaled({ defaultValue: 'file' })
+    c.item('file', 'new').focus()
+    c.outside.focus()
+    expect(c.value()).toBeNull()
+    expect(focused()).toBeNull()
+    expect(document.activeElement).toBe(c.outside)
+  })
+
+  it('浮层留在原地没搬走：条目的 focusout 同时经过 content 与 root，同一次离场只上报一次', () => {
+    // 受控且宿主不写回：每一次 MENUBAR.BLUR 都会再发一条 value-change，报两回就是两条
+    const c = mount({ value: 'file' })
+    c.item('file', 'new').focus()
+    c.item('file', 'new').blur()
+    expect(c.valueChanges).toEqual([{ value: null }])
+    // trigger 自己的离场仍由 root 上报
+    c.trigger('file').focus()
+    c.trigger('file').blur()
+    expect(c.valueChanges).toEqual([{ value: null }, { value: null }])
+  })
+})
+
 describe('menubar trigger 键盘', () => {
   it('左右键在 trigger 之间走，尽头回绕', () => {
     const c = mount()

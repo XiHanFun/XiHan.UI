@@ -139,6 +139,25 @@ export function connectMenubar<T extends PropTypes>(
     return withinControlled(root, node, 0) || withinControlled(floating, node, 0)
   }
 
+  /**
+   * 焦点从 owns 认下的节点离开：落点还在这套菜单栏里（trigger 之间、走进浮层、走进子菜单）就不算离场，
+   * 否则整条收起。relatedTarget 为 null 按 DOM 语义就是「去了看不见的地方」——落到 body、进了 iframe、
+   * 窗口失活（Alt+Tab）——一律算离场，不做区分。
+   *
+   * 一次离场只由一个部件上报：浮层被搬去了落点，条目的 focusout 走 DOM 树到不了 root，由所在那张 content
+   * 自己接；root 只接自己子树里、且不在任何一张 content 里的节点。判据只看 event.target 在 DOM 里的归属，
+   * 不依赖事件走的是哪条传播路径——React 的合成 focusout 会沿组件树穿过 Portal 把浮层里的离场也送到 root，
+   * 按这条判据 root 认不下它，同一次离场不会报两回（受控宿主只该收到一条 value-change）。
+   */
+  const leaveIfOutside = (event: FocusEvent, owns: (target: Element) => boolean): void => {
+    const target = event.target as Element | null
+    if (!target || !owns(target))
+      return
+    if (withinMenubar(refs.get('getRootEl')(), event.relatedTarget as Node | null))
+      return
+    send({ type: 'MENUBAR.BLUR' })
+  }
+
   /** 在 trigger 之间走一步并聚焦落点，禁用项跳过但仍可作起点。 */
   const focusTrigger = (from: string | null, intent: NavIntent): void => {
     const target = navigateItems(queryItems(refs.get('getRootEl')(), menubarTriggerQuery), from, intent, { loop })
@@ -234,12 +253,11 @@ export function connectMenubar<T extends PropTypes>(
           ?? navigateItems(triggers, null, 'first', { loop })
         focusItem(target)
       },
+      // 焦点在菜单栏内部换落点不算离场，走进浮层也算内部。浮层留在原地没搬走时条目的 focusout 也冒泡到这里，
+      // 那一程归它自己那张 content 上报，root 不重复认领
       'onFocusOut': (event: FocusEvent) => {
         const root = event.currentTarget as HTMLElement
-        // 焦点在菜单栏内部换落点不算离场，走进浮层也算内部
-        if (withinMenubar(root, event.relatedTarget as Node | null))
-          return
-        send({ type: 'MENUBAR.BLUR' })
+        leaveIfOutside(event, target => contains(root, target) && !target.closest(parts.content.selector))
       },
     }),
 
@@ -377,6 +395,12 @@ export function connectMenubar<T extends PropTypes>(
         'aria-hidden': !isOpen || undefined,
         // 收起时留在 DOM 只隐藏；交接中的那张先不藏，等新菜单落位同帧换掉
         'hidden': (!isOpen && !holding) || undefined,
+        // 浮层搬去了落点，条目的 focusout 走 DOM 树到不了 root：焦点从这张菜单离开整条菜单栏，由它替 root 判。
+        // 只认自己子树里的节点：子菜单的浮层另有落点，它的离场归子层的 menu 机器
+        'onFocusOut': (event: FocusEvent) => {
+          const content = event.currentTarget as HTMLElement
+          leaveIfOutside(event, target => contains(content, target))
+        },
         'onKeyDown': (event: KeyboardEvent) => {
           // 子菜单已经处理掉的键不再由本层接管：子层的收回键与 Escape 都会冒泡上来
           if (event.defaultPrevented)

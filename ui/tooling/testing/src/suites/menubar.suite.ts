@@ -842,11 +842,41 @@ export const menubarSuite: ConformanceSuite = {
       // 宿主不写回就仍开着，按住的中间帧才看得见
       props: { value: 'file' },
       // 条目按 value 指定展开着那张菜单里的：WC 只把展开的浮层搬到落点，文档序里第一条不一定是它的。
-      // 失焦落回本张菜单的 trigger：条目落到 body 时 React 的合成 focusout 会穿过 Portal 叫起根的
-      // MENUBAR.BLUR，Vue / WC 的 DOM 路径不会，对拍在这一步分叉
+      // 条目按住途中失焦落到 body 是离开整条菜单栏，三家都发一条收起意图；受控不写回，条目仍在场给触屏那一路按
+      steps: [heldPress('menubar', 'trigger'), heldPress('menubar', 'item', { value: 'new' })],
+    },
+    {
+      name: '浮层条目失焦到 body：焦点离开整条菜单栏即收起，锚点清空、root 重新认领 Tab 位、不夺回焦点',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { defaultValue: 'file' },
       steps: [
-        heldPress('menubar', 'trigger'),
-        heldPress('menubar', 'item', { value: 'new', blurTo: '[data-scope="menubar"][data-part="trigger"][data-value="file"]' }),
+        // 先让 trigger 认领 Tab 位，离场后才看得出锚点被清、Tab 位交回 root
+        { kind: 'focus', part: 'trigger[0]', expect: { parts: { 'root': { tabindex: '-1' }, 'trigger[0]': { tabindex: '0' } } } },
+        {
+          kind: 'raw',
+          why: '条目按 value 找：WC 只把展开的浮层搬到落点，文档序里第一条不一定是它的',
+          run: async ({ doc, flush }) => {
+            const item = doc.querySelector<HTMLElement>('[data-scope="menubar"][data-part="item"][data-value="new"]')
+            if (!item)
+              throw new Error('找不到 file 菜单里的 new 条目')
+            item.focus()
+            await flush()
+          },
+          expect: { parts: { 'trigger[0]': { 'aria-expanded': 'true', 'tabindex': '0' } }, events: [] },
+        },
+        // 浮层被搬去了落点，条目的 focusout 走 DOM 树到不了 root；Alt+Tab、程序化 blur 与进 iframe 都是这一路
+        // （relatedTarget 为 null）。收起由 content 自己上报，三家走同一条路
+        {
+          kind: 'blur',
+          expect: {
+            parts: {
+              'root': { tabindex: '0' },
+              'trigger[0]': { 'aria-expanded': 'false', 'tabindex': '-1' },
+              'content[0]': { hidden: '' },
+            },
+            events: [{ type: 'value-change', detail: { value: null } }],
+          },
+        },
       ],
     },
     {
