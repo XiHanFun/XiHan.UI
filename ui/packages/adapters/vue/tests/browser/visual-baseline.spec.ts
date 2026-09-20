@@ -431,6 +431,33 @@ async function mount(component: string, axes: Axes): Promise<HTMLElement> {
   return stage
 }
 
+/** 拆掉当前这一格：应用、舞台、portal 里的浮层与三条轴一起清。 */
+function unmount(): void {
+  app?.unmount()
+  app = null
+  stage?.remove()
+  stage = null
+  // portal 落点是全文档共用的一个节点，不清空的话上一格的浮层会留在下一格的画面里
+  document.getElementById(PORTAL_ROOT_ID)?.replaceChildren()
+  clearAxes()
+}
+
+/**
+ * 预热：正式截图前先把同一格挂上、等静止、再拆掉。
+ *
+ * 消掉的变量是栅格化历史。容器里观察到的事实：同一页里「首次挂载」与「紧接着再挂一次」，
+ * dialog 的 light-compact / dark-compact 两格面板右下角圆弧上有 6 个抗锯齿像素栅格化结果不同
+ * （差 ≤ 4/255），两种结果各自稳定、都能反复复现，与皮肤、令牌和任何一次提交无关；
+ * 不预热时落在哪一态取决于前一格留下的历史（8 轮校验里 light 8/8 落后者、dark 6/8 落前者）。
+ * 预热把每一格钉在「紧接着再挂一次」那一态：三轮全量复核，其余 38 格两态逐字节相同、不受影响。
+ * 拆掉之后等一拍，让上一棵树先从画面里撤干净，再挂正式那一份。
+ */
+async function warmUp(component: string, axes: Axes): Promise<void> {
+  await mount(component, axes)
+  unmount()
+  await raf()
+}
+
 beforeAll(async () => {
   installStage()
   assertBaselineFontInstalled()
@@ -442,15 +469,7 @@ beforeAll(async () => {
     await userEvent.hover(park)
 })
 
-afterEach(() => {
-  app?.unmount()
-  app = null
-  stage?.remove()
-  stage = null
-  // portal 落点是全文档共用的一个节点，不清空的话上一格的浮层会留在下一格的画面里
-  document.getElementById(PORTAL_ROOT_ID)?.replaceChildren()
-  clearAxes()
-})
+afterEach(unmount)
 
 describe('像素基线', () => {
   for (const component of Object.keys(FIXTURES)) {
@@ -458,6 +477,7 @@ describe('像素基线', () => {
       // 用例名就是基线文件名的主干：`__screenshots__/visual-baseline.spec.ts/<用例名>-chromium-<平台>.png`
       const name = `${component}-${combo}`
       it(name, async () => {
+        await warmUp(component, axes)
         const target = await mount(component, axes)
         // 截图前 Playwright 自己也会把有限次动画快进到末帧，而 timeout 内它会连拍到
         // 两张一致为止。两道都是兜底：画面该在 mount() 返回时就已经静止了，
