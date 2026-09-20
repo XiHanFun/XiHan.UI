@@ -443,6 +443,17 @@ export class XhCascaderElement extends XhPortalHostElement {
     return el
   }
 
+  /**
+   * 表单出口的落点：出口住在 root 里（与 Vue / React 相同），插在 positioner（或它搬迁期间的
+   * 占位节点）所在的那个 root 直系子节点之前。positioner 缺席或不在 root 里时为 null，出口退到 root 末尾。
+   */
+  private hiddenInputAnchor(parent: HTMLElement): ChildNode | null {
+    let node: Node | null = this.portal.home()
+    while (node && node.parentNode !== parent)
+      node = node.parentNode
+    return node as ChildNode | null
+  }
+
   protected wire(): void {
     const api = connectCascader(this.ctrl.service, wcNormalize)
 
@@ -452,12 +463,27 @@ export class XhCascaderElement extends XhPortalHostElement {
       this.spreader.release(input)
       input.remove()
     }
+    // 出口连成一段住在 root 里、排在 positioner 的作者位置之前，文档序与 Vue / React 一致：那两端把
+    // 出口渲在根末尾、浮层经 Portal 搬到落点，出口始终在浮层前面；Light DOM 的浮层收起时回到作者
+    // 原位，出口若追加在末尾就排到了它后面。搬迁中以租约留在原位的占位节点为落点。
+    const parent = this.getPart('root') ?? this
+    const anchor = this.hiddenInputAnchor(parent)
     for (let index = 0; index < api.value.length; index++) {
       const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
       this.formInputs[index] = input
       this.spreader.spread(input, api.getHiddenInputProps({ path: api.value[index]! }) as Record<string, unknown>)
-      if (input.parentElement !== this)
-        this.append(input)
+      const previous = this.formInputs[index - 1]
+      if (previous) {
+        if (previous.nextSibling !== input)
+          previous.after(input)
+      }
+      else if (anchor) {
+        if (input.nextSibling !== anchor)
+          anchor.before(input)
+      }
+      else if (input.parentElement !== parent) {
+        parent.append(input)
+      }
     }
 
     const put = (name: string, props: Record<string, unknown>): void => {

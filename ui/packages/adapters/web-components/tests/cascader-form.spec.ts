@@ -103,6 +103,53 @@ describe('web Components 级联结构化表单', () => {
     expect(view.values()).toEqual([JSON.stringify(paths[1])])
   })
 
+  it('出口住在 root 里、排在 positioner 之前；浮层搬走期间新增的出口收起后仍在它前面', async () => {
+    const element = document.createElement('xh-cascader') as XhCascaderElement
+    Object.assign(element, {
+      name: 'paths',
+      multiple: true,
+      defaultValue: [paths[0]],
+      collection: [
+        { value: '华东', label: '华东', children: [{ value: 'a,b', label: 'a,b' }] },
+        { value: 'a', label: 'a', children: [{ value: 'b,c', label: 'b,c' }] },
+      ],
+    })
+    element.innerHTML = `
+      <div data-xh-part="root">
+        <div data-xh-part="control"><button data-xh-part="trigger">选择</button></div>
+        <div data-xh-part="positioner"><div data-xh-part="content">
+          <div data-xh-part="column" level="0">
+            <div data-xh-part="item" value="华东">华东</div>
+            <div data-xh-part="item" value="a">a</div>
+          </div>
+          <div data-xh-part="column" level="1">
+            <div data-xh-part="item" value="a,b">a,b</div>
+            <div data-xh-part="item" value="b,c">b,c</div>
+          </div>
+        </div></div>
+      </div>`
+    document.body.append(element)
+    await tick()
+    const root = element.querySelector('[data-part="root"]')!
+    const inputs = () => [...element.querySelectorAll<HTMLElement>('[data-part="hidden-input"]')]
+    const positioner = () => element.querySelector('[data-part="positioner"]')
+    // Vue / React 把出口渲在根末尾、浮层经 Portal 搬走：文档序里出口始终在浮层前
+    expect(inputs().map(input => input.parentElement)).toEqual([root])
+    expect(inputs()[0]!.compareDocumentPosition(positioner()!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+
+    element.open = true
+    await tick()
+    expect(positioner()).toBeNull() // 已搬到落点
+    element.value = [paths[0]!, ['a', 'b,c']]
+    await tick()
+    element.open = false
+    await tick()
+    expect(inputs()).toHaveLength(2)
+    expect(inputs().map(input => input.parentElement)).toEqual([root, root])
+    expect(inputs()[0]!.nextSibling).toBe(inputs()[1])
+    expect(inputs()[1]!.compareDocumentPosition(positioner()!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
   it('断连清理自动字段，重连不重复提交路径', async () => {
     const view = await mount({ multiple: true, defaultValue: paths })
     view.element.remove()
