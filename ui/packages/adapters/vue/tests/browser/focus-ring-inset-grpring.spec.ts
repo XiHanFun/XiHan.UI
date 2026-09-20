@@ -114,7 +114,8 @@ describe('聚焦环画在元素自己那一圈', () => {
     expect(Number.parseFloat(s.outlineOffset) + Number.parseFloat(s.outlineWidth)).toBe(0)
   })
 
-  // 输入类的框自己不接焦点，环由 :focus-within 画在框上，焦点落在框里那个部件上
+  // 输入类的框自己不接焦点，环由 :focus-within 画在框上，焦点落在框里那个部件上；
+  // 框与连接层投影一致带上 Field Chrome 家族标记，focus-within 起环那条规则认的是家族角色
   const wrapped: [name: string, scope: string, inner: string, tag: string][] = [
     ['text-field', 'text-field', 'input', 'input'],
     ['number-field', 'number-field', 'input', 'input'],
@@ -127,7 +128,7 @@ describe('聚焦环画在元素自己那一圈', () => {
     host = document.createElement('div')
     host.innerHTML = `
       <div data-scope="${scope}" data-part="root">
-        <div data-scope="${scope}" data-part="control">
+        <div data-scope="${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md">
           <${tag} data-scope="${scope}" data-part="${inner}"></${tag}>
         </div>
       </div>`
