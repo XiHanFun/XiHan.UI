@@ -64,6 +64,22 @@ export async function recordTrace(
   c: ConformanceCase,
 ): Promise<DomSnapshot[]> {
   const tree = c.fixture ? c.fixture(suite.fixture) : suite.fixture
+  // 环境改造先于挂载：机器在挂载那一刻探测环境能力；挂不上也要复原
+  const restoreEnvironment = c.environment?.(window)
+  try {
+    return await recordMountedTrace(harness, suite, c, tree)
+  }
+  finally {
+    restoreEnvironment?.()
+  }
+}
+
+async function recordMountedTrace(
+  harness: AdapterHarness,
+  suite: ConformanceSuite,
+  c: ConformanceCase,
+  tree: ConformanceSuite['fixture'],
+): Promise<DomSnapshot[]> {
   const { root } = await harness.mount({
     component: suite.component,
     props: { ...suite.defaultProps, ...c.props },
