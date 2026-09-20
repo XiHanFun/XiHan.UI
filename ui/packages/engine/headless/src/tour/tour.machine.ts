@@ -390,6 +390,7 @@ export const tourMachine = createMachine({
           const focus = createFocusScope({
             config,
             layer,
+            flush,
             // 每次读最新 ref，容器晚一拍就位也能命中
             container: () => getContentEl(),
             // 退场内容已经 inert，保留焦点域的归还资格但不再把焦点拉回去。

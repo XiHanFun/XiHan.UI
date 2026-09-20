@@ -155,6 +155,7 @@ export const dialogMachine = createMachine({
           const focus = createFocusScope({
             config,
             layer,
+            flush,
             container: getContentEl,
             // 退出内容已经 inert，保留焦点域归还资格但不向失活内容反复拉焦点。
             trapped: () => (prop('modal') ?? true) && state.get() === 'open',

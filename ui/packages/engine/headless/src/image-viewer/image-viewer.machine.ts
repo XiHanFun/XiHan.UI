@@ -384,6 +384,7 @@ export const imageViewerMachine = createMachine({
           const focus = createFocusScope({
             config,
             layer,
+            flush,
             container: getContentEl,
             trapped: () => state.get() === 'open',
             loop: true,

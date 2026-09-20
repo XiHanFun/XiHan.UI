@@ -313,6 +313,7 @@ export const commandMachine = createMachine({
               const focus = createFocusScope({
                 config,
                 layer,
+                flush,
                 container: getContentEl,
                 trapped: () => state.get() === 'open' && (prop('modal') ?? true),
                 loop: () => state.get() === 'open' && (prop('modal') ?? true),

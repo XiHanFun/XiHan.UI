@@ -199,6 +199,7 @@ export const popoverMachine = createMachine({
           const focus = createFocusScope({
             config,
             layer,
+            flush,
             // 每次读最新 ref，容器晚一拍就位也能命中
             container: () => refs.get('getContentEl')(),
             // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭

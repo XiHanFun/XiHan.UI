@@ -461,6 +461,7 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
       const focus = createFocusScope({
         config,
         layer,
+        flush: o.flush,
         container: spec.container,
         trapped: spec.trapped ?? (() => false),
         loop: spec.loop ?? false,
