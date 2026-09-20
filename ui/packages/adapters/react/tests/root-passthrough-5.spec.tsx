@@ -80,9 +80,9 @@ const CASES: RootCase[] = [
   {
     name: 'toast',
     Root: XhToastRoot as ComponentType<Record<string, unknown>>,
-    schemaProps: { duration: 5000, type: 'info' },
+    schemaProps: { duration: 5000, tone: 'info' },
     token: '--xh-toast-bg',
-    leakAttrs: ['duration', 'type'],
+    leakAttrs: ['duration', 'tone'],
   },
   {
     name: 'toggle-group',
