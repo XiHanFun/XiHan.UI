@@ -1,5 +1,6 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { computeTextDiff, diffViewAnatomy, diffViewKeyboard } from '@xihan-ui/headless'
+import { heldPress } from './shared/press-channel'
 
 const WCAG = 'https://www.w3.org/WAI/WCAG21/Techniques/general/G202'
 
@@ -160,6 +161,40 @@ export const diffViewSuite: ConformanceSuite = {
           expect: {
             counts: { gap: 0 },
             events: [{ type: 'expanded-value-change' }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：展开按钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['diff-view.kbd.press'],
+      props: { model: LONG, contextLines: 3 },
+      steps: [heldPress('diff-view', 'gap-trigger')],
+    },
+    {
+      name: '按住途中那一格被 Enter 展开：折叠格离开行序，按压面随之收起，不残留在别处',
+      spec: { adr: 'press-channel' },
+      props: { model: LONG, contextLines: 3 },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'Enter 在 keydown 即 click，展开后按钮节点被卸下、不会再来 keyup；要看的是没有任何部件残留 data-pressed',
+          run: async ({ doc, flush }: RawStepContext) => {
+            const trigger = doc.querySelector<HTMLElement>('[data-scope="diff-view"][data-part="gap-trigger"]')
+            if (!trigger)
+              throw new Error('找不到 diff-view 的 gap-trigger 部件')
+            trigger.focus()
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (!trigger.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时 gap-trigger 应投影 data-pressed')
+            trigger.click()
+            await flush()
+            if (doc.querySelector('[data-scope="diff-view"][data-part="gap"]'))
+              throw new Error('展开之后折叠格应离开行序')
+            if (doc.querySelector('[data-scope="diff-view"][data-pressed]'))
+              throw new Error('折叠格展开后不该有任何部件残留 data-pressed')
           },
         },
       ],

@@ -17,5 +17,6 @@ export const diffViewKeyboard: KeyboardTable = {
   rows: [
     { id: 'diff-view.kbd.viewport-focus', keys: ['Tab'], when: '差异视图在 Tab 序列中', does: '滚动容器自身可聚焦，随后方向键的横纵滚动交给浏览器，组件不接管' },
     { id: 'diff-view.kbd.expand-gap', keys: ['Enter', 'Space'], when: '焦点在展开按钮上', does: '展开该处折起来的上下文行；组件只接 click，按键走原生 button 的默认行为' },
+    { id: 'diff-view.kbd.press', keys: ['Enter', 'Space'], when: '按住展开按钮', does: '按住期间该格的 gap-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或该格展开撤下' },
   ],
 }

@@ -139,7 +139,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 
 **状态**：`idle`
 
-**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET`
+**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isExpandedControlled`
 
@@ -191,6 +191,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | --- | --- | --- |
 | `Tab` | 差异视图在 Tab 序列中 | 滚动容器自身可聚焦，随后方向键的横纵滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在展开按钮上 | 展开该处折起来的上下文行；组件只接 click，按键走原生 button 的默认行为 |
+| `Enter` / `Space` | 按住展开按钮 | 按住期间该格的 gap-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或该格展开撤下 |
 
 ### ARIA
 
@@ -252,6 +253,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `token` | `data-kind` | token.kind |
 | `gap` | `data-expanded` | ''（条件成立时才出现） |
 | `gap` | `data-value` | hunkIndex:0 |
+| `gap-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `gap-trigger` | `data-value` | hunkIndex:0 |
 | `gap-trigger` | `data-xh-action-control` | '' |
 | `gap-trigger` | `data-xh-action-display` | 'always' |

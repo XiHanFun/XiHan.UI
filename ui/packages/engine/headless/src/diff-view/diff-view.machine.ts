@@ -13,6 +13,8 @@ const { createMachine } = setup<DiffViewSchema>()
 
 // 一个状态，唯一的状态是「哪几处折叠格被展开了」。
 // 展开是组件内部的呈现态，不做成对外的意图回调——否则每个使用者都要自己维护一个集合。
+// 另承载按压通道：Space / Enter 与触屏按住期间的 context.pressedValue（按折叠格 id 记，gap-trigger 投影
+// data-pressed），让键盘与触屏看见和指针 :active 同一副按压面。折叠格没有禁用态，不设守卫。
 export const diffViewMachine = createMachine({
   name: 'diff-view',
   context: ({ prop, cell }) => ({
@@ -23,9 +25,15 @@ export const diffViewMachine = createMachine({
       isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i]),
       onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
+    pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
-  watch: ({ track, prop, action }) => track([() => prop('expandedValue')], () => action(['syncExpanded'])),
+  watch: ({ track, prop, context, action }) => {
+    track([() => prop('expandedValue')], () => action(['syncExpanded']))
+    // 按住途中那一格被展开（Enter 在 keydown 即 click）：折叠格离开行序、按钮节点被卸下，不会再来 keyup / blur，
+    // 按压面由机器自己收；受控与非受控两条路都经 expandedValue 落地，盯 context 一处即够
+    track([context.dep('expandedValue')], () => action(['releaseWhenExpanded']))
+  },
   states: {
     idle: {
       on: {
@@ -39,6 +47,8 @@ export const diffViewMachine = createMachine({
           { actions: ['toggleGap'] },
         ],
         'CONTROLLED.EXPANDED.SET': { actions: ['syncExpanded'] },
+        'PRESS.START': { actions: ['startPress'] },
+        'PRESS.END': { actions: ['endPress'] },
       },
     },
   },
@@ -65,6 +75,22 @@ export const diffViewMachine = createMachine({
         if (next === undefined)
           return
         context.set('expandedValue', [...next])
+      },
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressedValue', e.value)
+      },
+      // 只收自己那一下：另一格的 keyup 不该把正按着的这一格松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
+          context.set('pressedValue', null)
+      },
+      releaseWhenExpanded: ({ context }) => {
+        const pressed = context.get('pressedValue')
+        if (pressed !== null && context.get('expandedValue').includes(pressed))
+          context.set('pressedValue', null)
       },
     },
   },

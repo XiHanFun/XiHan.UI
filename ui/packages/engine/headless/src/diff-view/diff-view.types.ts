@@ -78,6 +78,11 @@ export interface DiffViewSchema extends MachineSchema {
   }
   context: {
     expandedValue: string[]
+    /**
+     * 按压通道：Space / Enter 或触屏按住的那一格折叠格 id，gap-trigger 按它投影 data-pressed。
+     * 抬起、失焦、指针取消，或按住途中那一格被展开（折叠格离开行序、节点被卸下）时清空。
+     */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -87,9 +92,13 @@ export interface DiffViewSchema extends MachineSchema {
     | { type: 'GAP.COLLAPSE', id: string }
     // 受控回写：宿主改 expandedValue 后由 watch 派发，无条件写入、不再通知
     | { type: 'CONTROLLED.EXPANDED.SET', value: string[] }
+    /** 按压通道（shared/press）：某一格的展开按钮被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START', value: string }
+    /** 按住的展开按钮抬起、失焦或指针取消；只松开 value 对应的那一格。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
   guard: 'isExpandedControlled'
-  action: 'toggleGap' | 'invokeExpandedChange' | 'syncExpanded'
+  action: 'toggleGap' | 'invokeExpandedChange' | 'syncExpanded' | 'startPress' | 'endPress' | 'releaseWhenExpanded'
   effect: never
 }
 
