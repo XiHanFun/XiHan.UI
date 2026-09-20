@@ -22,6 +22,7 @@ export const carouselKeyboard: KeyboardTable = {
     { id: 'carousel.kbd.last', keys: ['End'], when: '焦点在轮播内', does: '跳到最后一页' },
     { id: 'carousel.kbd.trigger', keys: ['Enter', 'Space'], when: '焦点在上一张 / 下一张按钮上', does: '翻一页；由原生按钮的激活行为负责' },
     { id: 'carousel.kbd.indicator', keys: ['Enter', 'Space'], when: '焦点在指示点上', does: '跳到该指示点对应的页；由原生按钮的激活行为负责' },
+    { id: 'carousel.kbd.press', keys: ['Enter', 'Space'], when: 'held on prev-trigger / next-trigger / autoplay-trigger / indicator, 该按钮未禁用', does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或按住途中转禁用（翻到边界、关掉 loop、去掉 autoplay）撤下。翻页与播放 / 暂停照旧由这一次按键的原生激活承担' },
     { id: 'carousel.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: '任意时刻', does: '在两端按钮与各指示点之间逐个停靠；到端点后禁用的按钮自动脱序' },
     { id: 'carousel.kbd.editable', keys: ['方向键'], when: '焦点在幻灯片内的输入控件上', does: '不接管：交还给控件自己做光标移动' },
   ],

@@ -2,6 +2,7 @@ import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conforman
 import { carouselAnatomy, carouselKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // APG 的轮播模式：region + aria-roledescription="carousel"，每张 group + roledescription="slide"，
 // 自动播放期间视口活区闭麦。方向键翻页是本库在 APG 之外多给的一层（APG 只要求按钮可达）。
@@ -46,6 +47,7 @@ function carouselTree(slides = 4, indicators = 4, editableSlide?: number): Fixtu
         ],
       },
       { part: 'next-trigger', tag: 'button', text: '下一张' },
+      { part: 'autoplay-trigger', tag: 'button', text: '播放 / 暂停' },
       {
         part: 'indicator-group',
         children: Array.from({ length: indicators }, (_, i): FixtureNode => ({
@@ -152,6 +154,7 @@ export const carouselSuite: ConformanceSuite = {
           'item[2]',
           'item[3]',
           'next-trigger',
+          'autoplay-trigger',
           'indicator-group',
           'indicator[0]',
           'indicator[1]',
@@ -207,6 +210,18 @@ export const carouselSuite: ConformanceSuite = {
             'aria-controls': '@part(viewport)',
             'disabled': null,
             'data-disabled': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'floating',
+            'data-xh-action-size': 'md',
+          },
+          // 没配自动播放：开关没有可开关的东西，原生 disabled；名字按「按下会开始播放」给
+          'autoplay-trigger': {
+            'type': 'button',
+            'aria-label': 'Start automatic slide show',
+            'aria-controls': '@part(viewport)',
+            'disabled': '',
+            'data-disabled': '',
+            'data-state': 'paused',
             'data-xh-action-control': '',
             'data-xh-action-profile': 'floating',
             'data-xh-action-size': 'md',
@@ -644,10 +659,11 @@ export const carouselSuite: ConformanceSuite = {
             const nodes = [...doc.querySelectorAll<HTMLElement>(
               '[data-scope="carousel"][data-part="indicator"],'
               + '[data-scope="carousel"][data-part="prev-trigger"],'
-              + '[data-scope="carousel"][data-part="next-trigger"]',
+              + '[data-scope="carousel"][data-part="next-trigger"],'
+              + '[data-scope="carousel"][data-part="autoplay-trigger"]',
             )]
-            if (nodes.length !== 6)
-              throw new Error(`预期 6 个可点部件，实际 ${nodes.length}`)
+            if (nodes.length !== 7)
+              throw new Error(`预期 7 个可点部件，实际 ${nodes.length}`)
             for (const el of nodes) {
               // 出现 tabindex 就说明有人给指示点套了 roving tabindex
               if (el.hasAttribute('tabindex'))
@@ -656,8 +672,68 @@ export const carouselSuite: ConformanceSuite = {
             const prev = q(doc, 'prev-trigger')
             if (!prev?.hasAttribute('disabled'))
               throw new Error('首页且不回绕时 prev-trigger 应带原生 disabled——只有原生禁用才会退出 Tab 序列')
+            const autoplay = q(doc, 'autoplay-trigger')
+            if (!autoplay?.hasAttribute('disabled'))
+              throw new Error('没配自动播放时 autoplay-trigger 应带原生 disabled——它没有可开关的东西')
           },
         },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：两端翻页钮、播放开关与指示点投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['carousel.kbd.press'],
+      // 间隔取大值：按住播放开关会把计时停 / 起，这条只看按压面
+      props: { slideCount: 4, defaultPage: 1, autoplay: 60_000 },
+      steps: [
+        heldPress('carousel', 'prev-trigger'),
+        heldPress('carousel', 'next-trigger'),
+        heldPress('carousel', 'autoplay-trigger'),
+        // 指示点按页码记，身份在 data-index 上
+        heldPress('carousel', 'indicator', { selector: '[data-scope="carousel"][data-part="indicator"][data-index="2"]' }),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const held = doc.querySelector<HTMLElement>('[data-scope="carousel"][data-part="indicator"][data-index="2"]')!
+            const other = doc.querySelector<HTMLElement>('[data-scope="carousel"][data-part="indicator"][data-index="1"]')!
+            const next = q(doc, 'next-trigger')!
+            held.focus()
+            held.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!held.hasAttribute('data-pressed') || other.hasAttribute('data-pressed') || next.hasAttribute('data-pressed'))
+              throw new Error('按住第 3 颗指示点时只有它该投影 data-pressed')
+            held.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (held.hasAttribute('data-pressed'))
+              throw new Error('keyup 之后指示点应撤下 data-pressed')
+          },
+        },
+      ],
+    },
+    {
+      name: '到边界的翻页钮与没配自动播放的开关原生 disabled，按住不进入按压面；按住途中关掉 loop 即撤下',
+      spec: { adr: 'press-channel' },
+      props: { slideCount: 4, loop: true },
+      steps: [
+        heldPressIgnored('carousel', 'autoplay-trigger', '没配自动播放时开关原生 disabled，不接受按压'),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const prev = q(doc, 'prev-trigger')!
+            prev.focus()
+            prev.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!prev.hasAttribute('data-pressed'))
+              throw new Error('loop 开着时首页的上一张也可按，按住 Space 应投影 data-pressed')
+          },
+        },
+        // 关掉 loop：首页的上一张转原生 disabled、不会再来 keyup，按压面由机器收
+        { kind: 'setProps', props: { loop: false }, expect: { parts: { 'prev-trigger': { 'disabled': '', 'data-pressed': null } } } },
+        heldPressIgnored('carousel', 'prev-trigger', '首页且不回绕时上一张原生 disabled，不接受按压'),
+        { kind: 'setProps', props: { page: 3 }, expect: { parts: { 'next-trigger': { disabled: '' } } } },
+        heldPressIgnored('carousel', 'next-trigger', '末页且不回绕时下一张原生 disabled，不接受按压'),
       ],
     },
   ],

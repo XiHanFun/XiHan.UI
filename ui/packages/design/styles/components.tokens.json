@@ -6931,9 +6931,10 @@
       ],
       "state": [
         "@media (pointer: coarse)",
-        "active",
         "current",
-        "not([data-current])"
+        "is(:active, [data-pressed])",
+        "not([data-current])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -6995,8 +6996,9 @@
       ],
       "state": [
         "@media (pointer: coarse)",
-        "active",
-        "current"
+        "current",
+        "is(:active, [data-pressed])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-brand-active"
@@ -7189,13 +7191,14 @@
       ],
       "state": [
         "@media (pointer: coarse)",
-        "active",
         "autoplay",
         "current",
         "hover",
+        "is(:active, [data-pressed])",
         "not([data-autoplay], [data-paused])",
         "not([data-current])",
-        "paused"
+        "paused",
+        "pressed"
       ],
       "defaultToken": [
         "44px"

@@ -34,6 +34,7 @@ export type {
   CarouselItemProps,
   CarouselPageChangeDetails,
   CarouselPauseSource,
+  CarouselPressedKey,
   CarouselSchema,
   CarouselTranslations,
 } from './carousel.types'

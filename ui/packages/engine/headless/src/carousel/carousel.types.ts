@@ -30,6 +30,12 @@ export interface CarouselIndicatorProps {
   index: number
 }
 
+/**
+ * 按压通道里「正被按住的那一个」：两端翻页钮、播放开关，或某个指示点（按页码记）。
+ * 四类按钮共用一台机器，按住的只能是其中一个。
+ */
+export type CarouselPressedKey = 'prev' | 'next' | 'autoplay' | `indicator:${number}`
+
 /** 读屏文案。默认英文，与 dialog / pagination 的 translations 写法一致。 */
 export interface CarouselTranslations {
   /** 根节点（region 地标）的名字。 */
@@ -102,6 +108,11 @@ export interface CarouselSchema extends MachineSchema {
     dragStart: number | null
     /** 本次拖拽已产生的像素位移，连接层把它叠加进轨道位移，画面才能跟随手势。 */
     dragOffset: number
+    /**
+     * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个按钮，该部件投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦、指针取消，或按住途中该按钮转为禁用时撤下；与自动播放的开合互相独立。
+     */
+    pressed: CarouselPressedKey | null
   }
   computed: Record<string, never>
   refs: {
@@ -125,8 +136,15 @@ export interface CarouselSchema extends MachineSchema {
     | { type: 'DRAG.START', position: number }
     | { type: 'DRAG.MOVE', position: number }
     | { type: 'DRAG.END' }
+    /**
+     * 按压通道（shared/press）：某个按钮被 Space / Enter 或触屏按住，key 说的是哪一个；
+     * 到边界的翻页钮与没配自动播放的开关是原生 disabled，那份事实只有 connect 知道，随事件带给守卫。
+     */
+    | { type: 'PRESS.START', key: CarouselPressedKey, disabled?: boolean }
+    /** 该按钮抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END', key: CarouselPressedKey }
   tag: never
-  guard: 'isLastPauseSource' | 'canAdvance' | 'hasAutoplay'
+  guard: 'isLastPauseSource' | 'canAdvance' | 'hasAutoplay' | 'canPress'
   action:
     | 'setPage'
     | 'goPrev'
@@ -138,6 +156,9 @@ export interface CarouselSchema extends MachineSchema {
     | 'startDrag'
     | 'moveDrag'
     | 'endDrag'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
   effect: 'trackAutoplay' | 'trackPointer'
 }
 

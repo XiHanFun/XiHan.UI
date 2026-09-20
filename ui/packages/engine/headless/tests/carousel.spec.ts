@@ -1041,3 +1041,140 @@ describe('connectCarousel 播放开关', () => {
     expect(autoplayTrigger(c)['aria-label']).toBe('开始自动播放')
   })
 })
+
+// ══ 按压通道 ══
+
+const keyEvent = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (attrs: Dict, name: string, event: unknown): void => (attrs[name] as (e: unknown) => void)(event)
+
+describe('connectCarousel 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const prev = (c: ReturnType<typeof makeCarousel>): Dict => c.api().getPrevTriggerProps() as Dict
+  const next = (c: ReturnType<typeof makeCarousel>): Dict => c.api().getNextTriggerProps() as Dict
+  const dot = (c: ReturnType<typeof makeCarousel>, index: number): Dict => c.api().getIndicatorProps({ index }) as Dict
+
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；页码不动', () => {
+    const c = makeCarousel({ ...SIX, defaultPage: 2 })
+    expect(next(c)['data-pressed']).toBeUndefined()
+    fire(next(c), 'onKeyDown', keyEvent(' '))
+    expect(next(c)['data-pressed']).toBe('')
+    fire(next(c), 'onKeyUp', keyEvent(' '))
+    expect(next(c)['data-pressed']).toBeUndefined()
+    fire(next(c), 'onKeyDown', keyEvent('Enter'))
+    expect(next(c)['data-pressed']).toBe('')
+    fire(next(c), 'onBlur', {})
+    expect(next(c)['data-pressed']).toBeUndefined()
+    fire(next(c), 'onPointerDown', { pointerType: 'touch' })
+    expect(next(c)['data-pressed']).toBe('')
+    fire(next(c), 'onPointerCancel', {})
+    expect(next(c)['data-pressed']).toBeUndefined()
+    fire(next(c), 'onPointerDown', { pointerType: 'touch' })
+    expect(next(c)['data-pressed']).toBe('')
+    fire(next(c), 'onPointerUp', {})
+    expect(next(c)['data-pressed']).toBeUndefined()
+    fire(next(c), 'onPointerDown', { pointerType: 'mouse' })
+    expect(next(c)['data-pressed']).toBeUndefined()
+    expect(c.api().page).toBe(2)
+    c.stop()
+  })
+
+  it('四类按钮共用一台机器：只亮按住的那一个，别的按钮的 keyup 松不开它，指示点按页码分开认', () => {
+    const c = makeCarousel({ ...SIX, defaultPage: 2, autoplay: 100 })
+    fire(dot(c, 3), 'onKeyDown', keyEvent(' '))
+    expect(dot(c, 3)['data-pressed']).toBe('')
+    expect(dot(c, 2)['data-pressed']).toBeUndefined()
+    expect(prev(c)['data-pressed']).toBeUndefined()
+    expect(next(c)['data-pressed']).toBeUndefined()
+    expect(autoplayTrigger(c)['data-pressed']).toBeUndefined()
+    fire(next(c), 'onKeyUp', keyEvent(' '))
+    fire(dot(c, 2), 'onKeyUp', keyEvent(' '))
+    expect(dot(c, 3)['data-pressed']).toBe('')
+    fire(dot(c, 3), 'onKeyUp', keyEvent(' '))
+    expect(dot(c, 3)['data-pressed']).toBeUndefined()
+    c.stop()
+  })
+
+  it('按住播放开关：计时停 / 起不影响按压面；自动播放翻页途中按住的翻页钮也不丢', () => {
+    vi.useFakeTimers()
+    try {
+      const c = makeCarousel({ ...SIX, autoplay: 100 })
+      fire(autoplayTrigger(c), 'onKeyDown', keyEvent('Enter'))
+      expect(autoplayTrigger(c)['data-pressed']).toBe('')
+      // Enter 在 keydown 即 click 把计时按住，状态切到 paused
+      clickAutoplayTrigger(c)
+      expect(autoplayTrigger(c)['data-state']).toBe('paused')
+      expect(autoplayTrigger(c)['data-pressed']).toBe('')
+      clickAutoplayTrigger(c)
+      expect(c.api().autoplaying).toBe(true)
+      expect(autoplayTrigger(c)['data-pressed']).toBe('')
+      fire(autoplayTrigger(c), 'onKeyUp', keyEvent('Enter'))
+      expect(autoplayTrigger(c)['data-pressed']).toBeUndefined()
+
+      fire(next(c), 'onPointerDown', { pointerType: 'touch' })
+      expect(next(c)['data-pressed']).toBe('')
+      vi.advanceTimersByTime(100)
+      expect(c.api().page).toBe(1)
+      expect(next(c)['data-pressed']).toBe('')
+      fire(next(c), 'onPointerUp', {})
+      expect(next(c)['data-pressed']).toBeUndefined()
+      c.stop()
+    }
+    finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('禁用不进：首页的上一张、末页的下一张、没配自动播放的开关；loop 开着两端都进', () => {
+    const c = makeCarousel({ ...SIX })
+    expect(prev(c).disabled).toBe(true)
+    fire(prev(c), 'onKeyDown', keyEvent(' '))
+    expect(prev(c)['data-pressed']).toBeUndefined()
+    fire(prev(c), 'onPointerDown', { pointerType: 'touch' })
+    expect(prev(c)['data-pressed']).toBeUndefined()
+    expect(autoplayTrigger(c).disabled).toBe(true)
+    fire(autoplayTrigger(c), 'onKeyDown', keyEvent(' '))
+    expect(autoplayTrigger(c)['data-pressed']).toBeUndefined()
+    c.setProps({ defaultPage: 5, page: 5 })
+    fire(next(c), 'onKeyDown', keyEvent(' '))
+    expect(next(c)['data-pressed']).toBeUndefined()
+    c.stop()
+
+    const looped = makeCarousel({ ...SIX, loop: true })
+    fire(prev(looped), 'onKeyDown', keyEvent(' '))
+    expect(prev(looped)['data-pressed']).toBe('')
+    fire(prev(looped), 'onKeyUp', keyEvent(' '))
+    looped.stop()
+  })
+
+  it('按住途中转禁用自收：按住 Enter 翻到末页、关掉 loop、去掉 autoplay，按钮原生 disabled 后不会再来 keyup', () => {
+    const c = makeCarousel({ ...SIX, defaultPage: 4 })
+    fire(next(c), 'onKeyDown', keyEvent('Enter'))
+    expect(next(c)['data-pressed']).toBe('')
+    // Enter 在 keydown 即 click 翻到末页
+    ;(next(c).onClick as () => void)()
+    expect(c.api().page).toBe(5)
+    expect(next(c).disabled).toBe(true)
+    expect(next(c)['data-pressed']).toBeUndefined()
+    c.stop()
+
+    const looped = makeCarousel({ ...SIX, loop: true })
+    fire(prev(looped), 'onKeyDown', keyEvent(' '))
+    expect(prev(looped)['data-pressed']).toBe('')
+    looped.setProps({ loop: false })
+    expect(prev(looped).disabled).toBe(true)
+    expect(prev(looped)['data-pressed']).toBeUndefined()
+    looped.stop()
+
+    const playing = makeCarousel({ ...SIX, autoplay: 100 })
+    fire(autoplayTrigger(playing), 'onKeyDown', keyEvent(' '))
+    expect(autoplayTrigger(playing)['data-pressed']).toBe('')
+    playing.setProps({ autoplay: false })
+    expect(autoplayTrigger(playing).disabled).toBe(true)
+    expect(autoplayTrigger(playing)['data-pressed']).toBeUndefined()
+    // 指示点没有禁用态：翻页不影响按住的那一颗
+    fire(dot(playing, 1), 'onPointerDown', { pointerType: 'touch' })
+    playing.service.send({ type: 'PAGE.SET', page: 3 })
+    expect(dot(playing, 1)['data-pressed']).toBe('')
+    fire(dot(playing, 1), 'onPointerUp', {})
+    playing.stop()
+  })
+})
