@@ -47,6 +47,9 @@ export interface ApprovalNoteChangeDetails {
 export const APPROVAL_DENY_SELECTOR
   = '[data-scope="approval"][data-part="deny-trigger"],[data-xh-part="deny-trigger"]'
 
+/** 接了按压通道的三种部件：两颗判定钮各一把键，授权项按 value 记。 */
+export type ApprovalPressedKey = 'approve' | 'deny' | `item:${string}`
+
 export interface ApprovalSchema extends MachineSchema {
   props: {
     /** 本轮请求的身份。变化即重新进入待决，并按新时长重新计时。 */
@@ -92,6 +95,11 @@ export interface ApprovalSchema extends MachineSchema {
   context: {
     grantedScopes: string[]
     note: string
+    /**
+     * 按压通道：正被 Space / Enter 或触屏手指按住的那一个（授权项只认 Space），该部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或判定落定、转入挂起时撤下；与勾选、判定互相独立。
+     */
+    pressed: ApprovalPressedKey | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -111,8 +119,15 @@ export interface ApprovalSchema extends MachineSchema {
     | { type: 'CONTROLLED.EXPIRE' }
     /** 更换了一轮请求。 */
     | { type: 'REQUEST.RESET' }
+    /**
+     * 按压通道：某个部件被 Space / Enter 或触屏按住。disabled 是授权项自身的禁用事实，由 connect 判定后随事件带入；
+     * 判定在途与必选项未勾满由守卫按 props 与 context 判。
+     */
+    | { type: 'PRESS.START', key: ApprovalPressedKey, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 key 对应的那一个。 */
+    | { type: 'PRESS.END', key: ApprovalPressedKey }
   tag: never
-  guard: 'isStatusControlled' | 'canApprove' | 'isEditable' | 'canApproveControlled'
+  guard: 'isStatusControlled' | 'canApprove' | 'isEditable' | 'canApproveControlled' | 'canPress'
   action:
     | 'invokeApprove'
     | 'invokeDeny'
@@ -125,6 +140,10 @@ export interface ApprovalSchema extends MachineSchema {
     | 'denyIfPending'
     | 'resetRequest'
     | 'syncStatus'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseWhenInert'
   effect: 'trackTimeout'
 }
 

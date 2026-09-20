@@ -220,3 +220,139 @@ describe('connectApproval 投影', () => {
     expect(mount({ variant: 'subtle' }).root()).toMatchObject({ 'data-variant': 'subtle' })
   })
 })
+
+// ══ 按压通道 ══
+
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0, preventDefault: vi.fn() } as unknown as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+const READ = { value: 'read', required: true }
+const WRITE = { value: 'write' }
+
+describe('approval 按压通道：按 approve / deny / item:value 记按住的那一个投影 data-pressed', () => {
+  it('批准钮：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；判定不动', () => {
+    const r = mount({ scopes: [WRITE] })
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onKeyDown', key(' '))
+    expect(r.approve()['data-pressed']).toBe('')
+    expect(r.deny()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onKeyUp', key(' '))
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onKeyDown', key('Enter'))
+    expect(r.approve()['data-pressed']).toBe('')
+    fire(r.approve(), 'onBlur', {})
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onPointerDown', { pointerType: 'touch' })
+    expect(r.approve()['data-pressed']).toBe('')
+    fire(r.approve(), 'onPointerCancel', {})
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onPointerDown', { pointerType: 'touch' })
+    expect(r.approve()['data-pressed']).toBe('')
+    fire(r.approve(), 'onPointerUp', {})
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    expect(r.api().status).toBe('pending')
+    expect(r.decisions).toEqual([])
+  })
+
+  it('三种部件各记各的：另一颗钮或另一条授权项的 keyup 松不开正按着的那个；授权项只认 Space，Enter 不进', () => {
+    const r = mount({ scopes: [READ, WRITE] })
+    const item = (scope: typeof READ | typeof WRITE): Dict => r.api().getItemProps(scope) as Dict
+    fire(r.deny(), 'onKeyDown', key('Enter'))
+    expect(r.deny()['data-pressed']).toBe('')
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onKeyUp', key('Enter'))
+    expect(r.deny()['data-pressed']).toBe('')
+    fire(r.deny(), 'onKeyUp', key('Enter'))
+    expect(r.deny()['data-pressed']).toBeUndefined()
+
+    fire(item(READ), 'onKeyDown', key(' '))
+    expect(item(READ)['data-pressed']).toBe('')
+    expect(item(WRITE)['data-pressed']).toBeUndefined()
+    // Space 在 keydown 即翻转勾选，按压面不随之丢
+    expect(item(READ)['aria-checked']).toBe('true')
+    fire(item(WRITE), 'onKeyUp', key(' '))
+    expect(item(READ)['data-pressed']).toBe('')
+    fire(item(READ), 'onKeyUp', key(' '))
+    expect(item(READ)['data-pressed']).toBeUndefined()
+    fire(item(READ), 'onKeyDown', key('Enter'))
+    expect(item(READ)['data-pressed']).toBeUndefined()
+    fire(item(WRITE), 'onPointerDown', { pointerType: 'touch' })
+    expect(item(WRITE)['data-pressed']).toBe('')
+    fire(item(WRITE), 'onPointerUp', {})
+    expect(item(WRITE)['data-pressed']).toBeUndefined()
+  })
+
+  it('闸门：必选项没勾满时批准钮不进，拒绝钮照进；勾满后批准钮进；判定在途三种都不进；禁用的授权项不进', () => {
+    const r = mount({ scopes: [READ, WRITE] })
+    const item = (scope: typeof READ | typeof WRITE): Dict => r.api().getItemProps(scope) as Dict
+    fire(r.approve(), 'onKeyDown', key(' '))
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.deny(), 'onKeyDown', key(' '))
+    expect(r.deny()['data-pressed']).toBe('')
+    fire(r.deny(), 'onKeyUp', key(' '))
+    click(item(READ))
+    fire(r.approve(), 'onKeyDown', key(' '))
+    expect(r.approve()['data-pressed']).toBe('')
+    fire(r.approve(), 'onKeyUp', key(' '))
+
+    const busy = mount({ loading: true, scopes: [WRITE] })
+    fire(busy.approve(), 'onKeyDown', key(' '))
+    fire(busy.deny(), 'onPointerDown', { pointerType: 'touch' })
+    fire(busy.api().getItemProps(WRITE) as Dict, 'onKeyDown', key(' '))
+    expect(busy.approve()['data-pressed']).toBeUndefined()
+    expect(busy.deny()['data-pressed']).toBeUndefined()
+    expect((busy.api().getItemProps(WRITE) as Dict)['data-pressed']).toBeUndefined()
+
+    const off = { value: 'off', disabled: true }
+    const d = mount({ scopes: [off] })
+    fire(d.api().getItemProps(off) as Dict, 'onKeyDown', key(' '))
+    fire(d.api().getItemProps(off) as Dict, 'onPointerDown', { pointerType: 'touch' })
+    expect((d.api().getItemProps(off) as Dict)['data-pressed']).toBeUndefined()
+  })
+
+  it('判定落定即松开：按住 Enter 判掉的那颗钮随即原生 disabled、不会再来 keyup；终态不进，超时与受控回写同样收', () => {
+    const r = mount({ scopes: [WRITE] })
+    fire(r.approve(), 'onKeyDown', key('Enter'))
+    expect(r.approve()['data-pressed']).toBe('')
+    click(r.approve())
+    expect(r.api().status).toBe('approved')
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    fire(r.approve(), 'onKeyDown', key('Enter'))
+    fire(r.deny(), 'onPointerDown', { pointerType: 'touch' })
+    expect(r.approve()['data-pressed']).toBeUndefined()
+    expect(r.deny()['data-pressed']).toBeUndefined()
+
+    const c = mount({ status: 'pending' })
+    fire(c.deny(), 'onKeyDown', key(' '))
+    expect(c.deny()['data-pressed']).toBe('')
+    c.setProps({ status: 'denied' })
+    expect(c.deny()['data-pressed']).toBeUndefined()
+
+    vi.useFakeTimers()
+    try {
+      const t = mount({ timeoutMs: 30 })
+      fire(t.deny(), 'onKeyDown', key(' '))
+      expect(t.deny()['data-pressed']).toBe('')
+      vi.advanceTimersByTime(30)
+      expect(t.api().status).toBe('expired')
+      expect(t.deny()['data-pressed']).toBeUndefined()
+    }
+    finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('按住途中判定转入在途：三种部件一起锁住，按压面由机器收；撤掉 loading 后照常', () => {
+    const r = mount({ scopes: [WRITE] })
+    fire(r.deny(), 'onKeyDown', key(' '))
+    expect(r.deny()['data-pressed']).toBe('')
+    r.setProps({ loading: true })
+    expect(r.deny()['data-pressed']).toBeUndefined()
+    r.setProps({ loading: false })
+    fire(r.deny(), 'onKeyDown', key(' '))
+    expect(r.deny()['data-pressed']).toBe('')
+    fire(r.deny(), 'onKeyUp', key(' '))
+    expect(r.deny()['data-pressed']).toBeUndefined()
+  })
+})
