@@ -15,6 +15,7 @@ export type {
   ApprovalApi,
   ApprovalDecisionDetails,
   ApprovalNoteChangeDetails,
+  ApprovalPressedKey,
   ApprovalSchema,
   ApprovalScope,
   ApprovalScopesChangeDetails,

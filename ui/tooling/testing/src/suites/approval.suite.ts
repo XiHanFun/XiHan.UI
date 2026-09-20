@@ -1,14 +1,17 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { approvalAnatomy, approvalKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/'
 
 const ROOT = '[data-scope="approval"][data-part="root"]'
 
-function scope(value: string, label: string, required?: boolean): FixtureNode {
+function scope(value: string, label: string, required?: boolean, disabled?: boolean): FixtureNode {
   const attrs: Record<string, string> = { 'scope-value': value, 'scope-label': label }
   if (required)
     attrs['scope-required'] = ''
+  if (disabled)
+    attrs['scope-disabled'] = ''
   return {
     part: 'item',
     attrs,
@@ -16,6 +19,16 @@ function scope(value: string, label: string, required?: boolean): FixtureNode {
       { part: 'item-indicator', attrs: { 'scope-value': value } },
       { part: 'item-text', attrs: { 'scope-value': value }, text: label },
     ],
+  }
+}
+
+/** 授权项自身的禁用写在作者节点的 scope-disabled 上：把 write 那一项换成禁用的。 */
+function withDisabledWrite(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(node => (node.part === 'group'
+      ? { ...node, children: [scope('read', '读文件'), scope('write', '写文件', false, true)] }
+      : node)),
   }
 }
 
@@ -260,6 +273,99 @@ export const approvalSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { timeoutMs: 0 },
       initial: { parts: { root: { 'data-state': 'pending' } } },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：批准钮、拒绝钮投影 data-pressed，授权项只认 Space；抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['approval.kbd.press', 'approval.kbd.item-press'],
+      props: { scopes: [{ value: 'read' }, { value: 'write' }] },
+      steps: [
+        heldPress('approval', 'approve-trigger'),
+        heldPress('approval', 'deny-trigger'),
+        // 两次 keydown 把勾选翻回起点
+        heldPress('approval', 'item', { value: 'read', keys: [' '] }),
+        {
+          kind: 'raw',
+          why: 'role=checkbox 没有 Enter 这条激活键，Enter 按住不进按压面',
+          run: async ({ doc, flush }) => {
+            const item = doc.querySelector<HTMLElement>('[data-scope="approval"][data-part="item"][data-value="write"]')!
+            item.focus()
+            item.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (item.hasAttribute('data-pressed'))
+              throw new Error('Enter 按住授权项不该投影 data-pressed')
+            if (item.getAttribute('aria-checked') !== 'false')
+              throw new Error('Enter 不该翻转勾选')
+          },
+        },
+      ],
+    },
+    {
+      name: '必选项没勾满：批准钮不进按压面，拒绝钮与授权项照进；勾满后批准钮进',
+      spec: { adr: 'press-channel' },
+      props: { scopes: [{ value: 'read', required: true }, { value: 'write' }] },
+      steps: [
+        heldPressIgnored('approval', 'approve-trigger', '必选项没勾满时批准钮 aria-disabled 并投 data-disabled，家族给置灰面'),
+        heldPress('approval', 'deny-trigger'),
+        { kind: 'click', part: 'item[0]', expect: { parts: { 'approve-trigger': { 'aria-disabled': 'false', 'data-disabled': null } } } },
+        heldPress('approval', 'approve-trigger'),
+      ],
+    },
+    {
+      name: '判定在途与禁用的授权项：按住不进按压面',
+      spec: { adr: 'press-channel' },
+      fixture: withDisabledWrite,
+      props: { loading: true, scopes: [{ value: 'read' }, { value: 'write', disabled: true }] },
+      steps: [
+        heldPressIgnored('approval', 'approve-trigger', '判定在途两颗钮一起锁住'),
+        heldPressIgnored('approval', 'deny-trigger', '判定在途两颗钮一起锁住'),
+        heldPressIgnored('approval', 'item', '判定在途授权项 aria-disabled', { value: 'read' }),
+        { kind: 'setProps', props: { loading: false, scopes: [{ value: 'read' }, { value: 'write', disabled: true }] } },
+        heldPressIgnored('approval', 'item', '禁用的授权项 aria-disabled', { value: 'write' }),
+        heldPress('approval', 'item', { value: 'read', keys: [' '] }),
+      ],
+    },
+    {
+      name: '按住途中判定转入在途：三种部件一起锁住、不会再来 keyup，按压面由机器收',
+      spec: { adr: 'press-channel' },
+      props: { scopes: [{ value: 'read' }] },
+      steps: [
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const deny = doc.querySelector<HTMLElement>('[data-scope="approval"][data-part="deny-trigger"]')!
+            deny.focus()
+            deny.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!deny.hasAttribute('data-pressed'))
+              throw new Error('按住 Space 时拒绝钮应投影 data-pressed')
+          },
+        },
+        { kind: 'setProps', props: { loading: true, scopes: [{ value: 'read' }] }, expect: { parts: { 'deny-trigger': { 'aria-disabled': 'true', 'data-pressed': null } } } },
+      ],
+    },
+    {
+      name: '判定落定即松开：按住 Enter 判掉的那颗钮随即原生 disabled、不会再来 keyup；终态不再进',
+      spec: { adr: 'press-channel' },
+      props: { scopes: [{ value: 'read' }] },
+      steps: [
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const deny = doc.querySelector<HTMLElement>('[data-scope="approval"][data-part="deny-trigger"]')!
+            deny.focus()
+            deny.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (!deny.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时拒绝钮应投影 data-pressed')
+          },
+        },
+        { kind: 'click', part: 'deny-trigger', expect: { parts: { 'root': { 'data-state': 'denied' }, 'deny-trigger': { 'disabled': '', 'data-pressed': null } } } },
+        heldPressIgnored('approval', 'approve-trigger', '落定后两颗钮原生 disabled'),
+        heldPressIgnored('approval', 'item', '落定后授权项 aria-disabled', { value: 'read' }),
+      ],
     },
   ],
 }

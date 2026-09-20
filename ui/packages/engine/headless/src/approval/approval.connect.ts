@@ -5,9 +5,9 @@
 
 // 提供 approval 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ApprovalApi, ApprovalSchema, ApprovalScope, ApprovalStatus } from './approval.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { ApprovalApi, ApprovalPressedKey, ApprovalSchema, ApprovalScope, ApprovalStatus } from './approval.types'
+import { createPressTracker, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { approvalAnatomy } from './approval.anatomy'
 import { canApproveScopes } from './approval.types'
 
@@ -47,6 +47,15 @@ export function connectApproval<T extends PropTypes>(
 
   const isScopeGranted = (value: string): boolean => granted.includes(value)
   const scopeDisabled = (item: ApprovalScope): boolean => settled || loading || item.disabled === true
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」，各部件按自己的键合成一份跟踪器；Space / Enter 与触屏按住
+  // 投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。判定在途与必选项未勾满由机器守卫按 props 判，
+  // 授权项自身的禁用只有 connect 知道，随 PRESS.START 带给守卫；落定的两颗钮原生 disabled，不派事件
+  const pressed = context.get('pressed')
+  const press = (key: ApprovalPressedKey, disabled = false): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressed') === key,
+    onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+  })
 
   return {
     status,
@@ -114,37 +123,49 @@ export function connectApproval<T extends PropTypes>(
     // 每个复选框各占一个 Tab 停靠点，不做 roving：授权项要逐条读、逐条勾。
     // 整行是集合行：接 Action Control 的 row 档，ghost 形态、按下只换面不缩放（§9.2）；
     // 承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
-    getItemProps: item => normalize.element({
-      'role': 'checkbox',
-      ...parts.item.attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'row',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': size,
-      'aria-checked': isScopeGranted(item.value) ? 'true' : 'false',
-      'aria-disabled': scopeDisabled(item) ? 'true' : 'false',
-      'aria-required': item.required === true ? 'true' : 'false',
-      'data-value': item.value,
-      'data-state': isScopeGranted(item.value) ? 'checked' : 'unchecked',
-      'data-disabled': dataAttr(scopeDisabled(item)),
-      'tabindex': settled ? -1 : 0,
-      'onClick': () => {
-        if (!scopeDisabled(item))
-          send({ type: 'SCOPE.TOGGLE', value: item.value })
-      },
-      // 只认 Space，Enter 刻意不参与——与原生复选框一致
-      'onKeyDown': (event: KeyboardEvent) => {
-        if (event.key !== ' ' && event.key !== 'Spacebar')
-          return
-        event.preventDefault()
-        // 按住不放会连发 keydown，勾选会来回翻转；键照样吞掉，只是不重复执行
-        if (event.repeat)
-          return
-        if (!scopeDisabled(item))
-          send({ type: 'SCOPE.TOGGLE', value: item.value })
-      },
-    }),
+    getItemProps: (item) => {
+      const handlers = press(`item:${item.value}`, scopeDisabled(item))
+      return normalize.element({
+        'role': 'checkbox',
+        ...parts.item.attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'row',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': size,
+        'aria-checked': isScopeGranted(item.value) ? 'true' : 'false',
+        'aria-disabled': scopeDisabled(item) ? 'true' : 'false',
+        'aria-required': item.required === true ? 'true' : 'false',
+        'data-value': item.value,
+        'data-state': isScopeGranted(item.value) ? 'checked' : 'unchecked',
+        'data-disabled': dataAttr(scopeDisabled(item)),
+        'tabindex': settled ? -1 : 0,
+        // Space 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active（row 档只换面）；与勾选互相独立
+        'data-pressed': dataAttr(pressed === `item:${item.value}`),
+        'onClick': () => {
+          if (!scopeDisabled(item))
+            send({ type: 'SCOPE.TOGGLE', value: item.value })
+        },
+        // 只认 Space，Enter 刻意不参与——与原生复选框一致；role=checkbox 没有 Enter 这条激活键，Enter 也不进按压面。
+        // 同一个 keydown 先过跟踪器再翻转
+        'onKeyDown': (event: KeyboardEvent) => {
+          if (event.key !== ' ' && event.key !== 'Spacebar')
+            return
+          handlers.onKeyDown(event)
+          event.preventDefault()
+          // 按住不放会连发 keydown，勾选会来回翻转；键照样吞掉，只是不重复执行
+          if (event.repeat)
+            return
+          if (!scopeDisabled(item))
+            send({ type: 'SCOPE.TOGGLE', value: item.value })
+        },
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
@@ -213,6 +234,9 @@ export function connectApproval<T extends PropTypes>(
       'data-state': status,
       'data-loading': dataAttr(loading),
       'data-disabled': dataAttr(settled || gated),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；在途与没勾满不进
+      'data-pressed': dataAttr(pressed === 'approve'),
+      ...press('approve'),
       'onClick': () => {
         if (!settled && canApprove)
           send({ type: 'APPROVE' })
@@ -239,6 +263,9 @@ export function connectApproval<T extends PropTypes>(
       'data-state': status,
       'data-loading': dataAttr(loading),
       'data-disabled': dataAttr(settled),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；在途不进
+      'data-pressed': dataAttr(pressed === 'deny'),
+      ...press('deny'),
       'onClick': () => {
         if (!settled && !loading)
           send({ type: 'DENY', source: 'user' })

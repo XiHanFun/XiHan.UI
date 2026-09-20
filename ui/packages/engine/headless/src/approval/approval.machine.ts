@@ -5,7 +5,7 @@
 
 // 提供 approval 相关实现。
 
-import type { ApprovalSchema } from './approval.types'
+import type { ApprovalPressedKey, ApprovalSchema } from './approval.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { toggleItemValue } from '../checkbox-group'
 import { canApproveScopes } from './approval.types'
@@ -45,12 +45,16 @@ export const approvalMachine = createMachine({
       defaultValue: (prop('defaultNote') as string | undefined) ?? '',
       onChange: value => prop('onNoteChange')?.({ value }),
     })),
+    // 按压通道：正被按住的那一个（两颗判定钮各一把键、授权项按 value 记），与勾选、判定无关
+    pressed: cell<ApprovalPressedKey | null>(() => ({ defaultValue: null })),
   }),
   initialState: ({ prop }) => prop('status') ?? prop('defaultStatus') ?? 'pending',
   watch: ({ track, prop, action }) => {
     track([() => prop('status')], () => action(['syncStatus']))
     // 换了一轮请求就重入待决：reenter 把计时效应拆掉重挂，新一轮按新时长起跑
     track([() => prop('requestId')], () => action(['resetRequest']))
+    // 按住途中判定转入在途：三种部件一起锁住（aria-disabled），按压面由机器自己收
+    track([() => prop('loading')], () => action(['releaseWhenInert']))
   },
   on: {
     // 受控回写，只跳转不通知
@@ -62,13 +66,20 @@ export const approvalMachine = createMachine({
     // 程序化写入不挂可编辑守卫：那是给宿主用的入口
     'SCOPE.SET': { actions: ['setScopes'] },
     'NOTE.SET': { actions: ['setNote'] },
+    // 抬起在任何状态都要认：落定那一帧之后迟来的 keyup 落地即无事可做
+    'PRESS.END': { actions: ['endPress'] },
   },
   // 机器停止时若仍待决，按拒绝派一次（须 denyOnUnmount 显式开启）
   exit: ['denyIfPending'],
   states: {
     pending: {
       effects: ['trackTimeout'],
+      // 判定落定（含超时、受控回写与换一轮请求的重入）：按住 Enter 判掉的那颗钮随即原生 disabled、不会再来 keyup，
+      // 按压面在离开待决时由机器收
+      exit: ['releasePress'],
       on: {
+        // 按压通道只在待决态接：三个终态里两颗钮原生 disabled、授权项 aria-disabled
+        'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'APPROVE': [
           { guard: 'canApproveControlled', actions: ['invokeApprove'] },
           { guard: 'canApprove', target: 'approved', actions: ['invokeApprove'] },
@@ -96,8 +107,32 @@ export const approvalMachine = createMachine({
       isEditable: ({ prop }) => prop('loading') !== true,
       // 受控且能批：只发意图，不自改状态
       canApproveControlled: guards.and('isStatusControlled', 'canApprove'),
+      // 判定在途三种部件都不进；批准钮还要必选项勾满（没勾满那档投 data-disabled，家族给置灰面）；
+      // 授权项自身的禁用只有 connect 知道，随事件带入
+      canPress: ({ prop, context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PRESS.START' || prop('loading') === true || e.disabled)
+          return false
+        return e.key !== 'approve' || canApproveScopes(prop('scopes'), context.get('grantedScopes'))
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.key)
+      },
+      // 只收自己那一下：另一颗钮或另一条授权项的 keyup 不该把正按着的这个松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.key)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('loading') === true)
+          context.set('pressed', null)
+      },
       invokeApprove: ({ prop, context }) => {
         prop('onDecision')?.({
           requestId: prop('requestId'),
