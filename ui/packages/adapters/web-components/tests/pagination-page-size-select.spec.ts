@@ -99,9 +99,13 @@ describe('每页条数控制器（Web Components 适配器）', () => {
     const seen: unknown[] = []
     el.addEventListener('page-size-change', event => seen.push((event as CustomEvent).detail))
 
+    // 展开即把 positioner 整段搬进 Portal 目标（缺省 body），档位节点随之离开宿主子树
+    const positioner = selectPart(el, 'positioner')
     selectPart(el, 'trigger').click()
     await settle(el)
-    options(el).find(node => node.getAttribute('data-value') === '50')!.click()
+    expect(el.contains(positioner)).toBe(false)
+    expect(positioner.isConnected).toBe(true)
+    positioner.querySelector<HTMLElement>('[data-scope="select"][data-part="item"][data-value="50"]')!.click()
     await settle(el)
 
     expect(seen).toEqual([{ pageSize: 50, page: 1 }])
