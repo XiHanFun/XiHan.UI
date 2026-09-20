@@ -205,7 +205,7 @@ export interface MenubarSchema extends MachineSchema {
     | { type: 'TRIGGER.FOCUS', value: string, disabled?: boolean }
     /** 收起当前菜单。src 决定是否归还焦点。 */
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
-    /** 焦点离开菜单栏：清除 roving 锚点并收起，不夺回焦点。 */
+    /** 焦点离开整条菜单栏（trigger 与浮层里的菜单都算在内）：清除 roving 锚点并收起，不夺回焦点。 */
     | { type: 'MENUBAR.BLUR' }
     /** 程序化改写展开项。 */
     | { type: 'VALUE.SET', value: string | null }

@@ -7,9 +7,8 @@ export interface PressTargetOptions {
   selector?: string
   /**
    * 按住途中失焦的落点选择器；不给就 el.blur() 落到 body。
-   * 浮层里的条目落到 body 时，React 的合成 focusout 沿组件树穿过 Portal 叫起根的 onFocusOut，而 Vue / WC 的
-   * DOM 路径到不了根——两家对「焦点离开浮层」的回应不同，对拍会在这一步分叉；把落点指到宿主内部的节点，
-   * 三家都只看见条目自己的 blur。
+   * 落到 body 会顺带叫起宿主自己对「焦点离场」的回应（收起浮层、清锚点等）时，把落点指到宿主内部的节点，
+   * 只验条目自己的 blur；宿主对离场的回应由它自己的用例证明，这里不重验。
    */
   blurTo?: string
   /**
