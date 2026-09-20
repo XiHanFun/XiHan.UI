@@ -175,37 +175,40 @@ export function runA11y(
             throw new Error(`${suite.component}（${theme}）:\n${report.join('\n')}`)
         })
 
-        const interactive = suite.cases.filter(c => c.steps?.length)
-        if (interactive.length > 0) {
-          hooks.it(`交互终态无违规（${interactive.length} 个用例，按形态去重）`, async () => {
+        // 一个用例一条测试：把整套用例塞进一条会让大套件（三四十个用例，每个都要回放步骤、
+        // 落定动画、扫一遍 axe）合起来撞上单条测试的时限，超时报的还是整套而不是哪一个用例。
+        // 形态去重跨用例记账（同一 describe 里按声明顺序跑），重形态的用例回放完即通过、不再扫
+        const seen = new Set<string>()
+        for (const c of suite.cases.filter(c => c.steps?.length)) {
+          hooks.it(`交互终态无违规：${c.name}`, async () => {
             const report: string[] = []
-            const seen = new Set<string>()
             applyTheme(document, theme)
-            for (const c of interactive) {
+            // 环境改造先于挂载：机器在挂载那一刻探测环境能力；挂不上也要复原
+            const restoreEnvironment = c.environment?.(window)
+            try {
               const ctx = await mount(harness, suite, { ...suite.defaultProps, ...c.props }, c.fixture ? c.fixture(suite.fixture) : suite.fixture)
-              try {
+              await harness.flush()
+              for (const step of c.steps!) {
+                await applyStep(ctx, step)
                 await harness.flush()
-                for (const step of c.steps!) {
-                  await applyStep(ctx, step)
-                  await harness.flush()
-                }
-                const sig = signature(ctx, harness)
-                if (seen.has(sig))
-                  continue
+              }
+              const sig = signature(ctx, harness)
+              if (!seen.has(sig)) {
                 seen.add(sig)
-                await scan(ctx, `用例「${c.name}」终态：`, report)
-              }
-              catch (e) {
-                replayFailures++
-                if (replayReason == null)
-                  report.push(`用例「${c.name}」在浏览器里推不到终态：${(e as Error).message}`)
-              }
-              finally {
-                await harness.unmount()
+                await scan(ctx, '终态：', report)
               }
             }
+            catch (e) {
+              replayFailures++
+              if (replayReason == null)
+                report.push(`在浏览器里推不到终态：${(e as Error).message}`)
+            }
+            finally {
+              await harness.unmount()
+              restoreEnvironment?.()
+            }
             if (report.length)
-              throw new Error(`${suite.component}（${theme}）:\n${report.join('\n')}`)
+              throw new Error(`${suite.component}（${theme}）用例「${c.name}」\n${report.join('\n')}`)
           })
         }
 
