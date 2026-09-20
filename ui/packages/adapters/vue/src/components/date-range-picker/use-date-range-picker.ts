@@ -174,8 +174,16 @@ function createDateRangePickerContext(
         return content
       // 首次 mounted 时正文仍可能原地挂载，随后 Teleport 搬运会丢失刚取得的焦点。
       // 以真正进入目标容器为就绪事实，焦点域沿既有挂载流程等待，不提前聚焦临时位置。
-      const target = portalTarget.value
-      return typeof target !== 'string' && target.contains(content) ? content : null
+      const runtime = config.value
+      if (!runtime)
+        return null
+      // 焦点域在框架错误通道之外（flush / rAF）调这里，所以只回答 DOM 事实、不复核配置：
+      // 配置错误由渲染读 portalTarget 时抛出并交给框架上报。若这里也读那个 computed，
+      // 先到的一路会把异常截走，渲染只剩缓存的旧值，错误就成了未捕获 rejection。
+      // 跨 Document 或非 Element 的落点不包含正文，正文自然还没进落点。
+      const explicit = xhConfig.value.portalContainer
+      const host = explicit ? explicit() : runtime.portalContainer()
+      return isElement(host) && host.contains(content) ? content : null
     })
   }
 
