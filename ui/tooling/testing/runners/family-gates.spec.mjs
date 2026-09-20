@@ -206,14 +206,6 @@ describe('check-press-feedback.mjs 条件块', () => {
 })
 
 describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
-  /** 摘掉 press 段的总豁免，⑧ 才会逐部件报出来。 */
-  function dropPressedExcuse(root) {
-    const path = join(root, BACKLOG)
-    const json = JSON.parse(readFileSync(path, 'utf8'))
-    delete json.press['*:data-pressed']
-    writeFileSync(path, JSON.stringify(json, null, 2))
-  }
-
   /** 改一份 connect：把 from 换成 to，找不到 from 就让用例直接失败，免得夹具改空了还判通过。 */
   function rewriteConnect(root, comp, from, to) {
     const path = join(root, 'packages/engine/headless/src', comp, `${comp}.connect.ts`)
@@ -222,9 +214,19 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
     writeFileSync(path, source.replace(from, to), 'utf8')
   }
 
+  it('*:data-pressed 总豁免已删：登回 press 段即判键形态不合法', () => {
+    const root = createFixture()
+    const path = join(root, BACKLOG)
+    const json = JSON.parse(readFileSync(path, 'utf8'))
+    json.press['*:data-pressed'] = '各组件接上 press-channel 之前的总豁免'
+    writeFileSync(path, JSON.stringify(json, null, 2))
+    const result = run('check-press-feedback.mjs', root)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('press 段的键 *:data-pressed 不是「组件:部件[:状态]」形态')
+  }, SPAWN_TIMEOUT)
+
   it('字面量与 press(part) 展开两种写法都认作投影', () => {
     const root = createFixture()
-    dropPressedExcuse(root)
     const result = run('check-press-feedback.mjs', root)
     // button 直接写 'data-pressed' 字面量；dialog / popconfirm 经 ...press('trigger') 展开；
     // floating-panel 的形态钮经模板串 ...press(`window-state:…`) 展开
@@ -234,7 +236,6 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
 
   it('隔一层本地绑定或一层辅助的展开同样认作投影：table 先绑 pressing 再展开，editable 经 holdFocusThenPress 再展开 handlers', () => {
     const root = createFixture()
-    dropPressedExcuse(root)
     const result = run('check-press-feedback.mjs', root)
     for (const line of ['table 的 row', 'table 的 sort-trigger', 'table 的 select-all-trigger', 'table 的 column-visibility-trigger', 'editable 的 submit-trigger', 'editable 的 cancel-trigger'])
       expect(result.stderr).not.toContain(line)
@@ -242,7 +243,6 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
 
   it('隔层解到底仍没写 data-pressed 判红：把 table 的 press 辅助里的键摘掉，经绑定展开的四个部件一并红', () => {
     const root = createFixture()
-    dropPressedExcuse(root)
     rewriteConnect(root, 'table', '\'data-pressed\': dataAttr(pressedKey === key),', '')
     const result = run('check-press-feedback.mjs', root)
     expect(result.status).toBe(1)
@@ -253,7 +253,6 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
 
   it('展开的本地辅助没写 data-pressed 判红', () => {
     const root = createFixture()
-    dropPressedExcuse(root)
     rewriteConnect(root, 'dialog', '\'data-pressed\': dataAttr(pressed === part),', '')
     const result = run('check-press-feedback.mjs', root)
     expect(result.status).toBe(1)
@@ -263,7 +262,6 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
 
   it('只展开处理器（pressHandlers）不算投影', () => {
     const root = createFixture()
-    dropPressedExcuse(root)
     // 展开的是 shared/press 的处理器，不是本地返回 data-pressed 的辅助
     rewriteConnect(root, 'button', '\'data-pressed\': dataAttr(context.get(\'pressed\')),', '...pressHandlers(service),')
     const result = run('check-press-feedback.mjs', root)
@@ -273,11 +271,9 @@ describe('check-press-feedback.mjs ⑧ data-pressed 投影', () => {
 
   it('形态②按登记的 attr 判：context-menu 的 trigger 投影 data-pressing 即放行，摘掉即判红', () => {
     const passing = createFixture()
-    dropPressedExcuse(passing)
     expect(run('check-press-feedback.mjs', passing).stderr).not.toContain('context-menu 的 trigger')
 
     const root = createFixture()
-    dropPressedExcuse(root)
     rewriteConnect(root, 'context-menu', '\'data-pressing\': dataAttr(pressing),', '')
     const result = run('check-press-feedback.mjs', root)
     expect(result.status).toBe(1)

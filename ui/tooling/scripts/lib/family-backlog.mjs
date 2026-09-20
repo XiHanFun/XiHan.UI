@@ -14,8 +14,8 @@ export const BACKLOG_PATH = 'tooling/scripts/family-backlog.json'
 /** 表里允许出现的分段：七条家族门禁各一段，motion 段给 check-motion-role 的存量。 */
 export const SECTIONS = Object.freeze(['edge', 'selection', 'ladder', 'shape', 'scroll', 'press', 'text', 'motion'])
 
-/** 键的形态：`组件:部件[:状态…]`；`*:` 开头的是整段总豁免（只允许 press 段的 data-pressed 通道）。 */
-const KEY = /^[\w*-]+(?::{1,2}[^\s:]+)+$/
+/** 键的形态：`组件:部件[:状态…]`，逐部件登记；`*:` 开头的整段总豁免不再允许（press 段的 data-pressed 通道已铺满并删除）。 */
+const KEY = /^[\w-]+(?::{1,2}[^\s:]+)+$/
 
 /**
  * 读整份表并校验形态。返回 { sections, problems }：problems 非空时表本身有错，门禁应直接判红。
