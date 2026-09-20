@@ -35,12 +35,24 @@ const OVERLAYS = [
 /** 内联样式里把引擎坐标写进逻辑内边距的写法。 */
 const LOGICAL_INSET_FED_BY_ENGINE = /inset(?:Inline|Block)(?:Start|End)\s*:[^\n]*(?:position|popoutPosition|spotlight)\?\./
 
-/** positioner 把引擎坐标写进物理属性的写法。 */
-const PHYSICAL_X = /left: `\$\{position\?\.x \?\? 0\}px`/
-const PHYSICAL_Y = /top: `\$\{position\?\.y \?\? 0\}px`/
+/** 绝大多数族把引擎结果交给共享投影 overlayFixedStyle（menubar / side-nav 传的是逐面板的结果），由它写进 left / top。 */
+const PHYSICAL_VIA_SHARED = /overlayFixedStyle\(/
+
+/** 不走共享投影的族（tour 的锚定步、tree-select）自己把 x / y 写进 left / top。 */
+const PHYSICAL_X = /\bleft: (?:\w+ \? )?`\$\{position\?\.x \?\? 0\}px`/
+const PHYSICAL_Y = /\btop: (?:\w+ \? )?`\$\{position\?\.y \?\? 0\}px`/
 
 function connectSource(name: string): string {
   return readFileSync(join(HEADLESS, name, `${name}.connect.ts`), 'utf8')
+}
+
+/** 共享投影 overlayFixedStyle 的源码段：从声明到函数体收口为止。 */
+function sharedProjectionSource(): string {
+  const source = readFileSync(join(HEADLESS, 'shared', 'overlay.ts'), 'utf8')
+  const match = source.match(/export function overlayFixedStyle\([\s\S]*?\n\}\n/)
+  if (!match)
+    throw new Error('shared/overlay.ts 里找不到 overlayFixedStyle')
+  return match[0]
 }
 
 describe('引擎坐标只落在物理属性上', () => {
@@ -67,11 +79,19 @@ describe('引擎坐标只落在物理属性上', () => {
     })
   }
 
-  for (const name of ['tooltip', 'select']) {
+  it('共享投影 overlayFixedStyle 把 x / y 写进 left / top，不碰逻辑内边距', () => {
+    const source = sharedProjectionSource()
+    expect(source).toMatch(/\bleft: pixel\(position\?\.x\b/)
+    expect(source).toMatch(/\btop: pixel\(position\?\.y\b/)
+    expect(source).not.toMatch(/inset/i)
+  })
+
+  for (const name of OVERLAYS) {
     it(`${name} 的 positioner 把 x / y 写进 left / top`, () => {
       const source = connectSource(name)
-      expect(source).toMatch(PHYSICAL_X)
-      expect(source).toMatch(PHYSICAL_Y)
+      const viaShared = PHYSICAL_VIA_SHARED.test(source)
+      const inline = PHYSICAL_X.test(source) && PHYSICAL_Y.test(source)
+      expect(viaShared || inline, `${name} 既没走 overlayFixedStyle，也没自己写 left / top`).toBe(true)
     })
   }
 })
