@@ -35,6 +35,16 @@ async function focusVisible(scope: string, part: string, tag = 'button', attrs: 
   return el
 }
 
+/** 实心按钮：与连接层投影一致带上 Action Control 家族标记，换环色那条规则认的是家族的形态属性。 */
+const SOLID_BUTTON = {
+  'data-variant': 'solid',
+  'data-xh-action-control': '',
+  'data-xh-action-profile': 'text',
+  'data-xh-action-display': 'always',
+  'data-xh-action-size': 'md',
+  'data-xh-action-variant': 'solid',
+}
+
 /** --xh-ring-focus 算完之后的那个颜色串，用来与 outline-color 对拍。 */
 function ringFocusColor(): string {
   const probe = document.createElement('span')
@@ -63,14 +73,14 @@ describe('聚焦环公共层', () => {
   })
 
   it('偏移只有一档：改环色的那些档，偏移与默认档逐字相同', async () => {
-    const el = await focusVisible('button', 'root', 'button', { 'data-variant': 'solid' })
+    const el = await focusVisible('button', 'root', 'button', SOLID_BUTTON)
     const style = getComputedStyle(el)
     expect(style.outlineOffset).toBe('-2px')
     expect(style.outlineWidth).toBe('2px')
   })
 
   it('换环色档：面是实心的，环改取面自己的前景色，不再是品牌色', async () => {
-    const el = await focusVisible('button', 'root', 'button', { 'data-variant': 'solid' })
+    const el = await focusVisible('button', 'root', 'button', SOLID_BUTTON)
     const style = getComputedStyle(el)
     expect(style.outlineStyle).toBe('solid')
     expect(style.outlineColor).toBe(style.color)
