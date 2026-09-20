@@ -15,16 +15,16 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: rgb(0, 0, 0)
-border-right-color: rgb(0, 0, 0)
-border-bottom-color: rgb(0, 0, 0)
-border-left-color: rgb(0, 0, 0)
+border-top-color: platform
+border-right-color: platform
+border-bottom-color: platform
+border-left-color: platform
 min-height: 0px
 font-size: 14px
 line-height: 14px
 font-weight: 400
-color: rgb(0, 0, 0)
-background-color: rgba(0, 0, 0, 0)
+color: platform
+background-color: platform
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -33,7 +33,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: rgb(0, 0, 0)
+outline-color: platform
 
 [indicator]
 padding-top: 0px

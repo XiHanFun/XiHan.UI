@@ -52,6 +52,64 @@ export interface ComputedCollectOptions {
 export type ComputedSnapshot = Record<string, Record<string, string>>
 
 /**
+ * 平台画的原生控件上，皮肤没碰过的颜色记成这个值。
+ *
+ * button / input / select / textarea 只要皮肤没写 appearance: none，颜色就由宿主的原生主题给：
+ * ButtonFace 在 Windows 上是 rgb(240, 240, 240)、在 Linux 上是 rgb(239, 239, 239)，
+ * select 的底与 range 的 color 两边更是各画各的。这些数不是皮肤的裁决，采进快照只会让基线
+ * 跟着录制机的操作系统走——在开发机上录的到 CI 一定红。
+ *
+ * 判法：把一个只带 UA 相关属性的同类空壳插在旁边、用 all: revert 让它只剩 UA 样式，
+ * 颜色与它相等的就是平台给的。皮肤改过的值一律从令牌解析成 oklch，与 UA 的 rgb 不会撞车，
+ * 照常采值——接了 Action Control 的按钮 appearance 也是 auto，但底与前景都被皮肤换掉了，不受影响。
+ */
+export const PLATFORM_PAINTED = 'platform'
+
+const NATIVE_CONTROL_TAGS: ReadonlySet<string> = new Set(['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'])
+
+/** 采进快照的颜色属性：只有这些会落到平台主题上。 */
+const COLOR_PROPS: ReadonlySet<string> = new Set([
+  'border-top-color',
+  'border-right-color',
+  'border-bottom-color',
+  'border-left-color',
+  'color',
+  'background-color',
+  'outline-color',
+])
+
+/**
+ * 决定 UA 怎么画这个控件的作者属性，探针只带这几个。
+ * 不带 data-*：带了皮肤规则会命中探针，Light DOM 宿主的部件观察者也会把它当成新条目。
+ */
+const UA_SHAPING_ATTRS = ['type', 'multiple', 'size', 'disabled', 'readonly', 'checked'] as const
+
+/** 平台给这个控件的颜色；不是平台画的返回 null。 */
+function platformColors(el: HTMLElement, style: CSSStyleDeclaration): Record<string, string> | null {
+  if (!NATIVE_CONTROL_TAGS.has(el.tagName) || style.getPropertyValue('appearance') === 'none')
+    return null
+  const doc = el.ownerDocument
+  const view = doc.defaultView
+  if (!view)
+    return null
+  const probe = doc.createElement(el.tagName.toLowerCase())
+  for (const name of UA_SHAPING_ATTRS) {
+    const value = el.getAttribute(name)
+    if (value != null)
+      probe.setAttribute(name, value)
+  }
+  probe.style.setProperty('all', 'revert', 'important')
+  // 挂在同一个父节点下：color-scheme 等会影响原生主题取色的继承值要与被测节点一致。
+  el.after(probe)
+  const ua = view.getComputedStyle(probe)
+  const out: Record<string, string> = {}
+  for (const prop of COLOR_PROPS)
+    out[prop] = ua.getPropertyValue(prop).trim()
+  probe.remove()
+  return out
+}
+
+/**
  * 每个 part 取文档序第一个实例的计算样式。
  * 取第一个而不是全部：同一 part 的多个实例是数据驱动的重复，皮肤规则是同一条。
  */
@@ -66,9 +124,12 @@ export function collectComputedSnapshot(opts: ComputedCollectOptions): ComputedS
     const style = doc.defaultView?.getComputedStyle(el)
     if (!style)
       continue
+    const platform = platformColors(el, style)
     const props: Record<string, string> = {}
-    for (const prop of COMPUTED_PROPS)
-      props[prop] = style.getPropertyValue(prop).trim()
+    for (const prop of COMPUTED_PROPS) {
+      const value = style.getPropertyValue(prop).trim()
+      props[prop] = platform && COLOR_PROPS.has(prop) && platform[prop] === value ? PLATFORM_PAINTED : value
+    }
     out[part] = props
   }
 
