@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 //
-// Light DOM 搬不动浮层，只能在展开时把「祖先建了层叠上下文」这件事报出来。
+// 浮层展开即搬进 Portal 目标，缺省目标落在 body 末尾、祖先的层叠上下文困不住它；
+// 作者把 portalContainer 指进一个建了层叠上下文的祖先时，浮层还是会被那一层困住，
+// 展开时把这件事报出来。
 import type { DiagnosticRecord } from '@xihan-ui/core'
 import {
   DIAGNOSTIC_CODES,
@@ -16,7 +18,10 @@ import { findStackingTrap, stackingCauseOf } from '../src/dom/stacking-context'
 
 defineXhElements()
 
-interface Updatable extends HTMLElement { updateComplete: Promise<unknown> }
+interface Updatable extends HTMLElement {
+  updateComplete: Promise<unknown>
+  portalContainer?: () => Element | null
+}
 
 let seen: DiagnosticRecord[] = []
 
@@ -49,8 +54,11 @@ async function settle(el: Updatable): Promise<void> {
   }
 }
 
-/** 在给定样式的祖先里挂一个默认展开的 popover。 */
-async function mount(ancestorStyle?: string, attrs?: Record<string, string>): Promise<Updatable> {
+/**
+ * 在给定样式的祖先里挂一个默认展开的 popover；portal 为 'inside' 时把 Portal 目标也放进
+ * 这个祖先（作者自设 portalContainer），为 'default' 时走缺省目标（body 末尾）。
+ */
+async function mount(ancestorStyle?: string, portal: 'inside' | 'default' = 'inside'): Promise<Updatable> {
   const wrap = document.createElement('div')
   wrap.id = 'app'
   wrap.className = 'shell main'
@@ -58,9 +66,14 @@ async function mount(ancestorStyle?: string, attrs?: Record<string, string>): Pr
     wrap.setAttribute('style', ancestorStyle)
   const el = document.createElement('xh-popover') as Updatable
   el.setAttribute('default-open', '')
-  for (const [k, v] of Object.entries(attrs ?? {})) el.setAttribute(k, v)
   el.innerHTML = MARKUP
   wrap.appendChild(el)
+  if (portal === 'inside') {
+    const target = document.createElement('div')
+    target.className = 'overlays'
+    wrap.appendChild(target)
+    el.portalContainer = () => target
+  }
   document.body.appendChild(wrap)
   await settle(el)
   return el
@@ -155,8 +168,12 @@ describe('层叠上下文判据', () => {
 })
 
 describe('浮层展开时的层叠上下文诊断', () => {
-  it('祖先带 transform 时投诊断，并指出祖先与那条属性', async () => {
-    await mount('transform: translateX(1px)')
+  it('作者 Portal 目标的祖先带 transform 时投诊断，并指出祖先与那条属性', async () => {
+    const el = await mount('transform: translateX(1px)')
+    // 浮层已经搬进作者指定的目标，查的是目标往上的祖先链
+    const positioner = el.querySelector<HTMLElement>('[data-part="positioner"]')
+    expect(positioner).toBeNull()
+    expect(document.querySelector('.overlays [data-part="positioner"]')).not.toBeNull()
     const hits = traps()
     expect(hits).toHaveLength(1)
     expect(hits[0]).toMatchObject({ level: 'warn', scope: 'popover', part: 'positioner' })
@@ -187,6 +204,15 @@ describe('浮层展开时的层叠上下文诊断', () => {
 
   it('祖先干净时不投', async () => {
     await mount('position: relative')
+    expect(traps()).toHaveLength(0)
+  })
+
+  it('缺省 Portal 目标落在 body 末尾，宿主祖先的层叠上下文困不住搬走的浮层，不投', async () => {
+    const el = await mount('transform: translateX(1px)', 'default')
+    const positioner = document.querySelector<HTMLElement>('[data-part="positioner"]')!
+    expect(positioner.dataset.state).toBe('open')
+    expect(el.contains(positioner)).toBe(false)
+    expect(positioner.closest('#app')).toBeNull()
     expect(traps()).toHaveLength(0)
   })
 
