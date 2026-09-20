@@ -5,7 +5,7 @@ import { defineXhElements } from '../src/define'
 defineXhElements()
 
 interface KbdHost extends HTMLElement {
-  value: string
+  keys: string[]
   updateComplete: Promise<unknown>
 }
 
@@ -16,7 +16,7 @@ afterEach(() => {
 describe('xh-kbd 原生语义', () => {
   it('拒绝用 span 伪装键帽', async () => {
     const host = document.createElement('xh-kbd') as KbdHost
-    host.value = 'S'
+    host.keys = ['S']
     const root = document.createElement('span')
     root.dataset.xhPart = 'root'
     host.append(root)
@@ -24,16 +24,20 @@ describe('xh-kbd 原生语义', () => {
     await expect(host.updateComplete).rejects.toThrow(/原生 <kbd>/)
   })
 
-  it('原生 kbd 接收格式化文本与可读名称', async () => {
+  it('原生 kbd 接收逐键键帽与整组可读名称', async () => {
     const host = document.createElement('xh-kbd') as KbdHost
-    host.value = 'Mod'
+    host.keys = ['Mod', 'S']
     const root = document.createElement('kbd')
     root.dataset.xhPart = 'root'
     host.append(root)
     document.body.append(host)
     await host.updateComplete
     expect(root.dataset.scope).toBe('kbd')
-    expect(root.textContent).toMatch(/Ctrl|⌘/)
-    expect(root.getAttribute('aria-label')).toMatch(/Control|Command/)
+    expect(root.dataset.part).toBe('root')
+    const keys = Array.from(root.querySelectorAll('[data-part="key"]'))
+    expect(keys).toHaveLength(2)
+    expect(keys[0]!.textContent).toMatch(/^(Ctrl|⌘)$/)
+    expect(keys[1]!.textContent).toBe('S')
+    expect(root.getAttribute('aria-label')).toMatch(/^(Control|Command) \+ S$/)
   })
 })
