@@ -72,9 +72,9 @@ module.exports = {
       severity: 'error',
       comment: '解析不出来的 import。最常见的成因正是"伸手够了邻层却没在 package.json 里声明依赖"',
       from: { path: '^packages/' },
-      // Vite 的 ?raw 查询后缀：enhanced-resolve 带着后缀去查 exports 映射查不到，
+      // Vite 的 ?raw / ?url 查询后缀：enhanced-resolve 带着后缀去查 exports 映射查不到，
       // 但被引的包照样要在 package.json 里声明，不声明 Vite 同样解析失败
-      to: { couldNotResolve: true, pathNot: '\\?raw$' },
+      to: { couldNotResolve: true, pathNot: '\\?(?:raw|url)$' },
     },
     {
       name: 'styles-no-js-deps',
