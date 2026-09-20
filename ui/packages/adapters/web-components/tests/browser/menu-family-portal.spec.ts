@@ -105,7 +105,7 @@ describe.each(['context-menu', 'menu', 'menubar'] as const)('wc %s 根 Portal', 
 })
 
 describe('wc Menubar 多 positioner Portal', () => {
-  it('换面时新旧 content 各持有租约，并复用 Headless 的单一行为 Layer', async () => {
+  it('整排 positioner 共用一份租约：任一张可见就全部在落点、全部收起才归位，Headless 的单一行为 Layer 跨换面复用', async () => {
     const style = document.createElement('style')
     style.dataset.testMenuFamilyPortal = ''
     style.textContent = `
@@ -132,30 +132,35 @@ describe('wc Menubar 多 positioner Portal', () => {
     const editParent = editPositioner.parentNode
     document.body.append(stage)
 
+    // 与 Vue / React 相同：每张 positioner 都在落点、文档序保持作者那一排，收起的那张只是 hidden
     await settle()
     expect(filePositioner.parentElement?.dataset.xhPortalShell).toBe('')
-    expect(editPositioner.parentNode).toBe(editParent)
+    expect(editPositioner.parentElement).toBe(filePositioner.parentElement)
+    expect(filePositioner.nextElementSibling).toBe(editPositioner)
+    expect(document.querySelectorAll('#xh-portal-root > [data-xh-portal-shell]')).toHaveLength(1)
     expect(getLayerRegistry(document).list()).toHaveLength(1)
 
     element.value = 'edit'
     await settle()
     expect(filePositioner.parentElement?.dataset.xhPortalShell).toBe('')
-    expect(editPositioner.parentElement?.dataset.xhPortalShell).toBe('')
-    expect(document.querySelectorAll('#xh-portal-root > [data-xh-portal-shell]')).toHaveLength(2)
+    expect(editPositioner.parentElement).toBe(filePositioner.parentElement)
+    expect(document.querySelectorAll('#xh-portal-root > [data-xh-portal-shell]')).toHaveLength(1)
     expect(getLayerRegistry(document).list()).toHaveLength(1)
 
+    // 旧面退场播完也不单独归位：租约按整排持有，只要还有一张可见就留在落点
     finiteAnimations(fileContent)[0]!.finish()
     await settle()
-    expect(filePositioner.parentNode).toBe(fileParent)
+    expect(filePositioner.parentElement?.dataset.xhPortalShell).toBe('')
     expect(editPositioner.parentElement?.dataset.xhPortalShell).toBe('')
-    // 物理租约按 content 独立完成，Menubar 行为层仍由 Headless 跨换面复用。
     expect(getLayerRegistry(document).list()).toHaveLength(1)
 
     element.value = null
     await settle()
     finiteAnimations(editContent)[0]!.finish()
     await settle()
+    expect(filePositioner.parentNode).toBe(fileParent)
     expect(editPositioner.parentNode).toBe(editParent)
+    expect(document.querySelectorAll('#xh-portal-root > [data-xh-portal-shell]')).toHaveLength(0)
     expect(getLayerRegistry(document).list()).toHaveLength(0)
   })
 })

@@ -6524,6 +6524,25 @@
             },
             {
               "kind": "method",
+              "name": "hiddenInputAnchor",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ChildNode | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "表单出口的落点：出口住在 root 里（与 Vue / React 相同），插在 positioner（或它搬迁期间的\n占位节点）所在的那个 root 直系子节点之前。positioner 缺席或不在 root 里时为 null，出口退到 root 末尾。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -33308,8 +33327,15 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()",
+              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit }>()",
               "description": "逐个 content 一份退场闸门：一个菜单一份，它们各开各的。"
+            },
+            {
+              "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true,
+              "description": "整排菜单的定位层共用一份租约：任一张可见时全部搬到落点，逻辑来源是菜单栏根。\n与 Vue / React 相同——那两端把每张 positioner 都经 Portal 搬到落点、视觉环境取自根，\n文档序始终是作者写的那一排；若只搬展开的那一张，它会排到还留在原位的兄弟之后，\n部件序与 aria-controls 的配对随之乱掉。"
             },
             {
               "kind": "field",
@@ -33647,24 +33673,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "createPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "AnchoredPortalController"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "value",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
             },
             {
               "kind": "field",
