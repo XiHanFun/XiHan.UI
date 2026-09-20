@@ -310,6 +310,7 @@ granularity 决定两组输入行铺设哪几段、浮层铺设哪一档格子
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -333,6 +334,7 @@ granularity 决定两组输入行铺设哪几段、浮层铺设哪一档格子
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `preset` | `data-disabled` | ''（条件成立时才出现） |
+| `preset` | `data-pressed` | ''（条件成立时才出现） |
 | `preset` | `data-state` | 'checked' \| 'unchecked' |
 | `preset` | `data-value` | v |
 | `preset` | `data-xh-collection-context` | 'overlay' |

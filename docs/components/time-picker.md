@@ -400,6 +400,7 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `preset` | `data-disabled` | ''（条件成立时才出现） |
+| `preset` | `data-pressed` | ''（条件成立时才出现） |
 | `preset` | `data-state` | 'checked' \| 'unchecked' |
 | `preset` | `data-xh-collection-context` | 'overlay' |
 | `preset` | `data-xh-collection-item` | '' |
@@ -408,6 +409,7 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `column` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |

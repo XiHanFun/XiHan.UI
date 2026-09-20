@@ -285,6 +285,7 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `dropzone` | `data-dragging` | ''（条件成立时才出现） |
 | `dropzone` | `data-invalid` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-empty` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -300,8 +301,10 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `item-progress` | `data-disabled` | ''（条件成立时才出现） |
 | `item-progress` | `data-state` | uploadOf(file)?.status |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

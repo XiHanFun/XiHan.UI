@@ -259,6 +259,7 @@
 | `input` | `data-xh-field-input` | '' |
 | `input` | `data-xh-field-layout` | 'single-line' |
 | `edit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `edit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `edit-trigger` | `data-state` | 'edit' \| 'preview' |
 | `edit-trigger` | `data-xh-action-control` | '' |
 | `edit-trigger` | `data-xh-action-display` | 'always' |
@@ -266,6 +267,7 @@
 | `edit-trigger` | `data-xh-action-size` | props.size |
 | `edit-trigger` | `data-xh-action-variant` | 'ghost' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-state` | 'edit' \| 'preview' |
 | `submit-trigger` | `data-xh-action-control` | '' |
 | `submit-trigger` | `data-xh-action-display` | 'always' |
@@ -273,6 +275,7 @@
 | `submit-trigger` | `data-xh-action-size` | props.size |
 | `submit-trigger` | `data-xh-action-variant` | 'ghost' |
 | `cancel-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `cancel-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `cancel-trigger` | `data-state` | 'edit' \| 'preview' |
 | `cancel-trigger` | `data-xh-action-control` | '' |
 | `cancel-trigger` | `data-xh-action-display` | 'always' |

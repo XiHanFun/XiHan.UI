@@ -274,8 +274,11 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 | 部件 | 取值 |
 | --- | --- |
+| `row` | 'open' \| 'closed' \| undefined |
 | `column-visibility-trigger` | 'unchecked' \| 'checked' |
 | `select-all-trigger` | tableSelectionState(selection, selectableIds) |
+| `row-select-trigger` | 'open' \| 'closed' \| undefined |
+| `expand-trigger` | 'open' \| 'closed' \| undefined |
 | `expanded-row` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -475,23 +478,33 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `root` | `data-variant` | props.variant |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
+| `row` | `data-disabled` | ''（条件成立时才出现） |
 | `row` | `data-draggable` | ''（条件成立时才出现） |
 | `row` | `data-dragging` | ''（条件成立时才出现） |
 | `row` | `data-drop` | 'before' \| 'after' \| 'inside' |
+| `row` | `data-highlighted` | ''（条件成立时才出现） |
+| `row` | `data-pressed` | ''（条件成立时才出现） |
 | `row` | `data-section` | 'body' |
+| `row` | `data-selected` | ''（条件成立时才出现） |
+| `row` | `data-state` | 'open' \| 'closed' \| undefined |
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
+| `column-header` | `data-frozen` | undefined |
+| `column-header` | `data-sort` | 'asc' \| 'desc' |
+| `column-header` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
 | `cell` | `data-drop` | 'before' \| 'after' |
+| `cell` | `data-frozen` | undefined |
 | `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
 | `toolbar` | `data-size` | props.size |
 | `column-list` | `data-size` | props.size |
 | `column-visibility-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `column-visibility-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `column-visibility-trigger` | `data-state` | 'unchecked' \| 'checked' |
 | `column-visibility-trigger` | `data-xh-action-control` | '' |
 | `column-visibility-trigger` | `data-xh-action-display` | 'always' |
@@ -499,18 +512,27 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `column-visibility-trigger` | `data-xh-action-size` | props.size |
 | `column-visibility-trigger` | `data-xh-action-variant` | 'outline' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'icon' |
 | `select-all-trigger` | `data-xh-action-size` | props.size |
 | `select-all-trigger` | `data-xh-action-variant` | 'outline' |
+| `row-select-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `row-select-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `row-select-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `row-select-trigger` | `data-selected` | ''（条件成立时才出现） |
+| `row-select-trigger` | `data-state` | 'open' \| 'closed' \| undefined |
 | `row-select-trigger` | `data-xh-action-control` | '' |
 | `row-select-trigger` | `data-xh-action-display` | 'always' |
 | `row-select-trigger` | `data-xh-action-profile` | 'icon' |
 | `row-select-trigger` | `data-xh-action-size` | props.size |
 | `row-select-trigger` | `data-xh-action-variant` | 'outline' |
 | `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `sort-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `sort-trigger` | `data-sort` | 'asc' \| 'desc' |
+| `sort-trigger` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `sort-trigger` | `data-xh-action-control` | '' |
 | `sort-trigger` | `data-xh-action-display` | 'always' |
 | `sort-trigger` | `data-xh-action-profile` | 'row' |
@@ -522,6 +544,11 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `column-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `row-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `row-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `expand-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `expand-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `expand-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `expand-trigger` | `data-selected` | ''（条件成立时才出现） |
+| `expand-trigger` | `data-state` | 'open' \| 'closed' \| undefined |
 | `expand-trigger` | `data-xh-action-control` | '' |
 | `expand-trigger` | `data-xh-action-display` | 'always' |
 | `expand-trigger` | `data-xh-action-profile` | 'icon' |
@@ -530,6 +557,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `expanded-row` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-xh-action-control` | '' |
 | `load-more-trigger` | `data-xh-action-display` | 'always' |
 | `load-more-trigger` | `data-xh-action-profile` | 'row' |

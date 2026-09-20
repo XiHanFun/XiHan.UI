@@ -240,8 +240,17 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-orientation` | props.orientation |
+| `cell` | `data-disabled` | ''（条件成立时才出现） |
+| `cell` | `data-highlighted` | ''（条件成立时才出现） |
+| `cell` | `data-selected` | ''（条件成立时才出现） |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-selected` | ''（条件成立时才出现） |
 | `item` | `data-deletable` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-selectable` | ''（条件成立时才出现） |
+| `item` | `data-selected` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

@@ -283,6 +283,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `question` | `data-current` | ''（条件成立时才出现） |
 | `group` | `data-select-mode` | 'single' \| 'multiple' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-select-mode` | 'single' \| 'multiple' |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-action-control` | '' |
@@ -295,18 +296,21 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'icon' |
 | `prev-trigger` | `data-xh-action-size` | 'xs' |
 | `prev-trigger` | `data-xh-action-variant` | 'ghost' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'icon' |
 | `next-trigger` | `data-xh-action-size` | 'xs' |
 | `next-trigger` | `data-xh-action-variant` | 'ghost' |
 | `skip-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `skip-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `skip-trigger` | `data-xh-action-control` | '' |
 | `skip-trigger` | `data-xh-action-display` | 'always' |
 | `skip-trigger` | `data-xh-action-profile` | 'text' |
@@ -314,6 +318,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `skip-trigger` | `data-xh-action-variant` | 'ghost' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |
+| `submit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-tone` | props.tone |
 | `submit-trigger` | `data-xh-action-control` | '' |
 | `submit-trigger` | `data-xh-action-display` | 'always' |

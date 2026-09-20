@@ -164,6 +164,9 @@
 | `content` | 'open' \| 'closed' |
 | `search-item` | 'checked' \| 'indeterminate' \| 'unchecked' |
 | `column` | 'open' \| 'closed' |
+| `item` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-text` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-indicator` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `footer` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -385,12 +388,24 @@
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-branch` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-in-path` | ''（条件成立时才出现） |
 | `item` | `data-level` | String(meta.level) \| undefined |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-in-path` | ''（条件成立时才出现） |
+| `item-text` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-in-path` | ''（条件成立时才出现） |
+| `item-indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 

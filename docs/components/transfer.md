@@ -177,6 +177,9 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 | 部件 | 取值 |
 | --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
+| `item-checkbox` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | checkStates[panel.side] |
 
 以下名称仅用于内部状态机。
@@ -317,28 +320,44 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `group` | `data-side` | group.side |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-side` | group.side |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-side` | item.side |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-side` | item.side |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-checkbox` | `data-disabled` | ''（条件成立时才出现） |
+| `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-checkbox` | `data-side` | item.side |
+| `item-checkbox` | `data-state` | 'checked' \| 'unchecked' |
 | `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-side` | panel.side |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-side` | panel.side |
 | `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `to-target-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `to-target-trigger` | `data-xh-action-control` | '' |
 | `to-target-trigger` | `data-xh-action-display` | 'always' |
 | `to-target-trigger` | `data-xh-action-profile` | 'icon' |
 | `to-target-trigger` | `data-xh-action-size` | 'sm' |
 | `to-target-trigger` | `data-xh-action-variant` | 'outline' |
 | `to-source-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `to-source-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `to-source-trigger` | `data-xh-action-control` | '' |
 | `to-source-trigger` | `data-xh-action-display` | 'always' |
 | `to-source-trigger` | `data-xh-action-profile` | 'icon' |
 | `to-source-trigger` | `data-xh-action-size` | 'sm' |
 | `to-source-trigger` | `data-xh-action-variant` | 'outline' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-side` | panel.side |
 | `select-all-trigger` | `data-state` | checkStates[panel.side] |
 | `select-all-trigger` | `data-xh-action-control` | '' |

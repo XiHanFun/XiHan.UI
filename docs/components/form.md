@@ -255,13 +255,16 @@
 | `error-summary` | `data-count` | String(errorCount) |
 | `error-summary` | `data-state` | 'invalid' \| 'idle' |
 | `error-summary-item` | `data-invalid` | ''（条件成立时才出现） |
+| `error-summary-item` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-xh-action-control` | '' |
 | `submit-trigger` | `data-xh-action-display` | 'always' |
 | `submit-trigger` | `data-xh-action-profile` | 'text' |
 | `submit-trigger` | `data-xh-action-size` | 'md' |
 | `submit-trigger` | `data-xh-action-variant` | 'solid' |
 | `reset-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `reset-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `reset-trigger` | `data-xh-action-control` | '' |
 | `reset-trigger` | `data-xh-action-display` | 'always' |
 | `reset-trigger` | `data-xh-action-profile` | 'text' |

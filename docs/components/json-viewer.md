@@ -166,6 +166,18 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 ### 状态
 
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `branch` | 'open' \| 'closed' |
+| `branch-control` | 'open' \| 'closed' |
+| `branch-trigger` | 'open' \| 'closed' |
+| `branch-indicator` | 'open' \| 'closed' |
+| `branch-text` | 'open' \| 'closed' |
+| `branch-content` | 'open' \| 'closed' |
+| `preview` | 'open' \| 'closed' |
+
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
@@ -235,8 +247,16 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | --- | --- | --- |
 | `tree` | `aria-label` | label.tree |
 | `tree` | `role` | 'tree' |
+| `item` | `aria-level` | node?.level |
+| `item` | `aria-posinset` | node?.posInSet |
+| `item` | `aria-setsize` | node?.setSize |
+| `item` | `role` | 'treeitem' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
 | `branch` | `aria-label` | branchLabel(node) \| undefined |
+| `branch` | `aria-level` | node?.level |
+| `branch` | `aria-posinset` | node?.posInSet |
+| `branch` | `aria-setsize` | node?.setSize |
+| `branch` | `role` | 'treeitem' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `role` | 'group' |
@@ -267,7 +287,54 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `root` | `data-size` | props.size |
 | `root` | `data-variant` | props.variant |
 | `root` | `data-view` | props.view |
+| `item` | `data-circular` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-truncated` | ''（条件成立时才出现） |
+| `item` | `data-value-type` | node?.type |
+| `item-key` | `data-circular` | ''（条件成立时才出现） |
+| `item-key` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-key` | `data-truncated` | ''（条件成立时才出现） |
+| `item-key` | `data-value-type` | node?.type |
+| `item-value` | `data-circular` | ''（条件成立时才出现） |
+| `item-value` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-value` | `data-truncated` | ''（条件成立时才出现） |
+| `item-value` | `data-value-type` | node?.type |
+| `branch` | `data-circular` | ''（条件成立时才出现） |
+| `branch` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch` | `data-state` | 'open' \| 'closed' |
+| `branch` | `data-truncated` | ''（条件成立时才出现） |
+| `branch` | `data-value-type` | node?.type |
+| `branch-control` | `data-circular` | ''（条件成立时才出现） |
+| `branch-control` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
+| `branch-control` | `data-state` | 'open' \| 'closed' |
+| `branch-control` | `data-truncated` | ''（条件成立时才出现） |
+| `branch-control` | `data-value-type` | node?.type |
+| `branch-trigger` | `data-circular` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-state` | 'open' \| 'closed' |
+| `branch-trigger` | `data-truncated` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-value-type` | node?.type |
+| `branch-indicator` | `data-circular` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-state` | 'open' \| 'closed' |
+| `branch-indicator` | `data-truncated` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-value-type` | node?.type |
+| `branch-text` | `data-circular` | ''（条件成立时才出现） |
+| `branch-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-text` | `data-state` | 'open' \| 'closed' |
+| `branch-text` | `data-truncated` | ''（条件成立时才出现） |
+| `branch-text` | `data-value-type` | node?.type |
+| `branch-content` | `data-circular` | ''（条件成立时才出现） |
+| `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-content` | `data-state` | 'open' \| 'closed' |
+| `branch-content` | `data-truncated` | ''（条件成立时才出现） |
+| `branch-content` | `data-value-type` | node?.type |
+| `preview` | `data-circular` | ''（条件成立时才出现） |
+| `preview` | `data-highlighted` | ''（条件成立时才出现） |
+| `preview` | `data-state` | 'open' \| 'closed' |
+| `preview` | `data-truncated` | ''（条件成立时才出现） |
+| `preview` | `data-value-type` | node?.type |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

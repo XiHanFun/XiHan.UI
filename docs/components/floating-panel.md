@@ -162,8 +162,10 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 
 | 部件 | 取值 |
 | --- | --- |
+| `root` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
 | `window-state-trigger` | 'on' \| 'off' |
 
 以下名称仅用于内部状态机。
@@ -271,6 +273,12 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-resizing` | ''（条件成立时才出现） |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-window-state` | context.get('windowState') |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -280,6 +288,11 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-window-state` | context.get('windowState') |
+| `content` | `data-disabled` | ''（条件成立时才出现） |
+| `content` | `data-dragging` | ''（条件成立时才出现） |
+| `content` | `data-resizing` | ''（条件成立时才出现） |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-window-state` | context.get('windowState') |
 | `header` | `data-dragging` | ''（条件成立时才出现） |
 | `header` | `data-window-state` | context.get('windowState') |
 | `drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -288,6 +301,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `resize-trigger` | `data-edge` | item.edge |
 | `resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
 | `window-state-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `window-state-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `window-state-trigger` | `data-state` | 'on' \| 'off' |
 | `window-state-trigger` | `data-target-window-state` | item.windowState |
 | `window-state-trigger` | `data-xh-action-control` | '' |
@@ -295,6 +309,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `window-state-trigger` | `data-xh-action-profile` | 'icon' |
 | `window-state-trigger` | `data-xh-action-size` | 'sm' |
 | `window-state-trigger` | `data-xh-action-variant` | 'ghost' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

@@ -245,6 +245,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -257,6 +258,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

@@ -197,10 +197,18 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
 | `panel` | `data-collapsed` | ''（条件成立时才出现） |
+| `panel` | `data-disabled` | ''（条件成立时才出现） |
+| `panel` | `data-dragging` | ''（条件成立时才出现） |
 | `panel` | `data-index` | String(panel.index) |
+| `panel` | `data-orientation` | props.orientation |
+| `resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-index` | String(boundary) |
+| `resize-trigger` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

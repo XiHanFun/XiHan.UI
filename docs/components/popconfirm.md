@@ -211,6 +211,7 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -225,11 +226,13 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `confirm-trigger` | `data-xh-action-control` | '' |
 | `confirm-trigger` | `data-xh-action-display` | 'always' |
 | `confirm-trigger` | `data-xh-action-profile` | 'text' |
 | `confirm-trigger` | `data-xh-action-size` | 'sm' |
 | `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `cancel-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `cancel-trigger` | `data-xh-action-control` | '' |
 | `cancel-trigger` | `data-xh-action-display` | 'always' |
 | `cancel-trigger` | `data-xh-action-profile` | 'text' |

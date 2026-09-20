@@ -244,6 +244,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -257,6 +258,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |
