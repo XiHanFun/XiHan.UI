@@ -1,8 +1,9 @@
-// 横排折竖排这一组：timeline 按视口断点换档，steps 只折行、不翻朝向。
+// 横排折竖排这一组：timeline 按视口断点换档，steps 不折行、也不翻朝向。
 //
 // steps 的键盘轴跟着 orientation 走（方向键与 aria-orientation 都读它），
-// 皮肤把横排翻成竖排会让左右键在竖着的一列上走，所以这一件不做形态换档，
-// 只在第一层把折行做出来——下面的用例把这条契约钉住：横排永远是横排。
+// 皮肤把横排翻成竖排会让左右键在竖着的一列上走，所以这一件不做形态换档；
+// 步骤与连接线又必须留在同一条流程轴上，窄处由标题在自己的格内省略——
+// 下面的用例把这条契约钉住：横排永远是横排，也永远是一行。
 //
 // timeline 的换档由 @media (min-width) 决定，宿主视口固定改不动，每一档开一个那么宽的
 // iframe 来量；steps 一句查询都没写，仍挂在定宽的块级 div 里量。
@@ -166,18 +167,21 @@ describe('timeline 横排按视口宽度换档', () => {
   })
 })
 
-describe('steps 只折行、不翻朝向', () => {
-  it.each([320, 375])('%ipx：横排折到下一行，标题不再被切', (w) => {
+describe('steps 不折行、不翻朝向', () => {
+  it.each([320, 375])('%ipx：横排在窄处仍是一行，标题在格内省略，不顶出列表', (w) => {
     const h = mount(w, stepsMarkup('horizontal'))
     const list = pick(h, '#list')
 
-    // 折了行：列表比单行高
-    expect(list.getBoundingClientRect().height).toBeGreaterThan(
+    // 没折行：列表就是一步的高度，每一步的上沿都在同一条线上
+    expect(list.getBoundingClientRect().height).toBe(
       pick(h, '#item0').getBoundingClientRect().height,
     )
-    for (let i = 0; i < STEP_TITLES.length; i++)
-      expect(clipped(pick(h, `#title${i}`))).toBe(false)
+    const tops = STEP_TITLES.map((_, i) => pick(h, `#item${i}`).getBoundingClientRect().top)
+    expect(new Set(tops).size).toBe(1)
+    // 挤不下的标题在自己的格内省略，整条轴不顶出容器
+    expect(STEP_TITLES.some((_, i) => clipped(pick(h, `#title${i}`)))).toBe(true)
     expect(overflow(list)).toBe(0)
+    expect(overflow(host!)).toBe(0)
   })
 
   it.each(WIDE)('%ipx：宽处仍是一行，各步等分', (w) => {
