@@ -62107,9 +62107,11 @@
         "is(:hover, [data-highlighted])",
         "not([data-disabled])",
         "not([data-variant='solid'])",
+        "tone",
         "variant=solid"
       ],
       "defaultToken": [
+        "--xh-_tone-subtle-hover",
         "--xh-bg-subtle"
       ],
       "visibility": "public",
@@ -62132,9 +62134,11 @@
         "not([data-variant='solid'])",
         "pressed",
         "selectable",
+        "tone",
         "variant=solid"
       ],
       "defaultToken": [
+        "--xh-_tone-subtle-active",
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
@@ -62156,10 +62160,12 @@
         "not([data-disabled])",
         "pressed",
         "selectable",
+        "tone",
         "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_tone-active"
+        "--xh-_tone-active",
+        "--xh-bg-brand-active"
       ],
       "visibility": "public",
       "description": "tag-group 的 list、root 部件 background 覆盖槽。"

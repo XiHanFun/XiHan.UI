@@ -83,13 +83,27 @@
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  /* 实心档的面本身就是那族色，按下往同一族的 active 档走，字仍是实心底上配对的前景 */
+  /* 写了语气的淡底标签静息是 12% 语气淡底（tag.css），悬停 / 按下沿同一条语气曲线走 20% / 28%，
+     不跳回中性阶梯把语气丢掉；与 tag.css 同样带 [data-tone] 限定，语气槽沿继承流下来不算 */
+  [data-scope='tag-group'][data-part='list']
+    > [data-scope='tag'][data-part='root'][data-selectable][data-tone]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed]) {
+    background: var(--xh-tag-group-item-bg-pressed, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-hover)));
+  }
+
+  /* 实心档的面本身就是那族色，按下往同一族的 active 档走，字仍是实心底上配对的前景。
+     语气那条与 tag.css 同样带 [data-tone] 限定：语气槽沿继承流下来，没写语气的实心标签落在带
+     data-tone 的组里，静息面与字仍是品牌那族，按下若读祖先的 --xh-_tone-active 就会跳成另一族 */
   [data-scope='tag-group'][data-part='list']
     > [data-scope='tag'][data-part='root'][data-selectable][data-variant='solid']:not([data-disabled]):is(:active, [data-pressed]) {
     scale: var(--xh-motion-scale-press);
-    background: var(--xh-tag-group-item-bg-pressed-solid, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    background: var(--xh-tag-group-item-bg-pressed-solid, var(--xh-bg-brand-active));
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  [data-scope='tag-group'][data-part='list']
+    > [data-scope='tag'][data-part='root'][data-selectable][data-variant='solid'][data-tone]:not([data-disabled]):is(:active, [data-pressed]) {
+    background: var(--xh-tag-group-item-bg-pressed-solid, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   }
 
   /* 悬停与键盘锚点共用白底承载的 hover 档（§7.2：hover 100 → pressed 200）：
@@ -99,6 +113,11 @@
   [data-scope='tag-group'][data-part='list']
     > [data-scope='tag'][data-part='root']:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) {
     background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='tag-group'][data-part='list']
+    > [data-scope='tag'][data-part='root'][data-tone]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) {
+    background: var(--xh-tag-group-item-bg-hover, var(--xh-_tone-subtle-hover, var(--xh-bg-subtle)));
   }
 
   /* 只读整组都改不动，但不是禁用：颜色照常，只把「可点」这个暗示收回来。
