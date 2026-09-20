@@ -173,7 +173,9 @@ export const numberAnimationSuite: ConformanceSuite = {
     {
       name: '跑完之后改终点照样重新跑起来：数字跟着数据走，不必再拨 active',
       spec: { apg: SPEC },
-      props: { from: 0, to: 10, duration: 30 },
+      // 改终点那一帧要看到 running：采样前会把排着的动画帧等完（最多五帧，八十来毫秒），
+      // 时长得远长于这段等待，否则采到的已经是跑完的 idle
+      props: { from: 0, to: 10, duration: 500 },
       skipParity: CLOCK_BOUND,
       steps: [
         { kind: 'settle', until: { attr: { part: 'root', name: 'data-state', value: 'idle' } } },

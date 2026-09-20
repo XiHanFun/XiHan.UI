@@ -3,6 +3,7 @@ import type { AdapterHarness, ConformanceCase, ConformanceSuite, DomSnapshot, Te
 import { danglingCovers, missingKeyboardRows } from '../machine/transition-coverage'
 import { collectDomSnapshot } from '../snapshot/collect'
 import { applyStep } from './apply-step'
+import { settleFrame } from './frame'
 import { checkExpectation } from './match'
 
 export interface RunOptions {
@@ -25,7 +26,10 @@ function assertScopeCleared(doc: Document, component: string, adapter: string): 
     throw new Error(`${adapter}: 卸载后文档内仍残留 ${left} 个 ${component} scope 节点`)
 }
 
-/** 一个用例在一个 harness 上的完整轨迹：第 0 帧是挂载后，第 i+1 帧是第 i 步之后。 */
+/**
+ * 一个用例在一个 harness 上的完整轨迹：第 0 帧是挂载后，第 i+1 帧是第 i 步之后。
+ * 每一帧都等到动画帧过去再采样（见 settleFrame），采的是能画到屏幕上的那个状态。
+ */
 export async function recordTrace(
   harness: AdapterHarness,
   suite: ConformanceSuite,
@@ -46,11 +50,11 @@ export async function recordTrace(
   }
   const frames: DomSnapshot[] = []
   try {
-    await harness.flush()
+    await settleFrame(harness, ctx.doc)
     frames.push(snap(ctx, harness))
     for (const step of c.steps ?? []) {
       await applyStep(ctx, step)
-      await harness.flush()
+      await settleFrame(harness, ctx.doc)
       frames.push(snap(ctx, harness))
     }
   }
