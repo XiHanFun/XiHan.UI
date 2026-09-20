@@ -1,10 +1,11 @@
 // 定位引擎算出的可用空间，有没有真的下发成浮层上的私有槽。
 //
-// 宿主视口是固定的，改不动，所以换宽度只能靠内嵌 iframe：浮层挂在 iframe 文档里，
-// 引擎按那份文档的视口算可用区域，宽度由这边的 width 说了算。
-// 皮肤与令牌以 <style> 注入主文档，克隆一份进 iframe 的 head 才生效。
+// 换宽度走 page.viewport：整个测试文档改成那一档宽，引擎按它的视口算可用区域。
+// 不再挂进内嵌 iframe——浮层的 Scope 与 Layer 注册表都建在挂载它的那份文档上（48d6b8814 起
+// 视觉绑定校验节点与注册表同属一份 Document），从主文档挂进另一份文档不是被支持的接法。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { page } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import {
   XhCascaderColumn,
@@ -20,7 +21,6 @@ import {
   XhPopoverRoot,
   XhPopoverTrigger,
 } from '../../src'
-import { provideXhConfig } from '../../src/config/config'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -30,47 +30,50 @@ const SHIFT_PADDING = 4
 /** 要量的三档视口宽。 */
 const WIDTHS = [375, 768, 1280] as const
 
-let frame: HTMLIFrameElement | null = null
+/** 视口高固定一档，宽按用例换。 */
+const HEIGHT = 600
+
+let host: HTMLElement | null = null
 let app: App | null = null
+let originalViewport: { width: number, height: number } | null = null
 
-/** 在给定宽度的 iframe 里挂一个浮层，返回它的文档。 */
-function mountAt(width: number, render: () => VNode): Document {
-  frame = document.createElement('iframe')
-  frame.style.cssText = `width: ${width}px; height: 600px; border: 0`
-  document.body.append(frame)
+/** 把测试文档切到给定宽度，挂一个浮层，返回它所在的文档。 */
+async function mountAt(width: number, render: () => VNode): Promise<Document> {
+  originalViewport ??= { width: innerWidth, height: innerHeight }
+  await page.viewport(width, HEIGHT)
+  // 新尺寸到测试文档这一层要过一次排版；引擎按挂载那一刻的视口算，挂早了就是按旧宽度落位
+  for (let i = 0; document.documentElement.clientWidth !== width; i += 1) {
+    if (i >= 60)
+      throw new Error(`视口没有切到 ${width}px（现在是 ${document.documentElement.clientWidth}px）`)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+  }
+  host = document.createElement('div')
+  document.body.append(host)
 
-  const doc = frame.contentDocument
-  if (!doc)
-    throw new Error('iframe 没有文档')
-  for (const node of document.querySelectorAll('style, link[rel="stylesheet"]'))
-    doc.head.append(node.cloneNode(true))
-  doc.body.style.margin = '0'
-  const host = doc.createElement('div')
-  doc.body.append(host)
-
-  app = createApp({
-    setup() {
-      // 浮层默认搬去主文档的落点，那样引擎会按宿主视口算；改挂 iframe 的 body
-      provideXhConfig({ portalContainer: () => doc.body })
-      return () => render()
-    },
-  })
+  app = createApp({ setup: () => () => render() })
   app.mount(host)
-  return doc
+  return document
 }
 
-afterEach(() => {
+function unmount(): void {
   app?.unmount()
   app = null
-  frame?.remove()
-  frame = null
+  host?.remove()
+  host = null
+}
+
+afterEach(async () => {
+  unmount()
+  if (originalViewport)
+    await page.viewport(originalViewport.width, originalViewport.height)
+  originalViewport = null
 })
 
 /** 等浮层落位：坐标要等元素进 DOM 量到尺寸，之后才有可用空间可发。 */
 async function positionerAt(doc: Document, scope: string, slot: string): Promise<HTMLElement> {
   const win = doc.defaultView
   if (!win)
-    throw new Error('iframe 没有窗口')
+    throw new Error('文档没有窗口')
   for (let i = 0; i < 120; i += 1) {
     const el = doc.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='positioner']`)
     if (el?.hasAttribute('data-positioned') && el.style.getPropertyValue(slot))
@@ -79,7 +82,7 @@ async function positionerAt(doc: Document, scope: string, slot: string): Promise
   }
   const el = doc.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='positioner']`)
   if (!el)
-    throw new Error(`iframe 里没有 ${scope} 的 positioner`)
+    throw new Error(`文档里没有 ${scope} 的 positioner`)
   return el
 }
 
@@ -124,32 +127,29 @@ describe('可用宽度下发成私有槽', () => {
 
   it.each(CASES)('%s 落位后 positioner 上有 available-w', async (scope, render) => {
     const slot = `--xh-_${scope}-available-w`
-    const doc = mountAt(375, render)
+    const doc = await mountAt(375, render)
     const el = await positionerAt(doc, scope, slot)
     expect(pxOf(el, slot)).not.toBeNull()
   })
 
-  it.each(CASES)('%s 的 available-w 贴着 iframe 的碰撞边界逐档变', async (scope, render) => {
+  it.each(CASES)('%s 的 available-w 贴着视口的碰撞边界逐档变', async (scope, render) => {
     const slot = `--xh-_${scope}-available-w`
     const measured: number[] = []
     for (const width of WIDTHS) {
-      const doc = mountAt(width, render)
+      const doc = await mountAt(width, render)
       const el = await positionerAt(doc, scope, slot)
       const value = pxOf(el, slot)
       // 落在锚点下方：可用宽度是整条可用区域，两边各扣一份贴边余量
       expect(value).toBe(doc.documentElement.clientWidth - SHIFT_PADDING * 2)
       measured.push(value!)
-      app?.unmount()
-      app = null
-      frame?.remove()
-      frame = null
+      unmount()
     }
     // 三档各不相同：这个数跟着可用区走，不是某个静态档
     expect(new Set(measured).size).toBe(WIDTHS.length)
   })
 
   it('popover 的 available-h 与 available-w 一起下发', async () => {
-    const doc = mountAt(375, popover)
+    const doc = await mountAt(375, popover)
     const el = await positionerAt(doc, 'popover', '--xh-_popover-available-w')
     expect(pxOf(el, '--xh-_popover-available-w')).toBeGreaterThan(0)
     expect(pxOf(el, '--xh-_popover-available-h')).toBeGreaterThan(0)

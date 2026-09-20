@@ -1,10 +1,11 @@
 // 浮层的行内轴夹取：面板宽过落位那一侧的可用区时，皮肤把它夹回来，撑出去的那截改成面内横滚。
 //
-// 宿主视口是固定的，改不动，所以换宽度只能靠内嵌 iframe：浮层挂在 iframe 文档里，
-// 引擎按那份文档的视口算可用区域，宽度由这边的 width 说了算。
-// 皮肤与令牌以 <style> 注入主文档，克隆一份进 iframe 的 head 才生效。
+// 换宽度走 page.viewport：整个测试文档改成那一档宽，引擎按它的视口算可用区域。
+// 不再挂进内嵌 iframe——浮层的 Scope 与 Layer 注册表都建在挂载它的那份文档上（48d6b8814 起
+// 视觉绑定校验节点与注册表同属一份 Document），从主文档挂进另一份文档不是被支持的接法。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { page } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import {
   XhCascaderColumn,
@@ -36,7 +37,6 @@ import {
   XhPopoverRoot,
   XhPopoverTrigger,
 } from '../../src'
-import { provideXhConfig } from '../../src/config/config'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -44,49 +44,50 @@ import '@xihan-ui/styles'
 const NARROW = 375
 const WIDE = 1280
 
-let frame: HTMLIFrameElement | null = null
+/** 视口高固定一档，宽按用例换。 */
+const HEIGHT = 700
+
+let host: HTMLElement | null = null
 let app: App | null = null
+let originalViewport: { width: number, height: number } | null = null
 
-/** 在给定宽度的 iframe 里挂一个浮层，返回它的文档。 */
-function mountAt(width: number, render: () => VNode): Document {
-  frame = document.createElement('iframe')
-  frame.style.cssText = `width: ${width}px; height: 700px; border: 0`
-  document.body.append(frame)
+/** 把测试文档切到给定宽度，挂一个浮层，返回它所在的文档。 */
+async function mountAt(width: number, render: () => VNode): Promise<Document> {
+  originalViewport ??= { width: innerWidth, height: innerHeight }
+  await page.viewport(width, HEIGHT)
+  // 新尺寸到测试文档这一层要过一次排版；引擎按挂载那一刻的视口算，挂早了就是按旧宽度落位
+  for (let i = 0; document.documentElement.clientWidth !== width; i += 1) {
+    if (i >= 60)
+      throw new Error(`视口没有切到 ${width}px（现在是 ${document.documentElement.clientWidth}px）`)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+  }
+  host = document.createElement('div')
+  document.body.append(host)
 
-  const doc = frame.contentDocument
-  if (!doc)
-    throw new Error('iframe 没有文档')
-  for (const node of document.querySelectorAll('style, link[rel="stylesheet"]'))
-    doc.head.append(node.cloneNode(true))
-  doc.body.style.margin = '0'
-  const host = doc.createElement('div')
-  doc.body.append(host)
-
-  app = createApp({
-    setup() {
-      // 浮层默认搬去主文档的落点，那样引擎会按宿主视口算；改挂 iframe 的 body
-      provideXhConfig({ portalContainer: () => doc.body })
-      return () => render()
-    },
-  })
+  app = createApp({ setup: () => () => render() })
   app.mount(host)
-  return doc
+  return document
 }
 
 function unmount(): void {
   app?.unmount()
   app = null
-  frame?.remove()
-  frame = null
+  host?.remove()
+  host = null
 }
 
-afterEach(unmount)
+afterEach(async () => {
+  unmount()
+  if (originalViewport)
+    await page.viewport(originalViewport.width, originalViewport.height)
+  originalViewport = null
+})
 
 /** 等浮层落位：可用宽度要等引擎算完才写到 positioner 上，皮肤的夹取在那之后才成立。 */
 async function contentAt(doc: Document, scope: string): Promise<HTMLElement> {
   const win = doc.defaultView
   if (!win)
-    throw new Error('iframe 没有窗口')
+    throw new Error('文档没有窗口')
   for (let i = 0; i < 180; i += 1) {
     const positioner = doc.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='positioner']`)
     const content = doc.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='content']`)
@@ -185,7 +186,7 @@ describe('窄视口下浮层不伸出视口', () => {
   ]
 
   it.each(CASES)('%s（%s）的右缘留在视口里', async (scope, _shape, render) => {
-    const doc = mountAt(NARROW, render)
+    const doc = await mountAt(NARROW, render)
     const content = await contentAt(doc, scope)
     const rect = content.getBoundingClientRect()
     expect(rect.right).toBeLessThanOrEqual(doc.documentElement.clientWidth)
@@ -194,14 +195,14 @@ describe('窄视口下浮层不伸出视口', () => {
   // popover 的正文本来就能换行，夹窄了不产生溢出；
   // date-picker 的两张月历放不下时自己折行堆叠，也不再靠横滚够到第二张
   it.each(CASES.filter(([scope]) => scope !== 'popover' && scope !== 'date-picker'))('%s（%s）撑出去的那截改成面内横滚', async (scope, _shape, render) => {
-    const doc = mountAt(NARROW, render)
+    const doc = await mountAt(NARROW, render)
     const content = await contentAt(doc, scope)
     // 夹住外框之后盒内才产生溢出，overflow-x 这才有事可做：滚得到就点得到
     expect(content.scrollWidth).toBeGreaterThan(content.clientWidth)
   })
 
   it.each(CASES)('%s（%s）宽视口下不夹', async (scope, _shape, render) => {
-    const doc = mountAt(WIDE, render)
+    const doc = await mountAt(WIDE, render)
     const content = await contentAt(doc, scope)
     expect(content.scrollWidth).toBe(content.clientWidth)
     expect(content.getBoundingClientRect().right).toBeLessThanOrEqual(doc.documentElement.clientWidth)
@@ -211,7 +212,7 @@ describe('窄视口下浮层不伸出视口', () => {
 describe('日期面板夹窄了也不压排布', () => {
   /** 同一行里相邻两颗日期钮的横向间距：负数就是它们叠在一起。 */
   async function gapBetweenCells(width: number): Promise<number> {
-    const doc = mountAt(width, datePickerRange)
+    const doc = await mountAt(width, datePickerRange)
     await contentAt(doc, 'date-picker')
     const triggers = [...doc.querySelectorAll<HTMLElement>(`[data-part='cell']:not([hidden]) [data-part='cell-trigger']`)]
     const [first, second] = triggers
