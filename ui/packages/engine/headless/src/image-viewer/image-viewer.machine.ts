@@ -5,8 +5,9 @@
 
 // 提供 image viewer 相关实现。
 
+import type { PropFn } from '@xihan-ui/core'
 import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
-import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
+import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerPressedPart, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
@@ -61,6 +62,31 @@ function sameTransform(a: ImageViewerTransform, b: ImageViewerTransform | undefi
   return !!b && a.scale === b.scale && a.rotate === b.rotate && a.flipX === b.flipX && a.flipY === b.flipY && a.x === b.x && a.y === b.y
 }
 
+/**
+ * 按住的那颗按钮此刻是不是已经转成原生 disabled：贴住缩放端点的缩放钮、到边界（不回绕）的翻页钮。
+ * 按住 Enter 一路放大到 maxScale、翻到末张，或宿主改写 loop / 端点，按钮转禁用后不会再来 keyup，按压面得由机器收。
+ * 其余按钮没有禁用态。
+ */
+function pressedPartInert(
+  prop: PropFn<ImageViewerSchema>,
+  transform: ImageViewerTransform,
+  index: number,
+  part: ImageViewerPressedPart,
+): boolean {
+  if (part === 'zoom-in-trigger')
+    return transform.scale >= (prop('maxScale') ?? IMAGE_VIEWER_MAX_SCALE)
+  if (part === 'zoom-out-trigger')
+    return transform.scale <= (prop('minScale') ?? IMAGE_VIEWER_MIN_SCALE)
+  if (part !== 'prev-trigger' && part !== 'next-trigger')
+    return false
+  const count = imageViewerCount(prop('collection'))
+  const current = clampImageViewerIndex(index, count)
+  const loop = prop('loop') ?? true
+  return part === 'prev-trigger'
+    ? !(count > 1 && (loop || current > 0))
+    : !(count > 1 && (loop || current < count - 1))
+}
+
 // 开合编进 FSM 状态；下标住在 cell 里收口受控与非受控。变换是纯展示态，
 // 不受控也不发回调，换图与重开都归零。
 export const imageViewerMachine = createMachine({
@@ -74,6 +100,8 @@ export const imageViewerMachine = createMachine({
     transform: cell<ImageViewerTransform>(() => ({ defaultValue: IMAGE_VIEWER_IDENTITY, isEqual: sameTransform })),
     panning: cell<boolean>(() => ({ defaultValue: false })),
     imageStatus: cell<ImageViewerImageStatus>(() => ({ defaultValue: 'loading' })),
+    // 按压通道：正被按住的那颗按钮，与开合无关
+    pressed: cell<ImageViewerPressedPart | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -92,6 +120,20 @@ export const imageViewerMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     // 换图即弃掉上一张的缩放与平移，受控写回的下标也走这一条
     track([context.dep('index')], () => action(['resetTransform', 'resetImageStatus']))
+    // 按住途中按钮转禁用：按住 Enter 放大到端点 / 翻到末张、宿主改写 loop 或端点，按钮原生 disabled 后不会再来 keyup
+    track([
+      context.dep('transform'),
+      context.dep('index'),
+      () => prop('collection'),
+      () => prop('loop'),
+      () => prop('minScale'),
+      () => prop('maxScale'),
+    ], () => action(['releaseWhenInert']))
+  },
+  // 按压通道挂根级：收起途中 Presence 还留着按钮，PRESS.END 照收；开合两态之外的 PRESS.START 由守卫拦
+  on: {
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
   },
   states: {
     closed: {
@@ -107,7 +149,8 @@ export const imageViewerMachine = createMachine({
       // 每次展开都从基准态看起
       entry: ['resetTransform', 'resetImageStatus'],
       effects: ['trackPointers'],
-      exit: ['pointersEnd'],
+      // 收起即松开：按住 Enter 关掉浮层，关闭钮随内容一起藏起，不会再来 keyup 或 blur
+      exit: ['pointersEnd', 'releasePress'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -133,8 +176,30 @@ export const imageViewerMachine = createMachine({
   implementations: {
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      // 只在展开态接；贴住端点的缩放钮与到边界的翻页钮是原生 disabled，那份事实由 connect 判定后随事件带入
+      canPress: ({ state, event }) => {
+        const e = event.current()
+        return e.type === 'PRESS.START' && state.matches('open') && !e.disabled
+      },
     },
     actions: {
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.part)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.part)
+          context.set('pressed', null)
+      },
+      releasePress: ({ context }) => context.set('pressed', null),
+      releaseWhenInert: ({ context, prop }) => {
+        const part = context.get('pressed')
+        if (part != null && pressedPartInert(prop, context.get('transform'), context.get('index'), part))
+          context.set('pressed', null)
+      },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭

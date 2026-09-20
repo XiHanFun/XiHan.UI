@@ -2,6 +2,7 @@ import type { ImageViewerItem } from '@xihan-ui/headless'
 import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { imageViewerAnatomy, imageViewerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 
@@ -17,7 +18,7 @@ export function imageViewerProps(extra: Readonly<Record<string, unknown>> = {}):
   return { collection: IMAGE_VIEWER_ITEMS, ...extra }
 }
 
-/** content 里的内容：视口、计数与工具条。工具条第一个按钮是打开后焦点的落点。 */
+/** content 里的内容：视口、计数与工具条（十颗按钮齐全）。工具条第一个按钮是打开后焦点的落点。 */
 export const IMAGE_VIEWER_CONTENT_CHILDREN: readonly FixtureNode[] = [
   { part: 'viewport', children: [{ part: 'image', tag: 'img' }] },
   { part: 'counter' },
@@ -28,11 +29,29 @@ export const IMAGE_VIEWER_CONTENT_CHILDREN: readonly FixtureNode[] = [
       { part: 'next-trigger', tag: 'button' },
       { part: 'zoom-in-trigger', tag: 'button' },
       { part: 'zoom-out-trigger', tag: 'button' },
+      { part: 'rotate-left-trigger', tag: 'button' },
+      { part: 'rotate-right-trigger', tag: 'button' },
+      { part: 'flip-horizontal-trigger', tag: 'button' },
+      { part: 'flip-vertical-trigger', tag: 'button' },
       { part: 'reset-trigger', tag: 'button' },
       { part: 'close-trigger', tag: 'button' },
     ],
   },
 ]
+
+/** 工具条里的按钮部件，按夹具顺序；按压通道逐颗验。 */
+const IMAGE_VIEWER_BUTTONS = [
+  'prev-trigger',
+  'next-trigger',
+  'zoom-in-trigger',
+  'zoom-out-trigger',
+  'rotate-left-trigger',
+  'rotate-right-trigger',
+  'flip-horizontal-trigger',
+  'flip-vertical-trigger',
+  'reset-trigger',
+  'close-trigger',
+] as const
 
 /**
  * 取图相位那条用例专用的清单：只给 alt、不给 src。
@@ -150,6 +169,10 @@ export const imageViewerSuite: ConformanceSuite = {
               'next-trigger': { 'type': 'button', 'aria-label': 'Next image', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-size': 'md' },
               'zoom-in-trigger': { 'type': 'button', 'aria-label': 'Zoom in', 'disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
               'zoom-out-trigger': { 'type': 'button', 'aria-label': 'Zoom out', 'disabled': null, 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
+              'rotate-left-trigger': { 'type': 'button', 'aria-label': 'Rotate left', 'disabled': null, 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
+              'rotate-right-trigger': { 'type': 'button', 'aria-label': 'Rotate right', 'disabled': null, 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
+              'flip-horizontal-trigger': { 'type': 'button', 'aria-label': 'Flip horizontal', 'disabled': null, 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
+              'flip-vertical-trigger': { 'type': 'button', 'aria-label': 'Flip vertical', 'disabled': null, 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
               'reset-trigger': { 'type': 'button', 'aria-label': 'Reset', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
               'close-trigger': { 'type': 'button', 'aria-label': 'Close', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'lg' },
             },
@@ -428,6 +451,95 @@ export const imageViewerSuite: ConformanceSuite = {
         ...openImageViewer(),
         { kind: 'key', key: 'ArrowRight', expect: imageViewerAtIndex(0) },
         { kind: 'setProps', props: { index: 2 }, expect: imageViewerAtIndex(2) },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：十颗按钮各自投影 data-pressed，抬起、失焦或指针取消撤下；只亮按住的那一颗',
+      spec: { adr: 'press-channel' },
+      props: imageViewerProps(),
+      covers: ['image-viewer.kbd.press'],
+      steps: [
+        ...openImageViewer(),
+        ...IMAGE_VIEWER_BUTTONS.map(part => heldPress('image-viewer', part)),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const held = doc.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="reset-trigger"]')!
+            const others = IMAGE_VIEWER_BUTTONS
+              .filter(part => part !== 'reset-trigger')
+              .map(part => doc.querySelector<HTMLElement>(`[data-scope="image-viewer"][data-part="${part}"]`)!)
+            held.focus()
+            held.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (!held.hasAttribute('data-pressed') || others.some(el => el.hasAttribute('data-pressed')))
+              throw new Error('按住复位钮时只有它该投影 data-pressed')
+            held.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+            await flush()
+            if (held.hasAttribute('data-pressed'))
+              throw new Error('keyup 之后复位钮应撤下 data-pressed')
+          },
+        },
+      ],
+    },
+    {
+      name: '贴住缩放端点的缩放钮与不回绕时到边界的翻页钮原生 disabled，按住不进入按压面；按住途中放大到端点即撤下',
+      spec: { adr: 'press-channel' },
+      // 上限收窄到一步之内：一次按键就走到头，禁用位当场看得见
+      props: imageViewerProps({ minScale: 1, maxScale: 1.5, loop: false }),
+      steps: [
+        ...openImageViewer(),
+        heldPressIgnored('image-viewer', 'zoom-out-trigger', '已在 minScale 时缩小钮原生 disabled，不接受按压'),
+        heldPressIgnored('image-viewer', 'prev-trigger', '第一张且不回绕时上一张原生 disabled，不接受按压'),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const zoomIn = doc.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="zoom-in-trigger"]')!
+            zoomIn.focus()
+            zoomIn.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (!zoomIn.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时放大钮应投影 data-pressed')
+          },
+        },
+        // + 从放大钮冒到 content：放大一档即贴住上限，放大钮转原生 disabled、不会再来 keyup，按压面由机器收
+        {
+          kind: 'key',
+          key: '+',
+          expect: { parts: { 'zoom-in-trigger': { 'disabled': '', 'data-disabled': '', 'data-pressed': null } } },
+        },
+        heldPressIgnored('image-viewer', 'zoom-in-trigger', '已在 maxScale 时放大钮原生 disabled，不接受按压'),
+        { kind: 'key', key: 'End', expect: { parts: { 'next-trigger': { disabled: '' } } } },
+        heldPressIgnored('image-viewer', 'next-trigger', '最后一张且不回绕时下一张原生 disabled，不接受按压'),
+      ],
+    },
+    {
+      name: '收起即松开：按住 Enter 关掉浮层，关闭钮随内容藏起不会再来 keyup；重开后按压面是干净的',
+      spec: { adr: 'press-channel' },
+      props: imageViewerProps(),
+      steps: [
+        ...openImageViewer(),
+        {
+          kind: 'raw',
+          why: '按住的中间帧要拆开派才看得见',
+          run: async ({ doc, flush }) => {
+            const close = doc.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="close-trigger"]')!
+            close.focus()
+            close.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (!close.hasAttribute('data-pressed'))
+              throw new Error('按住 Enter 时关闭钮应投影 data-pressed')
+          },
+        },
+        { kind: 'click', part: 'close-trigger' },
+        { kind: 'settle', until: { absent: 'content' }, expect: { counts: { content: 0 } } },
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { activeElement: 'content' },
+          expect: { counts: { content: 1 }, parts: { 'close-trigger': { 'data-pressed': null } } },
+        },
       ],
     },
   ],

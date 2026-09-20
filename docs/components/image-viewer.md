@@ -147,9 +147,9 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `INDEX.SET` · `INDEX.NEXT` · `INDEX.PREV` · `ZOOM.BY` · `ZOOM.SET` · `ROTATE.BY` · `FLIP` · `TRANSFORM.RESET` · `IMAGE.LOAD` · `IMAGE.ERROR` · `PAN.MOVE` · `POINTERS.DOWN` · `POINTERS.CHANGE` · `POINTERS.END` · `PAN.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `INDEX.SET` · `INDEX.NEXT` · `INDEX.PREV` · `ZOOM.BY` · `ZOOM.SET` · `ROTATE.BY` · `FLIP` · `TRANSFORM.RESET` · `IMAGE.LOAD` · `IMAGE.ERROR` · `PAN.MOVE` · `POINTERS.DOWN` · `POINTERS.CHANGE` · `POINTERS.END` · `PAN.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled`
+**判据**：`isOpenControlled` · `canPress`
 
 ### connect API
 
@@ -216,6 +216,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `+` / `=` | open | 放大一档（zoomStep），到 maxScale 停住 |
 | `-` | open | 缩小一档，到 minScale 停住 |
 | `0` | open | 缩放、旋转、翻转与平移一并复位 |
+| `Enter` / `Space` | open, held on close-trigger / 工具条七颗 / prev-trigger / next-trigger, 该按钮未禁用 | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦、浮层收起或按住途中转禁用（贴住缩放端点、翻到边界）撤下。缩放、旋转、翻转、复位、翻页与关闭照旧由这一次按键的原生激活承担 |
 
 ### ARIA
 
