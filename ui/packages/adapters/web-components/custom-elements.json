@@ -8307,7 +8307,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-code-view>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectCodeView 的产出，\n接到作者编写的角色节点上，并把逐行结构铺进 code 角色节点。\n\n行是计算得出的派生数据，作者无法编写 N 个节点，因此 code 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。复制按钮由 `<xh-clipboard>` 组合提供。",
+          "description": "`<xh-code-view>`：Light-DOM 行为宿主，wire 时计算 connectCodeView 的产出，\n接到作者编写的角色节点上，并把逐行结构铺进 code 角色节点；机器只承载按压通道（fold-trigger 的 data-pressed）。\n\n行是计算得出的派生数据，作者无法编写 N 个节点，因此 code 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。复制按钮由 `<xh-clipboard>` 组合提供。",
           "name": "XhCodeViewElement",
           "cssParts": [
             {
@@ -8351,7 +8351,7 @@
               "name": "token"
             },
             {
-              "description": "展开或收起，承载 aria-expanded / aria-controls",
+              "description": "展开或收起，承载 aria-expanded / aria-controls；Space / Enter 与触屏按住投影 data-pressed",
               "name": "fold-trigger"
             }
           ],
@@ -8508,6 +8508,13 @@
             },
             {
               "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CodeViewSchema>(this, codeViewMachine, () => this.viewProps(), { scope: this.codeViewScope })"
+            },
+            {
+              "kind": "field",
               "name": "#painted",
               "privacy": "private",
               "type": {
@@ -8531,7 +8538,8 @@
                 "type": {
                   "text": "HighlighterPort | undefined"
                 }
-              }
+              },
+              "description": "只读不请求：机器挂载时就会读一遍 props，可选包的加载不能挂在这条读路径上，\n否则作者在连接之后才写下的 highlighter: null 已经晚了一步。请求放在 wire 里。"
             },
             {
               "kind": "method",

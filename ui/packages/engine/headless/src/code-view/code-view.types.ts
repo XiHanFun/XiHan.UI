@@ -5,7 +5,7 @@
 
 // 定义 code view 类型契约。
 
-import type { CodeToken, HighlighterPort, PropTypes, Size } from '@xihan-ui/core'
+import type { CodeToken, HighlighterPort, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 
 /** 语言未知时的取值。 */
 export const CODE_VIEW_FALLBACK_LANG = 'plaintext'
@@ -37,48 +37,72 @@ export interface CodeViewLineProps {
   index: number
 }
 
-export interface CodeViewProps {
-  code: string
-  /** 围栏语言标注，空白一律落为 plaintext。 */
-  lang?: string
-  /** 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 */
-  filename?: string
-  /**
-   * 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。
-   * 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。
-   */
-  labelled?: boolean
-  /** 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 */
-  complete?: boolean
-  /** 长行自动换行，默认关闭（长行横向滚动）。 */
-  wrap?: boolean
-  /** 渲染行号槽。 */
-  lineNumbers?: boolean
-  /** 首行的行号，默认 1；摘录与 patch 片段需要使用。 */
-  startLine?: number
-  /** 要高亮的行号，写为 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 */
-  highlightLines?: string | readonly number[]
-  /** 超过该行数才视为可折叠。 */
-  clamp?: number
-  /** 折叠态，纯受控：没有 defaultClamped，需要非受控时套用 collapsible。 */
-  clamped?: boolean
-  /**
-   * 着色实现。未提供时为纯文本，提供后也允许返回 null（语言未识别等），同样回退为纯文本。
-   * 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。
-   */
-  highlighter?: HighlighterPort
-  /**
-   * 块尚未闭合时也着色，默认 false。
-   * 默认关闭是因为未闭合代码的词法本身不稳定：引号、括号随时会配对，
-   * 每到一个 token 整块变一次色，比不着色更差。
-   */
-  highlightWhileStreaming?: boolean
-  /** 尺寸：sm / md / lg。 */
-  size?: Size
-  translations?: Partial<CodeViewTranslations>
-  /** 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 */
-  onClampToggle?: (details: CodeViewClampToggleDetails) => void
+export interface CodeViewSchema extends MachineSchema {
+  props: {
+    code: string
+    /** 围栏语言标注，空白一律落为 plaintext。 */
+    lang?: string
+    /** 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 */
+    filename?: string
+    /**
+     * 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。
+     * 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。
+     */
+    labelled?: boolean
+    /** 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 */
+    complete?: boolean
+    /** 长行自动换行，默认关闭（长行横向滚动）。 */
+    wrap?: boolean
+    /** 渲染行号槽。 */
+    lineNumbers?: boolean
+    /** 首行的行号，默认 1；摘录与 patch 片段需要使用。 */
+    startLine?: number
+    /** 要高亮的行号，写为 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 */
+    highlightLines?: string | readonly number[]
+    /** 超过该行数才视为可折叠。 */
+    clamp?: number
+    /** 折叠态，纯受控：没有 defaultClamped，需要非受控时套用 collapsible。 */
+    clamped?: boolean
+    /**
+     * 着色实现。未提供时为纯文本，提供后也允许返回 null（语言未识别等），同样回退为纯文本。
+     * 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。
+     */
+    highlighter?: HighlighterPort
+    /**
+     * 块尚未闭合时也着色，默认 false。
+     * 默认关闭是因为未闭合代码的词法本身不稳定：引号、括号随时会配对，
+     * 每到一个 token 整块变一次色，比不着色更差。
+     */
+    highlightWhileStreaming?: boolean
+    /** 尺寸：sm / md / lg。 */
+    size?: Size
+    translations?: Partial<CodeViewTranslations>
+    /** 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 */
+    onClampToggle?: (details: CodeViewClampToggleDetails) => void
+  }
+  context: {
+    /**
+     * 按压通道：折叠条被 Space / Enter 或触屏手指按住期间为 true，fold-trigger 投影 data-pressed。
+     * 抬起、失焦、指针取消，或按住途中折叠条因不再可折叠而收起时撤下；与折叠态互相独立。
+     */
+    pressed: boolean
+  }
+  computed: Record<string, never>
+  refs: Record<string, never>
+  /** 单态：折叠态纯受控、着色与切行都是纯函数，机器只承载按压通道。 */
+  state: 'idle'
+  event:
+    /** 按压通道（shared/press）：折叠条被 Space / Enter 或触屏按住。 */
+    | { type: 'PRESS.START' }
+    /** 折叠条抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END' }
+  tag: never
+  guard: 'canPress'
+  action: 'startPress' | 'endPress' | 'releaseWhenUnfoldable'
+  effect: never
 }
+
+export type CodeViewProps = CodeViewSchema['props']
 
 export interface CodeViewApi<T extends PropTypes = PropTypes> {
   lang: string
@@ -119,6 +143,16 @@ export interface CodeViewTranslations {
 /** 按 \n 切分统计代码行数：空串为 1 行，结尾换行多计一行。 */
 export function countCodeViewLines(code: string): number {
   return code.split('\n').length
+}
+
+/**
+ * 折叠是否可用：提供了正数 clamp 且行数确实超过它。
+ * connect 与机器的按压守卫共用同一份判据，折叠条是否在场只有一处答案。
+ */
+export function isCodeViewFoldable(code: string, clamp: number | undefined): boolean {
+  if (!Number.isFinite(clamp) || clamp! <= 0)
+    return false
+  return countCodeViewLines(code) > Math.floor(clamp!)
 }
 
 /**
