@@ -763,13 +763,19 @@ export const menubarSuite: ConformanceSuite = {
             events: [{ type: 'value-change', detail: { value: null } }],
           },
         },
+        // Tab 的默认动作把焦点按文档序带出浮层：夹具里浮层之后没有别的停靠点，落到 body。
+        // 焦点离开整条菜单栏即 MENUBAR.BLUR：roving 锚点清空，Tab 位退回 root
         {
           kind: 'raw',
-          why: '焦点归还排在效应拆除后的下一帧；等过这两帧才证得了 Tab 收起没把焦点抢回 trigger',
+          why: '焦点归还排在效应拆除后的下一帧；等过这两帧焦点仍在 body 才证得了 Tab 收起没把焦点抢回 trigger',
           run: () => new Promise<void>((resolve) => {
             requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
           }),
-          expect: { activeElement: { part: 'item[0]', exact: true }, events: [] },
+          expect: {
+            activeElement: null,
+            parts: { 'root': { tabindex: '0' }, 'trigger[0]': { tabindex: '-1' }, 'content[0]': { hidden: '' } },
+            events: [],
+          },
         },
       ],
     },
