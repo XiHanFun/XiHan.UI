@@ -140,6 +140,11 @@ export interface JsonViewerSchema extends MachineSchema {
     focusedValue: string | null
     /** 焦点当前是否在视图内。只影响高亮，不影响锚点。 */
     focusWithin: boolean
+    /**
+     * 按压通道：正被 Space / Enter 或触屏手指按住的分支行的路径，该行的 branch-control 投影 data-pressed；
+     * 没有按住时为 null。抬起、失焦或指针取消时撤下；与展开集合、焦点锚点互相独立。
+     */
+    pressedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -154,6 +159,10 @@ export interface JsonViewerSchema extends MachineSchema {
     | { type: 'NODE.FOCUS', value: string }
     /** 焦点离开视图，或持有焦点的行被移出 DOM。锚点保留，只取消高亮。 */
     | { type: 'VIEWER.BLUR' }
+    /** 按压通道（shared/press）：某个分支行被 Space / Enter 或触屏按住。视图没有禁用态，一律接。 */
+    | { type: 'PRESS.START', value: string }
+    /** 该分支行抬起、失焦或指针取消。 */
+    | { type: 'PRESS.END', value: string }
   tag: never
   guard: never
   action:
@@ -163,6 +172,8 @@ export interface JsonViewerSchema extends MachineSchema {
     | 'toggleBranch'
     | 'setFocusedValue'
     | 'clearFocusWithin'
+    | 'startPress'
+    | 'endPress'
   effect: never
 }
 

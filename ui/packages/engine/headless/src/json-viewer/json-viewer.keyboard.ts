@@ -23,6 +23,7 @@ export const jsonViewerKeyboard: KeyboardTable = {
     { id: 'json-viewer.kbd.expand', keys: ['ArrowRight'], when: 'focus on branch（dir=rtl 时改由 ArrowLeft 承担）', does: '收起的对象/数组就地展开；已展开则把焦点移到首个子行；标量行什么都不做且不吞键' },
     { id: 'json-viewer.kbd.collapse', keys: ['ArrowLeft'], when: 'focus in tree（dir=rtl 时改由 ArrowRight 承担）', does: '展开的对象/数组就地收起；收起的分支与标量行则把焦点移到父行；根行什么都不做' },
     { id: 'json-viewer.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus on branch', does: '切换该分支的展开态；焦点在标量行上时不吞这两个键' },
+    { id: 'json-viewer.kbd.press', keys: ['Enter', 'Space'], when: 'held on branch', does: '按住期间该分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面（行只换面不缩放）；抬起或失焦撤下。展开态的切换照旧由这一次按键承担' },
     { id: 'json-viewer.kbd.expand-siblings', keys: ['*'], when: 'focus in tree', does: '展开与焦点行同一父级的全部分支（已展开的不动）；同级没有可展开的分支时不吞这个键' },
   ],
 }

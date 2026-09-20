@@ -843,3 +843,65 @@ describe('connectJsonViewer 现状', () => {
     expect((nulled.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
   })
 })
+
+// ══ 按压通道 ══
+
+describe('connectJsonViewer 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  const keyup = (el: HTMLElement, key: string): void => {
+    el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))
+  }
+  const pointer = (el: HTMLElement, type: string, pointerType = 'touch'): void => {
+    el.dispatchEvent(new PointerEvent(type, { pointerType, bubbles: true, cancelable: true }))
+  }
+
+  it('键盘由 branch 代发、按压面画在 branch-control 上：keydown 在场、keyup 撤下、失焦撤下；展开态照旧切换、按压面不随之丢', () => {
+    const h = mount()
+    const tags = h.row(path('tags'))
+    tags.host.focus()
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(false)
+    press(tags.host, 'Enter')
+    // Enter 在 keydown 即展开，子层来了，按压面还在
+    expect(h.expanded()).toContain(path('tags'))
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(true)
+    expect(tags.host.hasAttribute('data-pressed')).toBe(false)
+    keyup(tags.host, 'Enter')
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(false)
+    press(tags.host, ' ')
+    expect(h.expanded()).not.toContain(path('tags'))
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(true)
+    tags.host.blur()
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(false)
+  })
+
+  it('触屏按在行上：pointerdown 在场、抬起 / 取消撤下；鼠标按下不走这一路；只亮按住的那一行', () => {
+    const h = mount()
+    const tags = h.row(path('tags'))
+    const nested = h.row(path('nested'))
+    pointer(tags.control!, 'pointerdown', 'mouse')
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(false)
+    pointer(tags.control!, 'pointerdown')
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(true)
+    expect(nested.control!.hasAttribute('data-pressed')).toBe(false)
+    // 别的行的抬起松不开这一行
+    pointer(nested.control!, 'pointerup')
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(true)
+    pointer(tags.control!, 'pointercancel')
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(false)
+    pointer(tags.control!, 'pointerdown')
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(true)
+    pointer(tags.control!, 'pointerup')
+    expect(tags.control!.hasAttribute('data-pressed')).toBe(false)
+  })
+
+  it('子层里的按键与失焦冒泡到父分支上不算数：父行只认落在自己身上的事件', () => {
+    const h = mount({ defaultExpandedValue: [ROOT, path('nested')] })
+    const nested = h.row(path('nested'))
+    const deep = h.row(path('nested', 'deep'))
+    deep.host.focus()
+    press(deep.host, ' ')
+    expect(deep.control!.hasAttribute('data-pressed')).toBe(true)
+    expect(nested.control!.hasAttribute('data-pressed')).toBe(false)
+    keyup(deep.host, ' ')
+    expect(deep.control!.hasAttribute('data-pressed')).toBe(false)
+  })
+})
