@@ -82,6 +82,12 @@ export interface QuestionFlowItemProps {
   disabled?: boolean
 }
 
+/**
+ * 按压通道按它记住正被按住的那一个：三颗步进 / 动作钮各一个键，选项按 `item:${value}` 记
+ * （只有当前题的选项可按，换题即松开，键里不必再带题目 id）。
+ */
+export type QuestionFlowPressedKey = 'prev' | 'next' | 'skip' | 'submit' | `item:${string}`
+
 /** 适配器在挂载前填入的 DOM 取值器。 */
 export interface QuestionFlowRefs {
   /** 题目轨道：测量当前题几何时的查询容器与参照系。 */
@@ -134,6 +140,11 @@ export interface QuestionFlowSchema extends MachineSchema {
     viewport: QuestionFlowViewport | null
     /** 等待自动前进的题目；没有待办时为 null。 */
     pendingAdvance: string | null
+    /**
+     * 按压通道：Space / Enter 或触屏按住的那一个部件，对应部件投影 data-pressed。
+     * 抬起、失焦、指针取消，或按住途中换题 / 交卷 / 题目改写 / 跳过钮收起时清空。
+     */
+    pressed: QuestionFlowPressedKey | null
   }
   computed: Record<string, never>
   refs: QuestionFlowRefs
@@ -153,8 +164,15 @@ export interface QuestionFlowSchema extends MachineSchema {
     // 受控回写：宿主改 status 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.ANSWERING' }
     | { type: 'CONTROLLED.SUBMITTED' }
+    /**
+     * 按压通道（shared/press）：某个部件被 Space / Enter 或触屏按住；只在答题态接。
+     * disabled 是该部件自身的禁用事实（边界题的翻页钮、答不完整时的提交钮、禁用选项），由 connect 判定后随事件带入。
+     */
+    | { type: 'PRESS.START', key: QuestionFlowPressedKey, disabled?: boolean }
+    /** 按住的部件抬起、失焦或指针取消；只松开 key 对应的那一个。 */
+    | { type: 'PRESS.END', key: QuestionFlowPressedKey }
   tag: never
-  guard: 'isStatusControlled' | 'canToggle' | 'canSkip' | 'isFirstQuestion' | 'isLastQuestion'
+  guard: 'isStatusControlled' | 'canToggle' | 'canSkip' | 'isFirstQuestion' | 'isLastQuestion' | 'canPress'
   action:
     | 'toggleOption'
     | 'setNote'
@@ -167,6 +185,10 @@ export interface QuestionFlowSchema extends MachineSchema {
     | 'advanceAfterSkip'
     | 'measureViewport'
     | 'syncStatus'
+    | 'startPress'
+    | 'endPress'
+    | 'releasePress'
+    | 'releaseSkipWhenHidden'
   effect: 'trackAutoAdvance' | 'trackViewportSize'
 }
 

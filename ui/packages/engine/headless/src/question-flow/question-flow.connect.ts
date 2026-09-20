@@ -5,14 +5,15 @@
 
 // 提供 question flow 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type {
   QuestionFlowApi,
   QuestionFlowItemProps,
+  QuestionFlowPressedKey,
   QuestionFlowQuestion,
   QuestionFlowSchema,
 } from './question-flow.types'
-import { dataAttr, focusItem, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, focusItem, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { questionFlowAnatomy, questionFlowItemQuery } from './question-flow.anatomy'
 import { canAdvanceQuestion, clampQuestionIndex } from './question-flow.types'
 
@@ -76,6 +77,26 @@ export function connectQuestionFlow<T extends PropTypes>(
     if (!canAdvance)
       return
     send(isLast ? { type: 'SUBMIT' } : { type: 'NEXT' })
+  }
+
+  // 按压通道：真源是机器 context 里「正被按住的那一个」（按部件键记），每个可按部件各自合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
+  // 部件自身的禁用只有 connect 知道，随 PRESS.START 带给机器的 canPress 守卫
+  const pressed = context.get('pressed')
+  const press = (key: QuestionFlowPressedKey, disabled: boolean): PressHandlers & { 'data-pressed': '' | undefined } => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressed') === key,
+      onChange: down => send(down ? { type: 'PRESS.START', key, disabled } : { type: 'PRESS.END', key }),
+    })
+    return {
+      'data-pressed': dataAttr(pressed === key),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
   }
 
   const counter = `${count === 0 ? 0 : index + 1} / ${count}`
@@ -220,6 +241,8 @@ export function connectQuestionFlow<T extends PropTypes>(
       const selected = isOptionSelected(item.questionId, item.value)
       const disabled = optionDisabled(item)
       const active = isCurrent(item.questionId)
+      // 非当前题的选项 inert、不可按；按压面与选中互相独立
+      const pressing = press(`item:${item.value}`, disabled || !active)
       return normalize.button({
         ...parts.item.attrs,
         // 原生按钮落在 form 里少了 type 会变成 submit
@@ -240,6 +263,13 @@ export function connectQuestionFlow<T extends PropTypes>(
         'data-disabled': dataAttr(disabled),
         // 非当前题里的选项一个 Tab 停靠点都不占；当前题里只有锚点那一项占
         'tabindex': active && anchorOf(item.questionId) === item.value ? 0 : -1,
+        // Space 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        ...pressing,
+        'onKeyDown': (event: KeyboardEvent) => {
+          // role=radio / checkbox 只有 Space 是激活键：Enter 归选项组的前进，不进按压面；切换本身仍在组上收口
+          if (event.key !== 'Enter')
+            pressing.onKeyDown(event)
+        },
         'onClick': () => {
           if (!disabled && active && !submitted)
             send({ type: 'OPTION.TOGGLE', questionId: item.questionId, value: item.value })
@@ -306,6 +336,8 @@ export function connectQuestionFlow<T extends PropTypes>(
       'aria-label': translations?.prev ?? 'Previous question',
       'disabled': (isFirst || submitted) || undefined,
       'data-disabled': dataAttr(isFirst || submitted),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；首题上不进
+      ...press('prev', isFirst || submitted),
       'onClick': () => send({ type: 'PREV' }),
     }),
 
@@ -326,6 +358,8 @@ export function connectQuestionFlow<T extends PropTypes>(
       'aria-label': translations?.next ?? 'Next question',
       'disabled': (isLast || submitted) || undefined,
       'data-disabled': dataAttr(isLast || submitted),
+      // 末题上不进
+      ...press('next', isLast || submitted),
       'onClick': () => send({ type: 'NEXT' }),
     }),
 
@@ -343,6 +377,8 @@ export function connectQuestionFlow<T extends PropTypes>(
       'hidden': !allowSkip || undefined,
       'disabled': submitted || undefined,
       'data-disabled': dataAttr(submitted),
+      // 收起或交卷后不进
+      ...press('skip', !allowSkip || submitted),
       'onClick': () => send({ type: 'SKIP' }),
     }),
 
@@ -365,6 +401,8 @@ export function connectQuestionFlow<T extends PropTypes>(
       'aria-label': isLast ? translations?.send : translations?.continue,
       'disabled': !canAdvance || undefined,
       'data-disabled': dataAttr(!canAdvance),
+      // 这一题答得不能往下走时不进
+      ...press('submit', !canAdvance),
       'onClick': advance,
     }),
 

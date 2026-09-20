@@ -315,3 +315,177 @@ describe('connectQuestionFlow 投影', () => {
     expect(mount({ variant: 'subtle' }).api().getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
   })
 })
+
+// ══ 按压通道 ══
+
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('question-flow：按压通道，Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('四颗钮：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；题号与状态不动', () => {
+    const rig = mount({ defaultIndex: 1, defaultAnswers: { b: ['b1'] } })
+    const buttons: Record<string, () => Dict> = {
+      prev: () => rig.api().getPrevTriggerProps() as Dict,
+      next: () => rig.api().getNextTriggerProps() as Dict,
+      skip: () => rig.api().getSkipTriggerProps() as Dict,
+      submit: () => rig.api().getSubmitTriggerProps() as Dict,
+    }
+    for (const trigger of Object.values(buttons)) {
+      expect(trigger().disabled).toBeUndefined()
+      expect(trigger()['data-pressed']).toBeUndefined()
+      fire(trigger(), 'onKeyDown', key(' '))
+      expect(trigger()['data-pressed']).toBe('')
+      fire(trigger(), 'onKeyUp', key(' '))
+      expect(trigger()['data-pressed']).toBeUndefined()
+      fire(trigger(), 'onKeyDown', key('Enter'))
+      expect(trigger()['data-pressed']).toBe('')
+      fire(trigger(), 'onBlur', {})
+      expect(trigger()['data-pressed']).toBeUndefined()
+      fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+      expect(trigger()['data-pressed']).toBe('')
+      fire(trigger(), 'onPointerCancel', {})
+      expect(trigger()['data-pressed']).toBeUndefined()
+      fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+      expect(trigger()['data-pressed']).toBe('')
+      fire(trigger(), 'onPointerUp', {})
+      expect(trigger()['data-pressed']).toBeUndefined()
+      fire(trigger(), 'onPointerDown', { pointerType: 'mouse' })
+      expect(trigger()['data-pressed']).toBeUndefined()
+    }
+    expect(rig.index()).toBe(1)
+    expect(rig.state()).toBe('answering')
+  })
+
+  it('按部件键记住按住的那一个：按住上一题时下一题不投影，另一颗的 keyup 不把它松开', () => {
+    const rig = mount({ defaultIndex: 1 })
+    const prev = (): Dict => rig.api().getPrevTriggerProps() as Dict
+    const next = (): Dict => rig.api().getNextTriggerProps() as Dict
+    fire(prev(), 'onKeyDown', key('Enter'))
+    expect(prev()['data-pressed']).toBe('')
+    expect(next()['data-pressed']).toBeUndefined()
+    fire(next(), 'onKeyUp', key('Enter'))
+    expect(prev()['data-pressed']).toBe('')
+    fire(prev(), 'onKeyUp', key('Enter'))
+    expect(prev()['data-pressed']).toBeUndefined()
+  })
+
+  it('选项：Space 与触屏按住投影，Enter 不是选项的激活键不进；按 item:value 记且与选中互相独立', () => {
+    const rig = mount()
+    const item = (value: string): Dict => rig.api().getItemProps({ questionId: 'a', value }) as Dict
+    fire(item('a1'), 'onKeyDown', key('Enter'))
+    expect(item('a1')['data-pressed']).toBeUndefined()
+    fire(item('a1'), 'onKeyDown', key(' '))
+    expect(item('a1')['data-pressed']).toBe('')
+    expect(item('a2')['data-pressed']).toBeUndefined()
+    // 切换在组上收口：这里模拟组把它选中，按压面不随选中丢
+    click(item('a1'))
+    expect(item('a1')['aria-checked']).toBe('true')
+    expect(item('a1')['data-pressed']).toBe('')
+    fire(item('a1'), 'onKeyUp', key(' '))
+    expect(item('a1')['data-pressed']).toBeUndefined()
+    fire(item('a2'), 'onPointerDown', { pointerType: 'touch' })
+    expect(item('a2')['data-pressed']).toBe('')
+    fire(item('a2'), 'onPointerUp', {})
+    expect(item('a2')['data-pressed']).toBeUndefined()
+  })
+
+  it('边界与禁用不进：首题的上一题、末题的下一题、答不完整的提交、禁用选项、非当前题的选项、关掉的跳过', () => {
+    const first = mount({ questions: [
+      { id: 'a', type: 'single', options: [{ value: 'a1' }, { value: 'a2', disabled: true }] },
+      { id: 'b', type: 'single', options: [{ value: 'b1' }] },
+    ], allowSkip: false })
+    const touch = (props: Dict): void => {
+      fire(props, 'onKeyDown', key(' '))
+      fire(props, 'onPointerDown', { pointerType: 'touch' })
+    }
+    touch(first.api().getPrevTriggerProps() as Dict)
+    expect((first.api().getPrevTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+    touch(first.api().getSubmitTriggerProps() as Dict)
+    expect((first.api().getSubmitTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+    touch(first.api().getSkipTriggerProps() as Dict)
+    expect((first.api().getSkipTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+    touch(first.api().getItemProps({ questionId: 'a', value: 'a2' }) as Dict)
+    expect((first.api().getItemProps({ questionId: 'a', value: 'a2' }) as Dict)['data-pressed']).toBeUndefined()
+    touch(first.api().getItemProps({ questionId: 'b', value: 'b1' }) as Dict)
+    expect((first.api().getItemProps({ questionId: 'b', value: 'b1' }) as Dict)['data-pressed']).toBeUndefined()
+    // 未禁用的那一项照进
+    touch(first.api().getItemProps({ questionId: 'a', value: 'a1' }) as Dict)
+    expect((first.api().getItemProps({ questionId: 'a', value: 'a1' }) as Dict)['data-pressed']).toBe('')
+
+    const last = mount({ defaultIndex: 2 })
+    touch(last.api().getNextTriggerProps() as Dict)
+    expect((last.api().getNextTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中换题：Enter 在 keydown 即前进，被按住的选项转 inert、翻页钮可能到边界，一并松开；换题后照常可按', () => {
+    const rig = mount({ defaultAnswers: { a: ['a1'] } })
+    const submit = (): Dict => rig.api().getSubmitTriggerProps() as Dict
+    fire(submit(), 'onKeyDown', key('Enter'))
+    expect(submit()['data-pressed']).toBe('')
+    click(submit())
+    expect(rig.index()).toBe(1)
+    expect(submit()['data-pressed']).toBeUndefined()
+    // 迟到的 keyup 不把新题上的按钮压下去
+    fire(submit(), 'onKeyUp', key('Enter'))
+    expect(submit()['data-pressed']).toBeUndefined()
+
+    const item = (): Dict => rig.api().getItemProps({ questionId: 'b', value: 'b1' }) as Dict
+    fire(item(), 'onPointerDown', { pointerType: 'touch' })
+    expect(item()['data-pressed']).toBe('')
+    rig.api().prev()
+    expect(rig.index()).toBe(0)
+    expect(item()['data-pressed']).toBeUndefined()
+
+    const next = (): Dict => rig.api().getNextTriggerProps() as Dict
+    fire(next(), 'onKeyDown', key(' '))
+    expect(next()['data-pressed']).toBe('')
+    fire(next(), 'onKeyUp', key(' '))
+    expect(next()['data-pressed']).toBeUndefined()
+  })
+
+  it('按住途中选中一项：Space 在 keydown 即切换、答题态重入，按压面不丢；自动前进换题时才松开', () => {
+    vi.useFakeTimers()
+    try {
+      const rig = mount({ autoAdvanceDelay: 100 })
+      const item = (): Dict => rig.api().getItemProps({ questionId: 'a', value: 'a1' }) as Dict
+      fire(item(), 'onKeyDown', key(' '))
+      rig.api().toggleOption('a', 'a1')
+      expect(item()['aria-checked']).toBe('true')
+      expect(item()['data-pressed']).toBe('')
+      vi.advanceTimersByTime(100)
+      expect(rig.index()).toBe(1)
+      expect(item()['data-pressed']).toBeUndefined()
+    }
+    finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('按住途中交卷、题目改写或关掉跳过：被按住的那一个不会再来 keyup，按压面由机器收', () => {
+    const rig = mount({ defaultIndex: 2, defaultAnswers: { c: ['c1'] } })
+    const submit = (): Dict => rig.api().getSubmitTriggerProps() as Dict
+    fire(submit(), 'onKeyDown', key('Enter'))
+    expect(submit()['data-pressed']).toBe('')
+    click(submit())
+    expect(rig.state()).toBe('submitted')
+    expect(submit()['data-pressed']).toBeUndefined()
+    // 交卷后一律不进
+    fire(submit(), 'onPointerDown', { pointerType: 'touch' })
+    expect(submit()['data-pressed']).toBeUndefined()
+
+    const rewritten = mount()
+    const item = (): Dict => rewritten.api().getItemProps({ questionId: 'a', value: 'a1' }) as Dict
+    fire(item(), 'onPointerDown', { pointerType: 'touch' })
+    expect(item()['data-pressed']).toBe('')
+    rewritten.setProps({ questions: [{ id: 'a', type: 'single', options: [{ value: 'a3' }] }] })
+    expect(item()['data-pressed']).toBeUndefined()
+
+    const skipping = mount()
+    const skip = (): Dict => skipping.api().getSkipTriggerProps() as Dict
+    fire(skip(), 'onKeyDown', key(' '))
+    expect(skip()['data-pressed']).toBe('')
+    skipping.setProps({ allowSkip: false })
+    expect(skip().hidden).toBe(true)
+    expect(skip()['data-pressed']).toBeUndefined()
+  })
+})

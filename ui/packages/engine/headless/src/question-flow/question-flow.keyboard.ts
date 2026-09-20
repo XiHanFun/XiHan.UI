@@ -22,5 +22,7 @@ export const questionFlowKeyboard: KeyboardTable = {
     { id: 'question-flow.kbd.last-option', keys: ['End'], when: '焦点在当前题的选项上', does: '焦点移到末个可停留选项；单选时同时选中它' },
     { id: 'question-flow.kbd.toggle', keys: ['Space'], when: '焦点在当前题的选项上', does: '切换该项。单选点已选中的那一项不取消' },
     { id: 'question-flow.kbd.advance', keys: ['Enter'], when: '焦点在当前题的选项或自由文本上，且这一题答得能往下走', does: '前进一题；已经在末题就交卷' },
+    { id: 'question-flow.kbd.item-press', keys: ['Space'], when: '按住当前题的未禁用选项', does: '按住期间该选项投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起、失焦、换题或交卷撤下。Enter 不是选项的激活键，不进按压面' },
+    { id: 'question-flow.kbd.press', keys: ['Enter', 'Space'], when: '按住未禁用的上一题 / 下一题 / 跳过 / 继续（发送）按钮', does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦、换题或交卷撤下' },
   ],
 }

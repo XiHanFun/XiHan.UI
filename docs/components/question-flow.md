@@ -159,9 +159,9 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 **状态**：`answering` · `submitted`
 
-**事件**：`OPTION.TOGGLE` · `NOTE.SET` · `GOTO` · `NEXT` · `PREV` · `SKIP` · `SUBMIT` · `VIEWPORT.MEASURE` · `after.autoAdvance` · `CONTROLLED.ANSWERING` · `CONTROLLED.SUBMITTED`
+**事件**：`OPTION.TOGGLE` · `NOTE.SET` · `GOTO` · `NEXT` · `PREV` · `SKIP` · `SUBMIT` · `VIEWPORT.MEASURE` · `after.autoAdvance` · `CONTROLLED.ANSWERING` · `CONTROLLED.SUBMITTED` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isStatusControlled` · `canToggle` · `canSkip` · `isFirstQuestion` · `isLastQuestion`
+**判据**：`isStatusControlled` · `canToggle` · `canSkip` · `isFirstQuestion` · `isLastQuestion` · `canPress`
 
 ### connect API
 
@@ -227,6 +227,8 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `End` | 焦点在当前题的选项上 | 焦点移到末个可停留选项；单选时同时选中它 |
 | `Space` | 焦点在当前题的选项上 | 切换该项。单选点已选中的那一项不取消 |
 | `Enter` | 焦点在当前题的选项或自由文本上，且这一题答得能往下走 | 前进一题；已经在末题就交卷 |
+| `Space` | 按住当前题的未禁用选项 | 按住期间该选项投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起、失焦、换题或交卷撤下。Enter 不是选项的激活键，不进按压面 |
+| `Enter` / `Space` | 按住未禁用的上一题 / 下一题 / 跳过 / 继续（发送）按钮 | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦、换题或交卷撤下 |
 
 ### ARIA
 

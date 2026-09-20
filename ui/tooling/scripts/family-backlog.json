@@ -1,5 +1,5 @@
 {
-  "$description": "逐家族豁免表：七条家族门禁（edge = check-surface-edge 与 check-elevation-role 的 raised 登记，键以 :raised 结尾的归后者；selection = check-selection-marker；ladder = check-state-ladder；shape = check-shape-scale 身份表；scroll = check-scrollbar-hosts，键「组件:部件:问题码」；press = check-press-feedback，*:data-pressed 是各组件接上按压通道前的总豁免（button / toggle 已接）；text = check-text-role；motion = check-motion-role 的大尺度待办）各一段，每段是「组件:部件[:状态]: 理由」。只登「尚未迁移」的存量，每条必须真被放行过一次——门禁跑完把没命中的条目判过期；「本来就不该有」的进各门禁自己的永久登记表。条目数由 tooling/testing/runners/family-backlog.spec.mjs 的快照与 CEILING 钉住，键集合只许是快照的子集：迁走一个组件 = 删条目 + vitest -u 重录快照 + 下调 CEILING，三者同一提交可见。",
+  "$description": "逐家族豁免表：七条家族门禁（edge = check-surface-edge 与 check-elevation-role 的 raised 登记，键以 :raised 结尾的归后者；selection = check-selection-marker；ladder = check-state-ladder；shape = check-shape-scale 身份表；scroll = check-scrollbar-hosts，键「组件:部件:问题码」；press = check-press-feedback（按压通道已铺满全部 PRESSABLE 部件，本段清空）；text = check-text-role；motion = check-motion-role 的大尺度待办）各一段，每段是「组件:部件[:状态]: 理由」。只登「尚未迁移」的存量，每条必须真被放行过一次——门禁跑完把没命中的条目判过期；「本来就不该有」的进各门禁自己的永久登记表。条目数由 tooling/testing/runners/family-backlog.spec.mjs 的快照与 CEILING 钉住，键集合只许是快照的子集：迁走一个组件 = 删条目 + vitest -u 重录快照 + 下调 CEILING，三者同一提交可见。",
   "edge": {
     "button:root:raised": "solid 档的 raised 抬升没有描边，raised 必带 --xh-border-default，待本组件迁移",
     "color-picker:area-thumb:raised": "拇指描边落 --xh-color-neutral-0 原语，应为 --xh-border-default，待本组件迁移",
@@ -23,9 +23,7 @@
   },
   "shape": {},
   "scroll": {},
-  "press": {
-    "*:data-pressed": "按压通道已落地（Core createPressTracker / pressHandlers，家族配方按压选择器已是 :is(:active, [data-pressed])），button / toggle 已投影 data-pressed；其余 PRESSABLE 部件（check-press-feedback ⑧）随各组件提交接入，全部接完删除这一条"
-  },
+  "press": {},
   "text": {
     "color-picker:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "file-upload:label:spacing": "根的 gap 落 --xh-space-3，字段标签贴控件应为 --xh-space-1；待本组件迁移",
