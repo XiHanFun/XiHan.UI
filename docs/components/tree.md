@@ -195,6 +195,18 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 
 ### 状态
 
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `branch` | 'open' \| 'closed' |
+| `branch-checkbox` | 'open' \| 'closed' |
+| `branch-control` | 'open' \| 'closed' |
+| `branch-trigger` | 'open' \| 'closed' |
+| `branch-indicator` | 'open' \| 'closed' |
+| `branch-text` | 'open' \| 'closed' |
+| `branch-content` | 'open' \| 'closed' |
+
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
@@ -279,10 +291,24 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `aria-orientation` | 'vertical' |
 | `tree` | `role` | 'tree' |
+| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-level` | meta?.level |
+| `item` | `aria-posinset` | meta?.posInSet |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `aria-setsize` | meta?.setSize |
+| `item` | `role` | 'treeitem' |
 | `item-checkbox` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `branch` | `aria-disabled` | 'true' \| 'false' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
 | `branch` | `aria-label` | metaOf(node.value)?.label |
+| `branch` | `aria-level` | meta?.level |
+| `branch` | `aria-posinset` | meta?.posInSet |
+| `branch` | `aria-selected` | 'true' \| 'false' |
+| `branch` | `aria-setsize` | meta?.setSize |
+| `branch` | `role` | 'treeitem' |
 | `branch-checkbox` | `aria-hidden` | 'true' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
@@ -311,28 +337,79 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-orientation` | 'vertical' |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-draggable` | ''（条件成立时才出现） |
 | `item` | `data-dragging` | ''（条件成立时才出现） |
 | `item` | `data-drop` | 'before' \| 'after' \| 'inside' |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-selected` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | 'md' |
+| `item-checkbox` | `data-disabled` | ''（条件成立时才出现） |
+| `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-checkbox` | `data-indeterminate` | ''（条件成立时才出现） |
+| `item-checkbox` | `data-selected` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
+| `item-indicator` | `data-selected` | ''（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-indeterminate` | ''（条件成立时才出现） |
+| `item-text` | `data-selected` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `branch` | `data-disabled` | ''（条件成立时才出现） |
+| `branch` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch` | `data-selected` | ''（条件成立时才出现） |
+| `branch` | `data-state` | 'open' \| 'closed' |
+| `branch-checkbox` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-checkbox` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-checkbox` | `data-selected` | ''（条件成立时才出现） |
+| `branch-checkbox` | `data-state` | 'open' \| 'closed' |
 | `branch-checkbox` | `data-xh-collection-slot` | 'prefix' |
+| `branch-control` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-control` | `data-draggable` | ''（条件成立时才出现） |
 | `branch-control` | `data-dragging` | ''（条件成立时才出现） |
 | `branch-control` | `data-drop` | 'before' \| 'after' \| 'inside' |
+| `branch-control` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-control` | `data-indeterminate` | ''（条件成立时才出现） |
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
+| `branch-control` | `data-selected` | ''（条件成立时才出现） |
+| `branch-control` | `data-state` | 'open' \| 'closed' |
 | `branch-control` | `data-xh-collection-context` | 'page' |
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | 'md' |
+| `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-selected` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-xh-collection-slot` | 'prefix' |
+| `branch-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-selected` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-state` | 'open' \| 'closed' |
 | `branch-indicator` | `data-xh-collection-slot` | 'prefix' |
+| `branch-text` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-text` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-text` | `data-selected` | ''（条件成立时才出现） |
+| `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-xh-collection-slot` | 'text' |
+| `branch-content` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-content` | `data-indeterminate` | ''（条件成立时才出现） |
 | `branch-content` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `branch-content` | `data-selected` | ''（条件成立时才出现） |
+| `branch-content` | `data-state` | 'open' \| 'closed' |
 | `node-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `node-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `node-drag-trigger` | `data-xh-collection-slot` | 'prefix' |

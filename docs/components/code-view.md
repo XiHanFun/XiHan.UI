@@ -249,6 +249,12 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `pre` | `data-wrap` | ''（条件成立时才出现） |
 | `code` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `code` | `data-wrap` | ''（条件成立时才出现） |
+| `line` | `data-highlighted` | ''（条件成立时才出现） |
+| `line` | `data-line-number` | String(lineNumberAt(index)) |
+| `line-number` | `data-highlighted` | ''（条件成立时才出现） |
+| `line-number` | `data-line-number` | String(lineNumberAt(index)) |
+| `line-content` | `data-highlighted` | ''（条件成立时才出现） |
+| `line-content` | `data-line-number` | String(lineNumberAt(index)) |
 | `token` | `data-kind` | token.kind |
 | `fold-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `fold-trigger` | `data-state` | 'closed' \| 'open' |

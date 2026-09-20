@@ -250,23 +250,27 @@
 | `summary` | `data-empty` | ''（条件成立时才出现） |
 | `jumper` | `data-empty` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'text' |
 | `prev-trigger` | `data-xh-action-size` | props.size |
 | `prev-trigger` | `data-xh-action-variant` | 'ghost' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'text' |
 | `next-trigger` | `data-xh-action-size` | props.size |
 | `next-trigger` | `data-xh-action-variant` | 'ghost' |
 | `item` | `data-current` | ''（条件成立时才出现） |
+| `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'text' |
 | `item` | `data-xh-action-size` | props.size |
 | `item` | `data-xh-action-variant` | 'ghost' |
+| `ellipsis-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `ellipsis-trigger` | `data-side` | props.side |
 | `ellipsis-trigger` | `data-state` | 'open' \| 'closed' |
 | `ellipsis-trigger` | `data-xh-action-control` | '' |

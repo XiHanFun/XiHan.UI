@@ -184,6 +184,9 @@
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
+| `item` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
+| `item-indicator` | 'checked' \| 'unchecked' |
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
 
@@ -348,11 +351,20 @@
 | `positioner` | `data-variant` | props.variant |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |

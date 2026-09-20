@@ -274,10 +274,14 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-state` | 'open' \| 'closed' |
 | `list` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |

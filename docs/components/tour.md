@@ -263,6 +263,7 @@
 | `progress-dot` | `data-current` | ''（条件成立时才出现） |
 | `progress-dot` | `data-index` | String(index) |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-state` | 'open' \| 'closed' |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
@@ -270,18 +271,21 @@
 | `prev-trigger` | `data-xh-action-size` | 'sm' |
 | `prev-trigger` | `data-xh-action-variant` | 'outline' |
 | `next-trigger` | `data-last` | ''（条件成立时才出现） |
+| `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-state` | 'open' \| 'closed' |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'text' |
 | `next-trigger` | `data-xh-action-size` | 'sm' |
 | `next-trigger` | `data-xh-action-variant` | 'solid' |
+| `skip-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `skip-trigger` | `data-state` | 'open' \| 'closed' |
 | `skip-trigger` | `data-xh-action-control` | '' |
 | `skip-trigger` | `data-xh-action-display` | 'always' |
 | `skip-trigger` | `data-xh-action-profile` | 'text' |
 | `skip-trigger` | `data-xh-action-size` | 'sm' |
 | `skip-trigger` | `data-xh-action-variant` | 'ghost' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

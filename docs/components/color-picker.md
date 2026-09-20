@@ -151,7 +151,17 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 
 | 部件 | 取值 |
 | --- | --- |
+| `root` | 'open' \| 'closed' |
+| `label` | 'open' \| 'closed' |
+| `control` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `value-text` | 'open' \| 'closed' |
+| `swatch` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `saturation-area` | 'open' \| 'closed' |
+| `area-thumb` | 'open' \| 'closed' |
+| `channel-input` | 'open' \| 'closed' |
 | `eye-dropper-trigger` | 'picking' \| 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -267,7 +277,25 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-readonly` | ''（条件成立时才出现） |
+| `label` | `data-state` | 'open' \| 'closed' |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `value-text` | `data-disabled` | ''（条件成立时才出现） |
+| `value-text` | `data-readonly` | ''（条件成立时才出现） |
+| `value-text` | `data-state` | 'open' \| 'closed' |
+| `swatch` | `data-disabled` | ''（条件成立时才出现） |
+| `swatch` | `data-readonly` | ''（条件成立时才出现） |
+| `swatch` | `data-state` | 'open' \| 'closed' |
 | `swatch` | `data-value` | context.get('value') |
 | `swatch` | `data-xh-swatch` | '' |
 | `swatch` | `data-xh-swatch-size` | props.size |
@@ -276,16 +304,29 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-readonly` | ''（条件成立时才出现） |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `saturation-area` | `data-disabled` | ''（条件成立时才出现） |
 | `saturation-area` | `data-dragging` | ''（条件成立时才出现） |
+| `saturation-area` | `data-readonly` | ''（条件成立时才出现） |
+| `saturation-area` | `data-state` | 'open' \| 'closed' |
+| `area-thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `area-thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `area-thumb` | `data-readonly` | ''（条件成立时才出现） |
+| `area-thumb` | `data-state` | 'open' \| 'closed' |
 | `hue-slider` | `data-channel` | 'hue' |
 | `alpha-slider` | `data-channel` | 'alpha' |
 | `alpha-slider` | `data-disabled` | ''（条件成立时才出现） |
 | `channel-input` | `data-channel` | channel |
+| `channel-input` | `data-disabled` | ''（条件成立时才出现） |
 | `channel-input` | `data-invalid` | ''（条件成立时才出现） |
+| `channel-input` | `data-readonly` | ''（条件成立时才出现） |
+| `channel-input` | `data-state` | 'open' \| 'closed' |
 | `eye-dropper-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `eye-dropper-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-state` | 'picking' \| 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->

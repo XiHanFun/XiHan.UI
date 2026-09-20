@@ -136,6 +136,14 @@
 
 ### 状态
 
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
+| `item-indicator` | 'checked' \| 'unchecked' |
+
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
@@ -239,11 +247,20 @@
 | `content` | `data-invalid` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |

@@ -251,8 +251,14 @@
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'prefix' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |

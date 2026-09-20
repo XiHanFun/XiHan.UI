@@ -278,17 +278,20 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `item` | `data-orientation` | props.orientation |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-orientation` | props.orientation |
+| `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
 | `prev-trigger` | `data-xh-action-size` | 'md' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-trigger` | `data-orientation` | props.orientation |
+| `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
 | `next-trigger` | `data-xh-action-size` | 'md' |
 | `autoplay-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `autoplay-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `autoplay-trigger` | `data-state` | 'paused' \| 'running' |
 | `autoplay-trigger` | `data-xh-action-control` | '' |
 | `autoplay-trigger` | `data-xh-action-display` | 'always' |
@@ -297,6 +300,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `indicator-group` | `data-orientation` | props.orientation |
 | `indicator` | `data-current` | ''（条件成立时才出现） |
 | `indicator` | `data-index` | String(index) |
+| `indicator` | `data-pressed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

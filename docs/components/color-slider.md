@@ -215,8 +215,44 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-channel` | colorToChannel(prop('channel')) |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-value` | context.get('value') |
+| `label` | `data-channel` | colorToChannel(prop('channel')) |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-dragging` | ''（条件成立时才出现） |
+| `label` | `data-invalid` | ''（条件成立时才出现） |
+| `label` | `data-orientation` | props.orientation |
+| `label` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-channel` | colorToChannel(prop('channel')) |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-dragging` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-orientation` | props.orientation |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `track` | `data-channel` | colorToChannel(prop('channel')) |
+| `track` | `data-disabled` | ''（条件成立时才出现） |
+| `track` | `data-dragging` | ''（条件成立时才出现） |
+| `track` | `data-invalid` | ''（条件成立时才出现） |
+| `track` | `data-orientation` | props.orientation |
+| `track` | `data-readonly` | ''（条件成立时才出现） |
+| `thumb` | `data-channel` | colorToChannel(prop('channel')) |
+| `thumb` | `data-disabled` | ''（条件成立时才出现） |
+| `thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `thumb` | `data-invalid` | ''（条件成立时才出现） |
+| `thumb` | `data-orientation` | props.orientation |
+| `thumb` | `data-readonly` | ''（条件成立时才出现） |
+| `value-text` | `data-channel` | colorToChannel(prop('channel')) |
+| `value-text` | `data-disabled` | ''（条件成立时才出现） |
+| `value-text` | `data-dragging` | ''（条件成立时才出现） |
+| `value-text` | `data-invalid` | ''（条件成立时才出现） |
+| `value-text` | `data-orientation` | props.orientation |
+| `value-text` | `data-readonly` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

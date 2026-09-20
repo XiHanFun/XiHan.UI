@@ -136,6 +136,15 @@
 
 ### 状态
 
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `swatch` | 'checked' \| 'unchecked' |
+| `indicator` | 'checked' \| 'unchecked' |
+| `hidden-input` | 'checked' \| 'unchecked' |
+
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
@@ -222,9 +231,25 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `swatch` | `data-disabled` | ''（条件成立时才出现） |
+| `swatch` | `data-invalid` | ''（条件成立时才出现） |
+| `swatch` | `data-readonly` | ''（条件成立时才出现） |
+| `swatch` | `data-state` | 'checked' \| 'unchecked' |
 | `swatch` | `data-xh-swatch` | '' |
 | `swatch` | `data-xh-swatch-size` | props.size |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-invalid` | ''（条件成立时才出现） |
+| `indicator` | `data-readonly` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
+| `hidden-input` | `data-invalid` | ''（条件成立时才出现） |
+| `hidden-input` | `data-readonly` | ''（条件成立时才出现） |
+| `hidden-input` | `data-state` | 'checked' \| 'unchecked' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

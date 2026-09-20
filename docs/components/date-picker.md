@@ -333,6 +333,7 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -356,6 +357,7 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `preset` | `data-disabled` | ''（条件成立时才出现） |
+| `preset` | `data-pressed` | ''（条件成立时才出现） |
 | `preset` | `data-state` | 'checked' \| 'unchecked' |
 | `preset` | `data-value` | v |
 | `preset` | `data-xh-collection-context` | 'overlay' |
@@ -365,12 +367,14 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `calendar` | `data-readonly` | ''（条件成立时才出现） |
 | `calendar` | `data-state` | 'open' \| 'closed' |
 | `time-column` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
+| `time-item` | `data-pressed` | ''（条件成立时才出现） |
 | `time-item` | `data-state` | 'checked' \| 'unchecked' |
 | `time-item` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
 | `time-item` | `data-value` | v |
 | `time-item` | `data-xh-collection-context` | 'overlay' |
 | `time-item` | `data-xh-collection-item` | '' |
 | `time-item` | `data-xh-collection-size` | props.size |
+| `confirm-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `confirm-trigger` | `data-xh-action-control` | '' |
 | `confirm-trigger` | `data-xh-action-display` | 'always' |
 | `confirm-trigger` | `data-xh-action-profile` | 'text' |

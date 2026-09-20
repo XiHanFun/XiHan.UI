@@ -233,7 +233,19 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-resizing` | ''（条件成立时才出现） |
 | `root` | `data-shape` | props.shape |
+| `viewport` | `data-disabled` | ''（条件成立时才出现） |
+| `viewport` | `data-dragging` | ''（条件成立时才出现） |
+| `viewport` | `data-readonly` | ''（条件成立时才出现） |
+| `viewport` | `data-resizing` | ''（条件成立时才出现） |
+| `crop-area` | `data-disabled` | ''（条件成立时才出现） |
+| `crop-area` | `data-dragging` | ''（条件成立时才出现） |
+| `crop-area` | `data-readonly` | ''（条件成立时才出现） |
+| `crop-area` | `data-resizing` | ''（条件成立时才出现） |
 | `crop-area` | `data-shape` | props.shape |
 | `crop-handle` | `data-disabled` | ''（条件成立时才出现） |
 | `crop-handle` | `data-position` | position |

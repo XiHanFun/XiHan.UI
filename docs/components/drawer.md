@@ -238,6 +238,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `root` | `data-side` | props.side |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -254,6 +255,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `content` | `data-side` | props.side |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

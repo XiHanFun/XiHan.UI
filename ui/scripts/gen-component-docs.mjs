@@ -131,6 +131,9 @@ function localBindings(sf) {
   const visit = (node) => {
     if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer)
       map.set(node.name.text, node)
+    // function 声明的本地辅助也收：spreadHelper 顺着 `...name(…)` 找到它的函数体
+    else if (ts.isFunctionDeclaration(node) && node.name && node.body)
+      map.set(node.name.text, node)
     ts.forEachChild(node, visit)
   }
   visit(sf)
@@ -247,8 +250,87 @@ function getterPart(getter) {
 }
 
 /**
+ * `...press(part)` / `...pressing` 展开到的本地辅助：名字与函数体；解不到或正在展开中（环）返回 null。
+ * 判据与门禁 tooling/scripts/lib/connect-getters.mjs 的 spreadsProject 同一套（check-press-feedback ⑧）：
+ * 展开的是本地调用 `...name(…)`，或本地绑定 `...name` 且绑定写成 `const name = 本地调用(…)`；辅助必须是
+ * 同一份 connect 里声明的函数（const 箭头 / 函数表达式或 function 声明）。展开的是导入、对象字面量、
+ * `parts.root.attrs` 这类成员访问都不算——门禁不算的，这里也不落进表。
+ */
+function spreadHelper(expr, locals, expanding) {
+  let name = null
+  if (ts.isCallExpression(expr) && ts.isIdentifier(expr.expression)) {
+    name = expr.expression.text
+  }
+  else if (ts.isIdentifier(expr)) {
+    const bound = locals.get(expr.text)
+    const init = bound && ts.isVariableDeclaration(bound) ? bound.initializer : null
+    if (init && ts.isCallExpression(init) && ts.isIdentifier(init.expression))
+      name = init.expression.text
+  }
+  if (!name || expanding.has(name))
+    return null
+  const decl = locals.get(name)
+  if (!decl)
+    return null
+  const fn = ts.isFunctionDeclaration(decl) ? decl : decl.initializer
+  if (!(ts.isFunctionDeclaration(fn) || ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) || !fn.body)
+    return null
+  return { name, body: fn.body }
+}
+
+/** 键是铺到 DOM 上的 data-* / aria-* / role 之一才进表；其余是事件、id、style 这类。 */
+function attrBucket(key) {
+  if (key.startsWith('data-'))
+    return 'data'
+  if (key.startsWith('aria-') || key === 'role')
+    return 'aria'
+  return null
+}
+
+/**
+ * 一棵子树里写在对象字面量上的属性键 → 值表达式。
+ * 同一字面量里后写的盖先写的（JS 展开语义：`{ ...stateAttrs(), 'data-state': picking ? … }` 以后者为准）；
+ * 不同字面量之间（getter 分支各返回一个对象）先出现的算数。`...helper(…)` 展开时把辅助函数体的表在
+ * 展开处并进来；expanding 是正在展开的辅助名栈，辅助互相展开的环走到这里就停。
+ */
+function literalAttrs(node, sf, locals, expanding) {
+  const out = new Map()
+  const visit = (n) => {
+    if (ts.isObjectLiteralExpression(n)) {
+      const own = new Map()
+      for (const m of n.properties) {
+        if (ts.isSpreadAssignment(m)) {
+          const helper = spreadHelper(m.expression, locals, expanding)
+          if (!helper)
+            continue
+          expanding.add(helper.name)
+          for (const [key, value] of literalAttrs(helper.body, sf, locals, expanding))
+            own.set(key, value)
+          expanding.delete(helper.name)
+          continue
+        }
+        if (!ts.isPropertyAssignment(m) || !m.name)
+          continue
+        const key = ts.isStringLiteral(m.name) || ts.isIdentifier(m.name) ? m.name.text : null
+        if (key && attrBucket(key))
+          own.set(key, m.initializer)
+      }
+      for (const [key, value] of own) {
+        if (!out.has(key))
+          out.set(key, value)
+      }
+    }
+    ts.forEachChild(n, visit)
+  }
+  visit(node)
+  return out
+}
+
+/**
  * 从 connect 源码里把每个部件铺到 DOM 上的 data-* / aria-* / role 抓出来。
  * 只认字面量键，动态拼出来的键抓不到——那类目前一个都没有。
+ * getter 里 `...press(part)` 这样展开的本地辅助顺着解进去：按压通道的 data-pressed 多写在辅助里，
+ * 不解的话表里就缺这一行，与门禁 ⑧ 的口径对不上。
  */
 function attrSurface(id, parts, states) {
   const file = path.join(headlessSrc, id, `${id}.connect.ts`)
@@ -256,44 +338,29 @@ function attrSurface(id, parts, states) {
     return { data: [], aria: [] }
   const sf = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true)
   const locals = localBindings(sf)
-  const data = []
-  const aria = []
+  const buckets = { data: [], aria: [] }
   const seen = new Set()
-
-  const collect = (node, part) => {
-    if (ts.isObjectLiteralExpression(node)) {
-      for (const m of node.properties) {
-        if (!ts.isPropertyAssignment(m) || !m.name)
-          continue
-        const key = ts.isStringLiteral(m.name) || ts.isIdentifier(m.name) ? m.name.text : null
-        if (!key)
-          continue
-        const isAria = key.startsWith('aria-') || key === 'role'
-        const bucket = key.startsWith('data-') ? data : isAria ? aria : null
-        if (!bucket)
-          continue
-        const dedupe = `${part} ${key}`
-        if (seen.has(dedupe))
-          continue
-        seen.add(dedupe)
-        bucket.push({ part, attr: key, value: readAttrValue(m.initializer, sf, locals) })
-      }
-    }
-    ts.forEachChild(node, c => collect(c, part))
-  }
 
   const visit = (node) => {
     // 返回对象里的 getXxxProps 一支就是一个部件的属性面
     if ((ts.isPropertyAssignment(node) || ts.isMethodDeclaration(node)) && node.name) {
       const name = node.name.getText(sf)
       if (/^get[A-Z]\w*Props$/.test(name)) {
-        collect(node, getterPart(name))
+        const part = getterPart(name)
+        for (const [key, init] of literalAttrs(node, sf, locals, new Set())) {
+          const dedupe = `${part} ${key}`
+          if (seen.has(dedupe))
+            continue
+          seen.add(dedupe)
+          buckets[attrBucket(key)].push({ part, attr: key, value: readAttrValue(init, sf, locals) })
+        }
         return
       }
     }
     ts.forEachChild(node, visit)
   }
   visit(sf)
+  const { data, aria } = buckets
 
   const order = new Map(parts.map((x, i) => [x, i]))
   const sorter = (a, b) =>

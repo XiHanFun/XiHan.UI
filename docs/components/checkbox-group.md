@@ -134,6 +134,10 @@ size 决定方框与条目文字的几何档位，组标题不随档
 
 | 部件 | 取值 |
 | --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `indicator` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
+| `hidden-input` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | resolveCheckedState(value, prop('itemValues') ?? []) |
 
 以下名称仅用于内部状态机。
@@ -221,12 +225,20 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'row' |
 | `item` | `data-xh-action-size` | 'xs' |
 | `item` | `data-xh-action-variant` | 'ghost' |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
+| `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
+| `hidden-input` | `data-state` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-readonly` | ''（条件成立时才出现） |

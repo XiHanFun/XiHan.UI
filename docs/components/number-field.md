@@ -252,6 +252,8 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `input` | `aria-valuenow` | undefined \| decodeNumber(value, { parse: prop('parse'), format: p… |
 | `input` | `role` | 'spinbutton' |
 | `suffix` | `aria-hidden` | 'true' |
+| `increment-trigger` | `aria-hidden` | 'true' |
+| `decrement-trigger` | `aria-hidden` | 'true' |
 
 ## 样式参考
 

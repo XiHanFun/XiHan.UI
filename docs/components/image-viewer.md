@@ -262,38 +262,47 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `image` | `data-loading` | ''（条件成立时才出现） |
 | `image` | `data-state` | 'open' \| 'closed' |
 | `toolbar` | `data-state` | 'open' \| 'closed' |
+| `zoom-in-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `zoom-in-trigger` | `data-xh-action-control` | '' |
 | `zoom-in-trigger` | `data-xh-action-display` | 'always' |
 | `zoom-in-trigger` | `data-xh-action-profile` | 'icon' |
 | `zoom-in-trigger` | `data-xh-action-size` | 'xs' |
+| `zoom-out-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `zoom-out-trigger` | `data-xh-action-control` | '' |
 | `zoom-out-trigger` | `data-xh-action-display` | 'always' |
 | `zoom-out-trigger` | `data-xh-action-profile` | 'icon' |
 | `zoom-out-trigger` | `data-xh-action-size` | 'xs' |
+| `rotate-left-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `rotate-left-trigger` | `data-xh-action-control` | '' |
 | `rotate-left-trigger` | `data-xh-action-display` | 'always' |
 | `rotate-left-trigger` | `data-xh-action-profile` | 'icon' |
 | `rotate-left-trigger` | `data-xh-action-size` | 'xs' |
+| `rotate-right-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `rotate-right-trigger` | `data-xh-action-control` | '' |
 | `rotate-right-trigger` | `data-xh-action-display` | 'always' |
 | `rotate-right-trigger` | `data-xh-action-profile` | 'icon' |
 | `rotate-right-trigger` | `data-xh-action-size` | 'xs' |
+| `flip-horizontal-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `flip-horizontal-trigger` | `data-xh-action-control` | '' |
 | `flip-horizontal-trigger` | `data-xh-action-display` | 'always' |
 | `flip-horizontal-trigger` | `data-xh-action-profile` | 'icon' |
 | `flip-horizontal-trigger` | `data-xh-action-size` | 'xs' |
+| `flip-vertical-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `flip-vertical-trigger` | `data-xh-action-control` | '' |
 | `flip-vertical-trigger` | `data-xh-action-display` | 'always' |
 | `flip-vertical-trigger` | `data-xh-action-profile` | 'icon' |
 | `flip-vertical-trigger` | `data-xh-action-size` | 'xs' |
+| `reset-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `reset-trigger` | `data-xh-action-control` | '' |
 | `reset-trigger` | `data-xh-action-display` | 'always' |
 | `reset-trigger` | `data-xh-action-profile` | 'icon' |
 | `reset-trigger` | `data-xh-action-size` | 'xs' |
+| `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
 | `prev-trigger` | `data-xh-action-size` | 'md' |
+| `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
@@ -301,6 +310,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `counter` | `data-count` | String(count) |
 | `counter` | `data-index` | String(index + 1) |
 | `counter` | `data-state` | 'open' \| 'closed' |
+| `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

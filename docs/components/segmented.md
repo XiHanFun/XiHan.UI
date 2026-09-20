@@ -158,6 +158,13 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 ### 状态
 
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
+
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
@@ -246,7 +253,15 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-text` | `data-invalid` | ''（条件成立时才出现） |
+| `item-text` | `data-readonly` | ''（条件成立时才出现） |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `indicator` | `data-value` | context.get('value') |
 
 <!-- xh-component-tokens:start -->
