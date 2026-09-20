@@ -165,7 +165,11 @@ describe('vue Portal 的局部视觉环境', () => {
     ])
 
     const group = document.querySelector<HTMLElement>('[data-scope="button-group"][data-part="root"]')!
-    expect([...group.children].map(node => node.getAttribute('data-scope'))).toEqual(['button', 'button'])
+    // 组内建分隔线是 ButtonGroup 自己按段落摆的直接子项（separators 默认开启），不是 Portal marker：
+    // 两段之间只允许出现它，asChild 触发器不得再多出 template 锚点
+    expect([...group.children].map(node => node.hasAttribute('data-xh-button-group-separator') ? 'separator' : node.getAttribute('data-scope')))
+      .toEqual(['button', 'separator', 'button'])
+    expect(group.querySelector(':scope > template[data-xh-portal-source]')).toBeNull()
     expect(group.lastElementChild?.textContent).toBe('末项')
     const toolbar = document.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="root"]')!
     expect(toolbar.querySelector(':scope > template[data-xh-portal-source]')).toBeNull()
