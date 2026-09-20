@@ -5,7 +5,7 @@
 
 // 提供 popconfirm 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { PopoverPressedPart, PopoverSchema } from '../popover'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents } from './popconfirm.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
@@ -285,7 +285,7 @@ export function connectPopconfirm<T extends PropTypes>(
   // （两颗动作钮并排，只记一个布尔分不清按住的是哪颗）；Space / Enter 与触屏按住投影 data-pressed，
   // 指针按住由 :active 表出，皮肤两者同一档；浮层收起时机器一并松开
   const pressed = context.get('pressed')
-  const press = (part: PopoverPressedPart) => {
+  const press = (part: PopoverPressedPart): PressHandlers & { 'data-pressed': '' | undefined } => {
     const handlers = createPressTracker({
       isPressed: () => context.get('pressed') === part,
       onChange: down => send({ type: down ? 'PRESS.START' : 'PRESS.END', part }),

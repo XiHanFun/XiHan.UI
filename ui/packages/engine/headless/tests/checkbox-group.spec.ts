@@ -453,7 +453,7 @@ describe('connectCheckboxGroup：按压通道', () => {
   /** 键盘事件替身：只带跟踪器与翻转看的几个字段；currentTarget 缺席时全选找不到 root、一个值都不动 */
   const key = (k: string, repeat = false): unknown => ({ key: k, repeat, preventDefault: () => {}, currentTarget: null })
 
-  it('PRESS.START 按 part + value 只让那一个投影 data-pressed，PRESS.END 撤下；另一个部件或条目的 keyup 不串', () => {
+  it('机器收到 PRESS.START 后按 part + value 只让那一个投影 data-pressed，PRESS.END 撤下；另一个部件或条目的 keyup 不串', () => {
     const s = makeService({ defaultValue: ['a'] })
     s.send({ type: 'PRESS.START', part: 'item', value: 'b' })
     expect(itemPressed(s, 'b')).toBe('')

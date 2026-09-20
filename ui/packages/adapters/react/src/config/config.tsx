@@ -6,14 +6,14 @@
 // 全局配置注入：应用级默认值，实例上写了的以实例为准。
 // 取值优先级：实例 props > 最近一层 Provider > 外层 Provider > 组件内建默认（英文）。
 // 不套 Provider 时组件走原路，零开销。
-import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type {
   VisualEnvironmentController,
   VisualEnvironmentControllerOptions,
 } from '@xihan-ui/core/visual-environment'
+import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
-import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
+import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { createContext, useContext, useLayoutEffect, useMemo, useState } from 'react'
 
 export type { XhTranslationOverrides }

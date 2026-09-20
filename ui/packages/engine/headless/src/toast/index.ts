@@ -35,6 +35,6 @@ export type {
   ToastServiceDefaults,
   ToastStatus,
   ToastStatusChangeDetails,
-  ToastTranslations,
   ToastTone,
+  ToastTranslations,
 } from './toast.types'

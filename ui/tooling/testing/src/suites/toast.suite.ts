@@ -305,7 +305,7 @@ export const toastSuite: ConformanceSuite = {
           },
           expect: {
             // 加载中不是语气：语气位照默认落 info，转圈另由 data-loading 说
-            parts: { 'root': { 'data-state': 'visible', 'data-loading': '', 'data-tone': 'info' }, 'indicator': { 'data-loading': '' } },
+            parts: { root: { 'data-state': 'visible', 'data-loading': '', 'data-tone': 'info' }, indicator: { 'data-loading': '' } },
             events: [],
           },
         },

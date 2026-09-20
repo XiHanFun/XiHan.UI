@@ -15,8 +15,10 @@ const STATES = ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', '
 const CONTEXT_STATES = {
   overlay: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed'],
   page: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed', 'current', 'current+hover', 'current+highlight', 'current+pressed'],
-  /** nav（横向导航）自带一整套基础态覆盖：白底承载阶梯 + muted 静息字；current 是透明面 + 品牌深字 + medium；
-   *  terminal 是不可点的当前页（Breadcrumb）。源序 rest → open-path → hover / highlight / pressed → current → current+* → terminal。 */
+  /**
+   * nav（横向导航）自带一整套基础态覆盖：白底承载阶梯 + muted 静息字；current 是透明面 + 品牌深字 + medium；
+   *  terminal 是不可点的当前页（Breadcrumb）。源序 rest → open-path → hover / highlight / pressed → current → current+* → terminal。
+   */
   nav: ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'current', 'current+hover', 'current+highlight', 'current+pressed', 'terminal'],
 }
 const SIZE_FIELDS = ['blockPadding', 'inlinePadding', 'gap', 'fontSize', 'glyphSize']
@@ -35,11 +37,15 @@ const STATE_SLOT = {
 }
 const MARKER_GLYPHS = ['trailing', 'leading', 'none']
 const MARKER_CURRENTS = ['none', 'bar']
-/** 上下文态的主体：selected 读 aria 事实，行不是 ARIA 主体时（Tree / TreeSelect 的 branch-control，aria-selected 在
- *  branch 上）读连接层同步下来的 data-selected；current 读状态词汇表里的 data-current。:is 取最高特指度，仍是 (0,1,0)。 */
+/**
+ * 上下文态的主体：selected 读 aria 事实，行不是 ARIA 主体时（Tree / TreeSelect 的 branch-control，aria-selected 在
+ *  branch 上）读连接层同步下来的 data-selected；current 读状态词汇表里的 data-current。:is 取最高特指度，仍是 (0,1,0)。
+ */
 const SUBJECT = { selected: ':is([aria-selected=\'true\'], [data-selected])', current: '[data-current]' }
-/** nav 的不可点当前页：连接层显式投影 data-xh-collection-terminal（不从 aria-current / href 推断——它同时带
- *  aria-disabled，靠 (0,4,0) 压过家族禁用面），不带 GUARD 也不叠 hover / pressed。 */
+/**
+ * nav 的不可点当前页：连接层显式投影 data-xh-collection-terminal（不从 aria-current / href 推断——它同时带
+ *  aria-disabled，靠 (0,4,0) 压过家族禁用面），不带 GUARD 也不叠 hover / pressed。
+ */
 const TERMINAL = '[data-current][data-xh-collection-terminal]'
 /** 交互守卫：aria-disabled 与 data-disabled 同为禁用事实（分支行只带后者）；busy / error 行的换面由组件皮肤自行接回。 */
 const GUARD = ':not([aria-disabled=\'true\'], [data-disabled], [aria-busy=\'true\'], [data-error])'
@@ -232,9 +238,11 @@ function sizeVars(source, size) {
   ].join('\n')
 }
 
-/** 上下文态选择器：selected / current 基底 (0,4,0)，叠加 hover / highlight / pressed 各升一级并保持基础态的源序；
+/**
+ * 上下文态选择器：selected / current 基底 (0,4,0)，叠加 hover / highlight / pressed 各升一级并保持基础态的源序；
  *  nav 覆盖的基础态与对应基础态同形只多一段 context（rest (0,2,0) → open-path (0,3,0) → hover / highlight / pressed (0,4,0)），
- *  terminal (0,4,0) 高于 [aria-disabled='true'] 的禁用面 (0,2,0)。 */
+ *  terminal (0,4,0) 高于 [aria-disabled='true'] 的禁用面 (0,2,0)。
+ */
 function contextSelector(context, state) {
   const item = `[data-xh-collection-item][data-xh-collection-context='${context}']`
   if (STATES.includes(state))
@@ -246,9 +254,11 @@ function contextSelector(context, state) {
   return overlay ? `${base}${OVERLAY_SUFFIX[overlay]}` : base
 }
 
-/** 按下态（基础 pressed 与 nav 覆盖的 pressed）都带按下时长与曲线，与基础按下块同形；
+/**
+ * 按下态（基础 pressed 与 nav 覆盖的 pressed）都带按下时长与曲线，与基础按下块同形；
  *  terminal 把光标直接写回：基础块的 cursor 只有 (0,1,0)，压不过 pointer.css 给 [aria-disabled='true'] 的
- *  not-allowed (0,3,0)，而不可点的当前页同时带 aria-disabled——它是位置不是禁用，光标要落 terminal 那一档。 */
+ *  not-allowed (0,3,0)，而不可点的当前页同时带 aria-disabled——它是位置不是禁用，光标要落 terminal 那一档。
+ */
 function stateExtras(source, state, indent) {
   if (state === 'pressed')
     return `\n\n${indent}transition-duration: ${source.motion.pressDuration};\n${indent}transition-timing-function: ${source.motion.pressEasing};`

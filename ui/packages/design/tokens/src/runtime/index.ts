@@ -5,13 +5,6 @@
 
 // 导出 runtime 模块的公共接口。
 
-export {
-  applyThemeAttrs,
-  applyVisualEnvironmentAttrs,
-  toThemeAttrs,
-  toVisualEnvironmentAttrs,
-  VISUAL_ENVIRONMENT_ATTRIBUTES,
-} from '@xihan-ui/core/visual-environment'
 export type { BrandScale, BrandStep, RegisterBrandOptions } from './brand'
 export { brandScaleCss, deriveBrandScale, registerBrand } from './brand'
 export type { Oklch, PickColorOptions } from './color'
@@ -39,6 +32,13 @@ export {
 } from './color'
 export type { ThemeController, ThemeControllerOptions } from './controller'
 export { createThemeController } from './controller'
+export {
+  applyThemeAttrs,
+  applyVisualEnvironmentAttrs,
+  toThemeAttrs,
+  toVisualEnvironmentAttrs,
+  VISUAL_ENVIRONMENT_ATTRIBUTES,
+} from '@xihan-ui/core/visual-environment'
 // @xihan-ui/tokens/runtime —— 兼容的主题运行时入口；实现由 Core 持有。
 export type { EnvSignals } from '@xihan-ui/core/visual-environment'
 export { createEnvSignals, SSR_ENV } from '@xihan-ui/core/visual-environment'

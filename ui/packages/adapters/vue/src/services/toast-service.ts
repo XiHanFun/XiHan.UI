@@ -16,8 +16,8 @@ import type {
   ToastPlacement,
   ToastRecord,
   ToastServiceDefaults,
-  ToastTranslations,
   ToastTone,
+  ToastTranslations,
 } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { XhConfig } from '../config/config'

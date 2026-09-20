@@ -40,7 +40,7 @@ function lineOf(source, index) {
  * 属性可以跨行（示例里多行 style 是常态）。
  */
 function* tags(source, jsx) {
-  const re = /<([A-Za-z][\w.-]*)/g
+  const re = /<([A-Z][\w.-]*)/gi
   for (const m of source.matchAll(re)) {
     let i = m.index + m[0].length
     let depth = 0
@@ -79,7 +79,7 @@ function* tags(source, jsx) {
 
 /** 库节点：Xh* 组件、xh-* 自定义元素、带 data-xh-part 的作者角色节点。 */
 function isLibraryNode(name, attrs) {
-  return /^Xh[A-Z]/.test(name) || /^xh-/.test(name) || /\sdata-xh-part=/.test(attrs)
+  return /^Xh[A-Z]/.test(name) || name.startsWith('xh-') || /\sdata-xh-part=/.test(attrs)
 }
 
 function hasScrollAttr(attrs, jsx) {
@@ -154,14 +154,17 @@ function checkMarkup(file, source, hostDir) {
       let matched = []
       const cls = last.match(/^\.([\w-]+)$/)
       const attr = last.match(/^\[([\w-]+)(?:=["']?([^"'\]]*)["']?)?\]$/)
-      if (cls)
+      if (cls) {
         matched = all.filter(t => classesOf(t.attrs, false).includes(cls[1]))
-      else if (attr)
+      }
+      else if (attr) {
         matched = all.filter(t => (attr[2] === undefined
           ? new RegExp(`\\s${attr[1]}(?:\\s|$|=)`)
           : new RegExp(`\\s${attr[1]}=["']${attr[2]}["']`)).test(t.attrs))
-      else
+      }
+      else {
         problems.push(`${where(at)}  <style> 选择器 \`${selector}\` 声明了 overflow: auto | scroll，但门禁只认类名 / 属性选择器，改成能对上元素的写法`)
+      }
       if ((cls || attr) && matched.length === 0)
         problems.push(`${where(at)}  <style> 选择器 \`${selector}\` 声明了 overflow: auto | scroll，但模板里没有匹配的元素`)
       for (const tag of matched)
@@ -182,7 +185,7 @@ function checkJsx(file, source, hostDir) {
   const all = [...tags(source, true)]
   // 顶层样式对象：const name(: CSSProperties)? = { … }
   const objects = new Map()
-  for (const m of source.matchAll(/const\s+(\w+)\s*(?::\s*[\w.<>]+)?\s*=\s*\{([\s\S]*?)\n\}/g))
+  for (const m of source.matchAll(/const\s+(\w+)\s*(?::\s*[\w.<>]+\s*)?=\s*\{([\s\S]*?)\n\}/g))
     objects.set(m[1], m[2])
   for (const [name, body] of objects) {
     if (SCROLLBAR_WIDTH_JS.test(body))

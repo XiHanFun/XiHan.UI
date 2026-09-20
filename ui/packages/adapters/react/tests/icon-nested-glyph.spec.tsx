@@ -98,7 +98,7 @@ describe('xhIcon 嵌套建树', () => {
     expect(dataKeys).toEqual([])
   })
 
-  it('SVG 连字符属性先转成 React 属性名，不产生无效 DOM 属性警告', async () => {
+  it('连字符的 SVG 属性先转成 React 属性名，不产生无效 DOM 属性警告', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     try {
       await mountIcon()

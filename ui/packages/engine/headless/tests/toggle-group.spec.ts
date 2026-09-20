@@ -600,7 +600,7 @@ describe('connectToggleGroup 按压通道', () => {
   const pointerEvent = (type: string, pointerType: string): PointerEvent =>
     new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
 
-  it('PRESS.START 只让那一个条目投影 data-pressed，PRESS.END 撤下；另一条目的 keyup 不串；开关态与按压互相独立', () => {
+  it('机器收到 PRESS.START 后只让那一个条目投影 data-pressed，PRESS.END 撤下；另一条目的 keyup 不串；开关态与按压互相独立', () => {
     const { service } = makeService({ defaultValue: 'a' })
     const g = mountGroup(service, ITEMS)
     service.send({ type: 'PRESS.START', value: 'c' })
@@ -614,7 +614,7 @@ describe('connectToggleGroup 按压通道', () => {
     expect(isPressed(g, 2)).toBe(false)
   })
 
-  it('Space / Enter 按住经跟踪器进出，长按重复键不重报，失焦即撤下；方向键不是按压', () => {
+  it('按住 Space / Enter 经跟踪器进出，长按重复键不重报，失焦即撤下；方向键不是按压', () => {
     const { service } = makeService()
     const g = mountGroup(service, ITEMS)
     for (const key of [' ', 'Enter']) {

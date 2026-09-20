@@ -92,8 +92,8 @@ function loadThemes(blocks) {
     const selectors = selector.split(',').map(part => part.trim())
     const targets = [
       selectors.includes(':where(:root)') ? root : null,
-      selectors.includes(":where([data-theme='light'])") ? light : null,
-      selectors.includes(":where([data-theme='dark'])") ? dark : null,
+      selectors.includes(':where([data-theme=\'light\'])') ? light : null,
+      selectors.includes(':where([data-theme=\'dark\'])') ? dark : null,
     ].filter(Boolean)
     if (targets.length === 0)
       continue

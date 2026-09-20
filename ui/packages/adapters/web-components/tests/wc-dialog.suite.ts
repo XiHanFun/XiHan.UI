@@ -48,7 +48,7 @@ export const wcDialogSuite: ConformanceSuite = {
       initial: {
         counts: { content: 1, trigger: 1 },
         parts: {
-          trigger: {
+          'trigger': {
             'aria-haspopup': 'dialog',
             'aria-expanded': 'false',
             'data-state': 'closed',
@@ -61,8 +61,8 @@ export const wcDialogSuite: ConformanceSuite = {
             'data-xh-action-variant': 'outline',
             'data-pressed': null,
           },
-          content: { 'data-state': 'closed', 'role': 'dialog' },
-          positioner: { 'data-state': 'closed' },
+          'content': { 'data-state': 'closed', 'role': 'dialog' },
+          'positioner': { 'data-state': 'closed' },
           // 面板角落的叉：Action Control icon 档 sm、ghost 面
           'close-trigger': {
             'data-xh-action-control': '',

@@ -30,7 +30,7 @@ function bbox(el: Element): DOMRect {
 }
 
 describe('matrix-code 真实几何', () => {
-  it('Data Matrix 正方形：根 160×160，模块那条 path 从静区起、到静区止，L 形定位图形贴着符号左缘与底缘', async () => {
+  it('正方形 Data Matrix：根 160×160，模块那条 path 从静区起、到静区止，L 形定位图形贴着符号左缘与底缘', async () => {
     const root = await mount({ format: 'data-matrix', value: 'Hello, World!' })
     const rect = root.getBoundingClientRect()
     expect(rect.width).toBe(160)
@@ -45,7 +45,7 @@ describe('matrix-code 真实几何', () => {
     expect(box.height).toBe(columns)
   })
 
-  it('Data Matrix 矩形：宽是 pixelSize，高按含静区的模块比例', async () => {
+  it('矩形 Data Matrix：宽是 pixelSize，高按含静区的模块比例', async () => {
     const root = await mount({ format: 'data-matrix', value: 'SN-2026-0915-0001', rectangular: true, pixelSize: 240 })
     const rect = root.getBoundingClientRect()
     const columns = Number(root.getAttribute('data-columns'))
@@ -58,7 +58,7 @@ describe('matrix-code 真实几何', () => {
     expect(box.height).toBe(rows)
   })
 
-  it('PDF417：横长的堆叠条码，宽是 pixelSize、高按含静区的模块比例；条从静区起止', async () => {
+  it('码制 PDF417：横长的堆叠条码，宽是 pixelSize、高按含静区的模块比例；条从静区起止', async () => {
     const root = await mount({ format: 'pdf417', value: 'Hello, World!', pixelSize: 320 })
     const rect = root.getBoundingClientRect()
     const columns = Number(root.getAttribute('data-columns'))
@@ -74,7 +74,7 @@ describe('matrix-code 真实几何', () => {
     expect(box.height).toBe(rows)
   })
 
-  it('Aztec：不留静区，牛眼贴着正方形根的正中', async () => {
+  it('码制 Aztec：不留静区，牛眼贴着正方形根的正中', async () => {
     const root = await mount({ format: 'aztec', value: 'Hello, World!', pixelSize: 190 })
     const rect = root.getBoundingClientRect()
     expect(rect.width).toBe(190)

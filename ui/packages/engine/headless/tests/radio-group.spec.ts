@@ -250,7 +250,7 @@ describe('connectRadioGroup 按压通道', () => {
   const pointerEvent = (type: string, pointerType: string): PointerEvent =>
     new PointerEvent(type, { pointerType, bubbles: true, cancelable: true })
 
-  it('PRESS.START 只让那一个条目投影 data-pressed，PRESS.END 撤下；另一条目的 keyup 不串；选中与按压互相独立', () => {
+  it('机器收到 PRESS.START 后只让那一个条目投影 data-pressed，PRESS.END 撤下；另一条目的 keyup 不串；选中与按压互相独立', () => {
     const g = makeGroup({ defaultValue: 'free' })
     g.service.send({ type: 'PRESS.START', value: 'pro' })
     expect(pressed(g, 'pro')).toBe('')
@@ -263,7 +263,7 @@ describe('connectRadioGroup 按压通道', () => {
     g.stop()
   })
 
-  it('Space 按住经跟踪器进出并在 keydown 那一刻选中，长按重复键不重报，失焦即撤下；Enter 不是 radio 的激活键，不进', () => {
+  it('按住 Space 经跟踪器进出并在 keydown 那一刻选中，长按重复键不重报，失焦即撤下；Enter 不是 radio 的激活键，不进', () => {
     const g = makeGroup()
     const pro = g.items[2]!
     pro.dispatchEvent(keyEvent('keydown', ' '))

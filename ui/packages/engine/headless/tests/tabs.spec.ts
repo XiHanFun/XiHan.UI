@@ -205,7 +205,7 @@ describe('标签页 · 按压通道', () => {
   const handler = (t: ReturnType<typeof makeTabs>, value: string, name: string): ((event: unknown) => void) =>
     (t.api().getTriggerProps({ value }) as Dict)[name] as (event: unknown) => void
 
-  it('PRESS.START 只让那一个 trigger 投影 data-pressed，PRESS.END 撤下；选中与按压互相独立', () => {
+  it('机器收到 PRESS.START 后只让那一个 trigger 投影 data-pressed，PRESS.END 撤下；选中与按压互相独立', () => {
     const t = makeTabs({ defaultValue: 'overview' })
     t.service.send({ type: 'PRESS.START', value: 'logs' })
     expect(pressed(t, 'logs')).toBe('')
@@ -225,7 +225,7 @@ describe('标签页 · 按压通道', () => {
     expect(pressed(t, 'api')).toBeUndefined()
   })
 
-  it('Space / Enter 按住经跟踪器进出，失焦即撤下；长按重复键不重报', () => {
+  it('按住 Space / Enter 经跟踪器进出，失焦即撤下；长按重复键不重报', () => {
     const t = makeTabs()
     for (const key of [' ', 'Enter']) {
       handler(t, 'logs', 'onKeyDown')({ key, repeat: false })

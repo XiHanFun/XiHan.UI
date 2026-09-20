@@ -266,7 +266,7 @@ export const tagGroupSuite: ConformanceSuite = {
           'cell[3]',
           'item-indicator[3]',
         ],
-        counts: { root: 1, label: 1, list: 1, cell: 4, 'item-indicator': 4 },
+        counts: { 'root': 1, 'label': 1, 'list': 1, 'cell': 4, 'item-indicator': 4 },
         parts: {
           'root': { 'data-orientation': 'horizontal', 'data-disabled': null, 'data-readonly': null },
           'label': { id: '@self' },

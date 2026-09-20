@@ -30,31 +30,6 @@ function flattenChildren(children: readonly VNode[]): VNode[] {
   return result
 }
 
-function renderChildren(children: readonly VNode[], props: {
-  disabled: boolean
-  orientation: Orientation
-  separators: boolean
-}): VNode[] {
-  const result: VNode[] = []
-  let itemCount = 0
-  for (const child of flattenChildren(children)) {
-    if (child.type === XhToggleGroupItem) {
-      if (props.separators && itemCount > 0) {
-        result.push(h('span', {
-          'key': `separator-${itemCount}`,
-          'aria-hidden': true,
-          'data-xh-toggle-group-separator': '',
-          'data-orientation': props.orientation === 'horizontal' ? 'vertical' : 'horizontal',
-          'data-disabled': props.disabled ? '' : undefined,
-        }))
-      }
-      itemCount += 1
-    }
-    result.push(child)
-  }
-  return result
-}
-
 export const XhToggleGroupRoot = defineComponent({
   name: 'XhToggleGroupRoot',
   // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
@@ -139,6 +114,32 @@ export const XhToggleGroupItem = defineComponent({
     )
   },
 })
+
+// 分隔线按条目计数插在相邻条目之间；要认 XhToggleGroupItem 这个组件对象，所以放在它的定义之后
+function renderChildren(children: readonly VNode[], props: {
+  disabled: boolean
+  orientation: Orientation
+  separators: boolean
+}): VNode[] {
+  const result: VNode[] = []
+  let itemCount = 0
+  for (const child of flattenChildren(children)) {
+    if (child.type === XhToggleGroupItem) {
+      if (props.separators && itemCount > 0) {
+        result.push(h('span', {
+          'key': `separator-${itemCount}`,
+          'aria-hidden': true,
+          'data-xh-toggle-group-separator': '',
+          'data-orientation': props.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+          'data-disabled': props.disabled ? '' : undefined,
+        }))
+      }
+      itemCount += 1
+    }
+    result.push(child)
+  }
+  return result
+}
 
 /** 表单出口：整组只有一份，提供 name 后才参与提交。 */
 export const XhToggleGroupHiddenInput = defineComponent({

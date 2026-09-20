@@ -169,8 +169,8 @@ export const calendarRangePickerSuite: ConformanceSuite = {
           'cell-trigger': DAYS.length,
         },
         parts: {
-          root: { 'data-disabled': null, 'data-readonly': null, 'data-invalid': null },
-          grid: {
+          'root': { 'data-disabled': null, 'data-readonly': null, 'data-invalid': null },
+          'grid': {
             'role': 'grid',
             'aria-labelledby': '@part(heading)',
             // 区间两端之间的格子都算选中，网格因此恒报可多选

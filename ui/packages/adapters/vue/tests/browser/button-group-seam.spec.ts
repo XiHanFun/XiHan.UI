@@ -82,7 +82,6 @@ function resolveColor(token: string): string {
   return value
 }
 
-
 /** 语义形状令牌在该元素上解到的像素值。 */
 function shapePx(element: HTMLElement, token: string): number {
   const probe = document.createElement('div')

@@ -154,7 +154,7 @@ describe('parseCalendarDate 脏值兜底', () => {
   })
 })
 
-describe('Action Control 投影', () => {
+describe('接入 Action Control 的投影', () => {
   it('四颗方向钮投 icon ghost sm、两颗标题钮投 text ghost sm、日期格投 text ghost sm', () => {
     const h = mount({ defaultFocusedValue: '2026-08-17' })
     const api = h.api()
@@ -784,8 +784,7 @@ describe('方向键导航', () => {
 
   it('邻月格的聚焦变化等 click 真正翻页后再通知，作者能在回调里画到目标月份', () => {
     const visibleMonths: number[] = []
-    let h: ReturnType<typeof mount>
-    h = mount({
+    const h: ReturnType<typeof mount> = mount({
       defaultFocusedValue: '2024-02-15',
       onFocusedValueChange: () => visibleMonths.push(h.api().visibleMonth.month),
     })

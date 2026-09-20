@@ -279,8 +279,7 @@ describe('区间模式', () => {
 
   it('终点落在邻月的日子上：按下落焦不翻页，松开才收尾并翻到那个月', async () => {
     const visibleMonths: number[] = []
-    let h: ReturnType<typeof mount>
-    h = mount({
+    const h: ReturnType<typeof mount> = mount({
       defaultFocusedValue: '2024-02-15',
       onFocusedValueChange: () => visibleMonths.push(h.api().visibleMonth.month),
     })
@@ -311,8 +310,7 @@ describe('区间模式', () => {
 
   it('反着挑：终点落在上个月的邻月格上，两端照样排好并翻到那个月', () => {
     const visibleMonths: number[] = []
-    let h: ReturnType<typeof mount>
-    h = mount({
+    const h: ReturnType<typeof mount> = mount({
       defaultFocusedValue: '2024-02-15',
       onFocusedValueChange: () => visibleMonths.push(h.api().visibleMonth.month),
     })
