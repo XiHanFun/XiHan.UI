@@ -6,7 +6,7 @@
     "surface-raised": { "$description": "抬起的面。深色档取半档 750，与淡底 {bg.subtle} 差一道明度：抬起的面上那些底色取淡底的部件（通知卡里的动作钮、日志面板上的滚动钮）静态时才有身形。", "$type": "color", "$value": "{color.neutral.750}" },
     "subtle": { "$type": "color", "$value": "{color.neutral.800}" },
     "subtle-hover": { "$type": "color", "$value": "{color.neutral.700}" },
-    "subtle-active": { "$type": "color", "$value": "{color.neutral.600}" },
+    "subtle-active": { "$description": "淡底承载阶梯的按下面（300）。取半档 650 而不是 600：焦点环保留在按下面上（§9.3），默认环 brand.400 压 600 只有 2.93，压 650 是 3.39，与浅色档同一余量。", "$type": "color", "$value": "{color.neutral.650}" },
     "muted": { "$type": "color", "$value": "{color.neutral.800}" },
     "brand": { "$type": "color", "$value": "{color.brand.500}" },
     "brand-hover": { "$type": "color", "$value": "{color.brand.400}" },

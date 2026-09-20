@@ -27,7 +27,7 @@
 --xh-bg-page: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-bg-scrollbar-track: oklch(0 0 0 / 0)
 --xh-bg-subtle: oklch(0.269 0.006 258)  ← var(--xh-color-neutral-800)
---xh-bg-subtle-active: oklch(0.439 0.006 258)  ← var(--xh-color-neutral-600)
+--xh-bg-subtle-active: oklch(0.4 0.006 258)  ← var(--xh-color-neutral-650)
 --xh-bg-subtle-hover: oklch(0.371 0.006 258)  ← var(--xh-color-neutral-700)
 --xh-bg-surface: oklch(0.208 0.006 258)  ← var(--xh-color-neutral-900)
 --xh-bg-surface-raised: oklch(0.28 0.006 258)  ← var(--xh-color-neutral-750)
