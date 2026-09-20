@@ -30,6 +30,8 @@ export const layoutMachine = createMachine({
   name: 'layout',
   context: ({ cell }) => ({
     siderNarrow: cell<boolean>(() => ({ defaultValue: false })),
+    // 按压通道：把手被 Space / Enter 或触屏按住，与折叠态互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
+    pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -38,6 +40,11 @@ export const layoutMachine = createMachine({
   watch: ({ track, prop, action }) => track([() => prop('siderCollapsed')], () => action(['syncSiderCollapsed'])),
   // 挂根级：断点与折叠态无关，跟着状态挂会在每次折叠时重挂并重发一次当前值
   effects: ['trackSiderBreakpoint'],
+  // 按压通道挂根级：把手在两个折叠态下都在场；它没有禁用态，按住一律进，不设守卫
+  on: {
+    'PRESS.START': { actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
+  },
   states: {
     expanded: {
       // 只在展开期间挂：Escape 收的是已经盖在内容之上的那一层，收起态没有可收的东西
@@ -74,6 +81,8 @@ export const layoutMachine = createMachine({
       isSiderCollapsedControlled: ({ prop }) => prop('siderCollapsed') !== undefined,
     },
     actions: {
+      startPress: ({ context }) => context.set('pressed', true),
+      endPress: ({ context }) => context.set('pressed', false),
       invokeOnCollapse: ({ prop }) => prop('onSiderCollapsedChange')?.({ collapsed: true }),
       invokeOnExpand: ({ prop }) => prop('onSiderCollapsedChange')?.({ collapsed: false }),
       // 只在受控（siderCollapsed 为布尔）时回写；变回 undefined = 转非受控，不强制展开

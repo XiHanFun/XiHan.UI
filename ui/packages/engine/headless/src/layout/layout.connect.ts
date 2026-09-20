@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { LayoutApi, LayoutSchema } from './layout.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { layoutAnatomy } from './layout.anatomy'
 import { resolveSiderPresentation } from './layout.machine'
 
@@ -23,6 +24,9 @@ export function connectLayout<T extends PropTypes>(
   const collapsed = state.get() === 'collapsed'
   const placement = prop('siderPlacement') ?? 'start'
   const ids = scope.ids('layout', 'sider')
+  // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
+  const pressed = context.get('pressed')
+  const press = pressHandlers(service)
 
   // 覆盖档的成立条件在这里收口：写了断点就只在未达档时成立，宽屏退回占位档
   const presentation = resolveSiderPresentation(
@@ -110,6 +114,14 @@ export function connectLayout<T extends PropTypes>(
       'aria-controls': ids.sider,
       'aria-expanded': collapsed ? 'false' : 'true',
       'data-collapsed': dataAttr(collapsed),
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与折叠态互相独立
+      'data-pressed': dataAttr(pressed),
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
       'onClick': () => send({ type: 'SIDER.TOGGLE' }),
     }),
   }

@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { layoutAnatomy, layoutKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress } from './shared/press-channel'
 
 // 骨架本身没有 APG 模式；能按的只有折叠把手，它照披露模式接线。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/'
@@ -81,6 +82,16 @@ export const layoutSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['layout.kbd.toggle-sider'],
       steps: [nativeActivation('layout', 'sider-trigger')],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：sider-trigger 投影 data-pressed，抬起、失焦或指针取消撤下；折叠后照常可按',
+      spec: { adr: 'press-channel' },
+      covers: ['layout.kbd.press'],
+      steps: [
+        heldPress('layout', 'sider-trigger'),
+        { kind: 'click', part: 'sider-trigger', expect: { parts: { 'sider-trigger': { 'aria-expanded': 'false', 'data-pressed': null } } } },
+        heldPress('layout', 'sider-trigger'),
+      ],
     },
     {
       name: '点击把手折叠：aria-expanded=false，根、侧栏与把手一并落 data-collapsed',

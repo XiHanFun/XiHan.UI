@@ -513,3 +513,70 @@ describe('layout 断点与覆盖档', () => {
     expect(l.api().siderPresentation).toBe('inline')
   })
 })
+
+// ══ 按压通道 ══
+
+type Dict = Record<string, unknown>
+const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+
+describe('layoutMachine 按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
+  it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；折叠态不动', () => {
+    const l = makeLayout()
+    cleanups.push(l.stop)
+    const trigger = (): Dict => l.api().getSiderTriggerProps() as Dict
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onBlur', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerCancel', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'mouse' })
+    expect(trigger()['data-pressed']).toBeUndefined()
+    expect(l.state()).toBe('expanded')
+  })
+
+  it('按住途中翻面：Enter 在 keydown 即折叠，按压面不随之丢，keyup 才撤下；两个折叠态都接按压', () => {
+    const l = makeLayout()
+    cleanups.push(l.stop)
+    const trigger = (): Dict => l.api().getSiderTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key('Enter'))
+    expect(trigger()['data-pressed']).toBe('')
+    press(trigger())
+    expect(l.state()).toBe('collapsed')
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key('Enter'))
+    expect(trigger()['data-pressed']).toBeUndefined()
+    fire(trigger(), 'onPointerDown', { pointerType: 'touch' })
+    expect(trigger()['data-pressed']).toBe('')
+    press(trigger())
+    expect(l.state()).toBe('expanded')
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onPointerUp', {})
+    expect(trigger()['data-pressed']).toBeUndefined()
+  })
+
+  it('受控折叠态下把手只发意图不落态，按压面照常进出；把手没有禁用态，覆盖档下同样接', () => {
+    const l = makeLayout({ siderCollapsed: false, siderPresentation: 'sheet' })
+    cleanups.push(l.stop)
+    const trigger = (): Dict => l.api().getSiderTriggerProps() as Dict
+    fire(trigger(), 'onKeyDown', key(' '))
+    expect(trigger()['data-pressed']).toBe('')
+    press(trigger())
+    expect(l.state()).toBe('expanded')
+    expect(trigger()['data-pressed']).toBe('')
+    fire(trigger(), 'onKeyUp', key(' '))
+    expect(trigger()['data-pressed']).toBeUndefined()
+  })
+})
