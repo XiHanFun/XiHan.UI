@@ -117,7 +117,8 @@ describe('floating-panel 的 M2 桌面磨砂皮肤', () => {
     expect(getComputedStyle(action).color).toBe(resolve(action, 'color', 'var(--xh-material-frosted-fg-muted)'))
   })
 
-  it.each(THEMES)('%s：标题栏按钮键盘聚焦先铺实体隔离底，几何不变', async (theme) => {
+  // 72ac8eb0b 起两颗钮接 Action Control ghost 档：焦点面透明、只吃库环，不再铺 focus-surface 实体隔离底
+  it.each(THEMES)('%s：标题栏按钮键盘聚焦画库环、焦点面透明，几何不变', async (theme) => {
     document.documentElement.dataset.theme = theme
     await mount()
 
@@ -128,7 +129,7 @@ describe('floating-panel 的 M2 桌面磨砂皮肤', () => {
     await focus(action)
     const style = getComputedStyle(action)
     expect(action.matches(':focus-visible')).toBe(true)
-    expect(style.backgroundColor).toBe(resolve(action, 'background-color', 'var(--xh-material-frosted-focus-surface)'))
+    expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.outlineStyle).toBe('solid')
     expect(style.width).toBe(width)
     expect(style.height).toBe(height)
