@@ -1,13 +1,15 @@
 // 行内轴夹取：popover / popconfirm / tour / select / combobox 的面板宽度受落位后的可用宽度约束，
 // 窄视口下不再伸出屏幕。
 //
-// 宿主视口固定改不动，换宽度只能靠内嵌 iframe：浮层挂在 iframe 文档里，
-// 定位引擎按那份文档的视口算可用区域。皮肤与令牌以 <style> 注入主文档，克隆一份进 iframe 才生效。
+// 换宽度走 page.viewport：整个测试文档改成那一档宽，定位引擎按它的视口算可用区域。
+// 不再挂进内嵌 iframe——浮层的 Scope 与 Layer 注册表都建在挂载它的那份文档上（48d6b8814 起
+// 视觉绑定校验节点与注册表同属一份 Document），从主文档挂进另一份文档不是被支持的接法。
 //
 // 判据全在布局结果上（getBoundingClientRect），不是读那几个私有槽：槽写对了而声明没消费它，
 // 面板照样越界。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { page } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import {
   XhComboboxContent,
@@ -46,7 +48,6 @@ import {
   XhTourRoot,
   XhTourTitle,
 } from '../../src'
-import { provideXhConfig } from '../../src/config/config'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -67,56 +68,75 @@ const WIDE_ANCHOR = 'inline-size: 420px'
 /** tour 的目标选择器恒在主文档里查（它的 scope 建在 null 上），目标只能挂主文档。 */
 const TOUR_TARGET_ID = 'inline-clamp-tour-target'
 
-let frame: HTMLIFrameElement | null = null
+/** 视口高固定一档，宽按用例换。 */
+const HEIGHT = 600
+
+let host: HTMLElement | null = null
 let app: App | null = null
+let originalViewport: { width: number, height: number } | null = null
 
-/** 在给定宽度的 iframe 里挂一个浮层，返回它的文档。 */
-function mountAt(width: number, render: () => VNode): Document {
-  frame = document.createElement('iframe')
-  frame.style.cssText = `width: ${width}px; height: 600px; border: 0`
-  document.body.append(frame)
+/** 把测试文档切到给定宽度，挂一个浮层，返回它所在的文档。 */
+async function mountAt(width: number, render: () => VNode): Promise<Document> {
+  originalViewport ??= { width: innerWidth, height: innerHeight }
+  await page.viewport(width, HEIGHT)
+  // 新尺寸到测试文档这一层要过一次排版；引擎按挂载那一刻的视口算，挂早了就是按旧宽度落位
+  for (let i = 0; document.documentElement.clientWidth !== width; i += 1) {
+    if (i >= 60)
+      throw new Error(`视口没有切到 ${width}px（现在是 ${document.documentElement.clientWidth}px）`)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+  }
+  host = document.createElement('div')
+  document.body.append(host)
 
-  const doc = frame.contentDocument
-  if (!doc)
-    throw new Error('iframe 没有文档')
-  for (const node of document.querySelectorAll('style, link[rel="stylesheet"]'))
-    doc.head.append(node.cloneNode(true))
-  doc.body.style.margin = '0'
-  const host = doc.createElement('div')
-  doc.body.append(host)
-
-  app = createApp({
-    setup() {
-      // 浮层默认搬去主文档的落点，那样引擎会按宿主视口算；改挂 iframe 的 body
-      provideXhConfig({ portalContainer: () => doc.body })
-      return () => render()
-    },
-  })
+  app = createApp({ setup: () => () => render() })
   app.mount(host)
-  return doc
+  return document
 }
 
-afterEach(() => {
+afterEach(async () => {
   app?.unmount()
   app = null
-  frame?.remove()
-  frame = null
+  host?.remove()
+  host = null
   document.querySelector(`#${TOUR_TARGET_ID}`)?.remove()
+  if (originalViewport)
+    await page.viewport(originalViewport.width, originalViewport.height)
+  originalViewport = null
 })
 
-/** 等浮层落位，返回 content。 */
+/**
+ * 等浮层落位且几何落定，返回 content。
+ *
+ * 引擎第一趟按面板未受锚宽 / 可用宽约束时量到的尺寸算坐标，同一趟把 anchor-w / available-w 写成槽；
+ * 皮肤据槽改了面板宽度后，尺寸观察再触发一趟重算才把它挪回可用区。量的是挪回之后那一帧，
+ * 所以落位之后还要等到相邻两帧帧尾的矩形不再变。
+ */
 async function contentAt(doc: Document, scope: string): Promise<HTMLElement> {
   const win = doc.defaultView
   if (!win)
-    throw new Error('iframe 没有窗口')
-  for (let i = 0; i < 120; i += 1) {
+    throw new Error('文档没有窗口')
+  // 一帧算到帧尾：尺寸观察回调排在动画帧回调之后，只等 rAF 会在它之前采样
+  const frame = (): Promise<void> => new Promise(resolve => win.requestAnimationFrame(() => win.setTimeout(resolve, 0)))
+  let content: HTMLElement | null = null
+  for (let i = 0; i < 120 && !content; i += 1) {
     const positioner = doc.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='positioner']`)
-    const content = doc.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='content']`)
-    if (positioner?.hasAttribute('data-positioned') && content)
-      return content
-    await new Promise(resolve => win.requestAnimationFrame(() => resolve(null)))
+    const candidate = doc.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='content']`)
+    if (positioner?.hasAttribute('data-positioned') && candidate)
+      content = candidate
+    else
+      await frame()
   }
-  throw new Error(`${scope} 一直没落位`)
+  if (!content)
+    throw new Error(`${scope} 一直没落位`)
+  let previous = JSON.stringify(content.getBoundingClientRect())
+  for (let i = 0; i < 60; i += 1) {
+    await frame()
+    const current = JSON.stringify(content.getBoundingClientRect())
+    if (current === previous)
+      return content
+    previous = current
+  }
+  throw new Error(`${scope} 的几何一直没落定`)
 }
 
 /** 读 positioner 上的一个私有槽，单位 px。 */
@@ -154,7 +174,7 @@ function tour(): VNode {
     const target = document.createElement('button')
     target.id = TOUR_TARGET_ID
     target.textContent = '目标'
-    // 引擎按浮层所在文档（iframe）的视口判有没有被滚出去，锚点的坐标得落在那块矩形里面
+    // 引擎按浮层所在文档的视口判有没有被滚出去，锚点的坐标得落在那块矩形里面
     target.style.cssText = 'position: fixed; left: 40px; top: 40px'
     document.body.append(target)
   }
@@ -219,7 +239,7 @@ const CASES: [string, number, () => VNode][] = RENDERS
 
 describe('跟随锚宽的浮层：夹取写在 min 那一侧', () => {
   it.each(CASES)('%s 在 %i 档不伸出视口，宽度不超过落位后的可用宽度', async (scope, width, render) => {
-    const doc = mountAt(width, render)
+    const doc = await mountAt(width, render)
     const rect = (await contentAt(doc, scope)).getBoundingClientRect()
     const viewport = doc.documentElement.clientWidth
 
@@ -232,7 +252,7 @@ describe('跟随锚宽的浮层：夹取写在 min 那一侧', () => {
   // CSS 里 min-inline-size 恒压过 max-inline-size：锚点比可用区还宽时，
   // 夹取只写在 max 那一侧就是一条死声明，面板照样按锚宽铺出去。
   it.each(ANCHOR_FOLLOWING)('%s：锚宽超过可用区时，面板收在可用宽度内', async (scope, render) => {
-    const doc = mountAt(375, render)
+    const doc = await mountAt(375, render)
     const rect = (await contentAt(doc, scope)).getBoundingClientRect()
     const available = slotPx(doc, scope, 'available-w')
 
@@ -242,7 +262,7 @@ describe('跟随锚宽的浮层：夹取写在 min 那一侧', () => {
   })
 
   it('popconfirm 块轴也夹取：面板不超过可用高度，长文交给自己滚', async () => {
-    const doc = mountAt(375, popconfirm)
+    const doc = await mountAt(375, popconfirm)
     const content = await contentAt(doc, 'popconfirm')
     const rect = content.getBoundingClientRect()
 
