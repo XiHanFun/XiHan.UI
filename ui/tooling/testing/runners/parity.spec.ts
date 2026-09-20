@@ -26,7 +26,6 @@ import {
   collapsibleSuite,
   colorFieldSuite,
   colorSliderSuite,
-  colorSwatchPickerSuite,
   colorSwatchSuite,
   dateFieldSuite,
   datePickerSuite,
@@ -243,7 +242,6 @@ const SUITES: readonly ConformanceSuite[] = [
   colorSwatchSuite,
   colorSliderSuite,
   colorFieldSuite,
-  colorSwatchPickerSuite,
   barCodeSuite,
 ]
 
@@ -253,6 +251,7 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'checkbox': 'WC 侧 indicator 由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'checkbox-group': '同上，且集合条目的禁用声明经 aria-disabled 改写',
   'code-view': '语言标注的入口名两侧永久不同（WC 必须叫 code-lang，lang 是 HTML 全局属性）',
+  'color-swatch-picker': '同 radio-group：格内的 hidden-input / swatch / indicator 由 Vue 版 Item 组件内部装配、WC 侧要作者手写，fixture 不同构；且格子的禁用声明两端 API 不同（Vue 是被消费的组件 prop，WC 落成 DOM 属性）',
   'color-picker': '两处永久性差异：①「渲染」与「机器效应」的先后两端相反——Vue 先渲染出带 tabindex 的部件再跑效应，行为宿主要先把机器 mount 起来才有属性可写，defaultOpen 的焦点域因此在 Vue 落 area-thumb、在 WC 落第一个原生可聚焦的 channel-input，17 条里 13 条差在这里；②带表单出口的 4 条另有一处 fixture 不同构，hidden-input 与被搬走的浮层在两端的文档先后相反',
   'combobox': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'command': '同 dialog：Vue 关闭即卸载面板子树，WC 是 Light DOM 不删作者节点',
