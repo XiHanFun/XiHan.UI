@@ -58,11 +58,12 @@ afterEach(() => {
 })
 
 describe('标签输入：标签越加越多，框不会一直长高', () => {
-  // 框里的每一枚标签就是库里的 tag：条目壳是 tags-input 的 item，里面是 tag 的 root（label + close-trigger）
+  // 框里的每一枚标签就是库里的 tag：条目壳是 tags-input 的 item，里面是 tag 的 root（label + close-trigger）；
+  // 框的高度由字段家族（data-xh-field-chrome + layout=multi-tag）给，夹具与 connect 的投影带齐同一组属性
   function mountTags(n: number): HTMLElement {
     mount(`
       <div data-scope="tags-input" data-part="root">
-        <div data-scope="tags-input" data-part="control" id="control">
+        <div data-scope="tags-input" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-xh-field-layout="multi-tag" data-variant="outline" id="control">
           ${rep(n, i => `<span data-scope="tags-input" data-part="item" data-value="标签${i}"><span data-scope="tag" data-part="root" data-variant="subtle" data-state="open"><span data-scope="tag" data-part="label">标签${i}</span><button data-scope="tag" data-part="close-trigger" type="button"></button></span></span>`)}
           <input data-scope="tags-input" data-part="input" />
           <button data-scope="tags-input" data-part="clear-trigger"></button>
