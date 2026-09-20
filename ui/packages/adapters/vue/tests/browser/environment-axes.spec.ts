@@ -4,8 +4,9 @@
 // 这里经 CDP 的 Emulation.setEmulatedMedia 切档，再读级联算出来的取值。
 // jsdom 不解析样式表里的 var() 与继承，getComputedStyle 恒是空串，这几条只能落在浏览器态。
 //
-// 节点直接按 data-scope / data-part 手搭：皮肤的选择器只认这两个属性与状态属性，
-// 与是哪个适配器渲出来的无关，手搭的结构与组件渲出来的结构在选择器眼里一模一样。
+// 节点直接按 data-scope / data-part 手搭：皮肤的选择器只认这两个属性、状态属性与家族标记
+// （如 data-xh-field-chrome），与是哪个适配器渲出来的无关，手搭的结构带齐 connect 投影的这几个属性，
+// 与组件渲出来的结构在选择器眼里一模一样。
 import { cdp } from '@vitest/browser/context'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 // 皮肤与令牌一起加载：这里查的就是皮肤算出来的取值
@@ -100,11 +101,12 @@ describe('高对比档', () => {
   })
 
   it('只读控件改画虚线边，与能改的控件分得开', () => {
-    // 描边取自 root 上声明的私有槽，缺了 root 那一层整条 border 会在计算值阶段失效
+    // 描边由字段家族（data-xh-field-chrome）画在 control 上，与 connect 的投影一致；
+    // 缺了家族标记这个节点就是一只裸盒，整条 border 都不存在
     mount(`
       <div data-scope="text-field" data-part="root">
-        <div data-scope="text-field" data-part="control" data-readonly></div>
-        <div data-scope="text-field" data-part="control"></div>
+        <div data-scope="text-field" data-part="control" data-xh-field-chrome data-variant="outline" data-readonly></div>
+        <div data-scope="text-field" data-part="control" data-xh-field-chrome data-variant="outline"></div>
       </div>
     `)
     expect(styleOf('[data-readonly]').borderTopStyle).toBe('dashed')
@@ -136,7 +138,7 @@ describe('高对比档', () => {
     mount(`
       <div data-scope="menu" data-part="item" data-selected></div>
       <div data-scope="text-field" data-part="root">
-        <div data-scope="text-field" data-part="control" data-readonly></div>
+        <div data-scope="text-field" data-part="control" data-xh-field-chrome data-variant="outline" data-readonly></div>
       </div>
     `)
     expect(styleOf('[data-selected]').outlineStyle).toBe('none')
@@ -200,34 +202,47 @@ describe('打印档', () => {
 
 describe('安全区', () => {
   it('系统没让出任何一段时，贴边就是贴边槽本来的取值', () => {
-    mount(`<div data-scope="toast" data-part="group"></div>`)
-    const group = styleOf('[data-part="group"]')
+    // 通知摞是一整面视口大小的定位面，贴边靠 padding；轻提示摞是定宽的堆叠面，贴边靠落位那一角的 inset
+    mount(`
+      <div data-scope="notification" data-part="group"></div>
+      <div data-scope="toast" data-part="group" data-placement="top-start"></div>
+    `)
+    const group = styleOf('[data-scope="notification"][data-part="group"]')
     // --xh-space-6 = 24px；env() 在没有安全区的视口上恒为 0，max() 取的是贴边槽那一头
     expect(group.paddingTop).toBe('24px')
     expect(group.paddingBottom).toBe('24px')
     expect(group.paddingLeft).toBe('24px')
     expect(group.paddingRight).toBe('24px')
+    // --xh-space-4 = 16px
+    const toast = styleOf('[data-scope="toast"][data-part="group"]')
+    expect(toast.top).toBe('16px')
+    expect(toast.left).toBe('16px')
   })
 
   it('系统占住的那一段比贴边宽时，贴边让到它外面', async () => {
     // 四周各占一段：上下比贴边宽，左右比贴边窄
     await emulateSafeArea({ top: 47, bottom: 59, left: 13, right: 17 })
     mount(`
-      <div data-scope="toast" data-part="group"></div>
       <div data-scope="notification" data-part="group"></div>
+      <div data-scope="toast" data-part="group" data-placement="top-start"></div>
+      <div data-scope="toast" data-part="group" data-placement="bottom-end"></div>
       <div data-scope="back-top" data-part="root"></div>
       <div data-scope="loading-bar" data-part="root"></div>
     `)
-    const toast = styleOf('[data-scope="toast"][data-part="group"]')
-    // 上下让到系统那一段外面；左右两段都比 24px 窄，贴边槽那一头仍然赢
-    expect(toast.paddingTop).toBe('47px')
-    expect(toast.paddingBottom).toBe('59px')
-    expect(toast.paddingLeft).toBe('24px')
-    expect(toast.paddingRight).toBe('24px')
-
     const notification = styleOf('[data-scope="notification"][data-part="group"]')
+    // 上下让到系统那一段外面；左右两段都比 24px 窄，贴边槽那一头仍然赢
     expect(notification.paddingTop).toBe('47px')
     expect(notification.paddingBottom).toBe('59px')
+    expect(notification.paddingLeft).toBe('24px')
+    expect(notification.paddingRight).toBe('24px')
+
+    // 轻提示摞只让落位那一角的两条边：贴边 --xh-toast-inset 缺省 --xh-space-4 = 16px
+    const toastTopStart = styleOf('[data-scope="toast"][data-placement="top-start"]')
+    expect(toastTopStart.top).toBe('47px')
+    expect(toastTopStart.left).toBe('16px')
+    const toastBottomEnd = styleOf('[data-scope="toast"][data-placement="bottom-end"]')
+    expect(toastBottomEnd.bottom).toBe('59px')
+    expect(toastBottomEnd.right).toBe('17px')
 
     // 贴边 --xh-space-8 = 32px，底部那一段 59px 更宽
     expect(styleOf('[data-scope="back-top"][data-part="root"]').bottom).toBe('59px')
@@ -239,12 +254,12 @@ describe('安全区', () => {
     // 只有物理左边被占住，且比贴边宽
     await emulateSafeArea({ top: 0, bottom: 0, left: 40, right: 0 })
     mount(`
-      <div data-scope="toast" data-part="group"></div>
+      <div data-scope="notification" data-part="group"></div>
       <div data-scope="back-top" data-part="root"></div>
     `)
-    const toast = styleOf('[data-scope="toast"][data-part="group"]')
-    expect(toast.paddingLeft).toBe('40px')
-    expect(toast.paddingRight).toBe('40px')
+    const notification = styleOf('[data-scope="notification"][data-part="group"]')
+    expect(notification.paddingLeft).toBe('40px')
+    expect(notification.paddingRight).toBe('40px')
     // 贴边 32px 被那 40px 顶开
     expect(styleOf('[data-scope="back-top"][data-part="root"]').right).toBe('40px')
   })
