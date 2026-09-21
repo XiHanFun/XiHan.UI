@@ -36,6 +36,7 @@ const STATUS_MARKS = {
   'time-range-picker:item': '--xh-time-range-picker-item-check-size',
   // 子菜单的展开 chevron：指示符档（§6.5），与同一行的标记位盒同走 --xh-control-indicator-size
   'menu:item': '--xh-menu-submenu-indicator-size',
+  'context-menu:item': '--xh-context-menu-submenu-indicator-size',
   // 表格的排序箭头不在此列：它是 :empty 守卫的兜底字形（作者塞进钮里的图标整个顶掉它），
   // 尺寸经钮自己改接的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长）量，走上面的常规判据
 }

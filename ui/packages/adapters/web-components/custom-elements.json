@@ -14808,6 +14808,9 @@
               "name": "--xh-context-menu-submenu-indicator-fg"
             },
             {
+              "name": "--xh-context-menu-submenu-indicator-size"
+            },
+            {
               "name": "--xh-context-menu-trigger-bg-pressing"
             }
           ]
