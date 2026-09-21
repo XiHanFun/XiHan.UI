@@ -26355,8 +26355,10 @@
   }
 
   [data-scope='menu'][data-part='content'] {
-    /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；条目里的图标由家族随
-       data-xh-collection-size 下发（§6.5） */
+    /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；条目里作者放的图标由家族随
+       data-xh-collection-size 下发（§6.5）。菜单自绘的状态字形（标记位的盒、子菜单的展开 chevron）不读这支：
+       它们是指示符，走 --xh-control-indicator-* 一族——标记位在自己身上把 --xh-icon-size 改接到盒的尺，
+       子菜单箭头走 --xh-menu-submenu-indicator-size */
     --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这四个私有槽，条目从 content 继承它们，换档不必给每个部件各写一条选择器。
@@ -26497,14 +26499,19 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动；盒尺随家族按档下发的 --xh-icon-size */
+  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动。盒是指示符（§6.5）：按指示符档取尺，
+     与 Cascader / Select 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
+     按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
+     作者塞进标记位的 XhIcon 与盒同尺；条目上那支只管作者直接放进条目里的图标 */
   [data-scope='menu'][data-part='item-indicator'] {
+    --xh-icon-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
+
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
-    block-size: var(--xh-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    inline-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-menu-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   }
 
@@ -26542,14 +26549,15 @@
   }
 
   /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
-     箭头与作者内容同排，用自动外距推到行尾。 */
+     箭头与作者内容同排，用自动外距推到行尾。箭头是指示符（§6.5）：与标记位的盒同走
+     --xh-control-indicator-size，不读 --xh-icon-size——按图标档取的 20px 会比 16px 的标记位盒大一圈 */
   [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
     content: '';
     flex: none;
     order: 1;
     margin-inline-start: auto;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-menu-submenu-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-menu-submenu-indicator-size, var(--xh-control-indicator-size));
     background-color: var(--xh-menu-submenu-indicator-fg, var(--xh-material-frosted-fg-muted));
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;

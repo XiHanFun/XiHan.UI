@@ -2046,6 +2046,7 @@ export type ComponentTokenName
     | '--xh-menu-separator-radius'
     | '--xh-menu-separator-thickness'
     | '--xh-menu-submenu-indicator-fg'
+    | '--xh-menu-submenu-indicator-size'
     | '--xh-menu-trigger-bg-active'
     | '--xh-menubar-arrow-size'
     | '--xh-menubar-backdrop'
