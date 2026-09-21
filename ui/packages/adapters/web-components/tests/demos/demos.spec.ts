@@ -265,7 +265,8 @@ describe('自定义元素版示例', () => {
           if (!delegated.has(scope))
             problems.push(`${describeNode(el)} 委派给了 ${[...delegated].join(' / ')}，接出来的 data-scope 却是 "${scope}"`)
         }
-        else if (wired !== authored) {
+        else if (wired !== authored && !contract?.rewired?.[authored]?.includes(wired)) {
+          // 契约登记了双重身份的（子菜单的 trigger 接成父菜单的 item）不算接错名
           problems.push(`${describeNode(el)} 接成了 data-part="${wired}"`)
         }
       }
