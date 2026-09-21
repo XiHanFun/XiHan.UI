@@ -24,6 +24,8 @@ const PORTAL_EXEMPT = {
 /**
  * 这些是皮肤固定绘制的选择状态，不是可由 XhIcon 替换的空槽兜底。
  * 标记宽高与预留轨共用专用公开尺寸槽，不能随字段展开图标的尺寸一并放大。
+ * 形态不限 ::after / ::before：行尾的勾与展开 chevron 挂 ::after，行首的状态标记挂 ::before，
+ * 都得用登记的专用槽同时控宽高；:empty 守卫的兜底字形不在此列，走 --xh-icon-size 的常规判据。
  */
 const STATUS_MARKS = {
   'cascader:search-item': '--xh-cascader-item-indicator-size',
@@ -40,6 +42,8 @@ const STATUS_MARKS = {
   'menubar:item': '--xh-menubar-submenu-indicator-size',
   // 级联分支条目行尾的展开 chevron：指示符档（§6.5），与同一行的标记盒同走 --xh-control-indicator-size
   'cascader:item': '--xh-cascader-branch-arrow-size',
+  // 文件条目行首的传完勾 / 失败警示（::before）：指示符档（§6.5），与同一行 icon 档的删除钮并排
+  'file-upload:item': '--xh-file-upload-item-mark-size',
   // 表格的排序箭头不在此列：它是 :empty 守卫的兜底字形（作者塞进钮里的图标整个顶掉它），
   // 尺寸经钮自己改接的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长）量，走上面的常规判据
 }
@@ -84,7 +88,7 @@ for (const file of files) {
     const selector = rule[1].replace(/\s+/g, ' ').trim()
     const part = [...selector.matchAll(/\[data-part='([\w-]+)'\]/g)].at(-1)?.[1]
     const mark = `${name}:${part}`
-    if (mark in STATUS_MARKS && /::after\b/.test(selector) && !selector.includes(':empty')) {
+    if (mark in STATUS_MARKS && /::(?:before|after)\b/.test(selector) && !selector.includes(':empty')) {
       statusMarksSeen.add(mark)
       const blockSize = rule[2].match(/block-size:([^;]+);/)?.[1]?.trim()
       if (!size?.startsWith(`var(${STATUS_MARKS[mark]},`) || size !== blockSize)

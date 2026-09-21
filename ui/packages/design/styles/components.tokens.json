@@ -28979,6 +28979,26 @@
       "description": "file-upload 的 item 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-file-upload-item-mark-size",
+      "component": "file-upload",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "state=done",
+        "state=error"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-file-upload-item-name-min-w",
       "component": "file-upload",
       "part": [
@@ -32891,8 +32911,6 @@
         "sort=desc",
         "state=checked",
         "state=completed",
-        "state=done",
-        "state=error",
         "state=indeterminate",
         "state=paused",
         "state=running",

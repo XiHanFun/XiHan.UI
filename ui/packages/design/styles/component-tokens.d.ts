@@ -1477,6 +1477,7 @@ export type ComponentTokenName
     | '--xh-file-upload-item-font-size'
     | '--xh-file-upload-item-gap'
     | '--xh-file-upload-item-inner-gap'
+    | '--xh-file-upload-item-mark-size'
     | '--xh-file-upload-item-name-min-w'
     | '--xh-file-upload-item-progress-fill'
     | '--xh-file-upload-item-progress-h'
