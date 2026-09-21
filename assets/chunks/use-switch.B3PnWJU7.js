@@ -1,0 +1,1 @@
+import{r as t}from"./jsx-runtime.CkCqEvy3.js";import{u as c}from"./use-machine.BCaN6Hs3.js";import{q4 as e,q5 as o}from"./theme.VZGDCnnk.js";function m(i){const r=c(o,()=>i);return{api:e(r,t),service:r}}export{m as u};

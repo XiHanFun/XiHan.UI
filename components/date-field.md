@@ -19,8 +19,8 @@
 ```vue
 <script setup lang="ts">
 import {
-  XhDateFieldControl,
   XhDateFieldClearTrigger,
+  XhDateFieldControl,
   XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,

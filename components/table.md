@@ -14,7 +14,7 @@
 
 ## 用法
 
-columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观
+columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边
 
 ```vue
 <script setup lang="ts">
@@ -23,6 +23,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -52,7 +53,7 @@ const rows = members.map(m => ({ id: m.id }));
         <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -76,9 +77,9 @@ const rows = members.map(m => ({ id: m.id }));
       <div data-xh-part="header">
         <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
-          <div data-xh-part="column-header" value="level">职级</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+          <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -124,7 +125,7 @@ const rows = members.map(m => ({ id: m.id }));
 
 加粗的是必需部件。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `toolbar` · `column-list` · `column-visibility-trigger` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `column-label` · `cell` · `caption` · `toolbar` · `column-list` · `column-visibility-trigger` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
 
 ## 示例
 
@@ -138,6 +139,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -194,8 +196,8 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <XhTableSortTrigger v-if="col.sortable">{{ col.label }}</XhTableSortTrigger>
-            <template v-else>{{ col.label }}</template>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+            <XhTableSortTrigger v-if="col.sortable" />
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -223,12 +225,14 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
       <div data-xh-part="header">
         <div data-xh-part="row">
           <div data-xh-part="column-header" value="name">
-            <span data-xh-part="sort-trigger">姓名</span>
+            <span data-xh-part="column-label">姓名</span>
+            <span data-xh-part="sort-trigger"></span>
           </div>
           <div data-xh-part="column-header" value="dept">
-            <span data-xh-part="sort-trigger">部门</span>
+            <span data-xh-part="column-label">部门</span>
+            <span data-xh-part="sort-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="level">职级</div>
+          <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -320,6 +324,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -366,8 +371,8 @@ const selection = ref<string[] | "all">(["u2"]);
             <!-- 全选把手是三态的唯一载体，自己占一个 Tab 位 -->
             <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="name">姓名</XhTableColumnHeader>
-          <XhTableColumnHeader value="dept">部门</XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>姓名</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="dept"><XhTableColumnLabel>部门</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -403,8 +408,8 @@ const selection = ref<string[] | "all">(["u2"]);
             <!-- 全选把手是三态的唯一载体，自己占一个 Tab 位 -->
             <span data-xh-part="select-all-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -485,6 +490,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableExpandedRow,
   XhTableExpandTrigger,
   XhTableHeader,
@@ -516,8 +522,8 @@ const expanded = ref<string[]>(["o1"]);
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="expand" />
-          <XhTableColumnHeader value="order">订单号</XhTableColumnHeader>
-          <XhTableColumnHeader value="amount">金额</XhTableColumnHeader>
+          <XhTableColumnHeader value="order"><XhTableColumnLabel>订单号</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="amount"><XhTableColumnLabel>金额</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -548,8 +554,8 @@ const expanded = ref<string[]>(["o1"]);
       <div data-xh-part="header">
         <div data-xh-part="row">
           <div data-xh-part="column-header" value="expand"></div>
-          <div data-xh-part="column-header" value="order">订单号</div>
-          <div data-xh-part="column-header" value="amount">金额</div>
+          <div data-xh-part="column-header" value="order"><span data-xh-part="column-label">订单号</span></div>
+          <div data-xh-part="column-header" value="amount"><span data-xh-part="column-label">金额</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -632,6 +638,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -678,7 +685,7 @@ const densities = [
               :key="col.id"
               :value="col.id"
             >
-              {{ col.label }}
+              <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             </XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>
@@ -705,8 +712,8 @@ const densities = [
         <div data-xh-part="caption">sm 紧凑</div>
         <div data-xh-part="header">
           <div data-xh-part="row">
-            <div data-xh-part="column-header" value="name">姓名</div>
-            <div data-xh-part="column-header" value="level">职级</div>
+            <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+            <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
           </div>
         </div>
         <div data-xh-part="body">
@@ -742,8 +749,8 @@ const densities = [
         <div data-xh-part="caption">缺省</div>
         <div data-xh-part="header">
           <div data-xh-part="row">
-            <div data-xh-part="column-header" value="name">姓名</div>
-            <div data-xh-part="column-header" value="level">职级</div>
+            <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+            <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
           </div>
         </div>
         <div data-xh-part="body">
@@ -778,8 +785,8 @@ const densities = [
         <div data-xh-part="caption">lg 宽松</div>
         <div data-xh-part="header">
           <div data-xh-part="row">
-            <div data-xh-part="column-header" value="name">姓名</div>
-            <div data-xh-part="column-header" value="level">职级</div>
+            <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+            <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
           </div>
         </div>
         <div data-xh-part="body">
@@ -839,6 +846,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableLoading,
@@ -899,7 +907,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -927,8 +935,8 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">任务</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">任务</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body"></div>
@@ -1010,6 +1018,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableFooter,
   XhTableHeader,
   XhTableRoot,
@@ -1042,7 +1051,7 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -1073,9 +1082,9 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
       <div data-xh-part="caption">采购清单</div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="item">条目</div>
-          <div data-xh-part="column-header" value="count">数量</div>
-          <div data-xh-part="column-header" value="amount">金额</div>
+          <div data-xh-part="column-header" value="item"><span data-xh-part="column-label">条目</span></div>
+          <div data-xh-part="column-header" value="count"><span data-xh-part="column-label">数量</span></div>
+          <div data-xh-part="column-header" value="amount"><span data-xh-part="column-label">金额</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -1129,6 +1138,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -1164,7 +1174,7 @@ const rows = members.map(m => ({ id: m.id }));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -1188,11 +1198,11 @@ const rows = members.map(m => ({ id: m.id }));
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
-          <div data-xh-part="column-header" value="city">城市</div>
-          <div data-xh-part="column-header" value="ext">分机</div>
-          <div data-xh-part="column-header" value="mail">邮箱</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+          <div data-xh-part="column-header" value="city"><span data-xh-part="column-label">城市</span></div>
+          <div data-xh-part="column-header" value="ext"><span data-xh-part="column-label">分机</span></div>
+          <div data-xh-part="column-header" value="mail"><span data-xh-part="column-label">邮箱</span></div>
         </div>
       </div>
       <div data-xh-part="body"></div>
@@ -1254,6 +1264,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -1290,8 +1301,8 @@ const selection = ref<string[]>(["p2"]);
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="select" />
-          <XhTableColumnHeader value="plan">套餐</XhTableColumnHeader>
-          <XhTableColumnHeader value="price">价格</XhTableColumnHeader>
+          <XhTableColumnHeader value="plan"><XhTableColumnLabel>套餐</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="price"><XhTableColumnLabel>价格</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -1317,8 +1328,8 @@ const selection = ref<string[]>(["p2"]);
         <div data-xh-part="row">
           <!-- 单选下全选把手不生效，表头那一格空着即可 -->
           <div data-xh-part="column-header" value="select"></div>
-          <div data-xh-part="column-header" value="plan">套餐</div>
-          <div data-xh-part="column-header" value="price">价格</div>
+          <div data-xh-part="column-header" value="plan"><span data-xh-part="column-label">套餐</span></div>
+          <div data-xh-part="column-header" value="price"><span data-xh-part="column-label">价格</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -1381,6 +1392,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -1408,7 +1420,7 @@ const rows = [...teams.map(t => ({ id: t.id })), { id: "sum" }];
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -1436,9 +1448,9 @@ const rows = [...teams.map(t => ({ id: t.id })), { id: "sum" }];
       <div data-xh-part="caption">交付单量</div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="team">小组</div>
-          <div data-xh-part="column-header" value="h1">上半年</div>
-          <div data-xh-part="column-header" value="h2">下半年</div>
+          <div data-xh-part="column-header" value="team"><span data-xh-part="column-label">小组</span></div>
+          <div data-xh-part="column-header" value="h1"><span data-xh-part="column-label">上半年</span></div>
+          <div data-xh-part="column-header" value="h2"><span data-xh-part="column-label">下半年</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -1486,6 +1498,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -1523,7 +1536,7 @@ function onEditKeydown(event: KeyboardEvent): void {
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -1568,9 +1581,9 @@ function onEditKeydown(event: KeyboardEvent): void {
       <div data-xh-part="caption">采购清单</div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="item">条目</div>
-          <div data-xh-part="column-header" value="count">数量</div>
-          <div data-xh-part="column-header" value="note">备注</div>
+          <div data-xh-part="column-header" value="item"><span data-xh-part="column-label">条目</span></div>
+          <div data-xh-part="column-header" value="count"><span data-xh-part="column-label">数量</span></div>
+          <div data-xh-part="column-header" value="note"><span data-xh-part="column-label">备注</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -1691,6 +1704,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -1726,16 +1740,16 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
         <XhTableRow>
           <XhTableColumnHeader value="team" />
           <XhTableColumnHeader value="q1" :style="groupStyle" :aria-colspan="2">
-            上半年
+            <XhTableColumnLabel>上半年</XhTableColumnLabel>
           </XhTableColumnHeader>
           <XhTableColumnHeader value="q3" :style="groupStyle" :aria-colspan="2">
-            下半年
+            <XhTableColumnLabel>下半年</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
         <!-- 第二行表头自报行号：缺省那条恒为 1 -->
         <XhTableRow :aria-rowindex="2">
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -1776,7 +1790,7 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
             aria-colspan="2"
             style="inline-size: 10rem; flex-grow: 2"
           >
-            上半年
+            <span data-xh-part="column-label">上半年</span>
           </div>
           <div
             data-xh-part="column-header"
@@ -1785,15 +1799,15 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
             aria-colspan="2"
             style="inline-size: 10rem; flex-grow: 2"
           >
-            下半年
+            <span data-xh-part="column-label">下半年</span>
           </div>
         </div>
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="team">小组</div>
-          <div data-xh-part="column-header" value="q1">Q1</div>
-          <div data-xh-part="column-header" value="q2">Q2</div>
-          <div data-xh-part="column-header" value="q3">Q3</div>
-          <div data-xh-part="column-header" value="q4">Q4</div>
+          <div data-xh-part="column-header" value="team"><span data-xh-part="column-label">小组</span></div>
+          <div data-xh-part="column-header" value="q1"><span data-xh-part="column-label">Q1</span></div>
+          <div data-xh-part="column-header" value="q2"><span data-xh-part="column-label">Q2</span></div>
+          <div data-xh-part="column-header" value="q3"><span data-xh-part="column-label">Q3</span></div>
+          <div data-xh-part="column-header" value="q4"><span data-xh-part="column-label">Q4</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -1855,6 +1869,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableRoot,
@@ -1904,9 +1919,9 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
     <XhTableRoot :columns="columns" :rows="rows">
       <XhTableHeader>
         <XhTableRow>
-          <XhTableColumnHeader value="name">姓名</XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>姓名</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="dept">
-            部门
+            <XhTableColumnLabel>部门</XhTableColumnLabel>
             <XhPopoverRoot placement="bottom-start" size="sm">
               <XhPopoverTrigger
                 aria-label="按部门过滤"
@@ -1929,7 +1944,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
             </XhPopoverRoot>
           </XhTableColumnHeader>
           <XhTableColumnHeader value="city">
-            城市
+            <XhTableColumnLabel>城市</XhTableColumnLabel>
             <XhPopoverRoot placement="bottom-start" size="sm">
               <XhPopoverTrigger
                 aria-label="按城市过滤"
@@ -1978,9 +1993,9 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
           <div data-xh-part="column-header" value="dept">
-            部门
+            <span data-xh-part="column-label">部门</span>
             <xh-popover placement="bottom-start" size="sm">
               <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
@@ -2010,7 +2025,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
             </xh-popover>
           </div>
           <div data-xh-part="column-header" value="city">
-            城市
+            <span data-xh-part="column-label">城市</span>
             <xh-popover placement="bottom-start" size="sm">
               <button data-xh-part="trigger" aria-label="按城市过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
@@ -2144,6 +2159,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -2267,7 +2283,7 @@ const twistyStyle = {
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -2316,8 +2332,8 @@ const twistyStyle = {
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">组织</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">组织</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body></div>
@@ -2469,6 +2485,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnResizeTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -2507,9 +2524,7 @@ const preference = ref<Record<string, unknown>>({});
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">
-              {{ col.label }}
-            </span>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             <!-- 把手压在两列的接缝上；没标 resizable 的列它自己不显示 -->
             <XhTableColumnResizeTrigger />
           </XhTableColumnHeader>
@@ -2536,16 +2551,16 @@ const preference = ref<Record<string, unknown>>({});
       <div data-xh-part="header">
         <div data-xh-part="row">
           <div data-xh-part="column-header" value="name">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">姓名</span>
+            <span data-xh-part="column-label">姓名</span>
             <!-- 把手压在两列的接缝上；没标 resizable 的列它自己不显示 -->
             <span data-xh-part="column-resize-trigger" value="name"></span>
           </div>
           <div data-xh-part="column-header" value="dept">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">部门</span>
+            <span data-xh-part="column-label">部门</span>
             <span data-xh-part="column-resize-trigger" value="dept"></span>
           </div>
           <div data-xh-part="column-header" value="city">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">城市</span>
+            <span data-xh-part="column-label">城市</span>
             <span data-xh-part="column-resize-trigger" value="city"></span>
           </div>
         </div>
@@ -2610,6 +2625,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -2664,7 +2680,7 @@ function onScroll(event: Event): void {
       <XhTableHeader>
         <XhTableRow :style="rowStyle">
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -2690,9 +2706,9 @@ function onScroll(event: Event): void {
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row" style="block-size: 36px">
-          <div data-xh-part="column-header" value="no">编号</div>
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
+          <div data-xh-part="column-header" value="no"><span data-xh-part="column-label">编号</span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
         </div>
       </div>
       <div data-xh-part="body"></div>
@@ -2792,6 +2808,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -2829,7 +2846,7 @@ const rows = members.map(m => ({ id: m.id }));
           <XhTableHeader>
             <XhTableRow>
               <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-                {{ col.label }}
+                <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
               </XhTableColumnHeader>
             </XhTableRow>
           </XhTableHeader>
@@ -2871,11 +2888,11 @@ const rows = members.map(m => ({ id: m.id }));
           <div data-xh-part="root">
             <div data-xh-part="header">
               <div data-xh-part="row">
-                <div data-xh-part="column-header" value="name">姓名</div>
-                <div data-xh-part="column-header" value="dept">部门</div>
-                <div data-xh-part="column-header" value="city">城市</div>
-                <div data-xh-part="column-header" value="ext">分机</div>
-                <div data-xh-part="column-header" value="mail">邮箱</div>
+                <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+                <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+                <div data-xh-part="column-header" value="city"><span data-xh-part="column-label">城市</span></div>
+                <div data-xh-part="column-header" value="ext"><span data-xh-part="column-label">分机</span></div>
+                <div data-xh-part="column-header" value="mail"><span data-xh-part="column-label">邮箱</span></div>
               </div>
             </div>
             <div data-xh-part="body"></div>
@@ -2954,6 +2971,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -2999,8 +3017,8 @@ const selection = ref<string[]>([]);
         <XhTableRow value="__head__">
           <XhTableColumnHeader v-for="c in cols" :key="c.id" :value="c.id">
             <XhTableSelectAllTrigger v-if="c.kind === 'select'" />
-            <template v-else-if="c.kind === 'index'">#</template>
-            <template v-else>{{ c.label }}</template>
+            <XhTableColumnLabel v-else-if="c.kind === 'index'">#</XhTableColumnLabel>
+            <XhTableColumnLabel v-else>{{ c.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -3046,13 +3064,13 @@ const selection = ref<string[]>([]);
       <div data-xh-part="header">
         <div data-xh-part="row" value="__head__">
           <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
-          <div data-xh-part="column-header" value="__index__">#</div>
+          <div data-xh-part="column-header" value="__index__"><span data-xh-part="column-label">#</span></div>
           <div data-xh-part="column-header" value="__select__">
             <span data-xh-part="select-all-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="name">名称</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
-          <div data-xh-part="column-header" value="status">状态</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">名称</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
+          <div data-xh-part="column-header" value="status"><span data-xh-part="column-label">状态</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body></div>
@@ -3169,6 +3187,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -3216,8 +3235,8 @@ const selection = ref<string[] | "all">([]);
           <XhTableColumnHeader value="select">
             <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="name">文件名</XhTableColumnHeader>
-          <XhTableColumnHeader value="size">大小</XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>文件名</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="size"><XhTableColumnLabel>大小</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -3257,8 +3276,8 @@ const selection = ref<string[] | "all">([]);
           <div data-xh-part="column-header" value="select">
             <span data-xh-part="select-all-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="name">文件名</div>
-          <div data-xh-part="column-header" value="size">大小</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">文件名</span></div>
+          <div data-xh-part="column-header" value="size"><span data-xh-part="column-label">大小</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -3357,6 +3376,7 @@ import {
   XhTableCell,
   XhTableColumnDragTrigger,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -3402,9 +3422,7 @@ function cell(m: (typeof members)[number], id: string): string {
           <XhTableColumnHeader v-for="col in effective" :key="col.id" :value="col.id">
             <!-- 把手在标题之前；不可拖的列它自己报不可用 -->
             <XhTableColumnDragTrigger />
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">
-              {{ col.label }}
-            </span>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -3433,19 +3451,19 @@ function cell(m: (typeof members)[number], id: string): string {
           <!-- 把手在标题之前；不可拖的列它自己报不可用 -->
           <div data-xh-part="column-header" value="name">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">姓名</span>
+            <span data-xh-part="column-label">姓名</span>
           </div>
           <div data-xh-part="column-header" value="dept">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">部门</span>
+            <span data-xh-part="column-label">部门</span>
           </div>
           <div data-xh-part="column-header" value="city">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">城市</span>
+            <span data-xh-part="column-label">城市</span>
           </div>
           <div data-xh-part="column-header" value="ops">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">操作</span>
+            <span data-xh-part="column-label">操作</span>
           </div>
         </div>
       </div>
@@ -3524,6 +3542,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -3573,9 +3592,9 @@ function onRowMove(details: {
       </XhTableCaption>
       <XhTableHeader>
         <XhTableRow>
-          <XhTableColumnHeader value="step">序号</XhTableColumnHeader>
-          <XhTableColumnHeader value="name">环节</XhTableColumnHeader>
-          <XhTableColumnHeader value="owner">负责人</XhTableColumnHeader>
+          <XhTableColumnHeader value="step"><XhTableColumnLabel>序号</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>环节</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -3600,9 +3619,9 @@ function onRowMove(details: {
       </div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="step">序号</div>
-          <div data-xh-part="column-header" value="name">环节</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="step"><span data-xh-part="column-label">序号</span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">环节</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body>
@@ -3695,6 +3714,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -3744,9 +3764,9 @@ const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(
       <XhTableHeader>
         <XhTableRow>
           <span aria-hidden="true" :style="spacerStyle" />
-          <XhTableColumnHeader value="step">序号</XhTableColumnHeader>
-          <XhTableColumnHeader value="name">环节</XhTableColumnHeader>
-          <XhTableColumnHeader value="owner">负责人</XhTableColumnHeader>
+          <XhTableColumnHeader value="step"><XhTableColumnLabel>序号</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>环节</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -3784,9 +3804,9 @@ const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(
               inline-size: var(--xh-table-row-drag-size, var(--xh-control-indicator-size));
             "
           ></span>
-          <div data-xh-part="column-header" value="step">序号</div>
-          <div data-xh-part="column-header" value="name">环节</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="step"><span data-xh-part="column-label">序号</span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">环节</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body>
@@ -3885,6 +3905,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableExpandTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -3985,7 +4006,7 @@ const twistySpacer
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -4022,8 +4043,8 @@ const twistySpacer
       </div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">任务</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">任务</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body></div>
@@ -4171,6 +4192,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnList,
   XhTableColumnVisibilityTrigger,
   XhTableHeader,
@@ -4247,7 +4269,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
         <XhTableHeader>
           <XhTableRow>
             <XhTableColumnHeader v-for="col in shown" :key="col.id" :value="col.id">
-              {{ col.label }}
+              <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             </XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>
@@ -4277,10 +4299,10 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
-          <div data-xh-part="column-header" value="city">城市</div>
-          <div data-xh-part="column-header" value="level">职级</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+          <div data-xh-part="column-header" value="city"><span data-xh-part="column-label">城市</span></div>
+          <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
         </div>
       </div>
       <div data-xh-part="body" id="table-settings-body"></div>
@@ -4376,6 +4398,8 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 ### 特性
 
 - 排序、选择、展开三套状态各自可受控。
+- 列名放在 `column-label` 里，它是列头里唯一可收窄的一格：列名太长时由它出省略号。排序钮、列宽把手与列拖拽把手都是它的兄弟，不装进它里面。列头是 flex 行，裸写的文本是匿名 flex item、缩不下去，窄列上会把定尺的把手连同外边距一起挤出列头盒，所以不可排序、不可改宽的列也要用它。
+- 排序钮（`sort-trigger`）是列头里独立的定尺图标钮，不包列名：列名留在 `column-label` 上，钮写在列名之后、被推到行尾侧与列宽把手并排；点列头文字不排序，点钮才排序。
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
@@ -4404,7 +4428,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnList` `XhTableColumnResizeTrigger` `XhTableColumnVisibilityTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadMoreTrigger` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` `XhTableToolbar` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnLabel` `XhTableColumnList` `XhTableColumnResizeTrigger` `XhTableColumnVisibilityTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadMoreTrigger` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` `XhTableToolbar` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -4544,10 +4568,11 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `setColumnPreference` | `(next?: TableColumnPreference) => void` | 整份偏好替换；未提供时清空，回到作者定义的原样。 |
 | `getRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getColumnHeaderProps` | `(props: TableColumnProps) => T['element']` |  |
+| `getColumnLabelProps` | `() => T['element']` | 列名。列头里唯一可收窄的一格：排序钮、列宽把手与列拖拽把手都是它的兄弟， 列名太长时由它出省略号，把手不会被挤出列头。只投部件属性，不带状态。 |
 | `getCellProps` | `(props: TableCellProps) => T['element']` |  |
 | `getSelectAllTriggerProps` | `() => T['element']` |  |
 | `getRowSelectTriggerProps` | `(props: TableRowProps) => T['element']` |  |
-| `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` |  |
+| `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` | 排序钮。独立的定尺图标钮，排在列名之后；列名留在 column-header 上， 钮的可及名取 translations.sort(列名)。只有 sortable 的列才渲染它。 |
 | `getColumnResizeTriggerProps` | `(props: TableColumnProps) => T['element']` | 列宽把手。只有 resizable 的列才渲染它。 |
 | `getColumnDragTriggerProps` | `(props: TableColumnProps) => T['element']` | 列拖拽把手。只有 reorderable 的列才渲染它。 |
 | `getRowDragTriggerProps` | `(props: TableRowProps) => T['element']` | 行拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：rowReorderable 关闭或该表不可拖动时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
@@ -4629,6 +4654,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `select-all-trigger` | `role` | 'checkbox' |
 | `row-select-trigger` | `aria-hidden` | 'true' |
 | `sort-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `sort-trigger` | `aria-label` | label.sort(def?.label ?? column.value) |
 | `sort-trigger` | `role` | 'button' |
 | `column-resize-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `column-resize-trigger` | `aria-label` | label.columnResize(def?.label ?? column.value) |
@@ -4655,6 +4681,11 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `footer-row` | `aria-rowindex` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … \| undefined |
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
+
+- 排序钮是 `role=button`，自占一个 Tab 位；它不包列名，可及名取 `translations.sort(列名)`（默认 `Sort by <列名>`），当前方向由所在列头的 `aria-sort` 报出，钮上不重复。
+- `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
+- 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。
+- 行内的勾选框与展开箭头对读屏隐藏：选中与展开都由行自身的属性与方向键 / 空格承担。
 
 ## 样式参考
 
@@ -4734,7 +4765,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `sort-trigger` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `sort-trigger` | `data-xh-action-control` | '' |
 | `sort-trigger` | `data-xh-action-display` | 'always' |
-| `sort-trigger` | `data-xh-action-profile` | 'row' |
+| `sort-trigger` | `data-xh-action-profile` | 'icon' |
 | `sort-trigger` | `data-xh-action-size` | props.size |
 | `sort-trigger` | `data-xh-action-variant` | 'ghost' |
 | `column-resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -4840,9 +4871,9 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `--xh-table-row-fg-selected` | `row` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | table 的 row 部件 color 覆盖槽。 |
 | `--xh-table-sort-bg-hover` | `sort-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | table 的 sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-sort-bg-pressed` | `sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | table 的 sort-trigger 部件 background-color 覆盖槽。 |
-| `--xh-table-sort-fg` | `sort-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
-| `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `sort-index`<br>`sort=asc`<br>`sort=desc` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
-| `--xh-table-sort-gap` | `sort-trigger` | `gap` | `default` | `--xh-space-1` | table 的 sort-trigger 部件 gap 覆盖槽。 |
+| `--xh-table-sort-fg` | `sort-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
+| `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`sort`<br>`sort-index` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
+| `--xh-table-sort-size` | `sort-trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 color 覆盖槽。 |
 | `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-space-2` | table 的 empty、loading 部件 gap 覆盖槽。 |
 | `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `8rem` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
@@ -4854,14 +4885,14 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `--xh-table-toolbar-fg` | `toolbar` | `color` | `default` | `--xh-fg-default` | table 的 toolbar 部件 color 覆盖槽。 |
 | `--xh-table-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-_table-toolbar-gap` | table 的 toolbar 部件 gap 覆盖槽。 |
 | `--xh-table-toolbar-py` | `toolbar` | `padding-block` | `default` | `--xh-space-2` | table 的 toolbar 部件 padding-block 覆盖槽。 |
-| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color、border、border-color 覆盖槽。 |
-| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color 覆盖槽。 |
-| `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color 覆盖槽。 |
-| `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color、border、border-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
+| `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
+| `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `--xh-_ring-color`<br>`background-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=indeterminate` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 --xh-_ring-color、background-color、color 覆盖槽。 |
 | `--xh-table-trigger-radius` | `column-drag-trigger`<br>`column-visibility-trigger`<br>`expand-trigger`<br>`row-drag-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` | table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 block-size、inline-size、min-block-size、min-inline-size 覆盖槽。 |
+| `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-icon-size、block-size、inline-size、min-block-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

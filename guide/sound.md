@@ -375,9 +375,9 @@ import { vSound } from "@xihan-ui/vue/sound";
 React 侧的适配同样放在单独的子入口 `@xihan-ui/react/sound`。服务层与 Vue 完全同名同形：
 
 ```ts
-import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
 import { createDialogService, createToastService } from "@xihan-ui/react";
 import { setSoundPlayer, withDialogSound, withToastSound } from "@xihan-ui/react/sound";
+import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
 
 // 更换主题、接入用户偏好；不设置时使用默认播放器
 setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }));
@@ -396,9 +396,11 @@ await dialog.confirm({ title: "删除这条记录？" });
 ```tsx
 import { useSoundOnPress } from "@xihan-ui/react/sound";
 
-<button ref={useSoundOnPress()}>提交</button>
-<button ref={useSoundOnPress("send")}>发送</button>
-<div ref={useSoundOnPress({ sound: "toggle-on", volume: 0.6 })} />;
+<>
+  <button ref={useSoundOnPress()}>提交</button>
+  <button ref={useSoundOnPress("send")}>发送</button>
+  <div ref={useSoundOnPress({ sound: "toggle-on", volume: 0.6 })} />
+</>;
 ```
 
 监听同样挂在 `click` 上而不是 `pointerdown`：键盘按 Enter / Space 激活也应发声，按下后拖开取消的不应发声。带 `disabled` / `aria-disabled` / `data-disabled` 的元素不发声。

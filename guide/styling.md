@@ -26,7 +26,7 @@ CSS 的级联顺序由 `@layer` 声明的首次出现顺序决定，与 `@import
 按组件引入样式时必须先引入 `layers.css` 或 `tokens.css` 之一，否则层序不成立，级联顺序会退化为引入顺序。
 
 ::: warning 本站示例使用无层版本
-文档站引入的是 `index.unlayered.css`（VitePress 自带无层的 `button` 重置，见[安装与接入](../installation#宿主有无层-reset-时改用无层版)）。层壳移除后，本页描述的层序在本站示例中不生效，规则按特异性竞争。层序相关的表现请在自己的项目中引入 `index.css` 后验证。
+主入口 `index.css` 与 `index.unlayered.css` 都是从同一份源序生成的扁平文件：家族配方在四份公共层之后只内联一次、排在一切组件皮肤之前，各皮肤随后按源序内联并去掉自带的家族 `@import`。文档站引入的是 `index.unlayered.css`（VitePress 自带无层的 `button` 重置，见[安装与接入](../installation#宿主有无层-reset-时改用无层版)）。层壳移除后，本页描述的层序在本站示例中不生效，规则按特异性竞争。层序相关的表现请在自己的项目中引入 `index.css` 后验证。
 :::
 
 ## reset 只作用于库节点
@@ -51,7 +51,7 @@ CSS 的级联顺序由 `@layer` 声明的首次出现顺序决定，与 `@import
 
 没有全局 reset，不影响宿主页面的任何元素。与现有页面共存不需要隔离。
 
-reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪元素自身的 (0,0,1) 无法再低）。有层版本里这一点无关紧要，层序已经保证皮肤压得住 reset；无层版本 `index.unlayered.css` 只按特指度竞争：Family Recipe 的根规则在产物里由 `[data-scope]` 前缀抬到 (0,2,0)（源文件仍是 `[data-xh-action-control]` 一类的 (0,1,0)），与皮肤选择器同档，并紧随令牌、先于全部皮肤与 reset 内联一次——同档只剩源序竞争，皮肤对配方物理属性的直接覆盖只有配方先出现才成立，与有层版本里皮肤高一级即胜等价；reset 只有低一档才不会靠源序把配方的字号压掉。代价是无层模式下宿主页面的元素选择器（`div { visibility: hidden }` 这类 (0,0,1)）可以压过 reset——这是无层模式「按特指度竞争」既有取舍的延伸，宿主有这类规则时请自行提高 reset 覆盖的特指度或改用有层版本。
+reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪元素自身的 (0,0,1) 无法再低）。有层版本里这一点无关紧要，层序已经保证皮肤压得住 reset；无层版本 `index.unlayered.css` 只按特指度竞争：Family Recipe 的根规则在产物里由 `[data-scope]` 前缀抬到 (0,2,0)（源文件仍是 `[data-xh-action-control]` 一类的 (0,1,0)），与皮肤选择器同档，并在四份公共层之后、先于全部组件皮肤与 reset 内联一次——同档只剩源序竞争，皮肤对配方物理属性的直接覆盖只有配方先出现才成立，与有层版本里皮肤高一级即胜等价；reset 只有低一档才不会靠源序把配方的字号压掉。代价是无层模式下宿主页面的元素选择器（`div { visibility: hidden }` 这类 (0,0,1)）可以压过 reset——这是无层模式「按特指度竞争」既有取舍的延伸，宿主有这类规则时请自行提高 reset 覆盖的特指度或改用有层版本。
 
 ## 组件内滚动
 
@@ -349,7 +349,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 | `check-shared-slots` | 同一个字面量在两个以上组件中作为默认值。这是一条未命名的设计决策，应先建立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠加 `opacity`。两种手段同时使用会把对比度压到无法阅读 |
 | `check-focus-ring-surface` | 可聚焦部件的面对环的对比度不到 3:1，该档位却没有规则更换环色（`--xh-_ring-color` / `outline-color` / 聚焦规则中的 `outline` 简写求值后仍是库环）。反之改环色的规则覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明直接判红，失效档只豁免对比度，环不允许消失。`@supports` 块内的规则按条件成立处理，`@media` 只认几种真实媒体条件为条件块，其余条件块与 `@container` 一律按成立处理；皮肤中给库环令牌链上的名称赋值直接判红 |
-| `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，与家族配方的 `outline-color` 过渡叠加，焦点离开时闪出一圈近黑描边 |
+| `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-overlay-strategy` | 浮层的坐标系在状态机、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖中声明、`connect` 中产出、适配器却未接线的部件。皮肤为它写了规则却匹配不到任何元素 |
 | `check-scrollbar-hosts` | 自绘条三端接线不齐、壳缺定位上下文或轨道底色、浮层没把壳记进层分支；皮肤里的滚动面没有登记进 `scroll-surface-registry.json`（或登记过期）、自绘面的轴与浮层 4px 档没接齐、`overscroll-behavior` / `scrollbar-gutter` 写在不该写的面上或该写的面上没写、原生面自己写 `scrollbar-width`、不是壳的部件声明 `--xh-scrollbar-track-bg` |

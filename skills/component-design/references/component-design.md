@@ -288,6 +288,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - `--xh-glyph-size-text`（随文 1em）只允许在纯行内文字组件（Tag、Kbd、Breadcrumb、Typography、Highlight）里使用。
 - Feedback 指示符（Alert、Toast、Notification）统一 `--xh-glyph-size-md`。
 - 配方内不写 12px / 14px 等字面图标尺寸；xs 视觉盒与 field-inset 字形走 `--xh-control-action-size` / `--xh-control-indicator-sm` / `--xh-glyph-size-sm`。
+- 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox / Tree 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
 
 ### 6.6 组件内滚动
 
@@ -341,7 +342,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | --- | --- | --- | --- | --- |
 | 浮层瞬态集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
 | 页内持久集合的选中 | Tree、Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle` + 前导勾选部件或 2px 指示条（`--xh-stroke-thick`，pill，`--xh-fg-brand`） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
-| 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上），无该部件时只靠字色与字重；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
+| 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上）；list 里没放该部件时，当前项在自己的 `::after` 上自画一条同规格的静态线（厚度 / 颜色 / 圆角读各自 `--xh-<c>-indicator-*` 同一组槽，不做动画，rtl 随逻辑属性镜像，放了部件即收起）：Tabs 横向贴底、纵向贴行向末端（与部件同侧）；Anchor 竖排贴行向起始缘、横排贴底边（链接为省略号收着 overflow，线画在链接盒内、主轴两端各退 `--xh-space-1` 避开圆角，部件则骑在 list 的轨道上）；NavigationMenu 的 `indicator` 部件表达的是「哪张面板开着」而非当前页，指向当前页面的链接始终自画静态线、不随部件收起（横排 list 里的直达链接贴底边，竖排的直达链接与面板里的链接贴行向起始缘，两端同样退 `--xh-space-1`）；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
 | 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
 | 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起 indicator：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
 | 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` | `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle` | hover 20% → pressed 28%；`solid` 变体才允许品牌实心 | Highlight / HighlightText |
@@ -407,7 +408,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 ### 9.1 离散动作控件
 
-按压缩放只给「定尺的独立动作控件」：inline-size 由 Action Control profile（text / icon / field-inset / floating）决定的按钮、把手、方框、轨道、星、日历格、色块。它们必须投影 `data-xh-action-control` 并使用同一配方，同时换底：
+按压缩放只给「定尺的独立动作控件」：inline-size 由 Action Control profile（text / icon / field-inset / floating）决定的按钮、把手、方框、轨道、星、日历格、色块、表格排序钮与展开钮（列头里的排序钮不包列名，是列名之后一颗独立的 icon 档 ghost 钮）。它们必须投影 `data-xh-action-control` 并使用同一配方，同时换底：
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |

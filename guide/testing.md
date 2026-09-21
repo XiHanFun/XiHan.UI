@@ -170,7 +170,7 @@ pnpm visual:performance --record
 
 ## 结构门禁
 
-`pnpm gate` 运行 123 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 122 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -194,7 +194,7 @@ pnpm visual:performance --record
 | `check-breakpoints` | 皮肤 `@media` 中的断点字面量不在令牌清单中（自定义属性在媒体条件中不生效，只能写字面量） |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
 | `check-focus-ring-surface` | 可聚焦部件的面与环的对比度不足 3:1（按计算结果，不按形态推断），该档却未把 `--xh-_ring-color` 设为 `currentColor`：键盘焦点在该面上等于未绘制。`currentColor` 覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记环由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
-| `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，与家族配方的 `outline-color` 过渡叠加，焦点离开时闪出一圈近黑描边 |
+| `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-exports` | 已实现却未从包级入口导出，包外无法获取，而构建与类型检查照常通过 |
 | `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
 | `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |
@@ -202,7 +202,7 @@ pnpm visual:performance --record
 | `check-changeset-packages` | changeset 头部写了 `.changeset/config.json` ignore 表里的私有包（如 `@xihan-ui/testing`）或不在工作区的包：前者与发布包混写时 `changeset version` 直接报 Mixed changesets，只写它时整份被丢掉、正文进不了 CHANGELOG；后者报 not in the workspace。不依赖 git 基线，头部读不成「包名: 档位」也判红 |
 | `check-surface-edge` / `check-selection-marker` / `check-state-ladder` / `check-text-role` 与扩展后的 `check-elevation-role` / `check-shape-scale` / `check-press-feedback` / `check-family-parity` | 七条家族门禁：根面边界三选一、选中与当前态按语义分类、交互态按承载面阶梯、排版与图标按角色、raised 逐部件登记且必带描边、形状身份表、按压几何与换底、同族同值。尚未迁移的存量登在 `tooling/scripts/family-backlog.json`，每条必须真被放行过一次（登记了却没命中判过期），`check-family-backlog`（`gate:family` 里的 `family-backlog.spec.mjs`）把每段条目数钉在快照与 CEILING 上、键集合只许是快照的子集——表只减不增 |
 
-另有分层依赖检查与十一项单独的门禁：
+另有分层依赖检查与十二项单独的门禁：
 
 ```bash
 pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引入第三方
@@ -213,6 +213,7 @@ pnpm gate:docs    # 重新生成组件文档页后比对
 pnpm gate:exports # 重新生成子路径导出后比对 package.json
 pnpm gate:surface # 公开面基线：基线中有而当前没有的名字判失败
 pnpm gate:demos   # 在真实 Chromium 中运行文档站的自定义元素示例
+pnpm gate:demo-types # 文档站 React 示例逐份类型检查（读 icons 的 dist，先 build）
 pnpm gate:publish # 逐包运行 publint 与 attw，校验 exports 条件与类型解析
 pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与库对账，示例不得保留站点标签
 pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合子集），并用临时夹具证七条家族门禁会红
@@ -230,7 +231,7 @@ pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合
 pnpm size
 ```
 
-37 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+38 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
 
 
 ## 相关

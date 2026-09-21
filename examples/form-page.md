@@ -8,6 +8,7 @@
 <script setup lang="ts">
 import type { RadioGroupNode, SelectNode } from "@xihan-ui/headless";
 import {
+  XhAlertContent,
   XhAlertDescription,
   XhAlertRoot,
   XhAlertTitle,
@@ -107,8 +108,10 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     </XhPageHeaderRoot>
 
     <XhAlertRoot tone="info">
-      <XhAlertTitle>先看一眼已知问题</XhAlertTitle>
-      <XhAlertDescription>近三天同类工单 12 条，其中 9 条已定位到同一处配置。</XhAlertDescription>
+      <XhAlertContent>
+        <XhAlertTitle>先看一眼已知问题</XhAlertTitle>
+        <XhAlertDescription>近三天同类工单 12 条，其中 9 条已定位到同一处配置。</XhAlertDescription>
+      </XhAlertContent>
     </XhAlertRoot>
 
     <XhFormRoot
@@ -391,8 +394,10 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 
   <xh-alert tone="info">
     <div data-xh-part="root">
-      <div data-xh-part="title">先看一眼已知问题</div>
-      <div data-xh-part="description">近三天同类工单 12 条，其中 9 条已定位到同一处配置。</div>
+      <div data-xh-part="content">
+        <div data-xh-part="title">先看一眼已知问题</div>
+        <div data-xh-part="description">近三天同类工单 12 条，其中 9 条已定位到同一处配置。</div>
+      </div>
     </div>
   </xh-alert>
 

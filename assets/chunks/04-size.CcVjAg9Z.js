@@ -1,1 +1,0 @@
-import{c5 as a,c6 as n,c7 as r}from"./theme.CgoFSkOP.js";import{d as c,o as i,c as l,B as m,E as t,w as u,k as e,F as p}from"./framework.DxrHb2fb.js";const F=c({__name:"04-size",setup(_){const o=["sm","md","lg"];return(d,f)=>(i(),l(p,null,m(o,s=>t(e(r),{key:s,style:{position:"static"},size:s},{default:u(()=>[t(e(a)),t(e(n))]),_:1},8,["size"])),64))}});export{F as default};

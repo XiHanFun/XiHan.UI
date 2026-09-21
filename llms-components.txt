@@ -3279,7 +3279,7 @@ function isGroupActive(group: {
 ### 特性
 
 - 支持页面或指定容器滚动。
-- 支持滚动偏移、平滑滚动和当前项指示条。
+- 支持滚动偏移、平滑滚动和当前项指示线：不放 `indicator` 部件时当前链接自带一条静态线（竖排贴起始缘、横排贴底边），放了部件则由部件滑动。
 - 支持水平、垂直和嵌套目录。
 
 ### 组合
@@ -3419,9 +3419,9 @@ function isGroupActive(group: {
 | `--xh-anchor-font-size` | `link`<br>`root` | `font-size` | `default` | `--xh-_anchor-font-size` | anchor 的 link、root 部件 font-size 覆盖槽。 |
 | `--xh-anchor-gap` | `list` | `gap` | `default` | `--xh-space-1` | anchor 的 list 部件 gap 覆盖槽。 |
 | `--xh-anchor-gap-horizontal` | `list` | `gap` | `orientation=horizontal` | `--xh-space-2` | anchor 的 list 部件 gap 覆盖槽。 |
-| `--xh-anchor-indicator-color` | `indicator` | `background` | `default` | `--xh-_anchor-accent` | anchor 的 indicator 部件 background 覆盖槽。 |
-| `--xh-anchor-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | anchor 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-anchor-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-start` | `default`<br>`orientation=horizontal` | `--xh-stroke-thick` | anchor 的 indicator 部件 block-size、inline-size、inset-block-end、inset-inline-start 覆盖槽。 |
+| `--xh-anchor-indicator-color` | `indicator`<br>`link` | `background` | `current`<br>`default` | `--xh-_anchor-accent` | anchor 的 indicator、link 部件 background 覆盖槽。 |
+| `--xh-anchor-indicator-radius` | `indicator`<br>`link` | `border-radius` | `current`<br>`default` | `--xh-shape-pill` | anchor 的 indicator、link 部件 border-radius 覆盖槽。 |
+| `--xh-anchor-indicator-thickness` | `indicator`<br>`link`<br>`list` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-start` | `current`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | anchor 的 indicator、link、list 部件 block-size、inline-size、inset-block-end、inset-inline-start 覆盖槽。 |
 | `--xh-anchor-leading` | `link`<br>`root` | `line-height` | `default` | `--xh-leading-normal` | anchor 的 link、root 部件 line-height 覆盖槽。 |
 | `--xh-anchor-link-bg-hover` | `link` | `background-color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | anchor 的 link 部件 background-color 覆盖槽。 |
 | `--xh-anchor-link-bg-pressed` | `link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | anchor 的 link 部件 background-color 覆盖槽。 |
@@ -8113,7 +8113,7 @@ const loading = ref(false);
 
 async function save() {
   loading.value = true;
-  await new Promise((resolve) => setTimeout(resolve, 1200));
+  await new Promise(resolve => setTimeout(resolve, 1200));
   loading.value = false;
 }
 </script>
@@ -13277,7 +13277,7 @@ const regions = [
 | `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | cascader 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | cascader 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-branch-arrow-fg` | `item` | `background-color` | `branch` | `--xh-fg-subtle` | cascader 的 item 部件 background-color 覆盖槽。 |
-| `--xh-cascader-branch-arrow-size` | `item` | `block-size`<br>`inline-size` | `branch` | `--xh-icon-size` | cascader 的 item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-cascader-branch-arrow-size` | `item` | `block-size`<br>`inline-size` | `branch` | `--xh-control-indicator-size` | cascader 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-cascader-column-divider` | `column` | `border-inline-start` | `default` | `--xh-material-frosted-separator` | cascader 的 column 部件 border-inline-start 覆盖槽。 |
 | `--xh-cascader-column-gap` | `column` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 column 部件 gap 覆盖槽。 |
 | `--xh-cascader-column-h` | `column`<br>`search-list` | `block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 column、search-list 部件 block-size 覆盖槽。 |
@@ -13342,7 +13342,7 @@ const regions = [
 | `--xh-cascader-item-font-weight-selected` | `item`<br>`search-item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | cascader 的 item、search-item 部件 font-weight 覆盖槽。 |
 | `--xh-cascader-item-gap` | `item`<br>`search-item` | `margin-inline-end`<br>`margin-inline-start`<br>`padding-inline-end` | `branch`<br>`default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_cascader-gap` | cascader 的 item、search-item 部件 margin-inline-end、margin-inline-start、padding-inline-end 覆盖槽。 |
 | `--xh-cascader-item-indicator-fg` | `item`<br>`search-item` | `background-color`<br>`color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_cascader-accent` | cascader 的 item、search-item 部件 background-color、color 覆盖槽。 |
-| `--xh-cascader-item-indicator-size` | `item-indicator`<br>`search-item` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default` | `--xh-control-indicator-size` | cascader 的 item-indicator、search-item 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-cascader-item-indicator-size` | `item-indicator`<br>`search-item` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`padding-inline-end` | `default` | `--xh-control-indicator-size` | cascader 的 item-indicator、search-item 部件 --xh-icon-size、block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-cascader-item-leading` | `item`<br>`search-item` | `line-height` | `default` | `--xh-leading-normal` | cascader 的 item、search-item 部件 line-height 覆盖槽。 |
 | `--xh-cascader-item-max-w` | `item` | `max-inline-size` | `default` | `--xh-overlay-max-w` | cascader 的 item 部件 max-inline-size 覆盖槽。 |
 | `--xh-cascader-item-px` | `item`<br>`search-item` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-_cascader-row-px` | cascader 的 item、search-item 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
@@ -14440,7 +14440,11 @@ import { XhCheckbox } from "@xihan-ui/vue";
 
 ### 响应式
 
-皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
+### RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 ---
 
@@ -20871,7 +20875,7 @@ const filtered = computed(() => {
 | `--xh-combobox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | combobox 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-combobox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_combobox-gap` | combobox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-combobox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_combobox-accent` | combobox 的 item 部件 color 覆盖槽。 |
-| `--xh-combobox-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | combobox 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-combobox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | combobox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-combobox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | combobox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-combobox-item-px` | `item` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-item-py` | `item` | `padding-block` | `default` | `--xh-_combobox-item-py` | combobox 的 item 部件 padding-block 覆盖槽。 |
@@ -22356,7 +22360,7 @@ import {
 | `--xh-context-menu-item-font-size` | `item` | `font-size` | `default` | `--xh-_context-menu-font-size` | context-menu 的 item 部件 font-size 覆盖槽。 |
 | `--xh-context-menu-item-gap` | `item` | `gap` | `default` | `--xh-_context-menu-item-gap` | context-menu 的 item 部件 gap 覆盖槽。 |
 | `--xh-context-menu-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | context-menu 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-context-menu-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-icon-size` | context-menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-context-menu-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | context-menu 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-context-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | context-menu 的 item 部件 line-height 覆盖槽。 |
 | `--xh-context-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_context-menu-item-px` | context-menu 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_context-menu-item-py` | context-menu 的 item 部件 padding-block 覆盖槽。 |
@@ -22370,6 +22374,7 @@ import {
 | `--xh-context-menu-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | context-menu 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | context-menu 的 separator 部件 block-size 覆盖槽。 |
 | `--xh-context-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-context-menu-submenu-indicator-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | context-menu 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-context-menu-trigger-bg-pressing` | `trigger` | `background` | `pressing` | `--xh-bg-subtle` | context-menu 的 trigger 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -22408,8 +22413,8 @@ import {
 ```vue
 <script setup lang="ts">
 import {
-  XhDateFieldControl,
   XhDateFieldClearTrigger,
+  XhDateFieldControl,
   XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,
@@ -29875,7 +29880,7 @@ import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ---
 
@@ -35659,6 +35664,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-2` | file-upload 的 list 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 item 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `state=uploading` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-file-upload-item-progress-h` | `item-progress` | `block-size` | `default` | `--xh-stroke-thick` | file-upload 的 item-progress 部件 block-size 覆盖槽。 |
@@ -42698,7 +42704,7 @@ import { XhIcon } from "@xihan-ui/vue";
 | --- | --- | --- | --- | --- | --- |
 | `--xh-icon-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`currentColor` | icon 的 root 部件 color 覆盖槽。 |
 | `--xh-icon-shift` | `root` | `vertical-align` | `default` | `--xh-glyph-baseline-shift` | icon 的 root 部件 vertical-align 覆盖槽。 |
-| `--xh-icon-size` | `autoplay-trigger`<br>`branch-checkbox`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-visibility-trigger`<br>`control`<br>`decrement-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-checkbox`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`row-select-trigger`<br>`scroll-to-end-trigger`<br>`select-all-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start`<br>`padding-inline-start` | `@media (min-width: 640px)`<br>`branch`<br>`default`<br>`direction`<br>`empty`<br>`indeterminate`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`not([aria-busy='true'])`<br>`not([data-selected])`<br>`orientation=vertical`<br>`selected`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=checked`<br>`state=completed`<br>`state=done`<br>`state=error`<br>`state=indeterminate`<br>`state=paused`<br>`state=running`<br>`state=visible` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-checkbox、branch-control、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start、padding-inline-start 覆盖槽。 |
+| `--xh-icon-size` | `autoplay-trigger`<br>`branch-checkbox`<br>`branch-indicator`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-visibility-trigger`<br>`control`<br>`decrement-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-checkbox`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`row-select-trigger`<br>`scroll-to-end-trigger`<br>`select-all-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `@media (min-width: 640px)`<br>`default`<br>`direction`<br>`empty`<br>`indeterminate`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not([aria-busy='true'])`<br>`not([data-selected])`<br>`selected`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=checked`<br>`state=completed`<br>`state=indeterminate`<br>`state=paused`<br>`state=running`<br>`state=visible` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-icon-stroke` | `root` | `stroke-width` | `default`<br>`weight=bold`<br>`weight=light` | `--xh-glyph-stroke-bold`<br>`--xh-glyph-stroke-light`<br>`--xh-glyph-stroke-regular` | icon 的 root 部件 stroke-width 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -47479,7 +47485,7 @@ function toggle(): void {
 | `--xh-json-viewer-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | json-viewer 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-json-viewer-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_json-viewer-indent` | json-viewer 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-json-viewer-indicator-fg` | `branch-trigger` | `color` | `default` | `--xh-fg-subtle` | json-viewer 的 branch-trigger 部件 color 覆盖槽。 |
-| `--xh-json-viewer-indicator-size` | `branch-trigger` | `inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-json-viewer-indicator-size` | `branch-trigger` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
 | `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
 | `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |
@@ -49268,7 +49274,7 @@ import {
 | `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-font-weight-regular` | listbox 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-context=page`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-listbox-item-indicator-fg` | `item` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 background-color、color 覆盖槽。 |
-| `--xh-listbox-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-icon-size` | listbox 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-listbox-item-px` | `item` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-item-py` | `item` | `padding-block` | `default` | `--xh-_listbox-item-py` | listbox 的 item 部件 padding-block 覆盖槽。 |
@@ -54682,7 +54688,7 @@ import {
 | `--xh-menu-item-font-size` | `item` | `font-size` | `default` | `--xh-_menu-font-size` | menu 的 item 部件 font-size 覆盖槽。 |
 | `--xh-menu-item-gap` | `item` | `gap` | `default` | `--xh-_menu-item-gap` | menu 的 item 部件 gap 覆盖槽。 |
 | `--xh-menu-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menu 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-menu-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-icon-size` | menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-menu-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menu 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menu 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_menu-item-px` | menu 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_menu-item-py` | menu 的 item 部件 padding-block 覆盖槽。 |
@@ -54696,6 +54702,7 @@ import {
 | `--xh-menu-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | menu 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-menu-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | menu 的 separator 部件 block-size 覆盖槽。 |
 | `--xh-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `--xh-material-frosted-fg-muted` | menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-menu-submenu-indicator-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menu 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-menu-trigger-bg-active` | `trigger` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-bg-subtle` | menu 的 trigger 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -55249,7 +55256,7 @@ import {
 | `--xh-menubar-item-font-size` | `item` | `font-size` | `default` | `--xh-_menubar-font-size` | menubar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-menubar-item-gap` | `item` | `gap` | `default` | `--xh-_menubar-item-gap` | menubar 的 item 部件 gap 覆盖槽。 |
 | `--xh-menubar-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menubar 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-menubar-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-icon-size` | menubar 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-menubar-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menubar 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menubar-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menubar 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menubar-item-px` | `item` | `padding-inline` | `default` | `--xh-_menubar-item-px` | menubar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-item-py` | `item` | `padding-block` | `default` | `--xh-_menubar-item-py` | menubar 的 item 部件 padding-block 覆盖槽。 |
@@ -55266,6 +55273,7 @@ import {
 | `--xh-menubar-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | menubar 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | menubar 的 separator 部件 block-size 覆盖槽。 |
 | `--xh-menubar-submenu-indicator-fg` | `item` | `background-color` | `default` | `--xh-material-frosted-fg-muted` | menubar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-menubar-submenu-indicator-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menubar 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-menubar-trigger-bg-active` | `trigger` | `background-color` | `in-path`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | menubar 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-menubar-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | menubar 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-menubar-trigger-bg-pressed` | `trigger` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | menubar 的 trigger 部件 background-color 覆盖槽。 |
@@ -56775,7 +56783,7 @@ const groups = [
 - 支持横向和竖向排列、延迟展开与键盘导航。
 - 没有子级的入口可直接渲染为链接。
 - `viewport` 可让所有面板在同一位置切换。
-- 当前链接使用 `aria-current="page"`。
+- 当前链接使用 `aria-current="page"`，并自带一条静态指示线（横排的直达链接贴底边，竖排与面板里的链接贴起始缘）；`indicator` 部件指的是开着的面板，两者各说各的。
 
 ### 组合
 
@@ -56912,6 +56920,8 @@ const groups = [
 
 `@xihan-ui/styles/navigation-menu.css` 使用 `[data-scope="navigation-menu"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -56966,9 +56976,9 @@ const groups = [
 | `--xh-navigation-menu-font-size` | `root`<br>`trigger` | `font-size` | `default` | `--xh-_navigation-menu-font-size` | navigation-menu 的 root、trigger 部件 font-size 覆盖槽。 |
 | `--xh-navigation-menu-gap` | `list` | `gap` | `default` | `--xh-space-1` | navigation-menu 的 list 部件 gap 覆盖槽。 |
 | `--xh-navigation-menu-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | navigation-menu 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-navigation-menu-indicator-color` | `indicator` | `background` | `default` | `--xh-_navigation-menu-accent` | navigation-menu 的 indicator 部件 background 覆盖槽。 |
-| `--xh-navigation-menu-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | navigation-menu 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-navigation-menu-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | navigation-menu 的 indicator 部件 block-size、inline-size、inset-block-end 覆盖槽。 |
+| `--xh-navigation-menu-indicator-color` | `indicator`<br>`link` | `background` | `current`<br>`default` | `--xh-_navigation-menu-accent` | navigation-menu 的 indicator、link 部件 background 覆盖槽。 |
+| `--xh-navigation-menu-indicator-radius` | `indicator`<br>`link` | `border-radius` | `current`<br>`default` | `--xh-shape-pill` | navigation-menu 的 indicator、link 部件 border-radius 覆盖槽。 |
+| `--xh-navigation-menu-indicator-thickness` | `indicator`<br>`item`<br>`link`<br>`list` | `block-size`<br>`inline-size`<br>`inset-block-end` | `current`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | navigation-menu 的 indicator、item、link、list 部件 block-size、inline-size、inset-block-end 覆盖槽。 |
 | `--xh-navigation-menu-layer` | `content`<br>`viewport` | `z-index` | `default` | `--xh-_layer` | navigation-menu 的 content、viewport 部件 z-index 覆盖槽。 |
 | `--xh-navigation-menu-link-bg-hover` | `link` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-_navigation-menu-highlight-bg` | navigation-menu 的 link 部件 background-color 覆盖槽。 |
 | `--xh-navigation-menu-link-bg-pressed` | `link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | navigation-menu 的 link 部件 background-color 覆盖槽。 |
@@ -74874,7 +74884,6 @@ function submit(): void {
   if (picked.value.length === 0)
     trigger.value?.$el.focus();
 }
-
 </script>
 
 <template>
@@ -74979,7 +74988,6 @@ const teams = [
   { value: "frontend", label: "前端组" },
   { value: "server", label: "服务端组" },
 ];
-
 </script>
 
 <template>
@@ -75642,7 +75650,7 @@ function onValueChange(details: { value: string[] }): void {
 | `--xh-select-item-font-size` | `item` | `font-size` | `default` | `--xh-_select-font-size` | select 的 item 部件 font-size 覆盖槽。 |
 | `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | select 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
-| `--xh-select-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-icon-size` | select 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
 | `--xh-select-item-px` | `item` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-select-item-py` | `item` | `padding-block` | `default` | `--xh-_select-item-py` | select 的 item 部件 padding-block 覆盖槽。 |
@@ -76852,6 +76860,7 @@ const branches = collection.filter(node => node.children);
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-side-nav-branch-indicator-size` | `branch-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | side-nav 的 branch-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `56px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
@@ -79682,9 +79691,13 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
+### 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ---
 
@@ -81764,6 +81777,7 @@ const errorAt = 1;
 | `--xh-steps-indicator-fg-hover` | `indicator`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=incomplete` | `--xh-fg-default` | steps 的 indicator、trigger 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-toned` | `indicator`<br>`item` | `color` | `state=incomplete`<br>`tone` | `--xh-_steps-accent-text` | steps 的 indicator、item 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_steps-caption-font-size` | steps 的 indicator 部件 font-size 覆盖槽。 |
+| `--xh-steps-indicator-mark-size` | `indicator` | `--xh-icon-size` | `default` | `--xh-control-indicator-size` | steps 的 indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-steps-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | steps 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-steps-indicator-shadow` | `indicator` | `box-shadow` | `state=current` | `--xh-_steps-highlight` | steps 的 indicator 部件 box-shadow 覆盖槽。 |
 | `--xh-steps-indicator-size` | `indicator`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-_steps-indicator-size` | steps 的 indicator、separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
@@ -82690,7 +82704,7 @@ function onSubmit(event: Event) {
 
 ## 用法
 
-columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观
+columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边
 
 ```vue
 <script setup lang="ts">
@@ -82699,6 +82713,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -82728,7 +82743,7 @@ const rows = members.map(m => ({ id: m.id }));
         <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -82752,9 +82767,9 @@ const rows = members.map(m => ({ id: m.id }));
       <div data-xh-part="header">
         <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
-          <div data-xh-part="column-header" value="level">职级</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+          <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -82800,7 +82815,7 @@ const rows = members.map(m => ({ id: m.id }));
 
 加粗的是必需部件。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `toolbar` · `column-list` · `column-visibility-trigger` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `column-label` · `cell` · `caption` · `toolbar` · `column-list` · `column-visibility-trigger` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
 
 ## 示例
 
@@ -82814,6 +82829,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -82870,8 +82886,8 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <XhTableSortTrigger v-if="col.sortable">{{ col.label }}</XhTableSortTrigger>
-            <template v-else>{{ col.label }}</template>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+            <XhTableSortTrigger v-if="col.sortable" />
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -82899,12 +82915,14 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
       <div data-xh-part="header">
         <div data-xh-part="row">
           <div data-xh-part="column-header" value="name">
-            <span data-xh-part="sort-trigger">姓名</span>
+            <span data-xh-part="column-label">姓名</span>
+            <span data-xh-part="sort-trigger"></span>
           </div>
           <div data-xh-part="column-header" value="dept">
-            <span data-xh-part="sort-trigger">部门</span>
+            <span data-xh-part="column-label">部门</span>
+            <span data-xh-part="sort-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="level">职级</div>
+          <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -82996,6 +83014,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -83042,8 +83061,8 @@ const selection = ref<string[] | "all">(["u2"]);
             <!-- 全选把手是三态的唯一载体，自己占一个 Tab 位 -->
             <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="name">姓名</XhTableColumnHeader>
-          <XhTableColumnHeader value="dept">部门</XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>姓名</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="dept"><XhTableColumnLabel>部门</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -83079,8 +83098,8 @@ const selection = ref<string[] | "all">(["u2"]);
             <!-- 全选把手是三态的唯一载体，自己占一个 Tab 位 -->
             <span data-xh-part="select-all-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -83161,6 +83180,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableExpandedRow,
   XhTableExpandTrigger,
   XhTableHeader,
@@ -83192,8 +83212,8 @@ const expanded = ref<string[]>(["o1"]);
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="expand" />
-          <XhTableColumnHeader value="order">订单号</XhTableColumnHeader>
-          <XhTableColumnHeader value="amount">金额</XhTableColumnHeader>
+          <XhTableColumnHeader value="order"><XhTableColumnLabel>订单号</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="amount"><XhTableColumnLabel>金额</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -83224,8 +83244,8 @@ const expanded = ref<string[]>(["o1"]);
       <div data-xh-part="header">
         <div data-xh-part="row">
           <div data-xh-part="column-header" value="expand"></div>
-          <div data-xh-part="column-header" value="order">订单号</div>
-          <div data-xh-part="column-header" value="amount">金额</div>
+          <div data-xh-part="column-header" value="order"><span data-xh-part="column-label">订单号</span></div>
+          <div data-xh-part="column-header" value="amount"><span data-xh-part="column-label">金额</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -83308,6 +83328,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -83354,7 +83375,7 @@ const densities = [
               :key="col.id"
               :value="col.id"
             >
-              {{ col.label }}
+              <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             </XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>
@@ -83381,8 +83402,8 @@ const densities = [
         <div data-xh-part="caption">sm 紧凑</div>
         <div data-xh-part="header">
           <div data-xh-part="row">
-            <div data-xh-part="column-header" value="name">姓名</div>
-            <div data-xh-part="column-header" value="level">职级</div>
+            <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+            <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
           </div>
         </div>
         <div data-xh-part="body">
@@ -83418,8 +83439,8 @@ const densities = [
         <div data-xh-part="caption">缺省</div>
         <div data-xh-part="header">
           <div data-xh-part="row">
-            <div data-xh-part="column-header" value="name">姓名</div>
-            <div data-xh-part="column-header" value="level">职级</div>
+            <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+            <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
           </div>
         </div>
         <div data-xh-part="body">
@@ -83454,8 +83475,8 @@ const densities = [
         <div data-xh-part="caption">lg 宽松</div>
         <div data-xh-part="header">
           <div data-xh-part="row">
-            <div data-xh-part="column-header" value="name">姓名</div>
-            <div data-xh-part="column-header" value="level">职级</div>
+            <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+            <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
           </div>
         </div>
         <div data-xh-part="body">
@@ -83515,6 +83536,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableLoading,
@@ -83575,7 +83597,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -83603,8 +83625,8 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">任务</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">任务</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body"></div>
@@ -83686,6 +83708,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableFooter,
   XhTableHeader,
   XhTableRoot,
@@ -83718,7 +83741,7 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -83749,9 +83772,9 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
       <div data-xh-part="caption">采购清单</div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="item">条目</div>
-          <div data-xh-part="column-header" value="count">数量</div>
-          <div data-xh-part="column-header" value="amount">金额</div>
+          <div data-xh-part="column-header" value="item"><span data-xh-part="column-label">条目</span></div>
+          <div data-xh-part="column-header" value="count"><span data-xh-part="column-label">数量</span></div>
+          <div data-xh-part="column-header" value="amount"><span data-xh-part="column-label">金额</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -83805,6 +83828,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -83840,7 +83864,7 @@ const rows = members.map(m => ({ id: m.id }));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -83864,11 +83888,11 @@ const rows = members.map(m => ({ id: m.id }));
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
-          <div data-xh-part="column-header" value="city">城市</div>
-          <div data-xh-part="column-header" value="ext">分机</div>
-          <div data-xh-part="column-header" value="mail">邮箱</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+          <div data-xh-part="column-header" value="city"><span data-xh-part="column-label">城市</span></div>
+          <div data-xh-part="column-header" value="ext"><span data-xh-part="column-label">分机</span></div>
+          <div data-xh-part="column-header" value="mail"><span data-xh-part="column-label">邮箱</span></div>
         </div>
       </div>
       <div data-xh-part="body"></div>
@@ -83930,6 +83954,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -83966,8 +83991,8 @@ const selection = ref<string[]>(["p2"]);
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="select" />
-          <XhTableColumnHeader value="plan">套餐</XhTableColumnHeader>
-          <XhTableColumnHeader value="price">价格</XhTableColumnHeader>
+          <XhTableColumnHeader value="plan"><XhTableColumnLabel>套餐</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="price"><XhTableColumnLabel>价格</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -83993,8 +84018,8 @@ const selection = ref<string[]>(["p2"]);
         <div data-xh-part="row">
           <!-- 单选下全选把手不生效，表头那一格空着即可 -->
           <div data-xh-part="column-header" value="select"></div>
-          <div data-xh-part="column-header" value="plan">套餐</div>
-          <div data-xh-part="column-header" value="price">价格</div>
+          <div data-xh-part="column-header" value="plan"><span data-xh-part="column-label">套餐</span></div>
+          <div data-xh-part="column-header" value="price"><span data-xh-part="column-label">价格</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -84057,6 +84082,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -84084,7 +84110,7 @@ const rows = [...teams.map(t => ({ id: t.id })), { id: "sum" }];
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -84112,9 +84138,9 @@ const rows = [...teams.map(t => ({ id: t.id })), { id: "sum" }];
       <div data-xh-part="caption">交付单量</div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="team">小组</div>
-          <div data-xh-part="column-header" value="h1">上半年</div>
-          <div data-xh-part="column-header" value="h2">下半年</div>
+          <div data-xh-part="column-header" value="team"><span data-xh-part="column-label">小组</span></div>
+          <div data-xh-part="column-header" value="h1"><span data-xh-part="column-label">上半年</span></div>
+          <div data-xh-part="column-header" value="h2"><span data-xh-part="column-label">下半年</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -84162,6 +84188,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -84199,7 +84226,7 @@ function onEditKeydown(event: KeyboardEvent): void {
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -84244,9 +84271,9 @@ function onEditKeydown(event: KeyboardEvent): void {
       <div data-xh-part="caption">采购清单</div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="item">条目</div>
-          <div data-xh-part="column-header" value="count">数量</div>
-          <div data-xh-part="column-header" value="note">备注</div>
+          <div data-xh-part="column-header" value="item"><span data-xh-part="column-label">条目</span></div>
+          <div data-xh-part="column-header" value="count"><span data-xh-part="column-label">数量</span></div>
+          <div data-xh-part="column-header" value="note"><span data-xh-part="column-label">备注</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -84367,6 +84394,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -84402,16 +84430,16 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
         <XhTableRow>
           <XhTableColumnHeader value="team" />
           <XhTableColumnHeader value="q1" :style="groupStyle" :aria-colspan="2">
-            上半年
+            <XhTableColumnLabel>上半年</XhTableColumnLabel>
           </XhTableColumnHeader>
           <XhTableColumnHeader value="q3" :style="groupStyle" :aria-colspan="2">
-            下半年
+            <XhTableColumnLabel>下半年</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
         <!-- 第二行表头自报行号：缺省那条恒为 1 -->
         <XhTableRow :aria-rowindex="2">
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -84452,7 +84480,7 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
             aria-colspan="2"
             style="inline-size: 10rem; flex-grow: 2"
           >
-            上半年
+            <span data-xh-part="column-label">上半年</span>
           </div>
           <div
             data-xh-part="column-header"
@@ -84461,15 +84489,15 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
             aria-colspan="2"
             style="inline-size: 10rem; flex-grow: 2"
           >
-            下半年
+            <span data-xh-part="column-label">下半年</span>
           </div>
         </div>
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="team">小组</div>
-          <div data-xh-part="column-header" value="q1">Q1</div>
-          <div data-xh-part="column-header" value="q2">Q2</div>
-          <div data-xh-part="column-header" value="q3">Q3</div>
-          <div data-xh-part="column-header" value="q4">Q4</div>
+          <div data-xh-part="column-header" value="team"><span data-xh-part="column-label">小组</span></div>
+          <div data-xh-part="column-header" value="q1"><span data-xh-part="column-label">Q1</span></div>
+          <div data-xh-part="column-header" value="q2"><span data-xh-part="column-label">Q2</span></div>
+          <div data-xh-part="column-header" value="q3"><span data-xh-part="column-label">Q3</span></div>
+          <div data-xh-part="column-header" value="q4"><span data-xh-part="column-label">Q4</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -84531,6 +84559,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableRoot,
@@ -84580,9 +84609,9 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
     <XhTableRoot :columns="columns" :rows="rows">
       <XhTableHeader>
         <XhTableRow>
-          <XhTableColumnHeader value="name">姓名</XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>姓名</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="dept">
-            部门
+            <XhTableColumnLabel>部门</XhTableColumnLabel>
             <XhPopoverRoot placement="bottom-start" size="sm">
               <XhPopoverTrigger
                 aria-label="按部门过滤"
@@ -84605,7 +84634,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
             </XhPopoverRoot>
           </XhTableColumnHeader>
           <XhTableColumnHeader value="city">
-            城市
+            <XhTableColumnLabel>城市</XhTableColumnLabel>
             <XhPopoverRoot placement="bottom-start" size="sm">
               <XhPopoverTrigger
                 aria-label="按城市过滤"
@@ -84654,9 +84683,9 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
           <div data-xh-part="column-header" value="dept">
-            部门
+            <span data-xh-part="column-label">部门</span>
             <xh-popover placement="bottom-start" size="sm">
               <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
@@ -84686,7 +84715,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
             </xh-popover>
           </div>
           <div data-xh-part="column-header" value="city">
-            城市
+            <span data-xh-part="column-label">城市</span>
             <xh-popover placement="bottom-start" size="sm">
               <button data-xh-part="trigger" aria-label="按城市过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
@@ -84820,6 +84849,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -84943,7 +84973,7 @@ const twistyStyle = {
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -84992,8 +85022,8 @@ const twistyStyle = {
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">组织</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">组织</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body></div>
@@ -85145,6 +85175,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnResizeTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -85183,9 +85214,7 @@ const preference = ref<Record<string, unknown>>({});
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">
-              {{ col.label }}
-            </span>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             <!-- 把手压在两列的接缝上；没标 resizable 的列它自己不显示 -->
             <XhTableColumnResizeTrigger />
           </XhTableColumnHeader>
@@ -85212,16 +85241,16 @@ const preference = ref<Record<string, unknown>>({});
       <div data-xh-part="header">
         <div data-xh-part="row">
           <div data-xh-part="column-header" value="name">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">姓名</span>
+            <span data-xh-part="column-label">姓名</span>
             <!-- 把手压在两列的接缝上；没标 resizable 的列它自己不显示 -->
             <span data-xh-part="column-resize-trigger" value="name"></span>
           </div>
           <div data-xh-part="column-header" value="dept">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">部门</span>
+            <span data-xh-part="column-label">部门</span>
             <span data-xh-part="column-resize-trigger" value="dept"></span>
           </div>
           <div data-xh-part="column-header" value="city">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">城市</span>
+            <span data-xh-part="column-label">城市</span>
             <span data-xh-part="column-resize-trigger" value="city"></span>
           </div>
         </div>
@@ -85286,6 +85315,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -85340,7 +85370,7 @@ function onScroll(event: Event): void {
       <XhTableHeader>
         <XhTableRow :style="rowStyle">
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -85366,9 +85396,9 @@ function onScroll(event: Event): void {
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row" style="block-size: 36px">
-          <div data-xh-part="column-header" value="no">编号</div>
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
+          <div data-xh-part="column-header" value="no"><span data-xh-part="column-label">编号</span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
         </div>
       </div>
       <div data-xh-part="body"></div>
@@ -85468,6 +85498,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -85505,7 +85536,7 @@ const rows = members.map(m => ({ id: m.id }));
           <XhTableHeader>
             <XhTableRow>
               <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-                {{ col.label }}
+                <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
               </XhTableColumnHeader>
             </XhTableRow>
           </XhTableHeader>
@@ -85547,11 +85578,11 @@ const rows = members.map(m => ({ id: m.id }));
           <div data-xh-part="root">
             <div data-xh-part="header">
               <div data-xh-part="row">
-                <div data-xh-part="column-header" value="name">姓名</div>
-                <div data-xh-part="column-header" value="dept">部门</div>
-                <div data-xh-part="column-header" value="city">城市</div>
-                <div data-xh-part="column-header" value="ext">分机</div>
-                <div data-xh-part="column-header" value="mail">邮箱</div>
+                <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+                <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+                <div data-xh-part="column-header" value="city"><span data-xh-part="column-label">城市</span></div>
+                <div data-xh-part="column-header" value="ext"><span data-xh-part="column-label">分机</span></div>
+                <div data-xh-part="column-header" value="mail"><span data-xh-part="column-label">邮箱</span></div>
               </div>
             </div>
             <div data-xh-part="body"></div>
@@ -85630,6 +85661,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -85675,8 +85707,8 @@ const selection = ref<string[]>([]);
         <XhTableRow value="__head__">
           <XhTableColumnHeader v-for="c in cols" :key="c.id" :value="c.id">
             <XhTableSelectAllTrigger v-if="c.kind === 'select'" />
-            <template v-else-if="c.kind === 'index'">#</template>
-            <template v-else>{{ c.label }}</template>
+            <XhTableColumnLabel v-else-if="c.kind === 'index'">#</XhTableColumnLabel>
+            <XhTableColumnLabel v-else>{{ c.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -85722,13 +85754,13 @@ const selection = ref<string[]>([]);
       <div data-xh-part="header">
         <div data-xh-part="row" value="__head__">
           <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
-          <div data-xh-part="column-header" value="__index__">#</div>
+          <div data-xh-part="column-header" value="__index__"><span data-xh-part="column-label">#</span></div>
           <div data-xh-part="column-header" value="__select__">
             <span data-xh-part="select-all-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="name">名称</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
-          <div data-xh-part="column-header" value="status">状态</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">名称</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
+          <div data-xh-part="column-header" value="status"><span data-xh-part="column-label">状态</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body></div>
@@ -85845,6 +85877,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -85892,8 +85925,8 @@ const selection = ref<string[] | "all">([]);
           <XhTableColumnHeader value="select">
             <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="name">文件名</XhTableColumnHeader>
-          <XhTableColumnHeader value="size">大小</XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>文件名</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="size"><XhTableColumnLabel>大小</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -85933,8 +85966,8 @@ const selection = ref<string[] | "all">([]);
           <div data-xh-part="column-header" value="select">
             <span data-xh-part="select-all-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="name">文件名</div>
-          <div data-xh-part="column-header" value="size">大小</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">文件名</span></div>
+          <div data-xh-part="column-header" value="size"><span data-xh-part="column-label">大小</span></div>
         </div>
       </div>
       <div data-xh-part="body">
@@ -86033,6 +86066,7 @@ import {
   XhTableCell,
   XhTableColumnDragTrigger,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -86078,9 +86112,7 @@ function cell(m: (typeof members)[number], id: string): string {
           <XhTableColumnHeader v-for="col in effective" :key="col.id" :value="col.id">
             <!-- 把手在标题之前；不可拖的列它自己报不可用 -->
             <XhTableColumnDragTrigger />
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">
-              {{ col.label }}
-            </span>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -86109,19 +86141,19 @@ function cell(m: (typeof members)[number], id: string): string {
           <!-- 把手在标题之前；不可拖的列它自己报不可用 -->
           <div data-xh-part="column-header" value="name">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">姓名</span>
+            <span data-xh-part="column-label">姓名</span>
           </div>
           <div data-xh-part="column-header" value="dept">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">部门</span>
+            <span data-xh-part="column-label">部门</span>
           </div>
           <div data-xh-part="column-header" value="city">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">城市</span>
+            <span data-xh-part="column-label">城市</span>
           </div>
           <div data-xh-part="column-header" value="ops">
             <span data-xh-part="column-drag-trigger"></span>
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">操作</span>
+            <span data-xh-part="column-label">操作</span>
           </div>
         </div>
       </div>
@@ -86200,6 +86232,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -86249,9 +86282,9 @@ function onRowMove(details: {
       </XhTableCaption>
       <XhTableHeader>
         <XhTableRow>
-          <XhTableColumnHeader value="step">序号</XhTableColumnHeader>
-          <XhTableColumnHeader value="name">环节</XhTableColumnHeader>
-          <XhTableColumnHeader value="owner">负责人</XhTableColumnHeader>
+          <XhTableColumnHeader value="step"><XhTableColumnLabel>序号</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>环节</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -86276,9 +86309,9 @@ function onRowMove(details: {
       </div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="step">序号</div>
-          <div data-xh-part="column-header" value="name">环节</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="step"><span data-xh-part="column-label">序号</span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">环节</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body>
@@ -86371,6 +86404,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -86420,9 +86454,9 @@ const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(
       <XhTableHeader>
         <XhTableRow>
           <span aria-hidden="true" :style="spacerStyle" />
-          <XhTableColumnHeader value="step">序号</XhTableColumnHeader>
-          <XhTableColumnHeader value="name">环节</XhTableColumnHeader>
-          <XhTableColumnHeader value="owner">负责人</XhTableColumnHeader>
+          <XhTableColumnHeader value="step"><XhTableColumnLabel>序号</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>环节</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
@@ -86460,9 +86494,9 @@ const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(
               inline-size: var(--xh-table-row-drag-size, var(--xh-control-indicator-size));
             "
           ></span>
-          <div data-xh-part="column-header" value="step">序号</div>
-          <div data-xh-part="column-header" value="name">环节</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="step"><span data-xh-part="column-label">序号</span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">环节</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body>
@@ -86561,6 +86595,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableExpandTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -86661,7 +86696,7 @@ const twistySpacer
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
@@ -86698,8 +86733,8 @@ const twistySpacer
       </div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">任务</div>
-          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">任务</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
         </div>
       </div>
       <div data-xh-part="body" data-body></div>
@@ -86847,6 +86882,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnList,
   XhTableColumnVisibilityTrigger,
   XhTableHeader,
@@ -86923,7 +86959,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
         <XhTableHeader>
           <XhTableRow>
             <XhTableColumnHeader v-for="col in shown" :key="col.id" :value="col.id">
-              {{ col.label }}
+              <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             </XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>
@@ -86953,10 +86989,10 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name">姓名</div>
-          <div data-xh-part="column-header" value="dept">部门</div>
-          <div data-xh-part="column-header" value="city">城市</div>
-          <div data-xh-part="column-header" value="level">职级</div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+          <div data-xh-part="column-header" value="city"><span data-xh-part="column-label">城市</span></div>
+          <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
         </div>
       </div>
       <div data-xh-part="body" id="table-settings-body"></div>
@@ -87052,6 +87088,8 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 ### 特性
 
 - 排序、选择、展开三套状态各自可受控。
+- 列名放在 `column-label` 里，它是列头里唯一可收窄的一格：列名太长时由它出省略号。排序钮、列宽把手与列拖拽把手都是它的兄弟，不装进它里面。列头是 flex 行，裸写的文本是匿名 flex item、缩不下去，窄列上会把定尺的把手连同外边距一起挤出列头盒，所以不可排序、不可改宽的列也要用它。
+- 排序钮（`sort-trigger`）是列头里独立的定尺图标钮，不包列名：列名留在 `column-label` 上，钮写在列名之后、被推到行尾侧与列宽把手并排；点列头文字不排序，点钮才排序。
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
@@ -87080,7 +87118,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnList` `XhTableColumnResizeTrigger` `XhTableColumnVisibilityTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadMoreTrigger` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` `XhTableToolbar` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnLabel` `XhTableColumnList` `XhTableColumnResizeTrigger` `XhTableColumnVisibilityTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadMoreTrigger` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` `XhTableToolbar` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -87220,10 +87258,11 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `setColumnPreference` | `(next?: TableColumnPreference) => void` | 整份偏好替换；未提供时清空，回到作者定义的原样。 |
 | `getRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getColumnHeaderProps` | `(props: TableColumnProps) => T['element']` |  |
+| `getColumnLabelProps` | `() => T['element']` | 列名。列头里唯一可收窄的一格：排序钮、列宽把手与列拖拽把手都是它的兄弟， 列名太长时由它出省略号，把手不会被挤出列头。只投部件属性，不带状态。 |
 | `getCellProps` | `(props: TableCellProps) => T['element']` |  |
 | `getSelectAllTriggerProps` | `() => T['element']` |  |
 | `getRowSelectTriggerProps` | `(props: TableRowProps) => T['element']` |  |
-| `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` |  |
+| `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` | 排序钮。独立的定尺图标钮，排在列名之后；列名留在 column-header 上， 钮的可及名取 translations.sort(列名)。只有 sortable 的列才渲染它。 |
 | `getColumnResizeTriggerProps` | `(props: TableColumnProps) => T['element']` | 列宽把手。只有 resizable 的列才渲染它。 |
 | `getColumnDragTriggerProps` | `(props: TableColumnProps) => T['element']` | 列拖拽把手。只有 reorderable 的列才渲染它。 |
 | `getRowDragTriggerProps` | `(props: TableRowProps) => T['element']` | 行拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：rowReorderable 关闭或该表不可拖动时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
@@ -87305,6 +87344,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `select-all-trigger` | `role` | 'checkbox' |
 | `row-select-trigger` | `aria-hidden` | 'true' |
 | `sort-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `sort-trigger` | `aria-label` | label.sort(def?.label ?? column.value) |
 | `sort-trigger` | `role` | 'button' |
 | `column-resize-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `column-resize-trigger` | `aria-label` | label.columnResize(def?.label ?? column.value) |
@@ -87331,6 +87371,11 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `footer-row` | `aria-rowindex` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … \| undefined |
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
+
+- 排序钮是 `role=button`，自占一个 Tab 位；它不包列名，可及名取 `translations.sort(列名)`（默认 `Sort by <列名>`），当前方向由所在列头的 `aria-sort` 报出，钮上不重复。
+- `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
+- 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。
+- 行内的勾选框与展开箭头对读屏隐藏：选中与展开都由行自身的属性与方向键 / 空格承担。
 
 ## 样式参考
 
@@ -87410,7 +87455,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `sort-trigger` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `sort-trigger` | `data-xh-action-control` | '' |
 | `sort-trigger` | `data-xh-action-display` | 'always' |
-| `sort-trigger` | `data-xh-action-profile` | 'row' |
+| `sort-trigger` | `data-xh-action-profile` | 'icon' |
 | `sort-trigger` | `data-xh-action-size` | props.size |
 | `sort-trigger` | `data-xh-action-variant` | 'ghost' |
 | `column-resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -87516,9 +87561,9 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `--xh-table-row-fg-selected` | `row` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | table 的 row 部件 color 覆盖槽。 |
 | `--xh-table-sort-bg-hover` | `sort-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | table 的 sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-sort-bg-pressed` | `sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | table 的 sort-trigger 部件 background-color 覆盖槽。 |
-| `--xh-table-sort-fg` | `sort-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
-| `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `sort-index`<br>`sort=asc`<br>`sort=desc` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
-| `--xh-table-sort-gap` | `sort-trigger` | `gap` | `default` | `--xh-space-1` | table 的 sort-trigger 部件 gap 覆盖槽。 |
+| `--xh-table-sort-fg` | `sort-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
+| `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`sort`<br>`sort-index` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
+| `--xh-table-sort-size` | `sort-trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 color 覆盖槽。 |
 | `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-space-2` | table 的 empty、loading 部件 gap 覆盖槽。 |
 | `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `8rem` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
@@ -87530,14 +87575,14 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `--xh-table-toolbar-fg` | `toolbar` | `color` | `default` | `--xh-fg-default` | table 的 toolbar 部件 color 覆盖槽。 |
 | `--xh-table-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-_table-toolbar-gap` | table 的 toolbar 部件 gap 覆盖槽。 |
 | `--xh-table-toolbar-py` | `toolbar` | `padding-block` | `default` | `--xh-space-2` | table 的 toolbar 部件 padding-block 覆盖槽。 |
-| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color、border、border-color 覆盖槽。 |
-| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color 覆盖槽。 |
-| `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 background-color 覆盖槽。 |
-| `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color、border、border-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
+| `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
+| `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `--xh-_ring-color`<br>`background-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=indeterminate` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 --xh-_ring-color、background-color、color 覆盖槽。 |
 | `--xh-table-trigger-radius` | `column-drag-trigger`<br>`column-visibility-trigger`<br>`expand-trigger`<br>`row-drag-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` | table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 block-size、inline-size、min-block-size、min-inline-size 覆盖槽。 |
+| `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-icon-size、block-size、inline-size、min-block-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -87880,7 +87925,7 @@ import {
 
 ### 特性
 
-- 默认 `line` 变体使用透明标签带与底部指示条，当前页由品牌字色与指示条表达；`segment` 提供浅色标签带，选中项为带描边的白色抬起面。
+- 默认 `line` 变体使用透明标签带与底部指示线，当前页由品牌字色与指示线表达：不放 `indicator` 部件时选中标签自带一条静态线（横向贴底、纵向贴行向末端），放了部件则由部件滑动；`segment` 提供浅色标签带，选中项为带描边的白色抬起面。
 - `card` 用于文档式标签。
 - 支持水平、垂直、禁用与手动激活模式。
 - 面板常驻并通过 `hidden` 切换，内部状态不会丢失。
@@ -87888,7 +87933,7 @@ import {
 
 ### 组合
 
-- `indicator` 为 `line` 变体提供滑动指示条。
+- `indicator` 为 `line` 变体提供滑动指示条；不放它时选中标签自画静态线，放了它静态线收起、不重复画。
 - `separator` 在相邻标签之间增加分隔线。
 
 ### 最佳实践
@@ -88076,9 +88121,9 @@ import {
 | `--xh-tabs-drop-fg` | `trigger` | `background` | `drop=after`<br>`drop=before`<br>`is([data-drop='before'], [data-drop='after'])` | `--xh-bg-brand` | tabs 的 trigger 部件 background 覆盖槽。 |
 | `--xh-tabs-drop-line` | `root`<br>`trigger` | `block-size`<br>`inline-size` | `drop=after`<br>`drop=before`<br>`is([data-drop='before'], [data-drop='after'])`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | tabs 的 root、trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tabs-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | tabs 的 root 部件 gap 覆盖槽。 |
-| `--xh-tabs-indicator-color` | `indicator` | `background` | `default` | `--xh-_tabs-accent` | tabs 的 indicator 部件 background 覆盖槽。 |
-| `--xh-tabs-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-tabs-indicator-thickness` | `indicator` | `block-size`<br>`inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | tabs 的 indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tabs-indicator-color` | `indicator`<br>`root`<br>`trigger` | `background` | `current`<br>`default`<br>`drop`<br>`not([data-drop])`<br>`variant=line` | `--xh-_tabs-accent` | tabs 的 indicator、root、trigger 部件 background 覆盖槽。 |
+| `--xh-tabs-indicator-radius` | `indicator`<br>`root`<br>`trigger` | `border-radius` | `current`<br>`default`<br>`drop`<br>`not([data-drop])`<br>`variant=line` | `--xh-shape-pill` | tabs 的 indicator、root、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-indicator-thickness` | `indicator`<br>`root`<br>`trigger` | `block-size`<br>`inline-size` | `current`<br>`default`<br>`drop`<br>`not([data-drop])`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=line` | `--xh-stroke-thick` | tabs 的 indicator、root、trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tabs-list-bg` | `list` | `background` | `default` | `--xh-_tabs-list-bg` | tabs 的 list 部件 background 覆盖槽。 |
 | `--xh-tabs-list-border` | `list`<br>`root` | `border`<br>`border-block-end`<br>`border-inline-end` | `default`<br>`variant=segment` | `--xh-border-default`<br>`transparent` | tabs 的 list、root 部件 border、border-block-end、border-inline-end 覆盖槽。 |
 | `--xh-tabs-list-gap` | `list` | `gap` | `default` | `--xh-_tabs-list-gap` | tabs 的 list 部件 gap 覆盖槽。 |
@@ -91623,8 +91668,8 @@ root 持有状态，label 与 control 中的 input 各自向它取属性；不�
 ```vue
 <script setup lang="ts">
 import {
-  XhTextFieldControl,
   XhTextFieldClearTrigger,
+  XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -110600,7 +110645,7 @@ const doc = ref<string[]>(["guide"]);
 | `--xh-tree-select-branch-content-gap` | `branch-content` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch-content 部件 gap 覆盖槽。 |
 | `--xh-tree-select-branch-gap` | `branch` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch 部件 gap 覆盖槽。 |
 | `--xh-tree-select-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree-select 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
-| `--xh-tree-select-branch-indicator-size` | `branch-indicator`<br>`branch-trigger`<br>`item` | `inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 branch-indicator、branch-trigger、item 部件 inline-size 覆盖槽。 |
+| `--xh-tree-select-branch-indicator-size` | `branch-indicator`<br>`branch-trigger`<br>`item` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 branch-indicator、branch-trigger、item 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-tree-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | tree-select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-tree-select-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | tree-select 的 content 部件 background 覆盖槽。 |
 | `--xh-tree-select-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | tree-select 的 content 部件 border 覆盖槽。 |
@@ -110651,7 +110696,7 @@ const doc = ref<string[]>(["guide"]);
 | `--xh-tree-select-item-font-weight-selected` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | tree-select 的 branch-control、item 部件 font-weight 覆盖槽。 |
 | `--xh-tree-select-item-gap` | `branch-control`<br>`item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_tree-select-gap` | tree-select 的 branch-control、item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-tree-select-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_tree-select-accent` | tree-select 的 branch-control、item 部件 color 覆盖槽。 |
-| `--xh-tree-select-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tree-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-tree-select-item-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree-select 的 branch-control、item 部件 line-height 覆盖槽。 |
 | `--xh-tree-select-item-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 branch-control、item 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-item-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-select-row-py` | tree-select 的 branch-control、item 部件 padding-block 覆盖槽。 |
@@ -113646,7 +113691,7 @@ const collection = [
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-md` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tree-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | tree 的 branch-content 部件 padding-inline-start 覆盖槽。 |
-| `--xh-tree-indicator-size` | `branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator` | `inline-size`<br>`padding-inline-start` | `default`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`orientation=vertical` | `--xh-icon-size` | tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 inline-size、padding-inline-start 覆盖槽。 |
+| `--xh-tree-indicator-size` | `branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size`<br>`padding-inline-start` | `default`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`orientation=vertical` | `--xh-control-indicator-size` | tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 --xh-icon-size、inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 background-color、color 覆盖槽。 |
 | `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 background-color、color 覆盖槽。 |
 | `--xh-tree-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree 的 label 部件 color 覆盖槽。 |
@@ -113678,7 +113723,7 @@ const collection = [
 
 ### 动效
 
-`background-color` · `box-shadow` · `color` · `outline-color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `box-shadow` · `color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

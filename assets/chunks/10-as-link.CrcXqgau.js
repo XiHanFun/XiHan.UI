@@ -1,0 +1,1 @@
+import{F as e}from"./theme.VZGDCnnk.js";import{d as a,o,b as r,w as n,a as s,k as f}from"./framework.DxrHb2fb.js";const _=a({__name:"10-as-link",setup(i){return(p,t)=>(o(),r(f(e),{as:"a",href:"/introduction"},{default:n(()=>[...t[0]||(t[0]=[s("了解更多",-1)])]),_:1}))}});export{_ as default};

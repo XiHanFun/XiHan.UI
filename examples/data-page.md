@@ -29,6 +29,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableLoading,
@@ -216,13 +217,15 @@ function refresh(): void {
             <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
           <XhTableColumnHeader value="no">
-            <XhTableSortTrigger>单号</XhTableSortTrigger>
+            <XhTableColumnLabel>单号</XhTableColumnLabel>
+            <XhTableSortTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="customer">客户</XhTableColumnHeader>
+          <XhTableColumnHeader value="customer"><XhTableColumnLabel>客户</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="amount">
-            <XhTableSortTrigger>金额</XhTableSortTrigger>
+            <XhTableColumnLabel>金额</XhTableColumnLabel>
+            <XhTableSortTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="status">状态</XhTableColumnHeader>
+          <XhTableColumnHeader value="status"><XhTableColumnLabel>状态</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
 
@@ -423,13 +426,15 @@ function refresh(): void {
             <span data-xh-part="select-all-trigger"></span>
           </div>
           <div data-xh-part="column-header" value="no">
-            <span data-xh-part="sort-trigger">单号</span>
+            <span data-xh-part="column-label">单号</span>
+            <span data-xh-part="sort-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="customer">客户</div>
+          <div data-xh-part="column-header" value="customer"><span data-xh-part="column-label">客户</span></div>
           <div data-xh-part="column-header" value="amount">
-            <span data-xh-part="sort-trigger">金额</span>
+            <span data-xh-part="column-label">金额</span>
+            <span data-xh-part="sort-trigger"></span>
           </div>
-          <div data-xh-part="column-header" value="status">状态</div>
+          <div data-xh-part="column-header" value="status"><span data-xh-part="column-label">状态</span></div>
         </div>
       </div>
       <div data-xh-part="body"></div>

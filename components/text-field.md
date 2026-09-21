@@ -19,8 +19,8 @@ root 持有状态，label 与 control 中的 input 各自向它取属性；不�
 ```vue
 <script setup lang="ts">
 import {
-  XhTextFieldControl,
   XhTextFieldClearTrigger,
+  XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,

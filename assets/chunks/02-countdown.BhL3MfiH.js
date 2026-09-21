@@ -1,1 +1,0 @@
-import{ga as o}from"./theme.CgoFSkOP.js";import{d as t,o as e,b as n,k as a}from"./framework.DxrHb2fb.js";const r=2*60*1e3,_=t({__name:"02-countdown",setup(s){return(c,m)=>(e(),n(a(o),{countdown:"","start-ms":r,"auto-start":""}))}});export{_ as default};
