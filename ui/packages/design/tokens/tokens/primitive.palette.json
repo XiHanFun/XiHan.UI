@@ -1,0 +1,569 @@
+{
+  "$description": "由 build/emit-palette.mjs 从 palette.seeds.json 生成，不要手改。基础色板：十二个色相 × 11 档，明度逐档与 color.brand 同值。",
+  "color": {
+    "red": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 25)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 25)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 25)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 25)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 25)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.214 25)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.216 25)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 25)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 25)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 25)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 25)"
+      },
+      "$description": "基础色板 red（色相 25）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "orange": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 50)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 50)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 50)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 50)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 50)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.214 50)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.216 50)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 50)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 50)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 50)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 50)"
+      },
+      "$description": "基础色板 orange（色相 50）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "amber": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 70)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 70)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 70)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 70)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 70)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.18 70)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.183 70)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 70)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 70)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 70)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 70)"
+      },
+      "$description": "基础色板 amber（色相 70）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "yellow": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 95)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 95)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 95)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 95)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 95)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.17 95)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.171 95)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.184 95)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 95)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 95)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 95)"
+      },
+      "$description": "基础色板 yellow（色相 95）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "lime": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 125)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 125)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 125)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 125)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 125)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.206 125)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.206 125)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 125)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 125)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 125)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 125)"
+      },
+      "$description": "基础色板 lime（色相 125）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "green": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 149)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 149)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 149)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 149)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 149)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.214 149)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.205 149)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 149)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 149)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 149)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 149)"
+      },
+      "$description": "基础色板 green（色相 149）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "teal": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 180)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 180)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 180)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 180)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.147 180)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.138 180)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.131 180)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.13 180)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.132 180)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 180)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 180)"
+      },
+      "$description": "基础色板 teal（色相 180）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "cyan": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 215)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 215)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 215)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 215)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.143 215)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.135 215)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.129 215)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.128 215)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.132 215)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 215)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 215)"
+      },
+      "$description": "基础色板 cyan（色相 215）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "blue": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 237)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 237)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 237)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 237)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 237)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.169 237)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.163 237)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.163 237)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 237)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 237)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 237)"
+      },
+      "$description": "基础色板 blue（色相 237）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "indigo": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 258)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 258)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 258)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 258)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 258)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.214 258)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.216 258)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 258)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 258)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 258)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 258)"
+      },
+      "$description": "基础色板 indigo（色相 258）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "purple": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 302)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 302)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 302)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 302)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 302)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.214 302)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.216 302)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 302)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 302)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 302)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 302)"
+      },
+      "$description": "基础色板 purple（色相 302）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    },
+    "pink": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 345)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 345)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 345)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 345)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 345)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.214 345)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.216 345)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 345)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 345)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 345)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 345)"
+      },
+      "$description": "基础色板 pink（色相 345）：11 档由 build/emit-palette.mjs 按品牌曲线派生，改种子请改 palette.seeds.json。"
+    }
+  }
+}

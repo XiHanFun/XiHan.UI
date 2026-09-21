@@ -55,8 +55,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "gen": "node build/emit-tokens.mjs",
-    "build": "node build/emit-tokens.mjs && tsdown",
+    "gen": "node build/emit-palette.mjs && node build/emit-tokens.mjs",
+    "build": "node build/emit-palette.mjs && node build/emit-tokens.mjs && tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run"
   },
