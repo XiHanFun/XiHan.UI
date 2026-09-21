@@ -61,7 +61,10 @@
 
   /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
   [data-scope='cascader']:is([data-part='root'], [data-part='positioner']) {
-    /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
+    /* 作者塞进触发器指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺；列里条目的由家族随
+       data-xh-collection-size 下发（§6.5）。级联选择器自绘的状态字形（标记盒里的勾与半选杠、分支箭头）
+       不读这支：它们是指示符，走 --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到
+       盒的尺，分支箭头走 --xh-cascader-branch-arrow-size */
     --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这几个私有槽，盒与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器；
@@ -498,13 +501,15 @@
 
   /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。落在家族网格的 suffix 列、跨两行居中。
      与菜单族的子菜单箭头同走字形令牌——此前这里是「描全边框再抹掉两条、把剩下的直角旋 45 度」，
-     作者换掉标记时换不动它，RTL 还得再翻一次旋转角 */
+     作者换掉标记时换不动它，RTL 还得再翻一次旋转角。
+     箭头是指示符（§6.5）：与同一行的标记盒同走 --xh-control-indicator-size，不读家族按档下发的
+     --xh-icon-size——按图标档取的 20px 会比 16px 的标记盒大一圈 */
   [data-scope='cascader'][data-part='item'][data-branch]::after {
     content: '';
     grid-column: suffix;
     grid-row: 1 / span 2;
-    inline-size: var(--xh-cascader-branch-arrow-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
-    block-size: var(--xh-cascader-branch-arrow-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    inline-size: var(--xh-cascader-branch-arrow-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-cascader-branch-arrow-size, var(--xh-control-indicator-size));
     margin-inline-start: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
     background-color: var(--xh-cascader-branch-arrow-fg, var(--xh-fg-subtle));
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -529,8 +534,13 @@
   }
 
   /* 勾选标记落在家族网格的 indicator 列，只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
-     未选中时占位不塌，切换选中不引起行宽抖动 */
+     未选中时占位不塌，切换选中不引起行宽抖动。
+     盒里的勾与半选杠是指示符（§6.5）：盒在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的兜底字形与作者
+     塞进盒里的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75，与搜索候选行尾的勾同尺）；
+     不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 会比 16 / 14 的盒还大 */
   [data-scope='cascader'][data-part='item-indicator'] {
+    --xh-icon-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -542,7 +552,8 @@
     display: none;
   }
 
-  /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
+  /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中。
+     尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块） */
   [data-scope='cascader'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;

@@ -38,6 +38,8 @@ const STATUS_MARKS = {
   'menu:item': '--xh-menu-submenu-indicator-size',
   'context-menu:item': '--xh-context-menu-submenu-indicator-size',
   'menubar:item': '--xh-menubar-submenu-indicator-size',
+  // 级联分支条目行尾的展开 chevron：指示符档（§6.5），与同一行的标记盒同走 --xh-control-indicator-size
+  'cascader:item': '--xh-cascader-branch-arrow-size',
   // 表格的排序箭头不在此列：它是 :empty 守卫的兜底字形（作者塞进钮里的图标整个顶掉它），
   // 尺寸经钮自己改接的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长）量，走上面的常规判据
 }

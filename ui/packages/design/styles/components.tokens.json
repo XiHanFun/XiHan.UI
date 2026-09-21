@@ -7638,7 +7638,7 @@
         "branch"
       ],
       "defaultToken": [
-        "--xh-icon-size"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "cascader 的 item 部件 block-size、inline-size 覆盖槽。"
@@ -8945,6 +8945,7 @@
         "search-item"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size",
         "padding-inline-end"
@@ -8956,7 +8957,7 @@
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "cascader 的 item-indicator、search-item 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
+      "description": "cascader 的 item-indicator、search-item 部件 --xh-icon-size、block-size、inline-size、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-cascader-item-leading",
@@ -32867,7 +32868,6 @@
       ],
       "state": [
         "@media (min-width: 640px)",
-        "branch",
         "default",
         "direction",
         "empty",
