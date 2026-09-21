@@ -31,6 +31,27 @@
 }
 
 /*
+ * 宿主的焦点环复位（VitePress base.css，无层）：
+ *   button:focus, button:focus-visible { outline: 4px auto -webkit-focus-ring-color }   (0,1,1)
+ *   button:focus:not(:focus-visible) { outline: none !important }                       (0,2,1) !important
+ *
+ * 库的环由 focus.css 的 [data-scope][data-part]:focus-visible (0,3,0) 画，特指度本就压过第一条，
+ * 键盘落焦时示例里看到的一直是库的 2px --xh-ring-focus 环；第一条真正落到的是示例里作者自己写的裸
+ * <button>（empty-state 的搜索钮之类）——那一类没有库的环可言，这里把它退回 UA 默认，示例舞台里
+ * 不再冒出 VitePress 的 4px auto 环。选择器停在 (0,2,0)：压过宿主那条，又不高于任何库规则
+ * （同为 (0,2,0) 的靠 index.ts 里皮肤排在后面取胜）。
+ *
+ * 第二条带 !important，作者层里没有任何写法能把它「还给」库的普通声明：important 先于特指度与层序，
+ * revert / revert-layer 从 important 声明出发只会落到 UA，不会落回库。所以它照旧生效——指针落焦的
+ * 按钮在示例里 outline 算成 none。库在这一刻本来也不画环（focus.css 只画 :focus-visible；集合条目
+ * 静息的描边是透明的），常态下看不出差别；只有 forced-colors 下指针落焦的选中项少一圈状态环。
+ * 传送到 body 的浮层内容不在 .xh-demo__stage 里，两条宿主规则在那里原样生效。
+ */
+.xh-demo__stage :where(button):focus {
+  outline: revert;
+}
+
+/*
  * 热力图钉住的那一列自带实色底，缺省取 --xh-bg-surface；示例舞台的底色由 --demo-stage-bg 给
  * （工具条不钉主题时是 VitePress 的 --vp-c-bg），深色态下两者不是同一个色，那一列会显出一块补丁。
  * 把令牌接到舞台自己的底色上，整年的那几份示例一处管住。
