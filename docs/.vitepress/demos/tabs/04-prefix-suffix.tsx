@@ -4,6 +4,7 @@ import { ActivityIcon, ChartBarIcon, FileTextIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -25,6 +26,7 @@ export default function Demo(): ReactNode {
           <XhIcon icon={FileTextIcon} />
           报告
         </XhTabsTrigger>
+        <XhTabsIndicator />
       </XhTabsList>
 
       <XhTabsContent value="activity">查看项目近期活动。</XhTabsContent>

@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -14,6 +15,7 @@ import {
       <XhTabsTrigger value="active">当前</XhTabsTrigger>
       <XhTabsTrigger value="disabled" disabled>不可用</XhTabsTrigger>
       <XhTabsTrigger value="available">可用</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="active">当前标签可以正常切换。</XhTabsContent>

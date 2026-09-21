@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsSeparator,
@@ -17,6 +18,7 @@ import {
       <XhTabsTrigger value="quarterly">按季</XhTabsTrigger>
       <XhTabsSeparator />
       <XhTabsTrigger value="yearly">按年</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="monthly">每月自动续费，可随时取消。</XhTabsContent>
