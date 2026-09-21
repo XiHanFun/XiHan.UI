@@ -29,8 +29,8 @@ const BUILD_TIMEOUT = 60_000
 
 /** 家族根规则：配方文件里第一条规则的选择器，每份副本恰好带一条。 */
 const FAMILY_ROOT = '[data-xh-action-control]'
-/** 家族粗指针热区：table.css 想用同特指度压掉的那条，副本排在它之后就反超。 */
-const FAMILY_COARSE_HIT = '[data-xh-action-control]:is([data-xh-action-profile=text],[data-xh-action-profile=row],[data-xh-action-profile=disclosure-trigger]):after'
+/** 家族粗指针热区：由 :where() 包住的 (0,0,1)，皮肤的覆盖靠特指度就赢；这里只数它出现几份。 */
+const FAMILY_COARSE_HIT = ':where([data-xh-action-control]:is([data-xh-action-profile=text],[data-xh-action-profile=row],[data-xh-action-profile=disclosure-trigger])):after'
 /** 皮肤规则：以 [data-scope 开头的顶层选择器。focus.css / label.css 这些公共层也是皮肤。 */
 const SKIN_RULE = /^\[data-scope\b/
 

@@ -419,9 +419,12 @@ export function compileActionControlRecipe(source) {
   )
   chunks.push(`  @media (hover: hover) and (pointer: fine) {\n${fine.join('\n\n')}\n  }`)
 
-  /* 非正方档只扩块轴命中区，正方档扩双轴。 */
+  /* 非正方档只扩块轴命中区，正方档扩双轴。
+     选择器整个由 :where() 包住，热区规则落到 (0,0,1)：皮肤对同一伪元素的覆盖（排序把手、评分星、
+     单选条目这些拿 ::after 画字形的部件要把热区钉回原位）从此只靠特指度就赢，不再依赖源序——
+     消费方产物里家族被重复内联、副本排在皮肤之后时，同为 (0,2,1) 的覆盖会被反超。 */
   const coarse = []
-  rule(`${profileSelector(PROFILES.filter(profile => !layoutOf(profile).square))}::after`, [
+  rule(`:where(${profileSelector(PROFILES.filter(profile => !layoutOf(profile).square))})::after`, [
     '      content: \'\';',
     '      position: absolute;',
     '      inset-block-start: 50%;',
@@ -431,7 +434,7 @@ export function compileActionControlRecipe(source) {
     '      block-size: 100%;',
     '      translate: -50% -50%;',
   ].join('\n'), 'coarse', coarse, '    ')
-  rule(`${profileSelector(PROFILES.filter(profile => layoutOf(profile).square))}::after`, [
+  rule(`:where(${profileSelector(PROFILES.filter(profile => layoutOf(profile).square))})::after`, [
     '      content: \'\';',
     '      position: absolute;',
     '      inset-block-start: 50%;',
