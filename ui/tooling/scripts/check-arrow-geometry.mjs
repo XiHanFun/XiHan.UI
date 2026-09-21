@@ -15,7 +15,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES = 'packages/design/styles/css'
-const INDEX = 'packages/design/styles/index.css'
+const INDEX = 'packages/design/styles/index.source.css'
 const SHARED = 'overlay-arrow.css'
 const ARROW_SCOPES = ['context-menu', 'hover-card', 'menu', 'menubar', 'popconfirm', 'popover', 'tour', 'tooltip']
 const ARROW_SELECTOR = `:where(${ARROW_SCOPES.map(scope => `[data-scope='${scope}']`).join(', ')})[data-part='arrow']`
@@ -120,7 +120,7 @@ const index = await readFile(INDEX, 'utf8')
 const imported = [...index.matchAll(/@import '\.\/css\/([\w-]+\.css)'/g)].map(m => m[1])
 const sharedAt = imported.indexOf(SHARED)
 if (sharedAt === -1) {
-  errors.push(`index.css 没引入 css/${SHARED}`)
+  errors.push(`index.source.css 没引入 css/${SHARED}`)
 }
 else {
   for (const file of files) {
@@ -131,7 +131,7 @@ else {
       continue
     const at = imported.indexOf(file)
     if (at > sharedAt)
-      errors.push(`index.css 里 css/${file} 排在 css/${SHARED} 之后：它的 border 简写会把摘掉的边框加回来`)
+      errors.push(`index.source.css 里 css/${file} 排在 css/${SHARED} 之后：它的 border 简写会把摘掉的边框加回来`)
   }
 }
 

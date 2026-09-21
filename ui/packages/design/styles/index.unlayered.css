@@ -3,11 +3,16 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* 本文件由 build/emit-unlayered.mjs 生成，不要手改。改皮肤请改 styles/ 下的源文件。
+/* 本文件由 build/emit-entries.mjs 生成，不要手改。改皮肤请改 css/ 与 family/ 下的源文件，
+ * 改引入顺序请改 index.source.css。
  *
  * 这是 index.css 的无层版本：内容一致，只是拆掉了 @layer 外壳，供宿主应用带有
  * 无层 reset/normalize 时使用。取舍见文档站的「安装与接入」。
  */
+
+/* 引入顺序的真源是 index.source.css（不发布），改顺序只改它；build/emit-entries.mjs 按它的顺序
+   把家族与皮肤内联成扁平的 index.css（主入口，保留 @layer）与 index.unlayered.css（拆壳）。
+   源序即 xihan.components 层内等特指度规则的胜负序。 */
 
 /* 层序声明必须最先：级联层的先后由首次出现定死，layers.css 打头才立得住序。 */
 
@@ -18,7 +23,214 @@
    tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
 @import '@xihan-ui/tokens/tokens.css';
 
-/* Family Recipe 先于一切皮肤内联：拆层后配方与皮肤同档 (0,2,0)，只剩源序竞争，
+/* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
+
+/* styles/focus.css */
+/*
+ * 聚焦环的公共层：全库共用一份。
+ *
+ * 解剖给每个部件打上 data-scope 与 data-part，键盘焦点落在哪个部件上，环就由这里画：
+ * 粗细取 --xh-ring-width，颜色取 --xh-_ring-color（默认 --xh-ring-focus），
+ * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
+ * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
+ *
+ * 环往内收之后，内侧紧挨着的是环压着的那块面。面是实心的那几档，环色与面同族、贴上去就
+ * 看不出来；那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
+ * 环随之取这块面配对的前景色——那一支色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+ * 取的是「面配对的前景色」，不是语气色：环仍然不随 data-tone 走，没有实心面的那些档
+ * 一律是 --xh-ring-focus 这一支。
+ *
+ * 灌 currentColor 的档要同时成立三件事：
+ *   一、面画在谁身上——画在祖先上（标签里那颗透空的关闭钮坐在标签那块实心底上）时
+ *       规则写成后代选择器，槽仍然灌在拿焦点的那个节点上；
+ *   二、部件得有 color——圆点、滑块这类没有字的部件先补一支与面配对的墨色，
+ *       不补则 currentColor 取到继承下来的正文色或原生控件的 UA 前景色；
+ *       只有一档要换的（开关选中的轨道）把那支色直接写进槽，不绕 currentColor；
+ *   三、面被换走的档要退出——失效档把面换成置灰底、前景换成置灰色或透明，
+ *       中性轻档把实心底换成灰底，currentColor 在这些档上会把环跟着糊掉甚至整条画成透明。
+ *       靠收窄选择器退回本份的默认值，或把槽显式写回 var(--xh-ring-focus)。
+ *
+ * 槽在这里只留一个默认值，名单不收在本份里——谁的面是实心的由那份皮肤自己知道，
+ * 也只有引了那份皮肤的人该为它付字节。
+ * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
+ *
+ * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
+ * [data-scope='x'][data-part='y']:focus-visible 同级，组件皮肤排在本份之后，
+ * 要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
+ * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
+ *
+ * 排在全部组件皮肤之前：组件不必为了换个环色把整条环重写一遍。
+ */
+
+[data-scope][data-part]:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
+
+/* styles/label.css */
+/*
+ * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
+ *
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
+ * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
+ * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
+ * 槽名里带组件名，写不进一条共享规则。
+ *
+ * scope 逐个列出，不写成 [data-scope][data-part='label']：label 这个部件名在标签、
+ * 统计、进度、推理、说明列表上指的是另一种文字（行内省略的标签正文、环内居中的数字、
+ * 描述项的名字），通配规则会把行距按到它们头上。要接进来的组件把 scope 加进列表。
+ *
+ * 选择器停在两个属性（0,2,0）或三个属性（0,3,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
+ * 要另写行距的组件照写即可压过。
+ */
+
+/* 标签是单行短文，行距不留额外的行间空白，标签与控件之间只剩容器给的那一道间距。 */
+[data-scope='checkbox'][data-part='label'],
+[data-scope='checkbox-group'][data-part='label'],
+[data-scope='color-picker'][data-part='label'],
+[data-scope='date-field'][data-part='label'],
+[data-scope='editable'][data-part='label'],
+[data-scope='field'][data-part='label'],
+[data-scope='file-upload'][data-part='label'],
+[data-scope='number-field'][data-part='label'],
+[data-scope='password-input'][data-part='label'],
+[data-scope='pin-input'][data-part='label'],
+[data-scope='radio-group'][data-part='label'],
+[data-scope='rating'][data-part='label'],
+[data-scope='signature-pad'][data-part='label'],
+[data-scope='slider'][data-part='label'],
+[data-scope='switch'][data-part='label'],
+[data-scope='tags-input'][data-part='label'],
+[data-scope='text-field'][data-part='label'],
+[data-scope='time-field'][data-part='label'] {
+  line-height: var(--xh-leading-none);
+}
+
+/*
+ * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
+ * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
+ */
+[data-scope='color-picker'][data-part='label'][data-disabled],
+[data-scope='rating'][data-part='label'][data-disabled],
+[data-scope='signature-pad'][data-part='label'][data-disabled],
+[data-scope='slider'][data-part='label'][data-disabled] {
+  color: var(--xh-fg-subtle);
+}
+
+/*
+ * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
+ * 自带标签的字段不得各画一套。
+ *
+ * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
+ * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
+ * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
+ */
+[data-scope='field'][data-part='label'][data-required]::after,
+[data-scope='fieldset'][data-part='legend'][data-required]::after {
+  content: var(--xh-glyph-mark-required);
+  margin-inline-start: var(--xh-space-1);
+  color: var(--xh-fg-danger);
+}
+
+/*
+ * 无效档的字色：标签跟着自己的 data-invalid 转警示色，没渲染错误文案的字段上这是唯一变化的东西。
+ * 有 --xh-<组件>-label-fg-invalid 覆盖槽的组件在各自皮肤里另写一条 color 压过这里。
+ */
+[data-scope='field'][data-part='label'][data-invalid],
+[data-scope='fieldset'][data-part='legend'][data-invalid] {
+  color: var(--xh-fg-danger);
+}
+
+/* 排在全部组件皮肤之前：字段族说明文字的公共层，无效时把说明让给错误文案。 */
+
+/* styles/description.css */
+/*
+ * 字段族说明与错误文案的公共层，按 [data-part='description'] / [data-part='error-text']
+ * 匹配下面逐个列出的 scope。
+ *
+ * 收在这里的是逐值相同的角色规则：说明 = --xh-text-secondary-size / --xh-fg-muted /
+ * --xh-leading-normal；错误文案 = --xh-text-secondary-size / --xh-fg-danger / --xh-leading-normal；
+ * 两者外边距归零，与控件的距离由字段根的 gap 给。挂了 --xh-<组件>-description-* /
+ * --xh-<组件>-error-* 覆盖槽的组件在各自皮肤里只另写带槽的 color / font-size 压过这里，
+ * margin 与 line-height 不再重写。
+ *
+ * 说明与错误文案落在控件下方的同一处：无效时收起说明，那一行只剩错误。两段同时在场
+ * 会把辅助区撑成两行，整表的字段高度随之参差。
+ *
+ * 收起只收视觉。说明的 id 仍挂在控件的 aria-describedby 上，读屏两段都念得到——
+ * 直接被 aria-describedby 指到的节点，隐藏与否都计入可及描述。
+ *
+ * scope 逐个列出，不写成 [data-part='description']：这个部件名在提示、气泡、
+ * 空状态、说明列表上指的是另一段文字，通配规则会把它们在无效态下一并收起。
+ * 要接进来的组件把自己的几条加进列表。
+ *
+ * 收起限定到直接子节点：字段集无效时收起的是它自己那段说明，不是组内各字段的说明。
+ * 引入顺序排在全部组件皮肤之前，组件要另作安排照写同样的无效态限定即可压过。
+ */
+
+[data-scope='field'][data-part='description'],
+[data-scope='fieldset'][data-part='description'] {
+  margin: 0;
+  font-size: var(--xh-text-secondary-size);
+  line-height: var(--xh-leading-normal);
+  color: var(--xh-fg-muted);
+}
+
+/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
+[data-scope='field'][data-part='error-text'],
+[data-scope='fieldset'][data-part='error-text'] {
+  margin: 0;
+  font-size: var(--xh-text-secondary-size);
+  line-height: var(--xh-leading-normal);
+  color: var(--xh-fg-danger);
+}
+
+[data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='description'],
+[data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='description'] {
+  display: none;
+}
+
+/* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
+
+/* styles/pointer.css */
+/*
+ * 指针反馈的公共层：全库共用一份。
+ *
+ * 两件事写在这里。
+ *
+ * 一、触摸点按时浏览器画的那层高亮方块。它是继承属性，一条规则打在 [data-scope] 上就覆盖
+ * 库里的每一个节点与它们的后代，不必逐个组件登记。
+ *
+ * 二、禁用态的光标。「这个控件不可用」在库里有三种条件拼写：解剖打出来的 data-disabled、
+ * 原生表单控件的 :disabled、集合条目用的 aria-disabled——三者说的是同一件事，光标也是同一个。
+ * 选择器停在两个属性加一个条件（0,3,0）：与组件皮肤里
+ * [data-scope='x'][data-part='y'][data-disabled] 同级，本份排在全部组件皮肤之前，
+ * 要另画的组件照写即可压过。
+ *
+ * 「在途」不在这里：它是另一件事，光标是 progress，挂在哪个部件上逐个组件不同，
+ * 写成通配会盖到作者自己的内容上（列表外壳、快捷键展示、可调容器都带 data-loading / data-disabled，
+ * 而它们身上的这两个标记说的是「这项行为关掉了」，不是「这个控件不可用」）。
+ *
+ * 排在全部组件皮肤之前：组件不必为了换一个光标把整条规则重写一遍。
+ */
+
+[data-scope] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-scope][data-part][data-disabled],
+[data-scope][data-part]:disabled,
+[data-scope][data-part][aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+/* Family Recipe 的内联点：emit-entries 把 family/ 下五份配方在这里内联一次。
+   位置必须在上面四份公共层之后（配方要像组件皮肤一样压过公共层，field-chrome 把内嵌 input 的
+   聚焦环置 none 就靠排在 focus.css 之后）、在下面一切组件皮肤之前（皮肤对配方物理属性的覆盖
+   只有配方先出现才成立）。皮肤自带的 family @import 由生成器剥掉。 */
+/* Family Recipe 在公共层之后、一切组件皮肤之前内联一次：拆层后配方与皮肤同档 (0,2,0)，只剩源序竞争，
    皮肤对配方物理属性的直接覆盖只有配方先出现才成立，与有层产物里皮肤高一级即胜等价。 */
 
 /* family/action-control.css */
@@ -1734,209 +1946,6 @@
     padding-block-start: 0;
     padding-block-end: 0;
   }
-}
-
-/* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
-
-/* styles/focus.css */
-/*
- * 聚焦环的公共层：全库共用一份。
- *
- * 解剖给每个部件打上 data-scope 与 data-part，键盘焦点落在哪个部件上，环就由这里画：
- * 粗细取 --xh-ring-width，颜色取 --xh-_ring-color（默认 --xh-ring-focus），
- * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
- * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
- *
- * 环往内收之后，内侧紧挨着的是环压着的那块面。面是实心的那几档，环色与面同族、贴上去就
- * 看不出来；那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
- * 环随之取这块面配对的前景色——那一支色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
- * 取的是「面配对的前景色」，不是语气色：环仍然不随 data-tone 走，没有实心面的那些档
- * 一律是 --xh-ring-focus 这一支。
- *
- * 灌 currentColor 的档要同时成立三件事：
- *   一、面画在谁身上——画在祖先上（标签里那颗透空的关闭钮坐在标签那块实心底上）时
- *       规则写成后代选择器，槽仍然灌在拿焦点的那个节点上；
- *   二、部件得有 color——圆点、滑块这类没有字的部件先补一支与面配对的墨色，
- *       不补则 currentColor 取到继承下来的正文色或原生控件的 UA 前景色；
- *       只有一档要换的（开关选中的轨道）把那支色直接写进槽，不绕 currentColor；
- *   三、面被换走的档要退出——失效档把面换成置灰底、前景换成置灰色或透明，
- *       中性轻档把实心底换成灰底，currentColor 在这些档上会把环跟着糊掉甚至整条画成透明。
- *       靠收窄选择器退回本份的默认值，或把槽显式写回 var(--xh-ring-focus)。
- *
- * 槽在这里只留一个默认值，名单不收在本份里——谁的面是实心的由那份皮肤自己知道，
- * 也只有引了那份皮肤的人该为它付字节。
- * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
- *
- * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
- * [data-scope='x'][data-part='y']:focus-visible 同级，组件皮肤排在本份之后，
- * 要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
- * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
- *
- * 排在全部组件皮肤之前：组件不必为了换个环色把整条环重写一遍。
- */
-
-[data-scope][data-part]:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
-  outline-offset: var(--xh-ring-offset);
-}
-
-/* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
-
-/* styles/label.css */
-/*
- * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
- *
- * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
- * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
- * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
- * 槽名里带组件名，写不进一条共享规则。
- *
- * scope 逐个列出，不写成 [data-scope][data-part='label']：label 这个部件名在标签、
- * 统计、进度、推理、说明列表上指的是另一种文字（行内省略的标签正文、环内居中的数字、
- * 描述项的名字），通配规则会把行距按到它们头上。要接进来的组件把 scope 加进列表。
- *
- * 选择器停在两个属性（0,2,0）或三个属性（0,3,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
- * 要另写行距的组件照写即可压过。
- */
-
-/* 标签是单行短文，行距不留额外的行间空白，标签与控件之间只剩容器给的那一道间距。 */
-[data-scope='checkbox'][data-part='label'],
-[data-scope='checkbox-group'][data-part='label'],
-[data-scope='color-picker'][data-part='label'],
-[data-scope='date-field'][data-part='label'],
-[data-scope='editable'][data-part='label'],
-[data-scope='field'][data-part='label'],
-[data-scope='file-upload'][data-part='label'],
-[data-scope='number-field'][data-part='label'],
-[data-scope='password-input'][data-part='label'],
-[data-scope='pin-input'][data-part='label'],
-[data-scope='radio-group'][data-part='label'],
-[data-scope='rating'][data-part='label'],
-[data-scope='signature-pad'][data-part='label'],
-[data-scope='slider'][data-part='label'],
-[data-scope='switch'][data-part='label'],
-[data-scope='tags-input'][data-part='label'],
-[data-scope='text-field'][data-part='label'],
-[data-scope='time-field'][data-part='label'] {
-  line-height: var(--xh-leading-none);
-}
-
-/*
- * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
- * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
- */
-[data-scope='color-picker'][data-part='label'][data-disabled],
-[data-scope='rating'][data-part='label'][data-disabled],
-[data-scope='signature-pad'][data-part='label'][data-disabled],
-[data-scope='slider'][data-part='label'][data-disabled] {
-  color: var(--xh-fg-subtle);
-}
-
-/*
- * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
- * 自带标签的字段不得各画一套。
- *
- * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
- * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
- * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
- */
-[data-scope='field'][data-part='label'][data-required]::after,
-[data-scope='fieldset'][data-part='legend'][data-required]::after {
-  content: var(--xh-glyph-mark-required);
-  margin-inline-start: var(--xh-space-1);
-  color: var(--xh-fg-danger);
-}
-
-/*
- * 无效档的字色：标签跟着自己的 data-invalid 转警示色，没渲染错误文案的字段上这是唯一变化的东西。
- * 有 --xh-<组件>-label-fg-invalid 覆盖槽的组件在各自皮肤里另写一条 color 压过这里。
- */
-[data-scope='field'][data-part='label'][data-invalid],
-[data-scope='fieldset'][data-part='legend'][data-invalid] {
-  color: var(--xh-fg-danger);
-}
-
-/* 排在全部组件皮肤之前：字段族说明文字的公共层，无效时把说明让给错误文案。 */
-
-/* styles/description.css */
-/*
- * 字段族说明与错误文案的公共层，按 [data-part='description'] / [data-part='error-text']
- * 匹配下面逐个列出的 scope。
- *
- * 收在这里的是逐值相同的角色规则：说明 = --xh-text-secondary-size / --xh-fg-muted /
- * --xh-leading-normal；错误文案 = --xh-text-secondary-size / --xh-fg-danger / --xh-leading-normal；
- * 两者外边距归零，与控件的距离由字段根的 gap 给。挂了 --xh-<组件>-description-* /
- * --xh-<组件>-error-* 覆盖槽的组件在各自皮肤里只另写带槽的 color / font-size 压过这里，
- * margin 与 line-height 不再重写。
- *
- * 说明与错误文案落在控件下方的同一处：无效时收起说明，那一行只剩错误。两段同时在场
- * 会把辅助区撑成两行，整表的字段高度随之参差。
- *
- * 收起只收视觉。说明的 id 仍挂在控件的 aria-describedby 上，读屏两段都念得到——
- * 直接被 aria-describedby 指到的节点，隐藏与否都计入可及描述。
- *
- * scope 逐个列出，不写成 [data-part='description']：这个部件名在提示、气泡、
- * 空状态、说明列表上指的是另一段文字，通配规则会把它们在无效态下一并收起。
- * 要接进来的组件把自己的几条加进列表。
- *
- * 收起限定到直接子节点：字段集无效时收起的是它自己那段说明，不是组内各字段的说明。
- * 引入顺序排在全部组件皮肤之前，组件要另作安排照写同样的无效态限定即可压过。
- */
-
-[data-scope='field'][data-part='description'],
-[data-scope='fieldset'][data-part='description'] {
-  margin: 0;
-  font-size: var(--xh-text-secondary-size);
-  line-height: var(--xh-leading-normal);
-  color: var(--xh-fg-muted);
-}
-
-/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
-[data-scope='field'][data-part='error-text'],
-[data-scope='fieldset'][data-part='error-text'] {
-  margin: 0;
-  font-size: var(--xh-text-secondary-size);
-  line-height: var(--xh-leading-normal);
-  color: var(--xh-fg-danger);
-}
-
-[data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='description'],
-[data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='description'] {
-  display: none;
-}
-
-/* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
-
-/* styles/pointer.css */
-/*
- * 指针反馈的公共层：全库共用一份。
- *
- * 两件事写在这里。
- *
- * 一、触摸点按时浏览器画的那层高亮方块。它是继承属性，一条规则打在 [data-scope] 上就覆盖
- * 库里的每一个节点与它们的后代，不必逐个组件登记。
- *
- * 二、禁用态的光标。「这个控件不可用」在库里有三种条件拼写：解剖打出来的 data-disabled、
- * 原生表单控件的 :disabled、集合条目用的 aria-disabled——三者说的是同一件事，光标也是同一个。
- * 选择器停在两个属性加一个条件（0,3,0）：与组件皮肤里
- * [data-scope='x'][data-part='y'][data-disabled] 同级，本份排在全部组件皮肤之前，
- * 要另画的组件照写即可压过。
- *
- * 「在途」不在这里：它是另一件事，光标是 progress，挂在哪个部件上逐个组件不同，
- * 写成通配会盖到作者自己的内容上（列表外壳、快捷键展示、可调容器都带 data-loading / data-disabled，
- * 而它们身上的这两个标记说的是「这项行为关掉了」，不是「这个控件不可用」）。
- *
- * 排在全部组件皮肤之前：组件不必为了换一个光标把整条规则重写一遍。
- */
-
-[data-scope] {
-  -webkit-tap-highlight-color: transparent;
-}
-
-[data-scope][data-part][data-disabled],
-[data-scope][data-part]:disabled,
-[data-scope][data-part][aria-disabled='true'] {
-  cursor: not-allowed;
 }
 
 /* 其余按层归属排列。 */

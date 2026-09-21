@@ -173,13 +173,13 @@ createVisualEnvironmentController({
 
 `@xihan-ui/styles` 是纯 CSS 包，与 JS 层无关，三种粒度任选：
 
-全量：令牌 + 层序 + reset + 全部组件皮肤。
+全量：令牌 + 层序 + reset + 全部组件皮肤。主入口 `index.css` 是一份生成的扁平文件：Action Control / Field Chrome / Collection Item / Swatch 四份家族配方与共享关键帧在 focus / label / description / pointer 四份公共层之后只内联一次、排在一切组件皮肤之前，各皮肤随后按源序内联、去掉自带的家族 `@import`。除令牌那一条外没有 `@import`，任何打包器都不会把家族复制几十份。
 
 ```ts
 import "@xihan-ui/styles";
 ```
 
-按组件引入。layers.css 与 tokens.css 各自带完整层序声明，先引入任一即可；组件皮肤不能排在它们之前。
+按组件引入。layers.css 与 tokens.css 各自带完整层序声明，先引入任一即可；组件皮肤不能排在它们之前。每份单皮肤文件头自带它所属家族的 `@import '../family/*.css'`，单独引入时家族在场。
 
 ```ts
 import "@xihan-ui/styles/layers.css";
@@ -198,9 +198,10 @@ import "@xihan-ui/tokens/tokens.css";
 
 ::: warning 第二种需要注意两点
 1. 漏引默认是静默的。少引一份皮肤时，该组件的 `data-scope` / `data-part` 照常存在、其他皮肤也已加载，只有它渲染为没有内边距、没有底色的裸元素。开发模式下开启下文的探测器可以发现。
-2. 顺序按 `index.css` 的相对顺序。同一个 `@layer xihan.components` 内，等特异性的规则由源序决定。自行排序（按字母、按目录读取序）当前可能看不出差别，将来增加跨组件规则后会与全量引入的渲染不同。需要按需引入时，按 `index.css` 的 `@import` 清单过滤，不自行排序。
+2. 顺序按 `index.css` 里各皮肤段的相对顺序。同一个 `@layer xihan.components` 内，等特异性的规则由源序决定。自行排序（按字母、按目录读取序）当前可能看不出差别，将来增加跨组件规则后会与全量引入的渲染不同。需要按需引入时，按 `index.css` 里 `/* styles/xxx.css */` 段标记的顺序过滤，不自行排序。
+3. 混用多份单皮肤时，每份都各带一份家族 `@import`。打包器对同一 URL 的 `@import` 去重（Vite 默认的 postcss 路径会去重）时没有代价；不去重的内联器（例如 `@tailwindcss/vite` 自带的那条）会把家族复制多份，产物随之翻倍，而且后出现的副本会排在前面的皮肤之后。家族的关键覆盖点已按特指度而非源序设计，但多份副本仍是纯浪费——引入的皮肤超过几份时改用主入口。
 
-全量是 145 份皮肤加令牌，压缩后约 66 kB gzip。没有明确的体积压力时使用第一种。
+全量是 145 份皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
 :::
 
 ### 开发模式下查漏引
@@ -243,7 +244,7 @@ button { padding: 0; background-color: transparent; }
 
 判断方法：组件的 `data-scope` / `data-part` 属性都存在、皮肤 CSS 已加载，但盒模型相关的属性全部未生效。
 
-包内为此额外提供一份移除层壳的 `index.unlayered.css`，内容与 `index.css` 完全一致，由构建脚本从同一份源生成：
+包内为此额外提供一份移除层壳的 `index.unlayered.css`，内容与 `index.css` 完全一致（家族同样只内联一次、排在皮肤之前），由构建脚本从同一份源序生成：
 
 ```ts
 // 宿主带无层 reset 时用这份，规则改按特异性竞争
