@@ -1,12 +1,13 @@
 // 粗指针下表头排序箭头的几何：箭头是排序把手的 ::after 字形，盒边长等于 --xh-icon-size，
 // 排在行内流里。把手接的是 Action Control row 档，家族在 (pointer: coarse) 下用同一个 ::after
-// 把热区扩到 44px 高、100% 宽、绝对定位居中——table.css 里那条覆盖与家族热区同为 (0,2,1)，
-// 只靠源序压过。
+// 把热区扩到 44px 高、100% 宽、绝对定位居中——皮肤的字形尺寸与 table.css 的粗指针覆盖
+// （position / min-block-size / translate）都是 (0,2,1)，家族热区由 :where() 包住只有 (0,0,1)，
+// 胜负由特指度定，不靠源序。
 //
-// 消费方产物里家族会被内联多份（每份皮肤文件头各引一次 family/action-control.css，
-// 不去重的打包器逐份贴进来），有副本排在 table.css 之后就反超：手机上箭头被撑成整格
-// （实测 ::after 82×44 / 142×44）。第二条用例把家族样式表原样再注入一次、排在全部皮肤之后，
-// 模拟这种形态，断言仍必须成立——这是级联健壮性的护栏，不是打包器的。
+// 此前家族与皮肤同为 (0,2,1)、只靠源序压过，消费方产物里家族被内联多份（每份皮肤文件头各引一次
+// family/action-control.css，不去重的打包器逐份贴进来），有副本排在 table.css 之后就反超：
+// 手机上箭头被撑成整格（实测 ::after 82×44 / 142×44）。第二条用例把家族样式表原样再注入一次、
+// 排在全部皮肤之后，模拟这种形态，断言仍必须成立——这是级联健壮性的护栏，不是打包器的。
 import type { App } from 'vue'
 import { cdp } from '@vitest/browser/context'
 import actionControlCss from '@xihan-ui/styles/action-control.css?raw'
