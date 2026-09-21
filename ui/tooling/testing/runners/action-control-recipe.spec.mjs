@@ -171,7 +171,7 @@ describe('action Control Family Recipe', () => {
   it('粗指针热区的 ::after 规则整个由 :where() 包住，皮肤对同一伪元素的覆盖不受源序影响', async () => {
     const css = compileActionControlRecipe(await source())
     const coarse = css.slice(css.indexOf('@media (pointer: coarse)'), css.indexOf('@media (forced-colors: active)'))
-    const selectors = [...coarse.matchAll(/^\s*([^{}\n]+?)\s*\{$/gm)].map(m => m[1]).filter(s => !s.startsWith('@'))
+    const selectors = coarse.split('\n').filter(line => line.trimEnd().endsWith('{')).map(line => line.trim().slice(0, -1).trim()).filter(s => !s.startsWith('@'))
     expect(selectors.length).toBe(2)
     for (const selector of selectors) {
       // (0,0,1)：伪元素自身的那一分之外全部归零。消费方产物里家族被重复内联、副本落在皮肤之后时，
