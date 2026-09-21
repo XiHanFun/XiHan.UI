@@ -99,6 +99,7 @@ const GLYPH_EXEMPT = {
   'tree-select:item-indicator': '行尾的对号 / 半选杠是指示符，与 16px 对号盒同走 --xh-control-indicator-size，不按图标档取',
   'side-nav:branch-indicator': '分支行尾的展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'json-viewer:branch-trigger': '分支行首的展开方向 chevron 是指示符，与 16px 把手盒同走 --xh-control-indicator-size，不按图标档取',
+  'menu:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，作者塞进去的图标与盒同尺，不按图标档取',
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])

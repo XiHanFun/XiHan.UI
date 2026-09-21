@@ -33255,6 +33255,9 @@
               "name": "--xh-menu-submenu-indicator-fg"
             },
             {
+              "name": "--xh-menu-submenu-indicator-size"
+            },
+            {
               "name": "--xh-menu-trigger-bg-active"
             }
           ]
