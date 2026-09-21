@@ -32793,7 +32793,6 @@
       "part": [
         "autoplay-trigger",
         "branch-checkbox",
-        "branch-control",
         "branch-indicator",
         "branch-trigger",
         "cancel-trigger",
@@ -32844,8 +32843,7 @@
       "property": [
         "block-size",
         "inline-size",
-        "margin-inline-start",
-        "padding-inline-start"
+        "margin-inline-start"
       ],
       "state": [
         "@media (min-width: 640px)",
@@ -32857,10 +32855,8 @@
         "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
-        "not(:has(> [data-scope='tree'][data-part='item-indicator'])",
         "not([aria-busy='true'])",
         "not([data-selected])",
-        "orientation=vertical",
         "selected",
         "size=2xl",
         "size=3xl",
@@ -32893,7 +32889,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-control、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start、padding-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -76224,6 +76220,7 @@
         "item-indicator"
       ],
       "property": [
+        "--xh-icon-size",
         "inline-size",
         "padding-inline-start"
       ],
@@ -76233,10 +76230,10 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-icon-size"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 inline-size、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 --xh-icon-size、inline-size、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-item-check-fg",

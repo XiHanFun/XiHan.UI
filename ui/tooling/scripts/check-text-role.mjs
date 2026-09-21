@@ -91,6 +91,9 @@ const GLYPH_EXEMPT = {
   'empty-state:indicator': '空状态的主视觉字形，不是控件内图标',
   'table:expand-trigger': '展开方向 chevron 是指示符，与 16px 方盒同走 --xh-control-indicator-size，不按图标档取',
   'table:sort-trigger': '排序方向箭头是指示符，与 16px 方盒同走 --xh-control-indicator-size（公开槽 --xh-table-sort-size），不按图标档取',
+  'tree:branch-trigger': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
+  'tree:branch-indicator': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
+  'tree:item-indicator': '叶子的对号是指示符，与 16px 对号盒同走 --xh-control-indicator-size，不按图标档取',
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
