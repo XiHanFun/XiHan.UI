@@ -23,6 +23,7 @@ async function settleMutations(): Promise<void> {
 
 afterEach(() => {
   document.body.innerHTML = ''
+  document.body.removeAttribute('style')
 })
 
 describe('portal 视觉环境桥', () => {
@@ -211,6 +212,74 @@ describe('portal 视觉环境桥', () => {
     expect(shell.style.color).toBe('')
     bridge.dispose()
     style.remove()
+  })
+
+  it('壳从父节点就能继承到的自定义属性不复制，祖先链上的局部覆盖才复制', () => {
+    // 壳挂在 body 下，body 上的声明对壳与来源同样可见，等同 :root 上的令牌
+    document.body.style.setProperty('--xh-token', 'shared')
+    document.body.style.setProperty('--business-color', 'base')
+    const { outer, source, shell } = fixture()
+    outer.style.setProperty('--business-color', 'override')
+
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--xh-token')).toBe('')
+    expect(shell.style.getPropertyValue('--business-color')).toBe('override')
+    expect(Array.from({ length: shell.style.length }, (_, index) => shell.style.item(index))).toEqual(['--business-color'])
+    bridge.dispose()
+    document.body.style.removeProperty('--xh-token')
+    document.body.style.removeProperty('--business-color')
+  })
+
+  it('祖先撤销覆盖、与壳父节点重新一致后，壳上的投影也撤掉', async () => {
+    document.body.style.setProperty('--business-color', 'base')
+    const { outer, source, shell } = fixture()
+    outer.style.setProperty('--business-color', 'override')
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--business-color')).toBe('override')
+
+    outer.style.removeProperty('--business-color')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('')
+    expect(shell.style.length).toBe(0)
+    bridge.dispose()
+    document.body.style.removeProperty('--business-color')
+  })
+
+  it('来源的 data-state / aria-* 翻转、body 里插护栏与不含自定义属性的 inline 样式都不触发重同步', async () => {
+    // 样式表改动本身不被观察：桥只会在被触发重同步时才读到新值，借此判定哪些变更触发了同步
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; }'
+    document.head.append(style)
+    const { source, shell } = fixture()
+    source.className = 'portal-source'
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    style.textContent = '.portal-source { --business-color: second; }'
+    source.setAttribute('data-state', 'open')
+    source.setAttribute('aria-expanded', 'true')
+    source.setAttribute('aria-controls', 'content')
+    source.textContent = '已选中'
+    const guard = document.createElement('span')
+    guard.dataset.xhFocusGuard = ''
+    document.body.append(guard)
+    document.body.style.overflow = 'hidden'
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    source.classList.add('portal-source--alt')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
+
+    style.textContent = '.portal-source { --business-color: third; }'
+    document.body.style.setProperty('--other', '1')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('third')
+
+    bridge.dispose()
+    style.remove()
+    document.body.style.removeProperty('--other')
+    document.body.style.overflow = ''
   })
 
   it('拒绝跨 Document 来源与壳，不把主页面视觉环境写进 iframe', () => {
