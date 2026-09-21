@@ -31158,7 +31158,9 @@
      不是根的后代，继承不过去。面板里的行与栏内那些消费的是同一批槽 */
   [data-scope='side-nav']:is([data-part='root'], [data-part='positioner']) {
     /* 行外的字形按档取尺，缺省 md，随 data-size 换档并同样声明在定位层上（弹出面板里的行也拿得到）；
-       行内的字形由家族随 data-xh-collection-size 下发（§6.5） */
+       行内的由家族随 data-xh-collection-size 下发（§6.5）。这支只管作者放进行里的图标：
+       侧栏自绘的状态字形（分支行尾的展开方向 chevron）是指示符，branch-indicator 在自己身上
+       把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
     --xh-icon-size: var(--xh-side-nav-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这三个私有槽，行从这两处继承它们，换档不必给每个部件各写一条选择器 */
@@ -31408,11 +31410,21 @@
     animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
-  /* 箭头是行尾的后缀：auto 外边距把它顶到行尾，家族按 suffix 槽下发的外边距已在行上归零 */
+  /* 箭头是行尾的后缀：auto 外边距把它顶到行尾，家族按 suffix 槽下发的外边距已在行上归零。
+     盒里的 chevron 是指示符（§6.5）：盒按指示符档定尺（comfortable 16 / compact 14，与 Tree / TreeSelect
+     的 branch-indicator 同款定尺盒），--xh-icon-size 在自己身上改接到盒的尺，兜底字形与作者塞进盒里的
+     XhIcon 读同一把尺、与盒同边长；不读家族按档下发到行的 --xh-icon-size——那支只管作者放进行里的
+     图标，按图标档取的 20px 比指示符档大一圈。盒自己定尺而不随字形撑开：转 90° 时才不抖 */
   [data-scope='side-nav'][data-part='branch-indicator'] {
+    --xh-icon-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
+
     margin-inline-start: auto;
     display: inline-flex;
     flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -31420,7 +31432,8 @@
     rotate: 90deg;
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
+     尺寸读部件自己改接过的 --xh-icon-size：chevron 与盒同边长（见上面那块） */
   [data-scope='side-nav'][data-part='branch-indicator']:empty::before {
     content: '';
     display: inline-block;

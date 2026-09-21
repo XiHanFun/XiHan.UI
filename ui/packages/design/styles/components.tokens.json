@@ -54027,6 +54027,26 @@
       "description": "separator 的 line、root 部件 block-size、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-side-nav-branch-indicator-size",
+      "component": "side-nav",
+      "part": [
+        "branch-indicator"
+      ],
+      "property": [
+        "--xh-icon-size",
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 branch-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-side-nav-collapsed-w",
       "component": "side-nav",
       "part": [
