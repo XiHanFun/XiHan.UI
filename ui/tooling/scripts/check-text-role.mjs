@@ -86,8 +86,11 @@ const PAGE_TITLE = new Set(['dialog', 'drawer', 'tour', 'page-header'])
 const INLINE_TEXT = new Set(['tag', 'tag-group', 'kbd', 'breadcrumb', 'typography', 'highlight'])
 /** Feedback 指示符：scope → 声明 --xh-icon-size 的部件，统一 md。 */
 const FEEDBACK_INDICATOR = { alert: 'root', toast: 'root', notification: 'item' }
-/** 不是控件内图标的字形：空状态的主视觉图形按自己的尺度走。 */
-const GLYPH_EXEMPT = { 'empty-state:indicator': '空状态的主视觉字形，不是控件内图标' }
+/** 不是控件内图标的字形：空状态的主视觉图形按自己的尺度走；方盒里的方向指示符与方盒同边长（§6.5）。 */
+const GLYPH_EXEMPT = {
+  'empty-state:indicator': '空状态的主视觉字形，不是控件内图标',
+  'table:expand-trigger': '展开方向 chevron 是指示符，与 16px 方盒同走 --xh-control-indicator-size，不按图标档取',
+}
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
 

@@ -1,5 +1,5 @@
-// 粗指针下表头排序箭头的几何：箭头是排序把手的 ::after 字形，盒边长等于 --xh-icon-size，
-// 排在行内流里。把手接的是 Action Control row 档，家族在 (pointer: coarse) 下用同一个 ::after
+// 粗指针下表头排序箭头的几何：箭头是排序把手的 ::after 字形，盒边长等于 --xh-control-indicator-size
+// （指示符档，与同一表头里的勾选框方盒同尺；字形尺寸的契约由 table-glyph-size.spec 管），排在行内流里。把手接的是 Action Control row 档，家族在 (pointer: coarse) 下用同一个 ::after
 // 把热区扩到 44px 高、100% 宽、绝对定位居中——皮肤的字形尺寸与 table.css 的粗指针覆盖
 // （position / min-block-size / translate）都是 (0,2,1)，家族热区由 :where() 包住只有 (0,0,1)，
 // 胜负由特指度定，不靠源序。
@@ -97,10 +97,10 @@ function sortTriggers(): HTMLElement[] {
   return list
 }
 
-/** 箭头字形的盒：边长等于表内字形尺寸，排在行内流里、没有家族热区那 44px 的下限。 */
+/** 箭头字形的盒：边长等于指示符档，排在行内流里、没有家族热区那 44px 的下限。 */
 function expectArrowGlyph(trigger: HTMLElement): void {
-  const icon = Number.parseFloat(getComputedStyle(root()).getPropertyValue('--xh-icon-size'))
-  expect([16, 20]).toContain(icon)
+  const icon = Number.parseFloat(getComputedStyle(root()).getPropertyValue('--xh-control-indicator-size'))
+  expect([14, 16]).toContain(icon)
   const after = getComputedStyle(trigger, '::after')
   // 失败时把量到的几何一起打出来：撑成整格时是 position absolute + 列宽 × 44px
   const observed = `::after position=${after.position} width=${after.width} height=${after.height} min-block-size=${after.minBlockSize} translate=${after.translate}`
@@ -113,7 +113,7 @@ function expectArrowGlyph(trigger: HTMLElement): void {
 }
 
 describe('粗指针下的排序箭头', () => {
-  it('箭头盒等于 --xh-icon-size、留在行内流里，不被家族热区撑成整格', async () => {
+  it('箭头盒等于 --xh-control-indicator-size、留在行内流里，不被家族热区撑成整格', async () => {
     await coarsePointer()
     await mount()
     const [sorted, idle] = sortTriggers()
