@@ -62,7 +62,8 @@ export class XhMenuElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  static override partContract = { anatomy: menuAnatomy, meta: menuMeta }
+  // 子菜单形态的 trigger 接线后是父菜单里的一条 item（双重身份，见 wire 与 Headless 的 getSubmenuTriggerProps）
+  static override partContract = { anatomy: menuAnatomy, meta: menuMeta, rewired: { trigger: ['item'] } }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。

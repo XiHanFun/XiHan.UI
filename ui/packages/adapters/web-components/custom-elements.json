@@ -32557,7 +32557,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: menuAnatomy, meta: menuMeta }"
+              "default": "{ anatomy: menuAnatomy, meta: menuMeta, rewired: { trigger: ['item'] } }"
             },
             {
               "kind": "field",

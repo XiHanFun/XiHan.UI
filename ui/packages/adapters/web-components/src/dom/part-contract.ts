@@ -27,6 +27,15 @@ export interface PartContract {
    * 与宿主解剖重名的角色名归宿主，其余的接线后 data-scope 必须是 `name`。
    */
   readonly delegates?: readonly { readonly name: string, readonly parts: readonly string[] }[]
+  /**
+   * 双重身份的角色节点：作者按本组件的角色名写，接线后 data-part 却是同一 scope 里的另一个部件。
+   *
+   * 子菜单形态的 Menu 就是这样：作者写 data-xh-part="trigger"（它是本子菜单的触发器，发现与
+   * 接线都按这个名找它），Headless 的 getSubmenuTriggerProps 却铺的是父菜单的 item 部件属性——
+   * 父层的方向键、高亮与集合条目皮肤都按 data-part="item" 认它，三端 DOM 一致。
+   * 不登记的话示例门禁会把它当成接错了名。键是作者写的角色名，值是允许接出来的 data-part。
+   */
+  readonly rewired?: Readonly<Record<string, readonly string[]>>
 }
 
 /** 元素类上挂的契约，只取校验用得上的那一项。 */

@@ -222,6 +222,55 @@ describe('委派给内嵌部件的角色节点', () => {
   })
 })
 
+describe('双重身份登记的核实', () => {
+  it('每个元素登记的双重身份：作者名与接出来的名都在它自己的解剖内', () => {
+    let entries = 0
+    for (const [tag, ctor] of registeredElements()) {
+      const contract = ctor.partContract
+      for (const [authored, wiredAs] of Object.entries(contract?.rewired ?? {})) {
+        entries++
+        expect(contract!.anatomy.parts, `${tag} 登记的作者名 "${authored}"`).toContain(authored)
+        for (const wired of wiredAs)
+          expect(contract!.anatomy.parts, `${tag} 把 "${authored}" 接成 "${wired}"`).toContain(wired)
+      }
+    }
+    expect(entries).toBeGreaterThan(0)
+  })
+
+  it('子菜单的 trigger 接线后是父菜单里的 item，正如契约所登记', async () => {
+    const host = document.createElement('xh-menu') as Updatable
+    host.setAttribute('default-open', '')
+    host.innerHTML = `
+      <button data-xh-part="trigger">文件</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="open">打开</div>
+          <xh-menu submenu>
+            <div data-xh-part="trigger" value="share">发送到</div>
+            <div data-xh-part="positioner">
+              <div data-xh-part="content"><div data-xh-part="item" value="email">邮件</div></div>
+            </div>
+          </xh-menu>
+        </div>
+      </div>
+    `
+    document.body.append(host)
+    await host.updateComplete
+    // 展开的菜单把 positioner 搬进了 body 的 Portal 容器，子菜单要在整份文档里找
+    const submenu = document.querySelector('xh-menu[submenu]') as Updatable
+    await submenu.updateComplete
+    const trigger = submenu.querySelector<HTMLElement>(':scope > [data-xh-part="trigger"]')!
+    const rewired = (submenu.constructor as ContractHolder).partContract!.rewired!.trigger
+    expect(rewired).toEqual(['item'])
+    expect(trigger.getAttribute('data-part')).toBe('item')
+    expect(trigger.getAttribute('aria-haspopup')).toBe('menu')
+    // 根菜单自己的 trigger 照旧接成 trigger
+    expect(host.querySelector(':scope > [data-xh-part="trigger"]')!.getAttribute('data-part')).toBe('trigger')
+    host.remove()
+    document.body.innerHTML = ''
+  })
+})
+
 describe('委派登记的核实', () => {
   it('每个元素登记的委派目标都是已注册元素的解剖名', () => {
     let delegates = 0

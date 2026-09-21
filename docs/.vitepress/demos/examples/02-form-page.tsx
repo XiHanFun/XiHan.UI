@@ -2,6 +2,7 @@
 import type { FormErrorPatch, FormSubmitDetails, FormValues, RadioGroupNode, SelectNode } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import {
+  XhAlertContent,
   XhAlertDescription,
   XhAlertRoot,
   XhAlertTitle,
@@ -148,8 +149,10 @@ export default function Demo(): ReactNode {
       </XhPageHeaderRoot>
 
       <XhAlertRoot tone="info">
-        <XhAlertTitle>先看一眼已知问题</XhAlertTitle>
-        <XhAlertDescription>近三天同类工单 12 条，其中 9 条已定位到同一处配置。</XhAlertDescription>
+        <XhAlertContent>
+          <XhAlertTitle>先看一眼已知问题</XhAlertTitle>
+          <XhAlertDescription>近三天同类工单 12 条，其中 9 条已定位到同一处配置。</XhAlertDescription>
+        </XhAlertContent>
       </XhAlertRoot>
 
       <XhFormRoot
