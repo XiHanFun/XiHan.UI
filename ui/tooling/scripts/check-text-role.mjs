@@ -101,6 +101,7 @@ const GLYPH_EXEMPT = {
   'json-viewer:branch-trigger': '分支行首的展开方向 chevron 是指示符，与 16px 把手盒同走 --xh-control-indicator-size，不按图标档取',
   'menu:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，作者塞进去的图标与盒同尺，不按图标档取',
   'context-menu:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
+  'menubar:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])

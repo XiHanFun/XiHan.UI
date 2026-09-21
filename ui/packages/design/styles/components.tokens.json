@@ -40826,6 +40826,7 @@
         "item-indicator"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size"
       ],
@@ -40833,10 +40834,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-icon-size"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "menubar 的 item-indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "menubar 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-menubar-item-leading",
@@ -41125,6 +41126,25 @@
       ],
       "visibility": "public",
       "description": "menubar 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-menubar-submenu-indicator-size",
+      "component": "menubar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "menubar 的 item 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-menubar-trigger-bg-active",
