@@ -2096,6 +2096,7 @@ export type ComponentTokenName
     | '--xh-menubar-separator-radius'
     | '--xh-menubar-separator-thickness'
     | '--xh-menubar-submenu-indicator-fg'
+    | '--xh-menubar-submenu-indicator-size'
     | '--xh-menubar-trigger-bg-active'
     | '--xh-menubar-trigger-bg-hover'
     | '--xh-menubar-trigger-bg-pressed'

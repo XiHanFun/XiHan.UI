@@ -34029,6 +34029,9 @@
               "name": "--xh-menubar-submenu-indicator-fg"
             },
             {
+              "name": "--xh-menubar-submenu-indicator-size"
+            },
+            {
               "name": "--xh-menubar-trigger-bg-active"
             },
             {
