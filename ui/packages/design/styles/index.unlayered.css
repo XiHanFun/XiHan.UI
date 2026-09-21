@@ -14287,9 +14287,11 @@
 }
 
 /* —— 尺寸 —— */
+/* 小号是贴在 16px 图标角上的角标：盒取 12 + 2 的半阶补偿 = 14px，字仍是刻度最小的 12px——
+   数字的字面只占字号的六成，扣掉两道 1px 描边后的 12px 内高装得下两位数，再小就得压字 */
 [data-scope='badge'][data-part='indicator'][data-size='sm'] {
   --xh-_badge-dot: var(--xh-space-1_5);
-  --xh-_badge-min: var(--xh-space-4);
+  --xh-_badge-min: calc(var(--xh-space-3) + var(--xh-space-0_5));
   --xh-_badge-px: var(--xh-space-0_5);
   --xh-_badge-font: var(--xh-text-caption-size);
 }
