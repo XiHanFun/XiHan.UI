@@ -6,7 +6,8 @@
 /* 定义 anchor 样式。 */
 
 /* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
-   本皮肤只映射桥接槽；指示条仍是 list 上的滑动 indicator 部件 */
+   本皮肤只映射桥接槽。2px 指示线由本皮肤画：目录里放了 indicator 部件就由部件在轨道上滑动，
+   没放则当前那一节的链接自画一条静态线 */
 @import '../family/collection-item.css';
 
 @layer xihan.components {
@@ -86,8 +87,9 @@
 
   /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + default 字，
      按下 pressed 200 只换面（§7.2 / §9.2）；当前那一节（§7.3 导航当前页）brand-strong 字色（随语气的
-     --xh-_anchor-accent-text）+ medium 字重都跟着变，不只靠指示条——指示条是可选部件，作者不渲染它时
-     "当前在哪"仍然要看得出来。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background */
+     --xh-_anchor-accent-text）+ medium 字重都跟着变，2px 指示线放了 indicator 部件由部件滑动、没放则由
+     下面的静态线规则画在当前链接自己身上。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background。
+     position: relative 是静态线的定位参照 */
   [data-scope='anchor'][data-part='link'] {
     --xh-collection-block-padding: var(--xh-anchor-link-py, var(--xh-space-1));
     --xh-collection-inline-padding: var(--xh-anchor-link-px, var(--xh-_anchor-link-px));
@@ -100,6 +102,7 @@
     --xh-collection-fg-current: var(--xh-anchor-link-fg-current, var(--xh-_anchor-accent-text));
     --xh-collection-font-weight-current: var(--xh-anchor-link-font-weight-current, var(--xh-font-weight-medium));
 
+    position: relative;
     display: inline-flex;
     align-items: center;
     /* 一节的标题可能很长，压不住会把整列撑开 */
@@ -125,7 +128,8 @@
   }
 
   /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
-     这里只管交叉轴的贴边与粗细，以及长什么样 */
+     这里只管交叉轴的贴边与粗细，以及长什么样。它是可选部件——不渲染它时，
+     当前那一节的链接自画一条同规格的静态线（见下） */
   [data-scope='anchor'][data-part='indicator'] {
     position: absolute;
     display: block;
@@ -156,10 +160,54 @@
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
+  /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（§7.3 导航当前页）：
+     与 Tabs line 档同一取法，作者不必为了这条线多放一个部件。
+     线画在当前链接的 ::after 上，以链接盒为定位参照（上面已给 position: relative），
+     厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。
+     不做动画：它随 data-current 在链接间跳，滑动只有部件做得到。
+     线贴在链接盒内的那条缘：链接为了省略号收着 overflow，画不到盒外；部件骑在 list 的轨道上（盒外一线宽），
+     两者同侧、差一线宽。主轴两端各退一格 --xh-space-1 避开链接的圆角（overflow 连圆角一起裁，贴满会被
+     切掉两个角），与家族 page 语境的起始侧指示条同一取法。嵌套目录里子级链接随自己的缩进走，部件则始终在
+     外层轨道上。
+     目录里一旦放了 indicator 部件，这条线就收起、位置交给部件滑动，不重复画两条：
+     由 list 按 :has 探一次，把私有槽写成 none，线的 content 读它；链接自己不必再各带一段 :has */
+  [data-scope='anchor'][data-part='list']:has([data-scope='anchor'][data-part='indicator']) {
+    --xh-_anchor-static-line: none;
+  }
+
+  [data-scope='anchor'][data-part='link'][data-current]::after {
+    content: var(--xh-_anchor-static-line, '');
+    position: absolute;
+    pointer-events: none;
+    border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
+    background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+  }
+
+  /* 竖排（缺省）：贴链接的行向起始缘（与 indicator 部件同一侧，rtl 随逻辑属性镜像） */
+  [data-scope='anchor'][data-part='list'][data-orientation='vertical']
+    [data-scope='anchor'][data-part='link'][data-current]::after {
+    inset-inline-start: 0;
+    inset-block: var(--xh-space-1);
+    inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
+  }
+
+  /* 横排：贴链接的块向末端（底边） */
+  [data-scope='anchor'][data-part='list'][data-orientation='horizontal']
+    [data-scope='anchor'][data-part='link'][data-current]::after {
+    inset-block-end: 0;
+    inset-inline: var(--xh-space-1);
+    block-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
+  }
+
   @media (forced-colors: active) {
     /* 指示条画的是一块纯底色，这一档里底色被统一换成 Canvas，条子整根消失，
        "读到哪一节"就只剩链接自己的字重。换成系统高亮色画回来 */
     [data-scope='anchor'][data-part='indicator'] {
+      background: Highlight;
+    }
+
+    /* 没放部件时当前链接自画的那条静态线同样是一块纯底色，同一档换成系统高亮色 */
+    [data-scope='anchor'][data-part='link'][data-current]::after {
       background: Highlight;
     }
   }
