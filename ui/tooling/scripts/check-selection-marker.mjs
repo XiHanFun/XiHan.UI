@@ -62,12 +62,13 @@ const SEMANTIC = {
   'tag-group:tag/root': [{ kind: 'page', state: '[data-selected]' }],
   'side-nav:link': [{ kind: 'page', state: '[data-current]' }],
   // 导航当前页：指示条 + 品牌深字 + medium；Breadcrumb 当前页不可点，保留默认字色。
-  // tabs 的 segment 档是有滑块开关：指示条部件在这一档收起，白色抬起面长在选中标签自己身上，
-  // 滑块三件（surface-raised 底 + border-default 描边 + raised 影）按 slider 类核选中标签在 segment 根下的规则
+  // tabs 的 segment 档是有滑块开关：没放 indicator 部件时白色抬起面长在选中标签自己身上，放了则搬到部件上滑动；
+  // 滑块三件（surface-raised 底 + border-default 描边 + raised 影）两处都按 slider 类核 segment 根下的规则
   'tabs:trigger': [
     { kind: 'nav', state: '[data-state=\'active\']' },
     { kind: 'slider', state: '[data-state=\'active\']', within: '[data-variant=\'segment\']' },
   ],
+  'tabs:indicator': [{ kind: 'slider', state: '[data-variant=\'segment\']' }],
   'anchor:link': [{ kind: 'nav', state: '[data-current]' }],
   'navigation-menu:link': [{ kind: 'nav', state: '[data-current]' }],
   'breadcrumb:link': [{ kind: 'nav-terminal', state: '[data-current]' }],

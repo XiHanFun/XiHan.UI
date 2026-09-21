@@ -40,6 +40,9 @@ const SUFFIX = {
  * 键是 `<组件>.<槽名的部件段>`，值是允许读到它的部件。
  */
 const CROSS_PART = {
+  // segment 档的白色抬起面：放了 indicator 部件时长在部件上跟着滑，没放长在选中标签上；
+  // 两处必须同一块面，描边 / 圆角 / 底 / 影读同一组按标签取名的槽，作者改一处两处一起变
+  'tabs.trigger': ['indicator'],
   // 摆了周序号的那一行是「序号列 + 七天」的网格，行首那一列的宽度按被排的那一列取名
   'calendar-picker.week-number': ['week-row'],
   'calendar-range-picker.week-number': ['week-row'],

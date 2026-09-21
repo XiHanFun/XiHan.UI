@@ -135,6 +135,8 @@ const IDENTITY = {
   'steps:separator': 'pill',
   'timeline:connector': 'pill',
   'tabs:indicator': 'pill',
+  // segment 档的部件是整块白色抬起面（与 Segmented 滑块同身份的 control 盒），不是一维对象
+  'tabs:indicator[data-variant=\'segment\']': 'control',
   // line 档没放 indicator 部件时选中标签自画的静态线：与部件同规格的一维对象
   'tabs:trigger::after': 'pill',
   'anchor:indicator': 'pill',

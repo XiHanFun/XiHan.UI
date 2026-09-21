@@ -97,8 +97,8 @@ const EXPECTED = {
   'slider': { thumb: ['raised', 'lifted'] },
   'color-slider': { thumb: ['raised', 'lifted'] },
   'switch': { thumb: ['raised'] },
-  // segment 档的选中标签是有滑块开关的白色抬起面（§7.3）：指示条部件在这一档收起，raised 落在标签自己身上
-  'tabs': { trigger: ['raised'] },
+  // segment 档的白色抬起面：放了 indicator 部件长在部件上跟着滑，没放长在选中标签上，两处同一块 raised 面
+  'tabs': { trigger: ['raised'], indicator: ['raised'] },
   'tag': { root: ['soft'] },
   // 含时分秒多列的锚定面板：floating（§8.4）
   'time-picker': { content: ['floating'] },
