@@ -89,7 +89,15 @@ async function declarations(entries, indent = '    ') {
 
 async function main() {
   const materials = await emitMaterialRecipes()
-  const primitive = flatten(await load('primitive.json'))
+  // 基础色板由 emit-palette.mjs 从种子派生，是原语的一部分：两份源合成一棵树再展开
+  const primitiveSource = await load('primitive.json')
+  const palette = await load('primitive.palette.json')
+  for (const name of Object.keys(palette.color)) {
+    if (name in primitiveSource.color)
+      throw new Error(`[emit-tokens] 基础色板的 ${name} 与 primitive.json 的 color.${name} 重名`)
+    primitiveSource.color[name] = palette.color[name]
+  }
+  const primitive = flatten(primitiveSource)
   const base = flatten(await load('semantic.base.json', materials.fragments['semantic.base.json']))
   const compact = flatten(await load('semantic.compact.json'))
   const lightAll = flatten(await load('semantic.light.json', materials.fragments['semantic.light.json']))

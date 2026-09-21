@@ -13,7 +13,12 @@ function loadJson(name: string): Record<string, unknown> {
   return JSON.parse(readFileSync(join(TOKENS_DIR, name), 'utf8'))
 }
 
-const primitive = loadJson('primitive.json')
+// 基础色板（primitive.palette.json）是原语的一部分，与 primitive.json 合成一棵树，emit-tokens 也这么合
+const primitive = (() => {
+  const base = loadJson('primitive.json') as { color: Record<string, unknown> }
+  const palette = loadJson('primitive.palette.json') as { color: Record<string, unknown> }
+  return { ...base, color: { ...base.color, ...palette.color } }
+})()
 
 /** 高对比档只写覆盖项，按组浅合并到基础档上，得到那一档的完整取值。 */
 function withOverrides(
@@ -526,14 +531,14 @@ describe('热力图色板轴：格子的描边', () => {
   }
 })
 
-// 紫不对应任何语气，只服务色板轴。它的明度与彩度逐档照 danger 族、只换色相：
-// 照抄一条已经验过的明度曲线，色阶的单调与分档质量就与 red 那一列逐值相同。
-describe('紫色原语沿用 danger 的明度曲线', () => {
-  it('purple.600 与 danger.600 只差色相', () => {
+// 紫不对应任何语气，只服务色板轴，取基础色板 purple 族的 600 档：
+// 明度与彩度就是品牌曲线的 600 档、只换色相，色阶的单调与分档质量与 brand 那一列逐值相同。
+describe('紫色原语来自基础色板', () => {
+  it('purple.600 与 brand.600 只差色相', () => {
     const [purpleL, purpleC, purpleH] = oklchParts(primitiveValue('color.purple.600'))
-    const [dangerL, dangerC] = oklchParts(primitiveValue('color.danger.600'))
-    expect(purpleL).toBe(dangerL)
-    expect(purpleC).toBe(dangerC)
+    const [brandL, brandC] = oklchParts(primitiveValue('color.brand.600'))
+    expect(purpleL).toBe(brandL)
+    expect(purpleC).toBe(brandC)
     expect(purpleH).toBe(302)
   })
 })

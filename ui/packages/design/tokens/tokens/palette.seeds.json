@@ -1,0 +1,15 @@
+{
+  "$description": "基础色板的种子：十二个色相各记一个 OKLCH 色相角。每个色相的 11 档由 build/emit-palette.mjs 按品牌曲线派生（明度、彩度逐档取 color.brand 的基线，彩度再按该档明度与色相收进 sRGB 色域），写进 primitive.palette.json。同一档跨色相同一明度：换色相不改对比度，语义层与语气层的对比度保证对任一色相都成立；代价是黄、青这类天然明亮的色相中档偏沉，要亮黄取 200 / 300 档。",
+  "red": { "hue": 25 },
+  "orange": { "hue": 50 },
+  "amber": { "hue": 70 },
+  "yellow": { "hue": 95 },
+  "lime": { "hue": 125 },
+  "green": { "hue": 149 },
+  "teal": { "hue": 180 },
+  "cyan": { "hue": 215 },
+  "blue": { "hue": 237 },
+  "indigo": { "hue": 258 },
+  "purple": { "hue": 302 },
+  "pink": { "hue": 345 }
+}
