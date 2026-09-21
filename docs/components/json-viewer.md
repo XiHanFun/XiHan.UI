@@ -356,7 +356,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `--xh-json-viewer-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | json-viewer 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-json-viewer-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_json-viewer-indent` | json-viewer 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-json-viewer-indicator-fg` | `branch-trigger` | `color` | `default` | `--xh-fg-subtle` | json-viewer 的 branch-trigger 部件 color 覆盖槽。 |
-| `--xh-json-viewer-indicator-size` | `branch-trigger` | `inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-json-viewer-indicator-size` | `branch-trigger` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
 | `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
 | `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |

@@ -34861,6 +34861,7 @@
         "branch-trigger"
       ],
       "property": [
+        "--xh-icon-size",
         "inline-size"
       ],
       "state": [
@@ -34870,7 +34871,7 @@
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 branch-trigger 部件 inline-size 覆盖槽。"
+      "description": "json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-key-fg",
