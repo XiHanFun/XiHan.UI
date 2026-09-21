@@ -32939,7 +32939,9 @@
        既不让页面上的层号插进来，也不让它们漏出去压住别人 */
     isolation: isolate;
 
-    /* 把手与排序箭头等表内字形按档取尺，缺省 md（§6.5）；表体行上的字形由家族随 data-xh-collection-size 下发 */
+    /* 作者放进单元格、列头与把手里的图标按档取尺，缺省 md（§6.5）；表体行上的由家族随 data-xh-collection-size 下发。
+       表格自绘的状态字形（排序方向、勾、半选杠、展开方向）不读这支：它们是指示符，与所在的方盒同走
+       --xh-control-indicator-* 一族——四颗把手在自己身上把 --xh-icon-size 改接到方盒的尺，排序箭头走 --xh-table-sort-size */
     --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-md));
 
     /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
@@ -33271,9 +33273,11 @@
     --xh-_table-trigger-bg: transparent;
     --xh-_table-trigger-bg-pressed: var(--xh-table-trigger-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-_table-trigger-border: transparent;
+    /* 方盒边长：四颗把手与盒里的字形都从这一支取 */
+    --xh-_table-trigger-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
 
-    --xh-action-visual-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
-    --xh-action-min-inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
+    --xh-action-visual-size: var(--xh-_table-trigger-size);
+    --xh-action-min-inline-size: var(--xh-_table-trigger-size);
     --xh-action-bg-rest: var(--xh-_table-trigger-bg);
     --xh-action-bg-hover: var(--xh-_table-trigger-bg);
     --xh-action-bg-pressed: var(--xh-_table-trigger-bg-pressed);
@@ -33294,6 +33298,20 @@
       min-inline-size: 0;
       min-block-size: 0;
     }
+  }
+
+  /* 盒里的字形是指示符（§6.5）：这四颗把手各自把 --xh-icon-size 改接到方盒的尺上，兜底字形与作者塞进盒里的
+     XhIcon 读同一把尺，root 那支只管作者放进单元格与把手里图标的 --xh-table-icon-size 不流进来。
+     三颗勾选框的勾与半选杠按方盒边长 × 0.75，与 Checkbox 的 --xh-_checkbox-glyph、Tree 勾选把手同一比例；
+     展开箭头的 chevron 与方盒同边长，同 Tree 的 branch-trigger */
+  [data-scope='table'][data-part='select-all-trigger'],
+  [data-scope='table'][data-part='row-select-trigger'],
+  [data-scope='table'][data-part='column-visibility-trigger'] {
+    --xh-icon-size: calc(var(--xh-_table-trigger-size) * 0.75);
+  }
+
+  [data-scope='table'][data-part='expand-trigger'] {
+    --xh-icon-size: var(--xh-_table-trigger-size);
   }
 
   /* 勾选方框是嵌在行里的小块：inset 档圆角（身份表登记）；展开箭头与列设置那颗是 control 档 */
@@ -33741,13 +33759,15 @@
     border: 0;
   }
 
-  /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西 */
+  /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西。
+     箭头是指示符（§6.5）：与同一表头里的勾选框方盒、列拖拽把手同走 --xh-control-indicator-size，
+     不读 --xh-icon-size——按图标档取的 20px 会比 16px 的方盒与列头文字都大一圈 */
   [data-scope='table'][data-part='sort-trigger']::after {
     color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
@@ -33758,8 +33778,8 @@
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
@@ -33770,8 +33790,8 @@
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
@@ -33877,7 +33897,8 @@
     animation: none;
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
+     尺寸读把手自己改接过的 --xh-icon-size：勾是方盒边长 × 0.75、chevron 与方盒同边长（见把手块） */
   [data-scope='table'][data-part='select-all-trigger']:empty::before,
   [data-scope='table'][data-part='column-visibility-trigger']:empty::before,
   [data-scope='table'][data-part='row-select-trigger']:empty::before {
@@ -33891,9 +33912,11 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
+  /* flex: none：方盒是 ghost 形态，家族那圈透明描边仍占位，不钉住的话与盒同边长的 chevron 会被挤窄一个描边 */
   [data-scope='table'][data-part='expand-trigger']:empty::before {
     content: '';
     display: inline-block;
+    flex: none;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);

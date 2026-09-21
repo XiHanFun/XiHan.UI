@@ -34,6 +34,8 @@ const STATUS_MARKS = {
   'time-picker:item': '--xh-time-picker-item-check-size',
   'time-range-picker:preset': '--xh-time-range-picker-preset-check-size',
   'time-range-picker:item': '--xh-time-range-picker-item-check-size',
+  // 排序方向箭头：指示符档（§6.5），与同一表头里的勾选框方盒同走 --xh-control-indicator-size
+  'table:sort-trigger': '--xh-table-sort-size',
 }
 const statusMarksSeen = new Set()
 

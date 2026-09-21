@@ -32828,7 +32828,6 @@
         "scroll-to-end-trigger",
         "select-all-trigger",
         "separator",
-        "sort-trigger",
         "submit-trigger",
         "to-source-trigger",
         "to-target-trigger",
@@ -32870,8 +32869,6 @@
         "size=sm",
         "size=text",
         "size=xl",
-        "sort=asc",
-        "sort=desc",
         "state=checked",
         "state=completed",
         "state=done",
@@ -32893,7 +32890,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-control、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start、padding-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-control、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -60340,6 +60337,27 @@
       "description": "table 的 sort-trigger 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-table-sort-size",
+      "component": "table",
+      "part": [
+        "sort-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default",
+        "sort=asc",
+        "sort=desc"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "table 的 sort-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-table-state-fg",
       "component": "table",
       "part": [
@@ -60770,6 +60788,7 @@
         "select-all-trigger"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size",
         "min-block-size",
@@ -60784,7 +60803,7 @@
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 block-size、inline-size、min-block-size、min-inline-size 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 --xh-icon-size、block-size、inline-size、min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tabs-content-fg",

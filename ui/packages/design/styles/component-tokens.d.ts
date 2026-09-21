@@ -3071,6 +3071,7 @@ export type ComponentTokenName
     | '--xh-table-sort-fg'
     | '--xh-table-sort-fg-active'
     | '--xh-table-sort-gap'
+    | '--xh-table-sort-size'
     | '--xh-table-state-fg'
     | '--xh-table-state-gap'
     | '--xh-table-state-min-h'

@@ -50599,6 +50599,9 @@
               "name": "--xh-table-sort-gap"
             },
             {
+              "name": "--xh-table-sort-size"
+            },
+            {
               "name": "--xh-table-state-fg"
             },
             {
