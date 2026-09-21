@@ -365,7 +365,7 @@ ${sizeVars(source, size)}
     margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
-  /* page 上下文：对号是前导标记（${markers.page.glyph}），指示条（${markers.page.current}）挂在起始侧。 */
+  /* page 上下文：对号是前导标记（${markers.page.glyph}）；当前项的起始侧指示条按配方开关（${markers.page.current}），none 即只由行面与字色表达。 */
   [data-xh-collection-item][data-xh-collection-context='page'] {
     position: relative;
     grid-template-columns:
@@ -413,7 +413,8 @@ ${contextStateVars(source, context, state)}${stateExtras(source, state, '    ')}
     --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-checked, ${source.stateValues.checked.indicatorColor});
   }
 
-  [data-xh-collection-item][data-xh-collection-context='page'][data-current]::before {
+${markers.page.current === 'bar'
+  ? `  [data-xh-collection-item][data-xh-collection-context='page'][data-current]::before {
     content: '';
     position: absolute;
     inset-block: ${markers.bar.blockInset};
@@ -424,7 +425,8 @@ ${contextStateVars(source, context, state)}${stateExtras(source, state, '    ')}
     pointer-events: none;
   }
 
-  [data-xh-collection-item][aria-disabled='true'] {
+`
+  : ''}  [data-xh-collection-item][aria-disabled='true'] {
 ${stateVars(source, 'disabled')}
   }
 

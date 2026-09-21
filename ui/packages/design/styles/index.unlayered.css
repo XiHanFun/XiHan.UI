@@ -1132,7 +1132,7 @@
   margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
 }
 
-/* page 上下文：对号是前导标记（leading），指示条（bar）挂在起始侧。 */
+/* page 上下文：对号是前导标记（leading）；当前项的起始侧指示条按配方开关（none），none 即只由行面与字色表达。 */
 [data-scope][data-xh-collection-item][data-xh-collection-context='page'] {
   position: relative;
   grid-template-columns:
@@ -1449,17 +1449,6 @@
 
 [data-scope][data-xh-collection-item][data-state='checked'] {
   --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-checked, var(--xh-fg-brand));
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'][data-current]::before {
-  content: '';
-  position: absolute;
-  inset-block: var(--xh-space-1);
-  inset-inline-start: 0;
-  inline-size: var(--xh-stroke-thick);
-  border-radius: var(--xh-shape-pill);
-  background-color: var(--xh-_collection-indicator-fg);
-  pointer-events: none;
 }
 
 [data-scope][data-xh-collection-item][aria-disabled='true'] {

@@ -37007,11 +37007,9 @@
         "item"
       ],
       "property": [
-        "background-color",
         "color"
       ],
       "state": [
-        "current",
         "disabled",
         "error",
         "highlighted",
@@ -37030,7 +37028,7 @@
         "--xh-listbox-item-indicator-fg"
       ],
       "visibility": "public",
-      "description": "listbox 的 item 部件 background-color、color 覆盖槽。"
+      "description": "listbox 的 item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-fg",
@@ -37162,11 +37160,9 @@
         "item"
       ],
       "property": [
-        "background-color",
         "color"
       ],
       "state": [
-        "current",
         "disabled",
         "error",
         "highlighted",
@@ -37185,7 +37181,7 @@
         "--xh-_listbox-accent"
       ],
       "visibility": "public",
-      "description": "listbox 的 item 部件 background-color、color 覆盖槽。"
+      "description": "listbox 的 item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-indicator-size",
@@ -54540,7 +54536,6 @@
         "link"
       ],
       "property": [
-        "background-color",
         "color"
       ],
       "state": [
@@ -54560,7 +54555,7 @@
         "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "side-nav 的 branch-trigger、link 部件 background-color、color 覆盖槽。"
+      "description": "side-nav 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-link-font-size",
@@ -76742,11 +76737,9 @@
         "item"
       ],
       "property": [
-        "background-color",
         "color"
       ],
       "state": [
-        "current",
         "disabled",
         "error",
         "highlighted",
@@ -76765,7 +76758,7 @@
         "--xh-tree-item-indicator-fg"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 background-color、color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tree-item-indicator-fg",
@@ -76775,11 +76768,9 @@
         "item"
       ],
       "property": [
-        "background-color",
         "color"
       ],
       "state": [
-        "current",
         "disabled",
         "error",
         "highlighted",
@@ -76798,7 +76789,7 @@
         "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 background-color、color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tree-label-fg",
