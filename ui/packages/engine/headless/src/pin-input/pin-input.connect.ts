@@ -9,7 +9,7 @@ import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/co
 import type { PinInputApi, PinInputSchema } from './pin-input.types'
 import { dataAttr, focusSafely, isComposingEvent, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/core'
 import { pinInputAnatomy } from './pin-input.anatomy'
-import { firstEmptyPinIndex, isPinComplete, padPinValue, pinFocusTarget, pinLength, sanitizePin } from './pin-input.machine'
+import { firstEmptyPinIndex, isPinComplete, padPinValue, pinLength, sanitizePin } from './pin-input.machine'
 
 const parts = pinInputAnatomy.build()
 
@@ -42,7 +42,6 @@ export function connectPinInput<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const mask = !!prop('mask')
   const otp = !!prop('otp')
-  const blurOnComplete = !!prop('blurOnComplete')
   const value = padPinValue(context.get('value'), length)
   const valueAsString = value.join('')
   const complete = isPinComplete(value)
@@ -67,14 +66,21 @@ export function connectPinInput<T extends PropTypes>(
   const boxesOf = (el: HTMLElement): HTMLElement[] =>
     queryItems(el.closest<HTMLElement>(parts.root.selector), INPUT_QUERY)
 
-  /** 聚焦某一格并全选，使打字替换而非追加。落点先过一次裁定，越不过第一个空格。 */
-  const focusBox = (from: HTMLElement, index: number): void => {
+  /**
+   * 把 DOM 焦点搬到机器裁定的锚点上：锚点在组外（填满收工）就撤走焦点，否则聚焦那一格并全选，
+   * 使打字替换而非追加。落点一律由机器裁，这里不再按值裁一次——受控值此刻可能还没写回，
+   * 按它裁会把焦点拽回刚填过的格子。
+   */
+  const followAnchor = (from: HTMLInputElement): void => {
+    const target = context.get('focusedIndex') ?? -1
+    if (target < 0) {
+      from.blur()
+      return
+    }
     const boxes = boxesOf(from)
     if (!boxes.length)
       return
-    const wanted = Math.min(Math.max(index, 0), boxes.length - 1)
-    const target = orderedEntry ? pinFocusTarget(liveValue(), wanted) : wanted
-    focusSafely(boxes[Math.min(Math.max(target, 0), boxes.length - 1)], { select: true })
+    focusSafely(boxes[Math.min(target, boxes.length - 1)], { select: true })
   }
 
   /** 把框里的内容拨回权威值：非法字符被丢弃、多字符铺开时值不变，宿主不重渲，须手动同步。 */
@@ -84,19 +90,10 @@ export function connectPinInput<T extends PropTypes>(
       el.value = next
   }
 
-  /** 写完之后焦点往哪儿去：填满且要求收工就撤走焦点，否则挪到下一个待填的格子。 */
-  const advance = (from: HTMLInputElement, index: number): void => {
-    if (blurOnComplete && isPinComplete(liveValue())) {
-      from.blur()
-      return
-    }
-    focusBox(from, index)
-  }
-
   const fillFrom = (el: HTMLInputElement, index: number, chars: string): void => {
     send({ type: 'VALUE.FILL', index, value: chars })
     resync(el, index)
-    advance(el, index + [...chars].length)
+    followAnchor(el)
   }
 
   // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
@@ -218,9 +215,7 @@ export function connectPinInput<T extends PropTypes>(
         send({ type: 'INPUT.FOCUS', index })
         // 机器裁定的落点与点中的那一格不同（前面还空着）时，把焦点交过去。
         // 裁定过的落点自己再裁一次仍是它，所以这一步至多搬一次，不会来回弹
-        const target = context.get('focusedIndex') ?? index
-        if (target !== index)
-          focusBox(event.currentTarget as HTMLElement, target)
+        followAnchor(event.currentTarget as HTMLInputElement)
       },
       'onBlur': () => {
         // 只在本格当下持有焦点锚点时才清，避免格间移动时抹掉刚记下的锚点
@@ -242,10 +237,10 @@ export function connectPinInput<T extends PropTypes>(
             resync(el, index)
             return
           }
-          // 空格子上的退格：退回上一格并把它清掉
+          // 空格子上的退格：退回上一格并把它清掉；清格把锚点停在被清的那一格，照着搬过去
           if (index > 0) {
             send({ type: 'VALUE.CLEAR_AT', index: index - 1 })
-            focusBox(el, index - 1)
+            followAnchor(el)
           }
           return
         }
@@ -266,8 +261,9 @@ export function connectPinInput<T extends PropTypes>(
         const target = stepIndex(boxes.length, index, intent, { loop: false })
         if (target < 0)
           return
-        // 往回改上一格照走，往前越不过第一个空格：落点在 focusBox 里再裁一次
-        focusBox(el, target)
+        // 往回改上一格照走，往前越不过第一个空格：先交机器裁定锚点，再照锚点搬
+        send({ type: 'INPUT.FOCUS', index: target })
+        followAnchor(el)
       },
     }),
 

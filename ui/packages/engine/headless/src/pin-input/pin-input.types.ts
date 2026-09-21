@@ -88,6 +88,10 @@ export interface PinInputSchema extends MachineSchema {
      *
      * 存放的是裁定后的下标而不是作者点击的格：按顺序录入时它不会越过第一个空格，
      * 连接层据此把焦点交到应到的格子上。
+     *
+     * 值的写入顺带挪它：铺字后落到铺完的下一格（`blurOnComplete` 且填满时为 -1），清格后停在
+     * 清掉的那一格。这一步只按刚写下的值裁，不回读 context——受控值要等宿主重渲才写回，
+     * 回读到的仍是旧值。
      */
     focusedIndex: number
   }
@@ -97,12 +101,19 @@ export interface PinInputSchema extends MachineSchema {
   event:
     /** 整份替换（外部 setValue）。 */
     | { type: 'VALUE.SET', value: string[] }
-    /** 从 index 起把 value 逐字符铺开，超出末格的部分截断。单字符输入与整串粘贴走同一路径。 */
+    /**
+     * 从 index 起把 value 逐字符铺开，超出末格的部分截断。单字符输入与整串粘贴走同一路径。
+     * 铺完把锚点挪到紧接着的下一格。
+     */
     | { type: 'VALUE.FILL', index: number, value: string }
-    /** 清除某一格。 */
+    /** 清除某一格，锚点停在这一格上。 */
     | { type: 'VALUE.CLEAR_AT', index: number }
     /** 清空整组。 */
     | { type: 'VALUE.CLEAR' }
+    /**
+     * 焦点要落到某一格：DOM 焦点已落上去，或连接层准备把焦点搬过去。机器裁定锚点，
+     * 连接层再照锚点搬。锚点已在这一格上时不再裁。
+     */
     | { type: 'INPUT.FOCUS', index: number }
     | { type: 'INPUT.BLUR' }
     | { type: 'FORM.RESET' }

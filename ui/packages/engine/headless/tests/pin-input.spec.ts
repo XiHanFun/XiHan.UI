@@ -50,6 +50,8 @@ interface Mounted {
   boxes: HTMLInputElement[]
   hidden: HTMLInputElement
   api: () => ReturnType<typeof connectPinInput>
+  /** 宿主重渲：受控值写回后由宿主自己重打一遍，机器不会替它通知。 */
+  render: () => void
   destroy: () => void
 }
 
@@ -95,6 +97,7 @@ function mount(props: Props = {}): Mounted {
     boxes,
     hidden,
     api: () => connectPinInput(service, normalizeProps),
+    render,
     destroy: () => {
       runtime.stop()
       root.remove()
@@ -822,5 +825,100 @@ describe('connectPinInput 命令式出口', () => {
     m.api().clear()
     expect(boxValues(m)).toEqual(['', '', ''])
     expect(m.api().complete).toBe(false)
+  })
+})
+
+// 受控接法里宿主把值写回是异步的：Vue 与 React 都要等自己重渲才把新 value 交回 prop，
+// 事件处理器里回读 context 拿到的仍是写之前那份。落点若按它裁，第一个空格还是刚填的这一格，
+// 焦点停在原地，用户得再敲一下才跳格。这里用一份写回延后的 props 把这一层演出来。
+describe('受控且宿主延后写回', () => {
+  /** 受控宿主：回调只记下值，写回与重渲由用例在断言之后手动触发。 */
+  function delayedHost(props: Props): { props: Props, flush: () => void } {
+    let pending: string[] | undefined
+    props.onValueChange = ({ value }) => {
+      pending = value
+    }
+    return {
+      props,
+      flush: () => {
+        if (pending !== undefined)
+          props.value = pending
+        pending = undefined
+      },
+    }
+  }
+
+  it('机器：铺完的锚点按刚写下的值裁，不回读还没写回的旧值', () => {
+    const host = delayedHost({ length: 4, value: ['', '', '', ''] })
+    const runtime = createVanillaRuntime()
+    const s = createService(pinInputMachine, { props: () => host.props, runtime })
+    runtime.start()
+
+    s.send({ type: 'INPUT.FOCUS', index: 0 })
+    s.send({ type: 'VALUE.FILL', index: 0, value: '1' })
+    // 宿主还没写回：context 里仍是空值，锚点却已经在第二格上
+    expect(padPinValue(s.context.get('value'), 4)).toEqual(['', '', '', ''])
+    expect(s.context.get('focusedIndex')).toBe(1)
+    // 连接层照锚点搬焦点，焦点事件跟着到达：锚点已在这一格上，不按旧值再裁一次
+    s.send({ type: 'INPUT.FOCUS', index: 1 })
+    expect(s.context.get('focusedIndex')).toBe(1)
+    host.flush()
+    s.send({ type: 'VALUE.FILL', index: 1, value: '2' })
+    expect(s.context.get('focusedIndex')).toBe(2)
+    // 空格上退格：清上一格，锚点退回被清的那一格
+    host.flush()
+    s.send({ type: 'VALUE.CLEAR_AT', index: 1 })
+    expect(s.context.get('focusedIndex')).toBe(1)
+  })
+
+  it('机器：blurOnComplete 在末格铺完就把锚点撤出组外，不等宿主写回', () => {
+    const host = delayedHost({ length: 2, value: ['1', ''], blurOnComplete: true })
+    const runtime = createVanillaRuntime()
+    const s = createService(pinInputMachine, { props: () => host.props, runtime })
+    runtime.start()
+    s.send({ type: 'INPUT.FOCUS', index: 1 })
+    s.send({ type: 'VALUE.FILL', index: 1, value: '2' })
+    expect(s.context.get('focusedIndex')).toBe(-1)
+  })
+
+  it('连接层：敲一下就跳一格，宿主写回之后接着敲仍是一下一格', () => {
+    const host = delayedHost({ length: 4, value: ['', '', '', ''] })
+    const m = open(host.props)
+    typeInto(m.boxes[0]!, '1')
+    // 宿主还没写回，框里按受控值拨回空；但焦点已经在第二格上
+    expect(boxValues(m)).toEqual(['', '', '', ''])
+    expect(focusedIndex(m)).toBe(1)
+    host.flush()
+    m.render()
+    expect(boxValues(m)).toEqual(['1', '', '', ''])
+    expect(focusedIndex(m)).toBe(1)
+    // 第二下敲的是第二格，不会把第一格盖掉
+    typeInto(m.boxes[1]!, '2')
+    host.flush()
+    m.render()
+    expect(boxValues(m)).toEqual(['1', '2', '', ''])
+    expect(focusedIndex(m)).toBe(2)
+  })
+
+  it('连接层：粘贴整串后焦点停在末格，退格照样一步一格', () => {
+    const host = delayedHost({ length: 4, value: ['', '', '', ''] })
+    const m = open(host.props)
+    paste(m.boxes[0]!, '2468')
+    expect(focusedIndex(m)).toBe(3)
+    host.flush()
+    m.render()
+    expect(boxValues(m)).toEqual(['2', '4', '6', '8'])
+    // 末格有值：退格清本格，焦点不动
+    pressKey(m.boxes[3]!, 'Backspace')
+    expect(focusedIndex(m)).toBe(3)
+    host.flush()
+    m.render()
+    expect(boxValues(m)).toEqual(['2', '4', '6', ''])
+    // 末格空了：退格退回第三格并清掉它，焦点随之退回
+    pressKey(m.boxes[3]!, 'Backspace')
+    expect(focusedIndex(m)).toBe(2)
+    host.flush()
+    m.render()
+    expect(boxValues(m)).toEqual(['2', '4', '', ''])
   })
 })

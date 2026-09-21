@@ -120,6 +120,20 @@ function commitValue(params: Params<PinInputSchema>, next: string[]): void {
     prop('onValueComplete')?.(detailsOf(next))
 }
 
+/**
+ * 写完值顺带裁定锚点，且只按刚写下的 `next` 裁，不回读 context：受控时 context 里的值直读宿主的
+ * prop，宿主把值写回要等它自己重渲，此刻回读拿到的仍是写之前那份——按它裁，第一个空格还是
+ * 刚填过的这一格，焦点就停在原地不走，用户得再敲一下才跳格。
+ */
+function anchorAfterWrite(params: Params<PinInputSchema>, next: string[], index: number): void {
+  const { context, prop } = params
+  if (prop('blurOnComplete') && isPinComplete(next)) {
+    context.set('focusedIndex', -1)
+    return
+  }
+  context.set('focusedIndex', pinFocusTarget(next, index))
+}
+
 /** 值存在 context 的 cell 里由其收口受控/非受控；机器只有一个状态，逻辑全在 context 与 actions。 */
 export const pinInputMachine = createMachine({
   name: 'pin-input',
@@ -184,6 +198,8 @@ export const pinInputMachine = createMachine({
         for (let i = 0; i < chars.length && e.index + i < length; i++)
           next[e.index + i] = chars[i]!
         commitValue(params, next)
+        // 铺完落到紧接着的下一格；值没变（选中后又敲了同一个字符）也照走，敲一下就该跳一格
+        anchorAfterWrite(params, next, e.index + chars.length)
       },
       clearValueAt: (params) => {
         const e = params.event.current()
@@ -195,6 +211,9 @@ export const pinInputMachine = createMachine({
           return
         next[e.index] = ''
         commitValue(params, next)
+        // 清掉的那一格随即成为第一个空格，锚点就停在它上面：清本格时焦点不动，
+        // 空格上退格清上一格时焦点随之退回
+        anchorAfterWrite(params, next, e.index)
       },
       clearValue: (params) => {
         commitValue(params, padPinValue([], pinLength(params.prop('length'))))
@@ -202,6 +221,10 @@ export const pinInputMachine = createMachine({
       setFocusedIndex: ({ context, event, prop }) => {
         const e = event.current()
         if (e.type !== 'INPUT.FOCUS')
+          return
+        // 锚点已经在这一格上就不再裁：这是值刚写完时挪过来的锚点，连接层照着它搬了焦点，
+        // 焦点事件跟着到达。此刻受控值可能还没写回，按它再裁一次会把焦点拽回刚填过的格子
+        if (context.get('focusedIndex') === e.index)
           return
         // 只读与禁用不按顺序录入：值本来就改不动，再把焦点往回拽只会挡住读与复制
         if (prop('disabled') || prop('readOnly')) {
