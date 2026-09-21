@@ -374,7 +374,7 @@
   /* 五个把手共用一副方形盒子，两种行的文字起点才对得齐；列设置区那颗与表头里的选择框同款，一眼看得出是同一件事。
      五颗都接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
      配方给，这里只把使用者槽映射到桥接槽；边长仍按 --xh-control-indicator-size 走。三颗勾选框是 outline 形态
-     （字段静息形态：canvas 底 + --xh-border-control 描边），展开箭头与排序钮是 ghost；空框与箭头坐在白底行上，
+     （字段静息形态：透明底 + --xh-border-control 描边），展开箭头与排序钮是 ghost；空框与箭头坐在白底行上，
      按下落 200 档，已勾选的品牌实心面按下派生 active 面；排序钮坐在表头淡底上，阶梯另由 host 槽给（见下） */
   [data-scope='table'][data-part='select-all-trigger'],
   [data-scope='table'][data-part='row-select-trigger'],
@@ -461,12 +461,12 @@
     display: none;
   }
 
-  /* 三个勾选把手：未选中时只剩一个空框（描边画出的 canvas 底空框），勾选标记靠前景色显隐，
+  /* 三个勾选把手：未选中时只剩一个空框（描边画出的透明底空框），勾选标记靠前景色显隐，
      切换选中不引起行宽抖动 */
   [data-scope='table'][data-part='select-all-trigger'],
   [data-scope='table'][data-part='row-select-trigger'],
   [data-scope='table'][data-part='column-visibility-trigger'] {
-    --xh-_table-trigger-bg: var(--xh-bg-canvas);
+    --xh-_table-trigger-bg: transparent;
     --xh-_table-trigger-border: var(--xh-table-trigger-border, var(--xh-border-control));
     --xh-_table-trigger-fg: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
     --xh-action-fg-rest: var(--xh-_table-trigger-fg);

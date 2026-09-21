@@ -158,14 +158,14 @@ describe('数字输入的尺寸与内部节奏', () => {
 })
 
 describe('数字输入的边界、只读与焦点', () => {
-  it('边界只由描边承担：outline 静息 canvas 底 + 控件描边、无影；subtle 淡底、描边透明、同样无影', async () => {
+  it('边界只由描边承担：outline 静息不填底 + 控件描边、无影；subtle 淡底、描边透明、同样无影', async () => {
     mountField()
     await settle()
     const control = part('control')
     expect(control.dataset.xhFieldChrome).toBe('')
     expect(control.dataset.variant).toBe('outline')
     expect(getComputedStyle(control).boxShadow).toBe('none')
-    expect(getComputedStyle(control).backgroundColor).toBe(tokenColor('--xh-bg-canvas'))
+    expect(getComputedStyle(control).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(control).borderTopColor).toBe(tokenColor('--xh-border-control'))
     teardown()
 

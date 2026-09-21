@@ -98,11 +98,11 @@ describe('checkboxGroup 控制盒', () => {
     })
   }
 
-  it('方框是字段家族的控制盒：canvas 底 + border-control 描边 + 无影，勾中后以语气色填充', async () => {
+  it('方框是字段家族的控制盒：不填底 + border-control 描边 + 无影，勾中后以语气色填充', async () => {
     await mountPair(false)
     const root = getPart('checkbox-group', 'root')
     const idle = getComputedStyle(getPart('checkbox-group', 'indicator'))
-    expect(idle.backgroundColor).toBe(resolveColor('--xh-bg-canvas', root))
+    expect(idle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(idle.borderTopColor).toBe(resolveColor('--xh-border-control', root))
     expect(idle.boxShadow).toBe('none')
     expect(idle.backgroundImage).toBe('none')
@@ -200,7 +200,7 @@ describe('checkboxGroup 控制盒', () => {
     expect(getComputedStyle(box).borderTopColor).toBe(restBorder)
     await pressPointer(item)
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(box).backgroundColor).toBe(resolveColor('--xh-bg-canvas', root))
+    expect(getComputedStyle(box).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     await releasePointerAway()
     await userEvent.hover(trigger)
     expect(getComputedStyle(trigger).backgroundColor).toBe('rgba(0, 0, 0, 0)')

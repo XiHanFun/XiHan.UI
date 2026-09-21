@@ -18,9 +18,9 @@
     padding-inline: var(--xh-field-control-padding-inline, var(--xh-_field-size-padding-inline));
     padding-block: 0;
     --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
-    --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
+    --xh-_field-variant-bg-rest: transparent;
     --xh-_field-variant-border-rest: var(--xh-border-control);
-    --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+    --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
     --xh-_field-variant-border-hover: var(--xh-border-control-hover);
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
@@ -43,9 +43,9 @@
   }
 
   [data-xh-field-chrome][data-variant='outline'] {
-    --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
+    --xh-_field-variant-bg-rest: transparent;
     --xh-_field-variant-border-rest: var(--xh-border-control);
-    --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+    --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
     --xh-_field-variant-border-hover: var(--xh-border-control-hover);
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);

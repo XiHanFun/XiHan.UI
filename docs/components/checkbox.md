@@ -70,7 +70,7 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 ### 特性
 
 - 支持选中、未选中与 `indeterminate` 状态。
-- 方框是字段家族的控制盒：canvas 底、描边与无影，勾中后以语气色填充，按下缩放并换底。
+- 方框是字段家族的控制盒：不填底、描边与无影，勾中后以语气色填充，按下缩放并换底。
 - `readOnly` 仍可聚焦并参与提交，`disabled` 不参与提交。
 - 标签、三档尺寸、校验状态和自定义指示器均使用同一状态动画。
 - `name` 与 `value` 通过隐藏字段参与原生表单。
@@ -236,7 +236,7 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-checkbox-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `--xh-bg-canvas` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `transparent` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-bg-checked` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-bg-checked-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked`<br>`state=indeterminate` | `--xh-_tone-active` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-bg-disabled` | `root` | `background-color` | `disabled` | `--xh-bg-subtle` | checkbox 的 root 部件 background-color 覆盖槽。 |

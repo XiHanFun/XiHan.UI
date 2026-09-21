@@ -255,7 +255,7 @@
     block-size: var(--xh-tree-checkbox-size, var(--xh-control-indicator-size));
     border: var(--xh-stroke-thin) solid var(--xh-tree-checkbox-border, var(--xh-border-control));
     border-radius: var(--xh-tree-checkbox-radius, var(--xh-shape-inset));
-    background: var(--xh-tree-checkbox-bg, var(--xh-bg-canvas));
+    background: var(--xh-tree-checkbox-bg, transparent);
     color: var(--xh-tree-checkbox-fg, var(--xh-fg-on-brand));
   }
 

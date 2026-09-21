@@ -182,8 +182,9 @@ function assertVariantMatrix(source) {
       throw new Error(`[field-chrome-recipe] variantValues.${variant}.readOnly.backgroundColor 必须为 var(--xh-bg-subtle)`)
   }
   const outline = source.variantValues.outline
-  if (outline.rest.backgroundColor !== 'var(--xh-bg-canvas)' || outline.rest.borderColor !== 'var(--xh-border-control)')
-    throw new Error('[field-chrome-recipe] variantValues.outline.rest 必须为 bg-canvas + border-control')
+  // 描边档静息不填底（§8.3）：盒里露出宿主的面，与浮层面板、卡片同一条边线、同一块底
+  if (outline.rest.backgroundColor !== 'transparent' || outline.rest.borderColor !== 'var(--xh-border-control)')
+    throw new Error('[field-chrome-recipe] variantValues.outline.rest 必须为 transparent + border-control')
   for (const variant of ['subtle', 'ghost']) {
     const value = source.variantValues[variant]
     if (value.rest.borderColor !== 'transparent')

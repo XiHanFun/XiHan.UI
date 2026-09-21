@@ -114,7 +114,7 @@ describe('table 把手接入 Action Control', () => {
     expect(selectAll.getAttribute('data-xh-action-variant')).toBe('outline')
     expect(unchecked.getBoundingClientRect().width).toBe(16)
     expect(unchecked.getBoundingClientRect().height).toBe(16)
-    expect(getComputedStyle(unchecked).backgroundColor).toBe(resolve('--xh-bg-canvas'))
+    expect(getComputedStyle(unchecked).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(unchecked).borderTopColor).toBe(resolve('--xh-border-control'))
     expect(getComputedStyle(unchecked).boxShadow).toBe('none')
     expect(getComputedStyle(checked).backgroundColor).toBe(resolve('--xh-bg-brand'))

@@ -127,7 +127,7 @@ afterEach(async () => {
 })
 
 describe('checkbox 字段家族控制盒与三态', () => {
-  it('方框是字段家族的控制盒：canvas 底 + border-control 描边 + 无影无顶光，勾中后以语气色填充', async () => {
+  it('方框是字段家族的控制盒：不填底 + border-control 描边（与装饰边同色）+ 无影无顶光，勾中后以语气色填充', async () => {
     await mount([
       h(XhCheckbox, { 'data-testid': 'off' }, () => '未勾'),
       h(XhCheckbox, { 'data-testid': 'on', 'defaultChecked': true }, () => '勾中'),
@@ -135,8 +135,9 @@ describe('checkbox 字段家族控制盒与三态', () => {
 
     const off = labelledBox('off')
     const idle = getComputedStyle(off)
-    expect(idle.backgroundColor).toBe(resolveColor(off, 'var(--xh-bg-canvas)'))
+    expect(idle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(idle.borderColor).toBe(resolveColor(off, 'var(--xh-border-control)'))
+    expect(idle.borderColor).toBe(resolveColor(off, 'var(--xh-border-default)'))
     expect(idle.boxShadow).toBe('none')
     expect(noHighlight(idle)).toBe(true)
     const on = getComputedStyle(labelledBox('on'))
@@ -171,7 +172,8 @@ describe('checkbox 字段家族控制盒与三态', () => {
       const check = getComputedStyle(indicator(`${tone}-on`), '::before').backgroundColor
       const line = getComputedStyle(indicator(`${tone}-mixed`), '::after').backgroundColor
 
-      expect(contrast(offBorder, page), `${theme}/${tone}/off`).toBeGreaterThanOrEqual(3)
+      // 未勾方框的描边与浮层面板、卡片的装饰边同一档（§8.3），3:1 留给高对比档
+      expect(offBorder, `${theme}/${tone}/off`).toBe(resolveColor(box(`${tone}-off`), 'var(--xh-border-default)'))
       expect(contrast(on.backgroundColor, page), `${theme}/${tone}/on`).toBeGreaterThanOrEqual(3)
       expect(contrast(mixed.backgroundColor, page), `${theme}/${tone}/mixed`).toBeGreaterThanOrEqual(3)
       expect(contrast(check, on.backgroundColor), `${theme}/${tone}/check`).toBeGreaterThanOrEqual(3)
@@ -180,7 +182,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     }
 
     const off = getComputedStyle(box('brand-off'))
-    expect(off.backgroundColor).toBe(resolveColor(box('brand-off'), 'var(--xh-bg-canvas)'))
+    expect(off.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(noHighlight(off)).toBe(true)
     expect(off.boxShadow).toBe('none')
     expect(off.backdropFilter).toBe('none')
@@ -245,7 +247,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     // 指针直接落在方框上：家族悬停块把未勾方框的描边升一档，底不动（§8.3 字段静息 → hover）
     await userEvent.hover(live)
     await expect.poll(() => getComputedStyle(live).borderColor).toBe(resolveColor(live, 'var(--xh-border-control-hover)'))
-    expect(getComputedStyle(live).backgroundColor).toBe(resolveColor(live, 'var(--xh-bg-canvas)'))
+    expect(getComputedStyle(live).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     await userEvent.unhover(live)
 
     await holdSpace(live)
@@ -259,7 +261,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     // 只读：按住不缩放、底不换（家族的按压块被只读映射钉回静息面）
     await holdSpace(readonly)
     expect(getComputedStyle(readonly).scale).toBe('none')
-    expect(getComputedStyle(readonly).backgroundColor).toBe(resolveColor(readonly, 'var(--xh-bg-canvas)'))
+    expect(getComputedStyle(readonly).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     await releaseSpace()
 
     // 禁用面：border-default + bg-subtle + fg-disabled，不靠 opacity；勾中的禁用方框同样退回中性面，勾由置灰色画出
@@ -327,6 +329,8 @@ describe('checkbox 字段家族控制盒与三态', () => {
   it('键盘 focus 在明暗三态下都达到 3:1，聚焦不改变 16px 控制盒几何', async () => {
     for (const theme of THEMES) {
       document.documentElement.dataset.theme = theme
+      // 未勾方框不填底：环压在页面底上，页面底随主题走
+      document.body.style.backgroundColor = 'var(--xh-bg-canvas)'
       await mount([
         h(XhCheckbox, { 'data-testid': 'off' }),
         h(XhCheckbox, { 'data-testid': 'on', 'defaultChecked': true }),
@@ -340,7 +344,9 @@ describe('checkbox 字段家族控制盒与三态', () => {
         element.focus()
         expect(element.matches(':focus-visible')).toBe(true)
         const style = getComputedStyle(element)
-        expect(contrast(style.outlineColor, style.backgroundColor), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
+        // 未勾方框不填底，环压在它露出的页面底上
+        const face = style.backgroundColor === 'rgba(0, 0, 0, 0)' ? getComputedStyle(document.body).backgroundColor : style.backgroundColor
+        expect(contrast(style.outlineColor, face), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
         const after = element.getBoundingClientRect()
         expect(after.width).toBe(before.width)
         expect(after.height).toBe(before.height)

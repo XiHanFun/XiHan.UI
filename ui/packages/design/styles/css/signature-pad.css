@@ -43,14 +43,14 @@
      控件行高那把尺量的是一行控件，一块要写字的面积用不上它。
      touch-action 由连接层内联写死，触摸落笔才不会被页面滚动抢走。
      外壳按字段规则自绘（§8.3 登记的画布型字段例外：字段家族配方钉死控件行高，画布按宽高比撑高吃不下它）：
-     静息 canvas 底 + border-control 描边 + control 圆角 + 无影 */
+     静息透明底 + border-control 描边 + control 圆角 + 无影 */
   [data-scope='signature-pad'][data-part='control'] {
     display: block;
     inline-size: 100%;
     aspect-ratio: var(--xh-signature-pad-aspect-ratio, 5 / 2);
     border: var(--xh-stroke-thin) solid var(--xh-signature-pad-border, var(--xh-border-control));
     border-radius: var(--xh-signature-pad-radius, var(--xh-shape-control));
-    background: var(--xh-signature-pad-bg, var(--xh-bg-canvas));
+    background: var(--xh-signature-pad-bg, transparent);
     cursor: crosshair;
     /* 一划就会把画布连同旁边的文字一起刷成选中态 */
     user-select: none;

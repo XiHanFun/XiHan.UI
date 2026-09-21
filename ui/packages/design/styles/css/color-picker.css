@@ -77,7 +77,7 @@
     padding-inline: var(--xh-color-picker-control-px, var(--xh-_color-picker-px));
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-control-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-control-radius, var(--xh-shape-control));
-    background: var(--xh-color-picker-control-bg, var(--xh-bg-canvas));
+    background: var(--xh-color-picker-control-bg, transparent);
     box-shadow: var(--xh-color-picker-control-shadow, var(--xh-elevation-raised));
     color: var(--xh-color-picker-control-fg, var(--xh-fg-default));
     cursor: pointer;
@@ -357,7 +357,7 @@
     padding-inline: var(--xh-color-picker-input-px, var(--xh-control-px-sm));
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-input-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-input-radius, var(--xh-shape-control));
-    background: var(--xh-color-picker-input-bg, var(--xh-bg-canvas));
+    background: var(--xh-color-picker-input-bg, transparent);
     color: inherit;
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;

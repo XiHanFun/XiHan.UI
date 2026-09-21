@@ -139,12 +139,13 @@ describe('字段族默认视觉盒', () => {
     }
   })
 
-  it('七个字段静息为描边式：canvas 底、border-control 描边、无阴影', () => {
+  it('七个字段静息为描边式：不填底、border-control 描边（与装饰边 border-default 同色）、无阴影', () => {
     mount()
     for (const family of FAMILIES) {
       const value = exterior(control(family))
-      expect(value.background, family).toBe(resolveColor('var(--xh-bg-canvas)'))
+      expect(value.background, family).toBe('rgba(0, 0, 0, 0)')
       expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-control)'))
+      expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-default)'))
       expect(value.shadow, family).toBe('none')
     }
   })
@@ -155,7 +156,7 @@ describe('字段族默认视觉盒', () => {
       await userEvent.hover(control(family))
       await settle()
       const value = exterior(control(family))
-      expect(value.background, family).toBe(resolveColor('color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas))'))
+      expect(value.background, family).toBe(resolveColor('color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent)'))
       expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-control-hover)'))
       expect(value.shadow, family).toBe('none')
     }

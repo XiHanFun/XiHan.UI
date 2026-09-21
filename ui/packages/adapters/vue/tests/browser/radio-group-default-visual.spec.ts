@@ -157,7 +157,7 @@ describe('radio-group 默认视觉', () => {
     expect(getComputedStyle(idle).borderTopColor).toBe(restBorder)
     await pressPointer(items[1]!)
     expect(getComputedStyle(items[1]!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-canvas', root))
+    expect(getComputedStyle(idle).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
   it('禁用：圆圈 border-default + bg-subtle、圆点 fg-disabled，整行 not-allowed 且不换面', async () => {
