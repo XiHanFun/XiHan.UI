@@ -168,6 +168,19 @@ describe('action Control Family Recipe', () => {
     expect(textTarget).not.toContain('min-inline-size')
   })
 
+  it('粗指针热区的 ::after 规则整个由 :where() 包住，皮肤对同一伪元素的覆盖不受源序影响', async () => {
+    const css = compileActionControlRecipe(await source())
+    const coarse = css.slice(css.indexOf('@media (pointer: coarse)'), css.indexOf('@media (forced-colors: active)'))
+    const selectors = [...coarse.matchAll(/^\s*([^{}\n]+?)\s*\{$/gm)].map(m => m[1]).filter(s => !s.startsWith('@'))
+    expect(selectors.length).toBe(2)
+    for (const selector of selectors) {
+      // (0,0,1)：伪元素自身的那一分之外全部归零。消费方产物里家族被重复内联、副本落在皮肤之后时，
+      // 皮肤那条 (0,2,1) 的覆盖也不会被反超
+      expect(selector).toMatch(/^:where\([^{}]+\)::after$/)
+      expect(selector).toContain('[data-xh-action-control]')
+    }
+  })
+
   it('默认值相同的状态仍保留独立覆盖槽，颜色槽缺省指向形态矩阵', async () => {
     const css = compileActionControlRecipe(await source())
     // hover 的前景与 rest 默认都取 fg-default，但组件仍可只覆盖 hover，不能被编译优化吞掉。
