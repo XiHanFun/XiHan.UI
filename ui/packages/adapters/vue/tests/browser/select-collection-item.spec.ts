@@ -203,7 +203,7 @@ describe('select 使用 Collection Item', () => {
     expect(Number.parseFloat(separatorStyle.height)).toBeGreaterThan(0)
   })
 
-  it('page 上下文：选中 = 品牌淡底 + 前导对号，current = 指示条，宽度不变', async () => {
+  it('page 上下文：选中 = 品牌淡底 + 前导对号，current 同一块面、不画指示条，宽度不变', async () => {
     // 裸条目只借皮肤在场：面板收着，否则随字段缺省宽撑到 16rem 的面板会盖住条目中心、挡住指针
     await mountSelect('md', 'closed')
     const item = rawItem({ context: 'page' })
@@ -221,10 +221,11 @@ describe('select 使用 Collection Item', () => {
     expect(item.getBoundingClientRect().width).toBe(width)
     expect(getComputedStyle(item, '::before').content).toBe('none')
 
+    // 当前项（SideNav 当前页）与选中同一块面：行面 + 字色就是标记，起始侧不再画 2px 指示条
     item.dataset.current = ''
-    const bar = getComputedStyle(item, '::before')
-    expect(bar.width).toBe('2px')
-    expect(bar.backgroundColor).toBe(tokenColor('--xh-fg-on-brand-subtle'))
+    expect(getComputedStyle(item, '::before').content).toBe('none')
+    expect(getComputedStyle(item).backgroundColor).toBe(tokenColor('--xh-bg-brand-subtle'))
+    expect(getComputedStyle(item).color).toBe(tokenColor('--xh-fg-on-brand-subtle'))
     expect(item.getBoundingClientRect().width).toBe(width)
 
     await userEvent.hover(item)

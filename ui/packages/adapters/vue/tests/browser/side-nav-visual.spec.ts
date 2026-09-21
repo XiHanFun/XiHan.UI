@@ -114,17 +114,15 @@ function trigger(value: string): HTMLElement {
 }
 
 describe('side-nav 当前项与展开路径（真源 §7.3 页内持久集合 / 展开路径）', () => {
-  it('当前页：品牌淡底 + 淡底前景 + 起始侧 2px 指示条；展开路径是与悬停同档的中性面，不用品牌色也不加粗', async () => {
+  it('当前页：品牌淡底 + 淡底前景，起始侧不画指示条；展开路径是与悬停同档的中性面，不用品牌色也不加粗', async () => {
     await mountNav()
     const current = link('user-role')
     const plain = link('user-list')
     expect(current.hasAttribute('data-current')).toBe(true)
     expect(getComputedStyle(current).backgroundColor).toBe(resolve('--xh-bg-brand-subtle'))
     expect(getComputedStyle(current).color).toBe(resolve('--xh-fg-on-brand-subtle', 'color'))
-    const bar = getComputedStyle(current, '::before')
-    expect(bar.position).toBe('absolute')
-    expect(bar.width).toBe('2px')
-    expect(bar.backgroundColor).toBe(resolve('--xh-fg-brand'))
+    // 当前页只由行面与字色表达：配方 markers.page.current 为 none，::before 不再画 2px 竖线
+    expect(getComputedStyle(current, '::before').content).toBe('none')
     expect(getComputedStyle(plain, '::before').content).toBe('none')
 
     const inPath = trigger('user')

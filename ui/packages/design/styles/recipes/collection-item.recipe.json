@@ -11,9 +11,9 @@
     "nav": ["rest", "hover", "keyboard-highlight", "pressed", "open-path", "current", "current+hover", "current+highlight", "current+pressed", "terminal"]
   },
   "markers": {
-    "$description": "标记类型按上下文固定：overlay 对号在行尾；page 对号在行首（前导标记），current 另画起始侧 2px 品牌指示条。nav 不画对号也不按条目画指示条：nav 的 2px 指示条是组件自己的滑动 indicator 部件（Tabs / Anchor / NavigationMenu），机器量几何、皮肤画在 list 上；无该部件时 Tabs / Anchor 由自己的皮肤在当前项上画一条静态线；NavigationMenu 的部件指的是开着的面板，当前页链接的静态线始终由自己的皮肤画、不随部件收起；Breadcrumb / Menubar 无指示条。",
+    "$description": "标记类型按上下文固定：overlay 对号在行尾；page 对号在行首（前导标记），current 只由品牌淡底行面与字色表达、不另画起始侧指示条（SideNav 当前项，2026-09-22 起）；bar 那组尺寸留给显式写 current: bar 的语境。nav 不画对号也不按条目画指示条：nav 的 2px 指示条是组件自己的滑动 indicator 部件（Tabs / Anchor / NavigationMenu），机器量几何、皮肤画在 list 上；无该部件时 Tabs / Anchor 由自己的皮肤在当前项上画一条静态线；NavigationMenu 的部件指的是开着的面板，当前页链接的静态线始终由自己的皮肤画、不随部件收起；Breadcrumb / Menubar 无指示条。",
     "overlay": { "glyph": "trailing", "current": "none" },
-    "page": { "glyph": "leading", "current": "bar" },
+    "page": { "glyph": "leading", "current": "none" },
     "nav": { "glyph": "none", "current": "none" },
     "bar": {
       "thickness": "var(--xh-stroke-thick)",
