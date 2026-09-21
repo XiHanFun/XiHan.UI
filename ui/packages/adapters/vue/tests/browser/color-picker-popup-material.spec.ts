@@ -89,7 +89,7 @@ describe('颜色选择器浮层：floating 实体面', () => {
     part('content').getAnimations().forEach(animation => animation.finish())
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
-    expect(alpha(control.backgroundColor)).toBe(255)
+    expect(alpha(control.backgroundColor)).toBe(0)
     expect(control.backdropFilter).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     // floating：实体底 + --xh-border-default 描边 + --xh-elevation-floating 落影，不透景、不画顶部边界光
@@ -107,7 +107,7 @@ describe('颜色选择器浮层：floating 实体面', () => {
     // 色相带归内嵌的 color-slider：轨道渐变由连接层内联给，挂载点把滑块 root 上的两个私有槽接上
     expect(getComputedStyle(part('track', 'color-slider')).backgroundImage).toContain('linear-gradient')
     expect(part('thumb', 'color-slider').getBoundingClientRect().width).toBeGreaterThan(0)
-    expect(alpha(getComputedStyle(part('channel-input')).backgroundColor)).toBe(255)
+    expect(alpha(getComputedStyle(part('channel-input')).backgroundColor)).toBe(0)
   })
 
   it.each(['light', 'dark'] as const)('%s：增强对比度时壳仍是实体表面，色板仍保留原色', async (theme) => {

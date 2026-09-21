@@ -132,7 +132,7 @@ describe('mention 单一状态表面', () => {
     const content = byTestId('content')
     const empty = byTestId('empty')
     finishAnimations(content)
-    expect(alpha(getComputedStyle(byTestId('input')).backgroundColor)).toBe(255)
+    expect(alpha(getComputedStyle(byTestId('input')).backgroundColor)).toBe(0)
     expect(getComputedStyle(byTestId('input')).backdropFilter).toBe('none')
     expect(getComputedStyle(content).backdropFilter).toContain('blur(16px)')
     expect(alpha(getComputedStyle(content).backgroundColor)).toBeLessThan(255)

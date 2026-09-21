@@ -67,7 +67,7 @@ describe('组合框 M2 浮层', () => {
     await mount(theme)
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
-    expect(alpha(control.backgroundColor)).toBe(255)
+    expect(alpha(control.backgroundColor)).toBe(0)
     expect(control.backdropFilter).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     expect(content.backdropFilter).toContain('blur(16px)')

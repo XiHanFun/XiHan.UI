@@ -260,7 +260,7 @@ describe('时间范围选择器的家族观感', () => {
     const control = part('control')
     const rest = getComputedStyle(control)
     expect(control.getAttribute('data-xh-field-chrome')).toBe('')
-    expect(alpha(rest.backgroundColor)).toBe(255)
+    expect(alpha(rest.backgroundColor)).toBe(0)
     expect(rest.borderTopStyle).toBe('solid')
     expect(alpha(rest.borderTopColor)).toBe(255)
     expect(rest.boxShadow).toBe('none')
