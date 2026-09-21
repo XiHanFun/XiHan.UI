@@ -42,8 +42,10 @@
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
+    "vite": "catalog:",
     "vitest": "catalog:"
   }
 }
