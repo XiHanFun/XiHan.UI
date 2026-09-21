@@ -92,6 +92,11 @@ async function mount(density: 'comfortable' | 'compact'): Promise<void> {
   await userEvent.click(document.querySelector<HTMLElement>('[data-scope=\'menubar\'][data-part=\'trigger\'][data-value=\'edit\']')!)
   await nextTick()
   await nextTick()
+  // 浮层有 slide-in 进场，播放期间整块被 translate 了一段小数像素，经变换矩阵量到的矩形带浮点噪声
+  // （16 → 16.0000038，整套并行跑时更常撞上）；等它跑完再量
+  await Promise.all(
+    document.getAnimations().map(animation => animation.finished.catch(() => undefined)),
+  )
 }
 
 function indicatorSize(): number {
