@@ -78,7 +78,9 @@
   }
 
   [data-scope='select'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+    /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准。
+       浮层条目里自绘的状态字形（勾选标记所在的标记盒与盒里的勾）不读这支：它们是指示符，走
+       --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺（§6.5） */
     --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-md));
 
     display: inline-flex;
@@ -525,16 +527,22 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动。
+     盒与盒里的勾是指示符（§6.5）：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
+     兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（勾选标记不是勾选格，不取 × 0.75，与 Listbox / Menu 族
+     同口径）；不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 比
+     16 / 14 的指示符档大一圈 */
   [data-scope='select'][data-part='item-indicator'] {
+    --xh-icon-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-select-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
-    block-size: var(--xh-select-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
   }
 
-  /* 同上：没写内容就由皮肤画勾 */
+  /* 同上：没写内容就由皮肤画勾。尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档 */
   [data-scope='select'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
