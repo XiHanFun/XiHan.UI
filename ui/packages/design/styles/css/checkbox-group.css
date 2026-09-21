@@ -29,8 +29,8 @@
     /* 勾中的填色随语气走；没写 data-tone 时退回品牌色 */
     --xh-_checkbox-group-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_checkbox-group-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    /* 方框是字段家族的控制盒（§8.3 字段静息形态）：canvas 底 + --xh-border-control 描边 + 无影，不消费海拔与顶光 */
-    --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
+    /* 方框是字段家族的控制盒（§8.3 字段静息形态）：透明底 + --xh-border-control 描边 + 无影，不消费海拔与顶光 */
+    --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg, transparent);
     /* 条目与全选格是方框的承载面：行自己坐画布走 100 → 200，行面上的方框按淡底容器阶梯再上一档（200 → 300）。
        两支私有槽是这一档的唯一来源——宿主拿它们给 --xh-action-host-bg-* 赋值（桥接槽只写不读），
        方框按下读同一支私有槽，即与宿主的 host 槽同源 */

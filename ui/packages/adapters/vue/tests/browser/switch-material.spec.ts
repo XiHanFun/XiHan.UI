@@ -123,8 +123,9 @@ describe('switch 实体轨道与 raised 滑块', () => {
     const offBorder = resolveColor(track('off'), 'var(--xh-_switch-track-border)')
     const readonlyBorder = resolveColor(track('readonly'), 'var(--xh-_switch-track-border)')
 
-    expect(contrast(offBorder, page), '未选中轨道边界与页面').toBeGreaterThanOrEqual(3)
-    expect(contrast(readonlyBorder, page), '只读轨道边界与页面').toBeGreaterThanOrEqual(3)
+    // 轨道描边与浮层面板、卡片的装饰边同一档（§8.3 所有带边框的控件盒），3:1 留给高对比档
+    expect(offBorder, '未选中轨道边界').toBe(resolveColor(track('off'), 'var(--xh-border-default)'))
+    expect(readonlyBorder, '只读轨道边界').toBe(resolveColor(track('readonly'), 'var(--xh-border-default)'))
     expect(contrast(on.backgroundColor, page), '选中轨道与页面').toBeGreaterThanOrEqual(3)
     expect(off.backgroundColor).not.toBe(on.backgroundColor)
     expect(readonly.backgroundColor).not.toBe(on.backgroundColor)

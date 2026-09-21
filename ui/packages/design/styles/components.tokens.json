@@ -9410,7 +9410,7 @@
         "readonly"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "checkbox 的 root 部件 background-color 覆盖槽。"
@@ -9942,7 +9942,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、root、select-all-trigger 部件 background-color 覆盖槽。"
@@ -13585,7 +13585,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "color-picker 的 control 部件 background 覆盖槽。"
@@ -13901,7 +13901,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 background 覆盖槽。"
@@ -28673,7 +28673,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 background 覆盖槽。"
@@ -49127,7 +49127,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "question-flow 的 item-indicator 部件 background 覆盖槽。"
@@ -50321,7 +50321,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "radio-group 的 indicator 部件 background 覆盖槽。"
@@ -55078,7 +55078,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -74539,7 +74539,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。"
@@ -76197,7 +76197,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "transparent"
       ],
       "visibility": "public",
       "description": "tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。"

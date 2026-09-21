@@ -148,12 +148,14 @@
       "$value": "{color.neutral.300}"
     },
     "control": {
+      "$description": "控件边界（输入框壳、勾选框、单选圈、开关轨道、拖放区）。与装饰边界 {border.default} 同一档：字段与它旁边的浮层面板、卡片描边同色，页面里只有一种边线重量。1.26:1 达不到 WCAG 1.4.11 的 3:1，那条门槛留给高对比档（.more 换到 neutral.600）；缺省档靠占位文字、标签与聚焦环辨认控件。",
       "$type": "color",
-      "$value": "{color.neutral.450}"
+      "$value": "{border.default}"
     },
     "control-hover": {
+      "$description": "悬停把控件边界升两档：静息在 200，升到 300 只差一道明度、在 1px 描边上看不出来。",
       "$type": "color",
-      "$value": "{color.neutral.500}"
+      "$value": "{color.neutral.400}"
     },
     "control-focus": {
       "$description": "聚焦时控件的描边色，与聚焦环同色；常态描边是 {border.control}，两者取值不同，聚焦才在描边上看得出来。",

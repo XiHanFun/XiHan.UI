@@ -21,8 +21,8 @@
     --xh-_input-group-h: var(--xh-control-h-md);
     --xh-_input-group-px: var(--xh-control-px-md);
     --xh-_input-group-font-size: var(--xh-control-font-md);
-    --xh-_input-group-bg: var(--xh-bg-canvas);
-    --xh-_input-group-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+    --xh-_input-group-bg: transparent;
+    --xh-_input-group-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
     /* 组壳按字段外壳画 outline 描边（§8.3）：静息 --xh-border-control、悬停升 -hover、聚焦换 -focus，无影 */
     --xh-_input-group-border: var(--xh-border-control);
     --xh-_input-group-border-hover: var(--xh-border-control-hover);

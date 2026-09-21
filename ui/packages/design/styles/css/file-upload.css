@@ -50,7 +50,7 @@
     padding-inline: var(--xh-file-upload-dropzone-px, var(--xh-space-4));
     border: var(--xh-stroke-thick) dashed var(--xh-file-upload-dropzone-border, var(--xh-border-control));
     border-radius: var(--xh-file-upload-dropzone-radius, var(--xh-shape-surface));
-    background: var(--xh-file-upload-dropzone-bg, var(--xh-bg-canvas));
+    background: var(--xh-file-upload-dropzone-bg, transparent);
     color: var(--xh-file-upload-dropzone-fg, var(--xh-fg-muted));
     font-size: var(--xh-file-upload-dropzone-font-size, var(--xh-text-body-size));
     text-align: center;

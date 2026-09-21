@@ -485,8 +485,8 @@
     --xh-material-frosted-shadow: 0 2px 4px -2px oklch(0.145 0.005 258 / 0.1), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16);
     --xh-_contrast-default-border-at-limit: var(--xh-color-warning-600);
     --xh-_contrast-more-border-at-limit: var(--xh-color-warning-800);
-    --xh-_contrast-default-border-control: var(--xh-color-neutral-450);
     --xh-_contrast-more-border-control: var(--xh-color-neutral-600);
+    --xh-_contrast-default-border-control-hover: var(--xh-color-neutral-400);
     --xh-_contrast-more-border-control-hover: var(--xh-color-neutral-700);
     --xh-_contrast-default-border-default: var(--xh-color-neutral-200);
     --xh-_contrast-more-border-default: var(--xh-color-neutral-550);
@@ -508,8 +508,8 @@
     --xh-_contrast-default-material-frosted-separator: oklch(0.145 0.005 258 / 0.12);
     --xh-_contrast-default-material-soft-highlight: oklch(1 0 0 / 0.72);
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
-    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
-    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-color-neutral-500)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
+    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
+    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control-hover)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
     --xh-border-default: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
@@ -586,8 +586,8 @@
     --xh-material-frosted-shadow: 0 2px 4px -2px oklch(0 0 0 / 0.42), 0 12px 28px -12px oklch(0 0 0 / 0.52);
     --xh-_contrast-default-border-at-limit: var(--xh-color-warning-500);
     --xh-_contrast-more-border-at-limit: var(--xh-color-warning-400);
-    --xh-_contrast-default-border-control: var(--xh-color-neutral-550);
     --xh-_contrast-more-border-control: var(--xh-color-neutral-400);
+    --xh-_contrast-default-border-control-hover: var(--xh-color-neutral-550);
     --xh-_contrast-more-border-control-hover: var(--xh-color-neutral-300);
     --xh-_contrast-default-border-default: var(--xh-color-neutral-700);
     --xh-_contrast-more-border-default: var(--xh-color-neutral-400);
@@ -609,8 +609,8 @@
     --xh-_contrast-default-material-frosted-separator: oklch(1 0 0 / 0.12);
     --xh-_contrast-default-material-soft-highlight: oklch(1 0 0 / 0.07);
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
-    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
-    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-color-neutral-500)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
+    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
+    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control-hover)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
     --xh-border-default: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
@@ -637,8 +637,8 @@
     --xh-_contrast-use-default: initial;
     --xh-_contrast-use-more: ;
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
-    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
-    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-color-neutral-500)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
+    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
+    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control-hover)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
     --xh-border-default: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
@@ -663,8 +663,8 @@
     --xh-_contrast-use-default: ;
     --xh-_contrast-use-more: initial;
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
-    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
-    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-color-neutral-500)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
+    --xh-border-control: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
+    --xh-border-control-hover: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control-hover)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
     --xh-border-default: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));

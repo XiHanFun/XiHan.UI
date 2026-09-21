@@ -355,7 +355,7 @@
     block-size: var(--xh-transfer-checkbox-size, var(--xh-_transfer-box));
     border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
     border-radius: var(--xh-transfer-checkbox-radius, var(--xh-shape-inset));
-    background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
+    background: var(--xh-transfer-checkbox-bg, transparent);
     color: var(--xh-transfer-checkbox-fg, var(--xh-_transfer-on-accent));
     font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-_transfer-box) * 0.75));
     line-height: var(--xh-leading-none);

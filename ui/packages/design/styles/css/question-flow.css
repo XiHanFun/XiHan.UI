@@ -239,7 +239,7 @@
     justify-content: center;
     border: var(--xh-stroke-thin) solid var(--xh-question-flow-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-question-flow-indicator-radius, var(--xh-shape-inset));
-    background: var(--xh-question-flow-indicator-bg, var(--xh-bg-canvas));
+    background: var(--xh-question-flow-indicator-bg, transparent);
     color: var(--xh-question-flow-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     inline-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));
     block-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));

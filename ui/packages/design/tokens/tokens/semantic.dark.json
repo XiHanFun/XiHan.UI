@@ -39,8 +39,8 @@
     "default": { "$description": "装饰性边界。深色档留在 700：往下的半档 750 与 {bg.subtle} 只差 1.04，热力图格子的描边落到那一档就与空格的底连成一片。", "$type": "color", "$value": "{color.neutral.700}" },
     "subtle": { "$type": "color", "$value": "{color.neutral.800}" },
     "strong": { "$type": "color", "$value": "{color.neutral.600}" },
-    "control": { "$type": "color", "$value": "{color.neutral.550}" },
-    "control-hover": { "$type": "color", "$value": "{color.neutral.500}" },
+    "control": { "$description": "控件边界与装饰边界 {border.default} 同一档（700），与浅色档同一条规则；3:1 留给高对比档。", "$type": "color", "$value": "{border.default}" },
+    "control-hover": { "$description": "悬停从 700 升到 550：深色档往亮端走两档才看得出。", "$type": "color", "$value": "{color.neutral.550}" },
     "control-focus": { "$description": "聚焦时控件的描边色，与聚焦环同色；常态描边是 {border.control}，两者取值不同，聚焦才在描边上看得出来。", "$type": "color", "$value": "{ring.focus}" },
     "invalid": { "$type": "color", "$value": "{color.danger.500}" },
     "at-limit": { "$type": "color", "$value": "{color.warning.500}" }

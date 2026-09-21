@@ -94,19 +94,19 @@
   "variantValues": {
     "outline": {
       "rest": {
-        "backgroundColor": "var(--xh-bg-canvas)",
+        "backgroundColor": "transparent",
         "borderColor": "var(--xh-border-control)"
       },
       "hover": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas))",
+        "backgroundColor": "color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent)",
         "borderColor": "var(--xh-border-control-hover)"
       },
       "focus": {
-        "backgroundColor": "var(--xh-bg-canvas)",
+        "backgroundColor": "transparent",
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "var(--xh-bg-canvas)",
+        "backgroundColor": "transparent",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -118,7 +118,7 @@
         "borderColor": "var(--xh-border-default)"
       },
       "loading": {
-        "backgroundColor": "var(--xh-bg-canvas)",
+        "backgroundColor": "transparent",
         "borderColor": "var(--xh-border-control)"
       }
     },

@@ -76,7 +76,7 @@ function tokenColor(name: string): string {
 }
 
 describe('prompt-input 的字段描边外壳', () => {
-  it.each(['light', 'dark'] as const)('%s：外壳走 Field Chrome 描边式（canvas 底 + border-control + 无影，无顶光无模糊），输入段透明', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：外壳走 Field Chrome 描边式（不填底 + border-control + 无影，无顶光无模糊），输入段透明', async (theme) => {
     document.documentElement.dataset.theme = theme
     mount()
     await settle()
@@ -86,8 +86,8 @@ describe('prompt-input 的字段描边外壳', () => {
     const rootStyle = getComputedStyle(root)
     const inputStyle = getComputedStyle(input)
     expect(root.getAttribute('data-xh-field-chrome')).toBe('')
-    expect(alpha(rootStyle.backgroundColor)).toBe(255)
-    expect(rootStyle.backgroundColor).toBe(tokenBackground('--xh-bg-canvas'))
+    // 描边式不填底：露出宿主的面，边界只由描边承担
+    expect(alpha(rootStyle.backgroundColor)).toBe(0)
     expect(rootStyle.backgroundImage).toBe('none')
     expect(rootStyle.borderTopWidth).toBe('1px')
     expect(rootStyle.borderTopColor).toBe(tokenColor('--xh-border-control'))
@@ -172,7 +172,7 @@ describe('prompt-input 的字段描边外壳', () => {
     const root = part('root')
     const input = part('input') as HTMLTextAreaElement
     const style = getComputedStyle(root)
-    expect(alpha(style.backgroundColor)).toBe(255)
+    expect(alpha(style.backgroundColor)).toBe(0)
     expect(style.backdropFilter).toBe('none')
     expect(style.borderTopWidth).toBe('1px')
     input.focus()
@@ -183,7 +183,7 @@ describe('prompt-input 的字段描边外壳', () => {
   it.each([
     ['减少透明度', { name: 'prefers-reduced-transparency', value: 'reduce' }, '(prefers-reduced-transparency: reduce)'],
     ['强制色', { name: 'forced-colors', value: 'active' }, '(forced-colors: active)'],
-  ] as const)('%s：系统辅助模式保持实体面、无影无渐变，输入段仍透明', async (_, feature, query) => {
+  ] as const)('%s：系统辅助模式保持描边面、无影无渐变，输入段仍透明', async (_, feature, query) => {
     await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [feature] })
     expect(matchMedia(query).matches).toBe(true)
     mount()
@@ -192,7 +192,8 @@ describe('prompt-input 的字段描边外壳', () => {
     const root = part('root')
     const input = part('input')
     const style = getComputedStyle(root)
-    expect(alpha(style.backgroundColor)).toBe(255)
+    // 强制色下底由系统 Canvas 顶上（不透明），减少透明度下仍是描边式的透明底
+    expect(alpha(style.backgroundColor)).toBe(feature.name === 'forced-colors' ? 255 : 0)
     expect(style.backdropFilter).toBe('none')
     expect(style.boxShadow).toBe('none')
     expect(style.backgroundImage).toBe('none')
@@ -200,13 +201,13 @@ describe('prompt-input 的字段描边外壳', () => {
     expect(alpha(getComputedStyle(input).backgroundColor)).toBe(0)
   })
 
-  it('打印：外壳保持实体描边面，无滤镜与投影', async () => {
+  it('打印：外壳保持描边面，无滤镜与投影', async () => {
     await cdp().send('Emulation.setEmulatedMedia', { media: 'print', features: [] })
     mount()
     await settle()
 
     const style = getComputedStyle(part('root'))
-    expect(alpha(style.backgroundColor)).toBe(255)
+    expect(alpha(style.backgroundColor)).toBe(0)
     expect(style.backdropFilter).toBe('none')
     expect(style.boxShadow).toBe('none')
     expect(style.borderTopWidth).toBe('1px')

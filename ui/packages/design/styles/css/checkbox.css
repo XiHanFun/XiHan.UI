@@ -28,11 +28,11 @@
     --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
 
     /* 方框接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
-       焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值（§8.3）：canvas 底 +
+       焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值（§8.3）：透明底 +
        --xh-border-control 描边 + 无影，不消费海拔与顶光；悬停只把描边升一档，底不动；按下换到 200 档中性面
        （白底承载）；边长随 --xh-control-indicator-* 走，不取家族的 profile 尺寸。
        常态 / 勾中 / 校验失败 / 只读只换下面四支私有槽，桥接槽的映射写一次 */
-    --xh-_checkbox-bg: var(--xh-checkbox-bg, var(--xh-bg-canvas));
+    --xh-_checkbox-bg: var(--xh-checkbox-bg, transparent);
     --xh-_checkbox-bg-pressed: var(--xh-checkbox-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-_checkbox-border: var(--xh-checkbox-border, var(--xh-border-control));
     --xh-_checkbox-border-hover: var(--xh-checkbox-border-hover, var(--xh-border-control-hover));

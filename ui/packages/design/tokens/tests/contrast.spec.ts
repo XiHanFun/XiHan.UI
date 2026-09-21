@@ -193,18 +193,29 @@ const OUTSIDE_CONTROL_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]
   ['dark', 'fg.subtle', 'bg.surface-raised'],
 ]
 
-// 控件边界走 border.control，WCAG 1.4.11 的 3:1 是硬门槛。
-// 这一族的取值判据是「中性色阶里第一个过 3:1 的档」：再退一档浅色掉到 2.59、深色掉到 2.54，
-// 再进一档浅色跳到 4.73（已是正文级重量，1px 描边取到那里整屏会发硬）。
-const CONTROL_BORDER_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
-  ['light', 'border.control', 'bg.canvas'],
-  ['light', 'border.control', 'bg.surface'],
-  ['light', 'border.control-hover', 'bg.canvas'],
-  ['light', 'border.control-hover', 'bg.surface'],
-  ['dark', 'border.control', 'bg.canvas'],
-  ['dark', 'border.control', 'bg.surface'],
-  ['dark', 'border.control-hover', 'bg.canvas'],
-  ['dark', 'border.control-hover', 'bg.surface'],
+// 控件边界走 border.control。缺省档它与装饰边界 border.default 同一档：输入框壳、勾选框、单选圈
+// 与旁边的浮层面板、卡片描边同色，页面里只有一种边线重量（设计决定，2026-09-22）。
+// 这一档 1.26:1 达不到 WCAG 1.4.11 的 3:1，那条门槛留给高对比档：.more 里控件边界换到 neutral.600 / 400，
+// 由下面 MORE_BORDERS 那组 4.5:1 与这里的 3:1 一起钉住；缺省档只钉「与装饰边同色」与「悬停更重」。
+const CONTROL_BORDER_SAME_AS_DEFAULT: ReadonlyArray<keyof typeof themes> = ['light', 'dark']
+
+const CONTROL_BORDER_MORE_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
+  ['light-more', 'border.control', 'bg.canvas'],
+  ['light-more', 'border.control', 'bg.surface'],
+  ['light-more', 'border.control-hover', 'bg.canvas'],
+  ['light-more', 'border.control-hover', 'bg.surface'],
+  ['dark-more', 'border.control', 'bg.canvas'],
+  ['dark-more', 'border.control', 'bg.surface'],
+  ['dark-more', 'border.control-hover', 'bg.canvas'],
+  ['dark-more', 'border.control-hover', 'bg.surface'],
+]
+
+// 悬停档的棘轮：静息落到装饰边那一档之后，悬停必须还能看出一道台阶（浅色 2.5、深色 1.9 起）。
+const CONTROL_HOVER_RATCHET: ReadonlyArray<[keyof typeof themes, string, number]> = [
+  ['light', 'bg.canvas', 2.5],
+  ['light', 'bg.surface', 2.5],
+  ['dark', 'bg.canvas', 3.0],
+  ['dark', 'bg.surface', 2.7],
 ]
 
 // 悬停必须比静息更重，否则「悬停反而变淡」——这条比绝对值更容易在改色时被破坏。
@@ -288,10 +299,22 @@ describe('禁用态实心按钮的字底棘轮（1.4.3 豁免，只钉住不许�
   })
 })
 
-describe('控件边界（WCAG 1.4.11，3:1）', () => {
-  for (const [theme, fg, bg] of CONTROL_BORDER_PAIRS) {
-    it(`${theme} ${fg} / ${bg}`, () => {
+describe('控件边界', () => {
+  for (const theme of CONTROL_BORDER_SAME_AS_DEFAULT) {
+    it(`${theme} 缺省档 border.control 与 border.default 同色`, () => {
+      expect(resolve(theme, 'border.control')).toBe(resolve(theme, 'border.default'))
+    })
+  }
+
+  for (const [theme, fg, bg] of CONTROL_BORDER_MORE_PAIRS) {
+    it(`${theme} ${fg} / ${bg}（WCAG 1.4.11，3:1）`, () => {
       expect(round(contrast(theme, fg, bg))).toBeGreaterThanOrEqual(3)
+    })
+  }
+
+  for (const [theme, bg, baseline] of CONTROL_HOVER_RATCHET) {
+    it(`${theme} 悬停档 border.control-hover / ${bg} 不低于 ${baseline}`, () => {
+      expect(round(contrast(theme, 'border.control-hover', bg))).toBeGreaterThanOrEqual(baseline)
     })
   }
 
