@@ -8,7 +8,7 @@ const loading = ref(false);
 
 async function save() {
   loading.value = true;
-  await new Promise((resolve) => setTimeout(resolve, 1200));
+  await new Promise(resolve => setTimeout(resolve, 1200));
   loading.value = false;
 }
 </script>

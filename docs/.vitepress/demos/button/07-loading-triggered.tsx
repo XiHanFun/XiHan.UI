@@ -9,7 +9,7 @@ export default function Demo(): ReactNode {
 
   async function save(): Promise<void> {
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise(resolve => setTimeout(resolve, 1200));
     setLoading(false);
   }
 

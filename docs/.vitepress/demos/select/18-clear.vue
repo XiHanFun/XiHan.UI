@@ -7,7 +7,6 @@ const teams = [
   { value: "frontend", label: "前端组" },
   { value: "server", label: "服务端组" },
 ];
-
 </script>
 
 <template>

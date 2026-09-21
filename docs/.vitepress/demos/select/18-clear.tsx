@@ -9,13 +9,15 @@ const teams = [
 ];
 
 export default function Demo(): ReactNode {
-  return <XhSelectRoot
-    collection={teams}
-    defaultValue={["frontend"]}
-    translations={{ clearTrigger: "清空所选" }}
-    clearable
-    label="所属小组"
-    placeholder="选一个组"
-    style={{ inlineSize: "240px" }}
-  />;
+  return (
+    <XhSelectRoot
+      collection={teams}
+      defaultValue={["frontend"]}
+      translations={{ clearTrigger: "清空所选" }}
+      clearable
+      label="所属小组"
+      placeholder="选一个组"
+      style={{ inlineSize: "240px" }}
+    />
+  );
 }

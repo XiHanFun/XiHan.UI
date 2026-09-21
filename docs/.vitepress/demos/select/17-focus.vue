@@ -33,7 +33,6 @@ function submit(): void {
   if (picked.value.length === 0)
     trigger.value?.$el.focus();
 }
-
 </script>
 
 <template>

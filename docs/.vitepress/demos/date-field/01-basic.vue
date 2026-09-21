@@ -1,8 +1,8 @@
 <!-- 基础用法 | 输入日期 -->
 <script setup lang="ts">
 import {
-  XhDateFieldControl,
   XhDateFieldClearTrigger,
+  XhDateFieldControl,
   XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,

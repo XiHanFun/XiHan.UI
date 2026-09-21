@@ -85,12 +85,12 @@ export interface Layer {
 export interface LayerRegistry {
   readonly ownerDocument: Document;
   // register / list / top / elementsAbove / subscribe ...
-  visualOf(layer: Layer): {
+  visualOf: (layer: Layer) => {
     visualIndex: number;
     visualLane: number;
     visualLayer: string;
   };
-  sync(layer: Layer): void; // isModal 等动态 getter 改值后显式通知
+  sync: (layer: Layer) => void; // isModal 等动态 getter 改值后显式通知
 }
 ```
 
@@ -136,7 +136,7 @@ const layer = createDismissLayer({
 const fallback = createEscapeFallback({
   config,
   isEnabled: () => sheetOpen,
-  onEscape: (event) => closeSheet(event),
+  onEscape: event => closeSheet(event),
 });
 ```
 

@@ -1,8 +1,8 @@
 // 基础用法 | root 持有状态，label 与 control 中的 input 各自向它取属性；不传 value 即为非受控，组件自行维护值
 import type { ReactNode } from "react";
 import {
-  XhTextFieldControl,
   XhTextFieldClearTrigger,
+  XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
