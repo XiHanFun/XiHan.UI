@@ -146,7 +146,7 @@ describe('material Recipe 生成', () => {
 
   it('单组件 CSS 与 full bundle 只消费同一份生成令牌', async () => {
     const tokenPackage = JSON.parse(await readFile(join(TOKENS_ROOT, 'package.json'), 'utf8'))
-    const fullEntry = await readFile(join(STYLES_ROOT, 'index.css'), 'utf8')
+    const fullEntry = await readFile(join(STYLES_ROOT, 'index.source.css'), 'utf8')
     expect(tokenPackage.exports['./tokens.css']).toBe('./tokens.css')
     expect(fullEntry.match(/@import '@xihan-ui\/tokens\/tokens\.css';/g)).toHaveLength(1)
 

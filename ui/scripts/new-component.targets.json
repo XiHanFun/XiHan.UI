@@ -143,8 +143,8 @@
     },
     {
       "id": "styles-index",
-      "path": "packages/design/styles/index.css",
-      "what": "全量入口的 @import 一行（源序即层内胜负序）",
+      "path": "packages/design/styles/index.source.css",
+      "what": "全量入口源序的 @import 一行（源序即层内胜负序，index.css 由它生成）",
       "probeAnchor": "(?m)^@import '\\./css/{c}\\.css';$"
     },
     {
@@ -173,9 +173,14 @@
       "what": "自定义元素清单"
     },
     {
+      "path": "packages/design/styles/index.css",
+      "command": "pnpm gate:styled",
+      "what": "扁平的有层主入口（家族一份在前、皮肤剥掉 family @import）"
+    },
+    {
       "path": "packages/design/styles/index.unlayered.css",
       "command": "pnpm gate:styled",
-      "what": "按需入口的无层版皮肤"
+      "what": "同一源序的无层版"
     },
     {
       "path": "packages/design/styles/package.json",

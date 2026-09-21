@@ -1,0 +1,178 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 引入顺序的真源是 index.source.css（不发布），改顺序只改它；build/emit-entries.mjs 按它的顺序
+   把家族与皮肤内联成扁平的 index.css（主入口，保留 @layer）与 index.unlayered.css（拆壳）。
+   源序即 xihan.components 层内等特指度规则的胜负序。 */
+
+/* 层序声明必须最先：级联层的先后由首次出现定死，layers.css 打头才立得住序。 */
+@import './css/layers.css';
+
+/* 令牌先于一切：皮肤里不写兜底值，令牌缺席就是缺陷，不是降级。
+   tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
+@import '@xihan-ui/tokens/tokens.css';
+
+/* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
+@import './css/focus.css';
+
+/* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
+@import './css/label.css';
+
+/* 排在全部组件皮肤之前：字段族说明文字的公共层，无效时把说明让给错误文案。 */
+@import './css/description.css';
+
+/* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
+@import './css/pointer.css';
+
+/* Family Recipe 的内联点：emit-entries 把 family/ 下五份配方在这里内联一次。
+   位置必须在上面四份公共层之后（配方要像组件皮肤一样压过公共层，field-chrome 把内嵌 input 的
+   聚焦环置 none 就靠排在 focus.css 之后）、在下面一切组件皮肤之前（皮肤对配方物理属性的覆盖
+   只有配方先出现才成立）。皮肤自带的 family @import 由生成器剥掉。 */
+/* emit-entries: family */
+
+/* 其余按层归属排列。 */
+@import './css/affix.css';
+@import './css/avatar-group.css';
+@import './css/back-top.css';
+@import './css/button-group.css';
+@import './css/descriptions.css';
+@import './css/diff-view.css';
+@import './css/download-trigger.css';
+@import './css/field-array.css';
+@import './css/fieldset.css';
+@import './css/flex.css';
+@import './css/float-button.css';
+@import './css/floating-panel.css';
+@import './css/gradient-text.css';
+@import './css/grid.css';
+@import './css/heatmap.css';
+@import './css/highlight.css';
+@import './css/icon-wrapper.css';
+@import './css/kbd.css';
+@import './css/image-cropper.css';
+@import './css/infinite-scroll.css';
+@import './css/input-group.css';
+@import './css/json-viewer.css';
+@import './css/layout.css';
+@import './css/list.css';
+@import './css/log.css';
+@import './css/markdown-stream.css';
+@import './css/marquee.css';
+@import './css/masonry.css';
+@import './css/matrix-code.css';
+@import './css/mention.css';
+@import './css/number-animation.css';
+@import './css/page-header.css';
+@import './css/password-input.css';
+@import './css/popconfirm.css';
+@import './css/prompt-input.css';
+@import './css/reset.css';
+@import './css/reasoning.css';
+@import './css/resizable.css';
+@import './css/segmented.css';
+@import './css/signature-pad.css';
+@import './css/statistic.css';
+@import './css/tag.css';
+@import './css/timeline.css';
+@import './css/timer.css';
+@import './css/timestamp.css';
+@import './css/truncate.css';
+@import './css/typography.css';
+@import './css/undefined.css';
+@import './css/visually-hidden.css';
+@import './css/tone.css';
+@import './css/alert.css';
+@import './css/empty-state.css';
+@import './css/skeleton.css';
+@import './css/spinner.css';
+@import './css/accordion.css';
+@import './css/anchor.css';
+@import './css/approval.css';
+@import './css/avatar.css';
+@import './css/badge.css';
+@import './css/bar-code.css';
+@import './css/breadcrumb.css';
+@import './css/button.css';
+@import './css/calendar-picker.css';
+@import './css/calendar-range-picker.css';
+@import './css/card.css';
+@import './css/carousel.css';
+@import './css/cascader.css';
+@import './css/checkbox.css';
+@import './css/checkbox-group.css';
+@import './css/clipboard.css';
+@import './css/code-view.css';
+@import './css/collapsible.css';
+@import './css/color-field.css';
+@import './css/color-picker.css';
+@import './css/color-slider.css';
+@import './css/color-swatch.css';
+@import './css/color-swatch-picker.css';
+@import './css/combobox.css';
+@import './css/command.css';
+@import './css/context-menu.css';
+@import './css/date-field.css';
+@import './css/date-picker.css';
+@import './css/date-range-picker.css';
+@import './css/dialog.css';
+@import './css/drawer.css';
+@import './css/editable.css';
+@import './css/field.css';
+@import './css/file-upload.css';
+@import './css/form.css';
+@import './css/hover-card.css';
+@import './css/icon.css';
+@import './css/image.css';
+@import './css/image-viewer.css';
+@import './css/listbox.css';
+@import './css/loading-bar.css';
+@import './css/menu.css';
+@import './css/menubar.css';
+@import './css/message-feed.css';
+@import './css/navigation-menu.css';
+@import './css/notification.css';
+@import './css/number-field.css';
+@import './css/pagination.css';
+@import './css/pin-input.css';
+@import './css/popover.css';
+@import './css/progress.css';
+@import './css/question-flow.css';
+@import './css/radio-group.css';
+@import './css/rating.css';
+@import './css/scroll-area.css';
+@import './css/scrollbar.css';
+@import './css/select.css';
+@import './css/separator.css';
+@import './css/side-nav.css';
+@import './css/slider.css';
+@import './css/sortable.css';
+@import './css/splitter.css';
+@import './css/steps.css';
+@import './css/switch.css';
+@import './css/table.css';
+@import './css/tabs.css';
+@import './css/tag-group.css';
+@import './css/tags-input.css';
+@import './css/text-field.css';
+@import './css/time-field.css';
+@import './css/time-picker.css';
+@import './css/time-range-picker.css';
+@import './css/toast.css';
+@import './css/toggle.css';
+@import './css/toggle-group.css';
+@import './css/tool-call.css';
+@import './css/toolbar.css';
+@import './css/tooltip.css';
+@import './css/tour.css';
+/* 排在六份浮层皮肤之后：箭头几何里摘边框那几条要压过它们的 border 简写 */
+@import './css/overlay-arrow.css';
+@import './css/transfer.css';
+@import './css/tree.css';
+@import './css/tree-select.css';
+@import './css/virtualizer.css';
+@import './css/watermark.css';
+
+/* 排在全部组件皮肤之后：高对比档的状态环靠源序压过组件里同特指度的 outline 声明。 */
+@import './css/forced-colors.css';

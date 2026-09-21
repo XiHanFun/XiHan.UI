@@ -26,7 +26,7 @@
     "gate:exports": "node tooling/scripts/gen-exports.mjs && git diff --exit-code packages/*/*/package.json",
     "gate:llms": "node tooling/scripts/check-llms.mjs",
     "gate:publish": "node tooling/scripts/check-publish.mjs",
-    "gate:styled": "pnpm --fail-if-no-match --filter @xihan-ui/styles gen && git diff --exit-code packages/design/styles/index.unlayered.css",
+    "gate:styled": "pnpm --fail-if-no-match --filter @xihan-ui/styles gen && git diff --exit-code packages/design/styles/index.css packages/design/styles/index.unlayered.css",
     "gate:tokens": "pnpm --fail-if-no-match --filter @xihan-ui/tokens gen && git diff --exit-code packages/design/tokens/tokens.css packages/design/tokens/tokens.json packages/design/tokens/src/generated/tokens.ts",
     "gen:docs": "node scripts/gen-component-docs.mjs",
     "headers": "node tooling/scripts/check-file-headers.mjs --write",

@@ -271,7 +271,7 @@ describe('collection Item recipe', () => {
 
   it('select 单皮肤递归带入 Collection Item，full 入口仍只有一个 Select 入口', async () => {
     const selectCss = await readFile(join(UI_ROOT, 'packages/design/styles/css/select.css'), 'utf8')
-    const indexCss = await readFile(join(UI_ROOT, 'packages/design/styles/index.css'), 'utf8')
+    const indexCss = await readFile(join(UI_ROOT, 'packages/design/styles/index.source.css'), 'utf8')
     expect(selectCss).toContain('@import \'../family/collection-item.css\';')
     expect(indexCss.match(/@import '\.\/css\/select\.css';/g)).toHaveLength(1)
   })

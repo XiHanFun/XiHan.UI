@@ -7,7 +7,7 @@
 ## 用法
 
 ```ts
-/* 全量 */
+/* 全量：主入口是生成的扁平文件，家族配方在公共层之后只内联一次、排在一切组件皮肤之前，除令牌外没有 @import */
 import '@xihan-ui/styles'
 
 /* 或按需：令牌与层序先行，tone 决定语气轴，缺了它 tone 会静默回落品牌色 */
@@ -15,6 +15,8 @@ import '@xihan-ui/styles/layers.css'
 import '@xihan-ui/styles/tone.css'
 import '@xihan-ui/styles/button.css'
 ```
+
+单皮肤文件头各自 `@import` 所属家族，单独引入时家族在场；混用多份单皮肤时每份都各带一份家族 `@import`，打包器不去重 `@import`（如 `@tailwindcss/vite` 自带的内联器）就会把家族复制多份。引入的皮肤超过几份时改用主入口。
 
 `button.css` 已传递引入 Action Control Family Recipe；需要给自定义解剖接入同一视觉合同时，也可单独引入 `@xihan-ui/styles/action-control.css`，并使用文档化的 `data-xh-action-*` 角色属性。家族缺省是无顶光、无描边、无投影的平面中性动作；品牌实心、显式边界与海拔必须由消费组件通过状态槽明确映射。
 

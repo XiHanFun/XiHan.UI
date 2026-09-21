@@ -184,6 +184,12 @@
     "limit": "165 kB"
   },
   {
+    "name": "styles/index.css（主入口，扁平有层）",
+    "path": "packages/design/styles/index.css",
+    "gzip": true,
+    "limit": "440 kB"
+  },
+  {
     "name": "icons：只用 CheckIcon",
     "path": "packages/design/icons/dist/index.mjs",
     "import": "{ CheckIcon }",

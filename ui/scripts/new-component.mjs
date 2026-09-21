@@ -836,7 +836,7 @@ const HANDLERS = {
     const lines = src.split('\n')
     const start = lines.findIndex(line => line === `@import './css/accordion.css';`)
     if (start === -1)
-      throw new Error('index.css 里找不到组件皮肤段的起点 accordion.css')
+      throw new Error('index.source.css 里找不到组件皮肤段的起点 accordion.css')
     for (let i = start; i < lines.length; i++) {
       const hit = lines[i].match(/^@import '\.\/css\/([\w-]+)\.css';$/)
       if (!hit || SKIP.has(hit[1]))
@@ -846,7 +846,7 @@ const HANDLERS = {
         return lines.join('\n')
       }
     }
-    throw new Error('index.css 里找不到插入位置')
+    throw new Error('index.source.css 里找不到插入位置')
   },
 
   'docs-manifest': (src, n, ctx) => {

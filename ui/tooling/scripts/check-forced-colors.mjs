@@ -27,7 +27,7 @@ const STYLES_DIR = 'packages/design/styles/css'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 const VOCABULARY = 'tooling/scripts/state-vocabulary.json'
 const SHARED = 'forced-colors.css'
-const ENTRY = 'packages/design/styles/index.css'
+const ENTRY = 'packages/design/styles/index.source.css'
 /** 无层版是按源序内联出来的产物，同一件事在它里面按位置查。 */
 const UNLAYERED = 'packages/design/styles/index.unlayered.css'
 

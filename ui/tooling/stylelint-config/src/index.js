@@ -142,8 +142,8 @@ export default {
   overrides: [
     {
       // reset.css 是细条规则的唯一住处：只对它放开 scrollbar 两条，其余禁用项原样保留。
-      // 无层产物把 reset 整段内联进去，同样放开；皮肤源文件各自受上面那张全表管
-      files: ['**/styles/css/reset.css', '**/styles/index.unlayered.css'],
+      // 两份扁平产物把 reset 整段内联进去，同样放开；皮肤源文件各自受上面那张全表管
+      files: ['**/styles/css/reset.css', '**/styles/index.css', '**/styles/index.unlayered.css'],
       rules: {
         'declaration-property-value-disallowed-list': [DISALLOWED, { message: disallowedListMessage }],
       },
