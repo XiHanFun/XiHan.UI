@@ -152,9 +152,13 @@
     inset: calc(-1 * var(--xh-space-1));
   }
 
-  /* 粗指针：家族 text 档的 ::after 把块轴补到 44px，行内轴只铺满轨道宽（md 40px），这里再补到 44px */
+  /* 粗指针：家族 text 档的 ::after 把块轴补到 44px、铺满轨道宽并以 -50% 平移居中，行内轴（md 40px）
+     这里再补到 44px。起点必须交还家族的 50%：上面那条 inset 负值特指度更高，留着的话盒的左上角
+     被钉在 -4px、再被家族的平移拉走半个盒，热区的中心落到轨道左上角外面，右半条开关摸不着 */
   @media (pointer: coarse) {
     [data-scope='switch'][data-part='root']::after {
+      inset-block: 50% auto;
+      inset-inline: 50% auto;
       min-inline-size: 44px;
     }
   }
