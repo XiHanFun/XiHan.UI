@@ -31614,6 +31614,31 @@
   border-inline: var(--xh-stroke-thin) solid currentColor;
 }
 
+/* 手指落点：家族 icon 档用 ::after 把命中区扩到 44×44；没塞图标的把手 ::after 已被抓手占着，
+   抓手那条只写了宽高与描边，家族的定位、44px 下限与 -50% 平移会从同一个 ::after 漏进来，
+   两条竖线被撑成 44px 高、跨出把手——这里逐项钉回，热区改由空着的 ::before 扩；
+   作者塞了图标时 :empty 不成立，家族的 ::after 照常落下 */
+@media (pointer: coarse) {
+  [data-scope='sortable'][data-part='item-drag-trigger']:empty::after {
+    position: static;
+    min-inline-size: 0;
+    min-block-size: 0;
+    translate: none;
+  }
+
+  [data-scope='sortable'][data-part='item-drag-trigger']:empty::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    min-inline-size: 44px;
+    min-block-size: 44px;
+    inline-size: 100%;
+    block-size: 100%;
+    translate: -50% -50%;
+  }
+}
+
 /* 拖动中（指针按住或键盘拾起）：光标换成"抓着"的样子，各态的手型槽一并换掉——
    家族的悬停 / 按下块比这条特指度高，直接写 cursor 会被盖回去 */
 [data-scope='sortable'][data-part='item-drag-trigger'][data-dragging] {
