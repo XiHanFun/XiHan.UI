@@ -250,13 +250,18 @@ export const tabsMachine = createMachine({
           }
           const listRect = list.getBoundingClientRect()
           const rect = trigger.getBoundingClientRect()
+          // 指示条是 list 的绝对定位后代，落点以 list 的内衬盒为原点；量出来的差是对边框盒的，
+          // 扣掉起始侧那道边（segment 档的标签带带一圈占位边），部件才与标签同一块矩形
+          const listStyle = list.ownerDocument.defaultView?.getComputedStyle(list)
+          const borderBlockStart = Number.parseFloat(listStyle?.borderBlockStartWidth ?? '0') || 0
+          const borderInlineStart = Number.parseFloat(listStyle?.borderInlineStartWidth ?? '0') || 0
           context.set('indicator', {
-            blockStart: rect.top - listRect.top,
+            blockStart: rect.top - listRect.top - borderBlockStart,
             blockSize: rect.height,
             // 起始缘按逻辑方向算，RTL 从右边缘量起
-            inlineStart: (prop('dir') ?? 'ltr') === 'rtl'
+            inlineStart: ((prop('dir') ?? 'ltr') === 'rtl'
               ? listRect.right - rect.right
-              : rect.left - listRect.left,
+              : rect.left - listRect.left) - borderInlineStart,
             inlineSize: rect.width,
           })
         }

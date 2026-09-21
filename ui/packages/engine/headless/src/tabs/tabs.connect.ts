@@ -324,19 +324,24 @@ export function connectTabs<T extends PropTypes>(
         'onFocus': () => send({ type: 'TRIGGER.FOCUS', value: item.value }),
       })
     },
-    // 主轴上的位置与长度由机器量成内联样式（它量得到，样式表量不到）；
-    // 交叉轴的贴边与粗细归皮肤
+    // 选中标签的四个几何量由机器量好写成私有槽（它量得到，样式表量不到）：
+    // line 档只取主轴那两支画一条线，segment 档四支都取、整块抬起面跟着滑；
+    // 交叉轴的贴边、粗细与长什么样归皮肤
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': true,
       'data-orientation': orientation,
+      // 部件自带形态：line 档是一条线、segment 档是整块抬起面，皮肤按它换身份，不必回溯到 root
+      'data-variant': variant,
       'data-value': value ?? undefined,
       'hidden': indicator == null || undefined,
-      // 只写主轴那一条
       'style': indicator
-        ? (horizontal
-            ? { insetInlineStart: `${indicator.inlineStart}px`, inlineSize: `${indicator.inlineSize}px` }
-            : { insetBlockStart: `${indicator.blockStart}px`, blockSize: `${indicator.blockSize}px` })
+        ? {
+            '--xh-_tabs-indicator-x': `${indicator.inlineStart}px`,
+            '--xh-_tabs-indicator-y': `${indicator.blockStart}px`,
+            '--xh-_tabs-indicator-w': `${indicator.inlineSize}px`,
+            '--xh-_tabs-indicator-h': `${indicator.blockSize}px`,
+          }
         : undefined,
     }),
 

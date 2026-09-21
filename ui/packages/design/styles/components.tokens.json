@@ -61501,9 +61501,11 @@
         "default",
         "drop",
         "not([data-drop])",
+        "not([data-variant='segment'])",
         "orientation=horizontal",
         "orientation=vertical",
-        "variant=line"
+        "variant=line",
+        "variant=segment"
       ],
       "defaultToken": [
         "--xh-stroke-thick"
@@ -61708,6 +61710,7 @@
       "name": "--xh-tabs-trigger-bg-active",
       "component": "tabs",
       "part": [
+        "indicator",
         "root",
         "trigger"
       ],
@@ -61733,7 +61736,7 @@
         "transparent"
       ],
       "visibility": "public",
-      "description": "tabs 的 root、trigger 部件 background、background-color 覆盖槽。"
+      "description": "tabs 的 indicator、root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-bg-active-hover",
@@ -61852,10 +61855,12 @@
       "name": "--xh-tabs-trigger-border-active",
       "component": "tabs",
       "part": [
+        "indicator",
         "root",
         "trigger"
       ],
       "property": [
+        "border",
         "border-color"
       ],
       "state": [
@@ -61869,7 +61874,7 @@
         "--xh-_tone-border"
       ],
       "visibility": "public",
-      "description": "tabs 的 root、trigger 部件 border-color 覆盖槽。"
+      "description": "tabs 的 indicator、root、trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-fg",
@@ -62099,24 +62104,27 @@
       "name": "--xh-tabs-trigger-radius",
       "component": "tabs",
       "part": [
+        "indicator",
         "trigger"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=segment"
       ],
       "defaultToken": [
         "--xh-_tabs-trigger-radius"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 border-radius 覆盖槽。"
+      "description": "tabs 的 indicator、trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-shadow-active",
       "component": "tabs",
       "part": [
+        "indicator",
         "root",
         "trigger"
       ],
@@ -62134,7 +62142,7 @@
         "--xh-elevation-raised"
       ],
       "visibility": "public",
-      "description": "tabs 的 root、trigger 部件 box-shadow 覆盖槽。"
+      "description": "tabs 的 indicator、root、trigger 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-tag-bg",

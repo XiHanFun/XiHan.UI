@@ -40,7 +40,7 @@ function mount(variant?: 'card' | 'line' | 'segment'): { list: HTMLElement, acti
       <div data-scope="tabs" data-part="list">
         <button data-scope="tabs" data-part="trigger" data-state="active" data-current${family}>概览</button>
         <button data-scope="tabs" data-part="trigger" data-state="inactive"${family}>分析</button>
-        <span data-scope="tabs" data-part="indicator" data-orientation="horizontal" style="inset-inline-start:0;inline-size:40px"></span>
+        <span data-scope="tabs" data-part="indicator" data-orientation="horizontal"${variant ? ` data-variant="${variant}"` : ' data-variant="line"'} style="--xh-_tabs-indicator-x:0;--xh-_tabs-indicator-y:0;--xh-_tabs-indicator-w:40px;--xh-_tabs-indicator-h:36px"></span>
       </div>
     </div>`
   document.body.append(host)
@@ -96,24 +96,31 @@ describe('tabs 默认视觉', () => {
     expect(plain.active.offsetWidth).toBe(plain.inactive.offsetWidth)
   })
 
-  it('segment 使用浅色标签带承载浮起的选中面，并收掉指示条', () => {
+  it('segment 使用浅色标签带承载浮起的选中面：放了 indicator 部件时面长在部件上跟着滑，选中标签自己透空', () => {
     const segment = mount('segment')
     const segmentPaint = {
       listBackground: paint(segment.list, 'background-color'),
       listPadding: paint(segment.list, 'padding-inline-start'),
-      activeBackground: paint(segment.active, 'background-color'),
-      activeShadow: paint(segment.active, 'box-shadow'),
+      indicatorBackground: paint(segment.indicator, 'background-color'),
+      indicatorShadow: paint(segment.indicator, 'box-shadow'),
     }
     expect(segmentPaint.listBackground).not.toBe('rgba(0, 0, 0, 0)')
     expect(Number.parseFloat(segmentPaint.listPadding)).toBeGreaterThan(0)
-    expect(segmentPaint.activeBackground).not.toBe('rgba(0, 0, 0, 0)')
-    expect(segmentPaint.activeShadow).not.toBe('none')
-    expect(paint(segment.indicator, 'display')).toBe('none')
-    // 标签带是 surface 面，标签本体是 control；内层圆角不超过外层圆角减去衬距
+    expect(paint(segment.indicator, 'display')).not.toBe('none')
+    expect(segmentPaint.indicatorBackground).not.toBe('rgba(0, 0, 0, 0)')
+    expect(segmentPaint.indicatorShadow).not.toBe('none')
+    // 部件按机器写的四支私有槽落位；面搬走后选中标签透空、不再叠一层
+    expect(getComputedStyle(segment.indicator).position).toBe('absolute')
+    expect(getComputedStyle(segment.indicator).width).toBe('40px')
+    expect(getComputedStyle(segment.indicator).height).toBe('36px')
+    expect(paint(segment.active, 'background-color')).toBe('rgba(0, 0, 0, 0)')
+    expect(paint(segment.active, 'box-shadow')).toBe('none')
+    // 标签带是 surface 面，标签本体与滑块都是 control；内层圆角不超过外层圆角减去衬距
     const listRadius = Number.parseFloat(getComputedStyle(segment.list).borderRadius)
     const triggerRadius = Number.parseFloat(getComputedStyle(segment.active).borderRadius)
     expect(listRadius).toBe(shapePx(segment.list, '--xh-shape-surface'))
     expect(triggerRadius).toBe(shapePx(segment.list, '--xh-shape-control'))
+    expect(Number.parseFloat(getComputedStyle(segment.indicator).borderRadius)).toBe(triggerRadius)
     expect(triggerRadius).toBeLessThanOrEqual(listRadius - Number.parseFloat(segmentPaint.listPadding))
     expect(segment.active.offsetWidth).toBe(segment.inactive.offsetWidth)
   })
@@ -160,8 +167,16 @@ describe('tabs 默认视觉', () => {
     expect(activeStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('segment 的选中标签是白色抬起面：surface-raised 底 + border-default 描边 + raised 影，标签带带透明占位边', () => {
+  it('segment 的白色抬起面三件：surface-raised 底 + border-default 描边 + raised 影，放了部件长在部件上、没放长在选中标签上；标签带带透明占位边', () => {
     const segment = mount('segment')
+    const slider = getComputedStyle(segment.indicator)
+    expect(slider.backgroundColor).toBe(resolveColor('--xh-bg-surface-raised', segment.list))
+    expect(slider.borderTopColor).toBe(resolveColor('--xh-border-default', segment.list))
+    expect(Number.parseFloat(slider.borderTopWidth)).toBe(1)
+    expect(slider.boxShadow).not.toBe('none')
+    // 作者没放 indicator 部件：面回到选中标签自己身上（面的过渡归零，读到的才是终值）
+    freezeMotion()
+    segment.indicator.remove()
     const active = getComputedStyle(segment.active)
     expect(active.backgroundColor).toBe(resolveColor('--xh-bg-surface-raised', segment.list))
     expect(active.borderTopColor).toBe(resolveColor('--xh-border-default', segment.list))

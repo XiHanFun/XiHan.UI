@@ -34339,6 +34339,8 @@
      列表一旦成为滚动容器就会把它连同标签的焦点环一起裁掉 */
   [data-scope='tabs'][data-part='list'] {
     position: relative;
+    /* 关起标签带内的层序：segment 档的标签抬一层压在滑动的抬起面上，这个 1 不漏到外面去 */
+    isolation: isolate;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -34463,12 +34465,27 @@
   }
 
   /* segment 档的选中标签就是那块白色抬起的滑块面（§7.3 有滑块开关）：surface-raised 底 +
-     border-default 描边 + raised 影三件写在标签自己身上——指示条部件在这一档收起，抬起面的归属就是标签 */
+     border-default 描边 + raised 影三件写在标签自己身上。标签带里放了 indicator 部件时，
+     这块面搬到部件上跟着滑（见下面的 indicator 规则），标签自己透空、只留字 */
   [data-scope='tabs'][data-part='root'][data-variant='segment']
     [data-scope='tabs'][data-part='trigger'][data-state='active'] {
     border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
     background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
     box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
+  }
+
+  /* segment 档的标签压在抬起面之上：面是绝对定位的部件，写在标签之后也不许盖住字。
+     层号只在标签带的层叠上下文里比大小（list 上有 isolation: isolate） */
+  [data-scope='tabs'][data-part='root'][data-variant='segment'] [data-scope='tabs'][data-part='trigger'] {
+    z-index: 1;
+  }
+
+  [data-scope='tabs'][data-part='root'][data-variant='segment']
+    [data-scope='tabs'][data-part='list']:has([data-scope='tabs'][data-part='indicator']:not([hidden]))
+    [data-scope='tabs'][data-part='trigger'][data-state='active'] {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
   }
 
   /* 选中项被悬停：常态 :hover 那条带着禁用守卫，特指度高过上面那条选中档，
@@ -34621,12 +34638,20 @@
     border: 0;
   }
 
-  /* 主轴上的位置与长度由机器写成内联样式（它量得到，样式表量不到）；
-     这里只管交叉轴的贴边与粗细，以及长什么样。它是可选部件——不渲染它时，
-     line 档由选中标签自画一条同规格的静态线（见下），card / segment 档由选中面表达 */
+  /* 选中标签的四个几何量由机器量好写成私有槽 --xh-_tabs-indicator-x / -y / -w / -h（它量得到，样式表量不到）；
+     line 档只取主轴那两支画一条线，这里管交叉轴的贴边与粗细，以及长什么样。它是可选部件——不渲染它时，
+     line 档由选中标签自画一条同规格的静态线（见下），card 档由卡片面表达，segment 档由标签自己的抬起面表达 */
   [data-scope='tabs'][data-part='indicator'] {
+    /* 还没量到时的落点，量到即被机器写的私有槽盖过 */
+    --xh-_tabs-indicator-x: 0;
+    --xh-_tabs-indicator-y: 0;
+    --xh-_tabs-indicator-w: 0;
+    --xh-_tabs-indicator-h: 0;
+
     position: absolute;
     inset-block-end: 0;
+    inset-inline-start: var(--xh-_tabs-indicator-x);
+    inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
@@ -34635,10 +34660,33 @@
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
-  /* 分段与卡片变体已经由选中面表达状态，不再叠一条下划线。 */
-  [data-scope='tabs'][data-part='root']:is([data-variant='segment'], [data-variant='card'])
-    [data-scope='tabs'][data-part='indicator'] {
+  /* 卡片变体已经由卡片面表达状态，不再叠一条下划线。 */
+  [data-scope='tabs'][data-part='indicator'][data-variant='card'] {
     display: none;
+  }
+
+  /* segment 档（§7.3 有滑块开关）：部件就是那块白色抬起的滑块面，四个几何量都取、整块跟着滑——
+     surface-raised 底 + border-default 描边 + raised 影三件与 Segmented 的滑块同一套；
+     描边吃进盒里（border-box），面与标签仍是同一块矩形。标签压在它上面，点击一律交给标签。
+     用连续档而不是进场那条：滑块是被推过去的，起步就该有速度；四个几何量同时走，标签宽不等时才不会先变形再挪位 */
+  [data-scope='tabs'][data-part='indicator'][data-variant='segment'] {
+    inset-block-end: auto;
+    inset-inline-end: auto;
+    inset-inline-start: var(--xh-_tabs-indicator-x);
+    inset-block-start: var(--xh-_tabs-indicator-y);
+    inline-size: var(--xh-_tabs-indicator-w);
+    block-size: var(--xh-_tabs-indicator-h);
+    box-sizing: border-box;
+    border: var(--xh-stroke-thin) solid var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
+    border-radius: var(--xh-tabs-trigger-radius, var(--xh-_tabs-trigger-radius));
+    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
+    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
+    pointer-events: none;
+    transition:
+      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   /* line 档没放 indicator 部件时，选中标签自画一条静态指示线（§7.3 导航当前页）：
@@ -34678,11 +34726,13 @@
     inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
   }
 
-  /* 竖排：滑条从基线挪到结束缘那条轨道上，交叉轴换成行内轴 */
-  [data-scope='tabs'][data-part='indicator'][data-orientation='vertical'] {
+  /* 竖排 line 档：滑条从基线挪到结束缘那条轨道上，主轴换成块向，取 -y / -h 两支 */
+  [data-scope='tabs'][data-part='indicator'][data-orientation='vertical']:not([data-variant='segment']) {
     inset-block-end: auto;
+    inset-inline-start: auto;
     inset-inline-end: 0;
-    block-size: auto;
+    inset-block-start: var(--xh-_tabs-indicator-y);
+    block-size: var(--xh-_tabs-indicator-h);
     inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
     transition:
       inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
