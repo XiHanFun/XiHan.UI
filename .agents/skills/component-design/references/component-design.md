@@ -329,6 +329,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 边界：default（一切根面外边与 raised 面描边）、subtle（仅内部分隔线与分隔伪元素）、strong（仅 contrast-more 与刻意登记的强调边）、control / control-hover / control-focus（字段与焦点边）、danger。
 
 每个实色和柔和语气必须提供匹配的 foreground；组件不得自行计算文字颜色。
+- 基础色板：十二个色相 × 11 档（`--xh-color-<red|orange|amber|yellow|lime|green|teal|cyan|blue|indigo|purple|pink>-<50…950>`），由 `tokens/palette.seeds.json` 经 `build/emit-palette.mjs` 按品牌曲线派生，同一档跨色相同一明度。它只给使用者、数据可视化与按颜色点名的色板轴（Heatmap `purple`）用；皮肤只消费语义角色与语气轴，不直接取色板。
 
 ### 7.2 使用规则
 
