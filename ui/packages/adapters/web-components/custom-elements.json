@@ -22445,6 +22445,9 @@
               "name": "--xh-file-upload-item-inner-gap"
             },
             {
+              "name": "--xh-file-upload-item-mark-size"
+            },
+            {
               "name": "--xh-file-upload-item-name-min-w"
             },
             {

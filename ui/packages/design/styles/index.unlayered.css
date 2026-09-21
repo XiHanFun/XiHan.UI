@@ -24053,7 +24053,9 @@
 }
 
 [data-scope='file-upload'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  /* 作者放进缩略图槽、删除钮与清空钮里的图标跟着字号走，与皮肤画的兜底叉同一把尺。
+     条目行首自绘的状态标记（传完的勾、失败的警示）不读这支：它们是指示符，与同一行里 icon 档的
+     删除钮并排、走 --xh-control-indicator-* 一族（§6.5），尺寸由 --xh-file-upload-item-mark-size 单独控 */
   --xh-icon-size: var(--xh-file-upload-icon-size, var(--xh-glyph-size-text));
 
   display: flex;
@@ -24241,7 +24243,10 @@
 
 /* 上传失败的那一行必须一眼认出来：不标出来的话它跟传完的行渲染完全一致，
    用户不知道该按哪一条的重试。红边之外再补一枚警示字形——只靠颜色的话，
-   色觉障碍用户与灰度打印下这一档等于没有 */
+   色觉障碍用户与灰度打印下这一档等于没有。
+   警示与下面的勾都是固定状态标记（不是 :empty 兜底，作者塞进条目的部件顶不掉）：按指示符档取尺
+   （comfortable 16 / compact 14，随密度换档），不读只管作者图标的 --xh-icon-size——随文 1em 落在
+   14 上下，comfortable 下比同一行里的指示符档小一圈、compact 下又不换档 */
 [data-scope='file-upload'][data-part='item'][data-state='error'] {
   border-color: var(--xh-file-upload-item-border-error, var(--xh-border-invalid));
   color: var(--xh-file-upload-item-fg-error, var(--xh-fg-danger));
@@ -24250,8 +24255,8 @@
 [data-scope='file-upload'][data-part='item'][data-state='error']::before {
   content: '';
   flex: none;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  inline-size: var(--xh-file-upload-item-mark-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-file-upload-item-mark-size, var(--xh-control-indicator-size));
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
   mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
@@ -24262,8 +24267,8 @@
 [data-scope='file-upload'][data-part='item'][data-state='done']::before {
   content: '';
   flex: none;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  inline-size: var(--xh-file-upload-item-mark-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-file-upload-item-mark-size, var(--xh-control-indicator-size));
   background-color: var(--xh-file-upload-item-fg-done, var(--xh-fg-success));
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;

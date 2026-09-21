@@ -355,6 +355,7 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-2` | file-upload 的 list 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 item 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `state=uploading` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-file-upload-item-progress-h` | `item-progress` | `block-size` | `default` | `--xh-stroke-thick` | file-upload 的 item-progress 部件 block-size 覆盖槽。 |
