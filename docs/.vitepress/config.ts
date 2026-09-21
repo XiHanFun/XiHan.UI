@@ -176,24 +176,6 @@ const startSidebar: DefaultTheme.SidebarItem[] = [
   { text: "更新日志", link: "/changelog" },
 ];
 
-const guideSidebar: DefaultTheme.SidebarItem[] = [
-  {
-    text: "核心概念",
-    collapsed: false,
-    items: guideChapters.map(([text, name], i) => ({
-      text: `${i + 1}. ${text}`,
-      link: `/guide/${name}`,
-    })),
-  },
-  // 这一页的路径落在 /guide/ 前缀下，点进去用的就是这一份侧栏；
-  // 它不属于编号章节，另起一组，读者才在侧栏里找得到自己在哪
-  {
-    text: "参考",
-    collapsed: false,
-    items: [{ text: "版本与兼容性政策", link: "/guide/versioning" }],
-  },
-];
-
 const adaptersSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: "适配器",
@@ -226,6 +208,28 @@ const runtimeSidebar: DefaultTheme.SidebarItem[] = [
       { text: "流式 Markdown", link: "/runtime/markdown" },
       { text: "代码着色", link: "/runtime/code-highlight" },
     ],
+  },
+];
+
+// 指南一册：核心概念按序编号，适配器与服务运行时两组接在后面——三条路径前缀共用这一份侧栏，
+// 读者在 /guide/、/adapters/、/runtime/ 之间跳转时左侧不换册
+const guideSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: "核心概念",
+    collapsed: false,
+    items: guideChapters.map(([text, name], i) => ({
+      text: `${i + 1}. ${text}`,
+      link: `/guide/${name}`,
+    })),
+  },
+  ...adaptersSidebar,
+  ...runtimeSidebar,
+  // 这一页的路径落在 /guide/ 前缀下，点进去用的就是这一份侧栏；
+  // 它不属于编号章节，另起一组，读者才在侧栏里找得到自己在哪
+  {
+    text: "参考",
+    collapsed: false,
+    items: [{ text: "版本与兼容性政策", link: "/guide/versioning" }],
   },
 ];
 
@@ -265,10 +269,10 @@ const componentsSidebar: DefaultTheme.SidebarItem[] = [
 // 首页是 layout: home，不落任何一份。
 const sidebar: DefaultTheme.Sidebar = {
   "/guide/": guideSidebar,
-  "/adapters/": adaptersSidebar,
+  "/adapters/": guideSidebar,
   "/components/": componentsSidebar,
   "/examples/": examplesSidebar,
-  "/runtime/": runtimeSidebar,
+  "/runtime/": guideSidebar,
   "/": startSidebar,
 };
 
@@ -287,30 +291,19 @@ const nav: DefaultTheme.NavItem[] = [
   },
   { text: "示例", link: "/examples/", activeMatch: "/examples/" },
   {
-    text: `v${version}`,
+    text: "社区",
     items: [
+      { text: "官方网站", link: "https://www.xihanfun.com" },
       {
-        text: "版本",
-        items: [{ text: "更新日志", link: "/changelog" }],
-      },
-      {
-        text: "项目",
-        items: [
-          { text: "适配器", link: "/adapters/vue" },
-          { text: "服务与运行时", link: "/runtime/" },
-        ],
-      },
-      {
-        text: "社区",
-        items: [
-          { text: "官方网站", link: "https://www.xihanfun.com" },
-          {
-            text: "贡献指南",
-            link: "https://docs.xihanfun.com/cosmos/contributing",
-          },
-        ],
+        text: "贡献指南",
+        link: "https://docs.xihanfun.com/cosmos/contributing",
       },
     ],
+  },
+  // 版本号本身就是一组：更新日志直接挂在它下面，不再套一层"版本"标题
+  {
+    text: `v${version}`,
+    items: [{ text: "更新日志", link: "/changelog" }],
   },
 ];
 
