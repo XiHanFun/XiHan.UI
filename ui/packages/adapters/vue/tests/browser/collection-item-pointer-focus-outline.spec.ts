@@ -1,9 +1,10 @@
 // 指针划过集合条目时，焦点跟着指针搬家；上一条目失焦的那几帧不得闪出描边。
 //
-// Collection Item 配方在根上声明 outline-color 过渡（micro 时长），指针路径下描边色恒为 transparent。
+// Collection Item 配方在根上常驻 solid 描边、静息透明，指针路径下描边色恒为 transparent。
 // 皮肤若在 `:focus:not(:focus-visible)` 下写 `outline: none`，简写会把 outline-color 复位成 currentColor；
-// 焦点离开时规则失效，outline-style 立即回到 solid，而 outline-color 还要从近黑过渡回透明——
-// 这段时间上一条目画出一圈实心描边。UA 只在 :focus-visible 画环，这条复位本就是死代码。
+// 焦点离开时规则失效，outline-style 立即回到 solid，outline-color 若还在从近黑过渡回透明——
+// 这段时间上一条目画出一圈实心描边（修前配方把描边色放在 micro 过渡里，正是这样闪的）。
+// UA 只在 :focus-visible 画环，这条复位本就是死代码。宿主页面同款复位那条路见 collection-item-host-focus-reset。
 // 过渡的中间帧只有真实 Chromium 能看见，jsdom 不算数。
 //
 // 菜单用真实指针点开（右键菜单用右键）：之后由脚本搬到条目上的焦点不带 :focus-visible，

@@ -19,13 +19,19 @@ function isTransparentColor(value: string): boolean {
   return value === 'transparent' || /(?:,\s*0|\/\s*0)\)$/.test(value)
 }
 
-async function mountSelect(size: 'sm' | 'md' | 'lg' = 'md'): Promise<HTMLElement[]> {
+/**
+ * @param size 尺寸档。
+ * @param open 打开方式：'default' 走 defaultOpen（首轮就打开，焦点由脚本落到选中项，浏览器没见过指针，
+ * 这枚焦点带 :focus-visible）；'pointer' 由真实指针点开触发器，之后脚本搬到条目上的焦点不带
+ * :focus-visible，与用户用鼠标打开后划过条目的那条路一致。
+ */
+async function mountSelect(size: 'sm' | 'md' | 'lg' = 'md', open: 'default' | 'pointer' = 'default'): Promise<HTMLElement[]> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
     render: () => h(XhSelectRoot, {
       collection: OPTIONS,
-      defaultOpen: true,
+      defaultOpen: open === 'default' || undefined,
       defaultValue: 'beta',
       size,
     }),
@@ -33,6 +39,11 @@ async function mountSelect(size: 'sm' | 'md' | 'lg' = 'md'): Promise<HTMLElement
   app.mount(host)
   await nextTick()
   await nextTick()
+  if (open === 'pointer') {
+    await userEvent.click(document.querySelector<HTMLElement>('[data-scope=\'select\'][data-part=\'trigger\']')!)
+    await nextTick()
+    await nextTick()
+  }
   return [...document.querySelectorAll<HTMLElement>('[data-scope=\'select\'][data-part=\'item\']')]
 }
 
@@ -104,7 +115,9 @@ describe('select 使用 Collection Item', () => {
   })
 
   it('selected 与 checked 保留对号，hover 和键盘高亮分别叠加且不改变字重或宽度', async () => {
-    const [plain, selected, disabled] = await mountSelect()
+    // 指针点开：随后划过条目时脚本搬去的焦点不带 :focus-visible，指针高亮只换面、不画环。
+    // defaultOpen 那条路的焦点带 :focus-visible，公共聚焦环会照画——描边色不再过渡后同步读也读得到它
+    const [plain, selected, disabled] = await mountSelect('md', 'pointer')
     const indicator = selected!.querySelector<HTMLElement>('[data-part=\'item-indicator\']')!
     expect(selected!.getAttribute('aria-selected')).toBe('true')
     expect(selected!.dataset.state).toBe('checked')
@@ -117,6 +130,7 @@ describe('select 使用 Collection Item', () => {
     await userEvent.hover(plain!)
     await nextTick()
     expect(plain!.hasAttribute('data-highlighted')).toBe(true)
+    expect(plain!.matches(':focus-visible'), '指针路径的焦点不带 :focus-visible').toBe(false)
     expect(getComputedStyle(plain!).backgroundColor).not.toBe(rest)
     expect(isTransparentColor(getComputedStyle(plain!).outlineColor)).toBe(true)
 

@@ -198,12 +198,11 @@
     line-height: var(--xh-tree-row-leading, var(--xh-leading-normal));
     white-space: nowrap;
     user-select: none;
-    /* 换面走家族的按下 / 释放时间线；box-shadow 一并接过渡：换父落点那圈内描边挂在行自己身上，
-       跟着 data-drop 在行间移动 */
+    /* 换面走家族的按下 / 释放时间线（与家族基础块同一份，描边色同样不进过渡）；box-shadow 一并接过渡：
+       换父落点那圈内描边挂在行自己身上，跟着 data-drop 在行间移动 */
     transition:
       background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

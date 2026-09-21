@@ -487,7 +487,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 
 ### 动效
 
-`background-color` · `box-shadow` · `color` · `outline-color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `box-shadow` · `color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

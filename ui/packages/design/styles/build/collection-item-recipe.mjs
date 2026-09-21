@@ -310,10 +310,14 @@ ${rest}
     line-height: var(--xh-leading-normal);
     cursor: var(--xh-_collection-cursor);
     opacity: var(--xh-_collection-opacity);
+    /* 描边色不进过渡，与 focus.css 的公共环同一节奏（即时出现、即时消失）：
+       描边在这里常驻 solid、静息透明，靠颜色表达键盘高亮。宿主页面常见的
+       button:focus:not(:focus-visible) { outline: none } 复位（VitePress 等）是无层规则，压过本份；
+       指针落焦时它把简写复位成 none，outline-color 同时落到 currentColor；焦点离开、规则失效的那一刻
+       solid 立即回来，颜色若还在过渡就画成一圈实心边（上一条目闪边）。颜色即时切换后这条路径没有中间帧 */
     transition:
       background-color ${source.motion.releaseDuration} ${source.motion.releaseEasing},
-      color ${source.motion.duration} ${source.motion.easing},
-      outline-color ${source.motion.duration} ${source.motion.easing};
+      color ${source.motion.duration} ${source.motion.easing};
   }
 
 ${SIZES.map(size => `  [data-xh-collection-item][data-xh-collection-size='${size}'] {
