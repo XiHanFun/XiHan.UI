@@ -25631,7 +25631,8 @@
 
 [data-scope='listbox'][data-part='root'] {
   /* 条目外的字形（空态 / 在途占位里作者塞的图标）按档取尺，缺省 md；条目内的字形由家族随
-     data-xh-collection-size 下发（§6.5） */
+     data-xh-collection-size 下发（§6.5）。列表框自绘的状态字形（前导对号所在的标记盒与盒里的勾）不读这支：
+     它们是指示符，走 --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺 */
   --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-md));
   /* 定高小列表的自绘条挂在根上（§6.6）：根是条子的定位盒，轨道底色关掉才不会在列表右缘糊出一条灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -25922,20 +25923,26 @@
 }
 
 /* 勾选标记落在家族网格的 indicator 列（page 语境下前置为前导对号）；显隐与颜色由家族按选中态给，
-   未选中时占位不塌，切换选中不引起行宽抖动 */
+   未选中时占位不塌，切换选中不引起行宽抖动。
+   盒与盒里的勾是指示符（§6.5）：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
+   兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（前导对号不是勾选格，不取 × 0.75，与 Menu 族同口径）；
+   不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 比 16 / 14 的指示符档大一圈 */
 [data-scope='listbox'][data-part='item-indicator'] {
+  --xh-icon-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-listbox-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
-  block-size: var(--xh-listbox-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+  inline-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
 }
 
 [data-scope='listbox'][data-part='item-indicator'][hidden] {
   display: none;
 }
 
-/* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
+/* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中。
+   尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块） */
 [data-scope='listbox'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
