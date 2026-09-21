@@ -282,6 +282,58 @@ describe('portal 视觉环境桥', () => {
     document.body.style.overflow = ''
   })
 
+  it('--xh- 命名空间只投影根上有声明的令牌覆盖，组件槽与家族槽不跟着触发器进浮层', () => {
+    // 令牌层把全部令牌声明在根上；皮肤写在组件 / 家族元素上的槽只是组件内部级联
+    document.documentElement.style.setProperty('--xh-color-brand-500', 'blue')
+    const { outer, inner, source, shell } = fixture()
+    outer.style.setProperty('--xh-collection-bg-rest', 'gray')
+    outer.style.setProperty('--xh-menu-item-h', '40px')
+    outer.style.setProperty('--xh-_collection-bg', 'gray')
+    inner.style.setProperty('--xh-color-brand-500', 'red')
+    inner.style.setProperty('--business-color', 'green')
+
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--xh-collection-bg-rest')).toBe('')
+    expect(shell.style.getPropertyValue('--xh-menu-item-h')).toBe('')
+    expect(shell.style.getPropertyValue('--xh-_collection-bg')).toBe('')
+    expect(shell.style.getPropertyValue('--xh-color-brand-500')).toBe('red')
+    expect(shell.style.getPropertyValue('--business-color')).toBe('green')
+    expect(Array.from({ length: shell.style.length }, (_, index) => shell.style.item(index)).sort())
+      .toEqual(['--business-color', '--xh-color-brand-500'])
+    bridge.dispose()
+    document.documentElement.style.removeProperty('--xh-color-brand-500')
+  })
+
+  it('根上后来才声明的 --xh- 名字在下一次同步时开始投影，不靠跨同步的缓存', async () => {
+    const { outer, source, shell } = fixture()
+    outer.style.setProperty('--xh-color-brand-500', 'red')
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--xh-color-brand-500')).toBe('')
+
+    document.documentElement.style.setProperty('--xh-color-brand-500', 'blue')
+    bridge.sync()
+    expect(shell.style.getPropertyValue('--xh-color-brand-500')).toBe('red')
+    bridge.dispose()
+    document.documentElement.style.removeProperty('--xh-color-brand-500')
+  })
+
+  it('语气经 data-tone 属性带到壳上，取最近显式声明并跟随变化', async () => {
+    const { outer, inner, source, shell } = fixture()
+    outer.setAttribute('data-tone', 'danger')
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.getAttribute('data-tone')).toBe('danger')
+
+    inner.setAttribute('data-tone', 'success')
+    await settleMutations()
+    expect(shell.getAttribute('data-tone')).toBe('success')
+
+    inner.removeAttribute('data-tone')
+    outer.removeAttribute('data-tone')
+    await settleMutations()
+    expect(shell.hasAttribute('data-tone')).toBe(false)
+    bridge.dispose()
+  })
+
   it('拒绝跨 Document 来源与壳，不把主页面视觉环境写进 iframe', () => {
     const { source } = fixture()
     const other = document.implementation.createHTMLDocument('other')
