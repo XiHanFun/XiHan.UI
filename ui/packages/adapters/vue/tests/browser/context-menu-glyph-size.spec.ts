@@ -3,8 +3,8 @@
 // 此前三者都读 --xh-icon-size（md 20px）：20 的标记位盒、20 的勾与 20 的 chevron 比同一行 16px 的指示符档大一圈，
 // compact 下指示符收到 14 时它们仍是 20。两档密度一起量：指示符档 comfortable 16 / compact 14，作者图标两档都恒 20。
 import type { App } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhContextMenuContent,

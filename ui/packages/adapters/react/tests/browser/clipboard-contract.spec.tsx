@@ -1,9 +1,9 @@
 import type { ComponentProps } from 'react'
 import type { Root } from 'react-dom/client'
-import { userEvent } from '@vitest/browser/context'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { XhClipboardCopyTrigger, XhClipboardRoot } from '../../src'
 
 let root: Root | null = null

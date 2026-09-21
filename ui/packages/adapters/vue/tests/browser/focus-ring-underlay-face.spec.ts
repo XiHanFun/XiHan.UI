@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 // 环内侧那块面不长在部件自己身上的那几档。
 //
 // 聚焦环往内收一个环宽（--xh-ring-offset = 负一个环宽），外沿与元素边框外沿重合，
@@ -10,8 +11,7 @@
 //
 // 量法与 focus-ring-face-contrast 一致：把环色叠在环内侧那一摞底上，按 WCAG 2.2
 // SC 1.4.11 的非文本对比算比值，阈值 3:1。
-import { userEvent } from '@vitest/browser/context'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 

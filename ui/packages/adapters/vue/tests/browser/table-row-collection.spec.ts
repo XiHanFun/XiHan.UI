@@ -3,8 +3,8 @@
 // 家族给行的是 display: grid + 内衬 + 圆角 + pointer 光标，这些都得被皮肤逐项盖掉——
 // jsdom 不排版，只有真实浏览器量得出来。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTableBody,

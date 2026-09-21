@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from 'vitest'
 // 聚焦环由公共层统一画：键盘焦点落在任何一个库节点上都出环，组件只在需要时改环色或撤掉环。
 // 三档各查一个代表：默认档（环画在元素自己那一圈）、换环色档（面是实心的，环改取面自己的前景色）、
 // 撤掉档（组件自己写 outline: none）。
@@ -5,8 +6,7 @@
 // 判据只看级联算出来的取值，所以直接摆带 data-scope / data-part 的裸节点：皮肤是纯 CSS，
 // 认的就是这两个属性。焦点用真实的 Tab 键送过去——:focus-visible 只在键盘模态下匹配，
 // 程序化 focus() 命不命中要看引擎的启发式。
-import { userEvent } from '@vitest/browser/context'
-import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 

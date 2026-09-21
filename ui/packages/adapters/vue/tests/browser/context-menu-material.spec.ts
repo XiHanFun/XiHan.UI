@@ -1,7 +1,7 @@
 // ContextMenu 的 M2 表面、作者任意 slot 行与四向短位移动效依赖完整 CSS 级联，只在真实 Chromium 验证。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhContextMenuArrow,

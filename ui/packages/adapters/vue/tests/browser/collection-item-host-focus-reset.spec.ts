@@ -11,8 +11,8 @@
 // 覆盖 Tabs 之外同型的 nav / page 语境条目：Anchor link、NavigationMenu / Menubar trigger、
 // Breadcrumb link、SideNav link。
 import type { App, VNode } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhAnchorItem,

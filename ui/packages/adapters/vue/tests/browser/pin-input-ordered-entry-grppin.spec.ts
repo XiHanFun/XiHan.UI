@@ -5,8 +5,8 @@
 // 一、点还轮不到的格子，焦点落到第一个空格；填满之后点哪一格就落哪一格。
 // 二、Tab 走得出这一组——还轮不到的格子退出了 Tab 序列，不会被拨回来形成死循环。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhPinInputInput, XhPinInputRoot } from '../../src'
 

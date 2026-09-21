@@ -1,8 +1,8 @@
 // ButtonGroup 的段靠一像素共边连成一体：组内按压不能缩开接缝，组形态也不能盖过子段显式形态。
 // 两条都依赖真实 :active、逻辑方向与完整 CSS 级联，只在 Chromium 中验证。
 import type { App, VNode } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import { XhButton, XhButtonGroup } from '../../src'
 import '@xihan-ui/tokens/tokens.css'

@@ -10,8 +10,8 @@
 // 按下与松开走 CDP 的真实鼠标事件（不是 .click()）：按下那一刻焦点搬到新标签、松开派 click 翻选中值，
 // 两个时刻各自采样。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTabsContent, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
 import { pressPointer, releasePointer, releasePointerAway } from './pointer-press'

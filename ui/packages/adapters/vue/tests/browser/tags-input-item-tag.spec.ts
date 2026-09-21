@@ -5,8 +5,8 @@
 // 只有真实浏览器量得出来：框高、标签的顶边、算出来的颜色都是布局与级联的结果，jsdom 不排版。
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { App, VNode } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTagCloseTrigger,

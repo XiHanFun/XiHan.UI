@@ -3,7 +3,7 @@
 // 坐标走 CDP，而 CDP 的坐标系是外层页面的：vitest 把测试文档装在一个按比例缩放的 iframe 里，
 // 元素在自己文档里量到的 clientX / clientY 要先按 iframe 在外层页面的位置与缩放换算，
 // 否则离左上角越远落点偏得越多，压到别的行上或干脆落到 body。
-import { cdp } from '@vitest/browser/context'
+import { cdp } from 'vitest/browser'
 
 /** 元素中心在外层页面（CDP 坐标系）里的位置。 */
 function centerOf(element: HTMLElement): { x: number, y: number } {

@@ -11,8 +11,8 @@
 // 接着容差被一路调大，直到基线什么也守不住。下面每一处等待与写死都是为了消掉一个变量，
 // 各自在注释里写明消的是哪一个。
 import type { App, VNode } from 'vue'
-import { page, userEvent } from '@vitest/browser/context'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { page, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhButton,

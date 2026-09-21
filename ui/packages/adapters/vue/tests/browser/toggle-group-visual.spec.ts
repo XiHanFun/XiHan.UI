@@ -1,6 +1,6 @@
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import { XhToggleGroupItem, XhToggleGroupRoot } from '../../src'
 import { pressPointer, releasePointerAway } from './pointer-press'

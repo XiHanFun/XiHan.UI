@@ -10,6 +10,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -46,7 +47,8 @@ function mount(props: Record<string, unknown>): () => Slot {
           return [
             h(XhTableHeader, null, () => [
               h(XhTableRow, { value: '__head__' }, () =>
-                p.columns.map(c => h(XhTableColumnHeader, { key: c.id, value: c.id }, () => c.id))),
+                // 列名装进 column-label（列头里唯一可收窄的一格），不再裸写在列头里
+                p.columns.map(c => h(XhTableColumnHeader, { key: c.id, value: c.id }, () => h(XhTableColumnLabel, null, () => c.id)))),
             ]),
             h(XhTableBody, null, () =>
               rows.map(row =>

@@ -2,8 +2,8 @@
 // 标记仍是行首的勾选方框；悬停 100 → 按下 200 只换面，勾选行悬停 20%；搬运钮接 Action Control icon outline 档，
 // 按下 0.97 并同时换底；两侧列表接自绘条，条子贴在列表盒上而不是壳边。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTransferItem,

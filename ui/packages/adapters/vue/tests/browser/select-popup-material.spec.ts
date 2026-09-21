@@ -1,7 +1,7 @@
 // Select 的 trigger 保持实体，popup 使用 M2；作者内容布局、选中面与四向动效依赖真实 CSS 级联。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhSelectContent,

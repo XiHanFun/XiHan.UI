@@ -9,9 +9,9 @@
 // table.css 之后就反超：手机上箭头被撑成整格（实测 ::after 82×44 / 142×44）。第二条用例把家族样式表原样
 // 再注入一次、排在全部皮肤之后，模拟这种形态，断言仍必须成立——这是级联健壮性的护栏，不是打包器的。
 import type { App } from 'vue'
-import { cdp } from '@vitest/browser/context'
 import actionControlCss from '@xihan-ui/styles/action-control.css?raw'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTableBody,

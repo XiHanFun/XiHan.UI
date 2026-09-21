@@ -1,8 +1,8 @@
 // 验证 Kbd 键盘按键的真实浏览器材质。
 
 import type { App, VNode } from 'vue'
-import { cdp } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import { XhKbd } from '../../src'
 import '@xihan-ui/tokens/tokens.css'

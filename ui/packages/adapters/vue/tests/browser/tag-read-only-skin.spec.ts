@@ -1,8 +1,8 @@
 // 标签的只读与禁用在皮肤上是两副样子：只读只锁那颗叉，标签本身照常；禁用连整枚一起置灰。
 // 两档都要叉留在原位，标签的宽度不因此跳变。jsdom 不排版也不算级联，只能在浏览器里量。
 import type { App, VNode } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from '../../src'
 // 皮肤与令牌要一起加载：这里查的就是皮肤按状态算出来的值

@@ -1,5 +1,5 @@
-import { cdp } from '@vitest/browser/context'
 import { expect } from 'vitest'
+import { cdp } from 'vitest/browser'
 
 /** 伪元素在视口坐标里的盒：由宿主的盒与伪元素的计算样式（定位、inset、尺寸、translate）折算。 */
 export interface PseudoBox {

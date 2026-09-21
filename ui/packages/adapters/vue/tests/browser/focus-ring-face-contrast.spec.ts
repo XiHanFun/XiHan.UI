@@ -1,3 +1,5 @@
+import { allSuites } from '@xihan-ui/testing'
+import { afterEach, describe, expect, it } from 'vitest'
 // 聚焦环压着的那块面，得看得见环。
 //
 // 环往内收一个环宽，外沿与元素边框外沿重合，环内侧紧挨着的就是元素自己那块面。
@@ -29,9 +31,7 @@
 // 对不上的逐条登在 focus-ring-face-contrast.reconcile.json 里写明理由，两侧反查：
 // 登记的必须仍然对不上、对不上的必须已登记。
 // 三张表都用 VITE_FOCUS_RING_UPDATE=1 重跑本份来重写，reconcile 表新进的条目理由留空由人补。
-import { commands, userEvent } from '@vitest/browser/context'
-import { allSuites } from '@xihan-ui/testing'
-import { afterEach, describe, expect, it } from 'vitest'
+import { commands, userEvent } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import surfaceRegistry from '../../../../../tooling/scripts/focus-ring-surface-registry.json'
 import { renderFixtureNode, resolveRoot } from '../fixture-vnode'

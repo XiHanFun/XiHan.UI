@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 // 三条环境轴上的皮肤取值：高对比（forced-colors）、打印（print）、移动视口的安全区。
 //
 // 三档都不是常态渲染，开发机上一个像素都看不出差别，只有把浏览器真切到那一档才验得了：
@@ -7,8 +8,7 @@
 // 节点直接按 data-scope / data-part 手搭：皮肤的选择器只认这两个属性、状态属性与家族标记
 // （如 data-xh-field-chrome），与是哪个适配器渲出来的无关，手搭的结构带齐 connect 投影的这几个属性，
 // 与组件渲出来的结构在选择器眼里一模一样。
-import { cdp } from '@vitest/browser/context'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { cdp } from 'vitest/browser'
 // 皮肤与令牌一起加载：这里查的就是皮肤算出来的取值
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'

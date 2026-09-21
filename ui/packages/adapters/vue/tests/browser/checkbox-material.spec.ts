@@ -1,6 +1,6 @@
 import type { App, VNode } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhCheckbox } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
