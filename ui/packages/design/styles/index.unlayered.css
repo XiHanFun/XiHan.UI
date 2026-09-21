@@ -3299,10 +3299,17 @@
   animation: none;
 }
 
-/* 手指落点：配方 text 档用 ::after 把块轴命中区扩到 44px；没写内容的按钮 ::after 已被兜底字形占着
-   （那条规则特指度更高，配方的命中区落不下来），这一档改用当时空着的 ::before 扩——
-   取数在途时字形不画、::before 是圆环，配方的 ::after 又能落下来，两颗伪元素轮着用 */
+/* 手指落点：配方 text 档用 ::after 把块轴命中区扩到 44px；没写内容的按钮 ::after 已被兜底字形占着，
+   这一档改用当时空着的 ::before 扩——取数在途时字形不画、::before 是圆环，配方的 ::after 又能落下来，
+   两颗伪元素轮着用。字形那条只写了尺寸与 mask，配方的定位、44px 下限与 -50% 平移会从同一个
+   ::after 漏进来：字形被拎出行内流、盒撑到 44px 高，按钮随之收窄一格字形——这里逐项钉回 */
 @media (pointer: coarse) {
+  [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true'])::after {
+    position: static;
+    min-block-size: 0;
+    translate: none;
+  }
+
   [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true'])::before {
     content: '';
     position: absolute;
