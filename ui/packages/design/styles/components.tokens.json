@@ -41872,43 +41872,50 @@
       "name": "--xh-navigation-menu-indicator-color",
       "component": "navigation-menu",
       "part": [
-        "indicator"
+        "indicator",
+        "link"
       ],
       "property": [
         "background"
       ],
       "state": [
+        "current",
         "default"
       ],
       "defaultToken": [
         "--xh-_navigation-menu-accent"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 indicator 部件 background 覆盖槽。"
+      "description": "navigation-menu 的 indicator、link 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-indicator-radius",
       "component": "navigation-menu",
       "part": [
-        "indicator"
+        "indicator",
+        "link"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
+        "current",
         "default"
       ],
       "defaultToken": [
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 indicator 部件 border-radius 覆盖槽。"
+      "description": "navigation-menu 的 indicator、link 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-indicator-thickness",
       "component": "navigation-menu",
       "part": [
-        "indicator"
+        "indicator",
+        "item",
+        "link",
+        "list"
       ],
       "property": [
         "block-size",
@@ -41916,14 +41923,16 @@
         "inset-block-end"
       ],
       "state": [
+        "current",
         "default",
+        "orientation=horizontal",
         "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-stroke-thick"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 indicator 部件 block-size、inline-size、inset-block-end 覆盖槽。"
+      "description": "navigation-menu 的 indicator、item、link、list 部件 block-size、inline-size、inset-block-end 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-layer",

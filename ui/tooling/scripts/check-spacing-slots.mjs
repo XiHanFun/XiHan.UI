@@ -61,6 +61,8 @@ const CROSS_PART = {
   'tabs.indicator': ['trigger'],
   // 同上：目录里没放 indicator 部件时当前链接在自己的 ::after 上画同规格的静态线
   'anchor.indicator': ['link'],
+  // 同上：当前页链接在自己的 ::after 上画同规格的静态线，与指开着面板的部件读同一组槽
+  'navigation-menu.indicator': ['link'],
   // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关
   'code-view.line': ['pre'],
   // 折叠条与文件头是同一条横栏的两端，描边与字号取同一族才连成一条

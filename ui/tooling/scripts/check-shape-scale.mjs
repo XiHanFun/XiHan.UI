@@ -140,6 +140,8 @@ const IDENTITY = {
   'anchor:indicator': 'pill',
   // 目录里没放 indicator 部件时当前链接自画的静态线：与部件同规格的一维对象
   'anchor:link::after': 'pill',
+  // 指向当前页面的链接自画的静态线：与部件同规格的一维对象（部件本身指的是开着的面板）
+  'navigation-menu:link::after': 'pill',
   'navigation-menu:indicator': 'pill',
   'resizable:handle::after': 'pill',
   'table:column-resize-trigger::after': 'pill',

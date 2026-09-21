@@ -58,7 +58,7 @@
 - 支持横向和竖向排列、延迟展开与键盘导航。
 - 没有子级的入口可直接渲染为链接。
 - `viewport` 可让所有面板在同一位置切换。
-- 当前链接使用 `aria-current="page"`。
+- 当前链接使用 `aria-current="page"`，并自带一条静态指示线（横排的直达链接贴底边，竖排与面板里的链接贴起始缘）；`indicator` 部件指的是开着的面板，两者各说各的。
 
 ### 组合
 
@@ -195,6 +195,8 @@
 
 `@xihan-ui/styles/navigation-menu.css` 使用 `[data-scope="navigation-menu"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -249,9 +251,9 @@
 | `--xh-navigation-menu-font-size` | `root`<br>`trigger` | `font-size` | `default` | `--xh-_navigation-menu-font-size` | navigation-menu 的 root、trigger 部件 font-size 覆盖槽。 |
 | `--xh-navigation-menu-gap` | `list` | `gap` | `default` | `--xh-space-1` | navigation-menu 的 list 部件 gap 覆盖槽。 |
 | `--xh-navigation-menu-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | navigation-menu 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-navigation-menu-indicator-color` | `indicator` | `background` | `default` | `--xh-_navigation-menu-accent` | navigation-menu 的 indicator 部件 background 覆盖槽。 |
-| `--xh-navigation-menu-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | navigation-menu 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-navigation-menu-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | navigation-menu 的 indicator 部件 block-size、inline-size、inset-block-end 覆盖槽。 |
+| `--xh-navigation-menu-indicator-color` | `indicator`<br>`link` | `background` | `current`<br>`default` | `--xh-_navigation-menu-accent` | navigation-menu 的 indicator、link 部件 background 覆盖槽。 |
+| `--xh-navigation-menu-indicator-radius` | `indicator`<br>`link` | `border-radius` | `current`<br>`default` | `--xh-shape-pill` | navigation-menu 的 indicator、link 部件 border-radius 覆盖槽。 |
+| `--xh-navigation-menu-indicator-thickness` | `indicator`<br>`item`<br>`link`<br>`list` | `block-size`<br>`inline-size`<br>`inset-block-end` | `current`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | navigation-menu 的 indicator、item、link、list 部件 block-size、inline-size、inset-block-end 覆盖槽。 |
 | `--xh-navigation-menu-layer` | `content`<br>`viewport` | `z-index` | `default` | `--xh-_layer` | navigation-menu 的 content、viewport 部件 z-index 覆盖槽。 |
 | `--xh-navigation-menu-link-bg-hover` | `link` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-_navigation-menu-highlight-bg` | navigation-menu 的 link 部件 background-color 覆盖槽。 |
 | `--xh-navigation-menu-link-bg-pressed` | `link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | navigation-menu 的 link 部件 background-color 覆盖槽。 |
