@@ -68,9 +68,11 @@ describe('每页条数控制器接的是库里的下拉', () => {
     // 原生下拉整个不在了
     expect(document.querySelector('select')).toBeNull()
 
+    // 字段外壳是描边式不填底：看得见的是那圈描边与家族投影，不是原生下拉的系统外观
     const control = getComputedStyle(selectPart('control'))
     expect(Number.parseFloat(control.borderTopWidth)).toBeGreaterThan(0)
-    expect(control.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(control.borderTopStyle).toBe('solid')
+    expect(selectPart('control').getAttribute('data-xh-field-chrome')).toBe('')
 
     // 展开指示符是 select 自己那枚箭头，不是系统下拉画的那个
     const indicator = getComputedStyle(selectPart('indicator'), '::before')

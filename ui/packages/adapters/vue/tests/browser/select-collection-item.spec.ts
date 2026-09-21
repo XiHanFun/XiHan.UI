@@ -25,7 +25,7 @@ function isTransparentColor(value: string): boolean {
  * 这枚焦点带 :focus-visible）；'pointer' 由真实指针点开触发器，之后脚本搬到条目上的焦点不带
  * :focus-visible，与用户用鼠标打开后划过条目的那条路一致。
  */
-async function mountSelect(size: 'sm' | 'md' | 'lg' = 'md', open: 'default' | 'pointer' = 'default'): Promise<HTMLElement[]> {
+async function mountSelect(size: 'sm' | 'md' | 'lg' = 'md', open: 'default' | 'pointer' | 'closed' = 'default'): Promise<HTMLElement[]> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
@@ -167,7 +167,8 @@ describe('select 使用 Collection Item', () => {
   })
 
   it('overlay 裸条目：open-path 与 hover 同档、loading/error/separator 命名空间', async () => {
-    await mountSelect()
+    // 裸条目只借皮肤在场：面板收着，否则随字段缺省宽撑到 16rem 的面板会盖住条目中心、挡住指针
+    await mountSelect('md', 'closed')
     const item = rawItem()
     const width = item.getBoundingClientRect().width
     const restColor = getComputedStyle(item).color
@@ -203,7 +204,8 @@ describe('select 使用 Collection Item', () => {
   })
 
   it('page 上下文：选中 = 品牌淡底 + 前导对号，current = 指示条，宽度不变', async () => {
-    await mountSelect()
+    // 裸条目只借皮肤在场：面板收着，否则随字段缺省宽撑到 16rem 的面板会盖住条目中心、挡住指针
+    await mountSelect('md', 'closed')
     const item = rawItem({ context: 'page' })
     const indicator = item.querySelector<HTMLElement>('[data-xh-collection-slot=\'indicator\']')!
     const width = item.getBoundingClientRect().width

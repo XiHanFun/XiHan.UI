@@ -83,7 +83,7 @@ describe('时间选择浮层', () => {
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
     expect(control.backdropFilter).toBe('none')
-    expect(alpha(control.backgroundColor)).toBe(255)
+    expect(alpha(control.backgroundColor)).toBe(0)
     expect(control.outlineStyle).toBe('solid')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     expect(content.backdropFilter).toBe('none')

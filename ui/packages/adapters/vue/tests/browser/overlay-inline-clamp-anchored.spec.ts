@@ -191,7 +191,7 @@ function tour(): VNode {
 /** select 的锚点是触发器：外面那层把它撑得比可用区还宽。 */
 function select(): VNode {
   return h('div', { style: WIDE_ANCHOR }, [
-    h(XhSelectRoot, { open: true, collection: CITIES }, () => [
+    h(XhSelectRoot, { open: true, collection: CITIES, style: WIDE_ANCHOR }, () => [
       h(XhSelectControl, null, () => [
         h(XhSelectTrigger, { style: WIDE_ANCHOR }, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
       ]),
@@ -210,7 +210,7 @@ function select(): VNode {
 
 /** combobox 的锚点是 control 那只盒。 */
 function combobox(): VNode {
-  return h(XhComboboxRoot, { open: true, collection: CITIES }, () => [
+  return h(XhComboboxRoot, { open: true, collection: CITIES, style: WIDE_ANCHOR }, () => [
     h(XhComboboxControl, { style: WIDE_ANCHOR }, () => [h(XhComboboxInput), h(XhComboboxTrigger)]),
     h(XhComboboxPositioner, null, () => [
       h(XhComboboxContent, null, () => CITIES.map(node =>

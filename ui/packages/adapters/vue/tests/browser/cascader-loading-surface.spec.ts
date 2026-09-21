@@ -105,7 +105,8 @@ describe('级联选择首次加载表面', () => {
     const control = getComputedStyle(part('control'))
     const content = part('content')
     const style = getComputedStyle(content)
-    expect(colorAlpha(control.backgroundColor)).toBe(255)
+    // 描边式字段外壳不填底：透明底不是磨砂，没有背景滤镜
+    expect(colorAlpha(control.backgroundColor)).toBe(0)
     expect(control.backdropFilter).toBe('none')
     expect(style.backdropFilter).toContain('blur(16px)')
     expect(colorAlpha(style.backgroundColor)).toBeLessThan(255)

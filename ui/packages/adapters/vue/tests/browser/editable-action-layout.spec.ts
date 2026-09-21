@@ -53,6 +53,16 @@ function token(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
 
+/** 颜色的 alpha 通道（0 – 255）：经 canvas 铺一像素读回，不同序列化的透明色都归到同一个数。 */
+function alpha(color: string): number {
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext('2d')!
+  context.fillStyle = color
+  context.fillRect(0, 0, 1, 1)
+  return context.getImageData(0, 0, 1, 1).data[3]!
+}
+
 /** 颜色令牌按浏览器序列化后的写法取，与 getComputedStyle 的颜色值可直接对拍。 */
 function tokenColor(name: string): string {
   const probe = document.createElement('span')
@@ -160,10 +170,11 @@ describe('就地编辑的左内容右动作布局', () => {
     expectIconButton('cancel-trigger', 32)
     expectUnifiedControl('input', 'submit-trigger', 'cancel-trigger')
     expectDivider('submit-trigger')
-    // 取消钮没有线：它的背景层只有家族那条透明的顶光渐变
+    // 取消钮没有线：它的背景层只有家族那条透明的顶光渐变；两颗钮静息都不填底
+    //（一支是 transparent 关键字、一支是兑成 0% 的 color-mix，序列化不同、都是全透明）
     expect(getComputedStyle(part('cancel-trigger')).backgroundSize).toBe('auto')
-    expect(getComputedStyle(part('submit-trigger')).backgroundColor)
-      .toBe(getComputedStyle(part('cancel-trigger')).backgroundColor)
+    expect(alpha(getComputedStyle(part('submit-trigger')).backgroundColor)).toBe(0)
+    expect(alpha(getComputedStyle(part('cancel-trigger')).backgroundColor)).toBe(0)
   })
 
   it('三颗钮常态透明，悬停浮出白底承载的 100 档，焦点环由 control 画在外框上', async () => {

@@ -135,13 +135,13 @@ const PRESETS = [
 ]
 
 describe('日期范围选择器的家族观感', () => {
-  it('输入行是描边式字段外壳：canvas 底 + 描边 + 无影，聚焦时描边换焦点色并带环', async () => {
+  it('输入行是描边式字段外壳：不填底 + 描边 + 无影，聚焦时描边换焦点色并带环', async () => {
     await mountPicker()
     const control = part('control')
     control.style.transition = 'none'
     const rest = getComputedStyle(control)
     expect(control.getAttribute('data-xh-field-chrome')).toBe('')
-    expect(alpha(rest.backgroundColor)).toBe(255)
+    expect(alpha(rest.backgroundColor)).toBe(0)
     expect(rest.borderTopStyle).toBe('solid')
     expect(alpha(rest.borderTopColor)).toBe(255)
     expect(rest.boxShadow).toBe('none')

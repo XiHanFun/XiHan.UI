@@ -127,13 +127,13 @@ afterEach(async () => {
 })
 
 describe('选择器实体触发与 M2 浮层', () => {
-  it('control 保持不透明实体，content 才使用磨砂、浮层海拔与顶光', async () => {
+  it('control 是描边式不填底的字段外壳，content 才使用磨砂、浮层海拔与顶光', async () => {
     await mountSelect()
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
 
     expect(backdrop(control)).toBe('none')
-    expect(colorAlpha(control.backgroundColor)).toBe(255)
+    expect(colorAlpha(control.backgroundColor)).toBe(0)
     expect(backdrop(content)).toContain('blur(16px)')
     expect(colorAlpha(content.backgroundColor)).toBeLessThan(255)
     expect(content.boxShadow).not.toBe('none')
