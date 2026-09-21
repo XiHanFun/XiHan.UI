@@ -3,8 +3,8 @@
 // 判据全是级联算出来的取值与伪元素上的取值，只有真实浏览器算得出来：
 // jsdom 不解析样式表里的 var() 与继承，也不给伪元素，getComputedStyle 恒是空串。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhAnchorItem,

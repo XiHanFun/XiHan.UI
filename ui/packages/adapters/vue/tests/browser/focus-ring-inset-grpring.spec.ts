@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from 'vitest'
 // 聚焦环画在元素自己那一圈：聚焦前后元素占的地方一样大，环仍然看得见。
 //
 // 三件事各查一遍：
@@ -18,8 +19,7 @@
 //
 // 判据只看级联算出来的取值，所以直接摆带 data-scope / data-part 的裸节点：皮肤是纯 CSS，
 // 认的就是这两个属性。焦点用真实的 Tab 键送过去——:focus-visible 只在键盘模态下匹配。
-import { cdp, userEvent } from '@vitest/browser/context'
-import { afterEach, describe, expect, it } from 'vitest'
+import { cdp, userEvent } from 'vitest/browser'
 import surfaceRegistry from '../../../../../tooling/scripts/focus-ring-surface-registry.json'
 import { splitTop, staticKey } from './focus-ring-surface-key'
 import '@xihan-ui/tokens/tokens.css'

@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from 'vitest'
 // 失效档的聚焦环不取被压过的前景墨；中性选中档同样使用公共环。
 //
 // 实心面那几档把 --xh-_ring-color 灌成 currentColor，环随面自己的前景色走。
@@ -9,8 +10,7 @@
 // 失效档要吃公共层的默认环色，没失效的那几档仍取面自己的前景色。
 // 通用那份判据（focus-ring-face-contrast）从皮肤推档位，推不出「另一条规则把 color 换掉」
 // 这种叠加档，所以这四档在这儿单列。
-import { userEvent } from '@vitest/browser/context'
-import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 

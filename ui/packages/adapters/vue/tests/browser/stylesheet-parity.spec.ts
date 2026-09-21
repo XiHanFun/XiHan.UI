@@ -8,11 +8,11 @@
 //
 // 判据是级联算出的取值，只有真实浏览器算得出来：jsdom 不解析样式表里的 var() 与层。
 import type { App, VNode } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
 import layeredUrl from '@xihan-ui/styles/index.css?url'
 import unlayeredUrl from '@xihan-ui/styles/index.unlayered.css?url'
 import tokensUrl from '@xihan-ui/tokens/tokens.css?url'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhButton,

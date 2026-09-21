@@ -2,8 +2,8 @@
 // 当前页是格状当前（§7.3）：实心品牌面 + 配对前景、不加粗，按下压到 active 档；省略位三态都压淡字色；
 // 首页的上一页由家族按 data-disabled 画置灰前景；摊开的页码面板是浮层滚动面，滚动链 contain（§6.6）。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhPaginationContent,

@@ -12,6 +12,8 @@ import {
   XhTableCell,
   XhTableColumnHeader,
   XhTableColumnLabel,
+  XhTableColumnList,
+  XhTableColumnVisibilityTrigger,
   XhTableExpandTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -85,6 +87,8 @@ async function mount(density: 'comfortable' | 'compact'): Promise<void> {
             ],
           })),
         }),
+        // 列设置里的显隐勾选框：与全选 / 行选同一套方盒与勾，列没藏起来时是 checked
+        h(XhTableColumnList, null, { default: () => h(XhTableColumnVisibilityTrigger, { value: 'name' }) }),
       ],
     }),
   })
@@ -140,10 +144,11 @@ describe.each(['comfortable', 'compact'] as const)('表格自绘状态字形按�
     expectCenteredBox(sort)
   })
 
-  it('三颗勾选框的兜底勾按方盒边长 × 0.75 取尺，落在盒内并居中', async () => {
+  it('四颗勾选框（全选、两行、列显隐）的兜底勾按方盒边长 × 0.75 取尺，落在盒内并居中', async () => {
     await mount(density)
     const indicator = indicatorSize()
-    for (const box of [part('select-all-trigger'), part('row-select-trigger', 0), part('row-select-trigger', 1)]) {
+    expect(part('column-visibility-trigger').getAttribute('data-state')).toBe('checked')
+    for (const box of [part('select-all-trigger'), part('row-select-trigger', 0), part('row-select-trigger', 1), part('column-visibility-trigger')]) {
       expect(box.getBoundingClientRect().width).toBe(indicator)
       const check = pseudoBox(box, '::before')
       const observed = describeGlyph(box, '::before')

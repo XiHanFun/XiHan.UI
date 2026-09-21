@@ -1,8 +1,8 @@
 import type { ContextMenuSelectDetails, MenubarSelectDetails } from '@xihan-ui/headless'
 import type { Mock } from 'vitest'
 import type { App, VNode } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhContextMenuContent,

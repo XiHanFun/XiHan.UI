@@ -1,5 +1,5 @@
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { pressPointer, releasePointerAway } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'

@@ -1,6 +1,6 @@
 import type { XhClipboardElement } from '../../src/elements/clipboard'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { defineXhElements } from '../../src/define'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'

@@ -3,8 +3,8 @@
 // 排序钮是列名之后一颗独立的 ghost 图标钮，贴列头行尾与列宽把手并排，按表头 host 槽下发的淡底阶梯换面；
 // 列头文字不再是排序的命中区。jsdom 不排版，只有真实浏览器量得出来。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
   XhTableBody,

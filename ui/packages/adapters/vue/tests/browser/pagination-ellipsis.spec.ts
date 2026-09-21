@@ -3,8 +3,8 @@
 // 这条必须在真实浏览器里验：浮层被 Teleport 搬到 portal 落点，坐标由定位引擎实测，
 // 而「落位才露」是皮肤按 data-positioned 判的——jsdom 既不排版也量不出坐标。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhPaginationContent,

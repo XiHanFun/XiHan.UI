@@ -2,8 +2,8 @@
 // 格子坐在白底上，悬停 100 档、按下 200 档并缩放（§7.2 / §9.1）；选中格实心品牌，按下压到 active 档；
 // 快速选年的网格是页内结构容器，滚动链保持 auto（§6.6）。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhCalendarRangePickerCell,

@@ -3,8 +3,8 @@
 // 家族 Collection Item 按 data-error 给的是告警面，且 hover / 高亮 / 按下三段都排除了 [data-error]；
 // 树选择皮肤把告警面映射回常态后，这三段反馈必须由皮肤在 error 行上重新接回。
 import type { App } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTreeSelectRoot } from '../../src'
 import '@xihan-ui/tokens/tokens.css'

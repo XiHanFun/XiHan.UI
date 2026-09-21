@@ -2,8 +2,8 @@
 // 悬停 100 → 按下 200 只换面，选中行悬停 20% / 按住 28%；分支行不是 treeitem 本体，
 // 选中面与禁用守卫按连接层同步的 data-selected / data-disabled 命中；真实选择不改变行几何。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTreeBranch,

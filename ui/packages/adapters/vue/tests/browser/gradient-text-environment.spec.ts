@@ -1,6 +1,6 @@
 import type { App } from 'vue'
-import { cdp } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhGradientText } from '../../src'
 import '@xihan-ui/tokens/tokens.css'

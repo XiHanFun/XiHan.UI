@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from 'vitest'
 // 环画在实心面上时，取的是那块面自己配对的前景色。
 //
 // 这一份钉三档：环压着的那块面，现成的档位表都推不出来。
@@ -9,8 +10,7 @@
 //
 // 每一档量两样：环色与面按 WCAG 2.2 SC 1.4.11 的非文本对比要过 3:1；
 // 环色要与那块面配对的前景色同值——同值才保证换了语气、换了主题它跟着走。
-import { userEvent } from '@vitest/browser/context'
-import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 

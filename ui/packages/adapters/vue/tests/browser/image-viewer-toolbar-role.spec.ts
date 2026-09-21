@@ -8,8 +8,8 @@
 // 三、焦点停在条里的钮上时，左右方向键与 Home/End 仍然翻页：
 //     这是看片的主交互，条内走位一旦接管这四个键，它就从这七颗钮上消失。
 import type { App } from 'vue'
-import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhImageViewerCloseTrigger,

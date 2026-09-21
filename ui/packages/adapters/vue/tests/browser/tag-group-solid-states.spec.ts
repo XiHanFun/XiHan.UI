@@ -6,8 +6,8 @@
 // 六族语气 × 浅深主题逐档量：算出来的颜色是级联的结果，只有真实浏览器量得出来。
 import type { Tone } from '@xihan-ui/core'
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTagGroupRoot } from '../../src'
 import '@xihan-ui/tokens/tokens.css'

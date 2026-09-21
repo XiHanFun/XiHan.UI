@@ -3,8 +3,8 @@
 // 置灰的那颗悬停照样换底、按下照样缩，看着还能点。
 // 判据必须用真实指针：合成事件不改伪类状态，getComputedStyle 读不到 :hover 的效果。
 import type { App, VNode } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import {
   XhButton,

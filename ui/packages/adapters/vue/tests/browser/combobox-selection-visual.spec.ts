@@ -1,8 +1,8 @@
 // Combobox 的焦点留在输入框，候选仅用 data-highlighted 表达导航位置。
 // 这里在真实 Chromium 中同时验证选择语义、作者内容几何与逻辑方向。
 import type { App } from 'vue'
-import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhComboboxContent,

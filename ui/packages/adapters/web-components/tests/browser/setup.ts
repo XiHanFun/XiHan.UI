@@ -1,5 +1,5 @@
-import { userEvent } from '@vitest/browser/context'
 import { beforeAll } from 'vitest'
+import { userEvent } from 'vitest/browser'
 
 /**
  * 把真实指针停到视口角落的一块 2×2 上，并把它留在 DOM 里当命中目标。
