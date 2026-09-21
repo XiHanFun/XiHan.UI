@@ -41,6 +41,7 @@
     "@xihan-ui/react": "link:../ui/packages/adapters/react",
     "@xihan-ui/sound": "link:../ui/packages/features/sound",
     "@xihan-ui/styles": "link:../ui/packages/design/styles",
+    "@xihan-ui/tokens": "link:../ui/packages/design/tokens",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",
     "@xihan-ui/web-components": "link:../ui/packages/adapters/web-components",
     "react": "19.2.0",

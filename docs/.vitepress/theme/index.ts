@@ -5,6 +5,8 @@ import XhDemo from "./XhDemo.vue";
 import XhDocsScrollbars from "./XhDocsScrollbars.vue";
 import XhFrameworkSwitch from "./XhFrameworkSwitch.vue";
 import XhPageMarkdown from "./XhPageMarkdown.vue";
+import XhTokenSwatches from "./XhTokenSwatches.vue";
+import XhTokenTable from "./XhTokenTable.vue";
 // 示例舞台隔离必须排在皮肤之前：两者选择器同权，同权时后来者胜，皮肤在后才盖得住隔离。
 import "./demo-isolation.css";
 // 组件默认皮肤：用无层版本。VitePress 自带无层的 button 重置，CSS 级联里无层
@@ -36,6 +38,9 @@ export default {
     // 组件页由生成器产出，示例统一写成 <XhDemo src="..." />，这里全局注册
     ctx.app.component("XhComponentCard", XhComponentCard);
     ctx.app.component("XhDemo", XhDemo);
+    // 设计一册的色板与令牌表直接读令牌产物，页面里只写前缀或名字
+    ctx.app.component("XhTokenSwatches", XhTokenSwatches);
+    ctx.app.component("XhTokenTable", XhTokenTable);
   },
 };
 
