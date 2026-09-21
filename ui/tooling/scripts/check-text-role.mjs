@@ -105,6 +105,7 @@ const GLYPH_EXEMPT = {
   'cascader:item-indicator': '行尾的勾 / 半选杠是指示符，与 16px 标记盒同走 --xh-control-indicator-size，兜底字形与作者塞进去的图标都与盒同尺，不按图标档取',
   'listbox:item-indicator': '前导对号所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'select:item-indicator': '浮层条目里勾选标记所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
+  'combobox:item-indicator': '浮层条目里勾选标记所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
