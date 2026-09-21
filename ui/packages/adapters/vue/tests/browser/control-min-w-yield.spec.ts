@@ -53,9 +53,16 @@ function segments(scope: string) {
     </div>`
 }
 
+/**
+ * text-field：control 与 input 带上 connect 投影的家族属性，量的才是真实组件的盒。
+ * 输入框在家族合同里是 flex: 1 1 auto，基准仍是原生 input 按 size=20 撑出的字宽，
+ * 这个数随字体走：Windows 上不到地板，CI 的 Linux 字体字宽更大，整件量到 204。
+ */
 const TEXT_FIELD = `
   <div data-scope="text-field" data-part="root">
-    <div data-scope="text-field" data-part="control"><input data-scope="text-field" data-part="input" /></div>
+    <div data-scope="text-field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
+      <input data-scope="text-field" data-part="input" data-xh-field-input data-xh-field-layout="single-line" />
+    </div>
   </div>`
 
 const NUMBER_FIELD = `
@@ -77,18 +84,15 @@ const CLIPBOARD = `
 const INPUT_GROUP = `
   <div data-scope="input-group" data-part="root">
     <span data-scope="input-group" data-part="item">https://</span>
-    <div data-scope="text-field" data-part="root">
-      <div data-scope="text-field" data-part="control"><input data-scope="text-field" data-part="input" /></div>
-    </div>
+    ${TEXT_FIELD}
   </div>`
 
-/** 默认宽恰好是那道 12rem 地板的控件。 */
+/** 默认宽恰好是那道 12rem 地板的控件；text-field 不在其列，见「不低于地板」那条。 */
 const AT_FLOOR: [string, string][] = [
   ['select', trigger('select')],
   ['cascader', trigger('cascader')],
   ['tree-select', trigger('tree-select')],
   ['color-picker', trigger('color-picker')],
-  ['text-field', TEXT_FIELD],
   ['number-field', NUMBER_FIELD],
   ['date-field', segments('date-field')],
   ['time-field', segments('time-field')],
@@ -99,6 +103,7 @@ const AT_FLOOR: [string, string][] = [
 /** 全部受这道地板牵连的控件，含默认宽由内容决定的那几件。 */
 const ALL: [string, string][] = [
   ...AT_FLOOR,
+  ['text-field', TEXT_FIELD],
   ['clipboard', CLIPBOARD],
   ['input-group', INPUT_GROUP],
   ['tags-input', `
@@ -120,6 +125,13 @@ describe('放得下就顶住地板', () => {
   it.each(AT_FLOOR)('%s 在够宽的容器里仍是 12rem', (_name, markup) => {
     expect(measure(480, markup).width).toBe(FLOOR)
     expect(measure(240, markup).width).toBe(FLOOR)
+  })
+
+  it('text-field 在够宽的容器里不低于地板，宽由内容与地板定、不由容器定', () => {
+    // 原生 input 的字宽基准随字体走，地板只保证下限；两个都放得下的容器里必须量到同一个数
+    const wide = measure(480, TEXT_FIELD).width
+    expect(wide).toBeGreaterThanOrEqual(FLOOR)
+    expect(measure(240, TEXT_FIELD).width).toBe(wide)
   })
 })
 

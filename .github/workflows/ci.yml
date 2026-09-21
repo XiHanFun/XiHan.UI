@@ -131,6 +131,9 @@ jobs:
         with:
           name: visual-diffs
           path: ui/packages/adapters/*/.vitest-attachments/**
+          # 落点是点开头的目录，upload-artifact 默认跳过隐藏文件，不开这个开关会报
+          # 「No files were found」而一张图都不带出来
+          include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
       # 示例文件在 docs/ 下，不在 turbo 对 test:browser 声明的输入集里，单开一步直接起 vitest

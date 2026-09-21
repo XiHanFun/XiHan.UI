@@ -94,6 +94,14 @@ const STABLE_TIMEOUT = 15_000
 /** 等动画跑完的上限。进场动画是几百毫秒量级，留出一个数量级的余量。 */
 const ANIMATION_BUDGET = 5000
 
+/** 与整套并行跑时圆弧上抖 1 个抗锯齿像素的四格，比对退到 pixelmatch 缺省档；理由见比对处。 */
+const DIALOG_AA_JITTER: ReadonlySet<string> = new Set([
+  'dialog-light-comfortable',
+  'dialog-dark-comfortable',
+  'dialog-light-compact',
+  'dialog-dark-compact',
+])
+
 /**
  * 五个视觉组合。轴打在文档根上，不打在舞台上——浮层被 portal 搬到 body 末尾，
  * 只有文档根是它与页内内容共同的祖先，轴打在舞台上浮层就吃不到。
@@ -500,8 +508,14 @@ describe('像素基线', () => {
             // 真到了消不掉的抖动那一步，先退到比对器自己的缺省档（threshold 0.1、includeAA 关），
             // 还不够再按容器里实测的失配像素数换算 allowedMismatchedPixelRatio，
             // 并把那个数是怎么量出来的写在这里——不要拍一个宽容差了事。
-            threshold: 0,
-            includeAA: true,
+            //
+            // dialog 四格已经走到了那一步：预热之后单跑这一份 spec 在容器里三轮 40/40 逐字节一致，
+            // 但与整套 vue 浏览器态并行跑时面板圆弧上仍会抖出 1 个抗锯齿像素——CI（run 35541790512）
+            // 四格各 1 px，同镜像容器整套并行一轮 dark-comfortable 1 px，画面、位置与尺寸逐项一致。
+            // 并行时栅格化被别的页面抢占，这一个像素落在哪一态不由这份 spec 决定。四格退到缺省档，
+            // 其余 36 格仍零容差。
+            threshold: DIALOG_AA_JITTER.has(name) ? 0.1 : 0,
+            includeAA: !DIALOG_AA_JITTER.has(name),
           },
           timeout: STABLE_TIMEOUT,
         })

@@ -23,6 +23,9 @@ function tokenColor(name: string): string {
 function mount(variant: 'ghost' | 'outline' | 'subtle' = 'ghost', hoverable = false) {
   const host = document.createElement('div')
   hosts.push(host)
+  // 令过渡即时完成：断言的是悬停稳定态的底色，不是过渡中间帧。真实指针是整个浏览器共用的一颗，
+  // 并行跑的别份用例一起步就把它停回角落，等 120ms 过渡走完再读，读到的多半已是失去悬停的透明底
+  host.style.setProperty('--xh-motion-duration-micro', '0ms')
   host.innerHTML = `
     <ul data-scope="list" data-part="root" data-variant="${variant}"${hoverable ? ' data-hoverable' : ''} data-split>
       <li data-scope="list" data-part="item">
@@ -84,13 +87,14 @@ describe('list 根面', () => {
 
 describe('list 条目', () => {
   it('白底上的 hoverable 条目悬停换到 100，淡底档里抬到 200', async () => {
+    // 悬停一落下就读：与 tabs / tag-group 的悬停用例同一写法，不给别份用例挪走指针的窗口
     const onCanvas = mount('outline', true).items[0]!
     await userEvent.hover(onCanvas)
-    await expect.poll(() => getComputedStyle(onCanvas).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
+    expect(getComputedStyle(onCanvas).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
 
     const onSubtle = mount('subtle', true).items[0]!
     await userEvent.hover(onSubtle)
-    await expect.poll(() => getComputedStyle(onSubtle).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
+    expect(getComputedStyle(onSubtle).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
   })
 
   it('标题 500 字重、说明 13 / fg-muted', () => {
