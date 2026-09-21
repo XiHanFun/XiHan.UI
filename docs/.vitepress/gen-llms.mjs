@@ -18,6 +18,7 @@ const SITE = "https://ui.docs.xihanfun.com";
 /** 顶层目录 → 栏目名。目录没登记时退回目录名本身，新开一册也不会从索引里漏掉。 */
 const SECTION_LABELS = {
   ".": "开始",
+  "design": "设计",
   "guide": "核心概念",
   "adapters": "适配器",
   "runtime": "服务与运行时",
@@ -26,7 +27,7 @@ const SECTION_LABELS = {
 };
 
 /** 栏目在索引里的排序，未登记的排在末尾并按目录名排。 */
-const SECTION_ORDER = [".", "guide", "adapters", "runtime", "examples", "components"];
+const SECTION_ORDER = [".", "design", "guide", "adapters", "runtime", "examples", "components"];
 
 // —— 读文件 ——
 

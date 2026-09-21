@@ -38,6 +38,9 @@ importers:
       '@xihan-ui/styles':
         specifier: link:../ui/packages/design/styles
         version: link:../ui/packages/design/styles
+      '@xihan-ui/tokens':
+        specifier: link:../ui/packages/design/tokens
+        version: link:../ui/packages/design/tokens
       '@xihan-ui/vue':
         specifier: link:../ui/packages/adapters/vue
         version: link:../ui/packages/adapters/vue

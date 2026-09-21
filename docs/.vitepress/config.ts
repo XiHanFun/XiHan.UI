@@ -32,7 +32,6 @@ const transitiveXihanPackages = [
   "@xihan-ui/backgrounds",
   "@xihan-ui/pointer",
   "@xihan-ui/position",
-  "@xihan-ui/tokens",
 ];
 const localXihanOptimizeExclusions = [
   ...new Set([...linkedXihanPackages, ...transitiveXihanPackages]),
@@ -153,6 +152,33 @@ const guideChapters: [text: string, name: string][] = [
   ["测试与质量门禁", "testing"],
 ];
 
+// 设计一册：规则本身与它们的取舍，按"全局样式"分页，与指南（怎么用）互相链接
+const designSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: "设计",
+    collapsed: false,
+    items: [
+      { text: "设计体系", link: "/design/" },
+      { text: "设计原则", link: "/design/principles" },
+      { text: "组件家族与模式", link: "/design/patterns" },
+    ],
+  },
+  {
+    text: "全局样式",
+    collapsed: false,
+    items: [
+      { text: "色彩", link: "/design/colors" },
+      { text: "布局", link: "/design/layout" },
+      { text: "字体", link: "/design/typography" },
+      { text: "图标", link: "/design/icons" },
+      { text: "形状与边界", link: "/design/shape" },
+      { text: "阴影与材质", link: "/design/shadow" },
+      { text: "暗黑模式", link: "/design/dark" },
+      { text: "动效", link: "/design/motion" },
+    ],
+  },
+];
+
 const startSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: "开始",
@@ -268,6 +294,7 @@ const componentsSidebar: DefaultTheme.SidebarItem[] = [
 // 每个顶部导航板块各自一份侧栏，由路径前缀决定用哪一份；
 // 首页是 layout: home，不落任何一份。
 const sidebar: DefaultTheme.Sidebar = {
+  "/design/": designSidebar,
   "/guide/": guideSidebar,
   "/adapters/": guideSidebar,
   "/components/": componentsSidebar,
@@ -283,6 +310,7 @@ const nav: DefaultTheme.NavItem[] = [
     activeMatch:
       "^/(introduction|overview|installation|quickstart|npm-package-dependency|faq)$",
   },
+  { text: "设计", link: "/design/", activeMatch: "/design/" },
   { text: "组件", link: "/components/", activeMatch: "/components/" },
   {
     text: "指南",
