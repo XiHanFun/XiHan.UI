@@ -18510,6 +18510,7 @@
         "item-indicator"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size"
       ],
@@ -18517,10 +18518,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-icon-size"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "context-menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "context-menu 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-item-leading",
@@ -18755,6 +18756,25 @@
       ],
       "visibility": "public",
       "description": "context-menu 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-context-menu-submenu-indicator-size",
+      "component": "context-menu",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "context-menu 的 item 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-trigger-bg-pressing",

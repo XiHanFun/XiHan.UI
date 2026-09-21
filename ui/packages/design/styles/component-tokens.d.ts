@@ -955,6 +955,7 @@ export type ComponentTokenName
     | '--xh-context-menu-separator-radius'
     | '--xh-context-menu-separator-thickness'
     | '--xh-context-menu-submenu-indicator-fg'
+    | '--xh-context-menu-submenu-indicator-size'
     | '--xh-context-menu-trigger-bg-pressing'
     | '--xh-date-field-action-bg'
     | '--xh-date-field-action-bg-active'

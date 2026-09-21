@@ -63,7 +63,9 @@
   /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
   [data-scope='context-menu']:is([data-part='root'], [data-part='positioner']) {
     /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；同样声明在 positioner 上，被搬走的浮层
-       才拿得到；条目里的图标由家族随 data-xh-collection-size 下发（§6.5） */
+       才拿得到；条目里作者放的图标由家族随 data-xh-collection-size 下发（§6.5）。菜单自绘的状态字形（标记位的盒、
+       盒里兜底的勾、子菜单的展开 chevron）不读这支：它们是指示符，走 --xh-control-indicator-* 一族——标记位在
+       自己身上把 --xh-icon-size 改接到盒的尺，子菜单箭头走 --xh-context-menu-submenu-indicator-size */
     --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这四个私有槽，条目与分组标题都从这两处继承它们，
@@ -257,14 +259,16 @@
     transition: none;
   }
 
-  /* 子菜单箭头留在主行末端；description 即使写在它前面，也由 order 独占下一行。 */
+  /* 子菜单箭头留在主行末端；description 即使写在它前面，也由 order 独占下一行。
+     箭头是指示符（§6.5）：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
+     按图标档取的 20px 会比 16px 的标记位盒大一圈 */
   [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
     content: '';
     flex: none;
     order: 1;
     margin-inline-start: auto;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-context-menu-submenu-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-context-menu-submenu-indicator-size, var(--xh-control-indicator-size));
     background-color: var(--xh-context-menu-submenu-indicator-fg, var(--xh-material-frosted-fg-muted));
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -288,14 +292,20 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）按作者写入的槽位留在主行，不为没写的条目强制占列；盒尺随家族按档下发的 --xh-icon-size */
+  /* 标记位（勾选符号 / 图标）按作者写入的槽位留在主行，不为没写的条目强制占列。盒是指示符（§6.5）：按指示符档
+     取尺，与 Menu / Cascader 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
+     按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
+     皮肤画的兜底勾与作者塞进标记位的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75）；
+     条目上那支只管作者直接放进条目里的图标 */
   [data-scope='context-menu'][data-part='item-indicator'] {
+    --xh-icon-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
+
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
-    block-size: var(--xh-context-menu-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-context-menu-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   }
 
@@ -362,7 +372,8 @@
     display: none;
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
+     尺寸读标记位自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记位那块） */
   [data-scope='context-menu'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
