@@ -130,6 +130,11 @@
       block-size: 100%;
       translate: -50% -50%;
     }
+
+    /* 与家族同一笔：起点是逻辑属性、平移是物理通道，rtl 下行内分量掉头，热区才落回把手中心 */
+    [data-scope='sortable'][data-part='item-drag-trigger']:empty:dir(rtl)::before {
+      translate: 50% -50%;
+    }
   }
 
   /* 拖动中（指针按住或键盘拾起）：光标换成"抓着"的样子，各态的手型槽一并换掉——

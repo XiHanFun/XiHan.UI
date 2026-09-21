@@ -21,7 +21,8 @@ function lengthOf(value: string, base: number): number {
  * 伪元素的视口盒。getBoundingClientRect 量不到伪元素，只能从计算样式折算：
  * position: static 时盒的起点取宿主的内容起点（行内流里的字形、抓手都从那儿起排，本用例只关心尺寸）；
  * position: absolute 时包含块是宿主的内边距盒：起点从描边内侧算，百分比按内边距盒解析，translate 再按盒自身解析。
- * 只处理横排 LTR，这里的用例都在这一种书写模式下量。
+ * 只处理横排；rtl 也能量——Chromium 对定位盒的 left / top 报的是解析后的使用值（px），
+ * 逻辑起点落在哪一边已经折进去了，只剩 translate 按盒自身解析。
  */
 export function pseudoBox(host: HTMLElement, pseudo: '::before' | '::after'): PseudoBox {
   const style = getComputedStyle(host, pseudo)
