@@ -34095,7 +34095,8 @@
 /* 定义 tabs 样式。 */
 
 /* line 档的页签归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按
-   家族角色（data-xh-collection-item / -size / -context）给，本皮肤只映射桥接槽；card / segment 档不归族，面与字仍写在本皮肤 */
+   家族角色（data-xh-collection-item / -size / -context）给，本皮肤只映射桥接槽；card / segment 档不归族，面与字仍写在本皮肤。
+   line 档的 2px 指示线由本皮肤画：标签带里放了 indicator 部件就由部件滑动，没放则选中标签自画一条静态线 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -34262,8 +34263,8 @@
 
   /* line 档（§7.3 导航当前页）：把公开槽映射到 Collection Item 的 nav 语境桥接槽。静息 muted / regular，
      悬停 100 + default 字，按下 200 只换面；当前页透明面 + 品牌深字（随语气的 --xh-_tabs-accent-text）+
-     medium，叠悬停 100（§9.3）。2px 指示条是下面 list 上的滑动 indicator 部件，不由家族按条目画。
-     高度由 block-size 定，块向内边距归零 */
+     medium，叠悬停 100（§9.3）。2px 指示线不由家族按条目画：放了 indicator 部件是 list 上的滑动部件，
+     没放则由下面的静态线规则画在选中标签自己身上。高度由 block-size 定，块向内边距归零 */
   [data-scope='tabs'][data-part='root'][data-variant='line'] [data-scope='tabs'][data-part='trigger'] {
     --xh-collection-block-padding: var(--xh-space-0);
     --xh-collection-bg-rest: var(--xh-tabs-trigger-bg, transparent);
@@ -34427,8 +34428,8 @@
   /* 落点指示线：插到哪张标签的哪一侧，线就画在那张标签的那条边上。
      定位上下文不必在这儿再给：标签的基础规则里已经是 position: relative。
      线走 ::after：选中态那道指示画的是 box-shadow（card 档的顶边条、segment 档的浮起），
-     line 档的当前页只换字色字重（指示条在 list 上），标签上两个伪元素都空着，落点线不与谁抢。
-     标签自身不收 overflow，线不会被裁掉；仍整条画在盒内不压着边 */
+     line 档放了部件时指示条在 list 上，没放时选中标签的静态线也占 ::after——它带 :not([data-drop]) 守卫，
+     拖动落到当前页上时让给落点线。标签自身不收 overflow，线不会被裁掉；仍整条画在盒内不压着边 */
   [data-scope='tabs'][data-part='trigger']:is([data-drop='before'], [data-drop='after'])::after {
     content: '';
     position: absolute;
@@ -34488,7 +34489,7 @@
 
   /* 主轴上的位置与长度由机器写成内联样式（它量得到，样式表量不到）；
      这里只管交叉轴的贴边与粗细，以及长什么样。它是可选部件——不渲染它时，
-     选中态仍由标签自己的底色与字色表达 */
+     line 档由选中标签自画一条同规格的静态线（见下），card / segment 档由选中面表达 */
   [data-scope='tabs'][data-part='indicator'] {
     position: absolute;
     inset-block-end: 0;
@@ -34504,6 +34505,43 @@
   [data-scope='tabs'][data-part='root']:is([data-variant='segment'], [data-variant='card'])
     [data-scope='tabs'][data-part='indicator'] {
     display: none;
+  }
+
+  /* line 档没放 indicator 部件时，选中标签自画一条静态指示线（§7.3 导航当前页）：
+     横向缺省也要像纵向示例那样有一条选中线，作者不必为了这条线多放一个部件。
+     线画在选中标签的 ::after 上，以标签盒为定位参照（基础规则里已是 position: relative），
+     厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。
+     不做动画：它随 data-current 在标签间跳，滑动只有部件做得到。
+     标签带里一旦放了 indicator 部件，这条线就收起、位置交给部件滑动，不重复画两条：
+     由标签带按 :has 探一次，把私有槽写成 none，线的 content 读它；标签自己不必再各带一段 :has。
+     ::after 同时是换位落点线的载体：拖动中标签带着 data-drop 时让给落点线，松手即回来 */
+  [data-scope='tabs'][data-part='list']:has([data-scope='tabs'][data-part='indicator']) {
+    --xh-_tabs-static-line: none;
+  }
+
+  [data-scope='tabs'][data-part='root'][data-variant='line']
+    [data-scope='tabs'][data-part='trigger'][data-current]:not([data-drop])::after {
+    content: var(--xh-_tabs-static-line, '');
+    position: absolute;
+    pointer-events: none;
+    border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
+    background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+  }
+
+  /* 横排：贴标签的块向末端（底边），横贯整枚标签 */
+  [data-scope='tabs'][data-part='root'][data-variant='line'][data-orientation='horizontal']
+    [data-scope='tabs'][data-part='trigger'][data-current]:not([data-drop])::after {
+    inset-block-end: 0;
+    inset-inline: 0;
+    block-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
+  }
+
+  /* 竖排：贴标签的行向末端（与 indicator 部件同一侧，rtl 随逻辑属性镜像），纵贯整枚标签 */
+  [data-scope='tabs'][data-part='root'][data-variant='line'][data-orientation='vertical']
+    [data-scope='tabs'][data-part='trigger'][data-current]:not([data-drop])::after {
+    inset-inline-end: 0;
+    inset-block: 0;
+    inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
   }
 
   /* 竖排：滑条从基线挪到结束缘那条轨道上，交叉轴换成行内轴 */
@@ -34562,6 +34600,12 @@
     /* 滑条与分隔线画的都是一块纯底色，这一档里底色被统一换成 Canvas，两者整根消失。
        滑条换成系统高亮色、分隔线换成前景色画回来 */
     [data-scope='tabs'][data-part='indicator'] {
+      background: Highlight;
+    }
+
+    /* 没放部件时选中标签自画的那条静态线同样是一块纯底色，同一档换成系统高亮色 */
+    [data-scope='tabs'][data-part='root'][data-variant='line']
+      [data-scope='tabs'][data-part='trigger'][data-current]:not([data-drop])::after {
       background: Highlight;
     }
 

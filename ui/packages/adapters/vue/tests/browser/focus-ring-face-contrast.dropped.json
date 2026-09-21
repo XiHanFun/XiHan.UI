@@ -376,6 +376,7 @@
   "[data-scope=\"tabs\"][data-part=\"root\"][data-variant=\"card\"] [data-scope=\"tabs\"][data-part=\"trigger\"]:not([data-disabled]):hover": "写法挂不出来：:hover",
   "[data-scope=\"tabs\"][data-part=\"root\"][data-variant=\"card\"] [data-scope=\"tabs\"][data-part=\"trigger\"]:not([data-disabled]):not([data-state=\"active\"]):active": "写法挂不出来：:active",
   "[data-scope=\"tabs\"][data-part=\"root\"][data-variant=\"card\"] [data-scope=\"tabs\"][data-part=\"trigger\"]:not([data-disabled])[data-state=\"active\"]:hover": "写法挂不出来：:hover",
+  "[data-scope=\"tabs\"][data-part=\"root\"][data-variant=\"line\"] [data-scope=\"tabs\"][data-part=\"trigger\"][data-current]:not([data-drop])::after": "写法挂不出来：::",
   "[data-scope=\"tabs\"][data-part=\"root\"][data-variant=\"segment\"] [data-scope=\"tabs\"][data-part=\"trigger\"]:not([data-disabled]):hover": "写法挂不出来：:hover",
   "[data-scope=\"tabs\"][data-part=\"root\"][data-variant=\"segment\"] [data-scope=\"tabs\"][data-part=\"trigger\"]:not([data-disabled]):not([data-state=\"active\"]):active": "写法挂不出来：:active",
   "[data-scope=\"tabs\"][data-part=\"root\"][data-variant=\"segment\"] [data-scope=\"tabs\"][data-part=\"trigger\"]:not([data-disabled])[data-state=\"active\"]:hover": "写法挂不出来：:hover",

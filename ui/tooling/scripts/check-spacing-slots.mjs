@@ -56,6 +56,9 @@ const CROSS_PART = {
   'cascader.item-indicator': ['search-item'],
   // 勾选框画在全选格上，checkbox-group 没有单独的 indicator 节点承载它
   'checkbox-group.indicator': ['select-all-trigger'],
+  // line 档没放 indicator 部件时选中标签在自己的 ::after 上画同规格的静态线：厚度 / 颜色 / 圆角与部件
+  // 同一组槽，作者改一处两者一起改，不另立一套只在没部件时才生效的槽名
+  'tabs.indicator': ['trigger'],
   // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关
   'code-view.line': ['pre'],
   // 折叠条与文件头是同一条横栏的两端，描边与字号取同一族才连成一条
