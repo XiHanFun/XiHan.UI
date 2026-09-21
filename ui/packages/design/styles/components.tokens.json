@@ -77037,6 +77037,7 @@
         "item"
       ],
       "property": [
+        "--xh-icon-size",
         "inline-size"
       ],
       "state": [
@@ -77046,7 +77047,7 @@
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "tree-select 的 branch-indicator、branch-trigger、item 部件 inline-size 覆盖槽。"
+      "description": "tree-select 的 branch-indicator、branch-trigger、item 部件 --xh-icon-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-content-backdrop",
@@ -78091,6 +78092,7 @@
         "item-indicator"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size"
       ],
@@ -78101,7 +78103,7 @@
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "tree-select 的 item-indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "tree-select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-item-leading",

@@ -40352,7 +40352,9 @@
 
   /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
   [data-scope='tree-select']:is([data-part='root'], [data-part='positioner']) {
-    /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
+    /* 作者塞进触发器指示符槽 / 清除钮的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺。这支只管作者放进
+       盒与行里的图标：面板里自绘的状态字形（展开方向、行尾对号与半选杠）是指示符，各部件在自己身上
+       把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺（§6.5） */
     --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这几个私有槽，盒与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器；
@@ -40832,8 +40834,13 @@
 
   /* 勾选标记落在家族网格的 indicator 列；未选中时占位不塌，切换选中不引起行宽抖动。
      尺寸槽按各自部件取名：行内的勾与展开箭头分别是 item- 与 branch- 段，
-     触发器上那枚箭头是 --xh-tree-select-indicator-*，三处各调各的 */
+     触发器上那枚箭头是 --xh-tree-select-indicator-*，三处各调各的。
+     盒里的对号 / 半选杠是指示符（§6.5）：在自己身上把 --xh-icon-size 改接到盒的尺，兜底字形与作者
+     塞进盒里的 XhIcon 读同一把尺、与盒同边长；不读家族按档下发到行的 --xh-icon-size——那支只管
+     作者放进行里的图标，按图标档取的 20px 会比 16 / 14 的盒还大 */
   [data-scope='tree-select'][data-part='item-indicator'] {
+    --xh-icon-size: var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size));
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -40857,9 +40864,12 @@
   }
 
   /* 展开箭头与方向指示符：两者都可能被作者用作「点这里展开」的把手，
-     所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐 */
+     所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐。
+     盒里的 chevron 是指示符（§6.5）：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
   [data-scope='tree-select'][data-part='branch-trigger'],
   [data-scope='tree-select'][data-part='branch-indicator'] {
+    --xh-icon-size: var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size));
+
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -40911,7 +40921,9 @@
     display: none;
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
+     尺寸读各部件的 --xh-icon-size：触发器箭头与清除钮的叉按图标档，行尾对号 / 半选杠与展开 chevron
+     读部件自己改接过的盒尺、与盒同边长（见上面两块） */
   [data-scope='tree-select'][data-part='indicator']:empty::before {
     content: '';
     display: inline-block;
