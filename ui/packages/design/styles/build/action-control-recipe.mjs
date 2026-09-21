@@ -445,6 +445,11 @@ export function compileActionControlRecipe(source) {
     '      block-size: 100%;',
     '      translate: -50% -50%;',
   ].join('\n'), 'coarse', coarse, '    ')
+  /* 起点是逻辑属性、平移是物理通道：rtl 下 inset-inline-start: 50% 落在右半边，再往左挪半个盒，
+     热区中心偏出宿主整整一个盒宽。平移没有逻辑关键字可用，只能靠 :dir() 分流，行内分量掉头；
+     inset: 0 + margin: auto 不能替代——过约束的行内轴自动外边距按规范取 0、盒贴起点，正方档在
+     小于 44px 的宿主上仍偏心。皮肤把平移钉回 translate: none 的（抓手、兜底字形）特指度更高，照旧盖住这条。 */
+  rule(':where([data-xh-action-control]:dir(rtl))::after', '      translate: 50% -50%;', 'coarse', coarse, '    ')
   chunks.push(`  @media (pointer: coarse) {\n${coarse.join('\n')}\n  }`)
 
   const forced = []

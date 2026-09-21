@@ -172,13 +172,27 @@ describe('action Control Family Recipe', () => {
     const css = compileActionControlRecipe(await source())
     const coarse = css.slice(css.indexOf('@media (pointer: coarse)'), css.indexOf('@media (forced-colors: active)'))
     const selectors = coarse.split('\n').filter(line => line.trimEnd().endsWith('{')).map(line => line.trim().slice(0, -1).trim()).filter(s => !s.startsWith('@'))
-    expect(selectors.length).toBe(2)
+    expect(selectors.length).toBe(3)
     for (const selector of selectors) {
       // (0,0,1)：伪元素自身的那一分之外全部归零。消费方产物里家族被重复内联、副本落在皮肤之后时，
       // 皮肤那条 (0,2,1) 的覆盖也不会被反超
       expect(selector).toMatch(/^:where\([^{}]+\)::after$/)
       expect(selector).toContain('[data-xh-action-control]')
     }
+  })
+
+  it('粗指针热区的平移在 rtl 下行内分量掉头：起点是逻辑属性、平移是物理通道，靠 :dir() 分流', async () => {
+    const css = compileActionControlRecipe(await source())
+    const coarse = css.slice(css.indexOf('@media (pointer: coarse)'), css.indexOf('@media (forced-colors: active)'))
+    const rules = coarse.slice(coarse.indexOf('\n') + 1).split(/\n {4}\}\n/).map(rule => rule.trim()).filter(rule => rule.startsWith(':where('))
+    expect(rules.length).toBe(3)
+    const [textTarget, squareTarget, rtl] = rules
+    expect(textTarget).not.toContain(':dir(')
+    expect(squareTarget).not.toContain(':dir(')
+    /* ltr 的两条仍是 -50% -50%，rtl 那条只改行内分量 */
+    expect(textTarget).toContain('translate: -50% -50%;')
+    expect(squareTarget).toContain('translate: -50% -50%;')
+    expect(rtl).toBe(':where([data-xh-action-control]:dir(rtl))::after {\n      translate: 50% -50%;')
   })
 
   it('默认值相同的状态仍保留独立覆盖槽，颜色槽缺省指向形态矩阵', async () => {

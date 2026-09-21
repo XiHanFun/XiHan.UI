@@ -176,5 +176,10 @@
       block-size: 100%;
       translate: -50% -50%;
     }
+
+    /* 与家族同一笔：起点是逻辑属性、平移是物理通道，rtl 下行内分量掉头，热区才落回按钮中心 */
+    [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true']):dir(rtl)::before {
+      translate: 50% -50%;
+    }
   }
 }

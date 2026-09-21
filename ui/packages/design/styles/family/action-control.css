@@ -444,6 +444,9 @@
       block-size: 100%;
       translate: -50% -50%;
     }
+    :where([data-xh-action-control]:dir(rtl))::after {
+      translate: 50% -50%;
+    }
   }
 
   @media (forced-colors: active) {
