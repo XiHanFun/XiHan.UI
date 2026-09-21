@@ -8435,8 +8435,10 @@
   [data-scope='mention'][data-part='root'] {
     display: block;
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-mention-input-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-mention-input-w, var(--xh-control-w)), var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -8985,8 +8987,10 @@
     flex-direction: column;
     gap: var(--xh-password-input-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-password-input-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-password-input-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-password-input-control-w, var(--xh-control-w)), var(--xh-password-input-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -16752,8 +16756,10 @@
     flex-direction: column;
     gap: var(--xh-cascader-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-cascader-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-cascader-control-w, var(--xh-control-w)), var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -18223,6 +18229,13 @@
     max-inline-size: 100%;
   }
 
+  /* 带输入框的用法是一件字段：不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，
+     地板同步让步，地板不高过缺省宽。只放复制钮的用法是一颗独立按钮，宽随文字走，不吃字段缺省宽 */
+  [data-scope='clipboard'][data-part='root']:has([data-scope='clipboard'][data-part='control']) {
+    inline-size: var(--xh-clipboard-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-clipboard-control-w, var(--xh-control-w)), var(--xh-clipboard-control-min-w, var(--xh-control-min-w)), 100%);
+  }
+
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='clipboard'][data-part='root'][data-size='sm'] {
@@ -18279,8 +18292,9 @@
   }
 
   [data-scope='clipboard'][data-part='input'] {
-    /* 宽度是偏好值不是地板：并排的复制钮占掉位置后，输入框还能继续被压缩 */
-    inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+    /* 撑满复制钮之外的剩余宽度；min-inline-size 归零解开原生 input 按字符数算出来的自动最小宽，
+       根被压窄时输入框跟着收，不是钮先被顶出去 */
+    flex: 1 1 auto;
     min-inline-size: 0;
     block-size: var(--xh-clipboard-input-h, var(--xh-_clipboard-h));
     padding-inline: var(--xh-clipboard-input-px, var(--xh-_clipboard-px));
@@ -18974,7 +18988,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-color-field-gap, var(--xh-space-1));
-    min-inline-size: min(var(--xh-color-field-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-color-field-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-color-field-control-w, var(--xh-control-w)), var(--xh-color-field-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -19131,8 +19148,10 @@
     flex-direction: column;
     gap: var(--xh-color-picker-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-color-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-color-picker-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-color-picker-control-w, var(--xh-control-w)), var(--xh-color-picker-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -20241,8 +20260,10 @@
     flex-direction: column;
     gap: var(--xh-combobox-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-combobox-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-combobox-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-combobox-control-w, var(--xh-control-w)), var(--xh-combobox-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -21485,8 +21506,10 @@
     flex-direction: column;
     gap: var(--xh-date-field-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-date-field-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-date-field-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-date-field-control-w, var(--xh-control-w)), var(--xh-date-field-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -21788,8 +21811,10 @@
     flex-direction: column;
     gap: var(--xh-date-picker-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-date-picker-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-date-picker-control-w, var(--xh-control-w)), var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -22534,8 +22559,12 @@
     flex-direction: column;
     gap: var(--xh-date-range-picker-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-date-range-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 起止两组段位、分隔符与日历钮排在一行，按日的内容本身就比字段缺省宽（--xh-control-w）宽，
+       钉成缺省宽会裁掉终点的段位：这一件缺省按内容撑开，使用者要钉宽仍走这条槽。
+       地板抬到一族的缺省宽：按年、按月的内容比缺省宽窄，不能比别的字段还窄，底线槽只在高过缺省宽时起作用。
+       父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    inline-size: var(--xh-date-range-picker-control-w, max-content);
+    min-inline-size: min(max(var(--xh-control-w), var(--xh-date-range-picker-control-min-w, var(--xh-control-min-w))), 100%);
     max-inline-size: 100%;
   }
 
@@ -23931,7 +23960,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-editable-gap, var(--xh-space-1));
-    min-inline-size: min(var(--xh-editable-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-editable-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-editable-control-w, var(--xh-control-w)), var(--xh-editable-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -28203,8 +28235,10 @@
     flex-direction: column;
     gap: var(--xh-number-field-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-number-field-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-number-field-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-number-field-control-w, var(--xh-control-w)), var(--xh-number-field-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -30697,8 +30731,10 @@
     /* 隐藏 select 以此为定位基准：它必须留在布局里，原生校验提示要有处可贴 */
     position: relative;
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-select-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-select-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-select-control-w, var(--xh-control-w)), var(--xh-select-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -34984,10 +35020,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-tags-input-gap, var(--xh-space-1));
-    inline-size: 100%;
-
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-tags-input-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-tags-input-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-tags-input-control-w, var(--xh-control-w)), var(--xh-tags-input-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -35246,7 +35282,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-text-field-gap, var(--xh-space-1));
-    min-inline-size: min(var(--xh-text-field-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-text-field-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-text-field-control-w, var(--xh-control-w)), var(--xh-text-field-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -35423,8 +35462,10 @@
     flex-direction: column;
     gap: var(--xh-time-field-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-time-field-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-time-field-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-time-field-control-w, var(--xh-control-w)), var(--xh-time-field-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -35717,8 +35758,10 @@
     flex-direction: column;
     gap: var(--xh-time-picker-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-time-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-time-picker-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-time-picker-control-w, var(--xh-control-w)), var(--xh-time-picker-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -36336,8 +36379,10 @@
     flex-direction: column;
     gap: var(--xh-time-range-picker-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-time-range-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-time-range-picker-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-time-range-picker-control-w, var(--xh-control-w)), var(--xh-time-range-picker-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 
@@ -40620,8 +40665,10 @@
     flex-direction: column;
     gap: var(--xh-tree-select-gap, var(--xh-space-1));
 
-    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-    min-inline-size: min(var(--xh-tree-select-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-tree-select-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-tree-select-control-w, var(--xh-control-w)), var(--xh-tree-select-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 

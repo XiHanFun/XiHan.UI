@@ -332,6 +332,7 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `--xh-number-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `0` | number-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-number-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | number-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-number-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | number-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-number-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | number-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-number-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | number-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-number-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | number-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-number-field-input-align` | `control`<br>`input` | `text-align` | `default` | `center` | number-field 的 control、input 部件 text-align 覆盖槽。 |

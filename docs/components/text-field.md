@@ -359,6 +359,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `--xh-text-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_text-field-px` | text-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-text-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | text-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-text-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | text-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-text-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | text-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-text-field-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | text-field 的 count 部件 color 覆盖槽。 |

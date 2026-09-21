@@ -130,6 +130,7 @@ export const tokens = {
   "--xh-control-box-sm": "32px",
   "--xh-control-box-md": "40px",
   "--xh-control-box-lg": "48px",
+  "--xh-control-w": "16rem",
   "--xh-control-min-w": "12rem",
   "--xh-control-px-sm": "var(--xh-space-2)",
   "--xh-control-px-md": "var(--xh-space-3)",

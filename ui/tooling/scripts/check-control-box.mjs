@@ -2,8 +2,9 @@
 // 门禁：输入与选择族的「盒」结构逐条同构。
 //
 // 盒 = 画描边、底色、圆角、控件高度、行内内衬的那一层，也是聚焦环落的那一层。
-// 一族十六个控件，盒是哪个部件、盒内谁占满剩余宽度、尾部动作钮多大、聚焦环画在哪，
-// 四件事各自散开就会长成十六种做法：✕ 有的靠右有的紧跟文字，钮有的 24px 有的跟控件一样高。
+// 一族十六个控件，盒是哪个部件、盒内谁占满剩余宽度、尾部动作钮多大、聚焦环画在哪、不传尺寸时多宽，
+// 五件事各自散开就会长成十六种做法：✕ 有的靠右有的紧跟文字，钮有的 24px 有的跟控件一样高，
+// 宽有的随内容走有的钉死。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -184,6 +185,8 @@ const EXEMPT = {
   'pin-input box-h': '每格是等宽方框，宽高同取 --xh-pin-input-box-size 一个尺寸，不走控件行高',
   'pin-input box-px': '方格内距归零，留了内距单字符居中后可用宽度不足',
   'pin-input box-min-w': '格宽即方格边长，再给最小宽会把方框拉成长方形',
+  'pin-input root-w': '根的宽由格数与格宽决定，不吃字段缺省宽',
+  'date-range-picker root-w': '起止两组段位、分隔符与日历钮排在一行，内容本身比缺省宽宽，缺省按内容撑开：inline-size 回退 max-content 而不是 --xh-control-w',
 }
 
 /** 检查项的说明，用在报告里。 */
@@ -195,6 +198,7 @@ const CHECKS = {
   'box-h': '盒高走 --xh-<c>-…-h 槽',
   'box-px': '盒行内内衬走 --xh-<c>-…-px 槽',
   'box-min-w': '盒最小宽走 --xh-<c>-…-min-w 槽并回退 --xh-control-min-w',
+  'root-w': '根的缺省宽走 --xh-<c>-…-w 槽并回退 --xh-control-w，不传尺寸时一族同宽',
   'content-flex': '盒内恰有一个 flex:1 的内容区，且它是 input / value-text / segment-group',
   'action-flex': '尾部动作钮 flex: none',
   'action-size': '尾部动作钮宽高走 --xh-control-action-size',
@@ -375,6 +379,24 @@ for (const comp of COMPONENTS) {
       'box-min-w',
       `该走 var(--xh-${comp}-…-min-w, var(--xh-control-min-w))`,
     )
+  }
+
+  // ②′ 根的缺省宽：不传尺寸时一族同宽，宽度不随内容走。根是收缩到内容宽的那个元素，
+  //     只写在盒上根会塌（见 fc77e4d16），所以量的是根的基础块
+  {
+    const rootSelector = `[data-scope='${comp}'][data-part='root']`
+    const rootDecls = new Map()
+    for (const rule of rules) {
+      if (!rule.selectors.includes(rootSelector))
+        continue
+      for (const [name, value] of rule.decls)
+        rootDecls.set(name, value)
+    }
+    const width = rootDecls.get('inline-size')
+    if (width == null)
+      report(comp, 'root-w', '根的基础块缺 inline-size')
+    else if (!(reaches(width, new RegExp(`--xh-${comp}-[\\w-]*-w\\b`)) && reaches(width, /--xh-control-w\b/)))
+      report(comp, 'root-w', `inline-size: ${width} —— 该走 var(--xh-${comp}-…-w, var(--xh-control-w))`)
   }
 
   // ③ 盒内恰有一个 flex:1 的内容区

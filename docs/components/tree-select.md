@@ -605,6 +605,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_tree-select-px` | tree-select 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | tree-select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | tree-select 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tree-select-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | tree-select 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tree-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | tree-select 的 empty 部件 color 覆盖槽。 |
 | `--xh-tree-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-tree-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 empty 部件 padding-inline 覆盖槽。 |

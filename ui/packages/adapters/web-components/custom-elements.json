@@ -6879,6 +6879,9 @@
               "name": "--xh-cascader-control-shadow"
             },
             {
+              "name": "--xh-cascader-control-w"
+            },
+            {
               "name": "--xh-cascader-empty-fg"
             },
             {
@@ -8202,6 +8205,12 @@
               "name": "--xh-clipboard-control-gap"
             },
             {
+              "name": "--xh-clipboard-control-min-w"
+            },
+            {
+              "name": "--xh-clipboard-control-w"
+            },
+            {
               "name": "--xh-clipboard-copy-trigger-attached-radius"
             },
             {
@@ -8284,9 +8293,6 @@
             },
             {
               "name": "--xh-clipboard-input-h"
-            },
-            {
-              "name": "--xh-clipboard-input-min-w"
             },
             {
               "name": "--xh-clipboard-input-px"
@@ -9643,6 +9649,9 @@
               "name": "--xh-color-field-control-shadow"
             },
             {
+              "name": "--xh-color-field-control-w"
+            },
+            {
               "name": "--xh-color-field-gap"
             },
             {
@@ -10617,6 +10626,9 @@
             },
             {
               "name": "--xh-color-picker-control-shadow"
+            },
+            {
+              "name": "--xh-color-picker-control-w"
             },
             {
               "name": "--xh-color-picker-gap"
@@ -12825,6 +12837,9 @@
             },
             {
               "name": "--xh-combobox-control-shadow"
+            },
+            {
+              "name": "--xh-combobox-control-w"
             },
             {
               "name": "--xh-combobox-empty-fg"
@@ -15311,6 +15326,9 @@
               "name": "--xh-date-field-control-shadow"
             },
             {
+              "name": "--xh-date-field-control-w"
+            },
+            {
               "name": "--xh-date-field-font-size"
             },
             {
@@ -16537,6 +16555,9 @@
             },
             {
               "name": "--xh-date-picker-control-shadow"
+            },
+            {
+              "name": "--xh-date-picker-control-w"
             },
             {
               "name": "--xh-date-picker-font-size"
@@ -17815,6 +17836,9 @@
             },
             {
               "name": "--xh-date-range-picker-control-shadow"
+            },
+            {
+              "name": "--xh-date-range-picker-control-w"
             },
             {
               "name": "--xh-date-range-picker-font-size"
@@ -20485,6 +20509,9 @@
             },
             {
               "name": "--xh-editable-control-shadow"
+            },
+            {
+              "name": "--xh-editable-control-w"
             },
             {
               "name": "--xh-editable-gap"
@@ -32414,6 +32441,9 @@
               "name": "--xh-mention-input-shadow"
             },
             {
+              "name": "--xh-mention-input-w"
+            },
+            {
               "name": "--xh-mention-item-bg-hover"
             },
             {
@@ -36572,6 +36602,9 @@
               "name": "--xh-number-field-control-shadow"
             },
             {
+              "name": "--xh-number-field-control-w"
+            },
+            {
               "name": "--xh-number-field-gap"
             },
             {
@@ -38178,6 +38211,9 @@
             },
             {
               "name": "--xh-password-input-control-shadow"
+            },
+            {
+              "name": "--xh-password-input-control-w"
             },
             {
               "name": "--xh-password-input-gap"
@@ -45425,6 +45461,9 @@
             },
             {
               "name": "--xh-select-control-shadow"
+            },
+            {
+              "name": "--xh-select-control-w"
             },
             {
               "name": "--xh-select-empty-fg"
@@ -52850,6 +52889,9 @@
               "name": "--xh-tags-input-control-shadow"
             },
             {
+              "name": "--xh-tags-input-control-w"
+            },
+            {
               "name": "--xh-tags-input-count-fg"
             },
             {
@@ -53525,6 +53567,9 @@
               "name": "--xh-text-field-control-shadow"
             },
             {
+              "name": "--xh-text-field-control-w"
+            },
+            {
               "name": "--xh-text-field-count-fg"
             },
             {
@@ -54093,6 +54138,9 @@
             },
             {
               "name": "--xh-time-field-control-shadow"
+            },
+            {
+              "name": "--xh-time-field-control-w"
             },
             {
               "name": "--xh-time-field-font-size"
@@ -54975,6 +55023,9 @@
             },
             {
               "name": "--xh-time-picker-control-shadow"
+            },
+            {
+              "name": "--xh-time-picker-control-w"
             },
             {
               "name": "--xh-time-picker-font-size"
@@ -56003,6 +56054,9 @@
             },
             {
               "name": "--xh-time-range-picker-control-shadow"
+            },
+            {
+              "name": "--xh-time-range-picker-control-w"
             },
             {
               "name": "--xh-time-range-picker-font-size"
@@ -62235,6 +62289,9 @@
             },
             {
               "name": "--xh-tree-select-control-shadow"
+            },
+            {
+              "name": "--xh-tree-select-control-w"
             },
             {
               "name": "--xh-tree-select-empty-fg"

@@ -27,7 +27,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-color-field-gap, var(--xh-space-1));
-    min-inline-size: min(var(--xh-color-field-control-min-w, var(--xh-control-min-w)), 100%);
+    /* 不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器。
+       地板不高过缺省宽：使用者把缺省宽钉到底线以下时不必再放开底线 */
+    inline-size: var(--xh-color-field-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-color-field-control-w, var(--xh-control-w)), var(--xh-color-field-control-min-w, var(--xh-control-min-w)), 100%);
     max-inline-size: 100%;
   }
 

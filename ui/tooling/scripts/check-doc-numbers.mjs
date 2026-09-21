@@ -162,6 +162,17 @@ const tokenSet = name => once(`token:${name}`, async () => JSON.parse(await read
 
 // —— 真值取法。每一条都带一句「怎么数出来的」，失败信息里原样打出去。——
 
+/** 皮肤目录里含某段文本的 .css 文件数。 */
+async function skinsConsuming(needle) {
+  const files = (await readdir(SKIN_CSS)).filter(f => f.endsWith('.css'))
+  let hit = 0
+  for (const file of files) {
+    if ((await readFile(join(SKIN_CSS, file), 'utf8')).includes(needle))
+      hit += 1
+  }
+  return hit
+}
+
 const truth = {
   全局令牌数: {
     how: 'packages/design/tokens/tokens.json 的键数（原语层 + 语义层）',
@@ -222,15 +233,11 @@ const truth = {
   },
   吃控件最小宽度令牌的皮肤数: {
     how: 'packages/design/styles/css 下引用 --xh-control-min-w 的 .css 文件数',
-    async value() {
-      const files = (await readdir(SKIN_CSS)).filter(f => f.endsWith('.css'))
-      let hit = 0
-      for (const file of files) {
-        if ((await readFile(join(SKIN_CSS, file), 'utf8')).includes('var(--xh-control-min-w)'))
-          hit += 1
-      }
-      return hit
-    },
+    value: () => skinsConsuming('var(--xh-control-min-w)'),
+  },
+  吃字段缺省宽令牌的皮肤数: {
+    how: 'packages/design/styles/css 下引用 --xh-control-w 的 .css 文件数（date-range-picker 只拿它作地板，也算）',
+    value: () => skinsConsuming('var(--xh-control-w)'),
   },
   组件皮肤份数: {
     how: '皮肤文件名与组件目录名对得上的那些',
@@ -1162,6 +1169,7 @@ const TABLE = [
   ['docs/guide/position.md', /\| (\d+) 种：四个方向/, 'placement取值数'],
   ['docs/guide/pointer.md', /这一层，(\d+) 个组件在用/, '用指针原语的组件数'],
   ['docs/guide/styling.md', /^(\d+) 份皮肤消费这条令牌/m, '吃控件最小宽度令牌的皮肤数'],
+  ['docs/guide/styling.md', /^(\d+) 份皮肤消费缺省宽令牌/m, '吃字段缺省宽令牌的皮肤数'],
   ['docs/guide/styling.md', /派生 (\d+) 档原语/, '品牌原语档数'],
   ['docs/guide/backgrounds.md', /^(\d+) 个：`aurora`/m, '内置背景效果数'],
   ['docs/guide/backgrounds.md', /这 (\d+) 个不自动注册/, '内置背景效果数'],

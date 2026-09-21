@@ -484,6 +484,7 @@ outline、subtle 和 ghost
 | `--xh-select-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_select-px` | select 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-select-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-select-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | select 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-select-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | select 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 empty 部件 color 覆盖槽。 |
 | `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 empty 部件 padding-inline 覆盖槽。 |

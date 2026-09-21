@@ -383,6 +383,7 @@ granularity 决定两组输入行铺设哪几段、浮层铺设哪一档格子
 | `--xh-date-range-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-range-picker-control-px` | date-range-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-range-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-range-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-range-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-range-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-range-picker-control-w` | `root` | `inline-size` | `default` | `max-content` | date-range-picker 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-date-range-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-range-picker-font-size` | date-range-picker 的 segment-group 部件 font-size 覆盖槽。 |
 | `--xh-date-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-range-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-range-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-range-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |

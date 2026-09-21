@@ -304,6 +304,7 @@
 | `--xh-date-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-field-control-px` | date-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | date-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-field-font-size` | `control` | `font-size` | `default` | `--xh-_date-field-font-size` | date-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-date-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |

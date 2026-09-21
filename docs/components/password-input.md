@@ -320,6 +320,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | `--xh-password-input-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_password-input-px` | password-input 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-password-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | password-input 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-password-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | password-input 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-password-input-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | password-input 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-password-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | password-input 的 root 部件 gap 覆盖槽。 |
 | `--xh-password-input-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | password-input 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-password-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | password-input 的 input 部件 box-shadow 覆盖槽。 |
