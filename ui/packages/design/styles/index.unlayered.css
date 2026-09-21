@@ -39386,7 +39386,9 @@
 
 [data-scope='tree'][data-part='root'] {
   /* 行外的字形（空态 / 在途占位里作者塞的图标）按档取尺，树没有 size 轴、固定 md；
-     行内的字形由家族随 data-xh-collection-size 下发（§6.5） */
+     行内的由家族随 data-xh-collection-size 下发（§6.5）。这支只管作者放进行里的图标：
+     树自绘的状态字形（展开方向、叶子对号、勾选把手里的勾）是指示符，各部件在自己身上
+     把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
   --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-md));
 
   display: flex;
@@ -39529,8 +39531,10 @@
   --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
   /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 md 档 */
   --xh-collection-glyph-size: var(--xh-tree-icon-size, var(--xh-_collection-glyph-size));
-  /* 箭头 / 对号盒与叶子的占位同一把尺：随家族按档下发的行内字形尺 */
-  --xh-_tree-indicator-size: var(--xh-tree-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+  /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档（§6.5），与同一行里的勾选把手、拖拽把手同走
+     --xh-control-indicator-size（comfortable 16 / compact 14）。不读家族按档下发的 --xh-icon-size——
+     那支只管作者放进行里的图标，按图标档取的 20px 会比 16px 的勾选把手大一圈 */
+  --xh-_tree-indicator-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
   --xh-collection-fg-rest: var(--xh-tree-row-fg, var(--xh-fg-default));
   --xh-collection-fg-hover: var(--xh-tree-row-fg, var(--xh-fg-default));
   --xh-collection-fg-keyboard-highlight: var(--xh-tree-row-fg, var(--xh-fg-default));
@@ -39691,8 +39695,11 @@
 }
 
 /* 勾选标记是 page 语境的前导对号：显隐与颜色由家族按行的选中态给；
-   未选中时占位不塌，切换选中不引起行宽抖动。盒尺随家族按档下发的字形尺 */
+   未选中时占位不塌，切换选中不引起行宽抖动。盒尺取指示符档；盒里的对号是指示符（§6.5），
+   在自己身上把 --xh-icon-size 改接到盒的尺，兜底对号与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长 */
 [data-scope='tree'][data-part='item-indicator'] {
+  --xh-icon-size: var(--xh-_tree-indicator-size);
+
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -39705,9 +39712,12 @@
 }
 
 /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
-   所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐 */
+   所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐。
+   盒里的 chevron 是指示符（§6.5）：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
 [data-scope='tree'][data-part='branch-trigger'],
 [data-scope='tree'][data-part='branch-indicator'] {
+  --xh-icon-size: var(--xh-_tree-indicator-size);
+
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -39774,7 +39784,8 @@
   display: none;
 }
 
-/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
+   尺寸读部件自己改接过的 --xh-icon-size：chevron 与对号都与盒同边长（见上面两块） */
 [data-scope='tree'][data-part='branch-trigger']:empty::before,
 [data-scope='tree'][data-part='branch-indicator']:empty::before {
   content: '';
