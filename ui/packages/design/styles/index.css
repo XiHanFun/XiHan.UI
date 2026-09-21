@@ -27374,7 +27374,8 @@
 /* styles/navigation-menu.css */
 /* 定义 navigation menu 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，入口与面板里的链接都走 Collection Item 家族的 nav 语境；本皮肤 @import 它们，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，入口与面板里的链接都走 Collection Item 家族的 nav 语境；本皮肤 @import 它们，单独引入仍成立。
+   2px 指示线由本皮肤画两种：list 上的滑动 indicator 部件指的是「哪张面板开着」，指向当前页面的链接自画一条静态线 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -27563,7 +27564,7 @@
      按 :hover / :focus-visible / :active 给出，指向当前页面的那一条（data-current）取 strong 档品牌字色 +
      medium 字重（§7.3），字色不随语气、不加下划线（下划线是"可点"的信号，它已经在这儿了）；这里只把公开槽
      映射到桥接槽。面板是实色 floating 面，常态字色取 --xh-fg-default 而非 nav 缺省的 muted。
-     布局保持 flex：链接是一行文字，不用家族网格 */
+     布局保持 flex：链接是一行文字，不用家族网格。position: relative 是当前链接静态线的定位参照 */
   [data-scope='navigation-menu'][data-part='link'] {
     --xh-collection-block-padding: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-py));
     --xh-collection-inline-padding: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-px));
@@ -27579,6 +27580,7 @@
     --xh-collection-fg-current: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand-strong));
     --xh-collection-font-weight-current: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
 
+    position: relative;
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -27622,8 +27624,37 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 指向当前页面的链接自画一条静态指示线（§7.3 导航当前页）：与 Tabs line / Anchor 同一取法，作者不必为了
+     这条线多放一个部件。下面的 indicator 部件表达的是「哪张面板开着」而不是当前页，所以这条线不随部件收起，
+     两者各说各的：部件亮着时开着的入口下有一条、当前页链接上另有一条。
+     线画在当前链接的 ::after 上，以链接盒为定位参照（上面已给 position: relative），
+     厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。不做动画。
+     缺省贴链接的行向起始缘（竖排的直达链接、面板里的链接都是一列，rtl 随逻辑属性镜像），主轴两端各退一格
+     --xh-space-1 避开链接的圆角，与家族 page 语境的起始侧指示条同一取法；横排 list 里的直达链接改贴底边 */
+  [data-scope='navigation-menu'][data-part='link'][data-current]::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: var(--xh-space-1);
+    inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
+    border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
+    background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
+    pointer-events: none;
+  }
+
+  /* 横排 list 里的直达链接：贴链接的块向末端（底边），与部件同一侧 */
+  [data-scope='navigation-menu'][data-part='list'][data-orientation='horizontal']
+    > [data-scope='navigation-menu'][data-part='item']
+    > [data-scope='navigation-menu'][data-part='link'][data-current]::after {
+    inset-inline: var(--xh-space-1);
+    inset-block: auto 0;
+    inline-size: auto;
+    block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
+  }
+
   /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
-     这里只管交叉轴的贴边与粗细，以及长什么样 */
+     这里只管交叉轴的贴边与粗细，以及长什么样。它指的是开着的面板：无面板开着时隐藏，
+     当前页由上面链接自画的静态线表达 */
   [data-scope='navigation-menu'][data-part='indicator'] {
     position: absolute;
     display: block;
@@ -27679,6 +27710,14 @@
     inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   }
 
+  @media (forced-colors: active) {
+    /* 两条指示线画的都是一块纯底色，这一档里底色被统一换成 Canvas，线整根消失：
+       开着的入口只剩转向的箭头、当前页只剩字重。换成系统高亮色画回来 */
+    [data-scope='navigation-menu'][data-part='indicator'],
+    [data-scope='navigation-menu'][data-part='link'][data-current]::after {
+      background: Highlight;
+    }
+  }
 }
 
 /* styles/notification.css */

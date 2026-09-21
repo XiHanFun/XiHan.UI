@@ -245,6 +245,7 @@
   "[data-scope=\"message-feed\"][data-part=\"scroll-to-end-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"navigation-menu\"][data-part=\"content\"]": "部件不接焦点：navigation-menu/content",
   "[data-scope=\"navigation-menu\"][data-part=\"indicator\"]": "部件不接焦点：navigation-menu/indicator",
+  "[data-scope=\"navigation-menu\"][data-part=\"link\"][data-current]::after": "写法挂不出来：::",
   "[data-scope=\"navigation-menu\"][data-part=\"trigger-indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"navigation-menu\"][data-part=\"viewport\"]": "部件不接焦点：navigation-menu/viewport",
   "[data-scope=\"navigation-menu\"][data-part=\"viewport\"] [data-scope=\"navigation-menu\"][data-part=\"content\"]": "部件不接焦点：navigation-menu/content",
