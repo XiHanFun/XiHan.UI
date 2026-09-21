@@ -32237,8 +32237,9 @@
   }
 
   [data-scope='steps'][data-part='root'] {
-    /* 作者塞进指示符槽的图标与皮肤画的兜底对号同一把尺：控件内图标取 sm 档（§6.5），
-       序号圆点最小 28px，16px 的字形在三档圆点里都留得出边距 */
+    /* 作者放进标题 / 说明里的图标按档取尺，缺省 sm（§6.5）。走过的步里皮肤画的兜底对号不读这支：
+       它是指示符，与序号圆点同走 --xh-control-indicator-* 一族——圆点在自己身上把 --xh-icon-size
+       改接到 --xh-steps-indicator-mark-size，兜底对号与作者塞进圆点里的 XhIcon 读同一把尺 */
     --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
 
     /* 尺寸档只换这三个私有槽，序号圆点、标题与圆点里的序号都从 root 继承它们，
@@ -32407,6 +32408,11 @@
 
   /* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号（§7.3）。 */
   [data-scope='steps'][data-part='indicator'] {
+    /* 圆点里的字形是指示符（§6.5）：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
+       不读 root 上只管作者标题 / 说明图标的 --xh-steps-icon-size；作者塞进圆点的 XhIcon 与兜底对号同一把尺。
+       圆点自己走 space / control-h 的尺（最小 28px），不随密度，两档字形在三档圆点里都留得出边距 */
+    --xh-icon-size: var(--xh-steps-indicator-mark-size, var(--xh-control-indicator-size));
+
     display: inline-flex;
     grid-row: 1 / span 2;
     flex: none;
@@ -32574,7 +32580,8 @@
     color: var(--xh-steps-content-fg, var(--xh-fg-default));
   }
 
-  /* 没写内容就由皮肤画兜底对号；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底对号；作者往部件里塞了自己的图形，这几条即不命中。
+     尺寸读圆点自己改接过的 --xh-icon-size：指示符档，随密度换档（见圆点块） */
   [data-scope='steps'][data-part='indicator'][data-state='completed']:empty::before {
     content: '';
     display: inline-block;

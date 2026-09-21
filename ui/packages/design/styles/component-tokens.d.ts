@@ -2950,6 +2950,7 @@ export type ComponentTokenName
     | '--xh-steps-indicator-fg-hover'
     | '--xh-steps-indicator-fg-toned'
     | '--xh-steps-indicator-font-size'
+    | '--xh-steps-indicator-mark-size'
     | '--xh-steps-indicator-radius'
     | '--xh-steps-indicator-shadow'
     | '--xh-steps-indicator-size'

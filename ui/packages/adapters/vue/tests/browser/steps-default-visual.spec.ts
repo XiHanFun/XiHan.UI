@@ -8,6 +8,7 @@ let host: HTMLElement | null = null
 afterEach(() => {
   host?.remove()
   host = null
+  delete document.documentElement.dataset.density
 })
 
 /** 语义色令牌在夹具里解到的颜色。 */
@@ -85,6 +86,19 @@ describe('steps 默认视觉', () => {
     expect(Number.parseFloat(mark.inlineSize)).toBe(16)
     expect(Number.parseFloat(mark.blockSize)).toBe(16)
     expect(mark.backgroundColor).toBe(getComputedStyle(completed).color)
+  })
+
+  it('compact 下兜底对号随指示符档收到 14px，圆点仍是 32px', () => {
+    document.documentElement.dataset.density = 'compact'
+    const steps = mount()
+    const completed = steps.indicators[0]!
+    completed.textContent = ''
+    const mark = getComputedStyle(completed, '::before')
+
+    // 对号是指示符（§6.5）：与 --xh-control-indicator-size 同档换尺，不读只管作者图标的 --xh-icon-size
+    expect(Number.parseFloat(mark.inlineSize)).toBe(14)
+    expect(Number.parseFloat(mark.blockSize)).toBe(14)
+    expect(completed.getBoundingClientRect().width).toBe(32)
   })
 
   it('触发器接 row 档：坐画布走 hover 100 → pressed 200，按下只换面不缩放', async () => {
