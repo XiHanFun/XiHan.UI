@@ -3,11 +3,22 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 提供 portal visual bridge 相关实现。
+// Portal 视觉桥：把逻辑来源所处的视觉环境投影到该 Portal 实例独占的壳上。
+//
+// 壳上承接三样东西，都取「来源 composed 祖先链上最近的显式声明」：
+// - 七个视觉 DOM 轴（主题、品牌、密度、对比度、动效、透明度、方向）；
+// - 语气 data-tone。它不是视觉轴，语气在来源那里是靠这个属性表达的（tone.css 把整族
+//   --xh-tone-* 声明在 [data-tone] 上），所以带属性过去而不是带派生出来的槽；
+// - CSS 自定义属性里，壳从自己的父节点继承不到、且属于「来源视觉环境」的那部分：
+//   作者自定义属性（不以 --xh- 开头）照投；--xh- 命名空间只投根上有声明的名字——令牌层把
+//   全部令牌声明在 :where(:root) 上，作者按三种粒度在 :root 写的组件槽覆盖也在根上；
+//   皮肤写在组件 / 家族元素上的公开槽（--xh-<组件>-*、--xh-collection-* 等）、私有槽
+//   --xh-_* 与 [data-tone] 上的 --xh-tone-* 根上没有，它们是组件内部级联，不跨 Portal。
+//   否则斑马行改写的 --xh-collection-bg-rest 会顺着行内的触发器一路继承进菜单项。
 
 import { isShadowRoot } from '../guards'
 
-const VISUAL_ATTRIBUTES = [
+const VISUAL_AXES = [
   'data-theme',
   'data-brand',
   'data-density',
@@ -18,7 +29,16 @@ const VISUAL_ATTRIBUTES = [
 ] as const
 
 /**
- * 祖先链上值得重算环境的属性：七个视觉轴、inline 样式、匹配样式表声明的 class，
+ * 逐项复制到壳上的属性：七个视觉轴，外加语气 data-tone。语气不是视觉轴，只是它在来源
+ * 那里靠属性表达、整族 --xh-tone-* 都挂在 [data-tone] 上，所以带属性而不是带派生槽。
+ */
+const VISUAL_ATTRIBUTES = [...VISUAL_AXES, 'data-tone'] as const
+
+/** 库自己的命名空间：令牌、组件槽、家族槽、私有槽与语气族都以它开头。 */
+const LIBRARY_NAMESPACE = '--xh-'
+
+/**
+ * 祖先链上值得重算环境的属性：七个视觉轴与语气、inline 样式、匹配样式表声明的 class，
  * 以及决定 composed 链走向的 slot。来源自身的 data-state / aria-* 状态翻转不在其列：
  * 触发器每开合一次都会改它们，而它们不改变来源所处的视觉环境。
  */
@@ -166,22 +186,41 @@ function resolvedCustomProperties(source: Element, computed: CSSStyleDeclaration
 }
 
 /**
- * 只投影壳从自己的 composed 父节点继承不到的那部分：来源与壳父节点计算值一致的名字
- * （典型是 :root 上的令牌）靠级联继承即可，逐个写进壳只会在每个 Portal 上复制整张令牌表。
- * 两份计算样式在同一批次读完再写壳，不夹杂写入触发的样式重算。
+ * 文档根上是否声明了这个名字。计算样式看到令牌层与作者在 :root 写的覆盖；jsdom 的
+ * 计算样式不含 inline 声明，补看 documentElement.style。
+ */
+function declaredOnRoot(name: string, root: HTMLElement, rootComputed: CSSStyleDeclaration | null): boolean {
+  return (rootComputed?.getPropertyValue(name) ?? '') !== '' || root.style.getPropertyValue(name) !== ''
+}
+
+/**
+ * 只投影壳从自己的 composed 父节点继承不到、且属于来源视觉环境的那部分。
+ *
+ * - 来源与壳父节点计算值一致的名字（典型是 :root 上的令牌）靠级联继承即可，逐个写进壳
+ *   只会在每个 Portal 上复制整张令牌表。
+ * - --xh- 命名空间再看一眼文档根：根上有声明的是令牌或作者在 :root 写的组件槽覆盖，
+ *   祖先链上的局部改写要带过去；根上没有的是皮肤写在组件 / 家族元素上的槽，
+ *   属于组件内部级联，不投。不维护名单：判定只对通过差分的少数名字做，每次同步
+ *   与来源、壳父节点两份计算样式同批读取，不建跨同步的缓存。
+ *
+ * 三份计算样式在同一批次读完再写壳，不夹杂写入触发的样式重算。
  */
 function projectedCustomProperties(source: Element, shell: HTMLElement): Map<string, string> {
-  const view = source.ownerDocument.defaultView
+  const doc = source.ownerDocument
+  const view = doc.defaultView
   const parent = composedParent(shell)
   const sourceComputed = view?.getComputedStyle(source) ?? null
   const parentComputed = view && parent ? view.getComputedStyle(parent) : null
+  const root = doc.documentElement
+  const rootComputed = view ? view.getComputedStyle(root) : null
   const resolved = resolvedCustomProperties(source, sourceComputed)
-  if (!parentComputed)
-    return resolved
   const values = new Map<string, string>()
   for (const [name, value] of resolved) {
-    if (parentComputed.getPropertyValue(name) !== value)
-      values.set(name, value)
+    if (parentComputed && parentComputed.getPropertyValue(name) === value)
+      continue
+    if (name.startsWith(LIBRARY_NAMESPACE) && !declaredOnRoot(name, root, rootComputed))
+      continue
+    values.set(name, value)
   }
   return values
 }
@@ -216,7 +255,7 @@ function applyCustomProperties(
 }
 
 /**
- * 观察当前 composed 祖先链：视觉轴、inline 样式与 class 变化重算环境；childList 接住来源或
+ * 观察当前 composed 祖先链：视觉轴、语气、inline 样式与 class 变化重算环境；childList 接住来源或
  * 任一祖先换父。ShadowRoot 本身也观察 childList，否则来源恰为 shadow 根直接子节点时，
  * 移出不会命中 host。
  */
@@ -254,7 +293,7 @@ function touchesChain(nodes: NodeList, chain: ReadonlySet<Node>): boolean {
 /**
  * 一批变更记录里是否有会改变来源视觉环境的那种。
  *
- * - 视觉轴、class、slot 的属性变化一律算。
+ * - 视觉轴、语气、class、slot 的属性变化一律算。
  * - inline 样式只在前后任一侧含自定义属性时才算：body 滚动锁定写的 overflow / padding、
  *   定位引擎写的 transform 都落在链上，但改不了任何自定义属性。
  * - childList 只在摘掉或挂入链上节点时才算换父：焦点护栏插进 body、触发器换文本都不是。
@@ -282,8 +321,10 @@ function collectedError(primary: unknown, rollback: unknown[], message: string):
 /**
  * 把逻辑来源最近显式声明的视觉环境投影到单个 Portal 壳。
  *
- * 桥接七个视觉 DOM 轴，以及来源祖先链上局部覆盖的 CSS 自定义属性；壳从自己的父节点
- * 继承得到的（:root 上的令牌）不复制，普通计算样式不会被复制。
+ * 桥接七个视觉 DOM 轴与语气 data-tone，以及来源祖先链上局部覆盖的 CSS 自定义属性：
+ * 作者自定义属性照投；--xh- 命名空间只投文档根上有声明的名字（令牌与 :root 上的组件槽
+ * 覆盖），皮肤写在组件 / 家族元素上的公开槽、私有槽与 --xh-tone-* 是组件内部级联，
+ * 不跨 Portal。壳从自己的父节点继承得到的不复制，普通计算样式不会被复制。
  */
 export function createPortalVisualBridge(options: PortalVisualBridgeOptions): PortalVisualBridge {
   const { source, shell } = options

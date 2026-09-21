@@ -12,7 +12,9 @@
 
 ## Portal 的视觉环境
 
-Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度和方向分别读取最近的显式声明；来源解析出的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。
+Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度和方向分别读取最近的显式声明；语气经 `data-tone` 属性一并带过去，浮层内按[在自定义节点上使用语气](./styling#在自定义节点上使用语气)读 `--xh-tone-*` 的节点取到的是来源那一族。来源祖先链上局部覆盖的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。
+
+自定义属性只带属于视觉环境的那部分。作者自己的属性（不以 `--xh-` 开头）照投；`--xh-` 命名空间只投文档根上有声明的名字，即令牌与按[覆盖样式的三种粒度](./styling#覆盖样式的三种粒度)写在 `:root` 上的组件槽覆盖。皮肤写在组件或家族元素上的公开槽（`--xh-<组件>-*`、`--xh-collection-*` 等）、私有槽 `--xh-_*` 与挂在 `[data-tone]` 上的 `--xh-tone-*` 是组件内部级联，不跨 Portal：斑马行改写的行底不会顺着行内的触发器进到菜单项，列表项里的下拉、卡片里的提示同理。判定按每次同步时的文档根计算样式做，不维护名单。
 
 框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性与自定义属性。普通属性、`class` / `style` 改动、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。普通计算样式不会复制。
 
@@ -24,7 +26,7 @@ const bridge = createPortalVisualBridge({ source, shell });
 bridge.dispose();
 ```
 
-桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`。三端物理 Portal 都从逻辑来源的 composed 祖先逐轴取最近显式声明，并把七轴与公开自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`，以及语气 `data-tone`。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
 ## 在 Vue 中使用
 
