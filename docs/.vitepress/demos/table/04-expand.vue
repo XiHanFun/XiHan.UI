@@ -4,6 +4,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableExpandedRow,
   XhTableExpandTrigger,
   XhTableHeader,
@@ -35,8 +36,8 @@ const expanded = ref<string[]>(["o1"]);
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="expand" />
-          <XhTableColumnHeader value="order">订单号</XhTableColumnHeader>
-          <XhTableColumnHeader value="amount">金额</XhTableColumnHeader>
+          <XhTableColumnHeader value="order"><XhTableColumnLabel>订单号</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="amount"><XhTableColumnLabel>金额</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>

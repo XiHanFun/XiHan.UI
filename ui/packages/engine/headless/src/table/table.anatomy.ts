@@ -17,6 +17,8 @@ export const tableAnatomy = createAnatomy('table', [
   'footer',
   'row',
   'column-header',
+  // 列名的容器：列头是 flex 行，裸文本节点是匿名 flex item、缩不下去，只有装进部件里的列名才能收窄出省略号
+  'column-label',
   'cell',
   'caption',
   // 工具条与列设置区都摆在 root 之外：root 是 grid 系角色，它的子节点只能是 row 与 rowgroup。

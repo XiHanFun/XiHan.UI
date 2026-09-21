@@ -11,6 +11,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -48,7 +49,7 @@ const rows = members.map(m => ({ id: m.id }));
           <XhTableHeader>
             <XhTableRow>
               <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-                {{ col.label }}
+                <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
               </XhTableColumnHeader>
             </XhTableRow>
           </XhTableHeader>

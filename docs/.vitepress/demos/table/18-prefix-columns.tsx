@@ -9,6 +9,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -60,7 +61,7 @@ export default function Demo(): ReactNode {
                   <XhTableColumnHeader key={c.id} value={c.id}>
                     {c.kind === "select"
                       ? <XhTableSelectAllTrigger />
-                      : c.kind === "index" ? "#" : c.label}
+                      : <XhTableColumnLabel>{c.kind === "index" ? "#" : c.label}</XhTableColumnLabel>}
                   </XhTableColumnHeader>
                 ))}
               </XhTableRow>

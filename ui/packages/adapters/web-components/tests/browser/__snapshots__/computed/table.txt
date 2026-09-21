@@ -140,6 +140,41 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.439 0.006 258)
 
+[column-label]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.439 0.006 258)
+border-right-color: oklch(0.439 0.006 258)
+border-bottom-color: oklch(0.439 0.006 258)
+border-left-color: oklch(0.439 0.006 258)
+min-height: auto
+font-size: 14px
+line-height: normal
+font-weight: 500
+color: oklch(0.439 0.006 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.439 0.006 258)
+
 [empty]
 padding-top: 24px
 padding-right: 16px
@@ -565,8 +600,8 @@ padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
 padding-left: 0px
-row-gap: 4px
-column-gap: 4px
+row-gap: 0px
+column-gap: 0px
 border-top-left-radius: 4px
 border-top-right-radius: 4px
 border-bottom-right-radius: 4px
@@ -579,11 +614,11 @@ border-top-color: rgba(0, 0, 0, 0)
 border-right-color: rgba(0, 0, 0, 0)
 border-bottom-color: rgba(0, 0, 0, 0)
 border-left-color: rgba(0, 0, 0, 0)
-min-height: 0px
+min-height: auto
 font-size: 14px
-line-height: normal
+line-height: 14px
 font-weight: 500
-color: oklch(0.439 0.006 258)
+color: oklch(0.708 0.005 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -593,4 +628,4 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.439 0.006 258)
+outline-color: oklch(0.708 0.005 258)

@@ -6,6 +6,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnResizeTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -46,9 +47,7 @@ export default function Demo(): ReactNode {
           <XhTableRow>
             {columns.map(col => (
               <XhTableColumnHeader key={col.id} value={col.id}>
-                <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {col.label}
-                </span>
+                <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
                 {/* 把手压在两列的接缝上；没标 resizable 的列它自己不显示 */}
                 <XhTableColumnResizeTrigger />
               </XhTableColumnHeader>

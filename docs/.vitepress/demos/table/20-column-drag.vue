@@ -6,6 +6,7 @@ import {
   XhTableCell,
   XhTableColumnDragTrigger,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -51,9 +52,7 @@ function cell(m: (typeof members)[number], id: string): string {
           <XhTableColumnHeader v-for="col in effective" :key="col.id" :value="col.id">
             <!-- 把手在标题之前；不可拖的列它自己报不可用 -->
             <XhTableColumnDragTrigger />
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">
-              {{ col.label }}
-            </span>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>

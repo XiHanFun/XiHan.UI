@@ -6,6 +6,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -57,9 +58,9 @@ export default function Demo(): ReactNode {
         <XhTableHeader>
           <XhTableRow>
             <span aria-hidden="true" style={spacerStyle} />
-            <XhTableColumnHeader value="step">序号</XhTableColumnHeader>
-            <XhTableColumnHeader value="name">环节</XhTableColumnHeader>
-            <XhTableColumnHeader value="owner">负责人</XhTableColumnHeader>
+            <XhTableColumnHeader value="step"><XhTableColumnLabel>序号</XhTableColumnLabel></XhTableColumnHeader>
+            <XhTableColumnHeader value="name"><XhTableColumnLabel>环节</XhTableColumnLabel></XhTableColumnHeader>
+            <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>
         <XhTableBody>

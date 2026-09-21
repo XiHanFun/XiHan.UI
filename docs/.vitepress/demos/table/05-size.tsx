@@ -5,6 +5,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -43,7 +44,7 @@ export default function Demo(): ReactNode {
               <XhTableRow>
                 {columns.map(col => (
                   <XhTableColumnHeader key={col.id} value={col.id}>
-                    {col.label}
+                    <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
                   </XhTableColumnHeader>
                 ))}
               </XhTableRow>

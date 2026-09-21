@@ -23,6 +23,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableLoading,
@@ -210,13 +211,15 @@ function refresh(): void {
             <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
           <XhTableColumnHeader value="no">
-            <XhTableSortTrigger>单号</XhTableSortTrigger>
+            <XhTableColumnLabel>单号</XhTableColumnLabel>
+            <XhTableSortTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="customer">客户</XhTableColumnHeader>
+          <XhTableColumnHeader value="customer"><XhTableColumnLabel>客户</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="amount">
-            <XhTableSortTrigger>金额</XhTableSortTrigger>
+            <XhTableColumnLabel>金额</XhTableColumnLabel>
+            <XhTableSortTrigger />
           </XhTableColumnHeader>
-          <XhTableColumnHeader value="status">状态</XhTableColumnHeader>
+          <XhTableColumnHeader value="status"><XhTableColumnLabel>状态</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
 

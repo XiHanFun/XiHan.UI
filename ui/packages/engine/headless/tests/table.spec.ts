@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectTable,
   flattenTableRows,
+  tableAnatomy,
   tableMachine,
   tableNormalizeSort,
   tableRowSelected,
@@ -94,6 +95,7 @@ interface Harness {
   footerRow: HTMLElement
   selectAll: HTMLElement
   columnHeader: (id: string) => HTMLElement
+  columnLabel: (id: string) => HTMLElement
   sortTrigger: (id: string) => HTMLElement
   row: (id: string) => RowEls
   emptyState: HTMLElement
@@ -130,6 +132,7 @@ function mount(initial: Partial<Props> = {}): Harness {
   const loadingState = make()
 
   const columnHeaders = new Map<string, HTMLElement>()
+  const columnLabels = new Map<string, HTMLElement>()
   const sortTriggers = new Map<string, HTMLElement>()
   const selectAll = make('span')
   for (const column of columns) {
@@ -139,8 +142,12 @@ function mount(initial: Partial<Props> = {}): Harness {
       cell.appendChild(selectAll)
     }
     else {
+      // 列名装在 column-label 里（列头里唯一可收窄的一格），排序钮是它后面一颗不包文字的独立钮
+      const label = make('span')
+      label.textContent = column.label ?? column.id
+      columnLabels.set(column.id, label)
+      cell.appendChild(label)
       const trigger = make('span')
-      trigger.textContent = column.label ?? column.id
       sortTriggers.set(column.id, trigger)
       cell.appendChild(trigger)
     }
@@ -192,6 +199,8 @@ function mount(initial: Partial<Props> = {}): Harness {
     spread(selectAll, api.getSelectAllTriggerProps() as Record<string, unknown>)
     for (const [id, el] of columnHeaders)
       spread(el, api.getColumnHeaderProps({ value: id }) as Record<string, unknown>)
+    for (const el of columnLabels.values())
+      spread(el, api.getColumnLabelProps() as Record<string, unknown>)
     for (const [id, el] of sortTriggers)
       spread(el, api.getSortTriggerProps({ value: id }) as Record<string, unknown>)
     for (const [id, el] of footerCells)
@@ -223,6 +232,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     footerRow,
     selectAll,
     columnHeader: id => columnHeaders.get(id)!,
+    columnLabel: id => columnLabels.get(id)!,
     sortTrigger: id => sortTriggers.get(id)!,
     row: id => rowEls.get(id)!,
     emptyState,
@@ -1079,6 +1089,39 @@ describe('指针与表头把手', () => {
     ])
   })
 
+  // 排序钮不包列名：列名留在列头上，钮里只有一枚箭头。名字缺席时读屏只听到「按钮」，
+  // 分不清是给哪一列排序的
+  it('排序钮带可及名，缺省拼上列名，给了 translations.sort 就用作者那份', () => {
+    const h = mount()
+    expect(h.sortTrigger('name').getAttribute('aria-label')).toBe('Sort by Name')
+    expect(h.sortTrigger('name').textContent).toBe('')
+    // 列名留在列头上，列头的文字不受钮影响
+    expect(h.columnHeader('name').textContent).toBe('Name')
+    document.body.innerHTML = ''
+    const named = mount({ translations: { sort: label => `按${label}排序` } })
+    expect(named.sortTrigger('name').getAttribute('aria-label')).toBe('按Name排序')
+    // 没写 label 的列退回列 id
+    document.body.innerHTML = ''
+    const unlabeled = mount({ columns: [{ id: 'select' }, { id: 'name', sortable: true }, { id: 'size', sortable: true }] })
+    expect(unlabeled.sortTrigger('size').getAttribute('aria-label')).toBe('Sort by size')
+  })
+
+  it('列名装在 column-label 部件里：只投部件属性，不带任何状态', () => {
+    const h = mount({ sort: [{ id: 'name', direction: 'asc' }] })
+    const label = h.columnLabel('name')
+    expect(label.getAttribute('data-scope')).toBe('table')
+    expect(label.getAttribute('data-part')).toBe('column-label')
+    expect(label.textContent).toBe('Name')
+    expect(label.parentElement).toBe(h.columnHeader('name'))
+    // 把手是它的兄弟，不是它的孩子：排序钮紧随其后
+    expect(label.nextElementSibling).toBe(h.sortTrigger('name'))
+    // 排序状态只落在列头与排序钮上，列名一个状态属性都不带
+    expect(Object.keys(h.api().getColumnLabelProps() as Record<string, unknown>).sort()).toEqual(['data-part', 'data-scope'])
+    expect(label.hasAttribute('data-sort')).toBe(false)
+    expect(label.hasAttribute('role')).toBe(false)
+    expect(tableAnatomy.parts).toContain('column-label')
+  })
+
   it('不可排序的列上排序把手退出 Tab 序列、点不动也不吞键', () => {
     const h = mount()
     // select 列没给 sortable，标记里也就没有 sort-trigger；直接验列头自己的声明
@@ -1086,10 +1129,11 @@ describe('指针与表头把手', () => {
     const props = h.api().getSortTriggerProps({ value: 'select' }) as Record<string, unknown>
     expect(props.tabindex).toBe(-1)
     expect(props['aria-disabled']).toBe('true')
-    // 排序把手接 Action Control row 档（铺满一格只换面），四颗把手接 icon 档：三颗勾选框 outline、展开箭头 ghost
+    // 排序钮与四颗把手都接 Action Control icon 档（定尺方盒，缩放并换底）：三颗勾选框 outline、排序钮与展开箭头 ghost
     expect(props['data-xh-action-control']).toBe('')
-    expect(props['data-xh-action-profile']).toBe('row')
+    expect(props['data-xh-action-profile']).toBe('icon')
     expect(props['data-xh-action-variant']).toBe('ghost')
+    expect(props['data-xh-action-display']).toBe('always')
     const selectAll = h.api().getSelectAllTriggerProps() as Record<string, unknown>
     expect(selectAll['data-xh-action-profile']).toBe('icon')
     expect(selectAll['data-xh-action-variant']).toBe('outline')

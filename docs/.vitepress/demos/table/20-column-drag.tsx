@@ -7,6 +7,7 @@ import {
   XhTableCell,
   XhTableColumnDragTrigger,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -55,9 +56,7 @@ export default function Demo(): ReactNode {
                   <XhTableColumnHeader key={col.id} value={col.id}>
                     {/* 把手在标题之前；不可拖的列它自己报不可用 */}
                     <XhTableColumnDragTrigger />
-                    <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {col.label}
-                    </span>
+                    <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
                   </XhTableColumnHeader>
                 ))}
               </XhTableRow>

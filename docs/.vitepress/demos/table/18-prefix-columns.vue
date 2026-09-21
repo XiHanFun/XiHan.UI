@@ -9,6 +9,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -54,8 +55,8 @@ const selection = ref<string[]>([]);
         <XhTableRow value="__head__">
           <XhTableColumnHeader v-for="c in cols" :key="c.id" :value="c.id">
             <XhTableSelectAllTrigger v-if="c.kind === 'select'" />
-            <template v-else-if="c.kind === 'index'">#</template>
-            <template v-else>{{ c.label }}</template>
+            <XhTableColumnLabel v-else-if="c.kind === 'index'">#</XhTableColumnLabel>
+            <XhTableColumnLabel v-else>{{ c.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>

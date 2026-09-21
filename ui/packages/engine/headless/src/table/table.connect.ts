@@ -163,6 +163,7 @@ export function connectTable<T extends PropTypes>(
   /** 这一列的宽度是不是用户改出来的。 */
   const hasWidthOverride = (id: string): boolean => context.get('columnPreference').widths?.[id] != null
   const label = {
+    sort: translations?.sort ?? ((columnLabel: string) => `Sort by ${columnLabel}`),
     columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
     columnDrag: translations?.columnDrag ?? ((columnLabel: string) => `Reorder column ${columnLabel}`),
     selectAll: translations?.selectAll ?? 'Select all rows',
@@ -864,6 +865,13 @@ export function connectTable<T extends PropTypes>(
       })
     },
 
+    // 列名装在自己的部件里而不是裸文本：列头是 flex 行，裸文本是匿名 flex item，min-inline-size 为 auto
+    // （nowrap 文本的 min-content）缩不下去，窄列上会把定尺的把手连同 auto 外边距一起挤出列头盒；
+    // 皮肤给不了匿名项 min-inline-size: 0 / text-overflow，只有真实节点才能收窄出省略号。无状态，只投部件属性
+    getColumnLabelProps: () => normalize.element({
+      ...parts['column-label'].attrs,
+    }),
+
     getCellProps: (cell) => {
       const def = columnOf(cell.value)
       const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(cell.value))
@@ -1152,7 +1160,8 @@ export function connectTable<T extends PropTypes>(
     }),
 
     getSortTriggerProps: (column) => {
-      const sortable = !!columnOf(column.value)?.sortable
+      const def = columnOf(column.value)
+      const sortable = !!def?.sortable
       const pressing = press(`sort:${column.value}`, !sortable)
       return normalize.element({
         ...parts['sort-trigger'].attrs,
@@ -1162,10 +1171,12 @@ export function connectTable<T extends PropTypes>(
         // 显式给角色：作者常写成 <span>，读屏听不出能按。
         // 当前排序方向由祖先 column-header 的 aria-sort 报出，不在这儿重复
         'role': 'button',
-        // 铺满一格的行级触发器（§9.2）：接 Action Control row 档、ghost 形态，按下只换面不缩放；
-        // 悬停 / 按下面按表头 host 槽下发的淡底阶梯走，内距与最小高度由皮肤归零（列头自己已给）
+        // 钮不包列名：列名留在 column-header 上，钮里只有一枚箭头，名字得自己说清是给哪一列排序
+        'aria-label': label.sort(def?.label ?? column.value),
+        // 独立的定尺图标钮（§9.1）：接 Action Control icon 档、ghost 形态，与展开箭头同款——
+        // 面与 0.97 按压由家族给，边长由皮肤钉在指示符档；悬停 / 按下面按表头 host 槽下发的淡底阶梯走
         'data-xh-action-control': '',
-        'data-xh-action-profile': 'row',
+        'data-xh-action-profile': 'icon',
         'data-xh-action-variant': 'ghost',
         'data-xh-action-display': 'always',
         'data-xh-action-size': prop('size') ?? 'md',

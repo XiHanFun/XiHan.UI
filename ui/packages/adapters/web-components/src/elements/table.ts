@@ -96,10 +96,11 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart footer - role=rowgroup 脚注区
  * @csspart row - role=row；写在 body 里的须自带 value 属性标识行身份
  * @csspart column-header - role=columnheader，须自带 value 属性标识列身份；承载 aria-sort
+ * @csspart column-label - 列名的容器，列头里唯一可收窄的一格：列名太长时由它出省略号，排序 / 列宽 / 列拖拽把手写在它之外作为兄弟；不可排序、不可改宽的列也用它（裸写在列头里的文本是匿名 flex item，缩不下去，窄列上会把把手挤出列头盒）；不带角色与状态
  * @csspart cell - role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数
  * @csspart select-all-trigger - 全选把手，三态（aria-checked 半选为 mixed），自占一个 Tab 位
  * @csspart row-select-trigger - 行选择把手（aria-hidden 且不占 Tab 位，键盘路径由 Space 承担）
- * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点击是追加到排序链
+ * @csspart sort-trigger - 排序钮，独立的定尺图标钮，不包列名（列名留在 column-header 里、钮写在列名之后），可及名取 translations.sort(列名)；自占一个 Tab 位，按住 Shift 点击是追加到排序链
  * @csspart column-resize-trigger - 列宽把手，自占一个 Tab 位；方向键调整一步、按住 Shift 是大步
  * @csspart column-drag-trigger - 列拖拽把手，自占一个 Tab 位；方向键移动一位、Home / End 移到可拖动区段首末
  * @csspart row-drag-trigger - 行拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由表体上的 Alt + 方向键承担
@@ -354,6 +355,8 @@ export class XhTableElement extends XhElement {
       return api.getRowProps(this.rowOf(el))
     })
     putAll('column-header', el => api.getColumnHeaderProps(this.columnOf(el)))
+    // 列名容器无状态，只投部件属性；身份不用查，它不区分列
+    putAll('column-label', () => api.getColumnLabelProps())
     // 单元格自报列身份，行身份跟着所在行走；表头与脚注的格子没有行可跟
     putAll('cell', (el) => {
       const row = el.closest<HTMLElement>(ROW_SELECTOR)

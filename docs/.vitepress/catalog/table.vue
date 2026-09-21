@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { XhTableBody, XhTableCell, XhTableColumnHeader, XhTableHeader, XhTableRoot, XhTableRow } from "@xihan-ui/vue";
+import { XhTableBody, XhTableCell, XhTableColumnHeader, XhTableColumnLabel, XhTableHeader, XhTableRoot, XhTableRow } from "@xihan-ui/vue";
 
 const columns = [
   { id: "name", label: "姓名" },
@@ -18,7 +18,7 @@ const rows = members.map(m => ({ id: m.id }));
   <XhTableRoot :columns="columns" :rows="rows" style="inline-size: var(--xh-doc-catalog-w)">
     <XhTableHeader>
       <XhTableRow>
-        <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">{{ col.label }}</XhTableColumnHeader>
+        <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id"><XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel></XhTableColumnHeader>
       </XhTableRow>
     </XhTableHeader>
     <XhTableBody>

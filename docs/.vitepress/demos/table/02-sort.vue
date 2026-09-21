@@ -4,6 +4,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -60,8 +61,8 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <XhTableSortTrigger v-if="col.sortable">{{ col.label }}</XhTableSortTrigger>
-            <template v-else>{{ col.label }}</template>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+            <XhTableSortTrigger v-if="col.sortable" />
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>

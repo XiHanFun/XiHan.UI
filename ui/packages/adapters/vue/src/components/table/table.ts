@@ -386,6 +386,19 @@ export const XhTableColumnHeader = /* @__PURE__ */ defineComponent({
   },
 })
 
+/**
+ * 列名。列头里唯一可收窄的一格：列名太长时由它出省略号，排序钮、列宽把手与列拖拽把手都写在它之外、
+ * 作为它的兄弟。不可排序、不可改宽的列也用它：裸写在 XhTableColumnHeader 里的文本是匿名 flex item，
+ * 缩不下去，窄列上会把定尺的把手挤出列头盒。
+ */
+export const XhTableColumnLabel = /* @__PURE__ */ defineComponent({
+  name: 'XhTableColumnLabel',
+  setup(_, { slots }) {
+    const ctx = useTableContext()
+    return () => h('span', ctx.api.value.getColumnLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTableCell = /* @__PURE__ */ defineComponent({
   name: 'XhTableCell',
   props: {
@@ -435,6 +448,10 @@ export const XhTableRowSelectTrigger = /* @__PURE__ */ defineComponent({
   },
 })
 
+/**
+ * 排序钮。独立的定尺图标钮，不包列名：列名留在 XhTableColumnHeader 里、钮写在列名之后，
+ * 可及名取 translations.sort(列名)。只有 sortable 的列渲染它。
+ */
 export const XhTableSortTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableSortTrigger',
   setup(_, { slots }) {

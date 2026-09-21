@@ -644,9 +644,18 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   setColumnPreference: (next?: TableColumnPreference) => void
   getRowProps: (props: TableRowProps) => T['element']
   getColumnHeaderProps: (props: TableColumnProps) => T['element']
+  /**
+   * 列名。列头里唯一可收窄的一格：排序钮、列宽把手与列拖拽把手都是它的兄弟，
+   * 列名太长时由它出省略号，把手不会被挤出列头。只投部件属性，不带状态。
+   */
+  getColumnLabelProps: () => T['element']
   getCellProps: (props: TableCellProps) => T['element']
   getSelectAllTriggerProps: () => T['element']
   getRowSelectTriggerProps: (props: TableRowProps) => T['element']
+  /**
+   * 排序钮。独立的定尺图标钮，排在列名之后；列名留在 column-header 上，
+   * 钮的可及名取 translations.sort(列名)。只有 sortable 的列才渲染它。
+   */
   getSortTriggerProps: (props: TableColumnProps) => T['element']
   /** 列宽把手。只有 resizable 的列才渲染它。 */
   getColumnResizeTriggerProps: (props: TableColumnProps) => T['element']
@@ -677,6 +686,11 @@ export interface TableApi<T extends PropTypes = PropTypes> {
 
 /** 读屏文案，默认英文。列拖拽的播报文案从共用的一份并入。 */
 export interface TableTranslations extends Partial<DragTranslations> {
+  /**
+   * 排序钮的名字。它是列头里独立的图标钮，不再包着列名：列名留在 `column-header` 上，
+   * 钮自身只有一枚方向箭头，名字是它对读屏唯一的自述。
+   */
+  sort: (columnLabel: string) => string
   /** 列宽把手的名字。表头文字是列名，把手自身需要说明用途。 */
   columnResize: (columnLabel: string) => string
   /** 列拖拽把手的名字。同一个列头中有两个把手，两个都需要说明各自的身份。 */

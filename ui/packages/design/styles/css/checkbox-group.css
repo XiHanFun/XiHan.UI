@@ -112,7 +112,7 @@
 
     position: relative;
     /* row 档铺满容器（inline-size: 100%）会把竖排的命中区拉到整行空白处、横排 wrap 也塌：
-       沿用「条目按内容收宽」的既有决定，写法同 table sort-trigger */
+       沿用「条目按内容收宽」的既有决定 */
     inline-size: auto;
     /* ghost 的 1px 透明边位会把方框列相对组标题错开 1px：边归零，几何保持不变 */
     border-width: 0;

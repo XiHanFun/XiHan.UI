@@ -11,6 +11,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableExpandTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -68,9 +69,10 @@ async function mount(density: 'comfortable' | 'compact'): Promise<void> {
             default: () => columns.map(column => h(XhTableColumnHeader, { key: column.id, value: column.id }, {
               default: () => column.id === 'select'
                 ? h(XhTableSelectAllTrigger)
+                // 列名装在 column-label 里，排序钮是它后面一颗不包文字的独立钮
                 : column.sortable
-                  ? h(XhTableSortTrigger, null, { default: () => column.label })
-                  : [column.label, authorIcon()],
+                  ? [h(XhTableColumnLabel, null, { default: () => column.label }), h(XhTableSortTrigger)]
+                  : [h(XhTableColumnLabel, null, { default: () => column.label }), authorIcon()],
             })),
           })],
         }),
@@ -124,16 +126,18 @@ function expectCenteredBox(box: HTMLElement): void {
 }
 
 describe.each(['comfortable', 'compact'] as const)('表格自绘状态字形按指示符档取尺（%s）', (density) => {
-  it('排序箭头 ::after 的宽高等于 --xh-control-indicator-size，且不高过列头文字的 line box', async () => {
+  it('排序箭头 :empty::before 的宽高等于 --xh-control-indicator-size、与钮的方盒同边长，且不高过列头文字的 line box', async () => {
     await mount(density)
     const indicator = indicatorSize()
     const sort = part('sort-trigger')
     expect(sort.getAttribute('data-sort')).toBe('asc')
-    const arrow = pseudoBox(sort, '::after')
-    const observed = describeGlyph(sort, '::after')
+    expect(sort.getBoundingClientRect().width).toBe(indicator)
+    const arrow = pseudoBox(sort, '::before')
+    const observed = describeGlyph(sort, '::before')
     expect(arrow.width, observed).toBe(indicator)
     expect(arrow.height, observed).toBe(indicator)
     expect(arrow.height, `${observed} 列头 line box ${headerLineBoxHeight()}`).toBeLessThanOrEqual(headerLineBoxHeight())
+    expectCenteredBox(sort)
   })
 
   it('三颗勾选框的兜底勾按方盒边长 × 0.75 取尺，落在盒内并居中', async () => {

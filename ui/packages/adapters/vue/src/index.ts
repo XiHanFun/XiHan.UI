@@ -983,6 +983,7 @@ export {
   XhTableCell,
   XhTableColumnDragTrigger,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnList,
   XhTableColumnResizeTrigger,
   XhTableColumnVisibilityTrigger,

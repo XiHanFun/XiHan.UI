@@ -17649,7 +17649,7 @@
 
   position: relative;
   /* row 档铺满容器（inline-size: 100%）会把竖排的命中区拉到整行空白处、横排 wrap 也塌：
-     沿用「条目按内容收宽」的既有决定，写法同 table sort-trigger */
+     沿用「条目按内容收宽」的既有决定 */
   inline-size: auto;
   /* ghost 的 1px 透明边位会把方框列相对组标题错开 1px：边归零，几何保持不变 */
   border-width: 0;
@@ -31987,7 +31987,7 @@
   --xh-action-radius: var(--xh-steps-trigger-radius, var(--xh-shape-control));
   /* 列距仍由 column-gap 给：家族的 gap 会连 row-gap 一起把标题与说明撑开 */
   --xh-action-gap: 0;
-  /* 高度由圆点 + 内距决定，不取 control-h 地板（同 table sort-trigger） */
+  /* 高度由圆点 + 内距决定，不取 control-h 地板 */
   --xh-action-visual-size: 0;
   --xh-action-font-size: inherit;
   /* 标题 / 说明 / 圆点各自着色，行本身不定字色 */
@@ -32636,7 +32636,7 @@
 
   /* 作者放进单元格、列头与把手里的图标按档取尺，缺省 md（§6.5）；表体行上的由家族随 data-xh-collection-size 下发。
      表格自绘的状态字形（排序方向、勾、半选杠、展开方向）不读这支：它们是指示符，与所在的方盒同走
-     --xh-control-indicator-* 一族——四颗把手在自己身上把 --xh-icon-size 改接到方盒的尺，排序箭头走 --xh-table-sort-size */
+     --xh-control-indicator-* 一族——五颗把手在自己身上把 --xh-icon-size 改接到方盒的尺，排序钮那支叫 --xh-table-sort-size */
   --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-md));
 
   /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
@@ -32779,7 +32779,7 @@
 }
 
 /* 表头是淡底承载面：里头的触发器按淡底阶梯走（hover 200 → pressed 300），阶梯由 host 槽向内下发（§7.2）；
-   排序把手不是 Action Control，按同一阶梯直接取 200 / 300 */
+   排序钮是 ghost 图标钮，悬停 / 按下面就从这两支 host 槽取 */
 [data-scope='table'][data-part='header'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -32896,6 +32896,19 @@
   user-select: none;
 }
 
+/* 列名是列头里唯一可收窄的一格：flex: 1 吃掉余量、把排序钮 / 列宽把手推到行尾，min-inline-size: 0 让它在
+   窄列上收得下去并出省略号。列名不能裸写成文本节点：flex 行里的裸文本是匿名 flex item，min-inline-size 取 auto
+   （nowrap 文本的 min-content）缩不下去，96px 的列配一串长列名时定尺的把手连同 auto 外边距一起被挤出列头盒、
+   被列头的 overflow: hidden 裁掉——皮肤给不了匿名项 min-inline-size: 0 与 text-overflow，只有真实节点接得住。
+   white-space 与行高照旧从列头继承 */
+[data-scope='table'][data-part='column-label'] {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* 横向吸附：钉在滚动容器的一侧。背景继承自行，跟着选中/高亮一起变，
    滚过去时不会露出一块与所在行不同色的补丁。
    同侧多列时的偏移由连接层按前面各列的宽度累加好写进 --xh-table-sticky-inset */
@@ -32956,15 +32969,16 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 四个把手共用一副方形盒子，两种行的文字起点才对得齐；列设置区那颗与表头里的选择框同款，一眼看得出是同一件事。
-   四颗都接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
+/* 五个把手共用一副方形盒子，两种行的文字起点才对得齐；列设置区那颗与表头里的选择框同款，一眼看得出是同一件事。
+   五颗都接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
    配方给，这里只把使用者槽映射到桥接槽；边长仍按 --xh-control-indicator-size 走。三颗勾选框是 outline 形态
-   （字段静息形态：canvas 底 + --xh-border-control 描边），展开箭头是 ghost；空框与箭头坐在白底行上，
-   按下落 200 档，已勾选的品牌实心面按下派生 active 面 */
+   （字段静息形态：canvas 底 + --xh-border-control 描边），展开箭头与排序钮是 ghost；空框与箭头坐在白底行上，
+   按下落 200 档，已勾选的品牌实心面按下派生 active 面；排序钮坐在表头淡底上，阶梯另由 host 槽给（见下） */
 [data-scope='table'][data-part='select-all-trigger'],
 [data-scope='table'][data-part='row-select-trigger'],
 [data-scope='table'][data-part='column-visibility-trigger'],
-[data-scope='table'][data-part='expand-trigger'] {
+[data-scope='table'][data-part='expand-trigger'],
+[data-scope='table'][data-part='sort-trigger'] {
   --xh-_table-trigger-bg: transparent;
   --xh-_table-trigger-bg-pressed: var(--xh-table-trigger-bg-pressed, var(--xh-bg-subtle-hover));
   --xh-_table-trigger-border: transparent;
@@ -32983,15 +32997,26 @@
   --xh-action-border-focus-visible: var(--xh-_table-trigger-border);
 }
 
-/* 家族 icon 档在粗指针下用 ::after 扩热区到 44px：四颗把手密排在行首与列头里（coarse-target 登记的
-   A 档存量），外扩会与相邻把手和上下行叠上；热区不外扩，全选框的 ::after 又是半选那道横杠 */
+/* 家族 icon 档在粗指针下用 ::after 扩热区到 44px：五颗把手密排在行首与列头里（coarse-target 登记的
+   A 档存量），外扩会与相邻把手和上下行叠上；热区不外扩，全选框的 ::after 又是半选那道横杠、
+   排序钮的 ::after 是多列排序的序号角标 */
 @media (pointer: coarse) {
   [data-scope='table'][data-part='select-all-trigger']::after,
   [data-scope='table'][data-part='row-select-trigger']::after,
   [data-scope='table'][data-part='column-visibility-trigger']::after,
-  [data-scope='table'][data-part='expand-trigger']::after {
+  [data-scope='table'][data-part='expand-trigger']::after,
+  [data-scope='table'][data-part='sort-trigger']::after {
     min-inline-size: 0;
     min-block-size: 0;
+  }
+
+  /* 序号角标要保住自己的字盒：家族热区那条把伪元素撑成盒的 100%，这里退回内容尺寸；落点与位移由基础规则给。
+     行首起点也要交还：家族热区写了 inset-inline-start: 50%，基础规则只钉了 inset-inline-end: 0，两头都定的
+     绝对定位盒被过约束成方盒的一半（16px 盒里只剩 8px），两位数序号会被截断 */
+  [data-scope='table'][data-part='sort-trigger'][data-sort-index]::after {
+    inline-size: auto;
+    block-size: auto;
+    inset-inline-start: auto;
   }
 }
 
@@ -33009,6 +33034,11 @@
   --xh-icon-size: var(--xh-_table-trigger-size);
 }
 
+/* 排序箭头留一支自己的公开槽，缺省与方盒同边长 */
+[data-scope='table'][data-part='sort-trigger'] {
+  --xh-icon-size: var(--xh-table-sort-size, var(--xh-_table-trigger-size));
+}
+
 /* 勾选方框是嵌在行里的小块：inset 档圆角（身份表登记）；展开箭头与列设置那颗是 control 档 */
 [data-scope='table'][data-part='select-all-trigger'],
 [data-scope='table'][data-part='row-select-trigger'] {
@@ -33016,14 +33046,16 @@
 }
 
 [data-scope='table'][data-part='column-visibility-trigger'],
-[data-scope='table'][data-part='expand-trigger'] {
+[data-scope='table'][data-part='expand-trigger'],
+[data-scope='table'][data-part='sort-trigger'] {
   --xh-action-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
 }
 
 [data-scope='table'][data-part='select-all-trigger'][hidden],
 [data-scope='table'][data-part='row-select-trigger'][hidden],
 [data-scope='table'][data-part='column-visibility-trigger'][hidden],
-[data-scope='table'][data-part='expand-trigger'][hidden] {
+[data-scope='table'][data-part='expand-trigger'][hidden],
+[data-scope='table'][data-part='sort-trigger'][hidden] {
   display: none;
 }
 
@@ -33142,44 +33174,29 @@
   outline: none;
 }
 
-/* 排序把手撑满列标题：整块列标题都点得动，而不是只有那一小截文字。
-   它是铺满一格的行级触发器（§9.2）：接 Action Control row 档、ghost 形态，按下只换面不缩放；
-   坐在表头淡底上，阶梯由 header 的 host 槽下发（hover 200 → pressed 300）。
-   列头自己已给内距与行高，把手不再叠 row 档的内距与最小高度；字继承列头的字号与字重 */
+/* 排序钮是列头里独立的定尺图标钮（§9.1）：不包列名，列名留在列头上、它排在列名之后，auto 外边距把它
+   推到行尾侧与列宽把手并排。盒型与 0.97 按压由家族 icon 档给（见五颗把手共用块）；坐在表头淡底上，
+   悬停 / 按下面按 header 的 host 槽下发的阶梯走（hover 200 → pressed 300），不取白底行那档。
+   箭头静息取 subtle 前景，参与排序的列换成默认前景（见字形块） */
 [data-scope='table'][data-part='sort-trigger'] {
-  --xh-action-gap: var(--xh-table-sort-gap, var(--xh-space-1));
-  --xh-action-padding-inline: 0;
-  --xh-action-padding-block: 0;
-  --xh-action-visual-size: 0;
-  --xh-action-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
   --xh-action-bg-hover: var(--xh-table-sort-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-table-sort-bg-pressed, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: currentColor;
-  --xh-action-fg-hover: currentColor;
-  --xh-action-fg-pressed: currentColor;
-  --xh-action-fg-focus-visible: currentColor;
-  --xh-action-fg-disabled: currentColor;
-  --xh-action-font-size: inherit;
+  --xh-action-bg-disabled: transparent;
+  --xh-action-border-disabled: transparent;
+  --xh-action-fg-rest: var(--xh-table-sort-fg, var(--xh-fg-subtle));
+  --xh-action-fg-hover: var(--xh-table-sort-fg, var(--xh-fg-subtle));
+  --xh-action-fg-pressed: var(--xh-table-sort-fg, var(--xh-fg-subtle));
+  --xh-action-fg-focus-visible: var(--xh-table-sort-fg, var(--xh-fg-subtle));
+  --xh-action-fg-disabled: var(--xh-fg-disabled);
 
-  flex: 1;
-  inline-size: auto;
-  min-inline-size: 0;
-  font: inherit;
-  line-height: inherit;
-  white-space: inherit;
+  margin-inline-start: auto;
 }
 
-/* 家族 row 档在粗指针下用 ::after 扩热区到 44px 高，这里的 ::after 是排序箭头字形：把它钉回行内位置 */
-@media (pointer: coarse) {
-  [data-scope='table'][data-part='sort-trigger']::after {
-    position: static;
-    min-block-size: 0;
-    translate: none;
-  }
-}
-
-[data-scope='table'][data-part='sort-trigger'][hidden] {
-  display: none;
+[data-scope='table'][data-part='sort-trigger'][data-sort] {
+  --xh-action-fg-rest: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+  --xh-action-fg-hover: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+  --xh-action-fg-focus-visible: var(--xh-table-sort-fg-active, var(--xh-fg-default));
 }
 
 /* 列宽把手贴在表头格的行尾侧。它压在相邻两列的接缝上，因此往外挪半个身位，
@@ -33200,6 +33217,12 @@
 
 [data-scope='table'][data-part='column-resize-trigger'][hidden] {
   display: none;
+}
+
+/* 同一格里前面已有排序钮时，auto 外边距只归第一颗：两条 auto 会把余量平分，排序钮就被推到格中间；
+   列宽把手紧贴排序钮之后。藏起来的排序钮不占位，也就不该夺走这条边距 */
+[data-scope='table'][data-part='sort-trigger']:not([hidden]) ~ [data-scope='table'][data-part='column-resize-trigger'] {
+  margin-inline-start: 0;
 }
 
 /* 接缝上那条线。平时借表头的分隔色，按住与聚焦时换成品牌色好认 */
@@ -33455,57 +33478,63 @@
 }
 
 /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西。
-   箭头是指示符（§6.5）：与同一表头里的勾选框方盒、列拖拽把手同走 --xh-control-indicator-size，
-   不读 --xh-icon-size——按图标档取的 20px 会比 16px 的方盒与列头文字都大一圈 */
-[data-scope='table'][data-part='sort-trigger']::after {
-  color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
+   箭头是指示符（§6.5）：尺寸读钮自己改接过的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长），
+   与同一表头里的勾选框方盒、列拖拽把手同走 --xh-control-indicator-size，按图标档取的 20px 会比
+   16px 的方盒与列头文字都大一圈。:empty 守卫同展开箭头：作者塞了自己的图标就整个顶掉兜底；
+   flex: none 是因为 ghost 那圈透明描边仍占位，不钉住的话与盒同边长的箭头会被挤窄一个描边。
+   三态各写一遍尺寸：字形门禁逐条规则查兜底盒有没有按 --xh-icon-size 量 */
+[data-scope='table'][data-part='sort-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
+  flex: none;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
   mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
 }
 
-[data-scope='table'][data-part='sort-trigger'][data-sort='asc']::after {
-  color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
+[data-scope='table'][data-part='sort-trigger'][data-sort='asc']:empty::before {
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   -webkit-mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
   mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
 }
 
-[data-scope='table'][data-part='sort-trigger'][data-sort='desc']::after {
-  color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-table-sort-size, var(--xh-control-indicator-size));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
+[data-scope='table'][data-part='sort-trigger'][data-sort='desc']:empty::before {
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   -webkit-mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
   mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
 }
 
-/* 多字段排序的优先级角标：链里第几环就显几，只在参与排序时才有 data-sort-index */
-[data-scope='table'][data-part='sort-trigger'][data-sort-index]::before {
-  order: 1;
+/* 多字段排序的优先级角标：链里第几环就显几，只在参与排序时才有 data-sort-index。
+   钮是定尺的 16px 方盒，数字排不进盒里：角标压在盒的行尾上角，写法同 Badge 的 top-end——
+   定位上下文由家族给（控件本身 position: relative），inset 走逻辑属性，rtl 下 end 自己换到左边 */
+[data-scope='table'][data-part='sort-trigger'][data-sort-index]::after {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  translate: 50% -50%;
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
   font-size: var(--xh-text-caption-size);
+  line-height: 1;
   content: attr(data-sort-index);
+  pointer-events: none;
+}
+
+/* rtl 下 translate 的行内轴要跟着翻，否则角标会往盒里面跑 */
+[dir='rtl'] [data-scope='table'][data-part='sort-trigger'][data-sort-index]::after {
+  translate: -50% -50%;
 }
 
 [data-scope='table'][data-part='sort-trigger'][data-disabled] {
   cursor: default;
 }
 
-[data-scope='table'][data-part='sort-trigger'][data-disabled]::after {
+/* 排不了序的列不画箭头 */
+[data-scope='table'][data-part='sort-trigger'][data-disabled]:empty::before {
   content: none;
 }
 
