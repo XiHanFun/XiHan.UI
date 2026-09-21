@@ -17558,11 +17558,21 @@
 
   /* 鼠标落点：方框只有一档指示符那么大，命中区靠一枚绝对定位的伪元素往外扩，
      盒子本身一动不动——放大盒子会把并排的文字挤开。常态外扩 6px，最小的 sm 档由 12px 到 24px；
-     粗指针下的 44px 热区由家族 icon 档的 ::after 给，这里不再另写 */
+     粗指针下的 44px 热区由家族 icon 档的 ::after 给，这里只把起点交还 */
   [data-scope='checkbox'][data-part='root']::after {
     content: '';
     position: absolute;
     inset: calc(-1 * var(--xh-space-1_5));
+  }
+
+  /* 粗指针：家族在同一个 ::after 上写 44×44 的盒、50% 起点与 -50% 平移把它钉在方框中心。
+     上面那条 inset 负值特指度更高，留着的话起点被钉在 -6px、再被家族的平移拉走半个盒，
+     热区的中心落到方框左上角外面，方框右下大半摸不着 */
+  @media (pointer: coarse) {
+    [data-scope='checkbox'][data-part='root']::after {
+      inset-block: 50% auto;
+      inset-inline: 50% auto;
+    }
   }
 
   [data-scope='checkbox'][data-part='indicator'] {
