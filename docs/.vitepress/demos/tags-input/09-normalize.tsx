@@ -34,7 +34,6 @@ export default function Demo(): ReactNode {
         value={tags}
         onValueChange={onValueChange}
         placeholder="打 Vue 回车，落进去的是 #vue"
-        style={{ maxInlineSize: "420px" }}
       >
         {({ value }) => (
           <>

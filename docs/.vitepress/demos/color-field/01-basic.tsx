@@ -18,7 +18,7 @@ export default function Demo(): ReactNode {
     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
       <XhColorFieldRoot value={value} onValueChange={details => setValue(details.value)} name="accent" placeholder="#rrggbb" clearable>
         <XhColorFieldLabel>主题色</XhColorFieldLabel>
-        <XhColorFieldControl style={{ inlineSize: "16rem" }}>
+        <XhColorFieldControl>
           <XhColorFieldSwatch />
           <XhColorFieldInput />
           <XhColorFieldClearTrigger />

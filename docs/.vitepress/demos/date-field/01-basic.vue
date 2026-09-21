@@ -15,7 +15,6 @@ import {
   <XhDateFieldRoot
     locale="zh-CN"
     name="deadline"
-    style="--xh-date-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
   >
     <XhDateFieldLabel>截止日期</XhDateFieldLabel>
     <XhDateFieldControl>

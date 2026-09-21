@@ -1,6 +1,6 @@
 // 周期区间 | granularity 决定两组输入行铺设哪几段、浮层铺设哪一档格子
 import type { CalendarGranularity } from "@xihan-ui/headless";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhDateRangePickerCalendar,
   XhDateRangePickerCell,
@@ -42,7 +42,6 @@ export default function Demo(): ReactNode {
           key={k.key}
           granularity={k.granularity}
           locale="zh-CN"
-          style={{ "--xh-date-range-picker-control-min-w": "calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))" } as CSSProperties}
         >
           {({ panels, weekDays, segments, endSegments }) => (
             <>

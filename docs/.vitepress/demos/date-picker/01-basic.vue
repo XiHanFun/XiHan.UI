@@ -31,7 +31,6 @@ import {
     v-slot="{ weeks, weekDays }"
     locale="zh-CN"
     name="delivery-date"
-    style="--xh-date-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))"
   >
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>

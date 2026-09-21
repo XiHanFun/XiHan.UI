@@ -99,7 +99,6 @@ export default function Demo(): ReactNode {
       onExpandedValueChange={details => setExpanded(details.value)}
       collection={collection}
       placeholder="选一个城市"
-      style={{ maxInlineSize: "320px" }}
       onOpenChange={onOpenChange}
     >
       <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>

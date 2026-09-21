@@ -34,7 +34,6 @@ export default function Demo(): ReactNode {
         label="文档"
         placeholder="选一个文件"
         clearable
-        style={{ maxInlineSize: "320px" }}
       />
       <p>{`已选：${doc.length ? doc.join("、") : "（无）"}`}</p>
     </>

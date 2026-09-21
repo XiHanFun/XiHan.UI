@@ -14,7 +14,7 @@ export default function Demo(): ReactNode {
       <XhPasswordInputRoot size="sm" defaultValue="hunter2">
         <XhPasswordInputLabel>sm</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "160px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>
@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
       <XhPasswordInputRoot defaultValue="hunter2">
         <XhPasswordInputLabel>缺省</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "160px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>
@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
       <XhPasswordInputRoot size="lg" defaultValue="hunter2">
         <XhPasswordInputLabel>lg</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "160px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>

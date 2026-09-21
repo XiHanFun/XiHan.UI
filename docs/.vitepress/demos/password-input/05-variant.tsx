@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
         <XhPasswordInputRoot key={v} variant={v} defaultValue="hunter2">
           <XhPasswordInputLabel>{v}</XhPasswordInputLabel>
           <XhPasswordInputControl>
-            <XhPasswordInputInput style={{ inlineSize: "160px" }} />
+            <XhPasswordInputInput />
             <XhPasswordInputVisibilityTrigger />
           </XhPasswordInputControl>
         </XhPasswordInputRoot>

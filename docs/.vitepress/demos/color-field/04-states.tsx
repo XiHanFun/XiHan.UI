@@ -14,7 +14,7 @@ export default function Demo(): ReactNode {
     <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
       <XhColorFieldRoot defaultValue="#10b981" disabled>
         <XhColorFieldLabel>禁用</XhColorFieldLabel>
-        <XhColorFieldControl style={{ inlineSize: "14rem" }}>
+        <XhColorFieldControl>
           <XhColorFieldSwatch />
           <XhColorFieldInput />
           <XhColorFieldClearTrigger />
@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
       </XhColorFieldRoot>
       <XhColorFieldRoot defaultValue="#10b981" readOnly>
         <XhColorFieldLabel>只读</XhColorFieldLabel>
-        <XhColorFieldControl style={{ inlineSize: "14rem" }}>
+        <XhColorFieldControl>
           <XhColorFieldSwatch />
           <XhColorFieldInput />
           <XhColorFieldClearTrigger />
@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
       </XhColorFieldRoot>
       <XhColorFieldRoot defaultValue="#10b981" invalid clearable>
         <XhColorFieldLabel>无效</XhColorFieldLabel>
-        <XhColorFieldControl style={{ inlineSize: "14rem" }}>
+        <XhColorFieldControl>
           <XhColorFieldSwatch />
           <XhColorFieldInput />
           <XhColorFieldClearTrigger />
@@ -38,7 +38,7 @@ export default function Demo(): ReactNode {
       </XhColorFieldRoot>
       <XhColorFieldRoot defaultValue="#10b981" size="sm" clearable>
         <XhColorFieldLabel>小号</XhColorFieldLabel>
-        <XhColorFieldControl style={{ inlineSize: "14rem" }}>
+        <XhColorFieldControl>
           <XhColorFieldSwatch />
           <XhColorFieldInput />
           <XhColorFieldClearTrigger />
@@ -46,7 +46,7 @@ export default function Demo(): ReactNode {
       </XhColorFieldRoot>
       <XhColorFieldRoot defaultValue="#10b981" size="lg" clearable>
         <XhColorFieldLabel>大号</XhColorFieldLabel>
-        <XhColorFieldControl style={{ inlineSize: "14rem" }}>
+        <XhColorFieldControl>
           <XhColorFieldSwatch />
           <XhColorFieldInput />
           <XhColorFieldClearTrigger />

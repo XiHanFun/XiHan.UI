@@ -48,7 +48,6 @@ const doc = ref<string[]>([]);
     :collection="files"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>

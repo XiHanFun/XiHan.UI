@@ -55,7 +55,6 @@ export default function Demo(): ReactNode {
         onExpandedValueChange={details => setExpanded(details.value)}
         collection={files}
         placeholder="选一个文件"
-        style={{ maxInlineSize: "320px" }}
       >
         <XhTreeSelectLabel>文档</XhTreeSelectLabel>
         <XhTreeSelectControl>

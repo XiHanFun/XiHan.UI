@@ -63,7 +63,6 @@ export default function Demo(): ReactNode {
         onValueChange={onValueChange}
         name="reviewers"
         placeholder="打名字回车"
-        style={{ maxInlineSize: "420px" }}
       >
         {({ value: tags }) => (
           <>

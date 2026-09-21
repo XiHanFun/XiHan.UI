@@ -46,7 +46,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
       :default-value="['guide']"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ t }}</XhTreeSelectLabel>
       <XhTreeSelectControl>

@@ -24,7 +24,6 @@ export default function Demo(): ReactNode {
       addOnPaste
       delimiter=","
       placeholder="试试粘贴 React,Svelte,Solid"
-      style={{ maxInlineSize: "420px" }}
     >
       {({ value, count, atMax }) => (
         <>

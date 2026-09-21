@@ -13,7 +13,7 @@ export default function Demo(): ReactNode {
       {({ value, empty, canClear, setValue, clear }) => (
         <>
           <XhTextFieldLabel>收货人</XhTextFieldLabel>
-          <XhTextFieldControl style={{ inlineSize: "200px" }}>
+          <XhTextFieldControl>
             <XhTextFieldInput />
           </XhTextFieldControl>
           <div style={{ display: "flex", gap: "8px" }}>

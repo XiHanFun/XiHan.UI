@@ -14,7 +14,7 @@ const nickname = ref("曦寒");
 <template>
   <XhTextFieldRoot v-model:value="nickname" placeholder="请输入昵称">
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>

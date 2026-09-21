@@ -92,7 +92,6 @@ function onOpenChange(details: { open: boolean }): void {
     :open="open"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
     @value-change="onValueChange"
     @open-change="onOpenChange"
   >

@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
       {({ editing, invalid }) => (
         <>
           <XhColorFieldLabel>强调色</XhColorFieldLabel>
-          <XhColorFieldControl style={{ inlineSize: "16rem" }}>
+          <XhColorFieldControl>
             <XhColorFieldSwatch />
             <XhColorFieldInput />
           </XhColorFieldControl>

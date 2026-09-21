@@ -45,7 +45,6 @@ const picked = ref<string[]>(["index"]);
     multiple
     name="docs"
     placeholder="可以多选"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>提交范围</XhTreeSelectLabel>
     <XhTreeSelectControl>

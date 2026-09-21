@@ -31,14 +31,14 @@ export default function Demo(): ReactNode {
     <>
       <XhTextFieldRoot placeholder="只收数字" maxLength={11}>
         <XhTextFieldLabel>手机号</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "200px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput inputMode="numeric" onBeforeInput={onlyDigits} />
         </XhTextFieldControl>
       </XhTextFieldRoot>
 
       <XhTextFieldRoot placeholder="空格进不来">
         <XhTextFieldLabel>账号</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "200px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput onBeforeInput={noSpace} />
         </XhTextFieldControl>
       </XhTextFieldRoot>

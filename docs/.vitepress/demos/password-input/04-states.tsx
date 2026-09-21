@@ -14,7 +14,7 @@ export default function Demo(): ReactNode {
       <XhPasswordInputRoot defaultValue="hunter2" disabled>
         <XhPasswordInputLabel>禁用</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "160px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>
@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
       <XhPasswordInputRoot defaultValue="hunter2" readOnly>
         <XhPasswordInputLabel>只读</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "160px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>
@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
       <XhPasswordInputRoot defaultValue="123" invalid>
         <XhPasswordInputLabel>校验失败</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "160px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>

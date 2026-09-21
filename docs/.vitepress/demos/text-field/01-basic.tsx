@@ -12,7 +12,7 @@ export default function Demo(): ReactNode {
   return (
     <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱" clearable>
       <XhTextFieldLabel>邮箱</XhTextFieldLabel>
-      <XhTextFieldControl style={{ inlineSize: "16rem" }}>
+      <XhTextFieldControl>
         <XhTextFieldInput />
         <XhTextFieldClearTrigger />
       </XhTextFieldControl>

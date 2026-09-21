@@ -1,5 +1,5 @@
 // 基础用法 | 输入或选择起止日期
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhDateRangePickerCalendar,
   XhDateRangePickerCell,
@@ -32,7 +32,6 @@ export default function Demo(): ReactNode {
       locale="zh-CN"
       name="trip-start"
       endName="trip-end"
-      style={{ "--xh-date-range-picker-control-min-w": "calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))" } as CSSProperties}
     >
       {({ weeks, weekDays }) => (
         <>

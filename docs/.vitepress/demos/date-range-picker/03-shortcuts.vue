@@ -43,7 +43,6 @@ const presets = computed(() => [
     v-slot="{ weeks, weekDays }"
     :presets="presets"
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>统计区间</XhDateRangePickerLabel>
     <XhDateRangePickerControl>

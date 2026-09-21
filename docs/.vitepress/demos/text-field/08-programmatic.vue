@@ -16,7 +16,7 @@ import {
     clearable
   >
     <XhTextFieldLabel>收货人</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">

@@ -13,7 +13,7 @@ import {
   <!-- 试着打 tomato 再按回车：颜色关键字不在支持的写法里 -->
   <XhColorFieldRoot v-slot="{ editing, invalid }" default-value="#e11d48" placeholder="#rrggbb">
     <XhColorFieldLabel>强调色</XhColorFieldLabel>
-    <XhColorFieldControl style="inline-size: 16rem">
+    <XhColorFieldControl>
       <XhColorFieldSwatch />
       <XhColorFieldInput />
     </XhColorFieldControl>

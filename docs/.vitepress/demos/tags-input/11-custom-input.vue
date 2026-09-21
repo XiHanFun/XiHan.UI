@@ -43,7 +43,6 @@ function options(text: string): string[] {
     :max="4"
     blur-behavior="add"
     placeholder="打前缀选后缀"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>通知邮箱（最多 4 个）</XhTagsInputLabel>
     <XhTagsInputControl>

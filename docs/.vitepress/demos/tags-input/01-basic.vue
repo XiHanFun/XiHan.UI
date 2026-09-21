@@ -20,7 +20,6 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
     v-slot="{ value }"
     v-model:value="tags"
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>技术栈</XhTagsInputLabel>
     <XhTagsInputControl>

@@ -16,7 +16,7 @@ export default function Demo(): ReactNode {
       {variants.map(v => (
         <XhTextFieldRoot key={v} variant={v} placeholder="请输入内容">
           <XhTextFieldLabel>{v}</XhTextFieldLabel>
-          <XhTextFieldControl style={{ inlineSize: "180px" }}>
+          <XhTextFieldControl>
             <XhTextFieldInput />
           </XhTextFieldControl>
         </XhTextFieldRoot>

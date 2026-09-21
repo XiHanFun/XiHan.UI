@@ -11,21 +11,21 @@ import {
 <template>
   <XhTextFieldRoot default-value="改不动" disabled>
     <XhTextFieldLabel>禁用</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot default-value="只能看" read-only>
     <XhTextFieldLabel>只读</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot default-value="格式不对" invalid>
     <XhTextFieldLabel>校验失败</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>

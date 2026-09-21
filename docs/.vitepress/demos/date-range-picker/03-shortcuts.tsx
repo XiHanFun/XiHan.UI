@@ -1,5 +1,5 @@
 // 快捷选项 | 常用区间一键写入两端
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { dateRangePickerPresetMonth, dateRangePickerPresetRange, dateRangePickerPresetYear } from "@xihan-ui/headless";
 import {
   XhDateRangePickerCalendar,
@@ -42,7 +42,6 @@ export default function Demo(): ReactNode {
     <XhDateRangePickerRoot
       presets={presets}
       locale="zh-CN"
-      style={{ "--xh-date-range-picker-control-min-w": "calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))" } as CSSProperties}
     >
       {({ weeks, weekDays }) => (
         <>

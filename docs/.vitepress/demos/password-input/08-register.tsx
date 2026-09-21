@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
       <XhPasswordInputRoot name="new-password" autoComplete="new-password" defaultValue="" required>
         <XhPasswordInputLabel>设置新密码</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "200px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>

@@ -54,7 +54,6 @@ export default function Demo(): ReactNode {
         multiple
         cascade
         checkedStrategy="parent"
-        style={{ maxInlineSize: "340px" }}
       >
         {() => (
           <>

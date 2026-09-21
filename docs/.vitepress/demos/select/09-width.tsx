@@ -50,7 +50,7 @@ export default function Demo(): ReactNode {
         defaultValue={["long"]}
         placeholder="请选择"
         style={{
-          "--xh-select-control-min-w": "15rem",
+          "--xh-select-control-w": "20rem",
           "--xh-select-content-min-w": "22rem",
         } as CSSProperties}
       >

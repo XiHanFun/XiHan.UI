@@ -30,14 +30,14 @@ function noSpace(event: Event) {
 <template>
   <XhTextFieldRoot placeholder="只收数字" :max-length="11">
     <XhTextFieldLabel>手机号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput inputmode="numeric" @beforeinput="onlyDigits" />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot placeholder="空格进不来">
     <XhTextFieldLabel>账号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput @beforeinput="noSpace" />
     </XhTextFieldControl>
   </XhTextFieldRoot>

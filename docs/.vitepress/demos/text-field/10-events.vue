@@ -23,7 +23,7 @@ function onValueChange(details: { value: string }) {
 <template>
   <XhTextFieldRoot placeholder="随便敲几个字" clearable @value-change="onValueChange">
     <XhTextFieldLabel>留言</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput @focus="push('focus')" @blur="push('blur')" />
     </XhTextFieldControl>
   </XhTextFieldRoot>

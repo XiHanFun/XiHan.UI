@@ -19,7 +19,7 @@ export default function Demo(): ReactNode {
       {({ value, atLimit }) => (
         <>
           <XhTextFieldLabel>昵称</XhTextFieldLabel>
-          <XhTextFieldControl style={{ inlineSize: "200px" }}>
+          <XhTextFieldControl>
             <XhTextFieldInput />
             <XhTextFieldClearTrigger />
           </XhTextFieldControl>

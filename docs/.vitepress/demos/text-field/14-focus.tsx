@@ -28,7 +28,7 @@ export default function Demo(): ReactNode {
   return (
     <XhTextFieldRoot defaultValue="曦寒组件库">
       <XhTextFieldLabel>标题</XhTextFieldLabel>
-      <XhTextFieldControl style={{ inlineSize: "220px" }}>
+      <XhTextFieldControl>
         <XhTextFieldInput ref={input} />
       </XhTextFieldControl>
       <div style={{ display: "flex", gap: "8px" }}>

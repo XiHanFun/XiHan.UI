@@ -14,7 +14,7 @@ export default function Demo(): ReactNode {
         placeholder="请输入昵称"
       >
         <XhTextFieldLabel>昵称</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "200px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput />
         </XhTextFieldControl>
       </XhTextFieldRoot>

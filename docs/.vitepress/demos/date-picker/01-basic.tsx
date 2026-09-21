@@ -1,5 +1,5 @@
 // 基础用法 | 输入或选择日期
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -30,9 +30,6 @@ export default function Demo(): ReactNode {
     <XhDatePickerRoot
       locale="zh-CN"
       name="delivery-date"
-      style={{
-        "--xh-date-picker-control-min-w": "calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))",
-      } as CSSProperties}
     >
       {({ weeks, weekDays }) => (
         <>

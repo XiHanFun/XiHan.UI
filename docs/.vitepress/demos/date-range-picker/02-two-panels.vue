@@ -36,7 +36,6 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
     v-model:value="value"
     :visible-count="2"
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>入住与退房</XhDateRangePickerLabel>
     <XhDateRangePickerControl>

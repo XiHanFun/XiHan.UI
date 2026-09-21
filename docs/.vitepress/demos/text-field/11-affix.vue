@@ -14,7 +14,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 <template>
   <XhTextFieldRoot placeholder="0.00">
     <XhTextFieldLabel>金额</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <span :style="affix">¥</span>
       <XhTextFieldInput inputmode="decimal" />
       <span :style="affix">元</span>
@@ -23,7 +23,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 
   <XhTextFieldRoot placeholder="170">
     <XhTextFieldLabel>身高</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput inputmode="numeric" />
       <span :style="affix">cm</span>
     </XhTextFieldControl>

@@ -11,7 +11,7 @@ import {
 <template>
   <XhTextFieldRoot placeholder="you@example.com">
     <XhTextFieldLabel>邮箱</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput
         autocomplete="email"
         inputmode="email"
@@ -22,7 +22,7 @@ import {
 
   <XhTextFieldRoot placeholder="11 位手机号" :max-length="11">
     <XhTextFieldLabel>手机号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput
         autocomplete="tel"
         inputmode="numeric"

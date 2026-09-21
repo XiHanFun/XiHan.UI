@@ -20,7 +20,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     placeholder="点进来看聚焦环"
   >
     <XhTextFieldLabel>{{ t }}</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>

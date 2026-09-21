@@ -52,7 +52,6 @@ const value = ref<string[]>(["user:view"]);
     multiple
     cascade
     checked-strategy="parent"
-    style="max-inline-size: 340px"
   >
     <XhTreeSelectLabel>权限</XhTreeSelectLabel>
     <XhTreeSelectControl>

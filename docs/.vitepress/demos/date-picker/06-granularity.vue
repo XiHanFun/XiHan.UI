@@ -66,7 +66,6 @@ function changeGranularity(details: { value: string | string[] | null }) {
     :granularity="granularity"
     :close-on-select="false"
     locale="zh-CN"
-    style="--xh-date-picker-control-min-w: 22rem"
   >
     <XhDatePickerLabel>统计周期</XhDatePickerLabel>
     <XhDatePickerControl>

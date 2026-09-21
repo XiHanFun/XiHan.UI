@@ -17,7 +17,7 @@ const revealed = ref(false);
   <XhPasswordInputRoot v-model:value="password" v-model:revealed="revealed">
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 200px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>

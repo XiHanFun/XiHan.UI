@@ -23,7 +23,6 @@ const tags = ref<string[]>(["文档"]);
     v-model:value="tags"
     :max="3"
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>话题（最多 3 个）</XhTagsInputLabel>
     <XhTagsInputControl>

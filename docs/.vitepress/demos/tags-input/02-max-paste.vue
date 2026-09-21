@@ -24,7 +24,6 @@ const tags = ref<string[]>(["Vue"]);
     add-on-paste
     delimiter=","
     placeholder="试试粘贴 React,Svelte,Solid"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>技术栈（最多 4 个）</XhTagsInputLabel>
     <XhTagsInputControl>

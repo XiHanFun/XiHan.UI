@@ -91,7 +91,6 @@ onBeforeUnmount(() => {
     :expanded-value="expanded"
     :loading="loading"
     placeholder="选一个城市"
-    style="max-inline-size: 320px"
     @expanded-value-change="expanded = $event.value"
     @open-change="onOpenChange"
   >

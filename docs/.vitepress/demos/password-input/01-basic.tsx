@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
     >
       <XhPasswordInputLabel>密码</XhPasswordInputLabel>
       <XhPasswordInputControl>
-        <XhPasswordInputInput style={{ inlineSize: "200px" }} />
+        <XhPasswordInputInput />
         {/* 节点留空，大写锁定开着时组件把文字写进来，读屏念的就是这一段 */}
         <XhPasswordInputCapsLockIndicator />
         {/* 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 */}

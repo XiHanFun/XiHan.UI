@@ -22,7 +22,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   >
     <XhPasswordInputLabel>{{ t }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>

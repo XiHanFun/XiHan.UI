@@ -17,7 +17,7 @@ const value = ref("rgba(59, 130, 246, 0.5)");
     <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
     <XhColorFieldRoot v-model:value="value" format="rgba" alpha placeholder="rgba(r, g, b, a)">
       <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 20rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
       </XhColorFieldControl>
