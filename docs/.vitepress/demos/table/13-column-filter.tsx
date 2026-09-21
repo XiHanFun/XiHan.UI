@@ -11,6 +11,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableRoot,
@@ -66,9 +67,9 @@ export default function Demo(): ReactNode {
       <XhTableRoot columns={columns} rows={rows}>
         <XhTableHeader>
           <XhTableRow>
-            <XhTableColumnHeader value="name">姓名</XhTableColumnHeader>
+            <XhTableColumnHeader value="name"><XhTableColumnLabel>姓名</XhTableColumnLabel></XhTableColumnHeader>
             <XhTableColumnHeader value="dept">
-              部门
+              <XhTableColumnLabel>部门</XhTableColumnLabel>
               <XhPopoverRoot placement="bottom-start" size="sm">
                 <XhPopoverTrigger
                   aria-label="按部门过滤"
@@ -98,7 +99,7 @@ export default function Demo(): ReactNode {
               </XhPopoverRoot>
             </XhTableColumnHeader>
             <XhTableColumnHeader value="city">
-              城市
+              <XhTableColumnLabel>城市</XhTableColumnLabel>
               <XhPopoverRoot placement="bottom-start" size="sm">
                 <XhPopoverTrigger
                   aria-label="按城市过滤"

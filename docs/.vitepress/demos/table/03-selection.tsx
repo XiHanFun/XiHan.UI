@@ -5,6 +5,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -52,8 +53,8 @@ export default function Demo(): ReactNode {
               {/* 全选把手是三态的唯一载体，自己占一个 Tab 位 */}
               <XhTableSelectAllTrigger />
             </XhTableColumnHeader>
-            <XhTableColumnHeader value="name">姓名</XhTableColumnHeader>
-            <XhTableColumnHeader value="dept">部门</XhTableColumnHeader>
+            <XhTableColumnHeader value="name"><XhTableColumnLabel>姓名</XhTableColumnLabel></XhTableColumnHeader>
+            <XhTableColumnHeader value="dept"><XhTableColumnLabel>部门</XhTableColumnLabel></XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>
         <XhTableBody>

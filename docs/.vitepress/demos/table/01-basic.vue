@@ -1,10 +1,11 @@
-<!-- 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观 -->
+<!-- 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边 -->
 <script setup lang="ts">
 import {
   XhTableBody,
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -34,7 +35,7 @@ const rows = members.map(m => ({ id: m.id }));
         <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>

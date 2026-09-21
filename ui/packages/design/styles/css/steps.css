@@ -146,7 +146,7 @@
     --xh-action-radius: var(--xh-steps-trigger-radius, var(--xh-shape-control));
     /* 列距仍由 column-gap 给：家族的 gap 会连 row-gap 一起把标题与说明撑开 */
     --xh-action-gap: 0;
-    /* 高度由圆点 + 内距决定，不取 control-h 地板（同 table sort-trigger） */
+    /* 高度由圆点 + 内距决定，不取 control-h 地板 */
     --xh-action-visual-size: 0;
     --xh-action-font-size: inherit;
     /* 标题 / 说明 / 圆点各自着色，行本身不定字色 */

@@ -9,6 +9,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnList,
   XhTableColumnVisibilityTrigger,
   XhTableHeader,
@@ -90,7 +91,7 @@ export default function Demo(): ReactNode {
               <XhTableRow>
                 {shown.map(col => (
                   <XhTableColumnHeader key={col.id} value={col.id}>
-                    {col.label}
+                    <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
                   </XhTableColumnHeader>
                 ))}
               </XhTableRow>

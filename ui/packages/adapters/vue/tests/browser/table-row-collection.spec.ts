@@ -10,6 +10,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -57,7 +58,7 @@ async function mountTable(): Promise<[HTMLElement, HTMLElement, HTMLElement]> {
       default: () => [
         h(XhTableHeader, null, {
           default: () => [h(XhTableRow, null, {
-            default: () => columns.map(column => h(XhTableColumnHeader, { key: column.id, value: column.id }, { default: () => column.label })),
+            default: () => columns.map(column => h(XhTableColumnHeader, { key: column.id, value: column.id }, { default: () => h(XhTableColumnLabel, null, { default: () => column.label }) })),
           })],
         }),
         h(XhTableBody, null, {

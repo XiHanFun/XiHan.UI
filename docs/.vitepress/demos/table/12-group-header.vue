@@ -5,6 +5,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -40,16 +41,16 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
         <XhTableRow>
           <XhTableColumnHeader value="team" />
           <XhTableColumnHeader value="q1" :style="groupStyle" :aria-colspan="2">
-            上半年
+            <XhTableColumnLabel>上半年</XhTableColumnLabel>
           </XhTableColumnHeader>
           <XhTableColumnHeader value="q3" :style="groupStyle" :aria-colspan="2">
-            下半年
+            <XhTableColumnLabel>下半年</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
         <!-- 第二行表头自报行号：缺省那条恒为 1 -->
         <XhTableRow :aria-rowindex="2">
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>

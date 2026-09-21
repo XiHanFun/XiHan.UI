@@ -4,6 +4,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableEmpty,
   XhTableHeader,
   XhTableLoading,
@@ -64,7 +65,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            {{ col.label }}
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>

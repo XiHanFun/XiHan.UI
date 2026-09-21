@@ -4,6 +4,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -40,8 +41,8 @@ const selection = ref<string[]>(["p2"]);
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="select" />
-          <XhTableColumnHeader value="plan">套餐</XhTableColumnHeader>
-          <XhTableColumnHeader value="price">价格</XhTableColumnHeader>
+          <XhTableColumnHeader value="plan"><XhTableColumnLabel>套餐</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="price"><XhTableColumnLabel>价格</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>

@@ -5,6 +5,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -67,9 +68,8 @@ export default function Demo(): ReactNode {
           <XhTableRow>
             {columns.map(col => (
               <XhTableColumnHeader key={col.id} value={col.id}>
-                {col.sortable
-                  ? <XhTableSortTrigger>{col.label}</XhTableSortTrigger>
-                  : col.label}
+                <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
+                {col.sortable && <XhTableSortTrigger />}
               </XhTableColumnHeader>
             ))}
           </XhTableRow>

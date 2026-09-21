@@ -1,10 +1,11 @@
-// 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观
+// 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边
 import type { ReactNode } from "react";
 import {
   XhTableBody,
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -35,7 +36,7 @@ export default function Demo(): ReactNode {
           <XhTableRow>
             {columns.map(col => (
               <XhTableColumnHeader key={col.id} value={col.id}>
-                {col.label}
+                <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
               </XhTableColumnHeader>
             ))}
           </XhTableRow>

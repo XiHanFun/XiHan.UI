@@ -5,6 +5,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -59,8 +60,8 @@ export default function Demo(): ReactNode {
             <XhTableColumnHeader value="select">
               <XhTableSelectAllTrigger />
             </XhTableColumnHeader>
-            <XhTableColumnHeader value="name">文件名</XhTableColumnHeader>
-            <XhTableColumnHeader value="size">大小</XhTableColumnHeader>
+            <XhTableColumnHeader value="name"><XhTableColumnLabel>文件名</XhTableColumnLabel></XhTableColumnHeader>
+            <XhTableColumnHeader value="size"><XhTableColumnLabel>大小</XhTableColumnLabel></XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>
         <XhTableBody>

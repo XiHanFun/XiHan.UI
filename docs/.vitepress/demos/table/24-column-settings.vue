@@ -9,6 +9,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnList,
   XhTableColumnVisibilityTrigger,
   XhTableHeader,
@@ -85,7 +86,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
         <XhTableHeader>
           <XhTableRow>
             <XhTableColumnHeader v-for="col in shown" :key="col.id" :value="col.id">
-              {{ col.label }}
+              <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             </XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>

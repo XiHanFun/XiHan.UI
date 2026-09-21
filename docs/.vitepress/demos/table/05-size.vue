@@ -5,6 +5,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -51,7 +52,7 @@ const densities = [
               :key="col.id"
               :value="col.id"
             >
-              {{ col.label }}
+              <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             </XhTableColumnHeader>
           </XhTableRow>
         </XhTableHeader>

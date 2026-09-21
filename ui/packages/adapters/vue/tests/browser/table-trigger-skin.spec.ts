@@ -1,14 +1,17 @@
-// 表格里的四颗把手（全选框、行勾选框、展开箭头、列设置勾选框）接入 Action Control icon 档，
-// 排序把手接入 row 档：盒仍是 16px 指示符档、面按字段静息形态取值、按下由家族给 0.97 缩放并换底；
-// 排序把手撑满列头、按表头 host 槽下发的淡底阶梯换面且不缩放。jsdom 不排版，只有真实浏览器量得出来。
+// 表格里的五颗把手（全选框、行勾选框、展开箭头、列设置勾选框、排序钮）都接入 Action Control icon 档：
+// 盒是 16px 指示符档、面按字段静息形态取值、按下由家族给 0.97 缩放并换底。
+// 排序钮是列名之后一颗独立的 ghost 图标钮，贴列头行尾与列宽把手并排，按表头 host 槽下发的淡底阶梯换面；
+// 列头文字不再是排序的命中区。jsdom 不排版，只有真实浏览器量得出来。
 import type { App } from 'vue'
 import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h, nextTick } from 'vue'
+import { createApp, h, nextTick, ref } from 'vue'
 import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableColumnResizeTrigger,
   XhTableExpandTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -22,7 +25,7 @@ import '@xihan-ui/styles'
 
 const columns = [
   { id: 'select', label: '', width: 56 },
-  { id: 'name', label: '名称', width: 160, sortable: true },
+  { id: 'name', label: '名称', width: 160, sortable: true, resizable: true },
   { id: 'size', label: '大小', width: 120 },
 ]
 const rows = [{ id: 'a', expandable: true }, { id: 'b' }]
@@ -53,7 +56,11 @@ function part(name: string, index = 0): HTMLElement {
   return element
 }
 
+/** 排序链，受控：点了什么这里就能看见 */
+const sort = ref<{ id: string, direction: 'asc' | 'desc' }[]>([])
+
 async function mount(): Promise<void> {
+  sort.value = []
   host = document.createElement('div')
   // 断言读的是终值：按压与释放的过渡时长归零
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
@@ -61,14 +68,22 @@ async function mount(): Promise<void> {
   host.style.setProperty('--xh-motion-duration-release', '0ms')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhTableRoot, { columns, rows, selectionMode: 'multiple', defaultSelection: ['b'] }, {
+    render: () => h(XhTableRoot, {
+      columns,
+      rows,
+      selectionMode: 'multiple',
+      defaultSelection: ['b'],
+      sort: sort.value,
+      onSortChange: ({ value }: { value: { id: string, direction: 'asc' | 'desc' }[] }) => { sort.value = value },
+    }, {
       default: () => [
         h(XhTableHeader, null, {
           default: () => [h(XhTableRow, null, {
+            // 列名装在 column-label 里，排序钮与列宽把手排在它之后
             default: () => columns.map(column => h(XhTableColumnHeader, { key: column.id, value: column.id }, {
               default: () => column.id === 'select'
                 ? h(XhTableSelectAllTrigger)
-                : column.sortable ? h(XhTableSortTrigger, null, { default: () => column.label }) : column.label,
+                : [h(XhTableColumnLabel, null, { default: () => column.label }), column.sortable ? h(XhTableSortTrigger) : null, column.resizable ? h(XhTableColumnResizeTrigger) : null],
             })),
           })],
         }),
@@ -134,25 +149,59 @@ describe('table 把手接入 Action Control', () => {
     expect(getComputedStyle(expand).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
   })
 
-  it('排序把手撑满列头，悬停 200 / 按下 300 只换面不缩放，不叠 row 档的内距与最小高度', async () => {
+  it('排序钮是指示符档的 ghost 图标钮，贴列头行尾与列宽把手并排，不包列名', async () => {
     await mount()
-    const sort = part('sort-trigger')
-    expect(sort.getAttribute('data-xh-action-profile')).toBe('row')
-    const header = sort.closest<HTMLElement>('[data-part="column-header"]')!
-    const style = getComputedStyle(sort)
-    expect(style.paddingInlineStart).toBe('0px')
-    expect(style.paddingBlockStart).toBe('0px')
-    expect(style.minHeight).toBe('0px')
-    expect(style.fontSize).toBe(getComputedStyle(header).fontSize)
-    expect(style.fontWeight).toBe(getComputedStyle(header).fontWeight)
-    expect(sort.getBoundingClientRect().height).toBeLessThanOrEqual(header.getBoundingClientRect().height)
-    await userEvent.hover(sort)
-    await expect.poll(() => getComputedStyle(sort).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
-    await userEvent.unhover(sort)
-    sort.setAttribute('data-pressed', '')
-    expect(getComputedStyle(sort).backgroundColor).toBe(resolve('--xh-bg-subtle-active'))
-    expect(getComputedStyle(sort).scale).toBe('none')
-    // 排序箭头字形仍在行内位置
-    expect(getComputedStyle(sort, '::after').position).toBe('static')
+    const trigger = part('sort-trigger')
+    expect(trigger.getAttribute('data-xh-action-profile')).toBe('icon')
+    expect(trigger.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(trigger.getAttribute('aria-label')).toBe('Sort by 名称')
+    expect(trigger.textContent).toBe('')
+    const header = trigger.closest<HTMLElement>('[data-part="column-header"]')!
+    expect(header.textContent).toContain('名称')
+    // 定尺方盒：与展开箭头同一支 16px 指示符档
+    const box = trigger.getBoundingClientRect()
+    expect(box.width).toBe(16)
+    expect(box.height).toBe(16)
+    // 静息透明，箭头取 subtle 前景
+    expect(getComputedStyle(trigger).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(trigger).color).toBe(resolve('--xh-fg-subtle'))
+    // 贴行尾：钮右边紧接列宽把手，列宽把手贴着列头内容盒的右沿；两颗之间只剩列头的 gap，余量没有被两条 auto 边距平分
+    const resize = part('column-resize-trigger')
+    const headerBox = header.getBoundingClientRect()
+    const resizeBox = resize.getBoundingClientRect()
+    expect(resizeBox.right).toBeCloseTo(headerBox.right - Number.parseFloat(getComputedStyle(header).paddingRight), 1)
+    const gap = Number.parseFloat(getComputedStyle(header).columnGap)
+    expect(resizeBox.left - box.right).toBeCloseTo(gap, 1)
+    // 列名装在 column-label 里、留在钮左边、不与钮重叠
+    const label = header.querySelector<HTMLElement>('[data-part="column-label"]')!
+    expect(label.textContent).toBe('名称')
+    expect(label.getBoundingClientRect().right).toBeLessThanOrEqual(box.left)
+  })
+
+  it('点列头文字不排序，点钮才排序；钮的悬停 200 / 按下 300 与 0.97 缩放与展开箭头同款', async () => {
+    await mount()
+    const trigger = part('sort-trigger')
+    const header = trigger.closest<HTMLElement>('[data-part="column-header"]')!
+    const headerBox = header.getBoundingClientRect()
+    // 点在列名文字上：离钮远远的那一头
+    await userEvent.click(header, { position: { x: 12, y: headerBox.height / 2 } })
+    await nextTick()
+    expect(sort.value).toEqual([])
+    expect(header.getAttribute('aria-sort')).toBe('none')
+    await userEvent.click(trigger)
+    await nextTick()
+    expect(sort.value).toEqual([{ id: 'name', direction: 'asc' }])
+    await expect.poll(() => header.getAttribute('aria-sort')).toBe('ascending')
+    expect(trigger.getAttribute('data-sort')).toBe('asc')
+    expect(getComputedStyle(trigger).color).toBe(resolve('--xh-fg-default'))
+    // 悬停 / 按下按表头淡底阶梯：200 → 300，按下同时 0.97 缩放（与展开箭头同一份家族配方）
+    await userEvent.hover(trigger)
+    await expect.poll(() => getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
+    await userEvent.unhover(trigger)
+    trigger.setAttribute('data-pressed', '')
+    expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-active'))
+    expect(getComputedStyle(trigger).scale).toBe('0.97')
+    trigger.removeAttribute('data-pressed')
+    expect(getComputedStyle(trigger).scale).toBe('none')
   })
 })

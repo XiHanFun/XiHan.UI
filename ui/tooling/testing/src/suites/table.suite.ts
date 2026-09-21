@@ -145,18 +145,19 @@ function detailRow(value: string): FixtureNode {
   }
 }
 
+// 列名装在 column-label 里（列头里唯一可收窄的一格，无状态），排序钮是它后面一颗不包文字的独立钮
 function columnHeader(value: string, text: string): FixtureNode {
   return {
     part: 'column-header',
     attrs: { value },
-    children: [{ part: 'sort-trigger', tag: 'span', text }],
+    children: [{ part: 'column-label', tag: 'span', text }, { part: 'sort-trigger', tag: 'span' }],
   }
 }
 
 // 文档序下标：
 // row      = [表头, a, b, c, d, 脚注]
 // cell     = [a×3, a 详情×1, b×3, c×3, c 详情×1, d×3, d 详情×1, 脚注×3]
-// 其余集合 = column-header [select, name, size]、sort-trigger [name, size]、
+// 其余集合 = column-header [select, name, size]、column-label / sort-trigger [name, size]、
 //            row-drag-trigger / expand-trigger / row-select-trigger [a, b, c, d]、
 //            expanded-row [a, c, d]
 const FIXTURE: FixtureNode = {
@@ -310,6 +311,7 @@ export const tableSuite: ConformanceSuite = {
           'footer': 1,
           'row': 6,
           'column-header': 3,
+          'column-label': 2,
           // 四行数据 ×3 + 三条详情行各 1 格 + 脚注 ×3
           'cell': 18,
           'select-all-trigger': 1,
@@ -418,6 +420,8 @@ export const tableSuite: ConformanceSuite = {
             'data-frozen': 'start',
           },
           'column-header[2]': { 'aria-colindex': '3', 'data-value': 'size', 'aria-sort': 'none' },
+          // 列名容器只投部件属性：不带角色、列身份与排序状态，可及名由列头从它的文字算出
+          'column-label[0]': { 'role': null, 'data-value': null, 'aria-sort': null, 'data-sort': null, 'data-sortable': null, 'tabindex': null },
           'cell[0]': { 'role': 'gridcell', 'aria-colindex': '1', 'data-frozen': null, 'aria-colspan': null },
           'cell[1]': { 'aria-colindex': '2', 'data-frozen': 'start' },
           'cell[2]': { 'aria-colindex': '3' },
@@ -451,8 +455,8 @@ export const tableSuite: ConformanceSuite = {
             'data-disabled': '',
             'data-dragging': null,
           },
-          // 排序把手铺满一格：Action Control row 档、ghost 形态
-          'sort-trigger[0]': { 'role': 'button', 'tabindex': '0', 'aria-disabled': 'false', 'data-xh-action-control': '', 'data-xh-action-profile': 'row', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
+          // 排序钮是独立的定尺图标钮：Action Control icon 档、ghost 形态；不包列名，名字取 translations.sort(列名)
+          'sort-trigger[0]': { 'role': 'button', 'tabindex': '0', 'aria-disabled': 'false', 'aria-label': 'Sort by Name', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
           'expanded-row': detailsShown(),
           // 详情行是所属数据行的下一层，那一层只有它自己
           'expanded-row[0]': {

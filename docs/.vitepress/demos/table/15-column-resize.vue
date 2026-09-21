@@ -5,6 +5,7 @@ import {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
+  XhTableColumnLabel,
   XhTableColumnResizeTrigger,
   XhTableHeader,
   XhTableRoot,
@@ -43,9 +44,7 @@ const preference = ref<Record<string, unknown>>({});
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">
-              {{ col.label }}
-            </span>
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
             <!-- 把手压在两列的接缝上；没标 resizable 的列它自己不显示 -->
             <XhTableColumnResizeTrigger />
           </XhTableColumnHeader>
