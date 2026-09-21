@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 // 命令式服务在业务组件的 effect 里首次被调用（服务此刻才懒建）。
 //
-// 宿主树用 flushSync 同步提交，layout effect 里的机器挂载随这次提交一起跑完，
-// 所以 createToastService() 返回时端口与机器都已就绪，命令不会落进窗口期。
-// 这条钉的正是这个时序：Vue 侧宿主的 mounted 会被追加到调用方 post-flush 队列的队尾，
+// 从 effect 里调用时正处在 React 的提交阶段，mount-host 的 flushSync 只能把宿主树排队，
+// 靠宿主渲染体接端口就会把第一条命令当成「宿主没挂」丢掉。所以机器改由服务自持：
+// 工厂里建好即 mount 并接上端口，createToastService() 返回时命令就能按序到达，宿主只负责渲染。
+// 这条钉的正是这个契约：Vue 侧宿主的 mounted 会被追加到调用方 post-flush 队列的队尾，
 // 三端要在「首次调用在挂载回调里」这一型上同构。
 import { act, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
