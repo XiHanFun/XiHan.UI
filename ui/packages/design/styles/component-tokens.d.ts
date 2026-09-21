@@ -2751,6 +2751,7 @@ export type ComponentTokenName
     | '--xh-separator-gap'
     | '--xh-separator-radius'
     | '--xh-separator-thickness'
+    | '--xh-side-nav-branch-indicator-size'
     | '--xh-side-nav-collapsed-w'
     | '--xh-side-nav-fg'
     | '--xh-side-nav-gap'

@@ -46317,6 +46317,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-side-nav-branch-indicator-size"
+            },
+            {
               "name": "--xh-side-nav-collapsed-w"
             },
             {
