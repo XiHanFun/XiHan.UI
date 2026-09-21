@@ -206,8 +206,15 @@
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 主标签带按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
+  /* 横排标签的宽随文字走，不把标签带等分铺满一行：line 与 card 档是一排并列的页签，
+     每一枚只占自己的字宽加内衬，标签带右侧留白；窄到放不下文字时仍按原合同折行 */
   [data-scope='tabs'][data-part='root'][data-orientation='horizontal']
+    [data-scope='tabs'][data-part='trigger'] {
+    flex: 0 0 auto;
+  }
+
+  /* segment 档是一条轨道里的格子（与 Segmented 同构）：格子按可用宽度等分 */
+  [data-scope='tabs'][data-part='root'][data-orientation='horizontal'][data-variant='segment']
     [data-scope='tabs'][data-part='trigger'] {
     flex: 1 1 0;
   }

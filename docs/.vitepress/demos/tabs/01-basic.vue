@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -14,6 +15,7 @@ import {
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="analytics">分析</XhTabsTrigger>
       <XhTabsTrigger value="reports">报告</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="overview">查看项目概览与近期活动。</XhTabsContent>

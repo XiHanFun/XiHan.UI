@@ -4,6 +4,7 @@ import { ActivityIcon, ChartBarIcon, FileTextIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -16,6 +17,7 @@ import {
       <XhTabsTrigger value="activity"><XhIcon :icon="ActivityIcon" />活动</XhTabsTrigger>
       <XhTabsTrigger value="analytics"><XhIcon :icon="ChartBarIcon" />分析</XhTabsTrigger>
       <XhTabsTrigger value="reports"><XhIcon :icon="FileTextIcon" />报告</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="activity">查看项目近期活动。</XhTabsContent>

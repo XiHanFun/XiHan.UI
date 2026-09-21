@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { XhTabsContent, XhTabsList, XhTabsRoot, XhTabsTrigger } from "@xihan-ui/vue";
+import { XhTabsContent, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -7,6 +7,7 @@ import { XhTabsContent, XhTabsList, XhTabsRoot, XhTabsTrigger } from "@xihan-ui/
     <XhTabsList aria-label="内容视图">
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="activity">动态</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
     <XhTabsContent value="overview">项目概览</XhTabsContent>
     <XhTabsContent value="activity">近期动态</XhTabsContent>
