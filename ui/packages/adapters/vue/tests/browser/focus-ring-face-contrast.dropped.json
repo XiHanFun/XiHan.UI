@@ -12,6 +12,7 @@
   "[data-scope=\"alert\"][data-part=\"close-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"alert\"][data-part=\"root\"]": "部件不接焦点：alert/root",
   "[data-scope=\"anchor\"][data-part=\"indicator\"]": "部件不接焦点：anchor/indicator",
+  "[data-scope=\"anchor\"][data-part=\"link\"][data-current]::after": "写法挂不出来：::",
   "[data-scope=\"approval\"][data-part=\"item-indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"approval\"][data-part=\"item-indicator\"][data-state=\"checked\"]": "部件不接焦点：approval/item-indicator",
   "[data-scope=\"approval\"][data-part=\"note\"]": "部件不接焦点：approval/note",

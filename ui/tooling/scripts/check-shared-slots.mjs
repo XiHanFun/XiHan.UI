@@ -35,6 +35,8 @@ const NOT_A_SCALE = new Set([
   '100vh',
   '100vw',
   '0 0 0 transparent',
+  // 生成内容的空串：静态指示线的 content 读私有槽、缺省画出来，不是一档取值
+  '\'\'',
 ])
 
 /**
