@@ -49,6 +49,13 @@
     max-inline-size: 100%;
   }
 
+  /* 带输入框的用法是一件字段：不传尺寸时一律这么宽，宽度不随内容走；父容器给不出这么宽时整件跟着收，
+     地板同步让步，地板不高过缺省宽。只放复制钮的用法是一颗独立按钮，宽随文字走，不吃字段缺省宽 */
+  [data-scope='clipboard'][data-part='root']:has([data-scope='clipboard'][data-part='control']) {
+    inline-size: var(--xh-clipboard-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-clipboard-control-w, var(--xh-control-w)), var(--xh-clipboard-control-min-w, var(--xh-control-min-w)), 100%);
+  }
+
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='clipboard'][data-part='root'][data-size='sm'] {
@@ -105,8 +112,9 @@
   }
 
   [data-scope='clipboard'][data-part='input'] {
-    /* 宽度是偏好值不是地板：并排的复制钮占掉位置后，输入框还能继续被压缩 */
-    inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+    /* 撑满复制钮之外的剩余宽度；min-inline-size 归零解开原生 input 按字符数算出来的自动最小宽，
+       根被压窄时输入框跟着收，不是钮先被顶出去 */
+    flex: 1 1 auto;
     min-inline-size: 0;
     block-size: var(--xh-clipboard-input-h, var(--xh-_clipboard-h));
     padding-inline: var(--xh-clipboard-input-px, var(--xh-_clipboard-px));

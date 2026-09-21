@@ -237,6 +237,17 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 图标按钮视觉盒遵循同一高度。
 - 粗指针命中区至少 44×44px；可以用伪元素扩展，不能改变布局盒。
 
+字段的宽度同样是一族一个数，不随内容走：
+
+| 槽 | 令牌 | 值 | 含义 |
+| --- | --- | ---: | --- |
+| `--xh-<c>-control-w` | `--xh-control-w` | 16rem | 不传尺寸时单行字段根的 `inline-size`；选中一条很长的选项触发器也不变宽，文字在盒内截断 |
+| `--xh-<c>-control-min-w` | `--xh-control-min-w` | 12rem | 被 flex / grid 容器压缩时的底线；根上写成 `min(缺省宽, 底线, 100%)`，底线不高过缺省宽，容器比底线还窄时收成容器宽 |
+
+- 根另带 `max-inline-size: 100%`；盒（control）只写家族的 `min(…, 100%)` 地板，由根撑开。要撑满表单列由使用者在根上写 `inline-size: 100%`。
+- 刻意例外（须登记进 check-control-box 的 EXEMPT）：DateRangePicker 起止两组按日的段位、分隔符与日历钮排在一行，内容比缺省宽宽，缺省 `inline-size: max-content`、地板取 `--xh-control-w`（按年、按月时不比别的字段窄）；PinInput 由格数与格宽定宽；PromptInput 铺满宿主；Field 的控件铺满表单列；Clipboard 只放复制钮的用法是独立按钮，缺省宽只给带输入框的用法（`:has(control)`）。
+- 示例不写内联宽度，让文档展示缺省宽；只有演示宽度本身的示例才改槽。
+
 ### 6.3 形状身份
 
 | 角色 | 圆角 | 给谁 |
@@ -649,6 +660,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - [ ] 使用 4/8/12px 小圆角体系。
 - [ ] 根面边界取描边 / 淡底 / 无壳之一；raised 已逐部件登记且带 border-default。
 - [ ] 字段静息为描边式，variant 缺省落 outline。
+- [ ] 单行字段根缺省宽走 `--xh-<c>-control-w` → `--xh-control-w`，地板不高过缺省宽；例外已登记。
 - [ ] selected / current 按 §7.3 语义表取唯一标记；open / in-path 与 hover 同档。
 - [ ] 交互阶梯按承载面取档；缺省语气正确（只有 Button 品牌实心）。
 - [ ] 形状按 §6.3 身份表取值，正方盒未用 pill。

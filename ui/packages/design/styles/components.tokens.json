@@ -8212,6 +8212,25 @@
       "description": "cascader 的 control 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-control-w",
+      "component": "cascader",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-empty-fg",
       "component": "cascader",
       "part": [
@@ -10679,6 +10698,45 @@
       "description": "clipboard 的 control 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-clipboard-control-min-w",
+      "component": "clipboard",
+      "part": [
+        "control",
+        "root"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "has([data-scope='clipboard'][data-part='control'])"
+      ],
+      "defaultToken": [
+        "--xh-control-min-w"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 control、root 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-clipboard-control-w",
+      "component": "clipboard",
+      "part": [
+        "control",
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "has([data-scope='clipboard'][data-part='control'])"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 control、root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-clipboard-copy-trigger-attached-radius",
       "component": "clipboard",
       "part": [
@@ -11241,24 +11299,6 @@
       ],
       "visibility": "public",
       "description": "clipboard 的 input 部件 block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-clipboard-input-min-w",
-      "component": "clipboard",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "inline-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-control-min-w"
-      ],
-      "visibility": "public",
-      "description": "clipboard 的 input 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-input-px",
@@ -12884,6 +12924,25 @@
       "description": "color-field 的 control 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-color-field-control-w",
+      "component": "color-field",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-color-field-gap",
       "component": "color-field",
       "part": [
@@ -13773,6 +13832,25 @@
       ],
       "visibility": "public",
       "description": "color-picker 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-control-w",
+      "component": "color-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-gap",
@@ -16114,6 +16192,25 @@
       ],
       "visibility": "public",
       "description": "combobox 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-combobox-control-w",
+      "component": "combobox",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-combobox-empty-fg",
@@ -19269,6 +19366,25 @@
       "description": "date-field 的 control 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-date-field-control-w",
+      "component": "date-field",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "date-field 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-date-field-font-size",
       "component": "date-field",
       "part": [
@@ -20404,6 +20520,25 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-control-w",
+      "component": "date-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-font-size",
@@ -21915,6 +22050,24 @@
       ],
       "visibility": "public",
       "description": "date-range-picker 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-w",
+      "component": "date-range-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "max-content"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 root 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-font-size",
@@ -25899,6 +26052,25 @@
       ],
       "visibility": "public",
       "description": "editable 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-w",
+      "component": "editable",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "editable 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-editable-gap",
@@ -39084,6 +39256,25 @@
       "description": "mention 的 input 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-mention-input-w",
+      "component": "mention",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "mention 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-mention-item-bg-hover",
       "component": "mention",
       "part": [
@@ -43571,6 +43762,25 @@
       "description": "number-field 的 control 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-number-field-control-w",
+      "component": "number-field",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-number-field-gap",
       "component": "number-field",
       "part": [
@@ -45453,6 +45663,25 @@
       ],
       "visibility": "public",
       "description": "password-input 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-password-input-control-w",
+      "component": "password-input",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "password-input 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-password-input-gap",
@@ -52986,6 +53215,25 @@
       ],
       "visibility": "public",
       "description": "select 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-select-control-w",
+      "component": "select",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "select 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-select-empty-fg",
@@ -63076,6 +63324,25 @@
       "description": "tags-input 的 control 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-tags-input-control-w",
+      "component": "tags-input",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tags-input-count-fg",
       "component": "tags-input",
       "part": [
@@ -64124,6 +64391,25 @@
       "description": "text-field 的 control 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-text-field-control-w",
+      "component": "text-field",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "text-field 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-text-field-count-fg",
       "component": "text-field",
       "part": [
@@ -64887,6 +65173,25 @@
       ],
       "visibility": "public",
       "description": "time-field 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-field-control-w",
+      "component": "time-field",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "time-field 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-time-field-font-size",
@@ -65942,6 +66247,25 @@
       ],
       "visibility": "public",
       "description": "time-picker 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-control-w",
+      "component": "time-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-font-size",
@@ -67656,6 +67980,25 @@
       ],
       "visibility": "public",
       "description": "time-range-picker 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-control-w",
+      "component": "time-range-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-font-size",
@@ -77725,6 +78068,25 @@
       ],
       "visibility": "public",
       "description": "tree-select 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-control-w",
+      "component": "tree-select",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-empty-fg",

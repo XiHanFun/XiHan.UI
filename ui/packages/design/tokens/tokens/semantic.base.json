@@ -24,7 +24,13 @@
       "$type": "dimension",
       "$value": "48px"
     },
+    "w": {
+      "$description": "单行字段根的缺省宽度：不传尺寸时下拉、日期、文本框等一律这么宽，宽度不再随内容走。",
+      "$type": "dimension",
+      "$value": "16rem"
+    },
     "min-w": {
+      "$description": "字段被 flex / grid 容器压缩时的底线：低于它就无法使用，容器再窄也不让步。",
       "$type": "dimension",
       "$value": "12rem"
     },

@@ -413,6 +413,7 @@
 | `--xh-combobox-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_combobox-px` | combobox 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | combobox 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | combobox 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-combobox-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | combobox 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-combobox-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 empty 部件 color 覆盖槽。 |
 | `--xh-combobox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 empty 部件 padding-inline 覆盖槽。 |

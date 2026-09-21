@@ -273,6 +273,7 @@
 | `--xh-color-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-field-px` | color-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-color-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | color-field 的 input 部件 box-shadow 覆盖槽。 |

@@ -455,6 +455,7 @@
 | `--xh-cascader-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_cascader-px` | cascader 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | cascader 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | cascader 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-cascader-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | cascader 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | cascader 的 empty 部件 color 覆盖槽。 |
 | `--xh-cascader-empty-min-h` | `empty` | `min-block-size` | `default` | `5rem` | cascader 的 empty 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-empty-p` | `empty` | `padding` | `default` | `--xh-space-3` | cascader 的 empty 部件 padding 覆盖槽。 |

@@ -66,6 +66,7 @@
 --xh-control-px-sm: 6px  ← var(--xh-space-1_5)
 --xh-control-separator-disabled-opacity: 0.36
 --xh-control-separator-opacity: 0.16
+--xh-control-w: 16rem
 --xh-diff-added-bg: oklch(0.3 0.05 150)
 --xh-diff-added-fg: oklch(0.86 0.12 150)
 --xh-diff-removed-bg: oklch(0.3 0.05 25)
