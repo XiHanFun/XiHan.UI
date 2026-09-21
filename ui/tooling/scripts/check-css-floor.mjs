@@ -103,6 +103,7 @@ function supportsRanges(css, re) {
 // 这条白名单就成了一张没人走的通行证,由下面的名单核验报出来。
 const ALLOWLIST = new Map([
   ['prompt-input.css', 'field-sizing:退化路径是 <textarea> 的 rows 属性定下的固定行数(HTML 侧),CSS 里无法机械验证'],
+  ['tags-input.css', 'field-sizing:就地编辑框随正在改的字宽;退化路径是 inline-size: auto 落回原生 input 按 size 算的宽,只是把后面的输入框挤到下一行,不丢功能'],
 ])
 
 // 把文件切成顶层规则块:'{' 深度归零处切开。@media 等 at-rule 与其后的规则块各自成块,

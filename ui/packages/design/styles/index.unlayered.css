@@ -34854,6 +34854,11 @@
    不声明 display —— 收起态靠 UA 的 [hidden]{display:none} 就够，
    自己加一条 display 反而要再补一条 [hidden] 规则去抵消它 */
 [data-scope='tags-input'][data-part='item-input'] {
+  /* 宽随正在改的那几个字走，不取原生 input 按 20 个字符算出来的宽：字段缺省宽只有 16rem，
+     一个 20 字符宽的编辑框会把后面的输入框挤到下一行，进编辑态时框就长高了 */
+  field-sizing: content;
+  inline-size: auto;
+  min-inline-size: 3ch;
   max-inline-size: 100%;
   padding-block: var(--xh-tags-input-item-py, var(--xh-_tags-input-item-py));
   padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));

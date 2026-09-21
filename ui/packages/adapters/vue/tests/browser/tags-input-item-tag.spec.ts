@@ -179,7 +179,8 @@ describe('标签输入的框：一行控件高，标签多了按行长', () => {
   })
 
   it.each(SIZES)('%s 档：标签换行时按行长高，行距取控件档的间距，每行的高由行里最高的那个定', async (size) => {
-    await mountTags({ size, tags: Array.from({ length: 8 }, (_, i) => `标签${i + 1}`) })
+    // 六枚标签：字段缺省宽 16rem 下 lg 档两枚一行，四行正好在框的最大高（12rem）以内，量的才是长高不是滚动
+    await mountTags({ size, tags: Array.from({ length: 6 }, (_, i) => `标签${i + 1}`) })
     const control = part('control')
     const style = getComputedStyle(control)
     const rows = rowHeights([...pills(), part('input')])
