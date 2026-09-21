@@ -21,12 +21,16 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 
 传受控属性即受控，只传 `default*` 即非受控。变更回调是普通的 React 回调，没有第二套事件：
 
-```tsx
-// 受控
-<XhDialogRoot open={open} onOpenChange={({ open }) => setOpen(open)} />
+受控：
 
-// 非受控
-<XhDialogRoot defaultOpen />
+```tsx
+<XhDialogRoot open={open} onOpenChange={({ open }) => setOpen(open)} />;
+```
+
+非受控：
+
+```tsx
+<XhDialogRoot defaultOpen />;
 ```
 
 载荷与 Vue 侧的明细对象相同：`{ open }`、`{ value }`、`{ checked }`。Vue 侧额外发出裸值事件是为了 `v-model`，React 没有这层语法，只保留明细一种。
@@ -40,7 +44,7 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 ```tsx
 <XhSelectRoot value={value} onValueChange={({ value }) => setValue(value)}>
   {({ hasValue, valueText }) => (hasValue ? valueText : "请选择")}
-</XhSelectRoot>
+</XhSelectRoot>;
 ```
 
 类型是 `SlotChildren<P>`：传节点也可以，传函数才能获得载荷。每个组件的载荷类型（如 `SelectRootSlotProps`）都一并导出。
@@ -52,7 +56,7 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 ```tsx
 <XhDialogTrigger asChild>
   <MyButton>打开</MyButton>
-</XhDialogTrigger>
+</XhDialogTrigger>;
 ```
 
 同名事件先运行作者处理器；作者调用 `preventDefault()` 后，不再运行部件内部动作。这条规则同时适用于写在部件和 `asChild` 子元素上的处理器。普通回调仍保留全部参数，ref 的登记和清理不受事件取消影响。
@@ -76,7 +80,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 ```tsx
 <XhConfigProvider config={{ locale: "zh-CN", size: "sm" }}>
   <App />
-</XhConfigProvider>
+</XhConfigProvider>;
 ```
 
 视觉环境必须显式绑定 DOM 根，不推测 Provider 对应的元素。嵌套 Provider 自动继承外层控制器，局部 motion 只投影当前根，不修改全局 JS override：
@@ -87,9 +91,10 @@ const { api, service } = useDialog({ open, onOpenChange });
     root: workspaceElement,
     initial: { mode: "dark", density: "compact", motion: "reduce" },
   },
-}}>
+}}
+>
   <Workspace />
-</XhConfigProvider>
+</XhConfigProvider>;
 ```
 
 配置经代理提供给部件 props：作者未传的属性从配置中取，传了的以作者为准。代理实现了 `ownKeys` 与 `getOwnPropertyDescriptor`：`{ ...props }` 展开在 React 中很常见，只有 `get` 陷阱的代理一经展开就退化为空对象，配置默认值会静默消失。
