@@ -47,7 +47,6 @@ export default function Demo(): ReactNode {
         multiple
         name="docs"
         placeholder="可以多选"
-        style={{ maxInlineSize: "320px" }}
       >
         <XhTreeSelectLabel>提交范围</XhTreeSelectLabel>
         <XhTreeSelectControl>

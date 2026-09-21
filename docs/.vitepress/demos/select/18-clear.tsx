@@ -17,7 +17,6 @@ export default function Demo(): ReactNode {
       clearable
       label="所属小组"
       placeholder="选一个组"
-      style={{ inlineSize: "240px" }}
     />
   );
 }

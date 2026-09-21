@@ -33,7 +33,6 @@ function onValueChange(details: { value: string[] }) {
     v-slot="{ value }"
     :value="tags"
     placeholder="打 Vue 回车，落进去的是 #vue"
-    style="max-inline-size: 420px"
     @value-change="onValueChange"
   >
     <XhTagsInputLabel>话题</XhTagsInputLabel>

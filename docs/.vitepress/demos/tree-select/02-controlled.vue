@@ -52,7 +52,6 @@ const expanded = ref<string[]>(["docs"]);
     v-model:expanded-value="expanded"
     :collection="files"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>

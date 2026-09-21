@@ -23,7 +23,6 @@ export default function Demo(): ReactNode {
         onValueChange={details => setTags(details.value)}
         editable
         placeholder="回车落一个"
-        style={{ maxInlineSize: "420px" }}
       >
         {({ value }) => (
           <>

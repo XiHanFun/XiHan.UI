@@ -1,5 +1,5 @@
 // 两页并排 | 起止常跨月时设置 visibleCount=2，两页一起翻
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhDateRangePickerCalendar,
   XhDateRangePickerCell,
@@ -37,7 +37,6 @@ export default function Demo(): ReactNode {
         visibleCount={2}
         locale="zh-CN"
         onValueChange={({ value: next }) => setValue(next)}
-        style={{ "--xh-date-range-picker-control-min-w": "calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))" } as CSSProperties}
       >
         {({ panels, weekDays }) => (
           <>

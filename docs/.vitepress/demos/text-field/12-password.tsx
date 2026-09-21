@@ -20,7 +20,7 @@ export default function Demo(): ReactNode {
     >
       <XhTextFieldLabel>密码</XhTextFieldLabel>
       <div style={{ display: "flex", gap: "4px" }}>
-        <XhTextFieldControl style={{ inlineSize: "200px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput autoComplete="current-password" />
         </XhTextFieldControl>
         <button type="button" aria-pressed={visible} onClick={() => setVisible(!visible)}>

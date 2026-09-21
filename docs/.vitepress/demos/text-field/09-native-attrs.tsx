@@ -12,7 +12,7 @@ export default function Demo(): ReactNode {
     <>
       <XhTextFieldRoot placeholder="you@example.com">
         <XhTextFieldLabel>邮箱</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "220px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput
             autoComplete="email"
             inputMode="email"
@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
 
       <XhTextFieldRoot placeholder="11 位手机号" maxLength={11}>
         <XhTextFieldLabel>手机号</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "220px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput
             autoComplete="tel"
             inputMode="numeric"

@@ -93,7 +93,6 @@ export default function Demo(): ReactNode {
         expandedValue={expanded}
         loading={loading}
         placeholder="选一个城市"
-        style={{ maxInlineSize: "320px" }}
         onExpandedValueChange={details => setExpanded(details.value)}
         onOpenChange={onOpenChange}
       >

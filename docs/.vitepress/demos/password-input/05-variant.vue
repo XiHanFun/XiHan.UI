@@ -15,7 +15,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   <XhPasswordInputRoot v-for="v in variants" :key="v" :variant="v" default-value="hunter2">
     <XhPasswordInputLabel>{{ v }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>

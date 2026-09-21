@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
       {/* 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() */}
       <XhColorFieldRoot value={value} onValueChange={details => setValue(details.value)} format="rgba" alpha placeholder="rgba(r, g, b, a)">
         <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
-        <XhColorFieldControl style={{ inlineSize: "20rem" }}>
+        <XhColorFieldControl>
           <XhColorFieldSwatch />
           <XhColorFieldInput />
         </XhColorFieldControl>

@@ -16,7 +16,7 @@ export default function Demo(): ReactNode {
       {tones.map(t => (
         <XhTextFieldRoot key={t} variant="subtle" tone={t} placeholder="点进来看聚焦环">
           <XhTextFieldLabel>{t}</XhTextFieldLabel>
-          <XhTextFieldControl style={{ inlineSize: "160px" }}>
+          <XhTextFieldControl>
             <XhTextFieldInput />
           </XhTextFieldControl>
         </XhTextFieldRoot>

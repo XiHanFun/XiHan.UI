@@ -19,7 +19,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     placeholder="请输入内容"
   >
     <XhTextFieldLabel>{{ v }}</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 180px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>

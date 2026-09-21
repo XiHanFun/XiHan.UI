@@ -49,7 +49,6 @@ export default function Demo(): ReactNode {
           size={s.size}
           defaultExpandedValue={["docs"]}
           placeholder="选一个文件"
-          style={{ inlineSize: "220px" }}
         >
           <XhTreeSelectLabel>{s.label}</XhTreeSelectLabel>
           <XhTreeSelectControl>

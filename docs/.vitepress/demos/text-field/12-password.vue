@@ -15,7 +15,7 @@ const visible = ref(false);
   <XhTextFieldRoot placeholder="请输入密码" :max-length="20">
     <XhTextFieldLabel>密码</XhTextFieldLabel>
     <div style="display: flex; gap: 4px">
-      <XhTextFieldControl style="inline-size: 200px">
+      <XhTextFieldControl>
         <XhTextFieldInput
           :type="visible ? 'text' : 'password'"
           autocomplete="current-password"

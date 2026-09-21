@@ -39,7 +39,6 @@ export default function Demo(): ReactNode {
       maxTagCount={2}
       multiple
       placeholder="请选择"
-      style={{ inlineSize: "280px" }}
     >
       {({ tags }) => (
         <>

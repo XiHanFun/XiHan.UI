@@ -44,7 +44,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
       :variant="v"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ v }}</XhTreeSelectLabel>
       <XhTreeSelectControl>

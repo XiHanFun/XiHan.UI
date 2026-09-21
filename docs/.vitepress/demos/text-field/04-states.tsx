@@ -12,21 +12,21 @@ export default function Demo(): ReactNode {
     <>
       <XhTextFieldRoot defaultValue="改不动" disabled>
         <XhTextFieldLabel>禁用</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "160px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput />
         </XhTextFieldControl>
       </XhTextFieldRoot>
 
       <XhTextFieldRoot defaultValue="只能看" readOnly>
         <XhTextFieldLabel>只读</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "160px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput />
         </XhTextFieldControl>
       </XhTextFieldRoot>
 
       <XhTextFieldRoot defaultValue="格式不对" invalid>
         <XhTextFieldLabel>校验失败</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "160px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput />
         </XhTextFieldControl>
       </XhTextFieldRoot>

@@ -93,7 +93,6 @@ export default function Demo(): ReactNode {
         open={open}
         defaultExpandedValue={["docs"]}
         placeholder="选一个文件"
-        style={{ maxInlineSize: "320px" }}
         onValueChange={onValueChange}
         onOpenChange={onOpenChange}
       >

@@ -51,7 +51,6 @@ const states = [
       :default-value="['guide']"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ s.label }}</XhTreeSelectLabel>
       <XhTreeSelectControl>

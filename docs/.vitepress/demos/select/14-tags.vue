@@ -39,7 +39,6 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     :max-tag-count="2"
     multiple
     placeholder="请选择"
-    style="inline-size: 280px"
   >
     <XhSelectLabel>技术栈</XhSelectLabel>
     <XhSelectControl>

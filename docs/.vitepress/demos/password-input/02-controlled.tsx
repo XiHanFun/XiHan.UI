@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
       >
         <XhPasswordInputLabel>密码</XhPasswordInputLabel>
         <XhPasswordInputControl>
-          <XhPasswordInputInput style={{ inlineSize: "200px" }} />
+          <XhPasswordInputInput />
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>

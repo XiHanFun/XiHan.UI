@@ -97,7 +97,6 @@ function onOpenChange(details: { open: boolean }): void {
     v-model:expanded-value="expanded"
     :collection="collection"
     placeholder="选一个城市"
-    style="max-inline-size: 320px"
     @open-change="onOpenChange"
   >
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>

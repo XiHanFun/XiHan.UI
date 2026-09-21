@@ -22,7 +22,6 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
     v-model:value="tags"
     editable
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>标签</XhTagsInputLabel>
     <XhTagsInputControl>

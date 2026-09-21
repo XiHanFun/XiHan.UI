@@ -18,7 +18,7 @@ const value = ref("#3b82f6");
   <div style="display: flex; flex-direction: column; gap: 8px">
     <XhColorFieldRoot v-model:value="value" name="accent" placeholder="#rrggbb" clearable>
       <XhColorFieldLabel>主题色</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 16rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />

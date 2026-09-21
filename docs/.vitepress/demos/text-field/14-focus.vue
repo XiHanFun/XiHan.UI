@@ -32,7 +32,7 @@ function caretToEnd(): void {
 <template>
   <XhTextFieldRoot default-value="曦寒组件库">
     <XhTextFieldLabel>标题</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput :ref="bindInput" />
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">

@@ -38,7 +38,6 @@ function isWeekend(value: string): boolean {
     :is-date-unavailable="isWeekend"
     allows-non-contiguous-ranges
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>工作日区间</XhDateRangePickerLabel>
     <XhDateRangePickerControl>

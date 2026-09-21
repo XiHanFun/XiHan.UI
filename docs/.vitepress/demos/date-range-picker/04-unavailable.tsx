@@ -1,5 +1,5 @@
 // 不可用日期 | 周末不可选，区间允许跨过不可用的日期
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhDateRangePickerCalendar,
   XhDateRangePickerCell,
@@ -37,7 +37,6 @@ export default function Demo(): ReactNode {
       isDateUnavailable={isWeekend}
       allowsNonContiguousRanges
       locale="zh-CN"
-      style={{ "--xh-date-range-picker-control-min-w": "calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))" } as CSSProperties}
     >
       {({ weeks, weekDays }) => (
         <>

@@ -60,7 +60,6 @@ function onValueChange(details: { value: string[] }) {
     :value="value"
     name="reviewers"
     placeholder="打名字回车"
-    style="max-inline-size: 420px"
     @value-change="onValueChange"
   >
     <XhTagsInputLabel>评审人</XhTagsInputLabel>

@@ -1,5 +1,5 @@
 // 框内前后缀 | 前后缀与输入框同在 control 这一个框里排成一行，共用它的描边与底色
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhTextFieldControl,
   XhTextFieldInput,
@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
     <>
       <XhTextFieldRoot placeholder="0.00">
         <XhTextFieldLabel>金额</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "200px" }}>
+        <XhTextFieldControl>
           <span style={affix}>¥</span>
           <XhTextFieldInput inputMode="decimal" />
           <span style={affix}>元</span>
@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
 
       <XhTextFieldRoot placeholder="170">
         <XhTextFieldLabel>身高</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "160px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput inputMode="numeric" />
           <span style={affix}>cm</span>
         </XhTextFieldControl>

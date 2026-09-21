@@ -44,7 +44,6 @@ export default function Demo(): ReactNode {
       collection={files}
       defaultExpandedValue={["docs"]}
       placeholder="选一个文件"
-      style={{ maxInlineSize: "320px" }}
     >
       {({ canClear, clear, setExpandedValue }) => (
         <>

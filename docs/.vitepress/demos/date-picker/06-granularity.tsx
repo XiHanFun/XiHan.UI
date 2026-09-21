@@ -1,6 +1,6 @@
 // 周期选择 | granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
 import {
   XhButton,
@@ -60,7 +60,6 @@ export default function Demo(): ReactNode {
       closeOnSelect={false}
       locale="zh-CN"
       onValueChange={({ value: next }) => setValue(next)}
-      style={{ "--xh-date-picker-control-min-w": "22rem" } as CSSProperties}
     >
       {({ panels, weekDays, segments, clear, setOpen }) => (
         <>

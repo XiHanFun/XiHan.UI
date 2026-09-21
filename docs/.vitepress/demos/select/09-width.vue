@@ -47,7 +47,7 @@ const plans = [
     <XhSelectRoot
       :default-value="['long']"
       placeholder="请选择"
-      style="--xh-select-control-min-w: 15rem; --xh-select-content-min-w: 22rem"
+      style="--xh-select-control-w: 20rem; --xh-select-content-min-w: 22rem"
     >
       <XhSelectLabel>加宽</XhSelectLabel>
       <XhSelectControl>

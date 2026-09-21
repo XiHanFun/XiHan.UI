@@ -44,7 +44,6 @@ export default function Demo(): ReactNode {
           variant={v}
           defaultExpandedValue={["docs"]}
           placeholder="选一个文件"
-          style={{ inlineSize: "220px" }}
         >
           <XhTreeSelectLabel>{v}</XhTreeSelectLabel>
           <XhTreeSelectControl>

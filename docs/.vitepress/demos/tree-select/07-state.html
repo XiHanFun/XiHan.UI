@@ -1,7 +1,7 @@
 <!-- 禁用、只读与校验失败 | disabled 连键盘入口都没有；readOnly 照常展开浏览但值不可修改也不可清空；invalid 只报告校验态，交互一切照常 -->
 <div id="tree-select-state" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
   <xh-tree-select disabled default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">禁用</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -40,7 +40,7 @@
   </xh-tree-select>
 
   <xh-tree-select read-only default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">只读</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -79,7 +79,7 @@
   </xh-tree-select>
 
   <xh-tree-select invalid default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">校验失败</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">

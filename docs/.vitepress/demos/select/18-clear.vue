@@ -17,6 +17,5 @@ const teams = [
     clearable
     label="所属小组"
     placeholder="选一个组"
-    style="inline-size: 240px"
   />
 </template>

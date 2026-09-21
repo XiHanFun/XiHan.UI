@@ -15,7 +15,7 @@ import {
     <XhPasswordInputRoot name="new-password" auto-complete="new-password" default-value="" required>
       <XhPasswordInputLabel>设置新密码</XhPasswordInputLabel>
       <XhPasswordInputControl>
-        <XhPasswordInputInput style="inline-size: 200px" />
+        <XhPasswordInputInput />
         <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>

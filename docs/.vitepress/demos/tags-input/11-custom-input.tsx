@@ -42,7 +42,6 @@ export default function Demo(): ReactNode {
       max={4}
       blurBehavior="add"
       placeholder="打前缀选后缀"
-      style={{ maxInlineSize: "420px" }}
     >
       {({ value, inputValue, addValue, setInputValue, atMax }) => (
         <>

@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
     <>
       <XhTextFieldRoot placeholder="随便敲几个字" clearable onValueChange={onValueChange}>
         <XhTextFieldLabel>留言</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "220px" }}>
+        <XhTextFieldControl>
           <XhTextFieldInput onFocus={() => push("focus")} onBlur={() => push("blur")} />
         </XhTextFieldControl>
       </XhTextFieldRoot>
