@@ -57851,6 +57851,24 @@
       "description": "steps 的 indicator 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-steps-indicator-mark-size",
+      "component": "steps",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-steps-indicator-radius",
       "component": "steps",
       "part": [

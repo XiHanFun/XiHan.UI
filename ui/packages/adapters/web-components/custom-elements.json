@@ -49193,6 +49193,9 @@
               "name": "--xh-steps-indicator-font-size"
             },
             {
+              "name": "--xh-steps-indicator-mark-size"
+            },
+            {
               "name": "--xh-steps-indicator-radius"
             },
             {
