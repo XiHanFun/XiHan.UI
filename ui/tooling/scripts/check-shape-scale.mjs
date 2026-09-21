@@ -135,6 +135,8 @@ const IDENTITY = {
   'steps:separator': 'pill',
   'timeline:connector': 'pill',
   'tabs:indicator': 'pill',
+  // line 档没放 indicator 部件时选中标签自画的静态线：与部件同规格的一维对象
+  'tabs:trigger::after': 'pill',
   'anchor:indicator': 'pill',
   'navigation-menu:indicator': 'pill',
   'resizable:handle::after': 'pill',

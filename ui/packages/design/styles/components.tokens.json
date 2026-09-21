@@ -61180,57 +61180,76 @@
       "name": "--xh-tabs-indicator-color",
       "component": "tabs",
       "part": [
-        "indicator"
+        "indicator",
+        "root",
+        "trigger"
       ],
       "property": [
         "background"
       ],
       "state": [
-        "default"
+        "current",
+        "default",
+        "drop",
+        "not([data-drop])",
+        "variant=line"
       ],
       "defaultToken": [
         "--xh-_tabs-accent"
       ],
       "visibility": "public",
-      "description": "tabs 的 indicator 部件 background 覆盖槽。"
+      "description": "tabs 的 indicator、root、trigger 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-tabs-indicator-radius",
       "component": "tabs",
       "part": [
-        "indicator"
+        "indicator",
+        "root",
+        "trigger"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "default"
+        "current",
+        "default",
+        "drop",
+        "not([data-drop])",
+        "variant=line"
       ],
       "defaultToken": [
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "tabs 的 indicator 部件 border-radius 覆盖槽。"
+      "description": "tabs 的 indicator、root、trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-tabs-indicator-thickness",
       "component": "tabs",
       "part": [
-        "indicator"
+        "indicator",
+        "root",
+        "trigger"
       ],
       "property": [
         "block-size",
         "inline-size"
       ],
       "state": [
+        "current",
         "default",
-        "orientation=vertical"
+        "drop",
+        "not([data-drop])",
+        "orientation=horizontal",
+        "orientation=vertical",
+        "variant=line"
       ],
       "defaultToken": [
         "--xh-stroke-thick"
       ],
       "visibility": "public",
-      "description": "tabs 的 indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "tabs 的 indicator、root、trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tabs-list-bg",
