@@ -22,6 +22,6 @@ description: 为 XiHan.UI 准备版本、消费 changeset、校验发布产物�
 
 ## 发布
 
-只有用户明确要求发布，才可在确认提交位于 `main` 后创建并推送 `vX.Y.Z` 标签。标签触发 `.github/workflows/release.yml`，该工作流重新构建、核对标签与预发布模式、检查产物并执行 npm 发布。
+只有用户明确要求发布，才可在确认提交位于 `main` 后创建并推送 `vX.Y.Z` 标签。标签触发 `.github/workflows/release.yml`，该工作流只做发布：重新构建、核对标签与预发布模式、执行 npm 发布；门禁、测试与 publint / attw 由 `ci.yml` 在提交进 `main` 时完成，发布链不再重跑。
 
 发布后核对 npm 版本和工作流结果，再用独立 docs 提交补 `docs/changelog.md`。不手工修改 dist、不跳过失败门禁、不重复发布已存在版本；失败时停止并报告，不移动标签掩盖问题。
