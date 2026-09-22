@@ -22,6 +22,10 @@
     "./ssr": {
       "types": "./dist/ssr.d.ts",
       "import": "./dist/ssr.js"
+    },
+    "./browser-commands": {
+      "types": "./dist/browser-commands.d.ts",
+      "import": "./dist/browser-commands.js"
     }
   },
   "main": "./dist/index.js",
@@ -41,6 +45,7 @@
     "axe-core": "catalog:"
   },
   "devDependencies": {
+    "@vitest/browser-playwright": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",

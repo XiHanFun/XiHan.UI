@@ -1,11 +1,12 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { imageAnatomy, imageKeyboard } from '@xihan-ui/headless'
+import { imageSource } from './shared/image-source'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/'
 
 const IMAGE_SELECTOR = '[data-scope="image"][data-part="image"]'
-const SRC = 'https://example.test/photo.png'
-const NEXT_SRC = 'https://example.test/other.png'
+const SRC = imageSource('photo.png')
+const NEXT_SRC = imageSource('other.png')
 
 function requireImage(doc: Document): HTMLElement {
   const image = doc.querySelector<HTMLElement>(IMAGE_SELECTOR)
