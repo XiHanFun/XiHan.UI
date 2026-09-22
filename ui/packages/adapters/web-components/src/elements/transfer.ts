@@ -92,6 +92,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写在 collection 中，不写在节点上
  * @csspart item-text - 条目文本
  * @csspart item-description - 条目的第 2 行副文本
+ * @csspart item-suffix - 条目行尾的作者内容（计数、徽标）
  * @csspart item-checkbox - 条目勾选标记（aria-hidden）；oneWay 下右侧的一份带 hidden
  * @csspart select-all-trigger - 本侧全选格，须是原生 button；三态经 aria-checked 上报
  * @csspart to-target-trigger - 向右移动的按钮，须是原生 button；可及名由 translations.toTarget 提供
@@ -342,6 +343,8 @@ export class XhTransferElement extends XhElement {
           this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
         for (const description of this.partsIn(el, 'item-description'))
           this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        for (const suffix of this.partsIn(el, 'item-suffix'))
+          this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
         for (const box of this.partsIn(el, 'item-checkbox')) {
           const boxProps = api.getItemCheckboxProps(item) as Record<string, unknown>
           this.spreader.spread(box, boxProps)

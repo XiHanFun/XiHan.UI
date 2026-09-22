@@ -625,6 +625,13 @@ export function connectTree<T extends PropTypes>(
       'data-xh-collection-slot': 'description',
     }),
 
+    // 行尾那一格：内容由作者给（计数、徽标）。行首归勾选框与展开箭头，这一格才是作者的
+    getItemSuffixProps: node => normalize.element({
+      ...parts['item-suffix'].attrs,
+      ...itemState(node.value),
+      'data-xh-collection-slot': 'suffix',
+    }),
+
     // 叶子的选中对号是 page 语境的前导标记，显隐由家族按行的 aria-selected 给
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,

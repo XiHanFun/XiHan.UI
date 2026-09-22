@@ -214,6 +214,16 @@ export const XhTreeItemDescription = defineComponent({
   },
 })
 
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhTreeItemSuffix = defineComponent({
+  name: 'XhTreeItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /**
  * 节点拖拽把手。放在节点中，自带 touch-action: none，按下即拖动，不等待激活距离。
  * 对读屏隐藏、也不占 Tab 位；键盘移动由树上的 Alt + 方向键承担。

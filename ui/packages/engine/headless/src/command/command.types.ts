@@ -56,6 +56,11 @@ export interface CommandNode {
    * 一句话能说清的写进 label。
    */
   description?: string
+  /**
+   * 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。
+   * 纯装饰：读屏从命令文字取意，不念它；只为真正注册了的组合写提示。
+   */
+  shortcut?: string
 }
 
 /** 单条命令的元信息，由清单推导，不含高亮态。 */
@@ -72,6 +77,8 @@ export interface CommandNodeMeta {
   tone: Tone | null
   /** 副文本；未提供时为 null。 */
   description: string | null
+  /** 快捷键提示；未提供时为 null。 */
+  shortcut: string | null
 }
 
 /** 分组声明：只提供组名与显示文本，成员由条目自行归属。 */
@@ -242,6 +249,7 @@ export interface CommandApi<T extends PropTypes = PropTypes> {
   getItemPrefixProps: (props: CommandItemProps) => T['element']
   getItemTextProps: (props: CommandItemProps) => T['element']
   getItemDescriptionProps: (props: CommandItemProps) => T['element']
+  getItemShortcutProps: (props: CommandItemProps) => T['element']
   getItemSuffixProps: (props: CommandItemProps) => T['element']
   /**
    * 空态占位：放在 content 中、list 的兄弟。

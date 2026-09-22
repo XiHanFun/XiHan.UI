@@ -18,6 +18,7 @@ export const treeAnatomy = createAnatomy('tree', [
   'item-indicator',
   'item-text',
   'item-description',
+  'item-suffix',
   'branch',
   'branch-checkbox',
   'branch-control',

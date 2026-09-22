@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-indicator` · `empty` · `loading` · `footer`
+`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `footer`
 
 ## 示例
 
@@ -69,6 +69,7 @@
 - `searchable` 按完整路径筛选选项。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 选项行尾留一格给作者（计数、徽标）。
 - 支持按需加载、空状态、加载状态与原生表单提交。
 - 选中项使用末端标记，半选项使用横线。
 
@@ -95,7 +96,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-cascader>` |
-| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderControl` `XhCascaderFooter` `XhCascaderGroup` `XhCascaderGroupLabel` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemDescription` `XhCascaderItemIndicator` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderLoading` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
+| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderControl` `XhCascaderFooter` `XhCascaderGroup` `XhCascaderGroupLabel` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemDescription` `XhCascaderItemIndicator` `XhCascaderItemSuffix` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderLoading` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
 | 组合式函数 | `useCascader` |
 | 状态机 | `cascaderMachine` |
 | 皮肤 | `@xihan-ui/styles/cascader.css` |
@@ -169,6 +170,7 @@
 | `item` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-text` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-description` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-suffix` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-indicator` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `footer` | 'open' \| 'closed' |
 
@@ -238,6 +240,7 @@
 | `getItemProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: CascaderItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: CascaderItemProps) => T['element']` |  |
 
 ## 无障碍
@@ -413,6 +416,11 @@
 | `item-description` | `data-in-path` | ''（条件成立时才出现） |
 | `item-description` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-in-path` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-in-path` | ''（条件成立时才出现） |

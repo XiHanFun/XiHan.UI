@@ -295,6 +295,16 @@ export const XhCommandItemDescription = defineComponent({
   },
 })
 
+/** 命令行尾的快捷键提示，与说明同档同色；纯装饰 */
+export const XhCommandItemShortcut = defineComponent({
+  name: 'XhCommandItemShortcut',
+  setup(_, { slots }) {
+    const ctx = useCommandContext()
+    const { item } = useCommandItemContext()
+    return () => h('span', ctx.api.value.getItemShortcutProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCommandEmpty = defineComponent({
   name: 'XhCommandEmpty',
   setup(_, { slots }) {
@@ -339,6 +349,7 @@ function renderDefaultTree(
       ...(prefixSlot ? [h(XhCommandItemPrefix, null, () => prefixSlot(node))] : []),
       h(XhCommandItemText, null, () => itemSlot?.(node) ?? node.label),
       ...(node.description != null ? [h(XhCommandItemDescription, null, () => node.description)] : []),
+      ...(node.shortcut != null ? [h(XhCommandItemShortcut, null, () => node.shortcut)] : []),
       ...(suffixSlot ? [h(XhCommandItemSuffix, null, () => suffixSlot(node))] : []),
     ])
 

@@ -339,6 +339,16 @@ export const XhTransferItemDescription = defineComponent({
   },
 })
 
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhTransferItemSuffix = defineComponent({
+  name: 'XhTransferItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useTransferContext()
+    const { item } = useTransferItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTransferItemCheckbox = defineComponent({
   name: 'XhTransferItemCheckbox',
   setup(_, { slots }) {

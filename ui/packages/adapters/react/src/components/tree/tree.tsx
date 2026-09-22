@@ -261,6 +261,14 @@ export function XhTreeItemDescription({ children, ...rest }: XhTreeItemDescripti
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhTreeItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhTreeItemSuffix({ children, ...rest }: XhTreeItemSuffixProps): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTreeNodeDragTriggerProps extends ComponentPropsWithRef<'span'> {}
 /**
  * 节点拖拽把手。放在节点中，自带 touch-action: none，按下即拖动，不等待激活距离。

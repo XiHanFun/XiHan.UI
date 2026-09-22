@@ -76,6 +76,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-text - 命令文本（选中时回传给宿主的取字来源）
  * @csspart item-prefix - 条目行首的作者内容（图标、色块、头像），对读屏隐藏
  * @csspart item-description - 条目的第 2 行副文本
+ * @csspart item-shortcut - 命令行尾的快捷键提示（aria-hidden，读屏从命令文字取意）
  * @csspart item-suffix - 条目行尾的作者内容（计数、徽标）
  * @csspart empty - 没有剩余条目时的提示；须放在 content 中作为 list 的兄弟（列表内只允许 option 与 group）
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
@@ -387,6 +388,8 @@ export class XhCommandElement extends XhPortalHostElement {
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+      for (const shortcut of this.partsIn(el, 'item-shortcut'))
+        this.spreader.spread(shortcut, api.getItemShortcutProps(item) as Record<string, unknown>)
       for (const prefix of this.partsIn(el, 'item-prefix'))
         this.spreader.spread(prefix, api.getItemPrefixProps(item) as Record<string, unknown>)
       for (const suffix of this.partsIn(el, 'item-suffix'))

@@ -860,6 +860,13 @@ export function connectCascader<T extends PropTypes>(
       'data-xh-collection-slot': 'description',
     }),
 
+    // 行尾那一格：内容由作者给（计数、徽标）。行首归勾选框与展开箭头，这一格才是作者的
+    getItemSuffixProps: item => normalize.element({
+      ...parts['item-suffix'].attrs,
+      ...itemState(item.value),
+      'data-xh-collection-slot': 'suffix',
+    }),
+
     // 对号落在家族网格的 indicator 列，显隐由家族按 item 的 aria-selected / data-state=checked 给（半选由皮肤给）
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,

@@ -5889,6 +5889,10 @@
               "name": "item-description"
             },
             {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
+            },
+            {
               "description": "条目选中标记（aria-hidden）",
               "name": "item-indicator"
             },
@@ -13050,6 +13054,10 @@
             {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "命令行尾的快捷键提示（aria-hidden，读屏从命令文字取意）",
+              "name": "item-shortcut"
             },
             {
               "description": "条目行尾的作者内容（计数、徽标）",
@@ -60574,6 +60582,10 @@
               "name": "item-description"
             },
             {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
+            },
+            {
               "description": "条目勾选标记（aria-hidden）；oneWay 下右侧的一份带 hidden",
               "name": "item-checkbox"
             },
@@ -61341,6 +61353,10 @@
             {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
             },
             {
               "description": "叶子与分支共用的选中或半选标记（aria-hidden）",
@@ -62590,6 +62606,10 @@
             {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
             },
             {
               "description": "叶子的勾选把手，点击只勾选、不触发点击行；可选",
