@@ -12,6 +12,7 @@ import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef, useState } from 'react'
+import { invalidateMachineProps } from '../../runtime/create-react-runtime'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
@@ -99,7 +100,10 @@ export function usePopconfirm(
     onCancel: () => { notifyRef.current?.onCancel?.() },
     pending,
     onPendingChange: (next) => {
+      // ref 同步落位，props 记忆当场作废：机器下一次读 props 立刻看到拦截态，
+      // 不等这次状态更新提交。除此之外的 props 都是渲染可见的，不走这个口子。
       pendingRef.current = next
+      invalidateMachineProps()
       setPendingState(next)
     },
     actionError,

@@ -16,6 +16,31 @@ import { flushSync } from 'react-dom'
 /** 一轮 drain 最多强制提交的次数；回调互相排队时到此为止，剩余的照常运行，不会死锁。 */
 const MAX_FLUSH_ROUNDS = 100
 
+/**
+ * 任意一台机器的 cell 变过一次就自增。
+ *
+ * useMachine 的 props 记忆拿它当第二把钥匙：同一组件里嵌套的机器（取色器里的滑杆、
+ * 分页里的页长下拉）从别的机器现读派生 props，那些值在两次渲染之间也会变，
+ * 只按渲染轮次记忆会把它们冻住。
+ */
+let machineEpoch = 0
+
+/** 读当前的机器版本号。 */
+export function machineVersion(): number {
+  return machineEpoch
+}
+
+/**
+ * 机器与渲染之外还有一处现读来源刚刚变了，让所有 props 记忆当场作废。
+ *
+ * 只给「必须在同一拍生效、等不到下一轮渲染」的那类状态用：气泡确认把挂起态同步落进 ref，
+ * 确认回调返回 thenable 的同一拍里 Escape 与层外交互就可能到达机器，而 React 的重渲排在
+ * 这次事件派发之后。除此之外的 props 都应当是渲染可见的，不该用这个口子。
+ */
+export function invalidateMachineProps(): void {
+  machineEpoch += 1
+}
+
 function noop(): void {}
 
 interface Tracker {
@@ -69,6 +94,7 @@ export function createReactRuntime(): ReactRuntime {
 
   function notify(): void {
     version += 1
+    machineEpoch += 1
     for (const fn of [...subscribers]) fn()
   }
 

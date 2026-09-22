@@ -2785,7 +2785,7 @@ export { mergeXhConfig, useXhConfig, withXhConfig, XhConfigProvider } from './co
 export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides, XhVisualEnvironmentConfig } from './config/config'
 export { carriesOwnAnatomy, mergeIntoChild, renderAsChild } from './runtime/as-child'
 export type { AsChildProps } from './runtime/as-child'
-export { createReactRuntime } from './runtime/create-react-runtime'
+export { createReactRuntime, invalidateMachineProps } from './runtime/create-react-runtime'
 export { mergeReactProps } from './runtime/merge-props'
 export { reactNormalize } from './runtime/normalize-props'
 export { usePortalTarget, XhPortal } from './runtime/portal'
