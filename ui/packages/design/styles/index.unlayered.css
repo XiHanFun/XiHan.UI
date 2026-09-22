@@ -1196,6 +1196,31 @@
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
+/* 语气段：条目自身动作的性质，静息只换字、hover / 高亮 / 按下换语气淡底，节奏与中性行一致（真源 §7.4）。
+   必须排在上下文段之前：语气与 selected / current 同特指度，靠源序让选中与当前压过语气。 */
+[data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: transparent;
+  --xh-_collection-fg: var(--xh-tone-fg);
+}
+
+[data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-tone-subtle);
+  --xh-_collection-fg: var(--xh-tone-fg);
+}
+
+[data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-tone-subtle);
+  --xh-_collection-fg: var(--xh-tone-fg);
+}
+
+[data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+  --xh-_collection-bg: var(--xh-tone-subtle-hover);
+  --xh-_collection-fg: var(--xh-tone-fg);
+
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
 [data-scope][data-xh-collection-item][data-xh-collection-context='overlay']:is([aria-selected='true'], [data-selected]):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
   --xh-_collection-bg: var(--xh-collection-bg-selected, transparent);
   --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-material-frosted-fg));
@@ -1537,6 +1562,36 @@
   }
 
   [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  /* 语气在强制颜色下退出：逐态用系统色盖回家族缺省，只留图标与文案通道（真源 §7.4）。
+     语气段在媒体查询外的特指度比这里的基础态各高一级，必须逐条同形盖回，不能只写一条。 */
+  [data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
+  }
+
+  [data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
     --xh-_collection-bg: Highlight;
     --xh-_collection-fg: HighlightText;
     --xh-_collection-outline: transparent;

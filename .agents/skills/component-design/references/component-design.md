@@ -364,6 +364,24 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - `--xh-bg-brand-subtle` 退出 today、completed、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字；Steps completed 改中性面 + 品牌对号。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
 
+### 7.4 集合行的语气
+
+Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除是 danger、停用是 warning），不表达选中、当前、校验结果或加载。不写 `data-tone` 的条目保持中性，与家族缺省逐档一致；写了才切到语气。
+
+| 状态 | 面 | 字 |
+| --- | --- | --- |
+| rest | 透明（不换面） | `--xh-tone-fg` |
+| hover / keyboard-highlight | `--xh-tone-subtle`（12%） | `--xh-tone-fg` |
+| pressed | `--xh-tone-subtle-hover`（20%） | `--xh-tone-fg` |
+
+- 静息不换面：整行彩底会把菜单读成色块表，语气由字色承担即可。面只在指针或键盘落到该行时出现，节奏与层级同中性行的「透明 → 100 → 200」，只是换了族色。
+- 字色固定取 `--xh-tone-fg`，不取 `--xh-tone-solid`：前者是按 WCAG 兑到 60% 的可读文字色，对本家族会遇到的透明面、语气淡底三态与抬起面共五种底、六个语气全部 ≥4.5（见 `css/tone.css` 的实测记录）。
+- 说明行保持 `--xh-collection-description-fg` 的 muted，不跟随语气：一条里出现两种彩字，语气就失去指向。
+- 优先级：selected / current 的标记（§7.3）压过语气，disabled 压过一切。同一条既选中又带 danger 时面归选中、语气退出——选中是集合的结构事实，语气只是该条动作的性质。
+- `nav` 语境（Tabs line trigger、Anchor / Breadcrumb link、Menubar / NavigationMenu trigger）不接语气：那里的条目表达的是位置而不是动作，语气轴在该语境下不生效，写了也不产出语气面。
+- 语气不改字重、缩进和指示器颜色。非颜色通道由图标承担（§7.2 第 10 条）：danger 条目必须同时给图标，不允许只靠红字区分。
+- forced-colors 下语气面与语气字一并退出，回到家族的系统色，只保留图标与文案通道。
+
 ## 8. 材质
 
 | 材质 | 用途 | 强制表达 |

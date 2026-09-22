@@ -10,6 +10,7 @@
     "page": ["selected", "selected+hover", "selected+highlight", "selected+pressed", "current", "current+hover", "current+highlight", "current+pressed"],
     "nav": ["rest", "hover", "keyboard-highlight", "pressed", "open-path", "current", "current+hover", "current+highlight", "current+pressed", "terminal"]
   },
+  "toneStates": ["rest", "hover", "keyboard-highlight", "pressed"],
   "markers": {
     "$description": "标记类型按上下文固定：overlay 对号在行尾；page 对号在行首（前导标记），current 只由品牌淡底行面与字色表达、不另画起始侧指示条（SideNav 当前项，2026-09-22 起）；bar 那组尺寸留给显式写 current: bar 的语境。nav 不画对号也不按条目画指示条：nav 的 2px 指示条是组件自己的滑动 indicator 部件（Tabs / Anchor / NavigationMenu），机器量几何、皮肤画在 list 上；无该部件时 Tabs / Anchor 由自己的皮肤在当前项上画一条静态线；NavigationMenu 的部件指的是开着的面板，当前页链接的静态线始终由自己的皮肤画、不随部件收起；Breadcrumb / Menubar 无指示条。",
     "overlay": { "glyph": "trailing", "current": "none" },
@@ -362,6 +363,25 @@
         "cursor": "default",
         "opacity": "1"
       }
+    }
+  },
+  "toneValues": {
+    "$description": "语气段只动面与字（真源 §7.4）：静息不换面、只把字换成 --xh-tone-fg；hover 与键盘高亮换 12% 语气淡底，按下换 20%，与中性行的透明 → 100 → 200 同节奏同层级，只是换了族色。字一律取 --xh-tone-fg 而不是 --xh-tone-solid：前者是兑到 60% 的可读文字色，对本家族的透明面、语气淡底三态与抬起面共五种底、六个语气全部 ≥4.5。说明行与指示器不在语气里，保持 muted 与品牌色。",
+    "rest": {
+      "backgroundColor": "transparent",
+      "color": "var(--xh-tone-fg)"
+    },
+    "hover": {
+      "backgroundColor": "var(--xh-tone-subtle)",
+      "color": "var(--xh-tone-fg)"
+    },
+    "keyboard-highlight": {
+      "backgroundColor": "var(--xh-tone-subtle)",
+      "color": "var(--xh-tone-fg)"
+    },
+    "pressed": {
+      "backgroundColor": "var(--xh-tone-subtle-hover)",
+      "color": "var(--xh-tone-fg)"
     }
   },
   "separator": {
