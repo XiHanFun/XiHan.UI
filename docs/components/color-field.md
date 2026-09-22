@@ -1,4 +1,4 @@
-# ColorField 颜色字段 <Badge type="info" text="alpha" />
+# ColorField 颜色字段
 
 可以手动输入颜色串的单行框，旁边显示当前颜色的色块。框内文字是草稿，回车或失焦时提交，提交后按 `format` 重写为规范写法。它属于[文本字段](./text-field)家族，面向已知颜色值直接输入的场景；需要在色域中挑选时使用[颜色选择器](./color-picker)。
 

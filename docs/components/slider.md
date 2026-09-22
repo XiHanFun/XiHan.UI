@@ -1,4 +1,4 @@
-# Slider 滑块 <Badge type="info" text="alpha" />
+# Slider 滑块
 
 在连续或离散的区间内拖出一个值或一段范围。
 

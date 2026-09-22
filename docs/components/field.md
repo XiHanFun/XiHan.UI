@@ -1,4 +1,4 @@
-# Field 表单字段 <Badge type="info" text="alpha" />
+# Field 表单字段
 
 为表单控件提供标签、说明、错误信息和状态关联。
 

@@ -1,4 +1,4 @@
-# Pagination 分页 <Badge type="info" text="alpha" />
+# Pagination 分页
 
 用于在分页结果之间导航。
 

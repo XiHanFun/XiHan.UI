@@ -1,4 +1,4 @@
-# Masonry 瀑布流 <Badge type="info" text="alpha" />
+# Masonry 瀑布流
 
 将等宽、不等高的内容排列为瀑布流。
 

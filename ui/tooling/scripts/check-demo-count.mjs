@@ -38,7 +38,14 @@ async function manifestComponents() {
     for (const component of category.components ?? []) {
       const needle = `"id": "${component.id}"`
       const at = lines.findIndex(line => line.includes(needle))
-      out.push({ id: component.id, name: component.name, line: at === -1 ? 1 : at + 1, renderless: component.renderless === true })
+      out.push({
+        id: component.id,
+        name: component.name,
+        line: at === -1 ? 1 : at + 1,
+        renderless: component.renderless === true,
+        // 缺省即正式；只有清单条目显式写了 status: "alpha" 的才是 alpha
+        alpha: component.status === 'alpha',
+      })
     }
   }
   return out
@@ -64,8 +71,7 @@ async function hasCatalogPreview(id) {
 }
 
 const components = await manifestComponents()
-const { stableComponents = [] } = JSON.parse(await readFile(MANIFEST, 'utf8'))
-const stable = new Set(stableComponents)
+const stable = components.filter(component => !component.alpha)
 const counts = new Map()
 for (const component of components)
   counts.set(component.id, await demoCount(component.id))
@@ -132,8 +138,8 @@ for (const { id, name, line } of components) {
   )
 }
 
-for (const { id, name, line, renderless } of components) {
-  if (!stable.has(id) || renderless)
+for (const { id, name, line, renderless } of stable) {
+  if (renderless)
     continue
   if (!await hasCatalogPreview(id)) {
     problems.push(
@@ -159,5 +165,5 @@ if (problems.length) {
 console.log(
   `[check-demo-count] 通过：${components.length} 个组件、合计 ${total} 份示例，`
   + `除登记豁免的 ${short} 个之外各不少于 ${FLOOR} 份；`
-  + `${stable.size} 个正式组件都有总览独立预览`,
+  + `${stable.length} 个正式组件都有总览独立预览`,
 )

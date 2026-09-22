@@ -1,34 +1,4 @@
 {
-  "stableComponents": [
-    "button",
-    "button-group",
-    "clipboard",
-    "download-trigger",
-    "truncate",
-    "gradient-text",
-    "kbd",
-    "icon",
-    "icon-wrapper",
-    "toggle",
-    "toggle-group",
-    "typography",
-    "watermark",
-    "resizable",
-    "toolbar",
-    "tour",
-    "card",
-    "carousel",
-    "steps",
-    "tabs",
-    "time-field",
-    "time-picker",
-    "number-field",
-    "alert",
-    "badge",
-    "skeleton",
-    "spinner",
-    "toast"
-  ],
   "categories": [
     {
       "id": "general",
@@ -366,7 +336,8 @@
         },
         {
           "id": "time-range-picker",
-          "name": "时间范围选择器"
+          "name": "时间范围选择器",
+          "status": "new"
         },
         {
           "id": "transfer",
@@ -397,7 +368,8 @@
         },
         {
           "id": "bar-code",
-          "name": "条形码"
+          "name": "条形码",
+          "status": "alpha"
         },
         {
           "id": "card",
@@ -582,7 +554,8 @@
       "components": [
         {
           "id": "approval",
-          "name": "审批"
+          "name": "审批",
+          "status": "alpha"
         },
         {
           "id": "code-view",
@@ -598,27 +571,33 @@
         },
         {
           "id": "markdown-stream",
-          "name": "流式正文"
+          "name": "流式正文",
+          "status": "alpha"
         },
         {
           "id": "message-feed",
-          "name": "消息流"
+          "name": "消息流",
+          "status": "alpha"
         },
         {
           "id": "prompt-input",
-          "name": "提示输入框"
+          "name": "提示输入框",
+          "status": "alpha"
         },
         {
           "id": "question-flow",
-          "name": "澄清问卷"
+          "name": "澄清问卷",
+          "status": "alpha"
         },
         {
           "id": "reasoning",
-          "name": "思考过程"
+          "name": "思考过程",
+          "status": "alpha"
         },
         {
           "id": "tool-call",
-          "name": "工具调用"
+          "name": "工具调用",
+          "status": "alpha"
         }
       ]
     }

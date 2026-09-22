@@ -1,4 +1,4 @@
-# TextField 文本字段 <Badge type="info" text="alpha" />
+# TextField 文本字段
 
 单行或多行的自由文本输入。
 

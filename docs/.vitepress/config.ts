@@ -87,24 +87,18 @@ function demoOfStack(error: Error): string {
 const { version } = require("../../ui/packages/adapters/vue/package.json");
 
 // 组件页由 ui/scripts/gen-component-docs.mjs 生成，侧栏读同一份清单，增删组件不用改这里
+type ComponentStatus = "alpha" | "new" | "updated";
 const componentManifest: {
-  stableComponents: string[];
   categories: {
     id: string;
     label: string;
-    components: { id: string; name: string; status?: "alpha" | "new" | "updated" }[];
+    components: { id: string; name: string; status?: ComponentStatus }[];
   }[];
 } = require("../../ui/scripts/component-docs.manifest.json");
 
-type ComponentStatus = "alpha" | "new" | "updated";
-const stableComponents = new Set(componentManifest.stableComponents);
-
-function componentStatus(component: { id: string; status?: ComponentStatus }): ComponentStatus | undefined {
-  return component.status ?? (stableComponents.has(component.id) ? undefined : "alpha");
-}
-
-function sidebarStatus(component: { id: string; status?: ComponentStatus }): string {
-  const status = componentStatus(component);
+// 组件缺省即正式、不挂标；alpha / new / updated 逐条写在清单条目的 status 上
+function sidebarStatus(component: { status?: ComponentStatus }): string {
+  const status = component.status;
   if (!status)
     return "";
   const label = status === "updated" ? "更新" : status;

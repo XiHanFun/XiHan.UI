@@ -1,4 +1,4 @@
-# Grid 栅格 <Badge type="info" text="alpha" />
+# Grid 栅格
 
 按行列排列内容。
 

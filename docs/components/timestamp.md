@@ -1,4 +1,4 @@
-# Timestamp 时间戳 <Badge type="info" text="alpha" />
+# Timestamp 时间戳
 
 把一个时刻渲染成文本，绝对或相对。
 

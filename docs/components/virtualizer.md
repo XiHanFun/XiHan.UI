@@ -1,4 +1,4 @@
-# Virtualizer 虚拟滚动 <Badge type="info" text="alpha" />
+# Virtualizer 虚拟滚动
 
 只渲染窗口内的条目，列表再长也只绘制可见的几十条。
 

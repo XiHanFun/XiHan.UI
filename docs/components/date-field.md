@@ -1,4 +1,4 @@
-# DateField 日期字段 <Badge type="info" text="alpha" />
+# DateField 日期字段
 
 按年、月、日逐段输入日期，适合已经知道目标日期、无需浏览日历的场景。
 

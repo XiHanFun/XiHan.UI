@@ -1,4 +1,4 @@
-# EmptyState 空状态 <Badge type="info" text="alpha" />
+# EmptyState 空状态
 
 没有数据时的占位区域：说明为什么为空，以及可以做什么。
 

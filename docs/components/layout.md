@@ -1,4 +1,4 @@
-# Layout 布局 <Badge type="info" text="alpha" />
+# Layout 布局
 
 用于构建带页头、侧栏、内容和页脚的页面骨架。
 

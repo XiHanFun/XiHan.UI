@@ -1,4 +1,4 @@
-# Sortable 排序 <Badge type="info" text="alpha" />
+# Sortable 排序
 
 通过拖拽或键盘重新排列内容。
 

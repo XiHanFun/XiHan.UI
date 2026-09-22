@@ -1,4 +1,4 @@
-# DatePicker 日期选择器 <Badge type="info" text="alpha" />
+# DatePicker 日期选择器
 
 将可键入的分段日期框、日历触发器和选择浮层组合成一个字段。
 

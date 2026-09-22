@@ -1,4 +1,4 @@
-# Timeline 时间线 <Badge type="info" text="alpha" />
+# Timeline 时间线
 
 按时间顺序排列的一串事件，每条有标记、连接线与内容。
 

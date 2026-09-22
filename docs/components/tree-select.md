@@ -1,4 +1,4 @@
-# TreeSelect 树选择 <Badge type="info" text="alpha" />
+# TreeSelect 树选择
 
 浮层内放一棵树的选择器，适用于层级不规整、深浅不一的数据。
 

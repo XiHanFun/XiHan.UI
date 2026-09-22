@@ -1,4 +1,4 @@
-# Switch 开关 <Badge type="info" text="alpha" />
+# Switch 开关
 
 一项设置的开与关，切换后立即生效。
 

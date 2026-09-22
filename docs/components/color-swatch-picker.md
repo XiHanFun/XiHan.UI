@@ -1,4 +1,4 @@
-# ColorSwatchPicker 颜色色块选择器 <Badge type="info" text="alpha" />
+# ColorSwatchPicker 颜色色块选择器
 
 从一组固定颜色中选择一个：主题色、标签色、高亮色。每格是一个 `role=radio` 的色块，整组是一个 `radiogroup`，即把选项绘制为颜色的[单选组](./radio-group)。需要自由调出任意颜色时使用[颜色选择器](./color-picker)，它内嵌的预设色板使用的就是本组件。
 

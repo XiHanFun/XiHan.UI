@@ -1,4 +1,4 @@
-# Form 表单 <Badge type="info" text="alpha" />
+# Form 表单
 
 管理一组字段的值、校验、提交和重置。
 

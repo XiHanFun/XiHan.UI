@@ -1,4 +1,4 @@
-# Listbox 列表框 <Badge type="info" text="alpha" />
+# Listbox 列表框
 
 用于展示一组常驻选项，并允许用户选择其中一项或多项。
 

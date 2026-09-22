@@ -1,4 +1,4 @@
-# TagsInput 标签输入 <Badge type="info" text="alpha" />
+# TagsInput 标签输入
 
 在一个输入框内录入一串标签：回车或分隔符成词，每个词是一个可删除的标签。
 

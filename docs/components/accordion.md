@@ -1,4 +1,4 @@
-# Accordion 手风琴 <Badge type="info" text="alpha" />
+# Accordion 手风琴
 
 一列可展开的区块，标题常驻，内容按需展开。
 

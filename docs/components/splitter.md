@@ -1,4 +1,4 @@
-# Splitter 分栏 <Badge type="info" text="alpha" />
+# Splitter 分栏
 
 将内容区域拆分为可调整大小的面板。
 

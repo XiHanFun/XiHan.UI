@@ -36,10 +36,9 @@ const checkOnly = process.argv.includes('--check')
 const manifest = JSON.parse(
   fs.readFileSync(path.join(here, 'component-docs.manifest.json'), 'utf8'),
 )
-const stableComponents = new Set(manifest.stableComponents ?? [])
-
+// 组件缺省即正式、不挂标；alpha / new / updated 逐条写在清单条目的 status 上
 function componentStatus(entry) {
-  return entry.status ?? (stableComponents.has(entry.id) ? undefined : 'alpha')
+  return entry.status
 }
 
 // 示例的框架清单：id / 显示名 / 扩展名 / 语法高亮语言 / 文档站是否已接入渲染。
@@ -1243,20 +1242,17 @@ function renderIndex() {
 const registered = new Set(
   manifest.categories.flatMap(c => c.components.map(x => x.id)),
 )
-const unknownStable = [...stableComponents].filter(id => !registered.has(id))
 const inCode = Object.keys(headless)
   .filter(k => k.endsWith('Meta'))
   .map(k => headless[k].component)
 
 const missing = inCode.filter(id => !registered.has(id))
 const extra = [...registered].filter(id => !inCode.includes(id))
-if (missing.length || extra.length || unknownStable.length) {
+if (missing.length || extra.length) {
   if (missing.length)
     console.error(`代码里有但 manifest 未登记：${missing.join(', ')}`)
   if (extra.length)
     console.error(`manifest 登记了但代码里没有：${extra.join(', ')}`)
-  if (unknownStable.length)
-    console.error(`stableComponents 未登记：${unknownStable.join(', ')}`)
   console.error('请更新 ui/scripts/component-docs.manifest.json')
   process.exit(1)
 }

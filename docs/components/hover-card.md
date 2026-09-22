@@ -1,4 +1,4 @@
-# HoverCard 悬浮卡片 <Badge type="info" text="alpha" />
+# HoverCard 悬浮卡片
 
 指针停留后出现的信息卡：预览一个对象，不打断当前操作。
 
