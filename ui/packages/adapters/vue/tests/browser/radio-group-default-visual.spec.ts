@@ -145,7 +145,7 @@ describe('radio-group 默认视觉', () => {
   })
 
   it('只读：整行不换面、手型 default，圆圈描边不升档、底不换', async () => {
-    const { root, items, indicators } = mount(' data-readonly=')
+    const { items, indicators } = mount(' data-readonly=')
     project(items)
     for (const item of items)
       item.setAttribute('data-readonly', '')

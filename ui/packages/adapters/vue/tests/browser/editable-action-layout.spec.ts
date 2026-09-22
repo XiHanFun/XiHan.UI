@@ -171,7 +171,7 @@ describe('就地编辑的左内容右动作布局', () => {
     expectUnifiedControl('input', 'submit-trigger', 'cancel-trigger')
     expectDivider('submit-trigger')
     // 取消钮没有线：它的背景层只有家族那条透明的顶光渐变；两颗钮静息都不填底
-    //（一支是 transparent 关键字、一支是兑成 0% 的 color-mix，序列化不同、都是全透明）
+    // （一支是 transparent 关键字、一支是兑成 0% 的 color-mix，序列化不同、都是全透明）
     expect(getComputedStyle(part('cancel-trigger')).backgroundSize).toBe('auto')
     expect(alpha(getComputedStyle(part('submit-trigger')).backgroundColor)).toBe(0)
     expect(alpha(getComputedStyle(part('cancel-trigger')).backgroundColor)).toBe(0)
