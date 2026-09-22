@@ -391,8 +391,13 @@ ${sizeVars(source, size)}
     font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
   }
 
+  /* 快捷键提示：与说明同档同色的次级文字（真源 §7.5），只是落位在行尾而不是第 2 行。
+     不换行——它是一串按键记号，折行会被读成两个组合。跟着 description 那支前景走，因此也不跟语气。 */
   [data-xh-collection-slot='shortcut'] {
     grid-column: shortcut;
+    color: var(--xh-_collection-description-fg);
+    font-size: var(--xh-collection-shortcut-font-size, var(--xh-control-caption-md));
+    white-space: nowrap;
   }
 
   [data-xh-collection-slot='suffix'] {
