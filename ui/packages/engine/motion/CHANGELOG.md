@@ -1,5 +1,47 @@
 # @xihan-ui/motion
 
+## 2.0.0
+
+### Major Changes
+
+- dc64383: **补间不再自带一套缓动曲线，改从共用的那张表取。** `tween.ts` 从前写死四条曲线（`ease-in` 是 `t³`、`ease-out` 是 `1-(1-t)³`），与 `easing.ts` 里同名的那几条**不是同一条曲线**——同一个动作用 CSS 声明和用 JS 逐帧算，走出来的路径不一样。现在补间经 `resolveEasing` 取曲线，JS 侧只剩 `easing.ts` 一张表，而它逐值对着设计令牌，由 `check-motion-source` 对账。
+
+  **删掉的公开面（`@xihan-ui/motion`）**：
+
+  | 删掉                  | 改用                                                  |
+  | --------------------- | ----------------------------------------------------- |
+  | `TweenEasing` 类型    | `EasingName`（曲线名）或 `EasingFunction`（自带函数） |
+  | `tweenEasings` 曲线表 | `easing` 曲线串表 + `resolveEasing`                   |
+  | `resolveTweenEasing`  | `resolveEasing`                                       |
+
+  `TweenSpec.easing` 现在收三种写法：曲线名、`cubic-bezier(...)` / `linear` 串，或函数本身。`@xihan-ui/headless` 随之不再转出 `TweenEasing`，改转 `EasingName`。
+
+  **破坏性：`number-animation` 的 `easing` 换了取值域。** 从前的四档 `linear` / `ease-in` / `ease-out` / `ease-in-out` 里，只有 `linear` 还认；另外三个不再是已知曲线名，会退回线性。逐条改成曲线表里的名字：
+
+  | 从前          | 改成        |
+  | ------------- | ----------- |
+  | `ease-in`     | `easeIn`    |
+  | `ease-out`    | `easeOut`   |
+  | `ease-in-out` | `easeInOut` |
+
+  同时可选的还有 `standard` / `emphasized` / `decelerate` / `accelerate` / `outStrong`，以及直接写一条 `cubic-bezier(...)` 串。曲线换过之后数字滚动的路径与同名 CSS 声明一致。
+
+  **对账面加一条。** `check-motion-source` 从四对缓动常量扩到五对，把 `ease.in-out` ↔ `easing.easeInOut` 也纳入逐字比对——令牌那条 `$description` 早就写着两者同值，此前没人拦。
+
+### Minor Changes
+
+- 317b582: **新增**入场缓动令牌 `--xh-motion-ease-enter-strong`（原语 `--xh-ease-out-strong` = `cubic-bezier(0.23, 1, 0.32, 1)`）。位移与高度变化走这一条：起步快、收尾长，比 `--xh-motion-ease-enter` 看得清。JS 侧同值常量 `easing.outStrong` 一并加上，两边由门禁对账。
+
+  **新增**正文行高令牌 `--xh-text-prose-leading`（原语 `--xh-leading-relaxed` = 1.625）。成段正文此前与控件文字共用 1.5 一个值。
+
+  **新增**兜底字形令牌 `--xh-glyph-mark-arrow-up`。此前只能借语义不对的 `--xh-glyph-mark-sort-asc`。
+
+  **修复** `code-view` 的行号被染成语法数字色。`--xh-code-view-number-fg` 一个名字被行号与数字记号两处消费，根上给它赋了语法色之后行号跟着变色。语法记号改用 `--xh-code-view-number-token-fg`，行号那个名字的语义不变。
+
+  **修复** `prompt-input` 发送按钮禁用态的字底对比度（浅色 1.96:1、深色 2.08:1）。禁用时底色仍是品牌色而只把字变灰，现在底色一并降到 `--xh-bg-muted`。
+
+  **修复** AI 族八处按下缩放是硬切。`approval` / `code-view` / `diff-view` / `message-feed` / `prompt-input` / `reasoning` / `tool-call` 的可点部件此前只声明了 `:active` 的缩放量、没有把 `scale` 写进 `transition`，按下与松手都不过渡；同批补齐悬停与描边的过渡。
+
 ## 1.1.0
 
 ## 1.0.0
