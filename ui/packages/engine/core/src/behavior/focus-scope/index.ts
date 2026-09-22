@@ -17,7 +17,7 @@ import {
 } from '../../kernel'
 import { isRendered } from '../../kernel/utils/rendered'
 import { acquireFocusGuards } from './focus-guards'
-import { activeElementInRoot, focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
+import { activeElementInRoot, focusFirst, focusSafely, getTabbables, removeLinks, tabbableEdges } from './tabbable'
 
 export interface FocusScopeOptions {
   config: RuntimeConfig
@@ -517,11 +517,10 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
     const el2 = container()
     if (!el2)
       return
-    const tabbables = getTabbables(el2)
-    if (tabbables.length === 0)
+    const edges = tabbableEdges(el2)
+    if (!edges)
       return
-    const first = tabbables[0]!
-    const last = tabbables[tabbables.length - 1]!
+    const { first, last } = edges
     const active = scope.getActiveElement()
     if (!e.shiftKey && active === last) {
       e.preventDefault()

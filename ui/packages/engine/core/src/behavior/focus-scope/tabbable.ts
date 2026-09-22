@@ -7,7 +7,7 @@
 
 import type { FocusableElement } from '../../kernel/types'
 import { isDocument, isHTMLElement, isShadowRoot } from '../../kernel/guards'
-import { isRendered } from '../../kernel/utils/rendered'
+import { createRenderedProbe } from '../../kernel/utils/rendered'
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 
@@ -26,7 +26,36 @@ const FOCUSABLE = [
 /** 容器内按 DOM 顺序排列的可 tab 元素。 */
 export function getTabbables(container: Element): FocusableElement[] {
   const els = Array.from(container.querySelectorAll<FocusableElement>(FOCUSABLE))
-  return els.filter(el => el.tabIndex >= 0 && isRendered(el))
+  const rendered = createRenderedProbe()
+  return els.filter(el => el.tabIndex >= 0 && rendered(el))
+}
+
+/**
+ * 容器内首尾两个可 tab 元素。Tab 边界回绕每按一次键只要这两个，从两端各扫到第一个命中即止，
+ * 不必把整屏候选都判一遍渲染状态。没有可 tab 元素时返回 null。
+ */
+export function tabbableEdges(container: Element): { first: FocusableElement, last: FocusableElement } | null {
+  const els = Array.from(container.querySelectorAll<FocusableElement>(FOCUSABLE))
+  const rendered = createRenderedProbe()
+  const tabbable = (el: FocusableElement): boolean => el.tabIndex >= 0 && rendered(el)
+  let first: FocusableElement | null = null
+  for (const el of els) {
+    if (tabbable(el)) {
+      first = el
+      break
+    }
+  }
+  if (!first)
+    return null
+  let last = first
+  for (let index = els.length - 1; index >= 0; index--) {
+    const el = els[index]!
+    if (el === first || tabbable(el)) {
+      last = el
+      break
+    }
+  }
+  return { first, last }
 }
 
 /** 过滤掉 <a> 元素。 */
