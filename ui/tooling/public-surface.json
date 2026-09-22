@@ -2428,6 +2428,7 @@
       "createReactRuntime",
       "createToastService",
       "getSoundPlayer",
+      "invalidateMachineProps",
       "mergeIntoChild",
       "mergeReactProps",
       "mergeXhConfig",

@@ -12,7 +12,7 @@ import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } fr
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { version as REACT_ADAPTER_VERSION } from '../../package.json'
 import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
-import { createReactRuntime } from './create-react-runtime'
+import { createReactRuntime, machineVersion } from './create-react-runtime'
 
 // 一台机器一个 hook 实例：渲染体登记最新 props，提交后挂载机器、跑 trackers，
 // 状态变化经 useSyncExternalStore 拉回组件重渲。
@@ -151,13 +151,29 @@ export function useMachine<T extends MachineSchema>(
   const optionsRef = useRef(options)
   optionsRef.current = options
 
+  // 连接层一次要读十几个 prop，每读一个都重新展开一遍组件 props 纯属白做。
+  // 两把钥匙一起当记忆的依据：渲染轮次盖住组件 props 与渲染期赋的 ref，
+  // 机器版本号盖住从别的机器现读的派生值。两者都没动，展开结果必然一样。
+  const renderEpoch = useRef(0)
+  renderEpoch.current += 1
+  const memo = useRef<{ render: number, machine: number, value: Partial<T['props']> }>({
+    render: -1,
+    machine: -1,
+    value: {} as Partial<T['props']>,
+  })
+
   const [instance] = useState<Instance<T>>(() => createInstance<T>(
     machine,
-    (() => applyXhConfigDefaults(
-      machine.name,
-      { ...propsRef.current() },
-      configRef.current(),
-    )) as ServiceOptions<T>['props'],
+    (() => {
+      const version = machineVersion()
+      const cache = memo.current
+      if (cache.render !== renderEpoch.current || cache.machine !== version) {
+        cache.render = renderEpoch.current
+        cache.machine = version
+        cache.value = applyXhConfigDefaults(machine.name, { ...propsRef.current() }, configRef.current())
+      }
+      return cache.value
+    }) as ServiceOptions<T>['props'],
     {
       scope: optionsRef.current.scope,
       onCreate: svc => optionsRef.current.onCreate?.(svc),
