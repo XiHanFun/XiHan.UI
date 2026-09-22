@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-text` · `item-description` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
+`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
 
 ## 示例
 
@@ -67,6 +67,7 @@
 - 支持分组、禁用条目和定高滚动。
 - 条目可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 条目可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 提供空态、加载态与加载更多部件。
 
 ### 组合
@@ -93,7 +94,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-listbox>` |
-| Vue 组件 | `XhListboxContent` `XhListboxEmpty` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemDescription` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxLoadMoreTrigger` `XhListboxLoading` `XhListboxRoot` |
+| Vue 组件 | `XhListboxContent` `XhListboxEmpty` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemDescription` `XhListboxItemIndicator` `XhListboxItemPrefix` `XhListboxItemSuffix` `XhListboxItemText` `XhListboxLabel` `XhListboxLoadMoreTrigger` `XhListboxLoading` `XhListboxRoot` |
 | 组合式函数 | `useListbox` |
 | 状态机 | `listboxMachine` |
 | 皮肤 | `@xihan-ui/styles/listbox.css` |
@@ -135,6 +136,8 @@
 | `XhListboxRoot` | `default` | `ListboxRootSlotProps` |  |
 | `XhListboxRoot` | `label` | — |  |
 | `XhListboxRoot` | `item` | `ListboxNodeMeta` |  |
+| `XhListboxRoot` | `item-prefix` | `ListboxNodeMeta` |  |
+| `XhListboxRoot` | `item-suffix` | `ListboxNodeMeta` |  |
 
 ### 状态
 
@@ -143,8 +146,10 @@
 | 部件 | 取值 |
 | --- | --- |
 | `item` | 'checked' \| 'unchecked' |
+| `item-prefix` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
 | `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 
 以下名称仅用于内部状态机。
@@ -182,8 +187,10 @@
 | `getGroupProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ListboxItemProps) => T['element']` |  |
 
 ## 无障碍
@@ -223,6 +230,7 @@
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -259,6 +267,10 @@
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-prefix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
@@ -267,6 +279,10 @@
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-state` | 'checked' \| 'unchecked' |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |

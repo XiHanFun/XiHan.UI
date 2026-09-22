@@ -735,6 +735,13 @@
     "item-name": [
       "file-upload"
     ],
+    "item-prefix": [
+      "combobox",
+      "command",
+      "listbox",
+      "mention",
+      "select"
+    ],
     "item-preview": [
       "file-upload"
     ],
@@ -754,9 +761,14 @@
       "file-upload"
     ],
     "item-suffix": [
+      "combobox",
+      "command",
       "context-menu",
+      "listbox",
+      "mention",
       "menu",
-      "menubar"
+      "menubar",
+      "select"
     ],
     "item-text": [
       "approval",

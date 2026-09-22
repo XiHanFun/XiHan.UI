@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-text` · `item-description` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
+`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
 
 ## 示例
 
@@ -84,6 +84,7 @@
 - 支持单选、多选、分组和自定义值。
 - 候选可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 输入值、选中值与展开状态均可独立受控。
 - `loading` 与 `empty` 分别表示加载和空结果。
 - 支持自定义过滤、异步候选和自定义条目内容。
@@ -114,7 +115,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-combobox>` |
-| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxGroup` `XhComboboxGroupLabel` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemDescription` `XhComboboxItemIndicator` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxLoading` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
+| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxGroup` `XhComboboxGroupLabel` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemDescription` `XhComboboxItemIndicator` `XhComboboxItemPrefix` `XhComboboxItemSuffix` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxLoading` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
 | 组合式函数 | `useCombobox` |
 | 状态机 | `comboboxMachine` |
 | 皮肤 | `@xihan-ui/styles/combobox.css` |
@@ -173,6 +174,8 @@
 | `XhComboboxRoot` | `label` | — |  |
 | `XhComboboxRoot` | `empty` | — |  |
 | `XhComboboxRoot` | `item` | `ComboboxNodeMeta` |  |
+| `XhComboboxRoot` | `item-prefix` | `ComboboxNodeMeta` |  |
+| `XhComboboxRoot` | `item-suffix` | `ComboboxNodeMeta` |  |
 
 ### 状态
 
@@ -187,8 +190,10 @@
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 | `item` | 'checked' \| 'unchecked' |
+| `item-prefix` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
 | `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
@@ -235,8 +240,10 @@
 | `getGroupProps` | `(props: ComboboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ComboboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ComboboxItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: ComboboxItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 与 content 是兄弟，同样不进入 role=listbox。 |
@@ -291,6 +298,7 @@
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -363,6 +371,10 @@
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-prefix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
@@ -371,6 +383,10 @@
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-state` | 'checked' \| 'unchecked' |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |

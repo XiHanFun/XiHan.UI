@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="mention"`：**`root`** · `label` · **`input`** · `positioner` · **`content`** · `empty` · `loading` · `item` · `item-text` · `item-description`
+`data-scope="mention"`：**`root`** · `label` · **`input`** · `positioner` · **`content`** · `empty` · `loading` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix`
 
 ## 示例
 
@@ -73,6 +73,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 - 多种前缀各自映射一份候选。
 - 候选可逐条声明语气，已停用或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放职位、handle 一类的补充信息。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
 - `label` 部件为输入框提供可点击的标题；提供 `translations.input` 时仍使用 `aria-label`。
@@ -106,7 +107,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-mention>` |
-| Vue 组件 | `XhMentionContent` `XhMentionEmpty` `XhMentionInput` `XhMentionItem` `XhMentionItemDescription` `XhMentionItemText` `XhMentionLabel` `XhMentionLoading` `XhMentionPositioner` `XhMentionRoot` |
+| Vue 组件 | `XhMentionContent` `XhMentionEmpty` `XhMentionInput` `XhMentionItem` `XhMentionItemDescription` `XhMentionItemPrefix` `XhMentionItemSuffix` `XhMentionItemText` `XhMentionLabel` `XhMentionLoading` `XhMentionPositioner` `XhMentionRoot` |
 | 组合式函数 | `useMention` |
 | 状态机 | `mentionMachine` |
 | 皮肤 | `@xihan-ui/styles/mention.css` |
@@ -157,6 +158,8 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | --- | --- | --- | --- |
 | `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
+| `XhMentionRoot` | `item-prefix` | `MentionNodeMeta` |  |
+| `XhMentionRoot` | `item-suffix` | `MentionNodeMeta` |  |
 | `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
 
 ### 状态
@@ -205,8 +208,10 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `getEmptyProps` | `() => T['element']` | 没有任何候选时显示的空态；有候选时带 hidden 收起。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 同样是 content 的兄弟，不进入 role=listbox。 |
 | `getItemProps` | `(props: MentionItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: MentionItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: MentionItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MentionItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: MentionItemProps) => T['element']` |  |
 
 ## 无障碍
 
@@ -250,6 +255,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -299,12 +305,18 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

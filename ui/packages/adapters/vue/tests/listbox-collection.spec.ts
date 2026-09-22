@@ -180,3 +180,43 @@ describe('listbox 代铺条目的副文本', () => {
     w.unmount()
   })
 })
+
+describe('listbox 代铺条目的逐槽钩子', () => {
+  it('item-prefix 只接管行首那一格，文字与副文本照旧由数据铺', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhListboxRoot, {
+        value: [],
+        collection: [{ value: 'beijing', label: '北京', description: '华北' }] satisfies ListboxNode[],
+      }, {
+        'item-prefix': (node: { value: string }) => [h('svg', { 'data-flag': node.value })],
+      }),
+    }), { attachTo: document.body })
+    const parts = [...document.body.querySelectorAll('[data-scope="listbox"][data-part^="item"]')]
+      .map(el => el.getAttribute('data-part'))
+    expect(parts).toEqual(['item', 'item-prefix', 'item-text', 'item-description', 'item-indicator'])
+    const prefix = document.body.querySelector('[data-part="item-prefix"]')!
+    expect(prefix.querySelector('svg')?.getAttribute('data-flag')).toBe('beijing')
+    // 行首那一格是纯装饰：可及名由条目文字承担
+    expect(prefix.getAttribute('aria-hidden')).toBe('true')
+    expect(prefix.getAttribute('data-xh-collection-slot')).toBe('prefix')
+    w.unmount()
+  })
+
+  it('item-suffix 落行尾那一格，排在副文本之后', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhListboxRoot, {
+        value: [],
+        collection: [{ value: 'beijing', label: '北京' }] satisfies ListboxNode[],
+      }, {
+        'item-suffix': () => [h('span', '12')],
+      }),
+    }), { attachTo: document.body })
+    const parts = [...document.body.querySelectorAll('[data-scope="listbox"][data-part^="item"]')]
+      .map(el => el.getAttribute('data-part'))
+    expect(parts).toEqual(['item', 'item-text', 'item-suffix', 'item-indicator'])
+    const suffix = document.body.querySelector('[data-part="item-suffix"]')!
+    expect(suffix.textContent).toBe('12')
+    expect(suffix.getAttribute('data-xh-collection-slot')).toBe('suffix')
+    w.unmount()
+  })
+})

@@ -65,6 +65,10 @@ export interface XhMentionRootProps extends RootElementProps {
   onOpenChange?: MentionProps['onOpenChange']
   /** 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: MentionNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: MentionNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: MentionNodeMeta) => ReactNode
   /** 铺开 collection 时空态中的文案；未写时使用内建英文。 */
   empty?: ReactNode
   children?: SlotChildren<MentionRootSlotProps>
@@ -95,6 +99,8 @@ export function XhMentionRoot({
   onOpenChange,
   children,
   renderItem,
+  renderItemPrefix,
+  renderItemSuffix,
   empty,
   ...rest
 }: XhMentionRootProps): ReactNode {
@@ -140,7 +146,7 @@ export function XhMentionRoot({
         close: api.close,
       })
     : collection
-      ? <DefaultTree collection={api.collection} empty={empty} renderItem={renderItem} />
+      ? <DefaultTree collection={api.collection} empty={empty} renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix} />
       : null
 
   return (
@@ -277,6 +283,22 @@ export function XhMentionItemText({ children, ...rest }: XhMentionItemTextProps)
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
+export interface XhMentionItemPrefixProps extends ComponentPropsWithRef<'span'> {}
+export function XhMentionItemPrefix({ children, ...rest }: XhMentionItemPrefixProps): ReactNode {
+  const ctx = useMentionContext()
+  const item = useMentionItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhMentionItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhMentionItemSuffix({ children, ...rest }: XhMentionItemSuffixProps): ReactNode {
+  const ctx = useMentionContext()
+  const item = useMentionItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
 export interface XhMentionItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
 export function XhMentionItemDescription({ children, ...rest }: XhMentionItemDescriptionProps): ReactNode {
@@ -294,6 +316,8 @@ function DefaultTree(props: {
   collection: readonly MentionNodeMeta[]
   empty?: ReactNode
   renderItem?: (node: MentionNodeMeta) => ReactNode
+  renderItemPrefix?: (node: MentionNodeMeta) => ReactNode
+  renderItemSuffix?: (node: MentionNodeMeta) => ReactNode
 }): ReactNode {
   return (
     <>
@@ -302,8 +326,10 @@ function DefaultTree(props: {
         <XhMentionContent>
           {props.collection.map(node => (
             <XhMentionItem key={node.value} value={node.value}>
+              {props.renderItemPrefix ? <XhMentionItemPrefix>{props.renderItemPrefix(node)}</XhMentionItemPrefix> : null}
               <XhMentionItemText>{props.renderItem?.(node) ?? node.label}</XhMentionItemText>
               {node.description != null ? <XhMentionItemDescription>{node.description}</XhMentionItemDescription> : null}
+              {props.renderItemSuffix ? <XhMentionItemSuffix>{props.renderItemSuffix(node)}</XhMentionItemSuffix> : null}
             </XhMentionItem>
           ))}
         </XhMentionContent>

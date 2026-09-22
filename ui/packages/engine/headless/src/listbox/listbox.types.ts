@@ -200,8 +200,10 @@ export interface ListboxApi<T extends PropTypes = PropTypes> {
   getGroupProps: (props: ListboxGroupProps) => T['element']
   getGroupLabelProps: (props: ListboxGroupProps) => T['element']
   getItemProps: (props: ListboxItemProps) => T['element']
+  getItemPrefixProps: (props: ListboxItemProps) => T['element']
   getItemTextProps: (props: ListboxItemProps) => T['element']
   getItemDescriptionProps: (props: ListboxItemProps) => T['element']
+  getItemSuffixProps: (props: ListboxItemProps) => T['element']
   getItemIndicatorProps: (props: ListboxItemProps) => T['element']
 }
 

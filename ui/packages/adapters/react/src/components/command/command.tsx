@@ -70,10 +70,14 @@ export interface XhCommandRootProps {
   onSelect?: CommandProps['onSelect']
   /** 每条命令的自定义内容；未提供时使用清单中的 label。 */
   renderItem?: (node: CommandNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: CommandNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: CommandNodeMeta) => ReactNode
   children?: SlotChildren<CommandRootSlotProps>
 }
 
-export function XhCommandRoot({ children, empty, trigger, footer, renderItem, ...props }: XhCommandRootProps): ReactNode {
+export function XhCommandRoot({ children, empty, trigger, footer, renderItem, renderItemPrefix, renderItemSuffix, ...props }: XhCommandRootProps): ReactNode {
   const ctx = useCommand(withXhConfig('command', props) as CommandProps)
   const api = ctx.api
 
@@ -103,7 +107,7 @@ export function XhCommandRoot({ children, empty, trigger, footer, renderItem, ..
           trigger={trigger}
           empty={empty}
           footer={footer}
-          renderItem={renderItem}
+          renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix}
         />
       )
 
@@ -248,6 +252,22 @@ export function XhCommandItemText({ children, ...rest }: XhCommandItemTextProps)
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
+export interface XhCommandItemPrefixProps extends ComponentPropsWithRef<'span'> {}
+export function XhCommandItemPrefix({ children, ...rest }: XhCommandItemPrefixProps): ReactNode {
+  const ctx = useCommandContext()
+  const item = useCommandItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhCommandItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhCommandItemSuffix({ children, ...rest }: XhCommandItemSuffixProps): ReactNode {
+  const ctx = useCommandContext()
+  const item = useCommandItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
 export interface XhCommandItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
 export function XhCommandItemDescription({ children, ...rest }: XhCommandItemDescriptionProps): ReactNode {
@@ -286,11 +306,15 @@ function DefaultTree(props: {
   empty?: ReactNode
   footer?: ReactNode
   renderItem?: (node: CommandNodeMeta) => ReactNode
+  renderItemPrefix?: (node: CommandNodeMeta) => ReactNode
+  renderItemSuffix?: (node: CommandNodeMeta) => ReactNode
 }): ReactNode {
   const item = (node: CommandNodeMeta): ReactNode => (
     <XhCommandItem key={node.value} value={node.value}>
+      {props.renderItemPrefix ? <XhCommandItemPrefix>{props.renderItemPrefix(node)}</XhCommandItemPrefix> : null}
       <XhCommandItemText>{props.renderItem?.(node) ?? node.label}</XhCommandItemText>
       {node.description != null ? <XhCommandItemDescription>{node.description}</XhCommandItemDescription> : null}
+      {props.renderItemSuffix ? <XhCommandItemSuffix>{props.renderItemSuffix(node)}</XhCommandItemSuffix> : null}
     </XhCommandItem>
   )
   return (

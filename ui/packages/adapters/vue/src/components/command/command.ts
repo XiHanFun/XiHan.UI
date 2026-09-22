@@ -76,6 +76,8 @@ export const XhCommandRoot = defineComponent({
     /** 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或 v-model:open 唤起）。 */
     trigger?: () => VNode[]
     item?: (node: CommandNodeMeta) => VNode[]
+    'item-prefix'?: (node: CommandNodeMeta) => VNode[]
+    'item-suffix'?: (node: CommandNodeMeta) => VNode[]
     empty?: () => VNode[]
     footer?: () => VNode[]
   }>,
@@ -127,6 +129,8 @@ export const XhCommandRoot = defineComponent({
         slots.item,
         slots.empty?.() ?? (props.empty != null ? [props.empty] : null),
         slots.footer?.(),
+        slots['item-prefix'],
+        slots['item-suffix'],
       )
     }
   },
@@ -261,6 +265,26 @@ export const XhCommandItemText = defineComponent({
   },
 })
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏 */
+export const XhCommandItemPrefix = defineComponent({
+  name: 'XhCommandItemPrefix',
+  setup(_, { slots }) {
+    const ctx = useCommandContext()
+    const { item } = useCommandItemContext()
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhCommandItemSuffix = defineComponent({
+  name: 'XhCommandItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useCommandContext()
+    const { item } = useCommandItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
 export const XhCommandItemDescription = defineComponent({
   name: 'XhCommandItemDescription',
@@ -307,11 +331,15 @@ function renderDefaultTree(
   itemSlot: ((node: CommandNodeMeta) => VNode[]) | undefined,
   empty: (VNode | string)[] | null,
   footer: VNode[] | undefined,
+  prefixSlot?: (node: CommandNodeMeta) => VNode[],
+  suffixSlot?: (node: CommandNodeMeta) => VNode[],
 ): VNode[] {
   const renderItem = (node: CommandNodeMeta): VNode =>
     h(XhCommandItem, { key: node.value, value: node.value }, () => [
+      ...(prefixSlot ? [h(XhCommandItemPrefix, null, () => prefixSlot(node))] : []),
       h(XhCommandItemText, null, () => itemSlot?.(node) ?? node.label),
       ...(node.description != null ? [h(XhCommandItemDescription, null, () => node.description)] : []),
+      ...(suffixSlot ? [h(XhCommandItemSuffix, null, () => suffixSlot(node))] : []),
     ])
 
   return [

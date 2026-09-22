@@ -379,6 +379,21 @@ export function connectMention<T extends PropTypes>(
       })
     },
 
+    // 行首那一格：内容由作者给（图标、色块、头像）。纯装饰，可及名由条目文字承担
+    getItemPrefixProps: item => normalize.element({
+      ...parts['item-prefix'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'prefix',
+      'aria-hidden': true,
+    }),
+
+    // 行尾那一格：内容同样由作者给（计数、徽标）。家族只管落位，不规定字号与颜色
+    getItemSuffixProps: item => normalize.element({
+      ...parts['item-suffix'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'suffix',
+    }),
+
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),

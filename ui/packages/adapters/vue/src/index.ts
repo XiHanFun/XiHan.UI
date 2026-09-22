@@ -271,6 +271,8 @@ export {
   XhComboboxItem,
   XhComboboxItemIndicator,
   XhComboboxItemDescription,
+  XhComboboxItemPrefix,
+  XhComboboxItemSuffix,
   XhComboboxItemText,
   XhComboboxLabel,
   XhComboboxLoading,
@@ -290,6 +292,8 @@ export {
   XhCommandInput,
   XhCommandItem,
   XhCommandItemDescription,
+  XhCommandItemPrefix,
+  XhCommandItemSuffix,
   XhCommandItemText,
   XhCommandList,
   XhCommandLoading,
@@ -608,6 +612,8 @@ export {
   XhListboxItem,
   XhListboxItemIndicator,
   XhListboxItemDescription,
+  XhListboxItemPrefix,
+  XhListboxItemSuffix,
   XhListboxItemText,
   XhListboxLabel,
   XhListboxLoading,
@@ -652,7 +658,7 @@ export type { MatrixCodeContext } from './components/matrix-code/context'
 export { XhMatrixCode, XhMatrixCodeLogo } from './components/matrix-code/matrix-code'
 export { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './components/mention/context'
 export type { MentionItemContext } from './components/mention/context'
-export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMentionItemDescription, XhMentionItemText, XhMentionLabel, XhMentionLoading, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
+export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMentionItemDescription, XhMentionItemPrefix, XhMentionItemSuffix, XhMentionItemText, XhMentionLabel, XhMentionLoading, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
 export type { MentionRootSlotProps } from './components/mention/mention'
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
@@ -899,6 +905,8 @@ export {
   XhSelectItemDeleteTrigger,
   XhSelectItemIndicator,
   XhSelectItemDescription,
+  XhSelectItemPrefix,
+  XhSelectItemSuffix,
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,

@@ -12006,8 +12006,16 @@
               "name": "item-text"
             },
             {
+              "description": "条目行首的作者内容（图标、色块、头像），对读屏隐藏",
+              "name": "item-prefix"
+            },
+            {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
             },
             {
               "description": "候选选中标记（aria-hidden）",
@@ -13036,8 +13044,16 @@
               "name": "item-text"
             },
             {
+              "description": "条目行首的作者内容（图标、色块、头像），对读屏隐藏",
+              "name": "item-prefix"
+            },
+            {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
             },
             {
               "description": "没有剩余条目时的提示；须放在 content 中作为 list 的兄弟（列表内只允许 option 与 group）",
@@ -29647,8 +29663,16 @@
               "name": "item-text"
             },
             {
+              "description": "条目行首的作者内容（图标、色块、头像），对读屏隐藏",
+              "name": "item-prefix"
+            },
+            {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
             },
             {
               "description": "条目选中标记（aria-hidden）",
@@ -31805,8 +31829,16 @@
               "name": "item-text"
             },
             {
+              "description": "条目行首的作者内容（图标、色块、头像），对读屏隐藏",
+              "name": "item-prefix"
+            },
+            {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
             }
           ],
           "members": [
@@ -44626,8 +44658,16 @@
               "name": "item-text"
             },
             {
+              "description": "条目行首的作者内容（图标、色块、头像），对读屏隐藏",
+              "name": "item-prefix"
+            },
+            {
               "description": "条目的第 2 行副文本",
               "name": "item-description"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标）",
+              "name": "item-suffix"
             },
             {
               "description": "条目选中标记（aria-hidden）",

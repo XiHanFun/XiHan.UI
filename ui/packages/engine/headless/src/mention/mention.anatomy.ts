@@ -18,8 +18,10 @@ export const mentionAnatomy = createAnatomy('mention', [
   'empty',
   'loading',
   'item',
+  'item-prefix',
   'item-text',
   'item-description',
+  'item-suffix',
 ])
 
 const parts = mentionAnatomy.build()
