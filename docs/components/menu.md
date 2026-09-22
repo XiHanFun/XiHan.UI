@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -48,6 +48,12 @@
 
 <XhDemo src="menu/05-tone" />
 
+### 说明与快捷键
+
+只交数据，副文本与按键提示自动落位
+
+<XhDemo src="menu/06-description" />
+
 ## 设计指引
 
 ### 何时使用
@@ -62,11 +68,12 @@
 
 ### 特性
 
-- `collection` 可直接生成条目、分组、标记位和分隔线。
+- `collection` 可直接生成条目、分组、标记位、说明、快捷键提示和分隔线。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
+- 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。
 - 支持方向键、首字符检索、禁用条目和多级子菜单。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
-- 条目可组合图标、文字、说明和快捷键提示。
+- 条目可组合图标、文字、说明和快捷键提示；写 `item` 插槽即整条交给作者。
 - 选中命令后发出根级 `select` 并关闭菜单链。
 
 ### 组合
@@ -91,7 +98,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menu>` |
-| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuItemDescription` `XhMenuItemIndicator` `XhMenuItemText` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
+| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuItemDescription` `XhMenuItemIndicator` `XhMenuItemShortcut` `XhMenuItemText` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
 | 组合式函数 | `useMenu` |
 | 状态机 | `menuMachine` |
 | 皮肤 | `@xihan-ui/styles/menu.css` |
@@ -176,6 +183,7 @@
 | `getItemTextProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getItemShortcutProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getSubmenuTriggerProps` | `(props: MenuItemProps) => T['element']` | 子菜单触发条目（submenu 模式）：既是父菜单中的一条 item（value 是它在父菜单 中的身份，父层的方向键与高亮照常识别它），又是本子菜单的触发器（aria-haspopup、 悬停 / 点击 / 右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。 |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenuGroupProps) => T['element']` |  |
@@ -217,6 +225,7 @@
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'menuitem' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `item-shortcut` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -268,6 +277,9 @@
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `submenu-trigger` | `data-disabled` | ''（条件成立时才出现） |

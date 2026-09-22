@@ -6,6 +6,8 @@ import {
   XhIcon,
   XhMenuContent,
   XhMenuItem,
+  XhMenuItemIndicator,
+  XhMenuItemShortcut,
   XhMenuItemText,
   XhMenuPositioner,
   XhMenuRoot,
@@ -22,20 +24,20 @@ export default function Demo(): ReactNode {
       <XhMenuPositioner>
         <XhMenuContent>
           <XhMenuItem value="copy">
-            <XhIcon icon={CopyIcon} size="sm" />
+            <XhMenuItemIndicator><XhIcon icon={CopyIcon} size="sm" /></XhMenuItemIndicator>
             <XhMenuItemText>复制</XhMenuItemText>
-            <span aria-hidden="true">⌘ C</span>
+            <XhMenuItemShortcut>⌘ C</XhMenuItemShortcut>
           </XhMenuItem>
           <XhMenuItem value="rename">
-            <XhIcon icon={PencilIcon} size="sm" />
+            <XhMenuItemIndicator><XhIcon icon={PencilIcon} size="sm" /></XhMenuItemIndicator>
             <XhMenuItemText>重命名</XhMenuItemText>
-            <span aria-hidden="true">F2</span>
+            <XhMenuItemShortcut>F2</XhMenuItemShortcut>
           </XhMenuItem>
           <XhMenuSeparator />
           <XhMenuItem value="delete">
-            <XhIcon icon={TrashIcon} size="sm" />
+            <XhMenuItemIndicator><XhIcon icon={TrashIcon} size="sm" /></XhMenuItemIndicator>
             <XhMenuItemText>移到回收站</XhMenuItemText>
-            <span aria-hidden="true">⌫</span>
+            <XhMenuItemShortcut>⌫</XhMenuItemShortcut>
           </XhMenuItem>
         </XhMenuContent>
       </XhMenuPositioner>

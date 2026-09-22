@@ -43,6 +43,9 @@ export function connectMenu<T extends PropTypes>(
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
+    indicator: node.indicator ?? null,
+    description: node.description ?? null,
+    shortcut: node.shortcut ?? null,
     group: node.group ?? null,
     groupLabel: node.groupLabel ?? null,
     separatorBefore: !!node.separatorBefore,
@@ -316,6 +319,15 @@ export function connectMenu<T extends PropTypes>(
       ...parts['item-description'].attrs,
       ...itemStateAttrs(item),
       'data-xh-collection-slot': 'description',
+    }),
+
+    // 快捷键提示落家族的 shortcut 列（行尾、suffix 之前）。纯装饰：可及名由条目文字承担，
+    // 读屏念到的是命令本身；连打检索也只取 item-text，这串按键记号不进检索串
+    getItemShortcutProps: item => normalize.element({
+      ...parts['item-shortcut'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'shortcut',
+      'aria-hidden': true,
     }),
 
     // 双重身份：value 是它在父菜单里的条目身份（父层导航与高亮照常认），

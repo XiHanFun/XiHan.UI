@@ -281,6 +281,16 @@ export const XhMenuItemDescription = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意 */
+export const XhMenuItemShortcut = /* @__PURE__ */ defineComponent({
+  name: 'XhMenuItemShortcut',
+  setup(_, { slots }) {
+    const ctx = useMenuContext()
+    const { item } = useMenuItemContext()
+    return () => h('span', ctx.api.value.getItemShortcutProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhMenuGroup = /* @__PURE__ */ defineComponent({
   name: 'XhMenuGroup',
   props: {
@@ -365,10 +375,19 @@ function renderNodes(
   })
 }
 
-/** 单个条目：写了 item 插槽即整条交给作者，没写就铺 label。 */
+/**
+ * 单个条目：按数据铺标记位、文字、说明与快捷键，未提供的那几个不铺对应部件。
+ * 写了 item 插槽即整条交给作者——它是整条的接管口，不是文字槽的填充口，
+ * 作者自己放置 XhMenuItemText 等部件（与 ContextMenu 的 item 插槽语义不同，那边填的是文字槽）。
+ */
 function renderItem(
   meta: MenuNodeMeta,
   itemSlot?: (node: MenuNodeMeta) => VNode[],
 ): VNode {
-  return h(XhMenuItem, { key: meta.value, value: meta.value }, () => itemSlot?.(meta) ?? meta.label)
+  return h(XhMenuItem, { key: meta.value, value: meta.value }, () => itemSlot?.(meta) ?? [
+    ...(meta.indicator != null ? [h(XhMenuItemIndicator, null, () => meta.indicator)] : []),
+    h(XhMenuItemText, null, () => meta.label),
+    ...(meta.description != null ? [h(XhMenuItemDescription, null, () => meta.description)] : []),
+    ...(meta.shortcut != null ? [h(XhMenuItemShortcut, null, () => meta.shortcut)] : []),
+  ])
 }

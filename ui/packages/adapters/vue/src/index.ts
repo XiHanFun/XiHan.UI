@@ -660,6 +660,7 @@ export {
   XhMenuItem,
   XhMenuItemDescription,
   XhMenuItemIndicator,
+  XhMenuItemShortcut,
   XhMenuItemText,
   XhMenuPositioner,
   XhMenuRoot,

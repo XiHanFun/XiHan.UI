@@ -7,7 +7,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, createServi
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { connectMenu, menuMachine } from '../src/menu'
+import { connectMenu, menuItemText, menuMachine } from '../src/menu'
 
 type Props = MenuSchema['props']
 type Dict = Record<string, unknown>
@@ -261,6 +261,32 @@ describe('条目高亮标记', () => {
     // 菜单级 tone 只落在 content 上；没写语气的条目不带属性，保持家族中性档
     expect((h.api().getContentProps() as Dict)['data-tone']).toBe('brand')
     expect((h.api().getItemProps({ value: 'copy' }) as Dict)['data-tone']).toBeUndefined()
+  })
+
+  it('标记位、说明与快捷键原样进元信息，未写时为 null', () => {
+    const h = mount({
+      collection: [
+        { value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' },
+        { value: 'paste', label: '粘贴' },
+      ],
+    })
+    expect(h.api().collection.map(node => [node.indicator, node.description, node.shortcut])).toEqual([
+      ['✓', '连同格式', '⌘ C'],
+      [null, null, null],
+    ])
+  })
+
+  it('快捷键落家族的 shortcut 槽，对读屏隐藏：可及名由条目文字承担', () => {
+    const props = mount().api().getItemShortcutProps({ value: 'copy' }) as Dict
+    expect(props['data-xh-collection-slot']).toBe('shortcut')
+    expect(props['aria-hidden']).toBe(true)
+    expect(props['data-part']).toBe('item-shortcut')
+  })
+
+  it('快捷键不进连打检索串：取字只认 item-text', () => {
+    const content = document.createElement('div')
+    content.innerHTML = `<div data-scope="menu" data-part="item"><span data-scope="menu" data-part="item-text">复制</span><span data-scope="menu" data-part="item-shortcut">⌘ C</span></div>`
+    expect(menuItemText(content.firstElementChild as HTMLElement)).toBe('复制')
   })
 
   it('分组身份与标题原样进元信息，未写时为 null', () => {
