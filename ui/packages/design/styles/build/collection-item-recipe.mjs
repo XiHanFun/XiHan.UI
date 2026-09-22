@@ -57,6 +57,26 @@ const OVERLAY_SUFFIX = {
   highlight: ':is(:focus-visible, [data-highlighted])',
   pressed: PRESSED,
 }
+/**
+ * 语气段（真源 §7.4）：条目自身动作的性质（删除 danger / 停用 warning），不表达选中、当前与校验。
+ * 只有这四态，其余态不接语气——checked / loading / error 归组件事实，disabled 由 GUARD 直接挡在门外。
+ */
+const TONE_STATES = ['rest', 'hover', 'keyboard-highlight', 'pressed']
+/** 语气只动面与字：说明行保持 muted、指示器保持品牌色，字重与缩进不随语气变。 */
+const TONE_FIELDS = ['backgroundColor', 'color']
+/**
+ * 语气的主体：nav 语境不接语气（那里的条目表达位置而非动作），neutral 由连接层负责不投影。
+ * 基底 (0,4,0) 与 selected / current 同级、叠加态 (0,5,0) 与它们的叠加态同级，
+ * 两边同级时靠源序分胜负——语气段排在上下文段之前，选中与当前因此恒压过语气（真源 §7.4）。
+ */
+const TONE_SUBJECT = '[data-tone]:not([data-xh-collection-context=\'nav\'])'
+/** 语气段的后缀：与基础态同一组选择器，只多一段语气主体。 */
+const TONE_SUFFIX = {
+  'rest': '',
+  'hover': ':hover',
+  'keyboard-highlight': ':is(:focus-visible, [data-highlighted])',
+  'pressed': PRESSED,
+}
 /** nav 覆盖基础态时的后缀：与基础态规则同一组选择器，只多一段 context，特指度各高一级。 */
 const BASE_SUFFIX = {
   'rest': '',
@@ -127,10 +147,12 @@ export function assertCollectionItemRecipe(source) {
     'contexts',
     'states',
     'contextStates',
+    'toneStates',
     'markers',
     'sizeValues',
     'stateValues',
     'contextValues',
+    'toneValues',
     'separator',
     'motion',
     'direction',
@@ -179,6 +201,12 @@ export function assertCollectionItemRecipe(source) {
       assertFields(source.contextValues[context][state], STATE_FIELDS, `contextValues.${context}.${state}`)
   }
 
+  assertList(source.toneStates, TONE_STATES, 'root.toneStates')
+  assertExactKeys(source.toneValues, ['$description', ...TONE_STATES], 'root.toneValues')
+  assertString(source.toneValues.$description, 'toneValues.$description')
+  for (const state of TONE_STATES)
+    assertFields(source.toneValues[state], TONE_FIELDS, `toneValues.${state}`)
+
   assertFields(source.separator, ['blockMargin', 'inlineMargin', 'color'], 'root.separator')
   if (source.separator.blockMargin.startsWith('-') || source.separator.inlineMargin.startsWith('-'))
     fail('separator margin 不允许使用负值')
@@ -211,6 +239,25 @@ function stateVars(source, state, indent = '    ') {
 
 function contextStateVars(source, context, state, indent = '    ') {
   return stateVarsFrom(source.contextValues[context][state], state, indent)
+}
+
+/**
+ * 语气段的取值：直接落私有槽，不经 --xh-collection-<slot>-<state> 那一组公开入口。
+ * 那一组是各皮肤写自己中性缺省的地方（皮肤无条件声明它），语气若从那里走会被恒等覆盖成中性。
+ * 需要改语气取色的使用者重绑 --xh-tone-* 桥即可，那本来就是全库的语气retarget 面。
+ */
+function toneStateVars(source, state, indent = '    ') {
+  return TONE_FIELDS
+    .map(field => `${indent}--xh-_collection-${STATE_SLOT[field]}: ${source.toneValues[state][field]};`)
+    .join('\n')
+}
+
+function toneSelector(state) {
+  return `[data-xh-collection-item]${TONE_SUBJECT}${GUARD}${TONE_SUFFIX[state]}`
+}
+
+function toneRules(source, render) {
+  return TONE_STATES.map(state => render(state)).join('\n\n')
 }
 
 function forcedVarsFrom(values, indent) {
@@ -401,6 +448,12 @@ ${stateVars(source, 'pressed')}
     transition-timing-function: ${source.motion.pressEasing};
   }
 
+  /* 语气段：条目自身动作的性质，静息只换字、hover / 高亮 / 按下换语气淡底，节奏与中性行一致（真源 §7.4）。
+     必须排在上下文段之前：语气与 selected / current 同特指度，靠源序让选中与当前压过语气。 */
+${toneRules(source, state => `  ${toneSelector(state)} {
+${toneStateVars(source, state)}${stateExtras(source, state, '    ')}
+  }`)}
+
 ${contextRules(source, (context, state) => `  ${contextSelector(context, state)} {
 ${contextStateVars(source, context, state)}${stateExtras(source, state, '    ')}
   }`)}
@@ -481,6 +534,12 @@ ${forcedStateVars(source, 'keyboard-highlight')}
     [data-xh-collection-item]${GUARD}${PRESSED} {
 ${forcedStateVars(source, 'pressed')}
     }
+
+    /* 语气在强制颜色下退出：逐态用系统色盖回家族缺省，只留图标与文案通道（真源 §7.4）。
+       语气段在媒体查询外的特指度比这里的基础态各高一级，必须逐条同形盖回，不能只写一条。 */
+${toneRules(source, state => `    ${toneSelector(state)} {
+${forcedStateVars(source, state, '      ')}
+    }`)}
 
 ${contextRules(source, (context, state) => `    ${contextSelector(context, state)} {
 ${forcedContextVars(source, context, state)}
