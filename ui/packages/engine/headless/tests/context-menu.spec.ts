@@ -539,6 +539,21 @@ describe('connectContextMenu 属性输出', () => {
     expect((api.getSeparatorProps() as Record<string, unknown>)['data-xh-collection-separator']).toBe('')
     expect((mount().api().getItemProps(decl) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
   })
+
+  it('逐条语气只认 collection 里这一条自己写的，菜单级 tone 不下发给条目', () => {
+    const h = mount({ tone: 'brand', collection: [{ value: 'copy' }, { value: 'delete', tone: 'danger' }] })
+    const api = h.api()
+    expect(api.collection.map(node => node.tone)).toEqual([null, 'danger'])
+    expect((api.getItemProps({ value: 'delete' }) as Record<string, unknown>)['data-tone']).toBe('danger')
+    expect((api.getItemProps({ value: 'copy' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+    expect((api.getPositionerProps() as Record<string, unknown>)['data-tone']).toBe('brand')
+  })
+
+  it('没有 collection 时条目不发 data-tone：作者直接写在部件上的那份原样留着', () => {
+    const props = mount({ tone: 'danger' }).api().getItemProps({ value: 'copy' }) as Record<string, unknown>
+    expect('data-tone' in props).toBe(true)
+    expect(props['data-tone']).toBeUndefined()
+  })
 })
 
 describe('roving tabindex 与焦点锚点', () => {

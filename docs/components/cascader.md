@@ -67,6 +67,7 @@
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
 - `searchable` 按完整路径筛选选项。
+- 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 支持按需加载、空状态、加载状态与原生表单提交。
 - 选中项使用末端标记，半选项使用横线。
 
@@ -380,6 +381,7 @@
 | `search-item` | `data-highlighted` | ''（条件成立时才出现） |
 | `search-item` | `data-pressed` | ''（条件成立时才出现） |
 | `search-item` | `data-state` | 'checked' \| 'indeterminate' \| 'unchecked' |
+| `search-item` | `data-tone` | undefined \| metaOf(v)?.tone |
 | `search-item` | `data-xh-collection-context` | 'overlay' |
 | `search-item` | `data-xh-collection-item` | '' |
 | `search-item` | `data-xh-collection-size` | props.size |
@@ -394,6 +396,7 @@
 | `item` | `data-level` | String(meta.level) \| undefined |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item` | `data-tone` | undefined \| metaOf(v)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

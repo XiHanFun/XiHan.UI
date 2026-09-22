@@ -56,6 +56,12 @@ export interface SelectNode {
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
+  /**
+   * 该条选项自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余条目同档。
+   * 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。
+   * 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个选择器的 tone 不下发给条目。
+   */
+  tone?: Tone
 }
 
 /** 单个条目的元信息，由 collection 推导，不含选中态与高亮态。 */
@@ -87,6 +93,8 @@ export interface SelectNodeMeta {
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
+  /** 该条自己写的语气；未提供时为 null。 */
+  tone: Tone | null
 }
 
 /**

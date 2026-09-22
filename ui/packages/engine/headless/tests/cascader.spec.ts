@@ -1718,3 +1718,17 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，条�
     expect(pressed(h.clear)).toBe(false)
   })
 })
+
+describe('逐条语气', () => {
+  it('写了 tone 的那条投影 data-tone，同列其余不带属性，且不向下传导', () => {
+    const h = mount({
+      collection: [
+        { value: 'cn', label: '中国', tone: 'danger', children: [{ value: 'bj', label: '北京' }] },
+        { value: 'us', label: '美国' },
+      ],
+    })
+    expect((h.api().getItemProps({ value: 'cn' }) as Record<string, unknown>)['data-tone']).toBe('danger')
+    expect((h.api().getItemProps({ value: 'us' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+    expect((h.api().getItemProps({ value: 'bj' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+  })
+})

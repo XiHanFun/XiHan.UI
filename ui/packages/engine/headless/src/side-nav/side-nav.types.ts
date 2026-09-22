@@ -47,6 +47,12 @@ export interface SideNavNode {
   label?: string
   /** 入口禁用：方向键跳过它，但它仍可聚焦。不向下传导给子级。 */
   disabled?: boolean
+  /**
+   * 该入口自身的性质：危险区域写 danger、需要留意的写 warning。不写即与其余入口同档，
+   * 也不向下传导给子级——每一层各自声明。只换字色与悬停 / 按下的面，不表达当前页；
+   * 当前项的品牌淡底与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。
+   */
+  tone?: Tone
   /** 直达目标；只对叶子有意义。 */
   href?: string
   children?: SideNavNode[]

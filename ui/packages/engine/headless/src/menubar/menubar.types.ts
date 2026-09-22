@@ -65,6 +65,12 @@ export interface MenubarNode {
   description?: string
   /** 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
+  /**
+   * 该条命令自身动作的性质：删除写 danger、停用写 warning。只在条目上读取——
+   * 顶层入口表达的是位置不是动作，写了也不产出语气面（真源 §7.4）。
+   * 只换字色与悬停 / 按下的面，不改字重与缩进；禁用压过它，破坏性命令仍要配图标。
+   */
+  tone?: Tone
   /** 所属分组的身份；相邻同值的条目合并为一个 group。只在条目上读取。 */
   group?: string
   /** 本组的标题文本，写在组内任意一条上即可。只在条目上读取。 */
@@ -83,6 +89,8 @@ export interface MenubarNodeMeta {
   /** 副文本原样透传，未提供时为 null。 */
   description: string | null
   disabled: boolean
+  /** 该条自己写的语气；未提供时为 null。顶层入口恒为 null 的读法见 MenubarNode。 */
+  tone: Tone | null
   /** 分组身份，未提供时为 null。 */
   group: string | null
   /** 分组标题，未提供时为 null。 */

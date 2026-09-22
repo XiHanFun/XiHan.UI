@@ -58,6 +58,7 @@
 
 - 支持分组、嵌套分支与当前项高亮：当前项铺品牌淡底行面、字取淡底前景，不另画指示条；通往当前项的展开分支只落与悬停同档的中性面。
 - `accordion` 限制同一层级只展开一个分支。
+- 入口可逐条声明语气，不向下传导；当前项的品牌淡底压过它。
 - 折叠后保留图标入口，子级在浮层中展示。
 - 方向键上下移动，左右键展开或收起分支。
 
@@ -250,6 +251,7 @@
 | `branch-trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
+| `branch-trigger` | `data-tone` | metaOf(v)?.tone |
 | `branch-trigger` | `data-value` | itemValue(el) |
 | `branch-trigger` | `data-xh-collection-context` | 'page' |
 | `branch-trigger` | `data-xh-collection-item` | '' |
@@ -263,6 +265,7 @@
 | `link` | `data-disabled` | ''（条件成立时才出现） |
 | `link` | `data-highlighted` | ''（条件成立时才出现） |
 | `link` | `data-pressed` | ''（条件成立时才出现） |
+| `link` | `data-tone` | metaOf(v)?.tone |
 | `link` | `data-value` | itemValue(el) |
 | `link` | `data-xh-collection-context` | 'page' |
 | `link` | `data-xh-collection-item` | '' |

@@ -94,6 +94,13 @@ export function connectCascader<T extends PropTypes>(
   const cascaded = cascadeOn ? cascadeState(collection, value.map(p => p[p.length - 1]!)) : null
   // 整个控件禁用向下传导到每个条目，条目也能在 collection 里单独禁用
   const isDisabled = (meta: CascaderNodeMeta): boolean => disabled || meta.disabled
+
+  /**
+   * 条目语气：只认 collection 里这一层自己写的那族色，不从父节点继承。
+   * 没写时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
+   */
+  const nodeTone = (v: string | undefined): string | undefined =>
+    (v == null ? undefined : metaOf(v)?.tone) ?? undefined
   const isSelected = (v: string): boolean => {
     if (cascaded)
       return cascaded.checked.has(v)
@@ -677,6 +684,8 @@ export function connectCascader<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 整条路径末段自己的性质：搜索结果显示的是那一片叶子，语气跟着它走
+        'data-tone': nodeTone(path.at(-1)),
         'id': searchItemId(key),
         'role': 'option',
         'aria-selected': selectionState === 'checked' ? 'true' : 'false',
@@ -785,6 +794,8 @@ export function connectCascader<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 该条自身的性质；家族据此换字与悬停 / 按下的面，展开路径与选中压过它
+        'data-tone': nodeTone(item.value),
         // 导航与选中都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
         // 列的 aria-labelledby 要指得到它，每个条目都需要稳定 id

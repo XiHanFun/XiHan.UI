@@ -117,6 +117,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
+- 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定该层子节点的排列方向，优先于 `leafOrientation`；标 `vertical` 可以把树级的 `horizontal` 改回竖排。根层不受影响，始终竖排。
@@ -345,6 +346,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `item` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-selected` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf(value)?.tone |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | 'md' |
@@ -383,6 +385,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-selected` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
+| `branch-control` | `data-tone` | metaOf(value)?.tone |
 | `branch-control` | `data-xh-collection-context` | 'page' |
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | 'md' |

@@ -5,7 +5,7 @@
 
 // 定义 command 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 export interface CommandTranslations {
@@ -44,6 +44,12 @@ export interface CommandNode {
   group?: string
   /** 条目禁用：方向键跳过它，点击与确认键都不选中。 */
   disabled?: boolean
+  /**
+   * 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余命令同档。
+   * 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。
+   * 红字不是唯一通道，破坏性命令仍要配图标。
+   */
+  tone?: Tone
 }
 
 /** 单条命令的元信息，由清单推导，不含高亮态。 */
@@ -56,6 +62,8 @@ export interface CommandNodeMeta {
   /** 未归组时为空串。 */
   group: string
   disabled: boolean
+  /** 该条自己写的语气；未提供时为 null。 */
+  tone: Tone | null
 }
 
 /** 分组声明：只提供组名与显示文本，成员由条目自行归属。 */

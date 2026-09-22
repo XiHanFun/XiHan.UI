@@ -1143,3 +1143,18 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，叶�
     }
   })
 })
+
+describe('逐条语气', () => {
+  it('叶子行与分支行都投影本节点的 tone，且不向下传导', () => {
+    const h = mount({
+      collection: [
+        { value: 'old', label: '归档', tone: 'danger', children: [{ value: 'old-a', label: 'A' }] },
+        { value: 'live', label: '在用' },
+      ],
+      defaultExpandedValue: ['old'],
+    })
+    expect((h.api().getBranchControlProps({ value: 'old' }) as Record<string, unknown>)['data-tone']).toBe('danger')
+    expect((h.api().getItemProps({ value: 'old-a' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+    expect((h.api().getItemProps({ value: 'live' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+  })
+})

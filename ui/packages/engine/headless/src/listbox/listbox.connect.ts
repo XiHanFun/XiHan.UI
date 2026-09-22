@@ -45,6 +45,7 @@ export function connectListbox<T extends PropTypes>(
     value: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
+    tone: node.tone ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
   const empty = counted && collection.length === 0
@@ -53,6 +54,14 @@ export function connectListbox<T extends PropTypes>(
   /** 条目禁用：整列禁用一票通过，其次看部件上写的，再没有就回 collection 里查。 */
   const isDisabled = (item: ListboxItemProps): boolean =>
     listDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
+
+  /**
+   * 条目语气：只认 collection 里这一条自己写的那族色，根上的 tone 不下发。
+   * 没有 collection 时返回 undefined，作者直接写在部件上的 data-tone 原样留着
+   * （连接层发 undefined 表示「这一条我不给」，不撤作者写过的属性）。
+   */
+  const itemTone = (item: ListboxItemProps): string | undefined =>
+    metaOf.get(item.value)?.tone ?? undefined
 
   // 按压通道：真源是机器 context 里「正被按住的那一个」（条目按 value 记，取下一页只记 part），各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
@@ -346,6 +355,8 @@ export function connectListbox<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'page',
+        // 该条自身的性质；家族据此换字与悬停 / 按下的面，禁用与选中压过它
+        'data-tone': itemTone(item),
         // 导航、检索与选中的条目身份
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'option',

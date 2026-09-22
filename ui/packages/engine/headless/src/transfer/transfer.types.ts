@@ -27,6 +27,12 @@ export interface TransferItem {
   label: string
   /** 条目禁用：不可勾选、也不可移动，但它仍可聚焦、仍是方向键的起点。 */
   disabled?: boolean
+  /**
+   * 该条自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余条目同档。
+   * 只换字色与悬停 / 按下的面，不表达勾选与校验；勾选的标记与禁用都压过它。
+   * 两侧面板读同一份数据，条目搬到哪一侧都带着自己的语气。
+   */
+  tone?: Tone
 }
 
 /**

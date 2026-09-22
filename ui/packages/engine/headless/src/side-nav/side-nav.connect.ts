@@ -52,6 +52,12 @@ export function connectSideNav<T extends PropTypes>(
   const isExpanded = (v: string): boolean => !collapsed && expandedValue.includes(v)
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
 
+  /**
+   * 入口语气：只认 collection 里这一层自己写的那族色，不从父级继承。
+   * 没写时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
+   */
+  const nodeTone = (v: string): string | undefined => metaOf(v)?.tone ?? undefined
+
   // 按压通道：真源是机器 context 里「正被按住的那一个」（入口按 value 记、链接行与分支行分开认），各自合成
   // 一份跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
   // 导航当前（aria-current）与按压互相独立；入口自身的禁用只有 connect 知道，随 PRESS.START 带给机器的守卫
@@ -296,6 +302,8 @@ export function connectSideNav<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'page',
+        // 该入口自身的性质；家族据此换字与悬停 / 按下的面，当前项与禁用压过它
+        'data-tone': nodeTone(v),
         'type': 'button',
         'id': triggerId(v),
         'data-value': v,
@@ -447,6 +455,8 @@ export function connectSideNav<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'page',
+        // 该入口自身的性质；家族据此换字与悬停 / 按下的面，当前项与禁用压过它
+        'data-tone': nodeTone(v),
         'data-value': v,
         'href': metaOf(v) ? (collectionHref(collection, v) ?? undefined) : undefined,
         // 选中的那条就是「当前页」，读屏与皮肤都认它

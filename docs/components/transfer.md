@@ -95,6 +95,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 - 两栏都可搜索，`filter` 可自定义匹配规则。
 - 勾中的条目铺品牌淡底行面并由行首的方框标记，与表格选中行同一副外观；两侧定高列表挂自绘滚动条。
 - `oneWay` 单向移动：只能移向目标，不可退回。
+- 条目可逐条声明语气，搬到另一侧仍带着自己的那一份。
 - 万级条目时只渲染可视区。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
 - 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
@@ -325,6 +326,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-side` | item.side |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-tone` | index.get(v)?.tone |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

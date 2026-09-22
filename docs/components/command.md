@@ -60,6 +60,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 
 - 内置过滤：传入清单后按检索串逐词筛选、按 `group` 归组，空组自动移除。`keywords` 让一条命令同时匹配英文名、拼音与旧称。
 - 过滤可以关闭（`filter` 置否），改由调用方筛选；远端检索使用这一档。
+- 命令可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
 - 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不保留持久选中状态，视觉上也不绘制对号或选中底。
@@ -277,6 +278,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

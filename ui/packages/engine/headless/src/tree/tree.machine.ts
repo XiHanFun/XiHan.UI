@@ -43,6 +43,7 @@ function collectNodes(
         value: node.value,
         label: node.label ?? node.value,
         disabled: !!node.disabled,
+        tone: node.tone ?? null,
         branch,
         level,
         posInSet: i + 1,

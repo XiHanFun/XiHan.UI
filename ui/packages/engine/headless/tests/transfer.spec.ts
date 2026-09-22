@@ -1179,3 +1179,14 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，四�
     expect(pressed(h.toTarget)).toBe(false)
   })
 })
+
+describe('逐条语气', () => {
+  it('写了 tone 的那条投影 data-tone，搬到另一侧仍带着自己的语气', () => {
+    const h = mount({
+      collection: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B', tone: 'danger' }],
+      defaultValue: ['b'],
+    })
+    expect((h.api().getItemProps({ value: 'b', side: 'target' }) as Record<string, unknown>)['data-tone']).toBe('danger')
+    expect((h.api().getItemProps({ value: 'a', side: 'source' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+  })
+})

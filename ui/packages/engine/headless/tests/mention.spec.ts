@@ -718,8 +718,8 @@ describe('公开 API 与无障碍属性', () => {
       ],
     })
     expect(m.api().collection).toEqual([
-      { value: 'lilei', label: '李雷', disabled: false },
-      { value: 'ghost', label: '幽灵', disabled: true },
+      { value: 'lilei', label: '李雷', disabled: false, tone: null },
+      { value: 'ghost', label: '幽灵', disabled: true, tone: null },
     ])
     const props = m.api().getItemProps({ value: 'ghost' }) as Record<string, unknown>
     expect(props['aria-disabled']).toBe('true')
@@ -1094,5 +1094,13 @@ describe('按压通道：触屏按住投影 data-pressed，按候选 value 记',
       m.setProps(inert)
       expect(pressed(m.item('lilei'))).toBe(false)
     }
+  })
+})
+
+describe('逐条语气', () => {
+  it('写了 tone 的那条投影 data-tone，没写的不带属性', () => {
+    const h = mount({ collection: [{ value: 'ann' }, { value: 'bob', tone: 'warning' }] })
+    expect((h.api().getItemProps({ value: 'bob' }) as Record<string, unknown>)['data-tone']).toBe('warning')
+    expect((h.api().getItemProps({ value: 'ann' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
   })
 })

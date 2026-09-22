@@ -58,6 +58,7 @@
 
 - 菜单默认贴近指针位置。
 - 支持分组、分隔线、标记位和子菜单。
+- 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
 - 条目可组合图标、文字、说明和快捷键提示。
 - 选中任意层级的命令后发出根级 `select` 并关闭菜单链。
@@ -103,7 +104,7 @@
 | `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
 | `translations` | `Partial<ContextMenuTranslations>` |  | 读屏文案，默认英文。 |
 | `longPressDelay` | `number` |  | 触摸端长按多久视为触发（ms），默认 700。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位使用哪族颜色。 |
+| `tone` | `Tone` |  | 整张菜单的语气：brand / neutral / success / warning / danger / info。 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档， 逐条的语气写在 collection 的 `tone` 上（见 ContextMenuNode）。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `onOpenChange` | `(details: ContextMenuOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onSelect` | `(details: ContextMenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
@@ -243,6 +244,7 @@
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

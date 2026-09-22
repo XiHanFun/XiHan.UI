@@ -117,6 +117,12 @@ export function connectTree<T extends PropTypes>(
   // 整棵树禁用向下传导到每个节点；节点也能在 collection 里单独禁用
   const isDisabled = (value: string): boolean => treeDisabled || !!metaOf(value)?.disabled
 
+  /**
+   * 节点语气：只认 collection 里这一层自己写的那族色，不从父节点继承。
+   * 没写时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
+   */
+  const nodeTone = (value: string): string | undefined => metaOf(value)?.tone ?? undefined
+
   // 分支的子层怎么排：节点上标了 childrenOrientation 就以它为准；没标才退回结构判据——
   // 只有子节点全是叶子的那一层才吃 leafOrientation，中间层恒竖排
   const branchOrientation = (value: string): 'horizontal' | 'vertical' =>
@@ -584,6 +590,8 @@ export function connectTree<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': 'md',
         'data-xh-collection-context': 'page',
+        // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
+        'data-tone': nodeTone(node.value),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
         'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === node.value),
         'onClick': (event: MouseEvent) => {
@@ -700,6 +708,8 @@ export function connectTree<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': 'md',
         'data-xh-collection-context': 'page',
+        // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
+        'data-tone': nodeTone(node.value),
         'data-dragging': dataAttr(draggingNode === node.value),
         'data-drop': dropSide(node.value),
         'data-draggable': dataAttr(nodeDraggable && !isDisabled(node.value)),
