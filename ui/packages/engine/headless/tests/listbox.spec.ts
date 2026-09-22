@@ -799,3 +799,18 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，条�
     expect(loadMore(h)['data-pressed']).toBe('')
   })
 })
+
+describe('逐条语气', () => {
+  it('写了 tone 的那条投影 data-tone，没写的不带属性', () => {
+    const h = mount({ collection: [{ value: 'apple' }, { value: 'durian', tone: 'danger' }] })
+    expect(h.api().collection.map(node => node.tone)).toEqual([null, 'danger'])
+    expect((h.api().getItemProps({ value: 'durian' }) as Record<string, unknown>)['data-tone']).toBe('danger')
+    expect((h.api().getItemProps({ value: 'apple' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+  })
+
+  it('没有 collection 时不发这个属性：作者写在部件上的那份原样留着', () => {
+    const props = mount().api().getItemProps({ value: 'apple' }) as Record<string, unknown>
+    expect('data-tone' in props).toBe(true)
+    expect(props['data-tone']).toBeUndefined()
+  })
+})

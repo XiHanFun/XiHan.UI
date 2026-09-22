@@ -65,6 +65,7 @@
 - 支持 `single`、`multiple` 和 `extended` 三种选择模式。
 - 支持方向键导航、连续输入检索与范围选择。
 - 支持分组、禁用条目和定高滚动。
+- 条目可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 提供空态、加载态与加载更多部件。
 
 ### 组合
@@ -251,6 +252,7 @@
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

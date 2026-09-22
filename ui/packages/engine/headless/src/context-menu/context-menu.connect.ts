@@ -54,11 +54,12 @@ export function connectContextMenu<T extends PropTypes>(
   const dir = prop('dir')
   const typeaheadOn = prop('typeahead') ?? true
 
-  // collection 推出的条目元信息：显示文本、禁用、标记位与分组都在这里定案，条目部件只报 value
+  // collection 推出的条目元信息：显示文本、禁用、语气、标记位与分组都在这里定案，条目部件只报 value
   const collection: ContextMenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
+    tone: node.tone ?? null,
     indicator: node.indicator ?? null,
     description: node.description ?? null,
     group: node.group ?? null,
@@ -70,6 +71,14 @@ export function connectContextMenu<T extends PropTypes>(
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: ContextMenuItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
+  /**
+   * 条目语气：只认 collection 里这一条自己写的那族色，菜单级的 tone 不下发。
+   * 没有 collection 时返回 undefined，作者直接写在条目部件上的 data-tone 原样留着
+   * （连接层发 undefined 表示「这一条我不给」，不撤作者写过的属性）。
+   */
+  const itemTone = (item: ContextMenuItemProps): string | undefined =>
+    metaOf.get(item.value)?.tone ?? undefined
 
   // 条目的按压通道：真源是机器 context 里「正被按住的那条」，每条条目各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
@@ -291,6 +300,8 @@ export function connectContextMenu<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 该条命令自身动作的性质；家族据此换字与悬停 / 按下的面，禁用与选中压过它
+        'data-tone': itemTone(item),
         // 导航、检索与选中都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'menuitem',

@@ -70,6 +70,7 @@ describe('命令清单的过滤与归组', () => {
       keywords: [],
       group: COMMAND_UNGROUPED,
       disabled: false,
+      tone: null,
     })
   })
 
@@ -437,5 +438,17 @@ describe('按压通道：Enter 与触屏按住投影 data-pressed，按命令 va
     c.setProps({ loading: true })
     expect(item(c, 'users')['data-pressed']).toBeUndefined()
     c.stop()
+  })
+})
+
+describe('逐条语气', () => {
+  it('写了 tone 的那条投影 data-tone，没写的不带属性', () => {
+    const c = makeCommand({
+      defaultOpen: true,
+      collection: [{ value: 'keep' }, { value: 'drop', tone: 'danger' }],
+      groups: [],
+    })
+    expect((c.api().getItemProps({ value: 'drop' }) as Record<string, unknown>)['data-tone']).toBe('danger')
+    expect((c.api().getItemProps({ value: 'keep' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
   })
 })

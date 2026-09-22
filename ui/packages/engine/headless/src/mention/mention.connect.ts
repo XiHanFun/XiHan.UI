@@ -53,6 +53,7 @@ export function connectMention<T extends PropTypes>(
     value: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
+    tone: node.tone ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
   // itemCount 尚未结算时不抢跑空态；结算后按真实可见 DOM 判断，手写 hidden 项也不会冒充候选。
@@ -69,6 +70,14 @@ export function connectMention<T extends PropTypes>(
   /** 候选禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: MentionItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
+  /**
+   * 候选语气：只认 collection 里这一条自己写的那族色，根上的 tone 不下发。
+   * 没有 collection 时返回 undefined，作者直接写在部件上的 data-tone 原样留着
+   * （连接层发 undefined 表示「这一条我不给」，不撤作者写过的属性）。
+   */
+  const itemTone = (item: MentionItemProps): string | undefined =>
+    metaOf.get(item.value)?.tone ?? undefined
 
   const itemStateAttrs = (item: MentionItemProps): Record<string, string | undefined> => ({
     'data-highlighted': dataAttr(isHighlighted(item.value)),
@@ -338,6 +347,8 @@ export function connectMention<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 该条自身的性质；家族据此换字与悬停 / 按下的面，禁用与选中压过它
+        'data-tone': itemTone(item),
         // 导航与提交都以此为候选身份
         [ITEM_VALUE_ATTR]: item.value,
         // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id

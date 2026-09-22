@@ -62,6 +62,7 @@ export function connectMenubar<T extends PropTypes>(
     label: node.label ?? node.value,
     description: node.description ?? null,
     disabled: !!node.disabled,
+    tone: node.tone ?? null,
     group: node.group ?? null,
     groupLabel: node.groupLabel ?? null,
     separatorBefore: !!node.separatorBefore,
@@ -84,6 +85,14 @@ export function connectMenubar<T extends PropTypes>(
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: MenubarItemProps): boolean =>
     item.disabled ?? itemMetaOf.get(item.value)?.disabled ?? false
+
+  /**
+   * 条目语气：只认 collection 里这一条自己写的那族色，菜单栏级的 tone 不下发。
+   * 入口不接语气——nav 语境表达的是位置不是动作（真源 §7.4），所以这里只给条目。
+   * 没有 collection 时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
+   */
+  const itemTone = (item: MenubarItemProps): string | undefined =>
+    itemMetaOf.get(item.value)?.tone ?? undefined
 
   // 按压通道：真源是机器 context 里「正被按住的那颗」（trigger / item 按 value 记），每颗各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
@@ -451,6 +460,8 @@ export function connectMenubar<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 该条命令自身动作的性质；家族据此换字与悬停 / 按下的面，禁用压过它
+        'data-tone': itemTone(item),
         // 导航、检索与选中的条目身份
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'menuitem',

@@ -5,7 +5,7 @@
 
 // 定义 tree 类型契约。
 
-import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Typeahead } from '@xihan-ui/core'
+import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Tone, Typeahead } from '@xihan-ui/core'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
@@ -31,6 +31,12 @@ export interface TreeNode {
   /** 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 */
   disabled?: boolean
   /**
+   * 该节点自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余节点同档，
+   * 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不改字重与缩进，
+   * 也不表达选中或校验；选中的标记与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。
+   */
+  tone?: Tone
+  /**
    * 子节点。提供数组即判定为分支，空数组也计入：暂时没有子项的目录仍要报告 aria-expanded。
    */
   children?: TreeNode[]
@@ -50,6 +56,8 @@ export interface TreeNodeMeta {
   /** node.label ?? node.value，恒为字符串，连打检索直接用它比较。 */
   label: string
   disabled: boolean
+  /** 该节点自己写的语气；未提供时为 null，不从父节点继承。 */
+  tone: Tone | null
   /** children 是数组即为分支。 */
   branch: boolean
   /** 1 起算，直接写入 aria-level。 */

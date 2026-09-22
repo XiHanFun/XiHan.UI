@@ -157,6 +157,7 @@ outline、subtle 和 ghost
 - 通过 `hidden-select` 参与表单。
 - 多选值可显示为标签，超出 `maxTagCount` 后合并为 `+N`。
 - 支持分组、加载、空状态、底部操作区和滚动加载。
+- 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 控件使用 Field Chrome，浮层使用 M2 磨砂表面。
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
@@ -428,6 +429,7 @@ outline、subtle 和 ghost
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

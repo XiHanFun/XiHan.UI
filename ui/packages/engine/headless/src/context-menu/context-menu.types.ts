@@ -59,13 +59,19 @@ export interface ContextMenuSelectDetails {
   value: string
 }
 
-/** 条目数据。提供 collection 时，显示文本、禁用、标记位与分组以它为准。 */
+/** 条目数据。提供 collection 时，显示文本、禁用、语气、标记位与分组以它为准。 */
 export interface ContextMenuNode {
   value: string
   /** 展示文本，也是连打检索的取字来源；默认回退为 value。 */
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
+  /**
+   * 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。
+   * 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。
+   * 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。
+   */
+  tone?: Tone
   /** 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 */
   indicator?: string
   /** 副文本，写入 item-description 部件；未提供时本条不铺该部件。 */
@@ -84,6 +90,8 @@ export interface ContextMenuNodeMeta {
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
+  /** 该条命令自身的语气；未提供时为 null。 */
+  tone: Tone | null
   /** 标记位文字；未提供时为 null。 */
   indicator: string | null
   /** 副文本；未提供时为 null。 */
@@ -140,7 +148,11 @@ export interface ContextMenuSchema extends MachineSchema {
     translations?: Partial<ContextMenuTranslations>
     /** 触摸端长按多久视为触发（ms），默认 700。 */
     longPressDelay?: number
-    /** 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位使用哪族颜色。 */
+    /**
+     * 整张菜单的语气：brand / neutral / success / warning / danger / info。
+     * 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档，
+     * 逐条的语气写在 collection 的 `tone` 上（见 ContextMenuNode）。
+     */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
     size?: Size

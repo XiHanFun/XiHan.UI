@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
       collection={actions}
       triggerAsChild
       trigger={<XhButton variant="subtle">文件</XhButton>}
-      renderItem={(node) => (
+      renderItem={node => (
         <>
           <XhMenuItemIndicator>
             <XhIcon icon={icons[node.value as keyof typeof icons]} size="sm" />

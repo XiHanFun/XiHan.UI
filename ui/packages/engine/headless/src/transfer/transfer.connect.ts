@@ -97,6 +97,12 @@ export function connectTransfer<T extends PropTypes>(
   const sideOf = (v: string): TransferSide => transferSideOf(value, v)
   const isItemLocked = (v: string): boolean => disabled || !!index.get(v)?.disabled
 
+  /**
+   * 条目语气：只认 collection 里这一条自己写的那族色，整份穿梭框的 tone 不下发。
+   * 没写时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
+   */
+  const itemTone = (v: string): string | undefined => index.get(v)?.tone ?? undefined
+
   /** 往 to 侧搬此刻是否可行。 */
   const canMove = (to: TransferSide): boolean => {
     if (disabled || readOnly)
@@ -477,6 +483,8 @@ export function connectTransfer<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'page',
+        // 该条自身的性质；家族据此换字与悬停 / 按下的面，勾选与禁用压过它
+        'data-tone': itemTone(item.value),
         // 导航、焦点与勾选都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'option',

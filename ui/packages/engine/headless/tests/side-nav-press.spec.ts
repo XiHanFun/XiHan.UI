@@ -213,3 +213,20 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，链�
     expect(pressed(guide)).toBe(false)
   })
 })
+
+describe('逐条语气', () => {
+  it('链接行与分支入口都投影本层的 tone，且不向下传导', () => {
+    const h = mount({
+      collection: [
+        { value: 'products', label: 'Products', children: [{ value: 'product-a', label: 'Product A' }] },
+        { value: 'docs', label: 'Docs', tone: 'danger', children: [{ value: 'doc-a', label: 'Doc A' }, { value: 'doc-b', label: 'Doc B', disabled: true }] },
+        { value: 'guide', label: 'Guide' },
+      ],
+    })
+    expect(h.trigger('docs').getAttribute('data-tone')).toBe('danger')
+    expect(h.trigger('products').hasAttribute('data-tone')).toBe(false)
+    // 不向下传导：danger 分支下的叶子仍是中性档
+    expect(h.link('doc-a').hasAttribute('data-tone')).toBe(false)
+    expect(h.link('guide').hasAttribute('data-tone')).toBe(false)
+  })
+})

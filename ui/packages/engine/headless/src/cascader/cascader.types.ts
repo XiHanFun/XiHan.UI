@@ -22,6 +22,12 @@ export interface CascaderNode {
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 */
   disabled?: boolean
+  /**
+   * 该条选项自身的性质：已失效的写 danger、需要留意的写 warning。不写即与同列其余条目同档，
+   * 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不表达选中与校验；
+   * 展开路径的面、选中的对号与禁用都压过它。搜索结果里取整条路径末段的语气。
+   */
+  tone?: Tone
   /** 子节点。非空数组才视为分支（右侧可以再打开一列）。 */
   children?: CascaderNode[]
 }
@@ -54,6 +60,8 @@ export interface CascaderNodeMeta {
   level: number
   /** 从根到它（含自身）的完整路径，选中时写入 value。 */
   path: readonly string[]
+  /** 该条自己写的语气；未提供时为 null，不从父节点继承。 */
+  tone: Tone | null
 }
 
 /** 当前并排展开的一列。 */

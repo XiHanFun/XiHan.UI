@@ -77,6 +77,12 @@ export interface ComboboxNode {
   label?: string
   /** 候选禁用：方向键跳过它，点击与回车都不选中它。 */
   disabled?: boolean
+  /**
+   * 该条候选自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余候选同档。
+   * 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。
+   * 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个组合框的 tone 不下发给候选。
+   */
+  tone?: Tone
 }
 
 /** 单个候选的元信息，由 collection 推导，不含选中态与高亮态。 */
@@ -85,6 +91,8 @@ export interface ComboboxNodeMeta {
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
+  /** 该条自己写的语气；未提供时为 null。 */
+  tone: Tone | null
 }
 
 /**

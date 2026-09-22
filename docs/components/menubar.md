@@ -59,6 +59,7 @@
 - 同一时间只展开一个顶层菜单。
 - 展开后移向相邻入口会直接切换菜单。
 - 支持方向键、首字符检索、禁用项、分组与子菜单。
+- 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
 - 条目可组合图标、文字、说明和快捷键提示。
 - 首次展开与最终关闭使用短距离淡变，顶层菜单切换不播放交叉动画。
 
@@ -265,6 +266,7 @@
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | itemMetaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

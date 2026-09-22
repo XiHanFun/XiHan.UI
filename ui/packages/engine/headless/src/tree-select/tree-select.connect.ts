@@ -119,6 +119,12 @@ export function connectTreeSelect<T extends PropTypes>(
   // 控件级禁用向下传导，节点也可在 collection 里单独禁用
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
 
+  /**
+   * 节点语气：只认 collection 里这一层自己写的那族色，不从父节点继承。
+   * 没写时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
+   */
+  const nodeTone = (v: string): string | undefined => metaOf(v)?.tone ?? undefined
+
   // 显示文字取自 collection 的 label，收起子树里的选中值也报得出名字
   const labelOf = (v: string): string => metaOf(v)?.label ?? v
   const valueText = value.length ? value.map(labelOf).join(', ') : null
@@ -609,6 +615,8 @@ export function connectTreeSelect<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
+        'data-tone': nodeTone(node.value),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
         'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === node.value),
         'onClick': (event: MouseEvent) => {
@@ -671,6 +679,8 @@ export function connectTreeSelect<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
+        'data-tone': nodeTone(node.value),
         // 触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
         // 键盘那一路由 branch 代发（焦点落在它身上），行自己只接触屏。与叶子行分开认：同一个值按住行时叶子不亮
         'data-pressed': dataAttr(pressedPart === 'branch-control' && pressedValue === node.value),

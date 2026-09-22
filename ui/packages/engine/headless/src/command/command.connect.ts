@@ -66,6 +66,14 @@ export function connectCommand<T extends PropTypes>(
   const itemDisabled = (item: CommandItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
+  /**
+   * 条目语气：只认清单里这一条自己写的那族色。
+   * 没有 collection 时返回 undefined，作者直接写在部件上的 data-tone 原样留着
+   * （连接层发 undefined 表示「这一条我不给」，不撤作者写过的属性）。
+   */
+  const itemTone = (item: CommandItemProps): string | undefined =>
+    metaOf.get(item.value)?.tone ?? undefined
+
   // item 与 item-text 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: CommandItemProps): Record<string, string | undefined> => ({
     'data-disabled': dataAttr(itemDisabled(item)),
@@ -294,6 +302,8 @@ export function connectCommand<T extends PropTypes>(
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
+        // 该条命令自身动作的性质；家族据此换字与悬停 / 按下的面，禁用压过它
+        'data-tone': itemTone(item),
         // 导航与选中都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
         // aria-activedescendant 要指得到它，所以每条命令都得有个稳定 id

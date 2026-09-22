@@ -71,6 +71,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 - 单行输入框，与其他输入控件使用同一档行高与内衬。
 - 多种前缀各自映射一份候选。
+- 候选可逐条声明语气，已停用或需要留意的那条自带该族字色与高亮底。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
 - `label` 部件为输入框提供可点击的标题；提供 `translations.input` 时仍使用 `aria-label`。
@@ -292,6 +293,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

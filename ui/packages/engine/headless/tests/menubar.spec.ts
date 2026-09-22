@@ -1343,3 +1343,14 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，trig
     runtime.stop()
   })
 })
+
+describe('逐条语气', () => {
+  it('条目写了 tone 就投影，顶层入口不接语气（nav 语境表达的是位置）', () => {
+    const h = mount({
+      collection: [{ value: 'file', label: '文件', tone: 'danger', items: [{ value: 'new' }, { value: 'delete', tone: 'danger' }] }],
+    })
+    expect((h.api().getItemProps({ value: 'delete' }) as Record<string, unknown>)['data-tone']).toBe('danger')
+    expect((h.api().getItemProps({ value: 'new' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+    expect((h.api().getTriggerProps({ value: 'file' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+  })
+})
