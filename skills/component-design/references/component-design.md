@@ -237,6 +237,17 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 图标按钮视觉盒遵循同一高度。
 - 粗指针命中区至少 44×44px；可以用伪元素扩展，不能改变布局盒。
 
+字段的宽度同样是一族一个数，不随内容走：
+
+| 槽 | 令牌 | 值 | 含义 |
+| --- | --- | ---: | --- |
+| `--xh-<c>-control-w` | `--xh-control-w` | 16rem | 不传尺寸时单行字段根的 `inline-size`；选中一条很长的选项触发器也不变宽，文字在盒内截断 |
+| `--xh-<c>-control-min-w` | `--xh-control-min-w` | 12rem | 被 flex / grid 容器压缩时的底线；根上写成 `min(缺省宽, 底线, 100%)`，底线不高过缺省宽，容器比底线还窄时收成容器宽 |
+
+- 根另带 `max-inline-size: 100%`；盒（control）只写家族的 `min(…, 100%)` 地板，由根撑开。要撑满表单列由使用者在根上写 `inline-size: 100%`。
+- 刻意例外（须登记进 check-control-box 的 EXEMPT）：DateRangePicker 起止两组按日的段位、分隔符与日历钮排在一行，内容比缺省宽宽，缺省 `inline-size: max-content`、地板取 `--xh-control-w`（按年、按月时不比别的字段窄）；PinInput 由格数与格宽定宽；PromptInput 铺满宿主；Field 的控件铺满表单列；Clipboard 只放复制钮的用法是独立按钮，缺省宽只给带输入框的用法（`:has(control)`）。
+- 示例不写内联宽度，让文档展示缺省宽；只有演示宽度本身的示例才改槽。
+
 ### 6.3 形状身份
 
 | 角色 | 圆角 | 给谁 |
@@ -306,6 +317,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 边缘渐隐只在 ScrollArea 的 fade 变体与 Marquee 提供；粘底只由 Core `createStickToBottom` 提供。
 - 滑块色阶维持 15 / 25 / 35% 三级；文档站页面滚动条与组件滚动条同一 `type`，不另写覆写。
 - 声明了 `--xh-scrollbar-track-bg` 却未接线为宿主的皮肤视为死声明。
+- 横向控件带排不下时分两路：Toolbar / Menubar / NavigationMenu / Segmented 折行；Tabs 不折行——标签带只裁主轴（`overflow: clip visible`，不是滚动容器，交叉轴上的焦点环、粗指针外扩与 raised 影都不被裁），标签整体沿主轴 `translate` 位移（机器按 continuous 档补间写进 `--xh-_tabs-scroll`），两端 `prev-trigger` / `next-trigger` 接 Action Control icon 档 ghost 面、静息底换成所在面的盖底（`--xh-tabs-scroll-trigger-bg`，缺省 surface、segment 轨道取 subtle）、挪到头那一侧 `opacity: 0`（与 Carousel 同），横向滚轮按量位移、竖滚轮留给页面，触屏手指沿主轴拖即跟手平移（放不下时 `list` 写 `touch-action: pan-y pinch-zoom`，交叉轴仍归页面），选中 / 聚焦的标签被裁时自动挪进视野；不铺边缘渐隐。
 
 ## 7. 颜色
 
@@ -318,6 +330,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 边界：default（一切根面外边与 raised 面描边）、subtle（仅内部分隔线与分隔伪元素）、strong（仅 contrast-more 与刻意登记的强调边）、control / control-hover / control-focus（字段与焦点边）、danger。
 
 每个实色和柔和语气必须提供匹配的 foreground；组件不得自行计算文字颜色。
+- 基础色板：十二个色相 × 11 档（`--xh-color-<red|orange|amber|yellow|lime|green|teal|cyan|blue|indigo|purple|pink>-<50…950>`），由 `tokens/palette.seeds.json` 经 `build/emit-palette.mjs` 按品牌曲线派生，同一档跨色相同一明度。它只给使用者、数据可视化与按颜色点名的色板轴（Heatmap `purple`）用；皮肤只消费语义角色与语气轴，不直接取色板。
 
 ### 7.2 使用规则
 
@@ -341,7 +354,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 语义 | 对象 | 唯一标记 | 叠加态 | forced-colors |
 | --- | --- | --- | --- | --- |
 | 浮层瞬态集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
-| 页内持久集合的选中 | Tree、Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle` + 前导勾选部件或 2px 指示条（`--xh-stroke-thick`，pill，`--xh-fg-brand`） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
+| 页内持久集合的选中 | Tree、Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；带勾选部件的集合再加前导对号。SideNav 当前项只有行面与字色，不画起始侧指示条（配方 `markers.page.current: none`，2026-09-22 起） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上）；list 里没放该部件时，当前项在自己的 `::after` 上自画一条同规格的静态线（厚度 / 颜色 / 圆角读各自 `--xh-<c>-indicator-*` 同一组槽，不做动画，rtl 随逻辑属性镜像，放了部件即收起）：Tabs 横向贴底、纵向贴行向末端（与部件同侧）；Anchor 竖排贴行向起始缘、横排贴底边（链接为省略号收着 overflow，线画在链接盒内、主轴两端各退 `--xh-space-1` 避开圆角，部件则骑在 list 的轨道上）；NavigationMenu 的 `indicator` 部件表达的是「哪张面板开着」而非当前页，指向当前页面的链接始终自画静态线、不随部件收起（横排 list 里的直达链接贴底边，竖排的直达链接与面板里的链接贴行向起始缘，两端同样退 `--xh-space-1`）；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
 | 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
 | 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起 indicator：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
@@ -385,14 +398,15 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 形态 | variant | border | background | box-shadow |
 | --- | --- | --- | --- | --- |
-| 描边 | outline（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段用 `--xh-border-control` | `--xh-bg-surface`；字段用 `--xh-bg-canvas` | none（Card 加 `--xh-elevation-raised`） |
+| 描边 | outline（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段用 `--xh-border-control`（缺省档与 `--xh-border-default` 同色，高对比档才加深） | `--xh-bg-surface`；字段与控件盒 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`） |
 | 淡底 | subtle | `--xh-stroke-thin solid transparent` | `--xh-bg-subtle`（有 tone 时 `--xh-tone-subtle`） | none |
 | 无壳 | ghost | 不写 | 不写 | 不写；只允许分隔线 |
 
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能出现在 `border-block-start / inline-start` 类分隔线与 `::after` 分隔伪元素中。
-- 字段静息形态 = 描边：`--xh-bg-canvas` + `--xh-border-control` + `--xh-shape-control` + 无影；hover 升 `--xh-border-control-hover`，focus-within 换 `--xh-border-control-focus` + `--xh-ring-focus`，invalid 用 `--xh-border-invalid` + `--xh-ring-invalid`。字段家族不消费 `--xh-elevation-raised`。
+- 字段静息形态 = 描边：`transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影；hover 升 `--xh-border-control-hover` 并在透明上罩 `color-mix(--xh-bg-subtle 45%, transparent)`，focus-within 换 `--xh-border-control-focus` + `--xh-ring-focus`，invalid 用 `--xh-border-invalid` + `--xh-ring-invalid`；readOnly / disabled 才填 `--xh-bg-subtle`。字段家族不消费 `--xh-elevation-raised`。
+- 所有带边框的控件盒同一条规则（2026-09-22 起）：输入框壳、Checkbox / CheckboxGroup / Transfer / Tree / Table 的方框、RadioGroup / QuestionFlow 的圆圈、Switch 轨道描边、InputGroup 组壳、ColorPicker 控件、FileUpload 拖放区、SignaturePad 画布——静息不填底、描边取 `--xh-border-control`，它在缺省档与浮层面板、卡片的 `--xh-border-default` 同色（页面里只有一种边线重量），`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
-- 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `--xh-bg-canvas` + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
+- 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边，子字段压平为透明。
 
 ### 8.4 浮层材质判据
@@ -648,7 +662,8 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - [ ] 三个适配器契约一致。
 - [ ] 使用 4/8/12px 小圆角体系。
 - [ ] 根面边界取描边 / 淡底 / 无壳之一；raised 已逐部件登记且带 border-default。
-- [ ] 字段静息为描边式，variant 缺省落 outline。
+- [ ] 字段静息为描边式且不填底，variant 缺省落 outline；带边框的控件盒描边取 `--xh-border-control`。
+- [ ] 单行字段根缺省宽走 `--xh-<c>-control-w` → `--xh-control-w`，地板不高过缺省宽；例外已登记。
 - [ ] selected / current 按 §7.3 语义表取唯一标记；open / in-path 与 hover 同档。
 - [ ] 交互阶梯按承载面取档；缺省语气正确（只有 Button 品牌实心）。
 - [ ] 形状按 §6.3 身份表取值，正方盒未用 pill。

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/json-viewer
 
-# JsonViewer JSON 视图 `alpha`
+# JsonViewer JSON 视图
 
 把一份 JSON 展开为可折叠的树：键名、值与值类型各自成块，对象与数组可以逐层收起。
 

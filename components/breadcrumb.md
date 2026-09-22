@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/breadcrumb
 
-# Breadcrumb 面包屑 `alpha`
+# Breadcrumb 面包屑
 
 显示当前页面在信息层级中的位置。
 

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/loading-bar
 
-# LoadingBar 加载条 `alpha`
+# LoadingBar 加载条
 
 页面顶部的细进度线，表示正在导航或正在获取数据。
 

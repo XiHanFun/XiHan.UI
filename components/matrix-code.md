@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/matrix-code
 
-# MatrixCode 二维码 `alpha`
+# MatrixCode 二维码
 
 将一段文本绘制为二维码，`format` 选择码制。
 

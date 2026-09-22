@@ -7,7 +7,7 @@
 
 来源：https://ui.docs.xihanfun.com/components/accordion
 
-# Accordion 手风琴 `alpha`
+# Accordion 手风琴
 
 一列可展开的区块，标题常驻，内容按需展开。
 
@@ -1574,7 +1574,7 @@ const panels = [
 
 来源：https://ui.docs.xihanfun.com/components/affix
 
-# Affix 固钉 `alpha`
+# Affix 固钉
 
 在滚动超过指定位置后固定内容。
 
@@ -2598,7 +2598,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/anchor
 
-# Anchor 锚点 `alpha`
+# Anchor 锚点
 
 根据滚动位置高亮当前章节的目录。
 
@@ -4247,7 +4247,7 @@ const rows = [
 
 来源：https://ui.docs.xihanfun.com/components/avatar-group
 
-# AvatarGroup 头像组 `alpha`
+# AvatarGroup 头像组
 
 将若干头像叠成一排，超出上限的部分收为一个计数。
 
@@ -4633,7 +4633,7 @@ const tokens = {
 
 来源：https://ui.docs.xihanfun.com/components/avatar
 
-# Avatar 头像 `alpha`
+# Avatar 头像
 
 表示一个人或一个组织的圆形标识：优先显示图片，无法加载时回退到文字或图标。
 
@@ -5469,7 +5469,7 @@ const tones = [
 
 来源：https://ui.docs.xihanfun.com/components/back-top
 
-# BackTop 回到顶部 `alpha`
+# BackTop 回到顶部
 
 滚动超过指定距离后显示返回入口。
 
@@ -6370,7 +6370,7 @@ import {
 - `count` 输出数字，超过 `max`（默认 99）时显示为“99+”。
 - 计数为 0 时整个收起，需要显示 0 时开启 `showZero`。
 - `dot` 收成一个圆点，只表示存在，不表示数量。
-- 计数盒三档最小尺寸为 16 / 28 / 32px，角标只探出宿主四分之一，保持与宿主的视觉连接。
+- 计数盒三档最小尺寸为 14 / 28 / 32px，角标只探出宿主四分之一，保持与宿主的视觉连接；sm 是贴在图标按钮角上的小号，字仍是 12px。
 - `label` 为读屏提供完整语句，避免只读出一个数字。
 
 ### 组合
@@ -6944,7 +6944,7 @@ import { XhBarCode } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/breadcrumb
 
-# Breadcrumb 面包屑 `alpha`
+# Breadcrumb 面包屑
 
 显示当前页面在信息层级中的位置。
 
@@ -8388,7 +8388,7 @@ import { XhButton } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/calendar-picker
 
-# CalendarPicker 日历选择器 `alpha`
+# CalendarPicker 日历选择器
 
 以天、周、月、季度或年为周期浏览并选择一个或多个日期，也可以在日期格中展示日程内容。
 
@@ -9372,7 +9372,7 @@ function hasPlan(iso: string) {
 
 来源：https://ui.docs.xihanfun.com/components/calendar-range-picker
 
-# CalendarRangePicker 日历范围选择器 `alpha`
+# CalendarRangePicker 日历范围选择器
 
 在日历网格中先选起点再选终点，选出一段连续的天、周、月、季度或年。
 
@@ -11956,7 +11956,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 来源：https://ui.docs.xihanfun.com/components/cascader
 
-# Cascader 级联选择 `alpha`
+# Cascader 级联选择
 
 用于从多层分类中选择完整路径。
 
@@ -13307,6 +13307,7 @@ const regions = [
 | `--xh-cascader-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_cascader-px` | cascader 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | cascader 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | cascader 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-cascader-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | cascader 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | cascader 的 empty 部件 color 覆盖槽。 |
 | `--xh-cascader-empty-min-h` | `empty` | `min-block-size` | `default` | `5rem` | cascader 的 empty 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-empty-p` | `empty` | `padding` | `default` | `--xh-space-3` | cascader 的 empty 部件 padding 覆盖槽。 |
@@ -13383,7 +13384,7 @@ const regions = [
 
 来源：https://ui.docs.xihanfun.com/components/checkbox-group
 
-# CheckboxGroup 复选框组 `alpha`
+# CheckboxGroup 复选框组
 
 从一组选项中选择任意多项。
 
@@ -13741,7 +13742,7 @@ const items = [
 - `collection` 提供选项文本与禁用状态。
 - 全选触发器自动计算全选与半选状态。
 - `orientation` 设置横向或纵向排列。
-- 方框是字段家族的控制盒：canvas 底、描边与无影，勾中后以语气色填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，方框随行换到承载面阶梯的下一档。
+- 方框是字段家族的控制盒：不填底、描边与无影，勾中后以语气色填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，方框随行换到承载面阶梯的下一档。
 
 ### 组合
 
@@ -13935,7 +13936,7 @@ const items = [
 | --- | --- | --- | --- | --- | --- |
 | `--xh-checkbox-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | checkbox-group 的 root 部件 gap 覆盖槽。 |
 | `--xh-checkbox-group-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_checkbox-group-glyph` | checkbox-group 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-checkbox-group-indicator-bg` | `indicator`<br>`root`<br>`select-all-trigger` | `background-color` | `default` | `--xh-bg-canvas` | checkbox-group 的 indicator、root、select-all-trigger 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-bg` | `indicator`<br>`root`<br>`select-all-trigger` | `background-color` | `default` | `transparent` | checkbox-group 的 indicator、root、select-all-trigger 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-group-indicator-bg-checked` | `indicator`<br>`select-all-trigger` | `background-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-accent` | checkbox-group 的 indicator、select-all-trigger 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-group-indicator-bg-checked-pressed` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-_tone-active` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-group-indicator-bg-disabled` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `background-color` | `disabled` | `--xh-bg-subtle` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 background-color 覆盖槽。 |
@@ -13990,7 +13991,7 @@ const items = [
 
 来源：https://ui.docs.xihanfun.com/components/checkbox
 
-# Checkbox 复选框 `alpha`
+# Checkbox 复选框
 
 用于选择一个或多个独立选项。
 
@@ -14242,7 +14243,7 @@ import { XhCheckbox } from "@xihan-ui/vue";
 ### 特性
 
 - 支持选中、未选中与 `indeterminate` 状态。
-- 方框是字段家族的控制盒：canvas 底、描边与无影，勾中后以语气色填充，按下缩放并换底。
+- 方框是字段家族的控制盒：不填底、描边与无影，勾中后以语气色填充，按下缩放并换底。
 - `readOnly` 仍可聚焦并参与提交，`disabled` 不参与提交。
 - 标签、三档尺寸、校验状态和自定义指示器均使用同一状态动画。
 - `name` 与 `value` 通过隐藏字段参与原生表单。
@@ -14408,7 +14409,7 @@ import { XhCheckbox } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-checkbox-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `--xh-bg-canvas` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `transparent` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-bg-checked` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-bg-checked-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked`<br>`state=indeterminate` | `--xh-_tone-active` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-bg-disabled` | `root` | `background-color` | `disabled` | `--xh-bg-subtle` | checkbox 的 root 部件 background-color 覆盖槽。 |
@@ -14810,6 +14811,8 @@ const sizes = ["sm", "md", "lg"] as const;
 | --- | --- | --- | --- | --- | --- |
 | `--xh-clipboard-control-active-layer` | `control`<br>`copy-trigger`<br>`input` | `z-index` | `focus-visible`<br>`hover` | `1` | clipboard 的 control、copy-trigger、input 部件 z-index 覆盖槽。 |
 | `--xh-clipboard-control-gap` | `control` | `gap` | `default` | `0` | clipboard 的 control 部件 gap 覆盖槽。 |
+| `--xh-clipboard-control-min-w` | `control`<br>`root` | `min-inline-size` | `has([data-scope='clipboard'][data-part='control'])` | `--xh-control-min-w` | clipboard 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-clipboard-control-w` | `control`<br>`root` | `inline-size`<br>`min-inline-size` | `has([data-scope='clipboard'][data-part='control'])` | `--xh-control-w` | clipboard 的 control、root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-attached-radius` | `control`<br>`copy-trigger` | `border-end-end-radius`<br>`border-start-end-radius` | `not(:first-child)` | `--xh-clipboard-input-radius` | clipboard 的 control、copy-trigger 部件 border-end-end-radius、border-start-end-radius 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg` | `copy-trigger` | `background-color` | `default`<br>`focus-visible`<br>`loading` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | clipboard 的 copy-trigger 部件 background-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg-active` | `copy-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | clipboard 的 copy-trigger 部件 background-color 覆盖槽。 |
@@ -14838,7 +14841,6 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-clipboard-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | clipboard 的 input 部件 color 覆盖槽。 |
 | `--xh-clipboard-input-font-size` | `input` | `font-size` | `default` | `--xh-text-body-size` | clipboard 的 input 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-input-h` | `input` | `block-size` | `default` | `--xh-_clipboard-h` | clipboard 的 input 部件 block-size 覆盖槽。 |
-| `--xh-clipboard-input-min-w` | `input` | `inline-size` | `default` | `--xh-control-min-w` | clipboard 的 input 部件 inline-size 覆盖槽。 |
 | `--xh-clipboard-input-px` | `input` | `padding-inline` | `default` | `--xh-_clipboard-px` | clipboard 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-clipboard-input-radius` | `control`<br>`copy-trigger`<br>`input` | `border-end-end-radius`<br>`border-radius`<br>`border-start-end-radius` | `default`<br>`not(:first-child)` | `--xh-shape-control` | clipboard 的 control、copy-trigger、input 部件 border-end-end-radius、border-radius、border-start-end-radius 覆盖槽。 |
 | `--xh-clipboard-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | clipboard 的 label 部件 color 覆盖槽。 |
@@ -14861,7 +14863,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 来源：https://ui.docs.xihanfun.com/components/code-view
 
-# CodeView 代码视图 `alpha`
+# CodeView 代码视图
 
 一段代码的逐行呈现：行号、指定行高亮、超长折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
 
@@ -15951,7 +15953,7 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 
 来源：https://ui.docs.xihanfun.com/components/collapsible
 
-# Collapsible 折叠区域 `alpha`
+# Collapsible 折叠区域
 
 一块可以展开与收起的单块内容。
 
@@ -16650,7 +16652,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 来源：https://ui.docs.xihanfun.com/components/color-field
 
-# ColorField 颜色字段 `alpha`
+# ColorField 颜色字段
 
 可以手动输入颜色串的单行框，旁边显示当前颜色的色块。框内文字是草稿，回车或失焦时提交，提交后按 `format` 重写为规范写法。它属于[文本字段](./text-field)家族，面向已知颜色值直接输入的场景；需要在色域中挑选时使用[颜色选择器](./color-picker)。
 
@@ -16686,7 +16688,7 @@ const value = ref("#3b82f6");
   <div style="display: flex; flex-direction: column; gap: 8px">
     <XhColorFieldRoot v-model:value="value" name="accent" placeholder="#rrggbb" clearable>
       <XhColorFieldLabel>主题色</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 16rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -16703,7 +16705,7 @@ const value = ref("#3b82f6");
   <xh-color-field id="color-field-basic" default-value="#3b82f6" name="accent" placeholder="#rrggbb" clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">主题色</label>
-      <div data-xh-part="control" style="inline-size: 16rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -16755,7 +16757,7 @@ const value = ref("rgba(59, 130, 246, 0.5)");
     <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
     <XhColorFieldRoot v-model:value="value" format="rgba" alpha placeholder="rgba(r, g, b, a)">
       <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 20rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
       </XhColorFieldControl>
@@ -16771,7 +16773,7 @@ const value = ref("rgba(59, 130, 246, 0.5)");
   <xh-color-field id="color-field-format" default-value="rgba(59, 130, 246, 0.5)" format="rgba" alpha placeholder="rgba(r, g, b, a)">
     <div data-xh-part="root">
       <label data-xh-part="label">遮罩色</label>
-      <div data-xh-part="control" style="inline-size: 20rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
       </div>
@@ -16808,7 +16810,7 @@ import {
   <!-- 试着打 tomato 再按回车：颜色关键字不在支持的写法里 -->
   <XhColorFieldRoot v-slot="{ editing, invalid }" default-value="#e11d48" placeholder="#rrggbb">
     <XhColorFieldLabel>强调色</XhColorFieldLabel>
-    <XhColorFieldControl style="inline-size: 16rem">
+    <XhColorFieldControl>
       <XhColorFieldSwatch />
       <XhColorFieldInput />
     </XhColorFieldControl>
@@ -16824,7 +16826,7 @@ import {
 <xh-color-field id="color-field-invalid" default-value="#e11d48" placeholder="#rrggbb">
   <div data-xh-part="root">
     <label data-xh-part="label">强调色</label>
-    <div data-xh-part="control" style="inline-size: 16rem">
+    <div data-xh-part="control">
       <span data-xh-part="swatch"></span>
       <input data-xh-part="input" />
     </div>
@@ -16866,7 +16868,7 @@ import {
   <div style="display: flex; flex-wrap: wrap; gap: 16px">
     <XhColorFieldRoot default-value="#10b981" disabled>
       <XhColorFieldLabel>禁用</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -16874,7 +16876,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" read-only>
       <XhColorFieldLabel>只读</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -16882,7 +16884,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" invalid clearable>
       <XhColorFieldLabel>无效</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -16890,7 +16892,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" size="sm" clearable>
       <XhColorFieldLabel>小号</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -16898,7 +16900,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" size="lg" clearable>
       <XhColorFieldLabel>大号</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -16913,7 +16915,7 @@ import {
   <xh-color-field default-value="#10b981" disabled>
     <div data-xh-part="root">
       <label data-xh-part="label">禁用</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -16923,7 +16925,7 @@ import {
   <xh-color-field default-value="#10b981" read-only>
     <div data-xh-part="root">
       <label data-xh-part="label">只读</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -16933,7 +16935,7 @@ import {
   <xh-color-field default-value="#10b981" invalid clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">无效</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -16943,7 +16945,7 @@ import {
   <xh-color-field default-value="#10b981" size="sm" clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">小号</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -16953,7 +16955,7 @@ import {
   <xh-color-field default-value="#10b981" size="lg" clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">大号</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -17194,6 +17196,7 @@ import {
 | `--xh-color-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-field-px` | color-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-color-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | color-field 的 input 部件 box-shadow 覆盖槽。 |
@@ -17222,7 +17225,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/color-picker
 
-# ColorPicker 颜色选择器 `alpha`
+# ColorPicker 颜色选择器
 
 在色域中自由选取一个颜色：触发按钮显示当前色，浮层内包含取色面、色相与透明度两条滑块、数值框、屏幕取色与预设色板。它是颜色家族的组合件：两条滑块是[颜色滑块](./color-slider)，预设色板是[颜色色块选择器](./color-swatch-picker)，触发按钮内的色块与[颜色色块](./color-swatch)同族；只需要其中一件时不使用完整的选择器。
 
@@ -17963,7 +17966,7 @@ const translations = {
 | `--xh-color-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | color-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | color-picker 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-content-w` | `content` | `inline-size` | `default` | `--xh-overlay-min-w` | color-picker 的 content 部件 inline-size 覆盖槽。 |
-| `--xh-color-picker-control-bg` | `control` | `background` | `default` | `--xh-bg-canvas` | color-picker 的 control 部件 background 覆盖槽。 |
+| `--xh-color-picker-control-bg` | `control` | `background` | `default` | `transparent` | color-picker 的 control 部件 background 覆盖槽。 |
 | `--xh-color-picker-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | color-picker 的 control 部件 background 覆盖槽。 |
 | `--xh-color-picker-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-bg-subtle` | color-picker 的 control 部件 background 覆盖槽。 |
 | `--xh-color-picker-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | color-picker 的 control 部件 background 覆盖槽。 |
@@ -17977,9 +17980,10 @@ const translations = {
 | `--xh-color-picker-control-px` | `control` | `padding-inline` | `default` | `--xh-_color-picker-px` | color-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-control-shadow` | `control` | `box-shadow` | `default` | `--xh-elevation-raised` | color-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-color-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-picker-hue-slider-gap` | `hue-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 hue-slider 部件 gap 覆盖槽。 |
-| `--xh-color-picker-input-bg` | `channel-input` | `background` | `default` | `--xh-bg-canvas` | color-picker 的 channel-input 部件 background 覆盖槽。 |
+| `--xh-color-picker-input-bg` | `channel-input` | `background` | `default` | `transparent` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-disabled` | `channel-input` | `background` | `disabled` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-readonly` | `channel-input` | `background` | `readonly` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-border` | `channel-input` | `border` | `default` | `--xh-border-control` | color-picker 的 channel-input 部件 border 覆盖槽。 |
@@ -18040,7 +18044,7 @@ const translations = {
 
 来源：https://ui.docs.xihanfun.com/components/color-slider
 
-# ColorSlider 颜色滑块 `alpha`
+# ColorSlider 颜色滑块
 
 只调整颜色某一个通道的滑杆：色相、饱和度、明度、透明度，或红、绿、蓝。值是完整的颜色串，轨道显示该通道从最小值到最大值的颜色变化，拇指填充当前值对应的颜色。多条并排即可组成自定义的调色面板；[颜色选择器](./color-picker)浮层内的色相带与透明度带就是它。
 
@@ -18703,7 +18707,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/color-swatch-picker
 
-# ColorSwatchPicker 颜色色块选择器 `alpha`
+# ColorSwatchPicker 颜色色块选择器
 
 从一组固定颜色中选择一个：主题色、标签色、高亮色。每格是一个 `role=radio` 的色块，整组是一个 `radiogroup`，即把选项绘制为颜色的[单选组](./radio-group)。需要自由调出任意颜色时使用[颜色选择器](./color-picker)，它内嵌的预设色板使用的就是本组件。
 
@@ -19337,7 +19341,7 @@ const swatches = [
 
 来源：https://ui.docs.xihanfun.com/components/color-swatch
 
-# ColorSwatch 颜色色块 `alpha`
+# ColorSwatch 颜色色块
 
 把一个颜色绘制为一小块用于展示：主题色一览、图例中的一格、当前选中的颜色。它只负责表达“这是什么颜色”，不接受点击、不修改值；需要挑选颜色时使用[颜色选择器](./color-picker)。
 
@@ -19654,7 +19658,7 @@ const legend = [
 
 来源：https://ui.docs.xihanfun.com/components/combobox
 
-# Combobox 组合框 `alpha`
+# Combobox 组合框
 
 将输入框与候选列表结合，用于搜索并选择选项。
 
@@ -20849,6 +20853,7 @@ const filtered = computed(() => {
 | `--xh-combobox-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_combobox-px` | combobox 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | combobox 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | combobox 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-combobox-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | combobox 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-combobox-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 empty 部件 color 覆盖槽。 |
 | `--xh-combobox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
@@ -20908,7 +20913,7 @@ const filtered = computed(() => {
 
 来源：https://ui.docs.xihanfun.com/components/command
 
-# Command 命令面板 `alpha`
+# Command 命令面板
 
 覆盖在页面上的检索面板：输入筛选命令，方向键选择，回车执行。
 
@@ -21816,7 +21821,7 @@ function onSelect(details: { label: string }) {
 
 来源：https://ui.docs.xihanfun.com/components/context-menu
 
-# ContextMenu 右键菜单 `alpha`
+# ContextMenu 右键菜单
 
 通过右键或长按在指针位置打开命令菜单。
 
@@ -22394,7 +22399,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/date-field
 
-# DateField 日期字段 `alpha`
+# DateField 日期字段
 
 按年、月、日逐段输入日期，适合已经知道目标日期、无需浏览日历的场景。
 
@@ -22427,7 +22432,6 @@ import {
   <XhDateFieldRoot
     locale="zh-CN"
     name="deadline"
-    style="--xh-date-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
   >
     <XhDateFieldLabel>截止日期</XhDateFieldLabel>
     <XhDateFieldControl>
@@ -22449,7 +22453,6 @@ import {
 <xh-date-field locale="zh-CN" name="deadline">
     <div
       data-xh-part="root"
-      style="--xh-date-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
     >
     <label data-xh-part="label">截止日期</label>
     <div data-xh-part="control">
@@ -23162,6 +23165,7 @@ import {
 | `--xh-date-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-field-control-px` | date-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | date-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-field-font-size` | `control` | `font-size` | `default` | `--xh-_date-field-font-size` | date-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-date-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
@@ -23193,7 +23197,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/date-picker
 
-# DatePicker 日期选择器 `alpha`
+# DatePicker 日期选择器
 
 将可键入的分段日期框、日历触发器和选择浮层组合成一个字段。
 
@@ -23242,7 +23246,6 @@ import {
     v-slot="{ weeks, weekDays }"
     locale="zh-CN"
     name="delivery-date"
-    style="--xh-date-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))"
   >
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>
@@ -23301,7 +23304,6 @@ import {
   <xh-date-picker locale="zh-CN" name="delivery-date">
     <div
       data-xh-part="root"
-      style="--xh-date-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))"
     >
       <span data-xh-part="label">交付日期</span>
       <div data-xh-part="control">
@@ -24355,7 +24357,6 @@ function changeGranularity(details: { value: string | string[] | null }) {
     :granularity="granularity"
     :close-on-select="false"
     locale="zh-CN"
-    style="--xh-date-picker-control-min-w: 22rem"
   >
     <XhDatePickerLabel>统计周期</XhDatePickerLabel>
     <XhDatePickerControl>
@@ -24440,7 +24441,7 @@ function changeGranularity(details: { value: string | string[] | null }) {
 <div id="period-picker-mount"></div>
 <template id="period-picker-template">
 <xh-date-picker id="period-picker" granularity="day" close-on-select="false" locale="zh-CN">
-  <div data-xh-part="root" style="--xh-date-picker-control-min-w: 22rem">
+  <div data-xh-part="root">
     <span data-xh-part="label">统计周期</span>
     <div data-xh-part="control">
       <div data-xh-part="segment-group"></div>
@@ -24986,6 +24987,7 @@ function changeGranularity(details: { value: string | string[] | null }) {
 | `--xh-date-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-picker-control-px` | date-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | date-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-picker-font-size` | date-picker 的 segment-group 部件 font-size 覆盖槽。 |
 | `--xh-date-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
@@ -25051,7 +25053,7 @@ function changeGranularity(details: { value: string | string[] | null }) {
 
 来源：https://ui.docs.xihanfun.com/components/date-range-picker
 
-# DateRangePicker 日期范围选择器 `alpha`
+# DateRangePicker 日期范围选择器
 
 将起止两组可键入的分段日期框、范围分隔符、日历触发器和范围日历浮层组合成一个字段。
 
@@ -25102,7 +25104,6 @@ import {
     locale="zh-CN"
     name="trip-start"
     end-name="trip-end"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>旅行日期</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -25162,7 +25163,7 @@ import {
 
 <template id="date-range-picker-basic-template">
   <xh-date-range-picker locale="zh-CN" name="trip-start" end-name="trip-end">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">旅行日期</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -25359,7 +25360,6 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
     v-model:value="value"
     :visible-count="2"
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>入住与退房</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -25424,7 +25424,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 <template id="date-range-picker-two-panels-template">
   <xh-date-range-picker locale="zh-CN" visible-count="2">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">入住与退房</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -25629,7 +25629,6 @@ const presets = computed(() => [
     v-slot="{ weeks, weekDays }"
     :presets="presets"
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>统计区间</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -25688,7 +25687,7 @@ const presets = computed(() => [
 
 <template id="date-range-picker-shortcuts-template">
   <xh-date-range-picker locale="zh-CN">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">统计区间</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -25901,7 +25900,6 @@ function isWeekend(value: string): boolean {
     :is-date-unavailable="isWeekend"
     allows-non-contiguous-ranges
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>工作日区间</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -25958,7 +25956,7 @@ function isWeekend(value: string): boolean {
 
 <template id="date-range-picker-unavailable-template">
   <xh-date-range-picker locale="zh-CN" allows-non-contiguous-ranges>
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">工作日区间</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -26155,7 +26153,6 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
       v-slot="{ panels, weekDays, segments, endSegments }"
       :granularity="k.granularity"
       locale="zh-CN"
-      style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
     >
       <XhDateRangePickerLabel>{{ k.label }}</XhDateRangePickerLabel>
       <XhDateRangePickerControl>
@@ -26219,7 +26216,7 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
 
 <template id="date-range-picker-granularity-template">
   <xh-date-range-picker locale="zh-CN">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label"></span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -26708,6 +26705,7 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
 | `--xh-date-range-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-range-picker-control-px` | date-range-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-range-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-range-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-range-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-range-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-range-picker-control-w` | `root` | `inline-size` | `default` | `max-content` | date-range-picker 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-date-range-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-range-picker-font-size` | date-range-picker 的 segment-group 部件 font-size 覆盖槽。 |
 | `--xh-date-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-range-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-range-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-range-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
@@ -26757,7 +26755,7 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
 
 来源：https://ui.docs.xihanfun.com/components/descriptions
 
-# Descriptions 描述列表 `alpha`
+# Descriptions 描述列表
 
 成对的标签与值，按列排开。
 
@@ -27308,7 +27306,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/dialog
 
-# Dialog 对话框 `alpha`
+# Dialog 对话框
 
 浮在页面之上的一层，通常需要用户处理完成后才能回到页面。
 
@@ -28598,7 +28596,7 @@ async function remove(): Promise<void> {
 
 来源：https://ui.docs.xihanfun.com/components/diff-view
 
-# DiffView 差异视图 `alpha`
+# DiffView 差异视图
 
 一份改动的逐行呈现：并排或单栏、双侧行号、变更类型的读屏文字，以及远离变更处的折叠。
 
@@ -29886,7 +29884,7 @@ import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/drawer
 
-# Drawer 抽屉 `alpha`
+# Drawer 抽屉
 
 从屏幕某一边滑出的面板。
 
@@ -31018,7 +31016,7 @@ const panel = ref<HTMLElement | null>(null);
 
 来源：https://ui.docs.xihanfun.com/components/editable
 
-# Editable 就地编辑 `alpha`
+# Editable 就地编辑
 
 用于在当前位置查看和编辑短文本。
 
@@ -31611,6 +31609,7 @@ import {
 | `--xh-editable-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `0` | editable 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-editable-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | editable 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-editable-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | editable 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-editable-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | editable 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-editable-gap` | `root` | `gap` | `default` | `--xh-space-1` | editable 的 root 部件 gap 覆盖槽。 |
 | `--xh-editable-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | editable 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-editable-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | editable 的 input 部件 box-shadow 覆盖槽。 |
@@ -31652,7 +31651,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/empty-state
 
-# EmptyState 空状态 `alpha`
+# EmptyState 空状态
 
 没有数据时的占位区域：说明为什么为空，以及可以做什么。
 
@@ -32391,7 +32390,7 @@ const results = [
 
 来源：https://ui.docs.xihanfun.com/components/field-array
 
-# FieldArray 字段数组 `alpha`
+# FieldArray 字段数组
 
 用于管理可添加、删除和排序的重复字段。
 
@@ -33132,7 +33131,7 @@ function patch(index: number, key: keyof Header, next: string) {
 
 来源：https://ui.docs.xihanfun.com/components/field
 
-# Field 表单字段 `alpha`
+# Field 表单字段
 
 为表单控件提供标签、说明、错误信息和状态关联。
 
@@ -33514,7 +33513,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/fieldset
 
-# Fieldset 字段集 `alpha`
+# Fieldset 字段集
 
 把若干相关字段收成一组，组标题由 `legend` 提供，禁用与无效沿这一组下发。
 
@@ -33968,7 +33967,7 @@ const enabled = ref(false);
 
 来源：https://ui.docs.xihanfun.com/components/file-upload
 
-# FileUpload 文件上传 `alpha`
+# FileUpload 文件上传
 
 选择文件、拖放文件，并列出已选与已上传的文件。
 
@@ -35637,7 +35636,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `--xh-file-upload-delete-fg-hover` | `item-delete-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-danger-hover` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-delete-radius` | `item-delete-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-delete-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-file-upload-delete-size` | `item-delete-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | file-upload 的 item-delete-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `--xh-bg-canvas` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `transparent` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-disabled` | `dropzone` | `background` | `disabled` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
@@ -35713,7 +35712,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 
 来源：https://ui.docs.xihanfun.com/components/flex
 
-# Flex 弹性布局 `alpha`
+# Flex 弹性布局
 
 沿水平或垂直方向排列内容。
 
@@ -36130,7 +36129,7 @@ const tones = ["brand", "info", "success", "danger"] as const;
 
 来源：https://ui.docs.xihanfun.com/components/float-button
 
-# FloatButton 浮动按钮 `alpha`
+# FloatButton 浮动按钮
 
 用于在视口边缘提供持续可见的操作入口。
 
@@ -36475,7 +36474,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 来源：https://ui.docs.xihanfun.com/components/floating-panel
 
-# FloatingPanel 浮动面板 `alpha`
+# FloatingPanel 浮动面板
 
 浮在页面上、可移动、可调整大小、可收拢与铺满的非模态面板。页面照常可读可点，面板停留在用户放置的位置。
 
@@ -37361,7 +37360,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 
 来源：https://ui.docs.xihanfun.com/components/form
 
-# Form 表单 `alpha`
+# Form 表单
 
 管理一组字段的值、校验、提交和重置。
 
@@ -38860,7 +38859,7 @@ const tones = [
 
 来源：https://ui.docs.xihanfun.com/components/grid
 
-# Grid 栅格 `alpha`
+# Grid 栅格
 
 按行列排列内容。
 
@@ -39204,7 +39203,7 @@ const sections = [
 
 来源：https://ui.docs.xihanfun.com/components/heatmap
 
-# Heatmap 热力图 `alpha`
+# Heatmap 热力图
 
 按网格铺开的强度图：一格是一个观测点，颜色深浅表示数值所在的档位。三种形态共用同一套分档、色阶、图例与详情条，只是格子的排列方式不同：连续周列的一年日历、按自然月分块的月历、行列由作者提供的矩阵。
 
@@ -41091,7 +41090,7 @@ const stats = computed(() => {
 
 来源：https://ui.docs.xihanfun.com/components/highlight
 
-# Highlight 文本高亮 `alpha`
+# Highlight 文本高亮
 
 标出一段文本中命中关键词的片段。
 
@@ -41468,7 +41467,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 来源：https://ui.docs.xihanfun.com/components/hover-card
 
-# HoverCard 悬浮卡片 `alpha`
+# HoverCard 悬浮卡片
 
 指针停留后出现的信息卡：预览一个对象，不打断当前操作。
 
@@ -42716,7 +42715,7 @@ import { XhIcon } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/image-cropper
 
-# ImageCropper 图片裁切 `alpha`
+# ImageCropper 图片裁切
 
 用于选择图片中需要保留的区域。
 
@@ -43321,7 +43320,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 来源：https://ui.docs.xihanfun.com/components/image-viewer
 
-# ImageViewer 图片预览 `alpha`
+# ImageViewer 图片预览
 
 查看大图：全屏浮层内可以缩放、旋转、翻转与翻页。
 
@@ -44101,7 +44100,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 
 来源：https://ui.docs.xihanfun.com/components/image
 
-# Image 图片 `alpha`
+# Image 图片
 
 显示一张图片，带加载状态与失败回退。
 
@@ -45311,12 +45310,12 @@ onBeforeUnmount(() => observer?.disconnect());
 - [Clipboard 剪贴板](/components/clipboard)
 - [DownloadTrigger 下载触发器](/components/download-trigger)
 - [Truncate 文本截断](/components/truncate)
-<XhComponentCard src="float-button" name="FloatButton" label="浮动按钮" href="/components/float-button" status="alpha" />
+- [FloatButton 浮动按钮](/components/float-button)
 - [GradientText 渐变文字](/components/gradient-text)
 - [Kbd 键盘按键](/components/kbd)
 - [Icon 图标](/components/icon)
 - [IconWrapper 图标块](/components/icon-wrapper)
-<XhComponentCard src="scrollbar" name="Scrollbar" label="滚动条" href="/components/scrollbar" status="alpha" />
+- [Scrollbar 滚动条](/components/scrollbar)
 - [Toggle 切换按钮](/components/toggle)
 - [ToggleGroup 切换按钮组](/components/toggle-group)
 - [Typography 排印](/components/typography)
@@ -45324,30 +45323,30 @@ onBeforeUnmount(() => observer?.disconnect());
 
 ## 布局
 
-<XhComponentCard src="flex" name="Flex" label="弹性布局" href="/components/flex" status="alpha" />
-<XhComponentCard src="grid" name="Grid" label="栅格" href="/components/grid" status="alpha" />
-<XhComponentCard src="layout" name="Layout" label="布局" href="/components/layout" status="alpha" />
-<XhComponentCard src="masonry" name="Masonry" label="瀑布流" href="/components/masonry" status="alpha" />
-<XhComponentCard src="scroll-area" name="ScrollArea" label="滚动区域" href="/components/scroll-area" status="alpha" />
-<XhComponentCard src="separator" name="Separator" label="分隔线" href="/components/separator" status="alpha" />
-<XhComponentCard src="sortable" name="Sortable" label="排序" href="/components/sortable" status="alpha" />
+- [Flex 弹性布局](/components/flex)
+- [Grid 栅格](/components/grid)
+- [Layout 布局](/components/layout)
+- [Masonry 瀑布流](/components/masonry)
+- [ScrollArea 滚动区域](/components/scroll-area)
+- [Separator 分隔线](/components/separator)
+- [Sortable 排序](/components/sortable)
 - [Resizable 可调容器](/components/resizable)
-<XhComponentCard src="splitter" name="Splitter" label="分栏" href="/components/splitter" status="alpha" />
+- [Splitter 分栏](/components/splitter)
 
 ## 导航
 
-<XhComponentCard src="affix" name="Affix" label="固钉" href="/components/affix" status="alpha" />
-<XhComponentCard src="anchor" name="Anchor" label="锚点" href="/components/anchor" status="alpha" />
-<XhComponentCard src="back-top" name="BackTop" label="回到顶部" href="/components/back-top" status="alpha" />
-<XhComponentCard src="breadcrumb" name="Breadcrumb" label="面包屑" href="/components/breadcrumb" status="alpha" />
-<XhComponentCard src="context-menu" name="ContextMenu" label="右键菜单" href="/components/context-menu" status="alpha" />
-<XhComponentCard src="menu" name="Menu" label="菜单" href="/components/menu" status="alpha" />
-<XhComponentCard src="menubar" name="Menubar" label="菜单栏" href="/components/menubar" status="alpha" />
-<XhComponentCard src="navigation-menu" name="NavigationMenu" label="导航菜单" href="/components/navigation-menu" status="alpha" />
-<XhComponentCard src="page-header" name="PageHeader" label="页头" href="/components/page-header" status="alpha" />
-<XhComponentCard src="pagination" name="Pagination" label="分页" href="/components/pagination" status="alpha" />
-<XhComponentCard src="segmented" name="Segmented" label="分段控制器" href="/components/segmented" status="alpha" />
-<XhComponentCard src="side-nav" name="SideNav" label="侧栏导航" href="/components/side-nav" status="alpha" />
+- [Affix 固钉](/components/affix)
+- [Anchor 锚点](/components/anchor)
+- [BackTop 回到顶部](/components/back-top)
+- [Breadcrumb 面包屑](/components/breadcrumb)
+- [ContextMenu 右键菜单](/components/context-menu)
+- [Menu 菜单](/components/menu)
+- [Menubar 菜单栏](/components/menubar)
+- [NavigationMenu 导航菜单](/components/navigation-menu)
+- [PageHeader 页头](/components/page-header)
+- [Pagination 分页](/components/pagination)
+- [Segmented 分段控制器](/components/segmented)
+- [SideNav 侧栏导航](/components/side-nav)
 - [Steps 步骤条](/components/steps)
 - [Tabs 标签页](/components/tabs)
 - [Toolbar 工具栏](/components/toolbar)
@@ -45355,106 +45354,106 @@ onBeforeUnmount(() => observer?.disconnect());
 
 ## 数据录入
 
-<XhComponentCard src="calendar-picker" name="CalendarPicker" label="日历选择器" href="/components/calendar-picker" status="alpha" />
-<XhComponentCard src="calendar-range-picker" name="CalendarRangePicker" label="日历范围选择器" href="/components/calendar-range-picker" status="alpha" />
-<XhComponentCard src="cascader" name="Cascader" label="级联选择" href="/components/cascader" status="alpha" />
-<XhComponentCard src="checkbox" name="Checkbox" label="复选框" href="/components/checkbox" status="alpha" />
-<XhComponentCard src="checkbox-group" name="CheckboxGroup" label="复选框组" href="/components/checkbox-group" status="alpha" />
-<XhComponentCard src="color-field" name="ColorField" label="颜色字段" href="/components/color-field" status="alpha" />
-<XhComponentCard src="color-picker" name="ColorPicker" label="颜色选择器" href="/components/color-picker" status="alpha" />
-<XhComponentCard src="color-slider" name="ColorSlider" label="颜色滑块" href="/components/color-slider" status="alpha" />
-<XhComponentCard src="color-swatch-picker" name="ColorSwatchPicker" label="颜色色块选择器" href="/components/color-swatch-picker" status="alpha" />
-<XhComponentCard src="combobox" name="Combobox" label="组合框" href="/components/combobox" status="alpha" />
-<XhComponentCard src="date-field" name="DateField" label="日期字段" href="/components/date-field" status="alpha" />
-<XhComponentCard src="date-picker" name="DatePicker" label="日期选择器" href="/components/date-picker" status="alpha" />
-<XhComponentCard src="date-range-picker" name="DateRangePicker" label="日期范围选择器" href="/components/date-range-picker" status="alpha" />
-<XhComponentCard src="editable" name="Editable" label="就地编辑" href="/components/editable" status="alpha" />
-<XhComponentCard src="field" name="Field" label="表单字段" href="/components/field" status="alpha" />
-<XhComponentCard src="field-array" name="FieldArray" label="字段数组" href="/components/field-array" status="alpha" />
-<XhComponentCard src="fieldset" name="Fieldset" label="字段集" href="/components/fieldset" status="alpha" />
-<XhComponentCard src="file-upload" name="FileUpload" label="文件上传" href="/components/file-upload" status="alpha" />
-<XhComponentCard src="form" name="Form" label="表单" href="/components/form" status="alpha" />
-<XhComponentCard src="image-cropper" name="ImageCropper" label="图片裁切" href="/components/image-cropper" status="alpha" />
-<XhComponentCard src="input-group" name="InputGroup" label="输入组" href="/components/input-group" status="alpha" />
-<XhComponentCard src="listbox" name="Listbox" label="列表框" href="/components/listbox" status="alpha" />
-<XhComponentCard src="mention" name="Mention" label="提及" href="/components/mention" status="alpha" />
+- [CalendarPicker 日历选择器](/components/calendar-picker)
+- [CalendarRangePicker 日历范围选择器](/components/calendar-range-picker)
+- [Cascader 级联选择](/components/cascader)
+- [Checkbox 复选框](/components/checkbox)
+- [CheckboxGroup 复选框组](/components/checkbox-group)
+- [ColorField 颜色字段](/components/color-field)
+- [ColorPicker 颜色选择器](/components/color-picker)
+- [ColorSlider 颜色滑块](/components/color-slider)
+- [ColorSwatchPicker 颜色色块选择器](/components/color-swatch-picker)
+- [Combobox 组合框](/components/combobox)
+- [DateField 日期字段](/components/date-field)
+- [DatePicker 日期选择器](/components/date-picker)
+- [DateRangePicker 日期范围选择器](/components/date-range-picker)
+- [Editable 就地编辑](/components/editable)
+- [Field 表单字段](/components/field)
+- [FieldArray 字段数组](/components/field-array)
+- [Fieldset 字段集](/components/fieldset)
+- [FileUpload 文件上传](/components/file-upload)
+- [Form 表单](/components/form)
+- [ImageCropper 图片裁切](/components/image-cropper)
+- [InputGroup 输入组](/components/input-group)
+- [Listbox 列表框](/components/listbox)
+- [Mention 提及](/components/mention)
 - [NumberField 数字字段](/components/number-field)
-<XhComponentCard src="password-input" name="PasswordInput" label="密码输入" href="/components/password-input" status="alpha" />
-<XhComponentCard src="pin-input" name="PinInput" label="分格输入" href="/components/pin-input" status="alpha" />
-<XhComponentCard src="radio-group" name="RadioGroup" label="单选组" href="/components/radio-group" status="alpha" />
-<XhComponentCard src="rating" name="Rating" label="评分" href="/components/rating" status="alpha" />
-<XhComponentCard src="select" name="Select" label="选择器" href="/components/select" status="alpha" />
-<XhComponentCard src="signature-pad" name="SignaturePad" label="签名板" href="/components/signature-pad" status="alpha" />
-<XhComponentCard src="slider" name="Slider" label="滑块" href="/components/slider" status="alpha" />
-<XhComponentCard src="switch" name="Switch" label="开关" href="/components/switch" status="alpha" />
-<XhComponentCard src="tag-group" name="TagGroup" label="标签组" href="/components/tag-group" status="alpha" />
-<XhComponentCard src="tags-input" name="TagsInput" label="标签输入" href="/components/tags-input" status="alpha" />
-<XhComponentCard src="text-field" name="TextField" label="文本字段" href="/components/text-field" status="alpha" />
+- [PasswordInput 密码输入](/components/password-input)
+- [PinInput 分格输入](/components/pin-input)
+- [RadioGroup 单选组](/components/radio-group)
+- [Rating 评分](/components/rating)
+- [Select 选择器](/components/select)
+- [SignaturePad 签名板](/components/signature-pad)
+- [Slider 滑块](/components/slider)
+- [Switch 开关](/components/switch)
+- [TagGroup 标签组](/components/tag-group)
+- [TagsInput 标签输入](/components/tags-input)
+- [TextField 文本字段](/components/text-field)
 - [TimeField 时间字段](/components/time-field)
 - [TimePicker 时间选择器](/components/time-picker)
-<XhComponentCard src="time-range-picker" name="TimeRangePicker" label="时间范围选择器" href="/components/time-range-picker" status="alpha" />
-<XhComponentCard src="transfer" name="Transfer" label="穿梭框" href="/components/transfer" status="alpha" />
-<XhComponentCard src="tree-select" name="TreeSelect" label="树选择" href="/components/tree-select" status="alpha" />
+<XhComponentCard src="time-range-picker" name="TimeRangePicker" label="时间范围选择器" href="/components/time-range-picker" status="new" />
+- [Transfer 穿梭框](/components/transfer)
+- [TreeSelect 树选择](/components/tree-select)
 
 ## 数据展示
 
-<XhComponentCard src="accordion" name="Accordion" label="手风琴" href="/components/accordion" status="alpha" />
-<XhComponentCard src="avatar" name="Avatar" label="头像" href="/components/avatar" status="alpha" />
-<XhComponentCard src="avatar-group" name="AvatarGroup" label="头像组" href="/components/avatar-group" status="alpha" />
+- [Accordion 手风琴](/components/accordion)
+- [Avatar 头像](/components/avatar)
+- [AvatarGroup 头像组](/components/avatar-group)
 <XhComponentCard src="bar-code" name="BarCode" label="条形码" href="/components/bar-code" status="alpha" />
 - [Card 卡片](/components/card)
 - [Carousel 走马灯](/components/carousel)
-<XhComponentCard src="collapsible" name="Collapsible" label="折叠区域" href="/components/collapsible" status="alpha" />
-<XhComponentCard src="color-swatch" name="ColorSwatch" label="颜色色块" href="/components/color-swatch" status="alpha" />
-<XhComponentCard src="descriptions" name="Descriptions" label="描述列表" href="/components/descriptions" status="alpha" />
-<XhComponentCard src="empty-state" name="EmptyState" label="空状态" href="/components/empty-state" status="alpha" />
-<XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" status="alpha" />
-<XhComponentCard src="highlight" name="Highlight" label="文本高亮" href="/components/highlight" status="alpha" />
-<XhComponentCard src="image" name="Image" label="图片" href="/components/image" status="alpha" />
-<XhComponentCard src="image-viewer" name="ImageViewer" label="图片预览" href="/components/image-viewer" status="alpha" />
-<XhComponentCard src="infinite-scroll" name="InfiniteScroll" label="无限滚动" href="/components/infinite-scroll" status="alpha" />
-<XhComponentCard src="json-viewer" name="JsonViewer" label="JSON 视图" href="/components/json-viewer" status="alpha" />
-<XhComponentCard src="list" name="List" label="列表" href="/components/list" status="alpha" />
-<XhComponentCard src="marquee" name="Marquee" label="跑马灯" href="/components/marquee" status="alpha" />
-<XhComponentCard src="matrix-code" name="MatrixCode" label="二维码" href="/components/matrix-code" status="alpha" />
-<XhComponentCard src="number-animation" name="NumberAnimation" label="数值动画" href="/components/number-animation" status="alpha" />
-<XhComponentCard src="statistic" name="Statistic" label="统计数值" href="/components/statistic" status="alpha" />
-<XhComponentCard src="table" name="Table" label="表格" href="/components/table" status="alpha" />
-<XhComponentCard src="tag" name="Tag" label="标签" href="/components/tag" status="alpha" />
-<XhComponentCard src="timeline" name="Timeline" label="时间线" href="/components/timeline" status="alpha" />
-<XhComponentCard src="timer" name="Timer" label="计时器" href="/components/timer" status="alpha" />
-<XhComponentCard src="timestamp" name="Timestamp" label="时间戳" href="/components/timestamp" status="alpha" />
-<XhComponentCard src="tree" name="Tree" label="树" href="/components/tree" status="alpha" />
-<XhComponentCard src="virtualizer" name="Virtualizer" label="虚拟滚动" href="/components/virtualizer" status="alpha" />
+- [Collapsible 折叠区域](/components/collapsible)
+- [ColorSwatch 颜色色块](/components/color-swatch)
+- [Descriptions 描述列表](/components/descriptions)
+- [EmptyState 空状态](/components/empty-state)
+- [Heatmap 热力图](/components/heatmap)
+- [Highlight 文本高亮](/components/highlight)
+- [Image 图片](/components/image)
+- [ImageViewer 图片预览](/components/image-viewer)
+- [InfiniteScroll 无限滚动](/components/infinite-scroll)
+- [JsonViewer JSON 视图](/components/json-viewer)
+- [List 列表](/components/list)
+- [Marquee 跑马灯](/components/marquee)
+- [MatrixCode 二维码](/components/matrix-code)
+- [NumberAnimation 数值动画](/components/number-animation)
+- [Statistic 统计数值](/components/statistic)
+- [Table 表格](/components/table)
+- [Tag 标签](/components/tag)
+- [Timeline 时间线](/components/timeline)
+- [Timer 计时器](/components/timer)
+- [Timestamp 时间戳](/components/timestamp)
+- [Tree 树](/components/tree)
+- [Virtualizer 虚拟滚动](/components/virtualizer)
 
 ## 反馈
 
 - [Alert 警告提示](/components/alert)
 - [Badge 徽标](/components/badge)
-<XhComponentCard src="loading-bar" name="LoadingBar" label="加载条" href="/components/loading-bar" status="alpha" />
-<XhComponentCard src="progress" name="Progress" label="进度条" href="/components/progress" status="alpha" />
+- [LoadingBar 加载条](/components/loading-bar)
+- [Progress 进度条](/components/progress)
 - [Skeleton 骨架屏](/components/skeleton)
 - [Spinner 加载指示器](/components/spinner)
-<XhComponentCard src="notification" name="Notification" label="通知" href="/components/notification" status="alpha" />
+- [Notification 通知](/components/notification)
 - [Toast 轻提示](/components/toast)
 
 ## 浮层
 
-<XhComponentCard src="command" name="Command" label="命令面板" href="/components/command" status="alpha" />
-<XhComponentCard src="dialog" name="Dialog" label="对话框" href="/components/dialog" status="alpha" />
-<XhComponentCard src="drawer" name="Drawer" label="抽屉" href="/components/drawer" status="alpha" />
-<XhComponentCard src="floating-panel" name="FloatingPanel" label="浮动面板" href="/components/floating-panel" status="alpha" />
-<XhComponentCard src="hover-card" name="HoverCard" label="悬浮卡片" href="/components/hover-card" status="alpha" />
-<XhComponentCard src="popconfirm" name="Popconfirm" label="弹出确认" href="/components/popconfirm" status="alpha" />
-<XhComponentCard src="popover" name="Popover" label="气泡卡片" href="/components/popover" status="alpha" />
-<XhComponentCard src="tooltip" name="Tooltip" label="文字提示" href="/components/tooltip" status="alpha" />
+- [Command 命令面板](/components/command)
+- [Dialog 对话框](/components/dialog)
+- [Drawer 抽屉](/components/drawer)
+- [FloatingPanel 浮动面板](/components/floating-panel)
+- [HoverCard 悬浮卡片](/components/hover-card)
+- [Popconfirm 弹出确认](/components/popconfirm)
+- [Popover 气泡卡片](/components/popover)
+- [Tooltip 文字提示](/components/tooltip)
 
 ## AI 对话
 
 <XhComponentCard src="approval" name="Approval" label="审批" href="/components/approval" status="alpha" />
-<XhComponentCard src="code-view" name="CodeView" label="代码视图" href="/components/code-view" status="alpha" />
-<XhComponentCard src="diff-view" name="DiffView" label="差异视图" href="/components/diff-view" status="alpha" />
-<XhComponentCard src="log" name="Log" label="日志" href="/components/log" status="alpha" />
+- [CodeView 代码视图](/components/code-view)
+- [DiffView 差异视图](/components/diff-view)
+- [Log 日志](/components/log)
 <XhComponentCard src="markdown-stream" name="MarkdownStream" label="流式正文" href="/components/markdown-stream" status="alpha" />
 <XhComponentCard src="message-feed" name="MessageFeed" label="消息流" href="/components/message-feed" status="alpha" />
 <XhComponentCard src="prompt-input" name="PromptInput" label="提示输入框" href="/components/prompt-input" status="alpha" />
@@ -45466,7 +45465,7 @@ onBeforeUnmount(() => observer?.disconnect());
 
 来源：https://ui.docs.xihanfun.com/components/infinite-scroll
 
-# InfiniteScroll 无限滚动 `alpha`
+# InfiniteScroll 无限滚动
 
 获取下一页的通用触发器，滚动只是默认的触发方式。
 
@@ -46360,7 +46359,7 @@ function onLoad(): void {
 
 来源：https://ui.docs.xihanfun.com/components/input-group
 
-# InputGroup 输入组 `alpha`
+# InputGroup 输入组
 
 用于在同一输入表面中组合前缀、输入控件和后缀。
 
@@ -46710,7 +46709,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/json-viewer
 
-# JsonViewer JSON 视图 `alpha`
+# JsonViewer JSON 视图
 
 把一份 JSON 展开为可折叠的树：键名、值与值类型各自成块，对象与数组可以逐层收起。
 
@@ -47818,7 +47817,7 @@ const count = ref(0);
 
 来源：https://ui.docs.xihanfun.com/components/layout
 
-# Layout 布局 `alpha`
+# Layout 布局
 
 用于构建带页头、侧栏、内容和页脚的页面骨架。
 
@@ -48194,7 +48193,7 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 
 来源：https://ui.docs.xihanfun.com/components/list
 
-# List 列表 `alpha`
+# List 列表
 
 一列同构的条目，每条可以有媒体位、标题、描述与操作位。
 
@@ -48677,7 +48676,7 @@ const sizes = [
 
 来源：https://ui.docs.xihanfun.com/components/listbox
 
-# Listbox 列表框 `alpha`
+# Listbox 列表框
 
 用于展示一组常驻选项，并允许用户选择其中一项或多项。
 
@@ -49267,13 +49266,13 @@ import {
 | `--xh-listbox-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | listbox 的 item 部件 background-color 覆盖槽。 |
 | `--xh-listbox-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | listbox 的 item 部件 background-color 覆盖槽。 |
 | `--xh-listbox-item-bg-selected` | `item` | `background-color` | `disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | listbox 的 item 部件 background-color 覆盖槽。 |
-| `--xh-listbox-item-check-fg` | `item` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-listbox-item-indicator-fg` | listbox 的 item 部件 background-color、color 覆盖槽。 |
+| `--xh-listbox-item-check-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-listbox-item-indicator-fg` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-fg-default` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-font-size` | `item` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 item 部件 font-size 覆盖槽。 |
 | `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-font-weight-regular` | listbox 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-context=page`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
-| `--xh-listbox-item-indicator-fg` | `item` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 background-color、color 覆盖槽。 |
+| `--xh-listbox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-listbox-item-px` | `item` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 item 部件 padding-inline 覆盖槽。 |
@@ -49307,7 +49306,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/loading-bar
 
-# LoadingBar 加载条 `alpha`
+# LoadingBar 加载条
 
 页面顶部的细进度线，表示正在导航或正在获取数据。
 
@@ -50034,7 +50033,7 @@ function reload(): void {
 
 来源：https://ui.docs.xihanfun.com/components/log
 
-# Log 日志 `alpha`
+# Log 日志
 
 等宽排版的滚动区域，一行一条，可以自动跟随到底部。
 
@@ -51522,7 +51521,7 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 
 来源：https://ui.docs.xihanfun.com/components/marquee
 
-# Marquee 跑马灯 `alpha`
+# Marquee 跑马灯
 
 内容沿一条轴循环滚动。
 
@@ -52059,7 +52058,7 @@ const speeds = [30, 60, 140] as const;
 
 来源：https://ui.docs.xihanfun.com/components/masonry
 
-# Masonry 瀑布流 `alpha`
+# Masonry 瀑布流
 
 将等宽、不等高的内容排列为瀑布流。
 
@@ -52373,7 +52372,7 @@ const steps = [
 
 来源：https://ui.docs.xihanfun.com/components/matrix-code
 
-# MatrixCode 二维码 `alpha`
+# MatrixCode 二维码
 
 将一段文本绘制为二维码，`format` 选择码制。
 
@@ -53122,7 +53121,7 @@ const value = ["0109501101530003", "17250630", "10ABC123", GS, "21SN001"].join("
 
 来源：https://ui.docs.xihanfun.com/components/mention
 
-# Mention 提及 `alpha`
+# Mention 提及
 
 在正文中输入前缀字符后弹出候选，选中后把引用插入文本。
 
@@ -54134,6 +54133,7 @@ const filtered = computed(() => {
 | `--xh-mention-input-px` | `input` | `padding-inline` | `xh-field-chrome` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-input-radius` | `input` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
 | `--xh-mention-input-shadow` | `input` | `box-shadow` | `xh-field-chrome` | `none` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-input-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | mention 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-mention-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | mention 的 item 部件 background-color 覆盖槽。 |
 | `--xh-mention-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | mention 的 item 部件 background-color 覆盖槽。 |
 | `--xh-mention-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
@@ -54172,7 +54172,7 @@ const filtered = computed(() => {
 
 来源：https://ui.docs.xihanfun.com/components/menu
 
-# Menu 菜单 `alpha`
+# Menu 菜单
 
 从触发器打开一组操作命令。
 
@@ -54722,7 +54722,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/menubar
 
-# Menubar 菜单栏 `alpha`
+# Menubar 菜单栏
 
 用于桌面应用的横向命令菜单栏。
 
@@ -56422,7 +56422,7 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 
 来源：https://ui.docs.xihanfun.com/components/navigation-menu
 
-# NavigationMenu 导航菜单 `alpha`
+# NavigationMenu 导航菜单
 
 用于站点顶部的多级导航菜单。
 
@@ -57017,7 +57017,7 @@ const groups = [
 
 来源：https://ui.docs.xihanfun.com/components/notification
 
-# Notification 通知 `alpha`
+# Notification 通知
 
 主动推送给用户的一条消息：有标题、有正文，可以带操作按钮。
 
@@ -58254,7 +58254,7 @@ function pop(create: Create, placement: string, label: string): void {
 
 来源：https://ui.docs.xihanfun.com/components/number-animation
 
-# NumberAnimation 数值动画 `alpha`
+# NumberAnimation 数值动画
 
 数字从一个值滚动到另一个值。
 
@@ -59759,6 +59759,7 @@ const formatWeight = (value: number) => `${value} kg`;
 | `--xh-number-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `0` | number-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-number-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | number-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-number-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | number-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-number-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | number-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-number-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | number-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-number-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | number-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-number-field-input-align` | `control`<br>`input` | `text-align` | `default` | `center` | number-field 的 control、input 部件 text-align 覆盖槽。 |
@@ -59795,7 +59796,7 @@ const formatWeight = (value: number) => `${value} kg`;
 
 来源：https://ui.docs.xihanfun.com/components/page-header
 
-# PageHeader 页头 `alpha`
+# PageHeader 页头
 
 统一呈现页面标题、说明、导航和主要操作。
 
@@ -60115,7 +60116,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/pagination
 
-# Pagination 分页 `alpha`
+# Pagination 分页
 
 用于在分页结果之间导航。
 
@@ -61005,7 +61006,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/password-input
 
-# PasswordInput 密码输入 `alpha`
+# PasswordInput 密码输入
 
 一格密码框，带明暗切换按钮，并在大写锁定开启时给出提示。
 
@@ -61045,7 +61046,7 @@ import {
   >
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 200px" />
+      <XhPasswordInputInput />
       <!-- 节点留空，大写锁定开着时组件把文字写进来，读屏念的就是这一段 -->
       <XhPasswordInputCapsLockIndicator />
       <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
@@ -61060,7 +61061,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">密码</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 200px" />
+      <input data-xh-part="input" />
       <!-- 节点留空，大写锁定开着时元素把文字写进来，读屏念的就是这一段 -->
       <span data-xh-part="caps-lock-indicator"></span>
       <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
@@ -61113,7 +61114,7 @@ const revealed = ref(false);
   <XhPasswordInputRoot v-model:value="password" v-model:revealed="revealed">
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 200px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61127,7 +61128,7 @@ const revealed = ref(false);
   <div data-xh-part="root">
     <label data-xh-part="label">密码</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 200px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61179,7 +61180,7 @@ import {
   >
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 220px" />
+      <XhPasswordInputInput />
       <!-- 节点留空：区里的文字由组件写，写的就是 translations.capsLockOn -->
       <XhPasswordInputCapsLockIndicator />
       <XhPasswordInputVisibilityTrigger />
@@ -61193,7 +61194,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">密码</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 220px" />
+      <input data-xh-part="input" />
       <!-- 节点留空：区里的文字由元素写，写的就是 translations.capsLockOn -->
       <span data-xh-part="caps-lock-indicator"></span>
       <button data-xh-part="visibility-trigger"></button>
@@ -61226,7 +61227,7 @@ import {
   <XhPasswordInputRoot default-value="hunter2" disabled>
     <XhPasswordInputLabel>禁用</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61234,7 +61235,7 @@ import {
   <XhPasswordInputRoot default-value="hunter2" read-only>
     <XhPasswordInputLabel>只读</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61242,7 +61243,7 @@ import {
   <XhPasswordInputRoot default-value="123" invalid>
     <XhPasswordInputLabel>校验失败</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61254,7 +61255,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">禁用</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61264,7 +61265,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">只读</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61274,7 +61275,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">校验失败</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61302,7 +61303,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   <XhPasswordInputRoot v-for="v in variants" :key="v" :variant="v" default-value="hunter2">
     <XhPasswordInputLabel>{{ v }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61314,7 +61315,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   <div data-xh-part="root">
     <label data-xh-part="label">outline</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61324,7 +61325,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   <div data-xh-part="root">
     <label data-xh-part="label">subtle</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61334,7 +61335,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   <div data-xh-part="root">
     <label data-xh-part="label">ghost</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61369,7 +61370,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   >
     <XhPasswordInputLabel>{{ t }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61382,7 +61383,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   <div data-xh-part="root">
     <label data-xh-part="label">brand</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61392,7 +61393,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   <div data-xh-part="root">
     <label data-xh-part="label">neutral</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61402,7 +61403,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   <div data-xh-part="root">
     <label data-xh-part="label">success</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61412,7 +61413,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   <div data-xh-part="root">
     <label data-xh-part="label">warning</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61422,7 +61423,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   <div data-xh-part="root">
     <label data-xh-part="label">danger</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61432,7 +61433,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   <div data-xh-part="root">
     <label data-xh-part="label">info</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61458,7 +61459,7 @@ import {
   <XhPasswordInputRoot size="sm" default-value="hunter2">
     <XhPasswordInputLabel>sm</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61466,7 +61467,7 @@ import {
   <XhPasswordInputRoot default-value="hunter2">
     <XhPasswordInputLabel>缺省</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61474,7 +61475,7 @@ import {
   <XhPasswordInputRoot size="lg" default-value="hunter2">
     <XhPasswordInputLabel>lg</XhPasswordInputLabel>
     <XhPasswordInputControl>
-      <XhPasswordInputInput style="inline-size: 160px" />
+      <XhPasswordInputInput />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
@@ -61486,7 +61487,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">sm</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61496,7 +61497,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">缺省</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61506,7 +61507,7 @@ import {
   <div data-xh-part="root">
     <label data-xh-part="label">lg</label>
     <div data-xh-part="control">
-      <input data-xh-part="input" style="inline-size: 160px" />
+      <input data-xh-part="input" />
       <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
@@ -61534,7 +61535,7 @@ import {
     <XhPasswordInputRoot name="new-password" auto-complete="new-password" default-value="" required>
       <XhPasswordInputLabel>设置新密码</XhPasswordInputLabel>
       <XhPasswordInputControl>
-        <XhPasswordInputInput style="inline-size: 200px" />
+        <XhPasswordInputInput />
         <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>
@@ -61550,7 +61551,7 @@ import {
     <div data-xh-part="root">
       <label data-xh-part="label">设置新密码</label>
       <div data-xh-part="control">
-        <input data-xh-part="input" style="inline-size: 200px" />
+        <input data-xh-part="input" />
         <button data-xh-part="visibility-trigger"></button>
       </div>
     </div>
@@ -61813,6 +61814,7 @@ import {
 | `--xh-password-input-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_password-input-px` | password-input 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-password-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | password-input 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-password-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | password-input 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-password-input-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | password-input 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-password-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | password-input 的 root 部件 gap 覆盖槽。 |
 | `--xh-password-input-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | password-input 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-password-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | password-input 的 input 部件 box-shadow 覆盖槽。 |
@@ -61852,7 +61854,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/pin-input
 
-# PinInput 分格输入 `alpha`
+# PinInput 分格输入
 
 把一串短码拆成若干格子，一格一个字符。
 
@@ -62773,7 +62775,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 来源：https://ui.docs.xihanfun.com/components/popconfirm
 
-# Popconfirm 弹出确认 `alpha`
+# Popconfirm 弹出确认
 
 贴着触发器的一句确认：比对话框轻，但仍能拦住一次误操作。
 
@@ -63478,7 +63480,7 @@ function onConfirm() {
 
 来源：https://ui.docs.xihanfun.com/components/popover
 
-# Popover 气泡卡片 `alpha`
+# Popover 气泡卡片
 
 由点击触发、贴着触发器的一小块浮层，可以放任意内容与交互。
 
@@ -64764,7 +64766,7 @@ function pin(event: MouseEvent): void {
 
 来源：https://ui.docs.xihanfun.com/components/progress
 
-# Progress 进度条 `alpha`
+# Progress 进度条
 
 表示一件事的完成程度。线形、环形与仪表盘三种形态。
 
@@ -66536,7 +66538,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 - 同一个输入框上叠加了其他处理器且它已处理该按键时，组件让位。
 - 自动长高是两行 CSS，不进入状态机；引擎不支持时退化为 `rows` 决定的固定行数。
 - 两种排布同一份皮肤：直接把输入框与按钮放进 root 是单行；套一层输入行后 root 变为竖排，输入行上下两侧可以再放附件条与动作行。
-- 默认形态是 outline：`--xh-bg-canvas` 底、`--xh-border-control` 描边、无影，不画顶光与背景模糊；输入段透明，底由外框承担。发送按钮与 Button 缺省同为品牌实心，生成中降为中性淡底的停止身份。
+- 默认形态是 outline：不填底、`--xh-border-control` 描边、无影，不画顶光与背景模糊；输入段透明，底由外框承担。发送按钮与 Button 缺省同为品牌实心，生成中降为中性淡底的停止身份。
 - 发送按钮留空时皮肤绘制兜底字形：发送身份为上箭头，停止身份为圆角方块；放入自定义图标或文案即覆盖。
 
 ### 组合
@@ -67883,7 +67885,7 @@ const questions: QuestionFlowQuestion[] = [
 | `--xh-question-flow-gap` | `root` | `gap` | `default` | `--xh-_question-flow-gap` | question-flow 的 root 部件 gap 覆盖槽。 |
 | `--xh-question-flow-group-gap` | `group` | `gap` | `default` | `--xh-space-1` | question-flow 的 group 部件 gap 覆盖槽。 |
 | `--xh-question-flow-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=md`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | question-flow 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-question-flow-indicator-bg` | `item-indicator` | `background` | `default` | `--xh-bg-canvas` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
+| `--xh-question-flow-indicator-bg` | `item-indicator` | `background` | `default` | `transparent` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
 | `--xh-question-flow-indicator-bg-checked` | `item-indicator` | `background` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
 | `--xh-question-flow-indicator-border` | `item-indicator` | `border` | `default` | `--xh-border-control` | question-flow 的 item-indicator 部件 border 覆盖槽。 |
 | `--xh-question-flow-indicator-border-checked` | `item-indicator` | `border-color` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 border-color 覆盖槽。 |
@@ -67960,7 +67962,7 @@ const questions: QuestionFlowQuestion[] = [
 
 来源：https://ui.docs.xihanfun.com/components/radio-group
 
-# RadioGroup 单选组 `alpha`
+# RadioGroup 单选组
 
 一组互斥选项共用一个值，所有选项同时可见。单个单选按钮是这里的 `item` 部件，不另立组件：它脱离组既没有互斥对象，也无法取消选中。
 
@@ -68513,7 +68515,7 @@ const collection = computed(() =>
 - 整组只占一个 Tab 位，组内靠方向键移动，与原生单选组一致。
 - `hidden-input` 承担表单参与。
 - `collection` 可数据驱动，也可以逐项编写。
-- 圆圈是字段家族的控制盒：canvas 底、描边与无影，选中后以语气色圆点填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，圆圈随行换到承载面阶梯的下一档。
+- 圆圈是字段家族的控制盒：不填底、描边与无影，选中后以语气色圆点填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，圆圈随行换到承载面阶梯的下一档。
 - 与[复选框](./checkbox)的不对称是有意的：一个复选框自身即成立（勾选同意条款），一个单选按钮自身不成立，因此复选框有独立组件、单选按钮没有。
 
 ### 组合
@@ -68688,7 +68690,7 @@ const collection = computed(() =>
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-radio-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | radio-group 的 root 部件 gap 覆盖槽。 |
-| `--xh-radio-group-indicator-bg` | `indicator` | `background` | `default` | `--xh-bg-canvas` | radio-group 的 indicator 部件 background 覆盖槽。 |
+| `--xh-radio-group-indicator-bg` | `indicator` | `background` | `default` | `transparent` | radio-group 的 indicator 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-bg-disabled` | `indicator`<br>`item` | `background` | `disabled` | `--xh-bg-subtle` | radio-group 的 indicator、item 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-bg-pressed` | `indicator`<br>`item` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-_radio-group-host-bg-pressed` | radio-group 的 indicator、item 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-border` | `indicator` | `border` | `default` | `--xh-border-control` | radio-group 的 indicator 部件 border 覆盖槽。 |
@@ -68732,7 +68734,7 @@ const collection = computed(() =>
 
 来源：https://ui.docs.xihanfun.com/components/rating
 
-# Rating 评分 `alpha`
+# Rating 评分
 
 用一排图案表示一个离散的分值。
 
@@ -70789,7 +70791,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/scroll-area
 
-# ScrollArea 滚动区域 `alpha`
+# ScrollArea 滚动区域
 
 提供带自定义滚动条的内容区域。
 
@@ -71245,7 +71247,7 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 
 来源：https://ui.docs.xihanfun.com/components/scrollbar
 
-# Scrollbar 滚动条 `alpha`
+# Scrollbar 滚动条
 
 为现有滚动容器提供一致的滚动条样式。
 
@@ -71859,7 +71861,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 
 来源：https://ui.docs.xihanfun.com/components/segmented
 
-# Segmented 分段控制器 `alpha`
+# Segmented 分段控制器
 
 一排连在一起的互斥选项，选中的一段下方有一块滑动的指示器：淡底轨道里一块带描边的白色抬起面。它是单选组，参与表单提交。
 
@@ -72668,7 +72670,7 @@ function onSubmit(event: Event) {
 
 来源：https://ui.docs.xihanfun.com/components/select
 
-# Select 选择器 `alpha`
+# Select 选择器
 
 从已知清单中选择一个或多个值，选项收在浮层内。
 
@@ -73657,7 +73659,7 @@ const plans = [
     <XhSelectRoot
       :default-value="['long']"
       placeholder="请选择"
-      style="--xh-select-control-min-w: 15rem; --xh-select-content-min-w: 22rem"
+      style="--xh-select-control-w: 20rem; --xh-select-content-min-w: 22rem"
     >
       <XhSelectLabel>加宽</XhSelectLabel>
       <XhSelectControl>
@@ -73718,7 +73720,7 @@ const plans = [
   <xh-select default-value="long" placeholder="请选择">
     <div
       data-xh-part="root"
-      style="--xh-select-control-min-w: 15rem; --xh-select-content-min-w: 22rem"
+      style="--xh-select-control-w: 20rem; --xh-select-content-min-w: 22rem"
     >
       <span data-xh-part="label">加宽</span>
       <div data-xh-part="control">
@@ -74374,7 +74376,6 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     :max-tag-count="2"
     multiple
     placeholder="请选择"
-    style="inline-size: 280px"
   >
     <XhSelectLabel>技术栈</XhSelectLabel>
     <XhSelectControl>
@@ -74411,7 +74412,7 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
 
 ```html
 <xh-select id="select-tags" multiple max-tag-count="2" placeholder="请选择">
-  <div data-xh-part="root" style="inline-size: 280px">
+  <div data-xh-part="root">
     <span data-xh-part="label">技术栈</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -74998,14 +74999,13 @@ const teams = [
     clearable
     label="所属小组"
     placeholder="选一个组"
-    style="inline-size: 240px"
   />
 </template>
 ```
 
 ```html
 <xh-select default-value="design" placeholder="选一个组">
-  <div data-xh-part="root" style="inline-size: 240px">
+  <div data-xh-part="root">
     <span data-xh-part="label">所属小组</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -75621,6 +75621,7 @@ function onValueChange(details: { value: string[] }): void {
 | `--xh-select-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_select-px` | select 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-select-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-select-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | select 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-select-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | select 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 empty 部件 color 覆盖槽。 |
 | `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 empty 部件 padding-inline 覆盖槽。 |
@@ -75688,7 +75689,7 @@ function onValueChange(details: { value: string[] }): void {
 
 来源：https://ui.docs.xihanfun.com/components/separator
 
-# Separator 分隔线 `alpha`
+# Separator 分隔线
 
 分隔相关内容或内容分组。
 
@@ -75945,7 +75946,7 @@ import { XhSeparator } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/side-nav
 
-# SideNav 侧栏导航 `alpha`
+# SideNav 侧栏导航
 
 用于组织应用的主要导航入口。
 
@@ -76634,7 +76635,7 @@ const branches = collection.filter(node => node.children);
 
 ### 特性
 
-- 支持分组、嵌套分支与当前项高亮：当前项铺品牌淡底行面并在起始侧画 2px 指示条，通往当前项的展开分支只落与悬停同档的中性面。
+- 支持分组、嵌套分支与当前项高亮：当前项铺品牌淡底行面、字取淡底前景，不另画指示条；通往当前项的展开分支只落与悬停同档的中性面。
 - `accordion` 限制同一层级只展开一个分支。
 - 折叠后保留图标入口，子级在浮层中展示。
 - 方向键上下移动，左右键展开或收起分支。
@@ -76868,7 +76869,7 @@ const branches = collection.filter(node => node.children);
 | `--xh-side-nav-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | side-nav 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-icon-size` | `branch-trigger`<br>`link`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | side-nav 的 branch-trigger、link、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-side-nav-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。 |
-| `--xh-side-nav-indicator-color` | `branch-trigger`<br>`link` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | side-nav 的 branch-trigger、link 部件 background-color、color 覆盖槽。 |
+| `--xh-side-nav-indicator-color` | `branch-trigger`<br>`link` | `color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
 | `--xh-side-nav-link-font-size` | `branch-trigger`<br>`link` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 branch-trigger、link 部件 font-size 覆盖槽。 |
 | `--xh-side-nav-link-gap` | `branch-trigger`<br>`link` | `gap` | `default` | `--xh-_side-nav-row-gap` | side-nav 的 branch-trigger、link 部件 gap 覆盖槽。 |
 | `--xh-side-nav-link-h` | `branch-trigger`<br>`link` | `min-block-size` | `default` | `--xh-_side-nav-row-h` | side-nav 的 branch-trigger、link 部件 min-block-size 覆盖槽。 |
@@ -76911,7 +76912,7 @@ const branches = collection.filter(node => node.children);
 
 来源：https://ui.docs.xihanfun.com/components/signature-pad
 
-# SignaturePad 签名板 `alpha`
+# SignaturePad 签名板
 
 用指针书写的画布：按下落笔、移动成迹、抬起收笔，输出可缩放、可直接提交的 SVG。
 
@@ -77301,7 +77302,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 - 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会清空画布。
 - 笔迹变化时发出 `draw`，签名定稿时发出 `draw-end`：抬笔、点击清空、表单重置三条路径都发出。按 `draw-end` 缓存待提交的 SVG 不会取到过期版本。
 - 指针划出画布甚至划出窗口都持续跟随，抬起即收笔；落笔的指针被捕获，手掌与第二根手指的移动不会续进这一笔。
-- 画布是一块字段外壳：静息 `--xh-bg-canvas` 底 + `--xh-border-control` 描边 + 4px 控件圆角、无影；落笔时描边加深，只读只换淡底，禁用退到 `--xh-border-default` + `--xh-bg-subtle`。画布按宽高比撑高，吃不下字段家族配方钉死的控件行高，因此外壳按同一套字段规则自绘。
+- 画布是一块字段外壳：静息不填底 + `--xh-border-control` 描边 + 4px 控件圆角、无影；落笔时描边加深，只读只换淡底，禁用退到 `--xh-border-default` + `--xh-bg-subtle`。画布按宽高比撑高，吃不下字段家族配方钉死的控件行高，因此外壳按同一套字段规则自绘。
 - 标签走字段标签档（14 / 500 / `--xh-fg-default`），贴画布 `--xh-space-1`；状态句是说明角色（13 / `--xh-fg-muted`）。
 - 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下缩放并换底；空画布时只把静息前景压淡，按钮照常可按。
 
@@ -77497,7 +77498,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-signature-pad-aspect-ratio` | `control` | `aspect-ratio` | `default` | `5 / 2` | signature-pad 的 control 部件 aspect-ratio 覆盖槽。 |
-| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-canvas` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg` | `control` | `background` | `default` | `transparent` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |
@@ -77895,7 +77896,7 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 
 来源：https://ui.docs.xihanfun.com/components/slider
 
-# Slider 滑块 `alpha`
+# Slider 滑块
 
 在连续或离散的区间内拖出一个值或一段范围。
 
@@ -79246,7 +79247,7 @@ function valueText({ value }: { value: number }) {
 
 来源：https://ui.docs.xihanfun.com/components/sortable
 
-# Sortable 排序 `alpha`
+# Sortable 排序
 
 通过拖拽或键盘重新排列内容。
 
@@ -80147,7 +80148,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/splitter
 
-# Splitter 分栏 `alpha`
+# Splitter 分栏
 
 将内容区域拆分为可调整大小的面板。
 
@@ -80596,7 +80597,7 @@ const inner = [
 
 来源：https://ui.docs.xihanfun.com/components/statistic
 
-# Statistic 统计数值 `alpha`
+# Statistic 统计数值
 
 带标签的关键数字，可以配前后缀。
 
@@ -81815,7 +81816,7 @@ const errorAt = 1;
 
 来源：https://ui.docs.xihanfun.com/components/switch
 
-# Switch 开关 `alpha`
+# Switch 开关
 
 一项设置的开与关，切换后立即生效。
 
@@ -82690,7 +82691,7 @@ function onSubmit(event: Event) {
 
 来源：https://ui.docs.xihanfun.com/components/table
 
-# Table 表格 `alpha`
+# Table 表格
 
 多行同构记录按列排开，支持排序、选择、展开与吸顶。
 
@@ -87623,6 +87624,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 <script setup lang="ts">
 import {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -87635,6 +87637,7 @@ import {
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="analytics">分析</XhTabsTrigger>
       <XhTabsTrigger value="reports">报告</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="overview">查看项目概览与近期活动。</XhTabsContent>
@@ -87651,6 +87654,7 @@ import {
       <button data-xh-part="trigger" value="overview">概览</button>
       <button data-xh-part="trigger" value="analytics">分析</button>
       <button data-xh-part="trigger" value="reports">报告</button>
+      <div data-xh-part="indicator"></div>
     </div>
 
     <div data-xh-part="content" value="overview">查看项目概览与近期活动。</div>
@@ -87664,7 +87668,7 @@ import {
 
 加粗的是必需部件。
 
-`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · `indicator` · `separator` · **`content`** · `tab-drag-trigger` · `live-region`
+`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · `indicator` · `separator` · `prev-trigger` · `next-trigger` · **`content`** · `tab-drag-trigger` · `live-region`
 
 ## 示例
 
@@ -87724,6 +87728,7 @@ import {
 <script setup lang="ts">
 import {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -87736,6 +87741,7 @@ import {
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="analytics">分析</XhTabsTrigger>
       <XhTabsTrigger value="reports">报告</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
     <XhTabsContent value="overview">查看项目概览。</XhTabsContent>
     <XhTabsContent value="analytics">查看项目分析。</XhTabsContent>
@@ -87751,6 +87757,7 @@ import {
       <button data-xh-part="trigger" value="overview">概览</button>
       <button data-xh-part="trigger" value="analytics">分析</button>
       <button data-xh-part="trigger" value="reports">报告</button>
+      <div data-xh-part="indicator"></div>
     </div>
     <div data-xh-part="content" value="overview">查看项目概览。</div>
     <div data-xh-part="content" value="analytics">查看项目分析。</div>
@@ -87769,6 +87776,7 @@ import { ActivityIcon, ChartBarIcon, FileTextIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -87781,6 +87789,7 @@ import {
       <XhTabsTrigger value="activity"><XhIcon :icon="ActivityIcon" />活动</XhTabsTrigger>
       <XhTabsTrigger value="analytics"><XhIcon :icon="ChartBarIcon" />分析</XhTabsTrigger>
       <XhTabsTrigger value="reports"><XhIcon :icon="FileTextIcon" />报告</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="activity">查看项目近期活动。</XhTabsContent>
@@ -87806,6 +87815,7 @@ import {
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
         报告
       </button>
+      <div data-xh-part="indicator"></div>
     </div>
 
     <div data-xh-part="content" value="activity">查看项目近期活动。</div>
@@ -87823,6 +87833,7 @@ import {
 <script setup lang="ts">
 import {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -87835,6 +87846,7 @@ import {
       <XhTabsTrigger value="active">当前</XhTabsTrigger>
       <XhTabsTrigger value="disabled" disabled>不可用</XhTabsTrigger>
       <XhTabsTrigger value="available">可用</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="active">当前标签可以正常切换。</XhTabsContent>
@@ -87851,6 +87863,7 @@ import {
       <button data-xh-part="trigger" value="active">当前</button>
       <button data-xh-part="trigger" value="disabled" disabled>不可用</button>
       <button data-xh-part="trigger" value="available">可用</button>
+      <div data-xh-part="indicator"></div>
     </div>
 
     <div data-xh-part="content" value="active">当前标签可以正常切换。</div>
@@ -87868,6 +87881,7 @@ import {
 <script setup lang="ts">
 import {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
   XhTabsSeparator,
@@ -87883,6 +87897,7 @@ import {
       <XhTabsTrigger value="quarterly">按季</XhTabsTrigger>
       <XhTabsSeparator />
       <XhTabsTrigger value="yearly">按年</XhTabsTrigger>
+      <XhTabsIndicator />
     </XhTabsList>
 
     <XhTabsContent value="monthly">每月自动续费，可随时取消。</XhTabsContent>
@@ -87901,11 +87916,86 @@ import {
       <button data-xh-part="trigger" value="quarterly">按季</button>
       <div data-xh-part="separator"></div>
       <button data-xh-part="trigger" value="yearly">按年</button>
+      <div data-xh-part="indicator"></div>
     </div>
 
     <div data-xh-part="content" value="monthly">每月自动续费，可随时取消。</div>
     <div data-xh-part="content" value="quarterly">每三个月结算一次。</div>
     <div data-xh-part="content" value="yearly">按年结算可享优惠。</div>
+  </div>
+</xh-tabs>
+```
+
+### 放不下时滚动
+
+标签带只裁主轴，两端翻页钮与滚轮把被裁掉的标签挪进视野
+
+```vue
+<script setup lang="ts">
+import {
+  XhTabsContent,
+  XhTabsIndicator,
+  XhTabsList,
+  XhTabsNextTrigger,
+  XhTabsPrevTrigger,
+  XhTabsRoot,
+  XhTabsTrigger,
+} from "@xihan-ui/vue";
+
+const regions = [
+  "华北",
+  "华东",
+  "华南",
+  "华中",
+  "西南",
+  "西北",
+  "东北",
+  "港澳台",
+  "海外",
+];
+</script>
+
+<template>
+  <XhTabsRoot default-value="华北" style="inline-size: 360px; max-inline-size: 100%">
+    <XhTabsList aria-label="销售区域">
+      <XhTabsPrevTrigger />
+      <XhTabsTrigger v-for="region in regions" :key="region" :value="region">{{ region }}大区</XhTabsTrigger>
+      <XhTabsIndicator />
+      <XhTabsNextTrigger />
+    </XhTabsList>
+
+    <XhTabsContent v-for="region in regions" :key="region" :value="region">{{ region }}大区的销售概览。</XhTabsContent>
+  </XhTabsRoot>
+</template>
+```
+
+```html
+<xh-tabs default-value="华北">
+  <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="销售区域">
+      <button data-xh-part="prev-trigger"></button>
+      <button data-xh-part="trigger" value="华北">华北大区</button>
+      <button data-xh-part="trigger" value="华东">华东大区</button>
+      <button data-xh-part="trigger" value="华南">华南大区</button>
+      <button data-xh-part="trigger" value="华中">华中大区</button>
+      <button data-xh-part="trigger" value="西南">西南大区</button>
+      <button data-xh-part="trigger" value="西北">西北大区</button>
+      <button data-xh-part="trigger" value="东北">东北大区</button>
+      <button data-xh-part="trigger" value="港澳台">港澳台大区</button>
+      <button data-xh-part="trigger" value="海外">海外大区</button>
+      <div data-xh-part="indicator"></div>
+      <button data-xh-part="next-trigger"></button>
+    </div>
+
+    <div data-xh-part="content" value="华北">华北大区的销售概览。</div>
+    <div data-xh-part="content" value="华东">华东大区的销售概览。</div>
+    <div data-xh-part="content" value="华南">华南大区的销售概览。</div>
+    <div data-xh-part="content" value="华中">华中大区的销售概览。</div>
+    <div data-xh-part="content" value="西南">西南大区的销售概览。</div>
+    <div data-xh-part="content" value="西北">西北大区的销售概览。</div>
+    <div data-xh-part="content" value="东北">东北大区的销售概览。</div>
+    <div data-xh-part="content" value="港澳台">港澳台大区的销售概览。</div>
+    <div data-xh-part="content" value="海外">海外大区的销售概览。</div>
   </div>
 </xh-tabs>
 ```
@@ -87929,16 +88019,18 @@ import {
 - `card` 用于文档式标签。
 - 支持水平、垂直、禁用与手动激活模式。
 - 面板常驻并通过 `hidden` 切换，内部状态不会丢失。
+- 标签带放不下时不折行：标签整体沿主轴位移露出被裁掉的那截，两端的 `prev-trigger` / `next-trigger` 按页翻，横向滚轮（触控板两指横划、Shift + 滚轮）按滚了多少挪多少，触屏手指按在标签带上沿主轴拖即跟手平移（交叉轴仍让给页面滚动，抬手后紧跟的那次 click 不算点选），选中或聚焦的标签被裁在外面时自动挪进视野；放得下时两只翻页钮收起，`api.overflow` 为 `null`。
 - `reorderable` 支持指针拖动与 Alt + 方向键换位。
 
 ### 组合
 
-- `indicator` 为 `line` 变体提供滑动指示条；不放它时选中标签自画静态线，放了它静态线收起、不重复画。
+- `indicator` 是滑动的当前标记：`line` 变体下是一条指示线，不放它时选中标签自画静态线，放了它静态线收起、不重复画；`segment` 变体下是那块白色抬起面，放了它选中标签自己透空、面跟着滑，不放则面长在选中标签身上；`card` 变体不用它。
 - `separator` 在相邻标签之间增加分隔线。
+- `prev-trigger` / `next-trigger` 放在 `list` 里、与标签平级（通常一头一尾），是标签带放不下时的翻页钮：鼠标专用的辅助入口，对读屏隐藏、不占 Tab 位——键盘用方向键在标签间移动，标签带自己跟着焦点挪；不放它们时滚轮与焦点跟随照常工作。不写内容时由皮肤画一枚 chevron，盖底缺省取 surface，标签页坐在别的面上时改 `--xh-tabs-scroll-trigger-bg`。
 
 ### 最佳实践
 
-- 标签数量控制在七个以内。
+- 标签数量控制在七个以内；确实更多（按数据生成的标签）时放上两端翻页钮，并把选中标签同步给 `value`，让它首帧就露在视野里。
 - 需要保留选择时，将当前标签同步到地址。
 
 ### 反模式
@@ -87953,7 +88045,7 @@ import {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tabs>` |
-| Vue 组件 | `XhTabsContent` `XhTabsIndicator` `XhTabsList` `XhTabsLiveRegion` `XhTabsRoot` `XhTabsSeparator` `XhTabsTabDragTrigger` `XhTabsTrigger` |
+| Vue 组件 | `XhTabsContent` `XhTabsIndicator` `XhTabsList` `XhTabsLiveRegion` `XhTabsNextTrigger` `XhTabsPrevTrigger` `XhTabsRoot` `XhTabsSeparator` `XhTabsTabDragTrigger` `XhTabsTrigger` |
 | 组合式函数 | `useTabs` |
 | 状态机 | `tabsMachine` |
 | 皮肤 | `@xihan-ui/styles/tabs.css` |
@@ -88002,7 +88094,7 @@ import {
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE` · `PRESS.START` · `PRESS.END` · `SCROLL.PREV` · `SCROLL.NEXT` · `SCROLL.BY` · `SCROLL.FRAME` · `PAN.START` · `PAN.MOVE` · `PAN.END` · `PAN.CANCEL`
 
 **判据**：`isAutomatic` · `canPress`
 
@@ -88017,12 +88109,15 @@ import {
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `dropTarget` | `DropTarget \| null` | 当前的落点；松手即落在此处。未落在任何标签上时为 null。 |
 | `announcement` | `string` | 读屏播报文本。渲染进 live-region，不进入视觉版面。 |
+| `overflow` | `TabsOverflow \| null` | 标签带放不放得下：放得下时为 null，放不下时记两端各还有没有被裁掉的标签。 |
 | `setValue` | `(next: string \| null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达无选中，写入侧同样接受。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: TabsTriggerProps) => T['button']` |  |
 | `getIndicatorProps` | `() => T['element']` | 选中标签下的滑条；位置由状态机测量后写为内联样式，没有选中项时 hidden。 |
 | `getSeparatorProps` | `() => T['element']` | 标签之间的细分隔线，纯装饰。 |
+| `getPrevTriggerProps` | `() => T['button']` | 标签带的前后翻页钮：标签带放不下时显示，挪到尽头的那一侧禁用；不占 Tab 位、对读屏隐藏—— 键盘用户用方向键在标签间移动，焦点落到被裁掉的标签上时标签带自己挪过去。 |
+| `getNextTriggerProps` | `() => T['button']` |  |
 | `getContentProps` | `(props: TabsContentProps) => T['element']` |  |
 | `getTabDragTriggerProps` | `(props: TabsTriggerProps) => T['element']` | 标签拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：reorderable 关闭或该标签禁用时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
@@ -88058,6 +88153,8 @@ import {
 | `trigger` | `role` | 'tab' |
 | `indicator` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
+| `prev-trigger` | `aria-hidden` | 'true' |
+| `next-trigger` | `aria-hidden` | 'true' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'tabpanel' |
 | `tab-drag-trigger` | `aria-hidden` | 'true' |
@@ -88096,7 +88193,22 @@ import {
 | `trigger` | `data-xh-collection-size` | props.size \| undefined |
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | item.value |
+| `indicator` | `data-variant` | props.variant |
 | `separator` | `data-orientation` | props.orientation |
+| `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-orientation` | props.orientation |
+| `prev-trigger` | `data-xh-action-control` | '' |
+| `prev-trigger` | `data-xh-action-display` | 'always' |
+| `prev-trigger` | `data-xh-action-profile` | 'icon' |
+| `prev-trigger` | `data-xh-action-size` | props.size |
+| `prev-trigger` | `data-xh-action-variant` | 'ghost' |
+| `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-orientation` | props.orientation |
+| `next-trigger` | `data-xh-action-control` | '' |
+| `next-trigger` | `data-xh-action-display` | 'always' |
+| `next-trigger` | `data-xh-action-profile` | 'icon' |
+| `next-trigger` | `data-xh-action-size` | props.size |
+| `next-trigger` | `data-xh-action-variant` | 'ghost' |
 | `content` | `data-state` | 'active' \| 'inactive' |
 | `tab-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `tab-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
@@ -88123,23 +88235,26 @@ import {
 | `--xh-tabs-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | tabs 的 root 部件 gap 覆盖槽。 |
 | `--xh-tabs-indicator-color` | `indicator`<br>`root`<br>`trigger` | `background` | `current`<br>`default`<br>`drop`<br>`not([data-drop])`<br>`variant=line` | `--xh-_tabs-accent` | tabs 的 indicator、root、trigger 部件 background 覆盖槽。 |
 | `--xh-tabs-indicator-radius` | `indicator`<br>`root`<br>`trigger` | `border-radius` | `current`<br>`default`<br>`drop`<br>`not([data-drop])`<br>`variant=line` | `--xh-shape-pill` | tabs 的 indicator、root、trigger 部件 border-radius 覆盖槽。 |
-| `--xh-tabs-indicator-thickness` | `indicator`<br>`root`<br>`trigger` | `block-size`<br>`inline-size` | `current`<br>`default`<br>`drop`<br>`not([data-drop])`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=line` | `--xh-stroke-thick` | tabs 的 indicator、root、trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tabs-indicator-thickness` | `indicator`<br>`root`<br>`trigger` | `block-size`<br>`inline-size` | `current`<br>`default`<br>`drop`<br>`not([data-drop])`<br>`not([data-variant='segment'])`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=line`<br>`variant=segment` | `--xh-stroke-thick` | tabs 的 indicator、root、trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tabs-list-bg` | `list` | `background` | `default` | `--xh-_tabs-list-bg` | tabs 的 list 部件 background 覆盖槽。 |
 | `--xh-tabs-list-border` | `list`<br>`root` | `border`<br>`border-block-end`<br>`border-inline-end` | `default`<br>`variant=segment` | `--xh-border-default`<br>`transparent` | tabs 的 list、root 部件 border、border-block-end、border-inline-end 覆盖槽。 |
 | `--xh-tabs-list-gap` | `list` | `gap` | `default` | `--xh-_tabs-list-gap` | tabs 的 list 部件 gap 覆盖槽。 |
-| `--xh-tabs-list-p` | `list` | `padding` | `default` | `--xh-_tabs-list-p` | tabs 的 list 部件 padding 覆盖槽。 |
+| `--xh-tabs-list-p` | `list`<br>`next-trigger`<br>`prev-trigger` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`inset-inline-end`<br>`inset-inline-start`<br>`padding` | `default`<br>`orientation=vertical` | `--xh-_tabs-list-p` | tabs 的 list、next-trigger、prev-trigger 部件 inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start、padding 覆盖槽。 |
 | `--xh-tabs-list-radius` | `list` | `border-radius` | `default` | `--xh-_tabs-list-radius` | tabs 的 list 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-scroll-icon-size` | `next-trigger`<br>`prev-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | tabs 的 next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tabs-scroll-trigger-bg` | `next-trigger`<br>`prev-trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible` | `--xh-_tabs-scroll-trigger-bg` | tabs 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tabs-scroll-trigger-fg` | `next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-muted` | tabs 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | tabs 的 separator 部件 background 覆盖槽。 |
 | `--xh-tabs-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-tabs-separator-size` | `separator` | `block-size` | `default` | `--xh-space-4` | tabs 的 separator 部件 block-size 覆盖槽。 |
 | `--xh-tabs-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thin` | tabs 的 separator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tabs-trigger-bg` | `root`<br>`trigger` | `background`<br>`background-color` | `is([data-variant='card'], [data-variant='segment'])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `transparent` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
-| `--xh-tabs-trigger-bg-active` | `root`<br>`trigger` | `background`<br>`background-color` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-active`<br>`--xh-_tone-subtle`<br>`transparent` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
+| `--xh-tabs-trigger-bg-active` | `indicator`<br>`root`<br>`trigger` | `background`<br>`background-color` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-active`<br>`--xh-_tone-subtle`<br>`transparent` | tabs 的 indicator、root、trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-tabs-trigger-bg-active-hover` | `root`<br>`trigger` | `background`<br>`background-color` | `current`<br>`disabled`<br>`error`<br>`hover`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-active-hover`<br>`--xh-bg-subtle` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-tabs-trigger-bg-hover` | `root`<br>`trigger` | `background`<br>`background-color` | `disabled`<br>`error`<br>`hover`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-hover`<br>`--xh-bg-subtle` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-tabs-trigger-bg-pressed` | `root`<br>`trigger` | `background`<br>`background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`not([data-state='active'])`<br>`pressed`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-trigger-bg-pressed`<br>`--xh-bg-subtle-hover` | tabs 的 root、trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-tabs-trigger-border` | `trigger` | `border` | `default` | `--xh-_tabs-trigger-border` | tabs 的 trigger 部件 border 覆盖槽。 |
-| `--xh-tabs-trigger-border-active` | `root`<br>`trigger` | `border-color` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-border-active`<br>`--xh-_tone-border` | tabs 的 root、trigger 部件 border-color 覆盖槽。 |
+| `--xh-tabs-trigger-border-active` | `indicator`<br>`root`<br>`trigger` | `border`<br>`border-color` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-border-active`<br>`--xh-_tone-border` | tabs 的 indicator、root、trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-tabs-trigger-fg` | `root`<br>`trigger` | `color` | `is([data-variant='card'], [data-variant='segment'])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-fg-muted` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-fg-active` | `root`<br>`trigger` | `color` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-accent-text` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-fg-hover` | `root`<br>`trigger` | `color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`variant=line`<br>`xh-collection-context=nav` | `--xh-fg-default` | tabs 的 root、trigger 部件 color 覆盖槽。 |
@@ -88148,15 +88263,17 @@ import {
 | `--xh-tabs-trigger-font-weight` | `root`<br>`trigger` | `font-weight` | `is([data-variant='card'], [data-variant='segment'])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-font-weight-regular`<br>`--xh-text-label-weight` | tabs 的 root、trigger 部件 font-weight 覆盖槽。 |
 | `--xh-tabs-trigger-font-weight-active` | `root`<br>`trigger` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-font-weight-medium` | tabs 的 root、trigger 部件 font-weight 覆盖槽。 |
 | `--xh-tabs-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | tabs 的 trigger 部件 gap 覆盖槽。 |
-| `--xh-tabs-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_tabs-trigger-h` | tabs 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-tabs-trigger-h` | `next-trigger`<br>`prev-trigger`<br>`trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_tabs-trigger-h` | tabs 的 next-trigger、prev-trigger、trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tabs-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_tabs-trigger-px` | tabs 的 trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-tabs-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_tabs-trigger-radius` | tabs 的 trigger 部件 border-radius 覆盖槽。 |
-| `--xh-tabs-trigger-shadow-active` | `root`<br>`trigger` | `box-shadow` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-shadow-active`<br>`--xh-elevation-raised` | tabs 的 root、trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-tabs-trigger-radius` | `indicator`<br>`trigger` | `border-radius` | `default`<br>`variant=segment` | `--xh-_tabs-trigger-radius` | tabs 的 indicator、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-trigger-shadow-active` | `indicator`<br>`root`<br>`trigger` | `box-shadow` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-shadow-active`<br>`--xh-elevation-raised` | tabs 的 indicator、root、trigger 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
 `background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核读系统的减弱动效偏好，据此决定要不要动。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -88166,13 +88283,13 @@ import {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ---
 
 来源：https://ui.docs.xihanfun.com/components/tag-group
 
-# TagGroup 标签组 `alpha`
+# TagGroup 标签组
 
 把一排标签作为一个整体操作：方向键在标签之间移动，整组只占一个 Tab 停靠点，标签可以选中、也可以移除，移除后焦点有去处。
 
@@ -88842,7 +88959,7 @@ const avatar
 
 来源：https://ui.docs.xihanfun.com/components/tag
 
-# Tag 标签 `alpha`
+# Tag 标签
 
 表示一个对象是什么：一个分类、一项技能、一个筛选条件。它承载实体身份，可以被移除。标签表达“它是什么”，不表达“发生了什么”；后者由[徽标](./badge)承担。
 
@@ -89532,7 +89649,7 @@ import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 
 来源：https://ui.docs.xihanfun.com/components/tags-input
 
-# TagsInput 标签输入 `alpha`
+# TagsInput 标签输入
 
 在一个输入框内录入一串标签：回车或分隔符成词，每个词是一个可删除的标签。
 
@@ -89570,7 +89687,6 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
     v-slot="{ value }"
     v-model:value="tags"
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>技术栈</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -89592,7 +89708,6 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
   id="tags-input-basic"
   value="Vue,TypeScript"
   placeholder="回车落一个"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">技术栈</label>
@@ -89698,7 +89813,6 @@ const tags = ref<string[]>(["Vue"]);
     add-on-paste
     delimiter=","
     placeholder="试试粘贴 React,Svelte,Solid"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>技术栈（最多 4 个）</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -89724,7 +89838,6 @@ const tags = ref<string[]>(["Vue"]);
   add-on-paste
   delimiter=","
   placeholder="试试粘贴 React,Svelte,Solid"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">技术栈（最多 4 个）</label>
@@ -89816,7 +89929,6 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
     v-model:value="tags"
     editable
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>标签</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -89841,7 +89953,6 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
   value="前端,组件库,无障碍"
   editable
   placeholder="回车落一个"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">标签</label>
@@ -90624,7 +90735,6 @@ function onValueChange(details: { value: string[] }) {
     v-slot="{ value }"
     :value="tags"
     placeholder="打 Vue 回车，落进去的是 #vue"
-    style="max-inline-size: 420px"
     @value-change="onValueChange"
   >
     <XhTagsInputLabel>话题</XhTagsInputLabel>
@@ -90647,7 +90757,6 @@ function onValueChange(details: { value: string[] }) {
   id="tags-input-normalize"
   value="#vue"
   placeholder="打 Vue 回车，落进去的是 #vue"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">话题</label>
@@ -90747,7 +90856,6 @@ const tags = ref<string[]>(["文档"]);
     v-model:value="tags"
     :max="3"
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>话题（最多 3 个）</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -90781,7 +90889,6 @@ const tags = ref<string[]>(["文档"]);
   value="文档"
   max="3"
   placeholder="回车落一个"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">话题（最多 3 个）</label>
@@ -90933,7 +91040,6 @@ function options(text: string): string[] {
     :max="4"
     blur-behavior="add"
     placeholder="打前缀选后缀"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>通知邮箱（最多 4 个）</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -91001,7 +91107,6 @@ function options(text: string): string[] {
   max="4"
   blur-behavior="add"
   placeholder="打前缀选后缀"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">通知邮箱（最多 4 个）</label>
@@ -91219,7 +91324,6 @@ function onValueChange(details: { value: string[] }) {
     :value="value"
     name="reviewers"
     placeholder="打名字回车"
-    style="max-inline-size: 420px"
     @value-change="onValueChange"
   >
     <XhTagsInputLabel>评审人</XhTagsInputLabel>
@@ -91245,7 +91349,6 @@ function onValueChange(details: { value: string[] }) {
   value="u-1"
   name="reviewers"
   placeholder="打名字回车"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">评审人</label>
@@ -91609,6 +91712,7 @@ function onValueChange(details: { value: string[] }) {
 | `--xh-tags-input-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_tags-input-control-px` | tags-input 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-tags-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | tags-input 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-tags-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | tags-input 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tags-input-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | tags-input 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tags-input-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | tags-input 的 count 部件 color 覆盖槽。 |
@@ -91649,7 +91753,7 @@ function onValueChange(details: { value: string[] }) {
 
 来源：https://ui.docs.xihanfun.com/components/text-field
 
-# TextField 文本字段 `alpha`
+# TextField 文本字段
 
 单行或多行的自由文本输入。
 
@@ -91679,7 +91783,7 @@ import {
 <template>
   <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱" clearable>
     <XhTextFieldLabel>邮箱</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 16rem">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -91691,7 +91795,7 @@ import {
 <xh-text-field name="email" type="email" placeholder="输入你的邮箱" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">邮箱</label>
-    <div data-xh-part="control" style="inline-size: 16rem">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -91727,7 +91831,7 @@ const nickname = ref("曦寒");
 <template>
   <XhTextFieldRoot v-model:value="nickname" placeholder="请输入昵称">
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -91740,7 +91844,7 @@ const nickname = ref("曦寒");
 <xh-text-field id="text-field-controlled" value="曦寒" placeholder="请输入昵称">
   <div data-xh-part="root">
     <label data-xh-part="label">昵称</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -91788,7 +91892,7 @@ import {
     clearable
   >
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -91807,7 +91911,7 @@ import {
 >
   <div data-xh-part="root">
     <label data-xh-part="label">昵称</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -91843,21 +91947,21 @@ import {
 <template>
   <XhTextFieldRoot default-value="改不动" disabled>
     <XhTextFieldLabel>禁用</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot default-value="只能看" read-only>
     <XhTextFieldLabel>只读</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot default-value="格式不对" invalid>
     <XhTextFieldLabel>校验失败</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -91868,7 +91972,7 @@ import {
 <xh-text-field default-value="改不动" disabled>
   <div data-xh-part="root">
     <label data-xh-part="label">禁用</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -91877,7 +91981,7 @@ import {
 <xh-text-field default-value="只能看" read-only>
   <div data-xh-part="root">
     <label data-xh-part="label">只读</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -91886,7 +91990,7 @@ import {
 <xh-text-field default-value="格式不对" invalid>
   <div data-xh-part="root">
     <label data-xh-part="label">校验失败</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -91918,7 +92022,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     placeholder="请输入内容"
   >
     <XhTextFieldLabel>{{ v }}</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 180px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -91929,7 +92033,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 <xh-text-field variant="outline" placeholder="请输入内容">
   <div data-xh-part="root">
     <label data-xh-part="label">outline</label>
-    <div data-xh-part="control" style="inline-size: 180px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -91938,7 +92042,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 <xh-text-field variant="subtle" placeholder="请输入内容">
   <div data-xh-part="root">
     <label data-xh-part="label">subtle</label>
-    <div data-xh-part="control" style="inline-size: 180px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -91948,7 +92052,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 <xh-text-field variant="ghost" placeholder="请输入内容">
   <div data-xh-part="root">
     <label data-xh-part="label">ghost</label>
-    <div data-xh-part="control" style="inline-size: 180px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -91981,7 +92085,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     placeholder="点进来看聚焦环"
   >
     <XhTextFieldLabel>{{ t }}</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -91993,7 +92097,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="brand" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">brand</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92002,7 +92106,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="neutral" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">neutral</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92011,7 +92115,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="success" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">success</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92020,7 +92124,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="warning" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">warning</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92029,7 +92133,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="danger" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">danger</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92038,7 +92142,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="info" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">info</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92064,7 +92168,7 @@ import {
   <!-- 固定 outline 形态，只看档位的差别 -->
   <XhTextFieldRoot variant="outline" size="sm" default-value="小" clearable>
     <XhTextFieldLabel>sm</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -92072,7 +92176,7 @@ import {
 
   <XhTextFieldRoot variant="outline" default-value="缺省" clearable>
     <XhTextFieldLabel>缺省</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -92080,7 +92184,7 @@ import {
 
   <XhTextFieldRoot variant="outline" size="lg" default-value="大" clearable>
     <XhTextFieldLabel>lg</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -92093,7 +92197,7 @@ import {
 <xh-text-field variant="outline" size="sm" default-value="小" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">sm</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -92103,7 +92207,7 @@ import {
 <xh-text-field variant="outline" default-value="缺省" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">缺省</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -92113,7 +92217,7 @@ import {
 <xh-text-field variant="outline" size="lg" default-value="大" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">lg</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -92143,7 +92247,7 @@ import {
     clearable
   >
     <XhTextFieldLabel>收货人</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
@@ -92160,7 +92264,7 @@ import {
 <xh-text-field id="text-field-programmatic" placeholder="等着被写入" max-length="12" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">收货人</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92221,7 +92325,7 @@ import {
 <template>
   <XhTextFieldRoot placeholder="you@example.com">
     <XhTextFieldLabel>邮箱</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput
         autocomplete="email"
         inputmode="email"
@@ -92232,7 +92336,7 @@ import {
 
   <XhTextFieldRoot placeholder="11 位手机号" :max-length="11">
     <XhTextFieldLabel>手机号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput
         autocomplete="tel"
         inputmode="numeric"
@@ -92247,7 +92351,7 @@ import {
 <xh-text-field placeholder="you@example.com">
   <div data-xh-part="root">
     <label data-xh-part="label">邮箱</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input
         data-xh-part="input"
         autocomplete="email"
@@ -92261,7 +92365,7 @@ import {
 <xh-text-field placeholder="11 位手机号" max-length="11">
   <div data-xh-part="root">
     <label data-xh-part="label">手机号</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input
         data-xh-part="input"
         autocomplete="tel"
@@ -92302,7 +92406,7 @@ function onValueChange(details: { value: string }) {
 <template>
   <XhTextFieldRoot placeholder="随便敲几个字" clearable @value-change="onValueChange">
     <XhTextFieldLabel>留言</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput @focus="push('focus')" @blur="push('blur')" />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -92318,7 +92422,7 @@ function onValueChange(details: { value: string }) {
 <xh-text-field id="text-field-events" placeholder="随便敲几个字" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">留言</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92375,7 +92479,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 <template>
   <XhTextFieldRoot placeholder="0.00">
     <XhTextFieldLabel>金额</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <span :style="affix">¥</span>
       <XhTextFieldInput inputmode="decimal" />
       <span :style="affix">元</span>
@@ -92384,7 +92488,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 
   <XhTextFieldRoot placeholder="170">
     <XhTextFieldLabel>身高</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput inputmode="numeric" />
       <span :style="affix">cm</span>
     </XhTextFieldControl>
@@ -92396,7 +92500,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 <xh-text-field placeholder="0.00">
   <div data-xh-part="root">
     <label data-xh-part="label">金额</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <!-- 不参与分宽，也不吃指针事件：点在前后缀上仍然落到输入框里 -->
       <span style="flex: none; color: var(--xh-fg-muted); pointer-events: none">¥</span>
       <input data-xh-part="input" inputmode="decimal" />
@@ -92408,7 +92512,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 <xh-text-field placeholder="170">
   <div data-xh-part="root">
     <label data-xh-part="label">身高</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" inputmode="numeric" />
       <span style="flex: none; color: var(--xh-fg-muted); pointer-events: none">cm</span>
     </div>
@@ -92437,7 +92541,7 @@ const visible = ref(false);
   <XhTextFieldRoot placeholder="请输入密码" :max-length="20">
     <XhTextFieldLabel>密码</XhTextFieldLabel>
     <div style="display: flex; gap: 4px">
-      <XhTextFieldControl style="inline-size: 200px">
+      <XhTextFieldControl>
         <XhTextFieldInput
           :type="visible ? 'text' : 'password'"
           autocomplete="current-password"
@@ -92457,7 +92561,7 @@ const visible = ref(false);
   <div data-xh-part="root">
     <label data-xh-part="label">密码</label>
     <div style="display: flex; gap: 4px">
-      <div data-xh-part="control" style="inline-size: 200px">
+      <div data-xh-part="control">
         <input data-xh-part="input" autocomplete="current-password" />
       </div>
       <button type="button" id="text-field-password-toggle" aria-pressed="false">显示</button>
@@ -92517,14 +92621,14 @@ function noSpace(event: Event) {
 <template>
   <XhTextFieldRoot placeholder="只收数字" :max-length="11">
     <XhTextFieldLabel>手机号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput inputmode="numeric" @beforeinput="onlyDigits" />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot placeholder="空格进不来">
     <XhTextFieldLabel>账号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput @beforeinput="noSpace" />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -92535,7 +92639,7 @@ function noSpace(event: Event) {
 <xh-text-field id="text-field-filter-digits" placeholder="只收数字" max-length="11">
   <div data-xh-part="root">
     <label data-xh-part="label">手机号</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" inputmode="numeric" />
     </div>
   </div>
@@ -92544,7 +92648,7 @@ function noSpace(event: Event) {
 <xh-text-field id="text-field-filter-space" placeholder="空格进不来">
   <div data-xh-part="root">
     <label data-xh-part="label">账号</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -92615,7 +92719,7 @@ function caretToEnd(): void {
 <template>
   <XhTextFieldRoot default-value="曦寒组件库">
     <XhTextFieldLabel>标题</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput :ref="bindInput" />
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
@@ -92632,7 +92736,7 @@ function caretToEnd(): void {
 <xh-text-field id="text-field-focus" default-value="曦寒组件库">
   <div data-xh-part="root">
     <label data-xh-part="label">标题</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
     <div style="display: flex; gap: 8px">
@@ -93110,6 +93214,7 @@ const note = ref("");
 | `--xh-text-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_text-field-px` | text-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-text-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | text-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-text-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | text-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-text-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | text-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-text-field-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | text-field 的 count 部件 color 覆盖槽。 |
@@ -94166,6 +94271,7 @@ function snap(next: string) {
 | `--xh-time-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_time-field-control-px` | time-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-time-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | time-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-time-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | time-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-field-font-size` | `control` | `font-size` | `default` | `--xh-_time-field-font-size` | time-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-time-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
@@ -96206,6 +96312,7 @@ const presets = computed(() => [
 | `--xh-time-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_time-picker-control-px` | time-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | time-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-time-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | time-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-picker-font-size` | `control` | `font-size` | `default` | `--xh-_time-picker-font-size` | time-picker 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-time-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
@@ -96267,7 +96374,7 @@ const presets = computed(() => [
 
 来源：https://ui.docs.xihanfun.com/components/time-range-picker
 
-# TimeRangePicker 时间范围选择器 `alpha`
+# TimeRangePicker 时间范围选择器 `new`
 
 将起止两组可键入的分段时间框、范围分隔符、时钟触发器和两组并排的分列选择浮层组合成一个字段。
 
@@ -97645,6 +97752,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `--xh-time-range-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_time-range-picker-control-px` | time-range-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-time-range-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | time-range-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-range-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-time-range-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | time-range-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-range-picker-font-size` | `control` | `font-size` | `default` | `--xh-_time-range-picker-font-size` | time-range-picker 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-range-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-time-range-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-range-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
@@ -97709,7 +97817,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 来源：https://ui.docs.xihanfun.com/components/timeline
 
-# Timeline 时间线 `alpha`
+# Timeline 时间线
 
 按时间顺序排列的一串事件，每条有标记、连接线与内容。
 
@@ -98498,7 +98606,7 @@ const releases = [
 
 来源：https://ui.docs.xihanfun.com/components/timer
 
-# Timer 计时器 `alpha`
+# Timer 计时器
 
 一段可正计时或倒计时的时长：可启动、暂停、继续、归零。
 
@@ -99178,7 +99286,7 @@ function restart(): void {
 
 来源：https://ui.docs.xihanfun.com/components/timestamp
 
-# Timestamp 时间戳 `alpha`
+# Timestamp 时间戳
 
 把一个时刻渲染成文本，绝对或相对。
 
@@ -102674,7 +102782,7 @@ import {
 
 来源：https://ui.docs.xihanfun.com/components/tooltip
 
-# Tooltip 文字提示 `alpha`
+# Tooltip 文字提示
 
 悬停或聚焦时出现的一句纯文字说明。
 
@@ -104371,7 +104479,7 @@ const translations = {
 
 来源：https://ui.docs.xihanfun.com/components/transfer
 
-# Transfer 穿梭框 `alpha`
+# Transfer 穿梭框
 
 左右两栏，把条目从一侧移到另一侧。
 
@@ -106948,7 +107056,7 @@ const rows = [
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-transfer-checkbox-bg` | `item-checkbox`<br>`select-all-trigger` | `background` | `default` | `--xh-bg-canvas` | transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。 |
+| `--xh-transfer-checkbox-bg` | `item-checkbox`<br>`select-all-trigger` | `background` | `default` | `transparent` | transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-bg-checked` | `item-checkbox`<br>`select-all-trigger` | `background` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-accent` | transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-bg-disabled` | `item-checkbox` | `background` | `disabled` | `--xh-bg-muted` | transfer 的 item-checkbox 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-border` | `item-checkbox`<br>`select-all-trigger` | `border` | `default` | `--xh-border-control` | transfer 的 item-checkbox、select-all-trigger 部件 border 覆盖槽。 |
@@ -107049,7 +107157,7 @@ const rows = [
 
 来源：https://ui.docs.xihanfun.com/components/tree-select
 
-# TreeSelect 树选择 `alpha`
+# TreeSelect 树选择
 
 浮层内放一棵树的选择器，适用于层级不规整、深浅不一的数据。
 
@@ -107115,7 +107223,6 @@ const doc = ref<string[]>([]);
     :collection="files"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -107171,7 +107278,7 @@ const doc = ref<string[]>([]);
 
 ```html
 <xh-tree-select id="tree-select-basic" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -107323,7 +107430,6 @@ const expanded = ref<string[]>(["docs"]);
     v-model:expanded-value="expanded"
     :collection="files"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -107380,7 +107486,7 @@ const expanded = ref<string[]>(["docs"]);
 
 ```html
 <xh-tree-select id="tree-select-controlled" value="guide" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -107520,7 +107626,6 @@ const picked = ref<string[]>(["index"]);
     multiple
     name="docs"
     placeholder="可以多选"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>提交范围</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -107570,7 +107675,7 @@ const picked = ref<string[]>(["index"]);
   name="docs"
   placeholder="可以多选"
 >
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">提交范围</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -107687,7 +107792,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
       :variant="v"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ v }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -107734,7 +107838,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start"
 >
   <xh-tree-select variant="outline" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">outline</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -107773,7 +107877,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">subtle</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -107812,7 +107916,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   </xh-tree-select>
 
   <xh-tree-select variant="ghost" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">ghost</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -107924,7 +108028,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
       :default-value="['guide']"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ t }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -107968,7 +108071,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 ```html
 <div id="tree-select-tone" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
   <xh-tree-select variant="subtle" tone="brand" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">brand</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108007,7 +108110,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="neutral" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">neutral</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108046,7 +108149,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="success" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">success</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108085,7 +108188,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="warning" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">warning</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108124,7 +108227,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="danger" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">danger</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108163,7 +108266,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="info" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">info</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108278,7 +108381,6 @@ const sizes = [
       :size="s.size"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ s.label }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -108322,7 +108424,7 @@ const sizes = [
 ```html
 <div id="tree-select-size" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
   <xh-tree-select size="sm" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">sm</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108361,7 +108463,7 @@ const sizes = [
   </xh-tree-select>
 
   <xh-tree-select placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">缺省</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108400,7 +108502,7 @@ const sizes = [
   </xh-tree-select>
 
   <xh-tree-select size="lg" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">lg</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108517,7 +108619,6 @@ const states = [
       :default-value="['guide']"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ s.label }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -108561,7 +108662,7 @@ const states = [
 ```html
 <div id="tree-select-state" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
   <xh-tree-select disabled default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">禁用</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108600,7 +108701,7 @@ const states = [
   </xh-tree-select>
 
   <xh-tree-select read-only default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">只读</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108639,7 +108740,7 @@ const states = [
   </xh-tree-select>
 
   <xh-tree-select invalid default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">校验失败</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -108796,7 +108897,6 @@ onBeforeUnmount(() => {
     :expanded-value="expanded"
     :loading="loading"
     placeholder="选一个城市"
-    style="max-inline-size: 320px"
     @expanded-value-change="expanded = $event.value"
     @open-change="onOpenChange"
   >
@@ -108847,7 +108947,7 @@ onBeforeUnmount(() => {
 
 ```html
 <xh-tree-select id="tree-select-async" placeholder="选一个城市">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">投放城市</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -109031,7 +109131,6 @@ const files = [
     :collection="files"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -109075,7 +109174,7 @@ const files = [
 
 ```html
 <xh-tree-select id="tree-select-action" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -109230,7 +109329,6 @@ const value = ref<string[]>(["user:view"]);
     multiple
     cascade
     checked-strategy="parent"
-    style="max-inline-size: 340px"
   >
     <XhTreeSelectLabel>权限</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -109280,7 +109378,7 @@ const value = ref<string[]>(["user:view"]);
   cascade
   checked-strategy="parent"
 >
-  <div data-xh-part="root" style="max-inline-size: 340px">
+  <div data-xh-part="root">
     <span data-xh-part="label">权限</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -109475,7 +109573,6 @@ function onOpenChange(details: { open: boolean }): void {
     v-model:expanded-value="expanded"
     :collection="collection"
     placeholder="选一个城市"
-    style="max-inline-size: 320px"
     @open-change="onOpenChange"
   >
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
@@ -109529,7 +109626,7 @@ function onOpenChange(details: { open: boolean }): void {
 
 ```html
 <xh-tree-select id="tree-select-filter" placeholder="选一个城市">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">投放城市</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -109818,7 +109915,6 @@ function onOpenChange(details: { open: boolean }): void {
     :open="open"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
     @value-change="onValueChange"
     @open-change="onOpenChange"
   >
@@ -109891,7 +109987,7 @@ function onOpenChange(details: { open: boolean }): void {
 
 ```html
 <xh-tree-select id="tree-select-file-picker" open="false" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">附件</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -110064,7 +110160,6 @@ const doc = ref<string[]>(["guide"]);
     label="文档"
     placeholder="选一个文件"
     clearable
-    style="max-inline-size: 320px"
   />
   <p>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
 </template>
@@ -110076,7 +110171,7 @@ const doc = ref<string[]>(["guide"]);
   default-value="guide"
   placeholder="选一个文件"
 >
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -110673,6 +110768,7 @@ const doc = ref<string[]>(["guide"]);
 | `--xh-tree-select-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_tree-select-px` | tree-select 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | tree-select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | tree-select 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tree-select-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | tree-select 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tree-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | tree-select 的 empty 部件 color 覆盖槽。 |
 | `--xh-tree-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-tree-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 empty 部件 padding-inline 覆盖槽。 |
@@ -110733,7 +110829,7 @@ const doc = ref<string[]>(["guide"]);
 
 来源：https://ui.docs.xihanfun.com/components/tree
 
-# Tree 树 `alpha`
+# Tree 树
 
 层级数据的展开与选择：分支可展开，节点可选。
 
@@ -113664,7 +113760,7 @@ const collection = [
 | `--xh-tree-branch-content-gap` | `branch-content` | `gap`<br>`row-gap` | `default`<br>`orientation=horizontal` | `--xh-list-option-gap` | tree 的 branch-content 部件 gap、row-gap 覆盖槽。 |
 | `--xh-tree-branch-gap` | `branch` | `gap` | `default` | `--xh-list-option-gap` | tree 的 branch 部件 gap 覆盖槽。 |
 | `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
-| `--xh-tree-checkbox-bg` | `branch-checkbox`<br>`item-checkbox` | `background` | `default` | `--xh-bg-canvas` | tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。 |
+| `--xh-tree-checkbox-bg` | `branch-checkbox`<br>`item-checkbox` | `background` | `default` | `transparent` | tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。 |
 | `--xh-tree-checkbox-bg-checked` | `branch-checkbox`<br>`item-checkbox` | `background` | `indeterminate`<br>`not([data-selected])`<br>`selected` | `--xh-bg-brand` | tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。 |
 | `--xh-tree-checkbox-border` | `branch-checkbox`<br>`item-checkbox` | `border` | `default` | `--xh-border-control` | tree 的 branch-checkbox、item-checkbox 部件 border 覆盖槽。 |
 | `--xh-tree-checkbox-border-checked` | `branch-checkbox`<br>`item-checkbox` | `border-color` | `indeterminate`<br>`not([data-selected])`<br>`selected` | `--xh-bg-brand` | tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。 |
@@ -113692,8 +113788,8 @@ const collection = [
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-md` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tree-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | tree 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-tree-indicator-size` | `branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size`<br>`padding-inline-start` | `default`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`orientation=vertical` | `--xh-control-indicator-size` | tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 --xh-icon-size、inline-size、padding-inline-start 覆盖槽。 |
-| `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 background-color、color 覆盖槽。 |
-| `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `background-color`<br>`color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 background-color、color 覆盖槽。 |
+| `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
+| `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tree-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree 的 label 部件 font-weight 覆盖槽。 |
@@ -114455,7 +114551,7 @@ const html = `
 
 来源：https://ui.docs.xihanfun.com/components/virtualizer
 
-# Virtualizer 虚拟滚动 `alpha`
+# Virtualizer 虚拟滚动
 
 只渲染窗口内的条目，列表再长也只绘制可见的几十条。
 

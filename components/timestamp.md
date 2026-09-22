@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/timestamp
 
-# Timestamp 时间戳 `alpha`
+# Timestamp 时间戳
 
 把一个时刻渲染成文本，绝对或相对。
 

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/accordion
 
-# Accordion 手风琴 `alpha`
+# Accordion 手风琴
 
 一列可展开的区块，标题常驻，内容按需展开。
 

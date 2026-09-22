@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/color-swatch
 
-# ColorSwatch 颜色色块 `alpha`
+# ColorSwatch 颜色色块
 
 把一个颜色绘制为一小块用于展示：主题色一览、图例中的一格、当前选中的颜色。它只负责表达“这是什么颜色”，不接受点击、不修改值；需要挑选颜色时使用[颜色选择器](./color-picker)。
 

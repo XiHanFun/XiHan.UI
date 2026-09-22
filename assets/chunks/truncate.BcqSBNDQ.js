@@ -1,0 +1,1 @@
+import{h5 as t}from"./theme.D_5FEi5w.js";import{d as a,c as o,E as r,w as n,k as s,o as c,a as i}from"./framework.DxrHb2fb.js";const l={style:{"inline-size":"var(--xh-doc-catalog-w-narrow)"}},p=a({__name:"truncate",setup(d){return(u,e)=>(c(),o("div",l,[r(s(t),null,{default:n(()=>[...e[0]||(e[0]=[i("这是一段超出容器宽度后自动截断的文本。",-1)])]),_:1})]))}});export{p as default};

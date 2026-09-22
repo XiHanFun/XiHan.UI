@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/menu
 
-# Menu 菜单 `alpha`
+# Menu 菜单
 
 从触发器打开一组操作命令。
 

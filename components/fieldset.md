@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/fieldset
 
-# Fieldset 字段集 `alpha`
+# Fieldset 字段集
 
 把若干相关字段收成一组，组标题由 `legend` 提供，禁用与无效沿这一组下发。
 

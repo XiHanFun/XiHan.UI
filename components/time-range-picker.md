@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/time-range-picker
 
-# TimeRangePicker 时间范围选择器 `alpha`
+# TimeRangePicker 时间范围选择器 `new`
 
 将起止两组可键入的分段时间框、范围分隔符、时钟触发器和两组并排的分列选择浮层组合成一个字段。
 
@@ -1378,6 +1378,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `--xh-time-range-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_time-range-picker-control-px` | time-range-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-time-range-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | time-range-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-range-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-time-range-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | time-range-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-range-picker-font-size` | `control` | `font-size` | `default` | `--xh-_time-range-picker-font-size` | time-range-picker 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-range-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-time-range-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-range-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |

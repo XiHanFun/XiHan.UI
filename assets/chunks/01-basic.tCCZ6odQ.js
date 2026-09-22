@@ -1,1 +1,0 @@
-import{h4 as t}from"./theme.VZGDCnnk.js";import{d as a,o as s,c as n,E as o,w as i,a as r,k as l}from"./framework.DxrHb2fb.js";const c={style:{"inline-size":"280px","max-inline-size":"100%"}},u=a({__name:"01-basic",setup(d){return(m,e)=>(s(),n("div",c,[o(l(t),null,{default:i(()=>[...e[0]||(e[0]=[r("XiHan.UI 提供框架无关的 Headless UI 组件与多端适配器。",-1)])]),_:1})]))}});export{u as default};

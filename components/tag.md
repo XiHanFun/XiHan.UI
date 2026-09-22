@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tag
 
-# Tag 标签 `alpha`
+# Tag 标签
 
 表示一个对象是什么：一个分类、一项技能、一个筛选条件。它承载实体身份，可以被移除。标签表达“它是什么”，不表达“发生了什么”；后者由[徽标](./badge)承担。
 

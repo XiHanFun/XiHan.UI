@@ -1,1 +1,0 @@
-import{hc as r,hd as o}from"./theme.VZGDCnnk.js";import{d as s,b as n,k as e,o as d,w as t,E as m,j as p}from"./framework.DxrHb2fb.js";const u=s({__name:"watermark",setup(c){return(f,a)=>(d(),n(e(r),{text:"XiHan.UI"},{default:t(()=>[m(e(o),null,{default:t(()=>[...a[0]||(a[0]=[p("div",{style:{padding:"var(--xh-space-7)"}},"水印内容",-1)])]),_:1})]),_:1}))}});export{u as default};

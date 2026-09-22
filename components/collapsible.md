@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/collapsible
 
-# Collapsible 折叠区域 `alpha`
+# Collapsible 折叠区域
 
 一块可以展开与收起的单块内容。
 

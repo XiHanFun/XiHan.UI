@@ -1,0 +1,1 @@
+import{H as a}from"./index.Dvd56iNz.js";import{d as t,gm as r}from"./theme.D_5FEi5w.js";import{d as n,o as s,b as c,w as m,E as i,k as e,a as l}from"./framework.DxrHb2fb.js";const x=n({__name:"01-basic",setup(p){return(f,o)=>(s(),c(e(r),null,{default:m(()=>[i(e(t),{icon:e(a)},null,8,["icon"]),o[0]||(o[0]=l(" 点赞 ",-1))]),_:1}))}});export{x as default};

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/empty-state
 
-# EmptyState 空状态 `alpha`
+# EmptyState 空状态
 
 没有数据时的占位区域：说明为什么为空，以及可以做什么。
 

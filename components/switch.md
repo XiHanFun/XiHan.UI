@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/switch
 
-# Switch 开关 `alpha`
+# Switch 开关
 
 一项设置的开与关，切换后立即生效。
 

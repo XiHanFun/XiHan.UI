@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/drawer
 
-# Drawer 抽屉 `alpha`
+# Drawer 抽屉
 
 从屏幕某一边滑出的面板。
 

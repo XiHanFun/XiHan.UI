@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/notification
 
-# Notification 通知 `alpha`
+# Notification 通知
 
 主动推送给用户的一条消息：有标题、有正文，可以带操作按钮。
 

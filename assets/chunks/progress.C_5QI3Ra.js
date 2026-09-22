@@ -1,0 +1,1 @@
+import{e5 as e}from"./theme.D_5FEi5w.js";import{d as o,c as r,E as s,k as a,o as t}from"./framework.DxrHb2fb.js";const c={style:{display:"grid",gap:"var(--xh-space-3)","inline-size":"var(--xh-doc-catalog-w)"}},d=o({__name:"progress",setup(n){return(p,i)=>(t(),r("div",c,[s(a(e),{value:30}),s(a(e),{value:72,tone:"success"})]))}});export{d as default};

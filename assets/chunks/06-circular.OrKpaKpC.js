@@ -1,0 +1,1 @@
+import{cP as o}from"./theme.D_5FEi5w.js";import{d as t,o as a,b as r,k as s}from"./framework.DxrHb2fb.js";const m=t({__name:"06-circular",setup(i){const n={id:1},e={name:"root",left:n,right:n};return e.parent=e,(c,p)=>(a(),r(s(o),{value:e,"default-expanded-depth":2,style:{"inline-size":"100%","max-inline-size":"420px"}}))}});export{m as default};

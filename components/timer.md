@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/timer
 
-# Timer 计时器 `alpha`
+# Timer 计时器
 
 一段可正计时或倒计时的时长：可启动、暂停、继续、归零。
 

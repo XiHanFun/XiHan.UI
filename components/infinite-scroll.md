@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/infinite-scroll
 
-# InfiniteScroll 无限滚动 `alpha`
+# InfiniteScroll 无限滚动
 
 获取下一页的通用触发器，滚动只是默认的触发方式。
 

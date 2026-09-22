@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 418 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 550 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -51,7 +51,138 @@
 | `--xh-color-info-500` | color | `oklch(0.685 0.156 237)` | — |
 | `--xh-color-info-600` | color | `oklch(0.62 0.16 237)` | — |
 | `--xh-color-info-700` | color | `oklch(0.53 0.15 237)` | — |
-| `--xh-color-purple-600` | color | `oklch(0.577 0.213 302)` | — |
+| `--xh-color-red-50` | color | `oklch(0.971 0.014 25)` | primitive.palette |
+| `--xh-color-red-100` | color | `oklch(0.936 0.032 25)` | primitive.palette |
+| `--xh-color-red-200` | color | `oklch(0.885 0.062 25)` | primitive.palette |
+| `--xh-color-red-300` | color | `oklch(0.809 0.105 25)` | primitive.palette |
+| `--xh-color-red-400` | color | `oklch(0.702 0.165 25)` | primitive.palette |
+| `--xh-color-red-500` | color | `oklch(0.623 0.214 25)` | primitive.palette |
+| `--xh-color-red-600` | color | `oklch(0.546 0.216 25)` | primitive.palette |
+| `--xh-color-red-700` | color | `oklch(0.488 0.196 25)` | primitive.palette |
+| `--xh-color-red-800` | color | `oklch(0.424 0.164 25)` | primitive.palette |
+| `--xh-color-red-900` | color | `oklch(0.379 0.132 25)` | primitive.palette |
+| `--xh-color-red-950` | color | `oklch(0.282 0.089 25)` | primitive.palette |
+| `--xh-color-orange-50` | color | `oklch(0.971 0.014 50)` | primitive.palette |
+| `--xh-color-orange-100` | color | `oklch(0.936 0.032 50)` | primitive.palette |
+| `--xh-color-orange-200` | color | `oklch(0.885 0.062 50)` | primitive.palette |
+| `--xh-color-orange-300` | color | `oklch(0.809 0.105 50)` | primitive.palette |
+| `--xh-color-orange-400` | color | `oklch(0.702 0.165 50)` | primitive.palette |
+| `--xh-color-orange-500` | color | `oklch(0.623 0.214 50)` | primitive.palette |
+| `--xh-color-orange-600` | color | `oklch(0.546 0.216 50)` | primitive.palette |
+| `--xh-color-orange-700` | color | `oklch(0.488 0.196 50)` | primitive.palette |
+| `--xh-color-orange-800` | color | `oklch(0.424 0.164 50)` | primitive.palette |
+| `--xh-color-orange-900` | color | `oklch(0.379 0.132 50)` | primitive.palette |
+| `--xh-color-orange-950` | color | `oklch(0.282 0.089 50)` | primitive.palette |
+| `--xh-color-amber-50` | color | `oklch(0.971 0.014 70)` | primitive.palette |
+| `--xh-color-amber-100` | color | `oklch(0.936 0.032 70)` | primitive.palette |
+| `--xh-color-amber-200` | color | `oklch(0.885 0.062 70)` | primitive.palette |
+| `--xh-color-amber-300` | color | `oklch(0.809 0.105 70)` | primitive.palette |
+| `--xh-color-amber-400` | color | `oklch(0.702 0.165 70)` | primitive.palette |
+| `--xh-color-amber-500` | color | `oklch(0.623 0.18 70)` | primitive.palette |
+| `--xh-color-amber-600` | color | `oklch(0.546 0.183 70)` | primitive.palette |
+| `--xh-color-amber-700` | color | `oklch(0.488 0.196 70)` | primitive.palette |
+| `--xh-color-amber-800` | color | `oklch(0.424 0.164 70)` | primitive.palette |
+| `--xh-color-amber-900` | color | `oklch(0.379 0.132 70)` | primitive.palette |
+| `--xh-color-amber-950` | color | `oklch(0.282 0.089 70)` | primitive.palette |
+| `--xh-color-yellow-50` | color | `oklch(0.971 0.014 95)` | primitive.palette |
+| `--xh-color-yellow-100` | color | `oklch(0.936 0.032 95)` | primitive.palette |
+| `--xh-color-yellow-200` | color | `oklch(0.885 0.062 95)` | primitive.palette |
+| `--xh-color-yellow-300` | color | `oklch(0.809 0.105 95)` | primitive.palette |
+| `--xh-color-yellow-400` | color | `oklch(0.702 0.165 95)` | primitive.palette |
+| `--xh-color-yellow-500` | color | `oklch(0.623 0.17 95)` | primitive.palette |
+| `--xh-color-yellow-600` | color | `oklch(0.546 0.171 95)` | primitive.palette |
+| `--xh-color-yellow-700` | color | `oklch(0.488 0.184 95)` | primitive.palette |
+| `--xh-color-yellow-800` | color | `oklch(0.424 0.164 95)` | primitive.palette |
+| `--xh-color-yellow-900` | color | `oklch(0.379 0.132 95)` | primitive.palette |
+| `--xh-color-yellow-950` | color | `oklch(0.282 0.089 95)` | primitive.palette |
+| `--xh-color-lime-50` | color | `oklch(0.971 0.014 125)` | primitive.palette |
+| `--xh-color-lime-100` | color | `oklch(0.936 0.032 125)` | primitive.palette |
+| `--xh-color-lime-200` | color | `oklch(0.885 0.062 125)` | primitive.palette |
+| `--xh-color-lime-300` | color | `oklch(0.809 0.105 125)` | primitive.palette |
+| `--xh-color-lime-400` | color | `oklch(0.702 0.165 125)` | primitive.palette |
+| `--xh-color-lime-500` | color | `oklch(0.623 0.206 125)` | primitive.palette |
+| `--xh-color-lime-600` | color | `oklch(0.546 0.206 125)` | primitive.palette |
+| `--xh-color-lime-700` | color | `oklch(0.488 0.196 125)` | primitive.palette |
+| `--xh-color-lime-800` | color | `oklch(0.424 0.164 125)` | primitive.palette |
+| `--xh-color-lime-900` | color | `oklch(0.379 0.132 125)` | primitive.palette |
+| `--xh-color-lime-950` | color | `oklch(0.282 0.089 125)` | primitive.palette |
+| `--xh-color-green-50` | color | `oklch(0.971 0.014 149)` | primitive.palette |
+| `--xh-color-green-100` | color | `oklch(0.936 0.032 149)` | primitive.palette |
+| `--xh-color-green-200` | color | `oklch(0.885 0.062 149)` | primitive.palette |
+| `--xh-color-green-300` | color | `oklch(0.809 0.105 149)` | primitive.palette |
+| `--xh-color-green-400` | color | `oklch(0.702 0.165 149)` | primitive.palette |
+| `--xh-color-green-500` | color | `oklch(0.623 0.214 149)` | primitive.palette |
+| `--xh-color-green-600` | color | `oklch(0.546 0.205 149)` | primitive.palette |
+| `--xh-color-green-700` | color | `oklch(0.488 0.196 149)` | primitive.palette |
+| `--xh-color-green-800` | color | `oklch(0.424 0.164 149)` | primitive.palette |
+| `--xh-color-green-900` | color | `oklch(0.379 0.132 149)` | primitive.palette |
+| `--xh-color-green-950` | color | `oklch(0.282 0.089 149)` | primitive.palette |
+| `--xh-color-teal-50` | color | `oklch(0.971 0.014 180)` | primitive.palette |
+| `--xh-color-teal-100` | color | `oklch(0.936 0.032 180)` | primitive.palette |
+| `--xh-color-teal-200` | color | `oklch(0.885 0.062 180)` | primitive.palette |
+| `--xh-color-teal-300` | color | `oklch(0.809 0.105 180)` | primitive.palette |
+| `--xh-color-teal-400` | color | `oklch(0.702 0.147 180)` | primitive.palette |
+| `--xh-color-teal-500` | color | `oklch(0.623 0.138 180)` | primitive.palette |
+| `--xh-color-teal-600` | color | `oklch(0.546 0.131 180)` | primitive.palette |
+| `--xh-color-teal-700` | color | `oklch(0.488 0.13 180)` | primitive.palette |
+| `--xh-color-teal-800` | color | `oklch(0.424 0.132 180)` | primitive.palette |
+| `--xh-color-teal-900` | color | `oklch(0.379 0.132 180)` | primitive.palette |
+| `--xh-color-teal-950` | color | `oklch(0.282 0.089 180)` | primitive.palette |
+| `--xh-color-cyan-50` | color | `oklch(0.971 0.014 215)` | primitive.palette |
+| `--xh-color-cyan-100` | color | `oklch(0.936 0.032 215)` | primitive.palette |
+| `--xh-color-cyan-200` | color | `oklch(0.885 0.062 215)` | primitive.palette |
+| `--xh-color-cyan-300` | color | `oklch(0.809 0.105 215)` | primitive.palette |
+| `--xh-color-cyan-400` | color | `oklch(0.702 0.143 215)` | primitive.palette |
+| `--xh-color-cyan-500` | color | `oklch(0.623 0.135 215)` | primitive.palette |
+| `--xh-color-cyan-600` | color | `oklch(0.546 0.129 215)` | primitive.palette |
+| `--xh-color-cyan-700` | color | `oklch(0.488 0.128 215)` | primitive.palette |
+| `--xh-color-cyan-800` | color | `oklch(0.424 0.132 215)` | primitive.palette |
+| `--xh-color-cyan-900` | color | `oklch(0.379 0.132 215)` | primitive.palette |
+| `--xh-color-cyan-950` | color | `oklch(0.282 0.089 215)` | primitive.palette |
+| `--xh-color-blue-50` | color | `oklch(0.971 0.014 237)` | primitive.palette |
+| `--xh-color-blue-100` | color | `oklch(0.936 0.032 237)` | primitive.palette |
+| `--xh-color-blue-200` | color | `oklch(0.885 0.062 237)` | primitive.palette |
+| `--xh-color-blue-300` | color | `oklch(0.809 0.105 237)` | primitive.palette |
+| `--xh-color-blue-400` | color | `oklch(0.702 0.165 237)` | primitive.palette |
+| `--xh-color-blue-500` | color | `oklch(0.623 0.169 237)` | primitive.palette |
+| `--xh-color-blue-600` | color | `oklch(0.546 0.163 237)` | primitive.palette |
+| `--xh-color-blue-700` | color | `oklch(0.488 0.163 237)` | primitive.palette |
+| `--xh-color-blue-800` | color | `oklch(0.424 0.164 237)` | primitive.palette |
+| `--xh-color-blue-900` | color | `oklch(0.379 0.132 237)` | primitive.palette |
+| `--xh-color-blue-950` | color | `oklch(0.282 0.089 237)` | primitive.palette |
+| `--xh-color-indigo-50` | color | `oklch(0.971 0.014 258)` | primitive.palette |
+| `--xh-color-indigo-100` | color | `oklch(0.936 0.032 258)` | primitive.palette |
+| `--xh-color-indigo-200` | color | `oklch(0.885 0.062 258)` | primitive.palette |
+| `--xh-color-indigo-300` | color | `oklch(0.809 0.105 258)` | primitive.palette |
+| `--xh-color-indigo-400` | color | `oklch(0.702 0.165 258)` | primitive.palette |
+| `--xh-color-indigo-500` | color | `oklch(0.623 0.214 258)` | primitive.palette |
+| `--xh-color-indigo-600` | color | `oklch(0.546 0.216 258)` | primitive.palette |
+| `--xh-color-indigo-700` | color | `oklch(0.488 0.196 258)` | primitive.palette |
+| `--xh-color-indigo-800` | color | `oklch(0.424 0.164 258)` | primitive.palette |
+| `--xh-color-indigo-900` | color | `oklch(0.379 0.132 258)` | primitive.palette |
+| `--xh-color-indigo-950` | color | `oklch(0.282 0.089 258)` | primitive.palette |
+| `--xh-color-purple-50` | color | `oklch(0.971 0.014 302)` | primitive.palette |
+| `--xh-color-purple-100` | color | `oklch(0.936 0.032 302)` | primitive.palette |
+| `--xh-color-purple-200` | color | `oklch(0.885 0.062 302)` | primitive.palette |
+| `--xh-color-purple-300` | color | `oklch(0.809 0.105 302)` | primitive.palette |
+| `--xh-color-purple-400` | color | `oklch(0.702 0.165 302)` | primitive.palette |
+| `--xh-color-purple-500` | color | `oklch(0.623 0.214 302)` | primitive.palette |
+| `--xh-color-purple-600` | color | `oklch(0.546 0.216 302)` | primitive.palette |
+| `--xh-color-purple-700` | color | `oklch(0.488 0.196 302)` | primitive.palette |
+| `--xh-color-purple-800` | color | `oklch(0.424 0.164 302)` | primitive.palette |
+| `--xh-color-purple-900` | color | `oklch(0.379 0.132 302)` | primitive.palette |
+| `--xh-color-purple-950` | color | `oklch(0.282 0.089 302)` | primitive.palette |
+| `--xh-color-pink-50` | color | `oklch(0.971 0.014 345)` | primitive.palette |
+| `--xh-color-pink-100` | color | `oklch(0.936 0.032 345)` | primitive.palette |
+| `--xh-color-pink-200` | color | `oklch(0.885 0.062 345)` | primitive.palette |
+| `--xh-color-pink-300` | color | `oklch(0.809 0.105 345)` | primitive.palette |
+| `--xh-color-pink-400` | color | `oklch(0.702 0.165 345)` | primitive.palette |
+| `--xh-color-pink-500` | color | `oklch(0.623 0.214 345)` | primitive.palette |
+| `--xh-color-pink-600` | color | `oklch(0.546 0.216 345)` | primitive.palette |
+| `--xh-color-pink-700` | color | `oklch(0.488 0.196 345)` | primitive.palette |
+| `--xh-color-pink-800` | color | `oklch(0.424 0.164 345)` | primitive.palette |
+| `--xh-color-pink-900` | color | `oklch(0.379 0.132 345)` | primitive.palette |
+| `--xh-color-pink-950` | color | `oklch(0.282 0.089 345)` | primitive.palette |
 
 ## space
 
@@ -196,6 +327,7 @@
 | `--xh-control-box-sm` | dimension | `32px` | compact |
 | `--xh-control-box-md` | dimension | `40px` | compact |
 | `--xh-control-box-lg` | dimension | `48px` | compact |
+| `--xh-control-w` | dimension | `16rem` | — |
 | `--xh-control-min-w` | dimension | `12rem` | — |
 | `--xh-control-px-sm` | dimension | `var(--xh-space-2)` | compact |
 | `--xh-control-px-md` | dimension | `var(--xh-space-3)` | compact |
@@ -628,8 +760,8 @@
 | `--xh-border-default` | color | `var(--xh-color-neutral-200)` | dark / dark.more / light.more |
 | `--xh-border-subtle` | color | `var(--xh-color-neutral-100)` | dark / dark.more / light.more |
 | `--xh-border-strong` | color | `var(--xh-color-neutral-300)` | dark / dark.more / light.more |
-| `--xh-border-control` | color | `var(--xh-color-neutral-450)` | dark / dark.more / light.more |
-| `--xh-border-control-hover` | color | `var(--xh-color-neutral-500)` | dark / dark.more / light.more |
+| `--xh-border-control` | color | `var(--xh-border-default)` | dark / dark.more / light.more |
+| `--xh-border-control-hover` | color | `var(--xh-color-neutral-400)` | dark / dark.more / light.more |
 | `--xh-border-control-focus` | color | `var(--xh-ring-focus)` | dark |
 | `--xh-border-invalid` | color | `var(--xh-color-danger-600)` | dark / dark.more / light.more |
 | `--xh-border-at-limit` | color | `var(--xh-color-warning-600)` | dark / dark.more / light.more |

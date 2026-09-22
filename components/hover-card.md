@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/hover-card
 
-# HoverCard 悬浮卡片 `alpha`
+# HoverCard 悬浮卡片
 
 指针停留后出现的信息卡：预览一个对象，不打断当前操作。
 

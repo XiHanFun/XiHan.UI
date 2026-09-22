@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/flex
 
-# Flex 弹性布局 `alpha`
+# Flex 弹性布局
 
 沿水平或垂直方向排列内容。
 

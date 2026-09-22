@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/context-menu
 
-# ContextMenu 右键菜单 `alpha`
+# ContextMenu 右键菜单
 
 通过右键或长按在指针位置打开命令菜单。
 

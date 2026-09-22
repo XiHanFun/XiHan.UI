@@ -1,0 +1,1 @@
+import{al as a}from"./theme.D_5FEi5w.js";import{d as t,o,b as r,w as n,a as s,k as p}from"./framework.DxrHb2fb.js";const f=t({__name:"06-value-mapping",setup(i){return(m,e)=>(o(),r(p(a),{invalid:"",required:""},{default:n(()=>[...e[0]||(e[0]=[s("我同意服务条款",-1)])]),_:1}))}});export{f as default};

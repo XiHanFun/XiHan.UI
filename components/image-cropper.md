@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/image-cropper
 
-# ImageCropper 图片裁切 `alpha`
+# ImageCropper 图片裁切
 
 用于选择图片中需要保留的区域。
 

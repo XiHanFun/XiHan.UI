@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/date-range-picker
 
-# DateRangePicker 日期范围选择器 `alpha`
+# DateRangePicker 日期范围选择器
 
 将起止两组可键入的分段日期框、范围分隔符、日历触发器和范围日历浮层组合成一个字段。
 
@@ -51,7 +51,6 @@ import {
     locale="zh-CN"
     name="trip-start"
     end-name="trip-end"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>旅行日期</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -111,7 +110,7 @@ import {
 
 <template id="date-range-picker-basic-template">
   <xh-date-range-picker locale="zh-CN" name="trip-start" end-name="trip-end">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">旅行日期</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -308,7 +307,6 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
     v-model:value="value"
     :visible-count="2"
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>入住与退房</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -373,7 +371,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 <template id="date-range-picker-two-panels-template">
   <xh-date-range-picker locale="zh-CN" visible-count="2">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">入住与退房</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -578,7 +576,6 @@ const presets = computed(() => [
     v-slot="{ weeks, weekDays }"
     :presets="presets"
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>统计区间</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -637,7 +634,7 @@ const presets = computed(() => [
 
 <template id="date-range-picker-shortcuts-template">
   <xh-date-range-picker locale="zh-CN">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">统计区间</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -850,7 +847,6 @@ function isWeekend(value: string): boolean {
     :is-date-unavailable="isWeekend"
     allows-non-contiguous-ranges
     locale="zh-CN"
-    style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
   >
     <XhDateRangePickerLabel>工作日区间</XhDateRangePickerLabel>
     <XhDateRangePickerControl>
@@ -907,7 +903,7 @@ function isWeekend(value: string): boolean {
 
 <template id="date-range-picker-unavailable-template">
   <xh-date-range-picker locale="zh-CN" allows-non-contiguous-ranges>
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label">工作日区间</span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -1104,7 +1100,6 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
       v-slot="{ panels, weekDays, segments, endSegments }"
       :granularity="k.granularity"
       locale="zh-CN"
-      style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))"
     >
       <XhDateRangePickerLabel>{{ k.label }}</XhDateRangePickerLabel>
       <XhDateRangePickerControl>
@@ -1168,7 +1163,7 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
 
 <template id="date-range-picker-granularity-template">
   <xh-date-range-picker locale="zh-CN">
-    <div data-xh-part="root" style="--xh-date-range-picker-control-min-w: calc(var(--xh-control-min-w) * 2 + var(--xh-control-h-md) * 2 + var(--xh-space-6))">
+    <div data-xh-part="root">
       <span data-xh-part="label"></span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
@@ -1657,6 +1652,7 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
 | `--xh-date-range-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-range-picker-control-px` | date-range-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-range-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-range-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-range-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-range-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-range-picker-control-w` | `root` | `inline-size` | `default` | `max-content` | date-range-picker 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-date-range-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-range-picker-font-size` | date-range-picker 的 segment-group 部件 font-size 覆盖槽。 |
 | `--xh-date-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-range-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-range-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-range-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |

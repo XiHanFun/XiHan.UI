@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/scroll-area
 
-# ScrollArea 滚动区域 `alpha`
+# ScrollArea 滚动区域
 
 提供带自定义滚动条的内容区域。
 

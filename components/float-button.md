@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/float-button
 
-# FloatButton 浮动按钮 `alpha`
+# FloatButton 浮动按钮
 
 用于在视口边缘提供持续可见的操作入口。
 

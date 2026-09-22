@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/field-array
 
-# FieldArray 字段数组 `alpha`
+# FieldArray 字段数组
 
 用于管理可添加、删除和排序的重复字段。
 

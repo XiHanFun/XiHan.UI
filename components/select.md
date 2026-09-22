@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/select
 
-# Select 选择器 `alpha`
+# Select 选择器
 
 从已知清单中选择一个或多个值，选项收在浮层内。
 
@@ -989,7 +989,7 @@ const plans = [
     <XhSelectRoot
       :default-value="['long']"
       placeholder="请选择"
-      style="--xh-select-control-min-w: 15rem; --xh-select-content-min-w: 22rem"
+      style="--xh-select-control-w: 20rem; --xh-select-content-min-w: 22rem"
     >
       <XhSelectLabel>加宽</XhSelectLabel>
       <XhSelectControl>
@@ -1050,7 +1050,7 @@ const plans = [
   <xh-select default-value="long" placeholder="请选择">
     <div
       data-xh-part="root"
-      style="--xh-select-control-min-w: 15rem; --xh-select-content-min-w: 22rem"
+      style="--xh-select-control-w: 20rem; --xh-select-content-min-w: 22rem"
     >
       <span data-xh-part="label">加宽</span>
       <div data-xh-part="control">
@@ -1706,7 +1706,6 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     :max-tag-count="2"
     multiple
     placeholder="请选择"
-    style="inline-size: 280px"
   >
     <XhSelectLabel>技术栈</XhSelectLabel>
     <XhSelectControl>
@@ -1743,7 +1742,7 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
 
 ```html
 <xh-select id="select-tags" multiple max-tag-count="2" placeholder="请选择">
-  <div data-xh-part="root" style="inline-size: 280px">
+  <div data-xh-part="root">
     <span data-xh-part="label">技术栈</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -2330,14 +2329,13 @@ const teams = [
     clearable
     label="所属小组"
     placeholder="选一个组"
-    style="inline-size: 240px"
   />
 </template>
 ```
 
 ```html
 <xh-select default-value="design" placeholder="选一个组">
-  <div data-xh-part="root" style="inline-size: 240px">
+  <div data-xh-part="root">
     <span data-xh-part="label">所属小组</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -2953,6 +2951,7 @@ function onValueChange(details: { value: string[] }): void {
 | `--xh-select-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_select-px` | select 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-select-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-select-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | select 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-select-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | select 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 empty 部件 color 覆盖槽。 |
 | `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 empty 部件 padding-inline 覆盖槽。 |

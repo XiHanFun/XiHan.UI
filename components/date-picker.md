@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/date-picker
 
-# DatePicker 日期选择器 `alpha`
+# DatePicker 日期选择器
 
 将可键入的分段日期框、日历触发器和选择浮层组合成一个字段。
 
@@ -49,7 +49,6 @@ import {
     v-slot="{ weeks, weekDays }"
     locale="zh-CN"
     name="delivery-date"
-    style="--xh-date-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))"
   >
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>
@@ -108,7 +107,6 @@ import {
   <xh-date-picker locale="zh-CN" name="delivery-date">
     <div
       data-xh-part="root"
-      style="--xh-date-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))"
     >
       <span data-xh-part="label">交付日期</span>
       <div data-xh-part="control">
@@ -1162,7 +1160,6 @@ function changeGranularity(details: { value: string | string[] | null }) {
     :granularity="granularity"
     :close-on-select="false"
     locale="zh-CN"
-    style="--xh-date-picker-control-min-w: 22rem"
   >
     <XhDatePickerLabel>统计周期</XhDatePickerLabel>
     <XhDatePickerControl>
@@ -1247,7 +1244,7 @@ function changeGranularity(details: { value: string | string[] | null }) {
 <div id="period-picker-mount"></div>
 <template id="period-picker-template">
 <xh-date-picker id="period-picker" granularity="day" close-on-select="false" locale="zh-CN">
-  <div data-xh-part="root" style="--xh-date-picker-control-min-w: 22rem">
+  <div data-xh-part="root">
     <span data-xh-part="label">统计周期</span>
     <div data-xh-part="control">
       <div data-xh-part="segment-group"></div>
@@ -1793,6 +1790,7 @@ function changeGranularity(details: { value: string | string[] | null }) {
 | `--xh-date-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-picker-control-px` | date-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | date-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-picker-font-size` | date-picker 的 segment-group 部件 font-size 覆盖槽。 |
 | `--xh-date-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |

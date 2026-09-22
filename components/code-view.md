@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/code-view
 
-# CodeView 代码视图 `alpha`
+# CodeView 代码视图
 
 一段代码的逐行呈现：行号、指定行高亮、超长折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
 

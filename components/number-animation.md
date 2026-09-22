@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/number-animation
 
-# NumberAnimation 数值动画 `alpha`
+# NumberAnimation 数值动画
 
 数字从一个值滚动到另一个值。
 

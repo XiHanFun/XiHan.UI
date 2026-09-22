@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/progress
 
-# Progress 进度条 `alpha`
+# Progress 进度条
 
 表示一件事的完成程度。线形、环形与仪表盘三种形态。
 

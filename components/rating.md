@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/rating
 
-# Rating 评分 `alpha`
+# Rating 评分
 
 用一排图案表示一个离散的分值。
 

@@ -1,1 +1,0 @@
-import{r as s}from"./index.CVfUds7h.js";import{n_ as a,n$ as n,o0 as m}from"./theme.VZGDCnnk.js";function f(t,r){const o=a(t.machine);s.useEffect(()=>{if(!o)return;let e=n({getNode:()=>r.current,getFormId:()=>t.prop("form"),onReset:()=>{t.getStatus()==="Started"&&t.send({type:m})}});return()=>{e==null||e.dispose(),e=null}},[o,t,r])}export{f as u};

@@ -10,7 +10,7 @@ description: 为 XiHan.UI 准备版本、消费 changeset、校验发布产物�
 - 工作区必须无冲突、无进行中的 merge/rebase、分支与目标版本明确；detached HEAD 不发版。
 - 版本真源是锁步 fixed 组中的包版本，发布计划来自 `ui/.changeset` 和 `.changeset/pre.json`。
 - `docs/changelog.md` 是版本级用户摘要，不代替 changeset。
-- 标签格式为 `vX.Y.Z[-tag.N]`，且标签提交必须位于 `main` 历史；`release.yml` 会拒绝其他提交。
+- 标签格式为 `vX.Y.Z[-tag.N]`，标签提交必须位于 `main` 历史，标签号必须等于 fixed 组包的 `version`；`release.yml` 的 guard 两条都查，任一不满足拒发。
 
 ## 准备版本
 
@@ -22,6 +22,6 @@ description: 为 XiHan.UI 准备版本、消费 changeset、校验发布产物�
 
 ## 发布
 
-只有用户明确要求发布，才可在确认提交位于 `main` 后创建并推送 `vX.Y.Z` 标签。标签触发 `.github/workflows/release.yml`，该工作流重新构建、核对标签与预发布模式、检查产物并执行 npm 发布。
+只有用户明确要求发布，才可在确认提交位于 `main` 后创建并推送 `vX.Y.Z` 标签。标签触发 `.github/workflows/release.yml`，该工作流只做发布：先由 guard 核对标签在 `main` 历史、标签号等于包版本且与预发布模式一致，再重新构建、执行 npm 发布；门禁、测试与 publint / attw 由 `ci.yml` 在提交进 `main` 时完成，发布链不再重跑。
 
 发布后核对 npm 版本和工作流结果，再用独立 docs 提交补 `docs/changelog.md`。不手工修改 dist、不跳过失败门禁、不重复发布已存在版本；失败时停止并报告，不移动标签掩盖问题。

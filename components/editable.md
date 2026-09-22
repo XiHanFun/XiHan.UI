@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/editable
 
-# Editable 就地编辑 `alpha`
+# Editable 就地编辑
 
 用于在当前位置查看和编辑短文本。
 
@@ -593,6 +593,7 @@ import {
 | `--xh-editable-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `0` | editable 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-editable-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | editable 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-editable-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | editable 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-editable-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | editable 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-editable-gap` | `root` | `gap` | `default` | `--xh-space-1` | editable 的 root 部件 gap 覆盖槽。 |
 | `--xh-editable-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | editable 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-editable-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | editable 的 input 部件 box-shadow 覆盖槽。 |

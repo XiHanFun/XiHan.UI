@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/page-header
 
-# PageHeader 页头 `alpha`
+# PageHeader 页头
 
 统一呈现页面标题、说明、导航和主要操作。
 

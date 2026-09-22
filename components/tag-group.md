@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tag-group
 
-# TagGroup 标签组 `alpha`
+# TagGroup 标签组
 
 把一排标签作为一个整体操作：方向键在标签之间移动，整组只占一个 Tab 停靠点，标签可以选中、也可以移除，移除后焦点有去处。
 

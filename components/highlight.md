@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/highlight
 
-# Highlight 文本高亮 `alpha`
+# Highlight 文本高亮
 
 标出一段文本中命中关键词的片段。
 

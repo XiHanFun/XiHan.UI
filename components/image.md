@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/image
 
-# Image 图片 `alpha`
+# Image 图片
 
 显示一张图片，带加载状态与失败回退。
 

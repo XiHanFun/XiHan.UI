@@ -1,0 +1,25 @@
+const t=`<!-- 图标标签 | 图标辅助识别内容类别 -->
+<xh-tabs default-value="activity">
+  <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="项目数据">
+      <button data-xh-part="trigger" value="activity">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,12 7,12 10,5 14,19 17,12 21,12"/></svg>
+        活动
+      </button>
+      <button data-xh-part="trigger" value="analytics">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><line x1="8" y1="20" x2="8" y2="14"/><line x1="13" y1="20" x2="13" y2="10"/><line x1="18" y1="20" x2="18" y2="6"/></svg>
+        分析
+      </button>
+      <button data-xh-part="trigger" value="reports">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+        报告
+      </button>
+      <div data-xh-part="indicator"></div>
+    </div>
+
+    <div data-xh-part="content" value="activity">查看项目近期活动。</div>
+    <div data-xh-part="content" value="analytics">查看项目分析数据。</div>
+    <div data-xh-part="content" value="reports">查看项目报告。</div>
+  </div>
+</xh-tabs>
+`;export{t as default};

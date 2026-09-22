@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tree-select
 
-# TreeSelect 树选择 `alpha`
+# TreeSelect 树选择
 
 浮层内放一棵树的选择器，适用于层级不规整、深浅不一的数据。
 
@@ -66,7 +66,6 @@ const doc = ref<string[]>([]);
     :collection="files"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -122,7 +121,7 @@ const doc = ref<string[]>([]);
 
 ```html
 <xh-tree-select id="tree-select-basic" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -274,7 +273,6 @@ const expanded = ref<string[]>(["docs"]);
     v-model:expanded-value="expanded"
     :collection="files"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -331,7 +329,7 @@ const expanded = ref<string[]>(["docs"]);
 
 ```html
 <xh-tree-select id="tree-select-controlled" value="guide" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -471,7 +469,6 @@ const picked = ref<string[]>(["index"]);
     multiple
     name="docs"
     placeholder="可以多选"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>提交范围</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -521,7 +518,7 @@ const picked = ref<string[]>(["index"]);
   name="docs"
   placeholder="可以多选"
 >
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">提交范围</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -638,7 +635,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
       :variant="v"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ v }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -685,7 +681,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start"
 >
   <xh-tree-select variant="outline" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">outline</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -724,7 +720,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">subtle</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -763,7 +759,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
   </xh-tree-select>
 
   <xh-tree-select variant="ghost" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">ghost</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -875,7 +871,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
       :default-value="['guide']"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ t }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -919,7 +914,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 ```html
 <div id="tree-select-tone" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
   <xh-tree-select variant="subtle" tone="brand" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">brand</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -958,7 +953,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="neutral" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">neutral</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -997,7 +992,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="success" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">success</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1036,7 +1031,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="warning" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">warning</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1075,7 +1070,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="danger" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">danger</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1114,7 +1109,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
   </xh-tree-select>
 
   <xh-tree-select variant="subtle" tone="info" default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">info</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1229,7 +1224,6 @@ const sizes = [
       :size="s.size"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ s.label }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -1273,7 +1267,7 @@ const sizes = [
 ```html
 <div id="tree-select-size" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
   <xh-tree-select size="sm" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">sm</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1312,7 +1306,7 @@ const sizes = [
   </xh-tree-select>
 
   <xh-tree-select placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">缺省</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1351,7 +1345,7 @@ const sizes = [
   </xh-tree-select>
 
   <xh-tree-select size="lg" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">lg</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1468,7 +1462,6 @@ const states = [
       :default-value="['guide']"
       :default-expanded-value="['docs']"
       placeholder="选一个文件"
-      style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ s.label }}</XhTreeSelectLabel>
       <XhTreeSelectControl>
@@ -1512,7 +1505,7 @@ const states = [
 ```html
 <div id="tree-select-state" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
   <xh-tree-select disabled default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">禁用</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1551,7 +1544,7 @@ const states = [
   </xh-tree-select>
 
   <xh-tree-select read-only default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">只读</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1590,7 +1583,7 @@ const states = [
   </xh-tree-select>
 
   <xh-tree-select invalid default-value="guide" placeholder="选一个文件">
-    <div data-xh-part="root" style="inline-size: 220px">
+    <div data-xh-part="root">
       <span data-xh-part="label">校验失败</span>
       <div data-xh-part="control">
         <button data-xh-part="trigger">
@@ -1747,7 +1740,6 @@ onBeforeUnmount(() => {
     :expanded-value="expanded"
     :loading="loading"
     placeholder="选一个城市"
-    style="max-inline-size: 320px"
     @expanded-value-change="expanded = $event.value"
     @open-change="onOpenChange"
   >
@@ -1798,7 +1790,7 @@ onBeforeUnmount(() => {
 
 ```html
 <xh-tree-select id="tree-select-async" placeholder="选一个城市">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">投放城市</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -1982,7 +1974,6 @@ const files = [
     :collection="files"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -2026,7 +2017,7 @@ const files = [
 
 ```html
 <xh-tree-select id="tree-select-action" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -2181,7 +2172,6 @@ const value = ref<string[]>(["user:view"]);
     multiple
     cascade
     checked-strategy="parent"
-    style="max-inline-size: 340px"
   >
     <XhTreeSelectLabel>权限</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -2231,7 +2221,7 @@ const value = ref<string[]>(["user:view"]);
   cascade
   checked-strategy="parent"
 >
-  <div data-xh-part="root" style="max-inline-size: 340px">
+  <div data-xh-part="root">
     <span data-xh-part="label">权限</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -2426,7 +2416,6 @@ function onOpenChange(details: { open: boolean }): void {
     v-model:expanded-value="expanded"
     :collection="collection"
     placeholder="选一个城市"
-    style="max-inline-size: 320px"
     @open-change="onOpenChange"
   >
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
@@ -2480,7 +2469,7 @@ function onOpenChange(details: { open: boolean }): void {
 
 ```html
 <xh-tree-select id="tree-select-filter" placeholder="选一个城市">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">投放城市</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -2769,7 +2758,6 @@ function onOpenChange(details: { open: boolean }): void {
     :open="open"
     :default-expanded-value="['docs']"
     placeholder="选一个文件"
-    style="max-inline-size: 320px"
     @value-change="onValueChange"
     @open-change="onOpenChange"
   >
@@ -2842,7 +2830,7 @@ function onOpenChange(details: { open: boolean }): void {
 
 ```html
 <xh-tree-select id="tree-select-file-picker" open="false" placeholder="选一个文件">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">附件</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -3015,7 +3003,6 @@ const doc = ref<string[]>(["guide"]);
     label="文档"
     placeholder="选一个文件"
     clearable
-    style="max-inline-size: 320px"
   />
   <p>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
 </template>
@@ -3027,7 +3014,7 @@ const doc = ref<string[]>(["guide"]);
   default-value="guide"
   placeholder="选一个文件"
 >
-  <div data-xh-part="root" style="max-inline-size: 320px">
+  <div data-xh-part="root">
     <span data-xh-part="label">文档</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
@@ -3624,6 +3611,7 @@ const doc = ref<string[]>(["guide"]);
 | `--xh-tree-select-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_tree-select-px` | tree-select 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | tree-select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | tree-select 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tree-select-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | tree-select 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tree-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | tree-select 的 empty 部件 color 覆盖槽。 |
 | `--xh-tree-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-tree-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 empty 部件 padding-inline 覆盖槽。 |

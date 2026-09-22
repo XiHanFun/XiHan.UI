@@ -1,0 +1,54 @@
+const a=`<!-- 状态与尺寸 | 禁用、只读、无效三态与 sm / lg 两档；色块与清空按钮跟随字段的尺寸档 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <xh-color-field default-value="#10b981" disabled>
+    <div data-xh-part="root">
+      <label data-xh-part="label">禁用</label>
+      <div data-xh-part="control">
+        <span data-xh-part="swatch"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+    </div>
+  </xh-color-field>
+  <xh-color-field default-value="#10b981" read-only>
+    <div data-xh-part="root">
+      <label data-xh-part="label">只读</label>
+      <div data-xh-part="control">
+        <span data-xh-part="swatch"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+    </div>
+  </xh-color-field>
+  <xh-color-field default-value="#10b981" invalid clearable>
+    <div data-xh-part="root">
+      <label data-xh-part="label">无效</label>
+      <div data-xh-part="control">
+        <span data-xh-part="swatch"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+    </div>
+  </xh-color-field>
+  <xh-color-field default-value="#10b981" size="sm" clearable>
+    <div data-xh-part="root">
+      <label data-xh-part="label">小号</label>
+      <div data-xh-part="control">
+        <span data-xh-part="swatch"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+    </div>
+  </xh-color-field>
+  <xh-color-field default-value="#10b981" size="lg" clearable>
+    <div data-xh-part="root">
+      <label data-xh-part="label">大号</label>
+      <div data-xh-part="control">
+        <span data-xh-part="swatch"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+    </div>
+  </xh-color-field>
+</div>
+`;export{a as default};

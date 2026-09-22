@@ -1,0 +1,26 @@
+const t=`<!-- 无法提交的草稿 | 无法解析的文字留在框中并标为无效，让用户看到自己输入的内容；Escape 放弃草稿回到规范文本 -->
+<!-- 试着打 tomato 再按回车：颜色关键字不在支持的写法里 -->
+<xh-color-field id="color-field-invalid" default-value="#e11d48" placeholder="#rrggbb">
+  <div data-xh-part="root">
+    <label data-xh-part="label">强调色</label>
+    <div data-xh-part="control">
+      <span data-xh-part="swatch"></span>
+      <input data-xh-part="input" />
+    </div>
+    <span id="color-field-invalid-hint" style="font-size: 13px">已收下</span>
+  </div>
+</xh-color-field>
+
+<script type="module">
+  // 编辑与无效两个事实都写在 root 的 data-* 上，提示文字照着它们改
+  const field = document.getElementById("color-field-invalid");
+  const root = field.querySelector('[data-xh-part="root"]');
+  const hint = document.getElementById("color-field-invalid-hint");
+  const observer = new MutationObserver(() => {
+    hint.textContent = root.hasAttribute("data-invalid")
+      ? "这串字不是颜色：改一改，或按 Escape 放弃"
+      : root.hasAttribute("data-editing") ? "回车或失焦收下" : "已收下";
+  });
+  observer.observe(root, { attributes: true, attributeFilter: ["data-editing", "data-invalid"] });
+<\/script>
+`;export{t as default};

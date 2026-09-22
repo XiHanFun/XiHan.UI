@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/segmented
 
-# Segmented 分段控制器 `alpha`
+# Segmented 分段控制器
 
 一排连在一起的互斥选项，选中的一段下方有一块滑动的指示器：淡底轨道里一块带描边的白色抬起面。它是单选组，参与表单提交。
 

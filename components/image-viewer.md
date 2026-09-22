@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/image-viewer
 
-# ImageViewer 图片预览 `alpha`
+# ImageViewer 图片预览
 
 查看大图：全屏浮层内可以缩放、旋转、翻转与翻页。
 

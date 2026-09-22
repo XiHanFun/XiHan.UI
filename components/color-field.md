@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/color-field
 
-# ColorField 颜色字段 `alpha`
+# ColorField 颜色字段
 
 可以手动输入颜色串的单行框，旁边显示当前颜色的色块。框内文字是草稿，回车或失焦时提交，提交后按 `format` 重写为规范写法。它属于[文本字段](./text-field)家族，面向已知颜色值直接输入的场景；需要在色域中挑选时使用[颜色选择器](./color-picker)。
 
@@ -36,7 +36,7 @@ const value = ref("#3b82f6");
   <div style="display: flex; flex-direction: column; gap: 8px">
     <XhColorFieldRoot v-model:value="value" name="accent" placeholder="#rrggbb" clearable>
       <XhColorFieldLabel>主题色</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 16rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -53,7 +53,7 @@ const value = ref("#3b82f6");
   <xh-color-field id="color-field-basic" default-value="#3b82f6" name="accent" placeholder="#rrggbb" clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">主题色</label>
-      <div data-xh-part="control" style="inline-size: 16rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -105,7 +105,7 @@ const value = ref("rgba(59, 130, 246, 0.5)");
     <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
     <XhColorFieldRoot v-model:value="value" format="rgba" alpha placeholder="rgba(r, g, b, a)">
       <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 20rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
       </XhColorFieldControl>
@@ -121,7 +121,7 @@ const value = ref("rgba(59, 130, 246, 0.5)");
   <xh-color-field id="color-field-format" default-value="rgba(59, 130, 246, 0.5)" format="rgba" alpha placeholder="rgba(r, g, b, a)">
     <div data-xh-part="root">
       <label data-xh-part="label">遮罩色</label>
-      <div data-xh-part="control" style="inline-size: 20rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
       </div>
@@ -158,7 +158,7 @@ import {
   <!-- 试着打 tomato 再按回车：颜色关键字不在支持的写法里 -->
   <XhColorFieldRoot v-slot="{ editing, invalid }" default-value="#e11d48" placeholder="#rrggbb">
     <XhColorFieldLabel>强调色</XhColorFieldLabel>
-    <XhColorFieldControl style="inline-size: 16rem">
+    <XhColorFieldControl>
       <XhColorFieldSwatch />
       <XhColorFieldInput />
     </XhColorFieldControl>
@@ -174,7 +174,7 @@ import {
 <xh-color-field id="color-field-invalid" default-value="#e11d48" placeholder="#rrggbb">
   <div data-xh-part="root">
     <label data-xh-part="label">强调色</label>
-    <div data-xh-part="control" style="inline-size: 16rem">
+    <div data-xh-part="control">
       <span data-xh-part="swatch"></span>
       <input data-xh-part="input" />
     </div>
@@ -216,7 +216,7 @@ import {
   <div style="display: flex; flex-wrap: wrap; gap: 16px">
     <XhColorFieldRoot default-value="#10b981" disabled>
       <XhColorFieldLabel>禁用</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -224,7 +224,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" read-only>
       <XhColorFieldLabel>只读</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -232,7 +232,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" invalid clearable>
       <XhColorFieldLabel>无效</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -240,7 +240,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" size="sm" clearable>
       <XhColorFieldLabel>小号</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -248,7 +248,7 @@ import {
     </XhColorFieldRoot>
     <XhColorFieldRoot default-value="#10b981" size="lg" clearable>
       <XhColorFieldLabel>大号</XhColorFieldLabel>
-      <XhColorFieldControl style="inline-size: 14rem">
+      <XhColorFieldControl>
         <XhColorFieldSwatch />
         <XhColorFieldInput />
         <XhColorFieldClearTrigger />
@@ -263,7 +263,7 @@ import {
   <xh-color-field default-value="#10b981" disabled>
     <div data-xh-part="root">
       <label data-xh-part="label">禁用</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -273,7 +273,7 @@ import {
   <xh-color-field default-value="#10b981" read-only>
     <div data-xh-part="root">
       <label data-xh-part="label">只读</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -283,7 +283,7 @@ import {
   <xh-color-field default-value="#10b981" invalid clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">无效</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -293,7 +293,7 @@ import {
   <xh-color-field default-value="#10b981" size="sm" clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">小号</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -303,7 +303,7 @@ import {
   <xh-color-field default-value="#10b981" size="lg" clearable>
     <div data-xh-part="root">
       <label data-xh-part="label">大号</label>
-      <div data-xh-part="control" style="inline-size: 14rem">
+      <div data-xh-part="control">
         <span data-xh-part="swatch"></span>
         <input data-xh-part="input" />
         <button data-xh-part="clear-trigger"></button>
@@ -544,6 +544,7 @@ import {
 | `--xh-color-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-field-px` | color-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-color-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | color-field 的 input 部件 box-shadow 覆盖槽。 |

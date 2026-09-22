@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/layout
 
-# Layout 布局 `alpha`
+# Layout 布局
 
 用于构建带页头、侧栏、内容和页脚的页面骨架。
 

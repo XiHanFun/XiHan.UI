@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/signature-pad
 
-# SignaturePad 签名板 `alpha`
+# SignaturePad 签名板
 
 用指针书写的画布：按下落笔、移动成迹、抬起收笔，输出可缩放、可直接提交的 SVG。
 
@@ -390,7 +390,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 - 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会清空画布。
 - 笔迹变化时发出 `draw`，签名定稿时发出 `draw-end`：抬笔、点击清空、表单重置三条路径都发出。按 `draw-end` 缓存待提交的 SVG 不会取到过期版本。
 - 指针划出画布甚至划出窗口都持续跟随，抬起即收笔；落笔的指针被捕获，手掌与第二根手指的移动不会续进这一笔。
-- 画布是一块字段外壳：静息 `--xh-bg-canvas` 底 + `--xh-border-control` 描边 + 4px 控件圆角、无影；落笔时描边加深，只读只换淡底，禁用退到 `--xh-border-default` + `--xh-bg-subtle`。画布按宽高比撑高，吃不下字段家族配方钉死的控件行高，因此外壳按同一套字段规则自绘。
+- 画布是一块字段外壳：静息不填底 + `--xh-border-control` 描边 + 4px 控件圆角、无影；落笔时描边加深，只读只换淡底，禁用退到 `--xh-border-default` + `--xh-bg-subtle`。画布按宽高比撑高，吃不下字段家族配方钉死的控件行高，因此外壳按同一套字段规则自绘。
 - 标签走字段标签档（14 / 500 / `--xh-fg-default`），贴画布 `--xh-space-1`；状态句是说明角色（13 / `--xh-fg-muted`）。
 - 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下缩放并换底；空画布时只把静息前景压淡，按钮照常可按。
 
@@ -586,7 +586,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-signature-pad-aspect-ratio` | `control` | `aspect-ratio` | `default` | `5 / 2` | signature-pad 的 control 部件 aspect-ratio 覆盖槽。 |
-| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-canvas` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg` | `control` | `background` | `default` | `transparent` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |

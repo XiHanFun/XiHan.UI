@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/text-field
 
-# TextField 文本字段 `alpha`
+# TextField 文本字段
 
 单行或多行的自由文本输入。
 
@@ -30,7 +30,7 @@ import {
 <template>
   <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱" clearable>
     <XhTextFieldLabel>邮箱</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 16rem">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -42,7 +42,7 @@ import {
 <xh-text-field name="email" type="email" placeholder="输入你的邮箱" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">邮箱</label>
-    <div data-xh-part="control" style="inline-size: 16rem">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -78,7 +78,7 @@ const nickname = ref("曦寒");
 <template>
   <XhTextFieldRoot v-model:value="nickname" placeholder="请输入昵称">
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -91,7 +91,7 @@ const nickname = ref("曦寒");
 <xh-text-field id="text-field-controlled" value="曦寒" placeholder="请输入昵称">
   <div data-xh-part="root">
     <label data-xh-part="label">昵称</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -139,7 +139,7 @@ import {
     clearable
   >
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -158,7 +158,7 @@ import {
 >
   <div data-xh-part="root">
     <label data-xh-part="label">昵称</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -194,21 +194,21 @@ import {
 <template>
   <XhTextFieldRoot default-value="改不动" disabled>
     <XhTextFieldLabel>禁用</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot default-value="只能看" read-only>
     <XhTextFieldLabel>只读</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot default-value="格式不对" invalid>
     <XhTextFieldLabel>校验失败</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -219,7 +219,7 @@ import {
 <xh-text-field default-value="改不动" disabled>
   <div data-xh-part="root">
     <label data-xh-part="label">禁用</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -228,7 +228,7 @@ import {
 <xh-text-field default-value="只能看" read-only>
   <div data-xh-part="root">
     <label data-xh-part="label">只读</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -237,7 +237,7 @@ import {
 <xh-text-field default-value="格式不对" invalid>
   <div data-xh-part="root">
     <label data-xh-part="label">校验失败</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -269,7 +269,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     placeholder="请输入内容"
   >
     <XhTextFieldLabel>{{ v }}</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 180px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -280,7 +280,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 <xh-text-field variant="outline" placeholder="请输入内容">
   <div data-xh-part="root">
     <label data-xh-part="label">outline</label>
-    <div data-xh-part="control" style="inline-size: 180px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -289,7 +289,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 <xh-text-field variant="subtle" placeholder="请输入内容">
   <div data-xh-part="root">
     <label data-xh-part="label">subtle</label>
-    <div data-xh-part="control" style="inline-size: 180px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -299,7 +299,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 <xh-text-field variant="ghost" placeholder="请输入内容">
   <div data-xh-part="root">
     <label data-xh-part="label">ghost</label>
-    <div data-xh-part="control" style="inline-size: 180px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -332,7 +332,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     placeholder="点进来看聚焦环"
   >
     <XhTextFieldLabel>{{ t }}</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -344,7 +344,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="brand" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">brand</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -353,7 +353,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="neutral" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">neutral</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -362,7 +362,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="success" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">success</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -371,7 +371,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="warning" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">warning</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -380,7 +380,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="danger" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">danger</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -389,7 +389,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 <xh-text-field variant="subtle" tone="info" placeholder="点进来看聚焦环">
   <div data-xh-part="root">
     <label data-xh-part="label">info</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -415,7 +415,7 @@ import {
   <!-- 固定 outline 形态，只看档位的差别 -->
   <XhTextFieldRoot variant="outline" size="sm" default-value="小" clearable>
     <XhTextFieldLabel>sm</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -423,7 +423,7 @@ import {
 
   <XhTextFieldRoot variant="outline" default-value="缺省" clearable>
     <XhTextFieldLabel>缺省</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -431,7 +431,7 @@ import {
 
   <XhTextFieldRoot variant="outline" size="lg" default-value="大" clearable>
     <XhTextFieldLabel>lg</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
@@ -444,7 +444,7 @@ import {
 <xh-text-field variant="outline" size="sm" default-value="小" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">sm</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -454,7 +454,7 @@ import {
 <xh-text-field variant="outline" default-value="缺省" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">缺省</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -464,7 +464,7 @@ import {
 <xh-text-field variant="outline" size="lg" default-value="大" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">lg</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
@@ -494,7 +494,7 @@ import {
     clearable
   >
     <XhTextFieldLabel>收货人</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput />
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
@@ -511,7 +511,7 @@ import {
 <xh-text-field id="text-field-programmatic" placeholder="等着被写入" max-length="12" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">收货人</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -572,7 +572,7 @@ import {
 <template>
   <XhTextFieldRoot placeholder="you@example.com">
     <XhTextFieldLabel>邮箱</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput
         autocomplete="email"
         inputmode="email"
@@ -583,7 +583,7 @@ import {
 
   <XhTextFieldRoot placeholder="11 位手机号" :max-length="11">
     <XhTextFieldLabel>手机号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput
         autocomplete="tel"
         inputmode="numeric"
@@ -598,7 +598,7 @@ import {
 <xh-text-field placeholder="you@example.com">
   <div data-xh-part="root">
     <label data-xh-part="label">邮箱</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input
         data-xh-part="input"
         autocomplete="email"
@@ -612,7 +612,7 @@ import {
 <xh-text-field placeholder="11 位手机号" max-length="11">
   <div data-xh-part="root">
     <label data-xh-part="label">手机号</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input
         data-xh-part="input"
         autocomplete="tel"
@@ -653,7 +653,7 @@ function onValueChange(details: { value: string }) {
 <template>
   <XhTextFieldRoot placeholder="随便敲几个字" clearable @value-change="onValueChange">
     <XhTextFieldLabel>留言</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput @focus="push('focus')" @blur="push('blur')" />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -669,7 +669,7 @@ function onValueChange(details: { value: string }) {
 <xh-text-field id="text-field-events" placeholder="随便敲几个字" clearable>
   <div data-xh-part="root">
     <label data-xh-part="label">留言</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -726,7 +726,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 <template>
   <XhTextFieldRoot placeholder="0.00">
     <XhTextFieldLabel>金额</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <span :style="affix">¥</span>
       <XhTextFieldInput inputmode="decimal" />
       <span :style="affix">元</span>
@@ -735,7 +735,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 
   <XhTextFieldRoot placeholder="170">
     <XhTextFieldLabel>身高</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 160px">
+    <XhTextFieldControl>
       <XhTextFieldInput inputmode="numeric" />
       <span :style="affix">cm</span>
     </XhTextFieldControl>
@@ -747,7 +747,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 <xh-text-field placeholder="0.00">
   <div data-xh-part="root">
     <label data-xh-part="label">金额</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <!-- 不参与分宽，也不吃指针事件：点在前后缀上仍然落到输入框里 -->
       <span style="flex: none; color: var(--xh-fg-muted); pointer-events: none">¥</span>
       <input data-xh-part="input" inputmode="decimal" />
@@ -759,7 +759,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 <xh-text-field placeholder="170">
   <div data-xh-part="root">
     <label data-xh-part="label">身高</label>
-    <div data-xh-part="control" style="inline-size: 160px">
+    <div data-xh-part="control">
       <input data-xh-part="input" inputmode="numeric" />
       <span style="flex: none; color: var(--xh-fg-muted); pointer-events: none">cm</span>
     </div>
@@ -788,7 +788,7 @@ const visible = ref(false);
   <XhTextFieldRoot placeholder="请输入密码" :max-length="20">
     <XhTextFieldLabel>密码</XhTextFieldLabel>
     <div style="display: flex; gap: 4px">
-      <XhTextFieldControl style="inline-size: 200px">
+      <XhTextFieldControl>
         <XhTextFieldInput
           :type="visible ? 'text' : 'password'"
           autocomplete="current-password"
@@ -808,7 +808,7 @@ const visible = ref(false);
   <div data-xh-part="root">
     <label data-xh-part="label">密码</label>
     <div style="display: flex; gap: 4px">
-      <div data-xh-part="control" style="inline-size: 200px">
+      <div data-xh-part="control">
         <input data-xh-part="input" autocomplete="current-password" />
       </div>
       <button type="button" id="text-field-password-toggle" aria-pressed="false">显示</button>
@@ -868,14 +868,14 @@ function noSpace(event: Event) {
 <template>
   <XhTextFieldRoot placeholder="只收数字" :max-length="11">
     <XhTextFieldLabel>手机号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput inputmode="numeric" @beforeinput="onlyDigits" />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <XhTextFieldRoot placeholder="空格进不来">
     <XhTextFieldLabel>账号</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+    <XhTextFieldControl>
       <XhTextFieldInput @beforeinput="noSpace" />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -886,7 +886,7 @@ function noSpace(event: Event) {
 <xh-text-field id="text-field-filter-digits" placeholder="只收数字" max-length="11">
   <div data-xh-part="root">
     <label data-xh-part="label">手机号</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" inputmode="numeric" />
     </div>
   </div>
@@ -895,7 +895,7 @@ function noSpace(event: Event) {
 <xh-text-field id="text-field-filter-space" placeholder="空格进不来">
   <div data-xh-part="root">
     <label data-xh-part="label">账号</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -966,7 +966,7 @@ function caretToEnd(): void {
 <template>
   <XhTextFieldRoot default-value="曦寒组件库">
     <XhTextFieldLabel>标题</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 220px">
+    <XhTextFieldControl>
       <XhTextFieldInput :ref="bindInput" />
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
@@ -983,7 +983,7 @@ function caretToEnd(): void {
 <xh-text-field id="text-field-focus" default-value="曦寒组件库">
   <div data-xh-part="root">
     <label data-xh-part="label">标题</label>
-    <div data-xh-part="control" style="inline-size: 220px">
+    <div data-xh-part="control">
       <input data-xh-part="input" />
     </div>
     <div style="display: flex; gap: 8px">
@@ -1461,6 +1461,7 @@ const note = ref("");
 | `--xh-text-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_text-field-px` | text-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-text-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | text-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-text-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | text-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-text-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | text-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-text-field-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | text-field 的 count 部件 color 覆盖槽。 |

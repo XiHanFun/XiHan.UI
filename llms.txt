@@ -6,10 +6,10 @@
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 177 页正文，示例已内联为代码块
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 188 页正文，示例已内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 135 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 29 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 418 支设计令牌的名字、类型与缺省取值
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 550 支设计令牌的名字、类型与缺省取值
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/components/button.md
 
 ## 开始
@@ -22,6 +22,20 @@
 - [包与依赖关系](https://ui.docs.xihanfun.com/npm-package-dependency): XiHan.UI 是一个 pnpm workspace。
 - [架构总览](https://ui.docs.xihanfun.com/overview): XiHan.UI 是一个 pnpm + turbo 的 monorepo。
 - [快速上手](https://ui.docs.xihanfun.com/quickstart): 同一个对话框的三种写法。
+
+## 设计
+
+- [色彩](https://ui.docs.xihanfun.com/design/colors): 颜色分三层：基础色板（primitive，只声明一次的原始值）、语义角色（semantic，`bg-*` / `fg-*` / `border-*` / `ring-*`，皮肤只消费这一层）、组件覆盖槽（`--xh-<组件>-*`）。
+- [暗黑模式](https://ui.docs.xihanfun.com/design/dark): 深色不是把浅色反相。
+- [图标](https://ui.docs.xihanfun.com/design/icons): 图标是界面里最小的一种"字"：跟着文字的字号、颜色与基线走，不自己发光。
+- [设计体系](https://ui.docs.xihanfun.com/design/): XiHan.UI 的设计不是一套画好的稿子，而是一组写进代码、由门禁守着的规则：组件行为住在框架无关的 Headless 层，颜色、间距、圆角、阴影、动效全部是 DTCG 令牌，皮肤只消费语义令牌与部件角色。
+- [布局](https://ui.docs.xihanfun.com/design/layout): 布局的尺度只有一把尺：4px 网格。
+- [动效](https://ui.docs.xihanfun.com/design/motion): 动效只做三件事：告诉你按到了、告诉你东西从哪来到哪去、告诉你什么在变。
+- [组件家族与模式](https://ui.docs.xihanfun.com/design/patterns): 新组件先归族，再决定局部样式。
+- [设计原则](https://ui.docs.xihanfun.com/design/principles): 这几条贯穿所有组件，其余页面里的每张表都是它们在某个维度上的展开。
+- [阴影与材质](https://ui.docs.xihanfun.com/design/shadow): 阴影在这里只表达"离页面多远"，不表达边界——边界归描边。
+- [形状与边界](https://ui.docs.xihanfun.com/design/shape): 圆角与边线是最容易长出第二套规则的地方——一个组件 6px、另一个 5px，看着都"差不多"。
+- [字体](https://ui.docs.xihanfun.com/design/typography): 组件不指定正文字族：皮肤里写的是 `font-family: inherit`，控件与面板跟着宿主页面的字走，库只定等宽字族、字号阶梯、字重、行高与排版角色。
 
 ## 核心概念
 

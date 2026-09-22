@@ -1,0 +1,1 @@
+import{cQ as e}from"./theme.D_5FEi5w.js";import{d as t,o,c,E as s,k as a}from"./framework.DxrHb2fb.js";const n={style:{display:"flex","align-items":"center",gap:"12px"}},m=t({__name:"01-basic",setup(r){return(p,i)=>(o(),c("div",n,[s(a(e),{keys:["Escape"]}),s(a(e),{keys:["Mod","K"]})]))}});export{m as default};

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/menubar
 
-# Menubar 菜单栏 `alpha`
+# Menubar 菜单栏
 
 用于桌面应用的横向命令菜单栏。
 

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/pagination
 
-# Pagination 分页 `alpha`
+# Pagination 分页
 
 用于在分页结果之间导航。
 

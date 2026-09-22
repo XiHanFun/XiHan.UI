@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/command
 
-# Command 命令面板 `alpha`
+# Command 命令面板
 
 覆盖在页面上的检索面板：输入筛选命令，方向键选择，回车执行。
 

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/color-slider
 
-# ColorSlider 颜色滑块 `alpha`
+# ColorSlider 颜色滑块
 
 只调整颜色某一个通道的滑杆：色相、饱和度、明度、透明度，或红、绿、蓝。值是完整的颜色串，轨道显示该通道从最小值到最大值的颜色变化，拇指填充当前值对应的颜色。多条并排即可组成自定义的调色面板；[颜色选择器](./color-picker)浮层内的色相带与透明度带就是它。
 

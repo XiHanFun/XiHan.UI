@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/list
 
-# List 列表 `alpha`
+# List 列表
 
 一列同构的条目，每条可以有媒体位、标题、描述与操作位。
 

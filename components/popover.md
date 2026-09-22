@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/popover
 
-# Popover 气泡卡片 `alpha`
+# Popover 气泡卡片
 
 由点击触发、贴着触发器的一小块浮层，可以放任意内容与交互。
 

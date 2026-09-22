@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/mention
 
-# Mention 提及 `alpha`
+# Mention 提及
 
 在正文中输入前缀字符后弹出候选，选中后把引用插入文本。
 
@@ -1012,6 +1012,7 @@ const filtered = computed(() => {
 | `--xh-mention-input-px` | `input` | `padding-inline` | `xh-field-chrome` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-input-radius` | `input` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
 | `--xh-mention-input-shadow` | `input` | `box-shadow` | `xh-field-chrome` | `none` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-input-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | mention 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-mention-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | mention 的 item 部件 background-color 覆盖槽。 |
 | `--xh-mention-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | mention 的 item 部件 background-color 覆盖槽。 |
 | `--xh-mention-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |

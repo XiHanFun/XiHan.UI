@@ -1,0 +1,27 @@
+const n=`// 形态 | variant 决定底色与描边的绘制方式：描边、淡色填底、无框；输入框没有实心档
+import type { ReactNode } from "react";
+import {
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from "@xihan-ui/react";
+
+const variants = ["outline", "subtle", "ghost"] as const;
+
+export default function Demo(): ReactNode {
+  return (
+    <>
+      {/* 无框档平时只看得见字，把指针移上去或聚焦才浮出边界 */}
+      {variants.map(v => (
+        <XhTextFieldRoot key={v} variant={v} placeholder="请输入内容">
+          <XhTextFieldLabel>{v}</XhTextFieldLabel>
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
+      ))}
+    </>
+  );
+}
+`;export{n as default};

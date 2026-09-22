@@ -1,0 +1,1 @@
+import{I as o}from"./theme.D_5FEi5w.js";import{d as r,b as a,k as t,o as c}from"./framework.DxrHb2fb.js";const p=r({__name:"breadcrumb",setup(n){const e=[{value:"home",label:"首页",href:"#/"},{value:"components",label:"组件",href:"#/components"},{value:"breadcrumb",label:"面包屑",current:!0}];return(l,m)=>(c(),a(t(o),{collection:e}))}});export{p as default};

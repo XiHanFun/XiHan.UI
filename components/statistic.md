@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/statistic
 
-# Statistic 统计数值 `alpha`
+# Statistic 统计数值
 
 带标签的关键数字，可以配前后缀。
 

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tags-input
 
-# TagsInput 标签输入 `alpha`
+# TagsInput 标签输入
 
 在一个输入框内录入一串标签：回车或分隔符成词，每个词是一个可删除的标签。
 
@@ -38,7 +38,6 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
     v-slot="{ value }"
     v-model:value="tags"
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>技术栈</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -60,7 +59,6 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
   id="tags-input-basic"
   value="Vue,TypeScript"
   placeholder="回车落一个"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">技术栈</label>
@@ -166,7 +164,6 @@ const tags = ref<string[]>(["Vue"]);
     add-on-paste
     delimiter=","
     placeholder="试试粘贴 React,Svelte,Solid"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>技术栈（最多 4 个）</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -192,7 +189,6 @@ const tags = ref<string[]>(["Vue"]);
   add-on-paste
   delimiter=","
   placeholder="试试粘贴 React,Svelte,Solid"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">技术栈（最多 4 个）</label>
@@ -284,7 +280,6 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
     v-model:value="tags"
     editable
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>标签</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -309,7 +304,6 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
   value="前端,组件库,无障碍"
   editable
   placeholder="回车落一个"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">标签</label>
@@ -1092,7 +1086,6 @@ function onValueChange(details: { value: string[] }) {
     v-slot="{ value }"
     :value="tags"
     placeholder="打 Vue 回车，落进去的是 #vue"
-    style="max-inline-size: 420px"
     @value-change="onValueChange"
   >
     <XhTagsInputLabel>话题</XhTagsInputLabel>
@@ -1115,7 +1108,6 @@ function onValueChange(details: { value: string[] }) {
   id="tags-input-normalize"
   value="#vue"
   placeholder="打 Vue 回车，落进去的是 #vue"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">话题</label>
@@ -1215,7 +1207,6 @@ const tags = ref<string[]>(["文档"]);
     v-model:value="tags"
     :max="3"
     placeholder="回车落一个"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>话题（最多 3 个）</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -1249,7 +1240,6 @@ const tags = ref<string[]>(["文档"]);
   value="文档"
   max="3"
   placeholder="回车落一个"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">话题（最多 3 个）</label>
@@ -1401,7 +1391,6 @@ function options(text: string): string[] {
     :max="4"
     blur-behavior="add"
     placeholder="打前缀选后缀"
-    style="max-inline-size: 420px"
   >
     <XhTagsInputLabel>通知邮箱（最多 4 个）</XhTagsInputLabel>
     <XhTagsInputControl>
@@ -1469,7 +1458,6 @@ function options(text: string): string[] {
   max="4"
   blur-behavior="add"
   placeholder="打前缀选后缀"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">通知邮箱（最多 4 个）</label>
@@ -1687,7 +1675,6 @@ function onValueChange(details: { value: string[] }) {
     :value="value"
     name="reviewers"
     placeholder="打名字回车"
-    style="max-inline-size: 420px"
     @value-change="onValueChange"
   >
     <XhTagsInputLabel>评审人</XhTagsInputLabel>
@@ -1713,7 +1700,6 @@ function onValueChange(details: { value: string[] }) {
   value="u-1"
   name="reviewers"
   placeholder="打名字回车"
-  style="max-inline-size: 420px"
 >
   <div data-xh-part="root">
     <label data-xh-part="label">评审人</label>
@@ -2077,6 +2063,7 @@ function onValueChange(details: { value: string[] }) {
 | `--xh-tags-input-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_tags-input-control-px` | tags-input 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-tags-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | tags-input 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-tags-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | tags-input 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tags-input-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | tags-input 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tags-input-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | tags-input 的 count 部件 color 覆盖槽。 |

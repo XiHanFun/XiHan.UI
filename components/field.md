@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/field
 
-# Field 表单字段 `alpha`
+# Field 表单字段
 
 为表单控件提供标签、说明、错误信息和状态关联。
 
