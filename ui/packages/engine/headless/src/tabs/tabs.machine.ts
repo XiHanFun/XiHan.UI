@@ -132,6 +132,8 @@ export const tabsMachine = createMachine({
     gesture: null,
     tabDrag: null,
     scrollTween: null,
+    pan: null,
+    panJustEnded: false,
   }),
   initialState: () => 'idle',
   states: {
@@ -163,6 +165,11 @@ export const tabsMachine = createMachine({
         'SCROLL.NEXT': { actions: ['scrollNext'] },
         'SCROLL.BY': { actions: ['scrollBy'] },
         'SCROLL.FRAME': { actions: ['stepScroll'] },
+        // 触屏手势平移：与换位拖动共用一个指针会话，按 refs.pan 在不在分流
+        'PAN.START': { actions: ['startPan'] },
+        'PAN.MOVE': { actions: ['trackPan'] },
+        'PAN.END': { actions: ['endPan'] },
+        'PAN.CANCEL': { actions: ['cancelPan'] },
       },
     },
   },
@@ -185,19 +192,26 @@ export const tabsMachine = createMachine({
 
       /**
        * 盯住标签带放不放得下：标签带自己或里面的标签变尺寸、标签增减，都重量一次，
-       * 量完把选中标签挪进视野（首帧选中的可能就在被裁掉的那一截里）。
+       * 放不放得下变了（首帧、外层变宽变窄、标签增减）就把选中标签挪进视野（首帧选中的可能就在被裁掉的那一截里）。
        * list 由连接层在首轮渲染后交进 refs，效应挂在根级、只在 INIT 挂一次，这里现取；
        * 没有 ResizeObserver / MutationObserver 的宿主（jsdom）只靠 resize 事件与显式事件。
        */
-      trackStrip: ({ refs, scope, action }) => {
+      trackStrip: ({ refs, scope, action, context }) => {
         let disposed = false
         const win = scope.getWin()
         let observed: HTMLElement | null = null
         let resizeObserver: ResizeObserver | null = null
         let mutationObserver: MutationObserver | null = null
         const remeasure = (): void => {
-          if (!disposed)
-            action(['measureStrip', 'revealSelected', 'measureIndicator'])
+          if (disposed)
+            return
+          const before = context.get('scrollMax')
+          action(['measureStrip'])
+          // 只在放不放得下真变了（外层变宽变窄、标签增减）才把选中标签挪进视野：观察器的首次回报、
+          // 标签换个面之类的量测都不动位置，手指正拖着标签带时更不能从它手里抢回去
+          if (context.get('scrollMax') !== before && !refs.get('pan'))
+            action(['revealSelected'])
+          action(['measureIndicator'])
         }
         const observeChildren = (list: HTMLElement): void => {
           if (!resizeObserver)
@@ -259,10 +273,17 @@ export const tabsMachine = createMachine({
             // 轴在这里现读，不在效应顶部求值：会话是根级效应建的、只在 INIT 挂一次，
             // 提前求值等于把轴钉死在挂载那一刻，运行期改 orientation 就量错轴了
             const horizontal = (prop('orientation') ?? 'horizontal') === 'horizontal'
-            send({ type: 'TAB_DRAG.MOVE', point: horizontal ? first.clientX : first.clientY })
+            const point = horizontal ? first.clientX : first.clientY
+            // 同一个会话两种手势：触屏按在标签带上是平移，鼠标按在标签上是换位拖动；哪一场在跑看 refs.pan
+            send(refs.get('pan') ? { type: 'PAN.MOVE', point } : { type: 'TAB_DRAG.MOVE', point })
           },
-          onEnd: ({ reason }: { reason: string }) =>
-            send({ type: reason === 'pointercancel' ? 'TAB_DRAG.CANCEL' : 'TAB_DRAG.END' }),
+          onEnd: ({ reason }: { reason: string }) => {
+            const canceled = reason === 'pointercancel'
+            if (refs.get('pan'))
+              send({ type: canceled ? 'PAN.CANCEL' : 'PAN.END' })
+            else
+              send({ type: canceled ? 'TAB_DRAG.CANCEL' : 'TAB_DRAG.END' })
+          },
         })
         refs.set('gesture', session)
         return () => {
@@ -420,6 +441,47 @@ export const tabsMachine = createMachine({
           tween.stop()
           refs.set('scrollTween', null)
         }
+      },
+      /** 手指按在标签带上：记下起点与此刻的位移，正在走的补间停掉——手指接管了位置。 */
+      startPan: ({ refs, context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PAN.START')
+          return
+        refs.get('scrollTween')?.stop()
+        refs.set('scrollTween', null)
+        refs.set('pan', { origin: e.origin, base: context.get('scroll'), activated: false })
+      },
+      /**
+       * 手指跟着走。走够激活距离才算平移（不然点一下也成了一次零位移的平移），一旦算平移就把
+       * 指下那枚标签的按压面撤掉：手指是在拖标签带，不是在按它。位移 = 起手位移 + 手指走的逻辑距离，
+       * 横排 LTR 手指往左是朝结束端、RTL 相反，竖排手指往上是朝结束端；两端夹住，不做回弹。
+       */
+      trackPan: ({ refs, context, prop, event }) => {
+        const e = event.current()
+        const pan = refs.get('pan')
+        if (e.type !== 'PAN.MOVE' || !pan)
+          return
+        const delta = e.point - pan.origin
+        if (!pan.activated) {
+          if (!shouldActivate({ x: delta, y: 0 }))
+            return
+          refs.set('pan', { ...pan, activated: true })
+          context.set('pressedValue', null)
+        }
+        const horizontal = isHorizontal(prop('orientation'))
+        const logical = horizontal && (prop('dir') ?? 'ltr') === 'rtl' ? delta : -delta
+        context.set('scroll', clampScroll(pan.base + logical, context.get('scrollMax')))
+      },
+      /** 手指抬起：真平移过的话，紧跟着的那次 click 是抬手的余波，记下来让标签不认它。 */
+      endPan: ({ refs }) => {
+        const pan = refs.get('pan')
+        refs.set('pan', null)
+        refs.set('panJustEnded', !!pan?.activated)
+      },
+      /** 被系统收走（比如判成了页面竖向滚动）：位置留在半路上即可，不会有 click 跟来。 */
+      cancelPan: ({ refs }) => {
+        refs.set('pan', null)
+        refs.set('panJustEnded', false)
       },
       /** 选中的标签被裁在视野外时把它挪进来：点到半露的标签、受控换值、首帧量测都走这里。 */
       revealSelected: (params) => {

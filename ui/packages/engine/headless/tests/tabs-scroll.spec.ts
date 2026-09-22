@@ -103,7 +103,7 @@ describe('标签页 · 放得下', () => {
     expect(prev.hidden).toBe(true)
     expect(next.hidden).toBe(true)
     expect(prev.disabled).toBe(true)
-    expect((api.getListProps() as Dict).style).toEqual({ '--xh-_tabs-scroll': '0px' })
+    expect(((api.getListProps() as Dict).style as Dict)['--xh-_tabs-scroll']).toBe('0px')
   })
 
   it('翻页钮不占 Tab 位、对读屏隐藏，接 Action Control icon 档', () => {
@@ -149,7 +149,7 @@ describe('标签页 · 放不下', () => {
     t.service.send({ type: 'SCROLL.NEXT' })
     expect(t.scroll()).toBe(VIEWPORT * 0.8)
     expect(t.api().overflow).toEqual({ start: true, end: true })
-    expect((t.api().getListProps() as Dict).style).toEqual({ '--xh-_tabs-scroll': `-${VIEWPORT * 0.8}px` })
+    expect(((t.api().getListProps() as Dict).style as Dict)['--xh-_tabs-scroll']).toBe(`-${VIEWPORT * 0.8}px`)
 
     t.service.send({ type: 'SCROLL.NEXT' })
     expect(t.scroll()).toBe(t.scrollMax())
@@ -165,7 +165,7 @@ describe('标签页 · 放不下', () => {
     const t = mount({ dir: 'rtl' })
     t.measure()
     t.service.send({ type: 'SCROLL.NEXT' })
-    expect((t.api().getListProps() as Dict).style).toEqual({ '--xh-_tabs-scroll': `${VIEWPORT * 0.8}px` })
+    expect(((t.api().getListProps() as Dict).style as Dict)['--xh-_tabs-scroll']).toBe(`${VIEWPORT * 0.8}px`)
   })
 
   it('横向滚轮按滚了多少挪多少并拦掉页面滚动；竖滚轮留给页面，按住 Shift 的竖滚轮才算', () => {
@@ -235,7 +235,7 @@ describe('标签页 · 放不下', () => {
     t.measure()
     expect(t.scrollMax()).toBe(COLLECTION.length * SPAN - VIEWPORT)
     t.service.send({ type: 'SCROLL.NEXT' })
-    expect((t.api().getListProps() as Dict).style).toEqual({ '--xh-_tabs-scroll': `-${VIEWPORT * 0.8}px` })
+    expect(((t.api().getListProps() as Dict).style as Dict)['--xh-_tabs-scroll']).toBe(`-${VIEWPORT * 0.8}px`)
     expect((t.api().getPrevTriggerProps() as Dict)['data-orientation']).toBe('vertical')
   })
 })
@@ -250,5 +250,124 @@ describe('标签页 · 指示条按排布几何量', () => {
     expect(style['--xh-_tabs-indicator-w']).toBe('100px')
     t.service.send({ type: 'SCROLL.NEXT' })
     expect(((t.api().getIndicatorProps() as Dict).style as Record<string, string>)['--xh-_tabs-indicator-x']).toBe('100px')
+  })
+})
+
+describe('标签页 · 触屏手势平移', () => {
+  function touchDown(t: ReturnType<typeof mount>, target: HTMLElement, clientX: number, extra: Partial<PointerEvent> = {}): void {
+    const handler = (t.api().getListProps() as Dict).onPointerDown as (e: PointerEvent) => void
+    handler({ pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0, clientX, clientY: 10, target, ...extra } as unknown as PointerEvent)
+  }
+  function move(clientX: number): void {
+    document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 7, clientX, clientY: 10 }))
+  }
+  function up(clientX: number, type: 'pointerup' | 'pointercancel' = 'pointerup'): void {
+    document.dispatchEvent(new PointerEvent(type, { pointerId: 7, clientX, clientY: 10 }))
+  }
+
+  it('放不下时主轴上的触屏手势归标签带：list 写 touch-action 让出交叉轴；放得下时不写', () => {
+    const t = mount()
+    t.measure()
+    expect(((t.api().getListProps() as Dict).style as Dict).touchAction).toBe('pan-y pinch-zoom')
+    const wide = mount({}, { viewport: 600 })
+    wide.measure()
+    expect(((wide.api().getListProps() as Dict).style as Dict).touchAction).toBeUndefined()
+    const vertical = mount({ orientation: 'vertical' })
+    vertical.measure()
+    expect(((vertical.api().getListProps() as Dict).style as Dict).touchAction).toBe('pan-x pinch-zoom')
+  })
+
+  it('手指按在标签上往左拖：走够激活距离才算平移，之后标签带跟手，两端夹住', () => {
+    const t = mount()
+    t.measure()
+    const tab = t.list.querySelector<HTMLElement>('[data-value="a"]')!
+    touchDown(t, tab, 100)
+    move(97)
+    expect(t.scroll()).toBe(0)
+    move(60)
+    expect(t.scroll()).toBe(40)
+    move(-1000)
+    expect(t.scroll()).toBe(t.scrollMax())
+    move(200)
+    expect(t.scroll()).toBe(0)
+    up(200)
+  })
+
+  it('平移一开始就撤掉指下标签的按压面，抬手后紧跟的那次 click 不算点选，再按下才恢复', () => {
+    const t = mount()
+    t.measure()
+    const tab = t.list.querySelector<HTMLElement>('[data-value="a"]')!
+    t.service.send({ type: 'PRESS.START', value: 'a' })
+    expect(t.service.context.get('pressedValue')).toBe('a')
+    touchDown(t, tab, 100)
+    move(50)
+    expect(t.service.context.get('pressedValue')).toBeNull()
+    up(50)
+    const click = (t.api().getTriggerProps({ value: 'c' }) as Dict).onClick as () => void
+    click()
+    expect(t.api().value).toBe('a')
+    click()
+    expect(t.api().value).toBe('c')
+    // 新的一次按下即清掉余波标记：点一下（没走够激活距离）就是点选
+    touchDown(t, tab, 100)
+    move(101)
+    up(101)
+    ;((t.api().getTriggerProps({ value: 'b' }) as Dict).onClick as () => void)()
+    expect(t.api().value).toBe('b')
+  })
+
+  it('被系统收走（判成竖向页面滚动）：位置留在半路，不留 click 余波', () => {
+    const t = mount()
+    t.measure()
+    const tab = t.list.querySelector<HTMLElement>('[data-value="a"]')!
+    touchDown(t, tab, 100)
+    move(70)
+    up(70, 'pointercancel')
+    expect(t.scroll()).toBe(30)
+    ;((t.api().getTriggerProps({ value: 'b' }) as Dict).onClick as () => void)()
+    expect(t.api().value).toBe('b')
+  })
+
+  it('鼠标、翻页钮与拖拽把手上的按下不起平移', () => {
+    const t = mount()
+    t.measure()
+    const tab = t.list.querySelector<HTMLElement>('[data-value="a"]')!
+    touchDown(t, tab, 100, { pointerType: 'mouse' })
+    move(50)
+    expect(t.scroll()).toBe(0)
+    up(50)
+    const next = t.list.querySelector<HTMLElement>('[data-part="next-trigger"]')!
+    touchDown(t, next, 100)
+    move(50)
+    expect(t.scroll()).toBe(0)
+    up(50)
+  })
+
+  it('rtl 横排：手指往右拖是朝结束端；竖排量块轴，手指往上拖是朝结束端', () => {
+    const rtl = mount({ dir: 'rtl' })
+    rtl.measure()
+    touchDown(rtl, rtl.list.querySelector<HTMLElement>('[data-value="a"]')!, 100)
+    move(140)
+    expect(rtl.scroll()).toBe(40)
+    up(140)
+
+    const vertical = mount({ orientation: 'vertical' })
+    vertical.measure()
+    const handler = (vertical.api().getListProps() as Dict).onPointerDown as (e: PointerEvent) => void
+    handler({ pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0, clientX: 10, clientY: 100, target: vertical.list.querySelector('[data-value="a"]') } as unknown as PointerEvent)
+    document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 7, clientX: 10, clientY: 60 }))
+    expect(vertical.scroll()).toBe(40)
+    document.dispatchEvent(new PointerEvent('pointerup', { pointerId: 7, clientX: 10, clientY: 60 }))
+  })
+
+  it('手指按下即接管位置：正在走的翻页补间停掉', () => {
+    setMotionOverride(null)
+    const t = mount()
+    t.measure()
+    t.service.send({ type: 'SCROLL.NEXT' })
+    expect(t.service.refs.get('scrollTween')).not.toBeNull()
+    touchDown(t, t.list.querySelector<HTMLElement>('[data-value="a"]')!, 100)
+    expect(t.service.refs.get('scrollTween')).toBeNull()
+    up(100)
   })
 })

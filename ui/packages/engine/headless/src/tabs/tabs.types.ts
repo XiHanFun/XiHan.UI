@@ -164,6 +164,20 @@ export interface TabsSchema extends MachineSchema {
       /** 停掉帧循环 */
       stop: VoidFunction
     } | null
+    /**
+     * 触屏上手指正拖着标签带平移。activated 之前只是按住（那是一次点按），
+     * 沿主轴走够激活距离才算平移；base 是起手那一刻的位移。
+     */
+    pan: {
+      origin: number
+      base: number
+      activated: boolean
+    } | null
+    /**
+     * 刚平移过一场：手指抬起时浏览器紧跟着派一次 click，落在指下那枚标签上，
+     * 那不是要选中它。下一次按下即清掉。
+     */
+    panJustEnded: boolean
   }
   state: 'idle'
   event:
@@ -196,6 +210,13 @@ export interface TabsSchema extends MachineSchema {
     | { type: 'SCROLL.BY', delta: number }
     /** 位移补间走一帧。 */
     | { type: 'SCROLL.FRAME' }
+    /** 触屏手指按在标签带上：origin 是主轴上的起点坐标。此时只是按住，不视为平移。 */
+    | { type: 'PAN.START', origin: number }
+    /** 手指移动，point 为主轴上的当前坐标。 */
+    | { type: 'PAN.MOVE', point: number }
+    /** 手指抬起 / 被系统收走。 */
+    | { type: 'PAN.END' }
+    | { type: 'PAN.CANCEL' }
   tag: never
   guard: 'isAutomatic' | 'canPress'
   action:
@@ -214,6 +235,10 @@ export interface TabsSchema extends MachineSchema {
     | 'scrollNext'
     | 'scrollBy'
     | 'stepScroll'
+    | 'startPan'
+    | 'trackPan'
+    | 'endPan'
+    | 'cancelPan'
     | 'revealSelected'
     | 'revealFocused'
     | 'startPress'

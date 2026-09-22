@@ -203,3 +203,45 @@ describe('标签页 · 放不下时位移而不折行', () => {
     expect(Math.round(segment.next.getBoundingClientRect().right)).toBe(Math.round(segment.list.getBoundingClientRect().right - inset))
   })
 })
+
+describe('标签页 · 触屏手势平移', () => {
+  /** 合成一根触屏指针：按在标签上，之后的移动与抬起都派在文档上（会话挂在文档上跟手）。 */
+  function touch(type: 'pointerdown' | 'pointermove' | 'pointerup', target: EventTarget, clientX: number, clientY: number): void {
+    target.dispatchEvent(new PointerEvent(type, { pointerId: 9, pointerType: 'touch', isPrimary: true, button: 0, clientX, clientY, bubbles: true, cancelable: true }))
+  }
+
+  it('放不下时标签带只让出交叉轴的手势；手指按在标签上横向拖，标签整体跟手位移，抬手后不选中指下那枚', async () => {
+    const { list, trigger, next } = mountTabs()
+    await expect.poll(() => next.hidden).toBe(false)
+    expect(getComputedStyle(list).touchAction).toBe('pan-y pinch-zoom')
+
+    const tab = trigger('tab-2')
+    const rect = tab.getBoundingClientRect()
+    const x = rect.left + rect.width / 2
+    const y = rect.top + rect.height / 2
+    const before = trigger('tab-1').getBoundingClientRect().left
+    touch('pointerdown', tab, x, y)
+    touch('pointermove', document, x - 60, y)
+    await expect.poll(() => shift(list)).toBe(-60)
+    expect(trigger('tab-1').getBoundingClientRect().left).toBeCloseTo(before - 60, 0)
+    touch('pointerup', document, x - 60, y)
+    // 抬手时浏览器补派的 click 落在指下那枚标签上：那是拖标签带，不是点选
+    tab.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await new Promise(resolve => setTimeout(resolve, 20))
+    expect(trigger('tab-1').getAttribute('aria-selected')).toBe('true')
+    expect(tab.getAttribute('aria-selected')).toBe('false')
+    // 位移留在手指松开的地方
+    expect(shift(list)).toBe(-60)
+  })
+
+  it('放得下时手势全归浏览器：不写 touch-action，拖也不动', () => {
+    const { list, trigger } = mountTabs({}, 2000)
+    expect(getComputedStyle(list).touchAction).toBe('auto')
+    const tab = trigger('tab-2')
+    const rect = tab.getBoundingClientRect()
+    touch('pointerdown', tab, rect.left + 10, rect.top + 10)
+    touch('pointermove', document, rect.left - 60, rect.top + 10)
+    touch('pointerup', document, rect.left - 60, rect.top + 10)
+    expect(shift(list)).toBe(0)
+  })
+})

@@ -79,7 +79,7 @@
 - `card` 用于文档式标签。
 - 支持水平、垂直、禁用与手动激活模式。
 - 面板常驻并通过 `hidden` 切换，内部状态不会丢失。
-- 标签带放不下时不折行：标签整体沿主轴位移露出被裁掉的那截，两端的 `prev-trigger` / `next-trigger` 按页翻，横向滚轮（触控板两指横划、Shift + 滚轮）按滚了多少挪多少，选中或聚焦的标签被裁在外面时自动挪进视野；放得下时两只翻页钮收起，`api.overflow` 为 `null`。
+- 标签带放不下时不折行：标签整体沿主轴位移露出被裁掉的那截，两端的 `prev-trigger` / `next-trigger` 按页翻，横向滚轮（触控板两指横划、Shift + 滚轮）按滚了多少挪多少，触屏手指按在标签带上沿主轴拖即跟手平移（交叉轴仍让给页面滚动，抬手后紧跟的那次 click 不算点选），选中或聚焦的标签被裁在外面时自动挪进视野；放得下时两只翻页钮收起，`api.overflow` 为 `null`。
 - `reorderable` 支持指针拖动与 Alt + 方向键换位。
 
 ### 组合
@@ -105,7 +105,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tabs>` |
-| Vue 组件 | `XhTabsContent` `XhTabsIndicator` `XhTabsList` `XhTabsLiveRegion` `XhTabsRoot` `XhTabsSeparator` `XhTabsTabDragTrigger` `XhTabsTrigger` |
+| Vue 组件 | `XhTabsContent` `XhTabsIndicator` `XhTabsList` `XhTabsLiveRegion` `XhTabsNextTrigger` `XhTabsPrevTrigger` `XhTabsRoot` `XhTabsSeparator` `XhTabsTabDragTrigger` `XhTabsTrigger` |
 | 组合式函数 | `useTabs` |
 | 状态机 | `tabsMachine` |
 | 皮肤 | `@xihan-ui/styles/tabs.css` |
@@ -154,7 +154,7 @@
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE` · `PRESS.START` · `PRESS.END` · `SCROLL.PREV` · `SCROLL.NEXT` · `SCROLL.BY` · `SCROLL.FRAME`
+**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE` · `PRESS.START` · `PRESS.END` · `SCROLL.PREV` · `SCROLL.NEXT` · `SCROLL.BY` · `SCROLL.FRAME` · `PAN.START` · `PAN.MOVE` · `PAN.END` · `PAN.CANCEL`
 
 **判据**：`isAutomatic` · `canPress`
 

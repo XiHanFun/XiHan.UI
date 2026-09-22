@@ -124,6 +124,25 @@ export function connectTabs<T extends PropTypes>(
       source: el,
     })
   }
+  /**
+   * 触屏手指按在标签带上：标签带放不下时起一场平移。鼠标不认——鼠标有滚轮与两端翻页钮，
+   * 按住拖标签在鼠标上是换位拖动的起手。两端翻页钮与拖拽把手各有自己的手势，不从它们起手。
+   * 与换位拖动共用同一个指针会话：会话里已经有指针（把手起的触屏换位）就不再起手。
+   */
+  function onPanStart(event: PointerEvent): void {
+    // 上一场平移留下的 click 余波到这里为止：新按下就是新意图
+    service.refs.set('panJustEnded', false)
+    if (overflow == null || !event.isPrimary || (event.pointerType !== 'touch' && event.pointerType !== 'pen'))
+      return
+    const target = event.target as HTMLElement | null
+    if (target?.closest(`${parts['prev-trigger'].selector}, ${parts['next-trigger'].selector}, ${parts['tab-drag-trigger'].selector}`))
+      return
+    const session = service.refs.get('gesture')
+    if (!session || session.points().length > 0)
+      return
+    session.add({ pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
+    send({ type: 'PAN.START', origin: horizontal ? event.clientX : event.clientY })
+  }
   const contentId = (target: string): string => scope.partId(tabsAnatomy.name, `content:${target}`)
   const stateAttr = (target: string): 'active' | 'inactive' => (target === value ? 'active' : 'inactive')
 
@@ -228,8 +247,14 @@ export function connectTabs<T extends PropTypes>(
       'role': 'tablist',
       'aria-orientation': orientation,
       // 放不下时标签整体沿主轴位移：位移量写成私有槽，标签带里的孩子读它做 translate（皮肤 tabs.css）。
-      // translate 是物理方向：横排 LTR 往左挪、RTL 往右挪，竖排往上挪
-      'style': { '--xh-_tabs-scroll': `${horizontal && rtl ? scroll : -scroll}px` },
+      // translate 是物理方向：横排 LTR 往左挪、RTL 往右挪，竖排往上挪。
+      // 放不下时主轴上的触屏手势归标签带自己（平移），交叉轴仍让给页面滚动与捏合缩放；
+      // 放得下时不写，手势全归浏览器
+      'style': {
+        '--xh-_tabs-scroll': `${horizontal && rtl ? scroll : -scroll}px`,
+        'touchAction': overflow == null ? undefined : horizontal ? 'pan-y pinch-zoom' : 'pan-x pinch-zoom',
+      },
+      'onPointerDown': onPanStart,
       // 标签带不是滚动容器（放不下时靠位移露出，皮肤只裁主轴），滚轮在这里接成位移：
       // 横排只认横向滚轮（触控板两指横划、Shift + 滚轮），竖滚轮留给页面；挪到头就把事件放行
       'onWheel': (event: WheelEvent) => {
@@ -348,6 +373,11 @@ export function connectTabs<T extends PropTypes>(
         'onKeyUp': handlers.onKeyUp,
         'onBlur': handlers.onBlur,
         'onClick': () => {
+          // 手指刚拖完标签带、抬手时浏览器补派的这次 click 不算点选
+          if (service.refs.get('panJustEnded')) {
+            service.refs.set('panJustEnded', false)
+            return
+          }
           if (!itemDisabled(item))
             send({ type: 'TRIGGER.SELECT', value: item.value })
         },
