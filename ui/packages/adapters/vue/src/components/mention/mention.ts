@@ -68,6 +68,8 @@ export const XhMentionRoot = defineComponent({
     default?: (props: MentionRootSlotProps) => VNode[]
     /** 铺开 collection 时每条候选的文本插槽。 */
     item?: (props: MentionNodeMeta) => VNode[]
+    'item-prefix'?: (props: MentionNodeMeta) => VNode[]
+    'item-suffix'?: (props: MentionNodeMeta) => VNode[]
     /** 铺开 collection 时空态中的文案；未写时使用内建英文。 */
     empty?: () => VNode[]
   }>,
@@ -106,7 +108,7 @@ export const XhMentionRoot = defineComponent({
             close: ctx.api.value.close,
           })
         : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, slots.item, slots.empty)
+          ? renderDefaultTree(ctx.api.value.collection, slots.item, slots['item-prefix'], slots['item-suffix'], slots.empty)
           : [],
     )
   },
@@ -221,6 +223,26 @@ export const XhMentionItemText = defineComponent({
   },
 })
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏 */
+export const XhMentionItemPrefix = defineComponent({
+  name: 'XhMentionItemPrefix',
+  setup(_, { slots }) {
+    const ctx = useMentionContext()
+    const { item } = useMentionItemContext()
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhMentionItemSuffix = defineComponent({
+  name: 'XhMentionItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useMentionContext()
+    const { item } = useMentionItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
 export const XhMentionItemDescription = defineComponent({
   name: 'XhMentionItemDescription',
@@ -239,6 +261,8 @@ export const XhMentionItemDescription = defineComponent({
 function renderDefaultTree(
   collection: readonly MentionNodeMeta[],
   itemSlot?: (node: MentionNodeMeta) => VNode[],
+  prefixSlot?: (node: MentionNodeMeta) => VNode[],
+  suffixSlot?: (node: MentionNodeMeta) => VNode[],
   emptySlot?: () => VNode[],
 ): VNode[] {
   const emptyText = emptySlot?.() ?? 'No results'
@@ -247,8 +271,10 @@ function renderDefaultTree(
     h(XhMentionPositioner, null, () => [
       h(XhMentionContent, null, () => collection.map(node =>
         h(XhMentionItem, { key: node.value, value: node.value }, () => [
+          ...(prefixSlot ? [h(XhMentionItemPrefix, null, () => prefixSlot(node))] : []),
           h(XhMentionItemText, null, () => itemSlot?.(node) ?? node.label),
           ...(node.description != null ? [h(XhMentionItemDescription, null, () => node.description)] : []),
+          ...(suffixSlot ? [h(XhMentionItemSuffix, null, () => suffixSlot(node))] : []),
         ]),
       )),
       h(XhMentionEmpty, null, () => emptyText),

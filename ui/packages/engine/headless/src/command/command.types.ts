@@ -239,8 +239,10 @@ export interface CommandApi<T extends PropTypes = PropTypes> {
   getGroupProps: (props: CommandGroupProps) => T['element']
   getGroupLabelProps: (props: CommandGroupProps) => T['element']
   getItemProps: (props: CommandItemProps) => T['element']
+  getItemPrefixProps: (props: CommandItemProps) => T['element']
   getItemTextProps: (props: CommandItemProps) => T['element']
   getItemDescriptionProps: (props: CommandItemProps) => T['element']
+  getItemSuffixProps: (props: CommandItemProps) => T['element']
   /**
    * 空态占位：放在 content 中、list 的兄弟。
    * 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。

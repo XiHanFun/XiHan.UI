@@ -82,7 +82,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 候选文本（选中后回填输入框的取字来源）
+ * @csspart item-prefix - 条目行首的作者内容（图标、色块、头像），对读屏隐藏
  * @csspart item-description - 条目的第 2 行副文本
+ * @csspart item-suffix - 条目行尾的作者内容（计数、徽标）
  * @csspart item-indicator - 候选选中标记（aria-hidden）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
@@ -353,6 +355,10 @@ export class XhComboboxElement extends XhPortalHostElement {
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+      for (const prefix of this.partsIn(el, 'item-prefix'))
+        this.spreader.spread(prefix, api.getItemPrefixProps(item) as Record<string, unknown>)
+      for (const suffix of this.partsIn(el, 'item-suffix'))
+        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
       for (const indicator of this.partsIn(el, 'item-indicator'))
         this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
     }

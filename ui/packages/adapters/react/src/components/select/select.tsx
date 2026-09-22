@@ -74,6 +74,10 @@ export interface XhSelectRootProps extends RootElementProps {
   onOpenChange?: SelectProps['onOpenChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: SelectNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
   children?: SlotChildren<SelectRootSlotProps>
 }
 
@@ -105,6 +109,8 @@ export function XhSelectRoot({
   onValueChange,
   onOpenChange,
   renderItem,
+  renderItemPrefix,
+  renderItemSuffix,
   children,
   ...rest
 }: XhSelectRootProps): ReactNode {
@@ -162,7 +168,7 @@ export function XhSelectRoot({
         deselect: api.deselect,
       })
     : collection
-      ? <DefaultTree collection={api.collection} label={label} clearable={clearable} renderItem={renderItem} />
+      ? <DefaultTree collection={api.collection} label={label} clearable={clearable} renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix} />
       : null
 
   return (
@@ -469,6 +475,22 @@ export function XhSelectItemText({ children, ...rest }: XhSelectItemTextProps): 
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
+export interface XhSelectItemPrefixProps extends ComponentPropsWithRef<'span'> {}
+export function XhSelectItemPrefix({ children, ...rest }: XhSelectItemPrefixProps): ReactNode {
+  const ctx = useSelectContext()
+  const item = useSelectItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhSelectItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhSelectItemSuffix({ children, ...rest }: XhSelectItemSuffixProps): ReactNode {
+  const ctx = useSelectContext()
+  const item = useSelectItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
 export interface XhSelectItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectItemDescription({ children, ...rest }: XhSelectItemDescriptionProps): ReactNode {
@@ -493,6 +515,8 @@ function DefaultTree(props: {
   label?: ReactNode
   clearable?: boolean
   renderItem?: (node: SelectNodeMeta) => ReactNode
+  renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
+  renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
 }): ReactNode {
   const trigger = (
     <XhSelectTrigger>
@@ -514,8 +538,10 @@ function DefaultTree(props: {
           <XhSelectList>
             {props.collection.map(node => (
               <XhSelectItem key={node.value} value={node.value}>
+                {props.renderItemPrefix ? <XhSelectItemPrefix>{props.renderItemPrefix(node)}</XhSelectItemPrefix> : null}
                 <XhSelectItemText>{props.renderItem?.(node) ?? node.label}</XhSelectItemText>
                 {node.description != null ? <XhSelectItemDescription>{node.description}</XhSelectItemDescription> : null}
+                {props.renderItemSuffix ? <XhSelectItemSuffix>{props.renderItemSuffix(node)}</XhSelectItemSuffix> : null}
                 <XhSelectItemIndicator />
               </XhSelectItem>
             ))}

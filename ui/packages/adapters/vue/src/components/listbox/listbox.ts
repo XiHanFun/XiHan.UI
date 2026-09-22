@@ -60,6 +60,8 @@ export const XhListboxRoot = defineComponent({
     default?: (props: ListboxRootSlotProps) => VNode[]
     label?: () => VNode[]
     item?: (node: ListboxNodeMeta) => VNode[]
+    'item-prefix'?: (node: ListboxNodeMeta) => VNode[]
+    'item-suffix'?: (node: ListboxNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: ListboxProps['onValueChange'] = (details) => {
@@ -83,7 +85,7 @@ export const XhListboxRoot = defineComponent({
           ? renderDefaultTree(
               ctx.api.value.collection,
               slots.label?.() ?? (props.label != null ? [props.label] : null),
-              slots.item,
+              slots.item, slots['item-prefix'], slots['item-suffix'],
             )
           : []),
     ])
@@ -223,6 +225,26 @@ export const XhListboxItemText = defineComponent({
   },
 })
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏 */
+export const XhListboxItemPrefix = defineComponent({
+  name: 'XhListboxItemPrefix',
+  setup(_, { slots }) {
+    const ctx = useListboxContext()
+    const { item } = useListboxItemContext()
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhListboxItemSuffix = defineComponent({
+  name: 'XhListboxItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useListboxContext()
+    const { item } = useListboxItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
 export const XhListboxItemDescription = defineComponent({
   name: 'XhListboxItemDescription',
@@ -250,13 +272,17 @@ function renderDefaultTree(
   collection: readonly ListboxNodeMeta[],
   label: (VNode | string)[] | null,
   itemSlot?: (node: ListboxNodeMeta) => VNode[],
+  prefixSlot?: (node: ListboxNodeMeta) => VNode[],
+  suffixSlot?: (node: ListboxNodeMeta) => VNode[],
 ): VNode[] {
   return [
     ...(label ? [h(XhListboxLabel, null, () => label)] : []),
     h(XhListboxContent, null, () => collection.map(node =>
       h(XhListboxItem, { key: node.value, value: node.value }, () => [
+        ...(prefixSlot ? [h(XhListboxItemPrefix, null, () => prefixSlot(node))] : []),
         h(XhListboxItemText, null, () => itemSlot?.(node) ?? node.label),
         ...(node.description != null ? [h(XhListboxItemDescription, null, () => node.description)] : []),
+        ...(suffixSlot ? [h(XhListboxItemSuffix, null, () => suffixSlot(node))] : []),
         h(XhListboxItemIndicator),
       ]),
     )),

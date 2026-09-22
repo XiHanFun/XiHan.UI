@@ -270,6 +270,8 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
    */
   getLoadingProps: () => T['element']
   getItemProps: (props: MentionItemProps) => T['element']
+  getItemPrefixProps: (props: MentionItemProps) => T['element']
   getItemTextProps: (props: MentionItemProps) => T['element']
   getItemDescriptionProps: (props: MentionItemProps) => T['element']
+  getItemSuffixProps: (props: MentionItemProps) => T['element']
 }

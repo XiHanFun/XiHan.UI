@@ -70,6 +70,8 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     default?: (props: SelectRootSlotProps) => VNode[]
     label?: () => VNode[]
     item?: (node: SelectNodeMeta) => VNode[]
+    'item-prefix'?: (node: SelectNodeMeta) => VNode[]
+    'item-suffix'?: (node: SelectNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: SelectProps['onValueChange'] = (details) => {
@@ -113,7 +115,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
               ctx.api.value.collection,
               slots.label?.() ?? (props.label != null ? [props.label] : null),
               props.clearable,
-              slots.item,
+              slots.item, slots['item-prefix'], slots['item-suffix'],
             )
           : []),
     ])
@@ -400,6 +402,26 @@ export const XhSelectItemText = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏 */
+export const XhSelectItemPrefix = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectItemPrefix',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    const { item } = useSelectItemContext()
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhSelectItemSuffix = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    const { item } = useSelectItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
 export const XhSelectItemDescription = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemDescription',
@@ -428,6 +450,8 @@ function renderDefaultTree(
   label: (VNode | string)[] | null,
   clearable: boolean,
   itemSlot?: (node: SelectNodeMeta) => VNode[],
+  prefixSlot?: (node: SelectNodeMeta) => VNode[],
+  suffixSlot?: (node: SelectNodeMeta) => VNode[],
 ): VNode[] {
   const trigger = h(XhSelectTrigger, null, () => [h(XhSelectValueText), h(XhSelectIndicator)])
   return [
@@ -439,8 +463,10 @@ function renderDefaultTree(
     h(XhSelectPositioner, null, () => [
       h(XhSelectContent, null, () => h(XhSelectList, null, () => collection.map(node =>
         h(XhSelectItem, { key: node.value, value: node.value }, () => [
+          ...(prefixSlot ? [h(XhSelectItemPrefix, null, () => prefixSlot(node))] : []),
           h(XhSelectItemText, null, () => itemSlot?.(node) ?? node.label),
           ...(node.description != null ? [h(XhSelectItemDescription, null, () => node.description)] : []),
+          ...(suffixSlot ? [h(XhSelectItemSuffix, null, () => suffixSlot(node))] : []),
           h(XhSelectItemIndicator),
         ]),
       ))),

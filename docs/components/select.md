@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-indicator` · `empty` · `loading` · `hidden-select`
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `hidden-select`
 
 ## 示例
 
@@ -165,6 +165,7 @@ outline、subtle 和 ghost
 - 支持分组、加载、空状态、底部操作区和滚动加载。
 - 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 控件使用 Field Chrome，浮层使用 M2 磨砂表面。
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
@@ -192,7 +193,7 @@ outline、subtle 和 ghost
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemDescription` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemDescription` `XhSelectItemIndicator` `XhSelectItemPrefix` `XhSelectItemSuffix` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -244,6 +245,8 @@ outline、subtle 和 ghost
 | `XhSelectRoot` | `default` | `SelectRootSlotProps` |  |
 | `XhSelectRoot` | `label` | — |  |
 | `XhSelectRoot` | `item` | `SelectNodeMeta` |  |
+| `XhSelectRoot` | `item-prefix` | `SelectNodeMeta` |  |
+| `XhSelectRoot` | `item-suffix` | `SelectNodeMeta` |  |
 
 ### 状态
 
@@ -260,8 +263,10 @@ outline、subtle 和 ghost
 | `list` | 'open' \| 'closed' |
 | `footer` | 'open' \| 'closed' |
 | `item` | 'checked' \| 'unchecked' |
+| `item-prefix` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
 | `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
@@ -318,8 +323,10 @@ outline、subtle 和 ghost
 | `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: SelectItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: SelectItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此获取值。 |
 
@@ -374,6 +381,7 @@ outline、subtle 和 ghost
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `hidden-select` | `aria-hidden` | 'true' |
 
@@ -442,12 +450,18 @@ outline、subtle 和 ghost
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-state` | 'checked' \| 'unchecked' |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |

@@ -314,8 +314,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   /** 分组标题：不是选项、不进入导航，只作为本组的可及名。 */
   getGroupLabelProps: (props: SelectGroupProps) => T['element']
   getItemProps: (props: SelectItemProps) => T['element']
+  getItemPrefixProps: (props: SelectItemProps) => T['element']
   getItemTextProps: (props: SelectItemProps) => T['element']
   getItemDescriptionProps: (props: SelectItemProps) => T['element']
+  getItemSuffixProps: (props: SelectItemProps) => T['element']
   getItemIndicatorProps: (props: SelectItemProps) => T['element']
   /**
    * 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。

@@ -86,6 +86,8 @@ export const XhComboboxRoot = defineComponent({
     label?: () => VNode[]
     empty?: () => VNode[]
     item?: (node: ComboboxNodeMeta) => VNode[]
+    'item-prefix'?: (node: ComboboxNodeMeta) => VNode[]
+    'item-suffix'?: (node: ComboboxNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: ComboboxProps['onValueChange'] = (details) => {
@@ -134,6 +136,8 @@ export const XhComboboxRoot = defineComponent({
               slots.empty?.() ?? (props.empty != null ? [props.empty] : null),
               slots.item,
               props.clearable,
+              slots['item-prefix'],
+              slots['item-suffix'],
             )
           : [],
     )
@@ -286,6 +290,26 @@ export const XhComboboxItemText = defineComponent({
   },
 })
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏 */
+export const XhComboboxItemPrefix = defineComponent({
+  name: 'XhComboboxItemPrefix',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    const { item } = useComboboxItemContext()
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhComboboxItemSuffix = defineComponent({
+  name: 'XhComboboxItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    const { item } = useComboboxItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
 export const XhComboboxItemDescription = defineComponent({
   name: 'XhComboboxItemDescription',
@@ -348,6 +372,8 @@ function renderDefaultTree(
   empty: (VNode | string)[] | null,
   itemSlot: ((node: ComboboxNodeMeta) => VNode[]) | undefined,
   clearable: boolean,
+  prefixSlot?: (node: ComboboxNodeMeta) => VNode[],
+  suffixSlot?: (node: ComboboxNodeMeta) => VNode[],
 ): VNode[] {
   return [
     ...(label ? [h(XhComboboxLabel, null, () => label)] : []),
@@ -359,8 +385,10 @@ function renderDefaultTree(
     h(XhComboboxPositioner, null, () => [
       h(XhComboboxContent, null, () => collection.map(node =>
         h(XhComboboxItem, { key: node.value, value: node.value }, () => [
+          ...(prefixSlot ? [h(XhComboboxItemPrefix, null, () => prefixSlot(node))] : []),
           h(XhComboboxItemText, null, () => itemSlot?.(node) ?? node.label),
           ...(node.description != null ? [h(XhComboboxItemDescription, null, () => node.description)] : []),
+          ...(suffixSlot ? [h(XhComboboxItemSuffix, null, () => suffixSlot(node))] : []),
           h(XhComboboxItemIndicator),
         ]),
       )),

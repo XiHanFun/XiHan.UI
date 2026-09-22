@@ -313,8 +313,10 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getGroupProps: (props: ComboboxGroupProps) => T['element']
   getGroupLabelProps: (props: ComboboxGroupProps) => T['element']
   getItemProps: (props: ComboboxItemProps) => T['element']
+  getItemPrefixProps: (props: ComboboxItemProps) => T['element']
   getItemTextProps: (props: ComboboxItemProps) => T['element']
   getItemDescriptionProps: (props: ComboboxItemProps) => T['element']
+  getItemSuffixProps: (props: ComboboxItemProps) => T['element']
   getItemIndicatorProps: (props: ComboboxItemProps) => T['element']
   getEmptyProps: () => T['element']
   /**

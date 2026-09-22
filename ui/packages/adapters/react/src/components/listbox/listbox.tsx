@@ -58,6 +58,10 @@ export interface XhListboxRootProps extends RootElementProps {
   onValueChange?: ListboxProps['onValueChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: ListboxNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: ListboxNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: ListboxNodeMeta) => ReactNode
   children?: SlotChildren<ListboxRootSlotProps>
 }
 
@@ -80,6 +84,8 @@ export function XhListboxRoot({
   children,
   label,
   renderItem,
+  renderItemPrefix,
+  renderItemSuffix,
   ...rest
 }: XhListboxRootProps): ReactNode {
   const ctx = useListbox(useFormControlProps({
@@ -112,7 +118,7 @@ export function XhListboxRoot({
         toggle: api.toggle,
       })
     : collection
-      ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
+      ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix} />
       : null
 
   return (
@@ -260,6 +266,22 @@ export function XhListboxItemText({ children, ...rest }: XhListboxItemTextProps)
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
+export interface XhListboxItemPrefixProps extends ComponentPropsWithRef<'span'> {}
+export function XhListboxItemPrefix({ children, ...rest }: XhListboxItemPrefixProps): ReactNode {
+  const ctx = useListboxContext()
+  const item = useListboxItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhListboxItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhListboxItemSuffix({ children, ...rest }: XhListboxItemSuffixProps): ReactNode {
+  const ctx = useListboxContext()
+  const item = useListboxItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
 export interface XhListboxItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
 export function XhListboxItemDescription({ children, ...rest }: XhListboxItemDescriptionProps): ReactNode {
@@ -283,6 +305,8 @@ function DefaultTree(props: {
   collection: readonly ListboxNodeMeta[]
   label?: ReactNode
   renderItem?: (node: ListboxNodeMeta) => ReactNode
+  renderItemPrefix?: (node: ListboxNodeMeta) => ReactNode
+  renderItemSuffix?: (node: ListboxNodeMeta) => ReactNode
 }): ReactNode {
   return (
     <>
@@ -290,8 +314,10 @@ function DefaultTree(props: {
       <XhListboxContent>
         {props.collection.map(node => (
           <XhListboxItem key={node.value} value={node.value}>
+            {props.renderItemPrefix ? <XhListboxItemPrefix>{props.renderItemPrefix(node)}</XhListboxItemPrefix> : null}
             <XhListboxItemText>{props.renderItem?.(node) ?? node.label}</XhListboxItemText>
             {node.description != null ? <XhListboxItemDescription>{node.description}</XhListboxItemDescription> : null}
+            {props.renderItemSuffix ? <XhListboxItemSuffix>{props.renderItemSuffix(node)}</XhListboxItemSuffix> : null}
             <XhListboxItemIndicator />
           </XhListboxItem>
         ))}

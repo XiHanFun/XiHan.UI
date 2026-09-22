@@ -79,7 +79,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 候选文本，也是插回正文的取字来源
+ * @csspart item-prefix - 条目行首的作者内容（图标、色块、头像），对读屏隐藏
  * @csspart item-description - 条目的第 2 行副文本
+ * @csspart item-suffix - 条目行尾的作者内容（计数、徽标）
  */
 export class XhMentionElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -307,6 +309,10 @@ export class XhMentionElement extends XhPortalHostElement {
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+      for (const prefix of this.partsIn(el, 'item-prefix'))
+        this.spreader.spread(prefix, api.getItemPrefixProps(item) as Record<string, unknown>)
+      for (const suffix of this.partsIn(el, 'item-suffix'))
+        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
     }
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）

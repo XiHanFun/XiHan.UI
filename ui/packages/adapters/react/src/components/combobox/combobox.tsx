@@ -79,6 +79,10 @@ export interface XhComboboxRootProps extends RootElementProps {
   onOpenChange?: ComboboxProps['onOpenChange']
   /** 每个候选的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: ComboboxNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: ComboboxNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: ComboboxNodeMeta) => ReactNode
   children?: SlotChildren<ComboboxRootSlotProps>
 }
 
@@ -116,6 +120,8 @@ export function XhComboboxRoot({
   onInputValueChange,
   onOpenChange,
   renderItem,
+  renderItemPrefix,
+  renderItemSuffix,
   children,
   ...rest
 }: XhComboboxRootProps): ReactNode {
@@ -177,7 +183,7 @@ export function XhComboboxRoot({
             label={label}
             empty={empty}
             clearable={clearable}
-            renderItem={renderItem}
+            renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix}
           />
         )
       : null
@@ -361,6 +367,22 @@ export function XhComboboxItemText({ children, ...rest }: XhComboboxItemTextProp
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
+export interface XhComboboxItemPrefixProps extends ComponentPropsWithRef<'span'> {}
+export function XhComboboxItemPrefix({ children, ...rest }: XhComboboxItemPrefixProps): ReactNode {
+  const ctx = useComboboxContext()
+  const item = useComboboxItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhComboboxItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhComboboxItemSuffix({ children, ...rest }: XhComboboxItemSuffixProps): ReactNode {
+  const ctx = useComboboxContext()
+  const item = useComboboxItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
 export interface XhComboboxItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
 export function XhComboboxItemDescription({ children, ...rest }: XhComboboxItemDescriptionProps): ReactNode {
@@ -421,6 +443,8 @@ function DefaultTree(props: {
   empty?: ReactNode
   clearable?: boolean
   renderItem?: (node: ComboboxNodeMeta) => ReactNode
+  renderItemPrefix?: (node: ComboboxNodeMeta) => ReactNode
+  renderItemSuffix?: (node: ComboboxNodeMeta) => ReactNode
 }): ReactNode {
   return (
     <>
@@ -434,8 +458,10 @@ function DefaultTree(props: {
         <XhComboboxContent>
           {props.collection.map(node => (
             <XhComboboxItem key={node.value} value={node.value}>
+              {props.renderItemPrefix ? <XhComboboxItemPrefix>{props.renderItemPrefix(node)}</XhComboboxItemPrefix> : null}
               <XhComboboxItemText>{props.renderItem?.(node) ?? node.label}</XhComboboxItemText>
               {node.description != null ? <XhComboboxItemDescription>{node.description}</XhComboboxItemDescription> : null}
+              {props.renderItemSuffix ? <XhComboboxItemSuffix>{props.renderItemSuffix(node)}</XhComboboxItemSuffix> : null}
               <XhComboboxItemIndicator />
             </XhComboboxItem>
           ))}
