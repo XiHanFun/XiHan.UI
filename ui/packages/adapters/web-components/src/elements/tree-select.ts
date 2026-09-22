@@ -99,6 +99,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart tree - role=tree 容器，没有锚点时的 Tab 兜底位与落焦点
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
+ * @csspart item-description - 条目的第 2 行副文本
  * @csspart item-indicator - 叶子与分支共用的选中或半选标记（aria-hidden）
  * @csspart branch - role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content
  * @csspart branch-control - 分支可点击行（点击只改变选中值，展开归箭头与左右方向键）
@@ -504,6 +505,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     }
     putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
     putAll('item-text', ITEM_SELECTOR, node => api.getItemTextProps(node))
+    putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
+    putAll('item-description', ITEM_SELECTOR, node => api.getItemDescriptionProps(node))
     putAll('item-indicator', `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`, node => api.getItemIndicatorProps(node))
     putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))
     putAll('branch-control', BRANCH_SELECTOR, node => api.getBranchControlProps(node))

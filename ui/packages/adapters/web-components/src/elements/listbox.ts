@@ -57,6 +57,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart content - role=listbox 容器，键盘在此收口，也是 roving tabindex 的兜底位
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索的取字来源）
+ * @csspart item-description - 条目的第 2 行副文本
  * @csspart item-indicator - 条目选中标记（aria-hidden）
  * @csspart empty - 空态占位，须放在 root 中作为 content 的兄弟；提供 collection 时由元素按条数收放，条目手写时由作者负责
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
@@ -249,6 +250,8 @@ export class XhListboxElement extends XhElement {
       // 条目内的文本与选中标记跟着同一份声明走，样式层各处状态一致
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+      for (const description of this.partsIn(el, 'item-description'))
+        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
       for (const indicator of this.partsIn(el, 'item-indicator'))
         this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
     }

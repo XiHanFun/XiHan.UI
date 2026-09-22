@@ -221,6 +221,16 @@ export const XhMentionItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhMentionItemDescription = defineComponent({
+  name: 'XhMentionItemDescription',
+  setup(_, { slots }) {
+    const ctx = useMentionContext()
+    const { item } = useMentionItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /**
  * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
@@ -238,6 +248,7 @@ function renderDefaultTree(
       h(XhMentionContent, null, () => collection.map(node =>
         h(XhMentionItem, { key: node.value, value: node.value }, () => [
           h(XhMentionItemText, null, () => itemSlot?.(node) ?? node.label),
+          ...(node.description != null ? [h(XhMentionItemDescription, null, () => node.description)] : []),
         ]),
       )),
       h(XhMentionEmpty, null, () => emptyText),

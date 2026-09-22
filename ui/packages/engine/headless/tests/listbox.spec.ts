@@ -814,3 +814,16 @@ describe('逐条语气', () => {
     expect(props['data-tone']).toBeUndefined()
   })
 })
+
+describe('副文本', () => {
+  it('取值器落家族的 description 槽', () => {
+    const props = mount().api().getItemDescriptionProps({ value: 'apple' }) as Record<string, unknown>
+    expect(props['data-xh-collection-slot']).toBe('description')
+    expect(props['data-part']).toBe('item-description')
+  })
+
+  it('数据里写了的进元信息，没写的为 null', () => {
+    const h = mount({ collection: [{ value: 'apple', description: '青苹果' }, { value: 'durian' }] })
+    expect(h.api().collection.map(node => node.description)).toEqual(['青苹果', null])
+  })
+})

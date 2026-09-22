@@ -28,6 +28,12 @@ export interface CascaderNode {
    * 展开路径的面、选中的对号与禁用都压过它。搜索结果里取整条路径末段的语气。
    */
   tone?: Tone
+  /**
+   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
+   * 一句话能说清的写进 label。
+   */
+  description?: string
   /** 子节点。非空数组才视为分支（右侧可以再打开一列）。 */
   children?: CascaderNode[]
 }
@@ -62,6 +68,8 @@ export interface CascaderNodeMeta {
   path: readonly string[]
   /** 该条自己写的语气；未提供时为 null，不从父节点继承。 */
   tone: Tone | null
+  /** 副文本；未提供时为 null。 */
+  description: string | null
 }
 
 /** 当前并排展开的一列。 */
@@ -407,5 +415,6 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   getColumnProps: (props: CascaderColumnProps) => T['element']
   getItemProps: (props: CascaderItemProps) => T['element']
   getItemTextProps: (props: CascaderItemProps) => T['element']
+  getItemDescriptionProps: (props: CascaderItemProps) => T['element']
   getItemIndicatorProps: (props: CascaderItemProps) => T['element']
 }

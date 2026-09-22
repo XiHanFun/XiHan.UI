@@ -20,7 +20,7 @@ collection 是层级元信息的唯一事实源，标记只负责外观；缩进
 
 加粗的是必需部件。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
+`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `item-description` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
 
 ## 示例
 
@@ -118,6 +118,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
+- 节点可写副文本，第 2 行放一句解释，不进连打检索串。
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定该层子节点的排列方向，优先于 `leafOrientation`；标 `vertical` 可以把树级的 `horizontal` 改回竖排。根层不受影响，始终竖排。
@@ -144,7 +145,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree>` |
-| Vue 组件 | `XhTreeBranch` `XhTreeBranchCheckbox` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemCheckbox` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
+| Vue 组件 | `XhTreeBranch` `XhTreeBranchCheckbox` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemCheckbox` `XhTreeItemDescription` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
 | 皮肤 | `@xihan-ui/styles/tree.css` |
@@ -248,6 +249,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `getLiveRegionProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeNodeProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemCheckboxProps` | `(props: TreeNodeProps) => T['element']` | 勾选把手：把勾选该项与点击该行分为两个可点击区域，未提供时没有独立把手。 |
 | `getItemIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: TreeNodeProps) => T['element']` |  |
@@ -365,6 +367,11 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `item-text` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item-text` | `data-selected` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-indeterminate` | ''（条件成立时才出现） |
+| `item-description` | `data-selected` | ''（条件成立时才出现） |
+| `item-description` | `data-xh-collection-slot` | 'description' |
 | `branch` | `data-disabled` | ''（条件成立时才出现） |
 | `branch` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch` | `data-indeterminate` | ''（条件成立时才出现） |

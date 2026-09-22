@@ -718,8 +718,8 @@ describe('公开 API 与无障碍属性', () => {
       ],
     })
     expect(m.api().collection).toEqual([
-      { value: 'lilei', label: '李雷', disabled: false, tone: null },
-      { value: 'ghost', label: '幽灵', disabled: true, tone: null },
+      { value: 'lilei', label: '李雷', disabled: false, tone: null, description: null },
+      { value: 'ghost', label: '幽灵', disabled: true, tone: null, description: null },
     ])
     const props = m.api().getItemProps({ value: 'ghost' }) as Record<string, unknown>
     expect(props['aria-disabled']).toBe('true')
@@ -1102,5 +1102,18 @@ describe('逐条语气', () => {
     const h = mount({ collection: [{ value: 'ann' }, { value: 'bob', tone: 'warning' }] })
     expect((h.api().getItemProps({ value: 'bob' }) as Record<string, unknown>)['data-tone']).toBe('warning')
     expect((h.api().getItemProps({ value: 'ann' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
+  })
+})
+
+describe('副文本', () => {
+  it('取值器落家族的 description 槽', () => {
+    const props = mount().api().getItemDescriptionProps({ value: 'lilei' }) as Record<string, unknown>
+    expect(props['data-xh-collection-slot']).toBe('description')
+    expect(props['data-part']).toBe('item-description')
+  })
+
+  it('数据里写了的进元信息，没写的为 null', () => {
+    const h = mount({ collection: [{ value: 'lilei', description: '产品' }, { value: 'poly' }] })
+    expect(h.api().collection.map(node => node.description)).toEqual(['产品', null])
   })
 })

@@ -62,6 +62,12 @@ export interface SelectNode {
    * 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个选择器的 tone 不下发给条目。
    */
   tone?: Tone
+  /**
+   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
+   * 一句话能说清的写进 label。
+   */
+  description?: string
 }
 
 /** 单个条目的元信息，由 collection 推导，不含选中态与高亮态。 */
@@ -95,6 +101,8 @@ export interface SelectNodeMeta {
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。 */
   tone: Tone | null
+  /** 副文本；未提供时为 null。 */
+  description: string | null
 }
 
 /**
@@ -307,6 +315,7 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getGroupLabelProps: (props: SelectGroupProps) => T['element']
   getItemProps: (props: SelectItemProps) => T['element']
   getItemTextProps: (props: SelectItemProps) => T['element']
+  getItemDescriptionProps: (props: SelectItemProps) => T['element']
   getItemIndicatorProps: (props: SelectItemProps) => T['element']
   /**
    * 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。

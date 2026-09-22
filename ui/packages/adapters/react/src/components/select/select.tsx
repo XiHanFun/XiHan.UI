@@ -469,6 +469,14 @@ export function XhSelectItemText({ children, ...rest }: XhSelectItemTextProps): 
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhSelectItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhSelectItemDescription({ children, ...rest }: XhSelectItemDescriptionProps): ReactNode {
+  const ctx = useSelectContext()
+  const item = useSelectItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhSelectItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectItemIndicator({ children, ...rest }: XhSelectItemIndicatorProps): ReactNode {
   const ctx = useSelectContext()
@@ -507,6 +515,7 @@ function DefaultTree(props: {
             {props.collection.map(node => (
               <XhSelectItem key={node.value} value={node.value}>
                 <XhSelectItemText>{props.renderItem?.(node) ?? node.label}</XhSelectItemText>
+                {node.description != null ? <XhSelectItemDescription>{node.description}</XhSelectItemDescription> : null}
                 <XhSelectItemIndicator />
               </XhSelectItem>
             ))}

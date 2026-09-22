@@ -19,6 +19,7 @@ export const comboboxAnatomy = createAnatomy('combobox', [
   'content',
   'item',
   'item-text',
+  'item-description',
   'item-indicator',
   'group',
   'group-label',

@@ -50,6 +50,12 @@ export interface CommandNode {
    * 红字不是唯一通道，破坏性命令仍要配图标。
    */
   tone?: Tone
+  /**
+   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
+   * 一句话能说清的写进 label。
+   */
+  description?: string
 }
 
 /** 单条命令的元信息，由清单推导，不含高亮态。 */
@@ -64,6 +70,8 @@ export interface CommandNodeMeta {
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。 */
   tone: Tone | null
+  /** 副文本；未提供时为 null。 */
+  description: string | null
 }
 
 /** 分组声明：只提供组名与显示文本，成员由条目自行归属。 */
@@ -232,6 +240,7 @@ export interface CommandApi<T extends PropTypes = PropTypes> {
   getGroupLabelProps: (props: CommandGroupProps) => T['element']
   getItemProps: (props: CommandItemProps) => T['element']
   getItemTextProps: (props: CommandItemProps) => T['element']
+  getItemDescriptionProps: (props: CommandItemProps) => T['element']
   /**
    * 空态占位：放在 content 中、list 的兄弟。
    * 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。

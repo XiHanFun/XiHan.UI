@@ -83,6 +83,12 @@ export interface ComboboxNode {
    * 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个组合框的 tone 不下发给候选。
    */
   tone?: Tone
+  /**
+   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
+   * 一句话能说清的写进 label。
+   */
+  description?: string
 }
 
 /** 单个候选的元信息，由 collection 推导，不含选中态与高亮态。 */
@@ -93,6 +99,8 @@ export interface ComboboxNodeMeta {
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。 */
   tone: Tone | null
+  /** 副文本；未提供时为 null。 */
+  description: string | null
 }
 
 /**
@@ -306,6 +314,7 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getGroupLabelProps: (props: ComboboxGroupProps) => T['element']
   getItemProps: (props: ComboboxItemProps) => T['element']
   getItemTextProps: (props: ComboboxItemProps) => T['element']
+  getItemDescriptionProps: (props: ComboboxItemProps) => T['element']
   getItemIndicatorProps: (props: ComboboxItemProps) => T['element']
   getEmptyProps: () => T['element']
   /**

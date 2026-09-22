@@ -5885,6 +5885,10 @@
               "name": "item-text"
             },
             {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
+            },
+            {
               "description": "条目选中标记（aria-hidden）",
               "name": "item-indicator"
             },
@@ -12002,6 +12006,10 @@
               "name": "item-text"
             },
             {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
+            },
+            {
               "description": "候选选中标记（aria-hidden）",
               "name": "item-indicator"
             },
@@ -13026,6 +13034,10 @@
             {
               "description": "命令文本（选中时回传给宿主的取字来源）",
               "name": "item-text"
+            },
+            {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
             },
             {
               "description": "没有剩余条目时的提示；须放在 content 中作为 list 的兄弟（列表内只允许 option 与 group）",
@@ -29635,6 +29647,10 @@
               "name": "item-text"
             },
             {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
+            },
+            {
               "description": "条目选中标记（aria-hidden）",
               "name": "item-indicator"
             },
@@ -31787,6 +31803,10 @@
             {
               "description": "候选文本，也是插回正文的取字来源",
               "name": "item-text"
+            },
+            {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
             }
           ],
           "members": [
@@ -44604,6 +44624,10 @@
             {
               "description": "条目文本（连打检索与 value-text 的取字来源）",
               "name": "item-text"
+            },
+            {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
             },
             {
               "description": "条目选中标记（aria-hidden）",
@@ -60506,6 +60530,10 @@
               "name": "item-text"
             },
             {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
+            },
+            {
               "description": "条目勾选标记（aria-hidden）；oneWay 下右侧的一份带 hidden",
               "name": "item-checkbox"
             },
@@ -61269,6 +61297,10 @@
             {
               "description": "叶子文本",
               "name": "item-text"
+            },
+            {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
             },
             {
               "description": "叶子与分支共用的选中或半选标记（aria-hidden）",
@@ -62514,6 +62546,10 @@
             {
               "description": "叶子文本",
               "name": "item-text"
+            },
+            {
+              "description": "条目的第 2 行副文本",
+              "name": "item-description"
             },
             {
               "description": "叶子的勾选把手，点击只勾选、不触发点击行；可选",

@@ -464,6 +464,16 @@ export const XhCascaderItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhCascaderItemDescription = defineComponent({
+  name: 'XhCascaderItemDescription',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    const { item } = useCascaderItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCascaderItemIndicator = defineComponent({
   name: 'XhCascaderItemIndicator',
   setup(_, { slots }) {

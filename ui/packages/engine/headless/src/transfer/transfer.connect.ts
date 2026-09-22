@@ -518,6 +518,13 @@ export function connectTransfer<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemState(item),
+      'data-xh-collection-slot': 'description',
+    }),
+
     // 视觉方框，读屏不需要它——勾选态由条目自己的 aria-selected 承担。
     // 它是前导勾选部件、自己就是选中标记（§7.3 页内持久集合），不占家族的 indicator 槽。
     // oneWay 下的 target 侧勾不了任何东西，这一格也就不该在场

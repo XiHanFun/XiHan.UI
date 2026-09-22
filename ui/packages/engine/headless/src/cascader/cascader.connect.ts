@@ -853,6 +853,13 @@ export function connectCascader<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemState(item.value),
+      'data-xh-collection-slot': 'description',
+    }),
+
     // 对号落在家族网格的 indicator 列，显隐由家族按 item 的 aria-selected / data-state=checked 给（半选由皮肤给）
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,

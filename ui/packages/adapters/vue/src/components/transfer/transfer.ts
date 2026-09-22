@@ -329,6 +329,16 @@ export const XhTransferItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhTransferItemDescription = defineComponent({
+  name: 'XhTransferItemDescription',
+  setup(_, { slots }) {
+    const ctx = useTransferContext()
+    const { item } = useTransferItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTransferItemCheckbox = defineComponent({
   name: 'XhTransferItemCheckbox',
   setup(_, { slots }) {

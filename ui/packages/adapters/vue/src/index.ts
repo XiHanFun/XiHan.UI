@@ -142,6 +142,7 @@ export {
   XhCascaderInput,
   XhCascaderItem,
   XhCascaderItemIndicator,
+  XhCascaderItemDescription,
   XhCascaderItemText,
   XhCascaderLabel,
   XhCascaderLoading,
@@ -269,6 +270,7 @@ export {
   XhComboboxInput,
   XhComboboxItem,
   XhComboboxItemIndicator,
+  XhComboboxItemDescription,
   XhComboboxItemText,
   XhComboboxLabel,
   XhComboboxLoading,
@@ -287,6 +289,7 @@ export {
   XhCommandGroupLabel,
   XhCommandInput,
   XhCommandItem,
+  XhCommandItemDescription,
   XhCommandItemText,
   XhCommandList,
   XhCommandLoading,
@@ -604,6 +607,7 @@ export {
   XhListboxGroupLabel,
   XhListboxItem,
   XhListboxItemIndicator,
+  XhListboxItemDescription,
   XhListboxItemText,
   XhListboxLabel,
   XhListboxLoading,
@@ -648,7 +652,7 @@ export type { MatrixCodeContext } from './components/matrix-code/context'
 export { XhMatrixCode, XhMatrixCodeLogo } from './components/matrix-code/matrix-code'
 export { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './components/mention/context'
 export type { MentionItemContext } from './components/mention/context'
-export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMentionItemText, XhMentionLabel, XhMentionLoading, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
+export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMentionItemDescription, XhMentionItemText, XhMentionLabel, XhMentionLoading, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
 export type { MentionRootSlotProps } from './components/mention/mention'
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
@@ -894,6 +898,7 @@ export {
   XhSelectItem,
   XhSelectItemDeleteTrigger,
   XhSelectItemIndicator,
+  XhSelectItemDescription,
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
@@ -1209,6 +1214,7 @@ export {
   XhTransferGroupLabel,
   XhTransferItem,
   XhTransferItemCheckbox,
+  XhTransferItemDescription,
   XhTransferItemText,
   XhTransferList,
   XhTransferLoading,
@@ -1246,6 +1252,7 @@ export {
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
+  XhTreeSelectItemDescription,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
   XhTreeSelectLoading,
@@ -1270,6 +1277,7 @@ export {
   XhTreeItem,
   XhTreeItemCheckbox,
   XhTreeItemIndicator,
+  XhTreeItemDescription,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeLiveRegion,

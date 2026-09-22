@@ -223,6 +223,16 @@ export const XhListboxItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhListboxItemDescription = defineComponent({
+  name: 'XhListboxItemDescription',
+  setup(_, { slots }) {
+    const ctx = useListboxContext()
+    const { item } = useListboxItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhListboxItemIndicator = defineComponent({
   name: 'XhListboxItemIndicator',
   setup(_, { slots }) {
@@ -246,6 +256,7 @@ function renderDefaultTree(
     h(XhListboxContent, null, () => collection.map(node =>
       h(XhListboxItem, { key: node.value, value: node.value }, () => [
         h(XhListboxItemText, null, () => itemSlot?.(node) ?? node.label),
+        ...(node.description != null ? [h(XhListboxItemDescription, null, () => node.description)] : []),
         h(XhListboxItemIndicator),
       ]),
     )),

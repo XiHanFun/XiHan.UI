@@ -253,6 +253,14 @@ export function XhTreeItemText({ children, ...rest }: XhTreeItemTextProps): Reac
   return <span {...mergeReactProps(ctx.api.getItemTextProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhTreeItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhTreeItemDescription({ children, ...rest }: XhTreeItemDescriptionProps): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTreeNodeDragTriggerProps extends ComponentPropsWithRef<'span'> {}
 /**
  * 节点拖拽把手。放在节点中，自带 touch-action: none，按下即拖动，不等待激活距离。

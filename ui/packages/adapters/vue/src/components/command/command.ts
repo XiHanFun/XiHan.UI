@@ -261,6 +261,16 @@ export const XhCommandItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhCommandItemDescription = defineComponent({
+  name: 'XhCommandItemDescription',
+  setup(_, { slots }) {
+    const ctx = useCommandContext()
+    const { item } = useCommandItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCommandEmpty = defineComponent({
   name: 'XhCommandEmpty',
   setup(_, { slots }) {
@@ -301,6 +311,7 @@ function renderDefaultTree(
   const renderItem = (node: CommandNodeMeta): VNode =>
     h(XhCommandItem, { key: node.value, value: node.value }, () => [
       h(XhCommandItemText, null, () => itemSlot?.(node) ?? node.label),
+      ...(node.description != null ? [h(XhCommandItemDescription, null, () => node.description)] : []),
     ])
 
   return [

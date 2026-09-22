@@ -46,6 +46,7 @@ export function connectListbox<T extends PropTypes>(
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
+    description: node.description ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
   const empty = counted && collection.length === 0
@@ -405,6 +406,13 @@ export function connectListbox<T extends PropTypes>(
       ...parts['item-text'].attrs,
       ...stateAttrs(item),
       'data-xh-collection-slot': 'text',
+    }),
+
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...stateAttrs(item),
+      'data-xh-collection-slot': 'description',
     }),
 
     // 选中标记落在家族网格的 indicator 列：page 语境下它是前导对号，显隐由家族按 data-state='checked' 给

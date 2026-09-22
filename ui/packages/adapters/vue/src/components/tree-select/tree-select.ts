@@ -382,6 +382,16 @@ export const XhTreeSelectItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhTreeSelectItemDescription = defineComponent({
+  name: 'XhTreeSelectItemDescription',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    const { node } = useTreeSelectNodeContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTreeSelectItemIndicator = defineComponent({
   name: 'XhTreeSelectItemIndicator',
   setup(_, { slots }) {

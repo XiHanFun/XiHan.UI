@@ -27,6 +27,7 @@ export const cascaderAnatomy = createAnatomy('cascader', [
   'group-label',
   'item',
   'item-text',
+  'item-description',
   'item-indicator',
   'empty',
   'loading',

@@ -361,6 +361,14 @@ export function XhComboboxItemText({ children, ...rest }: XhComboboxItemTextProp
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhComboboxItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhComboboxItemDescription({ children, ...rest }: XhComboboxItemDescriptionProps): ReactNode {
+  const ctx = useComboboxContext()
+  const item = useComboboxItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhComboboxItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhComboboxItemIndicator({ children, ...rest }: XhComboboxItemIndicatorProps): ReactNode {
   const ctx = useComboboxContext()
@@ -427,6 +435,7 @@ function DefaultTree(props: {
           {props.collection.map(node => (
             <XhComboboxItem key={node.value} value={node.value}>
               <XhComboboxItemText>{props.renderItem?.(node) ?? node.label}</XhComboboxItemText>
+              {node.description != null ? <XhComboboxItemDescription>{node.description}</XhComboboxItemDescription> : null}
               <XhComboboxItemIndicator />
             </XhComboboxItem>
           ))}

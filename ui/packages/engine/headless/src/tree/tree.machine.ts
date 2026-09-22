@@ -44,6 +44,7 @@ function collectNodes(
         label: node.label ?? node.value,
         disabled: !!node.disabled,
         tone: node.tone ?? null,
+    description: node.description ?? null,
         branch,
         level,
         posInSet: i + 1,

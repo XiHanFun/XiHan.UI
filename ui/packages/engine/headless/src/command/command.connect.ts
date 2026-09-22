@@ -355,6 +355,13 @@ export function connectCommand<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'description',
+    }),
+
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
       // 空态节点必须待在 role=listbox 之外（列表里只允许 option 与 group），放 content 里当 list 的兄弟；

@@ -69,6 +69,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
+ * @csspart item-description - 条目的第 2 行副文本
  * @csspart item-checkbox - 叶子的勾选把手，点击只勾选、不触发点击行；可选
  * @csspart item-indicator - 叶子选中标记（aria-hidden）
  * @csspart branch - role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content
@@ -239,6 +240,8 @@ export class XhTreeElement extends XhElement {
     }
     putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
     putAll('item-text', ITEM_SELECTOR, node => api.getItemTextProps(node))
+    putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
+    putAll('item-description', ITEM_SELECTOR, node => api.getItemDescriptionProps(node))
     putAll('item-checkbox', ITEM_SELECTOR, node => api.getItemCheckboxProps(node))
     putAll('item-indicator', ITEM_SELECTOR, node => api.getItemIndicatorProps(node))
     putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))

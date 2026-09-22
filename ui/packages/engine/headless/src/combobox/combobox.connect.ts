@@ -47,6 +47,7 @@ export function connectCombobox<T extends PropTypes>(
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
+    description: node.description ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
@@ -569,6 +570,13 @@ export function connectCombobox<T extends PropTypes>(
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
       'data-xh-collection-slot': 'text',
+    }),
+
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'description',
     }),
 
     // 对号落在家族网格的 indicator 列，显隐由家族按 item 的 aria-selected / data-state=checked 给

@@ -1787,3 +1787,11 @@ describe('逐条语气', () => {
     expect((h.api().getItemProps({ value: 'live' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
   })
 })
+
+describe('副文本', () => {
+  it('取值器落家族的 description 槽', () => {
+    const props = mount().api().getItemDescriptionProps({ value: 'src' }) as Record<string, unknown>
+    expect(props['data-xh-collection-slot']).toBe('description')
+    expect(props['data-part']).toBe('item-description')
+  })
+})
