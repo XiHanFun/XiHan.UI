@@ -276,6 +276,14 @@ export function XhContextMenuItemDescription({ children, ...rest }: XhContextMen
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhContextMenuItemShortcutProps extends ComponentPropsWithRef<'span'> {}
+/** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意。 */
+export function XhContextMenuItemShortcut({ children, ...rest }: XhContextMenuItemShortcutProps): ReactNode {
+  const ctx = useContextMenuContext()
+  const item = useContextMenuItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhContextMenuGroupProps extends ComponentPropsWithRef<'div'> {
   value: string
 }
@@ -402,6 +410,7 @@ function renderItemNode(
       {meta.indicator != null ? <XhContextMenuItemIndicator>{meta.indicator}</XhContextMenuItemIndicator> : null}
       <XhContextMenuItemText>{renderItem?.(meta) ?? meta.label}</XhContextMenuItemText>
       {meta.description != null ? <XhContextMenuItemDescription>{meta.description}</XhContextMenuItemDescription> : null}
+      {meta.shortcut != null ? <XhContextMenuItemShortcut>{meta.shortcut}</XhContextMenuItemShortcut> : null}
     </XhContextMenuItem>
   )
 }

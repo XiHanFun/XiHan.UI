@@ -340,6 +340,16 @@ export const XhMenubarItemDescription = defineComponent({
   },
 })
 
+/** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意 */
+export const XhMenubarItemShortcut = defineComponent({
+  name: 'XhMenubarItemShortcut',
+  setup(_, { slots }) {
+    const ctx = useMenubarContext()
+    const { item } = useMenubarItemContext()
+    return () => h('span', ctx.api.value.getItemShortcutProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 指向本菜单锚点的箭头，纯装饰；须写在同一菜单的 positioner 中 */
 export const XhMenubarArrow = defineComponent({
   name: 'XhMenubarArrow',
@@ -389,6 +399,7 @@ function renderNode(
   return h(XhMenubarItem, { key: meta.value, value: meta.value }, () => [
     h(XhMenubarItemText, null, () => itemSlot?.(meta) ?? meta.label),
     ...(meta.description != null ? [h(XhMenubarItemDescription, null, () => meta.description)] : []),
+    ...(meta.shortcut != null ? [h(XhMenubarItemShortcut, null, () => meta.shortcut)] : []),
   ])
 }
 

@@ -5,6 +5,8 @@ import {
   XhIcon,
   XhMenubarContent,
   XhMenubarItem,
+  XhMenubarItemIndicator,
+  XhMenubarItemShortcut,
   XhMenubarItemText,
   XhMenubarPositioner,
   XhMenubarRoot,
@@ -26,20 +28,20 @@ export default function Demo(): ReactNode {
       <XhMenubarPositioner value="file">
         <XhMenubarContent>
           <XhMenubarItem value="new">
-            <XhIcon icon={PlusIcon} size="sm" />
+            <XhMenubarItemIndicator><XhIcon icon={PlusIcon} size="sm" /></XhMenubarItemIndicator>
             <XhMenubarItemText>新建</XhMenubarItemText>
-            <span aria-hidden="true">⌘ N</span>
+            <XhMenubarItemShortcut>⌘ N</XhMenubarItemShortcut>
           </XhMenubarItem>
           <XhMenubarItem value="open">
-            <XhIcon icon={FolderIcon} size="sm" />
+            <XhMenubarItemIndicator><XhIcon icon={FolderIcon} size="sm" /></XhMenubarItemIndicator>
             <XhMenubarItemText>打开</XhMenubarItemText>
-            <span aria-hidden="true">⌘ O</span>
+            <XhMenubarItemShortcut>⌘ O</XhMenubarItemShortcut>
           </XhMenubarItem>
           <XhMenubarSeparator />
           <XhMenubarItem value="save">
-            <XhIcon icon={SaveIcon} size="sm" />
+            <XhMenubarItemIndicator><XhIcon icon={SaveIcon} size="sm" /></XhMenubarItemIndicator>
             <XhMenubarItemText>保存</XhMenubarItemText>
-            <span aria-hidden="true">⌘ S</span>
+            <XhMenubarItemShortcut>⌘ S</XhMenubarItemShortcut>
           </XhMenubarItem>
         </XhMenubarContent>
       </XhMenubarPositioner>

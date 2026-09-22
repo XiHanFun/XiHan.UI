@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -59,6 +59,7 @@
 - 菜单默认贴近指针位置。
 - 支持分组、分隔线、标记位和子菜单。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
+- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
 - 条目可组合图标、文字、说明和快捷键提示。
 - 选中任意层级的命令后发出根级 `select` 并关闭菜单链。
@@ -85,7 +86,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-context-menu>` |
-| Vue 组件 | `XhContextMenuArrow` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemDescription` `XhContextMenuItemIndicator` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
+| Vue 组件 | `XhContextMenuArrow` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemDescription` `XhContextMenuItemIndicator` `XhContextMenuItemShortcut` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
 | 组合式函数 | `useContextMenu` |
 | 状态机 | `contextMenuMachine` |
 | 皮肤 | `@xihan-ui/styles/context-menu.css` |
@@ -169,6 +170,7 @@
 | `getItemTextProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: ContextMenuItemProps) => T['element']` |  |
+| `getItemShortcutProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
@@ -208,6 +210,7 @@
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'menuitem' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `item-shortcut` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -257,6 +260,9 @@
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 

@@ -14202,6 +14202,10 @@
               "name": "item-description"
             },
             {
+              "description": "条目中的快捷键提示（aria-hidden，读屏从条目文字取意）",
+              "name": "item-shortcut"
+            },
+            {
               "description": "分隔线（role=separator，不进入方向键导航）",
               "name": "separator"
             },
@@ -33354,6 +33358,10 @@
             {
               "description": "条目副文本，排在文字下一行",
               "name": "item-description"
+            },
+            {
+              "description": "条目中的快捷键提示（aria-hidden，读屏从条目文字取意）",
+              "name": "item-shortcut"
             },
             {
               "description": "分隔线（role=separator，不进入方向键导航）",
