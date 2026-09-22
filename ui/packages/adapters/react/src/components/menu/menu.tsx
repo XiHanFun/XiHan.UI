@@ -37,6 +37,13 @@ type MenuProps = MenuSchema['props']
 /** 函数式 children 的载荷：菜单的展开态与开合命令。 */
 export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
+/** 代铺条目时可逐槽接管的三处渲染；三处都不给即完全按数据铺。 */
+interface MenuItemRenderers {
+  item?: (node: MenuNodeMeta) => ReactNode
+  prefix?: (node: MenuNodeMeta) => ReactNode
+  suffix?: (node: MenuNodeMeta) => ReactNode
+}
+
 export interface XhMenuRootProps {
   /** 条目数据；提供后不必逐条放置部件。 */
   collection?: MenuNode[]
@@ -61,6 +68,10 @@ export interface XhMenuRootProps {
   triggerAsChild?: boolean
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: MenuNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: MenuNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: MenuNodeMeta) => ReactNode
   onOpenChange?: MenuProps['onOpenChange']
   onSelect?: MenuProps['onSelect']
   children?: SlotChildren<MenuRootSlotProps>
@@ -70,6 +81,8 @@ export function XhMenuRoot({
   trigger,
   triggerAsChild,
   renderItem,
+  renderItemPrefix,
+  renderItemSuffix,
   children,
   ...props
 }: XhMenuRootProps): ReactNode {
@@ -78,7 +91,7 @@ export function XhMenuRoot({
   const body = children != null
     ? renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })
     : props.collection
-      ? <DefaultTree collection={ctx.api.collection} trigger={trigger} triggerAsChild={triggerAsChild} renderItem={renderItem} />
+      ? <DefaultTree collection={ctx.api.collection} trigger={trigger} triggerAsChild={triggerAsChild} renderers={{ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }} />
       : null
 
   return <MenuProvider value={ctx}>{body}</MenuProvider>
@@ -235,6 +248,14 @@ export function XhMenuItemShortcut({ children, ...rest }: XhMenuItemShortcutProp
   return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhMenuItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+/** 条目行尾的作者内容（计数、徽标、次级图标）；家族只管落位，不规定字号与颜色。 */
+export function XhMenuItemSuffix({ children, ...rest }: XhMenuItemSuffixProps): ReactNode {
+  const ctx = useMenuContext()
+  const item = useMenuItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhMenuGroupProps extends ComponentPropsWithRef<'div'> {
   value: string
 }
@@ -361,13 +382,13 @@ function DefaultTree(props: {
   collection: readonly MenuNodeMeta[]
   trigger?: ReactNode
   triggerAsChild?: boolean
-  renderItem?: (node: MenuNodeMeta) => ReactNode
+  renderers: MenuItemRenderers
 }): ReactNode {
   return (
     <>
       <XhMenuTrigger asChild={props.triggerAsChild}>{props.trigger}</XhMenuTrigger>
       <XhMenuPositioner>
-        <XhMenuContent>{renderNodes(props.collection, props.renderItem)}</XhMenuContent>
+        <XhMenuContent>{renderNodes(props.collection, props.renderers)}</XhMenuContent>
       </XhMenuPositioner>
     </>
   )
@@ -376,7 +397,7 @@ function DefaultTree(props: {
 /** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly MenuNodeMeta[],
-  renderItem?: (node: MenuNodeMeta) => ReactNode,
+  renderers: MenuItemRenderers,
 ): ReactNode[] {
   return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
     const head = run[0]!
@@ -386,7 +407,7 @@ function renderNodes(
       return (
         <Fragment key={head.value}>
           {lead}
-          {renderItemNode(head, renderItem)}
+          {renderItemNode(head, renderers)}
         </Fragment>
       )
     }
@@ -399,7 +420,7 @@ function renderNodes(
           {run.map((node, index) => (
             <Fragment key={node.value}>
               {index > 0 && node.separatorBefore ? <XhMenuSeparator /> : null}
-              {renderItemNode(node, renderItem)}
+              {renderItemNode(node, renderers)}
             </Fragment>
           ))}
         </XhMenuGroup>
@@ -415,16 +436,19 @@ function renderNodes(
  */
 function renderItemNode(
   meta: MenuNodeMeta,
-  renderItem?: (node: MenuNodeMeta) => ReactNode,
+  renderers: MenuItemRenderers,
 ): ReactNode {
   return (
     <XhMenuItem key={meta.value} value={meta.value}>
-      {renderItem?.(meta) ?? (
+      {renderers.item?.(meta) ?? (
         <>
-          {meta.indicator != null ? <XhMenuItemIndicator>{meta.indicator}</XhMenuItemIndicator> : null}
+          {renderers.prefix
+            ? <XhMenuItemIndicator>{renderers.prefix(meta)}</XhMenuItemIndicator>
+            : meta.indicator != null ? <XhMenuItemIndicator>{meta.indicator}</XhMenuItemIndicator> : null}
           <XhMenuItemText>{meta.label}</XhMenuItemText>
           {meta.description != null ? <XhMenuItemDescription>{meta.description}</XhMenuItemDescription> : null}
           {meta.shortcut != null ? <XhMenuItemShortcut>{meta.shortcut}</XhMenuItemShortcut> : null}
+          {renderers.suffix ? <XhMenuItemSuffix>{renderers.suffix(meta)}</XhMenuItemSuffix> : null}
         </>
       )}
     </XhMenuItem>

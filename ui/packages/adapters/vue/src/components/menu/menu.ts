@@ -24,6 +24,16 @@ type MenuProps = MenuSchema['props']
 /** 默认插槽的载荷：展开态与修改展开的动作。 */
 export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
+/** 代铺条目时可逐槽接管的三个插槽；三个都不写即完全按数据铺。 */
+export interface MenuItemSlots {
+  /** 整条的接管口：写了它，代铺的标记位、文字、说明与快捷键一概不铺。 */
+  item?: (node: MenuNodeMeta) => VNode[]
+  /** 只接管行首那一格（与数据里的 indicator 同一个部件），其余槽照旧由数据铺。 */
+  'item-prefix'?: (node: MenuNodeMeta) => VNode[]
+  /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺。 */
+  'item-suffix'?: (node: MenuNodeMeta) => VNode[]
+}
+
 export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   name: 'XhMenuRoot',
   // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
@@ -59,6 +69,8 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
     default?: (props: MenuRootSlotProps) => VNode[]
     trigger?: () => VNode[]
     item?: (node: MenuNodeMeta) => VNode[]
+    'item-prefix'?: (node: MenuNodeMeta) => VNode[]
+    'item-suffix'?: (node: MenuNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyOpen: MenuProps['onOpenChange'] = (details) => {
@@ -71,7 +83,7 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
     return () => (slots.default
       ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
       : props.collection
-        ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, slots.item, props.triggerAsChild)
+        ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] }, props.triggerAsChild)
         : [])
   },
 })
@@ -291,6 +303,16 @@ export const XhMenuItemShortcut = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 条目行尾的作者内容（计数、徽标、次级图标）；家族只管落位，不规定字号与颜色 */
+export const XhMenuItemSuffix = /* @__PURE__ */ defineComponent({
+  name: 'XhMenuItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useMenuContext()
+    const { item } = useMenuItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhMenuGroup = /* @__PURE__ */ defineComponent({
   name: 'XhMenuGroup',
   props: {
@@ -337,13 +359,13 @@ export const XhMenuArrow = /* @__PURE__ */ defineComponent({
 function renderDefaultTree(
   collection: readonly MenuNodeMeta[],
   trigger: (VNode | string)[] | null,
-  itemSlot?: (node: MenuNodeMeta) => VNode[],
+  itemSlots: MenuItemSlots,
   triggerAsChild?: boolean,
 ): VNode[] {
   return [
     h(XhMenuTrigger, { asChild: triggerAsChild }, () => trigger ?? []),
     h(XhMenuPositioner, null, () => [
-      h(XhMenuContent, null, () => renderNodes(collection, itemSlot)),
+      h(XhMenuContent, null, () => renderNodes(collection, itemSlots)),
     ]),
   ]
 }
@@ -351,7 +373,7 @@ function renderDefaultTree(
 /** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly MenuNodeMeta[],
-  itemSlot?: (node: MenuNodeMeta) => VNode[],
+  itemSlots: MenuItemSlots,
 ): VNode[] {
   return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
     const head = run[0]!
@@ -360,7 +382,7 @@ function renderNodes(
       ? [h(XhMenuSeparator, { key: `separator:${head.value}` })]
       : []
     if (head.group == null)
-      return [...lead, renderItem(head, itemSlot)]
+      return [...lead, renderItem(head, itemSlots)]
     const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
     return [
       ...lead,
@@ -368,7 +390,7 @@ function renderNodes(
         ...(groupLabel != null ? [h(XhMenuGroupLabel, null, () => groupLabel)] : []),
         ...run.flatMap((node, index) => [
           ...(index > 0 && node.separatorBefore ? [h(XhMenuSeparator, { key: `separator:${node.value}` })] : []),
-          renderItem(node, itemSlot),
+          renderItem(node, itemSlots),
         ]),
       ]),
     ]
@@ -377,17 +399,26 @@ function renderNodes(
 
 /**
  * 单个条目：按数据铺标记位、文字、说明与快捷键，未提供的那几个不铺对应部件。
- * 写了 item 插槽即整条交给作者——它是整条的接管口，不是文字槽的填充口，
- * 作者自己放置 XhMenuItemText 等部件（与 ContextMenu 的 item 插槽语义不同，那边填的是文字槽）。
+ *
+ * 三个插槽各管一段，不必为了改一处把整条重搭：
+ * - `item-prefix` / `item-suffix` 只接管行首与行尾那一格，其余槽照旧由数据铺。
+ *   行首那一格与数据里的 `indicator` 同一个部件，插槽在场时以它为准。
+ * - `item` 是整条的接管口：写了它，上面几格一概不铺，作者自己放置 XhMenuItemText 等部件
+ *   （与 ContextMenu 的 item 插槽语义不同，那边填的是文字槽）。
  */
 function renderItem(
   meta: MenuNodeMeta,
-  itemSlot?: (node: MenuNodeMeta) => VNode[],
+  itemSlots: MenuItemSlots,
 ): VNode {
-  return h(XhMenuItem, { key: meta.value, value: meta.value }, () => itemSlot?.(meta) ?? [
-    ...(meta.indicator != null ? [h(XhMenuItemIndicator, null, () => meta.indicator)] : []),
+  const prefix = itemSlots['item-prefix']
+  const suffix = itemSlots['item-suffix']
+  return h(XhMenuItem, { key: meta.value, value: meta.value }, () => itemSlots.item?.(meta) ?? [
+    ...(prefix
+      ? [h(XhMenuItemIndicator, null, () => prefix(meta))]
+      : meta.indicator != null ? [h(XhMenuItemIndicator, null, () => meta.indicator)] : []),
     h(XhMenuItemText, null, () => meta.label),
     ...(meta.description != null ? [h(XhMenuItemDescription, null, () => meta.description)] : []),
     ...(meta.shortcut != null ? [h(XhMenuItemShortcut, null, () => meta.shortcut)] : []),
+    ...(suffix ? [h(XhMenuItemSuffix, null, () => suffix(meta))] : []),
   ])
 }

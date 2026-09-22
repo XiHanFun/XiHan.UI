@@ -330,6 +330,14 @@ export function connectMenu<T extends PropTypes>(
       'aria-hidden': true,
     }),
 
+    // 行尾那一格，排在快捷键之后、选中对号之前。内容由作者给（计数、徽标、次级图标），
+    // 家族只管落位，不规定字号与颜色——它承载的是任意节点，不是文字
+    getItemSuffixProps: item => normalize.element({
+      ...parts['item-suffix'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'suffix',
+    }),
+
     // 双重身份：value 是它在父菜单里的条目身份（父层导航与高亮照常认），
     // 其余属性都是本子菜单的触发器。父层的选中经 aria-haspopup 嗅探跳过它。
     getSubmenuTriggerProps: (item) => {

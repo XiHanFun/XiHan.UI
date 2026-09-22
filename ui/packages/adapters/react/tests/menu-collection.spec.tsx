@@ -58,6 +58,57 @@ describe('menu 的 collection', () => {
     expect(shortcut.getAttribute('data-xh-collection-slot')).toBe('shortcut')
   })
 
+  it('renderItemPrefix 只接管行首那一格，说明与快捷键照旧由数据铺；它压过数据里的 indicator', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    root = createRoot(host)
+    ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
+    await act(async () => root!.render(
+      <XhMenuRoot
+        collection={[{ value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' }]}
+        trigger="操作"
+        renderItemPrefix={node => <svg data-icon={node.value} />}
+      />,
+    ))
+    expect(partNames()).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'item',
+      'item-indicator',
+      'item-text',
+      'item-description',
+      'item-shortcut',
+    ])
+    expect(document.body.querySelector('[data-part="item-indicator"] svg')?.getAttribute('data-icon')).toBe('copy')
+  })
+
+  it('renderItemSuffix 落行尾那一格，排在快捷键之后', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    root = createRoot(host)
+    ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
+    await act(async () => root!.render(
+      <XhMenuRoot
+        collection={[{ value: 'inbox', label: '收件箱', shortcut: '⌘ 1' }]}
+        trigger="操作"
+        renderItemSuffix={() => <span>12</span>}
+      />,
+    ))
+    expect(partNames()).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'item',
+      'item-text',
+      'item-shortcut',
+      'item-suffix',
+    ])
+    const suffix = document.body.querySelector('[data-part="item-suffix"]')!
+    expect(suffix.textContent).toBe('12')
+    expect(suffix.getAttribute('data-xh-collection-slot')).toBe('suffix')
+  })
+
   it('写了 renderItem 就整条交给作者：代铺的说明与快捷键都不再出现', async () => {
     host = document.createElement('div')
     document.body.append(host)

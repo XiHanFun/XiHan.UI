@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -86,7 +86,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menubar>` |
-| Vue 组件 | `XhMenubarArrow` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIndicator` `XhMenubarItemShortcut` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
+| Vue 组件 | `XhMenubarArrow` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIndicator` `XhMenubarItemShortcut` `XhMenubarItemSuffix` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
 | 组合式函数 | `useMenubar` |
 | 状态机 | `menubarMachine` |
 | 皮肤 | `@xihan-ui/styles/menubar.css` |
@@ -128,6 +128,8 @@
 | --- | --- | --- | --- |
 | `XhMenubarRoot` | `default` | `MenubarRootSlotProps` |  |
 | `XhMenubarRoot` | `item` | `MenubarNodeMeta` |  |
+| `XhMenubarRoot` | `item-prefix` | `MenubarNodeMeta` |  |
+| `XhMenubarRoot` | `item-suffix` | `MenubarNodeMeta` |  |
 | `XhMenubarSub` | `default` | `MenubarSubSlotProps` |  |
 
 ### 状态
@@ -173,6 +175,7 @@
 | `getItemIndicatorProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getItemShortcutProps` | `(props: MenubarItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenubarGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: MenubarGroupProps) => T['element']` |  |
@@ -285,6 +288,9 @@
 | `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
 | `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 

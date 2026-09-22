@@ -744,6 +744,11 @@
     "item-size-text": [
       "file-upload"
     ],
+    "item-suffix": [
+      "context-menu",
+      "menu",
+      "menubar"
+    ],
     "item-text": [
       "approval",
       "cascader",

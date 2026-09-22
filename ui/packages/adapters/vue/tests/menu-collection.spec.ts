@@ -187,6 +187,71 @@ describe('menu 的 collection', () => {
     w.unmount()
   })
 
+  it('item-prefix 只接管行首那一格，说明与快捷键照旧由数据铺', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [{ value: 'copy', label: '复制', description: '连同格式', shortcut: '⌘ C' }] satisfies MenuNode[],
+        }, {
+          'item-prefix': (node: MenuNodeMeta) => [h('svg', { 'data-icon': node.value })],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    expect(partNames(document.body)).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'item',
+      'item-indicator',
+      'item-text',
+      'item-description',
+      'item-shortcut',
+    ])
+    expect(document.body.querySelector('[data-part="item-indicator"] svg')?.getAttribute('data-icon')).toBe('copy')
+    w.unmount()
+  })
+
+  it('item-prefix 压过数据里的 indicator：同一格只画一次', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [{ value: 'copy', label: '复制', indicator: '✓' }] satisfies MenuNode[],
+        }, {
+          'item-prefix': () => [h('b', '★')],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    const indicators = [...document.body.querySelectorAll('[data-part="item-indicator"]')]
+    expect(indicators).toHaveLength(1)
+    expect(indicators[0]!.textContent).toBe('★')
+    w.unmount()
+  })
+
+  it('item-suffix 落行尾那一格，排在快捷键之后', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [{ value: 'inbox', label: '收件箱', shortcut: '⌘ 1' }] satisfies MenuNode[],
+        }, {
+          'item-suffix': () => [h('span', '12')],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    expect(partNames(document.body)).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'item',
+      'item-text',
+      'item-shortcut',
+      'item-suffix',
+    ])
+    const suffix = document.body.querySelector('[data-part="item-suffix"]')!
+    expect(suffix.textContent).toBe('12')
+    expect(suffix.getAttribute('data-xh-collection-slot')).toBe('suffix')
+    w.unmount()
+  })
+
   it('写了 item 插槽就整条交给作者：代铺的说明与快捷键都不再出现', () => {
     const w = mount(defineComponent({
       setup: () => () => h('div', [

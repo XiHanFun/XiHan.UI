@@ -51,6 +51,13 @@ export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | '
 /** 子菜单函数式 children 的载荷：该层子菜单自己的展开态与开合命令。 */
 export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
+/** 代铺条目时可逐槽接管的三处渲染；三处都不给即完全按数据铺。 */
+interface ContextMenuItemRenderers {
+  item?: (node: ContextMenuNodeMeta) => ReactNode
+  prefix?: (node: ContextMenuNodeMeta) => ReactNode
+  suffix?: (node: ContextMenuNodeMeta) => ReactNode
+}
+
 export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir' | 'onSelect'> {
   /** 条目数据；提供后不必逐条放置部件。 */
   collection?: ContextMenuNode[]
@@ -71,6 +78,10 @@ export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'
   trigger?: ReactNode
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: ContextMenuNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: ContextMenuNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: ContextMenuNodeMeta) => ReactNode
   onOpenChange?: ContextMenuProps['onOpenChange']
   onSelect?: ContextMenuProps['onSelect']
   children?: SlotChildren<ContextMenuRootSlotProps>
@@ -91,6 +102,8 @@ export function XhContextMenuRoot({
   size,
   trigger,
   renderItem,
+  renderItemPrefix,
+  renderItemSuffix,
   onOpenChange,
   onSelect,
   children,
@@ -121,7 +134,7 @@ export function XhContextMenuRoot({
         openAt: ctx.api.openAt,
       })
     : collection
-      ? <DefaultTree collection={ctx.api.collection} trigger={trigger} renderItem={renderItem} />
+      ? <DefaultTree collection={ctx.api.collection} trigger={trigger} renderers={{ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }} />
       : null
 
   return (
@@ -284,6 +297,14 @@ export function XhContextMenuItemShortcut({ children, ...rest }: XhContextMenuIt
   return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhContextMenuItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+/** 条目行尾的作者内容（计数、徽标、次级图标）；家族只管落位，不规定字号与颜色。 */
+export function XhContextMenuItemSuffix({ children, ...rest }: XhContextMenuItemSuffixProps): ReactNode {
+  const ctx = useContextMenuContext()
+  const item = useContextMenuItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhContextMenuGroupProps extends ComponentPropsWithRef<'div'> {
   value: string
 }
@@ -403,14 +424,17 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
 /** 单个条目：标记位排在文字前面，未提供标记位时不铺设该部件。 */
 function renderItemNode(
   meta: ContextMenuNodeMeta,
-  renderItem?: (node: ContextMenuNodeMeta) => ReactNode,
+  renderers: ContextMenuItemRenderers,
 ): ReactNode {
   return (
     <XhContextMenuItem key={meta.value} value={meta.value}>
-      {meta.indicator != null ? <XhContextMenuItemIndicator>{meta.indicator}</XhContextMenuItemIndicator> : null}
-      <XhContextMenuItemText>{renderItem?.(meta) ?? meta.label}</XhContextMenuItemText>
+      {renderers.prefix
+        ? <XhContextMenuItemIndicator>{renderers.prefix(meta)}</XhContextMenuItemIndicator>
+        : meta.indicator != null ? <XhContextMenuItemIndicator>{meta.indicator}</XhContextMenuItemIndicator> : null}
+      <XhContextMenuItemText>{renderers.item?.(meta) ?? meta.label}</XhContextMenuItemText>
       {meta.description != null ? <XhContextMenuItemDescription>{meta.description}</XhContextMenuItemDescription> : null}
       {meta.shortcut != null ? <XhContextMenuItemShortcut>{meta.shortcut}</XhContextMenuItemShortcut> : null}
+      {renderers.suffix ? <XhContextMenuItemSuffix>{renderers.suffix(meta)}</XhContextMenuItemSuffix> : null}
     </XhContextMenuItem>
   )
 }
@@ -418,7 +442,7 @@ function renderItemNode(
 /** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly ContextMenuNodeMeta[],
-  renderItem?: (node: ContextMenuNodeMeta) => ReactNode,
+  renderers: ContextMenuItemRenderers,
 ): ReactNode[] {
   return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
     const head = run[0]
@@ -428,7 +452,7 @@ function renderNodes(
       return (
         <Fragment key={head.value}>
           {lead}
-          {renderItemNode(head, renderItem)}
+          {renderItemNode(head, renderers)}
         </Fragment>
       )
     }
@@ -441,7 +465,7 @@ function renderNodes(
           {run.map((node, index) => (
             <Fragment key={node.value}>
               {index > 0 && node.separatorBefore ? <XhContextMenuSeparator /> : null}
-              {renderItemNode(node, renderItem)}
+              {renderItemNode(node, renderers)}
             </Fragment>
           ))}
         </XhContextMenuGroup>
@@ -457,13 +481,13 @@ function renderNodes(
 function DefaultTree(props: {
   collection: readonly ContextMenuNodeMeta[]
   trigger?: ReactNode
-  renderItem?: (node: ContextMenuNodeMeta) => ReactNode
+  renderers: ContextMenuItemRenderers
 }): ReactNode {
   return (
     <>
       <XhContextMenuTrigger>{props.trigger}</XhContextMenuTrigger>
       <XhContextMenuPositioner>
-        <XhContextMenuContent>{renderNodes(props.collection, props.renderItem)}</XhContextMenuContent>
+        <XhContextMenuContent>{renderNodes(props.collection, props.renderers)}</XhContextMenuContent>
       </XhContextMenuPositioner>
     </>
   )

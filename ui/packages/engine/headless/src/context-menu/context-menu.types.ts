@@ -259,6 +259,7 @@ export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   getItemIndicatorProps: (props: ContextMenuItemProps) => T['element']
   getItemDescriptionProps: (props: ContextMenuItemProps) => T['element']
   getItemShortcutProps: (props: ContextMenuItemProps) => T['element']
+  getItemSuffixProps: (props: ContextMenuItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: ContextMenuGroupProps) => T['element']
   getGroupLabelProps: (props: ContextMenuGroupProps) => T['element']
