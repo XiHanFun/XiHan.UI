@@ -138,6 +138,67 @@ describe('portal 视觉环境桥', () => {
     }
   })
 
+  it('密度档位只靠 data-density 带进壳，令牌不再逐名复制成 inline，浮层内解析值与页面内一致', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h('section', { 'data-density': 'compact' }, [
+        h('span', { 'data-testid': 'inline-probe' }, '行内'),
+        h(XhPortal, { to: document.body }, () => h('span', { 'data-testid': 'portal-probe' }, '浮层')),
+      ]),
+    })
+    app.mount(host)
+    await settle()
+
+    const shell = shellOf('portal-probe')
+    expect(shell.getAttribute('data-density')).toBe('compact')
+    expect(inlineCustomProperties(shell)).toEqual([])
+
+    const inline = document.querySelector<HTMLElement>('[data-testid="inline-probe"]')!
+    const probe = document.querySelector<HTMLElement>('[data-testid="portal-probe"]')!
+    const compact = getComputedStyle(inline).getPropertyValue('--xh-control-h-md')
+    // 紧凑档确实换了值，否则下面的等式随便都成立
+    expect(compact).not.toBe(getComputedStyle(document.documentElement).getPropertyValue('--xh-control-h-md'))
+    expect(getComputedStyle(probe).getPropertyValue('--xh-control-h-md')).toBe(compact)
+  })
+
+  it('祖先上与自定义属性无关的 class 增删不再让链下每台桥重读计算样式', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    app = createApp({
+      render: () => h('main', { 'data-testid': 'page' }, ids.map(id => h('section', null, [
+        h(XhPortal, { to: document.body }, () => h('span', { 'data-testid': `portal-${id}` }, id)),
+      ]))),
+    })
+    app.mount(host)
+    await settle()
+    expect(shellOf('portal-h')).toBeTruthy()
+
+    const proto = CSSStyleDeclaration.prototype
+    const original = proto.getPropertyValue
+    let reads = 0
+    proto.getPropertyValue = function (name: string): string {
+      if (name.startsWith('--'))
+        reads++
+      return original.call(this, name)
+    }
+    const page = host.querySelector<HTMLElement>('[data-testid="page"]')!
+    try {
+      // Vue 的类式页面过渡就是这个形状：一次进场在页面根上增删五次 class
+      for (const token of ['page-enter-from', 'page-enter-active', 'page-enter-to']) {
+        page.classList.add(token)
+        await settle()
+        page.classList.remove(token)
+        await settle()
+      }
+    }
+    finally {
+      proto.getPropertyValue = original
+    }
+    expect(reads).toBe(0)
+  })
+
   it('来源祖先覆盖根上的令牌仍投影到壳；语气经 data-tone 带过去，浮层内自定义节点取得同一族颜色', async () => {
     const host = document.createElement('div')
     document.body.append(host)

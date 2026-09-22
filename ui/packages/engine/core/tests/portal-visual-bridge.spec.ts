@@ -248,14 +248,14 @@ describe('portal 视觉环境桥', () => {
   it('来源的 data-state / aria-* 翻转、body 里插护栏与不含自定义属性的 inline 样式都不触发重同步', async () => {
     // 样式表改动本身不被观察：桥只会在被触发重同步时才读到新值，借此判定哪些变更触发了同步
     const style = document.createElement('style')
-    style.textContent = '.portal-source { --business-color: first; }'
+    style.textContent = '.portal-source { --business-color: first; } .tinted { --tint: 1; }'
     document.head.append(style)
     const { source, shell } = fixture()
     source.className = 'portal-source'
     const bridge = createPortalVisualBridge({ source, shell })
     expect(shell.style.getPropertyValue('--business-color')).toBe('first')
 
-    style.textContent = '.portal-source { --business-color: second; }'
+    style.textContent = '.portal-source { --business-color: second; } .tinted { --tint: 1; }'
     source.setAttribute('data-state', 'open')
     source.setAttribute('aria-expanded', 'true')
     source.setAttribute('aria-controls', 'content')
@@ -267,11 +267,11 @@ describe('portal 视觉环境桥', () => {
     await settleMutations()
     expect(shell.style.getPropertyValue('--business-color')).toBe('first')
 
-    source.classList.add('portal-source--alt')
+    source.classList.add('tinted')
     await settleMutations()
     expect(shell.style.getPropertyValue('--business-color')).toBe('second')
 
-    style.textContent = '.portal-source { --business-color: third; }'
+    style.textContent = '.portal-source { --business-color: third; } .tinted { --tint: 1; }'
     document.body.style.setProperty('--other', '1')
     await settleMutations()
     expect(shell.style.getPropertyValue('--business-color')).toBe('third')
@@ -280,6 +280,69 @@ describe('portal 视觉环境桥', () => {
     style.remove()
     document.body.style.removeProperty('--other')
     document.body.style.overflow = ''
+  })
+
+  it('祖先上与自定义属性无关的 class 增删不触发重同步，页面级过渡类不再拖动链下每台桥', async () => {
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; }'
+    document.head.append(style)
+    const { outer, source, shell } = fixture()
+    source.className = 'portal-source'
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    style.textContent = '.portal-source { --business-color: second; }'
+    for (const token of ['page-enter-from', 'page-enter-active', 'page-enter-to']) {
+      outer.classList.add(token)
+      await settleMutations()
+      outer.classList.remove(token)
+      await settleMutations()
+    }
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    outer.classList.add('portal-source')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
+
+    bridge.dispose()
+    style.remove()
+  })
+
+  it('样式表里出现 [class] 属性选择器时，class 变更一律照旧重算', async () => {
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; } [class~="opaque"] { --tint: 1; }'
+    document.head.append(style)
+    const { outer, source, shell } = fixture()
+    source.className = 'portal-source'
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    style.textContent = '.portal-source { --business-color: second; } [class~="opaque"] { --tint: 1; }'
+    outer.classList.add('page-enter-active')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
+
+    bridge.dispose()
+    style.remove()
+  })
+
+  it('只由文档根与复制过去的轴属性选中的声明不投影，壳带着同样的属性自己解析', () => {
+    // 令牌层就是这个形状：同一条规则既选文档根、又选桥会复制过去的轴属性，壳带着属性自己命中
+    const style = document.createElement('style')
+    style.textContent = ':where(:root), :where([data-density=\'compact\']) { --pad-2: 4px; }'
+      + '.dense[data-density=\'compact\'] { --pad-3: 6px; }'
+    document.head.append(style)
+    const { source, shell } = fixture()
+    source.setAttribute('data-density', 'compact')
+    source.className = 'dense'
+
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.getAttribute('data-density')).toBe('compact')
+    expect(shell.style.getPropertyValue('--pad-2')).toBe('')
+    expect(shell.style.getPropertyValue('--pad-3')).toBe('6px')
+
+    bridge.dispose()
+    style.remove()
   })
 
   it('--xh- 命名空间只投影根上有声明的令牌覆盖，组件槽与家族槽不跟着触发器进浮层', () => {
