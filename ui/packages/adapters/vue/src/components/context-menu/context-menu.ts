@@ -328,6 +328,16 @@ export const XhContextMenuItemDescription = defineComponent({
   },
 })
 
+/** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意 */
+export const XhContextMenuItemShortcut = defineComponent({
+  name: 'XhContextMenuItemShortcut',
+  setup(_, { slots }) {
+    const ctx = useContextMenuContext()
+    const { item } = useContextMenuItemContext()
+    return () => h('span', ctx.api.value.getItemShortcutProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhContextMenuSeparator = defineComponent({
   name: 'XhContextMenuSeparator',
   setup() {
@@ -399,5 +409,6 @@ function renderItem(
     ...(meta.indicator != null ? [h(XhContextMenuItemIndicator, null, () => meta.indicator)] : []),
     h(XhContextMenuItemText, null, () => itemSlot?.(meta) ?? meta.label),
     ...(meta.description != null ? [h(XhContextMenuItemDescription, null, () => meta.description)] : []),
+    ...(meta.shortcut != null ? [h(XhContextMenuItemShortcut, null, () => meta.shortcut)] : []),
   ])
 }

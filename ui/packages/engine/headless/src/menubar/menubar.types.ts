@@ -63,6 +63,11 @@ export interface MenubarNode {
   label?: string
   /** 副文本，写入 item-description 部件；只在条目上读取。 */
   description?: string
+  /**
+   * 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。
+   * 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。
+   */
+  shortcut?: string
   /** 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
   /**
@@ -88,6 +93,8 @@ export interface MenubarNodeMeta {
   label: string
   /** 副文本原样透传，未提供时为 null。 */
   description: string | null
+  /** 快捷键提示；未提供时为 null。 */
+  shortcut: string | null
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。顶层入口恒为 null 的读法见 MenubarNode。 */
   tone: Tone | null
@@ -282,6 +289,7 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   getItemTextProps: (props: MenubarItemProps) => T['element']
   getItemIndicatorProps: (props: MenubarItemProps) => T['element']
   getItemDescriptionProps: (props: MenubarItemProps) => T['element']
+  getItemShortcutProps: (props: MenubarItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: MenubarGroupProps) => T['element']
   getGroupLabelProps: (props: MenubarGroupProps) => T['element']

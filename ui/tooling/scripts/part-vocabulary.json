@@ -737,7 +737,9 @@
       "accordion"
     ],
     "item-shortcut": [
-      "menu"
+      "context-menu",
+      "menu",
+      "menubar"
     ],
     "item-size-text": [
       "file-upload"

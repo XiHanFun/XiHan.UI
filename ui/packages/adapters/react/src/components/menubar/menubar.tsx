@@ -382,6 +382,14 @@ export function XhMenubarItemDescription({ children, ...rest }: XhMenubarItemDes
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhMenubarItemShortcutProps extends ComponentPropsWithRef<'span'> {}
+/** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意。 */
+export function XhMenubarItemShortcut({ children, ...rest }: XhMenubarItemShortcutProps): ReactNode {
+  const ctx = useMenubarContext()
+  const item = useMenubarItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhMenubarSeparatorProps extends ComponentPropsWithRef<'div'> {}
 export function XhMenubarSeparator({ ...rest }: XhMenubarSeparatorProps): ReactNode {
   const ctx = useMenubarContext()
@@ -495,6 +503,7 @@ function renderNode(meta: MenubarNodeMeta, renderItem?: (node: MenubarNodeMeta) 
     <XhMenubarItem key={meta.value} value={meta.value}>
       <XhMenubarItemText>{renderItem?.(meta) ?? meta.label}</XhMenubarItemText>
       {meta.description != null ? <XhMenubarItemDescription>{meta.description}</XhMenubarItemDescription> : null}
+      {meta.shortcut != null ? <XhMenubarItemShortcut>{meta.shortcut}</XhMenubarItemShortcut> : null}
     </XhMenubarItem>
   )
 }

@@ -1354,3 +1354,23 @@ describe('逐条语气', () => {
     expect((h.api().getTriggerProps({ value: 'file' }) as Record<string, unknown>)['data-tone']).toBeUndefined()
   })
 })
+
+describe('快捷键提示', () => {
+  it('落家族的 shortcut 槽，对读屏隐藏：可及名由条目文字承担', () => {
+    const props = mount().api().getItemShortcutProps({ value: 'new' }) as Record<string, unknown>
+    expect(props['data-xh-collection-slot']).toBe('shortcut')
+    expect(props['aria-hidden']).toBe(true)
+    expect(props['data-part']).toBe('item-shortcut')
+  })
+
+  it('说明与快捷键只在条目上读取，顶层入口写了也不进条目表', () => {
+    const h = mount({
+      collection: [
+        { value: 'file', label: '文件', shortcut: '⌘ F', items: [{ value: 'new', label: '新建', description: '空白文档', shortcut: '⌘ N' }] },
+      ],
+    })
+    const menu = h.api().collection[0]!
+    expect([menu.description, menu.shortcut]).toEqual([null, '⌘ F'])
+    expect(menu.items.map(node => [node.description, node.shortcut])).toEqual([['空白文档', '⌘ N']])
+  })
+})

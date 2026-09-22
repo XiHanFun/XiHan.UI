@@ -76,6 +76,11 @@ export interface ContextMenuNode {
   indicator?: string
   /** 副文本，写入 item-description 部件；未提供时本条不铺该部件。 */
   description?: string
+  /**
+   * 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。
+   * 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。
+   */
+  shortcut?: string
   /** 归属分组的身份值；相邻同值的条目收进同一个 group 部件。未提供时本条直接落在 content 上。 */
   group?: string
   /** 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 */
@@ -96,6 +101,8 @@ export interface ContextMenuNodeMeta {
   indicator: string | null
   /** 副文本；未提供时为 null。 */
   description: string | null
+  /** 快捷键提示；未提供时为 null。 */
+  shortcut: string | null
   /** 分组身份；未提供时为 null。 */
   group: string | null
   /** 分组标题；未提供时为 null。 */
@@ -251,6 +258,7 @@ export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   getItemTextProps: (props: ContextMenuItemProps) => T['element']
   getItemIndicatorProps: (props: ContextMenuItemProps) => T['element']
   getItemDescriptionProps: (props: ContextMenuItemProps) => T['element']
+  getItemShortcutProps: (props: ContextMenuItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: ContextMenuGroupProps) => T['element']
   getGroupLabelProps: (props: ContextMenuGroupProps) => T['element']

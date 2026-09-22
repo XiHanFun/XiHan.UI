@@ -61,6 +61,7 @@ export function connectMenubar<T extends PropTypes>(
     value: node.value,
     label: node.label ?? node.value,
     description: node.description ?? null,
+    shortcut: node.shortcut ?? null,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
     group: node.group ?? null,
@@ -508,6 +509,15 @@ export function connectMenubar<T extends PropTypes>(
       ...parts['item-description'].attrs,
       ...itemStateAttrs(item),
       'data-xh-collection-slot': 'description',
+    }),
+
+    // 快捷键提示落家族的 shortcut 列（行尾、suffix 之前）。纯装饰：可及名由条目文字承担，
+    // 连打检索也只取 item-text，这串按键记号不进检索串
+    getItemShortcutProps: item => normalize.element({
+      ...parts['item-shortcut'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'shortcut',
+      'aria-hidden': true,
     }),
 
     getSeparatorProps: () => normalize.element({

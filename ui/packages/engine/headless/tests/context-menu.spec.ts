@@ -1157,3 +1157,25 @@ describe('条目按压通道：Space / Enter 与触屏按住投影 data-pressed�
     expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
   })
 })
+
+describe('快捷键提示', () => {
+  it('落家族的 shortcut 槽，对读屏隐藏：可及名由条目文字承担', () => {
+    const props = mount().api().getItemShortcutProps({ value: 'copy' }) as Record<string, unknown>
+    expect(props['data-xh-collection-slot']).toBe('shortcut')
+    expect(props['aria-hidden']).toBe(true)
+    expect(props['data-part']).toBe('item-shortcut')
+  })
+
+  it('说明与快捷键原样进元信息，未写时为 null', () => {
+    const h = mount({
+      collection: [
+        { value: 'copy', label: '复制', description: '连同格式', shortcut: '⌘ C' },
+        { value: 'paste', label: '粘贴' },
+      ],
+    })
+    expect(h.api().collection.map(node => [node.description, node.shortcut])).toEqual([
+      ['连同格式', '⌘ C'],
+      [null, null],
+    ])
+  })
+})
