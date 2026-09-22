@@ -189,7 +189,6 @@ describe('checkboxGroup 控制盒', () => {
 
   it('只读：整行不换面、手型 default，方框描边不升档', async () => {
     await mountPair(false, { readOnly: true })
-    const root = getPart('checkbox-group', 'root')
     const item = getPart('checkbox-group', 'item', 1)
     const box = getPart('checkbox-group', 'indicator', 1)
     const trigger = getPart('checkbox-group', 'select-all-trigger')

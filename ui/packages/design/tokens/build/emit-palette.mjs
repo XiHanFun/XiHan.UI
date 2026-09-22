@@ -91,5 +91,7 @@ async function main() {
   console.log(`[emit-palette] ${Object.keys(color).length} 个色相 × ${STEPS.length} 档 → primitive.palette.json`)
 }
 
+// 被 tests/palette.spec.ts 当模块引时只取 derivePalette，不落盘；直接跑才写文件。
+// 不 await：与 emit-tokens.mjs 同一写法，main 拒绝即未处理拒绝、进程按非零码退出，构建照样判红
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1])
-  await main()
+  main()
