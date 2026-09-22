@@ -4,6 +4,76 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v2.0.0 (2026-09-22)
+
+本版为主版本升级。主要变化：`@xihan-ui/kernel`、`@xihan-ui/machine`、`@xihan-ui/behavior` 合并为 `@xihan-ui/core`；新增 React 19 适配器 `@xihan-ui/react`；组件由 121 个增至 134 个（新增 20 个，删除 3 个，合并 4 个，更名 5 个）。所有更名与删除均不保留别名、转发或兼容层，引用旧名会直接报错。
+
+::: warning 升级须知
+以下按包、组件、部件与属性、行为四类列出破坏性变更的范围与去向。完整对照表（旧名 → 新名，逐部件、逐槽名）见各包随 npm 发布的 `CHANGELOG.md`。
+
+**包与依赖**
+
+- `@xihan-ui/kernel`、`@xihan-ui/machine`、`@xihan-ui/behavior` 合并为 `@xihan-ui/core`，旧包不再发布，无转发包。导出名称不变，子入口按原名平移：`kernel/metadata` → `core/metadata`、`kernel/skin-check` → `core/skin-check`、`kernel/vite` → `core/vite`、`machine/vanilla` → `core/vanilla`、`behavior/presence` → `core/presence`。诊断 `core.version-mismatch` 的 `detail.kernelVersion` 更名为 `coreVersion`。仅安装适配器的项目无需改动
+- `@xihan-ui/code-highlight` 由适配器的直接依赖改为可选 peer 依赖，使用代码着色的项目需自行安装；包由 `engine` 组移至 `features` 组，包名不变
+- 新增 `@xihan-ui/react`。公开包由 18 个变为 17 个
+
+**组件的增删与更名**
+
+- 删除 `thread`、`composer`、`code-block`，分别由 `message-feed`（配合 `log`）、`prompt-input`、`code-view` 替代
+- `result` 并入 `empty-state`（`live` 默认为 `polite`，默认尺寸档比原来小一号；保持原样需写 `live="off"` 与 `size="lg"`）；`space` 并入 `flex`（`XhSpace` 未写 `gap` 时默认有间距，`XhFlex` 默认为 0，迁移时需显式写 `gap="md"`）；`countdown` 并入 `timer`；`popselect` 退役，随表单提交的场景改用 `select`，仅切换视图参数的场景改用 `popover` 组合 `listbox`
+- 更名：`ellipsis` → `truncate`、`dynamic-input` → `field-array`、`time` → `timestamp`、`qr-code` → `matrix-code`（新增 `format` 选择码制）、`calendar` → `calendar-picker`（区间选择拆为新组件 `calendar-range-picker`；`date-picker` 只保留单选与多选，区间改用新组件 `date-range-picker`）
+- `color-picker` 重组为组合组件：色相与透明度滑块为内嵌的 `color-slider`，预设色板为内嵌的 `color-swatch-picker`；非法或越界的文本输入不再静默复原，改为保留状态并抛出错误
+- `select`、`tags-input`、`tag-group` 的标签统一改用 `tag` 组件渲染：`item-delete-trigger`、`item-preview`、`item-text` 不再是这三个组件的部件，对应节点为 `tag` 的 `root` / `label` / `close-trigger`；`select` 多选未指定 `maxTagCount` 时最多显示 3 枚标签，其余折叠为 `+N`
+
+**部件、属性与槽名**
+
+- 32 个部件更名、1 个部件并入他处；10 处同一角色在不同组件中命名不一致的部件统一命名
+- 14 组 prop 更名、2 组事件更名。例如 `resizable` / `floating-panel` 的像素尺寸 `size` 更名为 `dimensions`；`password-input` 的 `visible` / `defaultVisible` / `onVisibilityChange` 更名为 `revealed` / `defaultRevealed` / `onRevealedChange`；`virtualizer` 的 `onChange` 更名为 `onRangeChange`
+- 13 个 `data-*` 属性名删除，每组只保留一个（如 `data-affixed` → `data-fixed`；`data-borderless` → `data-bordered`，取值反转）；`data-type` 拆分为 `data-value-type`、`data-severity`、`data-select-mode`、`data-reveal-mode`、`data-format`；`data-phase` 与六个组件的生命周期 `data-status` 并入 `data-state`；`table` 的 `expanded-row`、`tree` 的 `branch-content`、`heatmap` 的 `tooltip` 收起态由 `hidden` 属性改为 `data-state`。CSS 选择器不会因属性名失配而报错，请在代码库中检索旧属性名
+- `dialog` / `drawer` 新增 `header` / `body` / `footer` 三个部件，`body` 为面板内唯一的滚动区域；文本输入的两套控件盒槽名合并为一套，被替代的槽名删除
+- 形态轴收敛：字段类组件未传 `variant` 时显式输出 `data-variant="outline"`，自定义皮肤若以「无 `data-variant`」判定默认态，需改为匹配 `outline`；`button` / `float-button` 移除 `shape`；`loading-bar` 移除 `color`；`card` 收敛为 `default` / `secondary` / `tertiary` / `transparent` 四种表面，移除 `size` / `hoverable` / `split` 属性与 `media` / `body` 部件
+- 轻提示与通知的 `type` 更名为 `tone`，取值收敛为 `info | success | warning | danger`，加载态独立为布尔 `loading`；通知队列 `max` 默认值由不限改为 5；`toast` / `alert` 的 `content` 改为必需；`empty-state` 的 `status` 只接受 `'404' | '403' | '500'`，语义改由 `tone` 表达；`steps` 的 `StepStatus` 收敛为 `completed | current | incomplete`，出错与警示改由逐步 `tones` 表达
+- 读屏文案只接受函数，不再接受字符串；`flex` 的 `direction` 别名与 `FlexDirection` 类型删除，只保留 `orientation`；`listbox` 的 `multiple` 删除，只保留 `selectionMode`；`kbd` 的单键与组合键统一为 `keys` 数组，默认仅展示，显式 `register` 后才注册监听；`grid` 的 `cols` / `span` / `offset` 增加运行时取值范围校验
+
+**行为**
+
+- 部件上同名事件处理器的执行顺序统一为「使用者的处理器先执行，部件的处理器后执行」；此前是否使用 `asChild` 会导致顺序相反。依赖部件先更新状态再读取的代码需改为微任务或变更回调
+- `pin-input` 改为按顺序录入，焦点落在第一个空格；`mention` 的输入框改为单行；`number-field` 的 `control` 部件改为必需
+- `combobox`、`tree-select`、`cascader`、`transfer` 的原生表单提交改为每个选中值一个同名隐藏字段，不再以逗号拼接；`cascader` 的 `value` 对非数组、混合类型、空路径一律拒绝
+- `FieldControl` 与 `asChild` 的组合宿主改为严格检查：Fragment 内唯一控件正常接线，零个或多个节点、非空文本混排时抛出错误，不再降级生成默认按钮
+- `@xihan-ui/motion` 删除 `TweenEasing`、`tweenEasings`、`resolveTweenEasing`，统一使用 `EasingName`、`easing`、`resolveEasing`
+- 三端 `XhConfig.motion` 的隐式全局覆盖移除，视觉环境统一由 `createVisualEnvironmentController` 管理；表单字段标识统一为 `FormPath`，`XhFormFieldGroup` 的 `value` 更名为 `name`
+:::
+
+- **新增** `@xihan-ui/react`：React 19 适配器，覆盖全部 134 个组件。组件名与 Vue 侧一致（`Xh*`），受控 / 非受控与变更载荷为同一份合同，带载荷的插槽以函数式 children 提供，无需安装 provider
+- **新增** 20 个组件。数据录入：`calendar-range-picker`、`date-range-picker`、`time-range-picker`、`color-field`、`color-slider`、`color-swatch-picker`、`input-group`、`tag-group`；数据展示：`bar-code`（一维码，七种码制）、`color-swatch`；浮层：`command`（命令面板）；AI 对话：`approval`（危险动作执行前的人工确认）、`code-view`、`diff-view`（单栏与并排）、`markdown-stream`、`message-feed`、`prompt-input`、`question-flow`（执行前的澄清问卷）、`reasoning`、`tool-call`
+- **新增** 七轴视觉环境 `createVisualEnvironmentController`：色彩模式、品牌、密度、书写方向、对比度、动效、透明材质统一解析、继承、持久化并投影到根元素，局部作用域只影响自身子树；Portal 按实例桥接来源处的局部视觉环境
+- **新增** 按压通道：Space / Enter 与触屏按住时输出 `data-pressed`，与指针 `:active` 共用同一套按压样式，覆盖全库可按下的部件
+- **新增** 浮层退场生命周期由 Presence 租约管理：逻辑关闭后 `content` 立即设为 `inert` 并退出可访问树，Layer、消解层与焦点域在退场动画结束后释放；`dialog` / `drawer` 新增 `onExitComplete`
+- **新增** 集合类组件补齐三种非条目状态：`empty`、`loading`、`load-more-trigger`；`tree-select` 新增懒加载分支合同（`hasChildren`、`loadChildren({ node, signal })`）及 loading / error / retry / loaded-empty 状态结构
+- **新增** `tabs` 标签溢出时不再折行，改为沿主轴滚动：新增 `prev-trigger` / `next-trigger`，支持滚轮、焦点跟随与触屏拖动；segment 档的指示条改为滑动式
+- **新增** `layout` 的 `siderPresentation`（`inline` / `sheet`），`sheet` 档下侧栏以覆盖方式展开
+- **新增** `dialog` / `drawer` / `image-viewer` 的遮罩形态轴 `variant`；`scroll-area` 的边缘渐隐与到头状态；`scrollbar` 的 `anchor`
+- **新增** 浮层类与选择类组件的 Portal 部件支持实例级 `container`
+- **新增** 命令式对话框服务的 `actionError` / `onActionError({ cause })` 与可本地化的 `actionErrorText`；`popconfirm` 的 `onConfirm` 支持返回 `PromiseLike`；`form` 新增 `validationError` 状态与校验异常事件，字段状态轴接入 `text-field` 控件
+- **新增** Web Components 侧补齐四个命令式反馈服务；轻提示与通知的队列合并为一套
+- **新增** `@xihan-ui/tokens` 十二色相基础色板；`matrix-code` 新增 `data-matrix`、`gs1`、`pdf417`、`aztec` 码制；`tag` 新增 `ghost` 形态与 `readOnly`；`form` 的 `layout` 新增 `grid` 档
+- **新增** `cascader`、`transfer` 支持 `name` / `form` 原生表单提交，含禁用排除与原生重置
+- **新增** `RenderedBlock.source`：代码块与公式块在已消毒的 `html` 之外提供未转义的原文
+
+- **修复** 四个浮层以指针打开后关闭时，焦点未按键盘规格返回触发器
+- **修复** 皮肤自绘的状态字形（勾选、半选、分支箭头）统一按指示符档取尺，compact 密度下与标记盒尺寸不一致的问题：select、combobox、listbox、cascader、menubar、context-menu、steps、file-upload 等
+- **修复** 几何类过渡按角色选择曲线档；集合条目的描边色不再参与过渡，切换标签页时不再闪烁
+- **修复** 补齐 11 处缺失的读屏文案；补齐两个适配器未暴露的 headless 能力（七个浮层的 `dir`、五个元素的 `translations`、分页省略位浮层的四项）
+- **修复** Vue `date-picker` 挂载在 iframe 或其他 Document 时的运行时归属；`trackHoverIntent` 固定使用触发器所属的 Document
+- **修复** `pin-input` 受控模式下输入一位跳过一格；`tags-input` 就地编辑框宽度随内容变化，不再按原生 input 的 20 字符宽度展开；`carousel` 在减弱动效档下不再自动播放
+- **修复** 粗指针热区平移在 RTL 下行内方向反向，热区中心偏离宿主
+
+- **调整** 带边框的控件盒统一为浅边框不填底，与浮层面板、卡片使用同一条边线；字段类组件未传尺寸时统一宽度为 16rem
+- **调整** 侧栏导航当前项去掉起始侧 2px 竖线，只保留品牌淡底与字色；标签页 line / card 档的标签宽度随文字；导航菜单与锚点目录中指向当前页的链接绘制静态指示线
+- **调整** `toggle-group` 默认外观改为浅色胶囊分段控件，选中项使用品牌淡底；`kbd` 收敛为固定 24px 键帽，新增 `default` / `light` 两种外观；徽标 sm 档收为 14px
+- **调整** 菜单类组件接入集合条目配方：条目按压面由 300 改为 200，展开中的触发器改为中性面，浮层滚动条走 4px 档并增加 overscroll 隔离
+
 ## v1.1.0 (2026-08-31)
 
 - **新增** `sortable` 组件：列表 / 网格拖拽排序，拖动中其余条目实时让位，`sort` 事件直接给出重排好的 `ids`，键盘路径默认开着

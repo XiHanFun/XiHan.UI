@@ -1,1 +1,0 @@
-import{gc as e}from"./theme.D_5FEi5w.js";import{d as o,b as r,k as t,o as a}from"./framework.DxrHb2fb.js";const _=o({__name:"timer",setup(n){return(s,c)=>(a(),r(t(e),{value:754e3}))}});export{_ as default};

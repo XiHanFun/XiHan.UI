@@ -1,0 +1,1 @@
+import{m as r}from"./index.Dvd56iNz.js";import{d as a}from"./theme.MiIkzu77.js";import{d as s,o as t,c,B as m,E as i,k as n,F as l}from"./framework.DxrHb2fb.js";const k=s({__name:"05-tone",setup(p){const o=["brand","success","warning","danger","info"];return(u,d)=>(t(),c(l,null,m(o,e=>i(n(a),{key:e,icon:n(r),tone:e,size:"lg"},null,8,["icon","tone"])),64))}});export{k as default};

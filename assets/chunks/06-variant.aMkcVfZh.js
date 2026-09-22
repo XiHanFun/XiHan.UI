@@ -1,1 +1,0 @@
-import{fb as a}from"./theme.D_5FEi5w.js";import{d as r,o as t,c as o,E as e,k as n,F as s}from"./framework.DxrHb2fb.js";const _=r({__name:"06-variant",setup(l){return(c,i)=>(t(),o(s,null,[e(n(a),{label:"加载中"}),e(n(a),{variant:"ring",label:"加载中"}),e(n(a),{variant:"dots",label:"加载中"})],64))}});export{_ as default};
