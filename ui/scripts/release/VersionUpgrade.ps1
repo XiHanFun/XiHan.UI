@@ -28,9 +28,9 @@ function Read-JsonFile([string]$Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
 }
 
-# 版本真源取 kernel 的 package.json：库包锁步同版，kernel 的号就是整套库的号
-$kernelPkgPath = Join-Path $uiRoot 'packages\engine\kernel\package.json'
-$currentVersion = (Read-JsonFile $kernelPkgPath).version
+# 版本真源取 core 的 package.json：库包锁步同版，core 的号就是整套库的号
+$corePkgPath = Join-Path $uiRoot 'packages\engine\core\package.json'
+$currentVersion = (Read-JsonFile $corePkgPath).version
 
 Write-Output "当前版本：$currentVersion"
 
@@ -156,7 +156,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Error "changeset version 失败"
 }
 
-$newVersion = (Read-JsonFile $kernelPkgPath).version
+$newVersion = (Read-JsonFile $corePkgPath).version
 Write-Output ""
 Write-Output "版本已升到：$newVersion"
 
@@ -165,7 +165,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Error "升级之后库包版本仍不一致"
 }
 
-# kernel 在构建期把 package.json 的 version 内联进产物（XIHAN_UI_METADATA.version），
+# core 在构建期把 package.json 的 version 内联进产物（XIHAN_UI_METADATA.version），
 # 不重新构建的话产物里还是上一个号，装的人会看到 core.version-mismatch。
 # TURBO_FORCE 绕开缓存：这个仓出现过该重跑却命中缓存的情况
 Write-Output ""
