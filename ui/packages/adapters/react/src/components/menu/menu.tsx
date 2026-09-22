@@ -10,7 +10,7 @@ import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, Me
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { mergeProps } from '@xihan-ui/core'
+import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
 import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
@@ -359,16 +359,55 @@ function DefaultTree(props: {
     <>
       <XhMenuTrigger asChild={props.triggerAsChild}>{props.trigger}</XhMenuTrigger>
       <XhMenuPositioner>
-        <XhMenuContent>
-          {props.collection.map((node, index) => (
-            // 首条上的标记不产出分隔线：菜单开头不留一道空隔
-            <Fragment key={node.value}>
-              {index > 0 && node.separatorBefore ? <XhMenuSeparator /> : null}
-              <XhMenuItem value={node.value}>{props.renderItem?.(node) ?? node.label}</XhMenuItem>
-            </Fragment>
-          ))}
-        </XhMenuContent>
+        <XhMenuContent>{renderNodes(props.collection, props.renderItem)}</XhMenuContent>
       </XhMenuPositioner>
     </>
+  )
+}
+
+/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
+function renderNodes(
+  collection: readonly MenuNodeMeta[],
+  renderItem?: (node: MenuNodeMeta) => ReactNode,
+): ReactNode[] {
+  return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
+    const head = run[0]!
+    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
+    const lead = runIndex > 0 && head.separatorBefore ? <XhMenuSeparator /> : null
+    if (head.group == null) {
+      return (
+        <Fragment key={head.value}>
+          {lead}
+          {renderItemNode(head, renderItem)}
+        </Fragment>
+      )
+    }
+    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
+    return (
+      <Fragment key={`group:${head.group}`}>
+        {lead}
+        <XhMenuGroup value={head.group}>
+          {groupLabel != null ? <XhMenuGroupLabel>{groupLabel}</XhMenuGroupLabel> : null}
+          {run.map((node, index) => (
+            <Fragment key={node.value}>
+              {index > 0 && node.separatorBefore ? <XhMenuSeparator /> : null}
+              {renderItemNode(node, renderItem)}
+            </Fragment>
+          ))}
+        </XhMenuGroup>
+      </Fragment>
+    )
+  })
+}
+
+/** 单个条目：写了 renderItem 即整条交给作者，没写就铺 label。 */
+function renderItemNode(
+  meta: MenuNodeMeta,
+  renderItem?: (node: MenuNodeMeta) => ReactNode,
+): ReactNode {
+  return (
+    <XhMenuItem key={meta.value} value={meta.value}>
+      {renderItem?.(meta) ?? meta.label}
+    </XhMenuItem>
   )
 }

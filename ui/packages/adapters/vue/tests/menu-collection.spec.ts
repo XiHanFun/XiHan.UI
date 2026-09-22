@@ -151,6 +151,84 @@ describe('menu 的 collection', () => {
     w.unmount()
   })
 
+  it('相邻同 group 的条目收进同一个 group，标题取本组首个写了 groupLabel 的那条', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [
+            { value: 'compact', label: '紧凑', group: 'density', groupLabel: '行高' },
+            { value: 'comfortable', label: '宽松', group: 'density' },
+            { value: 'sidebar', label: '侧栏', group: 'panels', groupLabel: '面板', separatorBefore: true },
+            { value: 'inspector', label: '属性面板', group: 'panels' },
+          ] satisfies MenuNode[],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    expect(partNames(document.body)).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'group',
+      'group-label',
+      'item',
+      'item',
+      // 领头一个分组的那条，分隔线画在 group 外面
+      'separator',
+      'group',
+      'group-label',
+      'item',
+      'item',
+    ])
+    const labelEls = [...document.body.querySelectorAll('[data-part="group-label"]')]
+    expect(labelEls.map(el => el.textContent)).toEqual(['行高', '面板'])
+    // 分组标题不是条目，只能靠 aria-labelledby 挂上来；两个组各认各的那一条
+    const groups = [...document.body.querySelectorAll('[data-part="group"]')]
+    expect(groups.map(el => el.getAttribute('role'))).toEqual(['group', 'group'])
+    expect(groups.map(el => el.getAttribute('aria-labelledby'))).toEqual(labelEls.map(el => el.id))
+    w.unmount()
+  })
+
+  it('没写 group 的条目直接落在 content 上，与分组段互不影响', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [
+            { value: 'undo', label: '撤销' },
+            { value: 'compact', label: '紧凑', group: 'density', groupLabel: '行高' },
+            { value: 'reset', label: '重置' },
+          ] satisfies MenuNode[],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    expect(partNames(document.body)).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'item',
+      'group',
+      'group-label',
+      'item',
+      'item',
+    ])
+    w.unmount()
+  })
+
+  it('同组内部写的分隔标记留在组里，不跑到 group 外面', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [
+            { value: 'compact', label: '紧凑', group: 'density', groupLabel: '行高' },
+            { value: 'comfortable', label: '宽松', group: 'density', separatorBefore: true },
+          ] satisfies MenuNode[],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    const group = document.body.querySelector('[data-part="group"]')!
+    expect(partNames(group)).toEqual(['group-label', 'item', 'separator', 'item'])
+    w.unmount()
+  })
+
   it('triggerAsChild 让代铺那条路借用作者的节点当触发器', () => {
     const w = mount(defineComponent({
       setup: () => () => h('div', [

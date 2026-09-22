@@ -9,7 +9,7 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { mergeProps } from '@xihan-ui/core'
+import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
@@ -333,11 +333,42 @@ function renderDefaultTree(
   return [
     h(XhMenuTrigger, { asChild: triggerAsChild }, () => trigger ?? []),
     h(XhMenuPositioner, null, () => [
-      h(XhMenuContent, null, () => collection.flatMap((node, index) => [
-        // 首条上的标记不产出分隔线：菜单开头不留一道空隔
-        ...(index > 0 && node.separatorBefore ? [h(XhMenuSeparator, { key: `separator:${node.value}` })] : []),
-        h(XhMenuItem, { key: node.value, value: node.value }, () => itemSlot?.(node) ?? node.label),
-      ])),
+      h(XhMenuContent, null, () => renderNodes(collection, itemSlot)),
     ]),
   ]
+}
+
+/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
+function renderNodes(
+  collection: readonly MenuNodeMeta[],
+  itemSlot?: (node: MenuNodeMeta) => VNode[],
+): VNode[] {
+  return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
+    const head = run[0]!
+    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
+    const lead = runIndex > 0 && head.separatorBefore
+      ? [h(XhMenuSeparator, { key: `separator:${head.value}` })]
+      : []
+    if (head.group == null)
+      return [...lead, renderItem(head, itemSlot)]
+    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
+    return [
+      ...lead,
+      h(XhMenuGroup, { key: `group:${head.group}`, value: head.group }, () => [
+        ...(groupLabel != null ? [h(XhMenuGroupLabel, null, () => groupLabel)] : []),
+        ...run.flatMap((node, index) => [
+          ...(index > 0 && node.separatorBefore ? [h(XhMenuSeparator, { key: `separator:${node.value}` })] : []),
+          renderItem(node, itemSlot),
+        ]),
+      ]),
+    ]
+  })
+}
+
+/** 单个条目：写了 item 插槽即整条交给作者，没写就铺 label。 */
+function renderItem(
+  meta: MenuNodeMeta,
+  itemSlot?: (node: MenuNodeMeta) => VNode[],
+): VNode {
+  return h(XhMenuItem, { key: meta.value, value: meta.value }, () => itemSlot?.(meta) ?? meta.label)
 }

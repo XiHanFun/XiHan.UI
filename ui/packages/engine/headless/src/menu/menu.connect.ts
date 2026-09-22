@@ -37,12 +37,14 @@ export function connectMenu<T extends PropTypes>(
   const typeaheadOn = prop('typeahead') ?? true
   const menuDisabled = !!prop('disabled')
 
-  // collection 推出的条目元信息：显示文本、禁用与逐条语气都在这里定案，条目部件只报 value
+  // collection 推出的条目元信息：显示文本、禁用、逐条语气与分组都在这里定案，条目部件只报 value
   const collection: MenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
+    group: node.group ?? null,
+    groupLabel: node.groupLabel ?? null,
     separatorBefore: !!node.separatorBefore,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
