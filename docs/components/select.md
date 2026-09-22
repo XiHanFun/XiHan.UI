@@ -144,6 +144,12 @@ outline、subtle 和 ghost
 
 <XhDemo src="select/21-description" />
 
+### 行首与行尾
+
+两格交给作者，文字与副文本仍由数据铺
+
+<XhDemo src="select/22-prefix" />
+
 ## 设计指引
 
 ### 何时使用
