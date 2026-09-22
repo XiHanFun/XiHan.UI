@@ -1,4 +1,4 @@
-# BackTop 回到顶部 <Badge type="info" text="alpha" />
+# BackTop 回到顶部
 
 滚动超过指定距离后显示返回入口。
 

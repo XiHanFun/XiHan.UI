@@ -1,4 +1,4 @@
-# PinInput 分格输入 <Badge type="info" text="alpha" />
+# PinInput 分格输入
 
 把一串短码拆成若干格子，一格一个字符。
 

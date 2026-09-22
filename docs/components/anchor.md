@@ -1,4 +1,4 @@
-# Anchor 锚点 <Badge type="info" text="alpha" />
+# Anchor 锚点
 
 根据滚动位置高亮当前章节的目录。
 

@@ -1,4 +1,4 @@
-# NavigationMenu 导航菜单 <Badge type="info" text="alpha" />
+# NavigationMenu 导航菜单
 
 用于站点顶部的多级导航菜单。
 

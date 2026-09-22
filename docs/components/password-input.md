@@ -1,4 +1,4 @@
-# PasswordInput 密码输入 <Badge type="info" text="alpha" />
+# PasswordInput 密码输入
 
 一格密码框，带明暗切换按钮，并在大写锁定开启时给出提示。
 

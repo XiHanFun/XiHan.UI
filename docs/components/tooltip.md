@@ -1,4 +1,4 @@
-# Tooltip 文字提示 <Badge type="info" text="alpha" />
+# Tooltip 文字提示
 
 悬停或聚焦时出现的一句纯文字说明。
 

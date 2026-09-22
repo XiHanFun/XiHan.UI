@@ -1,4 +1,4 @@
-# TimeRangePicker 时间范围选择器 <Badge type="info" text="alpha" />
+# TimeRangePicker 时间范围选择器 <Badge type="tip" text="new" />
 
 将起止两组可键入的分段时间框、范围分隔符、时钟触发器和两组并排的分列选择浮层组合成一个字段。
 

@@ -1,4 +1,4 @@
-# MatrixCode 二维码 <Badge type="info" text="alpha" />
+# MatrixCode 二维码
 
 将一段文本绘制为二维码，`format` 选择码制。
 

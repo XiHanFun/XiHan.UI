@@ -1,4 +1,4 @@
-# Avatar 头像 <Badge type="info" text="alpha" />
+# Avatar 头像
 
 表示一个人或一个组织的圆形标识：优先显示图片，无法加载时回退到文字或图标。
 

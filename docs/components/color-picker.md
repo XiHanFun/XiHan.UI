@@ -1,4 +1,4 @@
-# ColorPicker 颜色选择器 <Badge type="info" text="alpha" />
+# ColorPicker 颜色选择器
 
 在色域中自由选取一个颜色：触发按钮显示当前色，浮层内包含取色面、色相与透明度两条滑块、数值框、屏幕取色与预设色板。它是颜色家族的组合件：两条滑块是[颜色滑块](./color-slider)，预设色板是[颜色色块选择器](./color-swatch-picker)，触发按钮内的色块与[颜色色块](./color-swatch)同族；只需要其中一件时不使用完整的选择器。
 

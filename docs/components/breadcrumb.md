@@ -1,4 +1,4 @@
-# Breadcrumb 面包屑 <Badge type="info" text="alpha" />
+# Breadcrumb 面包屑
 
 显示当前页面在信息层级中的位置。
 

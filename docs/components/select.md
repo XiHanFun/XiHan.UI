@@ -1,4 +1,4 @@
-# Select 选择器 <Badge type="info" text="alpha" />
+# Select 选择器
 
 从已知清单中选择一个或多个值，选项收在浮层内。
 

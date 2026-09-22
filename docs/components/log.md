@@ -1,4 +1,4 @@
-# Log 日志 <Badge type="info" text="alpha" />
+# Log 日志
 
 等宽排版的滚动区域，一行一条，可以自动跟随到底部。
 

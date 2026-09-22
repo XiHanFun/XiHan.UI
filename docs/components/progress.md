@@ -1,4 +1,4 @@
-# Progress 进度条 <Badge type="info" text="alpha" />
+# Progress 进度条
 
 表示一件事的完成程度。线形、环形与仪表盘三种形态。
 

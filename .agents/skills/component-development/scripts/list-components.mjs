@@ -10,14 +10,14 @@ await run(async () => {
   const root = await repoRoot()
   const manifestPath = join(root, 'ui', 'scripts', 'component-docs.manifest.json')
   const { value: manifest } = await readJson(manifestPath, '组件文档清单')
-  const stable = new Set(manifest.stableComponents)
   const [rawKeyword] = positional(process.argv)
   const keyword = rawKeyword?.toLowerCase()
+  // 清单条目缺省即正式；alpha / new / updated 逐条写在 status 上
   const rows = manifest.categories.flatMap(category => category.components.map(component => ({
     id: component.id,
     name: component.name,
     category: category.label,
-    status: stable.has(component.id) ? 'stable' : (component.status ?? 'alpha'),
+    status: component.status ?? 'stable',
   }))).filter(row => !keyword
     || row.id.includes(keyword)
     || row.name.toLowerCase().includes(keyword)

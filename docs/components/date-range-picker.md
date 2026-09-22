@@ -1,4 +1,4 @@
-# DateRangePicker 日期范围选择器 <Badge type="info" text="alpha" />
+# DateRangePicker 日期范围选择器
 
 将起止两组可键入的分段日期框、范围分隔符、日历触发器和范围日历浮层组合成一个字段。
 

@@ -1,4 +1,4 @@
-# SignaturePad 签名板 <Badge type="info" text="alpha" />
+# SignaturePad 签名板
 
 用指针书写的画布：按下落笔、移动成迹、抬起收笔，输出可缩放、可直接提交的 SVG。
 

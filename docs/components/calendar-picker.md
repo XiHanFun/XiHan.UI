@@ -1,4 +1,4 @@
-# CalendarPicker 日历选择器 <Badge type="info" text="alpha" />
+# CalendarPicker 日历选择器
 
 以天、周、月、季度或年为周期浏览并选择一个或多个日期，也可以在日期格中展示日程内容。
 

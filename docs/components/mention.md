@@ -1,4 +1,4 @@
-# Mention 提及 <Badge type="info" text="alpha" />
+# Mention 提及
 
 在正文中输入前缀字符后弹出候选，选中后把引用插入文本。
 

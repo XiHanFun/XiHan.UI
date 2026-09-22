@@ -1,4 +1,4 @@
-# Command 命令面板 <Badge type="info" text="alpha" />
+# Command 命令面板
 
 覆盖在页面上的检索面板：输入筛选命令，方向键选择，回车执行。
 

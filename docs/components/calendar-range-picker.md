@@ -1,4 +1,4 @@
-# CalendarRangePicker 日历范围选择器 <Badge type="info" text="alpha" />
+# CalendarRangePicker 日历范围选择器
 
 在日历网格中先选起点再选终点，选出一段连续的天、周、月、季度或年。
 

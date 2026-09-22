@@ -1,4 +1,4 @@
-# Timer 计时器 <Badge type="info" text="alpha" />
+# Timer 计时器
 
 一段可正计时或倒计时的时长：可启动、暂停、继续、归零。
 
