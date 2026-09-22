@@ -2,7 +2,9 @@
 //
 // tabs / toolbar / menubar / navigation-menu / segmented 五条带子都是一行 flex，
 // 条目一律 white-space: nowrap，条目多了整条就从容器里顶出去——末尾几项既看不见也点不到。
-// 兜底是折行，一条规则同时管住窄视口与窄容器两种情形，不掺任何宽度查询。
+// toolbar / menubar / navigation-menu / segmented 的兜底是折行，一条规则同时管住窄视口与窄容器两种情形，
+// 不掺任何宽度查询；tabs 不折行：标签带只裁主轴，放不下的那截由位移（两端翻页钮 / 滚轮 / 焦点）露出，
+// 位移本身归 tabs-scroll.spec，这里只钉它裁得住、条目一个不少。
 // toggle-group 与 button-group 是焊成一条的连续分段，不折行：窄容器由作者改竖排或全宽。
 //
 // 夹具手写连接层投影的标记：归族的条目（tabs line 页签、toggle-group 段、button）带上家族角色属性，
@@ -118,6 +120,9 @@ const BARS: [string, string, string][] = [
   ['segmented', SEGMENTED, 'item'],
 ]
 
+/** 靠折行收住的那几条；tabs 靠位移，另测 */
+const WRAPPING_BARS = BARS.filter(([name]) => name !== 'tabs')
+
 afterEach(() => {
   frame?.remove()
   frame = null
@@ -134,7 +139,7 @@ describe('横向控件带排不下时的兜底', () => {
     expect(boxOverflow(260, html)).toBe(0)
   })
 
-  it.each(BARS)('%s 收得住靠的是折行，不是把条目压没', (_name, html, part) => {
+  it.each(WRAPPING_BARS)('%s 收得住靠的是折行，不是把条目压没', (_name, html, part) => {
     const narrow = mount(260, html)
     expect(rowsOf(narrow, part)).toBeGreaterThan(1)
     // 条目一个不少，每个都还有宽度
@@ -142,6 +147,19 @@ describe('横向控件带排不下时的兜底', () => {
     expect(nodes.length).toBeGreaterThan(0)
     for (const node of nodes)
       expect(node.offsetWidth).toBeGreaterThan(0)
+  })
+
+  it('tabs 收得住靠的是标签带只裁主轴：仍是一行、条目一个不少也不压扁，被裁的那截等位移露出', () => {
+    const narrow = mount(260, TABS)
+    expect(rowsOf(narrow, 'trigger')).toBe(1)
+    const list = narrow.querySelector('[data-scope="tabs"][data-part="list"]') as HTMLElement
+    expect(getComputedStyle(list).overflowX).toBe('clip')
+    const triggers = [...narrow.querySelectorAll('[data-scope="tabs"][data-part="trigger"]')] as HTMLElement[]
+    expect(triggers.length).toBeGreaterThan(0)
+    for (const trigger of triggers)
+      expect(trigger.scrollWidth).toBeLessThanOrEqual(trigger.clientWidth)
+    // 末尾的标签排在标签带之外、被裁掉，不是掉到下一行
+    expect(triggers.at(-1)!.getBoundingClientRect().right).toBeGreaterThan(list.getBoundingClientRect().right)
   })
 
   it.each(BARS)('%s 排得下时仍是一行', (_name, html, part) => {
@@ -179,14 +197,15 @@ describe('折行不改单行时的几何', () => {
     expect(rowsOf(wide, 'trigger')).toBe(1)
   })
 
-  it('tabs 归族后下限仍按文字算：等分带宽排不下时折行，不把标签压到文字之下', () => {
-    // 家族基础块给条目写了 min-inline-size: 0；标签横排按 flex: 1 1 0 等分带宽，
-    // 下限归零就只会被压扁再横向顶出去，永远等不到折行那一刻
+  it('tabs 归族后下限仍按文字算：排不下时不把标签压到文字之下，宽仍与排得下时相同', () => {
+    // 家族基础块给条目写了 min-inline-size: 0；下限归零的话排不下时标签会被压到文字之下
+    const wide = mount(1280, TABS)
+    const widths = ([...wide.querySelectorAll('[data-scope="tabs"][data-part="trigger"]')] as HTMLElement[]).map(el => el.offsetWidth)
     const narrow = mount(260, TABS)
     const triggers = [...narrow.querySelectorAll('[data-scope="tabs"][data-part="trigger"]')] as HTMLElement[]
+    expect(triggers.map(el => el.offsetWidth)).toEqual(widths)
     for (const trigger of triggers)
       expect(trigger.scrollWidth).toBeLessThanOrEqual(trigger.clientWidth)
-    expect(rowsOf(narrow, 'trigger')).toBeGreaterThan(1)
   })
 })
 

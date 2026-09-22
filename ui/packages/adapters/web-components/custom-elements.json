@@ -50760,6 +50760,14 @@
               "name": "separator"
             },
             {
+              "description": "标签带放不下时的往前翻页钮，须位于 list 中；对读屏隐藏、不占 Tab 位，放得下时 hidden",
+              "name": "prev-trigger"
+            },
+            {
+              "description": "标签带放不下时的往后翻页钮，与 prev-trigger 成对",
+              "name": "next-trigger"
+            },
+            {
               "description": "role=tab 的标签按钮，须自带 value 属性标识身份",
               "name": "trigger"
             },
@@ -51169,6 +51177,15 @@
             },
             {
               "name": "--xh-tabs-list-radius"
+            },
+            {
+              "name": "--xh-tabs-scroll-icon-size"
+            },
+            {
+              "name": "--xh-tabs-scroll-trigger-bg"
+            },
+            {
+              "name": "--xh-tabs-scroll-trigger-fg"
             },
             {
               "name": "--xh-tabs-separator-color"

@@ -57,6 +57,8 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 list 部件平级（root 自身不带角色，无法进入 role=tablist 的子节点集合）
  * @csspart indicator - 选中标签下的滑条，须位于 list 中；对读屏隐藏，位置由状态机测量后写为内联样式
  * @csspart separator - 标签之间的细分隔线，对读屏隐藏
+ * @csspart prev-trigger - 标签带放不下时的往前翻页钮，须位于 list 中；对读屏隐藏、不占 Tab 位，放得下时 hidden
+ * @csspart next-trigger - 标签带放不下时的往后翻页钮，与 prev-trigger 成对
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
  * @csspart tab-drag-trigger - 标签拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由标签带上的 Alt + 方向键承担
@@ -199,6 +201,18 @@ export class XhTabsElement extends XhElement {
 
     for (const el of this.getParts('separator'))
       this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+
+    // 翻页钮：放得下时 hidden，按本帧产出的 hidden 用内联 display 收起（与 indicator 同一路）
+    const prevProps = api.getPrevTriggerProps() as Record<string, unknown>
+    for (const prev of this.getParts('prev-trigger')) {
+      this.spreader.spread(prev, prevProps)
+      this.setPartHidden(prev, prevProps.hidden === true)
+    }
+    const nextProps = api.getNextTriggerProps() as Record<string, unknown>
+    for (const next of this.getParts('next-trigger')) {
+      this.spreader.spread(next, nextProps)
+      this.setPartHidden(next, nextProps.hidden === true)
+    }
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
     for (const el of this.getParts('trigger')) {

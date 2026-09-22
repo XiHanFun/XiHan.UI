@@ -16,6 +16,9 @@ export const tabsAnatomy = createAnatomy('tabs', [
   'indicator',
   // 标签之间的细分隔线，纯装饰
   'separator',
+  // 标签带放不下时的前后翻页钮：贴在标签带两端，只在溢出时显示，鼠标专用（键盘用方向键、焦点自带滚动）
+  'prev-trigger',
+  'next-trigger',
   'content',
   'tab-drag-trigger',
   'live-region',

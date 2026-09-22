@@ -107,8 +107,10 @@ export function XhTabsList({ children, ...rest }: XhTabsListProps): ReactNode {
   const ctx = useTabsContext()
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，标签得焦也会把它叫起来，那一下会把焦点从标签抢回锚点上——
-  // 装成原生监听器，到达路径才与另外两家一致。onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它
-  const bind = useNativeEvents(ctx.api.getListProps() as Record<string, unknown>, ['onFocus'])
+  // 装成原生监听器，到达路径才与另外两家一致。onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它。
+  // onWheel 同样装成原生监听器：React 把 wheel 委派在根容器上且登记为被动监听器，
+  // 标签带挪不动时要 preventDefault 拦住页面横向滚动，被动路径上那一下是空操作
+  const bind = useNativeEvents(ctx.api.getListProps() as Record<string, unknown>, ['onFocus', 'onWheel'])
   return (
     <div
       {...mergeReactProps(
@@ -135,6 +137,23 @@ export interface XhTabsSeparatorProps extends ComponentPropsWithRef<'div'> {}
 export function XhTabsSeparator({ children, ...rest }: XhTabsSeparatorProps): ReactNode {
   const ctx = useTabsContext()
   return <div {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
+export interface XhTabsPrevTriggerProps extends ComponentPropsWithRef<'button'> {}
+/**
+ * 标签带的往前翻页钮：标签带放不下时露面，贴在起始端；没塞内容时由皮肤画一枚 chevron。
+ * 放在 list 里、与标签平级；对读屏隐藏、不占 Tab 位——键盘用方向键在标签间移动即可。
+ */
+export function XhTabsPrevTrigger({ children, ...rest }: XhTabsPrevTriggerProps): ReactNode {
+  const ctx = useTabsContext()
+  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhTabsNextTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签带的往后翻页钮：与 XhTabsPrevTrigger 成对，贴在结束端。 */
+export function XhTabsNextTrigger({ children, ...rest }: XhTabsNextTriggerProps): ReactNode {
+  const ctx = useTabsContext()
+  return <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
 export interface XhTabsLiveRegionProps extends ComponentPropsWithRef<'div'> {}

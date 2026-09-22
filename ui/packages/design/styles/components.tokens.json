@@ -61576,19 +61576,27 @@
       "name": "--xh-tabs-list-p",
       "component": "tabs",
       "part": [
-        "list"
+        "list",
+        "next-trigger",
+        "prev-trigger"
       ],
       "property": [
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline",
+        "inset-inline-end",
+        "inset-inline-start",
         "padding"
       ],
       "state": [
-        "default"
+        "default",
+        "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-_tabs-list-p"
       ],
       "visibility": "public",
-      "description": "tabs 的 list 部件 padding 覆盖槽。"
+      "description": "tabs 的 list、next-trigger、prev-trigger 部件 inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start、padding 覆盖槽。"
     },
     {
       "name": "--xh-tabs-list-radius",
@@ -61607,6 +61615,65 @@
       ],
       "visibility": "public",
       "description": "tabs 的 list 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-tabs-scroll-icon-size",
+      "component": "tabs",
+      "part": [
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-tabs-scroll-trigger-bg",
+      "component": "tabs",
+      "part": [
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-_tabs-scroll-trigger-bg"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tabs-scroll-trigger-fg",
+      "component": "tabs",
+      "part": [
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 next-trigger、prev-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-separator-color",
@@ -62068,19 +62135,23 @@
       "name": "--xh-tabs-trigger-h",
       "component": "tabs",
       "part": [
+        "next-trigger",
+        "prev-trigger",
         "trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
         "--xh-_tabs-trigger-h"
       ],
       "visibility": "public",
-      "description": "tabs 的 trigger 部件 block-size 覆盖槽。"
+      "description": "tabs 的 next-trigger、prev-trigger、trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-px",

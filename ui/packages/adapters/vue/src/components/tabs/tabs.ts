@@ -101,6 +101,27 @@ export const XhTabsSeparator = defineComponent({
 })
 
 /**
+ * 标签带的往前翻页钮：标签带放不下时露面，贴在起始端；没塞内容时由皮肤画一枚 chevron。
+ * 放在 list 里、与标签平级；对读屏隐藏、不占 Tab 位——键盘用方向键在标签间移动即可。
+ */
+export const XhTabsPrevTrigger = defineComponent({
+  name: 'XhTabsPrevTrigger',
+  setup(_, { slots }) {
+    const ctx = useTabsContext()
+    return () => h('button', ctx.api.value.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标签带的往后翻页钮：与 XhTabsPrevTrigger 成对，贴在结束端。 */
+export const XhTabsNextTrigger = defineComponent({
+  name: 'XhTabsNextTrigger',
+  setup(_, { slots }) {
+    const ctx = useTabsContext()
+    return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
  * 拖动过程的读屏播报区，视觉上不可见。
  *
  * 放在 root 中、与 list 部件平级。它必须在拖动开始之前就在 DOM 上：

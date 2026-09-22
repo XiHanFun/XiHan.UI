@@ -929,6 +929,7 @@
       "image-viewer",
       "pagination",
       "question-flow",
+      "tabs",
       "tour"
     ],
     "next-year-trigger": [
@@ -1030,6 +1031,7 @@
       "image-viewer",
       "pagination",
       "question-flow",
+      "tabs",
       "tour"
     ],
     "prev-year-trigger": [
