@@ -32,8 +32,19 @@ let current: XhConfig = {}
 let currentVisualEnvironment: VisualEnvironmentController | undefined
 const listeners = new Set<() => void>()
 
+let generation = 0
+
+/**
+ * 配置解析的代号。沿祖先链解析一次要逐层判「这一层是不是 <xh-config>」，而状态机每读一个
+ * prop 都会解析一遍；拿这个数当钥匙就能把解析结果存下来，元素自己换位置时另行作废。
+ */
+export function xhConfigGeneration(): number {
+  return generation
+}
+
 /** 配置变了就叫一遍：全局那份改了、任一 <xh-config> 改了或进出文档，都走这里。 */
 export function notifyXhConfigChange(): void {
+  generation += 1
   for (const listener of [...listeners]) listener()
 }
 

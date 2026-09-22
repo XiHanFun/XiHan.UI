@@ -202,6 +202,28 @@ describe('接到真元素上', () => {
     expect(element.querySelector('[data-xh-part="close-trigger"]')?.getAttribute('aria-label')).toBe('Close')
   })
 
+  it('把元素搬进另一棵 <xh-config> 子树，文案跟着换那一层的', async () => {
+    // 配置解析结果按配置代号缓存，而搬家不改代号：断开再接上那一程必须把它作废
+    const host = document.createElement('div')
+    host.innerHTML = `<xh-config id="left"></xh-config><xh-config id="right"></xh-config>`
+    document.body.append(host)
+    const left = host.querySelector<HTMLElement & { translations?: unknown }>('#left')!
+    const right = host.querySelector<HTMLElement & { translations?: unknown }>('#right')!
+    left.translations = { dialog: { close: '左' } }
+    right.translations = { dialog: { close: '右' } }
+
+    left.innerHTML = html
+    const element = left.firstElementChild as Updatable
+    await element.updateComplete
+    await element.updateComplete
+    expect(element.querySelector('[data-xh-part="close-trigger"]')?.getAttribute('aria-label')).toBe('左')
+
+    right.append(element)
+    await element.updateComplete
+    await element.updateComplete
+    expect(element.querySelector('[data-xh-part="close-trigger"]')?.getAttribute('aria-label')).toBe('右')
+  })
+
   it('切语言时已挂载的元素跟着重渲', async () => {
     setXhConfig({ translations: { dialog: { close: '关闭' } } })
     const element = await mount(html)
