@@ -42,6 +42,12 @@
 
 <XhDemo src="menu/04-submenu" />
 
+### 破坏性命令
+
+用语气把删除一类命令与其余区分开
+
+<XhDemo src="menu/05-tone" />
+
 ## 设计指引
 
 ### 何时使用
@@ -57,6 +63,7 @@
 ### 特性
 
 - `collection` 可直接生成条目、分组、标记位和分隔线。
+- 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 支持方向键、首字符检索、禁用条目和多级子菜单。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
 - 条目可组合图标、文字、说明和快捷键提示。
@@ -68,7 +75,7 @@
 
 ### 最佳实践
 
-- 破坏性命令放在末尾，并与普通命令分隔。
+- 破坏性命令放在末尾、与普通命令分隔，并同时给出 `danger` 语气和图标。
 - 条目使用简短的动宾短语。
 - 仅为已注册的快捷键显示提示。
 
@@ -93,14 +100,14 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `MenuNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `collection` | `MenuNode[]` |  | 条目数据，显示文本、禁用与逐条语气的事实源。提供后条目部件只需声明 value。 未提供时回到这些事实都写在条目部件上的方式（语气写成条目的 `data-tone`）。 |
 | `open` | `boolean` |  | 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮使用哪族颜色。 |
+| `tone` | `Tone` |  | 整张菜单的语气：brand / neutral / success / warning / danger / info。 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档， 逐条的语气写在 collection 的 `tone` 上（见 MenuNode）。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `typeahead` | `boolean` |  | 首字符连打检索，默认开启。 |
 | `disabled` | `boolean` |  | 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled。 |
@@ -248,6 +255,7 @@
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
