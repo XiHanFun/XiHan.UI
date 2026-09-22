@@ -50,7 +50,7 @@ git add -A && git commit -m "release: @xihan-ui/* 1.0.0-alpha.1"
 git tag v1.0.0-alpha.1 && git push origin v1.0.0-alpha.1
 ```
 
-`v*` tag 推上去后工作流构建、跑 publint / attw、把 npm 上还没有的版本发出去；
+`v*` tag 推上去后工作流构建、把 npm 上还没有的版本发出去（publint / attw 等检查归 `ci.yml`，发布链不重跑）；
 也可以在 Actions 页手动 `Run workflow`（`workflow_dispatch`）发布当前 `main`。
 GitHub Release 之后自己在 Releases 页新建。
 
