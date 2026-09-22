@@ -263,6 +263,24 @@ describe('条目高亮标记', () => {
     expect((h.api().getItemProps({ value: 'copy' }) as Dict)['data-tone']).toBeUndefined()
   })
 
+  it('分组身份与标题原样进元信息，未写时为 null', () => {
+    const h = mount({
+      collection: [
+        { value: 'compact', label: '紧凑', group: 'density', groupLabel: '行高' },
+        { value: 'comfortable', label: '宽松', group: 'density' },
+        { value: 'reset', label: '重置' },
+      ],
+    })
+    expect(h.api().collection.map(node => [node.group, node.groupLabel])).toEqual([
+      ['density', '行高'],
+      ['density', null],
+      [null, null],
+    ])
+    // 分组标题的 id 由 group 身份派生，group 与 group-label 靠它互相认领
+    const label = h.api().getGroupLabelProps({ value: 'density' }) as Dict
+    expect((h.api().getGroupProps({ value: 'density' }) as Dict)['aria-labelledby']).toBe(label.id)
+  })
+
   it('没有 collection 时条目不发 data-tone：作者直接写在部件上的那份原样留着', () => {
     const h = mount({ tone: 'danger' })
     const props = h.api().getItemProps({ value: 'copy' }) as Dict

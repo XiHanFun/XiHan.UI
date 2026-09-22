@@ -58,7 +58,11 @@ export interface MenuNode {
    * 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。
    */
   tone?: Tone
-  /** 本条之前绘制一条分隔线；写在首条上不产出分隔线。 */
+  /** 归属分组的身份值；相邻同值的条目收进同一个 group 部件。未提供时本条直接落在 content 上。 */
+  group?: string
+  /** 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 */
+  groupLabel?: string
+  /** 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 */
   separatorBefore?: boolean
 }
 
@@ -70,6 +74,10 @@ export interface MenuNodeMeta {
   disabled: boolean
   /** 该条命令自身的语气；未提供时为 null。 */
   tone: Tone | null
+  /** 分组身份；未提供时为 null。 */
+  group: string | null
+  /** 分组标题；未提供时为 null。 */
+  groupLabel: string | null
   separatorBefore: boolean
 }
 
@@ -91,7 +99,7 @@ export interface MenuGroupProps {
 export interface MenuSchema extends MachineSchema {
   props: {
     /**
-     * 条目数据，显示文本、禁用与逐条语气的事实源。提供后条目部件只需声明 value。
+     * 条目数据，显示文本、禁用、逐条语气与分组的事实源。提供后条目部件只需声明 value。
      * 未提供时回到这些事实都写在条目部件上的方式（语气写成条目的 `data-tone`）。
      */
     collection?: MenuNode[]
