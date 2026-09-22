@@ -66,6 +66,9 @@ export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
   const axes = options.axes ?? DEFAULT_AXES
   const scope = options.scope ?? createScope(null, createVueIdGenerator())
   const bars: Bar[] = []
+  // 建齐没有：第一条轴的机器在循环里就要读 gutter，那时数组还没填满。这一位必须是响应式的，
+  // props 取值器读到的一切都要能让依赖它的计算失效，普通数组的长度做不到。
+  const built = ref(0)
 
   /**
    * 该轴的滚动条当前常驻在场。判据不经 api：api 中就要读 gutter，读回来会形成循环，
@@ -79,7 +82,7 @@ export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
   }
 
   /** 两条轴都在场：各自在末端让出交叉口一格，只有一条时不让，避免滑块行程无故缩短。 */
-  const both = (): boolean => axes.length > 1 && bars.length === axes.length && bars.every(standing)
+  const both = (): boolean => axes.length > 1 && built.value === axes.length && bars.every(standing)
 
   for (const axis of axes) {
     const rootRef = ref<HTMLElement | null>(null)
@@ -102,6 +105,7 @@ export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
       rootRef,
       trackRef,
     })
+    built.value = bars.length
   }
 
   /** 交叉口补丁只写在竖条中；只有一条轴在场时右下角没有缺口需要补，收起以免无故遮住一块内容。 */

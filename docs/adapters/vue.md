@@ -175,7 +175,9 @@ const { api } = useAccordion(
 | `flush` | `nextTick` |
 | `onMount` / `onCleanup` | `onMounted` / `onBeforeUnmount`（不在组件内则立即执行 / 忽略） |
 
-`useMachine(machine, props, scope)` 封装了它。props 传的是 getter 而不是对象，每次展开为新对象使状态机的身份缓存失效，因此在模板中原地修改某个 prop 也能生效。
+`useMachine(machine, props, scope)` 封装了它。props 传的是 getter 而不是对象，因此在模板中原地修改某个 prop 也能生效。
+
+getter 的求值放在一个 `computed` 里：连接层每读一个 prop 都会经过它，依赖没动时复用同一份展开结果（状态机的身份缓存跟着命中），依赖一动就产出新对象，身份缓存照旧失效。失效面与组件自己的重渲一致，getter 因此必须只读响应式来源——组件 props、`attrs`、ref、注入的上下文、全局配置。读普通变量或普通数组的长度不会让它重算；那类来源本来也驱动不了 `computed(() => connectX(...))` 的重算，只是以前靠每次重新展开碰巧读到过新值。
 
 ## 行为原语
 

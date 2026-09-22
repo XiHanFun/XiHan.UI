@@ -10,7 +10,7 @@ import type { MaybeRefOrGetter } from 'vue'
 import type { VueRuntimeOptions } from './create-vue-runtime'
 import { VERSION as CORE_VERSION, createService, isDev } from '@xihan-ui/core'
 import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/core/metadata'
-import { toValue } from 'vue'
+import { computed, toValue } from 'vue'
 import { version as VUE_VERSION } from '../../package.json'
 import { attachFormReset } from './attach-form-reset'
 import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
@@ -48,9 +48,13 @@ export function useMachine<T extends MachineSchema>(
   // 全局配置在这一处并进来：所有跑机器的组件都从这里取 props，不必逐个接线。
   // 与 WC 侧 MachineController 里那一处对位，两个适配器的生效面因此一致
   const config = useXhConfigDefaults()
+  // service 的 props() 调用极频繁：连接层每读一个 prop 就走一遍。放进 computed 里，
+  // 响应式依赖没动时复用同一份展开结果（machine 的身份缓存跟着命中），
+  // 依赖一动就产出新对象，身份缓存照旧失效。组件的 props、attrs、注入的上下文与全局配置
+  // 都是响应式的，缓存的失效面与组件自己的重渲一致。
+  const props = computed(() => applyXhConfigDefaults(machine.name, { ...toValue(userProps) }, config()))
   const service = createService(machine, {
-    // 每次展开成新对象，让 machine 的身份缓存失效
-    props: () => applyXhConfigDefaults(machine.name, { ...toValue(userProps) }, config()) as never,
+    props: () => props.value as never,
     runtime: createVueRuntime({ start: options.start }),
     scope,
   })
