@@ -317,6 +317,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 边缘渐隐只在 ScrollArea 的 fade 变体与 Marquee 提供；粘底只由 Core `createStickToBottom` 提供。
 - 滑块色阶维持 15 / 25 / 35% 三级；文档站页面滚动条与组件滚动条同一 `type`，不另写覆写。
 - 声明了 `--xh-scrollbar-track-bg` 却未接线为宿主的皮肤视为死声明。
+- 横向控件带排不下时分两路：Toolbar / Menubar / NavigationMenu / Segmented 折行；Tabs 不折行——标签带只裁主轴（`overflow: clip visible`，不是滚动容器，交叉轴上的焦点环、粗指针外扩与 raised 影都不被裁），标签整体沿主轴 `translate` 位移（机器按 continuous 档补间写进 `--xh-_tabs-scroll`），两端 `prev-trigger` / `next-trigger` 接 Action Control icon 档 ghost 面、静息底换成所在面的盖底（`--xh-tabs-scroll-trigger-bg`，缺省 surface、segment 轨道取 subtle）、挪到头那一侧 `opacity: 0`（与 Carousel 同），横向滚轮按量位移、竖滚轮留给页面，选中 / 聚焦的标签被裁时自动挪进视野；不铺边缘渐隐。
 
 ## 7. 颜色
 

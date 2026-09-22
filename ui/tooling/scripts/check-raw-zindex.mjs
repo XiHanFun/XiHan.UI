@@ -37,7 +37,7 @@ const IN_COMPONENT_STACKING = {
   'input-group.css': { reason: '相邻段的边框重叠，靠悬停或聚焦的那一段抬一层盖住邻段边框', isolatedBy: 'root' },
   'resizable.css': { reason: '把手压在容器边上，四个角再抬一层盖住相邻两条边', isolatedBy: 'root' },
   'table.css': { reason: '粘性列抬到普通单元格之上，表内的列间层序', isolatedBy: 'root' },
-  'tabs.css': { reason: 'segment 档的标签抬一层压在滑动的抬起面（indicator 部件）之上，层号只在标签带内排序', isolatedBy: 'list' },
+  'tabs.css': { reason: 'segment 档的标签抬一层压在滑动的抬起面（indicator 部件）之上，两端翻页钮再抬一层压在位移的标签之上，层号只在标签带内排序', isolatedBy: 'list' },
   'toggle-group.css': { reason: '条目的边框重叠与选中态抬升，组内三档', isolatedBy: 'root' },
   'tooltip.css': { reason: '隔离的 content 内，负一层着色面位于正文后方且不参与页面层序', isolatedBy: 'content', levels: new Set(['-1']) },
   'watermark.css': { reason: '水印压在内容之上，容器内的两层', isolatedBy: 'root' },

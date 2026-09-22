@@ -58,6 +58,14 @@ export interface TabsIndicatorRect {
   inlineSize: number
 }
 
+/** 标签带放不下时的事实：前后两端各还有没有被裁掉的标签。放得下时整体为 null。 */
+export interface TabsOverflow {
+  /** 起始侧还有被裁掉的标签（标签带已经往后挪过） */
+  start: boolean
+  /** 结束侧还有被裁掉的标签 */
+  end: boolean
+}
+
 /** 关闭一个标签：被关闭的标签与关闭后剩余的标签。 */
 export interface TabsCloseDetails {
   value: string
@@ -120,6 +128,10 @@ export interface TabsSchema extends MachineSchema {
     announcement: string
     /** 指示条的测量结果；没有选中项或无法测量时为 null。 */
     indicator: TabsIndicatorRect | null
+    /** 标签带沿主轴往起始端挪了多少（px，≥ 0）；放得下时恒为 0。 */
+    scroll: number
+    /** 位移上限：内容长度超出可见长度的那一截；放得下时为 0。 */
+    scrollMax: number
     /** 按压通道：Space / Enter 或触屏按住的 trigger value。抬起、失焦或指针取消即清空，与选中互相独立。 */
     pressedValue: string | null
   }
@@ -140,6 +152,17 @@ export interface TabsSchema extends MachineSchema {
       activated: boolean
       /** 拖动源节点。拖动中用它测量版面整体移动的距离，见 snapshotDrift。 */
       source: HTMLElement | null
+    } | null
+    /**
+     * 标签带位移的补间：从起步那一刻的位移走到目标位移，逐帧写进 scroll。
+     * 目标改了从当前显示值接着走；减弱动效下没有补间、一步到位。
+     */
+    scrollTween: {
+      from: number
+      to: number
+      startedAt: number
+      /** 停掉帧循环 */
+      stop: VoidFunction
     } | null
   }
   state: 'idle'
@@ -166,6 +189,13 @@ export interface TabsSchema extends MachineSchema {
     | { type: 'PRESS.START', value: string, disabled?: boolean }
     /** 按住的 trigger 抬起、失焦或指针取消；只松开 value 对应的那一个。 */
     | { type: 'PRESS.END', value: string }
+    /** 标签带往前 / 往后翻一页：翻页钮点按。 */
+    | { type: 'SCROLL.PREV' }
+    | { type: 'SCROLL.NEXT' }
+    /** 标签带沿主轴挪一段：滚轮驱动，delta 为逻辑方向（正数朝结束端），超出两端会被夹住。 */
+    | { type: 'SCROLL.BY', delta: number }
+    /** 位移补间走一帧。 */
+    | { type: 'SCROLL.FRAME' }
   tag: never
   guard: 'isAutomatic' | 'canPress'
   action:
@@ -179,9 +209,16 @@ export interface TabsSchema extends MachineSchema {
     | 'moveTabBy'
     | 'invokeOnTabClose'
     | 'measureIndicator'
+    | 'measureStrip'
+    | 'scrollPrev'
+    | 'scrollNext'
+    | 'scrollBy'
+    | 'stepScroll'
+    | 'revealSelected'
+    | 'revealFocused'
     | 'startPress'
     | 'endPress'
-  effect: 'trackPointer' | 'trackResize'
+  effect: 'trackPointer' | 'trackResize' | 'trackStrip'
 }
 
 export interface TabsApi<T extends PropTypes = PropTypes> {
@@ -194,6 +231,8 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   dropTarget: DropTarget | null
   /** 读屏播报文本。渲染进 live-region，不进入视觉版面。 */
   announcement: string
+  /** 标签带放不放得下：放得下时为 null，放不下时记两端各还有没有被裁掉的标签。 */
+  overflow: TabsOverflow | null
   /** 传 null 清空选中：context.value 与受控 value 都能表达无选中，写入侧同样接受。 */
   setValue: (next: string | null) => void
   getRootProps: () => T['element']
@@ -203,6 +242,12 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   getIndicatorProps: () => T['element']
   /** 标签之间的细分隔线，纯装饰。 */
   getSeparatorProps: () => T['element']
+  /**
+   * 标签带的前后翻页钮：标签带放不下时显示，挪到尽头的那一侧禁用；不占 Tab 位、对读屏隐藏——
+   * 键盘用户用方向键在标签间移动，焦点落到被裁掉的标签上时标签带自己挪过去。
+   */
+  getPrevTriggerProps: () => T['button']
+  getNextTriggerProps: () => T['button']
   getContentProps: (props: TabsContentProps) => T['element']
   /**
    * 拖动过程的读屏播报区。视觉隐藏，文本取自 announcement。

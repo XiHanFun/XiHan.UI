@@ -34257,9 +34257,16 @@
     --xh-_tabs-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
+    /* 翻页钮的盖底：标签带放不下时它浮在两端，挪到它底下的那截标签要被盖住。line / card 档的标签带是透明的，
+       盖底取 surface；坐在别的面上（画布、淡底面板）时由使用者槽换成所在的面。segment 档取轨道的淡底 */
+    --xh-_tabs-scroll-trigger-bg: var(--xh-bg-surface);
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
+    /* 排在一行弹性 / 网格容器里时也让得开：不写这条，根的最小宽是整条标签带的自然宽，
+       外层再窄它也不缩，标签带永远"放得下"、翻页钮永远不露面，整行反倒被顶出去 */
+    min-inline-size: 0;
   }
 
   /* 纵向：list 与 panel 并排 */
@@ -34332,17 +34339,23 @@
     --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle, var(--xh-bg-surface-raised));
     --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
     --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_tabs-scroll-trigger-bg: var(--xh-bg-subtle);
   }
 
-  /* 一行排不下就折行：标签宽度由文字决定，硬撑一行会把整块版面顶出去。
-     这里不改成横向滚动：指示条是绝对定位、块向落点在列表盒外沿（下面那条 inset-block-end 是负值），
-     列表一旦成为滚动容器就会把它连同标签的焦点环一起裁掉 */
+  /* 一行排不下不折行：标签整条沿主轴位移露出被裁掉的那截，两端的翻页钮与滚轮驱动，位移量由机器写在
+     --xh-_tabs-scroll 上（下面孩子那条规则读它）。只裁主轴（overflow-x: clip），交叉轴仍是 visible：
+     标签的焦点环画在盒内不受影响，粗指针下往块轴两侧外扩的命中区、segment 档抬起面的投影也都不被裁。
+     不做成滚动容器（overflow: hidden 会把两个轴一起裁，粗指针那圈外扩就没了；原生滚动条也不该露在标签带下） */
   [data-scope='tabs'][data-part='list'] {
+    /* 位移量：放得下时 0，放不下时由机器写成内联样式盖过这条 */
+    --xh-_tabs-scroll: 0;
+
     position: relative;
-    /* 关起标签带内的层序：segment 档的标签抬一层压在滑动的抬起面上，这个 1 不漏到外面去 */
+    /* 关起标签带内的层序：segment 档的标签抬一层压在滑动的抬起面上、翻页钮再抬一层压在标签上，两个层号都不漏到外面去 */
     isolation: isolate;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow: clip visible;
     align-items: center;
     gap: var(--xh-tabs-list-gap, var(--xh-_tabs-list-gap));
     padding: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
@@ -34351,12 +34364,26 @@
     background: var(--xh-tabs-list-bg, var(--xh-_tabs-list-bg));
   }
 
+  /* 竖排：主轴换成块向，裁块向、行向放开。竖排的标签带高随内容长，只有使用者限了高才会放不下 */
   [data-scope='tabs'][data-part='list'][aria-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
-    flex-wrap: nowrap;
+    overflow: visible clip;
     border-block-end: 0;
     border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
+  }
+
+  /* 排在标签带里的孩子——标签、分隔线、指示条——整体沿主轴位移；两端的翻页钮贴边不动，不在这条里。
+     位移量是机器逐帧补间写进来的（屏内的像素级推移走 continuous 档，与指示条同一档），这里不接过渡：
+     各部件各有自己的过渡清单（line 档的标签归家族），往每一份里都加一条 translate 会把家族与皮肤耦在一起 */
+  [data-scope='tabs'][data-part='list']
+    > :not([data-scope='tabs'][data-part='prev-trigger'], [data-scope='tabs'][data-part='next-trigger']) {
+    translate: var(--xh-_tabs-scroll) 0;
+  }
+
+  [data-scope='tabs'][data-part='list'][aria-orientation='vertical']
+    > :not([data-scope='tabs'][data-part='prev-trigger'], [data-scope='tabs'][data-part='next-trigger']) {
+    translate: 0 var(--xh-_tabs-scroll);
   }
 
   /* segment 档的标签带是一块淡底面：--xh-bg-subtle 底 + 一圈透明占位边 + 无影（§8.3 三选一）。
@@ -34385,8 +34412,8 @@
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     /* 家族基础块给条目写了 min-inline-size: 0（菜单条目要能收窄给文字省略号用）；标签不省略号，
-       横排时又按 flex: 1 1 0 等分带宽，下限归零后排不下的标签只会被压到文字之下再横向顶出去，
-       上面 list 的 flex-wrap 永远等不到折行那一刻。收回 auto：下限按文字算，排不下就折行 */
+       segment 档又按 flex: 1 1 0 等分带宽，下限归零后排不下的标签会被压到文字之下。
+       收回 auto：下限按文字算，排不下的那截由标签带位移露出 */
     min-inline-size: auto;
   }
 
@@ -34424,7 +34451,7 @@
   }
 
   /* 横排标签的宽随文字走，不把标签带等分铺满一行：line 与 card 档是一排并列的页签，
-     每一枚只占自己的字宽加内衬，标签带右侧留白；窄到放不下文字时仍按原合同折行 */
+     每一枚只占自己的字宽加内衬，标签带右侧留白；放不下的那截由标签带位移露出 */
   [data-scope='tabs'][data-part='root'][data-orientation='horizontal']
     [data-scope='tabs'][data-part='trigger'] {
     flex: 0 0 auto;
@@ -34755,6 +34782,100 @@
     block-size: var(--xh-tabs-separator-thickness, var(--xh-stroke-thin));
   }
 
+  /* —— 两端翻页钮 —— */
+  /* 标签带放不下时浮在两端的单图标钮，接 Action Control icon 档 ghost 面（连接层投影 profile / variant / size）：
+     盒取标签同高的正方形，四态面、0.97 按压与粗指针 44px 命中区由家族配方给。绝对定位贴在标签带两端、
+     不随标签位移；挪到它底下的那截标签由静息底盖住（透明 ghost 面盖不住字，静息 / 焦点 / 禁用三列换成盖底槽，
+     悬停与按下仍走 ghost 的阶梯——line / card 在白底上 100 → 200，segment 由轨道下发 200 → 300） */
+  [data-scope='tabs'][data-part='prev-trigger'],
+  [data-scope='tabs'][data-part='next-trigger'] {
+    --xh-action-visual-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
+    --xh-action-bg-rest: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
+    --xh-action-bg-focus-visible: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
+    --xh-action-bg-disabled: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
+    --xh-action-fg-rest: var(--xh-tabs-scroll-trigger-fg, var(--xh-fg-muted));
+    /* 作者塞进来的图标跟着 icon 档走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-tabs-scroll-icon-size, var(--xh-_action-profile-glyph-size));
+
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 50%;
+    translate: 0 -50%;
+  }
+
+  /* 贴在标签带内衬盒的两端：segment 档的轨道留着一圈内衬，钮坐在内衬里、不压到轨道边上 */
+  [data-scope='tabs'][data-part='prev-trigger'] {
+    inset-inline-start: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
+  }
+
+  [data-scope='tabs'][data-part='next-trigger'] {
+    inset-inline-end: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
+  }
+
+  /* 竖排：两只钮躺平成横贯标签带的一条，各贴块向的首尾 */
+  [data-scope='tabs'][data-part='prev-trigger'][data-orientation='vertical'],
+  [data-scope='tabs'][data-part='next-trigger'][data-orientation='vertical'] {
+    inline-size: auto;
+    inset-inline: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
+    inset-block-start: auto;
+    translate: 0 0;
+  }
+
+  [data-scope='tabs'][data-part='prev-trigger'][data-orientation='vertical'] {
+    inset-block-start: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
+  }
+
+  [data-scope='tabs'][data-part='next-trigger'][data-orientation='vertical'] {
+    inset-block-end: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
+  }
+
+  /* 挪到头的那一侧是原生 disabled（不可聚焦），连接层同时给 data-disabled：到头即收起——
+     它浮在标签上，留着会盖住边上那枚完整露出的标签；配方 disabled 列给的面被 opacity 0 盖住，两者不冲突 */
+  [data-scope='tabs'][data-part='prev-trigger'][data-disabled],
+  [data-scope='tabs'][data-part='next-trigger'][data-disabled] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* 没写内容就由皮肤画兜底字形：横排一左一右的 chevron，竖排一上一下；作者塞了自己的图形这几条即不命中 */
+  [data-scope='tabs'][data-part='prev-trigger']:empty::before,
+  [data-scope='tabs'][data-part='next-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+  }
+
+  [data-scope='tabs'][data-part='next-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-right);
+    mask-image: var(--xh-glyph-mark-chevron-right);
+  }
+
+  /* rtl 下标签序从右往左走，箭头跟着指向行进方向 */
+  [dir='rtl'] [data-scope='tabs'][data-part='prev-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-right);
+    mask-image: var(--xh-glyph-mark-chevron-right);
+  }
+
+  [dir='rtl'] [data-scope='tabs'][data-part='next-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+    mask-image: var(--xh-glyph-mark-chevron-left);
+  }
+
+  [data-scope='tabs'][data-part='prev-trigger'][data-orientation='vertical']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-up);
+    mask-image: var(--xh-glyph-mark-chevron-up);
+  }
+
+  [data-scope='tabs'][data-part='next-trigger'][data-orientation='vertical']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-down);
+    mask-image: var(--xh-glyph-mark-chevron-down);
+  }
+
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='tabs'][data-part='root'][hidden],
@@ -34762,6 +34883,8 @@
   [data-scope='tabs'][data-part='trigger'][hidden],
   [data-scope='tabs'][data-part='indicator'][hidden],
   [data-scope='tabs'][data-part='separator'][hidden],
+  [data-scope='tabs'][data-part='prev-trigger'][hidden],
+  [data-scope='tabs'][data-part='next-trigger'][hidden],
   [data-scope='tabs'][data-part='tab-drag-trigger'][hidden] {
     display: none;
   }
@@ -34813,6 +34936,12 @@
     [data-scope='tabs'][data-part='trigger'][data-state='active'] {
       font-weight: var(--xh-font-weight-semibold);
       text-decoration: underline;
+    }
+
+    /* 纸上翻不了页，两只钮不上纸 */
+    [data-scope='tabs'][data-part='prev-trigger'],
+    [data-scope='tabs'][data-part='next-trigger'] {
+      display: none;
     }
   }
 }

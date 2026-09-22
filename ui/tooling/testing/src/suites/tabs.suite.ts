@@ -20,6 +20,9 @@ const COLLECTION = VALUES.map(value => ({ value }))
  *
  * 末尾的播报区与 list 部件平级：root 自己不带角色，role=tablist 在 list 上，
  * 活动区域落不进它的子节点集合。它常挂在这儿，各用例不必各挂一遍。
+ *
+ * 标签带两端各挂一只翻页钮：jsdom 不排版，标签带永远"放得下"，两只钮始终 hidden；
+ * 这里钉的是三端把它们建成同一种节点（对读屏隐藏、不占 Tab 位、放得下时收起）。
  */
 function tabsTree(disabled?: string): FixtureNode {
   return {
@@ -27,21 +30,25 @@ function tabsTree(disabled?: string): FixtureNode {
     children: [
       {
         part: 'list',
-        children: VALUES.map((v): FixtureNode => {
-          const attrs: Record<string, string> = { value: v }
-          if (v === disabled)
-            attrs.disabled = ''
-          return {
-            part: 'trigger',
-            tag: 'button',
-            attrs,
-            children: [
-              // 标签带没有条目级上下文，把手与 trigger / content 一样自报 value
-              { part: 'tab-drag-trigger', tag: 'span', attrs: { value: v } },
-              { tag: 'span', text: `标签 ${v}` },
-            ],
-          }
-        }),
+        children: [
+          { part: 'prev-trigger', tag: 'button' },
+          ...VALUES.map((v): FixtureNode => {
+            const attrs: Record<string, string> = { value: v }
+            if (v === disabled)
+              attrs.disabled = ''
+            return {
+              part: 'trigger',
+              tag: 'button',
+              attrs,
+              children: [
+                // 标签带没有条目级上下文，把手与 trigger / content 一样自报 value
+                { part: 'tab-drag-trigger', tag: 'span', attrs: { value: v } },
+                { tag: 'span', text: `标签 ${v}` },
+              ],
+            }
+          }),
+          { part: 'next-trigger', tag: 'button' },
+        ],
       },
       ...VALUES.map(v => ({
         part: 'content',
@@ -73,21 +80,38 @@ export const tabsSuite: ConformanceSuite = {
         order: [
           'root',
           'list',
+          'prev-trigger',
           'trigger[0]',
           'tab-drag-trigger[0]',
           'trigger[1]',
           'tab-drag-trigger[1]',
           'trigger[2]',
           'tab-drag-trigger[2]',
+          'next-trigger',
           'content[0]',
           'content[1]',
           'content[2]',
           'live-region',
         ],
-        counts: { 'root': 1, 'list': 1, 'trigger': 3, 'tab-drag-trigger': 3, 'content': 3, 'live-region': 1 },
+        counts: { 'root': 1, 'list': 1, 'prev-trigger': 1, 'next-trigger': 1, 'trigger': 3, 'tab-drag-trigger': 3, 'content': 3, 'live-region': 1 },
         parts: {
           'root': { 'data-orientation': 'horizontal', 'data-variant': 'line' },
           'list': { 'role': 'tablist', 'aria-orientation': 'horizontal', 'tabindex': '0' },
+          // 两端翻页钮：鼠标专用的辅助入口，不进可及树、不占 Tab 位；jsdom 里标签带放得下，收起且禁用
+          'prev-trigger': {
+            'type': 'button',
+            'aria-hidden': 'true',
+            'tabindex': '-1',
+            'hidden': '',
+            'disabled': '',
+            'data-disabled': '',
+            'data-orientation': 'horizontal',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-size': 'md',
+          },
+          'next-trigger': { 'aria-hidden': 'true', 'tabindex': '-1', 'hidden': '', 'disabled': '', 'data-disabled': '' },
           'trigger[0]': {
             'role': 'tab',
             'type': 'button',

@@ -7,7 +7,7 @@
 
 import type { ItemQuery, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DragRect } from '../shared/drag'
-import type { TabsApi, TabsNodeMeta, TabsSchema, TabsTriggerProps } from './tabs.types'
+import type { TabsApi, TabsNodeMeta, TabsOverflow, TabsSchema, TabsTriggerProps } from './tabs.types'
 import { anchorItem, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { flatMoveCommand, flatMoveIntentFromKey } from '../shared/drag'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
@@ -17,6 +17,10 @@ const parts = tabsAnatomy.build()
 
 // 集合容器是 list 不是 root：trigger 直属 list，按归属过滤才切得干净（嵌套 Tabs 互不吞并）
 const ITEM_QUERY: ItemQuery = { scope: tabsAnatomy.name, part: 'trigger' }
+
+/** deltaMode 按行 / 按页计量时的换算：浏览器不给像素值，按常见的行高与一页的量级估。 */
+const WHEEL_LINE_PX = 16
+const WHEEL_PAGE_PX = 400
 
 export function connectTabs<T extends PropTypes>(
   service: Service<TabsSchema>,
@@ -34,6 +38,11 @@ export function connectTabs<T extends PropTypes>(
   const horizontal = orientation === 'horizontal'
   const closable = !!prop('closable')
   const indicator = context.get('indicator')
+  // 标签带放不放得下由位移与上限推出：上限为 0 就是放得下
+  const scroll = context.get('scroll')
+  const scrollMax = context.get('scrollMax')
+  const overflow: TabsOverflow | null = scrollMax > 0 ? { start: scroll > 0, end: scroll < scrollMax } : null
+  const rtl = dir === 'rtl'
 
   // collection 推出的条目元信息：标签文本与禁用都在这里定案，trigger 部件只报 value
   const collection: TabsNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -152,6 +161,7 @@ export function connectTabs<T extends PropTypes>(
     value,
     dropTarget,
     announcement: context.get('announcement'),
+    overflow,
     collection,
     focusedValue,
     setValue,
@@ -217,6 +227,26 @@ export function connectTabs<T extends PropTypes>(
       ...parts.list.attrs,
       'role': 'tablist',
       'aria-orientation': orientation,
+      // 放不下时标签整体沿主轴位移：位移量写成私有槽，标签带里的孩子读它做 translate（皮肤 tabs.css）。
+      // translate 是物理方向：横排 LTR 往左挪、RTL 往右挪，竖排往上挪
+      'style': { '--xh-_tabs-scroll': `${horizontal && rtl ? scroll : -scroll}px` },
+      // 标签带不是滚动容器（放不下时靠位移露出，皮肤只裁主轴），滚轮在这里接成位移：
+      // 横排只认横向滚轮（触控板两指横划、Shift + 滚轮），竖滚轮留给页面；挪到头就把事件放行
+      'onWheel': (event: WheelEvent) => {
+        if (overflow == null)
+          return
+        const raw = horizontal ? (event.deltaX || (event.shiftKey ? event.deltaY : 0)) : event.deltaY
+        if (raw === 0)
+          return
+        // 按行 / 按页计量的滚轮换算成像素：一行按一行字高、一页按一页可见长度的量级估
+        const unit = event.deltaMode === 1 ? WHEEL_LINE_PX : event.deltaMode === 2 ? WHEEL_PAGE_PX : 1
+        // 横排 RTL 下往左滚是朝结束端，逻辑方向翻过来
+        const delta = raw * unit * (horizontal && rtl ? -1 : 1)
+        if ((delta > 0 && !overflow.end) || (delta < 0 && !overflow.start))
+          return
+        event.preventDefault()
+        send({ type: 'SCROLL.BY', delta })
+      },
       // 焦点在组外时容器兜底进 Tab 序列，由 onFocus 转投给条目。
       // 判据用 focusedValue 而非 anchor：anchor 可能指向已不存在的值，那时无人认领 tabindex=0。
       // 焦点已在组内时容器让位（-1），Tab 才能正常离开本组。
@@ -350,6 +380,44 @@ export function connectTabs<T extends PropTypes>(
       ...parts.separator.attrs,
       'aria-hidden': true,
       'data-orientation': orientation,
+    }),
+
+    // 翻页钮：只在放不下时露面，挪到头的那一侧禁用（皮肤把禁用的那一只收起，别盖住边上的标签）。
+    // 鼠标专用的辅助入口——不占 Tab 位、对读屏隐藏：键盘用户用方向键在标签间移动，焦点落到被裁掉的标签上时
+    // 标签带自己挪过去，tablist 里也不该多出两个非 tab 的可达节点。贴在标签带两端（皮肤绝对定位），
+    // 接 Action Control icon 档 ghost 面，字形由皮肤兜底
+    getPrevTriggerProps: () => normalize.button({
+      ...parts['prev-trigger'].attrs,
+      'type': 'button',
+      'tabIndex': -1,
+      'aria-hidden': true,
+      'hidden': overflow == null || undefined,
+      'disabled': (overflow == null || !overflow.start) || undefined,
+      'data-disabled': dataAttr(overflow == null || !overflow.start),
+      'data-orientation': orientation,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'onClick': () => send({ type: 'SCROLL.PREV' }),
+    }),
+
+    getNextTriggerProps: () => normalize.button({
+      ...parts['next-trigger'].attrs,
+      'type': 'button',
+      'tabIndex': -1,
+      'aria-hidden': true,
+      'hidden': overflow == null || undefined,
+      'disabled': (overflow == null || !overflow.end) || undefined,
+      'data-disabled': dataAttr(overflow == null || !overflow.end),
+      'data-orientation': orientation,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'onClick': () => send({ type: 'SCROLL.NEXT' }),
     }),
 
     // 全部 panel 常挂，靠 hidden 显隐：不做懒挂载，panel 内的滚动位置与表单态才留得住
