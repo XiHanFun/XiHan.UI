@@ -359,6 +359,7 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   getTreeProps: () => T['element']
   getItemProps: (props: TreeSelectNodeProps) => T['element']
   getItemTextProps: (props: TreeSelectNodeProps) => T['element']
+  getItemDescriptionProps: (props: TreeSelectNodeProps) => T['element']
   getItemIndicatorProps: (props: TreeSelectNodeProps) => T['element']
   getBranchProps: (props: TreeSelectNodeProps) => T['element']
   getBranchControlProps: (props: TreeSelectNodeProps) => T['element']

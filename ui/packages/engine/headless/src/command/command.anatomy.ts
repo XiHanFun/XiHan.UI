@@ -19,6 +19,7 @@ export const commandAnatomy = createAnatomy('command', [
   'group-label',
   'item',
   'item-text',
+  'item-description',
   'empty',
   'loading',
   'footer',

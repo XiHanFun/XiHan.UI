@@ -286,6 +286,16 @@ export const XhComboboxItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhComboboxItemDescription = defineComponent({
+  name: 'XhComboboxItemDescription',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    const { item } = useComboboxItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhComboboxItemIndicator = defineComponent({
   name: 'XhComboboxItemIndicator',
   setup(_, { slots }) {
@@ -350,6 +360,7 @@ function renderDefaultTree(
       h(XhComboboxContent, null, () => collection.map(node =>
         h(XhComboboxItem, { key: node.value, value: node.value }, () => [
           h(XhComboboxItemText, null, () => itemSlot?.(node) ?? node.label),
+          ...(node.description != null ? [h(XhComboboxItemDescription, null, () => node.description)] : []),
           h(XhComboboxItemIndicator),
         ]),
       )),

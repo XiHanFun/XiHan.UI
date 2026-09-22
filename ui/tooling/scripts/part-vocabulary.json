@@ -686,11 +686,20 @@
       "file-upload"
     ],
     "item-description": [
+      "cascader",
+      "combobox",
+      "command",
       "context-menu",
       "list",
+      "listbox",
+      "mention",
       "menu",
       "menubar",
-      "notification"
+      "notification",
+      "select",
+      "transfer",
+      "tree",
+      "tree-select"
     ],
     "item-drag-trigger": [
       "sortable"

@@ -29,6 +29,7 @@ export const selectAnatomy = createAnatomy('select', [
   'group-label',
   'item',
   'item-text',
+  'item-description',
   'item-indicator',
   'empty',
   'loading',

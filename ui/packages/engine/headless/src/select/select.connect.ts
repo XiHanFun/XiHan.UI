@@ -47,6 +47,7 @@ export function connectSelect<T extends PropTypes>(
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
+    description: node.description ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
@@ -558,6 +559,13 @@ export function connectSelect<T extends PropTypes>(
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
       'data-xh-collection-slot': 'text',
+    }),
+
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'description',
     }),
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,

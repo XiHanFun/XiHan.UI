@@ -37,6 +37,12 @@ export interface TreeNode {
    */
   tone?: Tone
   /**
+   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
+   * 一句话能说清的写进 label。
+   */
+  description?: string
+  /**
    * 子节点。提供数组即判定为分支，空数组也计入：暂时没有子项的目录仍要报告 aria-expanded。
    */
   children?: TreeNode[]
@@ -58,6 +64,8 @@ export interface TreeNodeMeta {
   disabled: boolean
   /** 该节点自己写的语气；未提供时为 null，不从父节点继承。 */
   tone: Tone | null
+  /** 副文本；未提供时为 null。 */
+  description: string | null
   /** children 是数组即为分支。 */
   branch: boolean
   /** 1 起算，直接写入 aria-level。 */
@@ -331,6 +339,7 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   getLiveRegionProps: () => T['element']
   getItemProps: (props: TreeNodeProps) => T['element']
   getItemTextProps: (props: TreeNodeProps) => T['element']
+  getItemDescriptionProps: (props: TreeNodeProps) => T['element']
   /** 勾选把手：把勾选该项与点击该行分为两个可点击区域，未提供时没有独立把手。 */
   getItemCheckboxProps: (props: TreeNodeProps) => T['element']
   getItemIndicatorProps: (props: TreeNodeProps) => T['element']

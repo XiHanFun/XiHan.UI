@@ -400,6 +400,16 @@ export const XhSelectItemText = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhSelectItemDescription = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectItemDescription',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    const { item } = useSelectItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhSelectItemIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemIndicator',
   setup(_, { slots }) {
@@ -430,6 +440,7 @@ function renderDefaultTree(
       h(XhSelectContent, null, () => h(XhSelectList, null, () => collection.map(node =>
         h(XhSelectItem, { key: node.value, value: node.value }, () => [
           h(XhSelectItemText, null, () => itemSlot?.(node) ?? node.label),
+          ...(node.description != null ? [h(XhSelectItemDescription, null, () => node.description)] : []),
           h(XhSelectItemIndicator),
         ]),
       ))),

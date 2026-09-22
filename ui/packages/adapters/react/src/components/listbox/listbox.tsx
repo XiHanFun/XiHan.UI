@@ -260,6 +260,14 @@ export function XhListboxItemText({ children, ...rest }: XhListboxItemTextProps)
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhListboxItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhListboxItemDescription({ children, ...rest }: XhListboxItemDescriptionProps): ReactNode {
+  const ctx = useListboxContext()
+  const item = useListboxItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhListboxItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhListboxItemIndicator({ children, ...rest }: XhListboxItemIndicatorProps): ReactNode {
   const ctx = useListboxContext()
@@ -283,6 +291,7 @@ function DefaultTree(props: {
         {props.collection.map(node => (
           <XhListboxItem key={node.value} value={node.value}>
             <XhListboxItemText>{props.renderItem?.(node) ?? node.label}</XhListboxItemText>
+            {node.description != null ? <XhListboxItemDescription>{node.description}</XhListboxItemDescription> : null}
             <XhListboxItemIndicator />
           </XhListboxItem>
         ))}

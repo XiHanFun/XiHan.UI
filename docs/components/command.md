@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-text` · `empty` · `loading` · `footer`
+`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-description` · `empty` · `loading` · `footer`
 
 ## 示例
 
@@ -61,6 +61,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 - 内置过滤：传入清单后按检索串逐词筛选、按 `group` 归组，空组自动移除。`keywords` 让一条命令同时匹配英文名、拼音与旧称。
 - 过滤可以关闭（`filter` 置否），改由调用方筛选；远端检索使用这一档。
 - 命令可逐条声明语气，删除一类命令自带该族字色与高亮底。
+- 命令可写副文本，第 2 行放一句解释，不进检索串。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
 - 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不保留持久选中状态，视觉上也不绘制对号或选中底。
@@ -95,7 +96,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-command>` |
-| Vue 组件 | `XhCommandContent` `XhCommandEmpty` `XhCommandFooter` `XhCommandGroup` `XhCommandGroupLabel` `XhCommandInput` `XhCommandItem` `XhCommandItemText` `XhCommandList` `XhCommandLoading` `XhCommandRoot` `XhCommandTrigger` |
+| Vue 组件 | `XhCommandContent` `XhCommandEmpty` `XhCommandFooter` `XhCommandGroup` `XhCommandGroupLabel` `XhCommandInput` `XhCommandItem` `XhCommandItemDescription` `XhCommandItemText` `XhCommandList` `XhCommandLoading` `XhCommandRoot` `XhCommandTrigger` |
 | 组合式函数 | `useCommand` |
 | 状态机 | `commandMachine` |
 | 皮肤 | `@xihan-ui/styles/command.css` |
@@ -200,6 +201,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `getGroupLabelProps` | `(props: CommandGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CommandItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示。 |
 | `getFooterProps` | `() => T['element']` | 面板底部的提示条：内容由作者决定，这里只提供位置与观感。 |
@@ -285,6 +287,9 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-xh-collection-slot` | 'description' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `footer` | `data-state` | 'open' \| 'closed' |

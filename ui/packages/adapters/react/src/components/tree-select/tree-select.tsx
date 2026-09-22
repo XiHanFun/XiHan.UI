@@ -436,6 +436,14 @@ export function XhTreeSelectItemText({ children, ...rest }: XhTreeSelectItemText
   return <span {...mergeReactProps(ctx.api.getItemTextProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhTreeSelectItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhTreeSelectItemDescription({ children, ...rest }: XhTreeSelectItemDescriptionProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTreeSelectItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeSelectItemIndicator({ children, ...rest }: XhTreeSelectItemIndicatorProps): ReactNode {
   const ctx = useTreeSelectContext()

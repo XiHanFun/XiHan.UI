@@ -37,6 +37,12 @@ export interface MentionNode {
    * 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个提及框的 tone 不下发给候选。
    */
   tone?: Tone
+  /**
+   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
+   * 一句话能说清的写进 label。
+   */
+  description?: string
 }
 
 /** 单个候选的元信息，由 collection 推导。 */
@@ -47,6 +53,8 @@ export interface MentionNodeMeta {
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。 */
   tone: Tone | null
+  /** 副文本；未提供时为 null。 */
+  description: string | null
 }
 
 /** 条目声明的身份：值必须声明，禁用可由 collection 代为声明。 */
@@ -263,4 +271,5 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
   getLoadingProps: () => T['element']
   getItemProps: (props: MentionItemProps) => T['element']
   getItemTextProps: (props: MentionItemProps) => T['element']
+  getItemDescriptionProps: (props: MentionItemProps) => T['element']
 }

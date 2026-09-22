@@ -204,6 +204,16 @@ export const XhTreeItemText = defineComponent({
   },
 })
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档 */
+export const XhTreeItemDescription = defineComponent({
+  name: 'XhTreeItemDescription',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /**
  * 节点拖拽把手。放在节点中，自带 touch-action: none，按下即拖动，不等待激活距离。
  * 对读屏隐藏、也不占 Tab 位；键盘移动由树上的 Alt + 方向键承担。

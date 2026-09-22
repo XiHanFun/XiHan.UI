@@ -277,6 +277,14 @@ export function XhMentionItemText({ children, ...rest }: XhMentionItemTextProps)
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhMentionItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhMentionItemDescription({ children, ...rest }: XhMentionItemDescriptionProps): ReactNode {
+  const ctx = useMentionContext()
+  const item = useMentionItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 /**
  * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
@@ -295,6 +303,7 @@ function DefaultTree(props: {
           {props.collection.map(node => (
             <XhMentionItem key={node.value} value={node.value}>
               <XhMentionItemText>{props.renderItem?.(node) ?? node.label}</XhMentionItemText>
+              {node.description != null ? <XhMentionItemDescription>{node.description}</XhMentionItemDescription> : null}
             </XhMentionItem>
           ))}
         </XhMentionContent>

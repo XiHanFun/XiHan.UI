@@ -23,6 +23,7 @@ function toMeta(node: CascaderNode, level: number, parentPath: readonly string[]
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
+    description: node.description ?? null,
     branch: isBranch(node),
     level,
     path: [...parentPath, node.value],

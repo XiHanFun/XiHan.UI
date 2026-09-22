@@ -74,6 +74,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  * @csspart item - role=option 命令，须自带 value 属性标识身份；不在结果中时带 hidden
  * @csspart item-text - 命令文本（选中时回传给宿主的取字来源）
+ * @csspart item-description - 条目的第 2 行副文本
  * @csspart empty - 没有剩余条目时的提示；须放在 content 中作为 list 的兄弟（列表内只允许 option 与 group）
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
  * @csspart footer - 面板底部提示条，内容由作者决定
@@ -382,6 +383,8 @@ export class XhCommandElement extends XhPortalHostElement {
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+      for (const description of this.partsIn(el, 'item-description'))
+        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）。

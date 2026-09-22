@@ -643,6 +643,13 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
+    // 节点的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: node => normalize.element({
+      ...parts['item-description'].attrs,
+      ...nodeState(node.value),
+      'data-xh-collection-slot': 'description',
+    }),
+
     // 对号落在家族网格的 indicator 列（叶子与分支行共用）
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,

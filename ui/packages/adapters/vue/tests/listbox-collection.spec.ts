@@ -158,3 +158,25 @@ describe('listbox 的 collection', () => {
     w.unmount()
   })
 })
+
+describe('listbox 代铺条目的副文本', () => {
+  it('数据里写了 description 才铺 item-description，没写的条目只有文字', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhListboxRoot, {
+        value: [],
+        collection: [
+          { value: 'beijing', label: '北京', description: '华北，直辖市' },
+          { value: 'berlin', label: '柏林' },
+        ] satisfies ListboxNode[],
+      }),
+    }), { attachTo: document.body })
+    const parts = [...document.body.querySelectorAll('[data-scope="listbox"][data-part^="item"]')]
+      .map(el => el.getAttribute('data-part'))
+    // 选中对号常驻（由家族按 aria-selected 显隐），副文本排在文字之后、对号之前
+    expect(parts).toEqual(['item', 'item-text', 'item-description', 'item-indicator', 'item', 'item-text', 'item-indicator'])
+    const desc = document.body.querySelector('[data-part="item-description"]')!
+    expect(desc.textContent).toBe('华北，直辖市')
+    expect(desc.getAttribute('data-xh-collection-slot')).toBe('description')
+    w.unmount()
+  })
+})

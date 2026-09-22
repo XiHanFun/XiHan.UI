@@ -380,6 +380,14 @@ export function XhTransferItemText({ children, ...rest }: XhTransferItemTextProp
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhTransferItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhTransferItemDescription({ children, ...rest }: XhTransferItemDescriptionProps): ReactNode {
+  const ctx = useTransferContext()
+  const item = useTransferItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTransferItemCheckboxProps extends ComponentPropsWithRef<'span'> {}
 export function XhTransferItemCheckbox({ children, ...rest }: XhTransferItemCheckboxProps): ReactNode {
   const ctx = useTransferContext()

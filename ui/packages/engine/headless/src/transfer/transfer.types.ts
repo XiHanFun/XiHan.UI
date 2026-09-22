@@ -33,6 +33,12 @@ export interface TransferItem {
    * 两侧面板读同一份数据，条目搬到哪一侧都带着自己的语气。
    */
   tone?: Tone
+  /**
+   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
+   * 一句话能说清的写进 label。
+   */
+  description?: string
 }
 
 /**
@@ -249,6 +255,7 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   getGroupLabelProps: (props: TransferGroupProps) => T['element']
   getItemProps: (props: TransferItemProps) => T['element']
   getItemTextProps: (props: TransferItemProps) => T['element']
+  getItemDescriptionProps: (props: TransferItemProps) => T['element']
   getItemCheckboxProps: (props: TransferItemProps) => T['element']
   getToTargetTriggerProps: () => T['button']
   getToSourceTriggerProps: () => T['button']

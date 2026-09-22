@@ -520,6 +520,14 @@ export function XhCascaderItemText({ children, ...rest }: XhCascaderItemTextProp
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhCascaderItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhCascaderItemDescription({ children, ...rest }: XhCascaderItemDescriptionProps): ReactNode {
+  const ctx = useCascaderContext()
+  const item = useCascaderItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhCascaderItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhCascaderItemIndicator({ children, ...rest }: XhCascaderItemIndicatorProps): ReactNode {
   const ctx = useCascaderContext()

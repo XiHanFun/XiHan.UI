@@ -14,6 +14,7 @@ export const listboxAnatomy = createAnatomy('listbox', [
   'content',
   'item',
   'item-text',
+  'item-description',
   'item-indicator',
   'group',
   'group-label',

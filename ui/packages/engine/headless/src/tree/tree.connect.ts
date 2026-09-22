@@ -618,6 +618,13 @@ export function connectTree<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    getItemDescriptionProps: node => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemState(node.value),
+      'data-xh-collection-slot': 'description',
+    }),
+
     // 叶子的选中对号是 page 语境的前导标记，显隐由家族按行的 aria-selected 给
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,

@@ -44,6 +44,7 @@ export function resolveCommandNode(node: CommandNode): CommandNodeMeta {
     group: node.group ?? COMMAND_UNGROUPED,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
+    description: node.description ?? null,
   }
 }
 

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
+`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-text` · `item-description` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
 
 ## 示例
 
@@ -66,6 +66,7 @@
 - 支持方向键导航、连续输入检索与范围选择。
 - 支持分组、禁用条目和定高滚动。
 - 条目可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
+- 条目可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 提供空态、加载态与加载更多部件。
 
 ### 组合
@@ -92,7 +93,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-listbox>` |
-| Vue 组件 | `XhListboxContent` `XhListboxEmpty` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxLoadMoreTrigger` `XhListboxLoading` `XhListboxRoot` |
+| Vue 组件 | `XhListboxContent` `XhListboxEmpty` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemDescription` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxLoadMoreTrigger` `XhListboxLoading` `XhListboxRoot` |
 | 组合式函数 | `useListbox` |
 | 状态机 | `listboxMachine` |
 | 皮肤 | `@xihan-ui/styles/listbox.css` |
@@ -143,6 +144,7 @@
 | --- | --- |
 | `item` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 
 以下名称仅用于内部状态机。
@@ -181,6 +183,7 @@
 | `getGroupLabelProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ListboxItemProps) => T['element']` |  |
 
 ## 无障碍
@@ -260,6 +263,10 @@
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-xh-collection-slot` | 'description' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |

@@ -248,6 +248,14 @@ export function XhCommandItemText({ children, ...rest }: XhCommandItemTextProps)
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
+export interface XhCommandItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+export function XhCommandItemDescription({ children, ...rest }: XhCommandItemDescriptionProps): ReactNode {
+  const ctx = useCommandContext()
+  const item = useCommandItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhCommandEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 放在 content 中作为 list 的兄弟节点，不进入 role=listbox。 */
 export function XhCommandEmpty({ children, ...rest }: XhCommandEmptyProps): ReactNode {
@@ -282,6 +290,7 @@ function DefaultTree(props: {
   const item = (node: CommandNodeMeta): ReactNode => (
     <XhCommandItem key={node.value} value={node.value}>
       <XhCommandItemText>{props.renderItem?.(node) ?? node.label}</XhCommandItemText>
+      {node.description != null ? <XhCommandItemDescription>{node.description}</XhCommandItemDescription> : null}
     </XhCommandItem>
   )
   return (
