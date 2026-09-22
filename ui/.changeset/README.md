@@ -50,8 +50,9 @@ git add -A && git commit -m "release: @xihan-ui/* 1.0.0-alpha.1"
 git tag v1.0.0-alpha.1 && git push origin v1.0.0-alpha.1
 ```
 
-`v*` tag 推上去后工作流构建、把 npm 上还没有的版本发出去（publint / attw 等检查归 `ci.yml`，发布链不重跑）；
-也可以在 Actions 页手动 `Run workflow`（`workflow_dispatch`）发布当前 `main`。
+`v*` tag 推上去后工作流先把关两条——标签指向的提交在 `main` 历史里、标签号等于包的 `version`（且与 pre 模式对得上）——
+缺一拒发；过了再构建、把 npm 上还没有的版本发出去（publint / attw 等检查归 `ci.yml`，发布链不重跑）。
+也可以在 Actions 页手动 `Run workflow`（`workflow_dispatch`）重跑某个版本标签：选中那个 tag 运行，选分支会被拦下。
 GitHub Release 之后自己在 Releases 页新建。
 
 首个公开 alpha 之前执行过一次性的 `pnpm changeset pre enter alpha`（生成

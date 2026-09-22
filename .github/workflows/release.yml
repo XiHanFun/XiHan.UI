@@ -5,8 +5,12 @@ name: Release
 # 门禁、测试、publint / attw 全在 ci.yml：标签指向的提交进 main 时 CI 已经跑过一遍，
 # 这里不再重复；发布链上只留发包本身绕不开的步骤。
 #
-# 只有 main 上的版本标签能发包。标签本身不带分支信息，所以由 guard job 验证
-# 被标记的提交确实在 main 的历史里——打在 dev 或任何别处的 v* 标签一律拒发。
+# 发包必须同时满足两条，由 guard job 把关，缺一不发：
+# ① 标签指向的提交在 main 的历史里。标签本身不带分支信息，所以要查祖先关系——
+#    打在 dev 或任何别处的 v* 标签一律拒发。
+# ② 标签号就是包里写着的版本号，且与 changesets 的 pre 模式对得上——
+#    否则发出去的不是你以为的那个版本。
+# 手动 Run workflow 时必须选中一个版本标签；选分支会被 ① 拦下。
 on:
   workflow_dispatch:
   push:
@@ -41,6 +45,12 @@ jobs:
             exit 1
           fi
           echo "标签 $GITHUB_REF_NAME 在 main 上，放行"
+      # 对账脚本只用 node 内建模块，不装依赖
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: 标签号与包版本、预发布模式对账
+        run: node tooling/scripts/check-release-tag.mjs
 
   publish:
     needs: guard
@@ -65,9 +75,6 @@ jobs:
       # 发出去的是 dist，没有构建就没有可发的东西
       - name: Build
         run: pnpm build
-      # 标签写的版本号必须与 changesets 的 pre 模式对得上，否则发出去的不是你以为的那个版本
-      - name: 标签与预发布模式对账
-        run: pnpm exec node tooling/scripts/check-release-tag.mjs
       # changeset publish 只发 npm 上还没有的版本，已发布的包跳过
       - name: Publish to npm
         run: pnpm release
