@@ -290,6 +290,7 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   getItemIndicatorProps: (props: MenubarItemProps) => T['element']
   getItemDescriptionProps: (props: MenubarItemProps) => T['element']
   getItemShortcutProps: (props: MenubarItemProps) => T['element']
+  getItemSuffixProps: (props: MenubarItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: MenubarGroupProps) => T['element']
   getGroupLabelProps: (props: MenubarGroupProps) => T['element']

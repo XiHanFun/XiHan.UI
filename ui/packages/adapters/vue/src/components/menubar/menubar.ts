@@ -57,6 +57,16 @@ function useMenubarPart(register: MenubarPartRegistry, value: () => string): (el
 export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue'>
 
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内 */
+/** 代铺条目时可逐槽接管的三个插槽；三个都不写即完全按数据铺。 */
+export interface MenubarItemSlots {
+  /** 只填条目的文字槽，其余槽照旧由数据铺。 */
+  item?: (node: MenubarNodeMeta) => VNode[]
+  /** 只接管行首那一格，其余槽照旧由数据铺。 */
+  ['item-prefix']?: (node: MenubarNodeMeta) => VNode[]
+  /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺。 */
+  ['item-suffix']?: (node: MenubarNodeMeta) => VNode[]
+}
+
 export const XhMenubarRoot = defineComponent({
   name: 'XhMenubarRoot',
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
@@ -84,6 +94,8 @@ export const XhMenubarRoot = defineComponent({
   slots: Object as SlotsType<{
     default?: (props: MenubarRootSlotProps) => VNode[]
     item?: (node: MenubarNodeMeta) => VNode[]
+    'item-prefix'?: (node: MenubarNodeMeta) => VNode[]
+    'item-suffix'?: (node: MenubarNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: MenubarProps['onValueChange'] = (details) => {
@@ -103,7 +115,7 @@ export const XhMenubarRoot = defineComponent({
           setValue: ctx.api.value.setValue,
         })
       : props.collection
-        ? renderDefaultTree(ctx.api.value.collection, slots.item)
+        ? renderDefaultTree(ctx.api.value.collection, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] })
         : [])
   },
 })
@@ -350,6 +362,16 @@ export const XhMenubarItemShortcut = defineComponent({
   },
 })
 
+/** 条目行尾的作者内容（计数、徽标、次级图标）；家族只管落位，不规定字号与颜色 */
+export const XhMenubarItemSuffix = defineComponent({
+  name: 'XhMenubarItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useMenubarContext()
+    const { item } = useMenubarItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 指向本菜单锚点的箭头，纯装饰；须写在同一菜单的 positioner 中 */
 export const XhMenubarArrow = defineComponent({
   name: 'XhMenubarArrow',
@@ -377,7 +399,7 @@ export const XhMenubarSeparator = defineComponent({
  */
 function renderDefaultTree(
   collection: readonly MenubarNodeMeta[],
-  itemSlot?: (node: MenubarNodeMeta) => VNode[],
+  itemSlots: MenubarItemSlots,
 ): VNode[] {
   return [
     ...collection.map(menu =>
@@ -385,28 +407,35 @@ function renderDefaultTree(
     ),
     ...collection.map(menu =>
       h(XhMenubarPositioner, { key: `positioner:${menu.value}`, value: menu.value }, () => [
-        h(XhMenubarContent, null, () => renderNodes(menu.items, itemSlot)),
+        h(XhMenubarContent, null, () => renderNodes(menu.items, itemSlots)),
       ]),
     ),
   ]
 }
 
-/** 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。 */
+/**
+ * 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。
+ * `item-prefix` / `item-suffix` 插槽各接管首尾一格，其余槽照旧由数据铺。
+ */
 function renderNode(
   meta: MenubarNodeMeta,
-  itemSlot?: (node: MenubarNodeMeta) => VNode[],
+  itemSlots: MenubarItemSlots,
 ): VNode {
+  const prefix = itemSlots['item-prefix']
+  const suffix = itemSlots['item-suffix']
   return h(XhMenubarItem, { key: meta.value, value: meta.value }, () => [
-    h(XhMenubarItemText, null, () => itemSlot?.(meta) ?? meta.label),
+    ...(prefix ? [h(XhMenubarItemIndicator, null, () => prefix(meta))] : []),
+    h(XhMenubarItemText, null, () => itemSlots.item?.(meta) ?? meta.label),
     ...(meta.description != null ? [h(XhMenubarItemDescription, null, () => meta.description)] : []),
     ...(meta.shortcut != null ? [h(XhMenubarItemShortcut, null, () => meta.shortcut)] : []),
+    ...(suffix ? [h(XhMenubarItemSuffix, null, () => suffix(meta))] : []),
   ])
 }
 
 /** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly MenubarNodeMeta[],
-  itemSlot?: (node: MenubarNodeMeta) => VNode[],
+  itemSlots: MenubarItemSlots,
 ): VNode[] {
   return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
     const head = run[0]!
@@ -415,7 +444,7 @@ function renderNodes(
       ? [h(XhMenubarSeparator, { key: `separator:${head.value}` })]
       : []
     if (head.group == null)
-      return [...lead, renderNode(head, itemSlot)]
+      return [...lead, renderNode(head, itemSlots)]
     const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
     return [
       ...lead,
@@ -423,7 +452,7 @@ function renderNodes(
         ...(groupLabel != null ? [h(XhMenubarGroupLabel, null, () => groupLabel)] : []),
         ...run.flatMap((node, index) => [
           ...(index > 0 && node.separatorBefore ? [h(XhMenubarSeparator, { key: `separator:${node.value}` })] : []),
-          renderNode(node, itemSlot),
+          renderNode(node, itemSlots),
         ]),
       ]),
     ]

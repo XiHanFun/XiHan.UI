@@ -19,6 +19,7 @@ export const menubarAnatomy = createAnatomy('menubar', [
   'item-indicator',
   'item-description',
   'item-shortcut',
+  'item-suffix',
   'separator',
   'group',
   'group-label',

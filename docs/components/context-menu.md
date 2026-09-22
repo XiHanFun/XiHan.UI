@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -86,7 +86,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-context-menu>` |
-| Vue 组件 | `XhContextMenuArrow` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemDescription` `XhContextMenuItemIndicator` `XhContextMenuItemShortcut` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
+| Vue 组件 | `XhContextMenuArrow` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemDescription` `XhContextMenuItemIndicator` `XhContextMenuItemShortcut` `XhContextMenuItemSuffix` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
 | 组合式函数 | `useContextMenu` |
 | 状态机 | `contextMenuMachine` |
 | 皮肤 | `@xihan-ui/styles/context-menu.css` |
@@ -128,6 +128,8 @@
 | `XhContextMenuRoot` | `default` | `ContextMenuRootSlotProps` |  |
 | `XhContextMenuRoot` | `trigger` | — |  |
 | `XhContextMenuRoot` | `item` | `ContextMenuNodeMeta` |  |
+| `XhContextMenuRoot` | `item-prefix` | `ContextMenuNodeMeta` |  |
+| `XhContextMenuRoot` | `item-suffix` | `ContextMenuNodeMeta` |  |
 | `XhContextMenuSub` | `default` | `ContextMenuSubSlotProps` |  |
 
 ### 状态
@@ -171,6 +173,7 @@
 | `getItemIndicatorProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getItemShortcutProps` | `(props: ContextMenuItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
@@ -263,6 +266,9 @@
 | `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
 | `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 

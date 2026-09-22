@@ -59,6 +59,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-indicator - 条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden
  * @csspart item-description - 条目副文本，排在文字下一行
  * @csspart item-shortcut - 条目中的快捷键提示（aria-hidden，读屏从条目文字取意）
+ * @csspart item-suffix - 条目行尾的作者内容（计数、徽标、次级图标）
  * @csspart separator - 分隔线（role=separator，不进入方向键导航）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
@@ -350,6 +351,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
       for (const shortcut of this.partsIn(el, 'item-shortcut'))
         this.spreader.spread(shortcut, api.getItemShortcutProps(item) as Record<string, unknown>)
+      for (const suffix of this.partsIn(el, 'item-suffix'))
+        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
     }
     for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)

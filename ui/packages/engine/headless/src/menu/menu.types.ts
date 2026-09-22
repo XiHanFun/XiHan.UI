@@ -224,6 +224,7 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   getItemIndicatorProps: (props: MenuItemProps) => T['element']
   getItemDescriptionProps: (props: MenuItemProps) => T['element']
   getItemShortcutProps: (props: MenuItemProps) => T['element']
+  getItemSuffixProps: (props: MenuItemProps) => T['element']
   /**
    * 子菜单触发条目（submenu 模式）：既是父菜单中的一条 item（value 是它在父菜单
    * 中的身份，父层的方向键与高亮照常识别它），又是本子菜单的触发器（aria-haspopup、

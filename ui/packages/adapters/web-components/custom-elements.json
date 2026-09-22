@@ -14206,6 +14206,10 @@
               "name": "item-shortcut"
             },
             {
+              "description": "条目行尾的作者内容（计数、徽标、次级图标）",
+              "name": "item-suffix"
+            },
+            {
               "description": "分隔线（role=separator，不进入方向键导航）",
               "name": "separator"
             },
@@ -32563,6 +32567,10 @@
               "name": "item-shortcut"
             },
             {
+              "description": "条目行尾的作者内容（计数、徽标、次级图标）",
+              "name": "item-suffix"
+            },
+            {
               "description": "分隔线（role=separator，不进入方向键导航）",
               "name": "separator"
             },
@@ -33362,6 +33370,10 @@
             {
               "description": "条目中的快捷键提示（aria-hidden，读屏从条目文字取意）",
               "name": "item-shortcut"
+            },
+            {
+              "description": "条目行尾的作者内容（计数、徽标、次级图标）",
+              "name": "item-suffix"
             },
             {
               "description": "分隔线（role=separator，不进入方向键导航）",

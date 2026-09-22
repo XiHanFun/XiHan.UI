@@ -54,6 +54,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-indicator - 条目中的标记位，对读屏隐藏
  * @csspart item-description - 条目中的副文本
  * @csspart item-shortcut - 条目中的快捷键提示（aria-hidden，读屏从条目文字取意）
+ * @csspart item-suffix - 条目行尾的作者内容（计数、徽标、次级图标）
  * @csspart separator - 分隔线（role=separator，不进入方向键导航）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
@@ -400,6 +401,8 @@ export class XhMenuElement extends XhPortalHostElement {
       this.spreader.spread(el, api.getItemDescriptionProps(ownerItem(el)) as Record<string, unknown>)
     for (const el of this.getParts('item-shortcut'))
       this.spreader.spread(el, api.getItemShortcutProps(ownerItem(el)) as Record<string, unknown>)
+    for (const el of this.getParts('item-suffix'))
+      this.spreader.spread(el, api.getItemSuffixProps(ownerItem(el)) as Record<string, unknown>)
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
     for (const el of this.getParts('separator'))

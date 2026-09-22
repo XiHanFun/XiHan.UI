@@ -60,6 +60,13 @@ export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue
 /** 根上自有的取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
 
+/** 代铺条目时可逐槽接管的三处渲染；三处都不给即完全按数据铺。 */
+interface MenubarItemRenderers {
+  item?: (node: MenubarNodeMeta) => ReactNode
+  prefix?: (node: MenubarNodeMeta) => ReactNode
+  suffix?: (node: MenubarNodeMeta) => ReactNode
+}
+
 export interface XhMenubarRootProps extends RootElementProps {
   /** 菜单栏数据；提供后不必逐条放置部件。 */
   collection?: MenubarNode[]
@@ -79,6 +86,10 @@ export interface XhMenubarRootProps extends RootElementProps {
   onSelect?: MenubarProps['onSelect']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: MenubarNodeMeta) => ReactNode
+  /** 只接管条目行首那一格；其余槽仍由数据铺。 */
+  renderItemPrefix?: (node: MenubarNodeMeta) => ReactNode
+  /** 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 */
+  renderItemSuffix?: (node: MenubarNodeMeta) => ReactNode
   children?: SlotChildren<MenubarRootSlotProps>
 }
 
@@ -101,6 +112,8 @@ export function XhMenubarRoot({
   onSelect,
   children,
   renderItem,
+  renderItemPrefix,
+  renderItemSuffix,
   ...rest
 }: XhMenubarRootProps): ReactNode {
   const machineProps = {
@@ -129,7 +142,7 @@ export function XhMenubarRoot({
   const body = children != null
     ? renderSlot(children, { value: ctx.api.value, open: ctx.api.open, setValue: ctx.api.setValue })
     : collection
-      ? <DefaultTree collection={ctx.api.collection} renderItem={renderItem} />
+      ? <DefaultTree collection={ctx.api.collection} renderers={{ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }} />
       : null
 
   return (
@@ -390,6 +403,14 @@ export function XhMenubarItemShortcut({ children, ...rest }: XhMenubarItemShortc
   return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhMenubarItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+/** 条目行尾的作者内容（计数、徽标、次级图标）；家族只管落位，不规定字号与颜色。 */
+export function XhMenubarItemSuffix({ children, ...rest }: XhMenubarItemSuffixProps): ReactNode {
+  const ctx = useMenubarContext()
+  const item = useMenubarItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhMenubarSeparatorProps extends ComponentPropsWithRef<'div'> {}
 export function XhMenubarSeparator({ ...rest }: XhMenubarSeparatorProps): ReactNode {
   const ctx = useMenubarContext()
@@ -498,18 +519,20 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
 }
 
 /** 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。 */
-function renderNode(meta: MenubarNodeMeta, renderItem?: (node: MenubarNodeMeta) => ReactNode): ReactNode {
+function renderNode(meta: MenubarNodeMeta, renderers: MenubarItemRenderers): ReactNode {
   return (
     <XhMenubarItem key={meta.value} value={meta.value}>
-      <XhMenubarItemText>{renderItem?.(meta) ?? meta.label}</XhMenubarItemText>
+      {renderers.prefix ? <XhMenubarItemIndicator>{renderers.prefix(meta)}</XhMenubarItemIndicator> : null}
+      <XhMenubarItemText>{renderers.item?.(meta) ?? meta.label}</XhMenubarItemText>
       {meta.description != null ? <XhMenubarItemDescription>{meta.description}</XhMenubarItemDescription> : null}
       {meta.shortcut != null ? <XhMenubarItemShortcut>{meta.shortcut}</XhMenubarItemShortcut> : null}
+      {renderers.suffix ? <XhMenubarItemSuffix>{renderers.suffix(meta)}</XhMenubarItemSuffix> : null}
     </XhMenubarItem>
   )
 }
 
 /** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
-function renderNodes(collection: readonly MenubarNodeMeta[], renderItem?: (node: MenubarNodeMeta) => ReactNode): ReactNode {
+function renderNodes(collection: readonly MenubarNodeMeta[], renderers: MenubarItemRenderers): ReactNode {
   return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
     const head = run[0]!
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
@@ -518,7 +541,7 @@ function renderNodes(collection: readonly MenubarNodeMeta[], renderItem?: (node:
       return (
         <Fragment key={head.value}>
           {lead}
-          {renderNode(head, renderItem)}
+          {renderNode(head, renderers)}
         </Fragment>
       )
     }
@@ -531,7 +554,7 @@ function renderNodes(collection: readonly MenubarNodeMeta[], renderItem?: (node:
           {run.map((node, index) => (
             <Fragment key={node.value}>
               {index > 0 && node.separatorBefore ? <XhMenubarSeparator /> : null}
-              {renderNode(node, renderItem)}
+              {renderNode(node, renderers)}
             </Fragment>
           ))}
         </XhMenubarGroup>
@@ -547,7 +570,7 @@ function renderNodes(collection: readonly MenubarNodeMeta[], renderItem?: (node:
  */
 function DefaultTree(props: {
   collection: readonly MenubarNodeMeta[]
-  renderItem?: (node: MenubarNodeMeta) => ReactNode
+  renderers: MenubarItemRenderers
 }): ReactNode {
   return (
     <>
@@ -556,7 +579,7 @@ function DefaultTree(props: {
       ))}
       {props.collection.map(menu => (
         <XhMenubarPositioner key={`positioner:${menu.value}`} value={menu.value}>
-          <XhMenubarContent>{renderNodes(menu.items, props.renderItem)}</XhMenubarContent>
+          <XhMenubarContent>{renderNodes(menu.items, props.renderers)}</XhMenubarContent>
         </XhMenubarPositioner>
       ))}
     </>

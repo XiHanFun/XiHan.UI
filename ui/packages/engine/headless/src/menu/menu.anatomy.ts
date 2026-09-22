@@ -18,6 +18,7 @@ export const menuAnatomy = createAnatomy('menu', [
   'item-indicator',
   'item-description',
   'item-shortcut',
+  'item-suffix',
   'separator',
   'group',
   'group-label',
@@ -31,7 +32,7 @@ export const menuItemQuery: ItemQuery = { scope: menuAnatomy.name, part: 'item' 
 
 /**
  * 条目用于连打检索的文本：优先取 item-text 部件，缺省退回条目自身文本。
- * 直接取 textContent 会把 item-indicator、item-shortcut 这类装饰节点的文字一并算进来。
+ * 直接取 textContent 会把 item-indicator、item-shortcut、item-suffix 这类装饰节点的文字一并算进来。
  */
 export function menuItemText(el: HTMLElement): string {
   const text = el.querySelector<HTMLElement>(parts['item-text'].selector)
