@@ -33,6 +33,47 @@ function partNames(scope: ParentNode = document.body): (string | null)[] {
 }
 
 describe('menu 的 collection', () => {
+  it('标记位、文字、说明与快捷键按数据铺，未提供的那几个不铺对应部件', async () => {
+    await mountCollection([
+      { value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' },
+      { value: 'paste', label: '粘贴' },
+    ])
+    expect(partNames()).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'item',
+      'item-indicator',
+      'item-text',
+      'item-description',
+      'item-shortcut',
+      // 什么都没写的那条只剩文字
+      'item',
+      'item-text',
+    ])
+    const shortcut = document.body.querySelector('[data-part="item-shortcut"]')!
+    expect(shortcut.textContent).toBe('⌘ C')
+    // 快捷键是纯装饰：可及名由条目文字承担
+    expect(shortcut.getAttribute('aria-hidden')).toBe('true')
+    expect(shortcut.getAttribute('data-xh-collection-slot')).toBe('shortcut')
+  })
+
+  it('写了 renderItem 就整条交给作者：代铺的说明与快捷键都不再出现', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    root = createRoot(host)
+    ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
+    await act(async () => root!.render(
+      <XhMenuRoot
+        collection={[{ value: 'copy', label: '复制', description: '连同格式', shortcut: '⌘ C' }]}
+        trigger="操作"
+        renderItem={node => <b>{node.label}</b>}
+      />,
+    ))
+    expect(partNames()).toEqual(['trigger', 'positioner', 'content', 'item'])
+    expect(document.body.querySelector('[data-part="item"]')?.innerHTML).toBe('<b>复制</b>')
+  })
+
   it('相邻同 group 的条目收进同一个 group，标题取本组首个写了 groupLabel 的那条', async () => {
     await mountCollection([
       { value: 'compact', label: '紧凑', group: 'density', groupLabel: '行高' },
@@ -47,13 +88,17 @@ describe('menu 的 collection', () => {
       'group',
       'group-label',
       'item',
+      'item-text',
       'item',
+      'item-text',
       // 领头一个分组的那条，分隔线画在 group 外面
       'separator',
       'group',
       'group-label',
       'item',
+      'item-text',
       'item',
+      'item-text',
     ])
     const labelEls = [...document.body.querySelectorAll('[data-part="group-label"]')]
     expect(labelEls.map(el => el.textContent)).toEqual(['行高', '面板'])
@@ -72,10 +117,13 @@ describe('menu 的 collection', () => {
       'positioner',
       'content',
       'item',
+      'item-text',
       'group',
       'group-label',
       'item',
+      'item-text',
       'item',
+      'item-text',
     ])
   })
 
@@ -85,11 +133,11 @@ describe('menu 的 collection', () => {
       { value: 'comfortable', label: '宽松', group: 'density', separatorBefore: true },
     ])
     const group = document.body.querySelector('[data-part="group"]')!
-    expect(partNames(group)).toEqual(['group-label', 'item', 'separator', 'item'])
+    expect(partNames(group)).toEqual(['group-label', 'item', 'item-text', 'separator', 'item', 'item-text'])
   })
 
   it('首条上的分隔标记不产出分隔线', async () => {
     await mountCollection([{ value: 'copy', label: '复制', separatorBefore: true }])
-    expect(partNames()).toEqual(['trigger', 'positioner', 'content', 'item'])
+    expect(partNames()).toEqual(['trigger', 'positioner', 'content', 'item', 'item-text'])
   })
 })

@@ -6,6 +6,7 @@ import { defineComponent, h } from 'vue'
 import {
   XhMenuContent,
   XhMenuItem,
+  XhMenuItemText,
   XhMenuPositioner,
   XhMenuRoot,
   XhMenuSeparator,
@@ -39,10 +40,10 @@ function mountFromParts() {
         h(XhMenuTrigger, () => '操作'),
         h(XhMenuPositioner, () => [
           h(XhMenuContent, () => [
-            h(XhMenuItem, { value: 'copy' }, () => '复制'),
-            h(XhMenuItem, { value: 'paste' }, () => '粘贴'),
+            h(XhMenuItem, { value: 'copy' }, () => [h(XhMenuItemText, () => '复制')]),
+            h(XhMenuItem, { value: 'paste' }, () => [h(XhMenuItemText, () => '粘贴')]),
             h(XhMenuSeparator),
-            h(XhMenuItem, { value: 'delete' }, () => '删除'),
+            h(XhMenuItem, { value: 'delete' }, () => [h(XhMenuItemText, () => '删除')]),
           ]),
         ]),
       ]),
@@ -75,9 +76,12 @@ describe('menu 的 collection', () => {
       'positioner',
       'content',
       'item',
+      'item-text',
       'item',
+      'item-text',
       'separator',
       'item',
+      'item-text',
     ])
     w.unmount()
   })
@@ -113,7 +117,7 @@ describe('menu 的 collection', () => {
         h(XhMenuRoot, { collection: [{ value: 'copy', label: '复制', separatorBefore: true }] }),
       ]),
     }), { attachTo: document.body })
-    expect(partNames(document.body)).toEqual(['trigger', 'positioner', 'content', 'item'])
+    expect(partNames(document.body)).toEqual(['trigger', 'positioner', 'content', 'item', 'item-text'])
     w.unmount()
   })
 
@@ -151,6 +155,53 @@ describe('menu 的 collection', () => {
     w.unmount()
   })
 
+  it('标记位、文字、说明与快捷键按数据铺，未提供的那几个不铺对应部件', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [
+            { value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' },
+            { value: 'paste', label: '粘贴' },
+          ] satisfies MenuNode[],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    expect(partNames(document.body)).toEqual([
+      'trigger',
+      'positioner',
+      'content',
+      'item',
+      'item-indicator',
+      'item-text',
+      'item-description',
+      'item-shortcut',
+      // 什么都没写的那条只剩文字
+      'item',
+      'item-text',
+    ])
+    const shortcut = document.body.querySelector('[data-part="item-shortcut"]')!
+    expect(shortcut.textContent).toBe('⌘ C')
+    // 快捷键是纯装饰：可及名由条目文字承担
+    expect(shortcut.getAttribute('aria-hidden')).toBe('true')
+    expect(shortcut.getAttribute('data-xh-collection-slot')).toBe('shortcut')
+    w.unmount()
+  })
+
+  it('写了 item 插槽就整条交给作者：代铺的说明与快捷键都不再出现', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, {
+          collection: [{ value: 'copy', label: '复制', description: '连同格式', shortcut: '⌘ C' }] satisfies MenuNode[],
+        }, {
+          item: (node: { label: string }) => [h('b', node.label)],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    expect(partNames(document.body)).toEqual(['trigger', 'positioner', 'content', 'item'])
+    expect(document.body.querySelector('[data-part="item"]')?.innerHTML).toBe('<b>复制</b>')
+    w.unmount()
+  })
+
   it('相邻同 group 的条目收进同一个 group，标题取本组首个写了 groupLabel 的那条', () => {
     const w = mount(defineComponent({
       setup: () => () => h('div', [
@@ -171,13 +222,17 @@ describe('menu 的 collection', () => {
       'group',
       'group-label',
       'item',
+      'item-text',
       'item',
+      'item-text',
       // 领头一个分组的那条，分隔线画在 group 外面
       'separator',
       'group',
       'group-label',
       'item',
+      'item-text',
       'item',
+      'item-text',
     ])
     const labelEls = [...document.body.querySelectorAll('[data-part="group-label"]')]
     expect(labelEls.map(el => el.textContent)).toEqual(['行高', '面板'])
@@ -205,10 +260,13 @@ describe('menu 的 collection', () => {
       'positioner',
       'content',
       'item',
+      'item-text',
       'group',
       'group-label',
       'item',
+      'item-text',
       'item',
+      'item-text',
     ])
     w.unmount()
   })
@@ -225,7 +283,7 @@ describe('menu 的 collection', () => {
       ]),
     }), { attachTo: document.body })
     const group = document.body.querySelector('[data-part="group"]')!
-    expect(partNames(group)).toEqual(['group-label', 'item', 'separator', 'item'])
+    expect(partNames(group)).toEqual(['group-label', 'item', 'item-text', 'separator', 'item', 'item-text'])
     w.unmount()
   })
 

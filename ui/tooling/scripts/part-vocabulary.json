@@ -736,6 +736,9 @@
     "item-separator": [
       "accordion"
     ],
+    "item-shortcut": [
+      "menu"
+    ],
     "item-size-text": [
       "file-upload"
     ],
@@ -1631,6 +1634,7 @@
     "select": true,
     "sentinel": true,
     "separator": true,
+    "shortcut": true,
     "sider": true,
     "slider": true,
     "split": true,
