@@ -1,5 +1,5 @@
 // 框内前后缀 | 前后缀与输入框同在 control 这一个框里排成一行，共用它的描边与底色
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   XhTextFieldControl,
   XhTextFieldInput,
