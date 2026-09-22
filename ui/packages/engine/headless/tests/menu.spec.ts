@@ -251,6 +251,25 @@ describe('条目高亮标记', () => {
     expect((h.api().getItemProps({ value: 'paste' }) as Dict)['data-xh-collection-size']).toBe('sm')
   })
 
+  it('逐条语气只认 collection 里这一条自己写的，菜单级 tone 不下发给条目', () => {
+    const h = mount({
+      tone: 'brand',
+      collection: [{ value: 'copy' }, { value: 'paste' }, { value: 'delete', tone: 'danger' }],
+    })
+    expect(h.api().collection.map(node => node.tone)).toEqual([null, null, 'danger'])
+    expect((h.api().getItemProps({ value: 'delete' }) as Dict)['data-tone']).toBe('danger')
+    // 菜单级 tone 只落在 content 上；没写语气的条目不带属性，保持家族中性档
+    expect((h.api().getContentProps() as Dict)['data-tone']).toBe('brand')
+    expect((h.api().getItemProps({ value: 'copy' }) as Dict)['data-tone']).toBeUndefined()
+  })
+
+  it('没有 collection 时条目不发 data-tone：作者直接写在部件上的那份原样留着', () => {
+    const h = mount({ tone: 'danger' })
+    const props = h.api().getItemProps({ value: 'copy' }) as Dict
+    expect('data-tone' in props).toBe(true)
+    expect(props['data-tone']).toBeUndefined()
+  })
+
   it('焦点回到 content 自身时锚点清空，标记随之摘掉', () => {
     const h = mount()
     h.send({ type: 'OPEN', focus: 'none' })

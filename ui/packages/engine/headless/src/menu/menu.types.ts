@@ -45,13 +45,19 @@ export interface MenuSelectDetails {
   value: string
 }
 
-/** 条目数据。提供 collection 时，显示文本与禁用以它为准。 */
+/** 条目数据。提供 collection 时，显示文本、禁用与语气以它为准。 */
 export interface MenuNode {
   value: string
   /** 展示文本；默认回退为 value。 */
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
+  /**
+   * 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。
+   * 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。
+   * 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。
+   */
+  tone?: Tone
   /** 本条之前绘制一条分隔线；写在首条上不产出分隔线。 */
   separatorBefore?: boolean
 }
@@ -62,6 +68,8 @@ export interface MenuNodeMeta {
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
+  /** 该条命令自身的语气；未提供时为 null。 */
+  tone: Tone | null
   separatorBefore: boolean
 }
 
@@ -83,8 +91,8 @@ export interface MenuGroupProps {
 export interface MenuSchema extends MachineSchema {
   props: {
     /**
-     * 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。
-     * 未提供时回到文本与禁用都写在条目部件上的方式。
+     * 条目数据，显示文本、禁用与逐条语气的事实源。提供后条目部件只需声明 value。
+     * 未提供时回到这些事实都写在条目部件上的方式（语气写成条目的 `data-tone`）。
      */
     collection?: MenuNode[]
     /** 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 */
@@ -96,7 +104,11 @@ export interface MenuSchema extends MachineSchema {
     loop?: boolean
     /** 文字方向，默认 ltr。 */
     dir?: Direction
-    /** 语气：brand / neutral / success / warning / danger / info，决定条目高亮使用哪族颜色。 */
+    /**
+     * 整张菜单的语气：brand / neutral / success / warning / danger / info。
+     * 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档，
+     * 逐条的语气写在 collection 的 `tone` 上（见 MenuNode）。
+     */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
     size?: Size
