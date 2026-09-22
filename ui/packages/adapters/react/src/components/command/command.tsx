@@ -276,6 +276,14 @@ export function XhCommandItemDescription({ children, ...rest }: XhCommandItemDes
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 命令行尾的快捷键提示，与说明同档同色；纯装饰。 */
+export interface XhCommandItemShortcutProps extends ComponentPropsWithRef<'span'> {}
+export function XhCommandItemShortcut({ children, ...rest }: XhCommandItemShortcutProps): ReactNode {
+  const ctx = useCommandContext()
+  const item = useCommandItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhCommandEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 放在 content 中作为 list 的兄弟节点，不进入 role=listbox。 */
 export function XhCommandEmpty({ children, ...rest }: XhCommandEmptyProps): ReactNode {
@@ -314,6 +322,7 @@ function DefaultTree(props: {
       {props.renderItemPrefix ? <XhCommandItemPrefix>{props.renderItemPrefix(node)}</XhCommandItemPrefix> : null}
       <XhCommandItemText>{props.renderItem?.(node) ?? node.label}</XhCommandItemText>
       {node.description != null ? <XhCommandItemDescription>{node.description}</XhCommandItemDescription> : null}
+      {node.shortcut != null ? <XhCommandItemShortcut>{node.shortcut}</XhCommandItemShortcut> : null}
       {props.renderItemSuffix ? <XhCommandItemSuffix>{props.renderItemSuffix(node)}</XhCommandItemSuffix> : null}
     </XhCommandItem>
   )

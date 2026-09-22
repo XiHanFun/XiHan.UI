@@ -528,6 +528,14 @@ export function XhCascaderItemDescription({ children, ...rest }: XhCascaderItemD
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhCascaderItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhCascaderItemSuffix({ children, ...rest }: XhCascaderItemSuffixProps): ReactNode {
+  const ctx = useCascaderContext()
+  const item = useCascaderItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhCascaderItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhCascaderItemIndicator({ children, ...rest }: XhCascaderItemIndicatorProps): ReactNode {
   const ctx = useCascaderContext()

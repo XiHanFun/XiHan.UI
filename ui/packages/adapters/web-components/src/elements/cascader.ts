@@ -101,6 +101,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart item - role=option 的条目，须自带 value 属性标识身份；不在当前列中时带 hidden
  * @csspart item-text - 条目文本
  * @csspart item-description - 条目的第 2 行副文本
+ * @csspart item-suffix - 条目行尾的作者内容（计数、徽标）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
  * @csspart footer - 浮层底部的操作区，写在 content 中与列并列，横跨全部列；不进入任何一列的拥有关系，方向键也无法到达
  */
@@ -561,6 +562,8 @@ export class XhCascaderElement extends XhPortalHostElement {
       this.spreader.spread(el, api.getItemTextProps(this.itemOf(el)) as Record<string, unknown>)
     for (const el of this.getParts('item-description'))
       this.spreader.spread(el, api.getItemDescriptionProps(this.itemOf(el)) as Record<string, unknown>)
+    for (const el of this.getParts('item-suffix'))
+      this.spreader.spread(el, api.getItemSuffixProps(this.itemOf(el)) as Record<string, unknown>)
     for (const el of this.getParts('item-indicator'))
       this.spreader.spread(el, api.getItemIndicatorProps(this.itemOf(el)) as Record<string, unknown>)
 

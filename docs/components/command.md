@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `empty` · `loading` · `footer`
+`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-shortcut` · `item-suffix` · `empty` · `loading` · `footer`
 
 ## 示例
 
@@ -62,6 +62,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 - 过滤可以关闭（`filter` 置否），改由调用方筛选；远端检索使用这一档。
 - 命令可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 命令可写副文本，第 2 行放一句解释，不进检索串。
+- 命令可写快捷键提示，贴行尾、与说明同档同色；纯装饰，不进检索串。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
@@ -97,7 +98,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-command>` |
-| Vue 组件 | `XhCommandContent` `XhCommandEmpty` `XhCommandFooter` `XhCommandGroup` `XhCommandGroupLabel` `XhCommandInput` `XhCommandItem` `XhCommandItemDescription` `XhCommandItemPrefix` `XhCommandItemSuffix` `XhCommandItemText` `XhCommandList` `XhCommandLoading` `XhCommandRoot` `XhCommandTrigger` |
+| Vue 组件 | `XhCommandContent` `XhCommandEmpty` `XhCommandFooter` `XhCommandGroup` `XhCommandGroupLabel` `XhCommandInput` `XhCommandItem` `XhCommandItemDescription` `XhCommandItemPrefix` `XhCommandItemShortcut` `XhCommandItemSuffix` `XhCommandItemText` `XhCommandList` `XhCommandLoading` `XhCommandRoot` `XhCommandTrigger` |
 | 组合式函数 | `useCommand` |
 | 状态机 | `commandMachine` |
 | 皮肤 | `@xihan-ui/styles/command.css` |
@@ -206,6 +207,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `getItemPrefixProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: CommandItemProps) => T['element']` |  |
+| `getItemShortcutProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getItemSuffixProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示。 |
@@ -258,6 +260,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
 | `item-prefix` | `aria-hidden` | 'true' |
+| `item-shortcut` | `aria-hidden` | 'true' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
 
@@ -299,6 +302,9 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
 | `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |

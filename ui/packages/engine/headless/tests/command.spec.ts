@@ -72,6 +72,7 @@ describe('命令清单的过滤与归组', () => {
       disabled: false,
       tone: null,
       description: null,
+      shortcut: null,
     })
   })
 

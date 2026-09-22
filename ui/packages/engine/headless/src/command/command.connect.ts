@@ -377,6 +377,14 @@ export function connectCommand<T extends PropTypes>(
       'data-xh-collection-slot': 'description',
     }),
 
+    // 快捷键提示贴行尾，与说明同档同色；纯装饰，检索串只取 item-text
+    getItemShortcutProps: item => normalize.element({
+      ...parts['item-shortcut'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'shortcut',
+      'aria-hidden': true,
+    }),
+
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
       // 空态节点必须待在 role=listbox 之外（列表里只允许 option 与 group），放 content 里当 list 的兄弟；

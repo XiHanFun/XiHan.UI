@@ -392,6 +392,16 @@ export const XhTreeSelectItemDescription = defineComponent({
   },
 })
 
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhTreeSelectItemSuffix = defineComponent({
+  name: 'XhTreeSelectItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    const { node } = useTreeSelectNodeContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTreeSelectItemIndicator = defineComponent({
   name: 'XhTreeSelectItemIndicator',
   setup(_, { slots }) {

@@ -416,5 +416,6 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: CascaderItemProps) => T['element']
   getItemTextProps: (props: CascaderItemProps) => T['element']
   getItemDescriptionProps: (props: CascaderItemProps) => T['element']
+  getItemSuffixProps: (props: CascaderItemProps) => T['element']
   getItemIndicatorProps: (props: CascaderItemProps) => T['element']
 }

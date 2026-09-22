@@ -256,6 +256,7 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: TransferItemProps) => T['element']
   getItemTextProps: (props: TransferItemProps) => T['element']
   getItemDescriptionProps: (props: TransferItemProps) => T['element']
+  getItemSuffixProps: (props: TransferItemProps) => T['element']
   getItemCheckboxProps: (props: TransferItemProps) => T['element']
   getToTargetTriggerProps: () => T['button']
   getToSourceTriggerProps: () => T['button']

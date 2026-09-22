@@ -388,6 +388,14 @@ export function XhTransferItemDescription({ children, ...rest }: XhTransferItemD
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhTransferItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhTransferItemSuffix({ children, ...rest }: XhTransferItemSuffixProps): ReactNode {
+  const ctx = useTransferContext()
+  const item = useTransferItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTransferItemCheckboxProps extends ComponentPropsWithRef<'span'> {}
 export function XhTransferItemCheckbox({ children, ...rest }: XhTransferItemCheckboxProps): ReactNode {
   const ctx = useTransferContext()

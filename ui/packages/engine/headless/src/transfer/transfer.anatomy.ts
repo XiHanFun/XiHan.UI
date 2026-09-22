@@ -26,6 +26,7 @@ export const transferAnatomy = createAnatomy('transfer', [
   'item',
   'item-text',
   'item-description',
+  'item-suffix',
   'item-checkbox',
   'empty',
   'loading',

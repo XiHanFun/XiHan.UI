@@ -474,6 +474,16 @@ export const XhCascaderItemDescription = defineComponent({
   },
 })
 
+/** 条目行尾的作者内容（计数、徽标） */
+export const XhCascaderItemSuffix = defineComponent({
+  name: 'XhCascaderItemSuffix',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    const { item } = useCascaderItemContext()
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCascaderItemIndicator = defineComponent({
   name: 'XhCascaderItemIndicator',
   setup(_, { slots }) {

@@ -444,6 +444,14 @@ export function XhTreeSelectItemDescription({ children, ...rest }: XhTreeSelectI
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+/** 条目行尾的作者内容（计数、徽标）。 */
+export interface XhTreeSelectItemSuffixProps extends ComponentPropsWithRef<'span'> {}
+export function XhTreeSelectItemSuffix({ children, ...rest }: XhTreeSelectItemSuffixProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTreeSelectItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeSelectItemIndicator({ children, ...rest }: XhTreeSelectItemIndicatorProps): ReactNode {
   const ctx = useTreeSelectContext()

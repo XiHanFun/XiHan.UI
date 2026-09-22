@@ -21,6 +21,7 @@ export const commandAnatomy = createAnatomy('command', [
   'item-prefix',
   'item-text',
   'item-description',
+  'item-shortcut',
   'item-suffix',
   'empty',
   'loading',

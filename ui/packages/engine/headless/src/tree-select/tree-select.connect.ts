@@ -650,6 +650,13 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-xh-collection-slot': 'description',
     }),
 
+    // 行尾那一格：内容由作者给（计数、徽标）。行首归勾选框与展开箭头，这一格才是作者的
+    getItemSuffixProps: node => normalize.element({
+      ...parts['item-suffix'].attrs,
+      ...nodeState(node.value),
+      'data-xh-collection-slot': 'suffix',
+    }),
+
     // 对号落在家族网格的 indicator 列（叶子与分支行共用）
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,

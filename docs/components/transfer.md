@@ -20,7 +20,7 @@ collection 是条目全集的唯一事实源，value 只承载落在右侧的一
 
 加粗的是必需部件。
 
-`data-scope="transfer"`：`root` · `hidden-input` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
+`data-scope="transfer"`：`root` · `hidden-input` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
 
 ## 示例
 
@@ -97,6 +97,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 - `oneWay` 单向移动：只能移向目标，不可退回。
 - 条目可逐条声明语气，搬到另一侧仍带着自己的那一份。
 - 条目可写副文本，第 2 行放一句解释，搬到另一侧一并带着。
+- 条目行尾留一格给作者（计数、徽标）；行首那一格归勾选框。
 - 万级条目时只渲染可视区。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
 - 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
@@ -125,7 +126,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-transfer>` |
-| Vue 组件 | `XhTransferEmpty` `XhTransferGroup` `XhTransferGroupLabel` `XhTransferItem` `XhTransferItemCheckbox` `XhTransferItemDescription` `XhTransferItemText` `XhTransferList` `XhTransferLoading` `XhTransferPanelCount` `XhTransferPanelHeader` `XhTransferPanelTitle` `XhTransferRoot` `XhTransferSearch` `XhTransferSelectAllTrigger` `XhTransferSourcePanel` `XhTransferTargetPanel` `XhTransferToSourceTrigger` `XhTransferToTargetTrigger` |
+| Vue 组件 | `XhTransferEmpty` `XhTransferGroup` `XhTransferGroupLabel` `XhTransferItem` `XhTransferItemCheckbox` `XhTransferItemDescription` `XhTransferItemSuffix` `XhTransferItemText` `XhTransferList` `XhTransferLoading` `XhTransferPanelCount` `XhTransferPanelHeader` `XhTransferPanelTitle` `XhTransferRoot` `XhTransferSearch` `XhTransferSelectAllTrigger` `XhTransferSourcePanel` `XhTransferTargetPanel` `XhTransferToSourceTrigger` `XhTransferToTargetTrigger` |
 | 组合式函数 | `useTransfer` |
 | 状态机 | `transferMachine` |
 | 皮肤 | `@xihan-ui/styles/transfer.css` |
@@ -182,6 +183,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `item` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
 | `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-checkbox` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | checkStates[panel.side] |
 
@@ -236,6 +238,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `getItemProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: TransferItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemCheckboxProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getToTargetTriggerProps` | `() => T['button']` |  |
 | `getToSourceTriggerProps` | `() => T['button']` |  |
@@ -343,6 +346,11 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `item-description` | `data-side` | item.side |
 | `item-description` | `data-state` | 'checked' \| 'unchecked' |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-side` | item.side |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-checkbox` | `data-disabled` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-side` | item.side |

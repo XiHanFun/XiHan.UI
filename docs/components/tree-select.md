@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-description` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
+`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
 
 ## 示例
 
@@ -117,6 +117,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 - `cascade` 与 `checkedStrategy` 决定勾选是否带子级、回显给哪一层。
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
+- 节点行尾留一格给作者（计数、徽标）；行首那一格归勾选框与展开箭头。
 - 支持只选叶子不选分支、浮层内关键词过滤、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 获取直接子项；失败保留 cause，默认 `branch-error` 与 `branch-retry-trigger` 直接可用。
 - 整树空（`empty`）与在途（`loading`）默认自动渲染；collection 看有效树长度，手写节点由适配器只上报挂载事实、Headless 统一判空。`loading` 为真时树报 `aria-busy`，空态让位；作者写同名部件时保留作者结构与文案。
 - 输入框保持实体；浮层使用 M2 磨砂材质、内侧顶光和四向短位移，不缩放树中文字。树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；增强对比度时材质自动实体化。面板宽度受定位后的可用空间约束，触发器更宽时也不撑大面板。
@@ -147,7 +148,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree-select>` |
-| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemDescription` `XhTreeSelectItemIndicator` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
+| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemDescription` `XhTreeSelectItemIndicator` `XhTreeSelectItemSuffix` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
 | 组合式函数 | `useTreeSelect` |
 | 状态机 | `treeSelectMachine` |
 | 皮肤 | `@xihan-ui/styles/tree-select.css` |
@@ -293,6 +294,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `getItemProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getBranchControlProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
@@ -462,6 +464,11 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `item-description` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item-description` | `data-selected` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-indeterminate` | ''（条件成立时才出现） |
+| `item-suffix` | `data-selected` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
