@@ -1,4 +1,5 @@
 import { playwright } from '@vitest/browser-playwright'
+import { browserCommands } from '@xihan-ui/testing/browser-commands'
 import { defineConfig } from 'vitest/config'
 
 // 浏览器态：真实 Chromium，跑 jsdom 里演不出来的那部分（无障碍、布局、可见性、真实焦点）。
@@ -14,6 +15,7 @@ export default defineConfig({
       instances: [{ browser: 'chromium' }],
       headless: true,
       screenshotFailures: false,
+      commands: browserCommands,
     },
   },
 })

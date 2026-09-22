@@ -1,5 +1,6 @@
+/// <reference types="@xihan-ui/testing/browser-commands" />
 import { beforeAll } from 'vitest'
-import { userEvent } from 'vitest/browser'
+import { commands, userEvent } from 'vitest/browser'
 
 /**
  * 把真实指针停到视口角落的一块 2×2 上，并把它留在 DOM 里当命中目标。
@@ -17,4 +18,13 @@ async function parkPointer(): Promise<void> {
   await userEvent.hover(park)
 }
 
+/**
+ * 套件图源域名下的请求全程挂住：<img> 的 load / error 只由套件步骤派发，真实网络不插手。
+ * 命令本身与缘由见 @xihan-ui/testing 的 browser-commands。
+ */
+function holdImageSources(): Promise<void> {
+  return commands.holdImageSources()
+}
+
 beforeAll(parkPointer)
+beforeAll(holdImageSources)
