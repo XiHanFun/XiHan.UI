@@ -324,9 +324,7 @@ function pageMarkerRules(page) {
   [data-xh-collection-item][data-xh-collection-context='page'] {
     position: relative;`
   if (!leading)
-    return `${head}
-  }
-`
+    return `${head}\n  }\n`
   return `${head}
     grid-template-columns:
       [indicator] max-content
