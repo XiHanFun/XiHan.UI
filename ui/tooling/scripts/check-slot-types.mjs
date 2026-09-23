@@ -62,6 +62,9 @@ function declarationOf(source, from) {
   return null
 }
 
+/** 插槽取值：slots.item 或 slots['item-prefix']，第 1 / 2 组分别是两种写法的名字。 */
+const SLOT_ACCESS = String.raw`slots(?:\.(\w+)|\[\s*['"]([\w-]+)['"]\s*\])`
+
 const errors = []
 let vueDeclared = 0
 let reactDeclared = 0
@@ -79,16 +82,17 @@ for (const file of await walk(ADAPTERS.vue.components, ['.ts'])) {
     const section = source.slice(begin, end)
     const name = head[1]
 
-    // 带载荷的插槽调用：?.( 、!( 、裸( 三种形态，实参不是右括号
+    // 带载荷的插槽调用：?.( 、!( 、裸( 三种形态，实参不是右括号；
+    // 连字符插槽名只能写成 slots['item-prefix']，点号与方括号两种取法都认
     const used = new Set()
-    for (const call of section.matchAll(/slots\.(\w+)(?:\s*(?:\?\.|!))?\s*\(/g)) {
+    for (const call of section.matchAll(new RegExp(`${SLOT_ACCESS}(?:\\s*(?:\\?\\.|!))?\\s*\\(`, 'g'))) {
       const rest = section.slice(call.index + call[0].length)
       if (!rest.trimStart().startsWith(')'))
-        used.add(call[1])
+        used.add(call[1] ?? call[2])
     }
     // 反向判据的引用集：名字出现即算「用过」——slots.item 整体传给 helper 的裸引用也算，
     // 只有调用形态会漏掉 collection 族把插槽按引用透传的用法
-    const referenced = new Set([...section.matchAll(/slots\.(\w+)/g)].map(m => m[1]))
+    const referenced = new Set([...section.matchAll(new RegExp(SLOT_ACCESS, 'g'))].map(m => m[1] ?? m[2]))
 
     const declared = declarationOf(section, 0)
     if (declared === null) {
@@ -99,10 +103,11 @@ for (const file of await walk(ADAPTERS.vue.components, ['.ts'])) {
     if (used.size === 0 && referenced.size === 0)
       continue
 
-    // 逐键校验：形如 `key?: (props: T) => VNode[]`
+    // 逐键校验：形如 `key?: (props: T) => VNode[]`；lint 的 quote-props 要求同一对象里
+    // 有连字符键时全部加引号，所以 `'default'?:` 与 `default?:` 两种写法都要认
     const keys = new Map()
-    for (const entry of declared.body.matchAll(/^[^\S\n]*(\w+)(\??):[^\S\n]*(\S.*)$/gm))
-      keys.set(entry[1], { optional: entry[2] === '?', type: entry[3].trim() })
+    for (const entry of declared.body.matchAll(/^[^\S\n]*(?:'([\w-]+)'|"([\w-]+)"|(\w+))(\??):[^\S\n]*(\S.*)$/gm))
+      keys.set(entry[1] ?? entry[2] ?? entry[3], { optional: entry[4] === '?', type: entry[5].trim() })
     vueDeclared += keys.size
 
     for (const key of used) {
