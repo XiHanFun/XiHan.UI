@@ -72,10 +72,10 @@ export const XhContextMenuRoot = defineComponent({
     'update:open': (_open: PayloadOf<ContextMenuProps, 'onOpenChange'>['open']) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: ContextMenuRootSlotProps) => VNode[]
-    trigger?: () => VNode[]
+    'default'?: (props: ContextMenuRootSlotProps) => VNode[]
+    'trigger'?: () => VNode[]
     /** 只填条目的文字槽，标记位、副文本与快捷键照旧由数据铺 */
-    item?: (node: ContextMenuNodeMeta) => VNode[]
+    'item'?: (node: ContextMenuNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (node: ContextMenuNodeMeta) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */

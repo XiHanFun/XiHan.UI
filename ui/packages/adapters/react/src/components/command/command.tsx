@@ -107,7 +107,9 @@ export function XhCommandRoot({ children, empty, trigger, footer, renderItem, re
           trigger={trigger}
           empty={empty}
           footer={footer}
-          renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix}
+          renderItem={renderItem}
+          renderItemPrefix={renderItemPrefix}
+          renderItemSuffix={renderItemSuffix}
         />
       )
 
