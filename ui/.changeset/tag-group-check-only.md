@@ -1,5 +1,5 @@
 ---
-'@xihan-ui/styles': major
+'@xihan-ui/styles': minor
 ---
 
 TagGroup 的选中改成与 TreeSelect 同一种读法：选中的标签面、字与描边都不换，只在文字后亮一枚对号。
