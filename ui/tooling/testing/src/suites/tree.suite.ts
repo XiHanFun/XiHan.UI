@@ -486,20 +486,12 @@ export const treeSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '确认键：叶子选中并替换；分支顺带切换展开态',
+      name: '确认键：叶子与分支都只选中并替换，不碰展开态',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props({ defaultExpandedValue: ['src'] }),
       covers: ['tree.kbd.select'],
       steps: [
         { kind: 'focus', part: 'tree', expect: { activeElement: { part: 'branch[0]', exact: true } } },
-        {
-          kind: 'key',
-          key: 'Enter',
-          expect: {
-            parts: { 'branch': branchesSelected('src'), 'branch-content': contentsShown() },
-          },
-        },
-        // 再按一次：选中不变，展开态切回来
         {
           kind: 'key',
           key: 'Enter',
@@ -518,20 +510,20 @@ export const treeSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'expandOnClick 关掉后确认键与点行都只选中，不碰展开态',
+      name: 'expandOnClick 打开后确认键与点行顺带切换展开态',
       spec: { apg: APG },
-      props: props({ expandOnClick: false, defaultExpandedValue: ['src'] }),
+      props: props({ expandOnClick: true, defaultExpandedValue: ['src'] }),
       steps: [
         { kind: 'focus', part: 'tree' },
         {
           kind: 'key',
           key: 'Enter',
-          expect: { parts: { 'branch': branchesSelected('src'), 'branch-content': contentsShown('src') } },
+          expect: { parts: { 'branch': branchesSelected('src'), 'branch-content': contentsShown() } },
         },
         {
           kind: 'click',
           part: 'branch-control[2]',
-          expect: { parts: { 'branch': branchesSelected('docs'), 'branch-content': contentsShown('src') } },
+          expect: { parts: { 'branch': branchesSelected('docs'), 'branch-content': contentsShown('docs') } },
         },
       ],
     },
@@ -558,7 +550,7 @@ export const treeSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击：点分支行选中并展开，点箭头只切展开，点叶子替换选中',
+      name: '点击：点分支行只选中不展开，点箭头只切展开，点叶子替换选中',
       spec: { apg: APG },
       props: props(),
       steps: [
@@ -566,18 +558,18 @@ export const treeSuite: ConformanceSuite = {
           kind: 'click',
           part: 'branch-control[0]',
           expect: {
-            // 分支行只是 treeitem 里的一层内容，焦点该落在 branch 上
+            // 分支行只是 treeitem 里的一层内容，焦点该落在 branch 上；展开与选中分开，点行不碰展开态
             activeElement: { part: 'branch[0]', exact: true },
-            parts: { 'branch': branchesExpanded('src'), 'branch-content': contentsShown('src') },
+            parts: { 'branch': branchesSelected('src'), 'branch-content': contentsShown() },
           },
         },
         {
           kind: 'click',
           part: 'branch-trigger[0]',
           expect: {
-            // 箭头长在 branch-control 里：不掐断冒泡会再跑一遍点行，展开态被切两回
+            // 箭头长在 branch-control 里：不掐断冒泡会再跑一遍点行，把选中也连带改掉
             activeElement: { part: 'branch[0]', exact: true },
-            parts: { 'branch-content': contentsShown(), 'branch': branchesSelected('src') },
+            parts: { 'branch-content': contentsShown('src'), 'branch': branchesSelected('src') },
           },
         },
         {

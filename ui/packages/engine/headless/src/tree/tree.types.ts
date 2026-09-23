@@ -171,7 +171,7 @@ export interface TreeSchema extends MachineSchema {
     cascade?: boolean
     /** 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 */
     checkedStrategy?: CascadeStrategy
-    /** 点击分支行是否同时展开 / 收起，默认 true。关闭后只有 branch-trigger 与左右方向键能改变展开态。 */
+    /** 点击分支行（与确认键）是否同时展开 / 收起，默认 false：展开与选中分开，只有 branch-trigger 与左右方向键能改变展开态。 */
     expandOnClick?: boolean
     /** 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 */
     disabled?: boolean

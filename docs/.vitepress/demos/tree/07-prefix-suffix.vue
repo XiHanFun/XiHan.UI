@@ -1,4 +1,4 @@
-<!-- 前缀与行尾 | 行中放置什么由标记决定：文字前放图标、文字后放操作，方向指示也可以移到行尾 -->
+<!-- 前缀与行尾 | 行中放置什么由标记决定：文字前放图标、文字后放操作，展开箭头也可以移到行尾 -->
 <script setup lang="ts">
 import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
@@ -6,8 +6,8 @@ import {
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
-  XhTreeBranchIndicator,
   XhTreeBranchText,
+  XhTreeBranchTrigger,
   XhTreeItem,
   XhTreeItemIndicator,
   XhTreeItemText,
@@ -49,8 +49,7 @@ function rename(label: string): void {
           <XhTreeBranchControl>
             <XhIcon :icon="FolderIcon" />
             <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
-            <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
-            <XhTreeBranchIndicator />
+            <XhTreeBranchTrigger />
             <XhTreeItemIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>

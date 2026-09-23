@@ -36,9 +36,9 @@ multiple 关闭时是单选，开启后点击与确认键都变为切换，选�
 
 <XhDemo src="tree/03-controlled" />
 
-### 点击行不展开与禁用节点
+### 点击行展开与禁用节点
 
-expandOnClick 关闭后只有箭头与左右方向键能改变展开态；禁用节点仍可聚焦，只是确认键不响应它
+缺省点行只选中、展开归箭头与左右方向键，expandOnClick 打开后点行同时切换展开态；禁用节点仍可聚焦，只是确认键不响应它
 
 <XhDemo src="tree/04-expand-on-click" />
 
@@ -56,7 +56,7 @@ collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后
 
 ### 前缀与行尾
 
-行中放置什么由标记决定：文字前放图标、文字后放操作，方向指示也可以移到行尾
+行中放置什么由标记决定：文字前放图标、文字后放操作，展开箭头也可以移到行尾
 
 <XhDemo src="tree/07-prefix-suffix" />
 
@@ -116,7 +116,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 - 选中与[树形选择器](./tree-select)同一种读法：行不换面，单选、多选与级联都只在行尾画对号；分支行也摆 `item-indicator`，级联下的半选画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
-- `expandOnClick` 决定点整行是否展开。
+- 展开与选中分开：点行只选中，展开归箭头与左右方向键；`expandOnClick` 打开后点整行才顺带展开。
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
 - 节点行尾留一格给作者（计数、徽标），排在对号之前；行首那一格归展开箭头与拖拽把手。
@@ -165,7 +165,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `multiple` | `boolean` |  | 复选：点击与确认键都是切换，tree 带 aria-multiselectable=true。默认 false（单选）。 |
 | `cascade` | `boolean` |  | multiple 下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
-| `expandOnClick` | `boolean` |  | 点击分支行是否同时展开 / 收起，默认 true。关闭后只有 branch-trigger 与左右方向键能改变展开态。 |
+| `expandOnClick` | `boolean` |  | 点击分支行（与确认键）是否同时展开 / 收起，默认 false：展开与选中分开，只有 branch-trigger 与左右方向键能改变展开态。 |
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 |
 | `loading` | `boolean` |  | 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
@@ -298,7 +298,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `End` | focus in tree | 焦点移到末个可见行（展开着的子树也算行） |
 | `ArrowRight` | focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
-| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 未关时顺带切换展开态 |
+| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 打开时顺带切换展开态 |
 | `Enter` / `Space` | held on node, 树未禁用、未加载且节点未禁用 | 按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
