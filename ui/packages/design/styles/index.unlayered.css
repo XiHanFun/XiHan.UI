@@ -1137,20 +1137,9 @@
   margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
 }
 
-/* page 上下文：对号是前导标记（leading）；当前项的起始侧指示条按配方开关（none），none 即只由行面与字色表达。 */
+/* page 上下文：对号与 overlay 同在行尾的 indicator 列（trailing）；当前项的起始侧指示条按配方开关（none），none 即只由行面与字色表达。 */
 [data-scope][data-xh-collection-item][data-xh-collection-context='page'] {
   position: relative;
-  grid-template-columns:
-    [indicator] max-content
-    [prefix] max-content
-    [text] minmax(0, 1fr)
-    [shortcut] max-content
-    [suffix] max-content;
-}
-
-[data-scope][data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
-  margin-inline-start: 0;
-  margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
 }
 
 [data-scope][data-xh-collection-item][data-in-path] {
@@ -25787,7 +25776,7 @@
 
 [data-scope='listbox'][data-part='root'] {
   /* 条目外的字形（空态 / 在途占位里作者塞的图标）按档取尺，缺省 md；条目内的字形由家族随
-     data-xh-collection-size 下发（§6.5）。列表框自绘的状态字形（前导对号所在的标记盒与盒里的勾）不读这支：
+     data-xh-collection-size 下发（§6.5）。列表框自绘的状态字形（行尾对号所在的标记盒与盒里的勾）不读这支：
      它们是指示符，走 --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺 */
   --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-md));
   /* 定高小列表的自绘条挂在根上（§6.6）：根是条子的定位盒，轨道底色关掉才不会在列表右缘糊出一条灰带 */
@@ -26012,7 +26001,7 @@
 }
 
 /* 条目走 Collection Item 的 page 语境（页内持久集合，§7.3）：网格、尺寸档、悬停 / 高亮 / 按下面
-   （白底承载 hover 100 → pressed 200）与选中面（品牌淡底 + 淡底前景 + 前导对号，selected+hover 20% /
+   （白底承载 hover 100 → pressed 200）与选中面（品牌淡底 + 淡底前景 + 行尾对号，selected+hover 20% /
    +pressed 28%）都由家族按 aria-selected / aria-disabled 给出；禁用面（字色降级、not-allowed、不换面）
    也归家族。这里只把公开槽映射到桥接槽，不复制任何状态选择器。
    page 集合坐在 surface 白底上，前景走 fg-default 而不是浮层的 frosted 前景 */
@@ -26078,10 +26067,10 @@
   text-overflow: ellipsis;
 }
 
-/* 勾选标记落在家族网格的 indicator 列（page 语境下前置为前导对号）；显隐与颜色由家族按选中态给，
+/* 勾选标记落在家族网格行尾的 indicator 列（page 与 overlay 同位）；显隐与颜色由家族按选中态给，
    未选中时占位不塌，切换选中不引起行宽抖动。
    盒与盒里的勾是指示符（§6.5）：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
-   兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（前导对号不是勾选格，不取 × 0.75，与 Menu 族同口径）；
+   兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（对号不是勾选格，不取 × 0.75，与 Menu 族同口径）；
    不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 比 16 / 14 的指示符档大一圈 */
 [data-scope='listbox'][data-part='item-indicator'] {
   --xh-icon-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));

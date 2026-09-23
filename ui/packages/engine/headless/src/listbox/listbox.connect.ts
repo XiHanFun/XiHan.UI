@@ -347,7 +347,7 @@ export function connectListbox<T extends PropTypes>(
     }),
 
     // 条目走 Collection Item 的 page 语境（页内持久集合）：网格、尺寸档、悬停 / 高亮 / 按下面与
-    // 选中面（品牌淡底 + 前导对号）都由家族配方按 aria-selected / aria-disabled 给出，皮肤只映射公开槽
+    // 选中面（品牌淡底 + 行尾对号）都由家族配方按 aria-selected / aria-disabled 给出，皮肤只映射公开槽
     getItemProps: (item) => {
       const handlers = press('item', item.value, isDisabled(item))
       return normalize.element({
@@ -430,7 +430,7 @@ export function connectListbox<T extends PropTypes>(
       'data-xh-collection-slot': 'description',
     }),
 
-    // 选中标记落在家族网格的 indicator 列：page 语境下它是前导对号，显隐由家族按 data-state='checked' 给
+    // 选中标记落在家族网格行尾的 indicator 列，显隐由家族按 data-state='checked' 给
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...stateAttrs(item),

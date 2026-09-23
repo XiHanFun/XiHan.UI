@@ -314,6 +314,35 @@ function stateExtras(source, state, indent) {
   return ''
 }
 
+/**
+ * page 上下文的标记落位：对号按 markers.page.glyph 排在行尾（trailing，与 overlay 同列）或行首（leading）；
+ * 当前项的起始侧指示条按 markers.page.current 开关（none 即只由行面与字色表达）。
+ */
+function pageMarkerRules(page) {
+  const leading = page.glyph === 'leading'
+  const head = `  /* page 上下文：对号${leading ? '是前导标记，排在行首' : '与 overlay 同在行尾的 indicator 列'}（${page.glyph}）；当前项的起始侧指示条按配方开关（${page.current}），none 即只由行面与字色表达。 */
+  [data-xh-collection-item][data-xh-collection-context='page'] {
+    position: relative;`
+  if (!leading)
+    return `${head}
+  }
+`
+  return `${head}
+    grid-template-columns:
+      [indicator] max-content
+      [prefix] max-content
+      [text] minmax(0, 1fr)
+      [shortcut] max-content
+      [suffix] max-content;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
+    margin-inline-start: 0;
+    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+  }
+`
+}
+
 function contextRules(source, render) {
   return CONTEXTS.flatMap(context => CONTEXT_STATES[context].map(state => render(context, state))).join('\n\n')
 }
@@ -417,22 +446,7 @@ ${sizeVars(source, size)}
     margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
-  /* page 上下文：对号是前导标记（${markers.page.glyph}）；当前项的起始侧指示条按配方开关（${markers.page.current}），none 即只由行面与字色表达。 */
-  [data-xh-collection-item][data-xh-collection-context='page'] {
-    position: relative;
-    grid-template-columns:
-      [indicator] max-content
-      [prefix] max-content
-      [text] minmax(0, 1fr)
-      [shortcut] max-content
-      [suffix] max-content;
-  }
-
-  [data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
-    margin-inline-start: 0;
-    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
-  }
-
+${pageMarkerRules(markers.page)}
   [data-xh-collection-item][data-in-path] {
 ${stateVars(source, 'open-path')}
   }
