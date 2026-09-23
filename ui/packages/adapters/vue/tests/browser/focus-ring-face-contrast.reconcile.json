@@ -17,10 +17,6 @@
       "found": "静态没算出这一档，本侧量到 2.8:1（light · 无语气）",
       "why": "叉的按压面是从 currentColor 兑出的 22% 底，压在标签根的淡底 / 选中 / 语气面上；静态门禁把 [data-pressed] 归进 conditional 不判定，也看不见 color-mix 的 currentColor 与祖先铺的面。皮肤在按住且落焦时把环灌成叉自己的字色，浏览器侧继续受 3:1 断言。"
     },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-      "found": "静态没算出这一档，本侧量到 2.48:1（light · neutral）",
-      "why": "叉的按压面是从 currentColor 兑出的 22% 底，压在标签根的淡底 / 选中 / 语气面上；静态门禁把 [data-pressed] 归进 conditional 不判定，也看不见 color-mix 的 currentColor 与祖先铺的面。皮肤在按住且落焦时把环灌成叉自己的字色，浏览器侧继续受 3:1 断言。"
-    },
     "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
       "found": "静态没算出这一档，本侧量到 2.24:1（light · neutral）",
       "why": "叉的按压面是从 currentColor 兑出的 22% 底，压在标签根的淡底 / 选中 / 语气面上；静态门禁把 [data-pressed] 归进 conditional 不判定，也看不见 color-mix 的 currentColor 与祖先铺的面。皮肤在按住且落焦时把环灌成叉自己的字色，浏览器侧继续受 3:1 断言。"
@@ -31,10 +27,6 @@
     },
     "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
       "found": "静态没算出这一档，本侧量到 2.04:1（dark · 无语气）",
-      "why": "叉的按压面是从 currentColor 兑出的 22% 底，压在标签根的淡底 / 选中 / 语气面上；静态门禁把 [data-pressed] 归进 conditional 不判定，也看不见 color-mix 的 currentColor 与祖先铺的面。皮肤在按住且落焦时把环灌成叉自己的字色，浏览器侧继续受 3:1 断言。"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-      "found": "静态没算出这一档，本侧量到 2.17:1（light · neutral）",
       "why": "叉的按压面是从 currentColor 兑出的 22% 底，压在标签根的淡底 / 选中 / 语气面上；静态门禁把 [data-pressed] 归进 conditional 不判定，也看不见 color-mix 的 currentColor 与祖先铺的面。皮肤在按住且落焦时把环灌成叉自己的字色，浏览器侧继续受 3:1 断言。"
     },
     "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable][data-tone]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
@@ -48,10 +40,6 @@
     "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable][data-variant='solid']:not([data-disabled])": {
       "found": "静态算到覆盖它的档 tag [data-part='root'][data-scope='tag'][data-variant='solid']（1:1），本侧量到 1.49:1（dark · 无语气）",
       "why": "可选实心标签按下的面是品牌 active 档；静态门禁把 [data-pressed] 归进 conditional，只算到覆盖它的实心根那档。两侧指向同一块实心面，环都由 tag.css 灌成配对前景，本条只登记按下面的数值差异。"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-      "found": "静态没算出这一档，本侧量到 2.82:1（light · neutral）",
-      "why": "叉的按压面是从 currentColor 兑出的 22% 底，压在标签根的淡底 / 选中 / 语气面上；静态门禁把 [data-pressed] 归进 conditional 不判定，也看不见 color-mix 的 currentColor 与祖先铺的面。皮肤在按住且落焦时把环灌成叉自己的字色，浏览器侧继续受 3:1 断言。"
     },
     "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='subtle'] [data-part='close-trigger'][data-pressed][data-scope='tag']": {
       "found": "静态没算出这一档，本侧量到 2.82:1（light · neutral）",
