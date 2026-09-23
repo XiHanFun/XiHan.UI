@@ -72,8 +72,8 @@
 
 | 语义 | 对象 | 唯一标记 |
 | --- | --- | --- |
-| 浮层瞬态集合与树的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree | 透明底 + 行尾对号（`--xh-fg-brand`），正文颜色与字重保持 rest；树的分支行也放对号，半选画横杠 |
-| 页内持久集合的选中 | Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；带对号部件的集合再加行尾对号。SideNav 当前项只有行面与字色，不画指示条 |
+| 对号集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree、Listbox、TagGroup | 透明底 + 行尾对号（`--xh-fg-brand`），正文颜色与字重保持 rest；树的分支行也放对号，半选画横杠；TagGroup 保持标签自身的面，只多一枚文字后的对号 |
+| 页内持久集合的选中 | Table row、Transfer、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；Table row / Transfer 另有行首勾选框。SideNav 当前项只有行面与字色，不画指示条 |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | 透明面 + 2px 指示条 + `--xh-fg-brand-strong` + medium；Breadcrumb 当前页不可点、无指示条 |
 | 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 |
 | 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle` 内的白色抬起 indicator |
