@@ -1,6 +1,6 @@
 /// <reference types="@xihan-ui/testing/browser-commands" />
 import { beforeAll } from 'vitest'
-import { commands, userEvent } from 'vitest/browser'
+import { cdp, commands, userEvent } from 'vitest/browser'
 
 /**
  * 把真实指针停到视口角落的一块 2×2 上，并把它留在 DOM 里当命中目标。
@@ -26,5 +26,16 @@ function holdImageSources(): Promise<void> {
   return commands.holdImageSources()
 }
 
+/**
+ * 媒介与触屏仿真挂在整张页面上，同一 worker 里的下一个文件复用这张页面。
+ * 上一个文件末条用例仿真成 print / forced-colors 后不还原，这个文件就整份跑在 print 里：
+ * 皮肤的 print 块把悬停面与描边压回静息，悬停断言成片落空。每个文件开跑前复位。
+ */
+async function resetEmulation(): Promise<void> {
+  await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
+  await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
+}
+
+beforeAll(resetEmulation)
 beforeAll(parkPointer)
 beforeAll(holdImageSources)
