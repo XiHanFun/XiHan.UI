@@ -22,7 +22,9 @@ export const XhInputGroupRoot = defineComponent({
     size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectInputGroup(withXhConfig('input-group', props) as InputGroupProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('input-group', props)
+    const api = computed(() => connectInputGroup(configured as InputGroupProps, vueNormalize))
     provideInputGroup({ api })
     // 组内每一段是作者放进插槽的控件，直接当直接子节点摆
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
