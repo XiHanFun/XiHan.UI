@@ -1,8 +1,8 @@
-// 列表框自绘的状态字形——page 语境下前导对号所在的标记盒与盒里皮肤画的兜底勾——是指示符，不是控件内图标：
+// 列表框自绘的状态字形——行尾对号所在的标记盒与盒里皮肤画的兜底勾——是指示符，不是控件内图标：
 // 它们同属 --xh-control-indicator-* 一族（§6.5），条目上由家族按档下发的 --xh-icon-size（桥自
 // --xh-listbox-icon-size，md 20px）只管作者直接放进条目里的图标。
 // 此前标记盒与兜底勾都读行上的 --xh-icon-size：20 的盒与勾比 16px 的指示符档大一圈，compact 下指示符
-// 收到 14 时它们仍是 20。两档密度一起量：盒与勾同边长（前导对号不是勾选格，不取 × 0.75，与 Menu 族同口径），
+// 收到 14 时它们仍是 20。两档密度一起量：盒与勾同边长（对号不是勾选格，不取 × 0.75，与 Menu 族同口径），
 // 作者塞进标记盒的 XhIcon 与盒同尺，作者直接放进条目的图标两档都恒 20。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -116,7 +116,7 @@ describe.each(['comfortable', 'compact'] as const)('列表框自绘状态字形�
     }
   })
 
-  it('选中项前导的兜底勾与盒同边长，随指示符档换档', async () => {
+  it('选中项行尾的兜底勾与盒同边长，随指示符档换档；对号落在正文之后（§7.5 indicator 列在行尾）', async () => {
     await mount(density)
     const indicator = indicatorSize()
     const mark = indicatorOf('apple')
@@ -128,6 +128,8 @@ describe.each(['comfortable', 'compact'] as const)('列表框自绘状态字形�
     const observed = describeGlyph(mark, '::before')
     expect(check.width, observed).toBe(indicator)
     expect(check.height, observed).toBe(indicator)
+    const text = item('apple').querySelector<HTMLElement>('[data-part="item-text"]')!
+    expect(mark.getBoundingClientRect().left).toBeGreaterThanOrEqual(text.getBoundingClientRect().right)
   })
 
   it('作者塞进标记盒里的 XhIcon 与盒同尺，随指示符档换档', async () => {
