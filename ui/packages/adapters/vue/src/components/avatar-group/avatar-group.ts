@@ -22,7 +22,9 @@ export const XhAvatarGroupRoot = defineComponent({
     size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectAvatarGroup(withXhConfig('avatar-group', props) as AvatarGroupProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('avatar-group', props)
+    const api = computed(() => connectAvatarGroup(configured as AvatarGroupProps, vueNormalize))
     provideAvatarGroup({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

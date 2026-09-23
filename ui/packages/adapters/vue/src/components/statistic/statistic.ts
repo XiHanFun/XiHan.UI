@@ -23,7 +23,9 @@ export const XhStatisticRoot = defineComponent({
     trend: { type: String as PropType<StatisticTrend> },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectStatistic(withXhConfig('statistic', props) as StatisticProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('statistic', props)
+    const api = computed(() => connectStatistic(configured as StatisticProps, vueNormalize))
     provideStatistic({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

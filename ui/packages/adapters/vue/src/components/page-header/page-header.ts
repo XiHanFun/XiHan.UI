@@ -25,7 +25,9 @@ export const XhPageHeaderRoot = defineComponent({
     variant: { type: String as PropType<ControlVariant> },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectPageHeader(withXhConfig('page-header', props) as PageHeaderProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('page-header', props)
+    const api = computed(() => connectPageHeader(configured as PageHeaderProps, vueNormalize))
     providePageHeader({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

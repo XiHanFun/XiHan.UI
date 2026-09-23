@@ -31,17 +31,39 @@ export const XhKbd = defineComponent({
   },
   setup(props, { emit }) {
     const detected = useKbdPlatform()
-    const api = computed(() => connectKbd(withXhConfig('kbd', {
-      keys: props.keys,
-      platform: props.platform && props.platform !== 'auto' ? props.platform : detected.value,
-      variant: props.variant,
-      register: props.register,
-      target: props.target,
-      preventDefault: props.preventDefault,
-      enabled: props.enabled,
-      translations: props.translations,
-      onHotKey: details => emit('hot-key', details),
-    }) as KbdProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理。
+    // 本组件不能把它写进 computed：useKbdPlatform 在 onMounted 改写平台会让 api 失效，
+    // 下一次求值发生在下面 watchEffect 的作业里，那时已不在组件上下文中，inject 拿不到
+    // 全局配置，translations 与 locale 会被静默丢回内建英文。
+    // 代理包的是一组取值函数：props 与 detected 仍在求值期被追踪，响应性不变。
+    const configured = withXhConfig('kbd', {
+      get keys() {
+        return props.keys
+      },
+      get platform() {
+        return props.platform && props.platform !== 'auto' ? props.platform : detected.value
+      },
+      get variant() {
+        return props.variant
+      },
+      get register() {
+        return props.register
+      },
+      get target() {
+        return props.target
+      },
+      get preventDefault() {
+        return props.preventDefault
+      },
+      get enabled() {
+        return props.enabled
+      },
+      get translations() {
+        return props.translations
+      },
+      onHotKey: (details: PayloadOf<KbdProps, 'onHotKey'>) => emit('hot-key', details),
+    }) as KbdProps
+    const api = computed(() => connectKbd(configured, vueNormalize))
     const onKeyDown = (event: Event): void => api.value.handleKeyDown(event as KeyboardEvent)
     let bound: EventTarget | null = null
     const stop = (): void => {

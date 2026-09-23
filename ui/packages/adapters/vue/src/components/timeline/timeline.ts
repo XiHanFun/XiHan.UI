@@ -24,7 +24,9 @@ export const XhTimelineRoot = defineComponent({
     size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectTimeline(withXhConfig('timeline', props) as TimelineProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('timeline', props)
+    const api = computed(() => connectTimeline(configured as TimelineProps, vueNormalize))
     provideTimeline({ api })
     return () => h('ol', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

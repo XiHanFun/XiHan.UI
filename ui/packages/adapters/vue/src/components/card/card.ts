@@ -21,7 +21,9 @@ export const XhCardRoot = defineComponent({
     variant: { type: String as PropType<ControlVariant> },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectCard(withXhConfig('card', props) as CardProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('card', props)
+    const api = computed(() => connectCard(configured as CardProps, vueNormalize))
     provideCard({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

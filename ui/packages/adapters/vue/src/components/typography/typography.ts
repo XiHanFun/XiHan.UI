@@ -23,7 +23,9 @@ export const XhTypographyRoot = defineComponent({
     weight: { type: String as PropType<TypographyWeight> },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectTypography(withXhConfig('typography', props) as TypographyProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('typography', props)
+    const api = computed(() => connectTypography(configured as TypographyProps, vueNormalize))
     provideTypography({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },
