@@ -166,10 +166,13 @@ describe('不传尺寸时一族同宽', () => {
   })
 
   it('date-range-picker 起止两组按日的段位放不进缺省宽，按内容撑开', () => {
-    const wide = measure(600, rangeSegments('date-range-picker', 'yyyy')).width
+    // 段位字号经使用者槽抬到 20px：14px 下两组按日的段位放不放得进 16rem 取决于平台字体
+    // （Windows 放不进、CI 的 Linux 字体恰好放得进），抬高后在哪都放不进，量的才是「撑开」这条路径
+    const large = '--xh-date-range-picker-font-size: 20px'
+    const wide = measure(600, rangeSegments('date-range-picker', 'yyyy'), large).width
     expect(wide).toBeGreaterThan(DEFAULT)
     // 撑开的是内容而不是容器：两个都放得下的容器里量到同一个数
-    expect(measure(480, rangeSegments('date-range-picker', 'yyyy')).width).toBe(wide)
+    expect(measure(480, rangeSegments('date-range-picker', 'yyyy'), large).width).toBe(wide)
   })
 
   it('date-range-picker 按年的内容比缺省宽窄时顶住缺省宽，不比别的字段窄', () => {
