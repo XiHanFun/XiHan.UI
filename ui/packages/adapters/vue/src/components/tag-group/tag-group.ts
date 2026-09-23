@@ -203,8 +203,8 @@ function renderDefaultTree(
     h(XhTagGroupList, null, () => collection.map(node =>
       h(XhTagGroupItem, { key: node.value, value: node.value }, () => [
         h(XhTagGroupCell, null, () => [
-          h(XhTagGroupItemIndicator),
           h(XhTagGroupItemText, null, () => itemSlot?.(node) ?? node.label),
+          h(XhTagGroupItemIndicator),
           h(XhTagGroupItemDeleteTrigger),
         ]),
       ]),

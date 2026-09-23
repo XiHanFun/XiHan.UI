@@ -255,8 +255,8 @@ function DefaultTree(props: {
         {props.collection.map(node => (
           <XhTagGroupItem key={node.value} value={node.value}>
             <XhTagGroupCell>
-              <XhTagGroupItemIndicator />
               <XhTagGroupItemText>{props.renderItem?.(node) ?? node.label}</XhTagGroupItemText>
+              <XhTagGroupItemIndicator />
               <XhTagGroupItemDeleteTrigger />
             </XhTagGroupCell>
           </XhTagGroupItem>
