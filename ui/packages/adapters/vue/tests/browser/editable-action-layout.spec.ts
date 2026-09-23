@@ -155,8 +155,12 @@ describe('就地编辑的左内容右动作布局', () => {
 
   it('编辑态切成左侧输入与右侧确认、取消图标，三个动作不同时出现', async () => {
     await mountEditable()
+    for (const trigger of ['submit-trigger', 'cancel-trigger'])
+      part(trigger).style.transition = 'none'
     await userEvent.click(part('edit-trigger'))
     await nextTick()
+    // 指针还停在编辑钮原处，换出来的取消钮可能正好落在它下面（落点随字体宽度走）：先挪开再读静息面
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 
     const input = part('input').getBoundingClientRect()
     const submit = part('submit-trigger').getBoundingClientRect()
