@@ -1,6 +1,6 @@
 ---
-'@xihan-ui/headless': major
-'@xihan-ui/styles': major
+'@xihan-ui/headless': minor
+'@xihan-ui/styles': minor
 ---
 
 Listbox 的选中改成与 TreeSelect 同一种读法：行不换面、不换字色，只在行尾亮对号。

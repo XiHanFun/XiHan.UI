@@ -1,8 +1,8 @@
 ---
-'@xihan-ui/headless': major
-'@xihan-ui/vue': major
-'@xihan-ui/react': major
-'@xihan-ui/web-components': major
+'@xihan-ui/headless': minor
+'@xihan-ui/vue': minor
+'@xihan-ui/react': minor
+'@xihan-ui/web-components': minor
 ---
 
 Tree 的展开与选中分开：`expandOnClick` 缺省由 `true` 改为 `false`，与 TreeSelect 一致。

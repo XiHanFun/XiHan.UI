@@ -1,9 +1,9 @@
 ---
-'@xihan-ui/headless': major
-'@xihan-ui/vue': major
-'@xihan-ui/react': major
-'@xihan-ui/web-components': major
-'@xihan-ui/styles': major
+'@xihan-ui/headless': minor
+'@xihan-ui/vue': minor
+'@xihan-ui/react': minor
+'@xihan-ui/web-components': minor
+'@xihan-ui/styles': minor
 ---
 
 Tree 的选中改成与 TreeSelect 同一种读法：行不换面，单选、多选与级联都只在行尾画对号，勾选框部件删除。
