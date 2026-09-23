@@ -7,6 +7,7 @@ import { compileCollectionItemRecipe } from '../../../packages/design/styles/bui
 const UI_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const SOURCE = join(UI_ROOT, 'packages/design/styles/recipes/collection-item.recipe.json')
 const TOKENS = join(UI_ROOT, 'packages/design/tokens/tokens.json')
+const TONE = join(UI_ROOT, 'packages/design/styles/css/tone.css')
 
 const GUARD = ':not([aria-disabled=\'true\'], [data-disabled], [aria-busy=\'true\'], [data-error])'
 
@@ -208,8 +209,15 @@ describe('collection Item recipe', () => {
     expect(ruleBody(forced, contextSelector('nav', 'current'))).toContain('--xh-_collection-indicator-fg: ButtonText;')
     expect(ruleBody(forced, contextSelector('nav', 'terminal'))).toContain('--xh-_collection-indicator-fg: ButtonText;')
     expect(ruleBody(forced, contextSelector('nav', 'hover'))).toContain('--xh-_collection-bg: Highlight;')
-    const bars = [...css.matchAll(/\[data-current\]::before/g)]
-    expect(bars).toHaveLength(1)
+    // 配方里三个语境的 current 都是 none：当前项只由行面与字色表达，不产出起始侧指示条
+    expect([...css.matchAll(/\[data-current\]::before/g)]).toHaveLength(0)
+  })
+
+  it('page 语境的 current 开关写回 bar 时，生成器仍产出起始侧那条指示条', async () => {
+    const recipe = await source()
+    recipe.markers.page.current = 'bar'
+    const css = compileCollectionItemRecipe(recipe)
+    expect([...css.matchAll(/\[data-current\]::before/g)]).toHaveLength(1)
     const bar = ruleBody(css, '[data-xh-collection-item][data-xh-collection-context=\'page\'][data-current]::before')
     expect(bar).toContain('inset-inline-start: 0;')
     expect(bar).toContain('inline-size: var(--xh-stroke-thick);')
@@ -219,6 +227,10 @@ describe('collection Item recipe', () => {
   it('配方引用的令牌都已声明（family CSS 不在 check-token-refs 扫描面）', async () => {
     const recipe = await source()
     const tokens = new Set(Object.keys(JSON.parse(await readFile(TOKENS, 'utf8'))))
+    // 语气轴对外那一族 --xh-tone-* 不进 tokens.json：它们声明在 tone.css 的 [data-tone] 上，
+    // 由 check-tone-tokens 核名册，逐条语气的行面与字色就取这一族
+    for (const match of (await readFile(TONE, 'utf8')).matchAll(/^\s*(--xh-tone-[\w-]+):/gm))
+      tokens.add(match[1])
     const referenced = new Set()
     const collect = (value) => {
       if (typeof value === 'string') {
