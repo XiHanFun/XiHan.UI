@@ -135,6 +135,15 @@
 | --- | --- | --- | --- |
 | `XhScrollbarRoot` | `default` | `ScrollbarRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhScrollbarRoot` | `scrollable` | `ScrollbarTarget` |  | 真正在滚动的元素，或者取它的函数。它不必是本组件的后代： 表格的滚动盒、虚拟滚动的视口、任意 overflow:auto 的 div 均可。 |
+| `XhScrollbarRoot` | `children` | `SlotChildren<ScrollbarRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

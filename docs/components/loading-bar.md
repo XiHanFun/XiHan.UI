@@ -129,6 +129,14 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | --- | --- | --- | --- |
 | `XhLoadingBarRoot` | `default` | `LoadingBarRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhLoadingBarRoot` | `children` | `SlotChildren<LoadingBarRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

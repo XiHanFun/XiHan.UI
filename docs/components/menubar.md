@@ -149,6 +149,37 @@
 | `XhMenubarRoot` | `item-suffix` | `MenubarNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhMenubarSub` | `default` | `MenubarSubSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMenubarContent` | `value` | `string` |  | 默认时沿用外层 positioner 提供的身份，无 positioner 时必填。 |
+| `XhMenubarGroup` | `value` | `string` | 是 |  |
+| `XhMenubarItem` | `value` | `string` | 是 |  |
+| `XhMenubarItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhMenubarPositioner` | `value` | `string` | 是 |  |
+| `XhMenubarPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhMenubarRoot` | `renderItem` | `(node: MenubarNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhMenubarRoot` | `renderItemPrefix` | `(node: MenubarNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhMenubarRoot` | `renderItemSuffix` | `(node: MenubarNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
+| `XhMenubarRoot` | `children` | `SlotChildren<MenubarRootSlotProps>` |  |  |
+| `XhMenubarSub` | `value` | `string` | 是 | 它在所属菜单中的条目身份。 |
+| `XhMenubarSub` | `disabled` | `boolean` |  |  |
+| `XhMenubarSub` | `placement` | `Placement` |  |  |
+| `XhMenubarSub` | `offset` | `number` |  |  |
+| `XhMenubarSub` | `loop` | `boolean` |  |  |
+| `XhMenubarSub` | `openOnHover` | `boolean` |  |  |
+| `XhMenubarSub` | `hoverOpenDelay` | `number` |  |  |
+| `XhMenubarSub` | `hoverCloseDelay` | `number` |  |  |
+| `XhMenubarSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
+| `XhMenubarSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
+| `XhMenubarSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenubarSub` | `children` | `SlotChildren<MenubarSubSlotProps>` |  |  |
+| `XhMenubarTrigger` | `value` | `string` | 是 |  |
+| `XhMenubarTrigger` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+
 ### 状态
 
 公开状态写入 `data-state`。

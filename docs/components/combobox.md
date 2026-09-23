@@ -189,6 +189,25 @@
 | `XhComboboxRoot` | `item-prefix` | `ComboboxNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
 | `XhComboboxRoot` | `item-suffix` | `ComboboxNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhComboboxGroup` | `value` | `string` | 是 |  |
+| `XhComboboxInput` | `as` | `ComboboxInputHost` |  | 输入框渲染为哪个标签，默认 input。 写 textarea 即多行宿主：connect 随之撤销 type、role 与 aria-expanded。 |
+| `XhComboboxItem` | `value` | `string` | 是 |  |
+| `XhComboboxItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhComboboxPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhComboboxRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhComboboxRoot` | `empty` | `ReactNode` |  | 无匹配时的提示语。提供后不必再写 empty 部件。 |
+| `XhComboboxRoot` | `clearable` | `boolean` |  | 自动铺开时是否渲染清空按钮；手写部件模式不使用它，写了节点即可清空。 |
+| `XhComboboxRoot` | `renderItem` | `(node: ComboboxNodeMeta) => ReactNode` |  | 每个候选的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhComboboxRoot` | `renderItemPrefix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhComboboxRoot` | `renderItemSuffix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhComboboxRoot` | `children` | `SlotChildren<ComboboxRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

@@ -110,6 +110,17 @@
 | `icon` | `string` |  | 图标文本，写入 link-icon 部件；需要放置图形时改用插槽。 |
 | `current` | `boolean` |  | 当前页所在层级。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhBreadcrumbLink` | `value` | `string` |  | 链接身份，按压通道按它记住正被按住的那一条；未声明时派生一个实例内稳定的键。 |
+| `XhBreadcrumbLink` | `current` | `boolean` |  | 当前页的条目。 |
+| `XhBreadcrumbRoot` | `renderSeparator` | `() => ReactNode` |  | 分隔符的内容；未提供时由皮肤绘制默认箭头。 |
+| `XhBreadcrumbRoot` | `renderEllipsis` | `(nodes: readonly BreadcrumbNodeMeta[]) => ReactNode` |  | 省略位的内容，可得到被折叠的层；未提供时为一个省略号。 |
+
 ### 状态
 
 以下名称仅用于内部状态机。

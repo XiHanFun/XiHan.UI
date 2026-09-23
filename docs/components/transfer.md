@@ -186,6 +186,16 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | --- | --- | --- | --- |
 | `XhTransferRoot` | `default` | `TransferRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTransferGroup` | `value` | `string` | 是 |  |
+| `XhTransferItem` | `value` | `string` | 是 |  |
+| `XhTransferRoot` | `children` | `SlotChildren<TransferRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

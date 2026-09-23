@@ -166,6 +166,20 @@
 | `XhCascaderRoot` | `default` | `CascaderRootSlotProps` |  |
 | `XhCascaderSearchList` | `item` | `CascaderSearchListItemSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCascaderColumn` | `level` | `number \| string` | 是 | 层号，兼收字符串。 |
+| `XhCascaderContent` | `empty` | `ReactNode` |  | 空态占位的内容；未提供时按视图取无匹配或无数据文案。 |
+| `XhCascaderGroup` | `value` | `string` | 是 |  |
+| `XhCascaderItem` | `value` | `string` | 是 |  |
+| `XhCascaderPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhCascaderRoot` | `children` | `SlotChildren<CascaderRootSlotProps>` |  |  |
+| `XhCascaderSearchList` | `renderItem` | `(result: CascaderSearchResult) => ReactNode` |  | 每条候选的自定义内容；未提供时把整条路径连缀为一行。 |
+
 ### 状态
 
 公开状态写入 `data-state`。

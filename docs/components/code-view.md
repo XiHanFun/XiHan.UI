@@ -155,6 +155,16 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `XhCodeViewCode` | `line` | `CodeViewLineSlotProps` |  |
 | `XhCodeViewRoot` | `default` | `CodeViewRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCodeViewCode` | `children` | `SlotChildren<CodeViewLineSlotProps>` |  | 逐行接管该行的正文；未提供时按着色结果铺设。 |
+| `XhCodeViewFilename` | `filename` | `string` |  | 未写 children 时显示它。 |
+| `XhCodeViewRoot` | `children` | `SlotChildren<CodeViewRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

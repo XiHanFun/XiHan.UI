@@ -197,6 +197,21 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `XhTimePickerPresetGroup` | `default` | `TimePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimePickerRoot` | `default` | `TimePickerRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTimePickerColumn` | `unit` | `TimePickerColumnUnit` | 是 |  |
+| `XhTimePickerColumn` | `children` | `SlotChildren<TimePickerColumnSlotProps>` |  |  |
+| `XhTimePickerItem` | `value` | `string` | 是 | 两位补零的显示串（'09' / '30'）；上下午列写 '00' / '01'。 |
+| `XhTimePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhTimePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
+| `XhTimePickerPresetGroup` | `children` | `SlotChildren<TimePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
+| `XhTimePickerRoot` | `children` | `SlotChildren<TimePickerRootSlotProps>` |  |  |
+| `XhTimePickerSegment` | `segment` | `TimeSegmentType` | 是 | 段的身份由作者声明。 |
+
 ### 状态
 
 公开状态写入 `data-state`。

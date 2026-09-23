@@ -166,6 +166,36 @@
 | `XhMenuRoot` | `item-suffix` | `MenuNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhMenuSub` | `default` | `MenuSubSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMenuGroup` | `value` | `string` | 是 |  |
+| `XhMenuItem` | `value` | `string` | 是 |  |
+| `XhMenuItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhMenuPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhMenuRoot` | `trigger` | `ReactNode` |  | 触发器中放置的内容；只提供 collection 时由它承载。 |
+| `XhMenuRoot` | `triggerAsChild` | `boolean` |  | 只提供 collection 时，trigger 给出的节点直接作为触发器使用，不再外包一个 button。 |
+| `XhMenuRoot` | `renderItem` | `(node: MenuNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhMenuRoot` | `renderItemPrefix` | `(node: MenuNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhMenuRoot` | `renderItemSuffix` | `(node: MenuNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
+| `XhMenuRoot` | `children` | `SlotChildren<MenuRootSlotProps>` |  |  |
+| `XhMenuSub` | `value` | `string` | 是 | 它在父菜单中的条目身份。 |
+| `XhMenuSub` | `disabled` | `boolean` |  |  |
+| `XhMenuSub` | `collection` | `MenuNode[]` |  |  |
+| `XhMenuSub` | `placement` | `Placement` |  |  |
+| `XhMenuSub` | `offset` | `number` |  |  |
+| `XhMenuSub` | `loop` | `boolean` |  |  |
+| `XhMenuSub` | `openOnHover` | `boolean` |  |  |
+| `XhMenuSub` | `hoverOpenDelay` | `number` |  |  |
+| `XhMenuSub` | `hoverCloseDelay` | `number` |  |  |
+| `XhMenuSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
+| `XhMenuSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
+| `XhMenuSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenuSub` | `children` | `SlotChildren<MenuSubSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

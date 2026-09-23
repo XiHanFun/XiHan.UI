@@ -129,6 +129,15 @@ size 改变正文字号与块间距，三档共用同一份块列表
 | `XhMarkdownStreamContent` | `block` | `MarkdownStreamBlockSlotProps` |  |
 | `XhMarkdownStreamRoot` | `default` | `MarkdownStreamRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMarkdownStreamContent` | `children` | `SlotChildren<MarkdownStreamBlockSlotProps>` |  | 逐块接管该块的正文；未提供时按块类型铺设。 |
+| `XhMarkdownStreamRoot` | `children` | `SlotChildren<MarkdownStreamRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

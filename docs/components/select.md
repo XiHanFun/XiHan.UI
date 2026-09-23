@@ -266,6 +266,24 @@ outline、subtle 和 ghost
 | `XhSelectRoot` | `item-prefix` | `SelectNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
 | `XhSelectRoot` | `item-suffix` | `SelectNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSelectGroup` | `value` | `string` | 是 |  |
+| `XhSelectItem` | `value` | `string` | 是 |  |
+| `XhSelectItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
+| `XhSelectRoot` | `renderItem` | `(node: SelectNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhSelectRoot` | `renderItemPrefix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `renderItemSuffix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `children` | `SlotChildren<SelectRootSlotProps>` |  |  |
+| `XhSelectTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
+
 ### 状态
 
 公开状态写入 `data-state`。

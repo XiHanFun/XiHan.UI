@@ -158,6 +158,30 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 | `XhNotificationItem` | `default` | `{ item: NotificationItemApi }` |  |
 | `XhNotificationRoot` | `default` | `NotificationRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhNotificationGroup` | `placement` | `NotificationPlacement` |  | 未写时使用 notification 的 placement；写了则只接收该位置上的条目。 |
+| `XhNotificationGroup` | `children` | `SlotChildren<NotificationGroupSlotProps>` |  |  |
+| `XhNotificationItem` | `id` | `string` |  |  |
+| `XhNotificationItem` | `title` | `string` |  |  |
+| `XhNotificationItem` | `description` | `string` |  |  |
+| `XhNotificationItem` | `tone` | `ToastTone` |  |  |
+| `XhNotificationItem` | `loading` | `boolean` |  |  |
+| `XhNotificationItem` | `duration` | `number` |  |  |
+| `XhNotificationItem` | `removeDelay` | `number` |  |  |
+| `XhNotificationItem` | `closable` | `boolean` |  |  |
+| `XhNotificationItem` | `pauseOnPageIdle` | `boolean` |  |  |
+| `XhNotificationItem` | `paused` | `boolean` |  | 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 |
+| `XhNotificationItem` | `translations` | `NotificationProps['translations']` |  |  |
+| `XhNotificationItem` | `onStatusChange` | `ToastSchema['props']['onStatusChange']` |  |  |
+| `XhNotificationItem` | `onAction` | `ToastSchema['props']['onAction']` |  |  |
+| `XhNotificationItem` | `children` | `SlotChildren<NotificationItemSlotProps>` |  |  |
+| `XhNotificationRoot` | `children` | `SlotChildren<NotificationRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

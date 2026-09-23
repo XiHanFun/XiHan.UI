@@ -107,6 +107,18 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `ControlVariant` |  | 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhDescriptionsItem` | `as` | `ElementType` |  | 每一格渲染为哪个标签，默认 div。 |
+| `XhDescriptionsItem` | `span` | `number` |  | 该格横跨几列，未写即占一列；上限是根上的 columns。 |
+| `XhDescriptionsLabel` | `as` | `ElementType` |  | 标签渲染为哪个标签，默认 dt。 |
+| `XhDescriptionsRoot` | `as` | `ElementType` |  | 根渲染为哪个标签，默认 dl。 |
+| `XhDescriptionsValue` | `as` | `ElementType` |  | 取值渲染为哪个标签，默认 dd。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。

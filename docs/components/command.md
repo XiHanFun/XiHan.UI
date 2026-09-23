@@ -179,6 +179,24 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `XhCommandRoot` | `empty` | — |  |
 | `XhCommandRoot` | `footer` | — |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCommandContent` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhCommandGroup` | `value` | `string` | 是 |  |
+| `XhCommandItem` | `value` | `string` | 是 |  |
+| `XhCommandItem` | `disabled` | `boolean` |  | 默认交给 connect 查询清单，写死 false 会覆盖数据中的禁用。 |
+| `XhCommandRoot` | `empty` | `ReactNode` |  | 无匹配时的提示语。提供后不必再写 empty 部件。 |
+| `XhCommandRoot` | `trigger` | `ReactNode` |  | 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或受控 open 唤起）。 |
+| `XhCommandRoot` | `footer` | `ReactNode` |  | 铺开时浮层底部的操作区内容；未提供时不渲染 footer 部件。 |
+| `XhCommandRoot` | `renderItem` | `(node: CommandNodeMeta) => ReactNode` |  | 每条命令的自定义内容；未提供时使用清单中的 label。 |
+| `XhCommandRoot` | `renderItemPrefix` | `(node: CommandNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhCommandRoot` | `renderItemSuffix` | `(node: CommandNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhCommandRoot` | `children` | `SlotChildren<CommandRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

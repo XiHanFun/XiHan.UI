@@ -150,6 +150,21 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `XhApprovalItem` | `default` | `ApprovalScopeSlotProps` |  |
 | `XhApprovalRoot` | `default` | `ApprovalRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhApprovalItem` | `scopeValue` | `string` | 是 | 该项授权范围的取值。 |
+| `XhApprovalItem` | `scopeLabel` | `string` |  |  |
+| `XhApprovalItem` | `scopeRequired` | `boolean` |  | 必选项：未全部勾选时无法批准。 |
+| `XhApprovalItem` | `scopeDisabled` | `boolean` |  |  |
+| `XhApprovalItem` | `children` | `SlotChildren<ApprovalScopeSlotProps>` |  |  |
+| `XhApprovalItemIndicator` | `scopeValue` | `string` | 是 |  |
+| `XhApprovalItemText` | `scopeValue` | `string` | 是 |  |
+| `XhApprovalRoot` | `children` | `SlotChildren<ApprovalRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

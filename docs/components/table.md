@@ -306,6 +306,21 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `XhTableRoot` | `default` | `TableRootSlotProps` |  |
 | `XhTableRoot` | `toolbar` | `TableToolbarSlotProps` | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTableCell` | `value` | `string` | 是 | 列 id。 |
+| `XhTableCell` | `colspan` | `number \| string` |  | 跨列数，从 value 所在列向后计算。 |
+| `XhTableColumnHeader` | `value` | `string` | 是 |  |
+| `XhTableColumnVisibilityTrigger` | `value` | `string` |  | 列 id。写在列设置区中时必须提供；写在列标题中时可省略，跟随该列。 |
+| `XhTableExpandedRow` | `value` | `string` | 是 | 所属数据行的 id。 |
+| `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
+| `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |
+| `XhTableRow` | `value` | `string` |  | 行 id：数据行必须提供，表头行与脚注行省略。 |
+
 ### 状态
 
 公开状态写入 `data-state`。

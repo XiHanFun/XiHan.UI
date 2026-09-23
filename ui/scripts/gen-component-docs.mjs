@@ -527,6 +527,64 @@ function prose(id) {
   return out
 }
 
+// ── React 适配器 props ────────────────────────────────────────────────────────
+//
+// Vue 把「作者能接管什么」表达成带载荷的插槽，React 表达成 Props 上的函数与节点。
+// 后者此前全站无处可查：Props 表的来源是 Headless 的机器契约，适配器自己加的
+// trigger / renderItem / children 这些不在其中，Vue 靠下面的插槽表兜住了，React 没有对应物。
+//
+// 只收接口**自己声明**的成员：这些接口普遍 `extends ComponentPropsWithRef<'div'>`，
+// 把继承来的那一大票 DOM 属性列进文档没有意义，也会把真正要看的几行淹掉。
+
+const reactComponentRoot = path.join(uiRoot, 'packages/adapters/react/src/components')
+
+/** components/ 下的全部 .tsx，含直接挂在根上的单文件组件。 */
+function reactComponentFiles(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    const full = path.join(dir, d.name)
+    if (d.isDirectory())
+      return reactComponentFiles(full)
+    return d.isFile() && d.name.endsWith('.tsx') ? [full] : []
+  })
+}
+
+const reactFiles = reactComponentFiles(reactComponentRoot)
+const reactProgram = ts.createProgram(reactFiles, {
+  target: ts.ScriptTarget.ESNext,
+  module: ts.ModuleKind.ESNext,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+  jsx: ts.JsxEmit.ReactJSX,
+  skipLibCheck: true,
+  strict: false,
+})
+
+/** React 组件名（去掉尾部 Props）→ 它自己声明的 props。 */
+const reactPropsByComponent = new Map()
+for (const sf of reactProgram.getSourceFiles()) {
+  if (!reactFiles.includes(path.normalize(sf.fileName)))
+    continue
+  ts.forEachChild(sf, (node) => {
+    if (!ts.isInterfaceDeclaration(node))
+      return
+    const name = node.name.text
+    if (!name.startsWith('Xh') || !name.endsWith('Props'))
+      return
+    const rows = []
+    for (const m of node.members) {
+      if (!ts.isPropertySignature(m) || !m.type)
+        continue
+      rows.push({
+        name: m.name.getText(sf).replace(/^['"]|['"]$/g, ''),
+        type: typeText(m.type, sf),
+        optional: !!m.questionToken,
+        doc: jsdoc(m, sf),
+      })
+    }
+    if (rows.length)
+      reactPropsByComponent.set(name.slice(0, -'Props'.length), rows)
+  })
+}
+
 // ── Vue 插槽 ──────────────────────────────────────────────────────────────────
 
 const vueComponentRoot = path.join(uiRoot, 'packages/adapters/vue/src/components')
@@ -1086,6 +1144,29 @@ function renderComponent(entry, category) {
     push('| Vue 组件 | 插槽 | 载荷 | 说明 |', '| --- | --- | --- | --- |')
     for (const x of slotRows)
       push(`| ${cell(x.comp)} | ${cell(x.name)} | ${x.payload ? cell(x.payload) : '—'} | ${esc(x.doc)} |`)
+    push('')
+  }
+
+  // React 适配器 props：上面那张 Props 表是机器契约，这一节是 React 这一侧自己加的那几个。
+  // 根组件上与机器同名的不重复列（React 把机器 props 原样抄了一遍），子组件的照列不误
+  const machineNames = new Set(tm.props.map(x => x.name))
+  const reactRows = ad.components.flatMap((comp) => {
+    const own = reactPropsByComponent.get(comp) ?? []
+    const isRoot = comp === `Xh${pascal(id)}` || comp === `Xh${pascal(id)}Root`
+    return own
+      .filter(x => !(isRoot && machineNames.has(x.name)))
+      .map(x => ({ comp, ...x }))
+  })
+  if (reactRows.length) {
+    push('### React 适配器 props', '')
+    push(
+      '只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，'
+      + '根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。',
+      '',
+    )
+    push('| React 组件 | 属性 | 类型 | 必填 | 说明 |', '| --- | --- | --- | --- | --- |')
+    for (const x of reactRows)
+      push(`| ${cell(x.comp)} | ${cell(x.name)} | ${cell(x.type)} | ${x.optional ? '' : '是'} | ${esc(x.doc)} |`)
     push('')
   }
 

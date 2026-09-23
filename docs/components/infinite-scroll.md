@@ -122,6 +122,15 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | --- | --- | --- | --- |
 | `XhInfiniteScrollRoot` | `default` | `InfiniteScrollRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhInfiniteScrollRoot` | `target` | `HTMLElement \| null` |  | 裁剪出可视区的滚动容器，默认即整页滚动；distance 的提前量扩展的正是这块区域。 |
+| `XhInfiniteScrollRoot` | `children` | `SlotChildren<InfiniteScrollRootSlotProps>` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。

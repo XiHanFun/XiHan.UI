@@ -151,6 +151,19 @@
 | `tab-move` | `TabsMoveDetails` | 标签换位；detail 为 `{ value, from, to, values }`，values 是重排后的整份标签序 |
 | `tab-close` | `TabsCloseDetails` | 标签被关闭；detail 为 `{ value, values }`，values 是关闭该标签之后剩余的标签序 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTabsContent` | `value` | `string` | 是 |  |
+| `XhTabsRoot` | `renderPanel` | `(node: TabsNodeMeta) => ReactNode` |  | 每块面板的内容；未提供时为空面板。 |
+| `XhTabsRoot` | `children` | `ReactNode` |  |  |
+| `XhTabsTabDragTrigger` | `value` | `string` | 是 | 所属标签的 value。 |
+| `XhTabsTrigger` | `value` | `string` | 是 |  |
+| `XhTabsTrigger` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+
 ### 状态
 
 公开状态写入 `data-state`。

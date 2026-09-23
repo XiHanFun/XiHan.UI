@@ -105,6 +105,14 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `placement` | `TimelinePlacement` |  | 内容位于线的哪一侧：start / end / alternate，未提供时内容落在结束侧。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定圆点直径、条目间距与字号。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTimelineItem` | `tone` | `Tone` |  | 该条的语气，只在本条内生效，下传给它自己的圆点。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。

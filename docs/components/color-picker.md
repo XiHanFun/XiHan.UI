@@ -145,6 +145,16 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 | --- | --- | --- | --- |
 | `XhColorPickerRoot` | `default` | `ColorPickerRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhColorPickerChannelInput` | `channel` | `ColorPickerInputChannel` |  | 该输入框编辑的通道：hex 是整串，r/g/b 是分量，a 是透明度百分数；默认或无法识别时按 hex 处理。 |
+| `XhColorPickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhColorPickerRoot` | `children` | `SlotChildren<ColorPickerRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

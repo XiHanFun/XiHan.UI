@@ -221,6 +221,27 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `XhHeatmapRoot` | `cell` | `HeatmapCellSlotProps` | 铺开网格时每一格的内容插槽，默认是空格子；三种形态都铺设。 |
 | `XhHeatmapRoot` | `tooltip` | `HeatmapCellDetails \| null` | 详情条的内容插槽；写了它才会铺设 tooltip 部件。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhHeatmapCell` | `value` | `string` | 是 | 日期形态是 ISO 日期，矩阵形态是列身份。 |
+| `XhHeatmapCell` | `row` | `string` |  | 矩阵形态：行身份；写在行中时不必再写一遍。 |
+| `XhHeatmapColumnLabel` | `value` | `string` | 是 | 列身份。 |
+| `XhHeatmapLegendItem` | `value` | `number \| string` | 是 | 档位，兼收字符串。 |
+| `XhHeatmapLegendLabel` | `value` | `HeatmapLegendBound` | 是 | 挂在哪一端：low 是色阶起点，high 是终点。 |
+| `XhHeatmapMonthBlock` | `value` | `string` | 是 | 月份身份 YYYY-MM。 |
+| `XhHeatmapMonthLabel` | `value` | `string` | 是 | 月份身份 YYYY-MM。 |
+| `XhHeatmapRoot` | `renderCell` | `(cell: HeatmapCellSlotProps) => ReactNode` |  | 铺开网格时每一格的内容；未提供时是空格子。 |
+| `XhHeatmapRoot` | `renderTooltip` | `(details: HeatmapCellDetails \| null) => ReactNode` |  | 详情条的内容；提供后才铺设 tooltip 部件。 |
+| `XhHeatmapRoot` | `children` | `SlotChildren<HeatmapRootSlotProps>` |  |  |
+| `XhHeatmapRow` | `value` | `number \| string` |  | 行的身份。日历形态是行序 0-6，月历形态是月内第几周，矩阵形态是行身份； 未写即坐标轴行。 |
+| `XhHeatmapRow` | `month` | `string` |  | 月历形态：所属月份 YYYY-MM；写在月块中时不必再写一遍。 |
+| `XhHeatmapRowLabel` | `value` | `string` |  | 行身份；未写即表头行行首的角落占位。 |
+| `XhHeatmapWeekDay` | `value` | `number \| string` |  | 行序 0-6；未提供即坐标轴行行首的占位。 |
+
 ### 状态
 
 公开状态写入 `data-state`。
