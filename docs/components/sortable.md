@@ -124,6 +124,19 @@
 | `XhSortableItemDragTrigger` | `default` | — |  |
 | `XhSortableRoot` | `default` | `SortableRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSortableItem` | `itemId` | `string` | 是 | 项标识，与 ids 中的值一一对应。 |
+| `XhSortableItem` | `disabled` | `boolean` |  | 单独禁用该项。整份 disabled 在 Root 上，该项是项级的。 |
+| `XhSortableItem` | `children` | `SlotChildren<SortableItemSlotProps>` |  |  |
+| `XhSortableItemDragTrigger` | `itemId` | `string` | 是 | 项标识，与 ids 中的值一一对应。 |
+| `XhSortableItemDragTrigger` | `disabled` | `boolean` |  | 单独禁用该项。整份 disabled 在 Root 上，该项是项级的。 |
+| `XhSortableRoot` | `children` | `SlotChildren<SortableRootSlotProps>` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。

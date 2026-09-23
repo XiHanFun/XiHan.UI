@@ -137,6 +137,15 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | --- | --- | --- | --- |
 | `XhImageViewerRoot` | `default` | `ImageViewerRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhImageViewerContent` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhImageViewerRoot` | `children` | `SlotChildren<ImageViewerRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

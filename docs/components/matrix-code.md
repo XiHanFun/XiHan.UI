@@ -151,6 +151,14 @@ gs1 开启后最前面放置 FNC1，读码器把内容视为 GS1 元素串：变
 | `rectangular` | `boolean` |  | 从矩形尺寸（含矩形扩展 DMRE）中选择，默认从正方形尺寸中选择。 只对 data-matrix 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
 | `value` | `string` |  | 要编码的内容；空串不绘制。QR 按 UTF-8 取字节使用字节模式；Data Matrix 使用 ASCII 模式，Latin-1 以外的字符按 UTF-8 并声明 ECI。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMatrixCode` | `children` | `ReactNode` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

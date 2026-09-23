@@ -189,6 +189,16 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | --- | --- | --- | --- |
 | `XhFileUploadRoot` | `default` | `FileUploadRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhFileUploadItem` | `file` | `FileUploadFile` |  | 该行显示哪个文件（本地或远程附件）。 |
+| `XhFileUploadItem` | `index` | `number \| string` |  | 改用下标从 allFiles（远程在前、本地在后）中取文件，兼收字符串。 |
+| `XhFileUploadRoot` | `children` | `SlotChildren<FileUploadRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

@@ -227,6 +227,19 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `XhTreeSelectRoot` | `default` | `TreeSelectRootSlotProps` |  |
 | `XhTreeSelectRoot` | `label` | — |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTreeSelectBranch` | `value` | `string` | 是 |  |
+| `XhTreeSelectItem` | `value` | `string` | 是 |  |
+| `XhTreeSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhTreeSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhTreeSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
+| `XhTreeSelectRoot` | `children` | `SlotChildren<TreeSelectRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

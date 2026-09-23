@@ -151,6 +151,15 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | --- | --- | --- | --- |
 | `XhDrawerRoot` | `default` | `DrawerRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhDrawerRoot` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 提供后即为局部抽屉：遮罩与定位层从 fixed 换为 absolute，只覆盖该容器而不是整屏。 该容器要自带 position（relative 等），否则 absolute 会向上找到其他定位祖先。 |
+| `XhDrawerRoot` | `children` | `SlotChildren<DrawerRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

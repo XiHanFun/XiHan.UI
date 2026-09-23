@@ -116,6 +116,45 @@ cell-trigger 的内容全部由作者编写，日号之外还可放置自己的�
 | --- | --- | --- | --- |
 | `XhCalendarPickerRoot` | `default` | `CalendarPickerRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCalendarPickerCell` | `value` | `string` | 是 | ISO 日期串。 |
+| `XhCalendarPickerCell` | `index` | `number` |  | 属于第几个面板，默认 0。多面板时必须提供：同一天会同时出现在两个面板中 （8 月末的几天也铺在 9 月的首行），是否为本月只有连同面板一起看才能判定。 |
+| `XhCalendarPickerGrid` | `index` | `number` |  | 属于第几个面板，默认 0。单面板时不必写。 |
+| `XhCalendarPickerHeading` | `index` | `number` |  | 属于第几个面板，默认 0。单面板时不必写。 |
+| `XhCalendarPickerHeadingMonthTrigger` | `index` | `number` |  | 属于第几个面板，默认 0。单面板时不必写。 |
+| `XhCalendarPickerHeadingYearTrigger` | `index` | `number` |  | 属于第几个面板，默认 0。单面板时不必写。 |
+| `XhCalendarPickerRoot` | `value` | `string \| string[]` |  |  |
+| `XhCalendarPickerRoot` | `defaultValue` | `string \| string[]` |  |  |
+| `XhCalendarPickerRoot` | `selectionMode` | `CalendarPickerSelectionMode` |  |  |
+| `XhCalendarPickerRoot` | `focusedValue` | `string` |  |  |
+| `XhCalendarPickerRoot` | `defaultFocusedValue` | `string` |  |  |
+| `XhCalendarPickerRoot` | `min` | `string` |  |  |
+| `XhCalendarPickerRoot` | `max` | `string` |  |  |
+| `XhCalendarPickerRoot` | `isDateUnavailable` | `(value: string) => boolean` |  |  |
+| `XhCalendarPickerRoot` | `invalid` | `boolean` |  | 校验失败：根带 data-invalid。 |
+| `XhCalendarPickerRoot` | `locale` | `string` |  |  |
+| `XhCalendarPickerRoot` | `timeZone` | `string` |  |  |
+| `XhCalendarPickerRoot` | `disabled` | `boolean` |  |  |
+| `XhCalendarPickerRoot` | `readOnly` | `boolean` |  |  |
+| `XhCalendarPickerRoot` | `weekdayFormat` | `CalendarWeekdayFormat` |  |  |
+| `XhCalendarPickerRoot` | `fixedWeeks` | `boolean` |  |  |
+| `XhCalendarPickerRoot` | `granularity` | `CalendarGranularity` |  | 选择粒度；与 selectionMode 正交。区间选择是另一个组件（XhCalendarRangePicker）。 |
+| `XhCalendarPickerRoot` | `activeView` | `CalendarView` |  | 面板当前所处的层级；给定即受控，默认跟随 granularity。 |
+| `XhCalendarPickerRoot` | `defaultActiveView` | `CalendarView` |  | 非受控初值，默认同 granularity。 |
+| `XhCalendarPickerRoot` | `visibleCount` | `number` |  | 并排展示几页，默认 1。 |
+| `XhCalendarPickerRoot` | `translations` | `Partial<CalendarPickerTranslations>` |  |  |
+| `XhCalendarPickerRoot` | `onValueChange` | `CalendarPickerProps['onValueChange']` |  |  |
+| `XhCalendarPickerRoot` | `onFocusedValueChange` | `CalendarPickerProps['onFocusedValueChange']` |  |  |
+| `XhCalendarPickerRoot` | `onActiveViewChange` | `CalendarPickerProps['onActiveViewChange']` |  |  |
+| `XhCalendarPickerRoot` | `children` | `SlotChildren<CalendarPickerRootSlotProps>` |  |  |
+| `XhCalendarPickerWeekDay` | `value` | `number \| string` | 是 | 列序 0-6，兼收字符串。 |
+| `XhCalendarPickerWeekNumber` | `value` | `string` | 是 | 该行行首那一天的 ISO 串。 |
+
 ### 状态
 
 以下名称仅用于内部状态机。

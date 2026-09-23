@@ -210,6 +210,16 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | --- | --- | --- | --- |
 | `XhTreeRoot` | `default` | `TreeRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTreeBranch` | `value` | `string` | 是 |  |
+| `XhTreeItem` | `value` | `string` | 是 |  |
+| `XhTreeRoot` | `children` | `SlotChildren<TreeRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

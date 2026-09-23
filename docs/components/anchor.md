@@ -110,6 +110,16 @@
 | --- | --- | --- |
 | `value-change` | `AnchorValueChangeDetails` | 激活项变化；detail 为 `{ value: string \| null }` |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhAnchorLink` | `value` | `string` | 是 |  |
+| `XhAnchorRoot` | `scrollElement` | `() => HTMLElement \| null` |  | 判定线所依附的滚动容器取值器，默认挂在窗口上；挂载效应执行时求值。 |
+| `XhAnchorRoot` | `children` | `ReactNode` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。

@@ -122,6 +122,15 @@
 | --- | --- | --- | --- |
 | `XhClipboardRoot` | `default` | `ClipboardRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhClipboardIndicator` | `copied` | `boolean` |  | 该标记属于哪一侧：true = 复制成功后的对勾，false（默认）= 平时的复制图标。 |
+| `XhClipboardRoot` | `children` | `SlotChildren<ClipboardRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

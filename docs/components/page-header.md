@@ -93,6 +93,15 @@ ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底
 | `split` | `boolean` |  | 在页头底部绘制一条分隔线，把页头与下方内容分开；有面的两档不画它，边界由描边承担。 |
 | `variant` | `ControlVariant` |  | 形态：ghost 贴在页面底色上（默认），outline 为带描边的独立面，subtle 淡底。默认 ghost。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhPageHeaderBackTrigger` | `as` | `ElementType` |  | 渲染为哪个标签，默认 button。 |
+| `XhPageHeaderTitle` | `as` | `ElementType` |  | 渲染为哪个标签，默认 div；该块在页面大纲中确实是标题时写 h1（或 hN）。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。

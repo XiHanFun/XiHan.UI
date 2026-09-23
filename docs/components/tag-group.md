@@ -155,6 +155,19 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `XhTagGroupRoot` | `label` | — |  |
 | `XhTagGroupRoot` | `item` | `TagGroupNodeMeta` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTagGroupItem` | `value` | `string` | 是 |  |
+| `XhTagGroupItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的声明。 |
+| `XhTagGroupItem` | `deletable` | `boolean` |  |  |
+| `XhTagGroupRoot` | `label` | `ReactNode` |  | 标题内容。提供后不必再写 label 部件。 |
+| `XhTagGroupRoot` | `renderItem` | `(node: TagGroupNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhTagGroupRoot` | `children` | `SlotChildren<TagGroupRootSlotProps>` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。

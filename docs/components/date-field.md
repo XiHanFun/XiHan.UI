@@ -146,6 +146,17 @@
 | `XhDateFieldRoot` | `default` | `DateFieldRootSlotProps` |  |
 | `XhDateFieldSegment` | `default` | `DateFieldSegmentSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhDateFieldRoot` | `children` | `SlotChildren<DateFieldRootSlotProps>` |  |  |
+| `XhDateFieldSegment` | `index` | `number \| string` |  | 下标由作者声明，对应哪一段由 locale 与段集计算；兼收字符串。 |
+| `XhDateFieldSegment` | `segment` | `DateSegmentType` |  | 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 |
+| `XhDateFieldSegment` | `children` | `SlotChildren<DateFieldSegmentSlotProps>` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。

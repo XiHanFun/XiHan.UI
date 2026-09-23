@@ -139,6 +139,19 @@
 | --- | --- | --- | --- |
 | `XhSideNavRoot` | `default` | `SideNavRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSideNavBranch` | `value` | `string` | 是 |  |
+| `XhSideNavBranchContent` | `container` | `() => Element \| null` |  | 本分支弹层的 Portal 容器；优先于应用级配置。 |
+| `XhSideNavGroup` | `value` | `string` | 是 | 分组身份，与 group-label 依靠它配对。 |
+| `XhSideNavGroupLabel` | `value` | `string` | 是 |  |
+| `XhSideNavLink` | `value` | `string` | 是 |  |
+| `XhSideNavRoot` | `children` | `SlotChildren<SideNavRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。
