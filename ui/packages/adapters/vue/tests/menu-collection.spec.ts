@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import type { MenuNode } from '@xihan-ui/headless'
+import type { MenuNode, MenuNodeMeta } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'

@@ -143,7 +143,7 @@ describe('方向键在结果里挑落点', () => {
   it('一条可用的都没有即无落点', () => {
     expect(navigateCommandResults([], null, 'first', true)).toBeNull()
     expect(navigateCommandResults(
-      [{ value: 'a', label: 'a', keywords: [], group: '', disabled: true }],
+      [{ value: 'a', label: 'a', keywords: [], group: '', disabled: true, tone: null, description: null, shortcut: null }],
       null,
       'first',
       true,
