@@ -57,10 +57,10 @@ export const XhListboxRoot = defineComponent({
     'update:value': (_value: PayloadOf<ListboxProps, 'onValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: ListboxRootSlotProps) => VNode[]
-    label?: () => VNode[]
+    'default'?: (props: ListboxRootSlotProps) => VNode[]
+    'label'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
-    item?: (node: ListboxNodeMeta) => VNode[]
+    'item'?: (node: ListboxNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (node: ListboxNodeMeta) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
@@ -88,7 +88,9 @@ export const XhListboxRoot = defineComponent({
           ? renderDefaultTree(
               ctx.api.value.collection,
               slots.label?.() ?? (props.label != null ? [props.label] : null),
-              slots.item, slots['item-prefix'], slots['item-suffix'],
+              slots.item,
+              slots['item-prefix'],
+              slots['item-suffix'],
             )
           : []),
     ])

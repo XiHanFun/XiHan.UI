@@ -183,7 +183,9 @@ export function XhComboboxRoot({
             label={label}
             empty={empty}
             clearable={clearable}
-            renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix}
+            renderItem={renderItem}
+            renderItemPrefix={renderItemPrefix}
+            renderItemSuffix={renderItemSuffix}
           />
         )
       : null

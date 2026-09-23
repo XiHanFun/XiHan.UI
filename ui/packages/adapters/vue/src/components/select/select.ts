@@ -67,10 +67,10 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     'update:open': (_open: boolean) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: SelectRootSlotProps) => VNode[]
-    label?: () => VNode[]
+    'default'?: (props: SelectRootSlotProps) => VNode[]
+    'label'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
-    item?: (node: SelectNodeMeta) => VNode[]
+    'item'?: (node: SelectNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (node: SelectNodeMeta) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
@@ -118,7 +118,9 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
               ctx.api.value.collection,
               slots.label?.() ?? (props.label != null ? [props.label] : null),
               props.clearable,
-              slots.item, slots['item-prefix'], slots['item-suffix'],
+              slots.item,
+              slots['item-prefix'],
+              slots['item-suffix'],
             )
           : []),
     ])

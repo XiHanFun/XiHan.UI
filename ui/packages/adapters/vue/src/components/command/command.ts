@@ -72,17 +72,17 @@ export const XhCommandRoot = defineComponent({
     'update:inputValue': (_inputValue: PayloadOf<CommandProps, 'onInputValueChange'>['inputValue']) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: CommandRootSlotProps) => VNode[]
+    'default'?: (props: CommandRootSlotProps) => VNode[]
     /** 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或 v-model:open 唤起）。 */
-    trigger?: () => VNode[]
+    'trigger'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
-    item?: (node: CommandNodeMeta) => VNode[]
+    'item'?: (node: CommandNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (node: CommandNodeMeta) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
     'item-suffix'?: (node: CommandNodeMeta) => VNode[]
-    empty?: () => VNode[]
-    footer?: () => VNode[]
+    'empty'?: () => VNode[]
+    'footer'?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyOpen: CommandProps['onOpenChange'] = (details) => {

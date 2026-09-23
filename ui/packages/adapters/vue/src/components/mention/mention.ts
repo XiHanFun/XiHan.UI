@@ -65,15 +65,15 @@ export const XhMentionRoot = defineComponent({
     'update:value': (_value: PayloadOf<MentionProps, 'onValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: MentionRootSlotProps) => VNode[]
+    'default'?: (props: MentionRootSlotProps) => VNode[]
     /** 铺开 collection 时每条候选的文本插槽。 */
-    item?: (props: MentionNodeMeta) => VNode[]
+    'item'?: (props: MentionNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (props: MentionNodeMeta) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
     'item-suffix'?: (props: MentionNodeMeta) => VNode[]
     /** 铺开 collection 时空态中的文案；未写时使用内建英文。 */
-    empty?: () => VNode[]
+    'empty'?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: MentionProps['onValueChange'] = (details) => {
