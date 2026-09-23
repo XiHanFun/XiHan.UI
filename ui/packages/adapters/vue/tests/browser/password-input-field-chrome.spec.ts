@@ -222,6 +222,8 @@ describe('password-input Field Chrome 细节', () => {
     const buttonText = getComputedStyle(probe).color
     probe.remove()
 
+    // 断的是聚焦后的终态：换面的过渡在整套并行跑时会被读在中途
+    trigger.style.transition = 'none'
     part('enabled', 'input').focus()
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(trigger)
