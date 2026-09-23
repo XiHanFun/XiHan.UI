@@ -35131,32 +35131,8 @@
   }
 
   /* —— 选中 —— */
-  /* 选中：品牌淡底 + 配对前景 + 文字后的对号（item-indicator），描边退到透明边位；
-     悬停与按下在淡底上派生 20% / 28%，键盘锚点同悬停档。
-     标了语气的组从语气层取同一条曲线。置灰的标签不进这里：它的边与字都已退成置灰色。
-     实心档另有一条：它的面本身就是那族色，淡底与配对前景压在上面都读不出来 */
-  [data-scope='tag-group'][data-part='list']
-    > [data-scope='tag'][data-part='root'][data-selected]:not([data-disabled]):not([data-variant='solid']) {
-    border-color: var(--xh-tag-group-item-border-selected, transparent);
-    background: var(--xh-tag-group-item-bg-selected, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)));
-    color: var(--xh-tag-group-item-fg-selected, var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle)));
-  }
-
-  [data-scope='tag-group'][data-part='list']
-    > [data-scope='tag'][data-part='root'][data-selected]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) {
-    background: var(--xh-tag-group-item-bg-selected-hover, var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover)));
-  }
-
-  [data-scope='tag-group'][data-part='list']
-    > [data-scope='tag'][data-part='root'][data-selected][data-selectable]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed]) {
-    background: var(--xh-tag-group-item-bg-selected-pressed, var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle-active)));
-  }
-
-  /* 实心标签选中：字不换（仍是 tag.css 给的面配对前景色，作者的 --xh-tag-fg 照旧生效），
-     描边取字色，在实心底上描出一圈；环由 tag.css 取 currentColor，跟着字走 */
-  [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'][data-variant='solid'][data-selected]:not([data-disabled]) {
-    border-color: var(--xh-tag-group-item-border-selected, currentColor);
-  }
+  /* 与树选择同一种读法：选中的标签面、字与描边都不换，悬停 / 锚点 / 按下沿用未选中的那条阶梯，
+     只在文字后亮一枚对号（见下面 item-indicator 那几块） */
 
   /* 标签里那一格：文字与摘除钮排在一条线上。它是 tag 根与 tag 的 label / close-trigger 之间的一层，
      间距照抄所在标签的那一档，有它与没它标签长得一样 */
@@ -35186,11 +35162,22 @@
     justify-content: center;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    color: var(--xh-tag-group-item-indicator-fg, currentColor);
+    /* 与树选择的行尾对号同色：标了语气的组取语气字色，没写语气取品牌前景 */
+    color: var(--xh-tag-group-item-indicator-fg, var(--xh-_tone-fg, var(--xh-fg-brand)));
   }
 
   [data-scope='tag-group'][data-part='item-indicator'][hidden] {
     display: none;
+  }
+
+  /* 实心标签的面本身就是那族色，品牌 / 语气字色压在上面读不出来：对号取面配对的那支前景色 */
+  [data-scope='tag'][data-part='root'][data-variant='solid'] [data-scope='tag-group'][data-part='item-indicator'] {
+    color: var(--xh-tag-group-item-indicator-fg, currentColor);
+  }
+
+  /* 置灰的标签里对号跟着字一起退成置灰色 */
+  [data-scope='tag-group'][data-part='item-indicator'][data-disabled] {
+    color: inherit;
   }
 
   /* 摘除钮是操作，排在对号之后、格的最末 */
@@ -35210,12 +35197,15 @@
   }
 
   @media (forced-colors: active) {
-    /* 选中靠淡底与配对前景表出，这一档里两者都被统一换掉；用系统高亮反色画回，对号是字形节点、自己活得下来 */
+    /* 选中只由对号表达：遮罩出来的那块底色用系统高亮色画，按下时标签整枚反成 Highlight，对号换成反白 */
+    [data-scope='tag-group'][data-part='item-indicator']:empty::before {
+      background-color: Highlight;
+    }
+
     [data-scope='tag-group'][data-part='list']
-      > [data-scope='tag'][data-part='root'][data-selected]:not([data-disabled]):not([data-variant='solid']) {
-      border-color: Highlight;
-      background: Highlight;
-      color: HighlightText;
+      > [data-scope='tag'][data-part='root'][data-selectable]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed])
+      [data-scope='tag-group'][data-part='item-indicator']:empty::before {
+      background-color: HighlightText;
     }
 
     /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
@@ -35223,6 +35213,13 @@
       > [data-scope='tag'][data-part='root'][data-selectable]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed]) {
       background: Highlight;
       color: HighlightText;
+    }
+  }
+
+  @media print {
+    /* 打印默认丢底色，而对号是遮罩出来的一块底色：标签本就不换面，丢了它选中在纸上就没了踪影 */
+    [data-scope='tag-group'][data-part='item-indicator'] {
+      print-color-adjust: exact;
     }
   }
 }
