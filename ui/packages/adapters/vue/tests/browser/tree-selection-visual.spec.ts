@@ -1,9 +1,9 @@
-// 页内树的选中（真源 §7.3 页内持久集合）：品牌淡底行面 + 淡底前景 + 前导对号，
-// 悬停 100 → 按下 200 只换面，选中行悬停 20% / 按住 28%；分支行不是 treeitem 本体，
-// 选中面与禁用守卫按连接层同步的 data-selected / data-disabled 命中；真实选择不改变行几何。
+// 树的选中与树选择同一种读法（真源 §7.3）：透明底 + 行尾对号，正文颜色与字重保持 rest，
+// 悬停 100 → 按下 200 只换面，选中行叠悬停 / 按下沿用同一条阶梯；分支行不是 treeitem 本体，
+// 对号与禁用守卫按连接层同步的 data-selected / data-disabled 命中；真实选择不改变行几何。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { userEvent } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTreeBranch,
@@ -37,11 +37,12 @@ const collection = [
 let app: App | null = null
 let host: HTMLElement | null = null
 
-afterEach(() => {
+afterEach(async () => {
   app?.unmount()
   host?.remove()
   app = null
   host = null
+  await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
 function part(name: string, value: string): HTMLElement {
@@ -70,14 +71,14 @@ async function mountTree(defaultSelection = ['index']): Promise<void> {
     render: () => h(XhTreeRoot, { collection, defaultSelection, defaultExpandedValue: ['src'] }, () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'src' }, () => [
-          h(XhTreeBranchControl, null, () => [h(XhTreeBranchTrigger), h(XhTreeBranchText, null, () => 'src')]),
+          h(XhTreeBranchControl, null, () => [h(XhTreeBranchTrigger), h(XhTreeItemIndicator), h(XhTreeBranchText, null, () => 'src')]),
           h(XhTreeBranchContent, null, () => [
             h(XhTreeItem, { value: 'index' }, () => [h(XhTreeItemIndicator), h(XhTreeItemText, null, () => 'index.ts')]),
             h(XhTreeItem, { value: 'app' }, () => [h(XhTreeItemIndicator), h(XhTreeItemText, null, () => 'app.vue')]),
           ]),
         ]),
         h(XhTreeBranch, { value: 'docs' }, () => [
-          h(XhTreeBranchControl, null, () => [h(XhTreeBranchTrigger), h(XhTreeBranchText, null, () => 'docs')]),
+          h(XhTreeBranchControl, null, () => [h(XhTreeBranchTrigger), h(XhTreeItemIndicator), h(XhTreeBranchText, null, () => 'docs')]),
           h(XhTreeBranchContent, null, () => [
             h(XhTreeItem, { value: 'guide' }, () => [h(XhTreeItemIndicator), h(XhTreeItemText, null, () => 'guide.md')]),
           ]),
@@ -92,30 +93,37 @@ async function mountTree(defaultSelection = ['index']): Promise<void> {
     row.style.transition = 'none'
 }
 
-describe('页内树的选中与按压反馈', () => {
-  it('选中叶子：品牌淡底 + 淡底前景 + 前导对号；未选中行悬停 100，选中行悬停 20%', async () => {
+/** 行里的对号：分支行的对号长在 branch-control 里 */
+function mark(row: HTMLElement): HTMLElement {
+  return row.querySelector<HTMLElement>('[data-part="item-indicator"]')!
+}
+
+describe('树的选中与按压反馈', () => {
+  it('选中叶子：透明底 + 行尾对号，字色字重保持 rest；选中与未选中的行悬停同为 100', async () => {
     await mountTree()
     const index = part('item', 'index')
     const app = part('item', 'app')
-    const indexMark = index.querySelector<HTMLElement>('[data-part="item-indicator"]')!
-    const appMark = app.querySelector<HTMLElement>('[data-part="item-indicator"]')!
 
-    expect(getComputedStyle(index).backgroundColor).toBe(resolve('--xh-bg-brand-subtle'))
-    expect(getComputedStyle(index).color).toBe(resolve('--xh-fg-on-brand-subtle', 'color'))
+    expect(getComputedStyle(index).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(index).color).toBe(resolve('--xh-fg-default', 'color'))
+    expect(getComputedStyle(index).color).toBe(getComputedStyle(app).color)
     expect(getComputedStyle(index).fontWeight).toBe(getComputedStyle(app).fontWeight)
-    expect(getComputedStyle(indexMark).visibility).toBe('visible')
-    expect(getComputedStyle(appMark).visibility).toBe('hidden')
-    // 对号在文字之前：起始侧的前导标记
+    expect(getComputedStyle(mark(index)).visibility).toBe('visible')
+    expect(getComputedStyle(mark(index)).color).toBe(resolve('--xh-fg-brand', 'color'))
+    expect(getComputedStyle(mark(app)).visibility).toBe('hidden')
+    // 对号在正文之后、贴着行的末端：作者把它写在行首，皮肤照样排到最后
     const text = index.querySelector<HTMLElement>('[data-part="item-text"]')!.getBoundingClientRect()
-    expect(indexMark.getBoundingClientRect().right).toBeLessThanOrEqual(text.left)
+    const row = index.getBoundingClientRect()
+    expect(mark(index).getBoundingClientRect().left).toBeGreaterThanOrEqual(text.right)
+    expect(row.right - mark(index).getBoundingClientRect().right).toBeCloseTo(Number.parseFloat(getComputedStyle(index).paddingInlineEnd), 1)
 
     await userEvent.hover(app)
     expect(getComputedStyle(app).backgroundColor).toBe(resolve('--xh-bg-subtle'))
     await userEvent.hover(index)
-    expect(getComputedStyle(index).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-hover'))
+    expect(getComputedStyle(index).backgroundColor).toBe(resolve('--xh-bg-subtle'))
   })
 
-  it('按下只换面不缩放：未选中叶子按住 200 档，选中叶子按住 28%；真实选择不改变行几何', async () => {
+  it('按下只换面不缩放：选中与未选中的叶子按住同为 200 档；真实选择不改变行几何', async () => {
     await mountTree()
     const app = part('item', 'app')
     const before = app.getBoundingClientRect()
@@ -130,11 +138,11 @@ describe('页内树的选中与按压反馈', () => {
     expect(app.getBoundingClientRect().width).toBe(before.width)
     expect(app.getBoundingClientRect().height).toBe(before.height)
     await pressPointer(app)
-    expect(getComputedStyle(app).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-active'))
+    expect(getComputedStyle(app).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
     await releasePointer(app)
   })
 
-  it('分支行：选中面按 data-selected 命中，禁用分支不悬停换底、光标 not-allowed', async () => {
+  it('分支行：对号按 data-selected 显形，行不换面；禁用分支不悬停换底、光标 not-allowed', async () => {
     await mountTree(['src'])
     const src = part('branch-control', 'src')
     const docs = part('branch-control', 'docs')
@@ -142,17 +150,41 @@ describe('页内树的选中与按压反馈', () => {
     expect(src.hasAttribute('data-selected')).toBe(true)
     expect(src.hasAttribute('aria-selected')).toBe(false)
     expect(part('branch', 'src').getAttribute('aria-selected')).toBe('true')
-    expect(getComputedStyle(src).backgroundColor).toBe(resolve('--xh-bg-brand-subtle'))
-    expect(getComputedStyle(src).color).toBe(resolve('--xh-fg-on-brand-subtle', 'color'))
-    // 点行落焦：焦点行同时是高亮行，选中 + 高亮落 20%
+    expect(getComputedStyle(src).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(src).color).toBe(resolve('--xh-fg-default', 'color'))
+    expect(getComputedStyle(mark(src)).visibility).toBe('visible')
+    expect(mark(src).getBoundingClientRect().left).toBeGreaterThanOrEqual(src.querySelector<HTMLElement>('[data-part="branch-text"]')!.getBoundingClientRect().right)
+    expect(getComputedStyle(mark(docs)).visibility).toBe('hidden')
+    // 点行落焦：焦点行同时是高亮行，选中 + 高亮与未选中行的高亮同为 100
     await userEvent.click(src)
     await nextTick()
     expect(src.hasAttribute('data-highlighted')).toBe(true)
-    expect(getComputedStyle(src).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-hover'))
+    expect(getComputedStyle(src).backgroundColor).toBe(resolve('--xh-bg-subtle'))
 
     await userEvent.hover(docs)
     expect(getComputedStyle(docs).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(docs).color).toBe(resolve('--xh-fg-disabled', 'color'))
     expect(getComputedStyle(docs).cursor).toBe('not-allowed')
+  })
+
+  it('forced-colors：选中行与未选中行同为静息面，选中只由对号表达', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', {
+      media: '',
+      features: [{ name: 'forced-colors', value: 'active' }],
+    })
+    await mountTree()
+    const index = part('item', 'index')
+    const app = part('item', 'app')
+    await userEvent.hover(part('item', 'readme'))
+
+    expect(getComputedStyle(index).backgroundColor).toBe(getComputedStyle(app).backgroundColor)
+    expect(getComputedStyle(index).color).toBe(getComputedStyle(app).color)
+    expect(getComputedStyle(mark(index)).visibility).toBe('visible')
+  })
+
+  it('打印：对号是遮罩出来的一块底色，按原样印出，不随打印丢底色', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { media: 'print', features: [] })
+    await mountTree()
+    expect(getComputedStyle(mark(part('item', 'index'))).printColorAdjust).toBe('exact')
   })
 })

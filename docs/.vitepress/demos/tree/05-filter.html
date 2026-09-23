@@ -15,19 +15,20 @@
           <div data-xh-part="branch-control">
             <span data-xh-part="branch-trigger"></span>
             <span data-xh-part="branch-text">华东</span>
+            <span data-xh-part="item-indicator"></span>
           </div>
           <div data-xh-part="branch-content">
             <div data-xh-part="item" value="sh">
-              <span data-xh-part="item-indicator"></span>
               <span data-xh-part="item-text">上海</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="item" value="hz">
-              <span data-xh-part="item-indicator"></span>
               <span data-xh-part="item-text">杭州</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="item" value="nj">
-              <span data-xh-part="item-indicator"></span>
               <span data-xh-part="item-text">南京</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
           </div>
         </div>
@@ -35,15 +36,16 @@
           <div data-xh-part="branch-control">
             <span data-xh-part="branch-trigger"></span>
             <span data-xh-part="branch-text">华北</span>
+            <span data-xh-part="item-indicator"></span>
           </div>
           <div data-xh-part="branch-content">
             <div data-xh-part="item" value="bj">
-              <span data-xh-part="item-indicator"></span>
               <span data-xh-part="item-text">北京</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="item" value="tj">
-              <span data-xh-part="item-indicator"></span>
               <span data-xh-part="item-text">天津</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
           </div>
         </div>
@@ -51,15 +53,16 @@
           <div data-xh-part="branch-control">
             <span data-xh-part="branch-trigger"></span>
             <span data-xh-part="branch-text">华南</span>
+            <span data-xh-part="item-indicator"></span>
           </div>
           <div data-xh-part="branch-content">
             <div data-xh-part="item" value="gz">
-              <span data-xh-part="item-indicator"></span>
               <span data-xh-part="item-text">广州</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="item" value="sz">
-              <span data-xh-part="item-indicator"></span>
               <span data-xh-part="item-text">深圳</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
           </div>
         </div>
@@ -125,13 +128,13 @@
         const branch = part("branch");
         branch.setAttribute("value", region.value);
         const control = part("branch-control");
-        control.append(part("branch-trigger"), part("branch-text", region.label));
+        control.append(part("branch-trigger"), part("branch-text", region.label), part("item-indicator"));
         const content = part("branch-content");
         content.append(
           ...region.children.map((city) => {
             const item = part("item");
             item.setAttribute("value", city.value);
-            item.append(part("item-indicator"), part("item-text", city.label));
+            item.append(part("item-text", city.label), part("item-indicator"));
             return item;
           }),
         );

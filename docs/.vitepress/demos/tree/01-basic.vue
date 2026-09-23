@@ -54,27 +54,29 @@ const collection = [
         <XhTreeBranchControl>
           <XhTreeBranchTrigger />
           <XhTreeBranchText>src</XhTreeBranchText>
+          <XhTreeItemIndicator />
         </XhTreeBranchControl>
         <XhTreeBranchContent>
           <XhTreeBranch value="components">
             <XhTreeBranchControl>
               <XhTreeBranchTrigger />
               <XhTreeBranchText>components</XhTreeBranchText>
+              <XhTreeItemIndicator />
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem value="button">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>Button.vue</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
               <XhTreeItem value="dialog">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>Dialog.vue</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>
           <XhTreeItem value="main">
-            <XhTreeItemIndicator />
             <XhTreeItemText>main.ts</XhTreeItemText>
+            <XhTreeItemIndicator />
           </XhTreeItem>
         </XhTreeBranchContent>
       </XhTreeBranch>
@@ -83,22 +85,23 @@ const collection = [
         <XhTreeBranchControl>
           <XhTreeBranchTrigger />
           <XhTreeBranchText>docs</XhTreeBranchText>
+          <XhTreeItemIndicator />
         </XhTreeBranchControl>
         <XhTreeBranchContent>
           <XhTreeItem value="guide">
-            <XhTreeItemIndicator />
             <XhTreeItemText>guide.md</XhTreeItemText>
+            <XhTreeItemIndicator />
           </XhTreeItem>
           <XhTreeItem value="api">
-            <XhTreeItemIndicator />
             <XhTreeItemText>api.md</XhTreeItemText>
+            <XhTreeItemIndicator />
           </XhTreeItem>
         </XhTreeBranchContent>
       </XhTreeBranch>
 
       <XhTreeItem value="readme">
-        <XhTreeItemIndicator />
         <XhTreeItemText>README.md</XhTreeItemText>
+        <XhTreeItemIndicator />
       </XhTreeItem>
     </XhTreeTree>
   </XhTreeRoot>

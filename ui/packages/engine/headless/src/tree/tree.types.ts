@@ -341,11 +341,8 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   getItemTextProps: (props: TreeNodeProps) => T['element']
   getItemDescriptionProps: (props: TreeNodeProps) => T['element']
   getItemSuffixProps: (props: TreeNodeProps) => T['element']
-  /** 勾选把手：把勾选该项与点击该行分为两个可点击区域，未提供时没有独立把手。 */
-  getItemCheckboxProps: (props: TreeNodeProps) => T['element']
   getItemIndicatorProps: (props: TreeNodeProps) => T['element']
   getBranchProps: (props: TreeNodeProps) => T['element']
-  getBranchCheckboxProps: (props: TreeNodeProps) => T['element']
   getBranchControlProps: (props: TreeNodeProps) => T['element']
   getBranchTriggerProps: (props: TreeNodeProps) => T['element']
   getBranchIndicatorProps: (props: TreeNodeProps) => T['element']

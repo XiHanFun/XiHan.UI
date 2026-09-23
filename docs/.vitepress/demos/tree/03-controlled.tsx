@@ -64,15 +64,16 @@ export default function Demo(): ReactNode {
             <XhTreeBranchControl>
               <XhTreeBranchTrigger />
               <XhTreeBranchText>接口</XhTreeBranchText>
+              <XhTreeItemIndicator />
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem value="auth">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>鉴权</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
               <XhTreeItem value="user">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>用户</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>
@@ -81,11 +82,12 @@ export default function Demo(): ReactNode {
             <XhTreeBranchControl>
               <XhTreeBranchTrigger />
               <XhTreeBranchText>指南</XhTreeBranchText>
+              <XhTreeItemIndicator />
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem value="start">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>快速开始</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>

@@ -281,20 +281,6 @@ export function XhTreeNodeDragTrigger({ children, ...rest }: XhTreeNodeDragTrigg
   return <span {...mergeReactProps(ctx.api.getNodeDragTriggerProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
-export interface XhTreeItemCheckboxProps extends ComponentPropsWithRef<'span'> {}
-export function XhTreeItemCheckbox({ children, ...rest }: XhTreeItemCheckboxProps): ReactNode {
-  const ctx = useTreeContext()
-  const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getItemCheckboxProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
-}
-
-export interface XhTreeBranchCheckboxProps extends ComponentPropsWithRef<'span'> {}
-export function XhTreeBranchCheckbox({ children, ...rest }: XhTreeBranchCheckboxProps): ReactNode {
-  const ctx = useTreeContext()
-  const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getBranchCheckboxProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
-}
-
 export interface XhTreeItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeItemIndicator({ children, ...rest }: XhTreeItemIndicatorProps): ReactNode {
   const ctx = useTreeContext()

@@ -39920,7 +39920,7 @@
 [data-scope='tree'][data-part='root'] {
   /* 行外的字形（空态 / 在途占位里作者塞的图标）按档取尺，树没有 size 轴、固定 md；
      行内的由家族随 data-xh-collection-size 下发（§6.5）。这支只管作者放进行里的图标：
-     树自绘的状态字形（展开方向、叶子对号、勾选把手里的勾）是指示符，各部件在自己身上
+     树自绘的状态字形（展开方向、行尾对号与半选杠）是指示符，各部件在自己身上
      把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
   --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-md));
 
@@ -40050,10 +40050,10 @@
 }
 
 /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。
-   行走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
-   pressed 200）与选中面（品牌淡底 + 淡底前景 + 前导标记，selected+hover 20% / +pressed 28%）都由家族按
-   aria-selected / data-selected 与 aria-disabled / data-disabled 给出；这里只把公开槽映射到桥接槽。
-   布局保持 flex 而不用家族网格：一行里可以并排多个前导部件（箭头、勾选把手、拖拽把手）与作者自己的图标、
+   行走 Collection Item 的 overlay 语境，与树选择同一种选中读法（§7.3）：悬停 / 高亮 / 按下面（白底承载
+   hover 100 → pressed 200）由家族给，选中不换面、不换字色，只在行尾亮对号，选中叠悬停 / 按下沿用同一条阶梯；
+   家族按 aria-selected / data-selected 与 aria-disabled / data-disabled 给出，这里只把公开槽映射到桥接槽。
+   布局保持 flex 而不用家族网格：一行里可以并排多个前导部件（箭头、拖拽把手）与作者自己的图标、
    按钮，单列的 prefix 放不下；间距统一由行的 gap 给，家族按槽下发的外边距（--xh-collection-gap）归零 */
 [data-scope='tree'][data-part='item'],
 [data-scope='tree'][data-part='branch-control'] {
@@ -40064,18 +40064,18 @@
   --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
   /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 md 档 */
   --xh-collection-glyph-size: var(--xh-tree-icon-size, var(--xh-_collection-glyph-size));
-  /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档（§6.5），与同一行里的勾选把手、拖拽把手同走
+  /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档（§6.5），与同一行里的拖拽把手同走
      --xh-control-indicator-size（comfortable 16 / compact 14）。不读家族按档下发的 --xh-icon-size——
-     那支只管作者放进行里的图标，按图标档取的 20px 会比 16px 的勾选把手大一圈 */
+     那支只管作者放进行里的图标，按图标档取的 20px 会比 16px 的指示符盒大一圈 */
   --xh-_tree-indicator-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
   --xh-collection-fg-rest: var(--xh-tree-row-fg, var(--xh-fg-default));
   --xh-collection-fg-hover: var(--xh-tree-row-fg, var(--xh-fg-default));
   --xh-collection-fg-keyboard-highlight: var(--xh-tree-row-fg, var(--xh-fg-default));
   --xh-collection-fg-pressed: var(--xh-tree-row-fg, var(--xh-fg-default));
-  --xh-collection-fg-selected: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
-  --xh-collection-fg-selected-hover: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
-  --xh-collection-fg-selected-highlight: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
-  --xh-collection-fg-selected-pressed: var(--xh-tree-row-fg-selected, var(--xh-fg-on-brand-subtle));
+  --xh-collection-fg-selected: var(--xh-tree-row-fg-selected, var(--xh-tree-row-fg, var(--xh-fg-default)));
+  --xh-collection-fg-selected-hover: var(--xh-tree-row-fg-selected, var(--xh-tree-row-fg, var(--xh-fg-default)));
+  --xh-collection-fg-selected-highlight: var(--xh-tree-row-fg-selected, var(--xh-tree-row-fg, var(--xh-fg-default)));
+  --xh-collection-fg-selected-pressed: var(--xh-tree-row-fg-selected, var(--xh-tree-row-fg, var(--xh-fg-default)));
   --xh-collection-font-weight-selected: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-regular));
   --xh-collection-font-weight-selected-hover: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-regular));
   --xh-collection-font-weight-selected-highlight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-regular));
@@ -40083,11 +40083,13 @@
   --xh-collection-bg-hover: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
   --xh-collection-bg-keyboard-highlight: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
   --xh-collection-bg-pressed: var(--xh-tree-row-bg-pressed, var(--xh-bg-subtle-hover));
-  --xh-collection-bg-selected: var(--xh-tree-row-bg-selected, var(--xh-bg-brand-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-pressed: var(--xh-tree-row-bg-pressed, var(--xh-bg-subtle-hover));
   /* data-highlighted 跟的是连接层记的焦点行（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
   --xh-collection-outline-keyboard-highlight: transparent;
   --xh-collection-outline-selected-highlight: transparent;
-  /* 叶子的对号：槽按本部件取名（item-check-fg），标记部件的旧槽留在兜底位 */
+  /* 行尾对号：槽按本部件取名（item-check-fg），标记部件的旧槽留在兜底位 */
   --xh-collection-indicator-fg-rest: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
   --xh-collection-indicator-fg-checked: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
   --xh-collection-indicator-fg-selected: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
@@ -40110,12 +40112,9 @@
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
-   没摆（如勾选档首位直接是 item-checkbox）就由行盒自己补出来，
-   否则叶子会比同级分支往行首缩一格，层级关系读不出来。占位宽度与箭头 / 对号盒同一把尺 */
-[data-orientation='vertical'] > [data-scope='tree'][data-part='item']:not(
-    :has(> [data-scope='tree'][data-part='item-indicator'])
-  ) {
+/* 分支行的首格是展开箭头，叶子行没有这一格，由行盒自己补出来（对号在行尾，不再替叶子顶这一格），
+   否则叶子会比同级分支往行首缩一格，层级关系读不出来。占位宽度与箭头盒同一把尺 */
+[data-orientation='vertical'] > [data-scope='tree'][data-part='item'] {
   padding-inline-start: calc(
     var(--xh-tree-row-px, var(--xh-control-px-md)) +
       var(--xh-_tree-indicator-size) +
@@ -40146,76 +40145,6 @@
   --xh-collection-cursor-rest: not-allowed;
 }
 
-/* 勾选把手：勾选态只画在它身上，不碰行底色——底色那条通道归高亮 */
-[data-scope='tree'][data-part='item-checkbox'],
-[data-scope='tree'][data-part='branch-checkbox'] {
-  /* 方框里的勾按边长的比例取尺（与 Checkbox 同一比例），不吃家族按档下发的行内字形尺 */
-  --xh-icon-size: calc(var(--xh-tree-checkbox-size, var(--xh-control-indicator-size)) * 0.75);
-
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  inline-size: var(--xh-tree-checkbox-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-tree-checkbox-size, var(--xh-control-indicator-size));
-  border: var(--xh-stroke-thin) solid var(--xh-tree-checkbox-border, var(--xh-border-control));
-  border-radius: var(--xh-tree-checkbox-radius, var(--xh-shape-inset));
-  background: var(--xh-tree-checkbox-bg, transparent);
-  color: var(--xh-tree-checkbox-fg, var(--xh-fg-on-brand));
-}
-
-[data-scope='tree'][data-part='item-checkbox'][data-selected],
-[data-scope='tree'][data-part='branch-checkbox'][data-selected] {
-  border-color: var(--xh-tree-checkbox-border-checked, var(--xh-bg-brand));
-  background: var(--xh-tree-checkbox-bg-checked, var(--xh-bg-brand));
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-   勾满与半选铺的是同一块实心底，两态一起收 */
-[data-scope='tree'][data-part='item-checkbox'][data-selected]:focus-visible,
-[data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:focus-visible,
-[data-scope='tree'][data-part='branch-checkbox'][data-selected]:focus-visible,
-[data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-/* 半选：级联勾选下「子树勾了一部分」的第三态，此前发了 data-indeterminate 却没人画 */
-[data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]),
-[data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]) {
-  border-color: var(--xh-tree-checkbox-border-checked, var(--xh-bg-brand));
-  background: var(--xh-tree-checkbox-bg-checked, var(--xh-bg-brand));
-}
-
-/* 没写内容就由皮肤画；作者往把手里塞了自己的图形，这条规则即不命中 */
-[data-scope='tree'][data-part='item-checkbox'][data-selected]:empty::before,
-[data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-}
-
-[data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]):empty::before,
-[data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-}
-
-[data-scope='tree'][data-part='item-checkbox'][data-disabled],
-[data-scope='tree'][data-part='branch-checkbox'][data-disabled] {
-  border-color: var(--xh-tree-checkbox-border-disabled, var(--xh-border-default));
-}
-
 [data-scope='tree'][data-part='item-text'],
 [data-scope='tree'][data-part='branch-text'] {
   flex: 1;
@@ -40226,7 +40155,8 @@
   text-overflow: ellipsis;
 }
 
-/* 勾选标记是 page 语境的前导对号：显隐与颜色由家族按行的选中态给；
+/* 选中对号落在行尾，与树选择同位（§7.3 / §7.5）：作者在行里摆在哪儿都排到最后，
+   行尾那一格（item-suffix）在它之前；正文吃满剩余宽度，对号因此贴着行的末端。
    未选中时占位不塌，切换选中不引起行宽抖动。盒尺取指示符档；盒里的对号是指示符（§6.5），
    在自己身上把 --xh-icon-size 改接到盒的尺，兜底对号与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长 */
 [data-scope='tree'][data-part='item-indicator'] {
@@ -40234,6 +40164,7 @@
 
   display: inline-flex;
   flex: none;
+  order: 1;
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-_tree-indicator-size);
@@ -40241,6 +40172,17 @@
 
 [data-scope='tree'][data-part='item-indicator'][hidden] {
   display: none;
+}
+
+/* 家族只按行的 aria-selected 显示对号：分支行的 aria-selected 在 branch 上、半选没有选中语义，
+   这两档按标记自身的 data-selected / data-indeterminate 显形 */
+[data-scope='tree'][data-part='item-indicator']:is([data-selected], [data-indeterminate]) {
+  visibility: visible;
+}
+
+/* 分支行的禁用不在行的 aria-disabled 上（那在 branch 上），标记按自身的 data-disabled 降级 */
+[data-scope='tree'][data-part='item-indicator'][data-disabled] {
+  color: var(--xh-fg-disabled);
 }
 
 /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
@@ -40339,6 +40281,11 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+}
+
+[data-scope='tree'][data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-minus);
+  mask-image: var(--xh-glyph-mark-minus);
 }
 
 /* —— 节点拖拽搬家 —— */
@@ -40465,11 +40412,11 @@
   border: 0;
 }
 
-/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
-   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='tree'][data-part='item-checkbox'][hidden],
-[data-scope='tree'][data-part='branch-checkbox'][hidden] {
-  display: none;
+@media print {
+  /* 打印默认丢底色，而对号与半选杠是遮罩出来的一块底色：行本就不换面，丢了它选中在纸上就没了踪影 */
+  [data-scope='tree'][data-part='item-indicator'] {
+    print-color-adjust: exact;
+  }
 }
 
 /* styles/tree-select.css */

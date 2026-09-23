@@ -65,9 +65,6 @@
       "tree",
       "tree-select"
     ],
-    "branch-checkbox": [
-      "tree"
-    ],
     "branch-content": [
       "json-viewer",
       "side-nav",
@@ -671,8 +668,7 @@
       "notification"
     ],
     "item-checkbox": [
-      "transfer",
-      "tree"
+      "transfer"
     ],
     "item-close-trigger": [
       "notification"

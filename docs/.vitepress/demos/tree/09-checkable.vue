@@ -1,14 +1,13 @@
-<!-- 级联勾选 | multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾则父勾、部分勾选为半选；勾选框是行中的一段标记，勾选态与半选态都由组件报告 -->
+<!-- 级联勾选 | multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾则父勾、部分勾选为半选；勾选与半选都画在行尾，半选是一道横杠，两态都由组件报告 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,
-  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
-  XhTreeItemCheckbox,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
@@ -53,13 +52,13 @@ const selected = ref<string[]>(["hz"]);
         <XhTreeBranch v-for="region in collection" :key="region.value" :value="region.value">
           <XhTreeBranchControl>
             <XhTreeBranchTrigger />
-            <XhTreeBranchCheckbox />
             <XhTreeBranchText>{{ region.label }}</XhTreeBranchText>
+            <XhTreeItemIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="city in region.children" :key="city.value" :value="city.value">
-              <XhTreeItemCheckbox />
               <XhTreeItemText>{{ city.label }}</XhTreeItemText>
+              <XhTreeItemIndicator />
             </XhTreeItem>
           </XhTreeBranchContent>
         </XhTreeBranch>

@@ -585,11 +585,11 @@ export function connectTree<T extends PropTypes>(
         ...parts.item.attrs,
         ...nodeAttrs(node.value),
         ...itemState(node.value),
-        // 行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与选中面（品牌淡底 +
-        // 淡底前景 + 前导标记）由家族按 aria-selected / aria-disabled 给出。树没有 size 轴，行固定走 md 尺
+        // 行走 Collection Item 的 overlay 语境，与树选择同一种选中读法（§7.3）：悬停 / 高亮 / 按下只换面，
+        // 选中是透明底 + 行尾对号，由家族按 aria-selected / aria-disabled 给出。树没有 size 轴，行固定走 md 尺
         'data-xh-collection-item': '',
         'data-xh-collection-size': 'md',
-        'data-xh-collection-context': 'page',
+        'data-xh-collection-context': 'overlay',
         // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
         'data-tone': nodeTone(node.value),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
@@ -625,14 +625,15 @@ export function connectTree<T extends PropTypes>(
       'data-xh-collection-slot': 'description',
     }),
 
-    // 行尾那一格：内容由作者给（计数、徽标）。行首归勾选框与展开箭头，这一格才是作者的
+    // 行尾那一格：内容由作者给（计数、徽标），排在对号之前。行首归展开箭头与拖拽把手，这一格才是作者的
     getItemSuffixProps: node => normalize.element({
       ...parts['item-suffix'].attrs,
       ...itemState(node.value),
       'data-xh-collection-slot': 'suffix',
     }),
 
-    // 叶子的选中对号是 page 语境的前导标记，显隐由家族按行的 aria-selected 给
+    // 选中对号落在行尾（叶子与分支行共用）：半选靠自身的 data-indeterminate 换成横杠；
+    // 叶子行的显隐由家族按行的 aria-selected 给，分支行的由皮肤按标记自身的 data-selected / data-indeterminate 给
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemState(node.value),
@@ -659,60 +660,7 @@ export function connectTree<T extends PropTypes>(
       })
     },
 
-    // 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域。
-    // 点行的语义（单选替换、分支展开）归 item / branch-control，把手只管勾选。
-    getItemCheckboxProps: node => normalize.element({
-      ...parts['item-checkbox'].attrs,
-      ...itemState(node.value),
-      // 前导勾选部件自己就是选中标记（§7.3 页内持久集合），不占家族的 indicator 槽
-      'data-xh-collection-slot': 'prefix',
-      // 勾选态由所在的 treeitem 用 aria-selected / aria-checked 报，把手自己不重复一遍
-      'aria-hidden': true,
-      'tabindex': -1,
-      // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
-      // 焦点归属在 mousedown 的默认动作里定，onClick 再接管已经晚一拍
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
-      // 焦点归属在 mousedown 的默认动作里定，onClick 再接管已经晚一拍
-      'onClick': (event: MouseEvent) => {
-        // 把手长在条目里面，不掐断冒泡会再跑一遍点行
-        event.stopPropagation()
-        if (isDisabled(node.value))
-          return
-        // 指针聚焦被上面拦掉了，焦点得由把手交给所在的那一行：
-        // 不接管则 roving tabindex 的锚点跟不上，treeitem 的 onFocus 也不触发
-        focusValue(rowElOf(event.currentTarget as HTMLElement))
-        send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
-      },
-    }),
-
-    getBranchCheckboxProps: node => normalize.element({
-      ...parts['branch-checkbox'].attrs,
-      ...branchState(node.value),
-      'data-xh-collection-slot': 'prefix',
-      'aria-hidden': true,
-      'tabindex': -1,
-      // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
-      // 焦点归属在 mousedown 的默认动作里定，onClick 再接管已经晚一拍
-      'onPointerDown': (event: PointerEvent) => {
-        if (event.button === 0)
-          event.preventDefault()
-      },
-      'onClick': (event: MouseEvent) => {
-        // 不掐断冒泡会顺带把这一枝展开或收起
-        event.stopPropagation()
-        if (isDisabled(node.value))
-          return
-        // 同 item-checkbox：指针聚焦被拦掉后由把手把焦点交给所在的那一行
-        focusValue(rowElOf(event.currentTarget as HTMLElement))
-        send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
-      },
-    }),
-
-    // 分支行不是 treeitem 本体（aria-selected / aria-disabled 在 branch 上）：家族的选中面与禁用守卫
+    // 分支行不是 treeitem 本体（aria-selected / aria-disabled 在 branch 上）：家族的选中态与禁用守卫
     // 读连接层同步下来的 data-selected / data-disabled
     getBranchControlProps: (node) => {
       const handlers = press('branch-control', node.value)
@@ -721,7 +669,7 @@ export function connectTree<T extends PropTypes>(
         ...branchState(node.value),
         'data-xh-collection-item': '',
         'data-xh-collection-size': 'md',
-        'data-xh-collection-context': 'page',
+        'data-xh-collection-context': 'overlay',
         // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
         'data-tone': nodeTone(node.value),
         'data-dragging': dataAttr(draggingNode === node.value),

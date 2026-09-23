@@ -9,6 +9,7 @@ import {
   XhTreeBranchIndicator,
   XhTreeBranchText,
   XhTreeItem,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
@@ -50,6 +51,7 @@ function rename(label: string): void {
             <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
             <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
             <XhTreeBranchIndicator />
+            <XhTreeItemIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="file in dir.children" :key="file.value" :value="file.value">
@@ -57,6 +59,7 @@ function rename(label: string): void {
               <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               <!-- 掐断冒泡，否则点按钮连带把这一行也选上 -->
               <button type="button" @click.stop="rename(file.label)">重命名</button>
+              <XhTreeItemIndicator />
             </XhTreeItem>
           </XhTreeBranchContent>
         </XhTreeBranch>

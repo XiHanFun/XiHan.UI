@@ -61,8 +61,8 @@ function onSelectionChange(details: { value: string[] }): void {
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="file in dir.children" :key="file.value" :value="file.value">
-              <XhTreeItemIndicator />
               <XhTreeItemText>{{ file.label }}</XhTreeItemText>
+              <XhTreeItemIndicator />
             </XhTreeItem>
           </XhTreeBranchContent>
         </XhTreeBranch>

@@ -9,6 +9,7 @@ import {
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeLiveRegion,
@@ -118,11 +119,13 @@ function onNodeMove(move: Move): void {
               <XhTreeBranchTrigger />
               <XhTreeBranchText>{{ entry.label }}</XhTreeBranchText>
               <span style="margin-inline-start: auto">{{ entry.children.length }}</span>
+              <XhTreeItemIndicator />
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem v-for="file in entry.children" :key="file.value" :value="file.value">
                 <XhIcon :icon="FileIcon" />
                 <XhTreeItemText>{{ file.label }}</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>
@@ -130,6 +133,7 @@ function onNodeMove(move: Move): void {
           <XhTreeItem v-else :value="entry.value">
             <XhIcon :icon="FileIcon" />
             <XhTreeItemText>{{ entry.label }}</XhTreeItemText>
+            <XhTreeItemIndicator />
           </XhTreeItem>
         </template>
       </XhTreeTree>

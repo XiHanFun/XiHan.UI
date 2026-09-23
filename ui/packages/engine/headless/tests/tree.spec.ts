@@ -1006,9 +1006,9 @@ describe('范围选', () => {
 })
 
 describe('collection Item 家族投影', () => {
-  it('叶子与分支行投影 page 语境的行角色、md 尺与各槽；分支行的选中与禁用只以 data-* 同步', () => {
+  it('叶子与分支行投影 overlay 语境（与树选择同一种选中读法）的行角色、md 尺与各槽；分支行的选中与禁用只以 data-* 同步', () => {
     const h = mount({ defaultSelection: ['index'], defaultExpandedValue: ['src'] })
-    const row = { xhCollectionItem: '', xhCollectionSize: 'md', xhCollectionContext: 'page' }
+    const row = { xhCollectionItem: '', xhCollectionSize: 'md', xhCollectionContext: 'overlay' }
     expect(h.item('index').item.dataset).toMatchObject({ ...row, selected: '' })
     expect(h.item('index').item.getAttribute('aria-selected')).toBe('true')
     expect(h.item('readme').item.dataset).toMatchObject({ ...row, disabled: '' })
@@ -1023,14 +1023,14 @@ describe('collection Item 家族投影', () => {
     const slot = (props: Record<string, unknown>): unknown => props['data-xh-collection-slot']
     expect(slot(h.api().getItemTextProps(node) as Record<string, unknown>)).toBe('text')
     expect(slot(h.api().getItemIndicatorProps(node) as Record<string, unknown>)).toBe('indicator')
-    expect(slot(h.api().getItemCheckboxProps(node) as Record<string, unknown>)).toBe('prefix')
     expect(slot(h.api().getNodeDragTriggerProps(node) as Record<string, unknown>)).toBe('prefix')
     const branch = { value: 'src' }
     expect(slot(h.api().getBranchTextProps(branch) as Record<string, unknown>)).toBe('text')
     // 展开箭头与方向指示符是前导图标，不是选中标记
     expect(slot(h.api().getBranchTriggerProps(branch) as Record<string, unknown>)).toBe('prefix')
     expect(slot(h.api().getBranchIndicatorProps(branch) as Record<string, unknown>)).toBe('prefix')
-    expect(slot(h.api().getBranchCheckboxProps(branch) as Record<string, unknown>)).toBe('prefix')
+    // 分支行的对号与叶子同一个部件，同落行尾
+    expect(slot(h.api().getItemIndicatorProps(branch) as Record<string, unknown>)).toBe('indicator')
   })
 })
 

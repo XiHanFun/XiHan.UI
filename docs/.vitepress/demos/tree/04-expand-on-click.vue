@@ -42,15 +42,16 @@ const collection = [
         <XhTreeBranchControl>
           <XhTreeBranchTrigger />
           <XhTreeBranchText>build</XhTreeBranchText>
+          <XhTreeItemIndicator />
         </XhTreeBranchControl>
         <XhTreeBranchContent>
           <XhTreeItem value="vite">
-            <XhTreeItemIndicator />
             <XhTreeItemText>vite.config.ts</XhTreeItemText>
+            <XhTreeItemIndicator />
           </XhTreeItem>
           <XhTreeItem value="lock">
-            <XhTreeItemIndicator />
             <XhTreeItemText>pnpm-lock.yaml（禁用）</XhTreeItemText>
+            <XhTreeItemIndicator />
           </XhTreeItem>
         </XhTreeBranchContent>
       </XhTreeBranch>
@@ -59,13 +60,14 @@ const collection = [
         <XhTreeBranchControl>
           <XhTreeBranchTrigger />
           <XhTreeBranchText>dist</XhTreeBranchText>
+          <XhTreeItemIndicator />
         </XhTreeBranchControl>
         <XhTreeBranchContent />
       </XhTreeBranch>
 
       <XhTreeItem value="readme">
-        <XhTreeItemIndicator />
         <XhTreeItemText>README.md</XhTreeItemText>
+        <XhTreeItemIndicator />
       </XhTreeItem>
     </XhTreeTree>
   </XhTreeRoot>

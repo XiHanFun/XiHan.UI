@@ -2736,7 +2736,6 @@ export type { TreeSelectContext } from './components/tree-select/use-tree-select
 export { useTreeContext, useTreeNodeContext } from './components/tree/context'
 export {
   XhTreeBranch,
-  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchIndicator,
@@ -2744,7 +2743,6 @@ export {
   XhTreeBranchTrigger,
   XhTreeEmpty,
   XhTreeItem,
-  XhTreeItemCheckbox,
   XhTreeItemIndicator,
   XhTreeItemDescription,
   XhTreeItemSuffix,
@@ -2758,7 +2756,6 @@ export {
 } from './components/tree/tree'
 export type {
   TreeRootSlotProps,
-  XhTreeBranchCheckboxProps,
   XhTreeBranchContentProps,
   XhTreeBranchControlProps,
   XhTreeBranchIndicatorProps,
@@ -2766,7 +2763,6 @@ export type {
   XhTreeBranchTextProps,
   XhTreeBranchTriggerProps,
   XhTreeEmptyProps,
-  XhTreeItemCheckboxProps,
   XhTreeItemIndicatorProps,
   XhTreeItemProps,
   XhTreeItemDescriptionProps,

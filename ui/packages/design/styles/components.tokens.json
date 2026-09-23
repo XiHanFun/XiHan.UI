@@ -33008,7 +33008,6 @@
       "component": "icon",
       "part": [
         "autoplay-trigger",
-        "branch-checkbox",
         "branch-indicator",
         "branch-trigger",
         "cancel-trigger",
@@ -33066,13 +33065,10 @@
         "default",
         "direction",
         "empty",
-        "indeterminate",
         "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
         "not([aria-busy='true'])",
-        "not([data-selected])",
-        "selected",
         "size=2xl",
         "size=3xl",
         "size=4xl",
@@ -33102,7 +33098,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -76242,164 +76238,6 @@
       "description": "tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-tree-checkbox-bg",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "transparent"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-checkbox-bg-checked",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "indeterminate",
-        "not([data-selected])",
-        "selected"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-checkbox-border",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "border"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-border-control"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 border 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-checkbox-border-checked",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "indeterminate",
-        "not([data-selected])",
-        "selected"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-checkbox-border-disabled",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-border-default"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-checkbox-fg",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-on-brand"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-checkbox-radius",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-inset"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-checkbox-size",
-      "component": "tree",
-      "part": [
-        "branch-checkbox",
-        "item-checkbox"
-      ],
-      "property": [
-        "--xh-icon-size",
-        "block-size",
-        "inline-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-control-indicator-size"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-checkbox、item-checkbox 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
-    },
-    {
       "name": "--xh-tree-drag-fg",
       "component": "tree",
       "part": [
@@ -76783,7 +76621,6 @@
       ],
       "state": [
         "default",
-        "not(:has(> [data-scope='tree'][data-part='item-indicator'])",
         "orientation=vertical"
       ],
       "defaultToken": [
@@ -76814,7 +76651,7 @@
         "pressed",
         "selected",
         "state=checked",
-        "xh-collection-context=page",
+        "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
@@ -76845,7 +76682,7 @@
         "pressed",
         "selected",
         "state=checked",
-        "xh-collection-context=page",
+        "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
@@ -77086,7 +76923,10 @@
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
@@ -77108,35 +76948,14 @@
         "disabled",
         "error",
         "is(:active, [data-pressed])",
+        "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed"
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-row-bg-selected",
-      "component": "tree",
-      "part": [
-        "branch-control",
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "error",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "selected",
-        "xh-collection-context=page"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand-subtle"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 background-color 覆盖槽。"
@@ -77159,8 +76978,11 @@
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed"
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -77189,10 +77011,10 @@
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
         "selected",
-        "xh-collection-context=page"
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-fg-on-brand-subtle"
+        "--xh-tree-row-fg"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
@@ -77229,7 +77051,6 @@
       ],
       "state": [
         "default",
-        "not(:has(> [data-scope='tree'][data-part='item-indicator'])",
         "orientation=vertical"
       ],
       "defaultToken": [
@@ -77270,7 +77091,6 @@
       ],
       "state": [
         "default",
-        "not(:has(> [data-scope='tree'][data-part='item-indicator'])",
         "orientation=vertical"
       ],
       "defaultToken": [
@@ -77338,7 +77158,7 @@
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
         "selected",
-        "xh-collection-context=page"
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-font-weight-regular"
