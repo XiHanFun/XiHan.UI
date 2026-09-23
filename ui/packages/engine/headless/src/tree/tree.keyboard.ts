@@ -22,7 +22,7 @@ export const treeKeyboard: KeyboardTable = {
     { id: 'tree.kbd.last', keys: ['End'], when: 'focus in tree', does: '焦点移到末个可见行（展开着的子树也算行）' },
     { id: 'tree.kbd.expand', keys: ['ArrowRight'], when: 'focus on branch（dir=rtl 时改由 ArrowLeft 承担）', does: '收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键' },
     { id: 'tree.kbd.collapse', keys: ['ArrowLeft'], when: 'focus in tree（dir=rtl 时改由 ArrowRight 承担）', does: '展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做' },
-    { id: 'tree.kbd.select', keys: ['Enter', 'Space'], when: 'focus on node, 节点未禁用', does: '选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 未关时顺带切换展开态' },
+    { id: 'tree.kbd.select', keys: ['Enter', 'Space'], when: 'focus on node, 节点未禁用', does: '选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 打开时顺带切换展开态' },
     { id: 'tree.kbd.press', keys: ['Enter', 'Space'], when: 'held on node, 树未禁用、未加载且节点未禁用', does: '按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担' },
     { id: 'tree.kbd.expand-siblings', keys: ['*'], when: 'focus in tree', does: '展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键' },
     { id: 'tree.kbd.typeahead', keys: ['单个可打印字符'], when: 'focus in tree, typeahead 未关', does: '连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支' },

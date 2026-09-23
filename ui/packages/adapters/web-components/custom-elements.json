@@ -62628,7 +62628,7 @@
               "name": "branch-checkbox"
             },
             {
-              "description": "分支可点击行（选中 + 按 expand-on-click 切换展开）",
+              "description": "分支可点击行（选中；打开 expand-on-click 时顺带切换展开）",
               "name": "branch-control"
             },
             {
@@ -62984,7 +62984,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "点击分支行同时展开 / 收起，默认开启；写 expand-on-click=\"false\" 关闭",
+              "description": "点击分支行同时展开 / 收起，默认关闭（展开与选中分开，展开归箭头与左右方向键）；写 expand-on-click 打开",
               "name": "expand-on-click",
               "fieldName": "expandOnClick"
             },

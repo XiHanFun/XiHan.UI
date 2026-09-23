@@ -787,20 +787,20 @@ describe('确认键与点击', () => {
     expect(h.selected()).toEqual(['utils'])
   })
 
-  it('分支上的确认键顺带切换展开态；expandOnClick 关掉后只选中', () => {
+  it('分支上的确认键缺省只选中；expandOnClick 打开后才顺带切换展开态', () => {
     const h = mount()
     h.treeEl.focus()
     press(active(), 'Enter')
     expect(h.selected()).toEqual(['src'])
-    expect(h.expanded()).toEqual(['src'])
-    press(active(), 'Enter')
     expect(h.expanded()).toEqual([])
 
-    const fixed = mount({ expandOnClick: false })
-    fixed.treeEl.focus()
+    const opted = mount({ expandOnClick: true })
+    opted.treeEl.focus()
     press(active(), 'Enter')
-    expect(fixed.selected()).toEqual(['src'])
-    expect(fixed.expanded()).toEqual([])
+    expect(opted.selected()).toEqual(['src'])
+    expect(opted.expanded()).toEqual(['src'])
+    press(active(), 'Enter')
+    expect(opted.expanded()).toEqual([])
   })
 
   it('复选：确认键切换而不是替换', () => {
@@ -828,20 +828,20 @@ describe('确认键与点击', () => {
     expect(focused()).toBe('index')
   })
 
-  it('点分支行：选中 + 切展开，焦点落在 branch 上而不是行容器上', () => {
+  it('点分支行缺省只选中不展开（展开归箭头与左右方向键），焦点落在 branch 上而不是行容器上', () => {
     const h = mount()
     click(h.branch('src').control)
     expect(h.selected()).toEqual(['src'])
-    expect(h.expanded()).toEqual(['src'])
-    expect(focused()).toBe('src')
-    click(h.branch('src').control)
     expect(h.expanded()).toEqual([])
+    expect(focused()).toBe('src')
   })
 
-  it('expandOnClick=false 时点行只选中', () => {
-    const h = mount({ expandOnClick: false })
+  it('expandOnClick=true 时点分支行选中 + 切展开', () => {
+    const h = mount({ expandOnClick: true })
     click(h.branch('src').control)
     expect(h.selected()).toEqual(['src'])
+    expect(h.expanded()).toEqual(['src'])
+    click(h.branch('src').control)
     expect(h.expanded()).toEqual([])
   })
 

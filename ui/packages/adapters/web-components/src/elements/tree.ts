@@ -16,8 +16,8 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（点行展开、连打检索）只有三态才关得掉——
-// Lit 默认的 Boolean 转换器是 v !== null，写 expand-on-click="false" 照样是真。
+// 缺省为真的开关（连打检索）只有三态才关得掉——
+// Lit 默认的 Boolean 转换器是 v !== null，写 typeahead="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 移动事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
@@ -52,7 +52,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
- * @attr {boolean} expand-on-click - 点击分支行同时展开 / 收起，默认开启；写 expand-on-click="false" 关闭
+ * @attr {boolean} expand-on-click - 点击分支行同时展开 / 收起，默认关闭（展开与选中分开，展开归箭头与左右方向键）；写 expand-on-click 打开
  * @attr {boolean} disabled - 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
@@ -75,7 +75,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @csspart item-indicator - 叶子选中标记（aria-hidden）
  * @csspart branch - role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content
  * @csspart branch-checkbox - 分支的勾选把手，点击只勾选、不展开该分支；可选
- * @csspart branch-control - 分支可点击行（选中 + 按 expand-on-click 切换展开）
+ * @csspart branch-control - 分支可点击行（选中；打开 expand-on-click 时顺带切换展开）
  * @csspart branch-trigger - 展开箭头（aria-hidden 且不占 Tab 位，只切换展开态）
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-text - 分支文本

@@ -76,7 +76,8 @@ export function connectTree<T extends PropTypes>(
   // 树不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const typeaheadOn = prop('typeahead') ?? true
-  const expandOnClick = prop('expandOnClick') ?? true
+  // 展开与选中分开：点行只选中，展开归箭头与左右方向键；作者显式打开才让点行顺带切换展开态
+  const expandOnClick = prop('expandOnClick') ?? false
   const multiselectable = !!prop('multiple')
   const ids = scope.ids('tree', 'label', 'tree')
 
@@ -303,7 +304,7 @@ export function connectTree<T extends PropTypes>(
   }
 
   /**
-   * 确认键的落点：先选中，分支再按 expandOnClick 顺带切换展开态。
+   * 确认键的落点：先选中，分支只在 expandOnClick 打开时顺带切换展开态。
    * 焦点此刻就在这一行上，收起子树不会把焦点困在里面。
    */
   const activate = (row: TreeVisibleNode): void => {

@@ -1,4 +1,4 @@
-// 点击行不展开与禁用节点 | expandOnClick 关闭后只有箭头与左右方向键能改变展开态；禁用节点仍可聚焦，只是确认键不响应它
+// 点击行展开与禁用节点 | 缺省点行只选中、展开归箭头与左右方向键，expandOnClick 打开后点行同时切换展开态；禁用节点仍可聚焦，只是确认键不响应它
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,
@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
     <XhTreeRoot
       collection={collection}
       defaultExpandedValue={["build"]}
-      expandOnClick={false}
+      expandOnClick
       style={{ inlineSize: "100%", maxInlineSize: "320px" }}
     >
       <XhTreeLabel>构建产物</XhTreeLabel>
