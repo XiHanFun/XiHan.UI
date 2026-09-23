@@ -134,7 +134,7 @@ export const listboxSuite: ConformanceSuite = {
           'item[0]': {
             'data-xh-collection-item': '',
             'data-xh-collection-size': 'md',
-            'data-xh-collection-context': 'page',
+            'data-xh-collection-context': 'overlay',
             'role': 'option',
             'aria-selected': 'false',
             'aria-disabled': 'false',

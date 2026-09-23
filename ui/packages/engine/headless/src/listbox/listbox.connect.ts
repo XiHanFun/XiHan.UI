@@ -346,8 +346,8 @@ export function connectListbox<T extends PropTypes>(
       'data-disabled': dataAttr(listDisabled),
     }),
 
-    // 条目走 Collection Item 的 page 语境（页内持久集合）：网格、尺寸档、悬停 / 高亮 / 按下面与
-    // 选中面（品牌淡底 + 行尾对号）都由家族配方按 aria-selected / aria-disabled 给出，皮肤只映射公开槽
+    // 条目走 Collection Item 的 overlay 语境，与树选择同一种选中读法：网格、尺寸档、悬停 / 高亮 / 按下面
+    // 与选中（透明底 + 行尾对号）都由家族配方按 aria-selected / aria-disabled 给出，皮肤只映射公开槽
     getItemProps: (item) => {
       const handlers = press('item', item.value, isDisabled(item))
       return normalize.element({
@@ -355,7 +355,7 @@ export function connectListbox<T extends PropTypes>(
         ...stateAttrs(item),
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
-        'data-xh-collection-context': 'page',
+        'data-xh-collection-context': 'overlay',
         // 该条自身的性质；家族据此换字与悬停 / 按下的面，禁用与选中压过它
         'data-tone': itemTone(item),
         // 导航、检索与选中的条目身份

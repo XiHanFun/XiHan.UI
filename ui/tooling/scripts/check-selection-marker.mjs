@@ -2,9 +2,9 @@
 // 门禁：选中与当前态按语义分类，每类只有一种标记。
 //
 // 设计真源的选中与当前态分类：
-// 浮层瞬态集合与树（Select / Combobox / TreeSelect / Cascader / 时间列 / Mention / Tree）= 透明底 + 行尾对号，
+// 对号集合（Select / Combobox / TreeSelect / Cascader / 时间列 / Mention / Tree / Listbox）= 透明底 + 行尾对号，
 //   正文颜色与字重保持 rest；
-// 页内持久集合（Listbox / Table row / Transfer / TagGroup / SideNav 当前项）
+// 页内持久集合（Table row / Transfer / TagGroup / SideNav 当前项）
 //   = --xh-bg-brand-subtle 行面 + --xh-fg-on-brand-subtle；
 // 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand-strong + medium，
 //   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；两者都是 Collection Item 的 nav 语境；
@@ -53,11 +53,11 @@ const SEMANTIC = {
   'time-picker:preset': [{ kind: 'overlay', state: '[data-state=\'checked\']' }],
   'time-range-picker:item': [{ kind: 'overlay', state: '[data-state=\'checked\']' }],
   'time-range-picker:preset': [{ kind: 'overlay', state: '[data-state=\'checked\']' }],
-  // 树与树选择同一种选中读法（2026-09-24 起）：行投影 overlay 语境
+  // 树与列表框同一种选中读法：透明底 + 行尾对号（2026-09-24 起），行投影 overlay 语境
   'tree:item': [{ kind: 'overlay', state: '[data-selected]' }],
   'tree:branch-control': [{ kind: 'overlay', state: '[data-selected]' }],
-  // 页内持久集合：品牌淡底行面 + 行尾对号或行首勾选框
-  'listbox:item': [{ kind: 'page', state: '[data-state=\'checked\']' }],
+  'listbox:item': [{ kind: 'overlay', state: '[data-state=\'checked\']' }],
+  // 页内持久集合：品牌淡底行面，行首勾选框
   'table:row': [{ kind: 'page', state: '[data-selected]' }],
   'transfer:item': [{ kind: 'page', state: '[data-state=\'checked\']' }],
   'tag-group:tag/root': [{ kind: 'page', state: '[data-selected]' }],

@@ -36935,7 +36935,10 @@
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
@@ -36956,34 +36959,14 @@
         "disabled",
         "error",
         "is(:active, [data-pressed])",
+        "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed"
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "listbox 的 item 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-listbox-item-bg-selected",
-      "component": "listbox",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "error",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "selected",
-        "xh-collection-context=page"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand-subtle"
       ],
       "visibility": "public",
       "description": "listbox 的 item 部件 background-color 覆盖槽。"
@@ -37009,7 +36992,7 @@
         "pressed",
         "selected",
         "state=checked",
-        "xh-collection-context=page",
+        "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
@@ -37035,8 +37018,11 @@
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed"
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -37064,10 +37050,10 @@
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
         "selected",
-        "xh-collection-context=page"
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-fg-on-brand-subtle"
+        "--xh-listbox-item-fg"
       ],
       "visibility": "public",
       "description": "listbox 的 item 部件 color 覆盖槽。"
@@ -37110,7 +37096,7 @@
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
         "selected",
-        "xh-collection-context=page"
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-font-weight-regular"
@@ -37161,7 +37147,7 @@
         "pressed",
         "selected",
         "state=checked",
-        "xh-collection-context=page",
+        "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [

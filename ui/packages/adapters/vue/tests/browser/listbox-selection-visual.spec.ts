@@ -1,14 +1,14 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { userEvent } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhListboxRoot } from '../../src'
 import { pressPointer, releasePointer } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-// 页内持久集合的选中：品牌淡底行面 + 淡底前景 + 前导对号；
-// 悬停 100 → 按下 200 只换面，选中行悬停 20%；真实选择不改变行几何。
+// 列表框的选中与树选择同一种读法：透明底 + 行尾对号，正文颜色与字重保持 rest；
+// 悬停 100 → 按下 200 只换面，选中行叠悬停 / 按下沿用同一条阶梯；真实选择不改变行几何。
 let app: App | null = null
 let host: HTMLElement | null = null
 const collection = [
@@ -41,17 +41,27 @@ function resolve(token: string, property: 'background-color' | 'color' = 'backgr
   return value
 }
 
-afterEach(() => {
+afterEach(async () => {
   app?.unmount()
   host?.remove()
   app = null
   host = null
+  await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('列表框的页内选中反馈', () => {
+async function mount(defaultValue = ['apple']): Promise<void> {
+  host = document.createElement('div')
+  host.style.inlineSize = '240px'
+  document.body.append(host)
+  app = createApp({ render: () => h(XhListboxRoot, { collection, defaultValue }) })
+  app.mount(host)
+  await nextTick()
+}
+
+describe('列表框的选中反馈', () => {
   for (const selectionMode of ['single', 'multiple'] as const) {
     for (const [theme, dir] of [['light', 'ltr'], ['dark', 'rtl']] as const) {
-      it(`${selectionMode}/${theme}/${dir}：选中行品牌淡底 + 前导对号，悬停 / 按下只换面，真实选择不改变行几何`, async () => {
+      it(`${selectionMode}/${theme}/${dir}：选中行透明底 + 行尾对号，悬停 / 按下只换面，真实选择不改变行几何`, async () => {
         host = document.createElement('div')
         host.dataset.theme = theme
         host.dir = dir
@@ -65,27 +75,27 @@ describe('列表框的页内选中反馈', () => {
         for (const row of [apple, banana])
           row.style.transition = 'none'
 
-        // 选中行：品牌淡底 + 淡底前景，字重与未选中一致；对号露面且在文字之前（起始侧）
+        // 选中行：不换面、不换字色，字重与未选中一致；对号露面且在文字之后（行尾侧）
         const appleStyle = getComputedStyle(apple)
-        expect(appleStyle.backgroundColor).toBe(resolve('--xh-bg-brand-subtle'))
-        expect(appleStyle.color).toBe(resolve('--xh-fg-on-brand-subtle', 'color'))
+        expect(appleStyle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+        expect(appleStyle.color).toBe(resolve('--xh-fg-default', 'color'))
         expect(appleStyle.fontWeight).toBe(getComputedStyle(banana).fontWeight)
         expect(getComputedStyle(indicator(apple)).visibility).toBe('visible')
         expect(getComputedStyle(indicator(banana)).visibility).toBe('hidden')
         const appleMark = indicator(apple).getBoundingClientRect()
         const appleText = apple.querySelector<HTMLElement>(`[data-part='item-text']`)!.getBoundingClientRect()
-        expect(dir === 'ltr' ? appleMark.right <= appleText.left : appleMark.left >= appleText.right).toBe(true)
+        expect(dir === 'ltr' ? appleMark.left >= appleText.right : appleMark.right <= appleText.left).toBe(true)
 
-        // 未选中行：悬停 100 档，与选中面不同
+        // 未选中行：悬停 100 档
         await userEvent.hover(banana)
         banana.focus()
         await nextTick()
         expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-subtle'))
         expect(getComputedStyle(banana).color).toBe(resolve('--xh-fg-default', 'color'))
-        // 选中行悬停：20% 品牌淡底
+        // 选中行悬停：与未选中行同为 100 档
         await userEvent.hover(apple)
         await nextTick()
-        expect(getComputedStyle(apple).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-hover'))
+        expect(getComputedStyle(apple).backgroundColor).toBe(resolve('--xh-bg-subtle'))
         await userEvent.hover(banana)
         await nextTick()
 
@@ -96,8 +106,9 @@ describe('列表框的页内选中反馈', () => {
         expect(banana.getAttribute('data-state')).toBe('checked')
         expect(apple.getAttribute('data-state')).toBe(selectionMode === 'single' ? 'unchecked' : 'checked')
         expect(getComputedStyle(indicator(banana)).visibility).toBe('visible')
-        // 选中 + 悬停：面换到 20% 品牌淡底，行与对号的几何不动
-        expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-hover'))
+        // 选中 + 悬停：仍是 100 档，行与对号的几何不动
+        expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-subtle'))
+        expect(getComputedStyle(banana).color).toBe(resolve('--xh-fg-default', 'color'))
         expect(banana.getBoundingClientRect().width).toBe(rowBefore.width)
         expect(banana.getBoundingClientRect().height).toBe(rowBefore.height)
         expect(indicator(banana).getBoundingClientRect().x).toBe(markBefore.x)
@@ -117,13 +128,8 @@ describe('列表框的页内选中反馈', () => {
     }
   }
 
-  it('按下只换面不缩放：未选中行按住落 200 档，选中行按住落 28% 品牌淡底', async () => {
-    host = document.createElement('div')
-    host.style.inlineSize = '240px'
-    document.body.append(host)
-    app = createApp({ render: () => h(XhListboxRoot, { collection, defaultValue: ['apple'] }) })
-    app.mount(host)
-    await nextTick()
+  it('按下只换面不缩放：选中与未选中的行按住同为 200 档', async () => {
+    await mount()
     const apple = item('apple')
     const banana = item('banana')
     for (const row of [apple, banana])
@@ -139,10 +145,30 @@ describe('列表框的页内选中反馈', () => {
     await releasePointer(banana)
     await nextTick()
 
-    // 松手后 banana 成为选中行；再按住它落 28%
+    // 松手后 banana 成为选中行；再按住它仍落 200 档
     expect(banana.getAttribute('data-state')).toBe('checked')
     await pressPointer(banana)
-    expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-active'))
+    expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
     await releasePointer(banana)
+  })
+
+  it('forced-colors：选中行与未选中行同为静息面，选中只由对号表达', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', {
+      media: '',
+      features: [{ name: 'forced-colors', value: 'active' }],
+    })
+    await mount()
+    const apple = item('apple')
+    const banana = item('banana')
+    await userEvent.hover(item('cherry'))
+    expect(getComputedStyle(apple).backgroundColor).toBe(getComputedStyle(banana).backgroundColor)
+    expect(getComputedStyle(apple).color).toBe(getComputedStyle(banana).color)
+    expect(getComputedStyle(indicator(apple)).visibility).toBe('visible')
+  })
+
+  it('打印：对号是遮罩出来的一块底色，按原样印出，不随打印丢底色', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { media: 'print', features: [] })
+    await mount()
+    expect(getComputedStyle(indicator(item('apple'))).printColorAdjust).toBe('exact')
   })
 })
