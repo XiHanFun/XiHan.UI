@@ -9,7 +9,8 @@ afterEach(() => {
   host = null
 })
 
-/** 一排可选标签的静态投影：第一枚选中，第二枚未选中；标签是 tag 的 root，格子里领着本组件的选中标记。 */
+/** 一排可选标签的静态投影：第一枚选中，第二枚未选中；标签是 tag 的 root，格子里有本组件的选中标记与 tag 的摘除钮。
+ *  标记故意写在文字之前：落位由皮肤决定，作者怎么摆都排到文字之后、摘除钮之前。 */
 function mount() {
   host = document.createElement('div')
   // 断言读的是终值：按压与释放的过渡时长归零
@@ -23,6 +24,7 @@ function mount() {
           <span data-scope="tag-group" data-part="cell" role="gridcell" data-selected>
             <span data-scope="tag-group" data-part="item-indicator" aria-hidden="true" data-selected></span>
             <span data-scope="tag" data-part="label">设计</span>
+            <button data-scope="tag" data-part="close-trigger" type="button" aria-label="移除"></button>
           </span>
         </span>
         <span data-scope="tag" data-part="root" role="row" data-state="open" data-selectable aria-selected="false">
@@ -40,7 +42,7 @@ function mount() {
 }
 
 describe('tag-group 选中视觉', () => {
-  it('选中的标签换到品牌淡底并带前导对号，未选中的标记收起', () => {
+  it('选中的标签换到品牌淡底并带对号，未选中的标记收起', () => {
     const { items, indicators } = mount()
     const selected = getComputedStyle(items[0]!)
     const rest = getComputedStyle(items[1]!)
@@ -56,6 +58,15 @@ describe('tag-group 选中视觉', () => {
     // 对号与标签的关闭字形同一把随文尺：1em
     expect(Number.parseFloat(mark.inlineSize)).toBe(Number.parseFloat(getComputedStyle(items[0]!).fontSize))
     expect(mark.backgroundColor).toBe(selected.color)
+  })
+
+  it('对号落在文字之后、摘除钮之前：对号在行尾，操作钮排在最后', () => {
+    const { items, indicators } = mount()
+    const label = items[0]!.querySelector<HTMLElement>('[data-part="label"]')!.getBoundingClientRect()
+    const close = items[0]!.querySelector<HTMLElement>('[data-part="close-trigger"]')!.getBoundingClientRect()
+    const mark = indicators[0]!.getBoundingClientRect()
+    expect(mark.left).toBeGreaterThanOrEqual(label.right)
+    expect(close.left).toBeGreaterThanOrEqual(mark.right)
   })
 
   it('按下同时缩放与换底：未选中换到中性 200 档，选中在淡底上再深一档', () => {

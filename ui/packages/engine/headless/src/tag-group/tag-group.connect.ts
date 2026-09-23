@@ -359,7 +359,7 @@ export function connectTagGroup<T extends PropTypes>(
       role: 'gridcell',
     }),
 
-    // 选中标记领在文字前面：页内持久集合的选中不能只靠底色（§7.3），选中的那一枚亮一枚对号。
+    // 选中标记跟在文字后面：选中不能只靠底色，选中的那一枚亮一枚对号。
     // 未选中即 hidden 收起，selectionMode none 时 isSelected 恒假、标记永不出现；
     // 读屏不用它——选中态由标签上的 aria-selected 报
     getItemIndicatorProps: item => normalize.element({
