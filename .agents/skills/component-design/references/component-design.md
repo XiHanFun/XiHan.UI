@@ -299,7 +299,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - `--xh-glyph-size-text`（随文 1em）只允许在纯行内文字组件（Tag、Kbd、Breadcrumb、Typography、Highlight）里使用。
 - Feedback 指示符（Alert、Toast、Notification）统一 `--xh-glyph-size-md`。
 - 配方内不写 12px / 14px 等字面图标尺寸；xs 视觉盒与 field-inset 字形走 `--xh-control-action-size` / `--xh-control-indicator-sm` / `--xh-glyph-size-sm`。
-- 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox / Tree 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
+- 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
 
 ### 6.6 组件内滚动
 
@@ -353,8 +353,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 语义 | 对象 | 唯一标记 | 叠加态 | forced-colors |
 | --- | --- | --- | --- | --- |
-| 浮层瞬态集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
-| 页内持久集合的选中 | Tree、Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；带勾选部件的集合再加前导对号。SideNav 当前项只有行面与字色，不画起始侧指示条（配方 `markers.page.current: none`，2026-09-22 起） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
+| 浮层瞬态集合与树的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest。树族单选、多选、级联同一种标记：分支行也放对号，半选画横杠（`--xh-glyph-mark-minus`），不用勾选方框（Tree 2026-09-24 起与 TreeSelect 统一） | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
+| 页内持久集合的选中 | Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；带对号部件（`item-indicator`）的集合再加行尾对号（配方 `markers.page.glyph: trailing`，2026-09-24 起）。SideNav 当前项只有行面与字色，不画起始侧指示条（配方 `markers.page.current: none`，2026-09-22 起） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上）；list 里没放该部件时，当前项在自己的 `::after` 上自画一条同规格的静态线（厚度 / 颜色 / 圆角读各自 `--xh-<c>-indicator-*` 同一组槽，不做动画，rtl 随逻辑属性镜像，放了部件即收起）：Tabs 横向贴底、纵向贴行向末端（与部件同侧）；Anchor 竖排贴行向起始缘、横排贴底边（链接为省略号收着 overflow，线画在链接盒内、主轴两端各退 `--xh-space-1` 避开圆角，部件则骑在 list 的轨道上）；NavigationMenu 的 `indicator` 部件表达的是「哪张面板开着」而非当前页，指向当前页面的链接始终自画静态线、不随部件收起（横排 list 里的直达链接贴底边，竖排的直达链接与面板里的链接贴行向起始缘，两端同样退 `--xh-space-1`）；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
 | 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
 | 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起 indicator：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
@@ -363,6 +363,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - `--xh-bg-brand-subtle` 退出 today、completed、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字；Steps completed 改中性面 + 品牌对号。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
+- 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。
 
 ### 7.4 集合行的语气
 
@@ -388,12 +389,12 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 槽 | 归属 | 内容来源 |
 | --- | --- | --- |
-| `prefix` | 菜单族是前导图标（`item-indicator`）；候选列表是作者内容（`item-prefix`）；树族与穿梭框归勾选框与展开箭头 | 数据里的字形，或适配器的逐条钩子 |
+| `prefix` | 菜单族是前导图标（`item-indicator`）；候选列表是作者内容（`item-prefix`）；树族归展开箭头与拖拽把手；穿梭框归勾选框 | 数据里的字形，或适配器的逐条钩子 |
 | `text` | `item-text`，也是连打检索的取字来源 | `label` |
 | `description` | 第 2 行，跨 text 列 | 数据 |
 | `shortcut` | 行尾，菜单族与 Command 才有 | 数据 |
 | `suffix` | 行尾，排在快捷键之后、对号之前 | 适配器的逐条钩子 |
-| `indicator` | 选中对号，由库按 `aria-selected` 显隐 | 库 |
+| `indicator` | 选中对号，由库按 `aria-selected` 显隐；分支行按标记自身的 `data-selected` / `data-indeterminate` 显形，半选画横杠 | 库 |
 
 - 行首与行尾两格承载任意节点（图标、头像、计数、徽标），家族只管落位，不规定字号与颜色——它们不是文字。
 - 行首那一格是装饰：可及名由 `text` 承担，该格一律 `aria-hidden`。
@@ -452,7 +453,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能出现在 `border-block-start / inline-start` 类分隔线与 `::after` 分隔伪元素中。
 - 字段静息形态 = 描边：`transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影；hover 升 `--xh-border-control-hover` 并在透明上罩 `color-mix(--xh-bg-subtle 45%, transparent)`，focus-within 换 `--xh-border-control-focus` + `--xh-ring-focus`，invalid 用 `--xh-border-invalid` + `--xh-ring-invalid`；readOnly / disabled 才填 `--xh-bg-subtle`。字段家族不消费 `--xh-elevation-raised`。
-- 所有带边框的控件盒同一条规则（2026-09-22 起）：输入框壳、Checkbox / CheckboxGroup / Transfer / Tree / Table 的方框、RadioGroup / QuestionFlow 的圆圈、Switch 轨道描边、InputGroup 组壳、ColorPicker 控件、FileUpload 拖放区、SignaturePad 画布——静息不填底、描边取 `--xh-border-control`，它在缺省档与浮层面板、卡片的 `--xh-border-default` 同色（页面里只有一种边线重量），`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
+- 所有带边框的控件盒同一条规则（2026-09-22 起）：输入框壳、Checkbox / CheckboxGroup / Transfer / Table 的方框、RadioGroup / QuestionFlow 的圆圈、Switch 轨道描边、InputGroup 组壳、ColorPicker 控件、FileUpload 拖放区、SignaturePad 画布——静息不填底、描边取 `--xh-border-control`，它在缺省档与浮层面板、卡片的 `--xh-border-default` 同色（页面里只有一种边线重量），`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
 - 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边，子字段压平为透明。
