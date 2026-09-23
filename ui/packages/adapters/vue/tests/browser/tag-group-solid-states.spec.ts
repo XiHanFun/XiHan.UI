@@ -1,8 +1,8 @@
 // tag-group 叠在标签上的三档状态（悬停、键盘锚点、选中）落在实心标签上时，字得读得出来。
 //
 // 悬停与锚点的中性灰轻档只给淡底 / 描边 / 缺省档：实心档的字是实心底上配对的那支前景色，
-// 换成灰底就糊了；实心档在这两档里面不换、字不换。选中在实心档上靠面配对的前景色描边，
-// 字仍是那支前景色。淡底 / 描边 / 缺省档进轻档时底换成 --xh-bg-subtle-hover，与从前一致。
+// 换成灰底就糊了；实心档在这两档里面不换、字不换。选中不换面、不换描边，只多一枚对号，
+// 对号取面配对的那支前景色。淡底 / 描边 / 缺省档进轻档时底换成 --xh-bg-subtle-hover，与从前一致。
 // 六族语气 × 浅深主题逐档量：算出来的颜色是级联的结果，只有真实浏览器量得出来。
 import type { Tone } from '@xihan-ui/core'
 import type { App } from 'vue'
@@ -157,17 +157,24 @@ describe('实心标签在组里的三档状态', () => {
     expect(textContrast(first!), `${说明}｜锚点时字压在面上`).toBeGreaterThanOrEqual(TEXT_MIN)
   })
 
-  it.each(CASES)('选中：字仍读得出，描边与面分得开（$tone · $theme）', async ({ tone, theme }) => {
+  it.each(CASES)('选中：面、字与描边都不换，只多一枚与面分得开的对号（$tone · $theme）', async ({ tone, theme }) => {
     await mount('solid', tone, theme)
     const [, second] = tags()
+    const before = getComputedStyle(second!)
+    const resting = { bg: before.backgroundColor, color: before.color, border: before.borderTopColor }
     await userEvent.click(second!)
     await park()
     settle()
     const 说明 = label('solid', tone, theme)
     expect(second!.hasAttribute('data-selected'), `${说明}｜点了没选中`).toBe(true)
-    expect(textContrast(second!), `${说明}｜选中后字压在面上`).toBeGreaterThanOrEqual(TEXT_MIN)
     const style = getComputedStyle(second!)
-    expect(contrast(composite([...faceStack(second!), style.borderTopColor]), faceOf(second!)), `${说明}｜选中的描边糊在面里`).toBeGreaterThanOrEqual(NON_TEXT_MIN)
+    expect(style.backgroundColor, `${说明}｜选中不该换面`).toBe(resting.bg)
+    expect(style.color, `${说明}｜选中不该换字色`).toBe(resting.color)
+    expect(style.borderTopColor, `${说明}｜选中不该换描边`).toBe(resting.border)
+    expect(textContrast(second!), `${说明}｜选中后字压在面上`).toBeGreaterThanOrEqual(TEXT_MIN)
+    const mark = second!.querySelector<HTMLElement>('[data-part="item-indicator"]')!
+    const glyph = getComputedStyle(mark, '::before').backgroundColor
+    expect(contrast(composite([...faceStack(second!), glyph]), faceOf(second!)), `${说明}｜对号糊在面里`).toBeGreaterThanOrEqual(NON_TEXT_MIN)
   })
 })
 
@@ -187,5 +194,21 @@ describe('非实心标签在组里仍进中性灰轻档', () => {
     await userEvent.hover(first!)
     settle()
     expect(getComputedStyle(first!).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
+  })
+})
+
+describe('非实心标签选中：只多一枚取语气字色的对号', () => {
+  const NON_SOLID = THEMES.flatMap(theme => (['subtle', 'outline'] as const).flatMap(variant => TONES.map(tone => ({ variant, tone, theme }))))
+  it.each(NON_SOLID)('$variant · $tone · $theme：对号与面分得开', async ({ variant, tone, theme }) => {
+    await mount(variant, tone, theme)
+    const [, second] = tags()
+    await userEvent.click(second!)
+    await park()
+    settle()
+    const 说明 = label(variant, tone, theme)
+    expect(second!.hasAttribute('data-selected'), `${说明}｜点了没选中`).toBe(true)
+    const mark = second!.querySelector<HTMLElement>('[data-part="item-indicator"]')!
+    const glyph = getComputedStyle(mark, '::before').backgroundColor
+    expect(contrast(composite([...faceStack(second!), glyph]), faceOf(second!)), `${说明}｜对号糊在面里`).toBeGreaterThanOrEqual(NON_TEXT_MIN)
   })
 })

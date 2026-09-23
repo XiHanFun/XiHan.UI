@@ -51998,21 +51998,6 @@
               "name": "--xh-tag-group-item-bg-pressed-solid"
             },
             {
-              "name": "--xh-tag-group-item-bg-selected"
-            },
-            {
-              "name": "--xh-tag-group-item-bg-selected-hover"
-            },
-            {
-              "name": "--xh-tag-group-item-bg-selected-pressed"
-            },
-            {
-              "name": "--xh-tag-group-item-border-selected"
-            },
-            {
-              "name": "--xh-tag-group-item-fg-selected"
-            },
-            {
               "name": "--xh-tag-group-item-indicator-fg"
             },
             {
