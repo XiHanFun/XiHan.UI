@@ -121,6 +121,25 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 | `translations` | `Partial<NotificationTranslations>` |  |  |
 | `onItemsChange` | `(details: NotificationItemsChangeDetails) => void` |  |  |
 
+### NotificationRecord
+
+`items` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `title` | `string` |  |  |
+| `description` | `string` |  |  |
+| `tone` | `NotificationTone` |  |  |
+| `loading` | `boolean` |  | 事情尚未完成：图标换为转圈，且不自动消失。 |
+| `duration` | `number` |  |  |
+| `removeDelay` | `number` |  |  |
+| `closable` | `boolean` |  |  |
+| `placement` | `NotificationPlacement` |  | 单条覆盖落位；未提供时使用 notification 的 placement。 |
+| `actionLabel` | `string` |  | 行内动作按钮的文案。提供后才渲染动作部件。 只存放文案不存放回调：该条记录需要能被整份替换、序列化、比对， 按下之后的行为由宿主按 id 自行查询。 |
+| `priority` | `number` |  | 移除时优先移除低优先级。未提供时按语气派生：error=2 / warning=1 / 其余=0。 |
+| `count` | `number` |  | 按内容合并后的条数，&gt;1 时由 Headless 服务投影在标题后追加计数。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

@@ -122,6 +122,18 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `onSkip` | `(details: QuestionFlowSkipDetails) => void` |  |  |
 | `onSubmit` | `(details: QuestionFlowSubmitDetails) => void` |  |  |
 
+### QuestionFlowQuestion
+
+`questions` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `prompt` | `string` |  | 题干。它同时是选项组的可访问名；未提供时回退为 translations 的兜底文案。 |
+| `type` | `QuestionFlowType` |  | single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。默认 single。 |
+| `options` | `readonly QuestionFlowOption[]` | 是 |  |
+| `optional` | `boolean` |  | 允许不作答直接进入下一题。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

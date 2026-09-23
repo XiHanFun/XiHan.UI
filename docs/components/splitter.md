@@ -103,6 +103,18 @@
 | `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发出；拖动过程中连续发出。 |
 | `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于保存布局。 |
 
+### SplitterPanelProps
+
+`panels` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 作者给该面板起的名字，用于派生它的 DOM id（分隔条的 aria-controls 指向它）。 |
+| `min` | `number` |  | 百分比下界，默认 0。 |
+| `max` | `number` |  | 百分比上界，默认 100。 |
+| `collapsible` | `boolean` |  | 是否允许折叠，默认 false。 |
+| `collapsedSize` | `number` |  | 折叠后的百分比，默认 0；collapsible 为假时不使用。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

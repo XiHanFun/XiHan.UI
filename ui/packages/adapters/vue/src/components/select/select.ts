@@ -69,8 +69,11 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   slots: Object as SlotsType<{
     default?: (props: SelectRootSlotProps) => VNode[]
     label?: () => VNode[]
+    /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
     item?: (node: SelectNodeMeta) => VNode[]
+    /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (node: SelectNodeMeta) => VNode[]
+    /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
     'item-suffix'?: (node: SelectNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {

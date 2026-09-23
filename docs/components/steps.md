@@ -109,6 +109,18 @@
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
+### StepNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `string` |  | 标题文本。 |
+| `description` | `string` |  | 说明文本。 |
+| `status` | `StepStatus` |  | 覆盖该步的状态；未提供时由步序计算。 |
+| `tone` | `Tone` |  | 该步的语气：被驳回的写 danger、需要留意的写 warning；未提供时跟随整组的 tone。 |
+| `disabled` | `boolean` |  | 该步不可点击。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

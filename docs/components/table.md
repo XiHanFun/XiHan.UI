@@ -249,6 +249,42 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
 | `onExpandedValueChange` | `(details: TableExpandedValueChangeDetails) => void` |  |  |
 
+### TableColumnDef
+
+`columns` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 |
+| `label` | `string` |  | 展示名。只供调用方渲染，不作为可及名。 |
+| `sortable` | `boolean` |  | 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 |
+| `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写入 --xh-table-sticky-inset； 有一列宽度不是数字时无法计算，该侧从该列起都回退为贴边。 |
+| `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 |
+| `minWidth` | `number` |  | 拖动改列宽时的下限（px）。未提供时使用 TABLE_COLUMN_MIN_WIDTH。 |
+| `maxWidth` | `number` |  | 拖动改列宽时的上限（px）。未提供时不封顶。 |
+| `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
+| `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
+
+### TableRowDef
+
+`rows` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 全表唯一：DOM 身份（data-value）、选中 / 展开集合的元素、连接层查询行的键。 |
+| `disabled` | `boolean` |  | 行禁用：不可选中也不可展开，但仍可聚焦、仍是方向键的起点，也不计入全选基数。 |
+| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 |
+| `parentId` | `string` |  | 父行 id。提供后该行即为该父行的子行，收起父行时它随之隐藏。 有子行的行不再产出详情行：一行不可能同时既展开出子行、又展开出一块详情。 指向不存在的父行时按根行处理，不丢弃该行。 |
+
+### TableSortDescriptor
+
+`sort` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `direction` | `TableSortDirection` | 是 |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

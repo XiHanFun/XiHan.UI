@@ -119,6 +119,18 @@
 | `typeahead` | `boolean` |  | 连打检索，默认开启。 |
 | `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
 
+### ListboxNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `tone` | `Tone` |  | 该条选项自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整列的 tone 不下发给条目。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -135,9 +147,9 @@
 | --- | --- | --- | --- |
 | `XhListboxRoot` | `default` | `ListboxRootSlotProps` |  |
 | `XhListboxRoot` | `label` | — |  |
-| `XhListboxRoot` | `item` | `ListboxNodeMeta` |  |
-| `XhListboxRoot` | `item-prefix` | `ListboxNodeMeta` |  |
-| `XhListboxRoot` | `item-suffix` | `ListboxNodeMeta` |  |
+| `XhListboxRoot` | `item` | `ListboxNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhListboxRoot` | `item-prefix` | `ListboxNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhListboxRoot` | `item-suffix` | `ListboxNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 
 ### 状态
 

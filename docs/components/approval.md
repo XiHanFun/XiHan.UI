@@ -120,6 +120,17 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `onGrantedScopesChange` | `(details: ApprovalScopesChangeDetails) => void` |  |  |
 | `onNoteChange` | `(details: ApprovalNoteChangeDetails) => void` |  |  |
 
+### ApprovalScope
+
+`scopes` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  |  |
+| `required` | `boolean` |  | 必选项：未全部勾选时不能批准。 |
+| `disabled` | `boolean` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

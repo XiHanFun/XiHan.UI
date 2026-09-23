@@ -117,6 +117,16 @@
 | `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
 
+### ColorSwatchPickerNode
+
+`swatches` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 | 颜色串，也是该格的身份。 |
+| `label` | `string` |  | 读屏朗读该格的方式，例如「品牌红」；默认朗读颜色串。 |
+| `disabled` | `boolean` |  | 该格禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

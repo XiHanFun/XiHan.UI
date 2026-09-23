@@ -98,6 +98,18 @@
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 
+### BreadcrumbNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 | 层级身份，写入 data-value。 |
+| `label` | `string` |  | 显示文字；默认回退为 value。 |
+| `href` | `string` |  | 链接地址；未提供时渲染为不带 href 的 a。 |
+| `icon` | `string` |  | 图标文本，写入 link-icon 部件；需要放置图形时改用插槽。 |
+| `current` | `boolean` |  | 当前页所在层级。 |
+
 ### 状态
 
 以下名称仅用于内部状态机。

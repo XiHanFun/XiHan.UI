@@ -167,6 +167,16 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  |  |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+### TimePickerPreset
+
+`presets` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` | 是 | 显示文案，同时是该项的可及名。 |
+| `disabled` | `boolean` |  | 禁用该项：方向键仍可停留，但按下不写值。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

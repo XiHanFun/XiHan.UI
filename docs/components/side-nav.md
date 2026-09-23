@@ -109,6 +109,19 @@
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 
+### SideNavNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 入口文本；默认回退为 value，也是连打检索的取字来源。 |
+| `disabled` | `boolean` |  | 入口禁用：方向键跳过它，但它仍可聚焦。不向下传导给子级。 |
+| `tone` | `Tone` |  | 该入口自身的性质：危险区域写 danger、需要留意的写 warning。不写即与其余入口同档， 也不向下传导给子级——每一层各自声明。只换字色与悬停 / 按下的面，不表达当前页； 当前项的品牌淡底与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。 |
+| `href` | `string` |  | 直达目标；只对叶子有意义。 |
+| `children` | `SideNavNode[]` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

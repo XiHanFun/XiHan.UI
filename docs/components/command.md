@@ -131,6 +131,30 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `onInputValueChange` | `(details: CommandInputValueChangeDetails) => void` |  | 检索串变化意图回调。 |
 | `onSelect` | `(details: CommandSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 |
 
+### CommandNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是检索取字来源；默认回退为 value。 |
+| `keywords` | `readonly string[]` |  | 标题之外一并参与检索的别名，例如英文名、拼音、旧称。 |
+| `group` | `string` |  | 所属分组；未声明时不归组，渲染时不套分组外壳。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，点击与确认键都不选中。 |
+| `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余命令同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+| `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从命令文字取意，不念它；只为真正注册了的组合写提示。 |
+
+### CommandGroup
+
+`groups` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 分组标题；默认回退为 value。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -149,9 +173,9 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | --- | --- | --- | --- |
 | `XhCommandRoot` | `default` | `CommandRootSlotProps` |  |
 | `XhCommandRoot` | `trigger` | — | 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或 v-model:open 唤起）。 |
-| `XhCommandRoot` | `item` | `CommandNodeMeta` |  |
-| `XhCommandRoot` | `item-prefix` | `CommandNodeMeta` |  |
-| `XhCommandRoot` | `item-suffix` | `CommandNodeMeta` |  |
+| `XhCommandRoot` | `item` | `CommandNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhCommandRoot` | `item-prefix` | `CommandNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhCommandRoot` | `item-suffix` | `CommandNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhCommandRoot` | `empty` | — |  |
 | `XhCommandRoot` | `footer` | — |  |
 

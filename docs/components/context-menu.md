@@ -110,6 +110,23 @@
 | `onOpenChange` | `(details: ContextMenuOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onSelect` | `(details: ContextMenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 
+### ContextMenuNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。 |
+| `indicator` | `string` |  | 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 |
+| `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
+| `group` | `string` |  | 归属分组的身份值；相邻同值的条目收进同一个 group 部件。未提供时本条直接落在 content 上。 |
+| `groupLabel` | `string` |  | 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 |
+| `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -127,9 +144,9 @@
 | --- | --- | --- | --- |
 | `XhContextMenuRoot` | `default` | `ContextMenuRootSlotProps` |  |
 | `XhContextMenuRoot` | `trigger` | — |  |
-| `XhContextMenuRoot` | `item` | `ContextMenuNodeMeta` |  |
-| `XhContextMenuRoot` | `item-prefix` | `ContextMenuNodeMeta` |  |
-| `XhContextMenuRoot` | `item-suffix` | `ContextMenuNodeMeta` |  |
+| `XhContextMenuRoot` | `item` | `ContextMenuNodeMeta` | 只填条目的文字槽，标记位、副文本与快捷键照旧由数据铺 |
+| `XhContextMenuRoot` | `item-prefix` | `ContextMenuNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhContextMenuRoot` | `item-suffix` | `ContextMenuNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhContextMenuSub` | `default` | `ContextMenuSubSlotProps` |  |
 
 ### 状态

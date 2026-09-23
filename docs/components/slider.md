@@ -154,6 +154,15 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 | `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发出；拖动过程中连续发出。 |
 | `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于发起请求。 |
 
+### SliderMark
+
+`marks` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `number` | 是 |  |
+| `label` | `string` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
