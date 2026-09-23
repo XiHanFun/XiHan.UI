@@ -328,7 +328,7 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-slider-control-gutter` | `control`<br>`root`<br>`tick-label` | `margin-inline` | `has([data-part='tick-label'])`<br>`orientation=horizontal` | `--xh-space-6` | slider 的 control、root、tick-label 部件 margin-inline 覆盖槽。 |
+| `--xh-slider-control-gutter` | `control`<br>`root` | `margin-inline` | `has([data-part='tick-label'])`<br>`orientation=horizontal` | `--xh-space-6` | slider 的 control、root 部件 margin-inline 覆盖槽。 |
 | `--xh-slider-gap` | `root` | `gap` | `default` | `--xh-space-1` | slider 的 root 部件 gap 覆盖槽。 |
 | `--xh-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | slider 的 label 部件 color 覆盖槽。 |
 | `--xh-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | slider 的 label 部件 color 覆盖槽。 |

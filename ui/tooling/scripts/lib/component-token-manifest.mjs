@@ -186,8 +186,30 @@ function varCalls(value) {
   return calls
 }
 
+/** 剥掉 :has() 的参数：里面点名的部件是被检查的后代，规则并不落在它们身上。 */
+function withoutRelational(selector) {
+  let result = ''
+  let index = 0
+  while (index < selector.length) {
+    if (!selector.startsWith(':has(', index)) {
+      result += selector[index++]
+      continue
+    }
+    let depth = 0
+    index += ':has'.length
+    for (; index < selector.length; index++) {
+      if (selector[index] === '(')
+        depth++
+      else if (selector[index] === ')' && --depth === 0)
+        break
+    }
+    index++
+  }
+  return result
+}
+
 function partsOf(selector) {
-  const parts = [...selector.matchAll(/\[data-part\s*=\s*['"]([^'"]+)['"]\]/g)].map(match => match[1])
+  const parts = [...withoutRelational(selector).matchAll(/\[data-part\s*=\s*['"]([^'"]+)['"]\]/g)].map(match => match[1])
   return parts.length ? sorted(parts) : ['*']
 }
 
