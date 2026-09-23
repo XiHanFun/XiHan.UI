@@ -203,7 +203,7 @@ describe('select 使用 Collection Item', () => {
     expect(Number.parseFloat(separatorStyle.height)).toBeGreaterThan(0)
   })
 
-  it('page 上下文：选中 = 品牌淡底 + 前导对号，current 同一块面、不画指示条，宽度不变', async () => {
+  it('page 上下文：选中 = 品牌淡底 + 行尾对号，current 同一块面、不画指示条，宽度不变', async () => {
     // 裸条目只借皮肤在场：面板收着，否则随字段缺省宽撑到 16rem 的面板会盖住条目中心、挡住指针
     await mountSelect('md', 'closed')
     const item = rawItem({ context: 'page' })
@@ -215,8 +215,8 @@ describe('select 使用 Collection Item', () => {
     expect(getComputedStyle(item).backgroundColor).toBe(tokenColor('--xh-bg-brand-subtle'))
     expect(getComputedStyle(item).color).toBe(tokenColor('--xh-fg-on-brand-subtle'))
     expect(getComputedStyle(indicator).visibility).toBe('visible')
-    // 前导标记：对号贴着起始侧内边距
-    expect(indicator.getBoundingClientRect().left).toBeCloseTo(item.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(item).paddingInlineStart), 0)
+    // 与 overlay 同列：对号贴着结束侧内边距，行首一格留给前导图标
+    expect(indicator.getBoundingClientRect().right).toBeCloseTo(item.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(item).paddingInlineEnd), 0)
     expect(getComputedStyle(item).fontWeight).toBe('400')
     expect(item.getBoundingClientRect().width).toBe(width)
     expect(getComputedStyle(item, '::before').content).toBe('none')
