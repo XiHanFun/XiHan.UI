@@ -9,6 +9,7 @@ import {
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeLiveRegion,
@@ -139,12 +140,14 @@ export default function Demo(): ReactNode {
                         <XhTreeBranchTrigger />
                         <XhTreeBranchText>{entry.label}</XhTreeBranchText>
                         <span style={{ marginInlineStart: "auto" }}>{entry.children.length}</span>
+                        <XhTreeItemIndicator />
                       </XhTreeBranchControl>
                       <XhTreeBranchContent>
                         {entry.children.map(file => (
                           <XhTreeItem key={file.value} value={file.value}>
                             <XhIcon icon={FileIcon} />
                             <XhTreeItemText>{file.label}</XhTreeItemText>
+                            <XhTreeItemIndicator />
                           </XhTreeItem>
                         ))}
                       </XhTreeBranchContent>
@@ -155,6 +158,7 @@ export default function Demo(): ReactNode {
                     <XhTreeItem value={entry.value}>
                       <XhIcon icon={FileIcon} />
                       <XhTreeItemText>{entry.label}</XhTreeItemText>
+                      <XhTreeItemIndicator />
                     </XhTreeItem>
                   )}
             </Fragment>

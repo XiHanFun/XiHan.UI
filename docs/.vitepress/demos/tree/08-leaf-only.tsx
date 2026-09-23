@@ -63,8 +63,8 @@ export default function Demo(): ReactNode {
               <XhTreeBranchContent>
                 {dir.children.map(file => (
                   <XhTreeItem key={file.value} value={file.value}>
-                    <XhTreeItemIndicator />
                     <XhTreeItemText>{file.label}</XhTreeItemText>
+                    <XhTreeItemIndicator />
                   </XhTreeItem>
                 ))}
               </XhTreeBranchContent>

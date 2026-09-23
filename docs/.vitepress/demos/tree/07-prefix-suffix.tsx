@@ -9,6 +9,7 @@ import {
   XhTreeBranchIndicator,
   XhTreeBranchText,
   XhTreeItem,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
@@ -51,6 +52,7 @@ export default function Demo(): ReactNode {
                 <XhTreeBranchText>{dir.label}</XhTreeBranchText>
                 {/* 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state */}
                 <XhTreeBranchIndicator />
+                <XhTreeItemIndicator />
               </XhTreeBranchControl>
               <XhTreeBranchContent>
                 {dir.children.map(file => (
@@ -67,6 +69,7 @@ export default function Demo(): ReactNode {
                     >
                       重命名
                     </button>
+                    <XhTreeItemIndicator />
                   </XhTreeItem>
                 ))}
               </XhTreeBranchContent>

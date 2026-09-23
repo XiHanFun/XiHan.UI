@@ -1,17 +1,14 @@
 // @vitest-environment jsdom
-// 树上三个对读屏隐藏的把手（箭头与两个勾选框）：指针不得把焦点落在它们身上，
-// 否则焦点停在 aria-hidden 的节点里；勾选把手还要把焦点交给所在的那一行。
+// 树上对读屏隐藏的展开箭头：指针不得把焦点落在它身上，否则焦点停在 aria-hidden 的节点里。
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTreeBranch,
-  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
-  XhTreeItemCheckbox,
   XhTreeItemText,
   XhTreeRoot,
   XhTreeTree,
@@ -49,12 +46,10 @@ function mount(): HTMLElement {
             h(XhTreeBranch, { value: 'dir' }, () => [
               h(XhTreeBranchControl, null, () => [
                 h(XhTreeBranchTrigger),
-                h(XhTreeBranchCheckbox),
                 h(XhTreeBranchText, () => '目录'),
               ]),
               h(XhTreeBranchContent, null, () => [
                 h(XhTreeItem, { value: 'leaf' }, () => [
-                  h(XhTreeItemCheckbox),
                   h(XhTreeItemText, () => '叶子'),
                 ]),
               ]),
@@ -81,41 +76,20 @@ function pointerDown(el: HTMLElement): boolean {
   return event.defaultPrevented
 }
 
-describe('树上 aria-hidden 把手的焦点归属', () => {
-  it('三个把手都对读屏隐藏且不进 Tab 序列', async () => {
+describe('树上 aria-hidden 箭头的焦点归属', () => {
+  it('展开箭头对读屏隐藏且不进 Tab 序列', async () => {
     const host = mount()
     await tick()
-    for (const name of ['branch-trigger', 'branch-checkbox', 'item-checkbox']) {
-      const el = part(host, name)
-      expect(el.getAttribute('aria-hidden')).toBe('true')
-      expect(el.getAttribute('tabindex')).toBe('-1')
-    }
+    const el = part(host, 'branch-trigger')
+    expect(el.getAttribute('aria-hidden')).toBe('true')
+    expect(el.getAttribute('tabindex')).toBe('-1')
   })
 
-  it('指针按下被拦掉，焦点不会停在 aria-hidden 的把手上', async () => {
+  it('指针按下被拦掉，焦点不会停在 aria-hidden 的箭头上', async () => {
     const host = mount()
     await tick()
-    for (const name of ['branch-trigger', 'branch-checkbox', 'item-checkbox']) {
-      const el = part(host, name)
-      expect(pointerDown(el)).toBe(true)
-      expect(document.activeElement).not.toBe(el)
-    }
-  })
-
-  it('点勾选把手后，焦点落在所在的那一行', async () => {
-    const host = mount()
-    await tick()
-
-    const itemBox = part(host, 'item-checkbox')
-    pointerDown(itemBox)
-    itemBox.click()
-    await tick()
-    expect(document.activeElement).toBe(part(host, 'item'))
-
-    const branchBox = part(host, 'branch-checkbox')
-    pointerDown(branchBox)
-    branchBox.click()
-    await tick()
-    expect(document.activeElement).toBe(part(host, 'branch'))
+    const el = part(host, 'branch-trigger')
+    expect(pointerDown(el)).toBe(true)
+    expect(document.activeElement).not.toBe(el)
   })
 })

@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
-// 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域。
-// 点行的语义（单选替换、分支展开）归 item / branch-control，把手只管勾选。
+// 选中对号：与树选择同一种读法，单选、多选与级联都只在行尾画对号。
+// 叶子与分支行共用同一个 item-indicator，勾选态与半选态落在标记自身上，皮肤据此显形、换横杠。
 import type { TreeSchema } from '../src/tree'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { connectTree, treeMachine } from '../src/tree'
 
 const collection = [
@@ -13,57 +13,35 @@ const collection = [
 
 function tree(props: Partial<TreeSchema['props']> = {}) {
   const runtime = createVanillaRuntime()
-  const onSelectionChange = vi.fn()
   const service = createService(treeMachine, {
-    props: () => ({ collection, multiple: true, cascade: true, defaultExpandedValue: ['src'], onSelectionChange, ...props }),
+    props: () => ({ collection, multiple: true, cascade: true, defaultExpandedValue: ['src'], ...props }),
     runtime,
   })
   runtime.start()
-  return { service, onSelectionChange, api: () => connectTree(service, normalizeProps) }
+  return () => connectTree(service, normalizeProps)
 }
 
-function clickOn(props: Record<string, unknown>): { stopped: boolean } {
-  let stopped = false
-  ;(props.onClick as (e: unknown) => void)({
-    stopPropagation: () => { stopped = true },
-    currentTarget: document.createElement('span'),
-  })
-  return { stopped }
-}
-
-describe('勾选把手', () => {
-  it('点把手落选中', () => {
-    const { onSelectionChange, api } = tree()
-    clickOn(api().getItemCheckboxProps({ value: 'a.ts' }) as Record<string, unknown>)
-    expect(onSelectionChange).toHaveBeenCalled()
-  })
-
-  it('掐断冒泡：把手长在条目里，不掐会再跑一遍点行', () => {
-    const { api } = tree()
-    expect(clickOn(api().getItemCheckboxProps({ value: 'a.ts' }) as Record<string, unknown>).stopped).toBe(true)
-    expect(clickOn(api().getBranchCheckboxProps({ value: 'src' }) as Record<string, unknown>).stopped).toBe(true)
-  })
-
-  it('禁用时点不动', () => {
-    const { onSelectionChange, api } = tree({ disabled: true })
-    clickOn(api().getItemCheckboxProps({ value: 'a.ts' }) as Record<string, unknown>)
-    expect(onSelectionChange).not.toHaveBeenCalled()
-  })
-
-  it('勾选态与半选态都落到把手上——半选此前发了却没人画', () => {
-    const { api } = tree({ defaultSelection: ['a.ts'] })
-    const leaf = api().getItemCheckboxProps({ value: 'a.ts' }) as Record<string, unknown>
-    const branch = api().getBranchCheckboxProps({ value: 'src' }) as Record<string, unknown>
+describe('行尾对号', () => {
+  it('勾选态与半选态都落到标记上：子树只勾一半，分支行的对号报半选', () => {
+    const api = tree({ defaultSelection: ['a.ts'] })
+    const leaf = api().getItemIndicatorProps({ value: 'a.ts' }) as Record<string, unknown>
+    const branch = api().getItemIndicatorProps({ value: 'src' }) as Record<string, unknown>
     expect(leaf['data-selected']).toBe('')
-    // 子树只勾了一半，分支报半选
     expect(branch['data-indeterminate']).toBe('')
     expect(branch['data-selected']).toBeUndefined()
   })
 
-  it('把手不抢 Tab 位，也不向读屏重复一遍勾选态', () => {
-    const { api } = tree()
-    const leaf = api().getItemCheckboxProps({ value: 'a.ts' }) as Record<string, unknown>
-    expect(leaf.tabindex).toBe(-1)
+  it('子树全勾则分支行的对号报选中、不再报半选', () => {
+    const api = tree({ defaultSelection: ['a.ts', 'b.ts'] })
+    const branch = api().getItemIndicatorProps({ value: 'src' }) as Record<string, unknown>
+    expect(branch['data-selected']).toBe('')
+    expect(branch['data-indeterminate']).toBeUndefined()
+  })
+
+  it('标记落家族的 indicator 槽，对读屏隐藏：勾选态由所在的 treeitem 报', () => {
+    const api = tree()
+    const leaf = api().getItemIndicatorProps({ value: 'a.ts' }) as Record<string, unknown>
+    expect(leaf['data-xh-collection-slot']).toBe('indicator')
     expect(leaf['aria-hidden']).toBe(true)
   })
 })

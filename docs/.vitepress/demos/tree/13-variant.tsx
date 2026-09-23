@@ -42,21 +42,22 @@ export default function Demo(): ReactNode {
               <XhTreeBranchControl>
                 <XhTreeBranchTrigger />
                 <XhTreeBranchText>src</XhTreeBranchText>
+                <XhTreeItemIndicator />
               </XhTreeBranchControl>
               <XhTreeBranchContent>
                 <XhTreeItem value="main">
-                  <XhTreeItemIndicator />
                   <XhTreeItemText>main.ts</XhTreeItemText>
+                  <XhTreeItemIndicator />
                 </XhTreeItem>
                 <XhTreeItem value="app">
-                  <XhTreeItemIndicator />
                   <XhTreeItemText>App.vue</XhTreeItemText>
+                  <XhTreeItemIndicator />
                 </XhTreeItem>
               </XhTreeBranchContent>
             </XhTreeBranch>
             <XhTreeItem value="readme">
-              <XhTreeItemIndicator />
               <XhTreeItemText>README.md</XhTreeItemText>
+              <XhTreeItemIndicator />
             </XhTreeItem>
           </XhTreeTree>
         </XhTreeRoot>

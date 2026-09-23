@@ -102,12 +102,13 @@ export default function Demo(): ReactNode {
               <XhTreeBranchControl>
                 <XhTreeBranchTrigger />
                 <XhTreeBranchText>{region.label}</XhTreeBranchText>
+                <XhTreeItemIndicator />
               </XhTreeBranchControl>
               <XhTreeBranchContent>
                 {region.children.map(city => (
                   <XhTreeItem key={city.value} value={city.value}>
-                    <XhTreeItemIndicator />
                     <XhTreeItemText>{city.label}</XhTreeItemText>
+                    <XhTreeItemIndicator />
                   </XhTreeItem>
                 ))}
               </XhTreeBranchContent>

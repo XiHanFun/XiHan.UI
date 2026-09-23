@@ -2,13 +2,12 @@
 <script setup lang="ts">
 import {
   XhTreeBranch,
-  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
-  XhTreeItemCheckbox,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
@@ -81,20 +80,20 @@ const selection = ref<string[]>(["user:add"]);
         <XhTreeBranch v-for="dir in collection" :key="dir.value" :value="dir.value">
           <XhTreeBranchControl>
             <XhTreeBranchTrigger />
-            <XhTreeBranchCheckbox />
             <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
+            <XhTreeItemIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeBranch v-for="menu in dir.children" :key="menu.value" :value="menu.value">
               <XhTreeBranchControl>
                 <XhTreeBranchTrigger />
-                <XhTreeBranchCheckbox />
                 <XhTreeBranchText>{{ menu.label }}</XhTreeBranchText>
+                <XhTreeItemIndicator />
               </XhTreeBranchControl>
               <XhTreeBranchContent>
                 <XhTreeItem v-for="btn in menu.children" :key="btn.value" :value="btn.value">
-                  <XhTreeItemCheckbox />
                   <XhTreeItemText>{{ btn.label }}</XhTreeItemText>
+                  <XhTreeItemIndicator />
                 </XhTreeItem>
               </XhTreeBranchContent>
             </XhTreeBranch>

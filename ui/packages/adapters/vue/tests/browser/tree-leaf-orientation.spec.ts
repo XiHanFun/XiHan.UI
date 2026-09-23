@@ -14,7 +14,7 @@ import {
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
-  XhTreeItemCheckbox,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeRoot,
   XhTreeTree,
@@ -65,8 +65,8 @@ function renderNodes(nodes: Node[]): unknown[] {
           h(XhTreeBranchContent, null, () => renderNodes(node.children!)),
         ])
       : h(XhTreeItem, { key: node.value, value: node.value }, () => [
-          h(XhTreeItemCheckbox),
           h(XhTreeItemText, null, () => node.label),
+          h(XhTreeItemIndicator),
         ]),
   )
 }

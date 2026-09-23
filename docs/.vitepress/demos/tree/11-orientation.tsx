@@ -2,13 +2,12 @@
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,
-  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
-  XhTreeItemCheckbox,
+  XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
@@ -83,22 +82,22 @@ export default function Demo(): ReactNode {
             <XhTreeBranch key={dir.value} value={dir.value}>
               <XhTreeBranchControl>
                 <XhTreeBranchTrigger />
-                <XhTreeBranchCheckbox />
                 <XhTreeBranchText>{dir.label}</XhTreeBranchText>
+                <XhTreeItemIndicator />
               </XhTreeBranchControl>
               <XhTreeBranchContent>
                 {dir.children.map(menu => (
                   <XhTreeBranch key={menu.value} value={menu.value}>
                     <XhTreeBranchControl>
                       <XhTreeBranchTrigger />
-                      <XhTreeBranchCheckbox />
                       <XhTreeBranchText>{menu.label}</XhTreeBranchText>
+                      <XhTreeItemIndicator />
                     </XhTreeBranchControl>
                     <XhTreeBranchContent>
                       {menu.children.map(btn => (
                         <XhTreeItem key={btn.value} value={btn.value}>
-                          <XhTreeItemCheckbox />
                           <XhTreeItemText>{btn.label}</XhTreeItemText>
+                          <XhTreeItemIndicator />
                         </XhTreeItem>
                       ))}
                     </XhTreeBranchContent>

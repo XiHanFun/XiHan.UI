@@ -1279,7 +1279,6 @@ export { useTreeSelect } from './components/tree-select/use-tree-select'
 export type { TreeSelectContext } from './components/tree-select/use-tree-select'
 export {
   XhTreeBranch,
-  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchIndicator,
@@ -1287,7 +1286,6 @@ export {
   XhTreeBranchTrigger,
   XhTreeEmpty,
   XhTreeItem,
-  XhTreeItemCheckbox,
   XhTreeItemIndicator,
   XhTreeItemDescription,
   XhTreeItemSuffix,

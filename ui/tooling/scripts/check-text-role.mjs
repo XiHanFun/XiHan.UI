@@ -93,7 +93,7 @@ const GLYPH_EXEMPT = {
   'table:sort-trigger': '排序方向箭头是指示符，与 16px 方盒同走 --xh-control-indicator-size（公开槽 --xh-table-sort-size），不按图标档取',
   'tree:branch-trigger': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'tree:branch-indicator': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
-  'tree:item-indicator': '叶子的对号是指示符，与 16px 对号盒同走 --xh-control-indicator-size，不按图标档取',
+  'tree:item-indicator': '行尾对号与半选杠是指示符，与 16px 对号盒同走 --xh-control-indicator-size，不按图标档取',
   'tree-select:branch-trigger': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'tree-select:branch-indicator': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'tree-select:item-indicator': '行尾的对号 / 半选杠是指示符，与 16px 对号盒同走 --xh-control-indicator-size，不按图标档取',

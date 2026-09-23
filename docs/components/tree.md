@@ -20,7 +20,7 @@ collection 是层级元信息的唯一事实源，标记只负责外观；缩进
 
 加粗的是必需部件。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
+`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
 
 ## 示例
 
@@ -68,7 +68,7 @@ collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后
 
 ### 级联勾选
 
-multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾则父勾、部分勾选为半选；勾选框是行中的一段标记，勾选态与半选态都由组件报告
+multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾则父勾、部分勾选为半选；勾选与半选都画在行尾，半选是一道横杠，两态都由组件报告
 
 <XhDemo src="tree/09-checkable" />
 
@@ -113,13 +113,13 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 
 - 展开集合与选中集合两套值各自可受控。
 - `variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 让树直接落在页面上。
-- 页内树的选中行铺品牌淡底行面并带前导标记（勾选档是前导方框，其余档是前导对号）；下拉中的树（[树形选择器](./tree-select)）只在行尾画对号，两者刻意不同。
+- 选中与[树形选择器](./tree-select)同一种读法：行不换面，单选、多选与级联都只在行尾画对号；分支行也摆 `item-indicator`，级联下的半选画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
-- 节点行尾留一格给作者（计数、徽标）；行首那一格归勾选框与展开箭头。
+- 节点行尾留一格给作者（计数、徽标），排在对号之前；行首那一格归展开箭头与拖拽把手。
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定该层子节点的排列方向，优先于 `leafOrientation`；标 `vertical` 可以把树级的 `horizontal` 改回竖排。根层不受影响，始终竖排。
@@ -227,7 +227,6 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | 部件 | 取值 |
 | --- | --- |
 | `branch` | 'open' \| 'closed' |
-| `branch-checkbox` | 'open' \| 'closed' |
 | `branch-control` | 'open' \| 'closed' |
 | `branch-trigger` | 'open' \| 'closed' |
 | `branch-indicator` | 'open' \| 'closed' |
@@ -276,10 +275,8 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `getItemTextProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemSuffixProps` | `(props: TreeNodeProps) => T['element']` |  |
-| `getItemCheckboxProps` | `(props: TreeNodeProps) => T['element']` | 勾选把手：把勾选该项与点击该行分为两个可点击区域，未提供时没有独立把手。 |
 | `getItemIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: TreeNodeProps) => T['element']` |  |
-| `getBranchCheckboxProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchControlProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchTriggerProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
@@ -327,7 +324,6 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `aria-setsize` | meta?.setSize |
 | `item` | `role` | 'treeitem' |
-| `item-checkbox` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
 | `branch` | `aria-disabled` | 'true' \| 'false' |
@@ -338,7 +334,6 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `branch` | `aria-selected` | 'true' \| 'false' |
 | `branch` | `aria-setsize` | meta?.setSize |
 | `branch` | `role` | 'treeitem' |
-| `branch-checkbox` | `aria-hidden` | 'true' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `role` | 'group' |
@@ -375,14 +370,9 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-selected` | ''（条件成立时才出现） |
 | `item` | `data-tone` | metaOf(value)?.tone |
-| `item` | `data-xh-collection-context` | 'page' |
+| `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | 'md' |
-| `item-checkbox` | `data-disabled` | ''（条件成立时才出现） |
-| `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-checkbox` | `data-indeterminate` | ''（条件成立时才出现） |
-| `item-checkbox` | `data-selected` | ''（条件成立时才出现） |
-| `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
@@ -408,12 +398,6 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `branch` | `data-indeterminate` | ''（条件成立时才出现） |
 | `branch` | `data-selected` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
-| `branch-checkbox` | `data-disabled` | ''（条件成立时才出现） |
-| `branch-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
-| `branch-checkbox` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-checkbox` | `data-selected` | ''（条件成立时才出现） |
-| `branch-checkbox` | `data-state` | 'open' \| 'closed' |
-| `branch-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `branch-control` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-control` | `data-draggable` | ''（条件成立时才出现） |
 | `branch-control` | `data-dragging` | ''（条件成立时才出现） |
@@ -424,7 +408,7 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `branch-control` | `data-selected` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
 | `branch-control` | `data-tone` | metaOf(value)?.tone |
-| `branch-control` | `data-xh-collection-context` | 'page' |
+| `branch-control` | `data-xh-collection-context` | 'overlay' |
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | 'md' |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -469,14 +453,6 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `--xh-tree-branch-content-gap` | `branch-content` | `gap`<br>`row-gap` | `default`<br>`orientation=horizontal` | `--xh-list-option-gap` | tree 的 branch-content 部件 gap、row-gap 覆盖槽。 |
 | `--xh-tree-branch-gap` | `branch` | `gap` | `default` | `--xh-list-option-gap` | tree 的 branch 部件 gap 覆盖槽。 |
 | `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
-| `--xh-tree-checkbox-bg` | `branch-checkbox`<br>`item-checkbox` | `background` | `default` | `transparent` | tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。 |
-| `--xh-tree-checkbox-bg-checked` | `branch-checkbox`<br>`item-checkbox` | `background` | `indeterminate`<br>`not([data-selected])`<br>`selected` | `--xh-bg-brand` | tree 的 branch-checkbox、item-checkbox 部件 background 覆盖槽。 |
-| `--xh-tree-checkbox-border` | `branch-checkbox`<br>`item-checkbox` | `border` | `default` | `--xh-border-control` | tree 的 branch-checkbox、item-checkbox 部件 border 覆盖槽。 |
-| `--xh-tree-checkbox-border-checked` | `branch-checkbox`<br>`item-checkbox` | `border-color` | `indeterminate`<br>`not([data-selected])`<br>`selected` | `--xh-bg-brand` | tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。 |
-| `--xh-tree-checkbox-border-disabled` | `branch-checkbox`<br>`item-checkbox` | `border-color` | `disabled` | `--xh-border-default` | tree 的 branch-checkbox、item-checkbox 部件 border-color 覆盖槽。 |
-| `--xh-tree-checkbox-fg` | `branch-checkbox`<br>`item-checkbox` | `color` | `default` | `--xh-fg-on-brand` | tree 的 branch-checkbox、item-checkbox 部件 color 覆盖槽。 |
-| `--xh-tree-checkbox-radius` | `branch-checkbox`<br>`item-checkbox` | `border-radius` | `default` | `--xh-shape-inset` | tree 的 branch-checkbox、item-checkbox 部件 border-radius 覆盖槽。 |
-| `--xh-tree-checkbox-size` | `branch-checkbox`<br>`item-checkbox` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree 的 branch-checkbox、item-checkbox 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-tree-drag-fg` | `node-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-active` | `node-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-disabled` | `node-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
@@ -496,9 +472,9 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-md` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tree-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | tree 的 branch-content 部件 padding-inline-start 覆盖槽。 |
-| `--xh-tree-indicator-size` | `branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size`<br>`padding-inline-start` | `default`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`orientation=vertical` | `--xh-control-indicator-size` | tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 --xh-icon-size、inline-size、padding-inline-start 覆盖槽。 |
-| `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
-| `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 color 覆盖槽。 |
+| `--xh-tree-indicator-size` | `branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size`<br>`padding-inline-start` | `default`<br>`orientation=vertical` | `--xh-control-indicator-size` | tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 --xh-icon-size、inline-size、padding-inline-start 覆盖槽。 |
+| `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
+| `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tree-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree 的 label 部件 font-weight 覆盖槽。 |
@@ -511,18 +487,17 @@ variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outlin
 | `--xh-tree-px` | `tree` | `padding-inline` | `default` | `--xh-space-1` | tree 的 tree 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-py` | `tree` | `padding-block` | `default` | `--xh-space-1` | tree 的 tree 部件 padding-block 覆盖槽。 |
 | `--xh-tree-radius` | `tree` | `border-radius` | `default` | `--xh-shape-surface` | tree 的 tree 部件 border-radius 覆盖槽。 |
-| `--xh-tree-row-bg-hover` | `branch-control`<br>`item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | tree 的 branch-control、item 部件 background-color 覆盖槽。 |
-| `--xh-tree-row-bg-pressed` | `branch-control`<br>`item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | tree 的 branch-control、item 部件 background-color 覆盖槽。 |
-| `--xh-tree-row-bg-selected` | `branch-control`<br>`item` | `background-color` | `disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | tree 的 branch-control、item 部件 background-color 覆盖槽。 |
-| `--xh-tree-row-fg` | `branch-control`<br>`item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-fg-default` | tree 的 branch-control、item 部件 color 覆盖槽。 |
-| `--xh-tree-row-fg-selected` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | tree 的 branch-control、item 部件 color 覆盖槽。 |
+| `--xh-tree-row-bg-hover` | `branch-control`<br>`item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | tree 的 branch-control、item 部件 background-color 覆盖槽。 |
+| `--xh-tree-row-bg-pressed` | `branch-control`<br>`item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | tree 的 branch-control、item 部件 background-color 覆盖槽。 |
+| `--xh-tree-row-fg` | `branch-control`<br>`item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | tree 的 branch-control、item 部件 color 覆盖槽。 |
+| `--xh-tree-row-fg-selected` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-tree-row-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-row-font-size` | `branch-control`<br>`item` | `font-size` | `default` | `--xh-text-body-size` | tree 的 branch-control、item 部件 font-size 覆盖槽。 |
-| `--xh-tree-row-gap` | `branch-control`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`orientation=vertical` | `--xh-control-gap-md` | tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。 |
+| `--xh-tree-row-gap` | `branch-control`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`orientation=vertical` | `--xh-control-gap-md` | tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree 的 branch-control、item 部件 line-height 覆盖槽。 |
-| `--xh-tree-row-px` | `branch-control`<br>`item` | `padding-inline`<br>`padding-inline-start` | `default`<br>`not(:has(> [data-scope='tree'][data-part='item-indicator'])`<br>`orientation=vertical` | `--xh-control-px-md` | tree 的 branch-control、item 部件 padding-inline、padding-inline-start 覆盖槽。 |
+| `--xh-tree-row-px` | `branch-control`<br>`item` | `padding-inline`<br>`padding-inline-start` | `default`<br>`orientation=vertical` | `--xh-control-px-md` | tree 的 branch-control、item 部件 padding-inline、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-list-option-py-md` | tree 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-tree-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-control` | tree 的 branch-control、item 部件 border-radius 覆盖槽。 |
-| `--xh-tree-row-selected-font-weight` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-font-weight-regular` | tree 的 branch-control、item 部件 font-weight 覆盖槽。 |
+| `--xh-tree-row-selected-font-weight` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | tree 的 branch-control、item 部件 font-weight 覆盖槽。 |
 | `--xh-tree-tree-gap` | `tree` | `gap` | `default` | `--xh-list-option-gap` | tree 的 tree 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

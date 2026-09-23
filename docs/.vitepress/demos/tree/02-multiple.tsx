@@ -53,19 +53,20 @@ export default function Demo(): ReactNode {
             <XhTreeBranchControl>
               <XhTreeBranchTrigger />
               <XhTreeBranchText>华东</XhTreeBranchText>
+              <XhTreeItemIndicator />
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem value="sh">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>上海</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
               <XhTreeItem value="hz">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>杭州</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
               <XhTreeItem value="nj">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>南京</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>
@@ -74,15 +75,16 @@ export default function Demo(): ReactNode {
             <XhTreeBranchControl>
               <XhTreeBranchTrigger />
               <XhTreeBranchText>华北</XhTreeBranchText>
+              <XhTreeItemIndicator />
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem value="bj">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>北京</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
               <XhTreeItem value="tj">
-                <XhTreeItemIndicator />
                 <XhTreeItemText>天津</XhTreeItemText>
+                <XhTreeItemIndicator />
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>

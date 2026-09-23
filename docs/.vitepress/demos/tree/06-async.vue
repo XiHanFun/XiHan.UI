@@ -76,11 +76,12 @@ function onExpandedValueChange(details: { value: string[] }): void {
         <XhTreeBranchControl>
           <XhTreeBranchTrigger />
           <XhTreeBranchText>{{ node.label }}</XhTreeBranchText>
+          <XhTreeItemIndicator />
         </XhTreeBranchControl>
         <XhTreeBranchContent>
           <XhTreeItem v-for="child in node.children" :key="child.value" :value="child.value">
-            <XhTreeItemIndicator />
             <XhTreeItemText>{{ child.label }}</XhTreeItemText>
+            <XhTreeItemIndicator />
           </XhTreeItem>
         </XhTreeBranchContent>
       </XhTreeBranch>

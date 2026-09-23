@@ -80,12 +80,13 @@ export default function Demo(): ReactNode {
             <XhTreeBranchControl>
               <XhTreeBranchTrigger />
               <XhTreeBranchText>{node.label}</XhTreeBranchText>
+              <XhTreeItemIndicator />
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               {node.children?.map(child => (
                 <XhTreeItem key={child.value} value={child.value}>
-                  <XhTreeItemIndicator />
                   <XhTreeItemText>{child.label}</XhTreeItemText>
+                  <XhTreeItemIndicator />
                 </XhTreeItem>
               ))}
             </XhTreeBranchContent>

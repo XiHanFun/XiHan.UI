@@ -63059,30 +63059,6 @@
               "name": "--xh-tree-branch-indicator-fg"
             },
             {
-              "name": "--xh-tree-checkbox-bg"
-            },
-            {
-              "name": "--xh-tree-checkbox-bg-checked"
-            },
-            {
-              "name": "--xh-tree-checkbox-border"
-            },
-            {
-              "name": "--xh-tree-checkbox-border-checked"
-            },
-            {
-              "name": "--xh-tree-checkbox-border-disabled"
-            },
-            {
-              "name": "--xh-tree-checkbox-fg"
-            },
-            {
-              "name": "--xh-tree-checkbox-radius"
-            },
-            {
-              "name": "--xh-tree-checkbox-size"
-            },
-            {
               "name": "--xh-tree-drag-fg"
             },
             {
@@ -63189,9 +63165,6 @@
             },
             {
               "name": "--xh-tree-row-bg-pressed"
-            },
-            {
-              "name": "--xh-tree-row-bg-selected"
             },
             {
               "name": "--xh-tree-row-fg"
