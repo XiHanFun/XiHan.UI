@@ -64,11 +64,6 @@
     "theme": "light",
     "tone": null
   },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-    "ratio": 2.48,
-    "theme": "light",
-    "tone": "neutral"
-  },
   "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 2.24,
     "theme": "light",
@@ -83,11 +78,6 @@
     "ratio": 2.04,
     "theme": "dark",
     "tone": null
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-    "ratio": 2.17,
-    "theme": "light",
-    "tone": "neutral"
   },
   "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable][data-tone]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 1.95,
@@ -128,11 +118,6 @@
     "ratio": 1.49,
     "theme": "dark",
     "tone": null
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-    "ratio": 2.82,
-    "theme": "light",
-    "tone": "neutral"
   },
   "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']": {
     "ratio": 1,
@@ -183,25 +168,5 @@
     "ratio": 1,
     "theme": "light",
     "tone": "brand"
-  },
-  "tree [data-indeterminate][data-part='branch-checkbox'][data-scope='tree']:not([data-selected])": {
-    "ratio": 1,
-    "theme": "light",
-    "tone": null
-  },
-  "tree [data-indeterminate][data-part='item-checkbox'][data-scope='tree']:not([data-selected])": {
-    "ratio": 1,
-    "theme": "light",
-    "tone": null
-  },
-  "tree [data-part='branch-checkbox'][data-scope='tree'][data-selected]": {
-    "ratio": 1,
-    "theme": "light",
-    "tone": null
-  },
-  "tree [data-part='item-checkbox'][data-scope='tree'][data-selected]": {
-    "ratio": 1,
-    "theme": "light",
-    "tone": null
   }
 }
