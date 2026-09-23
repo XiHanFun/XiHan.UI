@@ -274,11 +274,11 @@ export const treeSuite: ConformanceSuite = {
             'data-value': 'docs',
           },
           'branch-content[0]': { 'role': 'group', 'data-state': 'closed' },
-          // 分支行走 Collection Item 的 page 语境；aria-selected / aria-disabled 在 branch 上，行只带 data-*
+          // 分支行走 Collection Item 的 overlay 语境（与树选择同一种选中读法）；aria-selected / aria-disabled 在 branch 上，行只带 data-*
           'branch-control[0]': {
             'data-xh-collection-item': '',
             'data-xh-collection-size': 'md',
-            'data-xh-collection-context': 'page',
+            'data-xh-collection-context': 'overlay',
             'data-selected': null,
             'data-disabled': null,
             'aria-selected': null,
@@ -290,7 +290,7 @@ export const treeSuite: ConformanceSuite = {
           'item[0]': {
             'data-xh-collection-item': '',
             'data-xh-collection-size': 'md',
-            'data-xh-collection-context': 'page',
+            'data-xh-collection-context': 'overlay',
             'role': 'treeitem',
             'aria-level': '2',
             'aria-posinset': '1',
