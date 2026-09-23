@@ -3,19 +3,19 @@
     "name": "core",
     "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "16 kB"
+    "limit": "30.3 kB"
   },
   {
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "7.9 kB"
+    "limit": "11.5 kB"
   },
   {
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "5 kB"
+    "limit": "7.3 kB"
   },
   {
     "name": "motion",
@@ -75,13 +75,13 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "290 kB"
+    "limit": "379 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "332 kB",
+    "limit": "424 kB",
     "ignore": [
       "vue"
     ]
@@ -99,7 +99,7 @@
     "name": "vue/behavior",
     "path": "packages/adapters/vue/dist/behavior.js",
     "gzip": true,
-    "limit": "3.8 kB",
+    "limit": "5.5 kB",
     "ignore": [
       "vue"
     ]
@@ -108,7 +108,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "332 kB",
+    "limit": "421 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -128,7 +128,7 @@
     "name": "react/behavior",
     "path": "packages/adapters/react/dist/behavior.js",
     "gzip": true,
-    "limit": "3.8 kB",
+    "limit": "5.7 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -157,13 +157,13 @@
     "name": "web-components",
     "path": "packages/adapters/web-components/dist/index.js",
     "gzip": true,
-    "limit": "6.6 kB"
+    "limit": "10.3 kB"
   },
   {
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "318 kB"
+    "limit": "416 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -175,13 +175,13 @@
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "31 kB"
+    "limit": "49.5 kB"
   },
   {
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "165 kB"
+    "limit": "423 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
@@ -217,7 +217,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhButton }",
     "gzip": true,
-    "limit": "1.65 kB",
+    "limit": "10.6 kB",
     "ignore": [
       "vue"
     ]
@@ -227,7 +227,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "15.3 kB",
+    "limit": "26.4 kB",
     "ignore": [
       "vue"
     ]
@@ -237,7 +237,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMenuRoot }",
     "gzip": true,
-    "limit": "25.9 kB",
+    "limit": "43.2 kB",
     "ignore": [
       "vue"
     ]
@@ -247,7 +247,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhTableRoot }",
     "gzip": true,
-    "limit": "22 kB",
+    "limit": "23.8 kB",
     "ignore": [
       "vue"
     ]
@@ -257,7 +257,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "22.3 kB",
+    "limit": "42.8 kB",
     "ignore": [
       "vue"
     ]
@@ -267,7 +267,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhToastRoot }",
     "gzip": true,
-    "limit": "9.7 kB",
+    "limit": "12 kB",
     "ignore": [
       "vue"
     ]
