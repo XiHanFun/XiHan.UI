@@ -1,6 +1,6 @@
 // 文件上传自绘的状态字形——传完那一行行首的对勾、失败那一行行首的警示——是指示符，不是控件内图标：
 // 它们是固定状态标记（不是 :empty 兜底，作者的图标顶不掉），与同一行里 icon 档的删除钮并排，
-// 走 --xh-control-indicator-* 一族（§6.5）；root 上的 --xh-icon-size（桥自 --xh-file-upload-icon-size，随文 1em）
+// 走 --xh-control-indicator-* 一族；root 上的 --xh-icon-size（桥自 --xh-file-upload-icon-size，随文 1em）
 // 只管作者放进缩略图槽、删除钮里的图标与皮肤画的兜底叉。此前两枚标记读 root 的 --xh-icon-size：
 // 随文 1em 落在 14 上下，comfortable 下比 16 的指示符档小一圈、compact 下又不随密度换档。
 // 两档密度一起量：两枚标记走指示符档 16 / 14，作者放进缩略图槽里的图标与删除钮里的兜底叉两档都恒随文。

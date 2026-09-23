@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // 门禁：文字按角色取排版令牌，图标按档取字形尺寸。
 //
-// 真源 component-design.md §6.4 / §6.5：
+// 文字角色与字形尺寸：
 // 字段标签 = --xh-text-label-size 14 / --xh-text-label-weight 500 / --xh-fg-default，贴控件 --xh-space-1，不随 size 档；
 // 控件随文标签（Checkbox / Switch 的 <label> 整行：方框 / 轨道 + 它自己的文字）= 控件文字，字号随档取
-// --xh-control-font-sm / md / lg（§6.4 控件字号随档，与 checkbox-group / radio-group 的条目文字同一把尺），
+// --xh-control-font-sm / md / lg（控件字号随档，与 checkbox-group / radio-group 的条目文字同一把尺），
 // 颜色 --xh-fg-default；
 // 集合标题（RadioGroup / CheckboxGroup / Listbox / Tree / TagGroup / Descriptions）= --xh-fg-muted，与集合 --xh-space-2；
 // 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal；错误文案 = 13 / --xh-fg-danger；
@@ -86,7 +86,7 @@ const PAGE_TITLE = new Set(['dialog', 'drawer', 'tour', 'page-header'])
 const INLINE_TEXT = new Set(['tag', 'tag-group', 'kbd', 'breadcrumb', 'typography', 'highlight'])
 /** Feedback 指示符：scope → 声明 --xh-icon-size 的部件，统一 md。 */
 const FEEDBACK_INDICATOR = { alert: 'root', toast: 'root', notification: 'item' }
-/** 不是控件内图标的字形：空状态的主视觉图形按自己的尺度走；方盒里的方向指示符与方盒同边长（§6.5）。 */
+/** 不是控件内图标的字形：空状态的主视觉图形按自己的尺度走；方盒里的方向指示符与方盒同边长。 */
 const GLYPH_EXEMPT = {
   'empty-state:indicator': '空状态的主视觉字形，不是控件内图标',
   'table:expand-trigger': '展开方向 chevron 是指示符，与 16px 方盒同走 --xh-control-indicator-size，不按图标档取',
@@ -103,7 +103,7 @@ const GLYPH_EXEMPT = {
   'context-menu:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'menubar:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'cascader:item-indicator': '行尾的勾 / 半选杠是指示符，与 16px 标记盒同走 --xh-control-indicator-size，兜底字形与作者塞进去的图标都与盒同尺，不按图标档取',
-  'listbox:item-indicator': '前导对号所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
+  'listbox:item-indicator': '行尾对号所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'select:item-indicator': '浮层条目里勾选标记所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'combobox:item-indicator': '浮层条目里勾选标记所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'steps:indicator': '走过的步里的对号是指示符，按 16px 指示符档走 --xh-control-indicator-size（公开槽 --xh-steps-indicator-mark-size），作者塞进圆点的图标与它同尺，不按图标档取',

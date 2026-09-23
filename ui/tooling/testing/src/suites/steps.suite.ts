@@ -120,7 +120,7 @@ export const stepsSuite: ConformanceSuite = {
           'trigger[0]': {
             'role': 'tab',
             'type': 'button',
-            // 整块内容行接 Action Control row 档 ghost（§9.2），按下只换面不缩放；圆点随触发器读宿主 host 槽
+            // 整块内容行接 Action Control row 档 ghost，按下只换面不缩放；圆点随触发器读宿主 host 槽
             'data-xh-action-control': '',
             'data-xh-action-profile': 'row',
             'data-xh-action-variant': 'ghost',

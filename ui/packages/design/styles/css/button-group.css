@@ -225,7 +225,7 @@
   }
 
   /* 独立 Button 按下时缩一档；组内段却靠共边重叠一像素，单段缩放会同时撕开两侧接缝。
-     组内仍保留 active 换底与撤高光，只把会改变外轮廓几何的 scale 收掉（§9.2 允许的只换面）；
+     组内仍保留 active 换底与撤高光，只把会改变外轮廓几何的 scale 收掉（允许的只换面）；
      键盘与触屏的按压由 Headless 投影 data-pressed，与指针 :active 同一档。 */
   [data-scope='button-group'][data-part='root']
     > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]),

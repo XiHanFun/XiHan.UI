@@ -118,7 +118,7 @@ describe('float-button 结构与缺省', () => {
     expect(trigger['data-xh-action-profile']).toBe('floating')
     expect(trigger['data-xh-action-display']).toBe('always')
     expect(trigger['data-xh-action-size']).toBe('md')
-    // 缺省中性：描边 + 磨砂面（真源 §7.2 第 2 条），不传 variant 时显式落 outline
+    // 缺省中性：描边 + 磨砂面，不传 variant 时显式落 outline
     expect(trigger['data-xh-action-variant']).toBe('outline')
     expect(rig.root()['data-variant']).toBe('outline')
     expect(trigger['data-pressed']).toBeUndefined()

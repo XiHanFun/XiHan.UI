@@ -76,7 +76,7 @@ describe('family/motion.css 共享关键帧', () => {
     }
   })
 
-  it('锚定关系登记与规范 §9.4 / §9.5 的分组一致', () => {
+  it('锚定关系登记与锚定关系表的分组一致', () => {
     const byRelation = {}
     for (const [name, relation] of Object.entries(SHARED_RELATION)) {
       expect(RELATIONS, `${name} 的 relation ${relation}`).toContain(relation)

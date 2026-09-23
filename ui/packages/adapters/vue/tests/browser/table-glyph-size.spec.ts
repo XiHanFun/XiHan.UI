@@ -1,5 +1,5 @@
 // 表格自绘的状态字形——排序方向、勾、半选杠、展开方向——是指示符，不是控件内图标：
-// 它们与所在的方盒 / 把手同属 --xh-control-indicator-* 一族（§6.5），--xh-table-icon-size / --xh-icon-size
+// 它们与所在的方盒 / 把手同属 --xh-control-indicator-* 一族，--xh-table-icon-size / --xh-icon-size
 // 只管作者放进单元格与把手里的图标。此前四种字形都按 --xh-icon-size（md 20px）取尺：comfortable 下
 // 排序箭头 20×20 比 16px 的勾选框与列头文字大一圈，compact 下 20px 的勾与半选杠落在 14px 的盒里
 // 比盒还大。两档密度一起量：指示符档 comfortable 16 / compact 14，作者图标两档都恒 20。

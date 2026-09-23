@@ -563,7 +563,7 @@ export function connectTable<T extends PropTypes>(
         [ITEM_VALUE_ATTR]: column.value,
         // 显式给角色：作者常写成 <span>，读屏听不出这是个能勾的东西
         'role': 'checkbox',
-        // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
+        // 定尺方框：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
         'data-xh-action-control': '',
         'data-xh-action-profile': 'icon',
         'data-xh-action-variant': 'outline',
@@ -907,7 +907,7 @@ export function connectTable<T extends PropTypes>(
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；没有全选基数时不进
         ...pressing,
         'role': 'checkbox',
-        // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
+        // 定尺方框：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
         'data-xh-action-control': '',
         'data-xh-action-profile': 'icon',
         'data-xh-action-variant': 'outline',
@@ -945,7 +945,7 @@ export function connectTable<T extends PropTypes>(
       ...rowState(row.value),
       // 把手不占 Tab 位，按压面主要为触屏而设；选择关停或行禁用时不进
       ...press(`row-select:${row.value}`, mode === 'none' || isRowDisabled(row.value)),
-      // 定尺方框（§9.1）：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
+      // 定尺方框：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'outline',
@@ -1173,7 +1173,7 @@ export function connectTable<T extends PropTypes>(
         'role': 'button',
         // 钮不包列名：列名留在 column-header 上，钮里只有一枚箭头，名字得自己说清是给哪一列排序
         'aria-label': label.sort(def?.label ?? column.value),
-        // 独立的定尺图标钮（§9.1）：接 Action Control icon 档、ghost 形态，与展开箭头同款——
+        // 独立的定尺图标钮：接 Action Control icon 档、ghost 形态，与展开箭头同款——
         // 面与 0.97 按压由家族给，边长由皮肤钉在指示符档；悬停 / 按下面按表头 host 槽下发的淡底阶梯走
         'data-xh-action-control': '',
         'data-xh-action-profile': 'icon',
@@ -1204,7 +1204,7 @@ export function connectTable<T extends PropTypes>(
       ...rowState(row.value),
       // 把手不占 Tab 位，按压面主要为触屏而设；不可展开或行禁用时不进
       ...press(`expand:${row.value}`, !metaOf(row.value)?.expandable || isRowDisabled(row.value)),
-      // 定尺图标钮（§9.1）：接 Action Control icon 档、ghost 形态，面与按压由家族给，边长由皮肤钉在指示符档
+      // 定尺图标钮：接 Action Control icon 档、ghost 形态，面与按压由家族给，边长由皮肤钉在指示符档
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'ghost',
@@ -1253,7 +1253,7 @@ export function connectTable<T extends PropTypes>(
     }),
 
     // 取下一页的入口：摆在表尾，还有没有下一页归作者判定；这里只焊死取数在途点不动。
-    // 它是铺满一行的独立动作条目（§9.2 load-more trigger）：接 Action Control 的 row 档、ghost 形态，
+    // 它是铺满一行的独立动作条目（load-more trigger）：接 Action Control 的 row 档、ghost 形态，
     // 宽度由容器给、高度随内容、按下只换面不缩放；悬停 / 按下 / 禁用面与粗指针热区由家族给，档位随 size
     getLoadMoreTriggerProps: () => normalize.button({
       ...parts['load-more-trigger'].attrs,

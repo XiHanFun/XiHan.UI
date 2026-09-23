@@ -20,11 +20,11 @@ export function connectToggle<T extends PropTypes>(
   const { state, context, prop, send } = service
   const pressed = state.get() === 'on'
   const disabled = !!prop('disabled')
-  // 缺省中性淡底（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  // 缺省中性淡底（只有 Button 缺省品牌实心）
   const variant = prop('variant') ?? 'subtle'
   // 家族形态矩阵按 data-xh-action-variant 给未选中的面：solid 只在按下（on）时才是品牌实心，
   // 未按下时投 ghost（透明底、白底承载 hover 100 → pressed 200）；其余三档原样投影，
-  // 选中面（品牌淡底 + fg-on-brand-subtle，§7.3 无滑块开关）由皮肤在 data-state='on' 上桥接
+  // 选中面（无滑块开关：品牌淡底 + fg-on-brand-subtle）由皮肤在 data-state='on' 上桥接
   const actionVariant = variant === 'solid' ? (pressed ? 'solid' : 'ghost') : variant
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)

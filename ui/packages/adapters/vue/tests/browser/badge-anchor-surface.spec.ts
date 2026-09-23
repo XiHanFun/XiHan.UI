@@ -63,7 +63,7 @@ describe('徽标的计数盒与附着位置', () => {
     expect(root.top - indicator.top).toBeCloseTo(indicator.height / 4, 1)
   })
 
-  // 圆点档是宽高同槽的正方盒：真源 §6.3 要求正方盒取 circle，不得沿用计数档的胶囊冒充圆
+  // 圆点档是宽高同槽的正方盒：正方盒取 circle，不得沿用计数档的胶囊冒充圆
   it('圆点档的正方盒取 circle 而非沿用计数档的胶囊', async () => {
     await mount(undefined, true)
     const indicator = part('indicator')

@@ -108,7 +108,7 @@ export const wcImageViewerSuite: ConformanceSuite = {
               // 报 group 不报 toolbar：条内没有方向键走位，那四个键在这台上是翻页
               'toolbar': { 'role': 'group', 'aria-label': 'Image tools', 'data-state': 'open' },
               'counter': { 'aria-live': 'polite', 'data-index': '1', 'data-count': '3', 'data-state': 'open' },
-              // 翻页钮接 Action Control floating 档 md，工具条钮接 icon 档 xs，叉接 icon 档 lg（§4.1）
+              // 翻页钮接 Action Control floating 档 md，工具条钮接 icon 档 xs，叉接 icon 档 lg
               'prev-trigger': { 'type': 'button', 'aria-label': 'Previous image', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-size': 'md' },
               'next-trigger': { 'type': 'button', 'aria-label': 'Next image', 'disabled': null, 'data-disabled': null },
               'zoom-in-trigger': { 'type': 'button', 'aria-label': 'Zoom in', 'disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },

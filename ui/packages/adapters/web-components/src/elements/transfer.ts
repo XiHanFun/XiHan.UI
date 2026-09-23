@@ -171,7 +171,7 @@ export class XhTransferElement extends XhElement {
   private readonly ctrl = new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())
 
   /**
-   * 两侧定高小列表各走一路自绘条（§6.6）：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、
+   * 两侧定高小列表各走一路自绘条：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、
    * 贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；
    * 两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算
    */

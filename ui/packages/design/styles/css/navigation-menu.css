@@ -23,7 +23,7 @@
        换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
        trigger 的字号经家族桥接槽接回 root 这一档，不另立私有槽 */
     /* 入口里的方向标记按档取尺，缺省 md，随 data-size 换档；面板里链接内的字形由家族随
-       data-xh-collection-size 下发（§6.5） */
+       data-xh-collection-size 下发 */
     --xh-icon-size: var(--xh-navigation-menu-icon-size, var(--xh-glyph-size-md));
 
     --xh-_navigation-menu-font-size: var(--xh-control-font-md);
@@ -34,7 +34,7 @@
     --xh-_navigation-menu-link-px: var(--xh-control-px-md);
     --xh-_navigation-menu-link-font-size: var(--xh-control-font-md);
 
-    /* 悬停、键盘锚点与展开着的入口同走中性灰轻档、不接语气槽：打开中不是选中，不用品牌色（§7.3） */
+    /* 悬停、键盘锚点与展开着的入口同走中性灰轻档、不接语气槽：打开中不是选中，不用品牌色 */
     --xh-_navigation-menu-highlight-bg: var(--xh-bg-subtle);
 
     /* 语气只落在指示条上；没写 data-tone 时 --xh-_tone 没被声明，退回品牌色。
@@ -111,7 +111,7 @@
   /* 入口归 Collection Item 展开路径 / 打开中（nav 语境）：几何、字号、面与字重全经家族桥接槽。静息 muted /
      regular，悬停走白底承载 hover 100 + default 字；展开着的那一张由连接层投影 data-in-path，家族给与悬停同档的
      中性面——打开中不是选中，不用品牌色、不加粗（横排的栏加粗会推挤相邻触发器），哪一张开着由指示条与转向的
-     箭头说明；按下 pressed 200 只换面不缩放（§9.2）；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
+     箭头说明；按下 pressed 200 只换面不缩放；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
      高度由 block-size 定，块向内边距归零。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 background / color /
      font-weight / cursor；也不写 font: inherit（reset.css 已抹平按钮 UA 字体，再写会把家族给的字号字重一并盖掉） */
   [data-scope='navigation-menu'][data-part='trigger'] {
@@ -195,7 +195,7 @@
 
   /* 面板里的链接归 Collection Item 导航当前（nav 语境）：悬停 / 键盘高亮（白底承载 100）与按下（200）面由家族
      按 :hover / :focus-visible / :active 给出，指向当前页面的那一条（data-current）取 strong 档品牌字色 +
-     medium 字重（§7.3），字色不随语气、不加下划线（下划线是"可点"的信号，它已经在这儿了）；这里只把公开槽
+     medium 字重，字色不随语气、不加下划线（下划线是"可点"的信号，它已经在这儿了）；这里只把公开槽
      映射到桥接槽。面板是实色 floating 面，常态字色取 --xh-fg-default 而非 nav 缺省的 muted。
      布局保持 flex：链接是一行文字，不用家族网格。position: relative 是当前链接静态线的定位参照 */
   [data-scope='navigation-menu'][data-part='link'] {
@@ -257,7 +257,7 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 指向当前页面的链接自画一条静态指示线（§7.3 导航当前页）：与 Tabs line / Anchor 同一取法，作者不必为了
+  /* 指向当前页面的链接自画一条静态指示线（导航当前页）：与 Tabs line / Anchor 同一取法，作者不必为了
      这条线多放一个部件。下面的 indicator 部件表达的是「哪张面板开着」而不是当前页，所以这条线不随部件收起，
      两者各说各的：部件亮着时开着的入口下有一条、当前页链接上另有一条。
      线画在当前链接的 ::after 上，以链接盒为定位参照（上面已给 position: relative），

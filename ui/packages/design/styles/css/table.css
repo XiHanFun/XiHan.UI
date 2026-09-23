@@ -35,7 +35,7 @@
        既不让页面上的层号插进来，也不让它们漏出去压住别人 */
     isolation: isolate;
 
-    /* 作者放进单元格、列头与把手里的图标按档取尺，缺省 md（§6.5）；表体行上的由家族随 data-xh-collection-size 下发。
+    /* 作者放进单元格、列头与把手里的图标按档取尺，缺省 md；表体行上的由家族随 data-xh-collection-size 下发。
        表格自绘的状态字形（排序方向、勾、半选杠、展开方向）不读这支：它们是指示符，与所在的方盒同走
        --xh-control-indicator-* 一族——五颗把手在自己身上把 --xh-icon-size 改接到方盒的尺，排序钮那支叫 --xh-table-sort-size */
     --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-md));
@@ -179,7 +179,7 @@
     outline: none;
   }
 
-  /* 表头是淡底承载面：里头的触发器按淡底阶梯走（hover 200 → pressed 300），阶梯由 host 槽向内下发（§7.2）；
+  /* 表头是淡底承载面：里头的触发器按淡底阶梯走（hover 200 → pressed 300），阶梯由 host 槽向内下发；
      排序钮是 ghost 图标钮，悬停 / 按下面就从这两支 host 槽取 */
   [data-scope='table'][data-part='header'] {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
@@ -203,7 +203,7 @@
     font-weight: var(--xh-table-footer-font-weight, var(--xh-font-weight-medium));
   }
 
-  /* 表体行走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
+  /* 表体行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
      pressed 200）与选中面（品牌淡底 + 淡底前景，selected+hover 20% / +pressed 28%）由家族按 aria-selected /
      aria-disabled 给出，标记由行首的勾选把手承担。这里只把公开槽映射到桥接槽，并逐项盖掉家族的行盒几何：
      行是 flex 容器（列宽由单元格的内联尺寸决定，不进家族网格）、不内衬、不圆角、字号与光标随表格本身
@@ -372,7 +372,7 @@
   }
 
   /* 五个把手共用一副方形盒子，两种行的文字起点才对得齐；列设置区那颗与表头里的选择框同款，一眼看得出是同一件事。
-     五颗都接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
+     五颗都接 Action Control icon 档（定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
      配方给，这里只把使用者槽映射到桥接槽；边长仍按 --xh-control-indicator-size 走。三颗勾选框是 outline 形态
      （字段静息形态：透明底 + --xh-border-control 描边），展开箭头与排序钮是 ghost；空框与箭头坐在白底行上，
      按下落 200 档，已勾选的品牌实心面按下派生 active 面；排序钮坐在表头淡底上，阶梯另由 host 槽给（见下） */
@@ -422,7 +422,7 @@
     }
   }
 
-  /* 盒里的字形是指示符（§6.5）：这四颗把手各自把 --xh-icon-size 改接到方盒的尺上，兜底字形与作者塞进盒里的
+  /* 盒里的字形是指示符：这四颗把手各自把 --xh-icon-size 改接到方盒的尺上，兜底字形与作者塞进盒里的
      XhIcon 读同一把尺，root 那支只管作者放进单元格与把手里图标的 --xh-table-icon-size 不流进来。
      三颗勾选框的勾与半选杠按方盒边长 × 0.75，与 Checkbox 的 --xh-_checkbox-glyph、Tree 勾选把手同一比例；
      展开箭头的 chevron 与方盒同边长，同 Tree 的 branch-trigger */
@@ -525,7 +525,7 @@
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
-  /* 禁用（§7.2 第 9 条）：--xh-border-default 描边 + --xh-bg-subtle 底，勾藏起来；家族的禁用块按映射给 */
+  /* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底，勾藏起来；家族的禁用块按映射给 */
   [data-scope='table'][data-part='select-all-trigger'][data-disabled],
   [data-scope='table'][data-part='column-visibility-trigger'][data-disabled],
   [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
@@ -576,7 +576,7 @@
     outline: none;
   }
 
-  /* 排序钮是列头里独立的定尺图标钮（§9.1）：不包列名，列名留在列头上、它排在列名之后，auto 外边距把它
+  /* 排序钮是列头里独立的定尺图标钮：不包列名，列名留在列头上、它排在列名之后，auto 外边距把它
      推到行尾侧与列宽把手并排。盒型与 0.97 按压由家族 icon 档给（见五颗把手共用块）；坐在表头淡底上，
      悬停 / 按下面按 header 的 host 槽下发的阶梯走（hover 200 → pressed 300），不取白底行那档。
      箭头静息取 subtle 前景，参与排序的列换成默认前景（见字形块） */
@@ -846,7 +846,7 @@
      悬停恒真，而悬停那条是 0-6-0、选中那条是 0-3-0，少写一层祖先这块淡底就会被那两档盖掉。
      禁用的行不接换父落点，:not([data-disabled]) 不会漏画任何一处高亮 */
   [data-scope='table'][data-part='root'] [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row'][data-drop='inside']:not([data-disabled]) {
-    /* 落点不是选中：品牌淡底专属选中（§7.1），落点面取悬停之上一档的中性面 */
+    /* 落点不是选中：品牌淡底专属选中，落点面取悬停之上一档的中性面 */
     background: var(--xh-table-drop-inside-bg, var(--xh-bg-subtle-hover));
   }
 
@@ -880,7 +880,7 @@
   }
 
   /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西。
-     箭头是指示符（§6.5）：尺寸读钮自己改接过的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长），
+     箭头是指示符：尺寸读钮自己改接过的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长），
      与同一表头里的勾选框方盒、列拖拽把手同走 --xh-control-indicator-size，按图标档取的 20px 会比
      16px 的方盒与列头文字都大一圈。:empty 守卫同展开箭头：作者塞了自己的图标就整个顶掉兜底；
      flex: none 是因为 ghost 那圈透明描边仍占位，不钉住的话与盒同边长的箭头会被挤窄一个描边。
@@ -988,7 +988,7 @@
   }
 
   /* 取下一页的按钮：铺满一行摆在表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
-     ghost 形态（§9.2）：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
+     ghost 形态：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
      焦点环与粗指针热区全由家族给，白底承载 hover 100 → pressed 200。
      这里只把使用者槽映射到桥接槽并把文案居中：它是一行里唯一的东西，靠起始缘会像一条没对齐的行 */
   [data-scope='table'][data-part='load-more-trigger'] {
@@ -1004,7 +1004,7 @@
 
     justify-content: center;
     text-align: center;
-    /* row 档允许换行、高度随内容，折行的文案走正文行高（§6.4） */
+    /* row 档允许换行、高度随内容，折行的文案走正文行高 */
     line-height: var(--xh-leading-normal);
   }
 

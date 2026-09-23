@@ -68,7 +68,7 @@ describe('steps 默认视觉', () => {
     const steps = mount()
     const [completed, current, incomplete] = steps.indicators.map(indicator => getComputedStyle(indicator))
 
-    // 格状当前（§7.3）：实心品牌底 + 内高光；brand-subtle 退出 completed 语义，走过的步坐回中性面
+    // 格状当前：实心品牌底 + 内高光；brand-subtle 退出 completed 语义，走过的步坐回中性面
     expect(current!.backgroundColor).not.toBe(completed!.backgroundColor)
     expect(completed!.backgroundColor).toBe(incomplete!.backgroundColor)
     expect(completed!.color).not.toBe(incomplete!.color)
@@ -95,7 +95,7 @@ describe('steps 默认视觉', () => {
     completed.textContent = ''
     const mark = getComputedStyle(completed, '::before')
 
-    // 对号是指示符（§6.5）：与 --xh-control-indicator-size 同档换尺，不读只管作者图标的 --xh-icon-size
+    // 对号是指示符：与 --xh-control-indicator-size 同档换尺，不读只管作者图标的 --xh-icon-size
     expect(Number.parseFloat(mark.inlineSize)).toBe(14)
     expect(Number.parseFloat(mark.blockSize)).toBe(14)
     expect(completed.getBoundingClientRect().width).toBe(32)

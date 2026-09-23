@@ -15,7 +15,7 @@
 
   [data-scope='tree'][data-part='root'] {
     /* 行外的字形（空态 / 在途占位里作者塞的图标）按档取尺，树没有 size 轴、固定 md；
-       行内的由家族随 data-xh-collection-size 下发（§6.5）。这支只管作者放进行里的图标：
+       行内的由家族随 data-xh-collection-size 下发。这支只管作者放进行里的图标：
        树自绘的状态字形（展开方向、行尾对号与半选杠）是指示符，各部件在自己身上
        把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
     --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-md));
@@ -146,7 +146,7 @@
   }
 
   /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。
-     行走 Collection Item 的 overlay 语境，与树选择同一种选中读法（§7.3）：悬停 / 高亮 / 按下面（白底承载
+     行走 Collection Item 的 overlay 语境，与树选择同一种选中读法：悬停 / 高亮 / 按下面（白底承载
      hover 100 → pressed 200）由家族给，选中不换面、不换字色，只在行尾亮对号，选中叠悬停 / 按下沿用同一条阶梯；
      家族按 aria-selected / data-selected 与 aria-disabled / data-disabled 给出，这里只把公开槽映射到桥接槽。
      布局保持 flex 而不用家族网格：一行里可以并排多个前导部件（箭头、拖拽把手）与作者自己的图标、
@@ -160,7 +160,7 @@
     --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
     /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 md 档 */
     --xh-collection-glyph-size: var(--xh-tree-icon-size, var(--xh-_collection-glyph-size));
-    /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档（§6.5），与同一行里的拖拽把手同走
+    /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档，与同一行里的拖拽把手同走
        --xh-control-indicator-size（comfortable 16 / compact 14）。不读家族按档下发的 --xh-icon-size——
        那支只管作者放进行里的图标，按图标档取的 20px 会比 16px 的指示符盒大一圈 */
     --xh-_tree-indicator-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
@@ -251,9 +251,9 @@
     text-overflow: ellipsis;
   }
 
-  /* 选中对号落在行尾，与树选择同位（§7.3 / §7.5）：作者在行里摆在哪儿都排到最后，
+  /* 选中对号落在行尾，与树选择同位：作者在行里摆在哪儿都排到最后，
      行尾那一格（item-suffix）在它之前；正文吃满剩余宽度，对号因此贴着行的末端。
-     未选中时占位不塌，切换选中不引起行宽抖动。盒尺取指示符档；盒里的对号是指示符（§6.5），
+     未选中时占位不塌，切换选中不引起行宽抖动。盒尺取指示符档；盒里的对号是指示符，
      在自己身上把 --xh-icon-size 改接到盒的尺，兜底对号与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长 */
   [data-scope='tree'][data-part='item-indicator'] {
     --xh-icon-size: var(--xh-_tree-indicator-size);
@@ -283,7 +283,7 @@
 
   /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
      所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐。
-     盒里的 chevron 是指示符（§6.5）：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
+     盒里的 chevron 是指示符：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
   [data-scope='tree'][data-part='branch-trigger'],
   [data-scope='tree'][data-part='branch-indicator'] {
     --xh-icon-size: var(--xh-_tree-indicator-size);
@@ -489,7 +489,7 @@
      禁用的节点从来不做落点，这一段因此不会漏画任何一处高亮 */
   [data-scope='tree'][data-part='item'][data-drop='inside']:not([data-disabled]),
   [data-scope='tree'][data-part='branch-control'][data-drop='inside']:not([data-disabled]) {
-    /* 落点不是选中：品牌淡底专属选中 / 当前（§7.1），落点面取悬停之上一档的中性面 */
+    /* 落点不是选中：品牌淡底专属选中 / 当前，落点面取悬停之上一档的中性面 */
     background: var(--xh-tree-drop-inside-bg, var(--xh-bg-subtle-hover));
     box-shadow: inset 0 0 0 var(--xh-tree-drop-line, var(--xh-stroke-thick))
       var(--xh-tree-drop-fg, var(--xh-border-control-focus));

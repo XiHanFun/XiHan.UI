@@ -135,7 +135,7 @@
      四件都钉在铺满视口的那一层的边上，贴边一律与安全区取大的一头：刘海、圆角与
      底部横条压住的那一段由系统给出，贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0。
      安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。
-     工具条是容器、计数是一行字的气泡，各按身份取圆角（surface / control，§6.3），
+     工具条是容器、计数是一行字的气泡，各按身份取圆角（surface / control），
      --xh-image-viewer-overlay-radius 仍是两者共用的使用者入口；翻页钮的面走下面的桥接槽 */
   [data-scope='image-viewer'][data-part='toolbar'],
   [data-scope='image-viewer'][data-part='counter'] {
@@ -190,7 +190,7 @@
     font-size: var(--xh-text-secondary-size);
   }
 
-  /* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle，§6.3）。
+  /* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle）。
      面桥接到自家深色 chrome：跟的是图上那层半透明深底不是页面底色，所以不取 frosted 缺省面，
      也不取语义档的 --xh-bg-subtle-*；到头时是原生 disabled，压不动的东西不给回应 */
   [data-scope='image-viewer'][data-part='prev-trigger'],

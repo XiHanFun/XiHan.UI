@@ -1,5 +1,5 @@
 // 菜单自绘的状态字形——标记位的盒与带子菜单条目行尾的展开 chevron——是指示符，不是控件内图标：
-// 它们同属 --xh-control-indicator-* 一族（§6.5），条目上由家族按档下发的 --xh-icon-size 只管作者放进条目里的图标。
+// 它们同属 --xh-control-indicator-* 一族，条目上由家族按档下发的 --xh-icon-size 只管作者放进条目里的图标。
 // 此前两者都读 --xh-icon-size（md 20px）：20 的标记位盒与 20 的 chevron 比同一行 16px 的指示符档大一圈，
 // compact 下指示符收到 14 时它们仍是 20。两档密度一起量：指示符档 comfortable 16 / compact 14，作者图标两档都恒 20。
 import type { App } from 'vue'

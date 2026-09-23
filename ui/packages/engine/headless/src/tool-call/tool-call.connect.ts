@@ -71,7 +71,7 @@ export function connectToolCall<T extends PropTypes>(
     }),
 
     // 开关是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
-    // 按下只换面不缩放（§9.2）；承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
+    // 按下只换面不缩放；承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,

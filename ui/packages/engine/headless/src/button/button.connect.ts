@@ -27,7 +27,7 @@ export function connectButton<T extends PropTypes>(
   const interactive = !disabled && !loading
   const iconOnly = !!prop('iconOnly')
   const size = prop('size')
-  // 缺省形态显式落 solid：只有 Button 缺省品牌实心（真源 §7.2 第 2 条），其余触发器缺省中性
+  // 缺省形态显式落 solid：只有 Button 缺省品牌实心，其余触发器缺省中性
   const variant = prop('variant') ?? 'solid'
   // 渲染成链接时没有原生 type 与原生 disabled 可用，两件事都改走 ARIA
   const nativeButton = (prop('as') ?? 'button') === 'button'

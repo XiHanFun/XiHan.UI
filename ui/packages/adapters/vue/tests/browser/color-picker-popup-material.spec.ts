@@ -84,7 +84,7 @@ function tokenColor(token: string): string {
 }
 
 describe('颜色选择器浮层：floating 实体面', () => {
-  it.each(['light', 'dark'] as const)('%s：局部主题跨 Portal 生效，面板是不透景的 floating 面（§8.4 多列面板）', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：局部主题跨 Portal 生效，面板是不透景的 floating 面（多列面板）', async (theme) => {
     await mount(theme)
     part('content').getAnimations().forEach(animation => animation.finish())
     const control = getComputedStyle(part('control'))

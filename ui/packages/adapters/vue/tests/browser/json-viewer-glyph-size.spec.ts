@@ -1,5 +1,5 @@
 // JSON 查看器自绘的状态字形——分支行首的展开方向 chevron——是指示符，不是控件内图标：
-// 它与自己所在的把手盒同属 --xh-control-indicator-* 一族（§6.5），--xh-json-viewer-icon-size / --xh-icon-size
+// 它与自己所在的把手盒同属 --xh-control-indicator-* 一族，--xh-json-viewer-icon-size / --xh-icon-size
 // 只管作者放进空态格里的图标。此前 chevron 读 root 按档下发的 --xh-icon-size（md 20px），而把手盒已是
 // 指示符档 16px：20 的箭头装在 16 的钮里、两侧各溢出 2px；compact 下盒收到 14 时它仍是 20。
 // 两档密度一起量：指示符档 comfortable 16 / compact 14，作者图标两档都恒 20。

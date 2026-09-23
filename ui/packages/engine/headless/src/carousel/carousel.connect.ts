@@ -256,7 +256,7 @@ export function connectCarousel<T extends PropTypes>(
       'disabled': !canScrollPrev || undefined,
       'data-disabled': dataAttr(!canScrollPrev),
       'data-orientation': orientation,
-      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）；
+      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出；
       // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
@@ -275,7 +275,7 @@ export function connectCarousel<T extends PropTypes>(
       'disabled': !canScrollNext || undefined,
       'data-disabled': dataAttr(!canScrollNext),
       'data-orientation': orientation,
-      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）；
+      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出；
       // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
@@ -301,7 +301,7 @@ export function connectCarousel<T extends PropTypes>(
       'disabled': autoplayInterval <= 0 || undefined,
       'data-disabled': dataAttr(autoplayInterval <= 0),
       'data-state': autoplayStopped ? 'paused' : 'running',
-      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）；
+      // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出；
       // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',

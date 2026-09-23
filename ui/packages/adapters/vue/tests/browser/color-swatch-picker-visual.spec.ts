@@ -72,7 +72,7 @@ describe('颜色色块选择器的格子', () => {
     expect(face.width).toBe(cell)
     expect(face.height).toBe(cell)
     expect(getComputedStyle(swatch).borderTopLeftRadius).toBe(getComputedStyle(item).borderTopLeftRadius)
-    // 色块 item 的身份是 inset（§6.3）
+    // 色块 item 的身份是 inset
     expect(getComputedStyle(item).borderTopLeftRadius).toBe(`${resolvedLength('--xh-shape-inset')}px`)
   })
 

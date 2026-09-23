@@ -25,18 +25,18 @@
 //    作者的整块内容，缩放它会把作者自己的排版一起抖起来。改比底色。
 // ③ 列表行的即时换面：显式登记 feedback: 'surface'，换底可由本部件或（投影了 data-xh-collection-item 时）
 //    家族配方的 pressed 面给出，禁止改变按压几何。投影了 data-xh-action-control 的部件读 family/action-control.css
-//    的通用按压块换底；几何由两条路保住：profile 为 row / disclosure-trigger 的（§9.2 铺满一行的动作条目与
+//    的通用按压块换底；几何由两条路保住：profile 为 row / disclosure-trigger 的（铺满一行的动作条目与
 //    disclosure trigger）靠两档专属的按压块 scale: none，其余 profile 的（共边相接的分段，缩放会把接缝拉开）
 //    必须在皮肤里给该部件写 --xh-action-scale-pressed: none，否则通用按压块的 0.97 缩放照样落下来。
 //    合同项可再带两个字段：target 指明换面落在该部件的哪个后代上（当前没有成员：radio-group 的 item 曾登
 //    target: 'indicator'，接 Action Control row 档后整行自己有面）；channel: 'color' 声明这一档无底、按下只换前景，此时 :active 块换 color 也算回执——
 //    没声明 channel 的仍只认换底（当前没有成员：tabs line 档已接 Collection Item nav 语境，按下经家族换面）。
 // ④ 展示色底的缩放（登记成 { part, feedback: 'scale', channel: 'border' }）：这一格的底色就是它要展示的
-//    东西（色板的格子），按下换底等于把展示物盖掉，§9.1「同时换底」在这里落不下去；缩放仍走令牌，
+//    东西（色板的格子），按下换底等于把展示物盖掉，「同时换底」在这里落不下去；缩放仍走令牌，
 //    换面的第二通道落在描边上——:active 块必须改 border / outline、家族的 --xh-swatch-border 或本皮肤的描边私有槽。
 //
-// 真源 §9.1 / §9.2 再加四条：
-// ⑤ 几何判据：登记为缩放的部件，基础规则含 inline-size: 100% / flex: 1 / display: block，或按 §4.1
+// 按压反馈再加四条：
+// ⑤ 几何判据：登记为缩放的部件，基础规则含 inline-size: 100% / flex: 1 / display: block，或按部件归族
 //    归为 disclosure trigger / row 的，不该缩放整条——改登记 { part, feedback: 'surface' }；
 // ⑥ 缩放必换底：:active 块（或家族配方的 :active 块）必须同时换一个非透明的 background；
 // ⑦ 集合行不许零反馈：NO_PRESS 只留扩大命中区标签、拖拽轨道、字段外壳与值区、作者内容区四类永久理由，
@@ -66,39 +66,39 @@ const COLLECTION_RECIPE = 'packages/design/styles/family/collection-item.css'
  */
 const PRESSABLE = {
   'menu': [{ part: 'item', feedback: 'surface' }],
-  // 列表族条目：一行文字，按下的回执走换面，不缩放整列（§9.2 集合行不允许零反馈）
+  // 列表族条目：一行文字，按下的回执走换面，不缩放整列（集合行不允许零反馈）
   // 命令走 Collection Item 的 overlay 语境，按下面由家族给
   'command': [{ part: 'item', feedback: 'surface' }],
   'mention': [{ part: 'item', feedback: 'surface' }],
   'tree': [{ part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],
   'json-viewer': [{ part: 'branch-control', feedback: 'surface' }],
   'side-nav': [{ part: 'link', feedback: 'surface' }, { part: 'branch-trigger', feedback: 'surface' }],
-  // 目录里的一节是铺开的一行链接（§9.2），按下只换面不缩放
+  // 目录里的一节是铺开的一行链接，按下只换面不缩放
   'anchor': [{ part: 'link', feedback: 'surface' }],
-  // 面包屑的一层是随文铺开的一段链接（§9.2），按下只换面不缩放
+  // 面包屑的一层是随文铺开的一段链接，按下只换面不缩放
   'breadcrumb': [{ part: 'link', feedback: 'surface' }],
   // 序号 + 标题 + 说明的整块内容行：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档专属块归零；
-  // 圆点随触发器读宿主 host 槽换到 300 / 当前步 brand-active，不缩放（§9.2）
+  // 圆点随触发器读宿主 host 槽换到 300 / 当前步 brand-active，不缩放
   'steps': [{ part: 'trigger', feedback: 'surface' }],
   // 圆圈 + 文字的整行条目：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档专属块归零；
-  // 圆圈随行读宿主 host 槽换到 300 / 选中圆点 active 档，不缩放（§9.2）。不登 target: 'indicator'——整行自己有面了
+  // 圆圈随行读宿主 host 槽换到 300 / 选中圆点 active 档，不缩放。不登 target: 'indicator'——整行自己有面了
   'radio-group': [{ part: 'item', feedback: 'surface' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
-  // 定尺的独立下载钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给（§9.1）
+  // 定尺的独立下载钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给
   'download-trigger': ['root'],
   'toggle': ['root'],
   // 共边相接的分段：接 Action Control text 档换面，皮肤给 --xh-action-scale-pressed: none 保住接缝
   'toggle-group': [{ part: 'item', feedback: 'surface' }],
-  // 淡底轨道里铺开的一段（§9.2 Segmented item 归行级）：按下换到 300 档中性面，不缩放
+  // 淡底轨道里铺开的一段（Segmented item 归行级）：按下换到 300 档中性面，不缩放
   'segmented': [{ part: 'item', feedback: 'surface' }],
   'back-top': ['trigger'],
   'float-button': ['trigger'],
-  // 定尺的独立复制钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给（§9.1）
+  // 定尺的独立复制钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给
   'clipboard': ['copy-trigger'],
-  // 列表末尾铺满一行的「取下一页」：Action Control row 档，按下只换面不缩放（§9.2）
+  // 列表末尾铺满一行的「取下一页」：Action Control row 档，按下只换面不缩放
   'infinite-scroll': [{ part: 'load-more-trigger', feedback: 'surface' }],
-  // 集合件尾部的「取下一页」：Action Control row 档铺满一行，按下只换面不缩放（§9.2）；条目走 Collection Item 的 page 语境
+  // 集合件尾部的「取下一页」：Action Control row 档铺满一行，按下只换面不缩放；条目走 Collection Item 的 page 语境
   'listbox': [{ part: 'load-more-trigger', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
   // 组里的一枚标签就是 tag 的 root，整枚就是点击目标；摘除钮是 tag 的 close-trigger，按压归 tag.css
   'tag-group': ['tag/root'],
@@ -120,18 +120,18 @@ const PRESSABLE = {
   'time-field': ['clear-trigger'],
   'file-upload': ['clear-trigger', 'item-delete-trigger', 'trigger'],
   'signature-pad': ['clear-trigger'],
-  // 开合触发器接了 Action Control text 档，与角落的叉同走家族按压块（§9.1）
+  // 开合触发器接了 Action Control text 档，与角落的叉同走家族按压块
   'dialog': ['close-trigger', 'trigger'],
   'drawer': ['close-trigger', 'trigger'],
   'notification': ['item-close-trigger', 'item-action-trigger'],
-  // 开合触发器接了 Action Control text 档，与角落的叉同走家族按压块（§9.1）
+  // 开合触发器接了 Action Control text 档，与角落的叉同走家族按压块
   'popover': ['close-trigger', 'trigger'],
-  // 末行三颗文字按钮与角落的叉都接了 Action Control，同走家族按压块（§9.1）
+  // 末行三颗文字按钮与角落的叉都接了 Action Control，同走家族按压块
   'tour': ['close-trigger', 'prev-trigger', 'next-trigger', 'skip-trigger'],
   'toast': ['close-trigger', 'action-trigger'],
   'alert': ['close-trigger'],
   'floating-panel': ['close-trigger', 'trigger', 'window-state-trigger'],
-  // 开合触发器与两颗动作钮都接了 Action Control text 档，同走家族按压块（§9.1）
+  // 开合触发器与两颗动作钮都接了 Action Control text 档，同走家族按压块
   'popconfirm': ['confirm-trigger', 'cancel-trigger', 'trigger'],
   'image-viewer': [
     'close-trigger',
@@ -156,12 +156,12 @@ const PRESSABLE = {
   // 勾选形的控件本体：方框、轨道、星星都是自己能被按下的一颗
   'checkbox': ['root'],
   // 条目与全选格是「方框 + 文案」的整行命中区：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档
-  // 专属块归零；方框随行读宿主 host 槽换到 300 / 语气 active 档，不缩放（§9.2）。不登 target: 'indicator'——
+  // 专属块归零；方框随行读宿主 host 槽换到 300 / 语气 active 档，不缩放。不登 target: 'indicator'——
   // 那种合同要求后代块直接写 background-color，方框规则写的是私有槽 --xh-_checkbox-group-bg
   'checkbox-group': [{ part: 'item', feedback: 'surface' }, { part: 'select-all-trigger', feedback: 'surface' }],
   'switch': ['root'],
   'rating': ['item'],
-  // 排序把手是定尺的图标钮（§9.1）：接 Action Control icon ghost 档，按下缩放并换底
+  // 排序把手是定尺的图标钮：接 Action Control icon ghost 档，按下缩放并换底
   'sortable': ['item-drag-trigger'],
   // 预设色板的格子归内嵌的 color-swatch-picker，按压归那份皮
   'color-picker': ['eye-dropper-trigger'],
@@ -191,16 +191,16 @@ const PRESSABLE = {
   // 展开与导航的触发钮
   'accordion': [{ part: 'trigger', feedback: 'surface' }],
   'collapsible': [{ part: 'trigger', feedback: 'surface' }],
-  // 菜单栏的入口是一排菜单名里铺开的一段，按下只换面不缩放（§9.2）
+  // 菜单栏的入口是一排菜单名里铺开的一段，按下只换面不缩放
   'menubar': [{ part: 'trigger', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
-  // 横排导航的入口是铺开的一段，按下只换面不缩放（§9.2）；面板里的链接走 Collection Item 的 overlay 语境
+  // 横排导航的入口是铺开的一段，按下只换面不缩放；面板里的链接走 Collection Item 的 overlay 语境
   'navigation-menu': [{ part: 'trigger', feedback: 'surface' }, { part: 'link', feedback: 'surface' }],
-  // 页签是铺开的一段（§9.2 Tabs trigger 归行级）：card / segment 档在皮肤里按下换底（200 / 300），缺省的
+  // 页签是铺开的一段（Tabs trigger 归行级）：card / segment 档在皮肤里按下换底（200 / 300），缺省的
   // line 档接 Collection Item nav 语境，按下由家族换面（100 → 200）
   'tabs': [{ part: 'trigger', feedback: 'surface' }],
   'toolbar': ['item'],
   // 表格里的勾选、展开与排序把手（定尺方框 / 图标钮，缩放并换底）；表体行走 Collection Item 的 page 语境只换面；
-  // 表尾那颗「取下一页」接 Action Control row 档，只换面不缩放（§9.2）
+  // 表尾那颗「取下一页」接 Action Control row 档，只换面不缩放
   'table': ['select-all-trigger', 'row-select-trigger', 'column-visibility-trigger', 'expand-trigger', 'sort-trigger', { part: 'row', feedback: 'surface' }, { part: 'load-more-trigger', feedback: 'surface' }],
   // 走马灯的翻页钮、播放钮与圆点
   'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
@@ -251,7 +251,7 @@ const NO_PRESS = {
 }
 
 /**
- * 真源 §4.1 归为 disclosure trigger / row 的部件：铺满一行、高度随内容，只换面不缩放。
+ * 按部件归族归为 disclosure trigger / row 的部件：铺满一行、高度随内容，只换面不缩放。
  * 登记在这里又在 PRESSABLE 里写成缩放形态的，判 ⑤。
  */
 const ROW_OR_DISCLOSURE = new Set([
@@ -274,12 +274,12 @@ const ROW_OR_DISCLOSURE = new Set([
 /** 基础规则里的这几条说明部件是铺满一行的东西，不是定尺的独立动作控件。 */
 const ROW_GEOMETRY = /(?:^|;)\s*(?:inline-size\s*:\s*100%|flex\s*:\s*1|display\s*:\s*block)\s*(?:;|$)/
 /**
- * 真源 §9.1 点名的定尺动作控件里，基础规则却带 ROW_GEOMETRY 那几条的：它们撑的是等分轨道里的一格，
+ * 点名的定尺动作控件里，基础规则却带 ROW_GEOMETRY 那几条的：它们撑的是等分轨道里的一格，
  * 不是一整行——日历格用 flex: 1 撑满七等分的一列并按 aspect-ratio 取方，宽由轨道给、高随宽走，仍是一颗定尺的格。
  * 逐部件登记并写明理由，⑤ 不判。
  */
 const TRACK_SQUARE = {
-  'calendar-picker:cell-trigger': '日历格：flex: 1 撑满七等分轨道的一格并按 aspect-ratio 取方（§9.1 日历格是定尺控件）',
+  'calendar-picker:cell-trigger': '日历格：flex: 1 撑满七等分轨道的一格并按 aspect-ratio 取方（日历格是定尺控件）',
   'calendar-range-picker:cell-trigger': '同 calendar-picker 的日历格',
 }
 
@@ -527,7 +527,7 @@ function checkPart(name, part, css, familyCss = '', contract = {}) {
   const key = `${name}:${part}`
   // ⑤ 几何判据：铺满一行的东西不该缩放整条
   if (ROW_OR_DISCLOSURE.has(key)) {
-    report(key, `${name} 的 ${part} 按 §4.1 是 disclosure trigger / row，登记成缩放形态——改登记 { part: '${part}', feedback: 'surface' }，皮肤只换面`)
+    report(key, `${name} 的 ${part} 按部件归族是 disclosure trigger / row，登记成缩放形态——改登记 { part: '${part}', feedback: 'surface' }，皮肤只换面`)
   }
   else if (key in TRACK_SQUARE) {
     trackSquareSeen.add(key)
@@ -559,7 +559,7 @@ function checkPart(name, part, css, familyCss = '', contract = {}) {
   else {
     const surface = match[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_[\w-]*(?:bg|surface)[\w-]*)\s*:\s*([^;]+)/)
     if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
-      report(key, `${name} 的 ${part} 按下只缩放不换底——:active 块要同时把 background 换到 active 面（§9.1）`)
+      report(key, `${name} 的 ${part} 按下只缩放不换底——:active 块要同时把 background 换到 active 面`)
   }
   // 缩放要能过渡，否则是硬切
   if (!/transition:[^;]*\bscale\b/.test(css) && !/transition:[^;]*\bscale\b/.test(familyCss)) {
@@ -596,7 +596,7 @@ function checkSurfacePart(name, part, css, familyCss = '', contract = {}, rowPro
     return surface && !/^(?:none|transparent)$/.test(surface[1].trim())
   })
   if (!surfaced)
-    report(key, `${name} 的 ${part} 没有明确的 :active 换面——集合行不允许零反馈（§9.2）`)
+    report(key, `${name} 的 ${part} 没有明确的 :active 换面——集合行不允许零反馈`)
   for (const match of blocks) {
     if (!/(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1]))
       continue

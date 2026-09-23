@@ -145,7 +145,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     expect(on.borderColor).toBe(resolveColor(off, 'var(--xh-bg-brand)'))
     expect(on.boxShadow).toBe('none')
     expect(labelledBox('on').hasAttribute('data-variant')).toBe(false)
-    // 方框接 Action Control icon 档（§9.1 定尺方框）：家族给盒型与过渡，边长仍是 16px 指示符档
+    // 方框接 Action Control icon 档（定尺方框）：家族给盒型与过渡，边长仍是 16px 指示符档
     expect(off.getAttribute('data-xh-action-control')).toBe('')
     expect(off.getAttribute('data-xh-action-profile')).toBe('icon')
     expect(off.getAttribute('data-xh-action-variant')).toBe('outline')
@@ -172,7 +172,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
       const check = getComputedStyle(indicator(`${tone}-on`), '::before').backgroundColor
       const line = getComputedStyle(indicator(`${tone}-mixed`), '::after').backgroundColor
 
-      // 未勾方框的描边与浮层面板、卡片的装饰边同一档（§8.3），3:1 留给高对比档
+      // 未勾方框的描边与浮层面板、卡片的装饰边同一档，3:1 留给高对比档
       expect(offBorder, `${theme}/${tone}/off`).toBe(resolveColor(box(`${tone}-off`), 'var(--xh-border-default)'))
       expect(contrast(on.backgroundColor, page), `${theme}/${tone}/on`).toBeGreaterThanOrEqual(3)
       expect(contrast(mixed.backgroundColor, page), `${theme}/${tone}/mixed`).toBeGreaterThanOrEqual(3)
@@ -244,7 +244,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     await finishMotion()
     expect(getComputedStyle(invalid).borderColor).toBe(invalidBorder)
 
-    // 指针直接落在方框上：家族悬停块把未勾方框的描边升一档，底不动（§8.3 字段静息 → hover）
+    // 指针直接落在方框上：家族悬停块把未勾方框的描边升一档，底不动（字段静息 → hover）
     await userEvent.hover(live)
     await expect.poll(() => getComputedStyle(live).borderColor).toBe(resolveColor(live, 'var(--xh-border-control-hover)'))
     expect(getComputedStyle(live).backgroundColor).toBe('rgba(0, 0, 0, 0)')

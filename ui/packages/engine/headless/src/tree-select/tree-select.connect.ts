@@ -643,7 +643,7 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 节点的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    // 节点的第 2 行：跨 text 槽、走 muted 档，不跟语气
     getItemDescriptionProps: node => normalize.element({
       ...parts['item-description'].attrs,
       ...nodeState(node.value),

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：根面的边界只由描边承担——三选一，不许阴影或淡底冒充边界。
 //
-// 真源 component-design.md §8.3：任何根面 / 主面只能取「描边 / 淡底 / 无壳」之一。
+// 任何根面 / 主面只能取「描边 / 淡底 / 无壳」之一。
 // 描边 = --xh-border-default（字段 --xh-border-control）描边 + surface 底 + 无影；
 // 淡底 = --xh-bg-subtle + 透明占位边 + 无影；无壳 = 三者都不写。
 // --xh-border-subtle / --xh-border-strong 只作内部分隔，不得出现在根面 border 简写里。
@@ -16,14 +16,14 @@
 // 私有槽在赋值点判：颜色位只写 var(--xh-_x) 的，找同部件基础块 / 同 variant 块里的赋值再判。
 // ⑤ 不限部件、不限状态：任何非条件规则里四边生效的 border 简写与 border-color 的颜色位（沿兜底链取最内层）
 //    不得是 --xh-border-subtle——它只作内部分隔线，只能出现在 border-block-start / -inline-end 类单边声明里；
-//    禁用态外边按 §7.2 第 9 条取 --xh-border-default（file-upload 条目、steps indicator、tag、table / transfer / tree
+//    禁用态外边取 --xh-border-default（file-upload 条目、steps indicator、tag、table / transfer / tree
 //    内嵌勾选框曾在这里取 subtle，与独立 Checkbox / Switch 不同值）。
 //
 // 存量登在 family-backlog.json 的 edge 段，命中即放行、不命中判过期，表只减不增。
 import { openBacklog } from './lib/family-backlog.mjs'
 import { colorPositionOf, conditional, innermost, partOf, readSkins, scopeOf, splitCompounds, splitSelectors } from './lib/skin-rules.mjs'
 
-/** 真源 §8.3 管的根面 / 主面部件。 */
+/** 边界三选一管的根面 / 主面部件。 */
 const MANAGED_PARTS = new Set(['root', 'content', 'panel', 'tree', 'viewport', 'source-panel', 'target-panel'])
 /** 只作内部分隔的边色，根面 border 简写里不许出现。 */
 const SEPARATOR_ONLY = new Set(['--xh-border-subtle', '--xh-border-strong'])
@@ -37,11 +37,11 @@ const OUTLINE_BORDER = new Set([
 ])
 /** 淡底面的底色。 */
 const SUBTLE_BG = /^--xh-(?:bg-subtle|_tone-subtle|tone-subtle)$/
-/** 真源 §8 登记的 soft 材质消费者：状态 chip 的描边是 soft 边。 */
+/** 登记在册的 soft 材质消费者：状态 chip 的描边是 soft 边。 */
 const SOFT_CONSUMERS = new Set(['tag:root'])
 /**
- * 真源 §8.4 登记的反白 compact frosted 面：--xh-material-frosted-border 是深色 14% 的透明边，压在反白深底上
- * 看不见，§8.1 要求的 1px 可见边界改由 on 色 20% 的 color-mix 承担。键 组件:部件，值是理由；
+ * 登记在册的反白 compact frosted 面：--xh-material-frosted-border 是深色 14% 的透明边，压在反白深底上
+ * 看不见，浮层要的 1px 可见边界改由 on 色 20% 的 color-mix 承担。键 组件:部件，值是理由；
  * 登记了却没在描边位落 color-mix 的照样报过期。
  */
 const INVERTED_COMPACT = {

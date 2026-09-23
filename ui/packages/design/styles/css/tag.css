@@ -31,7 +31,7 @@
     padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
     padding-block: var(--xh-tag-py, var(--xh-_tag-py));
     border: var(--xh-stroke-thin) solid var(--xh-tag-border, var(--xh-material-soft-border));
-    /* 状态 chip 的身份是胶囊（§6.3 pill 只给状态 chip 与一维对象） */
+    /* 状态 chip 的身份是胶囊（pill 只给状态 chip 与一维对象） */
     border-radius: var(--xh-tag-radius, var(--xh-shape-pill));
     background: var(--xh-tag-bg, var(--xh-material-soft-bg));
     box-shadow: var(--xh-tag-shadow, var(--xh-material-soft-shadow));
@@ -112,7 +112,7 @@
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  /* 按住的叉落着焦点（§9.3 focus-visible + pressed 保留焦点环）：按压面是从字色兑出的 22% 底，
+  /* 按住的叉落着焦点（focus-visible + pressed 保留焦点环）：按压面是从字色兑出的 22% 底，
      压在淡底 / 选中面上把面往字色那头带了一档，默认环与这块混色面在浅色档上只剩 2.2–2.9。
      环改取叉自己的字色：按压面正是从这支色兑出来的，字色压在它上面的对比与字压在标签面上同源，
      六族语气与深浅两态都过 3:1；实心档本来就取字色，这条与它同一口径 */

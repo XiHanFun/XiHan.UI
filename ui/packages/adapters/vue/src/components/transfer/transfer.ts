@@ -206,7 +206,7 @@ export const XhTransferList = defineComponent({
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
     const listRef = ref<HTMLElement | null>(null)
-    // 两侧定高小列表各走一路自绘条（§6.6）：条子紧跟在列表后面、贴在列表自己的盒子上，
+    // 两侧定高小列表各走一路自绘条：条子紧跟在列表后面、贴在列表自己的盒子上，
     // 挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；两条轴都摆——皮肤给的是两轴 overflow: auto。
     // 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
     const bars = useScrollbars({

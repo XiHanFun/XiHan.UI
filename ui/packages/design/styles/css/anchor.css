@@ -24,7 +24,7 @@
     --xh-_anchor-link-px: var(--xh-control-px-md);
     /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回品牌色。
        指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档——
-       导航当前页（§7.3）缺省是 --xh-fg-brand-strong，比指示条深一档。
+       导航当前页缺省是 --xh-fg-brand-strong，比指示条深一档。
        聚焦环不在其列，它恒是 --xh-ring-focus */
     --xh-_anchor-accent: var(--xh-_tone-soft, var(--xh-fg-brand));
     --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
@@ -86,7 +86,7 @@
   }
 
   /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + default 字，
-     按下 pressed 200 只换面（§7.2 / §9.2）；当前那一节（§7.3 导航当前页）brand-strong 字色（随语气的
+     按下 pressed 200 只换面；当前那一节（导航当前页）brand-strong 字色（随语气的
      --xh-_anchor-accent-text）+ medium 字重都跟着变，2px 指示线放了 indicator 部件由部件滑动、没放则由
      下面的静态线规则画在当前链接自己身上。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background。
      position: relative 是静态线的定位参照 */
@@ -160,7 +160,7 @@
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
-  /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（§7.3 导航当前页）：
+  /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（导航当前页）：
      与 Tabs line 档同一取法，作者不必为了这条线多放一个部件。
      线画在当前链接的 ::after 上，以链接盒为定位参照（上面已给 position: relative），
      厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。

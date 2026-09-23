@@ -121,7 +121,7 @@ export function connectApproval<T extends PropTypes>(
     }),
 
     // 每个复选框各占一个 Tab 停靠点，不做 roving：授权项要逐条读、逐条勾。
-    // 整行是集合行：接 Action Control 的 row 档，ghost 形态、按下只换面不缩放（§9.2）；
+    // 整行是集合行：接 Action Control 的 row 档，ghost 形态、按下只换面不缩放；
     // 承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
     getItemProps: (item) => {
       const handlers = press(`item:${item.value}`, scopeDisabled(item))
@@ -247,7 +247,7 @@ export function connectApproval<T extends PropTypes>(
     // 状态机要等宿主回话才落定，这段空窗里再按一次就会送出第二条判定，闸门后面的系统收到
     // 两条相互矛盾的结论。锁法与批准同构：aria-disabled 而不是原生 disabled，保住可聚焦，
     // 让读屏念得到为什么按不动
-    // 接 Action Control 的 text 档 outline 形态：非 Button 的触发器缺省中性描边（§7.2.2）
+    // 接 Action Control 的 text 档 outline 形态：非 Button 的触发器缺省中性描边
     getDenyTriggerProps: () => normalize.button({
       ...parts['deny-trigger'].attrs,
       'type': 'button',

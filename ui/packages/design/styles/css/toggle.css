@@ -14,7 +14,7 @@
 
   /* 未按下的四档形态由家族形态矩阵按 data-xh-action-variant 给出（缺省 subtle 由连接层显式投影；solid 未按下时
      投 ghost，只在按下时才是品牌实心）；公开槽桥接到矩阵之前：使用者槽 → 形态矩阵 → 家族缺省。
-     按下（on）是 §7.3 无滑块开关的选中面：品牌淡底 12 → 悬停 20 → 按压 28，前景 fg-on-brand-subtle，
+     按下（on）是无滑块开关的选中面：品牌淡底 12 → 悬停 20 → 按压 28，前景 fg-on-brand-subtle，
      私有槽在下面的 data-state='on' 块里接到桥接槽上。 */
   [data-scope='toggle'][data-part='root'] {
     --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)));
@@ -97,7 +97,7 @@
     --xh-action-border-disabled: var(--xh-_toggle-border-on);
   }
 
-  /* 使用者的 --xh-toggle-shadow 只落在按下面上：矩阵各态无影，淡底与阴影互斥（§5.3） */
+  /* 使用者的 --xh-toggle-shadow 只落在按下面上：矩阵各态无影，淡底与阴影互斥 */
   [data-scope='toggle'][data-part='root'][data-state='on'] {
     --xh-action-shadow-rest: var(--xh-toggle-shadow, none);
     --xh-action-shadow-hover: var(--xh-toggle-shadow, none);

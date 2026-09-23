@@ -136,7 +136,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
             'data-state': 'unchecked',
             'tabindex': '0',
             'disabled': null,
-            // 整行接 Action Control row 档 ghost（§9.2 行级命中区），xs 是 24px 命中地板；方框随行读宿主 host 槽
+            // 整行接 Action Control row 档 ghost（行级命中区），xs 是 24px 命中地板；方框随行读宿主 host 槽
             'data-xh-action-control': '',
             'data-xh-action-profile': 'row',
             'data-xh-action-variant': 'ghost',

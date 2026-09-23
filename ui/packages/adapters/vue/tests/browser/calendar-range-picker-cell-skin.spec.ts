@@ -1,6 +1,6 @@
-// 范围日历格与翻页钮的皮肤（与 calendar-picker 同构，另加区间中段的品牌淡底阶梯）：今天是 1px 品牌环 + 品牌字、底透明（§7.3 brand-subtle 退出 today 语义）；
-// 格子坐在白底上，悬停 100 档、按下 200 档并缩放（§7.2 / §9.1）；选中格实心品牌，按下压到 active 档；
-// 快速选年的网格是页内结构容器，滚动链保持 auto（§6.6）。
+// 范围日历格与翻页钮的皮肤（与 calendar-picker 同构，另加区间中段的品牌淡底阶梯）：今天是 1px 品牌环 + 品牌字、底透明（brand-subtle 退出 today 语义）；
+// 格子坐在白底上，悬停 100 档、按下 200 档并缩放；选中格实心品牌，按下压到 active 档；
+// 快速选年的网格是页内结构容器，滚动链保持 auto。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'

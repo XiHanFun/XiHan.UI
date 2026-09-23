@@ -1,4 +1,4 @@
-// 穿梭框条目接入 Collection Item 的 page 语境（真源 §7.3 页内持久集合）：勾选行铺品牌淡底 + 淡底前景，
+// 穿梭框条目接入 Collection Item 的 page 语境（页内持久集合）：勾选行铺品牌淡底 + 淡底前景，
 // 标记仍是行首的勾选方框；悬停 100 → 按下 200 只换面，勾选行悬停 20%；搬运钮接 Action Control icon outline 档，
 // 按下 0.97 并同时换底；两侧列表接自绘条，条子贴在列表盒上而不是壳边。
 import type { App } from 'vue'

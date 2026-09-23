@@ -1,5 +1,5 @@
 // 树选择器面板里自绘的状态字形——展开方向 chevron、行尾的对号与半选杠——是指示符，不是控件内图标：
-// 它们与所在的盒同属 --xh-control-indicator-* 一族（§6.5），--xh-tree-select-icon-size / --xh-icon-size
+// 它们与所在的盒同属 --xh-control-indicator-* 一族，--xh-tree-select-icon-size / --xh-icon-size
 // 只管作者放进行里的图标。盒早已按指示符档取尺（comfortable 16 / compact 14），但盒里的兜底字形此前
 // 读的是家族按档下发到行的 --xh-icon-size（md 20px）：20 的 chevron 与对号落在 16 / 14 的盒里比盒还大。
 // 两档密度一起量：字形与盒同边长（对号是行尾标记，不是勾选格，不取 × 0.75），作者图标两档都恒 20。

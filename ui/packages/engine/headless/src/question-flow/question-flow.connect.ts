@@ -234,7 +234,7 @@ export function connectQuestionFlow<T extends PropTypes>(
     },
 
     // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦，禁用项就当不成方向键的起点。
-    // 整行是集合行：接 Action Control 的 row 档，ghost 形态、按下只换面不缩放（§9.2）；
+    // 整行是集合行：接 Action Control 的 row 档，ghost 形态、按下只换面不缩放；
     // 承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
     getItemProps: (item) => {
       const single = typeOf(item.questionId) === 'single'

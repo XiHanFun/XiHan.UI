@@ -14,7 +14,7 @@
   [data-scope='file-upload'][data-part='root'] {
     /* 作者放进缩略图槽、删除钮与清空钮里的图标跟着字号走，与皮肤画的兜底叉同一把尺。
        条目行首自绘的状态标记（传完的勾、失败的警示）不读这支：它们是指示符，与同一行里 icon 档的
-       删除钮并排、走 --xh-control-indicator-* 一族（§6.5），尺寸由 --xh-file-upload-item-mark-size 单独控 */
+       删除钮并排、走 --xh-control-indicator-* 一族，尺寸由 --xh-file-upload-item-mark-size 单独控 */
     --xh-icon-size: var(--xh-file-upload-icon-size, var(--xh-glyph-size-text));
 
     display: flex;

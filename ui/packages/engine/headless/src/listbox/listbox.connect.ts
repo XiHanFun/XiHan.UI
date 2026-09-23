@@ -306,7 +306,7 @@ export function connectListbox<T extends PropTypes>(
 
     // 取下一页的入口：还有没有下一页只有作者知道，露不露面与点了做什么都归他，
     // 连接层只焊死「在途中与整列禁用点不动」。
-    // 它是铺满一行的独立动作条目（§9.2 load-more trigger）：接 Action Control 的 row 档、ghost 形态，
+    // 它是铺满一行的独立动作条目（load-more trigger）：接 Action Control 的 row 档、ghost 形态，
     // 宽度由容器给、高度随内容、按下只换面不缩放；悬停 / 按下 / 禁用面与粗指针热区由家族给，档位随 size
     getLoadMoreTriggerProps: () => {
       const handlers = press('load-more-trigger')
@@ -423,7 +423,7 @@ export function connectListbox<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气
     getItemDescriptionProps: item => normalize.element({
       ...parts['item-description'].attrs,
       ...stateAttrs(item),

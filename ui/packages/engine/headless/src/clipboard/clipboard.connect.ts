@@ -26,7 +26,7 @@ export function connectClipboard<T extends PropTypes>(
   const value = prop('value') ?? ''
   const disabled = !!prop('disabled')
   const translations = prop('translations')
-  // 缺省中性淡底（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  // 缺省中性淡底（只有 Button 缺省品牌实心）
   const variant = prop('variant') ?? 'subtle'
   // 播报区只在成功那一档有话说；平时是空串，读屏不会念一段旧文案
   const announcement = copied ? (translations?.copied ?? 'Copied') : ''

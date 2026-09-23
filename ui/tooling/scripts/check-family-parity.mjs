@@ -11,7 +11,7 @@
 // 登记的部件 + 状态在全族一条规则都匹配不上时判红：不查的话，部件改名或状态换写法之后
 // 这一条就只是空转，逐条列属性的家族尤其看不出来。
 //
-// 真源 §4 的家族（内容面 / 列表容器 / 反馈面 / 字段 / 值选择 / 导航 / 开关 / 按钮形触发器）
+// 设计真源的家族（内容面 / 列表容器 / 反馈面 / 字段 / 值选择 / 导航 / 开关 / 按钮形触发器）
 // 在存量上会大面积分叉，迁移按组件逐个进仓。这些家族读 family-backlog.json：成员在任何一段
 // 里还挂着豁免的，先不参与比对；已迁移成员 ≥ 2 才比——首个迁移组件进仓时
 // 门禁就能运行，第二个进仓时开始钉住同值。部件与状态可以按成员分别登记（partBy / stateBy），
@@ -182,10 +182,10 @@ const FAMILIES = [
       { part: 'cell-trigger', state: '[data-selected]', props: ['--xh-action-bg-rest', '--xh-action-bg-hover', '--xh-action-bg-pressed', '--xh-action-border-rest', '--xh-action-fg-rest', '--xh-action-ring-color-focus-visible'] },
     ],
   },
-  // ——以下家族按真源 §4 登记，读 family-backlog.json，已迁移成员 ≥ 2 才比——
+  // ——以下家族按设计真源登记，读 family-backlog.json，已迁移成员 ≥ 2 才比——
   {
-    // 静态内容面：边界三选一（§8.3），根面的边、底同源；影只在 Card 之外比——
-    // 真源 §5.3 把 raised 落影只给 Card（check-elevation-role EXPECTED card.root=['raised']），
+    // 静态内容面：边界三选一，根面的边、底同源；影只在 Card 之外比——
+    // raised 落影只给 Card（check-elevation-role EXPECTED card.root=['raised']），
     // 其余静态面一律无影，Card 的影是它一家的登记身份，不是分叉
     name: '内容面族',
     backlog: true,
@@ -214,7 +214,7 @@ const FAMILIES = [
     ],
   },
   {
-    // 反馈面：sheet 三件套（§8.4）
+    // 反馈面：sheet 三件套
     name: '反馈面族',
     backlog: true,
     members: ['toast', 'notification'],
@@ -224,7 +224,7 @@ const FAMILIES = [
     ],
   },
   {
-    // Feedback 三家的排版与指示符：标题 14/600、说明 13/fg-muted（§6.4），指示符统一 md 档（§6.5）
+    // Feedback 三家的排版与指示符：标题 14/600、说明 13/fg-muted，指示符统一 md 档
     name: 'Feedback 族',
     backlog: true,
     members: ['alert', 'toast', 'notification'],
@@ -237,7 +237,7 @@ const FAMILIES = [
     ],
   },
   {
-    // 字段外壳：视觉盒的桥接槽映射同源（§8.3）
+    // 字段外壳：视觉盒的桥接槽映射同源
     name: '字段族',
     backlog: true,
     members: [
@@ -333,7 +333,7 @@ const FAMILIES = [
     ],
   },
   {
-    // 值选择：选中行的底、字色与字重按集合语境走（§7.3）。选中 / 悬停 / 按下各态由 Collection Item 配方
+    // 值选择：选中行的底、字色与字重按集合语境走。选中 / 悬停 / 按下各态由 Collection Item 配方
     // 按 data-xh-collection-context 生成，已迁移成员的皮肤只在行的基础规则里把使用者槽映射到桥接槽——
     // 比对的是这些映射声明：悬停 / 高亮 / 按下面全族同源；选中字色、字重与选中叠加面只在浮层瞬态语境
     // （overlay）的成员间比，页内持久集合（listbox / tree）的选中面是品牌淡底 + 淡底前景，另一档取值
@@ -356,7 +356,7 @@ const FAMILIES = [
       },
     ],
   },
-  // 导航当前页与开关型（§7.3）不再按皮肤原文逐条比对：导航当前页三家（tabs line / anchor / navigation-menu）
+  // 导航当前页与开关型不再按皮肤原文逐条比对：导航当前页三家（tabs line / anchor / navigation-menu）
   // 接 Collection Item nav 语境，当前页的透明面 + --xh-fg-brand-strong + medium 由配方给，皮肤只在基础块里把
   // 公开槽映射到 --xh-collection-fg-current / -font-weight-current 桥接槽（公开槽名后缀各随自家状态词汇
   // -active / -current），取值由配方与 check-selection-marker 的映射核保证；开关型的选中面长在不同的结构上——
@@ -364,7 +364,7 @@ const FAMILIES = [
   // Action Control 桥接槽给，原文同值只有改公开槽名才做得到，由 check-selection-marker 按 slider / flat 两类
   // 逐成员核到令牌（surface-raised + border-default + raised、brand-subtle + on-brand-subtle）。
   {
-    // 按钮形触发器：缺省中性，hover / active 的底按承载面阶梯走（§7.2）。已迁移成员都接了 Action Control
+    // 按钮形触发器：缺省中性，hover / active 的底按承载面阶梯走。已迁移成员都接了 Action Control
     // 形态矩阵，悬停 / 按下面不再在皮肤里写 :hover / :active 规则，而是在部件基础规则里把使用者槽映射到
     // 桥接槽 --xh-action-bg-hover / -pressed（兜底 --xh-_action-variant-*），比的是这两条映射声明
     name: '按钮形触发器族',

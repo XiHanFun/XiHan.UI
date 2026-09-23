@@ -143,7 +143,7 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     expect(checkStyle(plainPreset).opacity).toBe('0')
 
     expect(selectedTime.getAttribute('data-state')).toBe('checked')
-    // 浮层瞬态集合的选中：透明底 + 末端对号，不上品牌淡底、不变字色、不加粗（§7.3）
+    // 浮层瞬态集合的选中：透明底 + 末端对号，不上品牌淡底、不变字色、不加粗
     expect(alpha(getComputedStyle(selectedTime).backgroundColor)).toBe(0)
     expect(getComputedStyle(selectedTime).color).toBe(getComputedStyle(plainTime).color)
     expect(getComputedStyle(selectedTime).fontWeight).toBe(getComputedStyle(plainTime).fontWeight)

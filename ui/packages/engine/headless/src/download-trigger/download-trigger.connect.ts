@@ -25,7 +25,7 @@ export function connectDownloadTrigger<T extends PropTypes>(
   const disabled = !!prop('disabled')
   // 与副作用里写进 download 属性的是同一份算法，界面上报的文件名不会与实际写出的那份对不上
   const fileName = resolveDownloadFileName(prop('fileName'))
-  // 缺省中性淡底（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  // 缺省中性淡底（只有 Button 缺省品牌实心）
   const variant = prop('variant') ?? 'subtle'
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)

@@ -27,7 +27,7 @@ describe('connectPopover：两颗按钮接 Action Control', () => {
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
-      // 缺省中性描边（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+      // 缺省中性描边（只有 Button 缺省品牌实心）
       'data-xh-action-variant': 'outline',
     })
     expect(trigger['data-pressed']).toBeUndefined()

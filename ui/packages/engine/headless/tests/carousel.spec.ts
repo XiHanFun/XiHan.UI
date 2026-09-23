@@ -583,7 +583,7 @@ describe('connectCarousel 属性', () => {
       expect(props['data-xh-action-size']).toBe('md')
       expect(props['data-xh-action-variant']).toBeUndefined()
     }
-    // 分页点是 8px 圆点 / 当前项 20px 胶囊（§6.3），不是配方管的按钮盒
+    // 分页点是 8px 圆点 / 当前项 20px 胶囊，不是配方管的按钮盒
     expect((a.getIndicatorProps({ index: 0 }) as Dict)['data-xh-action-control']).toBeUndefined()
   })
 

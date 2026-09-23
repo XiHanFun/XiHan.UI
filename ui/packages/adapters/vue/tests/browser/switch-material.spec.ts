@@ -123,7 +123,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
     const offBorder = resolveColor(track('off'), 'var(--xh-_switch-track-border)')
     const readonlyBorder = resolveColor(track('readonly'), 'var(--xh-_switch-track-border)')
 
-    // 轨道描边与浮层面板、卡片的装饰边同一档（§8.3 所有带边框的控件盒），3:1 留给高对比档
+    // 轨道描边与浮层面板、卡片的装饰边同一档（所有带边框的控件盒），3:1 留给高对比档
     expect(offBorder, '未选中轨道边界').toBe(resolveColor(track('off'), 'var(--xh-border-default)'))
     expect(readonlyBorder, '只读轨道边界').toBe(resolveColor(track('readonly'), 'var(--xh-border-default)'))
     expect(contrast(on.backgroundColor, page), '选中轨道与页面').toBeGreaterThanOrEqual(3)
@@ -149,7 +149,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
       h(XhSwitch, { 'data-testid': 'disabled-on', 'defaultChecked': true, 'disabled': true }),
     ])
     const rest = getComputedStyle(track('live')).backgroundColor
-    // 轨道接 Action Control text 档（§9.1 定尺轨道）：家族给按压与过渡，几何仍是 40 × 22 的轨道，滑块贴起始端
+    // 轨道接 Action Control text 档（定尺轨道）：家族给按压与过渡，几何仍是 40 × 22 的轨道，滑块贴起始端
     expect(track('live').getAttribute('data-xh-action-control')).toBe('')
     expect(track('live').getAttribute('data-xh-action-profile')).toBe('text')
     expect(track('live').getAttribute('data-xh-action-variant')).toBe('outline')

@@ -111,7 +111,7 @@
     cursor: row-resize;
   }
 
-  /* 分隔条是一根线不是一块面：悬停不走面阶梯（300 只留给 pressed，§7.2 第 3 条），
+  /* 分隔条是一根线不是一块面：悬停不走面阶梯（300 只留给 pressed），
      按线取——与字段描边 rest → hover 同向加深一档 */
   [data-scope='splitter'][data-part='resize-trigger']:hover {
     background: var(--xh-splitter-trigger-bg-hover, var(--xh-border-control));

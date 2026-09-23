@@ -18,7 +18,7 @@ const plans = [
 ]
 ```
 
-- 新部件 `item-description`（`getItemDescriptionProps` / `Xh*ItemDescription` / `data-xh-part="item-description"`）跨 text 槽落第 2 行，与快捷键同档同色，**不跟语气**（真源 §7.5）。
+- 新部件 `item-description`（`getItemDescriptionProps` / `Xh*ItemDescription` / `data-xh-part="item-description"`）跨 text 槽落第 2 行，与快捷键同档同色，**不跟语气**。
 - 代铺的树按数据铺：写了 `description` 的条目才多一个部件，没写的与此前完全一致。
 - 不进检索串：连打检索与命令面板的过滤都只取 `item-text` 那一段。
 

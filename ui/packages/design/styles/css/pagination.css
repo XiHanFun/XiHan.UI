@@ -18,7 +18,7 @@
   /* 私有槽同时声明在根与 positioner 上：摊开的页码面板被搬到 portal 落点，
      不是根的后代，继承不过去。面板里的页码格子与主区那排消费的是同一批槽 */
   [data-scope='pagination']:is([data-part='root'], [data-part='positioner']) {
-    /* 作者塞进面板或分页行里的图标按档取字形尺（§6.5）；四类格子上另按家族档位取同一把尺 */
+    /* 作者塞进面板或分页行里的图标按档取字形尺；四类格子上另按家族档位取同一把尺 */
     --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从这两处继承它们，
@@ -69,7 +69,7 @@
     display: none;
   }
 
-  /* 四类格子接 Action Control 的 text 档，缺省中性的 ghost 形态（§7.2 只有 Button 品牌实心）：盒型、三档几何、
+  /* 四类格子接 Action Control 的 text 档，缺省中性的 ghost 形态（只有 Button 品牌实心）：盒型、三档几何、
      透明描边（省略号也占一条，两者内容盒等高，一行里对得齐）、悬停 100 → 按下 200（画布承载）、禁用面、按压缩放与
      过渡都由家族给；这里只把使用者槽映射到桥接槽并保留分页自己的排版。
      等宽的关键：1 与 10 的内容宽度不同，靠最小宽度把它们撑到同一格，行宽才不会随当前页左右抖动 */
@@ -88,7 +88,7 @@
     --xh-action-fg-rest: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-pressed));
-    /* 作者塞进上一页/下一页的图标按档取字形尺（§6.5），与皮肤画的兜底字形同一把尺 */
+    /* 作者塞进上一页/下一页的图标按档取字形尺，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-_action-profile-glyph-size));
 
     flex: none;
@@ -107,7 +107,7 @@
   /* 首末页的上一页 / 下一页是原生 disabled（不可聚焦、进不了 Tab 序列），连接层同时给 data-disabled，
      家族按 data-disabled 画禁用面（透明底 + --xh-fg-disabled）；分页条目从不禁用 */
 
-  /* 当前页（§7.3 格状当前）：data-current 与 aria-current='page' 由连接层成对给出，样式挂在 data 钩子上，
+  /* 当前页（格状当前）：data-current 与 aria-current='page' 由连接层成对给出，样式挂在 data 钩子上，
      无障碍语义留给 aria。实心品牌面 + 配对前景、不加粗——字重一变字形就变宽，页码格子会跟着长一点，
      正是这里要避免的抖动；悬停 / 按下沿 brand → brand-hover → brand-active 走，三态都经桥接槽交给家族画，
      solid 面允许一条顶高光，环色改取面自己的前景 */
@@ -239,7 +239,7 @@
       var(--xh-_pagination-available-h)
     );
     overflow-y: auto;
-    /* 浮层滚动面：滚到底不把滚动量交给页面（§6.6 只给 Overlay 家族滚动面） */
+    /* 浮层滚动面：滚到底不把滚动量交给页面（只给 Overlay 家族滚动面） */
     overscroll-behavior: contain;
     padding: var(--xh-pagination-content-p, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-pagination-content-border, var(--xh-border-default));

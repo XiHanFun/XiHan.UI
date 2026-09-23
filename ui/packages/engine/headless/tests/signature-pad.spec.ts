@@ -359,7 +359,7 @@ describe('connectSignaturePad 属性表', () => {
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
-      // 缺省中性描边（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+      // 缺省中性描边（只有 Button 缺省品牌实心）
       'data-xh-action-variant': 'outline',
     })
     expect((api(h.service).getClearTriggerProps() as Record<string, unknown>)['data-pressed']).toBeUndefined()

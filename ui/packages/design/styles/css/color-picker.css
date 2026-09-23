@@ -217,9 +217,9 @@
     padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
     max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
     overflow-y: auto;
-    /* 浮层滚动面：滚到头不把页面一起带走（§6.6） */
+    /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    /* 面域 + 滑杆 + 通道输入的表单型多列面板，走 floating 材质（§8.4）——实体底 + --xh-border-default 描边 +
+    /* 面域 + 滑杆 + 通道输入的表单型多列面板，走 floating 材质——实体底 + --xh-border-default 描边 +
        --xh-elevation-floating 落影，不透景、不画顶部边界光 */
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-overlay));

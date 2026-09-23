@@ -7,7 +7,7 @@ import { pressPointer, releasePointer } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-// 页内持久集合的选中（真源 §7.3）：品牌淡底行面 + 淡底前景 + 前导对号；
+// 页内持久集合的选中：品牌淡底行面 + 淡底前景 + 前导对号；
 // 悬停 100 → 按下 200 只换面，选中行悬停 20%；真实选择不改变行几何。
 let app: App | null = null
 let host: HTMLElement | null = null

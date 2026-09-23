@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：选中与当前态按语义分类，每类只有一种标记。
 //
-// 真源 component-design.md §7.3：
+// 设计真源的选中与当前态分类：
 // 浮层瞬态集合与树（Select / Combobox / TreeSelect / Cascader / 时间列 / Mention / Tree）= 透明底 + 行尾对号，
 //   正文颜色与字重保持 rest；
 // 页内持久集合（Listbox / Table row / Transfer / TagGroup / SideNav 当前项）
@@ -33,7 +33,7 @@ import { colorPositionOf, conditional, innermost, partOf, privateSlots, readSkin
 const OVERLAY_STATES = [':hover', ':active', '[data-pressed]', ':focus', '[data-highlighted]', '[data-disabled]', '[aria-disabled', '[data-in-range]', '[data-today]', '[data-indeterminate]', '[data-dragging]', '[data-loading]', '::before', '::after', '[data-tone', '[data-variant', '[hidden]', ':empty', '[data-error]', '[aria-busy']
 
 /**
- * 组件:部件 → 语义类与状态选择器。按真源 §7.3 与 §4.1 登记。
+ * 组件:部件 → 语义类与状态选择器，按选中语义与部件归族登记。
  * kind：overlay / page / nav / nav-terminal / grid / slider / flat / open。
  * 键里的 `宿主:scope/部件` 与 check-press-feedback 同形：皮肤把规则写在了内嵌的别家部件上。
  */

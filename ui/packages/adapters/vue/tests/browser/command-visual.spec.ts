@@ -55,7 +55,7 @@ async function mount(options: { many?: boolean } = {}): Promise<void> {
     el.style.transition = 'none'
 }
 
-describe('command 面板与命令（真源 §6.3 / §7.3 / §8 / §9.2）', () => {
+describe('command 面板与命令', () => {
   it('面板是 overlay 圆角 + sheet 三件套：material-elevated 的边 / 底 / 影，边界由描边承担', async () => {
     await mount()
     const content = getComputedStyle(part('content'))

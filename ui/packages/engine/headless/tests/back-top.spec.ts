@@ -131,7 +131,7 @@ describe('backTopMachine 露面与收起', () => {
     expect(trigger['data-xh-action-profile']).toBe('floating')
     expect(trigger['data-xh-action-display']).toBe('always')
     expect(trigger['data-xh-action-size']).toBe('md')
-    // 缺省中性：描边 + 磨砂面（真源 §7.2 第 2 条），不传 variant 时显式落 outline
+    // 缺省中性：描边 + 磨砂面，不传 variant 时显式落 outline
     expect(trigger['data-xh-action-variant']).toBe('outline')
     expect((b.api().getRootProps() as Record<string, unknown>)['data-variant']).toBe('outline')
     expect(trigger['data-pressed']).toBeUndefined()

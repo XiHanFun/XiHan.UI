@@ -69,7 +69,7 @@ function link(href: string): HTMLElement {
   return host!.querySelector<HTMLElement>(`[data-scope="navigation-menu"][data-part="link"][href="${href}"]`)!
 }
 
-describe('navigation-menu 入口与面板链接（真源 §7.2 / §7.3 / §9.2）', () => {
+describe('navigation-menu 入口与面板链接', () => {
   it('展开着的入口是与悬停同档的中性面，不用品牌色；按下只换面到 200、不缩放', async () => {
     await mountNav()
     const open = trigger('products')

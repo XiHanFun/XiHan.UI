@@ -163,8 +163,8 @@ export function connectFloatingPanel<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'data-state': stateAttr,
-      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
-      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心）
+      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出；
+      // 缺省 outline 描边（只有 Button 缺省品牌实心）
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
@@ -326,7 +326,7 @@ export function connectFloatingPanel<T extends PropTypes>(
         'data-target-window-state': item.windowState,
         'data-state': active ? 'on' : 'off',
         'data-disabled': dataAttr(disabled),
-        // 标题栏上的单图标钮：icon 档 sm、ghost 面，按下即处于该形态的 on 态由皮肤按无滑块开关取品牌淡底（§7.3）
+        // 标题栏上的单图标钮：icon 档 sm、ghost 面，按下即处于该形态的 on 态由皮肤按无滑块开关取品牌淡底
         'data-xh-action-control': '',
         'data-xh-action-profile': 'icon',
         'data-xh-action-display': 'always',

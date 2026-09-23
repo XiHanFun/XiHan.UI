@@ -38,11 +38,11 @@
 
   /*
    * 取下一页的按钮：与哨兵同一条通路的键盘入口，摆在列表末尾自成一行——铺满一行的独立动作条目，
-   * 接 Action Control 的 row 档、outline 形态（§9.2）：宽度由容器给、高度随内容、按下只换面不缩放；
+   * 接 Action Control 的 row 档、outline 形态：宽度由容器给、高度随内容、按下只换面不缩放；
    * 盒几何、中性描边与透明底、悬停 / 按下 / 禁用面、焦点环与粗指针热区全由家族给，
    * 白底承载 hover 100 → pressed 200。这里只把使用者槽映射到桥接槽，并把文案居中：
    * 它是一行里唯一的东西，靠起始缘会像一条没对齐的列表项。
-   * 行高不吃家族的单行档：row 档允许换行、高度随内容，折行的文案走正文行高（§6.4）
+   * 行高不吃家族的单行档：row 档允许换行、高度随内容，折行的文案走正文行高
    */
   [data-scope='infinite-scroll'][data-part='load-more-trigger'] {
     --xh-action-gap: var(--xh-infinite-scroll-load-more-gap, var(--xh-_action-profile-gap));

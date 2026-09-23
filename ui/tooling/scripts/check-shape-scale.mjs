@@ -11,7 +11,7 @@
 //
 // 允许的写法：--xh-shape-* / 组件槽 --xh-<comp>-* / 私有槽 --xh-_* / 0 / inherit / 百分比 / calc。
 //
-// 第三条判据是形状身份（真源 §6.3 / §4.1）：IDENTITY 逐部件登记该取哪一档，登记部件的
+// 第三条判据是形状身份：IDENTITY 逐部件登记该取哪一档，登记部件的
 // radius 兜底值（私有槽在赋值点解）必须等于登记档；取 circle / pill 的部件必须在表里；
 // 同一规则块里 inline-size 与 block-size 同槽 / 同值的正方盒不得取 pill（用 pill 冒充圆）。
 // 登记为 floating 的悬浮圆钮，connect 还得投影 data-xh-action-profile: 'floating'——手写圆钮不算。
@@ -60,7 +60,7 @@ const NO_SLOT = {
 
 /**
  * 形状身份表：键「组件:部件[::伪元素][属性限定]」，值是该部件的圆角档。
- * 按真源 §6.3 身份表与 §4.1 归族表登记；同名部件跨组件语义不同，逐 scope 列出，不通配。
+ * 按形状身份表与部件归族表登记；同名部件跨组件语义不同，逐 scope 列出，不通配。
  * 值写成 { shape, floating: true } 的是悬浮单图标动作，还要接 Action Control floating profile。
  * circle / pill 的登记部件形状即身份，可以没有使用者覆盖槽（与 NO_SLOT 并存）。
  */
@@ -89,7 +89,7 @@ const IDENTITY = {
   'approval:footer::before': 'circle',
   'color-swatch-picker:indicator::before': 'circle',
   'skeleton:item[data-shape=\'circle\']': 'circle',
-  // 位置指示点：8px 圆点，当前项拉长成 20px 胶囊（§6.3）；粗指针下点由 ::after 画、进度条由 ::before 画，同一张表
+  // 位置指示点：8px 圆点，当前项拉长成 20px 胶囊；粗指针下点由 ::after 画、进度条由 ::before 画，同一张表
   'carousel:indicator': 'circle',
   'carousel:indicator[data-current]': 'pill',
   'carousel:indicator::after': 'circle',
@@ -152,7 +152,7 @@ const IDENTITY = {
   'sortable:drop-indicator': 'pill',
   'skeleton:item[data-shape=\'text\']': 'pill',
 
-  // 引导的分页点：圆点 circle，当前那颗拉长成 pill（§6.3 分页点统一 tour 款）
+  // 引导的分页点：圆点 circle，当前那颗拉长成 pill（分页点统一 tour 款）
   'tour:progress-dot': 'circle',
   'tour:progress-dot[data-current]': 'pill',
   // control：在 chrome 内或随文的按钮与字段
@@ -401,7 +401,7 @@ if (slotless.length > 0) {
 }
 
 if (identity.length > 0) {
-  console.error('[check-shape-scale] ✗ 形状身份没按 §6.3 走：')
+  console.error('[check-shape-scale] ✗ 形状身份没按形状档走：')
   for (const s of identity)
     console.error(`  ${s}`)
   console.error('\n身份表 IDENTITY 逐部件登记；circle 只给等宽高对象与悬浮单图标钮，pill 只给状态 chip 与一维对象，正方盒不得用 pill。存量登 family-backlog.json shape 段。')

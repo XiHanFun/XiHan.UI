@@ -412,7 +412,7 @@ export function connectTransfer<T extends PropTypes>(
         ...press(`select-all:${panel.side}`, off),
         'type': 'button',
         'role': 'checkbox',
-        // 「方框 + 文案」的整行命中区（§9.2）：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面由家族给，
+        // 「方框 + 文案」的整行命中区：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面由家族给，
         // 按下只换面不缩放（皮肤钉 --xh-action-scale-pressed: none）；xs 档 24px 是命中地板，方框 16px 居中其间
         'data-xh-action-control': '',
         'data-xh-action-profile': 'text',
@@ -518,7 +518,7 @@ export function connectTransfer<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气
     getItemDescriptionProps: item => normalize.element({
       ...parts['item-description'].attrs,
       ...itemState(item),
@@ -533,7 +533,7 @@ export function connectTransfer<T extends PropTypes>(
     }),
 
     // 视觉方框，读屏不需要它——勾选态由条目自己的 aria-selected 承担。
-    // 它是前导勾选部件、自己就是选中标记（§7.3 页内持久集合），不占家族的 indicator 槽。
+    // 它是前导勾选部件、自己就是选中标记（页内持久集合），不占家族的 indicator 槽。
     // oneWay 下的 target 侧勾不了任何东西，这一格也就不该在场
     getItemCheckboxProps: item => normalize.element({
       ...parts['item-checkbox'].attrs,

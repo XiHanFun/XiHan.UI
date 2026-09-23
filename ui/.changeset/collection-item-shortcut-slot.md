@@ -12,4 +12,4 @@ Collection Item 家族的 `shortcut` 槽终于被真正画出来：与说明同�
 - 颜色跟着 `--xh-collection-description-fg` 那支 muted 走，因此逐态跟随（rest / hover / selected / disabled），也**不跟随语气**——一行里出现两种彩字，语气就失去指向。
 - `white-space: nowrap`：它是一串按键记号，折行会被读成两个组合。
 
-设计真源补 §7.5「集合行的次级文字」，把说明与快捷键两处的落位、字号、颜色与语气边界写在一起。
+设计真源补「集合行的次级文字」一节，把说明与快捷键两处的落位、字号、颜色与语气边界写在一起。

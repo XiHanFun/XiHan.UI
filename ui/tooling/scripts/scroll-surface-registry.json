@@ -1,5 +1,5 @@
 {
-  "$description": "组件内滚动面登记表，真源是 component-design.md §6.6 的两档表。surfaces 的键是「组件:部件」（typography 的 prose 里那个 <pre> 写成 typography:prose(pre)，家族配方写成 field-chrome:input[layout=textarea]）；mode 是 drawn（Scrollbar 组件接线的自绘条）或 native（reset 层给的原生细条）；overscroll / gutter 是该面该不该写 overscroll-behavior: contain / scrollbar-gutter: stable；wiring 只在 drawn 上出现，缺省 scrollbars（useScrollbars / ScrollbarsController 接线），anatomy 表示条子是组件自己的解剖部件（ScrollArea）；layerNode 只在 drawn 上出现，写层注册的 node 指向的、包着这一面的浮层部件（select 的 list 住在 content 里），门禁据此认出该层并核它的 branches 记进了壳。尚未达标的面记在 family-backlog.json 的 scroll 段（键「组件:部件:问题码」），命中即从表里移除，登记了却没命中判红。",
+  "$description": "组件内滚动面登记表：自绘条 / 原生细条两档。surfaces 的键是「组件:部件」（typography 的 prose 里那个 <pre> 写成 typography:prose(pre)，家族配方写成 field-chrome:input[layout=textarea]）；mode 是 drawn（Scrollbar 组件接线的自绘条）或 native（reset 层给的原生细条）；overscroll / gutter 是该面该不该写 overscroll-behavior: contain / scrollbar-gutter: stable；wiring 只在 drawn 上出现，缺省 scrollbars（useScrollbars / ScrollbarsController 接线），anatomy 表示条子是组件自己的解剖部件（ScrollArea）；layerNode 只在 drawn 上出现，写层注册的 node 指向的、包着这一面的浮层部件（select 的 list 住在 content 里），门禁据此认出该层并核它的 branches 记进了壳。尚未达标的面记在 family-backlog.json 的 scroll 段（键「组件:部件:问题码」），命中即从表里移除，登记了却没命中判红。",
   "surfaces": {
     "select:list": {
       "mode": "drawn",
@@ -167,19 +167,19 @@
       "mode": "drawn",
       "overscroll": false,
       "gutter": false,
-      "why": "页内定高小列表，真源 §6.6 点名走自绘条"
+      "why": "页内定高小列表，点名走自绘条"
     },
     "transfer:list": {
       "mode": "drawn",
       "overscroll": false,
       "gutter": false,
-      "why": "穿梭框两侧的定高小列表，真源 §6.6 点名走自绘条"
+      "why": "穿梭框两侧的定高小列表，点名走自绘条"
     },
     "json-viewer:tree": {
       "mode": "native",
       "overscroll": false,
       "gutter": false,
-      "why": "页内结构容器（与 Tree 同类，真源 §6.6 自绘条只给浮层与定高小列表），深层缩进横向溢出；三端不再接自绘条"
+      "why": "页内结构容器（与 Tree 同类，自绘条只给浮层与定高小列表），深层缩进横向溢出；三端不再接自绘条"
     },
     "json-viewer:text": {
       "mode": "native",
@@ -234,7 +234,7 @@
       "mode": "native",
       "overscroll": true,
       "gutter": false,
-      "why": "浮在页面之上的 Overlay 家族滚动面：原生细条（§6.6 FloatingPanel body 走 reset 层统一细条），滚到头不把页面一起带走；内容高度不动态变化，不写 gutter"
+      "why": "浮在页面之上的 Overlay 家族滚动面：原生细条（FloatingPanel body 走 reset 层统一细条），滚到头不把页面一起带走；内容高度不动态变化，不写 gutter"
     },
     "layout:sider": {
       "mode": "native",
@@ -246,7 +246,7 @@
       "mode": "native",
       "overscroll": true,
       "gutter": false,
-      "why": "侧导航折叠态的 popout 分支列表：真源 §6.6 把 SideNav popout 归原生细条，但它是锚定浮层里的滚动面，到底后不把滚动链穿透给页面"
+      "why": "侧导航折叠态的 popout 分支列表：SideNav popout 归原生细条，但它是锚定浮层里的滚动面，到底后不把滚动链穿透给页面"
     },
     "log:viewport": {
       "mode": "native",

@@ -50,7 +50,7 @@ export function connectCheckbox<T extends PropTypes>(
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-required': required ? 'true' : 'false',
-      // 方框是定尺的独立动作控件（§9.1「方框」）：接 Action Control icon 档、outline 形态——盒型、悬停 / 按下 / 禁用面、
+      // 方框是定尺的独立动作控件（「方框」）：接 Action Control icon 档、outline 形态——盒型、悬停 / 按下 / 禁用面、
       // 0.97 缩放与换底、粗指针 44px 热区、焦点环由家族配方给，皮肤只把使用者槽映射到桥接槽；
       // 边长仍按 --xh-control-indicator-* 走（皮肤覆盖 --xh-action-visual-size），data-xh-action-size 只定字形档
       'data-xh-action-control': '',

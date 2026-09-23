@@ -100,7 +100,7 @@
     --xh-field-border-hover: var(--xh-field-control-border-hover, var(--xh-_field-variant-border-hover));
     --xh-field-border-focus: var(--xh-field-control-border-focus, var(--xh-_field-variant-border-focus));
     --xh-field-border-invalid: var(--xh-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
-    /* 焦点环与家族同一支公共环，不再留逐组件的环色槽（§7.2.5 焦点边与环一律公共） */
+    /* 焦点环与家族同一支公共环，不再留逐组件的环色槽（焦点边与环一律公共） */
     --xh-field-ring-focus: var(--xh-ring-focus);
     --xh-field-ring-invalid: var(--xh-ring-invalid);
     --xh-field-shadow-rest: var(--xh-field-control-shadow, none);

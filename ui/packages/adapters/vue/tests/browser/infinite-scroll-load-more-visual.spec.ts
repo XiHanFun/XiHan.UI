@@ -1,5 +1,5 @@
 // InfiniteScroll 的取下一页按钮走 Action Control row outline 档：铺满一行、高度随内容、中性描边透明底，
-// 白底承载 hover 100 → pressed 200，按下只换面不缩放（§9.2）。盒尺寸、各态底色与按压几何依赖真实布局与伪类，
+// 白底承载 hover 100 → pressed 200，按下只换面不缩放。盒尺寸、各态底色与按压几何依赖真实布局与伪类，
 // 只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

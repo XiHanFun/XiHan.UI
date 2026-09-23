@@ -331,7 +331,7 @@ export interface XhPaginationPositionerProps extends ComponentPropsWithRef<'div'
 export function XhPaginationPositioner({ children, container, ...rest }: XhPaginationPositionerProps): ReactNode {
   const ctx = usePaginationContext()
   // 折叠页码列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
-  // 浮层里的条子走 4px 档（§6.6）
+  // 浮层里的条子走 4px 档
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef}>

@@ -14,7 +14,7 @@
   }
 
   [data-scope='steps'][data-part='root'] {
-    /* 作者放进标题 / 说明里的图标按档取尺，缺省 sm（§6.5）。走过的步里皮肤画的兜底对号不读这支：
+    /* 作者放进标题 / 说明里的图标按档取尺，缺省 sm。走过的步里皮肤画的兜底对号不读这支：
        它是指示符，与序号圆点同走 --xh-control-indicator-* 一族——圆点在自己身上把 --xh-icon-size
        改接到 --xh-steps-indicator-mark-size，兜底对号与作者塞进圆点里的 XhIcon 读同一把尺 */
     --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
@@ -28,14 +28,14 @@
     /* 语气落在当前步的标记、走过那几步的对号与连接线上：强调色画描边与填充，
        accent-text 是普通底上的强调文字（走过与当前步的标题），on-accent 是实心底上的前景。
        没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色。
-       走过的步不再用品牌淡底（§7.3 brand-subtle 退出 completed 语义），淡底那两支私有槽随之撤掉 */
+       走过的步不再用品牌淡底（brand-subtle 退出 completed 语义），淡底那两支私有槽随之撤掉 */
     --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
     /* 走过的步里那枚对号：中性淡底上的品牌色标记，不用标题那档更深的字色 */
     --xh-_steps-accent-mark: var(--xh-_tone-fg, var(--xh-fg-brand));
     --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
     /* 触发器是序号圆点的承载面：圆点静息就坐在 --xh-bg-subtle（100）的淡底上，阶梯按淡底容器走
-       （hover 200 → pressed 300，§7.2 第 3 条）。两支私有槽是这一档的唯一来源——触发器拿它们给
+       （hover 200 → pressed 300）。两支私有槽是这一档的唯一来源——触发器拿它们给
        --xh-action-host-bg-* 赋值（桥接槽只写不读），圆点悬停 / 按下读同一支私有槽，即与宿主的 host 槽同源 */
     --xh-_steps-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_steps-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -134,7 +134,7 @@
     align-items: flex-start;
   }
 
-  /* 触发器是「序号 + 标题 + 说明」的整块内容行（§9.2）：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、
+  /* 触发器是「序号 + 标题 + 说明」的整块内容行：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、
      手型、过渡与焦点环由家族给，按下只换面不缩放（row 档专属按压块 scale: none）；这里只把使用者槽映射到桥接槽。
      触发器既是 Action Control 又是圆点的承载面：自己坐画布走 hover 100 → pressed 200，由 --xh-action-bg-* 钉住；
      --xh-action-host-bg-* 只对圆点生效（圆点自己是 100 的淡底，坐在触发器面上再上一档到 200 / 300）。
@@ -183,9 +183,9 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号（§7.3）。 */
+  /* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号。 */
   [data-scope='steps'][data-part='indicator'] {
-    /* 圆点里的字形是指示符（§6.5）：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
+    /* 圆点里的字形是指示符：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
        不读 root 上只管作者标题 / 说明图标的 --xh-steps-icon-size；作者塞进圆点的 XhIcon 与兜底对号同一把尺。
        圆点自己走 space / control-h 的尺（最小 28px），不随密度，两档字形在三档圆点里都留得出边距 */
     --xh-icon-size: var(--xh-steps-indicator-mark-size, var(--xh-control-indicator-size));
@@ -217,8 +217,8 @@
     display: none;
   }
 
-  /* 圆点是格状当前的标记（§4.1 / §7.3），但不是激活宿主：宿主是投影了 row 档的触发器；圆点在宿主的
-     :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放（§9.2）——
+  /* 圆点是格状当前的标记，但不是激活宿主：宿主是投影了 row 档的触发器；圆点在宿主的
+     :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放——
      圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
      当前步的实心面按下换语气 active 档 */
   [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
@@ -253,7 +253,7 @@
     box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
   }
 
-  /* 走过的步：中性淡底（透明边位，§8.3）承一枚品牌色对号；标了语气的步对号跟语气的前景走 */
+  /* 走过的步：中性淡底（透明边位）承一枚品牌色对号；标了语气的步对号跟语气的前景走 */
   [data-scope='steps'][data-part='indicator'][data-state='completed'] {
     border-color: var(--xh-steps-indicator-border-completed, transparent);
     background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-subtle));
@@ -307,7 +307,7 @@
     color: var(--xh-steps-title-fg-toned, var(--xh-_steps-accent-text));
   }
 
-  /* 说明走说明角色（§6.4）：13 / fg-muted / leading-normal，不随 size 档 */
+  /* 说明走说明角色：13 / fg-muted / leading-normal，不随 size 档 */
   [data-scope='steps'][data-part='description'] {
     grid-column: 2;
     color: var(--xh-steps-description-fg, var(--xh-fg-muted));

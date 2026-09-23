@@ -1,4 +1,4 @@
-// 验证 Timeline 条目文字与圆点 / 连线在真实浏览器里的排版档与形状（真源 §6.3 / §6.4）。
+// 验证 Timeline 条目文字与圆点 / 连线在真实浏览器里的排版档与形状。
 
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

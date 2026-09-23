@@ -42,7 +42,7 @@
     --xh-_log-font-size: var(--xh-text-secondary-size);
     --xh-_log-content-px: var(--xh-space-3);
 
-    /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 描边与淡底互斥），
+    /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（描边与淡底互斥），
        与 code-view / diff-view / json-viewer 同走 solid */
     position: relative;
     display: flex;
@@ -123,7 +123,7 @@
 
   /* 回到底部：浮在视口右下角，收起时不卸载只隐藏。盒型、悬停 / 按下面与缩放由 Action Control 的
      floating 档给（circle 正方盒、ghost 形态：白底承载 hover 100 → pressed 200）；材质随角落浮钮族走
-     frosted 四件套（底 + 边 + 影 + 磨砂，§8），这里只把使用者槽映射到桥接槽：
+     frosted 四件套（底 + 边 + 影 + 磨砂），这里只把使用者槽映射到桥接槽：
      字形按 xs 档取 --xh-_action-profile-glyph-size（16px），与 back-top 同一把尺 */
   [data-scope='log'][data-part='scroll-to-end-trigger'] {
     --xh-_log-scroll-to-end-trigger-shadow: var(--xh-log-scroll-to-end-trigger-shadow, var(--xh-material-frosted-shadow));

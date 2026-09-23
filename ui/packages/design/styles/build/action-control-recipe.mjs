@@ -22,7 +22,7 @@ const LAYOUT_JUSTIFY = ['center', 'start', 'space-between']
 const LAYOUT_PRESS = ['scale', 'surface']
 /* 承载面阶梯只对静息透明的形态有意义：ghost / outline 的悬停与按下面按容器下发的阶梯取值。 */
 const HOST_LADDER_VARIANTS = ['outline', 'ghost']
-/* 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档（真源 §9.1）。 */
+/* 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档。 */
 const PRESSED = ':is(:active, [data-pressed])'
 /* 深色实心只覆盖非禁用态：disabled 仍走中性面。 */
 const DARK_SOLID_STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'loading']

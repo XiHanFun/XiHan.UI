@@ -172,7 +172,7 @@ describe('实心标签在组里的三档状态', () => {
 })
 
 describe('非实心标签在组里仍进中性灰轻档', () => {
-  // 真源 §7.2 第 3 条：坐在白底上的控件 hover 走 100 档 --xh-bg-subtle，200 档留给 pressed
+  // 坐在白底上的控件 hover 走 100 档 --xh-bg-subtle，200 档留给 pressed
   it.each<Variant | undefined>(['subtle', 'outline', undefined])('variant=%s 悬停时底换成 --xh-bg-subtle', async (variant) => {
     document.documentElement.dataset.theme = 'light'
     host = document.createElement('div')

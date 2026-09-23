@@ -204,7 +204,7 @@ export function connectSteps<T extends PropTypes>(
         'id': triggerId(item.index),
         'type': 'button',
         'role': 'tab',
-        // 序号 + 标题 + 说明的整块内容行按 §9.2 归行级：接 Action Control row 档、ghost 形态，按下只换面不缩放；
+        // 序号 + 标题 + 说明的整块内容行归行级：接 Action Control row 档、ghost 形态，按下只换面不缩放；
         // 圆点是行内 aria-hidden 的格状当前标记，不投影配方，随触发器读宿主的 host 槽换面
         'data-xh-action-control': '',
         'data-xh-action-profile': 'row',

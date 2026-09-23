@@ -13,7 +13,7 @@ const scrollbarsWired: StepWithExpect = {
       throw new Error('找不到 popconfirm 的 positioner 部件')
     const bar = shell.querySelector('[data-scope="scrollbar"][data-part="root"]')
     if (!bar)
-      throw new Error('positioner 里没有自绘条：气泡确认的 content 是自绘条滚动面（§6.6），三端都要在浮层壳上接线')
+      throw new Error('positioner 里没有自绘条：气泡确认的 content 是自绘条滚动面，三端都要在浮层壳上接线')
   },
 }
 
@@ -84,7 +84,7 @@ export const popconfirmSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'aria-controls': '@part(content)',
             'data-state': 'closed',
-            // 页面上的独立文字按钮：Action Control text 档 md，缺省中性描边（§7.2 第 2 条）
+            // 页面上的独立文字按钮：Action Control text 档 md，缺省中性描边
             'data-xh-action-control': '',
             'data-xh-action-profile': 'text',
             'data-xh-action-display': 'always',

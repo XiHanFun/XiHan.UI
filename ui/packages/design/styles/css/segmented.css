@@ -19,17 +19,17 @@
     --xh-_segmented-px: var(--xh-control-px-md);
     --xh-_segmented-gap: var(--xh-control-gap-md);
     --xh-_segmented-font-size: var(--xh-control-font-md);
-    /* 指示器（有滑块开关的白色抬起面，§7.3）的底、描边与选中段的文字色；没写 data-tone 时就是这里的取值 */
+    /* 指示器（有滑块开关的白色抬起面）的底、描边与选中段的文字色；没写 data-tone 时就是这里的取值 */
     --xh-_segmented-indicator-bg: var(--xh-bg-surface-raised);
     --xh-_segmented-fg-selected: var(--xh-fg-default);
-    /* 轨道是淡底承载面：段坐在它上面，悬停 200 → 按下 300（§7.2），host 槽向内下发同一副阶梯 */
+    /* 轨道是淡底承载面：段坐在它上面，悬停 200 → 按下 300，host 槽向内下发同一副阶梯 */
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
     /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
        段各自带圆角，折行不会切角；不改成横向滚动是因为段离轨道内沿只有一格衬距，
        轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉。
-       轨道是一块淡底面（§8.3）：--xh-bg-subtle 底 + 同宽透明占位边 + 无影，边界由滑块的描边与轨道底色的落差承担 */
+       轨道是一块淡底面：--xh-bg-subtle 底 + 同宽透明占位边 + 无影，边界由滑块的描边与轨道底色的落差承担 */
     position: relative;
     display: inline-flex;
     flex-wrap: wrap;
@@ -149,7 +149,7 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    /* 段是轨道里铺开的一段（§9.2 Segmented item 归行级），按下只换面不缩放：transition 里没有 scale */
+    /* 段是轨道里铺开的一段（Segmented item 归行级），按下只换面不缩放：transition 里没有 scale */
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -170,14 +170,14 @@
   }
 
   /* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调。
-     底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中；段坐在淡底轨道里，悬停取 200（§7.2） */
+     底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中；段坐在淡底轨道里，悬停取 200 */
   [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {
     background-color: var(--xh-segmented-item-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-segmented-item-fg-hover, var(--xh-fg-default));
   }
 
   /* 按下去要有回应：未选中段换到按下面（淡底承载 300），几何不动；只读段不压。
-     选中段不叠按下面：它压着的白色滑块本身就是选中身份（§7.3 有滑块开关无叠加态） */
+     选中段不叠按下面：它压着的白色滑块本身就是选中身份（有滑块开关无叠加态） */
   [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
     background-color: var(--xh-segmented-item-bg-pressed, var(--xh-bg-subtle-active));
     transition-duration: var(--xh-motion-duration-press);
@@ -222,7 +222,7 @@
     inset-block-start: var(--xh-_segmented-indicator-y);
     inline-size: var(--xh-_segmented-indicator-w);
     block-size: var(--xh-_segmented-indicator-h);
-    /* 白色抬起面三件（§7.3 有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
+    /* 白色抬起面三件（有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
        尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
     border: var(--xh-stroke-thin) solid var(--xh-segmented-indicator-border, var(--xh-border-default));
     border-radius: var(--xh-segmented-indicator-radius, var(--xh-shape-inset));

@@ -1,5 +1,5 @@
 // 侧栏导航自绘的状态字形——分支行尾的展开方向 chevron——是指示符，不是控件内图标：
-// 它与自己所在的盒同属 --xh-control-indicator-* 一族（§6.5），--xh-side-nav-icon-size / --xh-icon-size
+// 它与自己所在的盒同属 --xh-control-indicator-* 一族，--xh-side-nav-icon-size / --xh-icon-size
 // 只管作者放进行里的图标。此前 chevron 读家族按档下发到行的 --xh-icon-size（md 20px），指示符盒又没有
 // 自己的尺、被字形撑到 20×20：comfortable 下比同一栏里 16px 的指示符档大一圈，compact 下方盒收到 14 时它仍是 20。
 // 两档密度一起量：指示符档 comfortable 16 / compact 14，作者图标两档都恒 20。

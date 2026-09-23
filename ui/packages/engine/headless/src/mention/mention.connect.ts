@@ -400,7 +400,7 @@ export function connectMention<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气
     getItemDescriptionProps: item => normalize.element({
       ...parts['item-description'].attrs,
       ...itemStateAttrs(item),

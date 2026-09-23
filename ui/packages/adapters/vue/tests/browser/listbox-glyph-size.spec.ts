@@ -1,5 +1,5 @@
 // 列表框自绘的状态字形——行尾对号所在的标记盒与盒里皮肤画的兜底勾——是指示符，不是控件内图标：
-// 它们同属 --xh-control-indicator-* 一族（§6.5），条目上由家族按档下发的 --xh-icon-size（桥自
+// 它们同属 --xh-control-indicator-* 一族，条目上由家族按档下发的 --xh-icon-size（桥自
 // --xh-listbox-icon-size，md 20px）只管作者直接放进条目里的图标。
 // 此前标记盒与兜底勾都读行上的 --xh-icon-size：20 的盒与勾比 16px 的指示符档大一圈，compact 下指示符
 // 收到 14 时它们仍是 20。两档密度一起量：盒与勾同边长（对号不是勾选格，不取 × 0.75，与 Menu 族同口径），
@@ -116,7 +116,7 @@ describe.each(['comfortable', 'compact'] as const)('列表框自绘状态字形�
     }
   })
 
-  it('选中项行尾的兜底勾与盒同边长，随指示符档换档；对号落在正文之后（§7.5 indicator 列在行尾）', async () => {
+  it('选中项行尾的兜底勾与盒同边长，随指示符档换档；对号落在正文之后（indicator 列在行尾）', async () => {
     await mount(density)
     const indicator = indicatorSize()
     const mark = indicatorOf('apple')

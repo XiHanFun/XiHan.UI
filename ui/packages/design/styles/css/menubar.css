@@ -51,8 +51,8 @@
 
   /* 入口归 Collection Item 展开路径 / 打开中（nav 语境）：几何、字号与面全经家族桥接槽。静息字色取 default
      （菜单名不是次要文字，不取 nav 缺省的 muted），悬停走白底承载 hover 100，展开着的那一张由连接层投影
-     data-in-path，家族给与悬停同档的中性面——打开中不是选中，不用品牌色、不接语气、不加粗（§7.3）；
-     按下 pressed 200 只换面不缩放（§9.2）；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
+     data-in-path，家族给与悬停同档的中性面——打开中不是选中，不用品牌色、不接语气、不加粗；
+     按下 pressed 200 只换面不缩放；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
      本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 background / color / cursor */
   [data-scope='menubar'][data-part='trigger'] {
     --xh-collection-block-padding: var(--xh-menubar-trigger-py, var(--xh-_menubar-trigger-py));
@@ -132,7 +132,7 @@
      缺省档写在第一条：trigger 与条目的行内内缩都走 control-px 档（随密度轴）、纵向走 space 档，换档各挪一级 */
   [data-scope='menubar']:is([data-part='root'], [data-part='positioner']) {
     /* 条目外的字形（分组标题、入口）按档取尺，缺省 md，随 data-size 换档；同样声明在 positioner 上，被搬走的
-       浮层才拿得到；条目里作者放的图标由家族随 data-xh-collection-size 下发（§6.5）。菜单栏自绘的状态字形（标记位的盒、
+       浮层才拿得到；条目里作者放的图标由家族随 data-xh-collection-size 下发。菜单栏自绘的状态字形（标记位的盒、
        盒里兜底的勾、子菜单的展开 chevron）不读这支：它们是指示符，走 --xh-control-indicator-* 一族——标记位在
        自己身上把 --xh-icon-size 改接到盒的尺，子菜单箭头走 --xh-menubar-submenu-indicator-size */
     --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-md));
@@ -186,7 +186,7 @@
     -webkit-backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
     backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
     /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
-       浮层滚动面：到底后不把滚动链穿透给页面（§6.6） */
+       浮层滚动面：到底后不把滚动链穿透给页面 */
     overflow-y: auto;
     overscroll-behavior: contain;
     pointer-events: auto;
@@ -305,7 +305,7 @@
 
   /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
      description 按 order 独占下一行，箭头仍留在主行末端。
-     箭头是指示符（§6.5）：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
+     箭头是指示符：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
      按图标档取的 20px 会比 16px 的标记位盒大一圈 */
   [data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after {
     content: '';
@@ -337,7 +337,7 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）按作者写入的位置留在主行，不为没写的条目强制占列。盒是指示符（§6.5）：按指示符档
+  /* 标记位（勾选符号 / 图标）按作者写入的位置留在主行，不为没写的条目强制占列。盒是指示符：按指示符档
      取尺，与 Menu / ContextMenu 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
      按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
      皮肤画的兜底勾与作者塞进标记位的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75）；

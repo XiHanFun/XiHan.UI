@@ -1,5 +1,5 @@
 {
-  "$description": "Collection Item 家族配方：尺寸节奏、内容列、上下文与状态矩阵只有这一份生成真源；组件只投影角色、上下文与状态事实。浮层集合（overlay）选中 = 透明底 + 行尾对号；页内持久集合（page）选中 = 品牌淡底行面 + 前导对号，导航当前页（current）= 品牌淡底行面 + 起始侧 2px 指示条；横向导航（nav：Tabs line trigger / Anchor link / Breadcrumb link / Menubar 与 NavigationMenu trigger）自带一整套白底承载阶梯：rest 透明面 + muted 字，hover 100 → pressed 200 只换面，open-path 与 hover 同档，current = 透明面 + --xh-fg-brand-strong + medium（指示条不由配方画），terminal = 不可点的当前页（--xh-fg-default + medium，无 hover / pressed）。page 选中态的说明行保留 muted 前景，与正文维持层级；分类依据见设计真源 §7.2「浮层瞬态 vs 页内持久」与 §7.3「导航当前页」。",
+  "$description": "Collection Item 家族配方：尺寸节奏、内容列、上下文与状态矩阵只有这一份生成真源；组件只投影角色、上下文与状态事实。浮层集合（overlay）选中 = 透明底 + 行尾对号；页内持久集合（page）选中 = 品牌淡底行面 + 行尾对号，导航当前页（current）= 品牌淡底行面 + 起始侧 2px 指示条；横向导航（nav：Tabs line trigger / Anchor link / Breadcrumb link / Menubar 与 NavigationMenu trigger）自带一整套白底承载阶梯：rest 透明面 + muted 字，hover 100 → pressed 200 只换面，open-path 与 hover 同档，current = 透明面 + --xh-fg-brand-strong + medium（指示条不由配方画），terminal = 不可点的当前页（--xh-fg-default + medium，无 hover / pressed）。page 选中态的说明行保留 muted 前景，与正文维持层级。",
   "version": 3,
   "sizes": ["sm", "md", "lg"],
   "columns": ["prefix", "text", "description", "shortcut", "suffix", "indicator"],
@@ -366,7 +366,7 @@
     }
   },
   "toneValues": {
-    "$description": "语气段只动面与字（真源 §7.4）：静息不换面、只把字换成 --xh-tone-fg；hover 与键盘高亮换 12% 语气淡底，按下换 20%，与中性行的透明 → 100 → 200 同节奏同层级，只是换了族色。字一律取 --xh-tone-fg 而不是 --xh-tone-solid：前者是兑到 60% 的可读文字色，对本家族的透明面、语气淡底三态与抬起面共五种底、六个语气全部 ≥4.5。说明行与指示器不在语气里，保持 muted 与品牌色。",
+    "$description": "语气段只动面与字：静息不换面、只把字换成 --xh-tone-fg；hover 与键盘高亮换 12% 语气淡底，按下换 20%，与中性行的透明 → 100 → 200 同节奏同层级，只是换了族色。字一律取 --xh-tone-fg 而不是 --xh-tone-solid：前者是兑到 60% 的可读文字色，对本家族的透明面、语气淡底三态与抬起面共五种底、六个语气全部 ≥4.5。说明行与指示器不在语气里，保持 muted 与品牌色。",
     "rest": {
       "backgroundColor": "transparent",
       "color": "var(--xh-tone-fg)"

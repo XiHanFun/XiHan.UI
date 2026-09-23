@@ -190,7 +190,7 @@ describe('标签的尺寸阶梯', () => {
     const control = host!.firstElementChild as HTMLElement
     const tagHeight = part('root').getBoundingClientRect().height
 
-    // comfortable 密度的 md 控件高是 36px（§6.2）
+    // comfortable 密度的 md 控件高是 36px
     const controlHeight = control.getBoundingClientRect().height
     expect(controlHeight).toBe(36)
     expect(tagHeight).toBeLessThanOrEqual(controlHeight)

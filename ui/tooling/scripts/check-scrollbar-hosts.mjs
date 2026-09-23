@@ -18,7 +18,7 @@
 // 才定得下来；那之前把解析硬猜出来，只会核出一批假绿。
 // React 只核 react-coverage.json 里已铺到的组件，没铺到的跳过。
 //
-// 规则⑦-⑩管的是「滚动面归档」：真源 component-design.md §6.6 把组件内滚动面分成两档
+// 规则⑦-⑩管的是「滚动面归档」：组件内滚动面分成两档
 // （自绘条 / 原生细条），scroll-surface-registry.json 逐面登记。皮肤里每一处 overflow: auto|scroll
 // 都得在表里（新滚动面必须归档），表里每一条都得扫得到（名单过期）；drawn 面核三端接线、轴、
 // 浮层 4px 档；每一面核 overscroll-behavior 与 scrollbar-gutter 该写的写了、不该写的没写；
@@ -39,7 +39,7 @@ const REACT = ADAPTERS.react.components
 const STYLES = 'packages/design/styles/css'
 /** 家族配方里也有滚动面（字段配方的 textarea 布局），一并扫。 */
 const FAMILY_SCROLL_FILES = ['packages/design/styles/family/field-chrome.css']
-/** 滚动面登记表：真源 §6.6 两档表的机器可读版。 */
+/** 滚动面登记表：自绘条 / 原生细条两档的机器可读版。 */
 const REGISTRY = 'tooling/scripts/scroll-surface-registry.json'
 /** 组件总数的分母：一个组件一份套件。 */
 const SUITES_DIR = 'tooling/testing/src/suites'
@@ -655,7 +655,7 @@ for (const { file, family } of skinFiles) {
 // 规则⑦：覆盖面。皮肤里的每一处滚动面都在表里，表里的每一条都扫得到。
 for (const key of [...scanned.keys()].sort()) {
   if (!(key in surfaces))
-    problems.push(`${key}（${[...scanned.get(key).files].join('、')}）有 overflow: auto|scroll 但没登记——新滚动面必须归档进 ${REGISTRY}，按真源 §6.6 定它走自绘条还是原生细条`)
+    problems.push(`${key}（${[...scanned.get(key).files].join('、')}）有 overflow: auto|scroll 但没登记——新滚动面必须归档进 ${REGISTRY}，定它走自绘条还是原生细条`)
 }
 for (const key of Object.keys(surfaces)) {
   if (!scanned.has(key))

@@ -20,7 +20,7 @@ export function connectBackTop<T extends PropTypes>(
   const { state, context, prop, send } = service
 
   const visible = state.matches('visible')
-  // 缺省 outline：描边 + 磨砂面的中性圆钮（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  // 缺省 outline：描边 + 磨砂面的中性圆钮（只有 Button 缺省品牌实心）
   const variant = prop('variant') ?? 'outline'
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
@@ -47,7 +47,7 @@ export function connectBackTop<T extends PropTypes>(
       // 按钮里通常只有一个图标，可及名字只能由这里给
       'aria-label': prop('translations')?.trigger ?? 'Back to top',
       'data-state': visible ? 'visible' : 'hidden',
-      // 浮在内容之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）
+      // 浮在内容之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',

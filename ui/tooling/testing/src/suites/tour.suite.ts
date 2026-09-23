@@ -129,7 +129,7 @@ export const tourSuite: ConformanceSuite = {
           },
           'arrow': { 'aria-hidden': 'true', 'hidden': '' },
           // 末行三颗都是 Action Control text 档 sm：上一步中性描边（首步原生禁用，同步投影 data-disabled 给家族铺禁用面）、
-          // 下一步显式 solid（主线动作，§7.2 第 2 条）、跳过无壳 ghost；静息都不带 data-pressed
+          // 下一步显式 solid（主线动作）、跳过无壳 ghost；静息都不带 data-pressed
           'prev-trigger': {
             'type': 'button',
             'disabled': '',
