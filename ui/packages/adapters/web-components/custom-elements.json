@@ -30200,9 +30200,6 @@
               "name": "--xh-listbox-item-bg-pressed"
             },
             {
-              "name": "--xh-listbox-item-bg-selected"
-            },
-            {
               "name": "--xh-listbox-item-check-fg"
             },
             {

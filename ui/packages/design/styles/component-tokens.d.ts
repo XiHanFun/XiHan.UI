@@ -1879,7 +1879,6 @@ export type ComponentTokenName
     | '--xh-listbox-icon-size'
     | '--xh-listbox-item-bg-hover'
     | '--xh-listbox-item-bg-pressed'
-    | '--xh-listbox-item-bg-selected'
     | '--xh-listbox-item-check-fg'
     | '--xh-listbox-item-fg'
     | '--xh-listbox-item-fg-selected'

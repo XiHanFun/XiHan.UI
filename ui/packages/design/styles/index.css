@@ -26242,11 +26242,11 @@
     display: none;
   }
 
-  /* 条目走 Collection Item 的 page 语境（页内持久集合）：网格、尺寸档、悬停 / 高亮 / 按下面
-     （白底承载 hover 100 → pressed 200）与选中面（品牌淡底 + 淡底前景 + 行尾对号，selected+hover 20% /
-     +pressed 28%）都由家族按 aria-selected / aria-disabled 给出；禁用面（字色降级、not-allowed、不换面）
-     也归家族。这里只把公开槽映射到桥接槽，不复制任何状态选择器。
-     page 集合坐在 surface 白底上，前景走 fg-default 而不是浮层的 frosted 前景 */
+  /* 条目走 Collection Item 的 overlay 语境，与树选择同一种选中读法：网格、尺寸档、悬停 / 高亮 / 按下面
+     （白底承载 hover 100 → pressed 200）由家族给，选中不换面、不换字色，只在行尾亮对号，
+     选中叠悬停 / 按下沿用同一条阶梯；禁用面（字色降级、not-allowed、不换面）也归家族。
+     这里只把公开槽映射到桥接槽，不复制任何状态选择器。
+     列表框坐在 surface 白底上，前景走 fg-default 而不是浮层的 frosted 前景 */
   [data-scope='listbox'][data-part='item'] {
     --xh-collection-block-padding: var(--xh-listbox-item-py, var(--xh-_listbox-item-py));
     --xh-collection-inline-padding: var(--xh-listbox-item-px, var(--xh-_listbox-item-px));
@@ -26259,10 +26259,10 @@
     --xh-collection-fg-hover: var(--xh-listbox-item-fg, var(--xh-fg-default));
     --xh-collection-fg-keyboard-highlight: var(--xh-listbox-item-fg, var(--xh-fg-default));
     --xh-collection-fg-pressed: var(--xh-listbox-item-fg, var(--xh-fg-default));
-    --xh-collection-fg-selected: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-selected-hover: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-selected-highlight: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-selected-pressed: var(--xh-listbox-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
+    --xh-collection-fg-selected-hover: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
+    --xh-collection-fg-selected-highlight: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
+    --xh-collection-fg-selected-pressed: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
     --xh-collection-font-weight-selected: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
     --xh-collection-font-weight-selected-hover: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
     --xh-collection-font-weight-selected-highlight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
@@ -26270,7 +26270,9 @@
     --xh-collection-bg-hover: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-listbox-item-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-collection-bg-selected: var(--xh-listbox-item-bg-selected, var(--xh-bg-brand-subtle));
+    --xh-collection-bg-selected-hover: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-highlight: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-pressed: var(--xh-listbox-item-bg-pressed, var(--xh-bg-subtle-hover));
     /* data-highlighted 跟的是连接层记的焦点条目（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
     --xh-collection-outline-selected-highlight: transparent;
@@ -26339,6 +26341,13 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  @media print {
+    /* 打印默认丢底色，而对号是遮罩出来的一块底色：行本就不换面，丢了它选中在纸上就没了踪影 */
+    [data-scope='listbox'][data-part='item-indicator'] {
+      print-color-adjust: exact;
+    }
   }
 }
 

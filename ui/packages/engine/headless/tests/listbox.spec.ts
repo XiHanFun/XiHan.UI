@@ -683,18 +683,18 @@ describe('集合相位三件套', () => {
     expect((mount().api().getLoadMoreTriggerProps() as Record<string, unknown>)['data-xh-action-size']).toBe('md')
   })
 
-  it('条目把 Collection Item 角色、尺寸与页内语境投影给三端，文字与对号各落一格', () => {
+  it('条目把 Collection Item 角色、尺寸与 overlay 语境投影给三端，文字与对号各落一格', () => {
     const h = mount({ defaultValue: 'apple', size: 'lg' })
     expect(h.item('apple').dataset).toMatchObject({
       xhCollectionItem: '',
       xhCollectionSize: 'lg',
-      xhCollectionContext: 'page',
+      xhCollectionContext: 'overlay',
     })
     // 禁用条目同样投影：家族守卫按 aria-disabled 拦掉悬停 / 按下面
     expect(h.item('banana').dataset).toMatchObject({
       xhCollectionItem: '',
       xhCollectionSize: 'lg',
-      xhCollectionContext: 'page',
+      xhCollectionContext: 'overlay',
       disabled: '',
     })
     expect((mount().api().getItemProps({ value: 'apple' }) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
