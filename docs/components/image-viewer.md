@@ -111,6 +111,15 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
+### ImageViewerItem
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `src` | `string` | 是 |  |
+| `alt` | `string` |  | 也是该图片在查看模式下的可及名。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

@@ -736,6 +736,15 @@ function unionMembers(node, sf) {
   if (out.length)
     return out
 
+  // 写成别名的（`state: PromptInputState`）先跟到声明处再按语法读：
+  // 落到下面的检查器那条路会拿到它归一化后的次序，而那个次序取决于本次运行里谁先被解析，
+  // 生成结果会随无关改动漂移——`--check` 门禁因此莫名判红
+  if (ts.isTypeReferenceNode(node)) {
+    const decl = checker.getSymbolAtLocation(node.typeName)?.declarations?.[0]
+    if (decl && ts.isTypeAliasDeclaration(decl))
+      return unionMembers(decl.type, decl.getSourceFile())
+  }
+
   const resolved = checker.getTypeFromTypeNode(node)
   const candidates = resolved.isUnion() ? resolved.types : [resolved]
   const values = candidates.flatMap(type => type.isStringLiteral() ? [type.value] : [])
@@ -744,10 +753,14 @@ function unionMembers(node, sf) {
 
 function typeMeta(id) {
   const P = pascal(id)
-  const result = { props: [], api: [], states: null, events: null, guards: null }
+  const result = { props: [], api: [], states: null, events: null, guards: null, nodes: [] }
   // 机器 props 与视图 props 分开收，合表时机器那份排在前
   const machineProps = []
   const viewProps = []
+  // 组件自己声明的接口，按名字索引：props 里以 `X[]` 出现的那些要展开成条目数据表。
+  // 只有写进数据的那一层需要展开——`collection: MenuNode[]` 一行带过的话，
+  // 逐条能写什么（语气、副文本、快捷键、分组）全站无处可查
+  const localInterfaces = new Map()
   for (const sf of program.getSourceFiles()) {
     if (!typeFiles.includes(path.normalize(sf.fileName)))
       continue
@@ -755,6 +768,25 @@ function typeMeta(id) {
       if (!ts.isInterfaceDeclaration(node) && !ts.isTypeAliasDeclaration(node))
         return
       const name = node.name.text
+
+      // 元信息（XxxNodeMeta）是连接层推导出来的只读产物，不是作者能写的字段，不收
+      if (ts.isInterfaceDeclaration(node) && !name.endsWith('Meta') && !localInterfaces.has(name)) {
+        const fields = []
+        for (const sym of checker.getPropertiesOfType(checker.getTypeAtLocation(node))) {
+          const decl = sym.declarations?.[0]
+          if (!decl || !ts.isPropertySignature(decl) || !decl.type)
+            continue
+          const declSf = decl.getSourceFile()
+          fields.push({
+            name: sym.name,
+            type: typeText(decl.type, declSf),
+            optional: Boolean(decl.questionToken),
+            doc: jsdoc(decl, declSf),
+          })
+        }
+        if (fields.length)
+          localInterfaces.set(name, fields)
+      }
 
       if (ts.isInterfaceDeclaration(node) && name === `${P}Schema`) {
         for (const member of node.members) {
@@ -840,6 +872,20 @@ function typeMeta(id) {
   }
   const named = new Set(machineProps.map(x => x.name))
   result.props = [...machineProps, ...viewProps.filter(x => !named.has(x.name))]
+
+  // props 里以数组出现的本组件接口即「作者按条写的数据」，按 props 的出现次序展开。
+  // `MenuNode[]`、`readonly CommandNode[]`、`Partial<X>` 之类一律先剥到裸名字再查
+  const seen = new Set()
+  for (const prop of result.props) {
+    const bare = prop.type.replace(/^readonly\s+/, '').replace(/\[\]$/, '')
+    if (bare === prop.type || seen.has(bare))
+      continue
+    const fields = localInterfaces.get(bare)
+    if (!fields)
+      continue
+    seen.add(bare)
+    result.nodes.push({ name: bare, via: prop.name, fields })
+  }
   return result
 }
 
@@ -1000,6 +1046,17 @@ function renderComponent(entry, category) {
     push('| 属性 | 类型 | 必填 | 说明 |', '| --- | --- | --- | --- |')
     for (const x of tm.props)
       push(`| ${cell(x.name)} | ${cell(x.type)} | ${x.optional ? '' : '是'} | ${esc(x.doc)} |`)
+    push('')
+  }
+
+  // 条目数据：props 里以数组交进来的那几个接口逐字段展开。
+  // 只写 `collection: MenuNode[]` 的话，逐条能声明什么全站无处可查
+  for (const node of tm.nodes) {
+    push(`### ${node.name}`, '')
+    push(`${code(node.via)} 的元素。`, '')
+    push('| 字段 | 类型 | 必填 | 说明 |', '| --- | --- | --- | --- |')
+    for (const f of node.fields)
+      push(`| ${cell(f.name)} | ${cell(f.type)} | ${f.optional ? '' : '是'} | ${esc(f.doc)} |`)
     push('')
   }
 

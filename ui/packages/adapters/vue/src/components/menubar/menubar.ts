@@ -93,8 +93,11 @@ export const XhMenubarRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: MenubarRootSlotProps) => VNode[]
+    /** 只填条目的文字槽，标记位、副文本与快捷键照旧由数据铺 */
     item?: (node: MenubarNodeMeta) => VNode[]
+    /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (node: MenubarNodeMeta) => VNode[]
+    /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
     'item-suffix'?: (node: MenubarNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {

@@ -104,6 +104,18 @@
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
+### NavigationMenuNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 入口文本；默认回退为 value。 |
+| `disabled` | `boolean` |  | 入口禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `href` | `string` |  | 直达目标。提供后该项即为一条链接，没有面板。 |
+| `current` | `boolean` |  | 指向当前页面的直达入口：输出 aria-current="page"。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

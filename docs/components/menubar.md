@@ -111,6 +111,23 @@
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
 | `onSelect` | `(details: MenubarSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
 
+### MenubarNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是菜单内连打检索的取字来源；默认回退为 value。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；只在条目上读取。 |
+| `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
+| `disabled` | `boolean` |  | 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。只在条目上读取—— 顶层入口表达的是位置不是动作，写了也不产出语气面（真源 §7.4）。 只换字色与悬停 / 按下的面，不改字重与缩进；禁用压过它，破坏性命令仍要配图标。 |
+| `group` | `string` |  | 所属分组的身份；相邻同值的条目合并为一个 group。只在条目上读取。 |
+| `groupLabel` | `string` |  | 本组的标题文本，写在组内任意一条上即可。只在条目上读取。 |
+| `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。只在条目上读取。 |
+| `items` | `MenubarNode[]` |  | 该菜单中的条目；只在顶层节点上读取。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -127,9 +144,9 @@
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhMenubarRoot` | `default` | `MenubarRootSlotProps` |  |
-| `XhMenubarRoot` | `item` | `MenubarNodeMeta` |  |
-| `XhMenubarRoot` | `item-prefix` | `MenubarNodeMeta` |  |
-| `XhMenubarRoot` | `item-suffix` | `MenubarNodeMeta` |  |
+| `XhMenubarRoot` | `item` | `MenubarNodeMeta` | 只填条目的文字槽，标记位、副文本与快捷键照旧由数据铺 |
+| `XhMenubarRoot` | `item-prefix` | `MenubarNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhMenubarRoot` | `item-suffix` | `MenubarNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhMenubarSub` | `default` | `MenubarSubSlotProps` |  |
 
 ### 状态

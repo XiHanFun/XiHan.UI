@@ -110,6 +110,16 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
+### CheckboxGroupNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：仍可聚焦、仍占一个 Tab 停靠点，但不可修改，全选也跳过它。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

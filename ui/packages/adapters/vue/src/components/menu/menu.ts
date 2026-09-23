@@ -68,8 +68,11 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   slots: Object as SlotsType<{
     default?: (props: MenuRootSlotProps) => VNode[]
     trigger?: () => VNode[]
+    /** 整条的接管口：写了它，代铺的各格一概不铺，作者自己放置部件 */
     item?: (node: MenuNodeMeta) => VNode[]
+    /** 只接管行首那一格，其余槽照旧由数据铺 */
     'item-prefix'?: (node: MenuNodeMeta) => VNode[]
+    /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
     'item-suffix'?: (node: MenuNodeMeta) => VNode[]
   }>,
   setup(props, { slots, emit }) {

@@ -139,6 +139,18 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
 | `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
 
+### MentionNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是插回正文的文字；默认回退为 value。 |
+| `disabled` | `boolean` |  | 候选禁用：方向键跳过它，点击与回车都不选中它。 |
+| `tone` | `Tone` |  | 该条候选自身的性质：需要留意的写 warning、已停用的写 danger。不写即与其余候选同档。 只换字色与悬停 / 按下的面，不表达选中与校验；禁用压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个提及框的 tone 不下发给候选。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -158,8 +170,8 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | --- | --- | --- | --- |
 | `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
-| `XhMentionRoot` | `item-prefix` | `MentionNodeMeta` |  |
-| `XhMentionRoot` | `item-suffix` | `MentionNodeMeta` |  |
+| `XhMentionRoot` | `item-prefix` | `MentionNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhMentionRoot` | `item-suffix` | `MentionNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
 
 ### 状态

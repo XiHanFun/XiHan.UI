@@ -156,6 +156,18 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `onUploadComplete` | `(details: FileUploadCompleteDetails) => void` |  | 单个文件传输完成（upload 的 Promise 兑现）。 |
 | `onUploadError` | `(details: FileUploadErrorDetails) => void` |  | 单个文件传输失败（upload 的 Promise 拒绝）；中止不视为失败，不发出。 |
 
+### FileUploadRemoteFile
+
+`remoteFiles` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 稳定标识（通常是服务端主键），删除与去重都以它为准。 |
+| `name` | `string` | 是 |  |
+| `size` | `number` |  | 字节数；未提供时不显示大小。 |
+| `type` | `string` |  | MIME 类型。 |
+| `url` | `string` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

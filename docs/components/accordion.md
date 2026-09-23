@@ -153,6 +153,17 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
+### AccordionNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 标题文本；默认回退为 value。 |
+| `content` | `string` |  | 正文；需要放置纯文本以外的内容时改用 content 插槽。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过该条目，但它仍可聚焦、仍是导航起点。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

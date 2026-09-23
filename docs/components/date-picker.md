@@ -156,6 +156,16 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `onFocusedValueChange` | `(details: DatePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板所在层级变化（点击标题向上、点击格子向下都会发出）；受控时是唯一出口。 |
 
+### DatePickerPreset
+
+`presets` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` | 是 | 显示文案，同时是该项的可及名。 |
+| `disabled` | `boolean` |  | 禁用该项：方向键仍可停留，但按下不写值。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

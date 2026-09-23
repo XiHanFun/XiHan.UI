@@ -117,6 +117,18 @@
 | `onComplete` | `(details: TourCompleteDetails) => void` |  | 末步再按下一步：先发它，再经 onOpenChange 关闭。 |
 | `onSkip` | `(details: TourSkipDetails) => void` |  | 用户主动放弃（skip-trigger 或 Escape）：先发它，再经 onOpenChange 关闭。 |
 
+### TourStep
+
+`steps` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 稳定标识，写入 data-step-id；作者据此对应（埋点、按步定制渲染）。 |
+| `target` | `string \| null` |  | 高亮目标的 CSS 选择器。null / 省略 / 查询不到节点都视为该步不锚定任何元素： 浮层居中、不绘制高亮框、不显示箭头。 |
+| `title` | `string` |  |  |
+| `description` | `string` |  |  |
+| `placement` | `Placement` |  | 该步的首选放置位；未提供时沿用整份引导的 placement。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

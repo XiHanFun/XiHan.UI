@@ -125,6 +125,17 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `onItemDelete` | `(details: TagGroupItemDeleteDetails) => void` |  | 移除意图回调。条目由宿主的数据决定去留，组件只报告用户要移除该标签， 同时把它从选中集合中移除，并把焦点交给相邻的标签。 |
 | `translations` | `Partial<TagGroupTranslations>` |  |  |
 
+### TagGroupNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索与移除按钮可访问名的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点，也不可移除。 |
+| `deletable` | `boolean` |  | 逐条覆盖可移除；未提供时跟随整组的 deletable。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。

@@ -157,6 +157,18 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
 
+### TransferItem
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` | 是 | 展示名，也是搜索过滤的取字来源。 |
+| `disabled` | `boolean` |  | 条目禁用：不可勾选、也不可移动，但它仍可聚焦、仍是方向键的起点。 |
+| `tone` | `Tone` |  | 该条自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达勾选与校验；勾选的标记与禁用都压过它。 两侧面板读同一份数据，条目搬到哪一侧都带着自己的语气。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
