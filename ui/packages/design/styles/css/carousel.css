@@ -99,10 +99,10 @@
     display: none;
   }
 
-  /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档（§4.1）：
+  /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
      盒型（md = box-lg 48px，圆形）、四态面、0.97 按压与 44px 命中区由家族配方给出，组件没有 size 轴、固定 md。
      连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
-     （100 → 200，§7.2 第 3 条），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
+     （100 → 200），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
   [data-scope='carousel'][data-part='prev-trigger'],
   [data-scope='carousel'][data-part='next-trigger'],
   [data-scope='carousel'][data-part='autoplay-trigger'] {
@@ -212,7 +212,7 @@
     translate: -50% 0;
   }
 
-  /* 分页点与 Tour 的步骤点同一种语言（§6.3）：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
+  /* 分页点与 Tour 的步骤点同一种语言：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
      本体就是那颗点：没有文字（页码交给作者，默认不显示），底色即标记。
      悬停 / 按下的回执落在点的颜色上：中性标记按前景阶梯加深一档、再加深一档；当前页按品牌阶梯压一档 */
   [data-scope='carousel'][data-part='indicator'] {
@@ -253,7 +253,7 @@
     background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-muted));
   }
 
-  /* 按下：点的颜色再压一档，同时缩一下（§9.1 同时换底）；指针按住由 :active 表出，
+  /* 按下：点的颜色再压一档，同时缩一下（同时换底）；指针按住由 :active 表出，
      Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
   [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current]) {
     background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
@@ -271,7 +271,7 @@
 
   /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
      样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
-     拉长成胶囊并换品牌色（格状当前 = 实心品牌，§7.3） */
+     拉长成胶囊并换品牌色（格状当前 = 实心品牌） */
   [data-scope='carousel'][data-part='indicator'][data-current] {
     inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
     border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
@@ -298,7 +298,7 @@
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  /* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义，§7.1；淡底上公共环够对比，不灌环色），
+  /* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义；淡底上公共环够对比，不灌环色），
      品牌填充条从起点沿轨道方向长满这一页的时长；暂停时定住 */
   [data-scope='carousel'][data-part='root'][data-autoplay]
     [data-scope='carousel'][data-part='indicator'][data-current],

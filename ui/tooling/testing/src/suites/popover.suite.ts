@@ -54,7 +54,7 @@ export const popoverSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'aria-controls': '@part(content)',
             'data-state': 'closed',
-            // 页面上的独立文字按钮：Action Control text 档 md，缺省中性描边（§7.2 第 2 条）
+            // 页面上的独立文字按钮：Action Control text 档 md，缺省中性描边
             'data-xh-action-control': '',
             'data-xh-action-profile': 'text',
             'data-xh-action-display': 'always',

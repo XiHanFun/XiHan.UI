@@ -66,7 +66,7 @@ export function connectBreadcrumb<T extends PropTypes>(
         // 当前页那条退出 Tab 序列；非当前页不写 tabindex，沿用 <a href> 的原生行为
         'tabindex': current ? -1 : undefined,
         'data-current': dataAttr(current),
-        // 链接归 Collection Item 导航当前（真源 §4.1）：面、字色、字重、光标与按压时间线由家族按 nav 语境给；
+        // 链接归 Collection Item 导航当前：面、字色、字重、光标与按压时间线由家族按 nav 语境给；
         // 当前页显式投影 terminal——它同时带 aria-disabled='true'，不显式标就会被家族的禁用面吃掉
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',

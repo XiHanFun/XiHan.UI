@@ -76,7 +76,7 @@
   }
 
   /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + 随语气的字色，
-     按下 pressed 200 只换面（§7.2 / §9.2）；当前页那条不再是"可去的地方"（§7.3）：连接层投影
+     按下 pressed 200 只换面；当前页那条不再是"可去的地方"：连接层投影
      data-xh-collection-terminal，家族给透明面 + 随语气的 fg-default + medium + cursor default，不响应悬停与按下，
      并压过它同时带的 aria-disabled 禁用面。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background */
   [data-scope='breadcrumb'][data-part='link'] {

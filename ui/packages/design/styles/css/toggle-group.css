@@ -30,8 +30,8 @@
     /* 形态的落点：没写 data-variant 时这十支保持缺省档的取值，段的规则读的是
        「使用者令牌 → 这十支 → 语义令牌」三级，使用者令牌永远排在形态之前。
        未选中那五支管段的壳，选中那五支管当前值那一段。
-       缺省档（subtle）的段坐在自己的淡底面上，悬停 200 → 按下 300（§7.2 淡底承载）；
-       选中段是无滑块开关（§7.3）：品牌淡底 + 淡底前景，悬停 20% → 按下 28% */
+       缺省档（subtle）的段坐在自己的淡底面上，悬停 200 → 按下 300（淡底承载）；
+       选中段是无滑块开关：品牌淡底 + 淡底前景，悬停 20% → 按下 28% */
     --xh-_toggle-group-item-bg: var(--xh-bg-subtle);
     --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
@@ -96,7 +96,7 @@
     --xh-_toggle-group-item-highlight-on: none;
   }
 
-  /* outline 与 ghost 的段坐在画布上：悬停 100 → 按下 200（§7.2 白底承载） */
+  /* outline 与 ghost 的段坐在画布上：悬停 100 → 按下 200（白底承载） */
   [data-scope='toggle-group'][data-part='root'][data-variant='outline'] {
     --xh-_toggle-group-item-bg: transparent;
     --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
@@ -258,7 +258,7 @@
 
   /* 选中态：单选是 role=radio + aria-checked，多选是原生按钮 + aria-pressed，
      两套 ARIA 各出一半，样式一条都对不上——只有 data-state 是两种模式共同的出口。
-     无滑块开关（§7.3）：品牌淡底 + 淡底前景，悬停 20% → 按下 28%，三态都经桥接槽交给家族画；
+     无滑块开关：品牌淡底 + 淡底前景，悬停 20% → 按下 28%，三态都经桥接槽交给家族画；
      用哪族颜色由 data-tone 决定：语气槽沿继承流下来，root 自己写了 tone 算、
      整组落在语气容器里也算；没有语气就退回品牌配色，与不接语气时逐值相同。
      使用者令牌排在语气之前：写了组件槽就以它为准。

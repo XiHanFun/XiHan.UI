@@ -172,7 +172,7 @@ export function connectTabs<T extends PropTypes>(
 
   // 变体不写时显式落 line：皮肤基础规则即 line 取值，root 上始终带 data-variant 供子部件与自定义皮肤判定
   const variant = prop('variant') ?? 'line'
-  // 只有 line 档的页签归 Collection Item 导航当前（真源 §4.1）：card 是自成一张卡片的选中面、segment 是
+  // 只有 line 档的页签归 Collection Item 导航当前：card 是自成一张卡片的选中面、segment 是
   // 有滑块开关，都不投家族角色；写成布尔再取值，'line' 不会被当成语境枚举
   const nav = variant === 'line'
 

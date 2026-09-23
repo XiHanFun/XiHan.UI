@@ -323,8 +323,8 @@ export function connectPopconfirm<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'data-state': stateAttr,
-      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
-      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心）。作者以 asChild 换成自己的按钮时，
+      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出；
+      // 缺省 outline 描边（只有 Button 缺省品牌实心）。作者以 asChild 换成自己的按钮时，
       // 这几条家族标记不落到它身上（适配器合并时跳过 data-xh-*）
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
@@ -374,7 +374,7 @@ export function connectPopconfirm<T extends PropTypes>(
       'aria-busy': isPending() ? 'true' : undefined,
       'aria-disabled': isPending() ? 'true' : undefined,
       'data-loading': dataAttr(isPending()),
-      // 确认是本浮层的主要动作，与 Button 主动作同待遇：text 档 sm、显式 solid（§7.2 第 2 条），
+      // 确认是本浮层的主要动作，与 Button 主动作同待遇：text 档 sm、显式 solid，
       // 语气由 content 上的 data-tone 经 --xh-_tone 下发；挂起期间家族的 loading 面接管 hover / pressed
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',

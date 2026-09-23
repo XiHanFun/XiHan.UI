@@ -22,9 +22,9 @@
      所以只能按位置显式安放，不能靠自动流——自动流会把"往回搬"甩到目标面板的位置上 */
   [data-scope='transfer'][data-part='root'] {
     /* 条目外的字形（空态占位里作者塞的图标）按档取尺，缺省 md；条目内的字形由家族随 data-xh-collection-size
-       下发，搬运钮内的按 Action Control icon 档取，勾选格里的勾按边长比例取（§6.5） */
+       下发，搬运钮内的按 Action Control icon 档取，勾选格里的勾按边长比例取 */
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-md));
-    /* 两侧定高小列表的自绘条挂在根上（§6.6）：根是条子的定位盒（面板不定位），轨道底色关掉才不会在列表边缘糊出一条灰带 */
+    /* 两侧定高小列表的自绘条挂在根上：根是条子的定位盒（面板不定位），轨道底色关掉才不会在列表边缘糊出一条灰带 */
     --xh-scrollbar-track-bg: transparent;
 
     /* 尺寸档只换这五个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
@@ -140,7 +140,7 @@
     min-inline-size: 0;
     overflow: hidden;
     color: var(--xh-transfer-panel-title-fg, var(--xh-fg-default));
-    /* 面板标头是 Surface 内的标题：14 / 600（§6.4） */
+    /* 面板标头是 Surface 内的标题：14 / 600 */
     font-size: var(--xh-transfer-panel-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-transfer-panel-title-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-leading-none);
@@ -285,7 +285,7 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 条目走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
+  /* 条目走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
      pressed 200）与勾选行的选中面（品牌淡底 + 淡底前景，selected+hover 20% / +pressed 28%）都由家族按
      aria-selected / aria-disabled 给出，标记由行首的勾选方框承担；禁用面（字色降级、not-allowed、不换面）
      也归家族。这里只把公开槽映射到桥接槽。
@@ -448,7 +448,7 @@
   }
 
   /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），禁用同时打原生 disabled 与 data-disabled。
-     它是「方框 + 文案」的整行命中区（§9.2）：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面与过渡由家族给
+     它是「方框 + 文案」的整行命中区：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面与过渡由家族给
      （白底承载 hover 100 → pressed 200），按下只换面不缩放（--xh-action-scale-pressed: none），勾选回执落在方框上；
      盒随内容收宽、高度取 xs 档的 24px 命中地板（方框 16px 居中其间），text 档的内距与最小宽度归零。
      position 是给叠在方框上的那颗字形 ::after 当定位基准 */
@@ -486,7 +486,7 @@
 
   /* 两颗搬运钮是只有字形的离散动作钮：接 Action Control 的 icon 档、outline 形态（中性描边、透明底，
      白底承载 hover 100 → pressed 200，按下 0.97 并同时换底），盒、焦点环、粗指针热区与禁用面由家族给；
-     此前的 raised 悬停抬升退役（§8.3 边界只由描边承担）。这里只把使用者槽映射到桥接槽；
+     此前的 raised 悬停抬升退役（边界只由描边承担）。这里只把使用者槽映射到桥接槽；
      钮是正方盒，按 sm 档取一个控件高 */
   [data-scope='transfer'][data-part='to-target-trigger'],
   [data-scope='transfer'][data-part='to-source-trigger'] {

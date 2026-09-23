@@ -70,7 +70,7 @@ describe('input-group 单一输入表面', () => {
     const outlineControl = getComputedStyle(control('outline'))
     const item = getComputedStyle(group('outline').querySelector('[data-part="item"]')!)
 
-    // 边界只由描边承担：组壳静息无影（§8.3），外轮廓取字段描边色 --xh-border-control
+    // 边界只由描边承担：组壳静息无影，外轮廓取字段描边色 --xh-border-control
     expect(outline.boxShadow).toBe('none')
     expect(subtle.boxShadow).toBe('none')
     expect(subtle.backgroundColor).not.toBe(outline.backgroundColor)

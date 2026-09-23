@@ -47,7 +47,7 @@ export function connectInfiniteScroll<T extends PropTypes>(
 
     // 读屏在虚拟光标模式下不产生滚动事件，哨兵那条路够不着；这个按钮是它的键盘等价通路。
     // 文案由作者写在按钮里：写死一句英文会与可见文字对不上，读屏念的与眼睛看的就分了家。
-    // 它是铺满一行的独立动作条目（§9.2 load-more trigger）：接 Action Control 的 row 档、outline 形态，
+    // 它是铺满一行的独立动作条目（load-more trigger）：接 Action Control 的 row 档、outline 形态，
     // 宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面与粗指针热区由家族给。
     // 本组件没有 size 轴，档位固定 md
     getLoadMoreTriggerProps: () => normalize.button({

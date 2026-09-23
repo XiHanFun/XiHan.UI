@@ -205,7 +205,7 @@ const CASES: Case[] = [
     },
   },
   {
-    // 页内定高小列表（§6.6）：条子挂在 root 上、贴在 content 自己的盒子上（root 里还有标题），两轴都摆，走 6px 缺省档
+    // 页内定高小列表：条子挂在 root 上、贴在 content 自己的盒子上（root 里还有标题），两轴都摆，走 6px 缺省档
     scope: 'listbox',
     axes: ['vertical', 'horizontal'],
     shell: 'root',

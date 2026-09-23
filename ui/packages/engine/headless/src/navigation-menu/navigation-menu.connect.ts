@@ -139,7 +139,7 @@ export function connectNavigationMenu<T extends PropTypes>(
         'data-state': stateAttr(isOpen),
         'data-orientation': orientation,
         'data-disabled': dataAttr(disabled),
-        // 入口归 Collection Item 展开路径 / 打开中（真源 §4.1）：面、字色、字重、光标与按压时间线由家族按 nav
+        // 入口归 Collection Item 展开路径 / 打开中：面、字色、字重、光标与按压时间线由家族按 nav
         // 语境给；展开着的那一张投影 data-in-path（与 menubar 同法），家族按它给与 hover 同档的中性面。
         // data-state open / closed 仍保留给箭头、positioner 与 viewport
         'data-xh-collection-item': '',
@@ -217,7 +217,7 @@ export function connectNavigationMenu<T extends PropTypes>(
     },
 
     // 面板里的链接不拦默认行为，只把导航收起。
-    // 链接归 Collection Item 导航当前（真源 §4.1 / §7.3）：走 nav 语境，悬停 / 键盘高亮 / 按下面与当前页的
+    // 链接归 Collection Item 导航当前：走 nav 语境，悬停 / 键盘高亮 / 按下面与当前页的
     // 字色字重（data-current：透明面 + brand-strong + medium）都由家族给；nav 不读 aria-selected
     getLinkProps: (link) => {
       const handlers = press('link', link.value)

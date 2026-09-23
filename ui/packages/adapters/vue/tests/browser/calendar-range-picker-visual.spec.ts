@@ -148,7 +148,7 @@ describe('范围日历轨道', () => {
     expect(Number.parseFloat(middle.borderStartStartRadius)).toBe(0)
     expect(Number.parseFloat(end.borderStartEndRadius)).toBeGreaterThan(0)
 
-    // 区间中段的格坐在品牌淡底的轨道上（§7.3 页内选中）：悬停换到 20% 的 brand-subtle-hover，不是白底格的 100 档
+    // 区间中段的格坐在品牌淡底的轨道上（页内选中）：悬停换到 20% 的 brand-subtle-hover，不是白底格的 100 档
     const probe = document.createElement('span')
     probe.style.backgroundColor = 'var(--xh-bg-brand-subtle-hover)'
     host!.append(probe)

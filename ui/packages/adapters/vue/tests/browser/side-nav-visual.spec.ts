@@ -113,7 +113,7 @@ function trigger(value: string): HTMLElement {
   return host!.querySelector<HTMLElement>(`[data-scope="side-nav"][data-part="branch-trigger"][data-value="${value}"]`)!
 }
 
-describe('side-nav 当前项与展开路径（真源 §7.3 页内持久集合 / 展开路径）', () => {
+describe('side-nav 当前项与展开路径（页内持久集合 / 展开路径）', () => {
   it('当前页：品牌淡底 + 淡底前景，起始侧不画指示条；展开路径是与悬停同档的中性面，不用品牌色也不加粗', async () => {
     await mountNav()
     const current = link('user-role')

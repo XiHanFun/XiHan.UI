@@ -73,8 +73,8 @@ export function connectDrawer<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'data-state': stateAttr,
-      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
-      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心）。作者以 asChild 换成自己的按钮时，
+      // 页面上的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出；
+      // 缺省 outline 描边（只有 Button 缺省品牌实心）。作者以 asChild 换成自己的按钮时，
       // 这几条家族标记不落到它身上（适配器合并时跳过 data-xh-*）
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',

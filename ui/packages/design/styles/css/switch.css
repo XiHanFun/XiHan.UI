@@ -41,9 +41,9 @@
     --xh-_switch-track-bg-pressed: var(--xh-switch-bg-pressed, var(--xh-_switch-track-bg));
     --xh-_switch-fg: var(--xh-switch-fg, var(--xh-fg-default));
 
-    /* 轨道接 Action Control text 档（§9.1 定尺轨道）：悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
+    /* 轨道接 Action Control text 档（定尺轨道）：悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
        焦点环与过渡由家族配方给，这里只把轨道的私有槽映射到桥接槽。轨道没有实描边（边界以内描边画，不吃行程），
-       边位映射 transparent 并把 border 宽度归零；内描边经 shadow 通道各态同一支。悬停不换面（§7.2 阶梯只给按下） */
+       边位映射 transparent 并把 border 宽度归零；内描边经 shadow 通道各态同一支。悬停不换面（阶梯只给按下） */
     --xh-action-visual-size: var(--xh-_switch-track-h);
     --xh-action-min-inline-size: calc(var(--xh-_switch-track-h) * 2 - var(--xh-_switch-pad) * 2);
     --xh-action-padding-inline: var(--xh-_switch-pad);
@@ -89,7 +89,7 @@
 
   /* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。
      变的是"动不动得了"：指针不摆手型、按下不缩放不换底（家族的按压块由这里的映射钉回静息面），
-     选中档的轨道退回未选中那一档的中性底（§7.2 交互态的底只从语义面派生），
+     选中档的轨道退回未选中那一档的中性底（交互态的底只从语义面派生），
      滑块收掉那层抬起的投影——投影是"这颗按得动"的信号。与文本框只读那一档同口径（压低底色而非置灰）。
      滑块停在哪一端不受影响，值本身仍由位置这条非颜色通道读出。 */
   [data-scope='switch'][data-part='root'][data-readonly]:not([data-disabled]) {
@@ -126,7 +126,7 @@
     box-shadow: var(--xh-switch-thumb-shadow-readonly, none);
   }
 
-  /* 禁用（§7.2）：不靠 opacity——轨道退回 --xh-bg-subtle 底 + --xh-border-default 内描边，滑块前景置灰；
+  /* 禁用：不靠 opacity——轨道退回 --xh-bg-subtle 底 + --xh-border-default 内描边，滑块前景置灰；
      选中的禁用轨道同样退回中性面，值由滑块位置读出。面与手型由家族的禁用块按映射给 */
   [data-scope='switch'][data-part='root'][data-disabled] {
     --xh-_switch-track-border: var(--xh-switch-border-disabled, var(--xh-border-default));
@@ -163,7 +163,7 @@
     }
   }
 
-  /* 滑块是 raised 抬起面（§5.3 可拖起部件，逐部件登记）：--xh-bg-surface-raised 底 + --xh-border-default 描边 +
+  /* 滑块是 raised 抬起面（可拖起部件，逐部件登记）：--xh-bg-surface-raised 底 + --xh-border-default 描边 +
      --xh-elevation-raised 影，无顶光；描边必须在，影只是加成 */
   [data-scope='switch'][data-part='thumb'] {
     position: relative;
@@ -233,13 +233,13 @@
     block-size: 60%;
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
-    /* 加载环是等宽高的圆（§6.3 全部加载环取 circle） */
+    /* 加载环是等宽高的圆（全部加载环取 circle） */
     border-radius: var(--xh-shape-circle);
     animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——
-     文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（§6.4 控件字号随档）；
+     文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（控件字号随档）；
      行高取正文档，长文字可以自然换行 */
   [data-scope='switch'][data-part='label'] {
     --xh-_switch-label-font-size: var(--xh-control-font-md);
@@ -261,7 +261,7 @@
     --xh-_switch-label-font-size: var(--xh-control-font-lg);
   }
 
-  /* 禁用标签色统一 --xh-fg-subtle（§6.4） */
+  /* 禁用标签色统一 --xh-fg-subtle */
   [data-scope='switch'][data-part='label'][data-disabled] {
     color: var(--xh-switch-label-fg-disabled, var(--xh-fg-subtle));
     cursor: not-allowed;

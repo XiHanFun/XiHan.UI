@@ -29914,7 +29914,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], anchor: 'layer', props: () => ({ dir: this.direction }), })",
-              "description": "定高小列表的自绘条（§6.6）：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上\n（root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。\n页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去"
+              "description": "定高小列表的自绘条：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上\n（root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。\n页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去"
             },
             {
               "kind": "method",
@@ -37279,7 +37279,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
-              "description": "折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档（§6.6）"
+              "description": "折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档"
             },
             {
               "kind": "method",
@@ -60811,7 +60811,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollables: () => this.getParts('list'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
-              "description": "两侧定高小列表各走一路自绘条（§6.6）：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、\n贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；\n两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算"
+              "description": "两侧定高小列表各走一路自绘条：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、\n贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；\n两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算"
             },
             {
               "kind": "field",

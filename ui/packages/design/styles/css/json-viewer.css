@@ -14,7 +14,7 @@
   /* 缺省态（md 档）。等宽字体让层级缩进与值的长度对得齐。
      逐类型配色走 --xh-syntax-* 语法令牌，与代码块的记号色同源、随主题明暗切换。 */
   [data-scope='json-viewer'][data-part='root'] {
-    /* 作者放进空态格里的图标按档取尺，缺省 md，随 data-size 换档（§6.5）。
+    /* 作者放进空态格里的图标按档取尺，缺省 md，随 data-size 换档。
        查看器自绘的状态字形（分支行首的展开方向 chevron）不读这支：它是指示符，与所在的把手盒同走
        --xh-control-indicator-* 一族——branch-trigger 在自己身上把 --xh-icon-size 改接到盒的尺 */
     --xh-icon-size: var(--xh-json-viewer-icon-size, var(--xh-glyph-size-md));
@@ -35,7 +35,7 @@
     display: none;
   }
 
-  /* 面画在两档容器与空态格上，root 只是壳。三档按 §8.3 边界三选一：outline 即基础规则
+  /* 面画在两档容器与空态格上，root 只是壳。三档按边界三选一：outline 即基础规则
      （--xh-border-default 描边 + surface 底 + 无影）；淡底档描边透明、底换 subtle；
      无框档边框留着但透明——去掉外框不会让行的位置跳一格 */
   [data-scope='json-viewer'][data-part='root'][data-variant='subtle']
@@ -66,7 +66,7 @@
   }
 
   /* 常驻容器不是浮层：两轴都可能溢出——深层缩进往行首方向推、长字符串往行尾伸；
-     页内结构容器走 reset 层的原生细条（§6.6），不写 overscroll */
+     页内结构容器走 reset 层的原生细条，不写 overscroll */
   [data-scope='json-viewer'][data-part='tree'] {
     display: flex;
     flex-direction: column;
@@ -154,7 +154,7 @@
     user-select: none;
   }
 
-  /* 按下只换面不缩放：白底承载 hover 100 → pressed 200（§7.2 / §9.2 集合行不允许零反馈）；
+  /* 按下只换面不缩放：白底承载 hover 100 → pressed 200（集合行不允许零反馈）；
      指针按住由 :active 表出，Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
   [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) {
     background: var(--xh-json-viewer-row-bg-active, var(--xh-bg-subtle-hover));
@@ -214,7 +214,7 @@
   }
 
   /* 展开箭头与勾选标记同宽，两种行的文字起点才对得齐。
-     盒里的 chevron 是指示符（§6.5）：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺——
+     盒里的 chevron 是指示符：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺——
      root 那支只管作者图标的 --xh-json-viewer-icon-size 不流进来，按图标档取的 20px 会比 16px 的盒还大；
      branch-indicator 由适配器固定渲染在这颗把手里，继承即可 */
   [data-scope='json-viewer'][data-part='branch-trigger'] {

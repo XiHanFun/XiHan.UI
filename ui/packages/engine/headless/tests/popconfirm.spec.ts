@@ -36,7 +36,7 @@ describe('connectPopconfirm：三颗按钮接 Action Control', () => {
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
-      // 真源 §7.2 第 2 条：确认 / 主线动作钮显式 solid，不属缺省语气
+      // 确认 / 主线动作钮显式 solid，不属缺省语气
       'data-xh-action-variant': 'solid',
     })
     expect(confirm['data-pressed']).toBeUndefined()

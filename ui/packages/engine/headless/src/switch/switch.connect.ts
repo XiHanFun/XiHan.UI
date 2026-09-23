@@ -51,7 +51,7 @@ export function connectSwitch<T extends PropTypes>(
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-required': required ? 'true' : 'false',
-      // 轨道是定尺的独立动作控件（§9.1「轨道」）：接 Action Control text 档、outline 形态——悬停 / 按下 / 禁用面、
+      // 轨道是定尺的独立动作控件（「轨道」）：接 Action Control text 档、outline 形态——悬停 / 按下 / 禁用面、
       // 0.97 缩放与换底、粗指针热区、焦点环由家族配方给，皮肤只把轨道的私有槽映射到桥接槽；
       // 宽高仍按 --xh-switch-track-h-* 走（皮肤覆盖 --xh-action-visual-size / -min-inline-size）
       'data-xh-action-control': '',

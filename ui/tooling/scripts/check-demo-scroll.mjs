@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：文档站示例里的作者滚动容器必须接 data-xh-scroll，自绘条宿主不手写 scrollbar-width。
 //
-// 原生细条住在 reset 层 `:where([data-scope][data-part], [data-xh-scroll])`（真源 §6.6）：库节点
+// 原生细条住在 reset 层 `:where([data-scope][data-part], [data-xh-scroll])`：库节点
 // 自动取到，作者自建的 overflow: auto | scroll 容器要自己写 data-xh-scroll 才有。示例是拿来照抄的，
 // 一份漏写就是一处原生粗条，而构建、其余门禁全绿。判据：
 //

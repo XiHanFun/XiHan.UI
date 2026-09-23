@@ -1,4 +1,4 @@
-// Heatmap 的详情条与 Tooltip 同一副反白气泡：非透明描边（§8.4 浮层不得只靠影分层）、
+// Heatmap 的详情条与 Tooltip 同一副反白气泡：非透明描边（浮层不得只靠影分层）、
 // frosted 紧凑档影、次级标注档 13px 字号。描边与影的计算值依赖真实级联，只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -68,7 +68,7 @@ describe('热力图的详情条', () => {
     const tooltip = part('tooltip')
     expect(tooltip.dataset.state).toBe('visible')
     const style = getComputedStyle(tooltip)
-    // 任何浮层的 content 都得有非透明描边，不能只靠影分层（§8.4）
+    // 任何浮层的 content 都得有非透明描边，不能只靠影分层
     expect(style.borderTopStyle).toBe('solid')
     expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')

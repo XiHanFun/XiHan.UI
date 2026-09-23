@@ -107,9 +107,9 @@
   }
 
   /* 中性浮层承载整条反馈，语气只落到状态字形和标题。
-     面走 sheet 三件套（§8.4：--xh-material-elevated-bg / -border / -shadow，亮暗两档同有 1px 描边）。 */
+     面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，亮暗两档同有 1px 描边）。 */
   [data-scope='toast'][data-part='root'] {
-    /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档（§6.5） */
+    /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档 */
     --xh-icon-size: var(--xh-toast-icon-size, var(--xh-glyph-size-md));
 
     --xh-toast-y: var(--xh-toast-offset-collapsed, 0px);
@@ -356,7 +356,7 @@
   }
 
   /* 操作钮是带文案的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
-     的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底，§7.2.2），组件只映射既有使用者槽。
+     的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底），组件只映射既有使用者槽。
      语气只落到状态字形和标题：这颗钮坐在带 data-tone 的条子里，底 / 边 / 字钉在中性语义面上，不随语气；
      条子是 sheet 白面承载：hover --xh-bg-subtle（100）→ pressed --xh-bg-subtle-hover（200）。
      条子是单行 flex，按钮不参与伸缩：文案长了该换行的是文字 */

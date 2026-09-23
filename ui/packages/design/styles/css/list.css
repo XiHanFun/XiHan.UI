@@ -19,7 +19,7 @@
     --xh-_list-item-gap: var(--xh-space-3);
     --xh-_list-title-size: var(--xh-control-font-md);
     --xh-_list-description-size: var(--xh-control-caption-md);
-    /* 条目悬停换到的面：坐在白底上是 100，淡底档的根把它抬到 200（§7.2 按承载面的阶梯） */
+    /* 条目悬停换到的面：坐在白底上是 100，淡底档的根把它抬到 200（按承载面的阶梯） */
     --xh-_list-item-bg-hover: var(--xh-bg-subtle);
 
     display: flex;

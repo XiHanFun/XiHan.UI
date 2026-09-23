@@ -48,7 +48,7 @@
   }
 
   /*
-   * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+   * 触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
    * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
    * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
    */
@@ -112,7 +112,7 @@
   }
 
   [data-scope='dialog'][data-part='content'] {
-    /* 作者塞进面板里的图标按控件档取（§6.5）；语气徽记与关闭钮另有各自的尺 */
+    /* 作者塞进面板里的图标按控件档取；语气徽记与关闭钮另有各自的尺 */
     --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这一个私有槽。它声明在 content 而不是别处：dialog 的解剖里没有 root，
@@ -262,7 +262,7 @@
 
   /* 正文段：面板里唯一会滚的一段。最小高度归零，
      否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来。
-     模态 body 是原生细条滚动面（§6.6）：细条由 reset 层统一给，滚到头不把页面一起带走 */
+     模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走 */
   [data-scope='dialog'][data-part='body'] {
     flex: 1 1 auto;
     min-block-size: 0;
@@ -305,7 +305,7 @@
     color: var(--xh-dialog-title-fg, var(--xh-fg-default));
   }
 
-  /* 说明文字走说明档（§6.4）：13px + fg-muted */
+  /* 说明文字走说明档：13px + fg-muted */
   [data-scope='dialog'][data-part='description'] {
     margin: 0;
     font-size: var(--xh-dialog-description-font-size, var(--xh-text-secondary-size));
@@ -320,7 +320,7 @@
   }
 
   /*
-   * 关闭钮是面板角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+   * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
    * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
    * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
    * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面，缺省仍是透明底与悬停字色；

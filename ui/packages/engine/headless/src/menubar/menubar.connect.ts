@@ -89,7 +89,7 @@ export function connectMenubar<T extends PropTypes>(
 
   /**
    * 条目语气：只认 collection 里这一条自己写的那族色，菜单栏级的 tone 不下发。
-   * 入口不接语气——nav 语境表达的是位置不是动作（真源 §7.4），所以这里只给条目。
+   * 入口不接语气——nav 语境表达的是位置不是动作，所以这里只给条目。
    * 没有 collection 时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
    */
   const itemTone = (item: MenubarItemProps): string | undefined =>
@@ -290,7 +290,7 @@ export function connectMenubar<T extends PropTypes>(
         'aria-disabled': disabled ? 'true' : 'false',
         'data-state': stateAttr(isOpen),
         'data-disabled': dataAttr(disabled),
-        // 入口归 Collection Item 展开路径 / 打开中（真源 §4.1）：面、字色、光标与按压时间线由家族按 nav 语境给；
+        // 入口归 Collection Item 展开路径 / 打开中：面、字色、光标与按压时间线由家族按 nav 语境给；
         // 展开着的那一张投影 data-in-path（与菜单的子菜单入口同法），家族按它给与 hover 同档的中性面。
         // data-state open / closed 仍保留给箭头与 positioner
         'data-xh-collection-item': '',

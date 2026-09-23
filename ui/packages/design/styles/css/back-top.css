@@ -43,7 +43,7 @@
   }
 
   /* —— 触发器 ——
-     浮在内容之上的单图标圆钮，接 Action Control floating 档（§4.1）：盒型（md = box-lg 48px，圆形）、
+     浮在内容之上的单图标圆钮，接 Action Control floating 档：盒型（md = box-lg 48px，圆形）、
      四态面、0.97 按压与 44px 命中区由家族配方按 data-xh-action-variant / -size 给出。
      这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射。
      整件只有这一颗按钮，槽名与其余一样不带部件段（照 float-button 的 --xh-float-button-size） */
@@ -62,7 +62,7 @@
     --xh-action-border-pressed: var(--xh-back-top-border-hover, var(--xh-_action-variant-border-pressed));
     --xh-action-border-focus-visible: var(--xh-back-top-border, var(--xh-_action-variant-border-focus-visible));
     --xh-action-border-disabled: var(--xh-back-top-border, var(--xh-_action-variant-border-disabled));
-    /* 矩阵各态无影（§8.3 淡底与阴影互斥）；outline 那一档的磨砂投影在下面另桥接 */
+    /* 矩阵各态无影（淡底与阴影互斥）；outline 那一档的磨砂投影在下面另桥接 */
     --xh-action-shadow-rest: var(--xh-back-top-shadow, none);
     --xh-action-shadow-hover: var(--xh-back-top-shadow, none);
     --xh-action-shadow-pressed: var(--xh-back-top-shadow, none);

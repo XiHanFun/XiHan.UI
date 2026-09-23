@@ -25,7 +25,7 @@
 
     display: flex;
     flex-direction: column;
-    /* 字段标签贴控件（§6.4 复合单字段） */
+    /* 字段标签贴控件（复合单字段） */
     gap: var(--xh-slider-gap, var(--xh-space-1));
   }
 
@@ -35,10 +35,10 @@
     align-items: center;
   }
 
-  /* 禁用不整体压暗（§7.2 第 9 条）：前景与表面各自降级——连接层把 data-disabled 发到每个角色节点上，
+  /* 禁用不整体压暗：前景与表面各自降级——连接层把 data-disabled 发到每个角色节点上，
      轨道、区间、拇指、刻度与标签就近消费，写在各自的规则里 */
 
-  /* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle */
+  /* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle */
   [data-scope='slider'][data-part='label'] {
     color: var(--xh-slider-label-fg, var(--xh-fg-default));
     font-size: var(--xh-slider-label-font-size, var(--xh-text-label-size));
@@ -144,7 +144,7 @@
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
      下面按半个直径回拉的负外边距就对不上圆心。
-     拇指是可拖起的 raised 面（§8）：描边取 --xh-border-default，raised 影只是加成、不作边界 */
+     拇指是可拖起的 raised 面：描边取 --xh-border-default，raised 影只是加成、不作边界 */
   [data-scope='slider'][data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
@@ -277,7 +277,7 @@
     pointer-events: none;
   }
 
-  /* 刻度点是正方盒，取 circle（§6.3 正方盒不得用 pill 冒充圆） */
+  /* 刻度点是正方盒，取 circle（正方盒不得用 pill 冒充圆） */
   [data-scope='slider'][data-part='tick'] {
     position: absolute;
     inset-block-start: 50%;

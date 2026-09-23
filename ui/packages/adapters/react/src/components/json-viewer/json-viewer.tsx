@@ -151,7 +151,7 @@ export function XhJsonViewerRoot({
   const ctx = useJsonViewer(withXhConfig('json-viewer', machineProps) as JsonViewerProps)
   const { api } = ctx
 
-  // 两档容器是页内结构容器（与 Tree 同类）：滚动条走 reset 层的原生细条，不接自绘条（§6.6）
+  // 两档容器是页内结构容器（与 Tree 同类）：滚动条走 reset 层的原生细条，不接自绘条
   // 空态与滚动层同级：一行也摊不出来时由它说话，有行可摊时 connect 给它打 hidden
   const emptySlot = (
     <div {...api.getEmptyProps() as Record<string, unknown>}>{empty ?? api.emptyText}</div>

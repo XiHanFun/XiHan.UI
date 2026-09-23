@@ -12,7 +12,7 @@
   }
 
   /* Card 是带统一内边距与节奏的内容面；布局方向可由作者在根上覆盖。
-     边界由 --xh-border-default 描边承担，raised 落影只是抬起的加成（§5.3：Card 是唯一登记 raised 的静态面，
+     边界由 --xh-border-default 描边承担，raised 落影只是抬起的加成（Card 是唯一登记 raised 的静态面，
      且 raised 必带描边）；内衬只走 --xh-surface-* 阶梯。 */
   [data-scope='card'][data-part='root'] {
     position: relative;

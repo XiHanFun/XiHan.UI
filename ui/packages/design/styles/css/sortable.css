@@ -67,7 +67,7 @@
     opacity: var(--xh-sortable-item-opacity-dragging, 0.9);
   }
 
-  /* 把手是只有字形的离散动作钮（§9.1 定尺把手）：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、
+  /* 把手是只有字形的离散动作钮（定尺把手）：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、
      禁用面全由 Action Control 的 icon ghost 档给（连接层投 xs：24px 正方盒，与此前 --xh-control-action-size
      同尺寸），组件只映射既有使用者槽。静息透明，白底承载 hover 100 → pressed 200（此前悬停落 200 是错档）。
      手型不是 pointer：抓起来拖的东西给 grab，按住拖动中给 grabbing；家族的手型槽逐态映射 */

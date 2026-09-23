@@ -67,7 +67,7 @@ export function connectAnchor<T extends PropTypes>(
         // 页内位置用 location 而非 page
         'aria-current': active ? 'location' : undefined,
         'data-current': dataAttr(active),
-        // 链接归 Collection Item 导航当前（真源 §4.1）：面、字色、字重与按压时间线由家族按 nav 语境给，
+        // 链接归 Collection Item 导航当前：面、字色、字重与按压时间线由家族按 nav 语境给，
         // 当前节读 data-current；2px 指示条仍是 list 上的滑动 indicator 部件
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',

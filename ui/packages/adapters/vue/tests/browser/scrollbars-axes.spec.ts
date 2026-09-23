@@ -3,7 +3,7 @@
 // 这几件只有真实浏览器量得出来：jsdom 不排版，clientWidth 与 getBoundingClientRect 恒是 0，
 // 原生条占不占位、退场那支过渡播不播得出来，都要真皮肤真布局。
 // 宿主取树浮层：content 两轴都可能溢出（深层缩进往行末推、行多往下伸），壳是 positioner。
-// json-viewer 已归页内结构容器、走原生细条（真源 §6.6），不再是双轴自绘条的宿主。
+// json-viewer 已归页内结构容器、走原生细条，不再是双轴自绘条的宿主。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'

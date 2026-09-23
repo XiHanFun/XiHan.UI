@@ -204,7 +204,7 @@ describe('collection Item recipe', () => {
     expect(ruleBody(forced, contextSelector('overlay', 'selected'))).toContain('--xh-_collection-indicator-fg: Highlight;')
     expect(ruleBody(forced, contextSelector('page', 'selected'))).toContain('--xh-_collection-indicator-fg: HighlightText;')
     expect(ruleBody(forced, contextSelector('page', 'current'))).toContain('--xh-_collection-indicator-fg: HighlightText;')
-    // 导航当前页 forced = ButtonText（§7.3）：字重与组件自己的滑动 indicator 承担非颜色通道
+    // 导航当前页 forced = ButtonText：字重与组件自己的滑动 indicator 承担非颜色通道
     expect(ruleBody(forced, contextSelector('nav', 'current'))).toContain('--xh-_collection-indicator-fg: ButtonText;')
     expect(ruleBody(forced, contextSelector('nav', 'terminal'))).toContain('--xh-_collection-indicator-fg: ButtonText;')
     expect(ruleBody(forced, contextSelector('nav', 'hover'))).toContain('--xh-_collection-bg: Highlight;')

@@ -61,14 +61,14 @@
   }
 
   /* 触发器的长相归作者，皮肤只表达展开态：展开着的那一张是打开路径，落与家族 hover 同档的中性面——
-     打开中不是选中，不用品牌色、不接语气（§7.3）；哪一张开着由浮层本身说明。不加粗：加粗会推挤相邻内容 */
+     打开中不是选中，不用品牌色、不接语气；哪一张开着由浮层本身说明。不加粗：加粗会推挤相邻内容 */
   [data-scope='menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
     background: var(--xh-menu-trigger-bg-active, var(--xh-bg-subtle));
   }
 
   [data-scope='menu'][data-part='content'] {
     /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；条目里作者放的图标由家族随
-       data-xh-collection-size 下发（§6.5）。菜单自绘的状态字形（标记位的盒、子菜单的展开 chevron）不读这支：
+       data-xh-collection-size 下发。菜单自绘的状态字形（标记位的盒、子菜单的展开 chevron）不读这支：
        它们是指示符，走 --xh-control-indicator-* 一族——标记位在自己身上把 --xh-icon-size 改接到盒的尺，
        子菜单箭头走 --xh-menu-submenu-indicator-size */
     --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-md));
@@ -100,7 +100,7 @@
     -webkit-backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
     backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
     /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
-       浮层滚动面：到底后不把滚动链穿透给页面（§6.6） */
+       浮层滚动面：到底后不把滚动链穿透给页面 */
     overflow-y: auto;
     overscroll-behavior: contain;
     pointer-events: auto;
@@ -211,7 +211,7 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动。盒是指示符（§6.5）：按指示符档取尺，
+  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动。盒是指示符：按指示符档取尺，
      与 Cascader / Select 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
      按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
      作者塞进标记位的 XhIcon 与盒同尺；条目上那支只管作者直接放进条目里的图标 */
@@ -261,7 +261,7 @@
   }
 
   /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
-     箭头与作者内容同排，用自动外距推到行尾。箭头是指示符（§6.5）：与标记位的盒同走
+     箭头与作者内容同排，用自动外距推到行尾。箭头是指示符：与标记位的盒同走
      --xh-control-indicator-size，不读 --xh-icon-size——按图标档取的 20px 会比 16px 的标记位盒大一圈 */
   [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
     content: '';

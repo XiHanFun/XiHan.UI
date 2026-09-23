@@ -36,7 +36,7 @@
     --xh-action-fg-loading: var(--xh-button-fg, var(--xh-_action-variant-fg-loading));
     --xh-action-highlight-rest: transparent;
     --xh-action-highlight-pressed: transparent;
-    /* 海拔只有 solid 一档有：其余形态按 §8.3 无影，私有槽在下面的 solid 块里才被赋值 */
+    /* 海拔只有 solid 一档有：其余形态无影，私有槽在下面的 solid 块里才被赋值 */
     --xh-_button-shadow-rest: var(--xh-button-shadow, none);
     --xh-_button-shadow-hover: var(--xh-button-shadow-hover, none);
     --xh-_button-shadow-pressed: none;
@@ -57,7 +57,7 @@
     font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
   }
 
-  /* Button soft 是 §5.3 登记的 raised 消费者：solid 一档静息带顶光与贴地软影，悬停抬到 raised，按下只留顶光。
+  /* Button soft 是登记在册的 raised 消费者：solid 一档静息带顶光与贴地软影，悬停抬到 raised，按下只留顶光。
      成组时段与段共边焊成一条，静息不落软影、悬停不抬起——投影会压到左右两段的面上，
      ButtonGroup 用 --xh-_button-group-shadow-rest / -hover 只留顶光 */
   [data-scope='button'][data-part='root'][data-variant='solid'] {

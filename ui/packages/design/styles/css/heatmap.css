@@ -323,7 +323,7 @@
     padding-block: var(--xh-heatmap-tooltip-py, var(--xh-space-1));
     padding-inline: var(--xh-heatmap-tooltip-px, var(--xh-space-2));
     border-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-control));
-    /* 与 Tooltip 同一副反白气泡：任何浮层都得有一圈非透明描边（§8.4），描边从字色里兑两成，
+    /* 与 Tooltip 同一副反白气泡：任何浮层都得有一圈非透明描边，描边从字色里兑两成，
        深浅主题与语气换色时跟着字色走；影走 frosted 紧凑档，与 Tooltip 的 content 同深 */
     border: var(--xh-stroke-thin) solid var(--xh-heatmap-tooltip-border, color-mix(in oklab, var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface)) 20%, transparent));
     background: var(--xh-heatmap-tooltip-bg, var(--xh-fg-default));

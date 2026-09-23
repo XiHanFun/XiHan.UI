@@ -157,7 +157,7 @@ export function connectPagination<T extends PropTypes>(
     }),
 
     // 首尾两端的按钮是单体控件，用原生 disabled（不可聚焦、脱出 Tab 序列）
-    // 四类格子都是 Action Control 的 text 档（§4.1 分页按钮），缺省中性的 ghost 形态：
+    // 四类格子都是 Action Control 的 text 档（分页按钮），缺省中性的 ghost 形态：
     // 悬停 / 按下 / 禁用面、按压缩放与几何由家族配方给，皮肤只映射使用者槽
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,

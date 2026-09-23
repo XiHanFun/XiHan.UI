@@ -107,7 +107,7 @@
   /* root 留在页面原地，只是 data-side / data-state 的落点，不该凭空多出一层盒子把
      trigger 从作者的 flex / grid 行里挤出去，故 display: contents。 */
   [data-scope='drawer'][data-part='root'] {
-    /* 作者塞进面板里的图标按控件档取（§6.5）；触发器与关闭钮另由家族配方按各自的档下发字形尺 */
+    /* 作者塞进面板里的图标按控件档取；触发器与关闭钮另由家族配方按各自的档下发字形尺 */
     --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-glyph-size-md));
 
     display: contents;
@@ -125,7 +125,7 @@
   }
 
   /*
-   * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+   * 触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
    * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出（此前自写描边盒型，hover 落 200 / active 落 300）。
    * 这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射。
    */
@@ -159,7 +159,7 @@
   }
 
   /* 抽屉展开期间触发按钮压住不弹起：面板贴在视口边上，它和按钮往往离得很远，
-     按钮自己得说明"这一扇是我开的"。open 与家族 hover 同档中性（§7.2 第 8 条）：
+     按钮自己得说明"这一扇是我开的"。open 与家族 hover 同档中性：
      白底承载的 --xh-bg-subtle（100）+ 悬停描边，聚焦时这块面留着 */
   [data-scope='drawer'][data-part='trigger'][data-state='open'] {
     --xh-action-bg-rest: var(--xh-drawer-trigger-bg-open, var(--xh-bg-subtle));
@@ -259,13 +259,13 @@
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
-    /* M4 sheet 三件套（§8.4）：任何浮层不得只靠 box-shadow 分层，亮色下面板与页面同色，
+    /* M4 sheet 三件套：任何浮层不得只靠 box-shadow 分层，亮色下面板与页面同色，
        1px 描边才是它的边界；影只是加成 */
     border: var(--xh-stroke-thin) solid var(--xh-drawer-border, var(--xh-material-elevated-border));
     background: var(--xh-drawer-bg, var(--xh-material-elevated-bg));
     color: var(--xh-drawer-fg, var(--xh-material-elevated-fg));
     box-shadow: var(--xh-drawer-shadow, var(--xh-material-elevated-shadow));
-    /* 作者不用 header / body / footer 三段时它是唯一的滚动层：模态面滚到头不把页面一起带走（§6.6） */
+    /* 作者不用 header / body / footer 三段时它是唯一的滚动层：模态面滚到头不把页面一起带走 */
     overflow: auto;
     overscroll-behavior: contain;
     /* 尺寸是照视口那条边算出来的，padding 再往外顶就会把面板挤出屏幕、
@@ -356,7 +356,7 @@
     will-change: translate;
   }
 
-  /* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移（§9.5）：走 --xh-motion-duration-slide
+  /* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide
      与 --xh-motion-ease-slide；退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
      不定住终态，面板会在最后一帧弹回原位再消失。 */
   [data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {
@@ -413,7 +413,7 @@
 
   /* 正文段：面板里唯一会滚的一段。最小高度归零，
      否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来。
-     模态 body 是原生细条滚动面（§6.6）：细条由 reset 层统一给，滚到头不把页面一起带走 */
+     模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走 */
   [data-scope='drawer'][data-part='body'] {
     flex: 1 1 auto;
     min-block-size: 0;
@@ -451,7 +451,7 @@
     color: var(--xh-drawer-title-fg, var(--xh-fg-default));
   }
 
-  /* 说明文字走说明档（§6.4）：13px + fg-muted */
+  /* 说明文字走说明档：13px + fg-muted */
   [data-scope='drawer'][data-part='description'] {
     margin: 0;
     font-size: var(--xh-drawer-description-font-size, var(--xh-text-secondary-size));
@@ -466,7 +466,7 @@
   }
 
   /*
-   * 关闭钮是面板角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+   * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
    * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
    * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
    * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面（与 dialog 一致），缺省仍是透明底与悬停字色；

@@ -137,7 +137,7 @@ export class XhListboxElement extends XhElement {
   private readonly ctrl = new MachineController<ListboxSchema>(this, listboxMachine, () => this.machineProps())
 
   /**
-   * 定高小列表的自绘条（§6.6）：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
+   * 定高小列表的自绘条：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
    * （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。
    * 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
    */

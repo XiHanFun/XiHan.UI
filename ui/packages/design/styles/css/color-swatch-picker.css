@@ -51,7 +51,7 @@
     --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-lg);
   }
 
-  /* 标题独占一行，格子从下一行起排。复合单字段的标签（§6.4）：14 / 500 / fg-default，不随档；
+  /* 标题独占一行，格子从下一行起排。复合单字段的标签：14 / 500 / fg-default，不随档；
      与格子的距离贴控件 space-1——容器的 gap 归格子之间，标签在它之上补一段差值把距离收成目标值 */
   [data-scope='color-swatch-picker'][data-part='label'] {
     flex-basis: 100%;
@@ -80,7 +80,7 @@
     flex: none;
     inline-size: var(--xh-color-swatch-picker-item-size, var(--xh-_color-swatch-picker-cell));
     block-size: var(--xh-color-swatch-picker-item-size, var(--xh-_color-swatch-picker-cell));
-    /* 色块 item 的身份是 inset（§6.3：嵌在 control 内的小块） */
+    /* 色块 item 的身份是 inset（嵌在 control 内的小块） */
     border-radius: var(--xh-color-swatch-picker-item-radius, var(--xh-shape-inset));
     outline: none;
     cursor: pointer;
@@ -88,12 +88,12 @@
   }
 
   /* 指到哪一格：描边换到控件的悬停边（border-strong 只留给 contrast-more 与登记的强调边）；
-     选中的那一格保留自己的品牌描边（§9.3 选中身份不被悬停盖掉） */
+     选中的那一格保留自己的品牌描边（选中身份不被悬停盖掉） */
   [data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly], [data-state='checked']):hover {
     --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-swatch-border-hover, var(--xh-border-control-hover));
   }
 
-  /* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉（§9.1 的「同时换底」在这里落不下去），
+  /* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉（的「同时换底」在这里落不下去），
      交互回执只能落在别处：按下去看下压，描边同时换到品牌色作第二通道（按住即将选中的那一格）。
      置灰与只读的都不压；指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
   [data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly]):is(:active, [data-pressed]) {
@@ -162,7 +162,7 @@
     inline-size: var(--xh-color-swatch-picker-indicator-size, var(--xh-_color-swatch-picker-indicator));
     block-size: var(--xh-color-swatch-picker-indicator-size, var(--xh-_color-swatch-picker-indicator));
     border: var(--xh-stroke-thin) solid var(--xh-color-swatch-picker-indicator-border, var(--xh-bg-canvas));
-    /* 正方盒取 circle（§6.3：宽高同槽的盒不得用 pill 冒充圆） */
+    /* 正方盒取 circle（宽高同槽的盒不得用 pill 冒充圆） */
     border-radius: var(--xh-shape-circle);
     background: var(--xh-color-swatch-picker-indicator-bg, var(--xh-_color-swatch-picker-accent));
     opacity: 0;

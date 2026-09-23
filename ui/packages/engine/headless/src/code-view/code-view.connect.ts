@@ -176,7 +176,7 @@ export function connectCodeView<T extends PropTypes>(
     }),
 
     // 折叠条是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
-    // 白底承载 hover 100 → pressed 200，按下只换面不缩放（§9.2）；档位随 size 走
+    // 白底承载 hover 100 → pressed 200，按下只换面不缩放；档位随 size 走
     getFoldTriggerProps: () => normalize.button({
       ...parts['fold-trigger'].attrs,
       'type': 'button',

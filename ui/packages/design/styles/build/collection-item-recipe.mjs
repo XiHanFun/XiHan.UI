@@ -49,7 +49,7 @@ const SUBJECT = { selected: ':is([aria-selected=\'true\'], [data-selected])', cu
 const TERMINAL = '[data-current][data-xh-collection-terminal]'
 /** 交互守卫：aria-disabled 与 data-disabled 同为禁用事实（分支行只带后者）；busy / error 行的换面由组件皮肤自行接回。 */
 const GUARD = ':not([aria-disabled=\'true\'], [data-disabled], [aria-busy=\'true\'], [data-error])'
-/** 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档（真源 §9.2）。 */
+/** 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档。 */
 const PRESSED = ':is(:active, [data-pressed])'
 /** 叠加态的后缀：hover / highlight / pressed 与基础态使用同一组选择器。 */
 const OVERLAY_SUFFIX = {
@@ -58,7 +58,7 @@ const OVERLAY_SUFFIX = {
   pressed: PRESSED,
 }
 /**
- * 语气段（真源 §7.4）：条目自身动作的性质（删除 danger / 停用 warning），不表达选中、当前与校验。
+ * 语气段：条目自身动作的性质（删除 danger / 停用 warning），不表达选中、当前与校验。
  * 只有这四态，其余态不接语气——checked / loading / error 归组件事实，disabled 由 GUARD 直接挡在门外。
  */
 const TONE_STATES = ['rest', 'hover', 'keyboard-highlight', 'pressed']
@@ -67,7 +67,7 @@ const TONE_FIELDS = ['backgroundColor', 'color']
 /**
  * 语气的主体：nav 语境不接语气（那里的条目表达位置而非动作），neutral 由连接层负责不投影。
  * 基底 (0,4,0) 与 selected / current 同级、叠加态 (0,5,0) 与它们的叠加态同级，
- * 两边同级时靠源序分胜负——语气段排在上下文段之前，选中与当前因此恒压过语气（真源 §7.4）。
+ * 两边同级时靠源序分胜负——语气段排在上下文段之前，选中与当前因此恒压过语气。
  */
 const TONE_SUBJECT = '[data-tone]:not([data-xh-collection-context=\'nav\'])'
 /** 语气段的后缀：与基础态同一组选择器，只多一段语气主体。 */
@@ -420,7 +420,7 @@ ${sizeVars(source, size)}
     font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
   }
 
-  /* 快捷键提示：与说明同档同色的次级文字（真源 §7.5），只是落位在行尾而不是第 2 行。
+  /* 快捷键提示：与说明同档同色的次级文字，只是落位在行尾而不是第 2 行。
      不换行——它是一串按键记号，折行会被读成两个组合。跟着 description 那支前景走，因此也不跟语气。 */
   [data-xh-collection-slot='shortcut'] {
     grid-column: shortcut;
@@ -467,7 +467,7 @@ ${stateVars(source, 'pressed')}
     transition-timing-function: ${source.motion.pressEasing};
   }
 
-  /* 语气段：条目自身动作的性质，静息只换字、hover / 高亮 / 按下换语气淡底，节奏与中性行一致（真源 §7.4）。
+  /* 语气段：条目自身动作的性质，静息只换字、hover / 高亮 / 按下换语气淡底，节奏与中性行一致。
      必须排在上下文段之前：语气与 selected / current 同特指度，靠源序让选中与当前压过语气。 */
 ${toneRules(source, state => `  ${toneSelector(state)} {
 ${toneStateVars(source, state)}${stateExtras(source, state, '    ')}
@@ -554,7 +554,7 @@ ${forcedStateVars(source, 'keyboard-highlight')}
 ${forcedStateVars(source, 'pressed')}
     }
 
-    /* 语气在强制颜色下退出：逐态用系统色盖回家族缺省，只留图标与文案通道（真源 §7.4）。
+    /* 语气在强制颜色下退出：逐态用系统色盖回家族缺省，只留图标与文案通道。
        语气段在媒体查询外的特指度比这里的基础态各高一级，必须逐条同形盖回，不能只写一条。 */
 ${toneRules(source, state => `    ${toneSelector(state)} {
 ${forcedStateVars(source, state, '      ')}

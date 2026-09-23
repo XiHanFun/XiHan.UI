@@ -241,7 +241,7 @@ export function XhTransferList({ children, ...rest }: XhTransferListProps): Reac
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上
   const bind = useNativeEvents(ctx.api.getListProps(panel) as Record<string, unknown>, ['onFocus'])
   const listRef = useRef<HTMLDivElement | null>(null)
-  // 两侧定高小列表各走一路自绘条（§6.6）：条子紧跟在列表后面、贴在列表自己的盒子上，
+  // 两侧定高小列表各走一路自绘条：条子紧跟在列表后面、贴在列表自己的盒子上，
   // 挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；两条轴都摆——皮肤给的是两轴 overflow: auto。
   // 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
   const bars = useScrollbars({

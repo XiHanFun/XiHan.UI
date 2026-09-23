@@ -1,5 +1,5 @@
-// 共享关键帧与锚定关系的登记：规范 §9.5 的三分（锚定列表 / 锚定面板 / 无锚定弹出）加
-// §9.4 的 disclosure 与遮罩淡入淡出。共享关键帧只定义在 family/motion.css，皮肤 @import 它。
+// 共享关键帧与锚定关系的登记：锚定列表 / 锚定面板 / 无锚定弹出三分，
+// 加上 disclosure 与遮罩淡入淡出。共享关键帧只定义在 family/motion.css，皮肤 @import 它。
 //
 // 两张门禁读同一份：check-keyframe-registry.mjs 把 relation 写进登记表并要求「relation 非空
 // 的名字只定义在 family/motion.css、family/motion.css 里没有表外的名字」；check-motion-role.mjs
@@ -25,7 +25,7 @@ export const SHARED_RELATION = Object.freeze({
 export const RELATIONS = Object.freeze(['anchored-list', 'anchored-panel', 'detached', 'fade', 'disclosure'])
 
 /**
- * 浮层的三种锚定关系各自许用的进出场关键帧（规范 §9.5 表）。
+ * 浮层的三种锚定关系各自许用的进出场关键帧（表）。
  * xh-pop-out 同时是锚定面板与无锚定弹出的退场；fade 与 disclosure 不表达锚定关系，任何组件都可引。
  */
 export const RELATION_KEYFRAMES = Object.freeze({
@@ -34,7 +34,7 @@ export const RELATION_KEYFRAMES = Object.freeze({
   'detached': Object.freeze(['xh-pop-in', 'xh-pop-out']),
 })
 
-/** 组件 → 锚定关系，逐行照抄规范 §9.5 的三行；没登记的组件不受关系判据管。 */
+/** 组件 → 锚定关系，逐行照抄锚定关系表的三行；没登记的组件不受关系判据管。 */
 export const OVERLAY_RELATION = Object.freeze({
   'menu': 'anchored-list',
   'select': 'anchored-list',

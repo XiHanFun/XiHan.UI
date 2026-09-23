@@ -244,7 +244,7 @@ for (const file of await readdir(SKINS)) {
   }
   for (const m of css.matchAll(/\[data-state=['"]([a-z0-9-]+)['"]\]/g))
     stateValues.add(m[1])
-  // 关键帧名字是受支持的覆盖点（规范 §8.7 约束 3），改名与删名同样是破坏性变更。
+  // 关键帧名字是受支持的覆盖点（约束 3），改名与删名同样是破坏性变更。
   for (const m of css.matchAll(/@keyframes\s+([\w-]+)/g))
     keyframes.add(m[1])
 }

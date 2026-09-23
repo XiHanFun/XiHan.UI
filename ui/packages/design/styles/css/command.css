@@ -19,7 +19,7 @@
      谁先命中谁给出这一档的取值；条目、检索框与提示条都从面板继承下去 */
   [data-scope='command']:is([data-part='positioner'], [data-part='content']) {
     /* 条目外的字形（分组标题、底部提示条）按档取尺，缺省 md，随 data-size 换档；命令里的图标由家族随
-       data-xh-collection-size 下发（§6.5） */
+       data-xh-collection-size 下发 */
     --xh-icon-size: var(--xh-command-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这六个私有槽，换档不必给每个部件各写一条选择器 */
@@ -118,7 +118,7 @@
     max-inline-size: var(--xh-command-max-w, var(--xh-_command-max-w));
     /* 封顶才有可滚的余量：不封顶结果列表会一路撑到视口外，滚动条永远出不来 */
     max-block-size: var(--xh-command-max-h, var(--xh-overlay-max-h));
-    /* 模态命令面板与 Dialog 同档：overlay 圆角 + sheet 三件套（material-elevated 的边 / 底 / 影，§8.4），
+    /* 模态命令面板与 Dialog 同档：overlay 圆角 + sheet 三件套（material-elevated 的边 / 底 / 影），
        边界由描边承担，不再只靠落影 */
     border: var(--xh-stroke-thin) solid var(--xh-command-border, var(--xh-material-elevated-border));
     border-radius: var(--xh-command-radius, var(--xh-shape-overlay));
@@ -205,7 +205,7 @@
     min-block-size: 0;
     padding-block: var(--xh-command-list-py, var(--xh-space-2));
     padding-inline: var(--xh-command-list-px, var(--xh-space-2));
-    /* 模态面板里的滚动面：到底后不把滚动链穿透给页面（§6.6） */
+    /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */
     overflow-y: auto;
     overscroll-behavior: contain;
   }

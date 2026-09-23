@@ -14,7 +14,7 @@
   }
 
   /* root 就是视觉盒：描边、底色、圆角、聚焦环、悬停与禁用面由 Field Chrome 家族画在它身上（静息描边式：
-     canvas 底 + --xh-border-control 描边 + 无影，不用 soft，§8.3 登记例外只在 8px surface 圆角），内部 textarea
+     canvas 底 + --xh-border-control 描边 + 无影，不用 soft，登记的例外只在 8px surface 圆角），内部 textarea
      无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
      三个视觉轴都落在 root 上：形态三档由家族按 data-variant 生成，语气管用哪族颜色，尺寸管高度与字号 */
   [data-scope='prompt-input'][data-part='root'] {

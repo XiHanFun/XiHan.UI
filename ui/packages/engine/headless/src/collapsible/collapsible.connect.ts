@@ -49,7 +49,7 @@ export function connectCollapsible<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
     // 触发器是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
-    // 按下只换面不缩放（§9.2）；根无壳，阶梯按画布承载走；档位随 size 走
+    // 按下只换面不缩放；根无壳，阶梯按画布承载走；档位随 size 走
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,

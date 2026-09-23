@@ -45,7 +45,7 @@ describe('anchor 导航当前页与阶梯', () => {
     expect(getComputedStyle(current!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(rest!).color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(rest!).fontWeight).toBe('400')
-    // 当前节叠悬停（§9.3）：保留品牌深字，面走 100
+    // 当前节叠悬停：保留品牌深字，面走 100
     await userEvent.hover(current!)
     expect(getComputedStyle(current!).backgroundColor).toBe(resolvedToken('--xh-bg-subtle'))
     expect(getComputedStyle(current!).color).toBe(resolvedToken('--xh-fg-brand-strong'))

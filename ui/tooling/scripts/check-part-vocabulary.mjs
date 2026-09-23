@@ -10,7 +10,7 @@
 //   ② 尾词必须是 tails 段里的规范词；判成同义词的尾词（synonymOf）一律判红，
 //      收敛前的存量逐个列在 pendingUsers 里放行，收敛完删掉即恢复判红
 //
-// parts 段由脚本从 127 份 *.anatomy.ts 现算生成，不手写——规范 §17.3 那张词频表已经
+// parts 段由脚本从 127 份 *.anatomy.ts 现算生成，不手写——设计真源里那张词频表已经
 // 全面过期，拿一张对不上代码的表当基线，第一次跑就会把合法名字判红。
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'

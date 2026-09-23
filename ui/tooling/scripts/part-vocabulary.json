@@ -1577,7 +1577,7 @@
     "breadcrumb": true,
     "button": {
       "synonymOf": "trigger",
-      "$description": "规范 §17.4：能点的东西一律用具名 *-trigger",
+      "$description": "能点的东西一律用具名 *-trigger",
       "pendingUsers": []
     },
     "calendar": true,

@@ -17,7 +17,7 @@
      根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
   [data-scope='rating'][data-part='root'] {
     /* 尺寸档只换这三个私有槽，星星与分值都从 root 继承它们，换档不必给每个部件各写一条选择器。
-       星是控件内的字形，按档取 --xh-glyph-size-sm / md / lg（§6.5）；标签字号不随档 */
+       星是控件内的字形，按档取 --xh-glyph-size-sm / md / lg；标签字号不随档 */
     --xh-_rating-item-gap: var(--xh-control-gap-md);
     --xh-_rating-item-size: var(--xh-glyph-size-md);
     --xh-_rating-item-box-size: var(--xh-control-action-size);
@@ -29,7 +29,7 @@
     position: relative;
     display: inline-flex;
     flex-direction: column;
-    /* 字段标签贴控件（§6.4 复合单字段） */
+    /* 字段标签贴控件（复合单字段） */
     gap: var(--xh-rating-gap, var(--xh-space-1));
   }
 
@@ -46,7 +46,7 @@
     --xh-_rating-font-size: var(--xh-control-font-lg);
   }
 
-  /* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle；文字部件不叠 opacity */
+  /* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle；文字部件不叠 opacity */
   [data-scope='rating'][data-part='label'] {
     color: var(--xh-rating-label-fg, var(--xh-fg-default));
     font-size: var(--xh-rating-label-font-size, var(--xh-text-label-size));
@@ -106,7 +106,7 @@
 
   /* 条目固定成一枚方形图标盒：连接层用 clientWidth 判定指针落在左半还是右半，
      固定盒能让半档分界与图形中心严格重合。
-     星接 Action Control icon 档（§9.1 定尺的星）：盒型、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族配方给，
+     星接 Action Control icon 档（定尺的星）：盒型、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族配方给，
      这里只把使用者槽映射到桥接槽。静息透明（ghost 形态）；悬停不换底——悬停预览由点亮的星形（data-highlighted）
      表达，再给盒换面是重复的通道；按下换到 200 档中性面（白底承载）。前景五态映射同一个值：点亮时五态一起换到
      点亮色，家族的悬停 / 按下块才不会把点亮色换回静息色；禁用不换前景，星带整体的压暗落在 control 的 opacity 上 */

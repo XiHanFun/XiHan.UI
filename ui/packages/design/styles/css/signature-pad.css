@@ -23,7 +23,7 @@
     gap: var(--xh-signature-pad-gap, var(--xh-space-2));
   }
 
-  /* 复合单字段的标签（§6.4）：14 / 500 / fg-default，不随档；贴画布 space-1——
+  /* 复合单字段的标签：14 / 500 / fg-default，不随档；贴画布 space-1——
      容器的 gap 归画布之后的部件，标签在它之上补一段差值把距离收成目标值 */
   [data-scope='signature-pad'][data-part='label'] {
     margin-block-end: calc(
@@ -42,7 +42,7 @@
   /* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。
      控件行高那把尺量的是一行控件，一块要写字的面积用不上它。
      touch-action 由连接层内联写死，触摸落笔才不会被页面滚动抢走。
-     外壳按字段规则自绘（§8.3 登记的画布型字段例外：字段家族配方钉死控件行高，画布按宽高比撑高吃不下它）：
+     外壳按字段规则自绘（登记的画布型字段例外：字段家族配方钉死控件行高，画布按宽高比撑高吃不下它）：
      静息透明底 + border-control 描边 + control 圆角 + 无影 */
   [data-scope='signature-pad'][data-part='control'] {
     display: block;
@@ -71,13 +71,13 @@
   }
 
   /* 只读仍看得见签名，只是改不动：收掉手型，别暗示"在这儿能写"；
-     面按字段只读规则只换到淡底，描边不动（§7.2 第 9 条） */
+     面按字段只读规则只换到淡底，描边不动 */
   [data-scope='signature-pad'][data-part='control'][data-readonly]:not([data-disabled]) {
     background: var(--xh-signature-pad-bg-readonly, var(--xh-bg-subtle));
     cursor: default;
   }
 
-  /* 字段禁用面（§7.2 第 9 条）：描边退到 border-default、底换淡底 */
+  /* 字段禁用面：描边退到 border-default、底换淡底 */
   [data-scope='signature-pad'][data-part='control'][data-disabled] {
     border-color: var(--xh-signature-pad-border-disabled, var(--xh-border-default));
     background: var(--xh-signature-pad-bg-disabled, var(--xh-bg-subtle));
@@ -100,9 +100,9 @@
   }
 
   /*
-   * 清空按钮是画布旁的独立文字按钮（§9.1）：盒型、sm 档几何、outline 四态面、0.97 按压与粗指针命中区由家族配方
+   * 清空按钮是画布旁的独立文字按钮：盒型、sm 档几何、outline 四态面、0.97 按压与粗指针命中区由家族配方
    * 按连接层投影的 data-xh-action-variant / -size 给出（缺省 outline，白底承载阶梯 100 → 200）。这里只把公开槽
-   * 桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射，矩阵各态无影（§8.3 淡底与阴影互斥）。
+   * 桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射，矩阵各态无影（淡底与阴影互斥）。
    */
   [data-scope='signature-pad'][data-part='clear-trigger'] {
     --xh-action-bg-rest: var(--xh-signature-pad-clear-bg, var(--xh-_action-variant-bg-rest));
@@ -142,7 +142,7 @@
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 签没签的那句话是说明角色（§6.4）：13 / fg-muted / leading-normal。读屏靠它播报，看得见的人也用得上，因此不做视觉隐藏 */
+  /* 签没签的那句话是说明角色：13 / fg-muted / leading-normal。读屏靠它播报，看得见的人也用得上，因此不做视觉隐藏 */
   [data-scope='signature-pad'][data-part='status'] {
     color: var(--xh-signature-pad-status-fg, var(--xh-fg-muted));
     font-size: var(--xh-signature-pad-status-font-size, var(--xh-text-secondary-size));

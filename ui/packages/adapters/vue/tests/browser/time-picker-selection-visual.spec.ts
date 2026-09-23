@@ -137,7 +137,7 @@ describe('time-picker 统一选中反馈', () => {
     expect(checkStyle(plainPreset).opacity).toBe('0')
 
     expect(selectedItem.getAttribute('data-state')).toBe('checked')
-    // 浮层瞬态集合的选中：透明底 + 末端对号，不上品牌淡底、不变字色、不加粗（§7.3）
+    // 浮层瞬态集合的选中：透明底 + 末端对号，不上品牌淡底、不变字色、不加粗
     expect(alpha(getComputedStyle(selectedItem).backgroundColor)).toBe(0)
     expect(getComputedStyle(selectedItem).color).toBe(getComputedStyle(plainItem).color)
     expect(getComputedStyle(selectedItem).fontWeight).toBe(getComputedStyle(plainItem).fontWeight)

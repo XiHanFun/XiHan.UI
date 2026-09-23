@@ -247,7 +247,7 @@ describe('框里的标签就是库里的 tag', () => {
     await mountTags({ tags: ['甲'] })
     const plain = getComputedStyle(pills()[0]!)
     expect(pills()[0]!.getAttribute('data-variant')).toBe('subtle')
-    // tag 是 soft 材质的登记消费者（真源 §8）：无语气的 subtle 档取 --xh-material-soft-* 底与边
+    // tag 是 soft 材质的登记消费者：无语气的 subtle 档取 --xh-material-soft-* 底与边
     expect(plain.backgroundColor).toBe(resolveColor('var(--xh-material-soft-bg)'))
     expect(plain.borderTopColor).toBe(resolveColor('var(--xh-material-soft-border)'))
     app?.unmount()

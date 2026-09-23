@@ -45,7 +45,7 @@ export function connectFloatButton<T extends PropTypes>(
   const placement = props.placement ?? FLOAT_BUTTON_DEFAULT_PLACEMENT
   const offset = resolveFloatButtonOffset(props.offset)
   const hover = prop('expandTrigger') === 'hover'
-  // 缺省 outline：描边 + 磨砂面的中性圆钮（真源 §7.2 第 2 条：只有 Button 缺省品牌实心）
+  // 缺省 outline：描边 + 磨砂面的中性圆钮（只有 Button 缺省品牌实心）
   const variant = props.variant ?? 'outline'
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
@@ -96,7 +96,7 @@ export function connectFloatButton<T extends PropTypes>(
       'disabled': disabled || undefined,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
-      // 浮在内容之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出（§4.1 / §9.1）
+      // 浮在内容之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',

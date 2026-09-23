@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：几何类过渡按角色选曲线档，不许用色彩档。
 //
-// 规范 §8.2 选用表把 `--xh-motion-ease-enter` 判给「仅不透明度 / 底色 / 边框色变化」，
+// 动效曲线选用表把 `--xh-motion-ease-enter` 判给「仅不透明度 / 底色 / 边框色变化」，
 // 动位置、尺寸、缩放、旋转的过渡另有档位。check-motion-easing.mjs 只拦「下探原语 /
 // 手写曲线 / 字面关键字」三类写法，判不出档位选错，本脚本补的就是这一条。
 //
@@ -12,11 +12,11 @@
 // 逐项判，不逐条判：一条 transition 可以列多项，`inset-block-start` 与 `scale` 同列时两项各判各的。
 //
 // animation 另核两条：
-//   关系 —— 浮层按锚定关系三分（规范 §9.5），登记在 OVERLAY_RELATION 里的组件，其 animation
+//   关系 —— 浮层按锚定关系三分，登记在 OVERLAY_RELATION 里的组件，其 animation
 //           引用的共享进出场关键帧只能是本关系那一对（RELATION_KEYFRAMES）；fade / disclosure
 //           不表达锚定关系，不受限。共享关键帧住在 family/motion.css，关系表在 lib/keyframe-relations.mjs。
 //   大尺度 —— 关键帧里动到 SLIDE_REQUIRED 登记的属性时，入场声明的曲线要走 --xh-motion-ease-slide；
-//           退场按 §9.5 走 -exit，不在此列。关键帧体从本皮肤与它 @import 的家族文件里解。
+//           退场走 -exit，不在此列。关键帧体从本皮肤与它 @import 的家族文件里解。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'

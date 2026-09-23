@@ -145,8 +145,8 @@ export function connectSignaturePad<T extends PropTypes>(
       'data-disabled': dataAttr(!editable),
       // 空画布时按钮照常可按（按下去是空操作），收掉它会让焦点掉回 body
       'data-empty': dataAttr(empty),
-      // 画布旁的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
-      // 缺省 outline 描边（§7.2 第 2 条：只有 Button 缺省品牌实心），sm 档贴着画布不抢主体
+      // 画布旁的独立文字按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出；
+      // 缺省 outline 描边（只有 Button 缺省品牌实心），sm 档贴着画布不抢主体
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',

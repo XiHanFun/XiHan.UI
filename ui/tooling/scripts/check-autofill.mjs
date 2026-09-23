@@ -320,7 +320,7 @@ function conditionMatches(condition, state) {
 
 /**
  * input 部件不在 Field Chrome 盒内的组件：皮肤引入了字段家族（盒是 control），但 input 是浮层里的搜索框，
- * 走 §8.3 登记的下划线式例外，不投影 data-xh-field-input；它的 autofill 两条由皮肤自写，按下面的普通判据核。
+ * 走登记在册的下划线式例外，不投影 data-xh-field-input；它的 autofill 两条由皮肤自写，按下面的普通判据核。
  * 每条都要真被用到（组件没引入字段家族或 input 已投影 field-input 即过期）。
  */
 const INPUT_OUTSIDE_CHROME = {

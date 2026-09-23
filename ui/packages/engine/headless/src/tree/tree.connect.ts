@@ -586,7 +586,7 @@ export function connectTree<T extends PropTypes>(
         ...parts.item.attrs,
         ...nodeAttrs(node.value),
         ...itemState(node.value),
-        // 行走 Collection Item 的 overlay 语境，与树选择同一种选中读法（§7.3）：悬停 / 高亮 / 按下只换面，
+        // 行走 Collection Item 的 overlay 语境，与树选择同一种选中读法：悬停 / 高亮 / 按下只换面，
         // 选中是透明底 + 行尾对号，由家族按 aria-selected / aria-disabled 给出。树没有 size 轴，行固定走 md 尺
         'data-xh-collection-item': '',
         'data-xh-collection-size': 'md',
@@ -619,7 +619,7 @@ export function connectTree<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气（真源 §7.5）
+    // 条目的第 2 行：跨 text 槽、走 muted 档，不跟语气
     getItemDescriptionProps: node => normalize.element({
       ...parts['item-description'].attrs,
       ...itemState(node.value),

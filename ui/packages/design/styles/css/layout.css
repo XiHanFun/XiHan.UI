@@ -92,7 +92,7 @@
   }
 
   /* 宽度过渡在这里声明一次，展开与折叠两档、以及 props 直接写进内联的宽度，走的都是这一条。
-     占位档的侧栏是淡底承载面：把手摆进来时由它下发 hover 200 → pressed 300（§7.2）；
+     占位档的侧栏是淡底承载面：把手摆进来时由它下发 hover 200 → pressed 300；
      覆盖档换成 elevated 白底，那一档的规则把阶梯写回 100 → 200 */
   [data-scope='layout'][data-part='sider'] {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
@@ -219,7 +219,7 @@
        写成槽位而不是写死 ±100%：贴边用的是逻辑 inset，RTL 下行首落在物理右边，
        位移若写死物理方向就会出现「贴在右边、却从左边滑进来」 */
     --xh-_layout-sheet-shift: -100%;
-    /* 这一档的底是 elevated 白底：交互阶梯按承载面走（§7.2），把上面占位档下发的 200 → 300 写回
+    /* 这一档的底是 elevated 白底：交互阶梯按承载面走，把上面占位档下发的 200 → 300 写回
        白底的 hover 100 → pressed 200 */
     --xh-action-host-bg-hover: var(--xh-bg-subtle);
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
@@ -245,7 +245,7 @@
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
-    /* 盖在内容之上、带遮罩的一面走 sheet 三件套（§8.4：--xh-material-elevated-bg / -border / -shadow），
+    /* 盖在内容之上、带遮罩的一面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow），
        贴着内容那一侧描一条边；占位档的侧栏不画投影 */
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-material-elevated-border));
     background: var(--xh-layout-sider-bg, var(--xh-material-elevated-bg));

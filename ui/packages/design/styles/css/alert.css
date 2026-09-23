@@ -14,10 +14,10 @@
     --xh-alert-skin: 1;
   }
 
-  /* 提示本体是一层中性 surface：边界由 --xh-border-default 描边承担、无影（§5.3 静态反馈面），
+  /* 提示本体是一层中性 surface：边界由 --xh-border-default 描边承担、无影（静态反馈面），
      语气只落到图标与标题，不会用整块彩底抢走正文层级。 */
   [data-scope='alert'][data-part='root'] {
-    /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档（§6.5） */
+    /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档 */
     --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-md));
 
     display: flex;

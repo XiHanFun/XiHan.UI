@@ -696,7 +696,7 @@ describe('connectTour：四颗按钮接 Action Control', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
     const text = { 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-display': 'always', 'data-xh-action-size': 'sm' }
     const next = t.api().getNextTriggerProps() as Dict
-    // 主线动作显式 solid（真源 §7.2 第 2 条：确认 / 主线动作钮与 Popconfirm 确认同列）
+    // 主线动作显式 solid（确认 / 主线动作钮与 Popconfirm 确认同列）
     expect(next).toMatchObject({ ...text, 'data-xh-action-variant': 'solid' })
     const prev = t.api().getPrevTriggerProps() as Dict
     expect(prev).toMatchObject({ ...text, 'data-xh-action-variant': 'outline' })

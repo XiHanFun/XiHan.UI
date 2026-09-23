@@ -22,7 +22,7 @@ export function connectButtonGroup<T extends PropTypes>(
   const orientation = props.orientation ?? 'horizontal'
   const disabled = !!props.disabled
   const separators = props.separators ?? true
-  // 组缺省中性淡底（真源 §7.2 第 2 条：只有 Button 单独一枚缺省品牌实心），显式落 subtle
+  // 组缺省中性淡底（只有 Button 单独一枚缺省品牌实心），显式落 subtle
   const variant = props.variant ?? 'subtle'
   const tone = props.tone
   const size = props.size

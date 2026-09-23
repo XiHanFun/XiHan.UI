@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // 门禁：组件总览预览（docs/.vitepress/catalog/*.vue）只展示 md 默认档，尺寸与间距只引令牌。
 //
-// 总览卡片不再缩放（真源 §15.1）：预览按真实像素渲染，卡片以 --xh-doc-catalog-w /
+// 总览卡片不再缩放：预览按真实像素渲染，卡片以 --xh-doc-catalog-w /
 // --xh-doc-catalog-w-narrow / --xh-doc-catalog-h 三个变量下发宽高真源。预览文件里任何一处散值
-// 都会在 133 张卡片里显出一张不一样的，而构建与其余门禁全绿。判据逐条对应真源 §15.1：
+// 都会在 133 张卡片里显出一张不一样的，而构建与其余门禁全绿。判据逐条对应设计真源「组件总览」一节：
 //
 // - 一律 md 默认档、默认 variant：`size="sm|lg|xs|xl"` 判红，`variant="…"` 判红。
 //   以尺寸本身为身份的组件登记在 SIZE_EXEMPT（两侧反查：登记了却没用到同样判红）。
@@ -22,14 +22,14 @@ import process from 'node:process'
 
 const CATALOG = '../docs/.vitepress/catalog'
 
-/** 以尺寸本身为身份的组件，允许的那一档（真源 §15.1）。 */
+/** 以尺寸本身为身份的组件，允许的那一档。 */
 const SIZE_EXEMPT = {
   'color-swatch': 'lg',
   'icon': 'lg',
   'number-animation': 'lg',
 }
 
-/** 核心用途即语气的组件，允许一个非 neutral 的 tone（真源 §15.1）。 */
+/** 核心用途即语气的组件，允许一个非 neutral 的 tone。 */
 const TONE_ALLOWED = new Set(['alert', 'toast', 'notification', 'badge', 'progress'])
 
 const problems = []
@@ -91,7 +91,7 @@ for (const file of files) {
     const { name, attrs, line } = tag
 
     if (/^(?:p|li|a)$/.test(name))
-      problems.push(`${where(line)}  <${name}> —— 总览预览的文字用 span / div，不用 p / li / a（真源 §15.1）`)
+      problems.push(`${where(line)}  <${name}> —— 总览预览的文字用 span / div，不用 p / li / a`)
 
     const size = attrs.match(/\ssize="(sm|lg|xs|xl)"/)
     if (size) {

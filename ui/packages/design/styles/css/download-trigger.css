@@ -35,7 +35,7 @@
   }
 
   /*
-   * 触发器就是这一个原生按钮，是定尺的独立动作按钮（§9.1）：盒型、三档几何、四态面、0.97 按压与粗指针
+   * 触发器就是这一个原生按钮，是定尺的独立动作按钮：盒型、三档几何、四态面、0.97 按压与粗指针
    * 命中区由家族配方按 data-xh-action-variant / -size 给出（缺省 subtle 由连接层显式投影，只有 solid 才品牌实心）。
    * 这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射；
    * 要换成品牌样式的作者改 --xh-download-trigger-* 这一族槽位，或直接写自己的类名。
@@ -57,7 +57,7 @@
     --xh-action-border-pressed: var(--xh-download-trigger-border-hover, var(--xh-_action-variant-border-pressed));
     --xh-action-border-focus-visible: var(--xh-download-trigger-border, var(--xh-_action-variant-border-focus-visible));
     --xh-action-border-disabled: var(--xh-download-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
-    /* 矩阵各态无影（§8.3 淡底与阴影互斥）：solid 也不再悬停抬影，使用者槽仍可自行加 */
+    /* 矩阵各态无影（淡底与阴影互斥）：solid 也不再悬停抬影，使用者槽仍可自行加 */
     --xh-action-shadow-hover: var(--xh-download-trigger-shadow-hover, none);
     --xh-action-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
     --xh-action-visual-size: var(--xh-download-trigger-h, var(--xh-_action-profile-visual-size));
@@ -121,7 +121,7 @@
     margin: auto;
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: var(--xh-_download-trigger-loading-fg);
-    /* 正圆的加载环：正方盒取 circle（§6.3） */
+    /* 正圆的加载环：正方盒取 circle */
     border-radius: var(--xh-shape-circle);
     opacity: 0;
     animation:

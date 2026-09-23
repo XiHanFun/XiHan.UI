@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：交互态的底与字只从语义面派生，阶梯按承载面走。
 //
-// 真源 component-design.md §7.2 第 3 条：坐在 canvas / surface 白底上的控件 hover 落
+// 坐在 canvas / surface 白底上的控件 hover 落
 // --xh-bg-subtle（100）→ pressed --xh-bg-subtle-hover（200）；坐在淡底容器（轨道、subtle 档容器）
 // 里的控件 hover 200 → pressed --xh-bg-subtle-active（300）；300 只留给 pressed。承载面通过
 // --xh-action-host-bg-hover / -pressed 向内下发，皮肤没给 host 槽赋值就是白底承载。

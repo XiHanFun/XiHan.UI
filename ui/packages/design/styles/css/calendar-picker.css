@@ -15,7 +15,7 @@
   }
 
   [data-scope='calendar-picker'][data-part='root'] {
-    /* 翻页钮是 sm 档的图标钮（--xh-control-h-sm 见方），钮里的图标按 sm 档取 --xh-glyph-size-sm（§6.5）；
+    /* 翻页钮是 sm 档的图标钮（--xh-control-h-sm 见方），钮里的图标按 sm 档取 --xh-glyph-size-sm；
        作者塞进去的图标与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-calendar-picker-icon-size, var(--xh-glyph-size-sm));
 
@@ -54,7 +54,7 @@
 
   /* 标题里的年与月：点它们逐级钻上去（年 → 十年格、月 → 月格）。
      长得像标题而不像按钮——它本来就是标题，只是可点 */
-  /* 标题里的年与月接 Action Control text 档（§9.1 日期翻页按钮同族）：盒、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡
+  /* 标题里的年与月接 Action Control text 档（日期翻页按钮同族）：盒、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡
      由家族配方给，这里只把使用者槽映射到桥接槽。长得像标题而不像按钮——它本来就是标题，只是可点：静息透明（ghost），
      悬停只换字色不换底（标题不是一枚按钮面），按下换到 200 档中性面（白底承载）；到顶那一层只作标题显示，
      光标别装成能点，也不再换面 */
@@ -80,7 +80,7 @@
     display: none;
   }
 
-  /* 四颗方向钮接 Action Control icon 档（§9.1 日期翻页按钮）、ghost 形态：正方盒、悬停 / 按下 / 禁用面、0.97 缩放与换底、
+  /* 四颗方向钮接 Action Control icon 档（日期翻页按钮）、ghost 形态：正方盒、悬停 / 按下 / 禁用面、0.97 缩放与换底、
      粗指针热区、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽；钮坐在日历的白底上，悬停 100 → 按下 200 */
   [data-scope='calendar-picker'][data-part='prev-year-trigger'],
   [data-scope='calendar-picker'][data-part='prev-trigger'],
@@ -138,7 +138,7 @@
     align-content: start;
     max-block-size: var(--xh-calendar-picker-year-grid-max-h, var(--xh-viewport-h-sm));
     padding-inline-end: var(--xh-calendar-picker-year-grid-pe, var(--xh-space-1));
-    /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto（§6.6）；嵌进 date-picker 浮层时由那份皮肤补 contain */
+    /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto；嵌进 date-picker 浮层时由那份皮肤补 contain */
     overflow-y: auto;
   }
 
@@ -239,7 +239,7 @@
     display: none;
   }
 
-  /* 日期格接 Action Control text 档（§9.1 日历格是定尺控件；§4.1 格状当前）、ghost 形态：悬停 / 按下 / 禁用面、
+  /* 日期格接 Action Control text 档（日历格是定尺控件，属格状当前）、ghost 形态：悬停 / 按下 / 禁用面、
      0.97 缩放与换底、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽。几何仍由网格给：宽度由 week-row 的
      等分轨道给、高度按 aspect-ratio 跟着走（block-size 归 auto，不取家族的固定高），日历才不会被长月份拉扁。
      格子坐在日历的白底上：悬停 100 → 按下 200；今天 / 选中 / 邻月 / 不可用只换下面的私有槽 */
@@ -304,7 +304,7 @@
     --xh-_calendar-picker-cell-fg: var(--xh-calendar-picker-cell-fg-outside, var(--xh-fg-subtle));
   }
 
-  /* 今天：1px 品牌环 + 品牌字（§7.3 brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
+  /* 今天：1px 品牌环 + 品牌字（brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
      选中仍用后面的实心强调面，两个状态叠加时不会混成同一种反馈 */
   [data-scope='calendar-picker'][data-part='cell-trigger'][data-today] {
     --xh-_calendar-picker-cell-bg: var(--xh-calendar-picker-today-bg, transparent);
@@ -312,7 +312,7 @@
     --xh-_calendar-picker-cell-fg: var(--xh-calendar-picker-today-fg, var(--xh-fg-brand));
   }
 
-  /* 实心强调面给单选 / 多选的选中格（§7.3 格状当前）：悬停不换面，按下压到 active 档（光缩放在深色底上看不出回执）。
+  /* 实心强调面给单选 / 多选的选中格（格状当前）：悬停不换面，按下压到 active 档（光缩放在深色底上看不出回执）。
      面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
   [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
@@ -352,7 +352,7 @@
     --xh-action-ring-color-focus-visible: var(--xh-ring-focus);
   }
 
-  /* 不可用又选中的格：退到中性淡底 + 置灰字（§7.2 禁用面），选中身份仍由这块底与未选中的透明格分开 */
+  /* 不可用又选中的格：退到中性淡底 + 置灰字（禁用面），选中身份仍由这块底与未选中的透明格分开 */
   [data-scope='calendar-picker'][data-part='cell-trigger'][data-disabled][data-selected] {
     --xh-action-bg-disabled: var(--xh-calendar-picker-cell-bg-selected-disabled, var(--xh-bg-subtle));
   }

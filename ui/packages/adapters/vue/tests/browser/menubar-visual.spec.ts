@@ -85,7 +85,7 @@ async function mountMenubar(options: { tall?: boolean } = {}): Promise<void> {
     el.style.transition = 'none'
 }
 
-describe('menubar 入口与条目（真源 §7.2 / §7.3 / §9.2）', () => {
+describe('menubar 入口与条目', () => {
   it('展开着的入口是与悬停同档的中性面，不用品牌淡底；按下只换面到 200、不缩放', async () => {
     await mountMenubar()
     const open = trigger('file')
@@ -142,7 +142,7 @@ describe('menubar 入口与条目（真源 §7.2 / §7.3 / §9.2）', () => {
     const indicator = item('new').querySelector<HTMLElement>('[data-part="item-indicator"]')!
     expect(indicator.getAttribute('data-xh-collection-slot')).toBe('prefix')
     expect(getComputedStyle(indicator).visibility).toBe('visible')
-    // 标记位是指示符（§6.5）：与指示符档同尺，不随家族按档下发的 --xh-icon-size（20px）；字形尺寸的契约由 menubar-glyph-size.spec 管
+    // 标记位是指示符：与指示符档同尺，不随家族按档下发的 --xh-icon-size（20px）；字形尺寸的契约由 menubar-glyph-size.spec 管
     expect(getComputedStyle(indicator).width).toBe('16px')
   })
 

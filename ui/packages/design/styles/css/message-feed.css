@@ -68,7 +68,7 @@
     overscroll-behavior: contain;
   }
 
-  /* 流式视口的内容高度一直在变，还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字（§6.6）。
+  /* 流式视口的内容高度一直在变，还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字。
      带 data-xh-scrollbar 的容器已经把原生条藏成零宽，这条空道对它没有布局作用，排除掉 */
   [data-scope='message-feed'][data-part='viewport']:not([data-xh-scrollbar]) {
     scrollbar-gutter: stable;
@@ -112,7 +112,7 @@
 
   /* 回到底部：浮在滚动区右下角，收起时不卸载只隐藏。盒型、悬停 / 按下面与缩放由 Action Control 的
      floating 档给（circle 正方盒、ghost 形态：白底承载 hover 100 → pressed 200）；材质随角落浮钮族走
-     frosted 四件套（底 + 边 + 影 + 磨砂，§8），这里只把使用者槽映射到桥接槽：
+     frosted 四件套（底 + 边 + 影 + 磨砂），这里只把使用者槽映射到桥接槽：
      字形按 xs 档取 --xh-_action-profile-glyph-size（16px），与 log / back-top 同一把尺 */
   [data-scope='message-feed'][data-part='scroll-to-end-trigger'] {
     --xh-_message-feed-scroll-to-end-trigger-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-material-frosted-shadow));

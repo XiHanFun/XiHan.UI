@@ -29,7 +29,7 @@ export const knownA11yViolations: KnownViolations = {
   'tag': { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-muted 一档（浅色 2.36:1、深色 1.93:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
   // select 摆在触发器外的那枚可删标签与 tag 同一档：触发器里的那些在原生 disabled 的按钮内，axe 跳过；外面这枚是个没有角色的 span
   'select': { 'color-contrast': '禁用时触发器外那枚标签的文字同 tag：fg-disabled 落在 bg-subtle 上（浅色 2.35:1、深色 1.93:1），按 1.4.3 失效控件豁免；它不在原生 disabled 的按钮里，axe 看得见' },
-  // 禁用的上传器里，文件条目的名字与大小同走 fg-disabled（真源 §7.2 第 9 条：字段禁用 = fg-disabled）；
+  // 禁用的上传器里，文件条目的名字与大小同走 fg-disabled（字段禁用 = fg-disabled）；
   // 条目是 role=listitem（aria-disabled 不允许写在它身上），三颗钮都是原生 disabled、axe 跳过，
   // 只有这两段文字被扫出来
   'file-upload': { 'color-contrast': '禁用时文件条目的名字与大小是全库统一的 fg-disabled 一档（浅色 2.58:1 落 bg-surface、深色 2.27:1），按 1.4.3 失效控件豁免；listitem 不能写 aria-disabled，axe 看得见' },

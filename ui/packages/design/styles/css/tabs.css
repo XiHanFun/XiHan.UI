@@ -25,7 +25,7 @@
     /* 缺省是 line 变体：透明标签带，选中项由文字与底部指示条表达。Web Components 升级前还没有
        data-variant，这组几何基础值也必须画成相同结果，避免定义完成时闪换样式；line 档的面与字色由家族
        按升级后写入的家族角色给，升级前那一帧只有几何没有面色（与 side-nav / menu 同）。
-       悬停与按下的面按承载面分档（§7.2）：line 档经家族走白底承载 hover 100 → pressed 200；card 坐在
+       悬停与按下的面按承载面分档：line 档经家族走白底承载 hover 100 → pressed 200；card 坐在
        画布上 hover 100 → pressed 200；segment 坐在淡底轨道里 hover 200 → pressed 300。card / segment 的
        六支面槽只在各自形态块里赋值，line 档不消费它们 */
     --xh-_tabs-list-gap: var(--xh-space-0);
@@ -87,7 +87,7 @@
   }
 
   /* 卡片式：基线收掉，选中的那张标签自己成为一张有描边有底的卡片，顶边一条指示条。
-     标签坐在画布上，悬停 100 → 按下 200（§7.2 白底承载） */
+     标签坐在画布上，悬停 100 → 按下 200（白底承载） */
   [data-scope='tabs'][data-part='root'][data-variant='card'] {
     --xh-_tabs-list-gap: var(--xh-control-gap-md);
     --xh-_tabs-list-bg: transparent;
@@ -106,7 +106,7 @@
     --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
   }
 
-  /* 分段式（§7.3 有滑块开关）：淡底轨道承载一块白色抬起的选中面，选中文字保持默认字色。
+  /* 分段式（有滑块开关）：淡底轨道承载一块白色抬起的选中面，选中文字保持默认字色。
      未选中标签坐在淡底轨道里，悬停 200 → 按下 300；选中面自己不再叠悬停 / 按下态。
      选中面的三件（surface-raised 底、border-default 描边、raised 影）写在下面标签自己的规则里 */
   [data-scope='tabs'][data-part='root'][data-variant='segment'] {
@@ -171,8 +171,8 @@
     translate: 0 var(--xh-_tabs-scroll);
   }
 
-  /* segment 档的标签带是一块淡底面：--xh-bg-subtle 底 + 一圈透明占位边 + 无影（§8.3 三选一）。
-     它同时是标签的淡底承载面，向内下发 hover 200 → pressed 300 的承载阶梯（§7.2）；
+  /* segment 档的标签带是一块淡底面：--xh-bg-subtle 底 + 一圈透明占位边 + 无影（三选一）。
+     它同时是标签的淡底承载面，向内下发 hover 200 → pressed 300 的承载阶梯；
      只写在标签带上不写在 root 上：内容面板里的按钮坐在画布上，不该跟着抬一档 */
   [data-scope='tabs'][data-part='root'][data-variant='segment'] [data-scope='tabs'][data-part='list'] {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
@@ -202,9 +202,9 @@
     min-inline-size: auto;
   }
 
-  /* line 档（§7.3 导航当前页）：把公开槽映射到 Collection Item 的 nav 语境桥接槽。静息 muted / regular，
+  /* line 档（导航当前页）：把公开槽映射到 Collection Item 的 nav 语境桥接槽。静息 muted / regular，
      悬停 100 + default 字，按下 200 只换面；当前页透明面 + 品牌深字（随语气的 --xh-_tabs-accent-text）+
-     medium，叠悬停 100（§9.3）。2px 指示线不由家族按条目画：放了 indicator 部件是 list 上的滑动部件，
+     medium，叠悬停 100。2px 指示线不由家族按条目画：放了 indicator 部件是 list 上的滑动部件，
      没放则由下面的静态线规则画在选中标签自己身上。高度由 block-size 定，块向内边距归零 */
   [data-scope='tabs'][data-part='root'][data-variant='line'] [data-scope='tabs'][data-part='trigger'] {
     --xh-collection-block-padding: var(--xh-space-0);
@@ -228,7 +228,7 @@
     color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
     font-weight: var(--xh-tabs-trigger-font-weight, var(--xh-text-label-weight));
     cursor: pointer;
-    /* 标签是铺开的一段（§9.2 Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale */
+    /* 标签是铺开的一段（Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale */
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -257,7 +257,7 @@
   }
 
   /* 按下去要有回应：card / segment 档的未选中标签换到按下面（card 200、segment 300），几何不动。
-     选中标签不叠按下面：card 的卡片面与 segment 的抬起面本身就是选中身份（§7.3 有滑块开关无叠加态） */
+     选中标签不叠按下面：card 的卡片面与 segment 的抬起面本身就是选中身份（有滑块开关无叠加态） */
   [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
     [data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):is(:active, [data-pressed]) {
     background: var(--xh-tabs-trigger-bg-pressed, var(--xh-_tabs-trigger-bg-pressed));
@@ -276,7 +276,7 @@
     font-weight: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
   }
 
-  /* segment 档的选中标签就是那块白色抬起的滑块面（§7.3 有滑块开关）：surface-raised 底 +
+  /* segment 档的选中标签就是那块白色抬起的滑块面（有滑块开关）：surface-raised 底 +
      border-default 描边 + raised 影三件写在标签自己身上。标签带里放了 indicator 部件时，
      这块面搬到部件上跟着滑（见下面的 indicator 规则），标签自己透空、只留字 */
   [data-scope='tabs'][data-part='root'][data-variant='segment']
@@ -477,7 +477,7 @@
     display: none;
   }
 
-  /* segment 档（§7.3 有滑块开关）：部件就是那块白色抬起的滑块面，四个几何量都取、整块跟着滑——
+  /* segment 档（有滑块开关）：部件就是那块白色抬起的滑块面，四个几何量都取、整块跟着滑——
      surface-raised 底 + border-default 描边 + raised 影三件与 Segmented 的滑块同一套；
      描边吃进盒里（border-box），面与标签仍是同一块矩形。标签压在它上面，点击一律交给标签。
      用连续档而不是进场那条：滑块是被推过去的，起步就该有速度；四个几何量同时走，标签宽不等时才不会先变形再挪位 */
@@ -501,7 +501,7 @@
       block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
-  /* line 档没放 indicator 部件时，选中标签自画一条静态指示线（§7.3 导航当前页）：
+  /* line 档没放 indicator 部件时，选中标签自画一条静态指示线（导航当前页）：
      横向缺省也要像纵向示例那样有一条选中线，作者不必为了这条线多放一个部件。
      线画在选中标签的 ::after 上，以标签盒为定位参照（基础规则里已是 position: relative），
      厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。

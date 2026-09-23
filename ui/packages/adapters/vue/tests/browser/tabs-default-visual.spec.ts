@@ -134,7 +134,7 @@ describe('tabs 默认视觉', () => {
     expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
     expect(Number.parseFloat(style.borderBottomWidth)).toBe(0)
     expect(getComputedStyle(line.indicator).bottom).toBe('0px')
-    // 当前页（§7.3 导航当前页，Collection Item nav 语境）：透明面 + --xh-fg-brand-strong + medium
+    // 当前页（导航当前页，Collection Item nav 语境）：透明面 + --xh-fg-brand-strong + medium
     const active = getComputedStyle(line.active)
     expect(active.boxShadow).toBe('none')
     expect(active.backgroundColor).toBe('rgba(0, 0, 0, 0)')
@@ -146,11 +146,11 @@ describe('tabs 默认视觉', () => {
     expect(rest.fontWeight).toBe('400')
     expect(rest.cursor).toBe('pointer')
 
-    // 悬停：白底承载 hover 100（§7.2）+ default 字，不再只换前景
+    // 悬停：白底承载 hover 100+ default 字，不再只换前景
     await userEvent.hover(line.inactive)
     expect(getComputedStyle(line.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
     expect(getComputedStyle(line.inactive).color).toBe(resolveColor('--xh-fg-default', line.list))
-    // 当前页叠悬停：保留品牌深字，面走 100（§9.3）
+    // 当前页叠悬停：保留品牌深字，面走 100
     await userEvent.hover(line.active)
     expect(getComputedStyle(line.active).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
     expect(getComputedStyle(line.active).color).toBe(resolveColor('--xh-fg-brand-strong', line.list))

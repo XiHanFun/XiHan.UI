@@ -187,7 +187,7 @@
     color: var(--xh-form-summary-fg, var(--xh-fg-danger));
     font-size: var(--xh-form-summary-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
-    /* 静态反馈面：边界由描边承担，不带落影（§8 solid 无影） */
+    /* 静态反馈面：边界由描边承担，不带落影（solid 无影） */
     box-shadow: var(--xh-form-summary-shadow, none);
   }
 
@@ -207,7 +207,7 @@
     animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
-  /* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行（§9.2）：悬停 / 按下只换面不缩放，
+  /* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行：悬停 / 按下只换面不缩放，
      底面坐在摘要的 surface 白底上，走白底承载阶梯 100 → 200；换面走按压时间线，释放回 release 档 */
   [data-scope='form'][data-part='error-summary-item'] {
     display: block;
@@ -303,7 +303,7 @@
 
   /* 两颗按钮是离散动作控件：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用面全由 Action Control 的 text 档给，
      组件只映射既有使用者槽。提交走 solid 档：表单提交是这一组里的主要动作，与 Button 缺省同为品牌实心；
-     重置走 outline 档：非 Button 的触发器缺省中性描边（§7.2.2）。两颗共用的几何与字号写在一起 */
+     重置走 outline 档：非 Button 的触发器缺省中性描边。两颗共用的几何与字号写在一起 */
   [data-scope='form'][data-part='submit-trigger'],
   [data-scope='form'][data-part='reset-trigger'] {
     --xh-action-visual-size: var(--xh-form-trigger-h, var(--xh-_action-profile-visual-size));

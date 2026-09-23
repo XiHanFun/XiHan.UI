@@ -1111,7 +1111,7 @@
   font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
 }
 
-/* 快捷键提示：与说明同档同色的次级文字（真源 §7.5），只是落位在行尾而不是第 2 行。
+/* 快捷键提示：与说明同档同色的次级文字，只是落位在行尾而不是第 2 行。
    不换行——它是一串按键记号，折行会被读成两个组合。跟着 description 那支前景走，因此也不跟语气。 */
 [data-xh-collection-slot='shortcut'] {
   grid-column: shortcut;
@@ -1190,7 +1190,7 @@
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
-/* 语气段：条目自身动作的性质，静息只换字、hover / 高亮 / 按下换语气淡底，节奏与中性行一致（真源 §7.4）。
+/* 语气段：条目自身动作的性质，静息只换字、hover / 高亮 / 按下换语气淡底，节奏与中性行一致。
    必须排在上下文段之前：语气与 selected / current 同特指度，靠源序让选中与当前压过语气。 */
 [data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
   --xh-_collection-bg: transparent;
@@ -1562,7 +1562,7 @@
     --xh-_collection-indicator-fg: HighlightText;
   }
 
-  /* 语气在强制颜色下退出：逐态用系统色盖回家族缺省，只留图标与文案通道（真源 §7.4）。
+  /* 语气在强制颜色下退出：逐态用系统色盖回家族缺省，只留图标与文案通道。
      语气段在媒体查询外的特指度比这里的基础态各高一级，必须逐条同形盖回，不能只写一条。 */
   [data-scope][data-xh-collection-item][data-tone]:not([data-xh-collection-context='nav']):not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]) {
     --xh-_collection-bg: Canvas;
@@ -1834,7 +1834,7 @@
 /* family/motion.css */
 /* 定义 motion 样式。 */
 
-/* 共享关键帧的唯一真源（规范 §9.4 / §9.5）。
+/* 共享关键帧的唯一真源。
  *
  * 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
  * 动画会静默地整个不跑。所以引用这里任一名字的皮肤都 @import 本文件，单独引入那份皮肤时
@@ -2169,7 +2169,7 @@
 }
 
 /* —— 触发器 ——
-   浮在内容之上的单图标圆钮，接 Action Control floating 档（§4.1）：盒型（md = box-lg 48px，圆形）、
+   浮在内容之上的单图标圆钮，接 Action Control floating 档：盒型（md = box-lg 48px，圆形）、
    四态面、0.97 按压与 44px 命中区由家族配方按 data-xh-action-variant / -size 给出。
    这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射。
    整件只有这一颗按钮，槽名与其余一样不带部件段（照 float-button 的 --xh-float-button-size） */
@@ -2188,7 +2188,7 @@
   --xh-action-border-pressed: var(--xh-back-top-border-hover, var(--xh-_action-variant-border-pressed));
   --xh-action-border-focus-visible: var(--xh-back-top-border, var(--xh-_action-variant-border-focus-visible));
   --xh-action-border-disabled: var(--xh-back-top-border, var(--xh-_action-variant-border-disabled));
-  /* 矩阵各态无影（§8.3 淡底与阴影互斥）；outline 那一档的磨砂投影在下面另桥接 */
+  /* 矩阵各态无影（淡底与阴影互斥）；outline 那一档的磨砂投影在下面另桥接 */
   --xh-action-shadow-rest: var(--xh-back-top-shadow, none);
   --xh-action-shadow-hover: var(--xh-back-top-shadow, none);
   --xh-action-shadow-pressed: var(--xh-back-top-shadow, none);
@@ -2488,7 +2488,7 @@
 }
 
 /* 独立 Button 按下时缩一档；组内段却靠共边重叠一像素，单段缩放会同时撕开两侧接缝。
-   组内仍保留 active 换底与撤高光，只把会改变外轮廓几何的 scale 收掉（§9.2 允许的只换面）；
+   组内仍保留 active 换底与撤高光，只把会改变外轮廓几何的 scale 收掉（允许的只换面）；
    键盘与触屏的按压由 Headless 投影 data-pressed，与指针 :active 同一档。 */
 [data-scope='button-group'][data-part='root']
   > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]),
@@ -2536,7 +2536,7 @@
   /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_descriptions-gap: var(--xh-space-3);
-  /* 标签是每一格的集合标题：叠着排时与取值隔 space-2（§6.4 集合标题与集合的间距） */
+  /* 标签是每一格的集合标题：叠着排时与取值隔 space-2（集合标题与集合的间距） */
   --xh-_descriptions-pair-gap: var(--xh-space-2);
   --xh-_descriptions-label-gap: var(--xh-space-2);
   --xh-_descriptions-py: var(--xh-space-2);
@@ -2786,10 +2786,10 @@
   --xh-diff-view-skin: 1;
 }
 
-/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）；
+/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担）；
    头部、行号列与并排接缝的内部分隔线走另一支 --xh-diff-view-divider（subtle） */
 [data-scope='diff-view'][data-part='root'] {
-  /* 作者塞进部件里的图标与皮肤画的兜底字形同一把尺：md 档，随 data-size 换档（§6.5） */
+  /* 作者塞进部件里的图标与皮肤画的兜底字形同一把尺：md 档，随 data-size 换档 */
   --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
@@ -3030,7 +3030,7 @@
   color: var(--xh-diff-view-punctuation-fg, var(--xh-fg-subtle));
 }
 
-/* 折起来的那一行：整行都是展开按钮。行是淡底承载面，向按钮下发 hover 200 → pressed 300（§7.2） */
+/* 折起来的那一行：整行都是展开按钮。行是淡底承载面，向按钮下发 hover 200 → pressed 300 */
 [data-scope='diff-view'][data-part='gap'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -3048,7 +3048,7 @@
 }
 
 /* 展开按钮铺满折叠格，盒型、悬停与按下面由 Action Control 的 disclosure-trigger 档给（ghost 形态，
-   按下只换面不缩放，§9.2）；这里只把使用者槽映射到桥接槽：圆角归零贴住格边、纵向内衬归零、
+   按下只换面不缩放）；这里只把使用者槽映射到桥接槽：圆角归零贴住格边、纵向内衬归零、
    高度锚在代码行高上让折叠格与相邻代码行同高，字号跟着正文走 */
 [data-scope='diff-view'][data-part='gap-trigger'] {
   --xh-action-radius: 0;
@@ -3224,7 +3224,7 @@
 }
 
 /*
- * 触发器就是这一个原生按钮，是定尺的独立动作按钮（§9.1）：盒型、三档几何、四态面、0.97 按压与粗指针
+ * 触发器就是这一个原生按钮，是定尺的独立动作按钮：盒型、三档几何、四态面、0.97 按压与粗指针
  * 命中区由家族配方按 data-xh-action-variant / -size 给出（缺省 subtle 由连接层显式投影，只有 solid 才品牌实心）。
  * 这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射；
  * 要换成品牌样式的作者改 --xh-download-trigger-* 这一族槽位，或直接写自己的类名。
@@ -3246,7 +3246,7 @@
   --xh-action-border-pressed: var(--xh-download-trigger-border-hover, var(--xh-_action-variant-border-pressed));
   --xh-action-border-focus-visible: var(--xh-download-trigger-border, var(--xh-_action-variant-border-focus-visible));
   --xh-action-border-disabled: var(--xh-download-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
-  /* 矩阵各态无影（§8.3 淡底与阴影互斥）：solid 也不再悬停抬影，使用者槽仍可自行加 */
+  /* 矩阵各态无影（淡底与阴影互斥）：solid 也不再悬停抬影，使用者槽仍可自行加 */
   --xh-action-shadow-hover: var(--xh-download-trigger-shadow-hover, none);
   --xh-action-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
   --xh-action-visual-size: var(--xh-download-trigger-h, var(--xh-_action-profile-visual-size));
@@ -3310,7 +3310,7 @@
   margin: auto;
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: var(--xh-_download-trigger-loading-fg);
-  /* 正圆的加载环：正方盒取 circle（§6.3） */
+  /* 正圆的加载环：正方盒取 circle */
   border-radius: var(--xh-shape-circle);
   opacity: 0;
   animation:
@@ -3584,7 +3584,7 @@
 [data-scope='fieldset'][data-part='legend'] {
   padding: 0;
   margin-block-end: var(--xh-fieldset-legend-gap, var(--xh-space-2));
-  /* 组标题是「一组字段的标题」，归集合标题角色（§6.4）：fg-muted，与组 --xh-space-2，字号字重同字段标签 */
+  /* 组标题是「一组字段的标题」，归集合标题角色：fg-muted，与组 --xh-space-2，字号字重同字段标签 */
   color: var(--xh-fieldset-legend-fg, var(--xh-fg-muted));
   font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-label-weight));
@@ -3851,7 +3851,7 @@
 /* —— 形态：给展开列表里原生动作项用的面 ——
    触发器的面由 Action Control 形态矩阵按 data-xh-action-variant 给（solid / subtle / ghost），
    原生动作项读不到矩阵，这几块私有槽按矩阵同一张表镜像；ghost 与 outline 的悬停 / 按下走画布承载的
-   阶梯（100 → 200，§7.2 第 3 条）。缺省 outline（连接层不传 variant 时显式落）是磨砂面：背景、边缘、
+   阶梯（100 → 200）。缺省 outline（连接层不传 variant 时显式落）是磨砂面：背景、边缘、
    顶光、投影与磨砂从同一份 M2 配方取，高对比、减少透明度、打印和强制色便能一起降级——钮浮在正文
    之上，透空的面在任何内容上都读不出边界，所以 outline 这一档面留着 */
 [data-scope='float-button'][data-part='root'][data-variant='solid'] {
@@ -3895,7 +3895,7 @@
 }
 
 /* —— 触发器 ——
-   浮在内容之上的单图标圆钮，接 Action Control floating 档（§4.1）：盒型（md = box-lg 48px，圆形）、
+   浮在内容之上的单图标圆钮，接 Action Control floating 档：盒型（md = box-lg 48px，圆形）、
    四态面、0.97 按压与 44px 命中区由家族配方按 data-xh-action-variant / -size 给出。
    这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射 */
 [data-scope='float-button'][data-part='trigger'] {
@@ -3913,7 +3913,7 @@
   --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-_action-variant-border-pressed));
   --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-_action-variant-border-focus-visible));
   --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-_action-variant-border-disabled));
-  /* 矩阵各态无影（§8.3 淡底与阴影互斥）；outline 那一档的磨砂投影在下面另桥接 */
+  /* 矩阵各态无影（淡底与阴影互斥）；outline 那一档的磨砂投影在下面另桥接 */
   --xh-action-shadow-rest: var(--xh-float-button-shadow, none);
   --xh-action-shadow-hover: var(--xh-float-button-shadow, none);
   --xh-action-shadow-pressed: var(--xh-float-button-shadow, none);
@@ -4110,7 +4110,7 @@
    皮肤只管层级、配色、圆角、阴影、把手的摆放与状态表现。 */
 
 [data-scope='floating-panel'][data-part='root'] {
-  /* 作者塞进面板里的图标按控件档取（§6.5）；标题栏上的按钮另由家族配方按各自的档下发字形尺 */
+  /* 作者塞进面板里的图标按控件档取；标题栏上的按钮另由家族配方按各自的档下发字形尺 */
   --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-md));
 
   /* 面板本身是 fixed 定位，root 只是作者那棵树里的容器，不参与排布 */
@@ -4128,7 +4128,7 @@
 }
 
 /*
- * 开合触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 开合触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出（此前只缩放不换底）。这里只把公开槽桥接到
  * 矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射。
  */
@@ -4248,7 +4248,7 @@
   display: none;
 }
 
-/* 浮层内标题（§6.4）：14 / 600 */
+/* 浮层内标题：14 / 600 */
 [data-scope='floating-panel'][data-part='title'] {
   margin: 0;
   flex: 1 1 auto;
@@ -4365,7 +4365,7 @@
 
 /*
  * —— 标题栏上的按钮 ——
- * 形态钮与关闭钮是标题栏上的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针
+ * 形态钮与关闭钮是标题栏上的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针
  * 命中区由家族配方给出——磨砂白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
  * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）；
  * 静息前景取磨砂面的 muted 字色，悬停 / 按下回到 fg-default。
@@ -4398,7 +4398,7 @@
   display: none;
 }
 
-/* 当前形态的那颗钮是按下的开关（aria-pressed），无滑块开关的 on 态取品牌淡底（§7.3）：
+/* 当前形态的那颗钮是按下的开关（aria-pressed），无滑块开关的 on 态取品牌淡底：
    rest 12% → hover 20% → pressed 28%，前景一律 --xh-fg-on-brand-subtle（对比度由该令牌承担）；
    淡底不是实心面，焦点吃库环 */
 [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on'] {
@@ -4419,7 +4419,7 @@
   }
 }
 
-/* 正文是浮在页面之上的 Overlay 滚动面（§6.6）：原生细条由 reset 层统一给，滚到头不把页面一起带走；
+/* 正文是浮在页面之上的 Overlay 滚动面：原生细条由 reset 层统一给，滚到头不把页面一起带走；
    内容高度不动态变化，不写 scrollbar-gutter */
 [data-scope='floating-panel'][data-part='body'] {
   flex: 1 1 auto;
@@ -5835,7 +5835,7 @@
   padding-block: var(--xh-heatmap-tooltip-py, var(--xh-space-1));
   padding-inline: var(--xh-heatmap-tooltip-px, var(--xh-space-2));
   border-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-control));
-  /* 与 Tooltip 同一副反白气泡：任何浮层都得有一圈非透明描边（§8.4），描边从字色里兑两成，
+  /* 与 Tooltip 同一副反白气泡：任何浮层都得有一圈非透明描边，描边从字色里兑两成，
      深浅主题与语气换色时跟着字色走；影走 frosted 紧凑档，与 Tooltip 的 content 同深 */
   border: var(--xh-stroke-thin) solid var(--xh-heatmap-tooltip-border, color-mix(in oklab, var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface)) 20%, transparent));
   background: var(--xh-heatmap-tooltip-bg, var(--xh-fg-default));
@@ -6113,7 +6113,7 @@
   background: var(--xh-kbd-bg, var(--xh-bg-subtle));
   color: var(--xh-kbd-fg, var(--xh-fg-muted));
   font-family: var(--xh-kbd-font, inherit);
-  /* 快捷键是次级标注，字号取 caption 档（§6.4） */
+  /* 快捷键是次级标注，字号取 caption 档 */
   font-size: var(--xh-kbd-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-kbd-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
@@ -6216,7 +6216,7 @@
 }
 
 /* 圆形裁切取 circle 档（50%）：shape 的固定长度档画出来是胶囊不是椭圆，
-   裁切框的宽高由数据决定、两边通常不等长，只有百分比才随框变成椭圆；圆角只能来自语义形状令牌（§6.3） */
+   裁切框的宽高由数据决定、两边通常不等长，只有百分比才随框变成椭圆；圆角只能来自语义形状令牌 */
 [data-scope='image-cropper'][data-part='crop-area'][data-shape='round'] {
   --xh-_image-cropper-corner-radius: var(--xh-shape-circle);
 
@@ -6300,7 +6300,7 @@
   content: '';
 }
 
-/* 把手静息是白面（bg-surface），悬停从同一语义面派生一档（§7.2 第 8 条），不切到品牌淡底；拖动中才是品牌实心 */
+/* 把手静息是白面（bg-surface），悬停从同一语义面派生一档，不切到品牌淡底；拖动中才是品牌实心 */
 [data-scope='image-cropper'][data-part='crop-handle']:hover:not([data-disabled], [data-readonly]) {
   --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-subtle));
 }
@@ -6534,11 +6534,11 @@
 
 /*
  * 取下一页的按钮：与哨兵同一条通路的键盘入口，摆在列表末尾自成一行——铺满一行的独立动作条目，
- * 接 Action Control 的 row 档、outline 形态（§9.2）：宽度由容器给、高度随内容、按下只换面不缩放；
+ * 接 Action Control 的 row 档、outline 形态：宽度由容器给、高度随内容、按下只换面不缩放；
  * 盒几何、中性描边与透明底、悬停 / 按下 / 禁用面、焦点环与粗指针热区全由家族给，
  * 白底承载 hover 100 → pressed 200。这里只把使用者槽映射到桥接槽，并把文案居中：
  * 它是一行里唯一的东西，靠起始缘会像一条没对齐的列表项。
- * 行高不吃家族的单行档：row 档允许换行、高度随内容，折行的文案走正文行高（§6.4）
+ * 行高不吃家族的单行档：row 档允许换行、高度随内容，折行的文案走正文行高
  */
 [data-scope='infinite-scroll'][data-part='load-more-trigger'] {
   --xh-action-gap: var(--xh-infinite-scroll-load-more-gap, var(--xh-_action-profile-gap));
@@ -6591,7 +6591,7 @@
   --xh-_input-group-font-size: var(--xh-control-font-md);
   --xh-_input-group-bg: transparent;
   --xh-_input-group-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
-  /* 组壳按字段外壳画 outline 描边（§8.3）：静息 --xh-border-control、悬停升 -hover、聚焦换 -focus，无影 */
+  /* 组壳按字段外壳画 outline 描边：静息 --xh-border-control、悬停升 -hover、聚焦换 -focus，无影 */
   --xh-_input-group-border: var(--xh-border-control);
   --xh-_input-group-border-hover: var(--xh-border-control-hover);
   --xh-_input-group-border-focus: var(--xh-border-control-focus);
@@ -6624,7 +6624,7 @@
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* subtle：淡底顶替描边表达边界，描边只退成透明而不去掉；悬停浮出 --xh-border-control（§8.3） */
+/* subtle：淡底顶替描边表达边界，描边只退成透明而不去掉；悬停浮出 --xh-border-control */
 [data-scope='input-group'][data-part='root'][data-variant='subtle'] {
   --xh-_input-group-bg: var(--xh-bg-subtle);
   --xh-_input-group-bg-hover: var(--xh-bg-subtle-hover);
@@ -6854,7 +6854,7 @@
 /* 缺省态（md 档）。等宽字体让层级缩进与值的长度对得齐。
    逐类型配色走 --xh-syntax-* 语法令牌，与代码块的记号色同源、随主题明暗切换。 */
 [data-scope='json-viewer'][data-part='root'] {
-  /* 作者放进空态格里的图标按档取尺，缺省 md，随 data-size 换档（§6.5）。
+  /* 作者放进空态格里的图标按档取尺，缺省 md，随 data-size 换档。
      查看器自绘的状态字形（分支行首的展开方向 chevron）不读这支：它是指示符，与所在的把手盒同走
      --xh-control-indicator-* 一族——branch-trigger 在自己身上把 --xh-icon-size 改接到盒的尺 */
   --xh-icon-size: var(--xh-json-viewer-icon-size, var(--xh-glyph-size-md));
@@ -6875,7 +6875,7 @@
   display: none;
 }
 
-/* 面画在两档容器与空态格上，root 只是壳。三档按 §8.3 边界三选一：outline 即基础规则
+/* 面画在两档容器与空态格上，root 只是壳。三档按边界三选一：outline 即基础规则
    （--xh-border-default 描边 + surface 底 + 无影）；淡底档描边透明、底换 subtle；
    无框档边框留着但透明——去掉外框不会让行的位置跳一格 */
 [data-scope='json-viewer'][data-part='root'][data-variant='subtle']
@@ -6906,7 +6906,7 @@
 }
 
 /* 常驻容器不是浮层：两轴都可能溢出——深层缩进往行首方向推、长字符串往行尾伸；
-   页内结构容器走 reset 层的原生细条（§6.6），不写 overscroll */
+   页内结构容器走 reset 层的原生细条，不写 overscroll */
 [data-scope='json-viewer'][data-part='tree'] {
   display: flex;
   flex-direction: column;
@@ -6994,7 +6994,7 @@
   user-select: none;
 }
 
-/* 按下只换面不缩放：白底承载 hover 100 → pressed 200（§7.2 / §9.2 集合行不允许零反馈）；
+/* 按下只换面不缩放：白底承载 hover 100 → pressed 200（集合行不允许零反馈）；
    指针按住由 :active 表出，Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
 [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) {
   background: var(--xh-json-viewer-row-bg-active, var(--xh-bg-subtle-hover));
@@ -7054,7 +7054,7 @@
 }
 
 /* 展开箭头与勾选标记同宽，两种行的文字起点才对得齐。
-   盒里的 chevron 是指示符（§6.5）：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺——
+   盒里的 chevron 是指示符：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺——
    root 那支只管作者图标的 --xh-json-viewer-icon-size 不流进来，按图标档取的 20px 会比 16px 的盒还大；
    branch-indicator 由适配器固定渲染在这颗把手里，继承即可 */
 [data-scope='json-viewer'][data-part='branch-trigger'] {
@@ -7257,7 +7257,7 @@
 }
 
 /* 宽度过渡在这里声明一次，展开与折叠两档、以及 props 直接写进内联的宽度，走的都是这一条。
-   占位档的侧栏是淡底承载面：把手摆进来时由它下发 hover 200 → pressed 300（§7.2）；
+   占位档的侧栏是淡底承载面：把手摆进来时由它下发 hover 200 → pressed 300；
    覆盖档换成 elevated 白底，那一档的规则把阶梯写回 100 → 200 */
 [data-scope='layout'][data-part='sider'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
@@ -7384,7 +7384,7 @@
      写成槽位而不是写死 ±100%：贴边用的是逻辑 inset，RTL 下行首落在物理右边，
      位移若写死物理方向就会出现「贴在右边、却从左边滑进来」 */
   --xh-_layout-sheet-shift: -100%;
-  /* 这一档的底是 elevated 白底：交互阶梯按承载面走（§7.2），把上面占位档下发的 200 → 300 写回
+  /* 这一档的底是 elevated 白底：交互阶梯按承载面走，把上面占位档下发的 200 → 300 写回
      白底的 hover 100 → pressed 200 */
   --xh-action-host-bg-hover: var(--xh-bg-subtle);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
@@ -7410,7 +7410,7 @@
     env(safe-area-inset-left),
     env(safe-area-inset-right)
   );
-  /* 盖在内容之上、带遮罩的一面走 sheet 三件套（§8.4：--xh-material-elevated-bg / -border / -shadow），
+  /* 盖在内容之上、带遮罩的一面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow），
      贴着内容那一侧描一条边；占位档的侧栏不画投影 */
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-material-elevated-border));
   background: var(--xh-layout-sider-bg, var(--xh-material-elevated-bg));
@@ -7501,7 +7501,7 @@
   --xh-_list-item-gap: var(--xh-space-3);
   --xh-_list-title-size: var(--xh-control-font-md);
   --xh-_list-description-size: var(--xh-control-caption-md);
-  /* 条目悬停换到的面：坐在白底上是 100，淡底档的根把它抬到 200（§7.2 按承载面的阶梯） */
+  /* 条目悬停换到的面：坐在白底上是 100，淡底档的根把它抬到 200（按承载面的阶梯） */
   --xh-_list-item-bg-hover: var(--xh-bg-subtle);
 
   display: flex;
@@ -7668,7 +7668,7 @@
   --xh-_log-font-size: var(--xh-text-secondary-size);
   --xh-_log-content-px: var(--xh-space-3);
 
-  /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 描边与淡底互斥），
+  /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（描边与淡底互斥），
      与 code-view / diff-view / json-viewer 同走 solid */
   position: relative;
   display: flex;
@@ -7749,7 +7749,7 @@
 
 /* 回到底部：浮在视口右下角，收起时不卸载只隐藏。盒型、悬停 / 按下面与缩放由 Action Control 的
    floating 档给（circle 正方盒、ghost 形态：白底承载 hover 100 → pressed 200）；材质随角落浮钮族走
-   frosted 四件套（底 + 边 + 影 + 磨砂，§8），这里只把使用者槽映射到桥接槽：
+   frosted 四件套（底 + 边 + 影 + 磨砂），这里只把使用者槽映射到桥接槽：
    字形按 xs 档取 --xh-_action-profile-glyph-size（16px），与 back-top 同一把尺 */
 [data-scope='log'][data-part='scroll-to-end-trigger'] {
   --xh-_log-scroll-to-end-trigger-shadow: var(--xh-log-scroll-to-end-trigger-shadow, var(--xh-material-frosted-shadow));
@@ -8788,7 +8788,7 @@
   --xh-_page-header-radius: var(--xh-shape-surface);
 }
 
-/* outline 是一张静态内容面：--xh-border-default 描边撑住这块面的边界 + surface 底，不叠投影（§5.3）；
+/* outline 是一张静态内容面：--xh-border-default 描边撑住这块面的边界 + surface 底，不叠投影；
    --xh-border-subtle 只作 ghost 贴底那条分隔线用，不当根面外边 */
 [data-scope='page-header'][data-part='root'][data-variant='outline'] {
   border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-default));
@@ -9278,7 +9278,7 @@
 }
 
 /*
- * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
  * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
  */
@@ -9340,7 +9340,7 @@
 /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
    标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
 [data-scope='popconfirm'][data-part='content'] {
-  /* 作者塞进面板里的图标按控件档取（§6.5）；两颗动作钮另由家族配方按 sm 档下发字形尺 */
+  /* 作者塞进面板里的图标按控件档取；两颗动作钮另由家族配方按 sm 档下发字形尺 */
   --xh-icon-size: var(--xh-popconfirm-icon-size, var(--xh-glyph-size-md));
   /* 尺寸档只换这两个私有槽 */
   --xh-_popconfirm-pad: var(--xh-surface-pad-md);
@@ -9357,7 +9357,7 @@
   /* 说明文案长度由作者给，矮视口下不限高面板会整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-popconfirm-max-h, var(--xh-overlay-max-h)), var(--xh-_popconfirm-available-h));
   overflow-y: auto;
-  /* 浮在页面之上的 Overlay 滚动面（§6.6）：滚到头不把页面一起带走 */
+  /* 浮在页面之上的 Overlay 滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
   padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
   padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
@@ -9433,7 +9433,7 @@
   color: var(--xh-popconfirm-title-fg, var(--xh-material-frosted-fg));
 }
 
-/* 说明文字走说明档（§6.4）：13px + fg-muted */
+/* 说明文字走说明档：13px + fg-muted */
 [data-scope='popconfirm'][data-part='description'] {
   margin: 0;
   min-inline-size: 0;
@@ -9458,7 +9458,7 @@
 
 /*
  * —— 两颗按钮 ——
- * 确认与取消都是浮层末行的文字按钮（§9.1）：盒型、sm 档几何、四态面、0.97 按压并换底、粗指针命中区与
+ * 确认与取消都是浮层末行的文字按钮：盒型、sm 档几何、四态面、0.97 按压并换底、粗指针命中区与
  * 强制色由家族配方按连接层投影的 data-xh-action-variant / -size 给出。这里只把公开槽桥接到矩阵之前
  * （使用者槽 → 形态矩阵 → 家族缺省）与几何映射；内衬与圆角槽取两颗共用的 action 段。
  */
@@ -9483,7 +9483,7 @@
   grid-column: 3;
 }
 
-/* 确认是实心的主操作（§7.2 第 2 条）。底色走共享语气槽：作者在 content 上写 data-tone="danger"
+/* 确认是实心的主操作。底色走共享语气槽：作者在 content 上写 data-tone="danger"
    就整体换成危险色，不写则用品牌色——配方 solid 列本就读 --xh-_tone，这里只桥接使用者槽 */
 [data-scope='popconfirm'][data-part='confirm-trigger'] {
   --xh-action-bg-rest: var(--xh-popconfirm-confirm-bg, var(--xh-_action-variant-bg-rest));
@@ -9582,7 +9582,7 @@
 }
 
 /* root 就是视觉盒：描边、底色、圆角、聚焦环、悬停与禁用面由 Field Chrome 家族画在它身上（静息描边式：
-   canvas 底 + --xh-border-control 描边 + 无影，不用 soft，§8.3 登记例外只在 8px surface 圆角），内部 textarea
+   canvas 底 + --xh-border-control 描边 + 无影，不用 soft，登记的例外只在 8px surface 圆角），内部 textarea
    无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
    三个视觉轴都落在 root 上：形态三档由家族按 data-variant 生成，语气管用哪族颜色，尺寸管高度与字号 */
 [data-scope='prompt-input'][data-part='root'] {
@@ -9849,7 +9849,7 @@
  * Typography prose 里的 <pre>——它是库内唯一不带 data-part 的滚动面，作者只写 <pre> 不写角色。
  * 皮肤不得再手写 scrollbar-width / scrollbar-color（stylelint 判红），要藏条写 none。
  * 这里不写 scrollbar-gutter：auto 是初始值，stable 只给内容高度会变的容器由皮肤显式写。
- * ::-webkit-scrollbar-thumb 的圆角取 pill：原生滑块与自绘 scrollbar:thumb 同为一维对象（真源 §6.3），
+ * ::-webkit-scrollbar-thumb 的圆角取 pill：原生滑块与自绘 scrollbar:thumb 同为一维对象，
  * 不再按厚度折半凑半圆，三档厚度都是同一身份。
  *
  * 令牌住在 xihan.tokens 层、排在本层之后，但自定义属性的求值不受层序影响：
@@ -9914,13 +9914,13 @@
   --xh-reasoning-skin: 1;
 }
 
-/* 一张淡底面：--xh-bg-subtle 底 + 透明边位 + 无影（§8 subtle 无影），描边留给 outline 档打开。
-   缺省淡底承载开关：向它下发 hover 200 → pressed 300 的阶梯（§7.2），白底档在形态规则里改回 100 → 200 */
+/* 一张淡底面：--xh-bg-subtle 底 + 透明边位 + 无影（subtle 无影），描边留给 outline 档打开。
+   缺省淡底承载开关：向它下发 hover 200 → pressed 300 的阶梯，白底档在形态规则里改回 100 → 200 */
 [data-scope='reasoning'][data-part='root'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
-  /* 作者塞进两个图形位的图标与皮肤画的兜底字形同一把尺：按档取（§6.5），与开关的家族档同步——
+  /* 作者塞进两个图形位的图标与皮肤画的兜底字形同一把尺：按档取，与开关的家族档同步——
      不写 data-size 时字号是 sm 档，字形随之取 sm */
   --xh-_reasoning-icon-size: var(--xh-glyph-size-sm);
   --xh-icon-size: var(--xh-reasoning-icon-size, var(--xh-_reasoning-icon-size));
@@ -9949,7 +9949,7 @@
 
 /* —— 形态 —— */
 /* 缺省档即 subtle，写在上面那条基础规则里 */
-/* 描边分区：--xh-border-default 描边 + surface 底（§5.3 静态内容面）；
+/* 描边分区：--xh-border-default 描边 + surface 底（静态内容面）；
    白底承载面把开关的阶梯改回 hover 100 → pressed 200 */
 [data-scope='reasoning'][data-part='root'][data-variant='outline'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle);
@@ -9977,7 +9977,7 @@
 }
 
 /* 开关铺满一行，盒型、悬停 / 按下 / 禁用面由 Action Control 的 disclosure-trigger 档给（ghost 形态，
-   阶梯由根按承载面经 host 槽下发，按下只换面不缩放，§9.2）；这里只把使用者槽映射到桥接槽：
+   阶梯由根按承载面经 host 槽下发，按下只换面不缩放）；这里只把使用者槽映射到桥接槽：
    圆角归零贴住面边，内衬与字号沿用本组件的档位（不取 profile 的内衬，几何不变），字色三态都停在
    弱一档的 muted（开关不是正文）；字形尺由根按同一档位给 */
 [data-scope='reasoning'][data-part='trigger'] {
@@ -10478,17 +10478,17 @@
   --xh-_segmented-px: var(--xh-control-px-md);
   --xh-_segmented-gap: var(--xh-control-gap-md);
   --xh-_segmented-font-size: var(--xh-control-font-md);
-  /* 指示器（有滑块开关的白色抬起面，§7.3）的底、描边与选中段的文字色；没写 data-tone 时就是这里的取值 */
+  /* 指示器（有滑块开关的白色抬起面）的底、描边与选中段的文字色；没写 data-tone 时就是这里的取值 */
   --xh-_segmented-indicator-bg: var(--xh-bg-surface-raised);
   --xh-_segmented-fg-selected: var(--xh-fg-default);
-  /* 轨道是淡底承载面：段坐在它上面，悬停 200 → 按下 300（§7.2），host 槽向内下发同一副阶梯 */
+  /* 轨道是淡底承载面：段坐在它上面，悬停 200 → 按下 300，host 槽向内下发同一副阶梯 */
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
   /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
      段各自带圆角，折行不会切角；不改成横向滚动是因为段离轨道内沿只有一格衬距，
      轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉。
-     轨道是一块淡底面（§8.3）：--xh-bg-subtle 底 + 同宽透明占位边 + 无影，边界由滑块的描边与轨道底色的落差承担 */
+     轨道是一块淡底面：--xh-bg-subtle 底 + 同宽透明占位边 + 无影，边界由滑块的描边与轨道底色的落差承担 */
   position: relative;
   display: inline-flex;
   flex-wrap: wrap;
@@ -10608,7 +10608,7 @@
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  /* 段是轨道里铺开的一段（§9.2 Segmented item 归行级），按下只换面不缩放：transition 里没有 scale */
+  /* 段是轨道里铺开的一段（Segmented item 归行级），按下只换面不缩放：transition 里没有 scale */
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -10629,14 +10629,14 @@
 }
 
 /* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调。
-   底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中；段坐在淡底轨道里，悬停取 200（§7.2） */
+   底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中；段坐在淡底轨道里，悬停取 200 */
 [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {
   background-color: var(--xh-segmented-item-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-segmented-item-fg-hover, var(--xh-fg-default));
 }
 
 /* 按下去要有回应：未选中段换到按下面（淡底承载 300），几何不动；只读段不压。
-   选中段不叠按下面：它压着的白色滑块本身就是选中身份（§7.3 有滑块开关无叠加态） */
+   选中段不叠按下面：它压着的白色滑块本身就是选中身份（有滑块开关无叠加态） */
 [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
   background-color: var(--xh-segmented-item-bg-pressed, var(--xh-bg-subtle-active));
   transition-duration: var(--xh-motion-duration-press);
@@ -10681,7 +10681,7 @@
   inset-block-start: var(--xh-_segmented-indicator-y);
   inline-size: var(--xh-_segmented-indicator-w);
   block-size: var(--xh-_segmented-indicator-h);
-  /* 白色抬起面三件（§7.3 有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
+  /* 白色抬起面三件（有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
      尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
   border: var(--xh-stroke-thin) solid var(--xh-segmented-indicator-border, var(--xh-border-default));
   border-radius: var(--xh-segmented-indicator-radius, var(--xh-shape-inset));
@@ -10755,7 +10755,7 @@
   gap: var(--xh-signature-pad-gap, var(--xh-space-2));
 }
 
-/* 复合单字段的标签（§6.4）：14 / 500 / fg-default，不随档；贴画布 space-1——
+/* 复合单字段的标签：14 / 500 / fg-default，不随档；贴画布 space-1——
    容器的 gap 归画布之后的部件，标签在它之上补一段差值把距离收成目标值 */
 [data-scope='signature-pad'][data-part='label'] {
   margin-block-end: calc(
@@ -10774,7 +10774,7 @@
 /* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。
    控件行高那把尺量的是一行控件，一块要写字的面积用不上它。
    touch-action 由连接层内联写死，触摸落笔才不会被页面滚动抢走。
-   外壳按字段规则自绘（§8.3 登记的画布型字段例外：字段家族配方钉死控件行高，画布按宽高比撑高吃不下它）：
+   外壳按字段规则自绘（登记的画布型字段例外：字段家族配方钉死控件行高，画布按宽高比撑高吃不下它）：
    静息透明底 + border-control 描边 + control 圆角 + 无影 */
 [data-scope='signature-pad'][data-part='control'] {
   display: block;
@@ -10803,13 +10803,13 @@
 }
 
 /* 只读仍看得见签名，只是改不动：收掉手型，别暗示"在这儿能写"；
-   面按字段只读规则只换到淡底，描边不动（§7.2 第 9 条） */
+   面按字段只读规则只换到淡底，描边不动 */
 [data-scope='signature-pad'][data-part='control'][data-readonly]:not([data-disabled]) {
   background: var(--xh-signature-pad-bg-readonly, var(--xh-bg-subtle));
   cursor: default;
 }
 
-/* 字段禁用面（§7.2 第 9 条）：描边退到 border-default、底换淡底 */
+/* 字段禁用面：描边退到 border-default、底换淡底 */
 [data-scope='signature-pad'][data-part='control'][data-disabled] {
   border-color: var(--xh-signature-pad-border-disabled, var(--xh-border-default));
   background: var(--xh-signature-pad-bg-disabled, var(--xh-bg-subtle));
@@ -10832,9 +10832,9 @@
 }
 
 /*
- * 清空按钮是画布旁的独立文字按钮（§9.1）：盒型、sm 档几何、outline 四态面、0.97 按压与粗指针命中区由家族配方
+ * 清空按钮是画布旁的独立文字按钮：盒型、sm 档几何、outline 四态面、0.97 按压与粗指针命中区由家族配方
  * 按连接层投影的 data-xh-action-variant / -size 给出（缺省 outline，白底承载阶梯 100 → 200）。这里只把公开槽
- * 桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射，矩阵各态无影（§8.3 淡底与阴影互斥）。
+ * 桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射，矩阵各态无影（淡底与阴影互斥）。
  */
 [data-scope='signature-pad'][data-part='clear-trigger'] {
   --xh-action-bg-rest: var(--xh-signature-pad-clear-bg, var(--xh-_action-variant-bg-rest));
@@ -10874,7 +10874,7 @@
   --xh-action-ring-color-focus-visible: currentColor;
 }
 
-/* 签没签的那句话是说明角色（§6.4）：13 / fg-muted / leading-normal。读屏靠它播报，看得见的人也用得上，因此不做视觉隐藏 */
+/* 签没签的那句话是说明角色：13 / fg-muted / leading-normal。读屏靠它播报，看得见的人也用得上，因此不做视觉隐藏 */
 [data-scope='signature-pad'][data-part='status'] {
   color: var(--xh-signature-pad-status-fg, var(--xh-fg-muted));
   font-size: var(--xh-signature-pad-status-font-size, var(--xh-text-secondary-size));
@@ -11044,7 +11044,7 @@
   padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
   padding-block: var(--xh-tag-py, var(--xh-_tag-py));
   border: var(--xh-stroke-thin) solid var(--xh-tag-border, var(--xh-material-soft-border));
-  /* 状态 chip 的身份是胶囊（§6.3 pill 只给状态 chip 与一维对象） */
+  /* 状态 chip 的身份是胶囊（pill 只给状态 chip 与一维对象） */
   border-radius: var(--xh-tag-radius, var(--xh-shape-pill));
   background: var(--xh-tag-bg, var(--xh-material-soft-bg));
   box-shadow: var(--xh-tag-shadow, var(--xh-material-soft-shadow));
@@ -11125,7 +11125,7 @@
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
-/* 按住的叉落着焦点（§9.3 focus-visible + pressed 保留焦点环）：按压面是从字色兑出的 22% 底，
+/* 按住的叉落着焦点（focus-visible + pressed 保留焦点环）：按压面是从字色兑出的 22% 底，
    压在淡底 / 选中面上把面往字色那头带了一档，默认环与这块混色面在浅色档上只剩 2.2–2.9。
    环改取叉自己的字色：按压面正是从这支色兑出来的，字色压在它上面的对比与字压在标签面上同源，
    六族语气与深浅两态都过 3:1；实心档本来就取字色，这条与它同一口径 */
@@ -12542,10 +12542,10 @@
   --xh-alert-skin: 1;
 }
 
-/* 提示本体是一层中性 surface：边界由 --xh-border-default 描边承担、无影（§5.3 静态反馈面），
+/* 提示本体是一层中性 surface：边界由 --xh-border-default 描边承担、无影（静态反馈面），
    语气只落到图标与标题，不会用整块彩底抢走正文层级。 */
 [data-scope='alert'][data-part='root'] {
-  /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档（§6.5） */
+  /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档 */
   --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-md));
 
   display: flex;
@@ -12731,7 +12731,7 @@
   --xh-_empty-state-gap: var(--xh-stack-gap-md);
   --xh-_empty-state-py: var(--xh-section-py-md);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
-  /* 标题走 Surface / Feedback 标题档 14/600（§6.4）；sm 同档只缩图形与留白，lg 升到页面级 heading-3 */
+  /* 标题走 Surface / Feedback 标题档 14/600；sm 同档只缩图形与留白，lg 升到页面级 heading-3 */
   --xh-_empty-state-title-size: var(--xh-text-label-size);
   /* 图标区的强调色：由 data-status（状态码）或 data-tone（语气）换掉；两样都没写就退成中性 */
   --xh-_empty-state-accent: var(--xh-fg-subtle);
@@ -13238,7 +13238,7 @@
 }
 
 [data-scope='accordion'][data-part='root'] {
-  /* 作者塞进正文里的图标与皮肤画的兜底字形同一把尺：md 档（§6.5），标题栏上另按家族档取值 */
+  /* 作者塞进正文里的图标与皮肤画的兜底字形同一把尺：md 档，标题栏上另按家族档取值 */
   --xh-icon-size: var(--xh-accordion-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换正文这两个私有槽，正文从 root 继承它们；标题栏的三档几何由家族 disclosure-trigger 档给 */
@@ -13323,7 +13323,7 @@
   border-inline-start: 0;
 }
 
-/* outline：一张静态内容面，--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）；
+/* outline：一张静态内容面，--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担）；
    根的外边走 --xh-accordion-border，与条与条之间的分隔线槽 --xh-accordion-item-border 各管各的 */
 [data-scope='accordion'][data-part='root'][data-variant='outline'] {
   border: var(--xh-stroke-thin) solid var(--xh-accordion-border, var(--xh-border-default));
@@ -13334,7 +13334,7 @@
 }
 
 /* subtle：同一块连续表面，底换成淡底，描边让位给底色但留住 1px 边位（三档几何一致）；
-   淡底承载面向标题栏下发 hover 200 → pressed 300（§7.2） */
+   淡底承载面向标题栏下发 hover 200 → pressed 300 */
 [data-scope='accordion'][data-part='root'][data-variant='subtle'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -13363,7 +13363,7 @@
 }
 
 /* 标题栏铺满一行，盒型、三档几何、悬停 / 按下 / 禁用面由 Action Control 的 disclosure-trigger 档给
-   （ghost 形态：白底承载 hover 100 → pressed 200，淡底容器由根下发 host 槽；按下只换面不缩放，§9.2）；
+   （ghost 形态：白底承载 hover 100 → pressed 200，淡底容器由根下发 host 槽；按下只换面不缩放）；
    这里只把使用者槽映射到桥接槽：字色三态同值（家族的 hover / pressed 字色规则比皮肤更特定，不映射会被换回
    缺省字色），字形按标题栏自己的档位取 --xh-_action-profile-glyph-size；边归零贴住条目，几何与迁移前一致 */
 [data-scope='accordion'][data-part='trigger'] {
@@ -13385,7 +13385,7 @@
 }
 
 /* 展开态自带一个槽：与常态共用一个的话，作者一改常态字色，
-   展开那一档的语气高亮就跟着被抹平，再也分不开。悬停 / 按下的面与收起态同档（§7.3 open 与家族 hover 同档中性） */
+   展开那一档的语气高亮就跟着被抹平，再也分不开。悬停 / 按下的面与收起态同档（open 与家族 hover 同档中性） */
 [data-scope='accordion'][data-part='trigger'][data-state='open'] {
   --xh-action-fg-rest: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
   --xh-action-fg-hover: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
@@ -13405,7 +13405,7 @@
   flex: none;
   color: var(--xh-accordion-indicator-fg, var(--xh-fg-muted));
   line-height: var(--xh-leading-none);
-  /* 指示器与正文同档转向（§9.4）：正文 enter 档展开，箭头也用同一段时长翻过去 */
+  /* 指示器与正文同档转向：正文 enter 档展开，箭头也用同一段时长翻过去 */
   transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -13480,7 +13480,7 @@
   --xh-_anchor-link-px: var(--xh-control-px-md);
   /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回品牌色。
      指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档——
-     导航当前页（§7.3）缺省是 --xh-fg-brand-strong，比指示条深一档。
+     导航当前页缺省是 --xh-fg-brand-strong，比指示条深一档。
      聚焦环不在其列，它恒是 --xh-ring-focus */
   --xh-_anchor-accent: var(--xh-_tone-soft, var(--xh-fg-brand));
   --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
@@ -13542,7 +13542,7 @@
 }
 
 /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + default 字，
-   按下 pressed 200 只换面（§7.2 / §9.2）；当前那一节（§7.3 导航当前页）brand-strong 字色（随语气的
+   按下 pressed 200 只换面；当前那一节（导航当前页）brand-strong 字色（随语气的
    --xh-_anchor-accent-text）+ medium 字重都跟着变，2px 指示线放了 indicator 部件由部件滑动、没放则由
    下面的静态线规则画在当前链接自己身上。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background。
    position: relative 是静态线的定位参照 */
@@ -13616,7 +13616,7 @@
     inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
-/* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（§7.3 导航当前页）：
+/* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（导航当前页）：
    与 Tabs line 档同一取法，作者不必为了这条线多放一个部件。
    线画在当前链接的 ::after 上，以链接盒为定位参照（上面已给 position: relative），
    厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。
@@ -13712,10 +13712,10 @@
   --xh-approval-skin: 1;
 }
 
-/* 一块要人做决定的静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担），
+/* 一块要人做决定的静态内容面：--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担），
    作者打了语气时描边染成语气色作强调（下面那条），判定落定后描边退回中性 */
 [data-scope='approval'][data-part='root'] {
-  /* 作者塞进标题 / 说明 / 结果条里的图标按档取尺（§6.5），缺省 md；勾选记号另按盒比例量 */
+  /* 作者塞进标题 / 说明 / 结果条里的图标按档取尺，缺省 md；勾选记号另按盒比例量 */
   --xh-_approval-icon-size: var(--xh-glyph-size-md);
   --xh-icon-size: var(--xh-approval-icon-size, var(--xh-_approval-icon-size));
 
@@ -13750,7 +13750,7 @@
   border-color: var(--xh-approval-border, var(--xh-_tone, var(--xh-border-default)));
 }
 
-/* 判过了就不再抢注意力：语气色边退回中性描边（根面外边不取 subtle，§5.3）。
+/* 判过了就不再抢注意力：语气色边退回中性描边（根面外边不取 subtle）。
    排在语气那条之后：同等特指度，落定要盖得过语气 */
 [data-scope='approval'][data-part='root']:not([data-state='pending']) {
   border-color: var(--xh-approval-border-settled, var(--xh-border-default));
@@ -13760,7 +13760,7 @@
 /* 缺省档即 outline，写在上面那条基础规则里。
    两档排在落定那条之后：它们把描边整个撤掉，排在前面会被落定那条按同等特指度盖回来 */
 /* 底色分区：描边让位给底色，闸门嵌在别人的面里时不再多一圈线；
-   淡底承载面向授权行与拒绝钮下发 hover 200 → pressed 300（§7.2） */
+   淡底承载面向授权行与拒绝钮下发 hover 200 → pressed 300 */
 [data-scope='approval'][data-part='root'][data-variant='subtle'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -13776,7 +13776,7 @@
   box-shadow: none;
 }
 
-/* 标题走 Surface 标题档 14/600（§6.4） */
+/* 标题走 Surface 标题档 14/600 */
 [data-scope='approval'][data-part='title'] {
   display: block;
   margin: 0;
@@ -13826,9 +13826,9 @@
 }
 
 /* 一项授权：整行可点、可聚焦，勾选记号在左。盒型、悬停 / 按下 / 禁用面由 Action Control 的 row 档给
-   （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2；禁用守卫认 data-disabled），
+   （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放；禁用守卫认 data-disabled），
    这里只把使用者槽映射到桥接槽，内衬与间距沿用本组件的档位。
-   行高不吃家族的单行档：row 档允许换行、高度随内容，一条会折行的授权文案走正文行高（§6.4） */
+   行高不吃家族的单行档：row 档允许换行、高度随内容，一条会折行的授权文案走正文行高 */
 [data-scope='approval'][data-part='item'] {
   --xh-action-gap: var(--xh-approval-item-gap, var(--xh-space-1_5));
   --xh-action-padding-inline: var(--xh-approval-item-px, var(--xh-space-2));
@@ -13989,7 +13989,7 @@
 
 /* 两颗按钮是离散动作控件：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用与在途面全由 Action Control 的
    text 档给，组件只映射既有使用者槽。批准走 solid 档：判定闸门里的主要动作，与 Button 缺省同为品牌实心；
-   拒绝走 outline 档：非 Button 的触发器缺省中性描边（§7.2.2）。
+   拒绝走 outline 档：非 Button 的触发器缺省中性描边。
    三档守卫由连接层投影：判定在途是 data-loading + aria-disabled（保住可聚焦，家族给在途面：底色不置灰、
    指针 progress），必选项没勾满与落定是 data-disabled（家族给禁用面：置灰底、置灰字、not-allowed）。
    两颗共用的几何与字号写在一起 */
@@ -14268,7 +14268,7 @@
 }
 
 /* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒。
-   宽高同槽的正方盒按身份取 circle（§6.3），不沿用计数档的胶囊冒充圆：
+   宽高同槽的正方盒按身份取 circle，不沿用计数档的胶囊冒充圆：
    胶囊那 9999px 在正方盒上虽也画成圆，形状身份却写错了档，作者按圆点覆盖圆角时无处落手。
    圆点直径只有六到十像素，一像素的内高光会占去顶上一大截、读成缺了一圈的描边，这里收掉 */
 [data-scope='badge'][data-part='indicator'][data-dot] {
@@ -14484,7 +14484,7 @@
 }
 
 /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + 随语气的字色，
-   按下 pressed 200 只换面（§7.2 / §9.2）；当前页那条不再是"可去的地方"（§7.3）：连接层投影
+   按下 pressed 200 只换面；当前页那条不再是"可去的地方"：连接层投影
    data-xh-collection-terminal，家族给透明面 + 随语气的 fg-default + medium + cursor default，不响应悬停与按下，
    并压过它同时带的 aria-disabled 禁用面。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background */
 [data-scope='breadcrumb'][data-part='link'] {
@@ -14607,7 +14607,7 @@
   --xh-action-fg-loading: var(--xh-button-fg, var(--xh-_action-variant-fg-loading));
   --xh-action-highlight-rest: transparent;
   --xh-action-highlight-pressed: transparent;
-  /* 海拔只有 solid 一档有：其余形态按 §8.3 无影，私有槽在下面的 solid 块里才被赋值 */
+  /* 海拔只有 solid 一档有：其余形态无影，私有槽在下面的 solid 块里才被赋值 */
   --xh-_button-shadow-rest: var(--xh-button-shadow, none);
   --xh-_button-shadow-hover: var(--xh-button-shadow-hover, none);
   --xh-_button-shadow-pressed: none;
@@ -14628,7 +14628,7 @@
   font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
 }
 
-/* Button soft 是 §5.3 登记的 raised 消费者：solid 一档静息带顶光与贴地软影，悬停抬到 raised，按下只留顶光。
+/* Button soft 是登记在册的 raised 消费者：solid 一档静息带顶光与贴地软影，悬停抬到 raised，按下只留顶光。
    成组时段与段共边焊成一条，静息不落软影、悬停不抬起——投影会压到左右两段的面上，
    ButtonGroup 用 --xh-_button-group-shadow-rest / -hover 只留顶光 */
 [data-scope='button'][data-part='root'][data-variant='solid'] {
@@ -14944,7 +14944,7 @@
 }
 
 [data-scope='calendar-picker'][data-part='root'] {
-  /* 翻页钮是 sm 档的图标钮（--xh-control-h-sm 见方），钮里的图标按 sm 档取 --xh-glyph-size-sm（§6.5）；
+  /* 翻页钮是 sm 档的图标钮（--xh-control-h-sm 见方），钮里的图标按 sm 档取 --xh-glyph-size-sm；
      作者塞进去的图标与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-calendar-picker-icon-size, var(--xh-glyph-size-sm));
 
@@ -14983,7 +14983,7 @@
 
 /* 标题里的年与月：点它们逐级钻上去（年 → 十年格、月 → 月格）。
    长得像标题而不像按钮——它本来就是标题，只是可点 */
-/* 标题里的年与月接 Action Control text 档（§9.1 日期翻页按钮同族）：盒、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡
+/* 标题里的年与月接 Action Control text 档（日期翻页按钮同族）：盒、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡
    由家族配方给，这里只把使用者槽映射到桥接槽。长得像标题而不像按钮——它本来就是标题，只是可点：静息透明（ghost），
    悬停只换字色不换底（标题不是一枚按钮面），按下换到 200 档中性面（白底承载）；到顶那一层只作标题显示，
    光标别装成能点，也不再换面 */
@@ -15009,7 +15009,7 @@
   display: none;
 }
 
-/* 四颗方向钮接 Action Control icon 档（§9.1 日期翻页按钮）、ghost 形态：正方盒、悬停 / 按下 / 禁用面、0.97 缩放与换底、
+/* 四颗方向钮接 Action Control icon 档（日期翻页按钮）、ghost 形态：正方盒、悬停 / 按下 / 禁用面、0.97 缩放与换底、
    粗指针热区、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽；钮坐在日历的白底上，悬停 100 → 按下 200 */
 [data-scope='calendar-picker'][data-part='prev-year-trigger'],
 [data-scope='calendar-picker'][data-part='prev-trigger'],
@@ -15066,7 +15066,7 @@
   align-content: start;
   max-block-size: var(--xh-calendar-picker-year-grid-max-h, var(--xh-viewport-h-sm));
   padding-inline-end: var(--xh-calendar-picker-year-grid-pe, var(--xh-space-1));
-  /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto（§6.6）；嵌进 date-picker 浮层时由那份皮肤补 contain */
+  /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto；嵌进 date-picker 浮层时由那份皮肤补 contain */
   overflow-y: auto;
 }
 
@@ -15167,7 +15167,7 @@
   display: none;
 }
 
-/* 日期格接 Action Control text 档（§9.1 日历格是定尺控件；§4.1 格状当前）、ghost 形态：悬停 / 按下 / 禁用面、
+/* 日期格接 Action Control text 档（日历格是定尺控件，属格状当前）、ghost 形态：悬停 / 按下 / 禁用面、
    0.97 缩放与换底、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽。几何仍由网格给：宽度由 week-row 的
    等分轨道给、高度按 aspect-ratio 跟着走（block-size 归 auto，不取家族的固定高），日历才不会被长月份拉扁。
    格子坐在日历的白底上：悬停 100 → 按下 200；今天 / 选中 / 邻月 / 不可用只换下面的私有槽 */
@@ -15232,7 +15232,7 @@
   --xh-_calendar-picker-cell-fg: var(--xh-calendar-picker-cell-fg-outside, var(--xh-fg-subtle));
 }
 
-/* 今天：1px 品牌环 + 品牌字（§7.3 brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
+/* 今天：1px 品牌环 + 品牌字（brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
    选中仍用后面的实心强调面，两个状态叠加时不会混成同一种反馈 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-today] {
   --xh-_calendar-picker-cell-bg: var(--xh-calendar-picker-today-bg, transparent);
@@ -15240,7 +15240,7 @@
   --xh-_calendar-picker-cell-fg: var(--xh-calendar-picker-today-fg, var(--xh-fg-brand));
 }
 
-/* 实心强调面给单选 / 多选的选中格（§7.3 格状当前）：悬停不换面，按下压到 active 档（光缩放在深色底上看不出回执）。
+/* 实心强调面给单选 / 多选的选中格（格状当前）：悬停不换面，按下压到 active 档（光缩放在深色底上看不出回执）。
    面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
@@ -15280,7 +15280,7 @@
   --xh-action-ring-color-focus-visible: var(--xh-ring-focus);
 }
 
-/* 不可用又选中的格：退到中性淡底 + 置灰字（§7.2 禁用面），选中身份仍由这块底与未选中的透明格分开 */
+/* 不可用又选中的格：退到中性淡底 + 置灰字（禁用面），选中身份仍由这块底与未选中的透明格分开 */
 [data-scope='calendar-picker'][data-part='cell-trigger'][data-disabled][data-selected] {
   --xh-action-bg-disabled: var(--xh-calendar-picker-cell-bg-selected-disabled, var(--xh-bg-subtle));
 }
@@ -15383,7 +15383,7 @@
 }
 
 [data-scope='calendar-range-picker'][data-part='root'] {
-  /* 翻页钮是 sm 档的图标钮（--xh-control-h-sm 见方），钮里的图标按 sm 档取 --xh-glyph-size-sm（§6.5）；
+  /* 翻页钮是 sm 档的图标钮（--xh-control-h-sm 见方），钮里的图标按 sm 档取 --xh-glyph-size-sm；
      作者塞进去的图标与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-calendar-range-picker-icon-size, var(--xh-glyph-size-sm));
 
@@ -15422,7 +15422,7 @@
 
 /* 标题里的年与月：点它们逐级钻上去（年 → 十年格、月 → 月格）。
    长得像标题而不像按钮——它本来就是标题，只是可点 */
-/* 标题里的年与月接 Action Control text 档（§9.1 日期翻页按钮同族）：盒、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡
+/* 标题里的年与月接 Action Control text 档（日期翻页按钮同族）：盒、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡
    由家族配方给，这里只把使用者槽映射到桥接槽。长得像标题而不像按钮——它本来就是标题，只是可点：静息透明（ghost），
    悬停只换字色不换底（标题不是一枚按钮面），按下换到 200 档中性面（白底承载）；到顶那一层只作标题显示，
    光标别装成能点，也不再换面 */
@@ -15448,7 +15448,7 @@
   display: none;
 }
 
-/* 四颗方向钮接 Action Control icon 档（§9.1 日期翻页按钮）、ghost 形态：正方盒、悬停 / 按下 / 禁用面、0.97 缩放与换底、
+/* 四颗方向钮接 Action Control icon 档（日期翻页按钮）、ghost 形态：正方盒、悬停 / 按下 / 禁用面、0.97 缩放与换底、
    粗指针热区、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽；钮坐在日历的白底上，悬停 100 → 按下 200 */
 [data-scope='calendar-range-picker'][data-part='prev-year-trigger'],
 [data-scope='calendar-range-picker'][data-part='prev-trigger'],
@@ -15505,7 +15505,7 @@
   align-content: start;
   max-block-size: var(--xh-calendar-range-picker-year-grid-max-h, var(--xh-viewport-h-sm));
   padding-inline-end: var(--xh-calendar-range-picker-year-grid-pe, var(--xh-space-1));
-  /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto（§6.6）；嵌进 date-picker 浮层时由那份皮肤补 contain */
+  /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto；嵌进 date-picker 浮层时由那份皮肤补 contain */
   overflow-y: auto;
 }
 
@@ -15650,7 +15650,7 @@
   border-radius: var(--xh-calendar-range-picker-cell-radius, var(--xh-shape-inset));
 }
 
-/* 日期格接 Action Control text 档（§9.1 日历格是定尺控件；§4.1 格状当前）、ghost 形态：悬停 / 按下 / 禁用面、
+/* 日期格接 Action Control text 档（日历格是定尺控件，属格状当前）、ghost 形态：悬停 / 按下 / 禁用面、
    0.97 缩放与换底、焦点环与过渡由家族配方给，这里只把使用者槽映射到桥接槽。几何仍由网格给：宽度由 week-row 的
    等分轨道给、高度按 aspect-ratio 跟着走（block-size 归 auto，不取家族的固定高），日历才不会被长月份拉扁。
    格子坐在日历的白底上：悬停 100 → 按下 200；今天 / 选中 / 邻月 / 不可用只换下面的私有槽 */
@@ -15715,13 +15715,13 @@
   --xh-_calendar-range-picker-cell-fg: var(--xh-calendar-range-picker-cell-fg-outside, var(--xh-fg-subtle));
 }
 
-/* 区间中段的格坐在品牌淡底的轨道上（§7.3 页内选中 12%）：悬停 20%、按下 28%，铺在格子自己的选中片上 */
+/* 区间中段的格坐在品牌淡底的轨道上（页内选中 12%）：悬停 20%、按下 28%，铺在格子自己的选中片上 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month], [data-disabled], [data-range-start], [data-range-end]) {
   --xh-_calendar-range-picker-cell-bg-hover: var(--xh-calendar-range-picker-range-cell-bg-hover, var(--xh-bg-brand-subtle-hover));
   --xh-_calendar-range-picker-cell-bg-pressed: var(--xh-calendar-range-picker-range-cell-bg-pressed, var(--xh-bg-brand-subtle-active));
 }
 
-/* 今天：1px 品牌环 + 品牌字（§7.3 brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
+/* 今天：1px 品牌环 + 品牌字（brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
    落在区间里时环压在轨道上，选中仍用后面的实心强调面，状态叠加时不会混成同一种反馈 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-today] {
   --xh-_calendar-range-picker-cell-bg: var(--xh-calendar-range-picker-today-bg, transparent);
@@ -15729,7 +15729,7 @@
   --xh-_calendar-range-picker-cell-fg: var(--xh-calendar-range-picker-today-fg, var(--xh-fg-brand));
 }
 
-/* 实心强调面只给单选 / 多选的选中格与区间的两端（§7.3 格状当前）：悬停不换面，按下压到 active 档（光缩放在深色底上
+/* 实心强调面只给单选 / 多选的选中格与区间的两端（格状当前）：悬停不换面，按下压到 active 档（光缩放在深色底上
    看不出回执）；区间中段的格子由格子上的轨道铺底，自己不换面——不然一整段都是实心圆，就分不出哪两格是端点。
    面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
@@ -15771,7 +15771,7 @@
   --xh-action-ring-color-focus-visible: var(--xh-ring-focus);
 }
 
-/* 不可用又选中的格：退到中性淡底 + 置灰字（§7.2 禁用面），选中身份仍由这块底与未选中的透明格分开 */
+/* 不可用又选中的格：退到中性淡底 + 置灰字（禁用面），选中身份仍由这块底与未选中的透明格分开 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-disabled][data-selected] {
   --xh-action-bg-disabled: var(--xh-calendar-range-picker-cell-bg-selected-disabled, var(--xh-bg-subtle));
 }
@@ -15891,7 +15891,7 @@
 }
 
 /* Card 是带统一内边距与节奏的内容面；布局方向可由作者在根上覆盖。
-   边界由 --xh-border-default 描边承担，raised 落影只是抬起的加成（§5.3：Card 是唯一登记 raised 的静态面，
+   边界由 --xh-border-default 描边承担，raised 落影只是抬起的加成（Card 是唯一登记 raised 的静态面，
    且 raised 必带描边）；内衬只走 --xh-surface-* 阶梯。 */
 [data-scope='card'][data-part='root'] {
   position: relative;
@@ -16078,10 +16078,10 @@
   display: none;
 }
 
-/* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档（§4.1）：
+/* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
    盒型（md = box-lg 48px，圆形）、四态面、0.97 按压与 44px 命中区由家族配方给出，组件没有 size 轴、固定 md。
    连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
-   （100 → 200，§7.2 第 3 条），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
+   （100 → 200），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
 [data-scope='carousel'][data-part='prev-trigger'],
 [data-scope='carousel'][data-part='next-trigger'],
 [data-scope='carousel'][data-part='autoplay-trigger'] {
@@ -16191,7 +16191,7 @@
   translate: -50% 0;
 }
 
-/* 分页点与 Tour 的步骤点同一种语言（§6.3）：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
+/* 分页点与 Tour 的步骤点同一种语言：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
    本体就是那颗点：没有文字（页码交给作者，默认不显示），底色即标记。
    悬停 / 按下的回执落在点的颜色上：中性标记按前景阶梯加深一档、再加深一档；当前页按品牌阶梯压一档 */
 [data-scope='carousel'][data-part='indicator'] {
@@ -16232,7 +16232,7 @@
   background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-muted));
 }
 
-/* 按下：点的颜色再压一档，同时缩一下（§9.1 同时换底）；指针按住由 :active 表出，
+/* 按下：点的颜色再压一档，同时缩一下（同时换底）；指针按住由 :active 表出，
    Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
 [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current]) {
   background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
@@ -16250,7 +16250,7 @@
 
 /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
    样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
-   拉长成胶囊并换品牌色（格状当前 = 实心品牌，§7.3） */
+   拉长成胶囊并换品牌色（格状当前 = 实心品牌） */
 [data-scope='carousel'][data-part='indicator'][data-current] {
   inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
   border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
@@ -16277,7 +16277,7 @@
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
-/* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义，§7.1；淡底上公共环够对比，不灌环色），
+/* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义；淡底上公共环够对比，不灌环色），
    品牌填充条从起点沿轨道方向长满这一页的时长；暂停时定住 */
 [data-scope='carousel'][data-part='root'][data-autoplay]
   [data-scope='carousel'][data-part='indicator'][data-current],
@@ -16603,7 +16603,7 @@
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner']) {
   /* 作者塞进触发器指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺；列里条目的由家族随
-     data-xh-collection-size 下发（§6.5）。级联选择器自绘的状态字形（标记盒里的勾与半选杠、分支箭头）
+     data-xh-collection-size 下发。级联选择器自绘的状态字形（标记盒里的勾与半选杠、分支箭头）
      不读这支：它们是指示符，走 --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到
      盒的尺，分支箭头走 --xh-cascader-branch-arrow-size */
   --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-md));
@@ -17045,7 +17045,7 @@
 /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。落在家族网格的 suffix 列、跨两行居中。
    与菜单族的子菜单箭头同走字形令牌——此前这里是「描全边框再抹掉两条、把剩下的直角旋 45 度」，
    作者换掉标记时换不动它，RTL 还得再翻一次旋转角。
-   箭头是指示符（§6.5）：与同一行的标记盒同走 --xh-control-indicator-size，不读家族按档下发的
+   箭头是指示符：与同一行的标记盒同走 --xh-control-indicator-size，不读家族按档下发的
    --xh-icon-size——按图标档取的 20px 会比 16px 的标记盒大一圈 */
 [data-scope='cascader'][data-part='item'][data-branch]::after {
   content: '';
@@ -17078,7 +17078,7 @@
 
 /* 勾选标记落在家族网格的 indicator 列，只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
    未选中时占位不塌，切换选中不引起行宽抖动。
-   盒里的勾与半选杠是指示符（§6.5）：盒在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的兜底字形与作者
+   盒里的勾与半选杠是指示符：盒在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的兜底字形与作者
    塞进盒里的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75，与搜索候选行尾的勾同尺）；
    不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 会比 16 / 14 的盒还大 */
 [data-scope='cascader'][data-part='item-indicator'] {
@@ -17406,8 +17406,8 @@
   /* 实心底上的勾与横杠，同样没写 data-tone 时退回原来的品牌底前景色 */
   --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
 
-  /* 方框接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
-     焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值（§8.3）：透明底 +
+  /* 方框接 Action Control icon 档（定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
+     焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值：透明底 +
      --xh-border-control 描边 + 无影，不消费海拔与顶光；悬停只把描边升一档，底不动；按下换到 200 档中性面
      （白底承载）；边长随 --xh-control-indicator-* 走，不取家族的 profile 尺寸。
      常态 / 勾中 / 校验失败 / 只读只换下面四支私有槽，桥接槽的映射写一次 */
@@ -17480,7 +17480,7 @@
 
 /* 悬停标签文字时也让控制盒回应，整行可点不再只有移到 16px 小盒上才看得出来：
    指针落在方框上时由家族的悬停块换到 --xh-action-border-hover，落在标签文字上时这里补同一档；
-   未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯，§8.3），勾中 / 校验失败的方框由上面的映射钉住不换 */
+   未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯），勾中 / 校验失败的方框由上面的映射钉住不换 */
 @media (hover: hover) {
   [data-scope='checkbox'][data-part='label']:not([data-disabled]):not([data-readonly]):hover
     [data-scope='checkbox'][data-part='root'] {
@@ -17592,7 +17592,7 @@
 }
 
 /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目、switch 的标签同一副样子 ——
-   文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（§6.4 控件字号随档）；
+   文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（控件字号随档）；
    行高取正文档，长文字可以自然换行 */
 [data-scope='checkbox'][data-part='label'] {
   --xh-_checkbox-label-gap: var(--xh-control-gap-md);
@@ -17617,7 +17617,7 @@
   --xh-_checkbox-label-font-size: var(--xh-control-font-lg);
 }
 
-/* 禁用标签色统一 --xh-fg-subtle（§6.4） */
+/* 禁用标签色统一 --xh-fg-subtle */
 [data-scope='checkbox'][data-part='label'][data-disabled] {
   color: var(--xh-checkbox-label-fg-disabled, var(--xh-fg-subtle));
   cursor: not-allowed;
@@ -17680,7 +17680,7 @@
 [data-scope='checkbox-group'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，条目、方框与全选格都从 root 继承它们，
      换档不必给每个部件各写一条选择器。方框与字形照 checkbox 的档位走，
-     单体与集合里的同一枚方框必须一样大；条目文字是控件文字，随档取 --xh-control-font-*（§6.4） */
+     单体与集合里的同一枚方框必须一样大；条目文字是控件文字，随档取 --xh-control-font-* */
   --xh-_checkbox-group-box: var(--xh-control-indicator-md);
   --xh-_checkbox-group-glyph: calc(var(--xh-_checkbox-group-box) * 0.75);
   --xh-_checkbox-group-gap: var(--xh-control-gap-md);
@@ -17691,7 +17691,7 @@
   /* 勾中的填色随语气走；没写 data-tone 时退回品牌色 */
   --xh-_checkbox-group-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_checkbox-group-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  /* 方框是字段家族的控制盒（§8.3 字段静息形态）：透明底 + --xh-border-control 描边 + 无影，不消费海拔与顶光 */
+  /* 方框是字段家族的控制盒（字段静息形态）：透明底 + --xh-border-control 描边 + 无影，不消费海拔与顶光 */
   --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg, transparent);
   /* 条目与全选格是方框的承载面：行自己坐画布走 100 → 200，行面上的方框按淡底容器阶梯再上一档（200 → 300）。
      两支私有槽是这一档的唯一来源——宿主拿它们给 --xh-action-host-bg-* 赋值（桥接槽只写不读），
@@ -17700,7 +17700,7 @@
   --xh-_checkbox-group-host-bg-pressed: var(--xh-bg-subtle-active);
 
   /* 标题与条目都是根的直接子节点，一支 gap 同时管「标题到集合」与「条目之间」：
-     集合标题与集合隔 --xh-space-2（§6.4），同组条目之间也是同一档紧密关系 */
+     集合标题与集合隔 --xh-space-2，同组条目之间也是同一档紧密关系 */
   display: flex;
   gap: var(--xh-checkbox-group-gap, var(--xh-space-2));
 }
@@ -17733,7 +17733,7 @@
   align-items: center;
 }
 
-/* 集合标题（§6.4）：14 / 500 / fg-muted，字号不随 size 档 */
+/* 集合标题：14 / 500 / fg-muted，字号不随 size 档 */
 [data-scope='checkbox-group'][data-part='label'] {
   color: var(--xh-checkbox-group-label-fg, var(--xh-fg-muted));
   font-size: var(--xh-checkbox-group-label-font-size, var(--xh-text-label-size));
@@ -17747,7 +17747,7 @@
   color: var(--xh-checkbox-group-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 条目是「方框 + 文案」的整行命中区（§9.2）：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、手型、
+/* 条目是「方框 + 文案」的整行命中区：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、手型、
    过渡与焦点环由家族给，按下只换面不缩放（row 档专属按压块 scale: none）；这里只把使用者槽映射到桥接槽。
    行自己坐画布走 100 → 200（--xh-action-bg-* 钉住自己的面），行面上的方框按淡底容器阶梯再上一档
    （--xh-action-host-bg-* 向内声明自己是方框的承载面，host 槽只对后代生效——自己的面已由 --xh-action-bg-* 钉住；
@@ -17811,7 +17811,7 @@
   box-shadow: var(--xh-checkbox-group-indicator-shadow, none);
   font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
   line-height: var(--xh-leading-none);
-  /* 方框不缩放（§9.2 行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
+  /* 方框不缩放（行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -17823,7 +17823,7 @@
   content: '';
 }
 
-/* 悬停整行时未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯，§8.3）；
+/* 悬停整行时未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯）；
    勾中的方框描边与底同色，悬停不换描边——填色本身已经在表达状态 */
 @media (hover: hover) {
   [data-scope='checkbox-group'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-invalid])
@@ -17844,7 +17844,7 @@
 }
 
 /* 按下去要有回应。方框不是激活宿主：宿主是投影了 row 档的整行（条目 / 全选格），方框在宿主的
-   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面、不缩放（§9.2）——行按下是 200，
+   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面、不缩放——行按下是 200，
    坐在上面的方框到 300（行以 --xh-action-host-bg-pressed 声明自己是方框的承载面，桥接槽只写不读，
    方框读的是喂给它的那支私有槽），勾中的换到语气的 active 档；
    与家族按压块同一时间线（按下 --xh-motion-duration-press，释放同走 micro） */
@@ -17933,7 +17933,7 @@
   border-color: var(--xh-checkbox-group-indicator-border-invalid, var(--xh-border-invalid));
 }
 
-/* 禁用（§7.2）：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 字形，不靠 opacity */
+/* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 字形，不靠 opacity */
 [data-scope='checkbox-group'][data-part='root'][data-disabled]
   [data-scope='checkbox-group'][data-part='indicator'],
 [data-scope='checkbox-group'][data-part='item'][data-disabled]
@@ -17955,7 +17955,7 @@
    家族的禁用块同样只读 data-disabled。position 是给叠在方框上的那颗字形 ::after 当定位基准 */
 [data-scope='checkbox-group'][data-part='select-all-trigger'] {
   --xh-action-gap: var(--xh-checkbox-group-select-all-trigger-gap, var(--xh-_checkbox-group-gap));
-  /* 全选格的身份是嵌在 control 内的小方框（§6.3 select-all 方框取 inset），与条目方框同一档 */
+  /* 全选格的身份是嵌在 control 内的小方框（select-all 方框取 inset），与条目方框同一档 */
   --xh-action-radius: var(--xh-checkbox-group-select-all-trigger-radius, var(--xh-shape-inset));
   --xh-action-font-size: var(--xh-checkbox-group-select-all-trigger-font-size, var(--xh-_checkbox-group-font-size));
   --xh-action-padding-inline: 0;
@@ -18179,7 +18179,7 @@
   border-end-end-radius: 0;
 }
 
-/* 焦点边一律 --xh-border-control-focus，不随 tone（§7.2 第 5 条） */
+/* 焦点边一律 --xh-border-control-focus，不随 tone */
 [data-scope='clipboard'][data-part='input']:focus-visible {
   border-color: var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
 }
@@ -18200,7 +18200,7 @@
   -webkit-text-fill-color: var(--xh-clipboard-input-autofill-fg, var(--xh-fg-default));
 }
 
-/* 复制钮是定尺的独立动作按钮（§9.1）：盒型、四态面、0.97 按压与粗指针命中区由家族配方给出，
+/* 复制钮是定尺的独立动作按钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方给出，
    这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射。
    叠格布局要保留：两侧指示器叠在同一格，切换时不抖宽度 */
 [data-scope='clipboard'][data-part='copy-trigger'] {
@@ -18220,7 +18220,7 @@
   --xh-action-border-pressed: var(--xh-clipboard-copy-trigger-border-hover, var(--xh-_action-variant-border-pressed));
   --xh-action-border-focus-visible: var(--xh-clipboard-copy-trigger-border, var(--xh-_action-variant-border-focus-visible));
   --xh-action-border-disabled: var(--xh-clipboard-copy-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
-  /* 矩阵各态无影（§8.3 淡底与阴影互斥）：solid 也不再悬停抬影，使用者槽仍可自行加 */
+  /* 矩阵各态无影（淡底与阴影互斥）：solid 也不再悬停抬影，使用者槽仍可自行加 */
   --xh-action-shadow-hover: var(--xh-clipboard-copy-trigger-shadow-hover, none);
   --xh-action-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-control));
   --xh-action-visual-size: var(--xh-clipboard-copy-trigger-h, var(--xh-_clipboard-h));
@@ -18286,7 +18286,7 @@
   margin: auto;
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: currentColor;
-  /* 正圆的加载环：正方盒取 circle（§6.3） */
+  /* 正圆的加载环：正方盒取 circle */
   border-radius: var(--xh-shape-circle);
   opacity: 0;
   animation:
@@ -18407,7 +18407,7 @@
   --xh-code-view-skin: 1;
 }
 
-/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担），
+/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担），
    overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定。
    color 给整段未着色的代码定基线，字号在这里消费一次，缺省即 sm 档。 */
 [data-scope='code-view'][data-part='root'] {
@@ -18595,7 +18595,7 @@
 }
 
 /* 折叠条是铺满一行的 disclosure trigger，盒型、悬停与按下面由 Action Control 的 disclosure-trigger 档给
-   （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2）；这里只把使用者槽映射到
+   （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放）；这里只把使用者槽映射到
    桥接槽：圆角归零贴住卡边，内衬沿用代码区的横向内距与折叠条自己的纵向内距，字号与头部条同档。
    顶边是与头部条同一支的内部分隔线：配方按状态写 border-color 简写，四个状态的边色槽都映射到
    这支分隔色，再把四边宽归零、只留顶边一条 */
@@ -18684,7 +18684,7 @@
 /* 根容器自己不排版，这条只声明尺寸档的私有槽：正文与标题行从 root 继承它们，
    换档不必给部件各写一条选择器；触发器的三档几何由家族 disclosure-trigger 档给 */
 [data-scope='collapsible'][data-part='root'] {
-  /* 作者塞进正文里的图标与皮肤画的兜底字形同一把尺：md 档（§6.5），触发器上另按家族档取值 */
+  /* 作者塞进正文里的图标与皮肤画的兜底字形同一把尺：md 档，触发器上另按家族档取值 */
   --xh-icon-size: var(--xh-collapsible-icon-size, var(--xh-glyph-size-md));
 
   --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
@@ -18724,7 +18724,7 @@
 }
 
 /* 触发器铺满一行，盒型、三档几何、悬停 / 按下 / 禁用面由 Action Control 的 disclosure-trigger 档给
-   （ghost 形态：根无壳，按画布承载 hover 100 → pressed 200；按下只换面不缩放，§9.2）；
+   （ghost 形态：根无壳，按画布承载 hover 100 → pressed 200；按下只换面不缩放）；
    这里只把使用者槽映射到桥接槽：字色三态同值（家族的 hover / pressed 字色规则比皮肤更特定，不映射会被换回
    缺省字色），字形按触发器自己的档位取 --xh-_action-profile-glyph-size；边归零贴住标题行，几何与迁移前一致 */
 [data-scope='collapsible'][data-part='trigger'] {
@@ -18746,7 +18746,7 @@
 }
 
 /* 展开着的那一档单开一个槽：与常态共用一个的话，作者一改常态字色就把展开态也改掉了。
-   悬停 / 按下的面与收起态同档（§7.3 open 与家族 hover 同档中性） */
+   悬停 / 按下的面与收起态同档（open 与家族 hover 同档中性） */
 [data-scope='collapsible'][data-part='trigger'][data-state='open'] {
   --xh-action-fg-rest: var(--xh-collapsible-trigger-fg-open, var(--xh-_collapsible-open-fg));
   --xh-action-fg-hover: var(--xh-collapsible-trigger-fg-open, var(--xh-_collapsible-open-fg));
@@ -18766,7 +18766,7 @@
   justify-content: center;
   color: var(--xh-collapsible-indicator-fg, var(--xh-fg-muted));
   line-height: var(--xh-leading-none);
-  /* 指示器与正文同档转向（§9.4）：正文 enter 档展开，箭头也用同一段时长翻过去 */
+  /* 指示器与正文同档转向：正文 enter 档展开，箭头也用同一段时长翻过去 */
   transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -19179,9 +19179,9 @@
   padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
   max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
   overflow-y: auto;
-  /* 浮层滚动面：滚到头不把页面一起带走（§6.6） */
+  /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
-  /* 面域 + 滑杆 + 通道输入的表单型多列面板，走 floating 材质（§8.4）——实体底 + --xh-border-default 描边 +
+  /* 面域 + 滑杆 + 通道输入的表单型多列面板，走 floating 材质——实体底 + --xh-border-default 描边 +
      --xh-elevation-floating 落影，不透景、不画顶部边界光 */
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
   border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-overlay));
@@ -19499,7 +19499,7 @@
 
   display: flex;
   flex-direction: column;
-  /* 字段标签贴控件（§6.4 复合单字段） */
+  /* 字段标签贴控件（复合单字段） */
   gap: var(--xh-color-slider-gap, var(--xh-space-1));
 }
 
@@ -19509,10 +19509,10 @@
   align-items: center;
 }
 
-/* 禁用不整体压暗（§7.2 第 9 条）：标签是文字，换到禁用前景；颜色带与拇指画的是颜色本身，换不得色，
+/* 禁用不整体压暗：标签是文字，换到禁用前景；颜色带与拇指画的是颜色本身，换不得色，
    压暗只做一次、落在 control 上（track / thumb 各自再叠一层 opacity 会越叠越黑），拇指另收掉抬升 */
 
-/* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle */
+/* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle */
 [data-scope='color-slider'][data-part='label'] {
   color: var(--xh-color-slider-label-fg, var(--xh-fg-default));
   font-size: var(--xh-color-slider-label-font-size, var(--xh-text-label-size));
@@ -19598,7 +19598,7 @@
 }
 
 /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上。
-   拇指填的是当前那一档的颜色（连接层写进私有槽），拇指是可拖起的 raised 面（§8）：
+   拇指填的是当前那一档的颜色（连接层写进私有槽），拇指是可拖起的 raised 面：
    --xh-border-default 描边把它从任何底色里框出来，raised 影只是加成、不作边界。
    box-sizing 必须显式写：描边要吃进直径里，否则下面按半个直径回拉的负外边距就对不上圆心。 */
 [data-scope='color-slider'][data-part='thumb'] {
@@ -19822,7 +19822,7 @@
   --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-lg);
 }
 
-/* 标题独占一行，格子从下一行起排。复合单字段的标签（§6.4）：14 / 500 / fg-default，不随档；
+/* 标题独占一行，格子从下一行起排。复合单字段的标签：14 / 500 / fg-default，不随档；
    与格子的距离贴控件 space-1——容器的 gap 归格子之间，标签在它之上补一段差值把距离收成目标值 */
 [data-scope='color-swatch-picker'][data-part='label'] {
   flex-basis: 100%;
@@ -19851,7 +19851,7 @@
   flex: none;
   inline-size: var(--xh-color-swatch-picker-item-size, var(--xh-_color-swatch-picker-cell));
   block-size: var(--xh-color-swatch-picker-item-size, var(--xh-_color-swatch-picker-cell));
-  /* 色块 item 的身份是 inset（§6.3：嵌在 control 内的小块） */
+  /* 色块 item 的身份是 inset（嵌在 control 内的小块） */
   border-radius: var(--xh-color-swatch-picker-item-radius, var(--xh-shape-inset));
   outline: none;
   cursor: pointer;
@@ -19859,12 +19859,12 @@
 }
 
 /* 指到哪一格：描边换到控件的悬停边（border-strong 只留给 contrast-more 与登记的强调边）；
-   选中的那一格保留自己的品牌描边（§9.3 选中身份不被悬停盖掉） */
+   选中的那一格保留自己的品牌描边（选中身份不被悬停盖掉） */
 [data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly], [data-state='checked']):hover {
   --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-swatch-border-hover, var(--xh-border-control-hover));
 }
 
-/* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉（§9.1 的「同时换底」在这里落不下去），
+/* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉（的「同时换底」在这里落不下去），
    交互回执只能落在别处：按下去看下压，描边同时换到品牌色作第二通道（按住即将选中的那一格）。
    置灰与只读的都不压；指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
 [data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly]):is(:active, [data-pressed]) {
@@ -19933,7 +19933,7 @@
   inline-size: var(--xh-color-swatch-picker-indicator-size, var(--xh-_color-swatch-picker-indicator));
   block-size: var(--xh-color-swatch-picker-indicator-size, var(--xh-_color-swatch-picker-indicator));
   border: var(--xh-stroke-thin) solid var(--xh-color-swatch-picker-indicator-border, var(--xh-bg-canvas));
-  /* 正方盒取 circle（§6.3：宽高同槽的盒不得用 pill 冒充圆） */
+  /* 正方盒取 circle（宽高同槽的盒不得用 pill 冒充圆） */
   border-radius: var(--xh-shape-circle);
   background: var(--xh-color-swatch-picker-indicator-bg, var(--xh-_color-swatch-picker-accent));
   opacity: 0;
@@ -20090,7 +20090,7 @@
 
   /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准。
      浮层条目里自绘的状态字形（勾选标记所在的标记盒与盒里的勾）不读这支：它们是指示符，走
-     --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺（§6.5） */
+     --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺 */
   --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
 
   /* 语气只落在勾选标记上，单选与多选正文使用同一颜色。 */
@@ -20430,7 +20430,7 @@
 
 /* 勾选标记落在家族网格的 indicator 列，只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
    未选中时占位不塌，切换选中不引起行宽抖动。
-   盒与盒里的勾是指示符（§6.5）：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
+   盒与盒里的勾是指示符：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
    兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（勾选标记不是勾选格，不取 × 0.75，与 Select /
    Listbox / Menu 族同口径）；不读 root / positioner 按档下发的 --xh-icon-size——那支只管作者放进条目里的
    图标，按图标档取的 20px 比 16 / 14 的指示符档大一圈 */
@@ -20538,7 +20538,7 @@
    谁先命中谁给出这一档的取值；条目、检索框与提示条都从面板继承下去 */
 [data-scope='command']:is([data-part='positioner'], [data-part='content']) {
   /* 条目外的字形（分组标题、底部提示条）按档取尺，缺省 md，随 data-size 换档；命令里的图标由家族随
-     data-xh-collection-size 下发（§6.5） */
+     data-xh-collection-size 下发 */
   --xh-icon-size: var(--xh-command-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这六个私有槽，换档不必给每个部件各写一条选择器 */
@@ -20637,7 +20637,7 @@
   max-inline-size: var(--xh-command-max-w, var(--xh-_command-max-w));
   /* 封顶才有可滚的余量：不封顶结果列表会一路撑到视口外，滚动条永远出不来 */
   max-block-size: var(--xh-command-max-h, var(--xh-overlay-max-h));
-  /* 模态命令面板与 Dialog 同档：overlay 圆角 + sheet 三件套（material-elevated 的边 / 底 / 影，§8.4），
+  /* 模态命令面板与 Dialog 同档：overlay 圆角 + sheet 三件套（material-elevated 的边 / 底 / 影），
      边界由描边承担，不再只靠落影 */
   border: var(--xh-stroke-thin) solid var(--xh-command-border, var(--xh-material-elevated-border));
   border-radius: var(--xh-command-radius, var(--xh-shape-overlay));
@@ -20724,7 +20724,7 @@
   min-block-size: 0;
   padding-block: var(--xh-command-list-py, var(--xh-space-2));
   padding-inline: var(--xh-command-list-px, var(--xh-space-2));
-  /* 模态面板里的滚动面：到底后不把滚动链穿透给页面（§6.6） */
+  /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -20974,7 +20974,7 @@
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='context-menu']:is([data-part='root'], [data-part='positioner']) {
   /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；同样声明在 positioner 上，被搬走的浮层
-     才拿得到；条目里作者放的图标由家族随 data-xh-collection-size 下发（§6.5）。菜单自绘的状态字形（标记位的盒、
+     才拿得到；条目里作者放的图标由家族随 data-xh-collection-size 下发。菜单自绘的状态字形（标记位的盒、
      盒里兜底的勾、子菜单的展开 chevron）不读这支：它们是指示符，走 --xh-control-indicator-* 一族——标记位在
      自己身上把 --xh-icon-size 改接到盒的尺，子菜单箭头走 --xh-context-menu-submenu-indicator-size */
   --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-md));
@@ -21013,7 +21013,7 @@
   -webkit-backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
   backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目超过上限就在菜单内部滚；内收焦点环不会被内边距缘裁掉。
-     浮层滚动面：到底后不把滚动链穿透给页面（§6.6） */
+     浮层滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
@@ -21171,7 +21171,7 @@
 }
 
 /* 子菜单箭头留在主行末端；description 即使写在它前面，也由 order 独占下一行。
-   箭头是指示符（§6.5）：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
+   箭头是指示符：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
    按图标档取的 20px 会比 16px 的标记位盒大一圈 */
 [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
   content: '';
@@ -21203,7 +21203,7 @@
   display: none;
 }
 
-/* 标记位（勾选符号 / 图标）按作者写入的槽位留在主行，不为没写的条目强制占列。盒是指示符（§6.5）：按指示符档
+/* 标记位（勾选符号 / 图标）按作者写入的槽位留在主行，不为没写的条目强制占列。盒是指示符：按指示符档
    取尺，与 Menu / Cascader 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
    按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
    皮肤画的兜底勾与作者塞进标记位的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75）；
@@ -22892,7 +22892,7 @@
 }
 
 /*
- * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
  * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
  */
@@ -22956,7 +22956,7 @@
 }
 
 [data-scope='dialog'][data-part='content'] {
-  /* 作者塞进面板里的图标按控件档取（§6.5）；语气徽记与关闭钮另有各自的尺 */
+  /* 作者塞进面板里的图标按控件档取；语气徽记与关闭钮另有各自的尺 */
   --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这一个私有槽。它声明在 content 而不是别处：dialog 的解剖里没有 root，
@@ -23106,7 +23106,7 @@
 
 /* 正文段：面板里唯一会滚的一段。最小高度归零，
    否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来。
-   模态 body 是原生细条滚动面（§6.6）：细条由 reset 层统一给，滚到头不把页面一起带走 */
+   模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走 */
 [data-scope='dialog'][data-part='body'] {
   flex: 1 1 auto;
   min-block-size: 0;
@@ -23149,7 +23149,7 @@
   color: var(--xh-dialog-title-fg, var(--xh-fg-default));
 }
 
-/* 说明文字走说明档（§6.4）：13px + fg-muted */
+/* 说明文字走说明档：13px + fg-muted */
 [data-scope='dialog'][data-part='description'] {
   margin: 0;
   font-size: var(--xh-dialog-description-font-size, var(--xh-text-secondary-size));
@@ -23164,7 +23164,7 @@
 }
 
 /*
- * 关闭钮是面板角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+ * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
  * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
  * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面，缺省仍是透明底与悬停字色；
@@ -23341,7 +23341,7 @@
 /* root 留在页面原地，只是 data-side / data-state 的落点，不该凭空多出一层盒子把
    trigger 从作者的 flex / grid 行里挤出去，故 display: contents。 */
 [data-scope='drawer'][data-part='root'] {
-  /* 作者塞进面板里的图标按控件档取（§6.5）；触发器与关闭钮另由家族配方按各自的档下发字形尺 */
+  /* 作者塞进面板里的图标按控件档取；触发器与关闭钮另由家族配方按各自的档下发字形尺 */
   --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-glyph-size-md));
 
   display: contents;
@@ -23359,7 +23359,7 @@
 }
 
 /*
- * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出（此前自写描边盒型，hover 落 200 / active 落 300）。
  * 这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射。
  */
@@ -23393,7 +23393,7 @@
 }
 
 /* 抽屉展开期间触发按钮压住不弹起：面板贴在视口边上，它和按钮往往离得很远，
-   按钮自己得说明"这一扇是我开的"。open 与家族 hover 同档中性（§7.2 第 8 条）：
+   按钮自己得说明"这一扇是我开的"。open 与家族 hover 同档中性：
    白底承载的 --xh-bg-subtle（100）+ 悬停描边，聚焦时这块面留着 */
 [data-scope='drawer'][data-part='trigger'][data-state='open'] {
   --xh-action-bg-rest: var(--xh-drawer-trigger-bg-open, var(--xh-bg-subtle));
@@ -23493,13 +23493,13 @@
     env(safe-area-inset-left),
     env(safe-area-inset-right)
   );
-  /* M4 sheet 三件套（§8.4）：任何浮层不得只靠 box-shadow 分层，亮色下面板与页面同色，
+  /* M4 sheet 三件套：任何浮层不得只靠 box-shadow 分层，亮色下面板与页面同色，
      1px 描边才是它的边界；影只是加成 */
   border: var(--xh-stroke-thin) solid var(--xh-drawer-border, var(--xh-material-elevated-border));
   background: var(--xh-drawer-bg, var(--xh-material-elevated-bg));
   color: var(--xh-drawer-fg, var(--xh-material-elevated-fg));
   box-shadow: var(--xh-drawer-shadow, var(--xh-material-elevated-shadow));
-  /* 作者不用 header / body / footer 三段时它是唯一的滚动层：模态面滚到头不把页面一起带走（§6.6） */
+  /* 作者不用 header / body / footer 三段时它是唯一的滚动层：模态面滚到头不把页面一起带走 */
   overflow: auto;
   overscroll-behavior: contain;
   /* 尺寸是照视口那条边算出来的，padding 再往外顶就会把面板挤出屏幕、
@@ -23590,7 +23590,7 @@
   will-change: translate;
 }
 
-/* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移（§9.5）：走 --xh-motion-duration-slide
+/* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide
    与 --xh-motion-ease-slide；退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
    不定住终态，面板会在最后一帧弹回原位再消失。 */
 [data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {
@@ -23647,7 +23647,7 @@
 
 /* 正文段：面板里唯一会滚的一段。最小高度归零，
    否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来。
-   模态 body 是原生细条滚动面（§6.6）：细条由 reset 层统一给，滚到头不把页面一起带走 */
+   模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走 */
 [data-scope='drawer'][data-part='body'] {
   flex: 1 1 auto;
   min-block-size: 0;
@@ -23685,7 +23685,7 @@
   color: var(--xh-drawer-title-fg, var(--xh-fg-default));
 }
 
-/* 说明文字走说明档（§6.4）：13px + fg-muted */
+/* 说明文字走说明档：13px + fg-muted */
 [data-scope='drawer'][data-part='description'] {
   margin: 0;
   font-size: var(--xh-drawer-description-font-size, var(--xh-text-secondary-size));
@@ -23700,7 +23700,7 @@
 }
 
 /*
- * 关闭钮是面板角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+ * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
  * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
  * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面（与 dialog 一致），缺省仍是透明底与悬停字色；
@@ -24114,7 +24114,7 @@
   --xh-field-border-hover: var(--xh-field-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-field-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  /* 焦点环与家族同一支公共环，不再留逐组件的环色槽（§7.2.5 焦点边与环一律公共） */
+  /* 焦点环与家族同一支公共环，不再留逐组件的环色槽（焦点边与环一律公共） */
   --xh-field-ring-focus: var(--xh-ring-focus);
   --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-field-control-shadow, none);
@@ -24187,7 +24187,7 @@
 [data-scope='file-upload'][data-part='root'] {
   /* 作者放进缩略图槽、删除钮与清空钮里的图标跟着字号走，与皮肤画的兜底叉同一把尺。
      条目行首自绘的状态标记（传完的勾、失败的警示）不读这支：它们是指示符，与同一行里 icon 档的
-     删除钮并排、走 --xh-control-indicator-* 一族（§6.5），尺寸由 --xh-file-upload-item-mark-size 单独控 */
+     删除钮并排、走 --xh-control-indicator-* 一族，尺寸由 --xh-file-upload-item-mark-size 单独控 */
   --xh-icon-size: var(--xh-file-upload-icon-size, var(--xh-glyph-size-text));
 
   display: flex;
@@ -24793,7 +24793,7 @@
   color: var(--xh-form-summary-fg, var(--xh-fg-danger));
   font-size: var(--xh-form-summary-font-size, var(--xh-text-body-size));
   line-height: var(--xh-leading-normal);
-  /* 静态反馈面：边界由描边承担，不带落影（§8 solid 无影） */
+  /* 静态反馈面：边界由描边承担，不带落影（solid 无影） */
   box-shadow: var(--xh-form-summary-shadow, none);
 }
 
@@ -24813,7 +24813,7 @@
   animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
-/* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行（§9.2）：悬停 / 按下只换面不缩放，
+/* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行：悬停 / 按下只换面不缩放，
    底面坐在摘要的 surface 白底上，走白底承载阶梯 100 → 200；换面走按压时间线，释放回 release 档 */
 [data-scope='form'][data-part='error-summary-item'] {
   display: block;
@@ -24909,7 +24909,7 @@
 
 /* 两颗按钮是离散动作控件：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用面全由 Action Control 的 text 档给，
    组件只映射既有使用者槽。提交走 solid 档：表单提交是这一组里的主要动作，与 Button 缺省同为品牌实心；
-   重置走 outline 档：非 Button 的触发器缺省中性描边（§7.2.2）。两颗共用的几何与字号写在一起 */
+   重置走 outline 档：非 Button 的触发器缺省中性描边。两颗共用的几何与字号写在一起 */
 [data-scope='form'][data-part='submit-trigger'],
 [data-scope='form'][data-part='reset-trigger'] {
   --xh-action-visual-size: var(--xh-form-trigger-h, var(--xh-_action-profile-visual-size));
@@ -25087,7 +25087,7 @@
   /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-hover-card-max-h, var(--xh-overlay-max-h)), var(--xh-_hover-card-available-h));
   overflow-y: auto;
-  /* 浮在页面之上的 Overlay 滚动面（§6.6）：滚到头不把页面一起带走 */
+  /* 浮在页面之上的 Overlay 滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
   padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-pad));
   padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-pad));
@@ -25152,7 +25152,7 @@
   color: var(--xh-hover-card-title-fg, var(--xh-fg-default));
 }
 
-/* 说明文字走说明档（§6.4）：13px + fg-muted */
+/* 说明文字走说明档：13px + fg-muted */
 [data-scope='hover-card'][data-part='description'] {
   margin: 0;
   font-size: var(--xh-hover-card-description-font-size, var(--xh-text-secondary-size));
@@ -25508,7 +25508,7 @@
    四件都钉在铺满视口的那一层的边上，贴边一律与安全区取大的一头：刘海、圆角与
    底部横条压住的那一段由系统给出，贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0。
    安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。
-   工具条是容器、计数是一行字的气泡，各按身份取圆角（surface / control，§6.3），
+   工具条是容器、计数是一行字的气泡，各按身份取圆角（surface / control），
    --xh-image-viewer-overlay-radius 仍是两者共用的使用者入口；翻页钮的面走下面的桥接槽 */
 [data-scope='image-viewer'][data-part='toolbar'],
 [data-scope='image-viewer'][data-part='counter'] {
@@ -25563,7 +25563,7 @@
   font-size: var(--xh-text-secondary-size);
 }
 
-/* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle，§6.3）。
+/* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle）。
    面桥接到自家深色 chrome：跟的是图上那层半透明深底不是页面底色，所以不取 frosted 缺省面，
    也不取语义档的 --xh-bg-subtle-*；到头时是原生 disabled，压不动的东西不给回应 */
 [data-scope='image-viewer'][data-part='prev-trigger'],
@@ -25776,10 +25776,10 @@
 
 [data-scope='listbox'][data-part='root'] {
   /* 条目外的字形（空态 / 在途占位里作者塞的图标）按档取尺，缺省 md；条目内的字形由家族随
-     data-xh-collection-size 下发（§6.5）。列表框自绘的状态字形（行尾对号所在的标记盒与盒里的勾）不读这支：
+     data-xh-collection-size 下发。列表框自绘的状态字形（行尾对号所在的标记盒与盒里的勾）不读这支：
      它们是指示符，走 --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺 */
   --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-md));
-  /* 定高小列表的自绘条挂在根上（§6.6）：根是条子的定位盒，轨道底色关掉才不会在列表右缘糊出一条灰带 */
+  /* 定高小列表的自绘条挂在根上：根是条子的定位盒，轨道底色关掉才不会在列表右缘糊出一条灰带 */
   --xh-scrollbar-track-bg: transparent;
 
   /* 尺寸档只换这四个私有槽，条目、分组标题与空态占位都从 root 继承它们，
@@ -25976,7 +25976,7 @@
 }
 
 /* 取下一页的按钮：铺满一行摆在列表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
-   ghost 形态（§9.2）：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
+   ghost 形态：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
    焦点环与粗指针热区全由家族给，白底承载 hover 100 → pressed 200。
    这里只把使用者槽映射到桥接槽并把文案居中：它是一行里唯一的东西，靠起始缘会像一条没对齐的条目 */
 [data-scope='listbox'][data-part='load-more-trigger'] {
@@ -25992,7 +25992,7 @@
 
   justify-content: center;
   text-align: center;
-  /* row 档允许换行、高度随内容，折行的文案走正文行高（§6.4） */
+  /* row 档允许换行、高度随内容，折行的文案走正文行高 */
   line-height: var(--xh-leading-normal);
 }
 
@@ -26000,7 +26000,7 @@
   display: none;
 }
 
-/* 条目走 Collection Item 的 page 语境（页内持久集合，§7.3）：网格、尺寸档、悬停 / 高亮 / 按下面
+/* 条目走 Collection Item 的 page 语境（页内持久集合）：网格、尺寸档、悬停 / 高亮 / 按下面
    （白底承载 hover 100 → pressed 200）与选中面（品牌淡底 + 淡底前景 + 行尾对号，selected+hover 20% /
    +pressed 28%）都由家族按 aria-selected / aria-disabled 给出；禁用面（字色降级、not-allowed、不换面）
    也归家族。这里只把公开槽映射到桥接槽，不复制任何状态选择器。
@@ -26069,7 +26069,7 @@
 
 /* 勾选标记落在家族网格行尾的 indicator 列（page 与 overlay 同位）；显隐与颜色由家族按选中态给，
    未选中时占位不塌，切换选中不引起行宽抖动。
-   盒与盒里的勾是指示符（§6.5）：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
+   盒与盒里的勾是指示符：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
    兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（对号不是勾选格，不取 × 0.75，与 Menu 族同口径）；
    不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 比 16 / 14 的指示符档大一圈 */
 [data-scope='listbox'][data-part='item-indicator'] {
@@ -26277,14 +26277,14 @@
 }
 
 /* 触发器的长相归作者，皮肤只表达展开态：展开着的那一张是打开路径，落与家族 hover 同档的中性面——
-   打开中不是选中，不用品牌色、不接语气（§7.3）；哪一张开着由浮层本身说明。不加粗：加粗会推挤相邻内容 */
+   打开中不是选中，不用品牌色、不接语气；哪一张开着由浮层本身说明。不加粗：加粗会推挤相邻内容 */
 [data-scope='menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
   background: var(--xh-menu-trigger-bg-active, var(--xh-bg-subtle));
 }
 
 [data-scope='menu'][data-part='content'] {
   /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；条目里作者放的图标由家族随
-     data-xh-collection-size 下发（§6.5）。菜单自绘的状态字形（标记位的盒、子菜单的展开 chevron）不读这支：
+     data-xh-collection-size 下发。菜单自绘的状态字形（标记位的盒、子菜单的展开 chevron）不读这支：
      它们是指示符，走 --xh-control-indicator-* 一族——标记位在自己身上把 --xh-icon-size 改接到盒的尺，
      子菜单箭头走 --xh-menu-submenu-indicator-size */
   --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-md));
@@ -26316,7 +26316,7 @@
   -webkit-backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
   backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
-     浮层滚动面：到底后不把滚动链穿透给页面（§6.6） */
+     浮层滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
@@ -26427,7 +26427,7 @@
   display: none;
 }
 
-/* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动。盒是指示符（§6.5）：按指示符档取尺，
+/* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动。盒是指示符：按指示符档取尺，
    与 Cascader / Select 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
    按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
    作者塞进标记位的 XhIcon 与盒同尺；条目上那支只管作者直接放进条目里的图标 */
@@ -26477,7 +26477,7 @@
 }
 
 /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
-   箭头与作者内容同排，用自动外距推到行尾。箭头是指示符（§6.5）：与标记位的盒同走
+   箭头与作者内容同排，用自动外距推到行尾。箭头是指示符：与标记位的盒同走
    --xh-control-indicator-size，不读 --xh-icon-size——按图标档取的 20px 会比 16px 的标记位盒大一圈 */
 [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
   content: '';
@@ -26612,8 +26612,8 @@
 
 /* 入口归 Collection Item 展开路径 / 打开中（nav 语境）：几何、字号与面全经家族桥接槽。静息字色取 default
    （菜单名不是次要文字，不取 nav 缺省的 muted），悬停走白底承载 hover 100，展开着的那一张由连接层投影
-   data-in-path，家族给与悬停同档的中性面——打开中不是选中，不用品牌色、不接语气、不加粗（§7.3）；
-   按下 pressed 200 只换面不缩放（§9.2）；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
+   data-in-path，家族给与悬停同档的中性面——打开中不是选中，不用品牌色、不接语气、不加粗；
+   按下 pressed 200 只换面不缩放；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
    本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 background / color / cursor */
 [data-scope='menubar'][data-part='trigger'] {
   --xh-collection-block-padding: var(--xh-menubar-trigger-py, var(--xh-_menubar-trigger-py));
@@ -26693,7 +26693,7 @@
    缺省档写在第一条：trigger 与条目的行内内缩都走 control-px 档（随密度轴）、纵向走 space 档，换档各挪一级 */
 [data-scope='menubar']:is([data-part='root'], [data-part='positioner']) {
   /* 条目外的字形（分组标题、入口）按档取尺，缺省 md，随 data-size 换档；同样声明在 positioner 上，被搬走的
-     浮层才拿得到；条目里作者放的图标由家族随 data-xh-collection-size 下发（§6.5）。菜单栏自绘的状态字形（标记位的盒、
+     浮层才拿得到；条目里作者放的图标由家族随 data-xh-collection-size 下发。菜单栏自绘的状态字形（标记位的盒、
      盒里兜底的勾、子菜单的展开 chevron）不读这支：它们是指示符，走 --xh-control-indicator-* 一族——标记位在
      自己身上把 --xh-icon-size 改接到盒的尺，子菜单箭头走 --xh-menubar-submenu-indicator-size */
   --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-md));
@@ -26747,7 +26747,7 @@
   -webkit-backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
   backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
-     浮层滚动面：到底后不把滚动链穿透给页面（§6.6） */
+     浮层滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
@@ -26866,7 +26866,7 @@
 
 /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
    description 按 order 独占下一行，箭头仍留在主行末端。
-   箭头是指示符（§6.5）：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
+   箭头是指示符：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
    按图标档取的 20px 会比 16px 的标记位盒大一圈 */
 [data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after {
   content: '';
@@ -26898,7 +26898,7 @@
   display: none;
 }
 
-/* 标记位（勾选符号 / 图标）按作者写入的位置留在主行，不为没写的条目强制占列。盒是指示符（§6.5）：按指示符档
+/* 标记位（勾选符号 / 图标）按作者写入的位置留在主行，不为没写的条目强制占列。盒是指示符：按指示符档
    取尺，与 Menu / ContextMenu 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
    按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
    皮肤画的兜底勾与作者塞进标记位的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75）；
@@ -27061,7 +27061,7 @@
   overscroll-behavior: contain;
 }
 
-/* 流式视口的内容高度一直在变，还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字（§6.6）。
+/* 流式视口的内容高度一直在变，还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字。
    带 data-xh-scrollbar 的容器已经把原生条藏成零宽，这条空道对它没有布局作用，排除掉 */
 [data-scope='message-feed'][data-part='viewport']:not([data-xh-scrollbar]) {
   scrollbar-gutter: stable;
@@ -27105,7 +27105,7 @@
 
 /* 回到底部：浮在滚动区右下角，收起时不卸载只隐藏。盒型、悬停 / 按下面与缩放由 Action Control 的
    floating 档给（circle 正方盒、ghost 形态：白底承载 hover 100 → pressed 200）；材质随角落浮钮族走
-   frosted 四件套（底 + 边 + 影 + 磨砂，§8），这里只把使用者槽映射到桥接槽：
+   frosted 四件套（底 + 边 + 影 + 磨砂），这里只把使用者槽映射到桥接槽：
    字形按 xs 档取 --xh-_action-profile-glyph-size（16px），与 log / back-top 同一把尺 */
 [data-scope='message-feed'][data-part='scroll-to-end-trigger'] {
   --xh-_message-feed-scroll-to-end-trigger-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-material-frosted-shadow));
@@ -27206,7 +27206,7 @@
      换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
      trigger 的字号经家族桥接槽接回 root 这一档，不另立私有槽 */
   /* 入口里的方向标记按档取尺，缺省 md，随 data-size 换档；面板里链接内的字形由家族随
-     data-xh-collection-size 下发（§6.5） */
+     data-xh-collection-size 下发 */
   --xh-icon-size: var(--xh-navigation-menu-icon-size, var(--xh-glyph-size-md));
 
   --xh-_navigation-menu-font-size: var(--xh-control-font-md);
@@ -27217,7 +27217,7 @@
   --xh-_navigation-menu-link-px: var(--xh-control-px-md);
   --xh-_navigation-menu-link-font-size: var(--xh-control-font-md);
 
-  /* 悬停、键盘锚点与展开着的入口同走中性灰轻档、不接语气槽：打开中不是选中，不用品牌色（§7.3） */
+  /* 悬停、键盘锚点与展开着的入口同走中性灰轻档、不接语气槽：打开中不是选中，不用品牌色 */
   --xh-_navigation-menu-highlight-bg: var(--xh-bg-subtle);
 
   /* 语气只落在指示条上；没写 data-tone 时 --xh-_tone 没被声明，退回品牌色。
@@ -27294,7 +27294,7 @@
 /* 入口归 Collection Item 展开路径 / 打开中（nav 语境）：几何、字号、面与字重全经家族桥接槽。静息 muted /
    regular，悬停走白底承载 hover 100 + default 字；展开着的那一张由连接层投影 data-in-path，家族给与悬停同档的
    中性面——打开中不是选中，不用品牌色、不加粗（横排的栏加粗会推挤相邻触发器），哪一张开着由指示条与转向的
-   箭头说明；按下 pressed 200 只换面不缩放（§9.2）；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
+   箭头说明；按下 pressed 200 只换面不缩放；禁用走 aria-disabled，家族给禁用字色与 not-allowed。
    高度由 block-size 定，块向内边距归零。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 background / color /
    font-weight / cursor；也不写 font: inherit（reset.css 已抹平按钮 UA 字体，再写会把家族给的字号字重一并盖掉） */
 [data-scope='navigation-menu'][data-part='trigger'] {
@@ -27378,7 +27378,7 @@
 
 /* 面板里的链接归 Collection Item 导航当前（nav 语境）：悬停 / 键盘高亮（白底承载 100）与按下（200）面由家族
    按 :hover / :focus-visible / :active 给出，指向当前页面的那一条（data-current）取 strong 档品牌字色 +
-   medium 字重（§7.3），字色不随语气、不加下划线（下划线是"可点"的信号，它已经在这儿了）；这里只把公开槽
+   medium 字重，字色不随语气、不加下划线（下划线是"可点"的信号，它已经在这儿了）；这里只把公开槽
    映射到桥接槽。面板是实色 floating 面，常态字色取 --xh-fg-default 而非 nav 缺省的 muted。
    布局保持 flex：链接是一行文字，不用家族网格。position: relative 是当前链接静态线的定位参照 */
 [data-scope='navigation-menu'][data-part='link'] {
@@ -27440,7 +27440,7 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 指向当前页面的链接自画一条静态指示线（§7.3 导航当前页）：与 Tabs line / Anchor 同一取法，作者不必为了
+/* 指向当前页面的链接自画一条静态指示线（导航当前页）：与 Tabs line / Anchor 同一取法，作者不必为了
    这条线多放一个部件。下面的 indicator 部件表达的是「哪张面板开着」而不是当前页，所以这条线不随部件收起，
    两者各说各的：部件亮着时开着的入口下有一条、当前页链接上另有一条。
    线画在当前链接的 ::after 上，以链接盒为定位参照（上面已给 position: relative），
@@ -27680,12 +27680,12 @@
  * 竖排 flex 里这两件事都做不到（叉会变成第三行）。
  * 底与描边一律中性，语气只由左列那枚字形承载：整片兑色是轻提示那条的做法，
  * 一张有标题有正文的卡片全片染色会把两层文字都压在同一片语气色上。
- * 面走 sheet 三件套（§8.4：--xh-material-elevated-bg / -border / -shadow，与 toast 同一套）。
+ * 面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，与 toast 同一套）。
  *
  * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
  */
 [data-scope='notification'][data-part='item'] {
-  /* 作者塞进卡片里的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档（§6.5）；
+  /* 作者塞进卡片里的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档；
      左列那枚类型字形另有自己的尺寸槽，叉与操作钮的字形各按按钮档取值 */
   --xh-icon-size: var(--xh-notification-icon-size, var(--xh-glyph-size-md));
 
@@ -27889,7 +27889,7 @@
 }
 
 /* 操作钮是带文案的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
-   的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底，§7.2.2），组件只映射既有使用者槽。
+   的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底），组件只映射既有使用者槽。
    语气只落到左列字形：这颗钮坐在带 data-tone 的卡片里，底 / 边 / 字钉在中性语义面上，不随语气；
    卡片是 sheet 白面承载：hover --xh-bg-subtle（100）→ pressed --xh-bg-subtle-hover（200） */
 [data-scope='notification'][data-part='item-action-trigger'] {
@@ -28218,7 +28218,7 @@
 /* 私有槽同时声明在根与 positioner 上：摊开的页码面板被搬到 portal 落点，
    不是根的后代，继承不过去。面板里的页码格子与主区那排消费的是同一批槽 */
 [data-scope='pagination']:is([data-part='root'], [data-part='positioner']) {
-  /* 作者塞进面板或分页行里的图标按档取字形尺（§6.5）；四类格子上另按家族档位取同一把尺 */
+  /* 作者塞进面板或分页行里的图标按档取字形尺；四类格子上另按家族档位取同一把尺 */
   --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从这两处继承它们，
@@ -28269,7 +28269,7 @@
   display: none;
 }
 
-/* 四类格子接 Action Control 的 text 档，缺省中性的 ghost 形态（§7.2 只有 Button 品牌实心）：盒型、三档几何、
+/* 四类格子接 Action Control 的 text 档，缺省中性的 ghost 形态（只有 Button 品牌实心）：盒型、三档几何、
    透明描边（省略号也占一条，两者内容盒等高，一行里对得齐）、悬停 100 → 按下 200（画布承载）、禁用面、按压缩放与
    过渡都由家族给；这里只把使用者槽映射到桥接槽并保留分页自己的排版。
    等宽的关键：1 与 10 的内容宽度不同，靠最小宽度把它们撑到同一格，行宽才不会随当前页左右抖动 */
@@ -28288,7 +28288,7 @@
   --xh-action-fg-rest: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-rest));
   --xh-action-fg-hover: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-hover));
   --xh-action-fg-pressed: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-pressed));
-  /* 作者塞进上一页/下一页的图标按档取字形尺（§6.5），与皮肤画的兜底字形同一把尺 */
+  /* 作者塞进上一页/下一页的图标按档取字形尺，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-_action-profile-glyph-size));
 
   flex: none;
@@ -28307,7 +28307,7 @@
 /* 首末页的上一页 / 下一页是原生 disabled（不可聚焦、进不了 Tab 序列），连接层同时给 data-disabled，
    家族按 data-disabled 画禁用面（透明底 + --xh-fg-disabled）；分页条目从不禁用 */
 
-/* 当前页（§7.3 格状当前）：data-current 与 aria-current='page' 由连接层成对给出，样式挂在 data 钩子上，
+/* 当前页（格状当前）：data-current 与 aria-current='page' 由连接层成对给出，样式挂在 data 钩子上，
    无障碍语义留给 aria。实心品牌面 + 配对前景、不加粗——字重一变字形就变宽，页码格子会跟着长一点，
    正是这里要避免的抖动；悬停 / 按下沿 brand → brand-hover → brand-active 走，三态都经桥接槽交给家族画，
    solid 面允许一条顶高光，环色改取面自己的前景 */
@@ -28439,7 +28439,7 @@
     var(--xh-_pagination-available-h)
   );
   overflow-y: auto;
-  /* 浮层滚动面：滚到底不把滚动量交给页面（§6.6 只给 Overlay 家族滚动面） */
+  /* 浮层滚动面：滚到底不把滚动量交给页面（只给 Overlay 家族滚动面） */
   overscroll-behavior: contain;
   padding: var(--xh-pagination-content-p, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-pagination-content-border, var(--xh-border-default));
@@ -28798,7 +28798,7 @@
 }
 
 /*
- * 触发器是页面上的独立文字按钮（§9.1）：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
+ * 触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
  * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
  */
@@ -28812,7 +28812,7 @@
 }
 
 [data-scope='popover'][data-part='content'] {
-  /* 作者塞进面板里的图标按控件档取（§6.5）；关闭钮另由家族配方按 sm 档下发字形尺 */
+  /* 作者塞进面板里的图标按控件档取；关闭钮另由家族配方按 sm 档下发字形尺 */
   --xh-icon-size: var(--xh-popover-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这两个私有槽。popover 没有 root 部件，size 落在浮层树最外层的 content 上。
@@ -28830,7 +28830,7 @@
   /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-popover-max-h, var(--xh-overlay-max-h)), var(--xh-_popover-available-h));
   overflow-y: auto;
-  /* 浮在页面之上的 Overlay 滚动面（§6.6）：滚到头不把页面一起带走 */
+  /* 浮在页面之上的 Overlay 滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
   padding-block: var(--xh-popover-py, var(--xh-_popover-pad));
   padding-inline: var(--xh-popover-px, var(--xh-_popover-pad));
@@ -28894,7 +28894,7 @@
   color: var(--xh-popover-title-fg, var(--xh-material-frosted-fg));
 }
 
-/* 说明文字走说明档（§6.4）：13px + fg-muted */
+/* 说明文字走说明档：13px + fg-muted */
 [data-scope='popover'][data-part='description'] {
   margin: 0;
   font-size: var(--xh-popover-description-font-size, var(--xh-text-secondary-size));
@@ -28909,7 +28909,7 @@
 }
 
 /*
- * 关闭钮是浮层角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+ * 关闭钮是浮层角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方给出——磨砂白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
  * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
  * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面，缺省仍是透明底与悬停字色：
@@ -29185,10 +29185,10 @@
   --xh-question-flow-skin: 1;
 }
 
-/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）。
+/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担）。
    三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管内衬、按钮高度与字号 */
 [data-scope='question-flow'][data-part='root'] {
-  /* 作者塞进翻页钮的图标按档取尺（§6.5），与皮肤画的兜底字形同一把尺 */
+  /* 作者塞进翻页钮的图标按档取尺，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-question-flow-icon-size, var(--xh-glyph-size-md));
   /* 尺寸缺省档：不写 data-size 时按中档走 */
   --xh-_question-flow-p: var(--xh-space-4);
@@ -29218,7 +29218,7 @@
 /* 描边式是缺省档，写在上面那条基础规则里 */
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，
    1px 的位置留着，与 outline 档并排时基线对得上；
-   淡底承载面向选项行与几颗中性钮下发 hover 200 → pressed 300（§7.2） */
+   淡底承载面向选项行与几颗中性钮下发 hover 200 → pressed 300 */
 [data-scope='question-flow'][data-part='root'][data-variant='subtle'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -29314,7 +29314,7 @@
   pointer-events: auto;
 }
 
-/* 题干就是这一题的标题，也是选项组的可访问名：走 Surface 标题档 14/600（§6.4） */
+/* 题干就是这一题的标题，也是选项组的可访问名：走 Surface 标题档 14/600 */
 [data-scope='question-flow'][data-part='prompt'] {
   display: block;
   margin: 0;
@@ -29339,9 +29339,9 @@
 }
 
 /* 一个选项：整行可点、可聚焦，记号在左。盒型、悬停 / 按下 / 禁用面由 Action Control 的 row 档给
-   （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2；禁用守卫认 data-disabled），
+   （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放；禁用守卫认 data-disabled），
    这里只把使用者槽映射到桥接槽，内衬与间距沿用本组件的档位；字色三态同一支，选中档在下面换一档。
-   行高不吃家族的单行档：row 档允许换行、高度随内容，一条会折行的选项文案走正文行高（§6.4） */
+   行高不吃家族的单行档：row 档允许换行、高度随内容，一条会折行的选项文案走正文行高 */
 [data-scope='question-flow'][data-part='item'] {
   --xh-action-gap: var(--xh-question-flow-item-gap, var(--xh-space-1_5));
   --xh-action-padding-inline: var(--xh-question-flow-item-px, var(--xh-space-2));
@@ -29422,7 +29422,7 @@
   display: none;
 }
 
-/* 单选那一档把方格收成圆：正方盒取 circle（§6.3） */
+/* 单选那一档把方格收成圆：正方盒取 circle */
 [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'] {
   border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-circle));
 }
@@ -29700,7 +29700,7 @@
   --xh-_radio-group-host-bg-pressed: var(--xh-bg-subtle-active);
 
   /* 标题与条目都是根的直接子节点，一支 gap 同时管「标题到集合」与「条目之间」：
-     集合标题与集合隔 --xh-space-2（§6.4），同组条目之间也是同一档紧密关系 */
+     集合标题与集合隔 --xh-space-2，同组条目之间也是同一档紧密关系 */
   display: flex;
   gap: var(--xh-radio-group-gap, var(--xh-space-2));
 }
@@ -29730,7 +29730,7 @@
   --xh-_radio-group-indicator: var(--xh-control-indicator-lg);
 }
 
-/* 集合标题（§6.4）：14 / 500 / fg-muted，字号不随 size 档——随档的是条目文字 */
+/* 集合标题：14 / 500 / fg-muted，字号不随 size 档——随档的是条目文字 */
 [data-scope='radio-group'][data-part='label'] {
   color: var(--xh-radio-group-label-fg, var(--xh-fg-muted));
   font-size: var(--xh-radio-group-label-font-size, var(--xh-text-label-size));
@@ -29738,12 +29738,12 @@
   line-height: var(--xh-leading-none);
 }
 
-/* label 自己不带状态属性，整组禁用只写在 root 上，禁用标签色统一 --xh-fg-subtle（§6.4） */
+/* label 自己不带状态属性，整组禁用只写在 root 上，禁用标签色统一 --xh-fg-subtle */
 [data-scope='radio-group'][data-part='root'][data-disabled] [data-scope='radio-group'][data-part='label'] {
   color: var(--xh-radio-group-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 条目是「圆圈 + 文案」的整行命中区（§9.2）：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、手型、
+/* 条目是「圆圈 + 文案」的整行命中区：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、手型、
    过渡与焦点环由家族给，按下只换面不缩放（row 档专属按压块 scale: none）；这里只把使用者槽映射到桥接槽。
    行自己坐画布走 100 → 200（--xh-action-bg-* 钉住自己的面），行面上的圆圈按淡底容器阶梯再上一档
    （--xh-action-host-bg-* 向内声明自己是圆圈的承载面，host 槽只对后代生效——自己的面已由 --xh-action-bg-* 钉住；
@@ -29787,8 +29787,8 @@
   --xh-action-cursor-focus-visible: default;
 }
 
-/* 圆圈是字段家族的控制盒（§8.3 字段静息形态）：透明底 + --xh-border-control 描边 + 无影。
-   不缩放（§9.2 行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
+/* 圆圈是字段家族的控制盒（字段静息形态）：透明底 + --xh-border-control 描边 + 无影。
+   不缩放（行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
 [data-scope='radio-group'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
@@ -29804,7 +29804,7 @@
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 悬停整行时未选中的圆圈描边升一档（字段静息 → hover 的同一条阶梯，§8.3）；
+/* 悬停整行时未选中的圆圈描边升一档（字段静息 → hover 的同一条阶梯）；
    选中圈与校验失败的圈保住各自的描边——圈内的点 / 警示色本身已经在表达状态 */
 [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):hover
   > [data-scope='radio-group'][data-part='indicator']:not([data-state='checked']):not([data-invalid]) {
@@ -29812,7 +29812,7 @@
 }
 
 /* 按下去要有回应。圆圈不是激活宿主：宿主是投影了 row 档的整行条目，圆圈在宿主的
-   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面、不缩放（§9.2）——行按下是 200，
+   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面、不缩放——行按下是 200，
    坐在上面的圆圈到 300（行以 --xh-action-host-bg-pressed 声明自己是圆圈的承载面，桥接槽只写不读，
    圆圈读的是喂给它的那支私有槽），描边不动、几何不动；
    与家族按压块同一时间线（按下 --xh-motion-duration-press，释放同走 micro） */
@@ -29857,7 +29857,7 @@
   background: var(--xh-radio-group-indicator-dot-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
 }
 
-/* 禁用（§7.2）：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 圆点，不靠 opacity；
+/* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 圆点，不靠 opacity；
    与 checkbox-group 方框、独立 checkbox 逐档一致。条目自己带 data-disabled（组禁用也逐条下放），圆圈读它 */
 [data-scope='radio-group'][data-part='item'][data-disabled] > [data-scope='radio-group'][data-part='indicator'] {
   border-color: var(--xh-radio-group-indicator-border-disabled, var(--xh-border-default));
@@ -29923,7 +29923,7 @@
    根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
 [data-scope='rating'][data-part='root'] {
   /* 尺寸档只换这三个私有槽，星星与分值都从 root 继承它们，换档不必给每个部件各写一条选择器。
-     星是控件内的字形，按档取 --xh-glyph-size-sm / md / lg（§6.5）；标签字号不随档 */
+     星是控件内的字形，按档取 --xh-glyph-size-sm / md / lg；标签字号不随档 */
   --xh-_rating-item-gap: var(--xh-control-gap-md);
   --xh-_rating-item-size: var(--xh-glyph-size-md);
   --xh-_rating-item-box-size: var(--xh-control-action-size);
@@ -29935,7 +29935,7 @@
   position: relative;
   display: inline-flex;
   flex-direction: column;
-  /* 字段标签贴控件（§6.4 复合单字段） */
+  /* 字段标签贴控件（复合单字段） */
   gap: var(--xh-rating-gap, var(--xh-space-1));
 }
 
@@ -29952,7 +29952,7 @@
   --xh-_rating-font-size: var(--xh-control-font-lg);
 }
 
-/* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle；文字部件不叠 opacity */
+/* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle；文字部件不叠 opacity */
 [data-scope='rating'][data-part='label'] {
   color: var(--xh-rating-label-fg, var(--xh-fg-default));
   font-size: var(--xh-rating-label-font-size, var(--xh-text-label-size));
@@ -30012,7 +30012,7 @@
 
 /* 条目固定成一枚方形图标盒：连接层用 clientWidth 判定指针落在左半还是右半，
    固定盒能让半档分界与图形中心严格重合。
-   星接 Action Control icon 档（§9.1 定尺的星）：盒型、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族配方给，
+   星接 Action Control icon 档（定尺的星）：盒型、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族配方给，
    这里只把使用者槽映射到桥接槽。静息透明（ghost 形态）；悬停不换底——悬停预览由点亮的星形（data-highlighted）
    表达，再给盒换面是重复的通道；按下换到 200 档中性面（白底承载）。前景五态映射同一个值：点亮时五态一起换到
    点亮色，家族的悬停 / 按下块才不会把点亮色换回静息色；禁用不换前景，星带整体的压暗落在 control 的 opacity 上 */
@@ -30478,7 +30478,7 @@
 [data-scope='select'][data-part='root'] {
   /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准。
      浮层条目里自绘的状态字形（勾选标记所在的标记盒与盒里的勾）不读这支：它们是指示符，走
-     --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺（§6.5） */
+     --xh-control-indicator-* 一族——标记盒在自己身上把 --xh-icon-size 改接到盒的尺 */
   --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-md));
 
   display: inline-flex;
@@ -30928,7 +30928,7 @@
 }
 
 /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动。
-   盒与盒里的勾是指示符（§6.5）：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
+   盒与盒里的勾是指示符：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
    兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（勾选标记不是勾选格，不取 × 0.75，与 Listbox / Menu 族
    同口径）；不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 比
    16 / 14 的指示符档大一圈 */
@@ -31122,7 +31122,7 @@
    不是根的后代，继承不过去。面板里的行与栏内那些消费的是同一批槽 */
 [data-scope='side-nav']:is([data-part='root'], [data-part='positioner']) {
   /* 行外的字形按档取尺，缺省 md，随 data-size 换档并同样声明在定位层上（弹出面板里的行也拿得到）；
-     行内的由家族随 data-xh-collection-size 下发（§6.5）。这支只管作者放进行里的图标：
+     行内的由家族随 data-xh-collection-size 下发。这支只管作者放进行里的图标：
      侧栏自绘的状态字形（分支行尾的展开方向 chevron）是指示符，branch-indicator 在自己身上
      把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
   --xh-icon-size: var(--xh-side-nav-icon-size, var(--xh-glyph-size-md));
@@ -31221,7 +31221,7 @@
 }
 
 /* —— 行：分支按钮与链接同一副长相 ——
-   两种行都走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
+   两种行都走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
    pressed 200，只换面不缩放）、当前页（品牌淡底 + 淡底前景 + 起始侧 2px 指示条，current+hover 20% /
    +pressed 28%）、展开路径（与 hover 同档的中性面，不用品牌色、不加粗）与禁用面都由家族按 data-current /
    data-in-path / aria-disabled 给出。这里只把公开槽映射到桥接槽。
@@ -31356,7 +31356,7 @@
   box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-floating));
 
   /* 子导航条目数没有上限，矮视口下不限高就整块伸出视口且滚不到。
-     浮层滚动面：到底后不把滚动链穿透给页面（§6.6）；细条由 reset 层给 */
+     浮层滚动面：到底后不把滚动链穿透给页面；细条由 reset 层给 */
   max-block-size: min(var(--xh-side-nav-popout-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_side-nav-available-h));
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -31375,7 +31375,7 @@
 }
 
 /* 箭头是行尾的后缀：auto 外边距把它顶到行尾，家族按 suffix 槽下发的外边距已在行上归零。
-   盒里的 chevron 是指示符（§6.5）：盒按指示符档定尺（comfortable 16 / compact 14，与 Tree / TreeSelect
+   盒里的 chevron 是指示符：盒按指示符档定尺（comfortable 16 / compact 14，与 Tree / TreeSelect
    的 branch-indicator 同款定尺盒），--xh-icon-size 在自己身上改接到盒的尺，兜底字形与作者塞进盒里的
    XhIcon 读同一把尺、与盒同边长；不读家族按档下发到行的 --xh-icon-size——那支只管作者放进行里的
    图标，按图标档取的 20px 比指示符档大一圈。盒自己定尺而不随字形撑开：转 90° 时才不抖 */
@@ -31452,7 +31452,7 @@
 
   display: flex;
   flex-direction: column;
-  /* 字段标签贴控件（§6.4 复合单字段） */
+  /* 字段标签贴控件（复合单字段） */
   gap: var(--xh-slider-gap, var(--xh-space-1));
 }
 
@@ -31462,10 +31462,10 @@
   align-items: center;
 }
 
-/* 禁用不整体压暗（§7.2 第 9 条）：前景与表面各自降级——连接层把 data-disabled 发到每个角色节点上，
+/* 禁用不整体压暗：前景与表面各自降级——连接层把 data-disabled 发到每个角色节点上，
    轨道、区间、拇指、刻度与标签就近消费，写在各自的规则里 */
 
-/* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle */
+/* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle */
 [data-scope='slider'][data-part='label'] {
   color: var(--xh-slider-label-fg, var(--xh-fg-default));
   font-size: var(--xh-slider-label-font-size, var(--xh-text-label-size));
@@ -31571,7 +31571,7 @@
 /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
    box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
    下面按半个直径回拉的负外边距就对不上圆心。
-   拇指是可拖起的 raised 面（§8）：描边取 --xh-border-default，raised 影只是加成、不作边界 */
+   拇指是可拖起的 raised 面：描边取 --xh-border-default，raised 影只是加成、不作边界 */
 [data-scope='slider'][data-part='thumb'] {
   position: absolute;
   box-sizing: border-box;
@@ -31704,7 +31704,7 @@
   pointer-events: none;
 }
 
-/* 刻度点是正方盒，取 circle（§6.3 正方盒不得用 pill 冒充圆） */
+/* 刻度点是正方盒，取 circle（正方盒不得用 pill 冒充圆） */
 [data-scope='slider'][data-part='tick'] {
   position: absolute;
   inset-block-start: 50%;
@@ -31840,7 +31840,7 @@
   opacity: var(--xh-sortable-item-opacity-dragging, 0.9);
 }
 
-/* 把手是只有字形的离散动作钮（§9.1 定尺把手）：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、
+/* 把手是只有字形的离散动作钮（定尺把手）：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、
    禁用面全由 Action Control 的 icon ghost 档给（连接层投 xs：24px 正方盒，与此前 --xh-control-action-size
    同尺寸），组件只映射既有使用者槽。静息透明，白底承载 hover 100 → pressed 200（此前悬停落 200 是错档）。
    手型不是 pointer：抓起来拖的东西给 grab，按住拖动中给 grabbing；家族的手型槽逐态映射 */
@@ -32077,7 +32077,7 @@
   cursor: row-resize;
 }
 
-/* 分隔条是一根线不是一块面：悬停不走面阶梯（300 只留给 pressed，§7.2 第 3 条），
+/* 分隔条是一根线不是一块面：悬停不走面阶梯（300 只留给 pressed），
    按线取——与字段描边 rest → hover 同向加深一档 */
 [data-scope='splitter'][data-part='resize-trigger']:hover {
   background: var(--xh-splitter-trigger-bg-hover, var(--xh-border-control));
@@ -32126,7 +32126,7 @@
 }
 
 [data-scope='steps'][data-part='root'] {
-  /* 作者放进标题 / 说明里的图标按档取尺，缺省 sm（§6.5）。走过的步里皮肤画的兜底对号不读这支：
+  /* 作者放进标题 / 说明里的图标按档取尺，缺省 sm。走过的步里皮肤画的兜底对号不读这支：
      它是指示符，与序号圆点同走 --xh-control-indicator-* 一族——圆点在自己身上把 --xh-icon-size
      改接到 --xh-steps-indicator-mark-size，兜底对号与作者塞进圆点里的 XhIcon 读同一把尺 */
   --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
@@ -32140,14 +32140,14 @@
   /* 语气落在当前步的标记、走过那几步的对号与连接线上：强调色画描边与填充，
      accent-text 是普通底上的强调文字（走过与当前步的标题），on-accent 是实心底上的前景。
      没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色。
-     走过的步不再用品牌淡底（§7.3 brand-subtle 退出 completed 语义），淡底那两支私有槽随之撤掉 */
+     走过的步不再用品牌淡底（brand-subtle 退出 completed 语义），淡底那两支私有槽随之撤掉 */
   --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
   /* 走过的步里那枚对号：中性淡底上的品牌色标记，不用标题那档更深的字色 */
   --xh-_steps-accent-mark: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
   /* 触发器是序号圆点的承载面：圆点静息就坐在 --xh-bg-subtle（100）的淡底上，阶梯按淡底容器走
-     （hover 200 → pressed 300，§7.2 第 3 条）。两支私有槽是这一档的唯一来源——触发器拿它们给
+     （hover 200 → pressed 300）。两支私有槽是这一档的唯一来源——触发器拿它们给
      --xh-action-host-bg-* 赋值（桥接槽只写不读），圆点悬停 / 按下读同一支私有槽，即与宿主的 host 槽同源 */
   --xh-_steps-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_steps-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -32246,7 +32246,7 @@
   align-items: flex-start;
 }
 
-/* 触发器是「序号 + 标题 + 说明」的整块内容行（§9.2）：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、
+/* 触发器是「序号 + 标题 + 说明」的整块内容行：接 Action Control row 档、ghost 形态，悬停 / 按下 / 禁用面、
    手型、过渡与焦点环由家族给，按下只换面不缩放（row 档专属按压块 scale: none）；这里只把使用者槽映射到桥接槽。
    触发器既是 Action Control 又是圆点的承载面：自己坐画布走 hover 100 → pressed 200，由 --xh-action-bg-* 钉住；
    --xh-action-host-bg-* 只对圆点生效（圆点自己是 100 的淡底，坐在触发器面上再上一档到 200 / 300）。
@@ -32295,9 +32295,9 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号（§7.3）。 */
+/* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号。 */
 [data-scope='steps'][data-part='indicator'] {
-  /* 圆点里的字形是指示符（§6.5）：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
+  /* 圆点里的字形是指示符：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
      不读 root 上只管作者标题 / 说明图标的 --xh-steps-icon-size；作者塞进圆点的 XhIcon 与兜底对号同一把尺。
      圆点自己走 space / control-h 的尺（最小 28px），不随密度，两档字形在三档圆点里都留得出边距 */
   --xh-icon-size: var(--xh-steps-indicator-mark-size, var(--xh-control-indicator-size));
@@ -32329,8 +32329,8 @@
   display: none;
 }
 
-/* 圆点是格状当前的标记（§4.1 / §7.3），但不是激活宿主：宿主是投影了 row 档的触发器；圆点在宿主的
-   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放（§9.2）——
+/* 圆点是格状当前的标记，但不是激活宿主：宿主是投影了 row 档的触发器；圆点在宿主的
+   :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放——
    圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
    当前步的实心面按下换语气 active 档 */
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
@@ -32365,7 +32365,7 @@
   box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
 }
 
-/* 走过的步：中性淡底（透明边位，§8.3）承一枚品牌色对号；标了语气的步对号跟语气的前景走 */
+/* 走过的步：中性淡底（透明边位）承一枚品牌色对号；标了语气的步对号跟语气的前景走 */
 [data-scope='steps'][data-part='indicator'][data-state='completed'] {
   border-color: var(--xh-steps-indicator-border-completed, transparent);
   background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-subtle));
@@ -32419,7 +32419,7 @@
   color: var(--xh-steps-title-fg-toned, var(--xh-_steps-accent-text));
 }
 
-/* 说明走说明角色（§6.4）：13 / fg-muted / leading-normal，不随 size 档 */
+/* 说明走说明角色：13 / fg-muted / leading-normal，不随 size 档 */
 [data-scope='steps'][data-part='description'] {
   grid-column: 2;
   color: var(--xh-steps-description-fg, var(--xh-fg-muted));
@@ -32552,9 +32552,9 @@
   --xh-_switch-track-bg-pressed: var(--xh-switch-bg-pressed, var(--xh-_switch-track-bg));
   --xh-_switch-fg: var(--xh-switch-fg, var(--xh-fg-default));
 
-  /* 轨道接 Action Control text 档（§9.1 定尺轨道）：悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
+  /* 轨道接 Action Control text 档（定尺轨道）：悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
      焦点环与过渡由家族配方给，这里只把轨道的私有槽映射到桥接槽。轨道没有实描边（边界以内描边画，不吃行程），
-     边位映射 transparent 并把 border 宽度归零；内描边经 shadow 通道各态同一支。悬停不换面（§7.2 阶梯只给按下） */
+     边位映射 transparent 并把 border 宽度归零；内描边经 shadow 通道各态同一支。悬停不换面（阶梯只给按下） */
   --xh-action-visual-size: var(--xh-_switch-track-h);
   --xh-action-min-inline-size: calc(var(--xh-_switch-track-h) * 2 - var(--xh-_switch-pad) * 2);
   --xh-action-padding-inline: var(--xh-_switch-pad);
@@ -32600,7 +32600,7 @@
 
 /* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。
    变的是"动不动得了"：指针不摆手型、按下不缩放不换底（家族的按压块由这里的映射钉回静息面），
-   选中档的轨道退回未选中那一档的中性底（§7.2 交互态的底只从语义面派生），
+   选中档的轨道退回未选中那一档的中性底（交互态的底只从语义面派生），
    滑块收掉那层抬起的投影——投影是"这颗按得动"的信号。与文本框只读那一档同口径（压低底色而非置灰）。
    滑块停在哪一端不受影响，值本身仍由位置这条非颜色通道读出。 */
 [data-scope='switch'][data-part='root'][data-readonly]:not([data-disabled]) {
@@ -32637,7 +32637,7 @@
   box-shadow: var(--xh-switch-thumb-shadow-readonly, none);
 }
 
-/* 禁用（§7.2）：不靠 opacity——轨道退回 --xh-bg-subtle 底 + --xh-border-default 内描边，滑块前景置灰；
+/* 禁用：不靠 opacity——轨道退回 --xh-bg-subtle 底 + --xh-border-default 内描边，滑块前景置灰；
    选中的禁用轨道同样退回中性面，值由滑块位置读出。面与手型由家族的禁用块按映射给 */
 [data-scope='switch'][data-part='root'][data-disabled] {
   --xh-_switch-track-border: var(--xh-switch-border-disabled, var(--xh-border-default));
@@ -32674,7 +32674,7 @@
   }
 }
 
-/* 滑块是 raised 抬起面（§5.3 可拖起部件，逐部件登记）：--xh-bg-surface-raised 底 + --xh-border-default 描边 +
+/* 滑块是 raised 抬起面（可拖起部件，逐部件登记）：--xh-bg-surface-raised 底 + --xh-border-default 描边 +
    --xh-elevation-raised 影，无顶光；描边必须在，影只是加成 */
 [data-scope='switch'][data-part='thumb'] {
   position: relative;
@@ -32744,13 +32744,13 @@
   block-size: 60%;
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
-  /* 加载环是等宽高的圆（§6.3 全部加载环取 circle） */
+  /* 加载环是等宽高的圆（全部加载环取 circle） */
   border-radius: var(--xh-shape-circle);
   animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——
-   文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（§6.4 控件字号随档）；
+   文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（控件字号随档）；
    行高取正文档，长文字可以自然换行 */
 [data-scope='switch'][data-part='label'] {
   --xh-_switch-label-font-size: var(--xh-control-font-md);
@@ -32772,7 +32772,7 @@
   --xh-_switch-label-font-size: var(--xh-control-font-lg);
 }
 
-/* 禁用标签色统一 --xh-fg-subtle（§6.4） */
+/* 禁用标签色统一 --xh-fg-subtle */
 [data-scope='switch'][data-part='label'][data-disabled] {
   color: var(--xh-switch-label-fg-disabled, var(--xh-fg-subtle));
   cursor: not-allowed;
@@ -32912,7 +32912,7 @@
      既不让页面上的层号插进来，也不让它们漏出去压住别人 */
   isolation: isolate;
 
-  /* 作者放进单元格、列头与把手里的图标按档取尺，缺省 md（§6.5）；表体行上的由家族随 data-xh-collection-size 下发。
+  /* 作者放进单元格、列头与把手里的图标按档取尺，缺省 md；表体行上的由家族随 data-xh-collection-size 下发。
      表格自绘的状态字形（排序方向、勾、半选杠、展开方向）不读这支：它们是指示符，与所在的方盒同走
      --xh-control-indicator-* 一族——五颗把手在自己身上把 --xh-icon-size 改接到方盒的尺，排序钮那支叫 --xh-table-sort-size */
   --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-md));
@@ -33056,7 +33056,7 @@
   outline: none;
 }
 
-/* 表头是淡底承载面：里头的触发器按淡底阶梯走（hover 200 → pressed 300），阶梯由 host 槽向内下发（§7.2）；
+/* 表头是淡底承载面：里头的触发器按淡底阶梯走（hover 200 → pressed 300），阶梯由 host 槽向内下发；
    排序钮是 ghost 图标钮，悬停 / 按下面就从这两支 host 槽取 */
 [data-scope='table'][data-part='header'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
@@ -33080,7 +33080,7 @@
   font-weight: var(--xh-table-footer-font-weight, var(--xh-font-weight-medium));
 }
 
-/* 表体行走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
+/* 表体行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
    pressed 200）与选中面（品牌淡底 + 淡底前景，selected+hover 20% / +pressed 28%）由家族按 aria-selected /
    aria-disabled 给出，标记由行首的勾选把手承担。这里只把公开槽映射到桥接槽，并逐项盖掉家族的行盒几何：
    行是 flex 容器（列宽由单元格的内联尺寸决定，不进家族网格）、不内衬、不圆角、字号与光标随表格本身
@@ -33248,7 +33248,7 @@
 }
 
 /* 五个把手共用一副方形盒子，两种行的文字起点才对得齐；列设置区那颗与表头里的选择框同款，一眼看得出是同一件事。
-   五颗都接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
+   五颗都接 Action Control icon 档（定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族
    配方给，这里只把使用者槽映射到桥接槽；边长仍按 --xh-control-indicator-size 走。三颗勾选框是 outline 形态
    （字段静息形态：透明底 + --xh-border-control 描边），展开箭头与排序钮是 ghost；空框与箭头坐在白底行上，
    按下落 200 档，已勾选的品牌实心面按下派生 active 面；排序钮坐在表头淡底上，阶梯另由 host 槽给（见下） */
@@ -33298,7 +33298,7 @@
   }
 }
 
-/* 盒里的字形是指示符（§6.5）：这四颗把手各自把 --xh-icon-size 改接到方盒的尺上，兜底字形与作者塞进盒里的
+/* 盒里的字形是指示符：这四颗把手各自把 --xh-icon-size 改接到方盒的尺上，兜底字形与作者塞进盒里的
    XhIcon 读同一把尺，root 那支只管作者放进单元格与把手里图标的 --xh-table-icon-size 不流进来。
    三颗勾选框的勾与半选杠按方盒边长 × 0.75，与 Checkbox 的 --xh-_checkbox-glyph、Tree 勾选把手同一比例；
    展开箭头的 chevron 与方盒同边长，同 Tree 的 branch-trigger */
@@ -33401,7 +33401,7 @@
   mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
-/* 禁用（§7.2 第 9 条）：--xh-border-default 描边 + --xh-bg-subtle 底，勾藏起来；家族的禁用块按映射给 */
+/* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底，勾藏起来；家族的禁用块按映射给 */
 [data-scope='table'][data-part='select-all-trigger'][data-disabled],
 [data-scope='table'][data-part='column-visibility-trigger'][data-disabled],
 [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
@@ -33452,7 +33452,7 @@
   outline: none;
 }
 
-/* 排序钮是列头里独立的定尺图标钮（§9.1）：不包列名，列名留在列头上、它排在列名之后，auto 外边距把它
+/* 排序钮是列头里独立的定尺图标钮：不包列名，列名留在列头上、它排在列名之后，auto 外边距把它
    推到行尾侧与列宽把手并排。盒型与 0.97 按压由家族 icon 档给（见五颗把手共用块）；坐在表头淡底上，
    悬停 / 按下面按 header 的 host 槽下发的阶梯走（hover 200 → pressed 300），不取白底行那档。
    箭头静息取 subtle 前景，参与排序的列换成默认前景（见字形块） */
@@ -33722,7 +33722,7 @@
    悬停恒真，而悬停那条是 0-6-0、选中那条是 0-3-0，少写一层祖先这块淡底就会被那两档盖掉。
    禁用的行不接换父落点，:not([data-disabled]) 不会漏画任何一处高亮 */
 [data-scope='table'][data-part='root'] [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row'][data-drop='inside']:not([data-disabled]) {
-  /* 落点不是选中：品牌淡底专属选中（§7.1），落点面取悬停之上一档的中性面 */
+  /* 落点不是选中：品牌淡底专属选中，落点面取悬停之上一档的中性面 */
   background: var(--xh-table-drop-inside-bg, var(--xh-bg-subtle-hover));
 }
 
@@ -33756,7 +33756,7 @@
 }
 
 /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西。
-   箭头是指示符（§6.5）：尺寸读钮自己改接过的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长），
+   箭头是指示符：尺寸读钮自己改接过的 --xh-icon-size（--xh-table-sort-size，缺省与方盒同边长），
    与同一表头里的勾选框方盒、列拖拽把手同走 --xh-control-indicator-size，按图标档取的 20px 会比
    16px 的方盒与列头文字都大一圈。:empty 守卫同展开箭头：作者塞了自己的图标就整个顶掉兜底；
    flex: none 是因为 ghost 那圈透明描边仍占位，不钉住的话与盒同边长的箭头会被挤窄一个描边。
@@ -33864,7 +33864,7 @@
 }
 
 /* 取下一页的按钮：铺满一行摆在表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
-   ghost 形态（§9.2）：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
+   ghost 形态：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
    焦点环与粗指针热区全由家族给，白底承载 hover 100 → pressed 200。
    这里只把使用者槽映射到桥接槽并把文案居中：它是一行里唯一的东西，靠起始缘会像一条没对齐的行 */
 [data-scope='table'][data-part='load-more-trigger'] {
@@ -33880,7 +33880,7 @@
 
   justify-content: center;
   text-align: center;
-  /* row 档允许换行、高度随内容，折行的文案走正文行高（§6.4） */
+  /* row 档允许换行、高度随内容，折行的文案走正文行高 */
   line-height: var(--xh-leading-normal);
 }
 
@@ -33983,7 +33983,7 @@
   /* 缺省是 line 变体：透明标签带，选中项由文字与底部指示条表达。Web Components 升级前还没有
      data-variant，这组几何基础值也必须画成相同结果，避免定义完成时闪换样式；line 档的面与字色由家族
      按升级后写入的家族角色给，升级前那一帧只有几何没有面色（与 side-nav / menu 同）。
-     悬停与按下的面按承载面分档（§7.2）：line 档经家族走白底承载 hover 100 → pressed 200；card 坐在
+     悬停与按下的面按承载面分档：line 档经家族走白底承载 hover 100 → pressed 200；card 坐在
      画布上 hover 100 → pressed 200；segment 坐在淡底轨道里 hover 200 → pressed 300。card / segment 的
      六支面槽只在各自形态块里赋值，line 档不消费它们 */
   --xh-_tabs-list-gap: var(--xh-space-0);
@@ -34045,7 +34045,7 @@
 }
 
 /* 卡片式：基线收掉，选中的那张标签自己成为一张有描边有底的卡片，顶边一条指示条。
-   标签坐在画布上，悬停 100 → 按下 200（§7.2 白底承载） */
+   标签坐在画布上，悬停 100 → 按下 200（白底承载） */
 [data-scope='tabs'][data-part='root'][data-variant='card'] {
   --xh-_tabs-list-gap: var(--xh-control-gap-md);
   --xh-_tabs-list-bg: transparent;
@@ -34064,7 +34064,7 @@
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
 }
 
-/* 分段式（§7.3 有滑块开关）：淡底轨道承载一块白色抬起的选中面，选中文字保持默认字色。
+/* 分段式（有滑块开关）：淡底轨道承载一块白色抬起的选中面，选中文字保持默认字色。
    未选中标签坐在淡底轨道里，悬停 200 → 按下 300；选中面自己不再叠悬停 / 按下态。
    选中面的三件（surface-raised 底、border-default 描边、raised 影）写在下面标签自己的规则里 */
 [data-scope='tabs'][data-part='root'][data-variant='segment'] {
@@ -34129,8 +34129,8 @@
   translate: 0 var(--xh-_tabs-scroll);
 }
 
-/* segment 档的标签带是一块淡底面：--xh-bg-subtle 底 + 一圈透明占位边 + 无影（§8.3 三选一）。
-   它同时是标签的淡底承载面，向内下发 hover 200 → pressed 300 的承载阶梯（§7.2）；
+/* segment 档的标签带是一块淡底面：--xh-bg-subtle 底 + 一圈透明占位边 + 无影（三选一）。
+   它同时是标签的淡底承载面，向内下发 hover 200 → pressed 300 的承载阶梯；
    只写在标签带上不写在 root 上：内容面板里的按钮坐在画布上，不该跟着抬一档 */
 [data-scope='tabs'][data-part='root'][data-variant='segment'] [data-scope='tabs'][data-part='list'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
@@ -34160,9 +34160,9 @@
   min-inline-size: auto;
 }
 
-/* line 档（§7.3 导航当前页）：把公开槽映射到 Collection Item 的 nav 语境桥接槽。静息 muted / regular，
+/* line 档（导航当前页）：把公开槽映射到 Collection Item 的 nav 语境桥接槽。静息 muted / regular，
    悬停 100 + default 字，按下 200 只换面；当前页透明面 + 品牌深字（随语气的 --xh-_tabs-accent-text）+
-   medium，叠悬停 100（§9.3）。2px 指示线不由家族按条目画：放了 indicator 部件是 list 上的滑动部件，
+   medium，叠悬停 100。2px 指示线不由家族按条目画：放了 indicator 部件是 list 上的滑动部件，
    没放则由下面的静态线规则画在选中标签自己身上。高度由 block-size 定，块向内边距归零 */
 [data-scope='tabs'][data-part='root'][data-variant='line'] [data-scope='tabs'][data-part='trigger'] {
   --xh-collection-block-padding: var(--xh-space-0);
@@ -34186,7 +34186,7 @@
   color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
   font-weight: var(--xh-tabs-trigger-font-weight, var(--xh-text-label-weight));
   cursor: pointer;
-  /* 标签是铺开的一段（§9.2 Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale */
+  /* 标签是铺开的一段（Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale */
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -34215,7 +34215,7 @@
 }
 
 /* 按下去要有回应：card / segment 档的未选中标签换到按下面（card 200、segment 300），几何不动。
-   选中标签不叠按下面：card 的卡片面与 segment 的抬起面本身就是选中身份（§7.3 有滑块开关无叠加态） */
+   选中标签不叠按下面：card 的卡片面与 segment 的抬起面本身就是选中身份（有滑块开关无叠加态） */
 [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
   [data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):is(:active, [data-pressed]) {
   background: var(--xh-tabs-trigger-bg-pressed, var(--xh-_tabs-trigger-bg-pressed));
@@ -34234,7 +34234,7 @@
   font-weight: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
 }
 
-/* segment 档的选中标签就是那块白色抬起的滑块面（§7.3 有滑块开关）：surface-raised 底 +
+/* segment 档的选中标签就是那块白色抬起的滑块面（有滑块开关）：surface-raised 底 +
    border-default 描边 + raised 影三件写在标签自己身上。标签带里放了 indicator 部件时，
    这块面搬到部件上跟着滑（见下面的 indicator 规则），标签自己透空、只留字 */
 [data-scope='tabs'][data-part='root'][data-variant='segment']
@@ -34435,7 +34435,7 @@
   display: none;
 }
 
-/* segment 档（§7.3 有滑块开关）：部件就是那块白色抬起的滑块面，四个几何量都取、整块跟着滑——
+/* segment 档（有滑块开关）：部件就是那块白色抬起的滑块面，四个几何量都取、整块跟着滑——
    surface-raised 底 + border-default 描边 + raised 影三件与 Segmented 的滑块同一套；
    描边吃进盒里（border-box），面与标签仍是同一块矩形。标签压在它上面，点击一律交给标签。
    用连续档而不是进场那条：滑块是被推过去的，起步就该有速度；四个几何量同时走，标签宽不等时才不会先变形再挪位 */
@@ -34459,7 +34459,7 @@
     block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
-/* line 档没放 indicator 部件时，选中标签自画一条静态指示线（§7.3 导航当前页）：
+/* line 档没放 indicator 部件时，选中标签自画一条静态指示线（导航当前页）：
    横向缺省也要像纵向示例那样有一条选中线，作者不必为了这条线多放一个部件。
    线画在选中标签的 ::after 上，以标签盒为定位参照（基础规则里已是 position: relative），
    厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。
@@ -37026,9 +37026,9 @@
 }
 
 /* 中性浮层承载整条反馈，语气只落到状态字形和标题。
-   面走 sheet 三件套（§8.4：--xh-material-elevated-bg / -border / -shadow，亮暗两档同有 1px 描边）。 */
+   面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，亮暗两档同有 1px 描边）。 */
 [data-scope='toast'][data-part='root'] {
-  /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档（§6.5） */
+  /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档 */
   --xh-icon-size: var(--xh-toast-icon-size, var(--xh-glyph-size-md));
 
   --xh-toast-y: var(--xh-toast-offset-collapsed, 0px);
@@ -37275,7 +37275,7 @@
 }
 
 /* 操作钮是带文案的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
-   的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底，§7.2.2），组件只映射既有使用者槽。
+   的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底），组件只映射既有使用者槽。
    语气只落到状态字形和标题：这颗钮坐在带 data-tone 的条子里，底 / 边 / 字钉在中性语义面上，不随语气；
    条子是 sheet 白面承载：hover --xh-bg-subtle（100）→ pressed --xh-bg-subtle-hover（200）。
    条子是单行 flex，按钮不参与伸缩：文案长了该换行的是文字 */
@@ -37425,7 +37425,7 @@
 
 /* 未按下的四档形态由家族形态矩阵按 data-xh-action-variant 给出（缺省 subtle 由连接层显式投影；solid 未按下时
    投 ghost，只在按下时才是品牌实心）；公开槽桥接到矩阵之前：使用者槽 → 形态矩阵 → 家族缺省。
-   按下（on）是 §7.3 无滑块开关的选中面：品牌淡底 12 → 悬停 20 → 按压 28，前景 fg-on-brand-subtle，
+   按下（on）是无滑块开关的选中面：品牌淡底 12 → 悬停 20 → 按压 28，前景 fg-on-brand-subtle，
    私有槽在下面的 data-state='on' 块里接到桥接槽上。 */
 [data-scope='toggle'][data-part='root'] {
   --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)));
@@ -37508,7 +37508,7 @@
   --xh-action-border-disabled: var(--xh-_toggle-border-on);
 }
 
-/* 使用者的 --xh-toggle-shadow 只落在按下面上：矩阵各态无影，淡底与阴影互斥（§5.3） */
+/* 使用者的 --xh-toggle-shadow 只落在按下面上：矩阵各态无影，淡底与阴影互斥 */
 [data-scope='toggle'][data-part='root'][data-state='on'] {
   --xh-action-shadow-rest: var(--xh-toggle-shadow, none);
   --xh-action-shadow-hover: var(--xh-toggle-shadow, none);
@@ -37579,8 +37579,8 @@
   /* 形态的落点：没写 data-variant 时这十支保持缺省档的取值，段的规则读的是
      「使用者令牌 → 这十支 → 语义令牌」三级，使用者令牌永远排在形态之前。
      未选中那五支管段的壳，选中那五支管当前值那一段。
-     缺省档（subtle）的段坐在自己的淡底面上，悬停 200 → 按下 300（§7.2 淡底承载）；
-     选中段是无滑块开关（§7.3）：品牌淡底 + 淡底前景，悬停 20% → 按下 28% */
+     缺省档（subtle）的段坐在自己的淡底面上，悬停 200 → 按下 300（淡底承载）；
+     选中段是无滑块开关：品牌淡底 + 淡底前景，悬停 20% → 按下 28% */
   --xh-_toggle-group-item-bg: var(--xh-bg-subtle);
   --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
@@ -37645,7 +37645,7 @@
   --xh-_toggle-group-item-highlight-on: none;
 }
 
-/* outline 与 ghost 的段坐在画布上：悬停 100 → 按下 200（§7.2 白底承载） */
+/* outline 与 ghost 的段坐在画布上：悬停 100 → 按下 200（白底承载） */
 [data-scope='toggle-group'][data-part='root'][data-variant='outline'] {
   --xh-_toggle-group-item-bg: transparent;
   --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
@@ -37807,7 +37807,7 @@
 
 /* 选中态：单选是 role=radio + aria-checked，多选是原生按钮 + aria-pressed，
    两套 ARIA 各出一半，样式一条都对不上——只有 data-state 是两种模式共同的出口。
-   无滑块开关（§7.3）：品牌淡底 + 淡底前景，悬停 20% → 按下 28%，三态都经桥接槽交给家族画；
+   无滑块开关：品牌淡底 + 淡底前景，悬停 20% → 按下 28%，三态都经桥接槽交给家族画；
    用哪族颜色由 data-tone 决定：语气槽沿继承流下来，root 自己写了 tone 算、
    整组落在语气容器里也算；没有语气就退回品牌配色，与不接语气时逐值相同。
    使用者令牌排在语气之前：写了组件槽就以它为准。
@@ -37982,7 +37982,7 @@
   --xh-tool-call-skin: 1;
 }
 
-/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）；
+/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担）；
    审批位与详情区的内部分隔线走另一支 --xh-tool-call-divider（subtle）。
    卡片建出来时淡入并向上收一段，一屏若干张的错峰交给外层容器排 */
 [data-scope='tool-call'][data-part='root'] {
@@ -37995,7 +37995,7 @@
   /* 影另落一份进私有槽给语气档：它要把影与左侧色条叠成一条 box-shadow，缺省无影写成零影占位 */
   --xh-_tool-call-shadow: var(--xh-tool-call-shadow, 0 0 0 transparent);
 
-  /* 作者塞进指示符里的图标与皮肤画的兜底字形同一把尺：md 档（§6.5），开关上另按家族档取值 */
+  /* 作者塞进指示符里的图标与皮肤画的兜底字形同一把尺：md 档，开关上另按家族档取值 */
   --xh-icon-size: var(--xh-tool-call-icon-size, var(--xh-glyph-size-md));
 
   display: block;
@@ -38015,7 +38015,7 @@
 /* —— 形态 —— */
 /* 缺省档即 outline，写在上面那条基础规则里 */
 /* 底色分区：描边让位给底色，嵌在别人的面里时不再多一圈线；
-   淡底承载面向开关下发 hover 200 → pressed 300（§7.2） */
+   淡底承载面向开关下发 hover 200 → pressed 300 */
 [data-scope='tool-call'][data-part='root'][data-variant='subtle'] {
   --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
@@ -38050,7 +38050,7 @@
 }
 
 /* 开关铺满一行，盒型、悬停 / 按下 / 禁用面由 Action Control 的 disclosure-trigger 档给（ghost 形态：
-   白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2）；这里只把使用者槽映射到桥接槽：
+   白底承载 hover 100 → pressed 200，按下只换面不缩放）；这里只把使用者槽映射到桥接槽：
    圆角归零贴住卡边，内衬与字号沿用卡片的档位（不取 profile 的 md 档内衬，几何不变），
    字形按开关自己的档位取 --xh-_action-profile-glyph-size */
 [data-scope='tool-call'][data-part='trigger'] {
@@ -38275,7 +38275,7 @@
   animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
-/* 退场走 exit 档曲线（§9.4） */
+/* 退场走 exit 档曲线 */
 [data-scope='tool-call'][data-part='content'][data-state='closed'] {
   animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
@@ -38448,7 +38448,7 @@
 }
 
 /* 淡底档：带内距、换成 subtle 底，描边让位给底色但留住 1px 边位（与 outline 几何一致），无影；
-   淡底承载面向条目下发 hover 200 → pressed 300（§7.2） */
+   淡底承载面向条目下发 hover 200 → pressed 300 */
 [data-scope='toolbar'][data-part='root'][data-variant='subtle'] {
   --xh-_toolbar-root-p: var(--xh-_toolbar-p);
   --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
@@ -38457,7 +38457,7 @@
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 }
 
-/* 附着式工具面：一张静态内容面，--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）。 */
+/* 附着式工具面：一张静态内容面，--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担）。 */
 [data-scope='toolbar'][data-part='root'][data-variant='outline'] {
   --xh-_toolbar-root-p: var(--xh-_toolbar-p);
   --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
@@ -38524,7 +38524,7 @@
 
 /* 默认条目是一枚无描边工具按钮：盒型、三档几何、悬停 / 按下 / 禁用面与按压缩放由 Action Control 的
    text 档给（ghost 形态：ghost 根按画布承载 hover 100 → pressed 200，subtle 根与分组由 host 槽下发
-   200 → 300，§7.2）；这里只把使用者槽映射到桥接槽（-gap / -h / -px / -radius / -bg / -bg-hover /
+   200 → 300）；这里只把使用者槽映射到桥接槽（-gap / -h / -px / -radius / -bg / -bg-hover /
    -bg-active / -bg-disabled / -fg / -font-size 保留为第一参数）。作者仍可用类名或内联样式完整覆盖。 */
 [data-scope='toolbar'][data-part='item'] {
   --xh-action-gap: var(--xh-toolbar-item-gap, var(--xh-control-gap-sm));
@@ -38544,7 +38544,7 @@
   touch-action: manipulation;
 }
 
-/* 无滑块开关的按下态（§7.3）：品牌淡底 + 淡底前景，hover / 按下沿 12% → 20% → 28% 三档走；
+/* 无滑块开关的按下态：品牌淡底 + 淡底前景，hover / 按下沿 12% → 20% → 28% 三档走；
    三态都经桥接槽交给家族画，禁用面仍由家族按 data-disabled 给 */
 [data-scope='toolbar'][data-part='item'][aria-pressed='true'] {
   --xh-action-bg-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand-subtle));
@@ -38715,10 +38715,10 @@
   --xh-_tooltip-py: var(--xh-space-1);
   --xh-_tooltip-px: var(--xh-space-2);
   --xh-_tooltip-font-size: var(--xh-control-caption-md);
-  /* Tooltip 保留反白身份（真源 §8.4 登记的反白 compact frosted）：短提示要与可交互的普通主题浮层一眼分开。
+  /* Tooltip 保留反白身份（登记的反白 compact frosted）：短提示要与可交互的普通主题浮层一眼分开。
      94% 是六种 tone 在纯黑/纯白最坏底色上仍托住 4.5:1 正文的首个安全档。
      边不取 --xh-material-frosted-border：那是深色 14% 的透明边，压在反白深底上看不见，
-     §8.1 要求的 1px 可见边界由 on 色 20% 拼色承担；§8.1 禁玻璃高光，顶光缺省不画 */
+     浮层要的 1px 可见边界由 on 色 20% 拼色承担；浮层不用玻璃高光，顶光缺省不画 */
   --xh-_tooltip-solid: var(--xh-_tone, var(--xh-fg-default));
   --xh-_tooltip-on: var(--xh-_tone-on, var(--xh-bg-surface));
   --xh-_tooltip-border: color-mix(in oklab, var(--xh-_tooltip-on) 20%, transparent);
@@ -38746,7 +38746,7 @@
   text-wrap: pretty;
   --xh-_tooltip-elevation-shadow: var(--xh-tooltip-shadow, var(--xh-material-frosted-compact-shadow));
 
-  /* 顶光槽缺省透明（§8.1 不用顶部高光），使用者要加自行灌色 */
+  /* 顶光槽缺省透明（不用顶部高光），使用者要加自行灌色 */
   box-shadow:
     inset 0 var(--xh-stroke-thin) 0 var(--xh-tooltip-highlight, transparent),
     var(--xh-_tooltip-elevation-shadow);
@@ -38766,7 +38766,7 @@
   pointer-events: none;
 }
 
-/* 入场走 enter 档（§9.5：锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit */
+/* 入场走 enter 档（锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit */
 [data-scope='tooltip'][data-part='content'][data-state='open'] {
   animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
@@ -39029,7 +39029,7 @@
   padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
   /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
   max-block-size: min(var(--xh-tour-max-h, var(--xh-overlay-max-h)), var(--xh-_tour-available-h));
-  /* M4 sheet 三件套（§8.4），与 dialog 同源：1px 描边是它的边界，不透明底，影只是加成 */
+  /* M4 sheet 三件套，与 dialog 同源：1px 描边是它的边界，不透明底，影只是加成 */
   border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-material-elevated-border));
   border-radius: var(--xh-tour-radius, var(--xh-shape-overlay));
   background: var(--xh-tour-bg, var(--xh-material-elevated-bg));
@@ -39073,7 +39073,7 @@
   padding-inline-end: calc(var(--xh-tour-close-size, var(--xh-control-h-sm)) + var(--xh-surface-action-inset));
 }
 
-/* 说明文字走说明档（§6.4）：13px + fg-muted */
+/* 说明文字走说明档：13px + fg-muted */
 [data-scope='tour'][data-part='description'] {
   margin: 0;
   font-size: var(--xh-text-secondary-size);
@@ -39098,7 +39098,7 @@
   display: none;
 }
 
-/* 圆点：8px 正圆取 circle（§6.3 分页点统一款），未走到的一档取中性描边色。
+/* 圆点：8px 正圆取 circle（分页点统一款），未走到的一档取中性描边色。
    宽度与底色都随状态换，换步那一下能看出进度在推进 */
 [data-scope='tour'][data-part='progress-dot'] {
   inline-size: var(--xh-space-2);
@@ -39124,7 +39124,7 @@
 
 /*
  * —— 末行三颗按钮 ——
- * 上一步 / 下一步 / 跳过都是气泡末行的文字按钮（§9.1）：盒型、sm 档几何、四态面、0.97 按压并换底、粗指针命中区与
+ * 上一步 / 下一步 / 跳过都是气泡末行的文字按钮：盒型、sm 档几何、四态面、0.97 按压并换底、粗指针命中区与
  * 强制色由家族配方按连接层投影的 data-xh-action-variant / -size 给出。这里只把公开槽桥接到矩阵之前
  * （使用者槽 → 形态矩阵 → 家族缺省）与几何映射；内衬与圆角槽三颗共用。
  */
@@ -39143,7 +39143,7 @@
   display: none;
 }
 
-/* 下一步是整条引导的主线动作，显式 solid（§7.2 第 2 条）：底、字与影三组使用者槽桥到配方 solid 列之前 */
+/* 下一步是整条引导的主线动作，显式 solid：底、字与影三组使用者槽桥到配方 solid 列之前 */
 [data-scope='tour'][data-part='next-trigger'] {
   --xh-action-bg-rest: var(--xh-tour-next-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-tour-next-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -39162,7 +39162,7 @@
 }
 
 /*
- * 关闭钮是气泡角落的单图标钮（§9.1）：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+ * 关闭钮是气泡角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
  * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
  * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放；
  * 静息前景取 muted 字色，悬停 / 按下 / 聚焦回到 fg-default。
@@ -39219,7 +39219,7 @@
 }
 
 /* 气泡限高之后只让正文让步：标题与上下步按钮滚出视线就点不到了。
-   模态气泡里的原生细条滚动面（§6.6）：细条由 reset 层统一给，滚到头不把页面一起带走；内容高度不动态变化，不写 gutter */
+   模态气泡里的原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走；内容高度不动态变化，不写 gutter */
 [data-scope='tour'][data-part='description'] {
   flex: 1 1 auto;
   min-block-size: 0;
@@ -39314,9 +39314,9 @@
    所以只能按位置显式安放，不能靠自动流——自动流会把"往回搬"甩到目标面板的位置上 */
 [data-scope='transfer'][data-part='root'] {
   /* 条目外的字形（空态占位里作者塞的图标）按档取尺，缺省 md；条目内的字形由家族随 data-xh-collection-size
-     下发，搬运钮内的按 Action Control icon 档取，勾选格里的勾按边长比例取（§6.5） */
+     下发，搬运钮内的按 Action Control icon 档取，勾选格里的勾按边长比例取 */
   --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-md));
-  /* 两侧定高小列表的自绘条挂在根上（§6.6）：根是条子的定位盒（面板不定位），轨道底色关掉才不会在列表边缘糊出一条灰带 */
+  /* 两侧定高小列表的自绘条挂在根上：根是条子的定位盒（面板不定位），轨道底色关掉才不会在列表边缘糊出一条灰带 */
   --xh-scrollbar-track-bg: transparent;
 
   /* 尺寸档只换这五个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
@@ -39432,7 +39432,7 @@
   min-inline-size: 0;
   overflow: hidden;
   color: var(--xh-transfer-panel-title-fg, var(--xh-fg-default));
-  /* 面板标头是 Surface 内的标题：14 / 600（§6.4） */
+  /* 面板标头是 Surface 内的标题：14 / 600 */
   font-size: var(--xh-transfer-panel-title-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-transfer-panel-title-font-weight, var(--xh-font-weight-semibold));
   line-height: var(--xh-leading-none);
@@ -39577,7 +39577,7 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 条目走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
+/* 条目走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
    pressed 200）与勾选行的选中面（品牌淡底 + 淡底前景，selected+hover 20% / +pressed 28%）都由家族按
    aria-selected / aria-disabled 给出，标记由行首的勾选方框承担；禁用面（字色降级、not-allowed、不换面）
    也归家族。这里只把公开槽映射到桥接槽。
@@ -39740,7 +39740,7 @@
 }
 
 /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），禁用同时打原生 disabled 与 data-disabled。
-   它是「方框 + 文案」的整行命中区（§9.2）：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面与过渡由家族给
+   它是「方框 + 文案」的整行命中区：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面与过渡由家族给
    （白底承载 hover 100 → pressed 200），按下只换面不缩放（--xh-action-scale-pressed: none），勾选回执落在方框上；
    盒随内容收宽、高度取 xs 档的 24px 命中地板（方框 16px 居中其间），text 档的内距与最小宽度归零。
    position 是给叠在方框上的那颗字形 ::after 当定位基准 */
@@ -39778,7 +39778,7 @@
 
 /* 两颗搬运钮是只有字形的离散动作钮：接 Action Control 的 icon 档、outline 形态（中性描边、透明底，
    白底承载 hover 100 → pressed 200，按下 0.97 并同时换底），盒、焦点环、粗指针热区与禁用面由家族给；
-   此前的 raised 悬停抬升退役（§8.3 边界只由描边承担）。这里只把使用者槽映射到桥接槽；
+   此前的 raised 悬停抬升退役（边界只由描边承担）。这里只把使用者槽映射到桥接槽；
    钮是正方盒，按 sm 档取一个控件高 */
 [data-scope='transfer'][data-part='to-target-trigger'],
 [data-scope='transfer'][data-part='to-source-trigger'] {
@@ -39915,7 +39915,7 @@
 
 [data-scope='tree'][data-part='root'] {
   /* 行外的字形（空态 / 在途占位里作者塞的图标）按档取尺，树没有 size 轴、固定 md；
-     行内的由家族随 data-xh-collection-size 下发（§6.5）。这支只管作者放进行里的图标：
+     行内的由家族随 data-xh-collection-size 下发。这支只管作者放进行里的图标：
      树自绘的状态字形（展开方向、行尾对号与半选杠）是指示符，各部件在自己身上
      把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
   --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-md));
@@ -40046,7 +40046,7 @@
 }
 
 /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。
-   行走 Collection Item 的 overlay 语境，与树选择同一种选中读法（§7.3）：悬停 / 高亮 / 按下面（白底承载
+   行走 Collection Item 的 overlay 语境，与树选择同一种选中读法：悬停 / 高亮 / 按下面（白底承载
    hover 100 → pressed 200）由家族给，选中不换面、不换字色，只在行尾亮对号，选中叠悬停 / 按下沿用同一条阶梯；
    家族按 aria-selected / data-selected 与 aria-disabled / data-disabled 给出，这里只把公开槽映射到桥接槽。
    布局保持 flex 而不用家族网格：一行里可以并排多个前导部件（箭头、拖拽把手）与作者自己的图标、
@@ -40060,7 +40060,7 @@
   --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
   /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 md 档 */
   --xh-collection-glyph-size: var(--xh-tree-icon-size, var(--xh-_collection-glyph-size));
-  /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档（§6.5），与同一行里的拖拽把手同走
+  /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档，与同一行里的拖拽把手同走
      --xh-control-indicator-size（comfortable 16 / compact 14）。不读家族按档下发的 --xh-icon-size——
      那支只管作者放进行里的图标，按图标档取的 20px 会比 16px 的指示符盒大一圈 */
   --xh-_tree-indicator-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
@@ -40151,9 +40151,9 @@
   text-overflow: ellipsis;
 }
 
-/* 选中对号落在行尾，与树选择同位（§7.3 / §7.5）：作者在行里摆在哪儿都排到最后，
+/* 选中对号落在行尾，与树选择同位：作者在行里摆在哪儿都排到最后，
    行尾那一格（item-suffix）在它之前；正文吃满剩余宽度，对号因此贴着行的末端。
-   未选中时占位不塌，切换选中不引起行宽抖动。盒尺取指示符档；盒里的对号是指示符（§6.5），
+   未选中时占位不塌，切换选中不引起行宽抖动。盒尺取指示符档；盒里的对号是指示符，
    在自己身上把 --xh-icon-size 改接到盒的尺，兜底对号与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长 */
 [data-scope='tree'][data-part='item-indicator'] {
   --xh-icon-size: var(--xh-_tree-indicator-size);
@@ -40183,7 +40183,7 @@
 
 /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
    所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐。
-   盒里的 chevron 是指示符（§6.5）：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
+   盒里的 chevron 是指示符：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
 [data-scope='tree'][data-part='branch-trigger'],
 [data-scope='tree'][data-part='branch-indicator'] {
   --xh-icon-size: var(--xh-_tree-indicator-size);
@@ -40389,7 +40389,7 @@
    禁用的节点从来不做落点，这一段因此不会漏画任何一处高亮 */
 [data-scope='tree'][data-part='item'][data-drop='inside']:not([data-disabled]),
 [data-scope='tree'][data-part='branch-control'][data-drop='inside']:not([data-disabled]) {
-  /* 落点不是选中：品牌淡底专属选中 / 当前（§7.1），落点面取悬停之上一档的中性面 */
+  /* 落点不是选中：品牌淡底专属选中 / 当前，落点面取悬停之上一档的中性面 */
   background: var(--xh-tree-drop-inside-bg, var(--xh-bg-subtle-hover));
   box-shadow: inset 0 0 0 var(--xh-tree-drop-line, var(--xh-stroke-thick))
     var(--xh-tree-drop-fg, var(--xh-border-control-focus));
@@ -40477,7 +40477,7 @@
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner']) {
   /* 作者塞进触发器指示符槽 / 清除钮的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺。这支只管作者放进
      盒与行里的图标：面板里自绘的状态字形（展开方向、行尾对号与半选杠）是指示符，各部件在自己身上
-     把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺（§6.5） */
+     把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
   --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这几个私有槽，盒与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器；
@@ -40960,7 +40960,7 @@
 /* 勾选标记落在家族网格的 indicator 列；未选中时占位不塌，切换选中不引起行宽抖动。
    尺寸槽按各自部件取名：行内的勾与展开箭头分别是 item- 与 branch- 段，
    触发器上那枚箭头是 --xh-tree-select-indicator-*，三处各调各的。
-   盒里的对号 / 半选杠是指示符（§6.5）：在自己身上把 --xh-icon-size 改接到盒的尺，兜底字形与作者
+   盒里的对号 / 半选杠是指示符：在自己身上把 --xh-icon-size 改接到盒的尺，兜底字形与作者
    塞进盒里的 XhIcon 读同一把尺、与盒同边长；不读家族按档下发到行的 --xh-icon-size——那支只管
    作者放进行里的图标，按图标档取的 20px 会比 16 / 14 的盒还大 */
 [data-scope='tree-select'][data-part='item-indicator'] {
@@ -40990,7 +40990,7 @@
 
 /* 展开箭头与方向指示符：两者都可能被作者用作「点这里展开」的把手，
    所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐。
-   盒里的 chevron 是指示符（§6.5）：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
+   盒里的 chevron 是指示符：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
 [data-scope='tree-select'][data-part='branch-trigger'],
 [data-scope='tree-select'][data-part='branch-indicator'] {
   --xh-icon-size: var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size));
@@ -41146,7 +41146,7 @@
   overflow-x: auto;
   overflow-y: auto;
   /* 页内结构容器，滚到尽头把剩余的滚动交给外层（overscroll-behavior 保持 auto）：
-     contain 只给浮层、模态 body 与粘底视口（§6.6）。滚动条走 reset 层的原生细条 */
+     contain 只给浮层、模态 body 与粘底视口。滚动条走 reset 层的原生细条 */
 }
 
 /* 单向列表把另一条轴关掉：那一向既没有内容也没有位移，能滚就成了滚不回来的暗格 */

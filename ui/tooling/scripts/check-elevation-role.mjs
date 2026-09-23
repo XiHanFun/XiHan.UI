@@ -22,10 +22,10 @@ const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
 const MATERIAL_SOFT = /--xh-material-soft-shadow\b/
 // M2 是锚定浮层的材质配方，海拔等价于 floating；单列名字才能拦住组件退回普通实体投影。
 const MATERIAL_FROSTED = /--xh-material-frosted-(?:compact-)?shadow\b/
-// M4 是 sheet 级遮罩式高层面（sheet = material-elevated 三件套：-bg / -border / -shadow，§8.4）；
+// M4 是 sheet 级遮罩式高层面（sheet = material-elevated 三件套：-bg / -border / -shadow）；
 // 只允许逐件登记过的部件消费，未迁移的 sheet 面仍走 --xh-elevation-sheet，随各组件迁移逐件补登。
 const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
-/** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。真源 §8 sheet 行：Dialog / Drawer / Command / Tour / Toast / Notification。 */
+/** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。sheet 面：Dialog / Drawer / Command / Tour / Toast / Notification。 */
 const ELEVATED_CONSUMERS = new Set(['dialog/content', 'drawer/content', 'tour/content', 'toast/root', 'notification/item', 'layout/sider', 'command/content'])
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
@@ -44,7 +44,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
  * 值是数组：同一个部件在不同状态下换档的（滑杆拇指静态一档、拖动中另一档）逐档登记，
  * 每一档都要在皮肤里真出现，否则算死登记。
  *
- * raised 同样逐部件登记（真源 §8）：它只给 Card 与可抬起 / 可拖起的部件，且描边必须在——
+ * raised 同样逐部件登记：它只给 Card 与可抬起 / 可拖起的部件，且描边必须在——
  * raised 所在规则块（或同部件基础块）必须声明 border，颜色位落 --xh-border-default /
  * --xh-material-solid-border；影只是加成，不作边界。存量的 raised 记在 family-backlog.json
  * edge 段（键 组件:部件:raised），随各组件迁移逐条删除。
@@ -64,15 +64,15 @@ const EXPECTED = {
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },
   'context-menu': { content: ['frosted'] },
-  // 含日历网格与时间列的锚定面板：floating（实体底 + border-default + elevation-floating，§8.4）
+  // 含日历网格与时间列的锚定面板：floating（实体底 + border-default + elevation-floating）
   'date-picker': { content: ['floating'] },
-  // 含两张日历网格的锚定面板：floating（§8.4）
+  // 含两张日历网格的锚定面板：floating
   'date-range-picker': { content: ['floating'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },
   'float-button': { root: ['frosted'] },
   'floating-panel': { content: ['frosted'] },
-  // 网格里跟着格子走的反白详情条：与 Tooltip 同一副气泡，描边 + frosted 紧凑影（§8.4）
+  // 网格里跟着格子走的反白详情条：与 Tooltip 同一副气泡，描边 + frosted 紧凑影
   'heatmap': { tooltip: ['frosted'] },
   // 浮在视口一角的回底钮：与 back-top / float-button 同属角落浮钮族，走 frosted 四件套
   'log': { 'scroll-to-end-trigger': ['frosted'] },
@@ -100,9 +100,9 @@ const EXPECTED = {
   // segment 档的白色抬起面：放了 indicator 部件长在部件上跟着滑，没放长在选中标签上，两处同一块 raised 面
   'tabs': { trigger: ['raised'], indicator: ['raised'] },
   'tag': { root: ['soft'] },
-  // 含时分秒多列的锚定面板：floating（§8.4）
+  // 含时分秒多列的锚定面板：floating
   'time-picker': { content: ['floating'] },
-  // 两组时列并排的锚定面板：floating（§8.4）
+  // 两组时列并排的锚定面板：floating
   'time-range-picker': { content: ['floating'] },
   'toast': { root: ['sheet'] },
   'tooltip': { content: ['frosted'] },
@@ -199,7 +199,7 @@ for (const file of files) {
         if (!backlog.excuse(`${comp}:${part}:raised`)) {
           problems.push(
             `${file}  ${selector.slice(0, 60)}  ${comp} 的 ${part} 用了 raised 却没登记——`
-            + `raised 只给 Card 与可抬起 / 可拖起部件，逐部件登进 EXPECTED 并带 --xh-border-default 描边；不是的改成描边面（§8.3）`,
+            + `raised 只给 Card 与可抬起 / 可拖起部件，逐部件登进 EXPECTED 并带 --xh-border-default 描边；不是的改成描边面`,
           )
         }
       }

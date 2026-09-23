@@ -15,7 +15,7 @@
     /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_descriptions-gap: var(--xh-space-3);
-    /* 标签是每一格的集合标题：叠着排时与取值隔 space-2（§6.4 集合标题与集合的间距） */
+    /* 标签是每一格的集合标题：叠着排时与取值隔 space-2（集合标题与集合的间距） */
     --xh-_descriptions-pair-gap: var(--xh-space-2);
     --xh-_descriptions-label-gap: var(--xh-space-2);
     --xh-_descriptions-py: var(--xh-space-2);

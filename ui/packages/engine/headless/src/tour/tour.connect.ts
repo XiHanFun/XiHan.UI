@@ -224,8 +224,8 @@ export function connectTour<T extends PropTypes>(
       'disabled': firstStep || undefined,
       'data-disabled': dataAttr(firstStep),
       'data-state': stateAttr,
-      // 末行的文字按钮：盒型、sm 档几何、四态面、0.97 按压并换底与粗指针命中区由家族配方按 text 档给出（§4.1 / §9.1）；
-      // 回退是次要动作，中性描边（§7.2 第 2 条：只有 Button 缺省品牌实心）
+      // 末行的文字按钮：盒型、sm 档几何、四态面、0.97 按压并换底与粗指针命中区由家族配方按 text 档给出；
+      // 回退是次要动作，中性描边（只有 Button 缺省品牌实心）
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
@@ -243,7 +243,7 @@ export function connectTour<T extends PropTypes>(
       // 两句都不给就整条不输出：这颗按钮通常带可见文字，发一句会把它盖掉
       'aria-label': lastStep ? translations?.finish : translations?.next,
       'data-state': stateAttr,
-      // 整条引导的主线动作：与 Popconfirm 的确认钮同列，显式 solid 品牌实心（真源 §7.2 第 2 条）
+      // 整条引导的主线动作：与 Popconfirm 的确认钮同列，显式 solid 品牌实心
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',

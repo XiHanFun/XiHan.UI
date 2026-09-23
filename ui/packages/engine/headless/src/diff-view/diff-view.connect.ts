@@ -296,7 +296,7 @@ export function connectDiffView<T extends PropTypes>(
     }),
 
     // 折叠格整行都是展开按钮，是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，
-    // ghost 形态，按下只换面不缩放（§9.2）；淡底承载的 hover 200 → pressed 300 由 gap 行经 host 槽下发；档位随 size 走
+    // ghost 形态，按下只换面不缩放；淡底承载的 hover 200 → pressed 300 由 gap 行经 host 槽下发；档位随 size 走
     getGapTriggerProps: ({ gapId }) => {
       const handlers = press(gapId)
       return normalize.button({

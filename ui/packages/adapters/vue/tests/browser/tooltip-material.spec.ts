@@ -81,7 +81,7 @@ describe('tooltip 紧凑反白 M2', () => {
     expect(content.borderTopWidth).toBe('1px')
     expect(content.borderRadius).toBe('4px')
     expect(content.boxShadow).not.toBe('none')
-    // §8.1 不用顶部高光：内描边式顶光缺省透明，只剩海拔那一层影
+    // 不用顶部高光：内描边式顶光缺省透明，只剩海拔那一层影
     expect(content.boxShadow.startsWith('rgba(0, 0, 0, 0) 0px 1px 0px 0px inset')).toBe(true)
     expect(arrow.backgroundColor).toBe(surface.backgroundColor)
     expect(arrow.opacity).toBe(surface.opacity)

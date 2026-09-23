@@ -11,7 +11,7 @@
 //   3 登记表每条至少被一份皮肤定义（过期反查）
 //   4 内容哈希撞名：两个名字归一化后内容等价即判红，除非整组登记在 duplicateContent
 //   5 consumers 与实际引用面双向一致
-//   6 relation 非空的名字（规范 §9.4 / §9.5 登记的共享关键帧）只能定义在 family/motion.css，
+//   6 relation 非空的名字（登记的共享关键帧）只能定义在 family/motion.css，
 //     且 family/motion.css 里的每个名字都带 relation——共享与专属的边界由这张表钉死
 //
 // 判据 4 是这套表的核心：它是唯一能拦住「同一个动作长出第 N 个名字」的机器判据。
@@ -136,7 +136,7 @@ if (process.argv.includes('--update')) {
     }
   }
   const table = {
-    $description: '关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css（relation 按规范 §9.4 / §9.5 登记锚定关系），组件专属关键帧住在各自皮肤，本表登记「这个名字全库该长什么样」。duplicateContent 记的是现存的「一个视觉多个名字」，每消掉一组就删一条，删完判据 4 即对全库生效。retired 是退役名单：旧名再出现即判红。',
+    $description: '关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css（relation 按锚定关系登记：锚定列表 / 锚定面板 / 无锚定弹出 / disclosure / 遮罩），组件专属关键帧住在各自皮肤，本表登记「这个名字全库该长什么样」。duplicateContent 记的是现存的「一个视觉多个名字」，每消掉一组就删一条，删完判据 4 即对全库生效。retired 是退役名单：旧名再出现即判红。',
     frames,
     duplicateContent,
     retired,

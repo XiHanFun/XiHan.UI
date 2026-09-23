@@ -1,5 +1,5 @@
 // 步骤条自绘的状态字形——走过的步里皮肤画的兜底对号——是指示符，不是控件内图标：它与序号圆点同属
-// --xh-control-indicator-* 一族（§6.5），root 上的 --xh-icon-size（桥自 --xh-steps-icon-size，sm 16px）只管
+// --xh-control-indicator-* 一族，root 上的 --xh-icon-size（桥自 --xh-steps-icon-size，sm 16px）只管
 // 作者放进标题 / 说明里的图标。此前对号读 root 的 --xh-icon-size：comfortable 下恰好也是 16，compact 下
 // 指示符收到 14 时它仍是 16。两档密度一起量：对号与作者塞进圆点里的 XhIcon 走指示符档 16 / 14，
 // 作者放进标题里的图标两档都恒 16；圆点自己走 space / control-h 尺（md 32px），不随密度。

@@ -192,7 +192,7 @@ export function connectSortable<T extends PropTypes>(
         'aria-roledescription': 'sortable',
         'aria-disabled': off ? 'true' : 'false',
         'aria-pressed': isDragging ? 'true' : 'false',
-        // 把手是只有字形的离散动作钮（§9.1 定尺把手）：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由
+        // 把手是只有字形的离散动作钮（定尺把手）：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由
         // Action Control 家族按这几位给。icon ghost 档静息透明、白底承载 hover 100 → pressed 200；
         // xs 是 24px 正方盒，与此前 --xh-control-action-size 同尺寸。禁用同时打 aria-disabled 与 data-disabled，
         // 家族按后者收掉反馈

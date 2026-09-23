@@ -27,8 +27,8 @@
     /* 实心底上的勾与横杠，同样没写 data-tone 时退回原来的品牌底前景色 */
     --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
 
-    /* 方框接 Action Control icon 档（§9.1 定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
-       焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值（§8.3）：透明底 +
+    /* 方框接 Action Control icon 档（定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
+       焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值：透明底 +
        --xh-border-control 描边 + 无影，不消费海拔与顶光；悬停只把描边升一档，底不动；按下换到 200 档中性面
        （白底承载）；边长随 --xh-control-indicator-* 走，不取家族的 profile 尺寸。
        常态 / 勾中 / 校验失败 / 只读只换下面四支私有槽，桥接槽的映射写一次 */
@@ -101,7 +101,7 @@
 
   /* 悬停标签文字时也让控制盒回应，整行可点不再只有移到 16px 小盒上才看得出来：
      指针落在方框上时由家族的悬停块换到 --xh-action-border-hover，落在标签文字上时这里补同一档；
-     未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯，§8.3），勾中 / 校验失败的方框由上面的映射钉住不换 */
+     未勾选的方框描边升一档（字段静息 → hover 的同一条阶梯），勾中 / 校验失败的方框由上面的映射钉住不换 */
   @media (hover: hover) {
     [data-scope='checkbox'][data-part='label']:not([data-disabled]):not([data-readonly]):hover
       [data-scope='checkbox'][data-part='root'] {
@@ -213,7 +213,7 @@
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目、switch 的标签同一副样子 ——
-     文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（§6.4 控件字号随档）；
+     文字是控件自己的文字，字号随 size 档取 --xh-control-font-*（控件字号随档）；
      行高取正文档，长文字可以自然换行 */
   [data-scope='checkbox'][data-part='label'] {
     --xh-_checkbox-label-gap: var(--xh-control-gap-md);
@@ -238,7 +238,7 @@
     --xh-_checkbox-label-font-size: var(--xh-control-font-lg);
   }
 
-  /* 禁用标签色统一 --xh-fg-subtle（§6.4） */
+  /* 禁用标签色统一 --xh-fg-subtle */
   [data-scope='checkbox'][data-part='label'][data-disabled] {
     color: var(--xh-checkbox-label-fg-disabled, var(--xh-fg-subtle));
     cursor: not-allowed;
