@@ -87,3 +87,19 @@ it('家族上下文声明只投影到投影了该 data-xh-collection-context 的
   const manifest = await buildComponentTokenManifest({ ...paths, familyStylesDir })
   assert.deepEqual(manifest.tokens.map(token => token.state), [['selected']])
 })
+
+it(':has() 里点名的部件是被检查的后代，不算槽落到的部件', async () => {
+  const paths = await fixture(`
+    [data-scope='sample'][data-part='item']:has(> [data-scope='sample'][data-part='check']) {
+      color: var(--xh-sample-fg, var(--xh-space-1));
+    }
+    [data-scope='sample'][data-part='row']:not(:has(> [data-scope='sample'][data-part='mark'])) {
+      padding: var(--xh-sample-px, var(--xh-space-1));
+    }
+  `)
+  const manifest = await buildComponentTokenManifest(paths)
+  assert.deepEqual(manifest.tokens.map(token => [token.name, token.part]), [
+    ['--xh-sample-fg', ['item']],
+    ['--xh-sample-px', ['row']],
+  ])
+})

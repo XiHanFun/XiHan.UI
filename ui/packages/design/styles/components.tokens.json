@@ -5263,7 +5263,6 @@
       "name": "--xh-calendar-picker-week-number-w",
       "component": "calendar-picker",
       "part": [
-        "week-number",
         "week-row"
       ],
       "property": [
@@ -5277,7 +5276,7 @@
         "--xh-control-h-md"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 week-number、week-row 部件 grid-template-columns 覆盖槽。"
+      "description": "calendar-picker 的 week-row 部件 grid-template-columns 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-year-grid-max-h",
@@ -6446,7 +6445,6 @@
       "name": "--xh-calendar-range-picker-week-number-w",
       "component": "calendar-range-picker",
       "part": [
-        "week-number",
         "week-row"
       ],
       "property": [
@@ -6460,7 +6458,7 @@
         "--xh-control-h-md"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 week-number、week-row 部件 grid-template-columns 覆盖槽。"
+      "description": "calendar-range-picker 的 week-row 部件 grid-template-columns 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-year-grid-max-h",
@@ -10701,7 +10699,6 @@
       "name": "--xh-clipboard-control-min-w",
       "component": "clipboard",
       "part": [
-        "control",
         "root"
       ],
       "property": [
@@ -10714,13 +10711,12 @@
         "--xh-control-min-w"
       ],
       "visibility": "public",
-      "description": "clipboard 的 control、root 部件 min-inline-size 覆盖槽。"
+      "description": "clipboard 的 root 部件 min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-control-w",
       "component": "clipboard",
       "part": [
-        "control",
         "root"
       ],
       "property": [
@@ -10734,7 +10730,7 @@
         "--xh-control-w"
       ],
       "visibility": "public",
-      "description": "clipboard 的 control、root 部件 inline-size、min-inline-size 覆盖槽。"
+      "description": "clipboard 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-attached-radius",
@@ -23646,7 +23642,6 @@
       "name": "--xh-dialog-separator",
       "component": "dialog",
       "part": [
-        "body",
         "content",
         "footer",
         "header"
@@ -23663,7 +23658,7 @@
         "--xh-material-elevated-separator"
       ],
       "visibility": "public",
-      "description": "dialog 的 body、content、footer、header 部件 border-block-end、border-block-start 覆盖槽。"
+      "description": "dialog 的 content、footer、header 部件 border-block-end、border-block-start 覆盖槽。"
     },
     {
       "name": "--xh-dialog-shadow",
@@ -27298,7 +27293,6 @@
       "name": "--xh-field-error-font-size",
       "component": "field",
       "part": [
-        "description",
         "error-text",
         "root"
       ],
@@ -27315,7 +27309,7 @@
         "--xh-text-secondary-size"
       ],
       "visibility": "public",
-      "description": "field 的 description、error-text、root 部件 block-size、font-size 覆盖槽。"
+      "description": "field 的 error-text、root 部件 block-size、font-size 覆盖槽。"
     },
     {
       "name": "--xh-field-gap",
@@ -36891,9 +36885,7 @@
       "name": "--xh-listbox-group-spacing",
       "component": "listbox",
       "part": [
-        "content",
-        "group",
-        "item"
+        "group"
       ],
       "property": [
         "margin-block-start"
@@ -36906,7 +36898,7 @@
         "--xh-space-1_5"
       ],
       "visibility": "public",
-      "description": "listbox 的 content、group、item 部件 margin-block-start 覆盖槽。"
+      "description": "listbox 的 group 部件 margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-listbox-icon-size",
@@ -44078,8 +44070,7 @@
       "component": "number-field",
       "part": [
         "control",
-        "decrement-trigger",
-        "input"
+        "decrement-trigger"
       ],
       "property": [
         "background-image"
@@ -44091,15 +44082,14 @@
         "--xh-material-soft-separator"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、input 部件 background-image 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger 部件 background-image 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-divider-h",
       "component": "number-field",
       "part": [
         "control",
-        "decrement-trigger",
-        "input"
+        "decrement-trigger"
       ],
       "property": [
         "background-size"
@@ -44111,7 +44101,7 @@
         "--xh-_number-field-divider-h"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、input 部件 background-size 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger 部件 background-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-fg",
@@ -54314,7 +54304,6 @@
       "name": "--xh-separator-gap",
       "component": "separator",
       "part": [
-        "content",
         "root"
       ],
       "property": [
@@ -54327,7 +54316,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "separator 的 content、root 部件 gap 覆盖槽。"
+      "description": "separator 的 root 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-separator-radius",
@@ -55916,8 +55905,7 @@
       "component": "slider",
       "part": [
         "control",
-        "root",
-        "tick-label"
+        "root"
       ],
       "property": [
         "margin-inline"
@@ -55930,7 +55918,7 @@
         "--xh-space-6"
       ],
       "visibility": "public",
-      "description": "slider 的 control、root、tick-label 部件 margin-inline 覆盖槽。"
+      "description": "slider 的 control、root 部件 margin-inline 覆盖槽。"
     },
     {
       "name": "--xh-slider-gap",
@@ -69039,8 +69027,7 @@
       "component": "timeline",
       "part": [
         "connector",
-        "item",
-        "label"
+        "item"
       ],
       "property": [
         "min-block-size",
@@ -69056,7 +69043,7 @@
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "timeline 的 connector、item、label 部件 min-block-size、min-inline-size 覆盖槽。"
+      "description": "timeline 的 connector、item 部件 min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-timeline-connector-radius",
@@ -69081,8 +69068,7 @@
       "component": "timeline",
       "part": [
         "connector",
-        "item",
-        "label"
+        "item"
       ],
       "property": [
         "block-size",
@@ -69098,7 +69084,7 @@
         "--xh-stroke-thick"
       ],
       "visibility": "public",
-      "description": "timeline 的 connector、item、label 部件 block-size、inline-size 覆盖槽。"
+      "description": "timeline 的 connector、item 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-timeline-content-gap",
@@ -69146,8 +69132,7 @@
       "component": "timeline",
       "part": [
         "content",
-        "item",
-        "label"
+        "item"
       ],
       "property": [
         "padding-block-start"
@@ -69161,7 +69146,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "timeline 的 content、item、label 部件 padding-block-start 覆盖槽。"
+      "description": "timeline 的 content、item 部件 padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-timeline-description-fg",
@@ -69333,8 +69318,7 @@
       "component": "timeline",
       "part": [
         "content",
-        "item",
-        "label"
+        "item"
       ],
       "property": [
         "padding-block-end",
@@ -69350,7 +69334,7 @@
         "--xh-_timeline-item-gap"
       ],
       "visibility": "public",
-      "description": "timeline 的 content、item、label 部件 padding-block-end、padding-inline-end 覆盖槽。"
+      "description": "timeline 的 content、item 部件 padding-block-end、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-timeline-label-fg",
@@ -77237,8 +77221,7 @@
       "component": "tree",
       "part": [
         "branch-control",
-        "item",
-        "item-indicator"
+        "item"
       ],
       "property": [
         "gap",
@@ -77253,7 +77236,7 @@
         "--xh-control-gap-md"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item、item-indicator 部件 gap、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-leading",
@@ -77279,8 +77262,7 @@
       "component": "tree",
       "part": [
         "branch-control",
-        "item",
-        "item-indicator"
+        "item"
       ],
       "property": [
         "padding-inline",
@@ -77295,7 +77277,7 @@
         "--xh-control-px-md"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item、item-indicator 部件 padding-inline、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 padding-inline、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-py",

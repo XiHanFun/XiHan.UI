@@ -377,7 +377,7 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 | `--xh-calendar-range-picker-week-day-h` | `week-day` | `block-size` | `default` | `--xh-control-h-sm` | calendar-range-picker 的 week-day 部件 block-size 覆盖槽。 |
 | `--xh-calendar-range-picker-week-number-fg` | `week-number` | `color` | `default` | `--xh-fg-subtle` | calendar-range-picker 的 week-number 部件 color 覆盖槽。 |
 | `--xh-calendar-range-picker-week-number-font-size` | `week-number` | `font-size` | `default` | `--xh-text-caption-size` | calendar-range-picker 的 week-number 部件 font-size 覆盖槽。 |
-| `--xh-calendar-range-picker-week-number-w` | `week-number`<br>`week-row` | `grid-template-columns` | `has(> [data-part='week-number'])`<br>`not([hidden])` | `--xh-control-h-md` | calendar-range-picker 的 week-number、week-row 部件 grid-template-columns 覆盖槽。 |
+| `--xh-calendar-range-picker-week-number-w` | `week-row` | `grid-template-columns` | `has(> [data-part='week-number'])`<br>`not([hidden])` | `--xh-control-h-md` | calendar-range-picker 的 week-row 部件 grid-template-columns 覆盖槽。 |
 | `--xh-calendar-range-picker-year-grid-max-h` | `grid` | `max-block-size` | `view=year` | `--xh-viewport-h-sm` | calendar-range-picker 的 grid 部件 max-block-size 覆盖槽。 |
 | `--xh-calendar-range-picker-year-grid-pe` | `grid` | `padding-inline-end` | `view=year` | `--xh-space-1` | calendar-range-picker 的 grid 部件 padding-inline-end 覆盖槽。 |
 <!-- xh-component-tokens:end -->
