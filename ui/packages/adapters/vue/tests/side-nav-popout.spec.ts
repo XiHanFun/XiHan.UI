@@ -210,10 +210,11 @@ describe('side-nav 折叠态弹出', () => {
     expect(document.activeElement).toBe(first)
 
     first!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))
-    // 焦点返还延后一帧（rAF），多等一拍
-    await sleep(50)
-    expect(panel.hasAttribute('hidden')).toBe(true)
-    expect(document.activeElement).toBe(trigger)
+    // 焦点返还延后一帧（rAF）：jsdom 的 rAF 是定时器，整仓并行跑时一帧可能拖过固定的 50ms，等结果落地而不是睡死数
+    await vi.waitFor(() => {
+      expect(panel.hasAttribute('hidden')).toBe(true)
+      expect(document.activeElement).toBe(trigger)
+    })
   })
 
   it('键盘：面板内上下方向键走面板行序列', async () => {
