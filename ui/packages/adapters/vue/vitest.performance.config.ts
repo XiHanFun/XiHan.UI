@@ -1,4 +1,5 @@
 import { playwright } from '@vitest/browser-playwright'
+import { browserCommands } from '@xihan-ui/testing/browser-commands'
 import { defineConfig } from 'vitest/config'
 
 // REQ-039 的性能预算独立于日常 browser 全量：它只在固定资源的 Linux 容器中运行。
@@ -14,6 +15,8 @@ export default defineConfig({
       instances: [{ browser: 'chromium' }],
       headless: true,
       screenshotFailures: false,
+      // setup.ts 与浏览器态共用，它在 beforeAll 里调这里注册的自定义命令
+      commands: browserCommands,
     },
   },
 })
