@@ -1,1 +1,0 @@
-import{cl as t}from"./theme.Dh5psj-1.js";import{d as a,b as r,w as n,k as o,o as s,a as i}from"./framework.DxrHb2fb.js";const h=a({__name:"gradient-text",setup(x){return(d,e)=>(s(),r(o(t),{style:{"font-size":"var(--xh-text-heading-2-size)","font-weight":"var(--xh-text-heading-2-weight)"}},{default:n(()=>[...e[0]||(e[0]=[i("渐变文字",-1)])]),_:1}))}});export{h as default};

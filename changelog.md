@@ -4,6 +4,44 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v2.1.0 (2026-09-24)
+
+本版补齐集合类组件的条目契约：逐条语气、说明、快捷键与首尾两格的逐条钩子，菜单的 `collection` 可以直接铺出分组；选中标记统一为行尾对号。本版包含少量破坏性变更（Tree、Listbox、TagGroup 的选中外观与相关部件、槽名），按次版本发布，升级前请看下方升级须知。
+
+::: warning 升级须知
+**Tree**
+
+- `expandOnClick` 缺省由 `true` 改为 `false`，与 TreeSelect 一致：点行与确认键只选中，展开交给展开箭头（`branch-trigger`）与左右方向键。需要「点目录即展开」的，显式打开 `expandOnClick`（Web Components 写 `expand-on-click`）；分支行只放了不可点的 `branch-indicator` 的树，缺省下只能用方向键展开，请在分支行补一枚 `branch-trigger`
+- 勾选框部件删除：`item-checkbox` / `branch-checkbox`，三端的 `XhTreeItemCheckbox` / `XhTreeBranchCheckbox`（React 另有 `XhTreeItemCheckboxProps` / `XhTreeBranchCheckboxProps`），以及 connect 上的 `getItemCheckboxProps` / `getBranchCheckboxProps`。单选、多选与级联都改为在行尾画对号：把勾选框换成 `XhTreeItemIndicator`，分支行同样放一枚；Web Components 把 `data-xh-part="item-checkbox"` / `"branch-checkbox"` 换成 `data-xh-part="item-indicator"`
+- 删除组件槽 `--xh-tree-checkbox-*`（8 个）与 `--xh-tree-row-bg-selected`；行的 `data-xh-collection-context` 由 `page` 改为 `overlay`
+
+**Listbox**
+
+- 选中行不再铺品牌淡底、不换字色，只在行尾亮对号；删除组件槽 `--xh-listbox-item-bg-selected`，`--xh-listbox-item-fg-selected` 保留但缺省回到条目自己的字色；条目的 `data-xh-collection-context` 由 `page` 改为 `overlay`
+
+**TagGroup**
+
+- 选中的标签不再换面、换字色与描边，只在文字后亮一枚对号；删除组件槽 `--xh-tag-group-item-bg-selected`、`--xh-tag-group-item-bg-selected-hover`、`--xh-tag-group-item-bg-selected-pressed`、`--xh-tag-group-item-fg-selected`、`--xh-tag-group-item-border-selected`；实心标签选中时不再描出字色描边
+
+**Menu**
+
+- 由 `collection` 代铺的条目，文字从 `item` 里的裸文本改放进 `item-text`（与 ContextMenu、Menubar 一致）。直接对条目文本节点写样式的自定义皮肤，请改为选中 `item-text`
+:::
+
+- **新增** 集合条目逐条语气：条目数据写 `tone`（`MenuNode` 与另外十二个集合组件的节点）即按该语气族着色，静息只换字色，悬停、键盘高亮与按下换语气淡底；选中与当前压过语气，禁用压过一切，强制颜色模式下退回系统色
+- **新增** 条目说明与快捷键：`MenuNode` 补上 `indicator` / `description` / `shortcut`，Menu 新增 `item-shortcut` 部件；ContextMenu、Menubar 补上 `item-shortcut` 与 `shortcut`；另外九个集合组件补上 `item-description` 与 `description`；Command 补上快捷键提示。快捷键以次级字号显示且不换行，不进入读屏可及名与连打检索
+- **新增** 首尾两格的逐条钩子：Menu、ContextMenu、Menubar 新增 `item-suffix` 部件与 `item-prefix` / `item-suffix` 插槽（React 为 `renderItemPrefix` / `renderItemSuffix`），给条目加图标或徽标不必再用 `item` 插槽整条重写；Listbox、Select、Combobox、Mention、Command 补上 `item-prefix` / `item-suffix`；Tree、TreeSelect、Cascader、Transfer 补上行尾一格
+- **新增** `MenuNode` 的 `group` 与 `groupLabel`：`collection` 按相邻同值收成分组并输出分组标题
+- **新增** 组件文档补充「React 适配器 props」表与条目数据表，插槽表写明 `item` / `item-prefix` / `item-suffix` 的分工
+
+- **修复** 浮层打开后不再常驻 `will-change`：此前入场动画中途的栅格会被沿用，动画结束后文字与 1px 分隔线仍然发虚；浮层文字也与页面其余文字一样使用亚像素抗锯齿
+- **修复** Vue 的 `XhKbd` 在平台探测之后不再丢失全局配置
+
+- **优化** 三端状态机读取 props 不再按 prop 个数重复展开：Vue 200 个按钮的挂载由 29.5ms 降至 16.0ms，Web Components 100 个分页的挂载约由 112ms 降至 24ms
+- **优化** Portal 视觉桥不再按「浮层数 × 自定义属性数」重读计算样式；焦点域的 Tab 判定不再按「候选数 × 容器层数」查询计算样式
+
+- **调整** 选中标记统一为行尾对号：Collection Item 家族 page 语境的对号从行首移到行尾，与浮层内的列表同列；Listbox、Tree、TagGroup 的选中外观随之统一（见升级须知）
+
 ## v2.0.0 (2026-09-22)
 
 本版为主版本升级。主要变化：`@xihan-ui/kernel`、`@xihan-ui/machine`、`@xihan-ui/behavior` 合并为 `@xihan-ui/core`；新增 React 19 适配器 `@xihan-ui/react`；组件由 121 个增至 134 个（新增 20 个，删除 3 个，合并 4 个，更名 5 个）。所有更名与删除均不保留别名、转发或兼容层，引用旧名会直接报错。
