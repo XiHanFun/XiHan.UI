@@ -1,1 +1,0 @@
-import{eW as o,eV as r,eX as n}from"./theme.DlyTCmrO.js";import{d as s,o as i,b as u,w as a,E as t,k as e}from"./framework.DxrHb2fb.js";const f=s({__name:"01-basic",setup(c){return(l,_)=>(i(),u(e(n),{style:{"max-inline-size":"22rem"}},{default:a(()=>[t(e(o),null,{default:a(()=>[t(e(r))]),_:1})]),_:1}))}});export{f as default};

@@ -1,0 +1,1 @@
+import{gl as l}from"./theme.Bzz-Xp1E.js";import{d as o,o as a,b as t,k as r}from"./framework.DxrHb2fb.js";const i=o({__name:"03-multiple",setup(n){const e=[{value:"bold",label:"B"},{value:"italic",label:"I"},{value:"underline",label:"U"}];return(u,c)=>(a(),t(r(l),{collection:e,"default-value":["bold"],multiple:""}))}});export{i as default};

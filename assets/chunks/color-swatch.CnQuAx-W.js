@@ -1,1 +1,0 @@
-import{j as s,m as e,r as m}from"./jsx-runtime.ClQg9AOk.js";import{w as c}from"./config.CyAiyREo.js";import{oV as i}from"./theme.DlyTCmrO.js";function f({value:o,size:r,label:t,...a}){return s.jsx("span",{...e(i(c("color-swatch",{value:o,size:r,label:t}),m).getRootProps(),a)})}export{f as X};

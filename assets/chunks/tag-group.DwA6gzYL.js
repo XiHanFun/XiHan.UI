@@ -1,1 +1,0 @@
-import{fC as a}from"./theme.DlyTCmrO.js";import{d as o,b as t,k as l,o as r}from"./framework.DxrHb2fb.js";const m=o({__name:"tag-group",setup(c){const e=[{value:"vue",label:"Vue"},{value:"react",label:"React"},{value:"wc",label:"Web Components"}];return(n,s)=>(r(),t(l(a),{collection:e,label:"技术栈",deletable:""}))}});export{m as default};

@@ -1,0 +1,1 @@
+import{dg as e}from"./theme.Bzz-Xp1E.js";import{d as a,b as o,k as r,o as t}from"./framework.DxrHb2fb.js";const p=a({__name:"matrix-code",setup(n){return(s,i)=>(t(),o(r(e),{value:"https://ui.xihanfun.com","pixel-size":64,margin:1}))}});export{p as default};
