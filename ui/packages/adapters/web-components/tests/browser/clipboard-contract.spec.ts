@@ -65,8 +65,18 @@ describe('web components Clipboard 浏览器合同', () => {
     await settle()
     expect(state(root)).toBe('copied')
     expect(button.getBoundingClientRect().width).toBeCloseTo(width, 4)
-    // 新侧立即参与淡入，旧侧等淡出完成后才隐藏；切换首帧不能两侧同时不可见
-    expect(indicators.map(indicator => getComputedStyle(indicator).visibility)).toEqual(['visible', 'visible'])
+    // 新侧立即参与淡入，旧侧等淡出完成后才隐藏；切换首帧不能两侧同时不可见。
+    // 旧侧按它 visibility 的延时过渡还在不在跑来断：读的时刻落在淡出之前或之后都成立（CI 上 settle 可能拖过整段淡出）
+    const [previous, next] = indicators
+    expect(getComputedStyle(next!).visibility).toBe('visible')
+    const fading = previous!.getAnimations().some(animation =>
+      animation instanceof CSSTransition && animation.transitionProperty === 'visibility' && animation.playState !== 'finished')
+    expect(getComputedStyle(previous!).visibility).toBe(fading ? 'visible' : 'hidden')
+    // 「等淡出完成后才隐藏」本身由延时承诺：旧侧的 visibility 过渡必须带正的延时，否则点下去当场就藏
+    const previousStyle = getComputedStyle(previous!)
+    const properties = previousStyle.transitionProperty.split(',').map(value => value.trim())
+    const delays = previousStyle.transitionDelay.split(',').map(value => Number.parseFloat(value))
+    expect(delays[properties.indexOf('visibility')]).toBeGreaterThan(0)
     const duration = Number.parseFloat(getComputedStyle(indicators[0]!).transitionDuration) * 1000
     await new Promise(resolve => setTimeout(resolve, duration + 40))
     expect(indicators.map(indicator => getComputedStyle(indicator).visibility)).toEqual(['hidden', 'visible'])
