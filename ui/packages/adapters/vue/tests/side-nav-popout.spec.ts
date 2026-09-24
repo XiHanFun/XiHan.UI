@@ -105,9 +105,9 @@ describe('side-nav 折叠态弹出', () => {
     await tick()
     const trigger = el(TRIGGER('docs'))
     trigger.dispatchEvent(new PointerEvent('pointerenter', { bubbles: false, pointerType: 'mouse' }))
-    await sleep(150)
     const panel = panelOf('docs')
-    expect(panel.hasAttribute('hidden')).toBe(false)
+    // 悬停延时是定时器：整仓并行跑时会拖过固定的睡眠时长，等面板真的弹出来再核
+    await vi.waitFor(() => expect(panel.hasAttribute('hidden')).toBe(false))
     expect(panel.hasAttribute('data-popout')).toBe(true)
     expect(positionerOf('docs').style.position).toBe('fixed')
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
@@ -203,11 +203,12 @@ describe('side-nav 折叠态弹出', () => {
     const trigger = el(TRIGGER('docs'))
     trigger.focus()
     trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
-    await sleep(50)
     const panel = panelOf('docs')
-    expect(panel.hasAttribute('hidden')).toBe(false)
     const first = panel.querySelector<HTMLElement>('[data-part="link"][data-value="guide"]')
-    expect(document.activeElement).toBe(first)
+    await vi.waitFor(() => {
+      expect(panel.hasAttribute('hidden')).toBe(false)
+      expect(document.activeElement).toBe(first)
+    })
 
     first!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))
     // 焦点返还延后一帧（rAF）：jsdom 的 rAF 是定时器，整仓并行跑时一帧可能拖过固定的 50ms，等结果落地而不是睡死数
@@ -223,9 +224,9 @@ describe('side-nav 折叠态弹出', () => {
     const trigger = el(TRIGGER('docs'))
     trigger.focus()
     trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
-    await sleep(50)
     const panel = panelOf('docs')
     const guide = panel.querySelector<HTMLElement>('[data-value="guide"]')!
+    await vi.waitFor(() => expect(document.activeElement).toBe(guide))
     guide.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
     await tick()
     expect(document.activeElement).toBe(panel.querySelector('[data-value="api"]'))
@@ -263,9 +264,11 @@ describe('side-nav 折叠态弹出', () => {
     expect(document.activeElement).toBe(first)
 
     first!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))
-    await sleep(50)
-    expect(panel.hasAttribute('hidden')).toBe(true)
-    expect(document.activeElement).toBe(trigger)
+    // 焦点返还延后一帧（rAF），等结果落地而不是睡死数
+    await vi.waitFor(() => {
+      expect(panel.hasAttribute('hidden')).toBe(true)
+      expect(document.activeElement).toBe(trigger)
+    })
   })
 
   it('弹出期间折叠开关翻回平铺：面板收掉，分支恢复内嵌展开', async () => {
