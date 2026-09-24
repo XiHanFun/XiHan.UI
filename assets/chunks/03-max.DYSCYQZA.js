@@ -1,0 +1,1 @@
+import{e5 as e}from"./theme.DFLq0s3F.js";import{d as s,o as t,c as r,E as a,k as o}from"./framework.DxrHb2fb.js";const n={style:{width:"100%",display:"grid",gap:"12px"}},i=s({__name:"03-max",setup(c){return(m,p)=>(t(),r("div",n,[a(o(e),{value:3,max:8}),a(o(e),{value:8,max:8})]))}});export{i as default};

@@ -1,1 +1,0 @@
-import{F as e}from"./theme.Bzz-Xp1E.js";import{d as o,o as a,b as r,w as s,a as n,k as f}from"./framework.DxrHb2fb.js";const i=o({__name:"08-full-width",setup(u){return(l,t)=>(a(),r(f(e),{"full-width":""},{default:s(()=>[...t[0]||(t[0]=[n("继续",-1)])]),_:1}))}});export{i as default};
