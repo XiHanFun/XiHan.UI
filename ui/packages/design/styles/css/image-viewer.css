@@ -75,9 +75,7 @@
     color: var(--xh-image-viewer-fg, var(--xh-color-neutral-0));
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='image-viewer'][data-part='content'][data-state='open'] {
-    will-change: opacity;
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 

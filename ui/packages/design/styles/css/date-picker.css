@@ -292,8 +292,6 @@
   }
 
   [data-scope='date-picker'][data-part='content'][data-state='open'] {
-    /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 

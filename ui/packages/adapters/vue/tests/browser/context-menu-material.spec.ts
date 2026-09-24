@@ -218,7 +218,8 @@ describe('右键菜单四向短位移', () => {
 
     content.dataset.state = 'open'
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
-    expect(getComputedStyle(content).willChange).toContain('translate')
+    // 打开态不常驻合成层：常驻的 will-change 会让静止画面沿用入场动画中途的栅格而发虚
+    expect(getComputedStyle(content).willChange).toBe('auto')
     expect(getComputedStyle(content).scale).toBe('none')
     content.dataset.state = 'closed'
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
