@@ -7,7 +7,7 @@
 // 数量线性涨，也不能随 :root 上令牌的数量线性涨——再压一份 :root 多摞 800 个自定义属性的
 // 极端环境，两种环境守同一预算。
 import type { App, VNode } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, inject, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhMenuContent,
@@ -34,6 +34,12 @@ import '@xihan-ui/styles'
 const LONG_TASK_MS = 50
 /** 一次打开允许的同步 JS 总量：click 派发起，到 content 的 data-state 落成 open。 */
 const SYNC_BUDGET_MS = 30
+/**
+ * 绝对预算在 CI 上的宽放倍数，本机仍按原值判（与 markdown 性能用例同一做法）。
+ * GitHub 共享 runner 比开发机慢数倍：本机 10–20ms 的一次打开，CI 上量到同步 21–43ms、整任务 50–69ms，
+ * 卡在门槛两侧时过时不过。CI 上只判「代价没有失控」并把实测数打进日志，门槛本身在本机判。
+ */
+const BUDGET_SLACK = inject('ci') ? 2 : 1
 /** 页面背景：一张列表的行数，每行一个行内操作 Menu 与一个 Tooltip，各自带一份 Portal 壳。 */
 const BACKGROUND_ROW_COUNT = 24
 /** 极端夹具：:root 上额外摞的自定义属性个数。 */
@@ -237,11 +243,11 @@ function report(label: string, scope: Scope, samples: OpenSample[]): string {
 }
 
 function assertWithinBudget(label: string, scope: Scope, samples: OpenSample[]): void {
-  const summary = report(label, scope, samples)
+  const summary = `${report(label, scope, samples)}${BUDGET_SLACK > 1 ? `（CI 预算 ×${BUDGET_SLACK}）` : ''}`
   console.warn(`\n${summary}`)
   for (const sample of samples) {
-    expect(sample.longTasks.filter(ms => ms >= LONG_TASK_MS), summary).toEqual([])
-    expect(sample.syncMs, summary).toBeLessThanOrEqual(SYNC_BUDGET_MS)
+    expect(sample.longTasks.filter(ms => ms >= LONG_TASK_MS * BUDGET_SLACK), summary).toEqual([])
+    expect(sample.syncMs, summary).toBeLessThanOrEqual(SYNC_BUDGET_MS * BUDGET_SLACK)
   }
 }
 
@@ -271,3 +277,10 @@ describe('浮层打开预算', () => {
     assertWithinBudget('极端', scope, samples)
   })
 })
+
+declare module 'vitest' {
+  export interface ProvidedContext {
+    /** 由 vitest.browser.config 的 provide 传入：是否跑在 CI 上。 */
+    ci: boolean
+  }
+}
