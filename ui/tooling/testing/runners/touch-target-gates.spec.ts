@@ -5,8 +5,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 
-const CONTROL_HEIGHT_GATE = fileURLToPath(new URL('../../scripts/check-control-height.mjs', import.meta.url))
-const COARSE_TARGET_GATE = fileURLToPath(new URL('../../scripts/check-coarse-target.mjs', import.meta.url))
+const CONTROL_HEIGHT_GATE = fileURLToPath(new URL('../../scripts/visual/check-control-height.mjs', import.meta.url))
+const COARSE_TARGET_GATE = fileURLToPath(new URL('../../scripts/visual/check-coarse-target.mjs', import.meta.url))
 
 const temporaryRoots: string[] = []
 

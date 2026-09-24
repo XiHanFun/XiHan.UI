@@ -155,13 +155,13 @@
     },
     {
       "id": "gate-press-feedback",
-      "path": "tooling/scripts/check-press-feedback.mjs",
+      "path": "tooling/scripts/visual/check-press-feedback.mjs",
       "what": "按压反馈登记：皮肤里带 cursor:pointer 的部件必须在两张表之一",
       "probeAnchor": "(?m)^  '{c}': \\["
     },
     {
       "id": "gate-control-height",
-      "path": "tooling/scripts/check-control-height.mjs",
+      "path": "tooling/scripts/visual/check-control-height.mjs",
       "what": "控件本体登记：root 是控件本体，高度受控件尺度令牌管辖",
       "probeAnchor": "(?m)^  '{c}': \\["
     }

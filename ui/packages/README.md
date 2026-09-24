@@ -13,7 +13,7 @@ packages/
 ## 入组判据
 
 判据落在**「这个包怎么到达使用者手里」**上，不落在依赖图的形状上。这一条能机检，
-`tooling/scripts/check-package-roles.mjs` 每次 `pnpm gate` 都会验一遍。
+`tooling/scripts/package/check-package-roles.mjs` 每次 `pnpm gate` 都会验一遍。
 
 | 组 | 判据 | 使用者视角 |
 | --- | --- | --- |

@@ -3,7 +3,7 @@
 // 判据五条：元素升级、作者写的角色节点全被发现、必需部件齐备、控制台零 error、脚本是 type="module"。
 // 判据一与二只有在真浏览器里才成立——jsdom 不升级自定义元素。
 //
-// 只跑指定组件：置环境变量 XH_WC_DEMOS=select,dialog（由 tooling/scripts/check-wc-demos.mjs 传入）。
+// 只跑指定组件：置环境变量 XH_WC_DEMOS=select,dialog（由 tooling/scripts/docs/check-wc-demos.mjs 传入）。
 import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { PartContract } from '../../src/dom/part-contract'
 import type { XhElement } from '../../src/element-base'

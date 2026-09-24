@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url))
-const GATE = join(ROOT, 'tooling/scripts/check-focus-outline-reset.mjs')
+const GATE = join(ROOT, 'tooling/scripts/a11y/check-focus-outline-reset.mjs')
 const SKINS = 'packages/design/styles/css'
 /** 要复制整目录皮肤再 spawn 一次门禁，显式给超时，不依赖 vitest 默认 5s。 */
 const SPAWN_TIMEOUT = 20_000

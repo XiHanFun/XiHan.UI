@@ -4,7 +4,7 @@
 // 空夹具会把整张名单判成过期，所以夹具从真实仓库复制门禁读的那几份输入（皮肤、家族配方、
 // connect / anatomy、登记表、豁免表），再在副本上动一刀；脚本当子进程在临时根下跑。
 import { spawnSync } from 'node:child_process'
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -47,8 +47,17 @@ function createFixture() {
   return root
 }
 
+/** 检查脚本按模块放在 tooling/scripts/<模块>/ 下：按文件名到各模块目录里找。 */
+function scriptPath(gate) {
+  const module = readdirSync(SCRIPTS, { withFileTypes: true })
+    .find(entry => entry.isDirectory() && existsSync(join(SCRIPTS, entry.name, gate)))
+  if (!module)
+    throw new Error(`tooling/scripts 的模块目录里没有 ${gate}`)
+  return join(SCRIPTS, module.name, gate)
+}
+
 function run(gate, cwd) {
-  return spawnSync(process.execPath, [join(SCRIPTS, gate)], { cwd, encoding: 'utf8' })
+  return spawnSync(process.execPath, [scriptPath(gate)], { cwd, encoding: 'utf8' })
 }
 
 function write(root, path, contents) {

@@ -3,7 +3,7 @@
 const { readdirSync } = require('node:fs')
 const { layers } = require('./tooling/eslint-config/src/layers.json')
 
-// 库包允许引用的第三方运行时依赖，与 tooling/scripts/check-runtime-deps.mjs 的 ALLOWLIST 对应。
+// 库包允许引用的第三方运行时依赖，与 tooling/scripts/package/check-runtime-deps.mjs 的 ALLOWLIST 对应。
 const RUNTIME_DEP_ALLOWLIST = ['@internationalized/date']
 
 const names = Object.keys(layers)

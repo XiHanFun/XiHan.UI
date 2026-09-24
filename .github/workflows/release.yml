@@ -50,7 +50,7 @@ jobs:
         with:
           node-version: 24
       - name: 标签号与包版本、预发布模式对账
-        run: node tooling/scripts/check-release-tag.mjs
+        run: node tooling/scripts/repo/check-release-tag.mjs
 
   publish:
     needs: guard

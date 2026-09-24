@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 
-const GATE = fileURLToPath(new URL('../../scripts/check-scrollbar-hosts.mjs', import.meta.url))
+const GATE = fileURLToPath(new URL('../../scripts/overlay/check-scrollbar-hosts.mjs', import.meta.url))
 
 const temporaryRoots = []
 

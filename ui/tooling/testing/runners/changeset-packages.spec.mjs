@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url))
-const GATE = join(ROOT, 'tooling/scripts/check-changeset-packages.mjs')
+const GATE = join(ROOT, 'tooling/scripts/repo/check-changeset-packages.mjs')
 /** 当前仓库有六百多份 changeset 要逐份读，显式给超时，不依赖 vitest 默认 5s。 */
 const SPAWN_TIMEOUT = 20_000
 
