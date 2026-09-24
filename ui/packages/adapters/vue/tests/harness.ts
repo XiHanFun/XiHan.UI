@@ -49,6 +49,23 @@ export function createVueHarness(): AdapterHarness {
   let events: AdapterEvent[] = []
 
   /**
+   * 挂载或重渲之后等墙钟跨过当前这一毫秒再交还。
+   *
+   * Vue 的事件包装会丢弃「早于监听器挂上」的事件：事件经过的第一个包装在它身上记下
+   * Date.now()，冒泡路上后面的包装若挂上的时刻（按微任务周期缓存的 Date.now()）不早于它，
+   * 就当这一下发生在挂上之前、直接跳过。JIT 热起来后挂载、聚焦、按第一个键能落在同一毫秒：
+   * toggle-group 的方向键收口在容器上，条目那一层先记下时间戳，容器的包装与它同一毫秒挂上而被
+   * 跳过，焦点原地不动——对拍随机判红，单跑不出现，前面先跑一批组件（JIT 变热）才出现。
+   * 真实用户做不到在挂上的同一毫秒按键，这里补上这段间隔，每次最多 1ms。
+   */
+  const crossMillisecond = (): void => {
+    const now = Date.now()
+    while (Date.now() === now) {
+      // 忙等不到 1ms：让之后派发的事件时间戳一定晚于这一拍挂上的监听器
+    }
+  }
+
+  /**
    * 一路刷到 DOM 不再动为止。
    *
    * 固定刷几拍是靠不住的：从"派事件"到"属性落到节点上"要经过
@@ -61,8 +78,10 @@ export function createVueHarness(): AdapterHarness {
    */
   const tick = async (): Promise<void> => {
     let mutated = false
+    let changed = false
     const observer = new MutationObserver(() => {
       mutated = true
+      changed = true
     })
     if (host)
       observer.observe(host, { attributes: true, childList: true, subtree: true, characterData: true })
@@ -77,6 +96,9 @@ export function createVueHarness(): AdapterHarness {
     }
     finally {
       observer.disconnect()
+      // 重渲过就可能挂上了新的事件包装
+      if (changed)
+        crossMillisecond()
     }
   }
 
@@ -119,6 +141,8 @@ export function createVueHarness(): AdapterHarness {
       }
       app.mount(host)
       await tick()
+      // 挂载本身在 tick 之前就把事件包装全挂上了，tick 未必再看到 DOM 变动
+      crossMillisecond()
       return { root: host }
     },
     async setProps(next) {
