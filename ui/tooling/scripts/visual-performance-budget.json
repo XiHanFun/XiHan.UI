@@ -41,7 +41,7 @@
     },
     {
       "path": ".size-limit.css.json",
-      "command": "node tooling/scripts/check-skin-size.mjs"
+      "command": "node tooling/scripts/skin/check-skin-size.mjs"
     }
   ],
   "limits": {

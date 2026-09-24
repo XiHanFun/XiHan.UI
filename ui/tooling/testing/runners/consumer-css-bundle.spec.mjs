@@ -1,6 +1,6 @@
 // 消费方产物形态：一个只 `import '@xihan-ui/styles'` 的最小消费方，打出来的 CSS 里
 // Family Recipe 只能出现一次，且落在四份公共层（focus / label / description / pointer）之后、
-// 第一条组件皮肤规则之前——与 tooling/scripts/check-layer-order.mjs 守的是同一契约。
+// 第一条组件皮肤规则之前——与 tooling/scripts/tokens/check-layer-order.mjs 守的是同一契约。
 //
 // 为什么盯这三件事：配方、公共层与皮肤同在 xihan.components 层，同层里只剩特指度与源序竞争。
 //   - 皮肤对配方物理属性的覆盖只有配方先出现才成立：家族粗指针热区曾与皮肤里想压掉它的

@@ -28,7 +28,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const uiRoot = resolve(here, '..')
 
 const TARGETS = join(here, 'new-component.targets.json')
-const DOC_NUMBERS = 'tooling/scripts/check-doc-numbers.mjs'
+const DOC_NUMBERS = 'tooling/scripts/docs/check-doc-numbers.mjs'
 
 /** 路径一律相对 ui/；`../` 前缀的落在仓库根。 */
 const abs = path => resolve(uiRoot, path)

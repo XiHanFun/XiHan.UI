@@ -5,7 +5,7 @@
   "private": true,
   "bin": {
     "xh-gen-exports": "./gen-exports.mjs",
-    "xh-check-pins": "./check-exact-pins.mjs",
-    "xh-check-tokens": "./check-tokens-dist.mjs"
+    "xh-check-pins": "./package/check-exact-pins.mjs",
+    "xh-check-tokens": "./tokens/check-tokens-dist.mjs"
   }
 }
