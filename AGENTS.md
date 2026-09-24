@@ -71,6 +71,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 | 类型检查 | `pnpm typecheck` |
 | 单测 | `pnpm test` |
 | 浏览器测试 | `pnpm test:browser` |
+| 按分类跑浏览器测试 | `pnpm test:browser <分类…>`（`--list` 列出分类，`--pkg=vue` 限定包，逐包串行、worker 有上限） |
 | Lint | `pnpm lint` |
 | 主质量门禁 | `pnpm gate` |
 | 按模块跑门禁 | `pnpm gate <模块…>`（`pnpm gate --list` 列出模块，`--keep-going` 跑完再汇总） |

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 // 门禁：浏览器态用例的「声明」与「实体」必须成对。
 //
-// 根上的 pnpm test:browser 是 turbo run test:browser，它按包里的 test:browser 脚本分发。
+// 根上的 pnpm test:browser 由 tooling/scripts/test-browser.mjs 逐包调用包里的 test:browser 脚本，
+// 它认包的口径与本脚本相同：声明了 test:browser 且有 tests/browser/ 目录。
 // 这条链上有两个静默口子，本脚本各堵一个：
 //   1. 包声明了 test:browser，--config 指的那份文件却不存在——脚本一跑就报错退出，
 //      而这个包的浏览器态判据从来没跑过；
-//   2. 包有 tests/browser/ 目录却没声明 test:browser——用例躺在库里，turbo 分发不到它，
+//   2. 包有 tests/browser/ 目录却没声明 test:browser——用例躺在库里，运行器分发不到它，
 //      写了等于没写。
 // 顺带核第三件：声明了脚本、config 也在，但 tests/browser/ 目录不存在，
 // 那份 config 的 include 指向空处，同样是一条跑不出用例的链。
