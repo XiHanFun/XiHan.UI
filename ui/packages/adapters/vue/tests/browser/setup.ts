@@ -27,13 +27,14 @@ function holdImageSources(): Promise<void> {
 }
 
 /**
- * 媒介与触屏仿真挂在整张页面上，同一 worker 里的下一个文件复用这张页面。
- * 上一个文件末条用例仿真成 print / forced-colors 后不还原，这个文件就整份跑在 print 里：
- * 皮肤的 print 块把悬停面与描边压回静息，悬停断言成片落空。每个文件开跑前复位。
+ * 媒介仿真挂在整张页面上，同一 worker 里的下一个文件复用这张页面。
+ * 上一个文件末条用例仿真成 print / forced-colors 后不还原，这个文件就整份跑在那个媒介里。每个文件开跑前复位。
+ *
+ * 触屏仿真不在这里复位：Linux 无头 Chromium 上关一次就把 (pointer) / (hover) 永久落成 none，
+ * 复位本身就会弄坏页面。仿真过触屏的文件由 vitest.browser.config 单开项目隔离。
  */
 async function resetEmulation(): Promise<void> {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
-  await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
 }
 
 beforeAll(resetEmulation)
