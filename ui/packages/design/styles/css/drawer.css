@@ -350,12 +350,6 @@
     border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
   }
 
-  /* 展开期间面板整块推到一屏之外再推回来：只在开着的这一档挂，
-     合成层随 data-state 一起收走，收起后不再占着 */
-  [data-scope='drawer'][data-part='content'][data-state='open'] {
-    will-change: translate;
-  }
-
   /* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide
      与 --xh-motion-ease-slide；退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
      不定住终态，面板会在最后一帧弹回原位再消失。 */

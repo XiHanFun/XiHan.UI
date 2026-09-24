@@ -229,9 +229,7 @@
     pointer-events: auto;
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='color-picker'][data-part='content'][data-state='open'] {
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 

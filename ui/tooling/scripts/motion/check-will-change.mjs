@@ -8,6 +8,11 @@
 // 只判「同一条规则块里既有 will-change、又有 animation 或 transition」的那些：
 // 动的属性从同块的 transition 逐项取，或按 animation 的关键帧名去 keyframe-registry.json
 // 里查帧体。will-change 单独成块（动画写在别的规则上）的量不准，跳过并计数。
+//
+// 判据二：浮层打开态（选择器带 [data-state='open']）不许挂合成属性的 will-change。打开态一直在场，
+// Chromium 对带 will-change 的层沿用第一次栅格化时的位移与缩放，入场动画中途那一帧的小数位移被保留，
+// 静止画面的文字与 1px 分隔线发虚（menu 像素基线在容器里实测：撤掉后分隔线回到单行）。
+// 入场动画自己就会把这一层提到合成层、播完按整数像素重画，用不着 will-change 提前占着。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -67,6 +72,9 @@ catch {
   process.exit(1)
 }
 
+/** 会把元素提到合成层的属性：点在打开态上即判红（判据二）。 */
+const COMPOSITED = new Set(['opacity', 'scale', 'translate', 'rotate', 'transform'])
+
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = []
 const seen = new Set()
@@ -85,6 +93,21 @@ for (const file of files) {
 
     const declared = new Set(splitTopLevel(wc[1]))
     const line = css.slice(0, rule.index + wc.index).split('\n').length
+    const before = css.slice(0, rule.index)
+    const selector = before.slice(Math.max(before.lastIndexOf('}'), before.lastIndexOf('{')) + 1).trim()
+
+    // 判据二：打开态一直在场，常驻的合成属性 will-change 让 Chromium 沿用入场动画中途那一帧的栅格
+    const composited = [...declared].filter(p => COMPOSITED.has(p))
+    if (selector.includes('[data-state=\'open\']') && composited.length > 0) {
+      problems.push(
+        `${file}:${line}  ${selector.replace(/\s+/g, ' ')} 挂着 will-change: ${composited.join(', ')}\n`
+        + '    —— 打开态一直在场：Chromium 对带 will-change 的层沿用第一次栅格化时的位移与缩放，入场动画中途的'
+        + '小数位移会被保留下来，静止画面的文字与 1px 分隔线跟着发虚。入场动画本身就会把这一层提到合成层、'
+        + '播完按整数像素重画，打开态不写 will-change',
+      )
+      continue
+    }
+
     const actual = new Set()
 
     for (const t of body.matchAll(/(?<![\w-])transition\s*:([^;}]+)/g)) {
@@ -135,13 +158,13 @@ for (const key of Object.keys(WILL_CHANGE_OVERRIDE)) {
 }
 
 if (problems.length) {
-  console.error('[check-will-change] ✗ will-change 点的属性与实际动的对不上：')
+  console.error('[check-will-change] ✗ will-change 写得不对：')
   for (const p of problems)
     console.error(`  ${p}`)
   process.exit(1)
 }
 
 console.log(
-  `[check-will-change] 通过：${checked} 处 will-change 与同块真会动的属性逐一对上`
+  `[check-will-change] 通过：${checked} 处 will-change 与同块真会动的属性逐一对上，浮层打开态没有常驻合成层`
   + `（动画写在别的规则上、量不准的 ${unverifiable} 处跳过）`,
 )

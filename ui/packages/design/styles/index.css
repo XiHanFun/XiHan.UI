@@ -4211,9 +4211,7 @@
      面板整棵子树都在 positioner 底下，它一收就不生成盒子，退场动画一帧都播不出来。
      真正的收起由宿主在退场结束后落成内联 display:none。 */
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='floating-panel'][data-part='positioner'][data-state='open'] {
-    will-change: opacity, scale;
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -8632,8 +8630,6 @@
 
   [data-scope='mention'][data-part='content'][data-state='open'] {
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -9491,8 +9487,6 @@
 
   [data-scope='popconfirm'][data-part='content'][data-state='open'] {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -17040,8 +17034,6 @@
 
   [data-scope='cascader'][data-part='content'][data-state='open'] {
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -19381,9 +19373,7 @@
     pointer-events: auto;
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='color-picker'][data-part='content'][data-state='open'] {
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -20526,8 +20516,6 @@
 
   [data-scope='combobox'][data-part='content'][data-state='open'] {
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -20867,8 +20855,6 @@
 
   [data-scope='command'][data-part='content'][data-state='open'] {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -21291,8 +21277,6 @@
 
   /* 首帧落位后从锚点一侧淡入短移，不缩放整张面。 */
   [data-scope='context-menu'][data-part='content'][data-state='open'] {
-    /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -22051,8 +22035,6 @@
   }
 
   [data-scope='date-picker'][data-part='content'][data-state='open'] {
-    /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -22821,8 +22803,6 @@
   }
 
   [data-scope='date-range-picker'][data-part='content'][data-state='open'] {
-    /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -23242,8 +23222,6 @@
 
   [data-scope='dialog'][data-part='content'][data-state='open'] {
     animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
   }
 
   [data-scope='dialog'][data-part='content'][data-state='closed'] {
@@ -23804,12 +23782,6 @@
     inset-block-end: 0;
     border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
     border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-  }
-
-  /* 展开期间面板整块推到一屏之外再推回来：只在开着的这一档挂，
-     合成层随 data-state 一起收走，收起后不再占着 */
-  [data-scope='drawer'][data-part='content'][data-state='open'] {
-    will-change: translate;
   }
 
   /* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide
@@ -25357,8 +25329,6 @@
 
   [data-scope='hover-card'][data-part='content'][data-state='open'] {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -25688,9 +25658,7 @@
     color: var(--xh-image-viewer-fg, var(--xh-color-neutral-0));
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='image-viewer'][data-part='content'][data-state='open'] {
-    will-change: opacity;
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
@@ -26600,9 +26568,7 @@
     outline: none;
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='menu'][data-part='content'][data-state='open'] {
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -27035,8 +27001,6 @@
 
   /* 首开从锚点一侧淡入短移，不缩放整张菜单面。 */
   [data-scope='menubar'][data-part='content'][data-state='open'] {
-    /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -27620,9 +27584,7 @@
     inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='navigation-menu'][data-part='content'][data-state='open'] {
-    will-change: opacity, scale;
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -28723,9 +28685,7 @@
     pointer-events: auto;
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='pagination'][data-part='content'][data-state='open'] {
-    will-change: opacity, scale;
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -29142,8 +29102,6 @@
 
   [data-scope='popover'][data-part='content'][data-state='open'] {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
   }
 
   /* 退场:收起那一帧 hidden 由退场闸门押后,这里才播得出来。forwards 把末态钉住,
@@ -31085,8 +31043,6 @@
 
   [data-scope='select'][data-part='content'][data-state='open'] {
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -31659,9 +31615,7 @@
     overscroll-behavior: contain;
   }
 
-  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='open'] {
-    will-change: opacity, scale;
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -36243,8 +36197,6 @@
   }
 
   [data-scope='time-picker'][data-part='content'][data-state='open'] {
-    /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -36896,8 +36848,6 @@
   }
 
   [data-scope='time-range-picker'][data-part='content'][data-state='open'] {
-    /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, translate;
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -39113,8 +39063,6 @@
   /* 入场走 enter 档（锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit */
   [data-scope='tooltip'][data-part='content'][data-state='open'] {
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -39397,8 +39345,6 @@
 
   [data-scope='tour'][data-part='content'][data-state='open'] {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -41092,8 +41038,6 @@
 
   [data-scope='tree-select'][data-part='content'][data-state='open'] {
     animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

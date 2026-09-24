@@ -180,8 +180,6 @@
 
   [data-scope='dialog'][data-part='content'][data-state='open'] {
     animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
   }
 
   [data-scope='dialog'][data-part='content'][data-state='closed'] {
