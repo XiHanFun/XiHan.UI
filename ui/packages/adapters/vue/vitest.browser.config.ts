@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs'
+import process from 'node:process'
 import { playwright } from '@vitest/browser-playwright'
 import { browserCommands } from '@xihan-ui/testing/browser-commands'
 import { defineConfig } from 'vitest/config'
@@ -30,6 +31,8 @@ export default defineConfig({
     // 硬件相关的性能预算只在固定配额的容器里跑（vitest.performance.config.ts），三个项目都不收
     exclude: ['tests/browser/visual-performance.spec.ts'],
     setupFiles: ['./tests/browser/setup.ts'],
+    // 浏览器里读不到 process.env：量耗时的用例经 inject('ci') 取，CI 共享 runner 上按倍数宽放绝对预算
+    provide: { ci: Boolean(process.env.CI) },
     browser: {
       enabled: true,
       provider: playwright(),
