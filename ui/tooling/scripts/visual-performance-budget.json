@@ -51,8 +51,8 @@
         "frameIntervalMaxMs": 50,
         "longTaskCountMax": 0,
         "longTaskTotalMsMax": 0,
-        "backdropBlurElementsMin": 2,
-        "backdropBlurAreaPxMin": 416001,
+        "backdropBlurElementsMin": 1,
+        "backdropBlurAreaPxMin": 416000,
         "backdropBlurAreaPxMax": 520000
       },
       "reduce": {
