@@ -21,6 +21,22 @@ pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
 
 在 Windows / macOS 宿主上，`pnpm test:browser` 固定有一条失败：像素基线文件受字体守卫拦截，整文件判失败、40 条用例全部 skipped。这是预期结果，不是环境故障；本地验证像素改动的方式见下文「像素基线」。
 
+### 按分类运行浏览器态
+
+`pnpm test:browser` 由 `ui/tooling/scripts/test-browser.mjs` 执行：先构建各包的依赖，再逐包串行运行（Vue → React → Web Components → 其余），每个包的 worker 数缺省为 `min(8, 核数 - 1)`。每个包各起一套 Chromium，同时运行多个包会在多核机器上拉起上百个页面，占满内存与 CPU。
+
+```bash
+pnpm test:browser                    # 全部包、全部用例
+pnpm test:browser form overlay       # 只跑这几类（跨包）
+pnpm test:browser --list             # 各分类在每个包里的用例数
+pnpm test:browser --pkg=vue,react    # 只跑点名的包
+pnpm test:browser --workers=4        # 调整每个包的 worker 数
+pnpm test:browser --no-build         # 跳过依赖构建
+pnpm test:browser overlay -- -t Esc  # -- 之后的参数原样交给 vitest
+```
+
+分类与组件总览一致（`ui/scripts/component-docs.manifest.json`）：`general`、`layout`、`navigation`、`form`、`data-display`、`feedback`、`overlay`、`ai`。用例文件名以某个组件名开头（取最长匹配）即归入该组件的分类；浮层主题的跨组件用例（`overlay-*`、各类 Portal、position 引擎）归 `overlay`；其余跨组件用例（全量无障碍、计算样式快照、像素基线、焦点环对账等）归 `shared`。某个包失败不中断其余包，全部跑完后汇总。
+
 ### Vue 浏览器态的三个项目
 
 同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。`vitest.browser.config.ts` 因此把 Vue 浏览器态分成三个项目，按 `sequence.groupOrder` 先后运行：

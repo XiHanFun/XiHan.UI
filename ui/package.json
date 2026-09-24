@@ -38,7 +38,7 @@
     "size": "turbo run build && size-limit",
     "surface:update": "node tooling/scripts/build-public-surface.mjs",
     "test": "turbo run test",
-    "test:browser": "turbo run test:browser",
+    "test:browser": "node tooling/scripts/test-browser.mjs",
     "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.node.json",
     "version": "changeset version",
     "visual:baseline": "node tooling/scripts/visual-baseline.mjs",
