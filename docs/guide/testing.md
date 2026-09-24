@@ -21,6 +21,18 @@ pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
 
 在 Windows / macOS 宿主上，`pnpm test:browser` 固定有一条失败：像素基线文件受字体守卫拦截，整文件判失败、40 条用例全部 skipped。这是预期结果，不是环境故障；本地验证像素改动的方式见下文「像素基线」。
 
+### Vue 浏览器态的三个项目
+
+同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。`vitest.browser.config.ts` 因此把 Vue 浏览器态分成三个项目，按 `sequence.groupOrder` 先后运行：
+
+| 项目 | 收哪些文件 | 为什么单独放 |
+| --- | --- | --- |
+| `vue-browser` | 其余全部 | 并行主池 |
+| `vue-browser-touch` | 调用过 `Emulation.setTouchEmulationEnabled` 或 `coarsePointer()` 的文件，配置加载时自动扫出 | Linux 无头 Chromium 上，一张页面只要关过一次触屏仿真，`(pointer)` 与 `(hover)` 就永久变为 `none`，没有 CDP 入口改回来。挂在 `@media (hover: hover)` 下的悬停规则随之失效，同一 worker 里后续文件的悬停断言与像素基线会随机判红。Windows 上不走这条恢复路径，本机复现不出来 |
+| `vue-browser-serial` | `overlay-open-budget.spec.ts` | 量主线程耗时，与整套并行时量到的是别的用例抢走的 CPU，放到最后单独串行 |
+
+媒介仿真（print、forced-colors 等）由 `tests/browser/setup.ts` 在每个文件开跑前复位；触屏仿真不能这样复位，复位本身就会让页面失去悬停能力。
+
 ## 一致性：一份规格驱动各适配器
 
 规格（`ConformanceSuite`）声明组件的解剖部件、键盘表与用例；适配器各实现一个 `AdapterHarness`（挂载 fixture 树、获取事件、卸载）。运行器把同一份规格交给不同的 harness，逐帧采集归一化后的 `DomSnapshot` 并断言。
