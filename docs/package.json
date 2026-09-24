@@ -1,7 +1,7 @@
 {
   "name": "xihan-ui-docs",
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "packageManager": "pnpm@11.7.0",
   "description": "XiHan.UI 文档站：框架无关的设计系统运行时，提供 Vue、React 与 Web Components 三端适配器。",
