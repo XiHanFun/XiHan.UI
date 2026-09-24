@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/headless",
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "XiHan.UI headless components — anatomy, machine, connect. No styles.",
   "author": {
     "name": "XiHanFun",

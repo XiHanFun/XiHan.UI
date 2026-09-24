@@ -1,5 +1,263 @@
 # @xihan-ui/vue
 
+## 2.1.0
+
+### Minor Changes
+
+- 1ed8a8d: Listbox / Select / Combobox / Mention / Command 补上 `item-prefix` 与 `item-suffix` 两个部件和对应的逐条钩子。
+
+  这五家的行首那一格一直空着：它们的 `item-indicator` 是行尾的选中对号，不是前导图标槽（那是菜单族的用法）。所以想给选项配个国旗、给候选人配个头像、给命令配个图标，只能走整条替换的 `item` 插槽 / `renderItem`，代价是文字与副文本全要自己重搭。
+
+  ```vue
+  <XhSelectRoot :collection="countries" label="国家">
+    <template #item-prefix="node"><CountryFlag :code="node.value" /></template>
+  </XhSelectRoot>
+  ```
+
+  ```tsx
+  <XhMentionRoot
+    collection={people}
+    renderItemPrefix={(node) => <XhAvatar name={node.label} size="sm" />}
+  />
+  ```
+
+  - **`item-prefix`** 落家族的 prefix 列（行首），带 `aria-hidden`：它是装饰，可及名由条目文字承担。
+  - **`item-suffix`** 落 suffix 列（行尾、选中对号之前），承载计数、徽标一类的任意节点，家族只管落位。
+  - 两个钩子都只接管自己那一格，文字、副文本与选中对号照旧由数据与家族负责；`item` / `renderItem` 语义不变。
+
+  Tree / TreeSelect / Transfer 不在其列：它们的行首那一格已经归勾选框与展开箭头，再放作者内容会跟结构件抢位。
+
+- 6f5fd2f: 菜单族三家新增 `item-suffix` 部件与**按槽位的逐条钩子**：想给条目加个图标，不必再把整条重搭。
+
+  此前 `collection` 那条路只有一个整条替换的出口（Vue 的 `item` 插槽 / React 的 `renderItem`）。图标是可渲染内容、进不了 Headless，所以"给每条命令配个 SVG 图标"只能走那个出口——代价是文字、说明、快捷键全部得自己重新搭一遍，数据里写的 `description` / `shortcut` 一个都不生效。
+
+  现在首尾两格各有自己的钩子：
+
+  ```vue
+  <XhMenuRoot :collection="actions" trigger-as-child>
+    <template #trigger><XhButton variant="subtle">文件</XhButton></template>
+    <template #item-prefix="node"><XhIcon :icon="iconOf(node)" size="sm" /></template>
+  </XhMenuRoot>
+  ```
+
+  ```tsx
+  <XhMenuRoot
+    collection={actions}
+    renderItemPrefix={(node) => <XhIcon icon={iconOf(node)} size="sm" />}
+  />
+  ```
+
+  - **`item-prefix` / `renderItemPrefix`** 只接管行首那一格（与数据里的 `indicator` 同一个部件，插槽在场时以它为准），文字、说明、快捷键照旧由数据铺。
+  - **`item-suffix` / `renderItemSuffix`** 只接管行尾那一格，落新增的 `item-suffix` 部件：家族的 suffix 列排在快捷键之后、选中对号之前，跨两行居中。它承载的是任意节点（计数、徽标、次级图标），所以家族只管落位，不规定字号与颜色。
+  - **`item` / `renderItem` 语义不变**，仍是整条的接管口。
+
+  Web Components 由作者自写 Light DOM，不需要钩子，只多一个可用的 `data-xh-part="item-suffix"` 角色。
+
+  文档的"破坏性命令"示例改用 `item-prefix` 重写：现在是三行数据加一个插槽，此前要把整条结构抄一遍。
+
+- 7adbd61: Command 补上快捷键提示，Tree / TreeSelect / Cascader / Transfer 补上行尾那一格——Collection Item 家族的六个槽至此每一格都有归属。
+
+  - **Command 的 `shortcut`**：命令面板本来就是快捷键的主场，`⌘K` 那一列此前没有承载它的部件。新增 `item-shortcut`，贴行尾、与说明同档同色、带 `aria-hidden`，不进检索串。
+  - **Tree / TreeSelect / Cascader / Transfer 的 `item-suffix`**：这四家的行首那一格归勾选框与展开箭头，行尾一直空着。现在留给作者放计数、徽标一类的任意节点，家族只管落位。
+
+  至此六个槽的归属：
+
+  | 槽            | 归属                                                                                                 |
+  | ------------- | ---------------------------------------------------------------------------------------------------- |
+  | `prefix`      | 菜单族 = `item-indicator`（前导图标）；候选列表 = `item-prefix`（作者内容）；树族 = 勾选框与展开箭头 |
+  | `text`        | `item-text`，取自 `label`，也是连打检索的取字来源                                                    |
+  | `description` | `item-description`，第 2 行、muted 档，全部集合组件可用                                              |
+  | `shortcut`    | `item-shortcut`，菜单族与 Command                                                                    |
+  | `suffix`      | `item-suffix`，作者内容，全部集合组件可用                                                            |
+  | `indicator`   | 选中对号，由库按 `aria-selected` 显隐                                                                |
+
+  导航族（Anchor / Breadcrumb / NavigationMenu / Tabs / SideNav）不在其列：那里的条目表达位置而不是一条可配置的数据行。
+
+- 7fea8a8: 另外九个集合组件补上 `item-description` 部件与节点上的 `description`：条目的第 2 行终于到处都能写了。
+
+  家族的网格里一直留着说明这一行（跨 text 槽的第 2 行、muted 档），但只有 ContextMenu 与 Menubar 拿得到它。一句话说不清的选项——订阅方案、权限档、机型——只能把解释挤进 `label`，或者放弃 `collection` 退回手写部件。
+
+  覆盖 Listbox / Select / Combobox / Mention / Command / Cascader / Tree / TreeSelect / Transfer：
+
+  ```ts
+  const plans = [
+    {
+      value: "team",
+      label: "团队版",
+      description: "最多 20 人，共享工作区与审计日志",
+    },
+    {
+      value: "enterprise",
+      label: "企业版",
+      description: "单点登录、私有部署与专属支持",
+    },
+  ];
+  ```
+
+  - 新部件 `item-description`（`getItemDescriptionProps` / `Xh*ItemDescription` / `data-xh-part="item-description"`）跨 text 槽落第 2 行，与快捷键同档同色，**不跟语气**。
+  - 代铺的树按数据铺：写了 `description` 的条目才多一个部件，没写的与此前完全一致。
+  - 不进检索串：连打检索与命令面板的过滤都只取 `item-text` 那一段。
+
+  SideNav 不在其列：它的入口在折叠成图标栏时只剩一格，第 2 行无处安放。
+
+- 2bd127a: ContextMenu 与 Menubar 补上 `item-shortcut` 部件与节点上的 `shortcut`，菜单族三家至此口径一致。
+
+  三家的文档都写着"条目可组合图标、文字、说明和快捷键提示"，但谁都没有承载快捷键的部件：示例只能在条目末尾塞一个没有槽位的裸 `<span aria-hidden>`，既不落家族的 shortcut 列，也拿不到那一列的字号与颜色。Menu 已在上一版补齐，这一版补另外两家。
+
+  ```ts
+  const commands = [
+    { value: "copy", label: "复制", description: "连同格式", shortcut: "⌘ C" },
+  ];
+  ```
+
+  - 新部件 `item-shortcut`（`getItemShortcutProps` / `XhContextMenuItemShortcut` / `XhMenubarItemShortcut` / `data-xh-part="item-shortcut"`）落行尾、跨两行居中，与说明同档同色。
+  - 带 `aria-hidden`：可及名由条目文字承担；连打检索只取 `item-text`，这串按键记号不进检索串。
+  - Menubar 的 `shortcut` 与 `description` 一样**只在条目上读取**，顶层入口写了不生效。
+
+  示例 `context-menu/03-icon` 与 `menubar/03-icon` 一并改正：图标进 `item-indicator`（此前是裸 `<svg>`，不落 prefix 列），快捷键进 `item-shortcut`。
+
+- 8eeb26b: Menu 新增 `item-shortcut` 部件，`MenuNode` 补上 `indicator` / `description` / `shortcut`——菜单的条目契约至此与 ContextMenu 完全对齐。
+
+  文档从一开始就写着"条目可组合图标、文字、说明和快捷键提示"，但 Menu 既没有说明与快捷键的字段，也没有承载快捷键的部件：示例只能在条目末尾塞一个没有槽位的裸 `<span aria-hidden>`，既不落家族的 shortcut 列，也拿不到那一列的字号与颜色。
+
+  ```ts
+  const actions = [
+    {
+      value: "duplicate",
+      label: "创建副本",
+      description: "保留当前版本，另存一份",
+      shortcut: "⌘ D",
+    },
+    {
+      value: "archive",
+      label: "归档",
+      description: "移出列表，随时可以恢复",
+      shortcut: "⌘ ⇧ A",
+      separatorBefore: true,
+    },
+  ];
+  ```
+
+  - **新部件 `item-shortcut`**（`getItemShortcutProps` / `XhMenuItemShortcut` / `data-xh-part="item-shortcut"`）落家族的 shortcut 列：行尾、跨两行居中、排在 `suffix` 之前，与说明同档同色。
+  - **纯装饰**：带 `aria-hidden`，可及名由条目文字承担；连打检索只取 `item-text`，这串按键记号不进检索串。
+  - **只为真正注册了的组合写提示**，写一个不存在的比不写更糟。
+
+  有一处 DOM 形状变化：代铺的条目此前把 `label` 作为裸文本放进 `item`，现在放进 `item-text` 部件（与 ContextMenu、Menubar 一致）。这修正了两件事——家族的 text 槽此前选不中它，连打检索也会把说明与快捷键的文字一并算进去。手写部件那条路本来就该自己放 `XhMenuItemText`，不受影响。
+
+  `item` 插槽（React `renderItem`）的语义不变：它是**整条**的接管口，写了它就由作者全权负责条目内容，代铺的标记位、说明与快捷键都不再出现。这一点与 ContextMenu / Menubar 的同名插槽不同——那两家填的是文字槽。
+
+- 43b3f69: `MenuNode` 新增 `group` 与 `groupLabel`，`collection` 那条路终于真的铺得出分组。
+
+  此前文档写着"`collection` 可直接生成条目、分组、标记位和分隔线"，`MenuNode` 却没有这两个字段，代铺的树也只认条目与分隔线。示例 `demos/menu/03-group` 照文档传了 `group` / `groupLabel`，浏览器里实测产出 0 个 `group`、0 个 `group-label` —— 一个不工作的示例照着一句不成立的文档写了出来。ContextMenu 与 Menubar 一直是对的，只有 Menu 漏了。
+
+  ```ts
+  const actions = [
+    { value: "compact", label: "紧凑", group: "density", groupLabel: "行高" },
+    { value: "comfortable", label: "宽松", group: "density" },
+    {
+      value: "sidebar",
+      label: "侧栏",
+      group: "panels",
+      groupLabel: "面板",
+      separatorBefore: true,
+    },
+  ];
+  ```
+
+  规则与 ContextMenu 逐条对齐：
+
+  - **相邻同值收进同一个 `group`**，不相邻的同值各成一段（与数据顺序一致，不重排）。
+  - **标题取本组首个写了 `groupLabel` 的那条**，本组无人提供时不铺 `group-label`；`group` 靠 `aria-labelledby` 认领它。
+  - **领头一个分组的条目，它的 `separatorBefore` 画在 `group` 外面**；组内条目的分隔线留在组里。首条上的标记仍然不产出分隔线。
+  - 没写 `group` 的条目直接落在 `content` 上，与分组段互不影响。
+
+  手写部件那条路本来就支持分组，产出的 DOM 与代铺的一致，这次没有变化；Web Components 由作者自写 Light DOM，同样不受影响。
+
+- 6c9ff6b: Tree 的展开与选中分开：`expandOnClick` 缺省由 `true` 改为 `false`，与 TreeSelect 一致。
+
+  此前点分支行（或在分支上按确认键）会同时选中并切换展开态，想勾一枝却把它收了起来。现在点行与确认键只选中，展开归展开箭头（`branch-trigger`）与左右方向键；需要文件管理器那种「点目录即展开」的，显式打开 `expandOnClick`（Web Components 写 `expand-on-click`）。
+
+  **破坏性变更**：依赖点行展开的树需要补上 `expandOnClick`，或在分支行里摆一枚 `branch-trigger`——只摆了不可点的 `branch-indicator` 的树，缺省下只能靠方向键展开。
+
+- 9fd2157: Tree 的选中改成与 TreeSelect 同一种读法：行不换面，单选、多选与级联都只在行尾画对号，勾选框部件删除。
+
+  此前页内树有两套标记：单选铺品牌淡底 + 行首对号，勾选档再摆一枚行首方框——方框已经表明了勾选态，淡底又把同一件事说了一遍；而下拉里的树（TreeSelect）一直是透明底 + 行尾对号。现在两者统一：
+
+  - 行投影 Collection Item 的 `overlay` 语境：选中不换面、不换字色，悬停 / 高亮 / 按下沿用未选行的 100 → 200 阶梯。
+  - 对号（`item-indicator`）一律排到行尾，作者写在行首也会被排到最后；行尾那一格（`item-suffix`）在它之前。
+  - 分支行也放 `item-indicator`：勾选态与级联半选态落在标记自身的 `data-selected` / `data-indeterminate` 上，半选画横杠。
+  - forced-colors 下选中行保持 Canvas，只由对号表达；打印时对号按原样印出。
+
+  **破坏性变更**
+
+  - 删除部件 `item-checkbox` / `branch-checkbox`，以及三端对应的 `XhTreeItemCheckbox` / `XhTreeBranchCheckbox`（React 另有 `XhTreeItemCheckboxProps` / `XhTreeBranchCheckboxProps`）和 connect 上的 `getItemCheckboxProps` / `getBranchCheckboxProps`。
+  - 删除组件槽 `--xh-tree-checkbox-*`（8 个）与 `--xh-tree-row-bg-selected`。
+  - 行的 `data-xh-collection-context` 由 `page` 改为 `overlay`。
+
+  迁移：把勾选框换成对号，分支行同样摆一枚。
+
+  ```vue
+  <XhTreeBranchControl>
+    <XhTreeBranchTrigger />
+    <XhTreeBranchText>华东</XhTreeBranchText>
+    <XhTreeItemIndicator />
+  </XhTreeBranchControl>
+  <XhTreeItem value="sh">
+    <XhTreeItemText>上海</XhTreeItemText>
+    <XhTreeItemIndicator />
+  </XhTreeItem>
+  ```
+
+  Web Components 把 `data-xh-part="item-checkbox"` / `"branch-checkbox"` 换成 `data-xh-part="item-indicator"`。
+
+- 6bad64f: Vue 侧状态机的 props 取值器不再按 prop 个数重复展开。连接层每读一个 prop 都会调一次 `service` 的 `props()`，而那一处每次都把组件 props 整个展开成新对象再并全局配置——一个按钮渲染一遍要走十几趟，每趟都是十来次响应式代理取值。现在取值器的求值放进一个 `computed`：响应式依赖没动时复用同一份展开结果，状态机的身份缓存跟着命中（带 props 归一化的组件连归一化也一并省掉）；依赖一动就产出新对象，身份缓存照旧失效。
+
+  实测 Chromium：挂载 200 个 `XhButton` 从 29.5ms 降到 16.0ms，200 个按钮加 100 个文本字段从 63ms 降到 16.4ms，打开 200 项 Select 的同步开销从 12.2ms 降到 8.1ms。
+
+  因此 `useMachine` 的 props 取值器必须只读响应式来源（组件 props、`attrs`、ref、注入的上下文、全局配置）。读普通变量或普通数组的长度不再会让它重算——那类来源本来也驱动不了 `computed(() => connectX(...))` 的重算，只是以前靠每次重新展开碰巧读到过新值。仓库内唯一一处这样的读取（自绘滚动条按「两条轴都建好了没有」决定让不让交叉口那一格）已改为响应式。
+
+### Patch Changes
+
+- 03585eb: Vue 的三个条目插槽补上 JSDoc：文档「插槽」表的说明列此前是空的，看得到名字与载荷类型，看不出 `item` / `item-prefix` / `item-suffix` 三者分工。
+
+  `item` 在菜单里是整条的接管口，在 ContextMenu / Menubar / 候选列表里填的是文字槽——这条差别现在写在各自的声明上，一并进文档。
+
+- 4f9ca55: `withXhConfig` 不再写在 computed 里，`XhKbd` 在平台探测之后不会再丢掉全局配置。
+
+  `withXhConfig` 要调 `inject`，只能在 setup 期跑。`XhKbd` 把它写在了 `api` 这个 computed 的取值函数里：首次求值确实发生在 setup 期，但 `useKbdPlatform` 会在 `onMounted` 把探测到的平台写回 `detected`，`api` 随之失效，而下一次求值发生在同组件那个 `watchEffect` 的作业里——那时既没有 `currentInstance` 也没有 `currentRenderingInstance`。
+
+  于是每个 `XhKbd` 挂载后都会在开发期打一条 `[Vue warn] inject() can only be used inside setup() or functional components`，并且 `inject` 返回 `undefined` 时 `withXhConfig` 原样返回 props，`provideXhConfig` 注入的 `translations` 与 `locale` 被静默丢弃：键帽的读屏文案从作者提供的那份回落到内建英文，配置在别处生效、在它这里没反应，谁也不会报错。
+
+  `kbd` 这一侧改成在 setup 期包一次代理，源对象写成一组取值函数，`props` 与 `detected` 仍在求值期被追踪，响应性不变。
+
+  另外七个把 `withXhConfig` 写进 computed 的组件（`avatar-group`、`card`、`input-group`、`page-header`、`statistic`、`timeline`、`typography`）一并按 `badge` 的既有写法提到 setup 期。它们目前不报警——那几个 computed 只在渲染期被读，`currentRenderingInstance` 还在——但同一处接线只要哪天被渲染之外的读者碰到，就会重演 `kbd` 这一幕。
+
+- c456e52: TagGroup 选中标签的对号从文字前移到文字后，与集合行「对号一律在行尾」统一。
+
+  - 皮肤按顺序排：对号排在文字与作者内容之后、摘除钮之前，作者在格里把 `item-indicator` 写在哪儿都一样。
+  - Vue / React 不传结构时的默认渲染同步改成「文字 → 对号 → 摘除钮」。
+  - 选中的淡底、配对前景与按压反馈不变。
+
+- Updated dependencies [1ed8a8d]
+- Updated dependencies [6f5fd2f]
+- Updated dependencies [7adbd61]
+- Updated dependencies [7fea8a8]
+- Updated dependencies [4a82bc7]
+- Updated dependencies [e00c965]
+- Updated dependencies [2bd127a]
+- Updated dependencies [8eeb26b]
+- Updated dependencies [43b3f69]
+- Updated dependencies [cd2be1f]
+- Updated dependencies [1e7bc1d]
+- Updated dependencies [abd9e8c]
+- Updated dependencies [6c9ff6b]
+- Updated dependencies [9fd2157]
+  - @xihan-ui/headless@2.1.0
+  - @xihan-ui/core@2.1.0
+  - @xihan-ui/motion@2.1.0
+  - @xihan-ui/position@2.1.0
+  - @xihan-ui/pointer@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

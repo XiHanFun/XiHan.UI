@@ -1,5 +1,106 @@
 # @xihan-ui/styles
 
+## 2.1.0
+
+### Minor Changes
+
+- 7c813b5: Collection Item 家族 page 语境的选中对号从行首移到行尾，与 overlay 语境同列：Listbox 的选中项现在是品牌淡底 + 行尾对号。
+
+  对号一律落在行尾（`prefix | text | shortcut | suffix | indicator`），行首一格留给前导图标、展开箭头、拖拽把手与勾选框。配方 `markers.page.glyph` 由 `leading` 改为 `trailing`，生成器按它决定 page 语境是否另排一套行首网格；改回 `leading` 仍能生成旧的排法，但当前没有语境使用。
+
+  行面、字色与悬停 / 按下阶梯不变，只动对号的位置。
+
+- 589d76b: Collection Item 家族的 `shortcut` 槽终于被真正画出来：与说明同档同色的次级文字，不换行。
+
+  这一列从家族建立起就在网格里（`prefix | text | shortcut | suffix | indicator`），但只声明了 `grid-column`——没有字号也没有颜色，落进去的文字会按主文字的 14px 与全强度前景显示，与命令本身抢层级。全库至今没有任何组件消费它，Menu 的示例只能在条目末尾塞一个没有槽位的裸 `<span>`，既不落列也不对齐。
+
+  现在补齐三条声明：
+
+  - 字号走 `--xh-control-caption-md`（控件内次级文字档，比同档主文字低一级），与 `description` 同档；可用 `--xh-collection-shortcut-font-size` 逐组件改写。
+  - 颜色跟着 `--xh-collection-description-fg` 那支 muted 走，因此逐态跟随（rest / hover / selected / disabled），也**不跟随语气**——一行里出现两种彩字，语气就失去指向。
+  - `white-space: nowrap`：它是一串按键记号，折行会被读成两个组合。
+
+  设计真源补「集合行的次级文字」一节，把说明与快捷键两处的落位、字号、颜色与语气边界写在一起。
+
+- 8ada4b9: Collection Item 家族新增语气档：条目写 `data-tone` 即按该族颜色表达，不写保持中性。
+
+  此前语气只画在集合的容器上（菜单整张、列表整份），单条命令表达不了自身动作的性质——"移到回收站"与"复制"在皮肤上是同一条。作者要把删除项标红，只能绕过家族在条目上写散值，于是每个产品各自一套红。
+
+  新增的这一档只动面与字，节奏与中性行完全一致：
+
+  - 静息不换面，只把字换成 `--xh-tone-fg`。整行彩底会把菜单读成色块表，语气由字色承担即可。
+  - hover 与键盘高亮换 `--xh-tone-subtle`（12%），按下换 `--xh-tone-subtle-hover`（20%）——与中性行的透明 → 100 → 200 同节奏同层级，只是换了族色。
+  - 字一律取 `--xh-tone-fg` 而非 `--xh-tone-solid`：前者是按 WCAG 兑到 60% 的可读文字色，对本家族会遇到的透明面、语气淡底三态与抬起面共五种底、六个语气全部 ≥4.5。
+
+  三条边界写死在家族里，组件不必各自判断：
+
+  - **选中与当前压过语气。** 同一条既被选中又带 `danger` 时面归选中、语气退出——选中是集合的结构事实，语气只是该条动作的性质；`disabled` 压过一切。
+  - **`nav` 语境不接语气。** Tabs line trigger、Anchor / Breadcrumb link、Menubar / NavigationMenu trigger 表达的是位置而不是动作，写了也不产出语气面。
+  - **forced-colors 下语气整档退出**，逐态盖回系统色，只保留图标与文案通道。
+
+  说明行保持 muted、不跟随语气：一条里出现两种彩字，语气就失去指向。语气也不改字重、缩进与指示器颜色，非颜色通道仍由图标承担。
+
+- e00c965: Listbox 的选中改成与 TreeSelect 同一种读法：行不换面、不换字色，只在行尾亮对号。
+
+  - 条目的 `data-xh-collection-context` 由 `page` 改为 `overlay`，选中叠悬停 / 按下沿用未选行的 100 → 200 阶梯。
+  - forced-colors 下选中行保持 Canvas，只由对号表达；打印时对号按原样印出。
+
+  **破坏性变更**：删除组件槽 `--xh-listbox-item-bg-selected`。`--xh-listbox-item-fg-selected` 保留，缺省改回条目自己的字色。
+
+- d727908: TagGroup 的选中改成与 TreeSelect 同一种读法：选中的标签面、字与描边都不换，只在文字后亮一枚对号。
+
+  - 对号取品牌前景，标了语气的组取语气字色；实心标签取面配对的那支前景色，置灰标签跟着字一起置灰。
+  - 悬停、键盘锚点与按下沿用未选中的那条阶梯；forced-colors 下对号用系统高亮色画出，打印时按原样印出。
+
+  **破坏性变更**：删除组件槽 `--xh-tag-group-item-bg-selected`、`--xh-tag-group-item-bg-selected-hover`、`--xh-tag-group-item-bg-selected-pressed`、`--xh-tag-group-item-fg-selected` 与 `--xh-tag-group-item-border-selected`；实心标签选中时不再描出那一圈字色描边。
+
+- c456e52: TagGroup 选中标签的对号从文字前移到文字后，与集合行「对号一律在行尾」统一。
+
+  - 皮肤按顺序排：对号排在文字与作者内容之后、摘除钮之前，作者在格里把 `item-indicator` 写在哪儿都一样。
+  - Vue / React 不传结构时的默认渲染同步改成「文字 → 对号 → 摘除钮」。
+  - 选中的淡底、配对前景与按压反馈不变。
+
+- 9fd2157: Tree 的选中改成与 TreeSelect 同一种读法：行不换面，单选、多选与级联都只在行尾画对号，勾选框部件删除。
+
+  此前页内树有两套标记：单选铺品牌淡底 + 行首对号，勾选档再摆一枚行首方框——方框已经表明了勾选态，淡底又把同一件事说了一遍；而下拉里的树（TreeSelect）一直是透明底 + 行尾对号。现在两者统一：
+
+  - 行投影 Collection Item 的 `overlay` 语境：选中不换面、不换字色，悬停 / 高亮 / 按下沿用未选行的 100 → 200 阶梯。
+  - 对号（`item-indicator`）一律排到行尾，作者写在行首也会被排到最后；行尾那一格（`item-suffix`）在它之前。
+  - 分支行也放 `item-indicator`：勾选态与级联半选态落在标记自身的 `data-selected` / `data-indeterminate` 上，半选画横杠。
+  - forced-colors 下选中行保持 Canvas，只由对号表达；打印时对号按原样印出。
+
+  **破坏性变更**
+
+  - 删除部件 `item-checkbox` / `branch-checkbox`，以及三端对应的 `XhTreeItemCheckbox` / `XhTreeBranchCheckbox`（React 另有 `XhTreeItemCheckboxProps` / `XhTreeBranchCheckboxProps`）和 connect 上的 `getItemCheckboxProps` / `getBranchCheckboxProps`。
+  - 删除组件槽 `--xh-tree-checkbox-*`（8 个）与 `--xh-tree-row-bg-selected`。
+  - 行的 `data-xh-collection-context` 由 `page` 改为 `overlay`。
+
+  迁移：把勾选框换成对号，分支行同样摆一枚。
+
+  ```vue
+  <XhTreeBranchControl>
+    <XhTreeBranchTrigger />
+    <XhTreeBranchText>华东</XhTreeBranchText>
+    <XhTreeItemIndicator />
+  </XhTreeBranchControl>
+  <XhTreeItem value="sh">
+    <XhTreeItemText>上海</XhTreeItemText>
+    <XhTreeItemIndicator />
+  </XhTreeItem>
+  ```
+
+  Web Components 把 `data-xh-part="item-checkbox"` / `"branch-checkbox"` 换成 `data-xh-part="item-indicator"`。
+
+### Patch Changes
+
+- c79e9ac: 浮层打开后不再常驻 `will-change`，静止画面不再发虚。
+
+  此前 26 份浮层皮肤（Menu、Select、Popover、Dialog、Drawer、Tooltip、ContextMenu、Menubar、日期与时间选择器等）在 `[data-state='open']` 上一直挂着 `will-change: opacity, translate` 一类合成属性。Chromium 对这样的层沿用第一次栅格化时的位移与缩放：第一次栅格若落在入场动画中途，小数位移就被保留下来，动画播完后文字与 1px 分隔线仍是重采样出来的，看上去发虚；落在哪一帧取决于时序，所以时好时坏。
+
+  现在打开态只留入场动画：动画播放期间浏览器照样把这一层提到合成层，播完按整数像素重画。附带的变化是浮层里的文字与页面其他文字一样走亚像素抗锯齿，不再被合成层压成灰阶。退场态与拖拽中的 `will-change` 不变。
+
+  - @xihan-ui/tokens@2.1.0
+
 ## 2.0.0
 
 ### Major Changes
