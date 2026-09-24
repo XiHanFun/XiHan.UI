@@ -35,7 +35,7 @@ $currentVersion = (Read-JsonFile $corePkgPath).version
 Write-Output "当前版本：$currentVersion"
 
 # 锁步核对：库包必须同版，不同版就先修好再发
-& node tooling/scripts/check-version-lock.mjs
+& node tooling/scripts/package/check-version-lock.mjs
 if ($LASTEXITCODE -ne 0) {
     Write-Error "库包版本不一致，发版前必须先统一"
 }
@@ -160,7 +160,7 @@ $newVersion = (Read-JsonFile $corePkgPath).version
 Write-Output ""
 Write-Output "版本已升到：$newVersion"
 
-& node tooling/scripts/check-version-lock.mjs
+& node tooling/scripts/package/check-version-lock.mjs
 if ($LASTEXITCODE -ne 0) {
     Write-Error "升级之后库包版本仍不一致"
 }
