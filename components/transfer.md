@@ -205,7 +205,7 @@ const value = ref<string[]>(["read"]);
 
 加粗的是必需部件。
 
-`data-scope="transfer"`：`root` · `hidden-input` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
+`data-scope="transfer"`：`root` · `hidden-input` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
 
 ## 示例
 
@@ -2297,6 +2297,9 @@ const rows = [
 - 两栏都可搜索，`filter` 可自定义匹配规则。
 - 勾中的条目铺品牌淡底行面并由行首的方框标记，与表格选中行同一副外观；两侧定高列表挂自绘滚动条。
 - `oneWay` 单向移动：只能移向目标，不可退回。
+- 条目可逐条声明语气，搬到另一侧仍带着自己的那一份。
+- 条目可写副文本，第 2 行放一句解释，搬到另一侧一并带着。
+- 条目行尾留一格给作者（计数、徽标）；行首那一格归勾选框。
 - 万级条目时只渲染可视区。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
 - 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
@@ -2325,7 +2328,7 @@ const rows = [
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-transfer>` |
-| Vue 组件 | `XhTransferEmpty` `XhTransferGroup` `XhTransferGroupLabel` `XhTransferItem` `XhTransferItemCheckbox` `XhTransferItemText` `XhTransferList` `XhTransferLoading` `XhTransferPanelCount` `XhTransferPanelHeader` `XhTransferPanelTitle` `XhTransferRoot` `XhTransferSearch` `XhTransferSelectAllTrigger` `XhTransferSourcePanel` `XhTransferTargetPanel` `XhTransferToSourceTrigger` `XhTransferToTargetTrigger` |
+| Vue 组件 | `XhTransferEmpty` `XhTransferGroup` `XhTransferGroupLabel` `XhTransferItem` `XhTransferItemCheckbox` `XhTransferItemDescription` `XhTransferItemSuffix` `XhTransferItemText` `XhTransferList` `XhTransferLoading` `XhTransferPanelCount` `XhTransferPanelHeader` `XhTransferPanelTitle` `XhTransferRoot` `XhTransferSearch` `XhTransferSelectAllTrigger` `XhTransferSourcePanel` `XhTransferTargetPanel` `XhTransferToSourceTrigger` `XhTransferToTargetTrigger` |
 | 组合式函数 | `useTransfer` |
 | 状态机 | `transferMachine` |
 | 皮肤 | `@xihan-ui/styles/transfer.css` |
@@ -2356,6 +2359,18 @@ const rows = [
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
 
+### TransferItem
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` | 是 | 展示名，也是搜索过滤的取字来源。 |
+| `disabled` | `boolean` |  | 条目禁用：不可勾选、也不可移动，但它仍可聚焦、仍是方向键的起点。 |
+| `tone` | `Tone` |  | 该条自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达勾选与校验；勾选的标记与禁用都压过它。 两侧面板读同一份数据，条目搬到哪一侧都带着自己的语气。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -2373,6 +2388,16 @@ const rows = [
 | --- | --- | --- | --- |
 | `XhTransferRoot` | `default` | `TransferRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTransferGroup` | `value` | `string` | 是 |  |
+| `XhTransferItem` | `value` | `string` | 是 |  |
+| `XhTransferRoot` | `children` | `SlotChildren<TransferRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。
@@ -2381,6 +2406,8 @@ const rows = [
 | --- | --- |
 | `item` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-checkbox` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | checkStates[panel.side] |
 
@@ -2434,6 +2461,8 @@ const rows = [
 | `getGroupLabelProps` | `(props: TransferGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TransferItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: TransferItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemCheckboxProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getToTargetTriggerProps` | `() => T['button']` |  |
 | `getToSourceTriggerProps` | `() => T['button']` |  |
@@ -2527,6 +2556,7 @@ const rows = [
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-side` | item.side |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-tone` | index.get(v)?.tone |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -2535,6 +2565,16 @@ const rows = [
 | `item-text` | `data-side` | item.side |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-side` | item.side |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-side` | item.side |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-checkbox` | `data-disabled` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-side` | item.side |

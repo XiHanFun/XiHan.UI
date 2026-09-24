@@ -934,6 +934,14 @@ const formatWeight = (value: number) => `${value} kg`;
 | --- | --- | --- | --- |
 | `XhNumberFieldRoot` | `default` | `NumberFieldRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhNumberFieldRoot` | `children` | `SlotChildren<NumberFieldRootSlotProps>` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。
@@ -1096,8 +1104,8 @@ const formatWeight = (value: number) => `${value} kg`;
 | `--xh-number-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | number-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-number-field-placeholder-fg` | `control`<br>`input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | number-field 的 control、input 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-bg-active` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。 |
-| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger`<br>`input` | `background-image` | `has([data-part='input'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger、input 部件 background-image 覆盖槽。 |
-| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`input` | `background-size` | `has([data-part='input'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、input 部件 background-size 覆盖槽。 |
+| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger` | `background-image` | `has([data-part='input'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger 部件 background-image 覆盖槽。 |
+| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger` | `background-size` | `has([data-part='input'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger 部件 background-size 覆盖槽。 |
 | `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-fg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-font-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `font-size` | `default` | `--xh-_number-field-trigger-font-size` | number-field 的 control、decrement-trigger、increment-trigger 部件 font-size 覆盖槽。 |

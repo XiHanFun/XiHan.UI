@@ -629,6 +629,16 @@ function onSubmit(event: Event) {
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: SegmentedValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
+### SegmentedNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -645,6 +655,17 @@ function onSubmit(event: Event) {
 | --- | --- | --- | --- |
 | `XhSegmentedRoot` | `default` | — |  |
 | `XhSegmentedRoot` | `item` | `SegmentedNodeMeta` | 铺开 collection 时每一段的文本插槽。 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSegmentedItem` | `value` | `string` | 是 |  |
+| `XhSegmentedItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhSegmentedRoot` | `renderItem` | `(node: SegmentedNodeMeta) => ReactNode` |  | 每一段的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhSegmentedRoot` | `children` | `ReactNode` |  |  |
 
 ### 状态
 

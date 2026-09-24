@@ -314,6 +314,20 @@ const html = `
 | `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距随之换档。 |
 | `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，整块正文随之变化。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTypographyHeading` | `level` | `TypographyLevel \| string` |  | 字号档位 1-6，超出范围收敛到边界。 |
+| `XhTypographyHeading` | `as` | `ElementType` |  | 渲染为哪个标签，默认 p；需要进入文档大纲时写 h2（或 hN）。 |
+| `XhTypographyProse` | `as` | `ElementType` |  | 渲染为哪个标签，默认 div。 |
+| `XhTypographyText` | `tone` | `Tone` |  | 语气：决定使用哪族颜色。 |
+| `XhTypographyText` | `variant` | `TypographyVariant` |  | 形态：muted 弱化 / strong 加重 / code 等宽。 |
+| `XhTypographyText` | `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，只作用于该段行内文字。 |
+| `XhTypographyText` | `as` | `ElementType` |  | 渲染为哪个标签，默认 span；需要 code / strong 的原生语义时自行写明。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。

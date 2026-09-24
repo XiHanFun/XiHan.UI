@@ -1033,6 +1033,20 @@ const rules = {
 | `XhFormFieldGroup` | `default` | `FormFieldGroupSlotProps` |  |
 | `XhFormRoot` | `default` | `FormRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhFormErrorSummary` | `children` | `SlotChildren<FormErrorSummarySlotProps>` |  |  |
+| `XhFormErrorSummaryItem` | `name` | `FormPath` | 是 | 该条指向哪个字段路径。 |
+| `XhFormErrorSummaryItem` | `children` | `SlotChildren<FormErrorSummaryItemSlotProps>` |  |  |
+| `XhFormFieldGroup` | `name` | `FormPath` | 是 | 字段路径；字符串含点仍是单键，数组才表示层级。 |
+| `XhFormFieldGroup` | `span` | `FormFieldSpan` |  | grid 排布下该格占多宽：1 至 4 跨相应列数，'full' 占满整行；未写时占一列。 |
+| `XhFormFieldGroup` | `children` | `SlotChildren<FormFieldGroupSlotProps>` |  |  |
+| `XhFormRoot` | `children` | `SlotChildren<FormRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。

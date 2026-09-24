@@ -18,7 +18,11 @@ Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents
 
 自定义属性只带属于视觉环境的那部分。作者自己的属性（不以 `--xh-` 开头）照投；`--xh-` 命名空间只投文档根上有声明的名字，即令牌与按[覆盖样式的三种粒度](./styling#覆盖样式的三种粒度)写在 `:root` 上的组件槽覆盖。皮肤写在组件或家族元素上的公开槽（`--xh-<组件>-*`、`--xh-collection-*` 等）、私有槽 `--xh-_*` 与挂在 `[data-tone]` 上的 `--xh-tone-*` 是组件内部级联，不跨 Portal：斑马行改写的行底不会顺着行内的触发器进到菜单项，列表项里的下拉、卡片里的提示同理。判定按每次同步时的文档根计算样式做，不维护名单。
 
-框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性与自定义属性。普通属性、`class` / `style` 改动、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。普通计算样式不会复制。
+实例壳自己就能解析出来的那些不复制。只由文档根（`:root`、`html`）或桥复制过去的那些属性选中的声明——令牌层的 `:where(:root)`、`:where([data-density='compact'])`、`:where([data-theme='dark'])`，以及作者按同样形状写的规则——在壳上会被同一条规则再命中一次，壳因此只拿属性、不拿逐条 inline 声明；祖先上密度或主题的局部切换仍然完整生效，浮层内解析到的令牌与来源处一致。来源没有显式声明该轴时壳也不写该属性，按既有语义继续继承落点容器。
+
+框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性与自定义属性。普通属性、`style` 改动、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。普通计算样式不会复制。
+
+`class` 改动只在增删的名字出现在「声明了自定义属性的选择器」里时才重算：页面级过渡类、展开态与加载态每帧都在祖先链上增删 class，它们与自定义属性无关，链下每个浮层不必为此各读一遍整张令牌表。判定来自一份按文档缓存的样式表索引，样式表增删或整段替换会让它失效；通过 CSSOM 往已有分组规则内部插入声明自定义属性的规则不改变索引指纹，这种改动后需要显式 `sync()`。样式表跨域读不到规则、或选择器里出现 `[class]` 时，索引整体让位，按原来的方式重算。
 
 ```ts
 import { createPortalVisualBridge } from "@xihan-ui/core";

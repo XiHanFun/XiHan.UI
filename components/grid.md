@@ -266,6 +266,15 @@ const sections = [
 | `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；未提供时跟随 gap。 |
 | `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，未提供时行数由内容撑出；范围外的值按未提供处理。 提供后把这几行排为显式轨道，超出的项落入隐式行。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhGridItem` | `span` | `GridColumnCount \| string \| GridSpanByBreakpoint` |  | 跨几列：1 至 12 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
+| `XhGridItem` | `offset` | `GridColumnOffset \| string \| GridOffsetByBreakpoint` |  | 向后偏移几列：1 至 11 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。

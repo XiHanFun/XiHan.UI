@@ -407,6 +407,18 @@ const groups = [
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
+### NavigationMenuNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 入口文本；默认回退为 value。 |
+| `disabled` | `boolean` |  | 入口禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `href` | `string` |  | 直达目标。提供后该项即为一条链接，没有面板。 |
+| `current` | `boolean` |  | 指向当前页面的直达入口：输出 aria-current="page"。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -414,6 +426,21 @@ const groups = [
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `NavigationMenuValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhNavigationMenuContent` | `value` | `string` | 是 |  |
+| `XhNavigationMenuLink` | `current` | `boolean` |  |  |
+| `XhNavigationMenuRoot` | `renderPanel` | `(node: NavigationMenuNodeMeta) => ReactNode` |  | 每张面板的内容；只提供 collection 时由它承载。 |
+| `XhNavigationMenuRoot` | `children` | `ReactNode` |  |  |
+| `XhNavigationMenuTrigger` | `value` | `string` | 是 |  |
+| `XhNavigationMenuTrigger` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhNavigationMenuTriggerIndicator` | `value` | `string` | 是 |  |
+| `XhNavigationMenuTriggerIndicator` | `disabled` | `boolean` |  |  |
 
 ### 状态
 

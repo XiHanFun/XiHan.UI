@@ -124,6 +124,8 @@ pnpm --filter @xihan-ui/vue exec vitest run tests/browser/<file>.spec.ts --confi
 
 ## 8. 完成门禁
 
+开发中改了哪一块，先跑对应模块（`pnpm gate skin visual`，`pnpm gate --list` 列出十个模块）；检查脚本在 `tooling/scripts/<模块>/` 下，模块清单是 `tooling/scripts/gate.modules.mjs`。浏览器态同理按组件分类跑（`pnpm test:browser form --pkg=vue`，`pnpm test:browser --list` 列出分类）。
+
 任务相关检查通过后，至少运行：
 
 ```bash

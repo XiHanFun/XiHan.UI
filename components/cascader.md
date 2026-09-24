@@ -201,7 +201,7 @@ const regions = [
 
 加粗的是必需部件。
 
-`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `footer`
+`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `footer`
 
 ## 示例
 
@@ -963,6 +963,9 @@ const regions = [
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
 - `searchable` 按完整路径筛选选项。
+- 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
+- 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 选项行尾留一格给作者（计数、徽标）。
 - 支持按需加载、空状态、加载状态与原生表单提交。
 - 选中项使用末端标记，半选项使用横线。
 
@@ -989,7 +992,7 @@ const regions = [
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-cascader>` |
-| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderControl` `XhCascaderFooter` `XhCascaderGroup` `XhCascaderGroupLabel` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemIndicator` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderLoading` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
+| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderControl` `XhCascaderFooter` `XhCascaderGroup` `XhCascaderGroupLabel` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemDescription` `XhCascaderItemIndicator` `XhCascaderItemSuffix` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderLoading` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
 | 组合式函数 | `useCascader` |
 | 状态机 | `cascaderMachine` |
 | 皮肤 | `@xihan-ui/styles/cascader.css` |
@@ -1028,6 +1031,19 @@ const regions = [
 | `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: CascaderOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+### CascaderNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示名，也是路径回显的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 |
+| `tone` | `Tone` |  | 该条选项自身的性质：已失效的写 danger、需要留意的写 warning。不写即与同列其余条目同档， 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不表达选中与校验； 展开路径的面、选中的对号与禁用都压过它。搜索结果里取整条路径末段的语气。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+| `children` | `CascaderNode[]` |  | 子节点。非空数组才视为分支（右侧可以再打开一列）。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -1046,6 +1062,20 @@ const regions = [
 | `XhCascaderRoot` | `default` | `CascaderRootSlotProps` |  |
 | `XhCascaderSearchList` | `item` | `CascaderSearchListItemSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCascaderColumn` | `level` | `number \| string` | 是 | 层号，兼收字符串。 |
+| `XhCascaderContent` | `empty` | `ReactNode` |  | 空态占位的内容；未提供时按视图取无匹配或无数据文案。 |
+| `XhCascaderGroup` | `value` | `string` | 是 |  |
+| `XhCascaderItem` | `value` | `string` | 是 |  |
+| `XhCascaderPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhCascaderRoot` | `children` | `SlotChildren<CascaderRootSlotProps>` |  |  |
+| `XhCascaderSearchList` | `renderItem` | `(result: CascaderSearchResult) => ReactNode` |  | 每条候选的自定义内容；未提供时把整条路径连缀为一行。 |
+
 ### 状态
 
 公开状态写入 `data-state`。
@@ -1062,6 +1092,8 @@ const regions = [
 | `column` | 'open' \| 'closed' |
 | `item` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-text` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-description` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-suffix` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-indicator` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `footer` | 'open' \| 'closed' |
 
@@ -1130,6 +1162,8 @@ const regions = [
 | `getColumnProps` | `(props: CascaderColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CascaderItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: CascaderItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: CascaderItemProps) => T['element']` |  |
 
 ## 无障碍
@@ -1276,6 +1310,7 @@ const regions = [
 | `search-item` | `data-highlighted` | ''（条件成立时才出现） |
 | `search-item` | `data-pressed` | ''（条件成立时才出现） |
 | `search-item` | `data-state` | 'checked' \| 'indeterminate' \| 'unchecked' |
+| `search-item` | `data-tone` | undefined \| metaOf(v)?.tone |
 | `search-item` | `data-xh-collection-context` | 'overlay' |
 | `search-item` | `data-xh-collection-item` | '' |
 | `search-item` | `data-xh-collection-size` | props.size |
@@ -1290,6 +1325,7 @@ const regions = [
 | `item` | `data-level` | String(meta.level) \| undefined |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item` | `data-tone` | undefined \| metaOf(v)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -1298,6 +1334,16 @@ const regions = [
 | `item-text` | `data-in-path` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-in-path` | ''（条件成立时才出现） |
+| `item-description` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-in-path` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-in-path` | ''（条件成立时才出现） |

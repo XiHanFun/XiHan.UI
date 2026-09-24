@@ -211,7 +211,7 @@ const doc = ref<string[]>([]);
 
 加粗的是必需部件。
 
-`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
+`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
 
 ## 示例
 
@@ -3121,6 +3121,9 @@ const doc = ref<string[]>(["guide"]);
 - 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。
 - 单选、多选、分支与叶子统一用末端对号表示选中，级联半选使用横线；正文保持正常颜色和字重，中性底只用于悬停和键盘高亮。展开箭头位于行首，与选择标记分开。
 - `cascade` 与 `checkedStrategy` 决定勾选是否带子级、回显给哪一层。
+- 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
+- 节点可写副文本，第 2 行放一句解释，不进连打检索串。
+- 节点行尾留一格给作者（计数、徽标）；行首那一格归勾选框与展开箭头。
 - 支持只选叶子不选分支、浮层内关键词过滤、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 获取直接子项；失败保留 cause，默认 `branch-error` 与 `branch-retry-trigger` 直接可用。
 - 整树空（`empty`）与在途（`loading`）默认自动渲染；collection 看有效树长度，手写节点由适配器只上报挂载事实、Headless 统一判空。`loading` 为真时树报 `aria-busy`，空态让位；作者写同名部件时保留作者结构与文案。
 - 输入框保持实体；浮层使用 M2 磨砂材质、内侧顶光和四向短位移，不缩放树中文字。树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；增强对比度时材质自动实体化。面板宽度受定位后的可用空间约束，触发器更宽时也不撑大面板。
@@ -3151,7 +3154,7 @@ const doc = ref<string[]>(["guide"]);
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree-select>` |
-| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemIndicator` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
+| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemDescription` `XhTreeSelectItemIndicator` `XhTreeSelectItemSuffix` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
 | 组合式函数 | `useTreeSelect` |
 | 状态机 | `treeSelectMachine` |
 | 皮肤 | `@xihan-ui/styles/tree-select.css` |
@@ -3193,6 +3196,21 @@ const doc = ref<string[]>(["guide"]);
 | `onBranchLoad` | `(details: TreeSelectBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，不转换为错误或全局空态。 |
 | `onBranchLoadError` | `(details: TreeSelectBranchLoadErrorDetails) => void` |  | 一轮有效分支请求失败；保留 loader 给出的原始 error。 |
 
+### TreeSelectNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `TreeSelectNode[]` |  |  |
+| `hasChildren` | `boolean` |  |  |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示名，也是连打检索与分支可及名的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 |
+| `tone` | `Tone` |  | 该节点自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余节点同档， 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不改字重与缩进， 也不表达选中或校验；选中的标记与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+| `childrenOrientation` | `Orientation` |  | 该层子节点的排布方式，由作者在数据上标注。提供后以它为准，`vertical` 也优先于树级的 `leafOrientation`；未提供时才回退为 `leafOrientation` 加子节点全是叶子的结构判据。 标注在哪一层，横向排布就只落在哪一层：菜单授权中标注在按钮的父菜单上，其他目录不受影响， 也不随子节点增减漂移。只影响排布，不改变键盘。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -3214,6 +3232,19 @@ const doc = ref<string[]>(["guide"]);
 | --- | --- | --- | --- |
 | `XhTreeSelectRoot` | `default` | `TreeSelectRootSlotProps` |  |
 | `XhTreeSelectRoot` | `label` | — |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTreeSelectBranch` | `value` | `string` | 是 |  |
+| `XhTreeSelectItem` | `value` | `string` | 是 |  |
+| `XhTreeSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhTreeSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhTreeSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
+| `XhTreeSelectRoot` | `children` | `SlotChildren<TreeSelectRootSlotProps>` |  |  |
 
 ### 状态
 
@@ -3296,6 +3327,8 @@ const doc = ref<string[]>(["guide"]);
 | `getTreeProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getBranchControlProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
@@ -3451,6 +3484,7 @@ const doc = ref<string[]>(["guide"]);
 | `item` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-selected` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf(v)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -3459,6 +3493,16 @@ const doc = ref<string[]>(["guide"]);
 | `item-text` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item-text` | `data-selected` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-indeterminate` | ''（条件成立时才出现） |
+| `item-description` | `data-selected` | ''（条件成立时才出现） |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-indeterminate` | ''（条件成立时才出现） |
+| `item-suffix` | `data-selected` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
@@ -3483,6 +3527,7 @@ const doc = ref<string[]>(["guide"]);
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-selected` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
+| `branch-control` | `data-tone` | metaOf(v)?.tone |
 | `branch-control` | `data-xh-collection-context` | 'overlay' |
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | props.size |

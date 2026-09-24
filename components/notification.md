@@ -1060,6 +1060,25 @@ function pop(create: Create, placement: string, label: string): void {
 | `translations` | `Partial<NotificationTranslations>` |  |  |
 | `onItemsChange` | `(details: NotificationItemsChangeDetails) => void` |  |  |
 
+### NotificationRecord
+
+`items` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `title` | `string` |  |  |
+| `description` | `string` |  |  |
+| `tone` | `NotificationTone` |  |  |
+| `loading` | `boolean` |  | 事情尚未完成：图标换为转圈，且不自动消失。 |
+| `duration` | `number` |  |  |
+| `removeDelay` | `number` |  |  |
+| `closable` | `boolean` |  |  |
+| `placement` | `NotificationPlacement` |  | 单条覆盖落位；未提供时使用 notification 的 placement。 |
+| `actionLabel` | `string` |  | 行内动作按钮的文案。提供后才渲染动作部件。 只存放文案不存放回调：该条记录需要能被整份替换、序列化、比对， 按下之后的行为由宿主按 id 自行查询。 |
+| `priority` | `number` |  | 移除时优先移除低优先级。未提供时按语气派生：error=2 / warning=1 / 其余=0。 |
+| `count` | `number` |  | 按内容合并后的条数，&gt;1 时由 Headless 服务投影在标题后追加计数。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -1077,6 +1096,30 @@ function pop(create: Create, placement: string, label: string): void {
 | `XhNotificationGroup` | `default` | `NotificationGroupSlotProps` |  |
 | `XhNotificationItem` | `default` | `{ item: NotificationItemApi }` |  |
 | `XhNotificationRoot` | `default` | `NotificationRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhNotificationGroup` | `placement` | `NotificationPlacement` |  | 未写时使用 notification 的 placement；写了则只接收该位置上的条目。 |
+| `XhNotificationGroup` | `children` | `SlotChildren<NotificationGroupSlotProps>` |  |  |
+| `XhNotificationItem` | `id` | `string` |  |  |
+| `XhNotificationItem` | `title` | `string` |  |  |
+| `XhNotificationItem` | `description` | `string` |  |  |
+| `XhNotificationItem` | `tone` | `ToastTone` |  |  |
+| `XhNotificationItem` | `loading` | `boolean` |  |  |
+| `XhNotificationItem` | `duration` | `number` |  |  |
+| `XhNotificationItem` | `removeDelay` | `number` |  |  |
+| `XhNotificationItem` | `closable` | `boolean` |  |  |
+| `XhNotificationItem` | `pauseOnPageIdle` | `boolean` |  |  |
+| `XhNotificationItem` | `paused` | `boolean` |  | 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 |
+| `XhNotificationItem` | `translations` | `NotificationProps['translations']` |  |  |
+| `XhNotificationItem` | `onStatusChange` | `ToastSchema['props']['onStatusChange']` |  |  |
+| `XhNotificationItem` | `onAction` | `ToastSchema['props']['onAction']` |  |  |
+| `XhNotificationItem` | `children` | `SlotChildren<NotificationItemSlotProps>` |  |  |
+| `XhNotificationRoot` | `children` | `SlotChildren<NotificationRootSlotProps>` |  |  |
 
 ### 状态
 

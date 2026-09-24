@@ -455,6 +455,16 @@ const swatches = [
 | `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
 
+### ColorSwatchPickerNode
+
+`swatches` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 | 颜色串，也是该格的身份。 |
+| `label` | `string` |  | 读屏朗读该格的方式，例如「品牌红」；默认朗读颜色串。 |
+| `disabled` | `boolean` |  | 该格禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -471,6 +481,18 @@ const swatches = [
 | --- | --- | --- | --- |
 | `XhColorSwatchPickerRoot` | `default` | `ColorSwatchPickerRootSlotProps` |  |
 | `XhColorSwatchPickerRoot` | `label` | — |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhColorSwatchPickerItem` | `value` | `string` | 是 |  |
+| `XhColorSwatchPickerItem` | `label` | `string` |  | 读屏朗读该格子的方式；默认交给 connect 查询 swatches，都没有时朗读颜色串。 |
+| `XhColorSwatchPickerItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 swatches，写死 false 会覆盖数据中的禁用。 |
+| `XhColorSwatchPickerRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhColorSwatchPickerRoot` | `children` | `SlotChildren<ColorSwatchPickerRootSlotProps>` |  |  |
 
 ### 状态
 

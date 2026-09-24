@@ -780,6 +780,15 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | --- | --- | --- | --- |
 | `XhPinInputRoot` | `default` | `PinInputRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhPinInputInput` | `index` | `number \| string` | 是 | 下标由作者声明；兼收字符串，与另外两个适配器读取的是同一份声明。 |
+| `XhPinInputRoot` | `children` | `SlotChildren<PinInputRootSlotProps>` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。

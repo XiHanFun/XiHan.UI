@@ -50,7 +50,7 @@ const menus = [
 
 加粗的是必需部件。
 
-`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -130,6 +130,8 @@ import {
   XhIcon,
   XhMenubarContent,
   XhMenubarItem,
+  XhMenubarItemIndicator,
+  XhMenubarItemShortcut,
   XhMenubarItemText,
   XhMenubarPositioner,
   XhMenubarRoot,
@@ -144,10 +146,10 @@ import {
     <XhMenubarTrigger value="edit"><XhIcon :icon="PencilIcon" size="sm" />编辑</XhMenubarTrigger>
     <XhMenubarPositioner value="file">
       <XhMenubarContent>
-        <XhMenubarItem value="new"><XhIcon :icon="PlusIcon" size="sm" /><XhMenubarItemText>新建</XhMenubarItemText><span aria-hidden="true">⌘ N</span></XhMenubarItem>
-        <XhMenubarItem value="open"><XhIcon :icon="FolderIcon" size="sm" /><XhMenubarItemText>打开</XhMenubarItemText><span aria-hidden="true">⌘ O</span></XhMenubarItem>
+        <XhMenubarItem value="new"><XhMenubarItemIndicator><XhIcon :icon="PlusIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>新建</XhMenubarItemText><XhMenubarItemShortcut>⌘ N</XhMenubarItemShortcut></XhMenubarItem>
+        <XhMenubarItem value="open"><XhMenubarItemIndicator><XhIcon :icon="FolderIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>打开</XhMenubarItemText><XhMenubarItemShortcut>⌘ O</XhMenubarItemShortcut></XhMenubarItem>
         <XhMenubarSeparator />
-        <XhMenubarItem value="save"><XhIcon :icon="SaveIcon" size="sm" /><XhMenubarItemText>保存</XhMenubarItemText><span aria-hidden="true">⌘ S</span></XhMenubarItem>
+        <XhMenubarItem value="save"><XhMenubarItemIndicator><XhIcon :icon="SaveIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>保存</XhMenubarItemText><XhMenubarItemShortcut>⌘ S</XhMenubarItemShortcut></XhMenubarItem>
       </XhMenubarContent>
     </XhMenubarPositioner>
     <XhMenubarPositioner value="edit">
@@ -167,10 +169,10 @@ import {
     <button data-xh-part="trigger" value="edit">编辑</button>
     <div data-xh-part="positioner" value="file">
       <div data-xh-part="content" value="file">
-        <div data-xh-part="item" value="new"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span data-xh-part="item-text">新建</span><span aria-hidden="true">⌘ N</span></div>
-        <div data-xh-part="item" value="open"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h7l2 3h9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span data-xh-part="item-text">打开</span><span aria-hidden="true">⌘ O</span></div>
+        <div data-xh-part="item" value="new"><span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span data-xh-part="item-text">新建</span><span data-xh-part="item-shortcut">⌘ N</span></div>
+        <div data-xh-part="item" value="open"><span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h7l2 3h9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span data-xh-part="item-text">打开</span><span data-xh-part="item-shortcut">⌘ O</span></div>
         <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="save"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h12l3 3v13H4V5zM8 4v6h8M8 20v-6h8v6"/></svg><span data-xh-part="item-text">保存</span><span aria-hidden="true">⌘ S</span></div>
+        <div data-xh-part="item" value="save"><span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h12l3 3v13H4V5zM8 4v6h8M8 20v-6h8v6"/></svg></span><span data-xh-part="item-text">保存</span><span data-xh-part="item-shortcut">⌘ S</span></div>
       </div>
     </div>
     <div data-xh-part="positioner" value="edit"><div data-xh-part="content" value="edit"><div data-xh-part="item" value="undo">撤销</div><div data-xh-part="item" value="redo">重做</div></div></div>
@@ -276,6 +278,8 @@ import {
 - 同一时间只展开一个顶层菜单。
 - 展开后移向相邻入口会直接切换菜单。
 - 支持方向键、首字符检索、禁用项、分组与子菜单。
+- 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
+- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
 - 条目可组合图标、文字、说明和快捷键提示。
 - 首次展开与最终关闭使用短距离淡变，顶层菜单切换不播放交叉动画。
 
@@ -301,7 +305,7 @@ import {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menubar>` |
-| Vue 组件 | `XhMenubarArrow` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIndicator` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
+| Vue 组件 | `XhMenubarArrow` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIndicator` `XhMenubarItemShortcut` `XhMenubarItemSuffix` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
 | 组合式函数 | `useMenubar` |
 | 状态机 | `menubarMachine` |
 | 皮肤 | `@xihan-ui/styles/menubar.css` |
@@ -326,6 +330,23 @@ import {
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
 | `onSelect` | `(details: MenubarSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
 
+### MenubarNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是菜单内连打检索的取字来源；默认回退为 value。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；只在条目上读取。 |
+| `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
+| `disabled` | `boolean` |  | 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。只在条目上读取—— 顶层入口表达的是位置不是动作，写了也不产出语气面。 只换字色与悬停 / 按下的面，不改字重与缩进；禁用压过它，破坏性命令仍要配图标。 |
+| `group` | `string` |  | 所属分组的身份；相邻同值的条目合并为一个 group。只在条目上读取。 |
+| `groupLabel` | `string` |  | 本组的标题文本，写在组内任意一条上即可。只在条目上读取。 |
+| `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。只在条目上读取。 |
+| `items` | `MenubarNode[]` |  | 该菜单中的条目；只在顶层节点上读取。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -342,8 +363,41 @@ import {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhMenubarRoot` | `default` | `MenubarRootSlotProps` |  |
-| `XhMenubarRoot` | `item` | `MenubarNodeMeta` |  |
+| `XhMenubarRoot` | `item` | `MenubarNodeMeta` | 只填条目的文字槽，标记位、副文本与快捷键照旧由数据铺 |
+| `XhMenubarRoot` | `item-prefix` | `MenubarNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhMenubarRoot` | `item-suffix` | `MenubarNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhMenubarSub` | `default` | `MenubarSubSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMenubarContent` | `value` | `string` |  | 默认时沿用外层 positioner 提供的身份，无 positioner 时必填。 |
+| `XhMenubarGroup` | `value` | `string` | 是 |  |
+| `XhMenubarItem` | `value` | `string` | 是 |  |
+| `XhMenubarItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhMenubarPositioner` | `value` | `string` | 是 |  |
+| `XhMenubarPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhMenubarRoot` | `renderItem` | `(node: MenubarNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhMenubarRoot` | `renderItemPrefix` | `(node: MenubarNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhMenubarRoot` | `renderItemSuffix` | `(node: MenubarNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
+| `XhMenubarRoot` | `children` | `SlotChildren<MenubarRootSlotProps>` |  |  |
+| `XhMenubarSub` | `value` | `string` | 是 | 它在所属菜单中的条目身份。 |
+| `XhMenubarSub` | `disabled` | `boolean` |  |  |
+| `XhMenubarSub` | `placement` | `Placement` |  |  |
+| `XhMenubarSub` | `offset` | `number` |  |  |
+| `XhMenubarSub` | `loop` | `boolean` |  |  |
+| `XhMenubarSub` | `openOnHover` | `boolean` |  |  |
+| `XhMenubarSub` | `hoverOpenDelay` | `number` |  |  |
+| `XhMenubarSub` | `hoverCloseDelay` | `number` |  |  |
+| `XhMenubarSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
+| `XhMenubarSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
+| `XhMenubarSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenubarSub` | `children` | `SlotChildren<MenubarSubSlotProps>` |  |  |
+| `XhMenubarTrigger` | `value` | `string` | 是 |  |
+| `XhMenubarTrigger` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 
 ### 状态
 
@@ -387,6 +441,8 @@ import {
 | `getItemTextProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MenubarItemProps) => T['element']` |  |
+| `getItemShortcutProps` | `(props: MenubarItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenubarGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: MenubarGroupProps) => T['element']` |  |
@@ -438,6 +494,7 @@ import {
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'menuitem' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `item-shortcut` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -482,6 +539,7 @@ import {
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | itemMetaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -494,6 +552,12 @@ import {
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 

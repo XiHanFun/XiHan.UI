@@ -4470,6 +4470,42 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
 | `onExpandedValueChange` | `(details: TableExpandedValueChangeDetails) => void` |  |  |
 
+### TableColumnDef
+
+`columns` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 |
+| `label` | `string` |  | 展示名。只供调用方渲染，不作为可及名。 |
+| `sortable` | `boolean` |  | 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 |
+| `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写入 --xh-table-sticky-inset； 有一列宽度不是数字时无法计算，该侧从该列起都回退为贴边。 |
+| `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 |
+| `minWidth` | `number` |  | 拖动改列宽时的下限（px）。未提供时使用 TABLE_COLUMN_MIN_WIDTH。 |
+| `maxWidth` | `number` |  | 拖动改列宽时的上限（px）。未提供时不封顶。 |
+| `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
+| `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
+
+### TableRowDef
+
+`rows` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 全表唯一：DOM 身份（data-value）、选中 / 展开集合的元素、连接层查询行的键。 |
+| `disabled` | `boolean` |  | 行禁用：不可选中也不可展开，但仍可聚焦、仍是方向键的起点，也不计入全选基数。 |
+| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 |
+| `parentId` | `string` |  | 父行 id。提供后该行即为该父行的子行，收起父行时它随之隐藏。 有子行的行不再产出详情行：一行不可能同时既展开出子行、又展开出一块详情。 指向不存在的父行时按根行处理，不丢弃该行。 |
+
+### TableSortDescriptor
+
+`sort` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `direction` | `TableSortDirection` | 是 |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -4490,6 +4526,21 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | --- | --- | --- | --- |
 | `XhTableRoot` | `default` | `TableRootSlotProps` |  |
 | `XhTableRoot` | `toolbar` | `TableToolbarSlotProps` | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTableCell` | `value` | `string` | 是 | 列 id。 |
+| `XhTableCell` | `colspan` | `number \| string` |  | 跨列数，从 value 所在列向后计算。 |
+| `XhTableColumnHeader` | `value` | `string` | 是 |  |
+| `XhTableColumnVisibilityTrigger` | `value` | `string` |  | 列 id。写在列设置区中时必须提供；写在列标题中时可省略，跟随该列。 |
+| `XhTableExpandedRow` | `value` | `string` | 是 | 所属数据行的 id。 |
+| `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
+| `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |
+| `XhTableRow` | `value` | `string` |  | 行 id：数据行必须提供，表头行与脚注行省略。 |
 
 ### 状态
 

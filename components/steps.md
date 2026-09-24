@@ -488,6 +488,18 @@ const errorAt = 1;
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
+### StepNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `string` |  | 标题文本。 |
+| `description` | `string` |  | 说明文本。 |
+| `status` | `StepStatus` |  | 覆盖该步的状态；未提供时由步序计算。 |
+| `tone` | `Tone` |  | 该步的语气：被驳回的写 danger、需要留意的写 warning；未提供时跟随整组的 tone。 |
+| `disabled` | `boolean` |  | 该步不可点击。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -503,6 +515,17 @@ const errorAt = 1;
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhStepsRoot` | `default` | `StepsRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhStepsContent` | `value` | `number \| string` | 是 |  |
+| `XhStepsItem` | `value` | `number \| string` | 是 | 步骤下标，兼收字符串以支持模板属性字面量。 |
+| `XhStepsItem` | `disabled` | `boolean` |  |  |
+| `XhStepsRoot` | `children` | `SlotChildren<StepsRootSlotProps>` |  |  |
 
 ### 状态
 

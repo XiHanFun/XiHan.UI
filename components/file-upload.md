@@ -1497,6 +1497,18 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `onUploadComplete` | `(details: FileUploadCompleteDetails) => void` |  | 单个文件传输完成（upload 的 Promise 兑现）。 |
 | `onUploadError` | `(details: FileUploadErrorDetails) => void` |  | 单个文件传输失败（upload 的 Promise 拒绝）；中止不视为失败，不发出。 |
 
+### FileUploadRemoteFile
+
+`remoteFiles` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 稳定标识（通常是服务端主键），删除与去重都以它为准。 |
+| `name` | `string` | 是 |  |
+| `size` | `number` |  | 字节数；未提供时不显示大小。 |
+| `type` | `string` |  | MIME 类型。 |
+| `url` | `string` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -1517,6 +1529,16 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFileUploadRoot` | `default` | `FileUploadRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhFileUploadItem` | `file` | `FileUploadFile` |  | 该行显示哪个文件（本地或远程附件）。 |
+| `XhFileUploadItem` | `index` | `number \| string` |  | 改用下标从 allFiles（远程在前、本地在后）中取文件，兼收字符串。 |
+| `XhFileUploadRoot` | `children` | `SlotChildren<FileUploadRootSlotProps>` |  |  |
 
 ### 状态
 

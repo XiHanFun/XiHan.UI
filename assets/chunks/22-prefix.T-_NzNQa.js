@@ -1,0 +1,40 @@
+const a=`<!-- 行首与行尾 | 两格交给作者，文字与副文本仍由数据铺 -->
+<xh-select default-value="open" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">状态</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="open">
+            <span data-xh-part="item-prefix"><span style="display: block; inline-size: 8px; block-size: 8px; border-radius: var(--xh-shape-pill); background: var(--xh-fg-warning)"></span></span>
+            <span data-xh-part="item-text">进行中</span>
+            <span data-xh-part="item-description">已排期，尚未合并</span>
+            <span data-xh-part="item-suffix" style="color: var(--xh-fg-muted); font-size: var(--xh-control-caption-md)">12</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="merged">
+            <span data-xh-part="item-prefix"><span style="display: block; inline-size: 8px; block-size: 8px; border-radius: var(--xh-shape-pill); background: var(--xh-fg-success)"></span></span>
+            <span data-xh-part="item-text">已合并</span>
+            <span data-xh-part="item-description">进入主干</span>
+            <span data-xh-part="item-suffix" style="color: var(--xh-fg-muted); font-size: var(--xh-control-caption-md)">148</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="closed">
+            <span data-xh-part="item-prefix"><span style="display: block; inline-size: 8px; block-size: 8px; border-radius: var(--xh-shape-pill); background: var(--xh-fg-muted)"></span></span>
+            <span data-xh-part="item-text">已关闭</span>
+            <span data-xh-part="item-description">不再处理</span>
+            <span data-xh-part="item-suffix" style="color: var(--xh-fg-muted); font-size: var(--xh-control-caption-md)">31</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+`;export{a as default};

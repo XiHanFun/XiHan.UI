@@ -102,7 +102,7 @@ const members = [
 
 加粗的是必需部件。
 
-`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
+`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
 
 ## 示例
 
@@ -348,6 +348,9 @@ import {
 - 支持 `single`、`multiple` 和 `extended` 三种选择模式。
 - 支持方向键导航、连续输入检索与范围选择。
 - 支持分组、禁用条目和定高滚动。
+- 条目可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
+- 条目可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 提供空态、加载态与加载更多部件。
 
 ### 组合
@@ -357,7 +360,7 @@ import {
 
 ### 最佳实践
 
-- 使用 `item-indicator` 表示选中，并始终保留其空间。页内列表的选中行铺品牌淡底行面并在起始侧画对号，与下拉候选的透明底行尾对号刻意不同。
+- 使用 `item-indicator` 表示选中，并始终保留其空间。选中与下拉候选同一种读法：行不换面、不换字色，只在行尾画对号。
 - 条目标题保持简短，补充信息使用次级文字。
 - 长列表设置固定高度，并按需启用虚拟化。
 - 空态与加载态放在 `content` 外，与其互斥显示。
@@ -374,7 +377,7 @@ import {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-listbox>` |
-| Vue 组件 | `XhListboxContent` `XhListboxEmpty` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxLoadMoreTrigger` `XhListboxLoading` `XhListboxRoot` |
+| Vue 组件 | `XhListboxContent` `XhListboxEmpty` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemDescription` `XhListboxItemIndicator` `XhListboxItemPrefix` `XhListboxItemSuffix` `XhListboxItemText` `XhListboxLabel` `XhListboxLoadMoreTrigger` `XhListboxLoading` `XhListboxRoot` |
 | 组合式函数 | `useListbox` |
 | 状态机 | `listboxMachine` |
 | 皮肤 | `@xihan-ui/styles/listbox.css` |
@@ -399,6 +402,18 @@ import {
 | `typeahead` | `boolean` |  | 连打检索，默认开启。 |
 | `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
 
+### ListboxNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `tone` | `Tone` |  | 该条选项自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整列的 tone 不下发给条目。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -415,7 +430,24 @@ import {
 | --- | --- | --- | --- |
 | `XhListboxRoot` | `default` | `ListboxRootSlotProps` |  |
 | `XhListboxRoot` | `label` | — |  |
-| `XhListboxRoot` | `item` | `ListboxNodeMeta` |  |
+| `XhListboxRoot` | `item` | `ListboxNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhListboxRoot` | `item-prefix` | `ListboxNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhListboxRoot` | `item-suffix` | `ListboxNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhListboxGroup` | `value` | `string` | 是 |  |
+| `XhListboxItem` | `value` | `string` | 是 |  |
+| `XhListboxItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhListboxRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhListboxRoot` | `renderItem` | `(node: ListboxNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhListboxRoot` | `renderItemPrefix` | `(node: ListboxNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhListboxRoot` | `renderItemSuffix` | `(node: ListboxNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhListboxRoot` | `children` | `SlotChildren<ListboxRootSlotProps>` |  |  |
 
 ### 状态
 
@@ -424,7 +456,10 @@ import {
 | 部件 | 取值 |
 | --- | --- |
 | `item` | 'checked' \| 'unchecked' |
+| `item-prefix` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 
 以下名称仅用于内部状态机。
@@ -462,7 +497,10 @@ import {
 | `getGroupProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ListboxItemProps) => T['element']` |  |
 
 ## 无障碍
@@ -502,6 +540,7 @@ import {
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -534,13 +573,26 @@ import {
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
-| `item` | `data-xh-collection-context` | 'page' |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
+| `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-prefix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
@@ -585,18 +637,17 @@ import {
 | `--xh-listbox-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | listbox 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-listbox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | listbox 的 group-label 部件 padding-block 覆盖槽。 |
-| `--xh-listbox-group-spacing` | `content`<br>`group`<br>`item` | `margin-block-start` | `has([data-scope='listbox'][data-part='item']:not([hidden])`<br>`not([data-scope='listbox'][data-part='content'] [hidden] *)` | `--xh-space-1_5` | listbox 的 content、group、item 部件 margin-block-start 覆盖槽。 |
+| `--xh-listbox-group-spacing` | `group` | `margin-block-start` | `has([data-scope='listbox'][data-part='item']:not([hidden])`<br>`not([data-scope='listbox'][data-part='content'] [hidden] *)` | `--xh-space-1_5` | listbox 的 group 部件 margin-block-start 覆盖槽。 |
 | `--xh-listbox-icon-size` | `item`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | listbox 的 item、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-listbox-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | listbox 的 item 部件 background-color 覆盖槽。 |
-| `--xh-listbox-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | listbox 的 item 部件 background-color 覆盖槽。 |
-| `--xh-listbox-item-bg-selected` | `item` | `background-color` | `disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | listbox 的 item 部件 background-color 覆盖槽。 |
-| `--xh-listbox-item-check-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-listbox-item-indicator-fg` | listbox 的 item 部件 color 覆盖槽。 |
-| `--xh-listbox-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-fg-default` | listbox 的 item 部件 color 覆盖槽。 |
-| `--xh-listbox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | listbox 的 item 部件 color 覆盖槽。 |
+| `--xh-listbox-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | listbox 的 item 部件 background-color 覆盖槽。 |
+| `--xh-listbox-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | listbox 的 item 部件 background-color 覆盖槽。 |
+| `--xh-listbox-item-check-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-listbox-item-indicator-fg` | listbox 的 item 部件 color 覆盖槽。 |
+| `--xh-listbox-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | listbox 的 item 部件 color 覆盖槽。 |
+| `--xh-listbox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-listbox-item-fg` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-font-size` | `item` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 item 部件 font-size 覆盖槽。 |
-| `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-font-weight-regular` | listbox 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-context=page`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
-| `--xh-listbox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 color 覆盖槽。 |
+| `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | listbox 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-listbox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-listbox-item-px` | `item` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 item 部件 padding-inline 覆盖槽。 |

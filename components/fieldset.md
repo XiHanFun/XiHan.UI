@@ -355,6 +355,14 @@ const enabled = ref(false);
 | `required` | `boolean` |  | 必填标记：落为 data-required，供皮肤给组标题加星号，校验仍由宿主负责。 不产出 aria-required：该属性在 group 角色上不受支持，写入也不进入无障碍树。 |
 | `translations` | `Partial<FieldsetTranslations>` |  | 文案覆盖。本组件当前没有外露文案，保留该位，接全局配置的通道由适配器铺设。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhFieldsetRoot` | `children` | `ReactNode` |  |  |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。

@@ -78,7 +78,7 @@ const fruits = [
 
 加粗的是必需部件。
 
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `hidden-select`
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `hidden-select`
 
 ## 示例
 
@@ -2605,6 +2605,135 @@ function onValueChange(details: { value: string[] }): void {
 </script>
 ```
 
+### 选项副文本
+
+一行放不下的解释写在第 2 行
+
+```vue
+<script setup lang="ts">
+import type { SelectNode } from "@xihan-ui/headless";
+import { XhSelectRoot } from "@xihan-ui/vue";
+
+const plans: SelectNode[] = [
+  { value: "free", label: "免费版", description: "单人使用，保留 30 天历史" },
+  { value: "team", label: "团队版", description: "最多 20 人，共享工作区与审计日志" },
+  { value: "enterprise", label: "企业版", description: "单点登录、私有部署与专属支持" },
+];
+</script>
+
+<template>
+  <XhSelectRoot :collection="plans" :default-value="['team']" label="订阅方案" placeholder="请选择" />
+</template>
+```
+
+```html
+<xh-select default-value="team" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">订阅方案</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="free">
+            <span data-xh-part="item-text">免费版</span>
+            <span data-xh-part="item-description">单人使用，保留 30 天历史</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="team">
+            <span data-xh-part="item-text">团队版</span>
+            <span data-xh-part="item-description">最多 20 人，共享工作区与审计日志</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="enterprise">
+            <span data-xh-part="item-text">企业版</span>
+            <span data-xh-part="item-description">单点登录、私有部署与专属支持</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+```
+
+### 行首与行尾
+
+两格交给作者，文字与副文本仍由数据铺
+
+```vue
+<script setup lang="ts">
+import type { SelectNode, SelectNodeMeta } from "@xihan-ui/headless";
+import { XhSelectRoot } from "@xihan-ui/vue";
+
+const states: SelectNode[] = [
+  { value: "open", label: "进行中", description: "已排期，尚未合并" },
+  { value: "merged", label: "已合并", description: "进入主干" },
+  { value: "closed", label: "已关闭", description: "不再处理" },
+];
+
+const dot = { open: "var(--xh-fg-warning)", merged: "var(--xh-fg-success)", closed: "var(--xh-fg-muted)" };
+const count = { open: 12, merged: 148, closed: 31 };
+const key = (node: SelectNodeMeta): keyof typeof dot => node.value as keyof typeof dot;
+</script>
+
+<template>
+  <XhSelectRoot :collection="states" :default-value="['open']" label="状态" placeholder="请选择">
+    <template #item-prefix="node">
+      <span :style="{ display: 'block', inlineSize: '8px', blockSize: '8px', borderRadius: 'var(--xh-shape-pill)', background: dot[key(node)] }" />
+    </template>
+    <template #item-suffix="node">
+      <span style="color: var(--xh-fg-muted); font-size: var(--xh-control-caption-md)">{{ count[key(node)] }}</span>
+    </template>
+  </XhSelectRoot>
+</template>
+```
+
+```html
+<xh-select default-value="open" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">状态</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="open">
+            <span data-xh-part="item-prefix"><span style="display: block; inline-size: 8px; block-size: 8px; border-radius: var(--xh-shape-pill); background: var(--xh-fg-warning)"></span></span>
+            <span data-xh-part="item-text">进行中</span>
+            <span data-xh-part="item-description">已排期，尚未合并</span>
+            <span data-xh-part="item-suffix" style="color: var(--xh-fg-muted); font-size: var(--xh-control-caption-md)">12</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="merged">
+            <span data-xh-part="item-prefix"><span style="display: block; inline-size: 8px; block-size: 8px; border-radius: var(--xh-shape-pill); background: var(--xh-fg-success)"></span></span>
+            <span data-xh-part="item-text">已合并</span>
+            <span data-xh-part="item-description">进入主干</span>
+            <span data-xh-part="item-suffix" style="color: var(--xh-fg-muted); font-size: var(--xh-control-caption-md)">148</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="closed">
+            <span data-xh-part="item-prefix"><span style="display: block; inline-size: 8px; block-size: 8px; border-radius: var(--xh-shape-pill); background: var(--xh-fg-muted)"></span></span>
+            <span data-xh-part="item-text">已关闭</span>
+            <span data-xh-part="item-description">不再处理</span>
+            <span data-xh-part="item-suffix" style="color: var(--xh-fg-muted); font-size: var(--xh-control-caption-md)">31</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -2624,6 +2753,9 @@ function onValueChange(details: { value: string[] }): void {
 - 通过 `hidden-select` 参与表单。
 - 多选值可显示为标签，超出 `maxTagCount` 后合并为 `+N`。
 - 支持分组、加载、空状态、底部操作区和滚动加载。
+- 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
+- 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 控件使用 Field Chrome，浮层使用 M2 磨砂表面。
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
@@ -2651,7 +2783,7 @@ function onValueChange(details: { value: string[] }): void {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemDescription` `XhSelectItemIndicator` `XhSelectItemPrefix` `XhSelectItemSuffix` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -2685,6 +2817,18 @@ function onValueChange(details: { value: string[] }): void {
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+### SelectNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `tone` | `Tone` |  | 该条选项自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个选择器的 tone 不下发给条目。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -2702,7 +2846,27 @@ function onValueChange(details: { value: string[] }): void {
 | --- | --- | --- | --- |
 | `XhSelectRoot` | `default` | `SelectRootSlotProps` |  |
 | `XhSelectRoot` | `label` | — |  |
-| `XhSelectRoot` | `item` | `SelectNodeMeta` |  |
+| `XhSelectRoot` | `item` | `SelectNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhSelectRoot` | `item-prefix` | `SelectNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhSelectRoot` | `item-suffix` | `SelectNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSelectGroup` | `value` | `string` | 是 |  |
+| `XhSelectItem` | `value` | `string` | 是 |  |
+| `XhSelectItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
+| `XhSelectRoot` | `renderItem` | `(node: SelectNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhSelectRoot` | `renderItemPrefix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `renderItemSuffix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `children` | `SlotChildren<SelectRootSlotProps>` |  |  |
+| `XhSelectTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 
 ### 状态
 
@@ -2719,7 +2883,10 @@ function onValueChange(details: { value: string[] }): void {
 | `list` | 'open' \| 'closed' |
 | `footer` | 'open' \| 'closed' |
 | `item` | 'checked' \| 'unchecked' |
+| `item-prefix` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
@@ -2776,7 +2943,10 @@ function onValueChange(details: { value: string[] }): void {
 | `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: SelectItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: SelectItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: SelectItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此获取值。 |
 
@@ -2831,6 +3001,7 @@ function onValueChange(details: { value: string[] }): void {
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `hidden-select` | `aria-hidden` | 'true' |
 
@@ -2895,12 +3066,22 @@ function onValueChange(details: { value: string[] }): void {
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |

@@ -123,6 +123,8 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 `useMachine(machine, getProps, options)` 封装了它。props 传的是 getter：每次渲染读取，状态机读到的始终是当前帧的值。
 
+getter 的求值带一份记忆，钥匙有两把：渲染轮次与机器版本号。前者盖住组件 props 与渲染期赋值的 ref，后者是「任意一台机器的 cell 变过一次」的全局计数，盖住那些从别的机器现读的派生 props（取色器里内嵌的滑杆、分页里内嵌的页长下拉）。连接层一趟要读十几个 prop，两把钥匙都没动时它们共用同一份展开结果；任一动了当场作废。因此 getter 应当只读这两类来源。确实要在同一拍生效、等不到下一轮渲染的状态（气泡确认的挂起态就是一例）落 ref 之后调一次 `invalidateMachineProps()` 让记忆作废，别默默地读。
+
 ## 部分处理器挂为原生监听器
 
 `connect` 按 DOM 语义编写，有两类处理器无法通过 React 的合成事件层：
@@ -229,7 +231,7 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1006 个导出组件按组件分组列在[组件参考](../components/)。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1034 个导出组件按组件分组列在[组件参考](../components/)。
 
 没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
 
@@ -385,7 +387,9 @@ const { api } = useAccordion(
 | `flush` | `nextTick` |
 | `onMount` / `onCleanup` | `onMounted` / `onBeforeUnmount`（不在组件内则立即执行 / 忽略） |
 
-`useMachine(machine, props, scope)` 封装了它。props 传的是 getter 而不是对象，每次展开为新对象使状态机的身份缓存失效，因此在模板中原地修改某个 prop 也能生效。
+`useMachine(machine, props, scope)` 封装了它。props 传的是 getter 而不是对象，因此在模板中原地修改某个 prop 也能生效。
+
+getter 的求值放在一个 `computed` 里：连接层每读一个 prop 都会经过它，依赖没动时复用同一份展开结果（状态机的身份缓存跟着命中），依赖一动就产出新对象，身份缓存照旧失效。失效面与组件自己的重渲一致，getter 因此必须只读响应式来源——组件 props、`attrs`、ref、注入的上下文、全局配置。读普通变量或普通数组的长度不会让它重算；那类来源本来也驱动不了 `computed(() => connectX(...))` 的重算，只是以前靠每次重新展开碰巧读到过新值。
 
 ## 行为原语
 
@@ -1567,7 +1571,11 @@ Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents
 
 自定义属性只带属于视觉环境的那部分。作者自己的属性（不以 `--xh-` 开头）照投；`--xh-` 命名空间只投文档根上有声明的名字，即令牌与按[覆盖样式的三种粒度](./styling#覆盖样式的三种粒度)写在 `:root` 上的组件槽覆盖。皮肤写在组件或家族元素上的公开槽（`--xh-<组件>-*`、`--xh-collection-*` 等）、私有槽 `--xh-_*` 与挂在 `[data-tone]` 上的 `--xh-tone-*` 是组件内部级联，不跨 Portal：斑马行改写的行底不会顺着行内的触发器进到菜单项，列表项里的下拉、卡片里的提示同理。判定按每次同步时的文档根计算样式做，不维护名单。
 
-框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性与自定义属性。普通属性、`class` / `style` 改动、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。普通计算样式不会复制。
+实例壳自己就能解析出来的那些不复制。只由文档根（`:root`、`html`）或桥复制过去的那些属性选中的声明——令牌层的 `:where(:root)`、`:where([data-density='compact'])`、`:where([data-theme='dark'])`，以及作者按同样形状写的规则——在壳上会被同一条规则再命中一次，壳因此只拿属性、不拿逐条 inline 声明；祖先上密度或主题的局部切换仍然完整生效，浮层内解析到的令牌与来源处一致。来源没有显式声明该轴时壳也不写该属性，按既有语义继续继承落点容器。
+
+框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性与自定义属性。普通属性、`style` 改动、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。普通计算样式不会复制。
+
+`class` 改动只在增删的名字出现在「声明了自定义属性的选择器」里时才重算：页面级过渡类、展开态与加载态每帧都在祖先链上增删 class，它们与自定义属性无关，链下每个浮层不必为此各读一遍整张令牌表。判定来自一份按文档缓存的样式表索引，样式表增删或整段替换会让它失效；通过 CSSOM 往已有分组规则内部插入声明自定义属性的规则不改变索引指纹，这种改动后需要显式 `sync()`。样式表跨域读不到规则、或选择器里出现 `[class]` 时，索引整体让位，按原来的方式重算。
 
 ```ts
 import { createPortalVisualBridge } from "@xihan-ui/core";
@@ -3940,7 +3948,7 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 ## 组件内滚动
 
-组件内的滚动条形态只有两档，按滚动面的身份固定（设计真源 §6.6）：
+组件内的滚动条形态只有两档，按滚动面的身份固定：
 
 | 档 | 适用面 | 表达 |
 | --- | --- | --- |
@@ -4306,6 +4314,34 @@ pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
 
 在 Windows / macOS 宿主上，`pnpm test:browser` 固定有一条失败：像素基线文件受字体守卫拦截，整文件判失败、40 条用例全部 skipped。这是预期结果，不是环境故障；本地验证像素改动的方式见下文「像素基线」。
 
+### 按分类运行浏览器态
+
+`pnpm test:browser` 由 `ui/tooling/scripts/test-browser.mjs` 执行：先构建各包的依赖，再逐包串行运行（Vue → React → Web Components → 其余），每个包的 worker 数缺省为 `min(8, 核数 - 1)`。每个包各起一套 Chromium，同时运行多个包会在多核机器上拉起上百个页面，占满内存与 CPU。
+
+```bash
+pnpm test:browser                    # 全部包、全部用例
+pnpm test:browser form overlay       # 只跑这几类（跨包）
+pnpm test:browser --list             # 各分类在每个包里的用例数
+pnpm test:browser --pkg=vue,react    # 只跑点名的包
+pnpm test:browser --workers=4        # 调整每个包的 worker 数
+pnpm test:browser --no-build         # 跳过依赖构建
+pnpm test:browser overlay -- -t Esc  # -- 之后的参数原样交给 vitest
+```
+
+分类与组件总览一致（`ui/scripts/component-docs.manifest.json`）：`general`、`layout`、`navigation`、`form`、`data-display`、`feedback`、`overlay`、`ai`。用例文件名以某个组件名开头（取最长匹配）即归入该组件的分类；浮层主题的跨组件用例（`overlay-*`、各类 Portal、position 引擎）归 `overlay`；其余跨组件用例（全量无障碍、计算样式快照、像素基线、焦点环对账等）归 `shared`。某个包失败不中断其余包，全部跑完后汇总。
+
+### Vue 浏览器态的三个项目
+
+同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。`vitest.browser.config.ts` 因此把 Vue 浏览器态分成三个项目，按 `sequence.groupOrder` 先后运行：
+
+| 项目 | 收哪些文件 | 为什么单独放 |
+| --- | --- | --- |
+| `vue-browser` | 其余全部 | 并行主池 |
+| `vue-browser-touch` | 调用过 `Emulation.setTouchEmulationEnabled` 或 `coarsePointer()` 的文件，配置加载时自动扫出 | Linux 无头 Chromium 上，一张页面只要关过一次触屏仿真，`(pointer)` 与 `(hover)` 就永久变为 `none`，没有 CDP 入口改回来。挂在 `@media (hover: hover)` 下的悬停规则随之失效，同一 worker 里后续文件的悬停断言与像素基线会随机判红。Windows 上不走这条恢复路径，本机复现不出来 |
+| `vue-browser-serial` | `overlay-open-budget.spec.ts` | 量主线程耗时，与整套并行时量到的是别的用例抢走的 CPU，放到最后单独串行 |
+
+媒介仿真（print、forced-colors 等）由 `tests/browser/setup.ts` 在每个文件开跑前复位；触屏仿真不能这样复位，复位本身就会让页面失去悬停能力。
+
 ## 一致性：一份规格驱动各适配器
 
 规格（`ConformanceSuite`）声明组件的解剖部件、键盘表与用例；适配器各实现一个 `AdapterHarness`（挂载 fixture 树、获取事件、卸载）。运行器把同一份规格交给不同的 harness，逐帧采集归一化后的 `DomSnapshot` 并断言。
@@ -4452,6 +4488,30 @@ pnpm visual:performance --record
 继续由 `.size-limit.css.json` 与 `check-skin-size` 守护。性能预算门禁反查这两份真源；修改本项不得提高既有阈值。
 
 ## 结构门禁
+
+结构检查按职责分成十个模块，脚本放在 `ui/tooling/scripts/<模块>/` 下，执行顺序由 `ui/tooling/scripts/gate.modules.mjs` 决定。每一步都是独立子进程，串行执行：
+
+```bash
+pnpm gate                    # 全部模块，遇到第一处失败即停（CI 运行这一条）
+pnpm gate overlay motion     # 只跑点名的模块
+pnpm gate --list             # 列出模块、中文名与步数
+pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可与模块名同用
+```
+
+| 模块 | 管什么 |
+| --- | --- |
+| `package` | 运行时依赖、版本锁步、包清单与角色、子路径导出、发布产物 |
+| `tokens` | 令牌产物、令牌引用、字面量与兜底、语气层、层序与层号 |
+| `skin` | 皮肤入口与标记、解剖对齐、收起态、视觉轴、打印 / 高对比 / 安全区等环境档 |
+| `visual` | 形状、间距、描边、字号、海拔、交互阶梯、控件与面板尺寸、字形、家族配方与按压反馈 |
+| `overlay` | 浮层坐标系、可用空间、定位层、遮罩、箭头、落点与自绘滚动条 |
+| `motion` | 关键帧、时长与缓动、幅度、减弱动效、动效覆盖面 |
+| `a11y` | 聚焦环、焦点复位与上报、ARIA 写法、按键重复与键盘套件 |
+| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点 |
+| `docs` | 示例的多框架对齐、令牌与动效、文档数字与导入、组件总览 |
+| `repo` | changeset、提交 scope、发版标签、PR 模板、类型检查覆盖面、文件头、脚本接线 |
+
+改了哪一块先跑对应模块，提交前再跑一次全量。
 
 `pnpm gate` 运行 122 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
@@ -4836,7 +4896,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | --- | --- | --- |
 | 包名 | 17 | 把代码从一个包移到另一个包 = major |
 | `exports` 子路径 | 34 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
-| Vue 组件导出 `Xh*` | 1010（134 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组件导出 `Xh*` | 1038（134 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 102 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
 | 无头内核 `connect*` | 134 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
@@ -4882,8 +4942,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 134 | **受约束**（新增第 135 个组件是 minor） |
-| `data-part` 取值（部件名） | 259 个不同名字 / 1012 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 259 个 | **受约束** |
+| `data-part` 取值（部件名） | 261 个不同名字 / 1040 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 261 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 294 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
@@ -4903,7 +4963,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 225 个不同的 `data-*` 属性名、1565 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 225 个不同的 `data-*` 属性名、1567 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -4915,7 +4975,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 170 个属性名 / 732 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 170 个属性名 / 731 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -4967,9 +5027,9 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层均为 major。`xihan.overrides` 刻意留空，专供使用方覆盖，不会作为未使用的层被清理 |
 | 全局令牌 · 原语层 | 115 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤中不应直接使用它们，但接入品牌轴必须写 `--xh-color-brand-*`，因此它们是公开的 |
 | 全局令牌 · 语义层 | 302 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 4053（覆盖 133 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
+| 组件覆盖槽 | 4038（覆盖 133 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 58 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
-| 关键帧名 | 63 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（规范 §8.7 约束 3），因此改名与删名同样是 major |
+| 关键帧名 | 63 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 4 | `--xh-_truncate-lines`、`--xh-_float-button-offset`、`--xh-_tour-spotlight-radius`、`--xh-_carousel-autoplay-duration`。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，文本截断、浮动按钮贴边、引导目标圆角或轮播进度会失效，且不报任何错误 |
 | `@xihan-ui/styles` 的 CSS 子路径 | 155 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./motion.css`，与 145 条 `.css`：134 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
@@ -5162,7 +5222,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 1010 个组件、102 个组合式函数 |
+| `@xihan-ui/vue` | 1038 个组件、102 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
 | `@xihan-ui/web-components` | 137 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
@@ -5194,12 +5254,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，15511 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，15592 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 191 条子入口、7948 个导出名、134 个 `data-scope` 与 1012 条部件配对、
+覆盖：包名与 191 条子入口、8016 个导出名、134 个 `data-scope` 与 1040 条部件配对、
 134 个组件的 1721 个 prop 名、227 种 `data-*`、33 个 `data-state` 取值、550 个令牌、
-5 个 `@layer` 名、4053 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
+5 个 `@layer` 名、4038 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
@@ -5405,6 +5465,8 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 `locale` 与 `size` 两条属性写在标签上即可；`translations` 是对象、`scrollRoot` 是函数，只能通过 property 设置。子树中每个元素都沿祖先链解析，运行状态机与不运行状态机的组件一致；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` / `xh-command` 开启模态时读取，修改后下一次打开生效。`<xh-config>` 自身不渲染任何内容，也不接线任何角色节点：它是 `display: contents`，布局上完全让开。
 
 `setXhConfig` 是整份替换（不深合并），修改一处需要传入整份配置；`<xh-config>` 之间以及它与全局配置之间才是逐键合并。
+
+运行状态机的元素把沿祖先链解析到的那份结果缓存起来：状态机每读一个 prop 都要经过这一步，而解析一次要逐层往上找配置作用域。缓存在全局那份改了、任一 `<xh-config>` 改了或进出文档时整体作废，元素自己被搬到另一棵子树时随断开重连作废。因此**改配置要走 `setXhConfig` 或 `<xh-config>` 的 property**，就地改写已经交出去的那个配置对象不会被看见——这一条本来就成立（子树里已挂载的元素也不会因此重渲），缓存只是让它更明显。
 
 ## 与其他库的对应关系
 

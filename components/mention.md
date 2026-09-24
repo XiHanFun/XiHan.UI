@@ -112,7 +112,7 @@ const filtered = computed(() => {
 
 加粗的是必需部件。
 
-`data-scope="mention"`：**`root`** · `label` · **`input`** · `positioner` · **`content`** · `empty` · `loading` · `item` · `item-text`
+`data-scope="mention"`：**`root`** · `label` · **`input`** · `positioner` · **`content`** · `empty` · `loading` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix`
 
 ## 示例
 
@@ -742,6 +742,9 @@ const filtered = computed(() => {
 
 - 单行输入框，与其他输入控件使用同一档行高与内衬。
 - 多种前缀各自映射一份候选。
+- 候选可逐条声明语气，已停用或需要留意的那条自带该族字色与高亮底。
+- 候选可写副文本，第 2 行放职位、handle 一类的补充信息。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
 - `label` 部件为输入框提供可点击的标题；提供 `translations.input` 时仍使用 `aria-label`。
@@ -775,7 +778,7 @@ const filtered = computed(() => {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-mention>` |
-| Vue 组件 | `XhMentionContent` `XhMentionEmpty` `XhMentionInput` `XhMentionItem` `XhMentionItemText` `XhMentionLabel` `XhMentionLoading` `XhMentionPositioner` `XhMentionRoot` |
+| Vue 组件 | `XhMentionContent` `XhMentionEmpty` `XhMentionInput` `XhMentionItem` `XhMentionItemDescription` `XhMentionItemPrefix` `XhMentionItemSuffix` `XhMentionItemText` `XhMentionLabel` `XhMentionLoading` `XhMentionPositioner` `XhMentionRoot` |
 | 组合式函数 | `useMention` |
 | 状态机 | `mentionMachine` |
 | 皮肤 | `@xihan-ui/styles/mention.css` |
@@ -807,6 +810,18 @@ const filtered = computed(() => {
 | `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
 | `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
 
+### MentionNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是插回正文的文字；默认回退为 value。 |
+| `disabled` | `boolean` |  | 候选禁用：方向键跳过它，点击与回车都不选中它。 |
+| `tone` | `Tone` |  | 该条候选自身的性质：需要留意的写 warning、已停用的写 danger。不写即与其余候选同档。 只换字色与悬停 / 按下的面，不表达选中与校验；禁用压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个提及框的 tone 不下发给候选。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -826,7 +841,24 @@ const filtered = computed(() => {
 | --- | --- | --- | --- |
 | `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
+| `XhMentionRoot` | `item-prefix` | `MentionNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhMentionRoot` | `item-suffix` | `MentionNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMentionItem` | `value` | `string` | 是 |  |
+| `XhMentionItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhMentionPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhMentionRoot` | `renderItem` | `(node: MentionNodeMeta) => ReactNode` |  | 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 |
+| `XhMentionRoot` | `renderItemPrefix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhMentionRoot` | `renderItemSuffix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhMentionRoot` | `empty` | `ReactNode` |  | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
+| `XhMentionRoot` | `children` | `SlotChildren<MentionRootSlotProps>` |  |  |
 
 ### 状态
 
@@ -874,7 +906,10 @@ const filtered = computed(() => {
 | `getEmptyProps` | `() => T['element']` | 没有任何候选时显示的空态；有候选时带 hidden 收起。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 同样是 content 的兄弟，不进入 role=listbox。 |
 | `getItemProps` | `(props: MentionItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: MentionItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: MentionItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: MentionItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: MentionItemProps) => T['element']` |  |
 
 ## 无障碍
 
@@ -918,6 +953,7 @@ const filtered = computed(() => {
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -963,12 +999,22 @@ const filtered = computed(() => {
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

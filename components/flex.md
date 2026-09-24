@@ -348,6 +348,14 @@ const tones = ["brand", "info", "success", "danger"] as const;
 | `XhFlex` | `default` | — | 子项，按写入的顺序排列。 |
 | `XhFlex` | `split` | — | 分隔符的内容：写了它，组件在每两个子项之间各铺设一个分隔符部件，逐缝隙重新求值一次。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhFlex` | `split` | `ReactNode` |  | 分隔符的内容：提供后，组件在每两个子项之间各铺设一个分隔符部件。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。

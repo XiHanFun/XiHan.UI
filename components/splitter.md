@@ -316,6 +316,18 @@ const inner = [
 | `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发出；拖动过程中连续发出。 |
 | `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于保存布局。 |
 
+### SplitterPanelProps
+
+`panels` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 | 作者给该面板起的名字，用于派生它的 DOM id（分隔条的 aria-controls 指向它）。 |
+| `min` | `number` |  | 百分比下界，默认 0。 |
+| `max` | `number` |  | 百分比上界，默认 100。 |
+| `collapsible` | `boolean` |  | 是否允许折叠，默认 false。 |
+| `collapsedSize` | `number` |  | 折叠后的百分比，默认 0；collapsible 为假时不使用。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -332,6 +344,16 @@ const inner = [
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSplitterRoot` | `default` | `SplitterRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSplitterPanel` | `index` | `number \| string` |  | 第几块面板；多块时必须逐个写明。兼收字符串。 |
+| `XhSplitterResizeTrigger` | `index` | `number \| string` |  | 第几条分隔条；它位于第 index 与第 index+1 块面板之间，调整的是前一块。兼收字符串。 |
+| `XhSplitterRoot` | `children` | `SlotChildren<SplitterRootSlotProps>` |  |  |
 
 ### 状态
 

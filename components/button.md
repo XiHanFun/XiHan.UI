@@ -412,6 +412,16 @@ import { XhButton } from "@xihan-ui/vue";
 | `fullWidth` | `boolean` |  | 撑满行宽：表单末尾的提交按钮与移动端常用。 |
 | `as` | `ButtonElement` |  | 渲染的标签，默认 button。 写为 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达， 点击仍被拦截。href 由作者自行提供。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhButton` | `href` | `ComponentPropsWithRef<'a'>['href']` |  |  |
+| `XhButton` | `target` | `ComponentPropsWithRef<'a'>['target']` |  |  |
+| `XhButton` | `rel` | `ComponentPropsWithRef<'a'>['rel']` |  |  |
+
 ### 状态
 
 以下名称仅用于内部状态机。

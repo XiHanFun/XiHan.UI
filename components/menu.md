@@ -66,7 +66,7 @@ const actions = [
 
 加粗的是必需部件。
 
-`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -82,6 +82,8 @@ import {
   XhIcon,
   XhMenuContent,
   XhMenuItem,
+  XhMenuItemIndicator,
+  XhMenuItemShortcut,
   XhMenuItemText,
   XhMenuPositioner,
   XhMenuRoot,
@@ -98,20 +100,20 @@ import {
     <XhMenuPositioner>
       <XhMenuContent>
         <XhMenuItem value="copy">
-          <XhIcon :icon="CopyIcon" size="sm" />
+          <XhMenuItemIndicator><XhIcon :icon="CopyIcon" size="sm" /></XhMenuItemIndicator>
           <XhMenuItemText>复制</XhMenuItemText>
-          <span aria-hidden="true">⌘ C</span>
+          <XhMenuItemShortcut>⌘ C</XhMenuItemShortcut>
         </XhMenuItem>
         <XhMenuItem value="rename">
-          <XhIcon :icon="PencilIcon" size="sm" />
+          <XhMenuItemIndicator><XhIcon :icon="PencilIcon" size="sm" /></XhMenuItemIndicator>
           <XhMenuItemText>重命名</XhMenuItemText>
-          <span aria-hidden="true">F2</span>
+          <XhMenuItemShortcut>F2</XhMenuItemShortcut>
         </XhMenuItem>
         <XhMenuSeparator />
         <XhMenuItem value="delete">
-          <XhIcon :icon="TrashIcon" size="sm" />
+          <XhMenuItemIndicator><XhIcon :icon="TrashIcon" size="sm" /></XhMenuItemIndicator>
           <XhMenuItemText>移到回收站</XhMenuItemText>
-          <span aria-hidden="true">⌫</span>
+          <XhMenuItemShortcut>⌫</XhMenuItemShortcut>
         </XhMenuItem>
       </XhMenuContent>
     </XhMenuPositioner>
@@ -125,17 +127,20 @@ import {
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="item" value="copy">
-        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-        <span data-xh-part="item-text">复制</span><span aria-hidden="true">⌘ C</span>
+        <span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></span>
+        <span data-xh-part="item-text">复制</span>
+        <span data-xh-part="item-shortcut">⌘ C</span>
       </div>
       <div data-xh-part="item" value="rename">
-        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>
-        <span data-xh-part="item-text">重命名</span><span aria-hidden="true">F2</span>
+        <span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></span>
+        <span data-xh-part="item-text">重命名</span>
+        <span data-xh-part="item-shortcut">F2</span>
       </div>
       <div data-xh-part="separator"></div>
       <div data-xh-part="item" value="delete">
-        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"/></svg>
-        <span data-xh-part="item-text">移到回收站</span><span aria-hidden="true">⌫</span>
+        <span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"/></svg></span>
+        <span data-xh-part="item-text">移到回收站</span>
+        <span data-xh-part="item-shortcut">⌫</span>
       </div>
     </div>
   </div>
@@ -254,6 +259,111 @@ import {
 </xh-menu>
 ```
 
+### 破坏性命令
+
+用语气把删除一类命令与其余区分开
+
+```vue
+<script setup lang="ts">
+import type { MenuNode, MenuNodeMeta } from "@xihan-ui/headless";
+import { CopyIcon, PencilIcon, TrashIcon } from "@xihan-ui/icons";
+import { XhButton, XhIcon, XhMenuRoot } from "@xihan-ui/vue";
+
+const actions: MenuNode[] = [
+  { value: "copy", label: "复制", shortcut: "⌘ C" },
+  { value: "rename", label: "重命名", shortcut: "F2" },
+  { value: "delete", label: "移到回收站", tone: "danger", shortcut: "⌫", separatorBefore: true },
+];
+
+const icons = { copy: CopyIcon, rename: PencilIcon, delete: TrashIcon };
+const iconOf = (node: MenuNodeMeta) => icons[node.value as keyof typeof icons];
+</script>
+
+<template>
+  <XhMenuRoot :collection="actions" trigger-as-child>
+    <template #trigger><XhButton variant="subtle">文件</XhButton></template>
+    <template #item-prefix="node">
+      <XhIcon :icon="iconOf(node)" size="sm" />
+    </template>
+  </XhMenuRoot>
+</template>
+```
+
+```html
+<xh-menu>
+  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">文件</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="copy">
+        <span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></span>
+        <span data-xh-part="item-text">复制</span>
+        <span data-xh-part="item-shortcut">⌘ C</span>
+      </div>
+      <div data-xh-part="item" value="rename">
+        <span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></span>
+        <span data-xh-part="item-text">重命名</span>
+        <span data-xh-part="item-shortcut">F2</span>
+      </div>
+      <div data-xh-part="separator"></div>
+      <div data-xh-part="item" value="delete" data-tone="danger">
+        <span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"/></svg></span>
+        <span data-xh-part="item-text">移到回收站</span>
+        <span data-xh-part="item-shortcut">⌫</span>
+      </div>
+    </div>
+  </div>
+</xh-menu>
+```
+
+### 说明与快捷键
+
+只交数据，副文本与按键提示自动落位
+
+```vue
+<script setup lang="ts">
+import type { MenuNode } from "@xihan-ui/headless";
+import { XhButton, XhMenuRoot } from "@xihan-ui/vue";
+
+const actions: MenuNode[] = [
+  { value: "duplicate", label: "创建副本", description: "保留当前版本，另存一份", shortcut: "⌘ D" },
+  { value: "export", label: "导出", description: "生成 PDF 或 PNG", shortcut: "⌘ E" },
+  { value: "archive", label: "归档", description: "移出列表，随时可以恢复", shortcut: "⌘ ⇧ A", separatorBefore: true },
+];
+</script>
+
+<template>
+  <XhMenuRoot :collection="actions" trigger-as-child>
+    <template #trigger><XhButton variant="subtle">更多</XhButton></template>
+  </XhMenuRoot>
+</template>
+```
+
+```html
+<xh-menu>
+  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">更多</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="duplicate">
+        <span data-xh-part="item-text">创建副本</span>
+        <span data-xh-part="item-description">保留当前版本，另存一份</span>
+        <span data-xh-part="item-shortcut">⌘ D</span>
+      </div>
+      <div data-xh-part="item" value="export">
+        <span data-xh-part="item-text">导出</span>
+        <span data-xh-part="item-description">生成 PDF 或 PNG</span>
+        <span data-xh-part="item-shortcut">⌘ E</span>
+      </div>
+      <div data-xh-part="separator"></div>
+      <div data-xh-part="item" value="archive">
+        <span data-xh-part="item-text">归档</span>
+        <span data-xh-part="item-description">移出列表，随时可以恢复</span>
+        <span data-xh-part="item-shortcut">⌘ ⇧ A</span>
+      </div>
+    </div>
+  </div>
+</xh-menu>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -268,10 +378,13 @@ import {
 
 ### 特性
 
-- `collection` 可直接生成条目、分组、标记位和分隔线。
+- `collection` 可直接生成条目、分组、标记位、说明、快捷键提示和分隔线。
+- 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
+- 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。
 - 支持方向键、首字符检索、禁用条目和多级子菜单。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
 - 条目可组合图标、文字、说明和快捷键提示。
+- 行首与行尾两格各有逐条钩子，只想加个图标不必把整条重搭；`item` 插槽仍是整条的接管口。
 - 选中命令后发出根级 `select` 并关闭菜单链。
 
 ### 组合
@@ -280,7 +393,7 @@ import {
 
 ### 最佳实践
 
-- 破坏性命令放在末尾，并与普通命令分隔。
+- 破坏性命令放在末尾、与普通命令分隔，并同时给出 `danger` 语气和图标。
 - 条目使用简短的动宾短语。
 - 仅为已注册的快捷键显示提示。
 
@@ -296,7 +409,7 @@ import {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menu>` |
-| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuItemDescription` `XhMenuItemIndicator` `XhMenuItemText` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
+| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuItemDescription` `XhMenuItemIndicator` `XhMenuItemShortcut` `XhMenuItemSuffix` `XhMenuItemText` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
 | 组合式函数 | `useMenu` |
 | 状态机 | `menuMachine` |
 | 皮肤 | `@xihan-ui/styles/menu.css` |
@@ -305,14 +418,14 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `MenuNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `collection` | `MenuNode[]` |  | 条目数据，显示文本、禁用、逐条语气与分组的事实源。提供后条目部件只需声明 value。 未提供时回到这些事实都写在条目部件上的方式（语气写成条目的 `data-tone`）。 |
 | `open` | `boolean` |  | 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮使用哪族颜色。 |
+| `tone` | `Tone` |  | 整张菜单的语气：brand / neutral / success / warning / danger / info。 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档， 逐条的语气写在 collection 的 `tone` 上（见 MenuNode）。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `typeahead` | `boolean` |  | 首字符连打检索，默认开启。 |
 | `disabled` | `boolean` |  | 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled。 |
@@ -323,6 +436,23 @@ import {
 | `hoverCloseDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角中的停滞上限，默认 300。 |
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
+
+### MenuNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
+| `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。 |
+| `indicator` | `string` |  | 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 |
+| `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
+| `group` | `string` |  | 归属分组的身份值；相邻同值的条目收进同一个 group 部件。未提供时本条直接落在 content 上。 |
+| `groupLabel` | `string` |  | 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 |
+| `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 |
 
 ### 事件
 
@@ -341,8 +471,40 @@ import {
 | --- | --- | --- | --- |
 | `XhMenuRoot` | `default` | `MenuRootSlotProps` |  |
 | `XhMenuRoot` | `trigger` | — |  |
-| `XhMenuRoot` | `item` | `MenuNodeMeta` |  |
+| `XhMenuRoot` | `item` | `MenuNodeMeta` | 整条的接管口：写了它，代铺的各格一概不铺，作者自己放置部件 |
+| `XhMenuRoot` | `item-prefix` | `MenuNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhMenuRoot` | `item-suffix` | `MenuNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhMenuSub` | `default` | `MenuSubSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMenuGroup` | `value` | `string` | 是 |  |
+| `XhMenuItem` | `value` | `string` | 是 |  |
+| `XhMenuItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhMenuPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhMenuRoot` | `trigger` | `ReactNode` |  | 触发器中放置的内容；只提供 collection 时由它承载。 |
+| `XhMenuRoot` | `triggerAsChild` | `boolean` |  | 只提供 collection 时，trigger 给出的节点直接作为触发器使用，不再外包一个 button。 |
+| `XhMenuRoot` | `renderItem` | `(node: MenuNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhMenuRoot` | `renderItemPrefix` | `(node: MenuNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhMenuRoot` | `renderItemSuffix` | `(node: MenuNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
+| `XhMenuRoot` | `children` | `SlotChildren<MenuRootSlotProps>` |  |  |
+| `XhMenuSub` | `value` | `string` | 是 | 它在父菜单中的条目身份。 |
+| `XhMenuSub` | `disabled` | `boolean` |  |  |
+| `XhMenuSub` | `collection` | `MenuNode[]` |  |  |
+| `XhMenuSub` | `placement` | `Placement` |  |  |
+| `XhMenuSub` | `offset` | `number` |  |  |
+| `XhMenuSub` | `loop` | `boolean` |  |  |
+| `XhMenuSub` | `openOnHover` | `boolean` |  |  |
+| `XhMenuSub` | `hoverOpenDelay` | `number` |  |  |
+| `XhMenuSub` | `hoverCloseDelay` | `number` |  |  |
+| `XhMenuSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
+| `XhMenuSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
+| `XhMenuSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenuSub` | `children` | `SlotChildren<MenuSubSlotProps>` |  |  |
 
 ### 状态
 
@@ -381,6 +543,8 @@ import {
 | `getItemTextProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getItemShortcutProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getSubmenuTriggerProps` | `(props: MenuItemProps) => T['element']` | 子菜单触发条目（submenu 模式）：既是父菜单中的一条 item（value 是它在父菜单 中的身份，父层的方向键与高亮照常识别它），又是本子菜单的触发器（aria-haspopup、 悬停 / 点击 / 右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。 |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenuGroupProps) => T['element']` |  |
@@ -422,6 +586,7 @@ import {
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'menuitem' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `item-shortcut` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -460,6 +625,7 @@ import {
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -472,6 +638,12 @@ import {
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `submenu-trigger` | `data-disabled` | ''（条件成立时才出现） |

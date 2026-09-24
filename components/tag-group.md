@@ -145,26 +145,26 @@ const topics = [
     <div data-xh-part="list">
       <span data-xh-part="item" value="design">
         <span data-xh-part="cell">
-          <span data-xh-part="item-indicator"></span>
           <span data-xh-part="item-text">设计</span>
+          <span data-xh-part="item-indicator"></span>
         </span>
       </span>
       <span data-xh-part="item" value="a11y">
         <span data-xh-part="cell">
-          <span data-xh-part="item-indicator"></span>
           <span data-xh-part="item-text">无障碍</span>
+          <span data-xh-part="item-indicator"></span>
         </span>
       </span>
       <span data-xh-part="item" value="motion">
         <span data-xh-part="cell">
-          <span data-xh-part="item-indicator"></span>
           <span data-xh-part="item-text">动效</span>
+          <span data-xh-part="item-indicator"></span>
         </span>
       </span>
       <span data-xh-part="item" value="legacy" aria-disabled="true">
         <span data-xh-part="cell">
-          <span data-xh-part="item-indicator"></span>
           <span data-xh-part="item-text">已归档</span>
+          <span data-xh-part="item-indicator"></span>
         </span>
       </span>
     </div>
@@ -312,13 +312,13 @@ const avatar
     <XhTagGroupList>
       <XhTagGroupItem v-for="member in members" :key="member.value" :value="member.value">
         <XhTagGroupCell>
-          <XhTagGroupItemIndicator />
           <!-- 首字头像只是装饰，连打检索取的是 item-text 里那几个字 -->
           <span aria-hidden="true" :style="avatar">{{ member.initial }}</span>
           <XhTagGroupItemText>{{ member.label }}</XhTagGroupItemText>
           <span aria-hidden="true" style="color: var(--xh-fg-muted)">
             {{ member.tasks }}
           </span>
+          <XhTagGroupItemIndicator />
           <XhTagGroupItemDeleteTrigger />
         </XhTagGroupCell>
       </XhTagGroupItem>
@@ -340,7 +340,6 @@ const avatar
     <div data-xh-part="list">
       <span data-xh-part="item" value="zhang">
         <span data-xh-part="cell">
-          <span data-xh-part="item-indicator"></span>
           <!-- 首字头像只是装饰，连打检索取的是 item-text 里那几个字 -->
           <span
             aria-hidden="true"
@@ -358,12 +357,12 @@ const avatar
           >
           <span data-xh-part="item-text">张三</span>
           <span aria-hidden="true" style="color: var(--xh-fg-muted)">3</span>
+          <span data-xh-part="item-indicator"></span>
           <button data-xh-part="item-delete-trigger"></button>
         </span>
       </span>
       <span data-xh-part="item" value="li">
         <span data-xh-part="cell">
-          <span data-xh-part="item-indicator"></span>
           <span
             aria-hidden="true"
             style="
@@ -380,12 +379,12 @@ const avatar
           >
           <span data-xh-part="item-text">李四</span>
           <span aria-hidden="true" style="color: var(--xh-fg-muted)">8</span>
+          <span data-xh-part="item-indicator"></span>
           <button data-xh-part="item-delete-trigger"></button>
         </span>
       </span>
       <span data-xh-part="item" value="wang">
         <span data-xh-part="cell">
-          <span data-xh-part="item-indicator"></span>
           <span
             aria-hidden="true"
             style="
@@ -402,6 +401,7 @@ const avatar
           >
           <span data-xh-part="item-text">王五</span>
           <span aria-hidden="true" style="color: var(--xh-fg-muted)">0</span>
+          <span data-xh-part="item-indicator"></span>
           <button data-xh-part="item-delete-trigger"></button>
         </span>
       </span>
@@ -449,7 +449,7 @@ const avatar
 - roving tabindex：整组一个 Tab 停靠点，组内使用方向键移动；`Home` / `End` 到端点。
 - `selectionMode` 三档：`none` 只是标记、`single` 单选、`multiple` 可多选（`Ctrl` / `Cmd` + `A` 全选）。
 - 每一个标签就是库内的[标签](./tag)：标签本体是它的 `root`，文字是它的 `label`，移除按钮是它的 `close-trigger`；组只在其上叠加行角色、Tab 停靠点、选中与锚点。
-- 选中的标签使用品牌淡底，并在文字前展示 `item-indicator` 选中标记（默认绘制对号，也可放入图标）；未选中时该部件收起，不接选中时不出现。
+- 选中的标签不换面、不换字色，只在文字后展示 `item-indicator` 选中标记（默认绘制对号，也可放入图标）；未选中时该部件收起，不接选中时不出现。
 - `deletable` 显示移除按钮，键盘路径使用 `Delete` / `Backspace`。
 - 选择与移除是两个互斥动作：点击标签本体才选择，点击移除按钮只从选中集合移除并发出 `item-delete`，不会让同一次冒泡 click 把待删值重新选中。
 - 移除一个之后焦点交给前一个；前面没有则交给后一个，没有剩余时交给列表容器。
@@ -509,6 +509,17 @@ const avatar
 | `onItemDelete` | `(details: TagGroupItemDeleteDetails) => void` |  | 移除意图回调。条目由宿主的数据决定去留，组件只报告用户要移除该标签， 同时把它从选中集合中移除，并把焦点交给相邻的标签。 |
 | `translations` | `Partial<TagGroupTranslations>` |  |  |
 
+### TagGroupNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索与移除按钮可访问名的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点，也不可移除。 |
+| `deletable` | `boolean` |  | 逐条覆盖可移除；未提供时跟随整组的 deletable。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -527,6 +538,19 @@ const avatar
 | `XhTagGroupRoot` | `default` | `TagGroupRootSlotProps` |  |
 | `XhTagGroupRoot` | `label` | — |  |
 | `XhTagGroupRoot` | `item` | `TagGroupNodeMeta` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTagGroupItem` | `value` | `string` | 是 |  |
+| `XhTagGroupItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的声明。 |
+| `XhTagGroupItem` | `deletable` | `boolean` |  |  |
+| `XhTagGroupRoot` | `label` | `ReactNode` |  | 标题内容。提供后不必再写 label 部件。 |
+| `XhTagGroupRoot` | `renderItem` | `(node: TagGroupNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhTagGroupRoot` | `children` | `SlotChildren<TagGroupRootSlotProps>` |  |  |
 
 ### 状态
 
@@ -647,12 +671,7 @@ const avatar
 | `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`tone`<br>`variant=solid` | `--xh-_tone-subtle-hover`<br>`--xh-bg-subtle` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-subtle-active`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed-solid` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-active`<br>`--xh-bg-brand-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
-| `--xh-tag-group-item-bg-selected` | `list`<br>`root` | `background` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone-subtle` | tag-group 的 list、root 部件 background 覆盖槽。 |
-| `--xh-tag-group-item-bg-selected-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
-| `--xh-tag-group-item-bg-selected-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`selected`<br>`variant=solid` | `--xh-_tone-subtle-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
-| `--xh-tag-group-item-border-selected` | `list`<br>`root` | `border-color` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `currentColor`<br>`transparent` | tag-group 的 list、root 部件 border-color 覆盖槽。 |
-| `--xh-tag-group-item-fg-selected` | `list`<br>`root` | `color` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone-fg` | tag-group 的 list、root 部件 color 覆盖槽。 |
-| `--xh-tag-group-item-indicator-fg` | `item-indicator` | `color` | `default` | `currentColor` | tag-group 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-tag-group-item-indicator-fg` | `item-indicator`<br>`root` | `color` | `default`<br>`variant=solid` | `--xh-_tone-fg`<br>`currentColor` | tag-group 的 item-indicator、root 部件 color 覆盖槽。 |
 | `--xh-tag-group-item-indicator-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag-group 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tag-group 的 label 部件 color 覆盖槽。 |
 | `--xh-tag-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tag-group 的 label 部件 font-size 覆盖槽。 |

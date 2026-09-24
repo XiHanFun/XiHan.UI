@@ -404,6 +404,16 @@ const items = [
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
+### CheckboxGroupNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `disabled` | `boolean` |  | 条目禁用：仍可聚焦、仍占一个 Tab 停靠点，但不可修改，全选也跳过它。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -421,6 +431,18 @@ const items = [
 | `XhCheckboxGroupRoot` | `default` | `CheckboxGroupRootSlotProps` |  |
 | `XhCheckboxGroupRoot` | `label` | — |  |
 | `XhCheckboxGroupRoot` | `item` | `CheckboxGroupNodeMeta` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCheckboxGroupItem` | `value` | `string` | 是 |  |
+| `XhCheckboxGroupItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhCheckboxGroupRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhCheckboxGroupRoot` | `renderItem` | `(node: CheckboxGroupNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhCheckboxGroupRoot` | `children` | `SlotChildren<CheckboxGroupRootSlotProps>` |  |  |
 
 ### 状态
 

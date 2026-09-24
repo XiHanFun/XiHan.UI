@@ -1408,6 +1408,17 @@ const panels = [
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
+### AccordionNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 标题文本；默认回退为 value。 |
+| `content` | `string` |  | 正文；需要放置纯文本以外的内容时改用 content 插槽。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过该条目，但它仍可聚焦、仍是导航起点。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -1415,6 +1426,17 @@ const panels = [
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `AccordionValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhAccordionItem` | `value` | `string` | 是 |  |
+| `XhAccordionItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhAccordionRoot` | `renderContent` | `(node: AccordionNodeMeta) => ReactNode` |  | 每个条目正文的自定义内容；未提供时使用 collection 中的 content。 |
+| `XhAccordionRoot` | `children` | `ReactNode` |  |  |
 
 ### 状态
 

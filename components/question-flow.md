@@ -895,6 +895,18 @@ const questions: QuestionFlowQuestion[] = [
 | `onSkip` | `(details: QuestionFlowSkipDetails) => void` |  |  |
 | `onSubmit` | `(details: QuestionFlowSubmitDetails) => void` |  |  |
 
+### QuestionFlowQuestion
+
+`questions` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `prompt` | `string` |  | 题干。它同时是选项组的可访问名；未提供时回退为 translations 的兜底文案。 |
+| `type` | `QuestionFlowType` |  | single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。默认 single。 |
+| `options` | `readonly QuestionFlowOption[]` | 是 |  |
+| `optional` | `boolean` |  | 允许不作答直接进入下一题。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -915,6 +927,26 @@ const questions: QuestionFlowQuestion[] = [
 | --- | --- | --- | --- |
 | `XhQuestionFlowItem` | `default` | `QuestionFlowOptionSlotProps` |  |
 | `XhQuestionFlowRoot` | `default` | `QuestionFlowRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhQuestionFlowGroup` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowItem` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowItem` | `optionValue` | `string` | 是 |  |
+| `XhQuestionFlowItem` | `optionDisabled` | `boolean` |  | 默认交给 connect 查询 questions，写死 false 会覆盖数据中的禁用。 |
+| `XhQuestionFlowItem` | `children` | `SlotChildren<QuestionFlowOptionSlotProps>` |  |  |
+| `XhQuestionFlowItemIndicator` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowItemIndicator` | `optionValue` | `string` | 是 |  |
+| `XhQuestionFlowItemText` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowItemText` | `optionValue` | `string` | 是 |  |
+| `XhQuestionFlowNote` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowPrompt` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowQuestion` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowRoot` | `children` | `SlotChildren<QuestionFlowRootSlotProps>` |  |  |
 
 ### 状态
 

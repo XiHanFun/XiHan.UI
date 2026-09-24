@@ -299,7 +299,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - `--xh-glyph-size-text`（随文 1em）只允许在纯行内文字组件（Tag、Kbd、Breadcrumb、Typography、Highlight）里使用。
 - Feedback 指示符（Alert、Toast、Notification）统一 `--xh-glyph-size-md`。
 - 配方内不写 12px / 14px 等字面图标尺寸；xs 视觉盒与 field-inset 字形走 `--xh-control-action-size` / `--xh-control-indicator-sm` / `--xh-glyph-size-sm`。
-- 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox / Tree 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
+- 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
 
 ### 6.6 组件内滚动
 
@@ -353,8 +353,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 语义 | 对象 | 唯一标记 | 叠加态 | forced-colors |
 | --- | --- | --- | --- | --- |
-| 浮层瞬态集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
-| 页内持久集合的选中 | Tree、Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；带勾选部件的集合再加前导对号。SideNav 当前项只有行面与字色，不画起始侧指示条（配方 `markers.page.current: none`，2026-09-22 起） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
+| 对号集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree、Listbox、TagGroup | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest。TagGroup 保持标签自身的面，选中只多一枚文字后的对号。树族单选、多选、级联同一种标记：分支行也放对号，半选画横杠（`--xh-glyph-mark-minus`），不用勾选方框（Tree、Listbox、TagGroup 2026-09-24 起与 TreeSelect 统一） | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
+| 页内持久集合的选中 | Table row、Transfer、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；Table row / Transfer 另有行首勾选框。配方 `markers.page.glyph` 为 trailing：page 语境若再接对号部件，对号同样落在行尾。SideNav 当前项只有行面与字色，不画起始侧指示条（配方 `markers.page.current: none`，2026-09-22 起） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上）；list 里没放该部件时，当前项在自己的 `::after` 上自画一条同规格的静态线（厚度 / 颜色 / 圆角读各自 `--xh-<c>-indicator-*` 同一组槽，不做动画，rtl 随逻辑属性镜像，放了部件即收起）：Tabs 横向贴底、纵向贴行向末端（与部件同侧）；Anchor 竖排贴行向起始缘、横排贴底边（链接为省略号收着 overflow，线画在链接盒内、主轴两端各退 `--xh-space-1` 避开圆角，部件则骑在 list 的轨道上）；NavigationMenu 的 `indicator` 部件表达的是「哪张面板开着」而非当前页，指向当前页面的链接始终自画静态线、不随部件收起（横排 list 里的直达链接贴底边，竖排的直达链接与面板里的链接贴行向起始缘，两端同样退 `--xh-space-1`）；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
 | 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
 | 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起 indicator：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
@@ -363,6 +363,55 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - `--xh-bg-brand-subtle` 退出 today、completed、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字；Steps completed 改中性面 + 品牌对号。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
+- 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。
+
+### 7.4 集合行的语气
+
+Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除是 danger、停用是 warning），不表达选中、当前、校验结果或加载。不写 `data-tone` 的条目保持中性，与家族缺省逐档一致；写了才切到语气。
+
+| 状态 | 面 | 字 |
+| --- | --- | --- |
+| rest | 透明（不换面） | `--xh-tone-fg` |
+| hover / keyboard-highlight | `--xh-tone-subtle`（12%） | `--xh-tone-fg` |
+| pressed | `--xh-tone-subtle-hover`（20%） | `--xh-tone-fg` |
+
+- 静息不换面：整行彩底会把菜单读成色块表，语气由字色承担即可。面只在指针或键盘落到该行时出现，节奏与层级同中性行的「透明 → 100 → 200」，只是换了族色。
+- 字色固定取 `--xh-tone-fg`，不取 `--xh-tone-solid`：前者是按 WCAG 兑到 60% 的可读文字色，对本家族会遇到的透明面、语气淡底三态与抬起面共五种底、六个语气全部 ≥4.5（见 `css/tone.css` 的实测记录）。
+- 说明行保持 `--xh-collection-description-fg` 的 muted，不跟随语气：一条里出现两种彩字，语气就失去指向。
+- 优先级：selected / current 的标记（§7.3）压过语气，disabled 压过一切。同一条既选中又带 danger 时面归选中、语气退出——选中是集合的结构事实，语气只是该条动作的性质。
+- `nav` 语境（Tabs line trigger、Anchor / Breadcrumb link、Menubar / NavigationMenu trigger）不接语气：那里的条目表达的是位置而不是动作，语气轴在该语境下不生效，写了也不产出语气面。
+- 语气不改字重、缩进和指示器颜色。非颜色通道由图标承担（§7.2 第 10 条）：danger 条目必须同时给图标，不允许只靠红字区分。
+- forced-colors 下语气面与语气字一并退出，回到家族的系统色，只保留图标与文案通道。
+
+### 7.5 集合行的槽位
+
+一行按 `prefix | text | shortcut | suffix | indicator` 五列排布，说明占 text 列的第 2 行。每一格的归属固定：
+
+| 槽 | 归属 | 内容来源 |
+| --- | --- | --- |
+| `prefix` | 菜单族是前导图标（`item-indicator`）；候选列表是作者内容（`item-prefix`）；树族归展开箭头与拖拽把手；穿梭框归勾选框 | 数据里的字形，或适配器的逐条钩子 |
+| `text` | `item-text`，也是连打检索的取字来源 | `label` |
+| `description` | 第 2 行，跨 text 列 | 数据 |
+| `shortcut` | 行尾，菜单族与 Command 才有 | 数据 |
+| `suffix` | 行尾，排在快捷键之后、对号之前 | 适配器的逐条钩子 |
+| `indicator` | 选中对号，由库按 `aria-selected` 显隐；分支行按标记自身的 `data-selected` / `data-indeterminate` 显形，半选画横杠 | 库 |
+
+- 行首与行尾两格承载任意节点（图标、头像、计数、徽标），家族只管落位，不规定字号与颜色——它们不是文字。
+- 行首那一格是装饰：可及名由 `text` 承担，该格一律 `aria-hidden`。
+- 导航族（Tabs、Anchor、Breadcrumb、NavigationMenu、SideNav）不接这套槽：那里的条目表达位置，不是一条可配置的数据行。
+
+一行里最多两处次级文字：跨 text 槽第 2 行的说明，和行尾跨两行居中的快捷键提示。两者同档、同色，只是落位不同。
+
+| 槽 | 落位 | 字号 | 颜色 |
+| --- | --- | --- | --- |
+| `description` | text 槽第 2 行 | `--xh-control-caption-md` | `--xh-collection-description-fg` |
+| `shortcut` | 行尾 `shortcut` 列，跨两行居中，排在 `suffix` 之前 | `--xh-control-caption-md` | `--xh-collection-description-fg` |
+
+- 两者都走控件内次级文字档（`--xh-control-caption-*`，比同档主文字低一级），不是 §6.4 表里给非控件语境的 `--xh-text-caption-size`。
+- 两者都不跟随语气（§7.4）：一行里出现两种彩字，语气就失去指向。
+- 快捷键提示不换行：它是一串按键记号，折行会读成两个组合。
+- 快捷键是纯装饰，可及名由条目自己的文字承担；只为真正注册了的快捷键显示提示，写一个不存在的组合比不写更糟。
+- 说明与快捷键可以同时出现，此时说明占第 2 行、快捷键仍贴行尾；条目高度由说明行撑开，快捷键不额外增高。
 
 ## 8. 材质
 
@@ -404,7 +453,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能出现在 `border-block-start / inline-start` 类分隔线与 `::after` 分隔伪元素中。
 - 字段静息形态 = 描边：`transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影；hover 升 `--xh-border-control-hover` 并在透明上罩 `color-mix(--xh-bg-subtle 45%, transparent)`，focus-within 换 `--xh-border-control-focus` + `--xh-ring-focus`，invalid 用 `--xh-border-invalid` + `--xh-ring-invalid`；readOnly / disabled 才填 `--xh-bg-subtle`。字段家族不消费 `--xh-elevation-raised`。
-- 所有带边框的控件盒同一条规则（2026-09-22 起）：输入框壳、Checkbox / CheckboxGroup / Transfer / Tree / Table 的方框、RadioGroup / QuestionFlow 的圆圈、Switch 轨道描边、InputGroup 组壳、ColorPicker 控件、FileUpload 拖放区、SignaturePad 画布——静息不填底、描边取 `--xh-border-control`，它在缺省档与浮层面板、卡片的 `--xh-border-default` 同色（页面里只有一种边线重量），`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
+- 所有带边框的控件盒同一条规则（2026-09-22 起）：输入框壳、Checkbox / CheckboxGroup / Transfer / Table 的方框、RadioGroup / QuestionFlow 的圆圈、Switch 轨道描边、InputGroup 组壳、ColorPicker 控件、FileUpload 拖放区、SignaturePad 画布——静息不填底、描边取 `--xh-border-control`，它在缺省档与浮层面板、卡片的 `--xh-border-default` 同色（页面里只有一种边线重量），`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
 - 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边，子字段压平为透明。

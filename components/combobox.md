@@ -104,7 +104,7 @@ const filtered = computed(() => {
 
 加粗的是必需部件。
 
-`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
+`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
 
 ## 示例
 
@@ -864,6 +864,9 @@ const filtered = computed(() => {
 ### 特性
 
 - 支持单选、多选、分组和自定义值。
+- 候选可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
+- 候选可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 输入值、选中值与展开状态均可独立受控。
 - `loading` 与 `empty` 分别表示加载和空结果。
 - 支持自定义过滤、异步候选和自定义条目内容。
@@ -894,7 +897,7 @@ const filtered = computed(() => {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-combobox>` |
-| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxGroup` `XhComboboxGroupLabel` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemIndicator` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxLoading` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
+| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxGroup` `XhComboboxGroupLabel` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemDescription` `XhComboboxItemIndicator` `XhComboboxItemPrefix` `XhComboboxItemSuffix` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxLoading` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
 | 组合式函数 | `useCombobox` |
 | 状态机 | `comboboxMachine` |
 | 皮肤 | `@xihan-ui/styles/combobox.css` |
@@ -933,6 +936,18 @@ const filtered = computed(() => {
 | `onInputValueChange` | `(details: ComboboxInputValueChangeDetails) => void` |  | 输入串变化回调：调用方据此重新过滤候选。 |
 | `onOpenChange` | `(details: ComboboxOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+### ComboboxNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是选中后回填输入框的取字来源；默认回退为 value。 |
+| `disabled` | `boolean` |  | 候选禁用：方向键跳过它，点击与回车都不选中它。 |
+| `tone` | `Tone` |  | 该条候选自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余候选同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个组合框的 tone 不下发给候选。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -952,7 +967,28 @@ const filtered = computed(() => {
 | `XhComboboxRoot` | `default` | `ComboboxRootSlotProps` |  |
 | `XhComboboxRoot` | `label` | — |  |
 | `XhComboboxRoot` | `empty` | — |  |
-| `XhComboboxRoot` | `item` | `ComboboxNodeMeta` |  |
+| `XhComboboxRoot` | `item` | `ComboboxNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhComboboxRoot` | `item-prefix` | `ComboboxNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhComboboxRoot` | `item-suffix` | `ComboboxNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhComboboxGroup` | `value` | `string` | 是 |  |
+| `XhComboboxInput` | `as` | `ComboboxInputHost` |  | 输入框渲染为哪个标签，默认 input。 写 textarea 即多行宿主：connect 随之撤销 type、role 与 aria-expanded。 |
+| `XhComboboxItem` | `value` | `string` | 是 |  |
+| `XhComboboxItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
+| `XhComboboxPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhComboboxRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhComboboxRoot` | `empty` | `ReactNode` |  | 无匹配时的提示语。提供后不必再写 empty 部件。 |
+| `XhComboboxRoot` | `clearable` | `boolean` |  | 自动铺开时是否渲染清空按钮；手写部件模式不使用它，写了节点即可清空。 |
+| `XhComboboxRoot` | `renderItem` | `(node: ComboboxNodeMeta) => ReactNode` |  | 每个候选的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhComboboxRoot` | `renderItemPrefix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhComboboxRoot` | `renderItemSuffix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhComboboxRoot` | `children` | `SlotChildren<ComboboxRootSlotProps>` |  |  |
 
 ### 状态
 
@@ -967,7 +1003,10 @@ const filtered = computed(() => {
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 | `item` | 'checked' \| 'unchecked' |
+| `item-prefix` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
+| `item-suffix` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
@@ -1014,7 +1053,10 @@ const filtered = computed(() => {
 | `getGroupProps` | `(props: ComboboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ComboboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ComboboxItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ComboboxItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: ComboboxItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 与 content 是兄弟，同样不进入 role=listbox。 |
@@ -1069,6 +1111,7 @@ const filtered = computed(() => {
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -1137,13 +1180,26 @@ const filtered = computed(() => {
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-prefix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |

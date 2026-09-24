@@ -526,6 +526,15 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
+### ImageViewerItem
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `src` | `string` | 是 |  |
+| `alt` | `string` |  | 也是该图片在查看模式下的可及名。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -542,6 +551,15 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhImageViewerRoot` | `default` | `ImageViewerRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhImageViewerContent` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhImageViewerRoot` | `children` | `SlotChildren<ImageViewerRootSlotProps>` |  |  |
 
 ### 状态
 

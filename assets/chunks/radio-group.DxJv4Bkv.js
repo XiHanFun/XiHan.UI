@@ -1,0 +1,1 @@
+import{en as e}from"./theme.Dh5psj-1.js";import{d as o,b as l,k as r,o as t}from"./framework.DxrHb2fb.js";const d=o({__name:"radio-group",setup(n){const a=[{value:"free",label:"免费版"},{value:"standard",label:"标准版"},{value:"pro",label:"专业版"}];return(s,p)=>(t(),l(r(e),{collection:a,"default-value":"standard",label:"套餐"}))}});export{d as default};

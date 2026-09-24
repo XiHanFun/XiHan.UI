@@ -244,7 +244,7 @@ import { XhSeparator } from "@xihan-ui/vue";
 | `--xh-separator-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | separator 的 content 部件 font-size 覆盖槽。 |
 | `--xh-separator-dash-gap` | `line`<br>`root` | `background` | `dashed`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1_5` | separator 的 line、root 部件 background 覆盖槽。 |
 | `--xh-separator-dash-length` | `line`<br>`root` | `background` | `dashed`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1_5` | separator 的 line、root 部件 background 覆盖槽。 |
-| `--xh-separator-gap` | `content`<br>`root` | `gap` | `has([data-part='content'])` | `--xh-space-3` | separator 的 content、root 部件 gap 覆盖槽。 |
+| `--xh-separator-gap` | `root` | `gap` | `has([data-part='content'])` | `--xh-space-3` | separator 的 root 部件 gap 覆盖槽。 |
 | `--xh-separator-radius` | `line`<br>`root` | `border-radius` | `default` | `--xh-shape-pill` | separator 的 line、root 部件 border-radius 覆盖槽。 |
 | `--xh-separator-thickness` | `line`<br>`root` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | separator 的 line、root 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->

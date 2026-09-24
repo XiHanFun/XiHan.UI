@@ -475,6 +475,19 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 | `streaming` | `boolean` |  | 该段正文是否仍在增长，只写 data-streaming。 |
 | `translations` | `Partial<MarkdownStreamTranslations>` |  |  |
 
+### MarkdownBlock
+
+`blocks` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 是 | 稳定 key。生长中的块恒为 {@link MARKDOWN_STREAM_LIVE_KEY}。 |
+| `kind` | `'markdown' \| 'code' \| 'math' \| 'html'` | 是 |  |
+| `html` | `string` | 是 | 已消毒的 HTML。只对 kind 为 markdown 的块有效，见 {@link markdownBlockHtml}。 |
+| `complete` | `boolean` | 是 | 该块是否已闭合。 |
+| `lang` | `string` |  | 围栏语言标注，仅 code 块有。 |
+| `source` | `string` |  | 块正文原文，仅 code 与 math 块有。 |
+
 ### 插槽
 
 仅列出带载荷的插槽。
@@ -483,6 +496,15 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 | --- | --- | --- | --- |
 | `XhMarkdownStreamContent` | `block` | `MarkdownStreamBlockSlotProps` |  |
 | `XhMarkdownStreamRoot` | `default` | `MarkdownStreamRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhMarkdownStreamContent` | `children` | `SlotChildren<MarkdownStreamBlockSlotProps>` |  | 逐块接管该块的正文；未提供时按块类型铺设。 |
+| `XhMarkdownStreamRoot` | `children` | `SlotChildren<MarkdownStreamRootSlotProps>` |  |  |
 
 ### 状态
 

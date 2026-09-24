@@ -1137,6 +1137,15 @@ function valueText({ value }: { value: number }) {
 | `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发出；拖动过程中连续发出。 |
 | `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于发起请求。 |
 
+### SliderMark
+
+`marks` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `number` | 是 |  |
+| `label` | `string` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -1154,6 +1163,16 @@ function valueText({ value }: { value: number }) {
 | --- | --- | --- | --- |
 | `XhSliderRoot` | `default` | `SliderRootSlotProps` |  |
 | `XhSliderTickGroup` | `tick` | `SliderTickGroupTickSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSliderRoot` | `children` | `SlotChildren<SliderRootSlotProps>` |  |  |
+| `XhSliderThumb` | `index` | `number \| string` |  | 第几个滑块，多滑块时必须逐个写明；兼收字符串。 |
+| `XhSliderTickGroup` | `tick` | `SlotChildren<SliderTickSlotProps>` |  | 逐档刻度的文案接管口；未提供时填入刻度自带的 label。 |
 
 ### 状态
 
@@ -1292,7 +1311,7 @@ function valueText({ value }: { value: number }) {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-slider-control-gutter` | `control`<br>`root`<br>`tick-label` | `margin-inline` | `has([data-part='tick-label'])`<br>`orientation=horizontal` | `--xh-space-6` | slider 的 control、root、tick-label 部件 margin-inline 覆盖槽。 |
+| `--xh-slider-control-gutter` | `control`<br>`root` | `margin-inline` | `has([data-part='tick-label'])`<br>`orientation=horizontal` | `--xh-space-6` | slider 的 control、root 部件 margin-inline 覆盖槽。 |
 | `--xh-slider-gap` | `root` | `gap` | `default` | `--xh-space-1` | slider 的 root 部件 gap 覆盖槽。 |
 | `--xh-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | slider 的 label 部件 color 覆盖槽。 |
 | `--xh-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | slider 的 label 部件 color 覆盖槽。 |

@@ -133,7 +133,7 @@ function run(details: CommandSelectDetails) {
 
 加粗的是必需部件。
 
-`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-text` · `empty` · `loading` · `footer`
+`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-shortcut` · `item-suffix` · `empty` · `loading` · `footer`
 
 ## 示例
 
@@ -599,6 +599,10 @@ function onSelect(details: { label: string }) {
 
 - 内置过滤：传入清单后按检索串逐词筛选、按 `group` 归组，空组自动移除。`keywords` 让一条命令同时匹配英文名、拼音与旧称。
 - 过滤可以关闭（`filter` 置否），改由调用方筛选；远端检索使用这一档。
+- 命令可逐条声明语气，删除一类命令自带该族字色与高亮底。
+- 命令可写副文本，第 2 行放一句解释，不进检索串。
+- 命令可写快捷键提示，贴行尾、与说明同档同色；纯装饰，不进检索串。
+- 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
 - 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不保留持久选中状态，视觉上也不绘制对号或选中底。
@@ -633,7 +637,7 @@ function onSelect(details: { label: string }) {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-command>` |
-| Vue 组件 | `XhCommandContent` `XhCommandEmpty` `XhCommandFooter` `XhCommandGroup` `XhCommandGroupLabel` `XhCommandInput` `XhCommandItem` `XhCommandItemText` `XhCommandList` `XhCommandLoading` `XhCommandRoot` `XhCommandTrigger` |
+| Vue 组件 | `XhCommandContent` `XhCommandEmpty` `XhCommandFooter` `XhCommandGroup` `XhCommandGroupLabel` `XhCommandInput` `XhCommandItem` `XhCommandItemDescription` `XhCommandItemPrefix` `XhCommandItemShortcut` `XhCommandItemSuffix` `XhCommandItemText` `XhCommandList` `XhCommandLoading` `XhCommandRoot` `XhCommandTrigger` |
 | 组合式函数 | `useCommand` |
 | 状态机 | `commandMachine` |
 | 皮肤 | `@xihan-ui/styles/command.css` |
@@ -666,6 +670,30 @@ function onSelect(details: { label: string }) {
 | `onInputValueChange` | `(details: CommandInputValueChangeDetails) => void` |  | 检索串变化意图回调。 |
 | `onSelect` | `(details: CommandSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 |
 
+### CommandNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 展示文本，也是检索取字来源；默认回退为 value。 |
+| `keywords` | `readonly string[]` |  | 标题之外一并参与检索的别名，例如英文名、拼音、旧称。 |
+| `group` | `string` |  | 所属分组；未声明时不归组，渲染时不套分组外壳。 |
+| `disabled` | `boolean` |  | 条目禁用：方向键跳过它，点击与确认键都不选中。 |
+| `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余命令同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。 |
+| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+| `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从命令文字取意，不念它；只为真正注册了的组合写提示。 |
+
+### CommandGroup
+
+`groups` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 分组标题；默认回退为 value。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -684,9 +712,29 @@ function onSelect(details: { label: string }) {
 | --- | --- | --- | --- |
 | `XhCommandRoot` | `default` | `CommandRootSlotProps` |  |
 | `XhCommandRoot` | `trigger` | — | 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或 v-model:open 唤起）。 |
-| `XhCommandRoot` | `item` | `CommandNodeMeta` |  |
+| `XhCommandRoot` | `item` | `CommandNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhCommandRoot` | `item-prefix` | `CommandNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhCommandRoot` | `item-suffix` | `CommandNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 | `XhCommandRoot` | `empty` | — |  |
 | `XhCommandRoot` | `footer` | — |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCommandContent` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhCommandGroup` | `value` | `string` | 是 |  |
+| `XhCommandItem` | `value` | `string` | 是 |  |
+| `XhCommandItem` | `disabled` | `boolean` |  | 默认交给 connect 查询清单，写死 false 会覆盖数据中的禁用。 |
+| `XhCommandRoot` | `empty` | `ReactNode` |  | 无匹配时的提示语。提供后不必再写 empty 部件。 |
+| `XhCommandRoot` | `trigger` | `ReactNode` |  | 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或受控 open 唤起）。 |
+| `XhCommandRoot` | `footer` | `ReactNode` |  | 铺开时浮层底部的操作区内容；未提供时不渲染 footer 部件。 |
+| `XhCommandRoot` | `renderItem` | `(node: CommandNodeMeta) => ReactNode` |  | 每条命令的自定义内容；未提供时使用清单中的 label。 |
+| `XhCommandRoot` | `renderItemPrefix` | `(node: CommandNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhCommandRoot` | `renderItemSuffix` | `(node: CommandNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhCommandRoot` | `children` | `SlotChildren<CommandRootSlotProps>` |  |  |
 
 ### 状态
 
@@ -737,7 +785,11 @@ function onSelect(details: { label: string }) {
 | `getGroupProps` | `(props: CommandGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: CommandGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: CommandItemProps) => T['element']` |  |
+| `getItemPrefixProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CommandItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: CommandItemProps) => T['element']` |  |
+| `getItemShortcutProps` | `(props: CommandItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示。 |
 | `getFooterProps` | `() => T['element']` | 面板底部的提示条：内容由作者决定，这里只提供位置与观感。 |
@@ -788,6 +840,8 @@ function onSelect(details: { label: string }) {
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
+| `item-prefix` | `aria-hidden` | 'true' |
+| `item-shortcut` | `aria-hidden` | 'true' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
 
@@ -816,12 +870,25 @@ function onSelect(details: { label: string }) {
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `item-prefix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-prefix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-prefix` | `data-xh-collection-slot` | 'prefix' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-description` | `data-xh-collection-slot` | 'description' |
+| `item-shortcut` | `data-disabled` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-shortcut` | `data-xh-collection-slot` | 'shortcut' |
+| `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `footer` | `data-state` | 'open' \| 'closed' |

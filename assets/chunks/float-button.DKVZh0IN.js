@@ -1,1 +1,0 @@
-import{c5 as a,c6 as e,c7 as s}from"./theme.MiIkzu77.js";import{d as n,b as r,w as c,k as t,o as i,E as o}from"./framework.DxrHb2fb.js";const m=n({__name:"float-button",setup(u){return(l,p)=>(i(),r(t(s),{style:{position:"static"}},{default:c(()=>[o(t(a)),o(t(e))]),_:1}))}});export{m as default};

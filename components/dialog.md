@@ -1116,6 +1116,15 @@ async function remove(): Promise<void> {
 | --- | --- | --- | --- |
 | `XhDialogRoot` | `default` | `DialogRootSlotProps` |  |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhDialogContent` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhDialogRoot` | `children` | `SlotChildren<DialogRootSlotProps>` |  |  |
+
 ### 状态
 
 公开状态写入 `data-state`。
@@ -1267,7 +1276,7 @@ async function remove(): Promise<void> {
 | `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | dialog 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-dialog-py` | `content` | `background`<br>`padding-block` | `default` | `--xh-surface-py-md` | dialog 的 content 部件 background、padding-block 覆盖槽。 |
 | `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | dialog 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-dialog-separator` | `body`<br>`content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='dialog'][data-part='body'])`<br>`has([data-scope='dialog'][data-part='footer'])` | `--xh-material-elevated-separator` | dialog 的 body、content、footer、header 部件 border-block-end、border-block-start 覆盖槽。 |
+| `--xh-dialog-separator` | `content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='dialog'][data-part='body'])`<br>`has([data-scope='dialog'][data-part='footer'])` | `--xh-material-elevated-separator` | dialog 的 content、footer、header 部件 border-block-end、border-block-start 覆盖槽。 |
 | `--xh-dialog-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | dialog 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-dialog-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | dialog 的 title 部件 color 覆盖槽。 |
 | `--xh-dialog-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | dialog 的 title 部件 font-size 覆盖槽。 |

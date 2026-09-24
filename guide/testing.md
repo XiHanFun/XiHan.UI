@@ -23,6 +23,34 @@ pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
 
 在 Windows / macOS 宿主上，`pnpm test:browser` 固定有一条失败：像素基线文件受字体守卫拦截，整文件判失败、40 条用例全部 skipped。这是预期结果，不是环境故障；本地验证像素改动的方式见下文「像素基线」。
 
+### 按分类运行浏览器态
+
+`pnpm test:browser` 由 `ui/tooling/scripts/test-browser.mjs` 执行：先构建各包的依赖，再逐包串行运行（Vue → React → Web Components → 其余），每个包的 worker 数缺省为 `min(8, 核数 - 1)`。每个包各起一套 Chromium，同时运行多个包会在多核机器上拉起上百个页面，占满内存与 CPU。
+
+```bash
+pnpm test:browser                    # 全部包、全部用例
+pnpm test:browser form overlay       # 只跑这几类（跨包）
+pnpm test:browser --list             # 各分类在每个包里的用例数
+pnpm test:browser --pkg=vue,react    # 只跑点名的包
+pnpm test:browser --workers=4        # 调整每个包的 worker 数
+pnpm test:browser --no-build         # 跳过依赖构建
+pnpm test:browser overlay -- -t Esc  # -- 之后的参数原样交给 vitest
+```
+
+分类与组件总览一致（`ui/scripts/component-docs.manifest.json`）：`general`、`layout`、`navigation`、`form`、`data-display`、`feedback`、`overlay`、`ai`。用例文件名以某个组件名开头（取最长匹配）即归入该组件的分类；浮层主题的跨组件用例（`overlay-*`、各类 Portal、position 引擎）归 `overlay`；其余跨组件用例（全量无障碍、计算样式快照、像素基线、焦点环对账等）归 `shared`。某个包失败不中断其余包，全部跑完后汇总。
+
+### Vue 浏览器态的三个项目
+
+同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。`vitest.browser.config.ts` 因此把 Vue 浏览器态分成三个项目，按 `sequence.groupOrder` 先后运行：
+
+| 项目 | 收哪些文件 | 为什么单独放 |
+| --- | --- | --- |
+| `vue-browser` | 其余全部 | 并行主池 |
+| `vue-browser-touch` | 调用过 `Emulation.setTouchEmulationEnabled` 或 `coarsePointer()` 的文件，配置加载时自动扫出 | Linux 无头 Chromium 上，一张页面只要关过一次触屏仿真，`(pointer)` 与 `(hover)` 就永久变为 `none`，没有 CDP 入口改回来。挂在 `@media (hover: hover)` 下的悬停规则随之失效，同一 worker 里后续文件的悬停断言与像素基线会随机判红。Windows 上不走这条恢复路径，本机复现不出来 |
+| `vue-browser-serial` | `overlay-open-budget.spec.ts` | 量主线程耗时，与整套并行时量到的是别的用例抢走的 CPU，放到最后单独串行 |
+
+媒介仿真（print、forced-colors 等）由 `tests/browser/setup.ts` 在每个文件开跑前复位；触屏仿真不能这样复位，复位本身就会让页面失去悬停能力。
+
 ## 一致性：一份规格驱动各适配器
 
 规格（`ConformanceSuite`）声明组件的解剖部件、键盘表与用例；适配器各实现一个 `AdapterHarness`（挂载 fixture 树、获取事件、卸载）。运行器把同一份规格交给不同的 harness，逐帧采集归一化后的 `DomSnapshot` 并断言。
@@ -169,6 +197,30 @@ pnpm visual:performance --record
 继续由 `.size-limit.css.json` 与 `check-skin-size` 守护。性能预算门禁反查这两份真源；修改本项不得提高既有阈值。
 
 ## 结构门禁
+
+结构检查按职责分成十个模块，脚本放在 `ui/tooling/scripts/<模块>/` 下，执行顺序由 `ui/tooling/scripts/gate.modules.mjs` 决定。每一步都是独立子进程，串行执行：
+
+```bash
+pnpm gate                    # 全部模块，遇到第一处失败即停（CI 运行这一条）
+pnpm gate overlay motion     # 只跑点名的模块
+pnpm gate --list             # 列出模块、中文名与步数
+pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可与模块名同用
+```
+
+| 模块 | 管什么 |
+| --- | --- |
+| `package` | 运行时依赖、版本锁步、包清单与角色、子路径导出、发布产物 |
+| `tokens` | 令牌产物、令牌引用、字面量与兜底、语气层、层序与层号 |
+| `skin` | 皮肤入口与标记、解剖对齐、收起态、视觉轴、打印 / 高对比 / 安全区等环境档 |
+| `visual` | 形状、间距、描边、字号、海拔、交互阶梯、控件与面板尺寸、字形、家族配方与按压反馈 |
+| `overlay` | 浮层坐标系、可用空间、定位层、遮罩、箭头、落点与自绘滚动条 |
+| `motion` | 关键帧、时长与缓动、幅度、减弱动效、动效覆盖面 |
+| `a11y` | 聚焦环、焦点复位与上报、ARIA 写法、按键重复与键盘套件 |
+| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点 |
+| `docs` | 示例的多框架对齐、令牌与动效、文档数字与导入、组件总览 |
+| `repo` | changeset、提交 scope、发版标签、PR 模板、类型检查覆盖面、文件头、脚本接线 |
+
+改了哪一块先跑对应模块，提交前再跑一次全量。
 
 `pnpm gate` 运行 122 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 

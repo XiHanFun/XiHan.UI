@@ -681,6 +681,14 @@ const releases = [
 | `placement` | `TimelinePlacement` |  | 内容位于线的哪一侧：start / end / alternate，未提供时内容落在结束侧。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定圆点直径、条目间距与字号。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhTimelineItem` | `tone` | `Tone` |  | 该条的语气，只在本条内生效，下传给它自己的圆点。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。
@@ -746,12 +754,12 @@ const releases = [
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-timeline-connector-bg` | `connector` | `background` | `default` | `--xh-border-default` | timeline 的 connector 部件 background 覆盖槽。 |
-| `--xh-timeline-connector-min-length` | `connector`<br>`item`<br>`label` | `min-block-size`<br>`min-inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-4` | timeline 的 connector、item、label 部件 min-block-size、min-inline-size 覆盖槽。 |
+| `--xh-timeline-connector-min-length` | `connector`<br>`item` | `min-block-size`<br>`min-inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-4` | timeline 的 connector、item 部件 min-block-size、min-inline-size 覆盖槽。 |
 | `--xh-timeline-connector-radius` | `connector` | `border-radius` | `default` | `--xh-shape-pill` | timeline 的 connector 部件 border-radius 覆盖槽。 |
-| `--xh-timeline-connector-thickness` | `connector`<br>`item`<br>`label` | `block-size`<br>`inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-stroke-thick` | timeline 的 connector、item、label 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-timeline-connector-thickness` | `connector`<br>`item` | `block-size`<br>`inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-stroke-thick` | timeline 的 connector、item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-timeline-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | timeline 的 content 部件 gap 覆盖槽。 |
 | `--xh-timeline-content-pb` | `content`<br>`item` | `padding-block-end` | `@media (min-width: 768px)`<br>`nth-child(even)`<br>`orientation=horizontal`<br>`placement=alternate`<br>`placement=start` | `--xh-space-2` | timeline 的 content、item 部件 padding-block-end 覆盖槽。 |
-| `--xh-timeline-content-pt` | `content`<br>`item`<br>`label` | `padding-block-start` | `@media (min-width: 768px)`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-2` | timeline 的 content、item、label 部件 padding-block-start 覆盖槽。 |
+| `--xh-timeline-content-pt` | `content`<br>`item` | `padding-block-start` | `@media (min-width: 768px)`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-2` | timeline 的 content、item 部件 padding-block-start 覆盖槽。 |
 | `--xh-timeline-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | timeline 的 description 部件 color 覆盖槽。 |
 | `--xh-timeline-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | timeline 的 description 部件 font-size 覆盖槽。 |
 | `--xh-timeline-fg` | `root` | `color` | `default` | `--xh-fg-default` | timeline 的 root 部件 color 覆盖槽。 |
@@ -761,7 +769,7 @@ const releases = [
 | `--xh-timeline-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_timeline-caption-font-size` | timeline 的 indicator 部件 font-size 覆盖槽。 |
 | `--xh-timeline-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | timeline 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-timeline-indicator-size` | `indicator`<br>`item` | `block-size`<br>`inline-size`<br>`margin-block-start` | `default` | `--xh-_timeline-dot-size` | timeline 的 indicator、item 部件 block-size、inline-size、margin-block-start 覆盖槽。 |
-| `--xh-timeline-item-gap` | `content`<br>`item`<br>`label` | `padding-block-end`<br>`padding-inline-end` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-_timeline-item-gap` | timeline 的 content、item、label 部件 padding-block-end、padding-inline-end 覆盖槽。 |
+| `--xh-timeline-item-gap` | `content`<br>`item` | `padding-block-end`<br>`padding-inline-end` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-_timeline-item-gap` | timeline 的 content、item 部件 padding-block-end、padding-inline-end 覆盖槽。 |
 | `--xh-timeline-label-fg` | `label` | `color` | `default` | `--xh-fg-subtle` | timeline 的 label 部件 color 覆盖槽。 |
 | `--xh-timeline-label-font-size` | `label` | `font-size` | `default` | `--xh-_timeline-caption-font-size` | timeline 的 label 部件 font-size 覆盖槽。 |
 | `--xh-timeline-time-fg` | `time` | `color` | `default` | `--xh-fg-subtle` | timeline 的 time 部件 color 覆盖槽。 |

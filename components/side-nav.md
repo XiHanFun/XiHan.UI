@@ -691,6 +691,7 @@ const branches = collection.filter(node => node.children);
 
 - 支持分组、嵌套分支与当前项高亮：当前项铺品牌淡底行面、字取淡底前景，不另画指示条；通往当前项的展开分支只落与悬停同档的中性面。
 - `accordion` 限制同一层级只展开一个分支。
+- 入口可逐条声明语气，不向下传导；当前项的品牌淡底压过它。
 - 折叠后保留图标入口，子级在浮层中展示。
 - 方向键上下移动，左右键展开或收起分支。
 
@@ -741,6 +742,19 @@ const branches = collection.filter(node => node.children);
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 
+### SideNavNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 |  |
+| `label` | `string` |  | 入口文本；默认回退为 value，也是连打检索的取字来源。 |
+| `disabled` | `boolean` |  | 入口禁用：方向键跳过它，但它仍可聚焦。不向下传导给子级。 |
+| `tone` | `Tone` |  | 该入口自身的性质：危险区域写 danger、需要留意的写 warning。不写即与其余入口同档， 也不向下传导给子级——每一层各自声明。只换字色与悬停 / 按下的面，不表达当前页； 当前项的品牌淡底与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。 |
+| `href` | `string` |  | 直达目标；只对叶子有意义。 |
+| `children` | `SideNavNode[]` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -757,6 +771,19 @@ const branches = collection.filter(node => node.children);
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSideNavRoot` | `default` | `SideNavRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhSideNavBranch` | `value` | `string` | 是 |  |
+| `XhSideNavBranchContent` | `container` | `() => Element \| null` |  | 本分支弹层的 Portal 容器；优先于应用级配置。 |
+| `XhSideNavGroup` | `value` | `string` | 是 | 分组身份，与 group-label 依靠它配对。 |
+| `XhSideNavGroupLabel` | `value` | `string` | 是 |  |
+| `XhSideNavLink` | `value` | `string` | 是 |  |
+| `XhSideNavRoot` | `children` | `SlotChildren<SideNavRootSlotProps>` |  |  |
 
 ### 状态
 
@@ -883,6 +910,7 @@ const branches = collection.filter(node => node.children);
 | `branch-trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
+| `branch-trigger` | `data-tone` | metaOf(v)?.tone |
 | `branch-trigger` | `data-value` | itemValue(el) |
 | `branch-trigger` | `data-xh-collection-context` | 'page' |
 | `branch-trigger` | `data-xh-collection-item` | '' |
@@ -896,6 +924,7 @@ const branches = collection.filter(node => node.children);
 | `link` | `data-disabled` | ''（条件成立时才出现） |
 | `link` | `data-highlighted` | ''（条件成立时才出现） |
 | `link` | `data-pressed` | ''（条件成立时才出现） |
+| `link` | `data-tone` | metaOf(v)?.tone |
 | `link` | `data-value` | itemValue(el) |
 | `link` | `data-xh-collection-context` | 'page' |
 | `link` | `data-xh-collection-item` | '' |

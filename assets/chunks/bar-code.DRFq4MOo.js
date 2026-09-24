@@ -1,0 +1,1 @@
+import{H as e}from"./theme.Dh5psj-1.js";import{d as a,b as r,k as o,o as t}from"./framework.DxrHb2fb.js";const _=a({__name:"bar-code",setup(n){return(s,c)=>(t(),r(o(e),{value:"XH-0915","bar-width":1,height:28,margin:4}))}});export{_ as default};

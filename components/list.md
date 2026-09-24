@@ -412,6 +412,15 @@ const sizes = [
 | `split` | `boolean` |  | 条目之间绘制分隔线。 |
 | `variant` | `ControlVariant` |  | 形态：ghost 不画壳（默认），outline 为整份列表绘制描边与圆角，subtle 淡底。默认 ghost。 |
 
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhListItem` | `as` | `ElementType` |  | 条目渲染为哪个标签，默认 li；根换为 div 时这里一并更换。 |
+| `XhListRoot` | `as` | `ElementType` |  | 根渲染为哪个标签，默认 ul；换为 div 即不进入读屏的列表语义。 |
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。
