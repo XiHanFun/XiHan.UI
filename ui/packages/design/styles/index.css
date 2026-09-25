@@ -9096,7 +9096,9 @@
     grid-row: span 2;
   }
 
-  @media (max-width: 640px) {
+  /* 窄于 sm 断点时标题区占满第二列、操作区换到下一行。写成 min-width 的补集：640px 本身归宽档，
+     与其余皮肤在同一宽度切换 */
+  @media not all and (min-width: 640px) {
     [data-scope='page-header'][data-part='root'] {
       grid-template-columns: auto minmax(0, 1fr);
     }
