@@ -54440,7 +54440,7 @@
         "collapsed"
       ],
       "defaultToken": [
-        "56px"
+        "--xh-sider-collapsed-w"
       ],
       "visibility": "public",
       "description": "side-nav 的 root 部件 inline-size 覆盖槽。"
@@ -55075,7 +55075,7 @@
         "default"
       ],
       "defaultToken": [
-        "240px"
+        "--xh-sider-w"
       ],
       "visibility": "public",
       "description": "side-nav 的 root 部件 inline-size 覆盖槽。"

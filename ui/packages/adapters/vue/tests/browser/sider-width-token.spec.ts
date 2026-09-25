@@ -25,12 +25,16 @@ function mount(tokens: Record<string, string> = {}) {
     <div data-scope="layout" data-part="root">
       <aside data-scope="layout" data-part="sider" data-collapsed data-sider="collapsed"></aside>
       <main data-scope="layout" data-part="content"></main>
-    </div>`
+    </div>
+    <nav data-scope="side-nav" data-part="root" data-sider="nav-expanded"></nav>
+    <nav data-scope="side-nav" data-part="root" data-collapsed data-sider="nav-collapsed"></nav>`
   document.body.append(host)
   const width = (selector: string) => host!.querySelector<HTMLElement>(selector)!.getBoundingClientRect().width
   return {
     layoutExpanded: width('[data-sider="expanded"]'),
     layoutCollapsed: width('[data-sider="collapsed"]'),
+    navExpanded: width('[data-sider="nav-expanded"]'),
+    navCollapsed: width('[data-sider="nav-collapsed"]'),
   }
 }
 
@@ -40,20 +44,26 @@ function rem(n: number): number {
 }
 
 describe('侧栏宽度令牌', () => {
-  it('缺省展开 15rem、折叠 4rem', () => {
+  it('缺省展开 15rem、折叠 4rem，Layout 侧栏与 SideNav 同宽', () => {
     const widths = mount()
     expect(widths.layoutExpanded).toBe(rem(15))
     expect(widths.layoutCollapsed).toBe(rem(4))
+    expect(widths.navExpanded).toBe(widths.layoutExpanded)
+    expect(widths.navCollapsed).toBe(widths.layoutCollapsed)
   })
 
-  it('改令牌，Layout 侧栏跟着变', () => {
+  it('改令牌，Layout 侧栏与 SideNav 一起变', () => {
     const widths = mount({ '--xh-sider-w': '18rem', '--xh-sider-collapsed-w': '3.5rem' })
     expect(widths.layoutExpanded).toBe(rem(18))
     expect(widths.layoutCollapsed).toBe(rem(3.5))
+    expect(widths.navExpanded).toBe(rem(18))
+    expect(widths.navCollapsed).toBe(rem(3.5))
   })
 
-  it('组件槽仍压过令牌', () => {
-    const widths = mount({ '--xh-sider-w': '18rem', '--xh-layout-sider-w': '12rem' })
+  it('组件槽仍压过令牌，只改自己那一件', () => {
+    const widths = mount({ '--xh-sider-w': '18rem', '--xh-layout-sider-w': '12rem', '--xh-side-nav-collapsed-w': '3rem' })
     expect(widths.layoutExpanded).toBe(rem(12))
+    expect(widths.navExpanded).toBe(rem(18))
+    expect(widths.navCollapsed).toBe(rem(3))
   })
 })
