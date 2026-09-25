@@ -17714,7 +17714,7 @@
     scale: var(--xh-motion-scale-enter);
     transition:
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
