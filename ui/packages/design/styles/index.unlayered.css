@@ -25466,7 +25466,7 @@
   max-block-size: 85%;
   user-select: none;
   /* 变换是内联 style 写的，只给缩放旋转一点缓动；拖拽平移要跟手，不缓 */
-  transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+  transition: transform var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
 }
 
 /* 拖拽期间变换每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
