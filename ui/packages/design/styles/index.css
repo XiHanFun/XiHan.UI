@@ -37213,11 +37213,11 @@
 /* Toast 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
 
 @layer xihan.motion {
-  /* 新条目从视口边缘外进入，同时落到自己的折叠层级。 */
+  /* 新条目从视口边缘外进入，同时落到自己的折叠层级。整幅位移取令牌，减弱动效下归零，只剩淡入 */
   @keyframes xh-toast-in {
     from {
       opacity: 0;
-      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - 100%)))
+      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - var(--xh-motion-travel))))
         scale(var(--xh-toast-scale-collapsed, 1));
     }
 
@@ -37254,7 +37254,7 @@
 
     to {
       opacity: 0;
-      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - 100%)))
+      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - var(--xh-motion-travel))))
         scale(var(--xh-toast-scale, 1));
     }
   }
@@ -37340,8 +37340,8 @@
     transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-y))) scale(var(--xh-toast-scale));
     transform-origin: bottom center;
     transition:
-      transform var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

@@ -575,7 +575,7 @@
       ]
     },
     "xh-toast-in": {
-      "content": "from{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-offset-collapsed,0px) - 100%))) scale(var(--xh-toast-scale-collapsed,1))}to{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-offset-collapsed,0px))) scale(var(--xh-toast-scale-collapsed,1))}",
+      "content": "from{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-offset-collapsed,0px) - var(--xh-motion-travel)))) scale(var(--xh-toast-scale-collapsed,1))}to{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-offset-collapsed,0px))) scale(var(--xh-toast-scale-collapsed,1))}",
       "definedIn": [
         "toast.css"
       ],
@@ -584,7 +584,7 @@
       ]
     },
     "xh-toast-out": {
-      "content": "from{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-y,0px))) scale(var(--xh-toast-scale,1))}to{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-y,0px) - 100%))) scale(var(--xh-toast-scale,1))}",
+      "content": "from{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-y,0px))) scale(var(--xh-toast-scale,1))}to{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-y,0px) - var(--xh-motion-travel)))) scale(var(--xh-toast-scale,1))}",
       "definedIn": [
         "toast.css"
       ],
