@@ -169,7 +169,7 @@
     scale: 0;
     transition:
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-settle);
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle);
   }
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */

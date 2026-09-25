@@ -9,16 +9,6 @@
 @import '../family/motion.css';
 @import '../family/action-control.css';
 
-@layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-popconfirm-rotate {
-    to {
-      transform: rotate(1turn);
-    }
-  }
-}
-
-
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='popconfirm'] {
@@ -263,7 +253,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentcolor;
     border-radius: var(--xh-shape-circle);
-    animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 取消是中性的次要出口，不参与语气：content 上的 data-tone 会把 --xh-_tone-* 一路继承下来，

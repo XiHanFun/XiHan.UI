@@ -211,7 +211,7 @@ export function createBackgroundSurface(
   let pointerTarget = 0
 
   const respectReducedMotion = options.respectReducedMotion !== false
-  let reduced = respectReducedMotion && resolveMotionPreference() === 'reduce'
+  let reduced = respectReducedMotion && resolveMotionPreference(target) === 'reduce'
 
   function buildPrograms(): void {
     backgroundProgram?.dispose()
@@ -475,8 +475,9 @@ export function createBackgroundSurface(
   }
 
   const stopReducedMotion = respectReducedMotion
-    ? onMotionPreferenceChange((value) => {
-        reduced = value === 'reduce'
+    ? onMotionPreferenceChange(() => {
+        // 全局偏好变了按宿主重新判断：宿主所在容器的 data-motion 仍然优先
+        reduced = resolveMotionPreference(target) === 'reduce'
         // 形变走到一半才切到减弱动效：同样直接收尾，不停在半路
         if (reduced)
           morph = 1

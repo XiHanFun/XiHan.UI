@@ -899,7 +899,7 @@ const truth = {
     },
   },
   库自用dataXh属性数: {
-    how: 'packages / tooling 源码里出现过的 data-xh-* 名字去重，减掉作者书写的 data-xh-part 与 data-xh-scroll',
+    how: 'packages / tooling 源码里出现过的 data-xh-* 名字去重，减掉作者书写的 data-xh-part、data-xh-scroll、data-xh-ink 与 data-xh-ink-margin',
     async value() {
       const EXT = ['.ts', '.js', '.mjs', '.css', '.vue', '.html']
       const names = new Set()
@@ -917,6 +917,9 @@ const truth = {
       names.delete('data-xh-part')
       // data-xh-scroll 同样由作者书写（reset 层原生细条的作者入口），不是库自用标记
       names.delete('data-xh-scroll')
+      // 墨色域的两个声明写在作者自己的彩色区块上，是作者输入
+      names.delete('data-xh-ink')
+      names.delete('data-xh-ink-margin')
       return names.size
     },
   },

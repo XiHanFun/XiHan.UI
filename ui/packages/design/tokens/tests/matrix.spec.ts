@@ -46,6 +46,18 @@ const ATTR_TO_AXIS: Record<string, Axis> = {
   'data-transparency': 'transparency',
 }
 
+/**
+ * 面的声明而不是页面环境：墨色域写在彩色区块上，这 32 格模拟的是没有声明域的缺省面，
+ * 所以只写了这些属性的选择器分支在矩阵里永不命中。它们的取值由 ink.spec 与浏览器用例对账。
+ */
+const SURFACE_ATTRS = new Set(['data-xh-ink', 'data-xh-ink-margin'])
+
+/** 选择器分支是不是只由面的声明构成。 */
+function isSurfaceBranch(selector: string): boolean {
+  const attrs = [...selector.matchAll(/\[([\w-]+)/g)].map(m => m[1]!)
+  return attrs.length > 0 && attrs.every(attr => SURFACE_ATTRS.has(attr))
+}
+
 function combinations(): Combination[] {
   const out: Combination[] = []
   for (const theme of AXES.theme) {
@@ -105,7 +117,7 @@ function toMatcher(selector: string): Partial<Record<Axis, string>> {
   return req
 }
 
-interface Parsed { blocks: Block[], mediaConditions: string[] }
+interface Parsed { blocks: Block[], mediaConditions: string[], supportsConditions: string[], surfaceSelectors: string[] }
 
 /**
  * 逐行扫 tokens.css。产物的形状是固定的：一行一条声明，选择器与开花括号同行，
@@ -117,6 +129,8 @@ interface Parsed { blocks: Block[], mediaConditions: string[] }
 function parse(source: string): Parsed {
   const blocks: Block[] = []
   const mediaConditions: string[] = []
+  const supportsConditions: string[] = []
+  const surfaceSelectors: string[] = []
   let inComment = false
   let inMedia = 0
   let depth = 0
@@ -144,6 +158,13 @@ function parse(source: string): Parsed {
       depth++
       continue
     }
+    // @supports 与 @media 一样整块跳过：里面只有墨色 auto 域，条件记下来对账
+    if (line.startsWith('@supports') && line.endsWith('{')) {
+      supportsConditions.push(line.slice('@supports'.length, -1).trim())
+      inMedia = depth + 1
+      depth++
+      continue
+    }
     if (line.startsWith('@layer')) {
       if (line.endsWith('{'))
         depth++
@@ -167,11 +188,19 @@ function parse(source: string): Parsed {
         current = { index: -1, selector, matchers: [], decls: [], plain: [] }
         continue
       }
+      const branches = selector.split(',').map(s => s.trim())
+      const environment = branches.filter(branch => !isSurfaceBranch(branch))
+      surfaceSelectors.push(...branches.filter(isSurfaceBranch))
+      if (environment.length === 0) {
+        // 只写给墨色域的块：不进矩阵，花括号照样配平
+        current = { index: -1, selector, matchers: [], decls: [], plain: [] }
+        continue
+      }
       counted++
       current = {
         index: counted,
-        selector,
-        matchers: selector.split(',').map(s => toMatcher(s.trim())),
+        selector: environment.join(', '),
+        matchers: environment.map(toMatcher),
         decls: [],
         plain: [],
       }
@@ -192,10 +221,10 @@ function parse(source: string): Parsed {
   }
 
   // @media 里那些块占了 index -1，不参与层叠
-  return { blocks: blocks.filter(b => b.index > 0), mediaConditions }
+  return { blocks: blocks.filter(b => b.index > 0), mediaConditions, supportsConditions, surfaceSelectors }
 }
 
-const { blocks, mediaConditions } = parse(css)
+const { blocks, mediaConditions, supportsConditions, surfaceSelectors } = parse(css)
 
 /* ---------- 层叠 ---------- */
 
@@ -396,6 +425,20 @@ describe('快照的前提', () => {
       '(forced-colors: active)',
       '(prefers-reduced-motion: reduce)',
       'print',
+    ])
+  })
+
+  it('跳过的 @supports 与面的声明都有独立用例看守', () => {
+    // 墨色域不是页面环境，auto 域又受相对颜色语法守卫：两者的取值由 ink.spec 与 Chromium 的
+    // ink-domain 用例对账。新的 @supports 或新的面声明冒出来时这里判红
+    expect(supportsConditions).toHaveLength(1)
+    expect(supportsConditions[0]).toMatch(/^\(color: color\(from red srgb-linear /)
+    expect([...new Set(surfaceSelectors)].sort()).toEqual([
+      `:where([data-xh-ink='dark'])`,
+      `:where([data-xh-ink='dark'][data-xh-ink-margin='ample'])`,
+      `:where([data-xh-ink='light'])`,
+      `:where([data-xh-ink='light'][data-xh-ink-margin='ample'])`,
+      `:where([data-xh-ink])`,
     ])
   })
 

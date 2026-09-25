@@ -19,6 +19,9 @@ export { cubicBezier, easing, resolveEasing, toLinearEasing } from './easing'
 export type { EasingFunction, EasingName } from './easing'
 // 帧循环
 export { frameLoop, frameNow } from './frame'
+// 从元素读取语义动效令牌
+export { readMotion } from './read'
+export type { MotionReading } from './read'
 // 减弱动效
 export {
   getMotionOverride,
@@ -30,6 +33,9 @@ export {
   setMotionOverride,
 } from './reduced-motion'
 export type { MotionPreference } from './reduced-motion'
+// 语义动效常量
+export { motionDurations, motionEasings } from './semantic'
+export type { MotionDurationName, MotionEaseName } from './semantic'
 // 弹簧
 export { createSpring, springFromPerceptual, springPresets, springToLinearEasing, supportsLinearEasing } from './spring'
 export type { SpringPerceptual, SpringPhysical, SpringPresetName, SpringSolver, SpringSpec } from './spring'

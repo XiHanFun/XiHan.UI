@@ -19,15 +19,6 @@
         "approval"
       ]
     },
-    "xh-approval-rotate": {
-      "content": "to{rotate:360deg}",
-      "definedIn": [
-        "approval.css"
-      ],
-      "consumers": [
-        "approval"
-      ]
-    },
     "xh-carousel-indicator-progress": {
       "content": "from{scale:var(--xh-_carousel-progress-from)}to{scale:var(--xh-_carousel-progress-to)}",
       "definedIn": [
@@ -55,25 +46,16 @@
         "clipboard"
       ]
     },
-    "xh-clipboard-rotate": {
-      "content": "to{rotate:360deg}",
-      "definedIn": [
-        "clipboard.css"
-      ],
-      "consumers": [
-        "clipboard"
-      ]
-    },
     "xh-countdown": {
       "content": "from{inline-size:100%}to{inline-size:0%}",
       "definedIn": [
-        "notification.css",
-        "toast.css"
+        "family/motion.css"
       ],
       "consumers": [
         "notification",
         "toast"
-      ]
+      ],
+      "relation": "value"
     },
     "xh-dialog-in": {
       "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
@@ -146,17 +128,8 @@
         "download-trigger"
       ]
     },
-    "xh-download-trigger-rotate": {
-      "content": "to{rotate:360deg}",
-      "definedIn": [
-        "download-trigger.css"
-      ],
-      "consumers": [
-        "download-trigger"
-      ]
-    },
     "xh-drawer-in-bottom": {
-      "content": "from{translate:0 var(--xh-_drawer-shift-block,100%)}to{translate:0 0}",
+      "content": "from{translate:0 var(--xh-_drawer-shift-block,var(--xh-motion-travel))}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -165,7 +138,7 @@
       ]
     },
     "xh-drawer-in-left": {
-      "content": "from{translate:calc(-1 * var(--xh-_drawer-shift-inline,100%)) 0}to{translate:0 0}",
+      "content": "from{translate:calc(-1 * var(--xh-_drawer-shift-inline,var(--xh-motion-travel))) 0}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -174,7 +147,7 @@
       ]
     },
     "xh-drawer-in-right": {
-      "content": "from{translate:var(--xh-_drawer-shift-inline,100%) 0}to{translate:0 0}",
+      "content": "from{translate:var(--xh-_drawer-shift-inline,var(--xh-motion-travel)) 0}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -183,7 +156,7 @@
       ]
     },
     "xh-drawer-in-top": {
-      "content": "from{translate:0 calc(-1 * var(--xh-_drawer-shift-block,100%))}to{translate:0 0}",
+      "content": "from{translate:0 calc(-1 * var(--xh-_drawer-shift-block,var(--xh-motion-travel)))}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -192,7 +165,7 @@
       ]
     },
     "xh-drawer-out-bottom": {
-      "content": "from{translate:0 0}to{translate:0 var(--xh-_drawer-shift-block,100%)}",
+      "content": "from{translate:0 0}to{translate:0 var(--xh-_drawer-shift-block,var(--xh-motion-travel))}",
       "definedIn": [
         "drawer.css"
       ],
@@ -201,7 +174,7 @@
       ]
     },
     "xh-drawer-out-left": {
-      "content": "from{translate:0 0}to{translate:calc(-1 * var(--xh-_drawer-shift-inline,100%)) 0}",
+      "content": "from{translate:0 0}to{translate:calc(-1 * var(--xh-_drawer-shift-inline,var(--xh-motion-travel))) 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -210,7 +183,7 @@
       ]
     },
     "xh-drawer-out-right": {
-      "content": "from{translate:0 0}to{translate:var(--xh-_drawer-shift-inline,100%) 0}",
+      "content": "from{translate:0 0}to{translate:var(--xh-_drawer-shift-inline,var(--xh-motion-travel)) 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -219,13 +192,21 @@
       ]
     },
     "xh-drawer-out-top": {
-      "content": "from{translate:0 0}to{translate:0 calc(-1 * var(--xh-_drawer-shift-block,100%))}",
+      "content": "from{translate:0 0}to{translate:0 calc(-1 * var(--xh-_drawer-shift-block,var(--xh-motion-travel)))}",
       "definedIn": [
         "drawer.css"
       ],
       "consumers": [
         "drawer"
       ]
+    },
+    "xh-drop-in": {
+      "content": "from{opacity:0;translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "fade"
     },
     "xh-fade-in": {
       "content": "from{opacity:0}to{opacity:1}",
@@ -266,6 +247,14 @@
       "consumers": [
         "form"
       ]
+    },
+    "xh-item-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "list"
     },
     "xh-log-button-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
@@ -337,15 +326,6 @@
     },
     "xh-notification-out": {
       "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
-      "definedIn": [
-        "notification.css"
-      ],
-      "consumers": [
-        "notification"
-      ]
-    },
-    "xh-notification-spin": {
-      "content": "to{rotate:360deg}",
       "definedIn": [
         "notification.css"
       ],
@@ -445,15 +425,6 @@
       ],
       "relation": "anchored-panel"
     },
-    "xh-popconfirm-rotate": {
-      "content": "to{transform:rotate(1turn)}",
-      "definedIn": [
-        "popconfirm.css"
-      ],
-      "consumers": [
-        "popconfirm"
-      ]
-    },
     "xh-progress-indeterminate": {
       "content": "from{inset-inline-start:-40%}to{inset-inline-start:100%}",
       "definedIn": [
@@ -511,6 +482,30 @@
       ],
       "relation": "fade"
     },
+    "xh-sheet-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "sheet"
+    },
+    "xh-sheet-out": {
+      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "sheet"
+    },
+    "xh-shimmer": {
+      "content": "from{background-position:150% center}to{background-position:-50% center}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "loop"
+    },
     "xh-skeleton-pulse": {
       "content": "to{opacity:var(--xh-state-disabled-opacity)}",
       "definedIn": [
@@ -529,14 +524,39 @@
         "skeleton"
       ]
     },
-    "xh-spin": {
-      "content": "to{transform:rotate(360deg)}",
+    "xh-slide-in": {
+      "content": "from{translate:var(--xh-_slide-from-x,0) var(--xh-_slide-from-y,0)}to{translate:0 0}",
       "definedIn": [
-        "button.css"
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "slide"
+    },
+    "xh-slide-out": {
+      "content": "from{translate:0 0}to{translate:var(--xh-_slide-from-x,0) var(--xh-_slide-from-y,0)}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "slide"
+    },
+    "xh-spin": {
+      "content": "to{rotate:1turn}",
+      "definedIn": [
+        "family/motion.css"
       ],
       "consumers": [
-        "button"
-      ]
+        "approval",
+        "button",
+        "clipboard",
+        "download-trigger",
+        "notification",
+        "popconfirm",
+        "spinner",
+        "switch",
+        "toast"
+      ],
+      "relation": "loop"
     },
     "xh-spinner-dots": {
       "content": "50%{opacity:var(--xh-state-disabled-opacity)}",
@@ -545,24 +565,6 @@
       ],
       "consumers": [
         "spinner"
-      ]
-    },
-    "xh-spinner-rotate": {
-      "content": "to{transform:rotate(1turn)}",
-      "definedIn": [
-        "spinner.css"
-      ],
-      "consumers": [
-        "spinner"
-      ]
-    },
-    "xh-switch-rotate": {
-      "content": "to{transform:rotate(1turn)}",
-      "definedIn": [
-        "switch.css"
-      ],
-      "consumers": [
-        "switch"
       ]
     },
     "xh-table-loading-pulse": {
@@ -575,7 +577,7 @@
       ]
     },
     "xh-toast-in": {
-      "content": "from{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-offset-collapsed,0px) - 100%))) scale(var(--xh-toast-scale-collapsed,1))}to{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-offset-collapsed,0px))) scale(var(--xh-toast-scale-collapsed,1))}",
+      "content": "from{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-offset-collapsed,0px) - var(--xh-motion-travel)))) scale(var(--xh-toast-scale-collapsed,1))}to{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-offset-collapsed,0px))) scale(var(--xh-toast-scale-collapsed,1))}",
       "definedIn": [
         "toast.css"
       ],
@@ -584,16 +586,7 @@
       ]
     },
     "xh-toast-out": {
-      "content": "from{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-y,0px))) scale(var(--xh-toast-scale,1))}to{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-y,0px) - 100%))) scale(var(--xh-toast-scale,1))}",
-      "definedIn": [
-        "toast.css"
-      ],
-      "consumers": [
-        "toast"
-      ]
-    },
-    "xh-toast-spin": {
-      "content": "to{rotate:360deg}",
+      "content": "from{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-y,0px))) scale(var(--xh-toast-scale,1))}to{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-y,0px) - var(--xh-motion-travel)))) scale(var(--xh-toast-scale,1))}",
       "definedIn": [
         "toast.css"
       ],
@@ -657,22 +650,45 @@
       ]
     },
     "xh-approval-in": {
-      "$description": "4 个名字是同一段动画，收敛前登记在案",
+      "$description": "5 个名字是同一段动画，收敛前登记在案",
       "names": [
         "xh-approval-in",
+        "xh-item-in",
         "xh-message-feed-item-in",
         "xh-question-flow-in",
         "xh-tool-call-enter"
       ]
     },
-    "xh-approval-rotate": {
-      "$description": "5 个名字是同一段动画，收敛前登记在案",
+    "xh-diff-view-reveal": {
+      "$description": "3 个名字是同一段动画，收敛前登记在案",
       "names": [
-        "xh-approval-rotate",
-        "xh-clipboard-rotate",
-        "xh-download-trigger-rotate",
-        "xh-notification-spin",
-        "xh-toast-spin"
+        "xh-diff-view-reveal",
+        "xh-drop-in",
+        "xh-form-summary-enter"
+      ]
+    },
+    "xh-dialog-in": {
+      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-dialog-in",
+        "xh-notification-in",
+        "xh-sheet-in"
+      ]
+    },
+    "xh-dialog-out": {
+      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-dialog-out",
+        "xh-notification-out",
+        "xh-sheet-out"
+      ]
+    },
+    "xh-reasoning-shimmer": {
+      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-reasoning-shimmer",
+        "xh-shimmer",
+        "xh-tool-call-shimmer"
       ]
     },
     "xh-clipboard-loading-reveal": {
@@ -680,42 +696,6 @@
       "names": [
         "xh-clipboard-loading-reveal",
         "xh-download-trigger-loading-reveal"
-      ]
-    },
-    "xh-dialog-in": {
-      "$description": "2 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-dialog-in",
-        "xh-notification-in"
-      ]
-    },
-    "xh-dialog-out": {
-      "$description": "2 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-dialog-out",
-        "xh-notification-out"
-      ]
-    },
-    "xh-diff-view-reveal": {
-      "$description": "2 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-diff-view-reveal",
-        "xh-form-summary-enter"
-      ]
-    },
-    "xh-popconfirm-rotate": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-popconfirm-rotate",
-        "xh-spinner-rotate",
-        "xh-switch-rotate"
-      ]
-    },
-    "xh-reasoning-shimmer": {
-      "$description": "2 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-reasoning-shimmer",
-        "xh-tool-call-shimmer"
       ]
     }
   },
@@ -727,6 +707,14 @@
     "xh-reasoning-expand": "并入 xh-disclosure-expand（family/motion.css）",
     "xh-reasoning-collapse": "并入 xh-disclosure-collapse（family/motion.css）",
     "xh-tool-call-expand": "并入 xh-disclosure-expand（family/motion.css）",
-    "xh-tool-call-collapse": "并入 xh-disclosure-collapse（family/motion.css）"
+    "xh-tool-call-collapse": "并入 xh-disclosure-collapse（family/motion.css）",
+    "xh-spinner-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-popconfirm-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-switch-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-toast-spin": "并入 xh-spin（family/motion.css）",
+    "xh-approval-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-clipboard-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-download-trigger-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-notification-spin": "并入 xh-spin（family/motion.css）"
   }
 }

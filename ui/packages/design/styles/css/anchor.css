@@ -140,8 +140,8 @@
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
     transition:
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* display 会盖掉 hidden 属性的 UA 规则，无激活项时显式让位 */
@@ -156,8 +156,8 @@
     inline-size: auto;
     block-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（导航当前页）：

@@ -5,13 +5,12 @@
 
 /* 定义 approval 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 /* 独立皮肤同时传递引入授权行与两颗钮的动作控件配方，full bundle 递归去重。 */
 @import '../family/action-control.css';
 
 @layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-
   /* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
   @keyframes xh-approval-in {
     from {
@@ -34,12 +33,6 @@
     to {
       opacity: 1;
       scale: 1;
-    }
-  }
-
-  @keyframes xh-approval-rotate {
-    to {
-      rotate: 360deg;
     }
   }
 }
@@ -409,7 +402,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentColor;
     border-radius: var(--xh-shape-circle);
-    animation: xh-approval-rotate var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。

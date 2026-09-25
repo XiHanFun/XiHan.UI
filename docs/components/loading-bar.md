@@ -221,7 +221,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | `--xh-loading-bar-peg-fg` | `peg` | `background` | `default` | `--xh-loading-bar-range` | loading-bar 的 peg 部件 background 覆盖槽。 |
 | `--xh-loading-bar-peg-w` | `peg` | `inline-size` | `default` | `--xh-space-8` | loading-bar 的 peg 部件 inline-size 覆盖槽。 |
 | `--xh-loading-bar-range` | `peg`<br>`range` | `background` | `default` | `--xh-_tone-soft` | loading-bar 的 peg、range 部件 background 覆盖槽。 |
-| `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-enter` | loading-bar 的 range 部件 transition 覆盖槽。 |
+| `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-move` | loading-bar 的 range 部件 transition 覆盖槽。 |
 | `--xh-loading-bar-track` | `track` | `background` | `default` | `transparent` | loading-bar 的 track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

@@ -58,8 +58,8 @@
 
 ## Disclosure
 
-- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容走 `grid-template-rows: 0fr → 1fr`：入场 `--xh-motion-duration-enter` + `--xh-motion-ease-enter-strong`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit`；指示器旋转与内容同档。
-- 密集树形展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层）不动高度，只旋转指示器 `--xh-motion-duration-micro`。
+- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容走 `grid-template-rows: 0fr → 1fr`：展开 `--xh-motion-duration-expand` + `--xh-motion-ease-enter-strong`，收起 `--xh-motion-duration-collapse` + `--xh-motion-ease-exit`；指示器随内容同档转向，减弱动效下两者都瞬时完成。
+- 密集展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器 `--xh-motion-duration-nudge`。
 
 ## 浮层进出场
 
@@ -79,7 +79,7 @@
 
 ## 减弱动效
 
-`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）取消位移与缩放，保留即时换面：按下仍然换底、浮层仍然出现，只是不再滑动与缩放。JS 侧经 `resolveMotionPreference` 读同一个值——退场租约、贴底滚动、数字动画、加载弧线、背景层全部走这一条通道，产品自己的"减弱动效"设置用 `setMotionOverride` 一处设置、处处生效。
+`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）去掉位移、保留淡变：位移、缩放、旋转与尺寸变化瞬时完成（`move` / `nudge` / `expand` / `collapse` / `slide` / `press` / `release` 为 1ms，幅度令牌归零），换色与出现的淡变保留为 120ms（`micro` / `enter` / `exit`）。按下仍然换底、浮层仍然淡入，只是不再滑动与缩放；浮层退场在减弱动效下直接移除。`data-motion="default"` 恢复完整动效：系统要求减弱、而产品设置或某个局部容器选择完整动效时，该子树的令牌回到基线取值。两者可以嵌套，最近的一层生效。JS 侧经 `resolveMotionPreference` 读同一个值——退场租约、贴底滚动、数字动画、加载弧线、背景层全部走这一条通道，产品自己的"减弱动效"设置用 `setMotionOverride` 一处设置、处处生效。
 
 ## 相关
 

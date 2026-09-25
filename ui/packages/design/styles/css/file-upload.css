@@ -256,7 +256,7 @@
     border-radius: inherit;
     background: var(--xh-file-upload-item-progress-fill, var(--xh-bg-brand));
     inline-size: calc(var(--xh-_file-upload-progress, 0) * 100%);
-    transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+    transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='file-upload'][data-part='item-progress'][hidden] {

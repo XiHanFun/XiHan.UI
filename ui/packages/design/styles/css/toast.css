@@ -7,13 +7,14 @@
 
 /* Toast 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
 @import '../family/action-control.css';
+@import '../family/motion.css';
 
 @layer xihan.motion {
-  /* 新条目从视口边缘外进入，同时落到自己的折叠层级。 */
+  /* 新条目从视口边缘外进入，同时落到自己的折叠层级。整幅位移取令牌，减弱动效下归零，只剩淡入 */
   @keyframes xh-toast-in {
     from {
       opacity: 0;
-      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - 100%)))
+      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - var(--xh-motion-travel))))
         scale(var(--xh-toast-scale-collapsed, 1));
     }
 
@@ -21,23 +22,6 @@
       opacity: 1;
       transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-offset-collapsed, 0px)))
         scale(var(--xh-toast-scale-collapsed, 1));
-    }
-  }
-
-  @keyframes xh-toast-spin {
-    to {
-      rotate: 360deg;
-    }
-  }
-
-  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
-  @keyframes xh-countdown {
-    from {
-      inline-size: 100%;
-    }
-
-    to {
-      inline-size: 0%;
     }
   }
 
@@ -50,7 +34,7 @@
 
     to {
       opacity: 0;
-      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - 100%)))
+      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - var(--xh-motion-travel))))
         scale(var(--xh-toast-scale, 1));
     }
   }
@@ -136,8 +120,8 @@
     transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-y))) scale(var(--xh-toast-scale));
     transform-origin: bottom center;
     transition:
-      transform var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -231,7 +215,7 @@
   [data-scope='toast'][data-part='root'][data-loading]::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；「在等什么」由条子上的
@@ -295,7 +279,7 @@
   [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：与 root 上那枚同一处理——转圈停下，静止的箭头仍读得出「还没好」。

@@ -269,7 +269,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 的轨道 |
 | overlay | 12px | Popover、Menu、Dialog、Drawer、Toast |
 | circle | 50% | 宽高相等的圆形对象：avatar、icon-wrapper、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
-| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、Tag、ToolCall status、Approval result、QuestionFlow result；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄 |
+| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、Tag、ToolCall status、Approval result、QuestionFlow result；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5） |
 
 强制规则：
 
@@ -489,6 +489,45 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 线型、纹理 | 强制色、打印，或任意祖先写了 `data-xh-chart-patterns`；常规模式下不用，因为虚线表达的是预测或阈值 |
 | 数据表 | 始终存在（视觉隐藏），见 §13 |
 
+### 7.7 墨色与彩色面
+
+墨色是所在面的前景基色：浅色面上是纯黑，深色面上是纯白。中性装饰（描边、分隔、淡底、交互阶梯）不取不透明灰，而取墨色按比例透明。不透明灰的显著度随底色变化十几倍（neutral 200 描边在黄底上 1.06:1、黑底上 16.68:1），墨色在任何底色上显著度一致，颜色取底色自身的深浅变体。
+
+墨色由域决定。域是声明了自身底色极性的面：
+
+| 声明 | 含义 |
+| --- | --- |
+| `data-xh-ink="dark"` | 浅色底，黑墨 |
+| `data-xh-ink="light"` | 深色底，白墨 |
+| `data-xh-ink="auto"` + `--xh-ink-surface` | 由底色以相对颜色语法按相对亮度 0.179 选墨色（与 `tone.css` 的黑白字分界同一个数）；写在 `@supports` 内，不支持时等于未声明。auto 只决定墨色与中性装饰，语气色与表面沿用外层主题；需要它们随极性切换时声明 dark / light |
+| `data-xh-ink-margin="ample"` | 底色离分界足够远，允许弱化文字；缺省 `tight` |
+
+库自己渲染的彩色面自动成为域：`data-tone` 实心面、Tooltip 反白面、ImageViewer 控制层、liquid 材质（§8.5）。
+
+域内重映射：
+
+| 令牌 | 域内取值（浅色档） |
+| --- | --- |
+| `--xh-fg-default` | 墨色 |
+| `--xh-fg-muted`、占位文字 | `ample` 时墨色 72%；`tight` 时等于墨色，层级只靠字号与字重 |
+| `--xh-border-default` / `-control` | 墨色 10% |
+| `--xh-border-subtle`、`--xh-bg-subtle` | 墨色 4.5% |
+| 白底阶梯 hover → pressed | 墨色 4.5% → 10% |
+| 淡底阶梯 hover → pressed | 墨色 10% → 17% |
+| `--xh-ring-focus`、`--xh-border-control-focus` | 墨色 |
+| Button solid | 墨色实心 + 域底色字 |
+| 选中面（原 `--xh-bg-brand-subtle`） | 墨色 12% + 选中字重 |
+| Switch 打开 | 墨色轨道 + 域底色拇指 |
+
+- 未声明域的缺省面同样用墨色表达中性装饰，墨色取主题极性；作者自建的彩色区块即使不声明，描边与淡底也是洁净的，只剩文字需要声明域。
+- 比例由令牌构建按「与缺省面上的现行取值对比度相等」生成，按主题分别计算（暗色档 neutral 700 描边在 neutral 900 面上约等于白墨 17.5%），皮肤与作者不手填。
+- 半透明描边相叠会加深：段间共用描边的组合控件（ButtonGroup、InputGroup、ToggleGroup、Pagination、日历网格、表格单元格）只画一侧，不以负外边距叠边。
+- 正文墨色取纯黑 / 纯白，不取 neutral 950 / 50：底色相对亮度 0.15–0.24 时，后两者都到不了 4.5:1。
+- 余量：黑墨在相对亮度 ≥ 0.5 的底上、白墨在 ≤ 0.05 的底上才声明 `ample`。
+- 放文字的彩色面避开相对亮度 0.15–0.24；品牌色阶 500 落在其中，所以浅色档品牌实心取 600（白字 5.08:1），暗色档取 500 配深字。
+- 语气色（danger、success 等）在域内保留自己的实心或淡底面，文字落在自己的面上，不改成墨色。
+- contrast more 下域内装饰回到实色（与缺省面同一套高对比取值）；forced colors 下取 `CanvasText` / `Canvas`。
+
 ## 8. 材质
 
 | 材质 | 用途 | 强制表达 |
@@ -500,12 +539,13 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | floating | 含网格或多列的锚定面板（NavigationMenu content、Date / Time / DateRange / TimeRange picker content） | solid 底 + `--xh-border-default` + `--xh-elevation-floating`，不透景 |
 | frosted | 短列表 / 菜单 / tooltip 等需要透景的锚定瞬态浮层 | `--xh-material-frosted-*` 四件套（bg + backdrop + border + shadow） |
 | sheet | Dialog、Drawer、Command、Tour、Toast、Notification | `--xh-material-elevated-border` + `--xh-material-elevated-bg` + `--xh-material-elevated-shadow` 三件套，必有 1px 描边 |
+| liquid | `data-material="liquid"` 下浮在内容之上的导航层：浮动钮、媒体控制、悬浮栏（§8.5） | `--xh-material-liquid-*`：取样 + 折射 + 按下层着色 + 墨色细线与 1px 边缘光 + floating 影；standard 档下这些部件取原材质 |
 
 ### 8.1 Frosted
 
 - 只用于需要保留背景空间感的瞬态浮层。
 - 背景最终不透明度应在约 82%–90%。
-- blur 使用 16px，saturate 不高于 1.08。
+- blur 使用 16px，saturate 不高于 1.08（这一上限只约束 frosted，liquid 见 §8.5）。
 - 必须有 1px 可见边界，不能只依赖 `backdrop-filter`。
 - 允许 1px 内侧顶部边界光（`--xh-material-frosted-highlight`）：它是 1px 边界的内侧一半，只表达面的厚度，不是玻璃反射；不允许更大范围的高光、反射线或高透明玻璃效果。Tooltip 反白 compact 档不画（§8.4）。
 - 大段正文、表单、Card、Table、Toast、Dialog 主阅读面默认不使用 frosted。
@@ -516,6 +556,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 不允许 `glass` 材质、variant、令牌或配方。
 - 不允许将非法的 `glass` 值自动映射为 frosted。
 - 发现旧 glass 消费者时必须显式迁移，并按公开面变化提供 changeset。
+- liquid（§8.5）是独立角色，不是 glass 的别名：不接受 `glass` 值，不复用 glass 的旧槽名，也不用于 glass 曾经覆盖的内容面与浮层。
 
 ### 8.3 边界三选一
 
@@ -541,8 +582,35 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 刻意例外（须登记）：图表提示框（含 Heatmap 的详情条）走标准 frosted 四件套 + overlay 形状，不反白。提示框里有系列色标，色槽色按图表所在表面校准，反白深底会让色标失去校准；跟随指针时不做位置过渡；`aria-hidden`，朗读由数据标记承担（§13）。
 - 内容含网格或多列（日历、时间列、导航大面板）→ floating（solid + border-default + elevation-floating）。
 - 模态与强反馈面 → sheet 三件套；任何浮层不得只靠 box-shadow 分层，content / item 部件必须有非透明 border 或 material-*-border。
+- 瞬态浮层与模态不使用 liquid。
 
 完整细则见《交互触感与柔和模糊材质规范》。
+
+### 8.5 Liquid
+
+liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、自身内容很短的控制面。它只在应用级轴 `data-material="liquid"` 下出现（缺省 `standard`，与现有 7 个视觉轴并列，由 Portal 视觉桥投影，最近的祖先生效）；standard 档下同一部件取原材质。
+
+| 允许 | 部件 |
+| --- | --- |
+| 浮动钮 | FloatButton trigger 与列表项、BackTop、MessageFeed / Log 回底按钮 |
+| 媒体控制 | Carousel 翻页钮与指示器、ImageViewer 工具条 / 翻页钮 / 关闭钮 / 计数 |
+| 悬浮栏 | Layout 顶栏、底栏（sticky 或 fixed 时）、Toolbar 悬浮档 |
+
+- 不允许：瞬态浮层、模态、Toast / Notification、Card、Table、表单、正文容器；liquid 内再嵌 liquid。栏内的 Segmented、Tabs 继承栏的材质，自身不叠材质。
+- 结构五层，自下而上：
+  1. 取样：`--xh-material-liquid-backdrop`（blur sm 8px + saturate 140%）。
+  2. 折射：只在距边缘 `--xh-material-liquid-bezel`（18px）以内，按边缘法线向内位移。
+  3. 着色：色调浅 / 深 × 不透明度；材质自身是一个墨色域（§7.7）。
+  4. 边界：墨色 12% 细线承担可见边界，外加 1px 边缘光环；面内无高光、无反射线。
+  5. 投影：`--xh-elevation-floating`。
+- 可读下限：浅色调不透明度 ≥ 0.48、深色调 ≥ 0.61，标签文字在任何下层上 ≥ 4.5:1。下层均匀且色调已知时可降到通透档（浅 0.24 / 深 0.34）；下层杂乱、有文字、未知，以及首次判定完成前，一律取可读下限。
+- 色调按下层决定，不按主题：作者在图片、视频、画布区域声明 `data-xh-backdrop="light | dark"`（杂乱时加 `data-xh-backdrop-busy`），其余读 DOM 计算色；相对亮度 0.179 ± 0.04 滞回。不读像素、不申请设备方向权限。
+- 光源：细指针下 1px 边缘光沿周长的亮度随指针方向转动；粗指针与无指针固定左上（RTL 右上）。
+- 折射只在 Chromium 内核启用，由增强包按引擎门控；其余引擎与未装增强包时为模糊 + 饱和。尺寸超过 640 × 120 或同一视口超过 3 个时只取样不折射。
+- 选中不用品牌色字：品牌字压在彩色下层上会失去对比。选中只用指示块 + 字重。
+- 形状：不贴边的一维栏取 pill，浮动钮与媒体控制钮取 circle，贴边铺满的栏不取圆角。
+- 环境：reduced transparency 下不透明度 1、无背景滤镜与折射，细线与边缘光保留；contrast more 下不透明度 1、细线 3:1、无光环；forced colors 下 `Canvas` / `CanvasText` + 系统边框；print 随导航层隐藏；reduced motion 下色调切换保留 120ms 淡变、光源固定。
+- 增强（下层判定、折射、光源）由 features 包 `@xihan-ui/material` 提供，核心与适配器不含这部分代码；增强不改变结构、语义与状态表达，服务端输出静态形态。
 
 ## 9. 动效
 
@@ -551,23 +619,24 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 角色 | 用途 | 可动属性 | 时长 / 缓动 | 减弱动效 |
 | --- | --- | --- | --- | --- |
 | 按压 | 确认按下（§9.1–§9.3） | `scale` + 换面 | `press` / `press`，`release` / `release` | 只换面 |
-| 状态 | hover、选中、焦点、校验的换色 | 颜色、描边色、阴影、`opacity` | `micro` / `enter` | 保留淡变 |
-| 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale` | `move` / `continuous`；短边 ≤ 32px 部件的缩放可用 `settle` | 瞬时 |
-| 指示 | 选中指示器在项之间移动（§9.8） | `translate`；尺寸为登记例外 | `move` / `continuous` | 瞬时 |
+| 状态 | hover、选中、焦点、校验的换色；liquid 档的交互光（§9.12） | 颜色、描边色、阴影、`opacity`；交互光只动描边上的渐变位置 | `micro` / `enter`；交互光 `glint` / `enter` | 保留淡变；交互光不播 |
+| 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale` | `nudge` / `continuous`；短边 ≤ 32px 部件的缩放可用 `settle`；liquid 档的滑块用弹簧 `spring-toggle` | 瞬时 |
+| 指示 | 选中指示器在项之间移动（§9.8） | `translate`；尺寸为登记例外 | `move` / `continuous`；liquid 档用双沿弹簧 `spring-lead` / `spring-trail` | 瞬时 |
 | 披露 | 内容展开收起（§9.4） | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
 | 出现 | 挂载与卸载（§9.5） | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
 | 列表 | 加入、移除、重排、错开（§9.6） | 同出现；重排用 `translate` | 同出现；重排 `move` / `continuous` | 淡变，无错开 |
 | 导航 | 抽屉、侧栏、走马灯、标签带滚动、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
 | 数值 | 进度、计数、倒计时（§9.7） | `clip-path`、文本 | `move` / `continuous` | 瞬时；倒计时分段 |
-| 手势 | 拖拽跟手、松手归位 | `translate`、`scale`（`scale-drag`） | 跟手无过渡；归位 `release` / `release` | 瞬时归位 |
-| 循环 | 转圈、微光、脉冲、光标、不定进度 | `rotate`、`background-position`、`opacity`、`translate` | 循环时长 / `loop` | 停止并显示静态替代 |
+| 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale`（`scale-drag`） | 跟手无过渡；松手用弹簧并交接松手速度（§9.11）：归位与快甩 `smooth`、越界回弹 `stiff` | 瞬时归位 |
+| 循环 | 转圈、微光、脉冲、光标、不定进度、呼吸（§9.12） | `rotate`、`background-position`、`opacity`、`translate`；呼吸只动 `opacity`、`scale` | 循环时长 / `loop`；呼吸 `loop-breathe` / `breathe` | 停止并显示静态替代 |
 | 注意 | 抖动、脉冲强调 | — | 只在 `@xihan-ui/animations` 中使用 | 不播放 |
 | 数据 | 图表入场、更新、退出（§9.10） | 几何参数、`scale`、`stroke-dashoffset`、`opacity` | `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
-表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`。
+表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`；弹簧名是 `@xihan-ui/motion` 的预设，由令牌生成。
 
 - 带位移、缩放、旋转或尺寸变化的动画不得使用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变（§14.4）。
+- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`（200ms）；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的拖拽让位、查看器缩放平移取 `nudge`（120ms）。
 - 例外：出现与列表加入、移除的关键帧用 `enter` / `exit`，其中的位移与缩放只取 `--xh-motion-distance-*`、`--xh-motion-scale-*`、`--xh-motion-travel`，减弱动效下归零，剩下的只有淡变。
 
 ### 9.1 离散动作控件
@@ -611,7 +680,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - Surface 级 disclosure（Accordion、Collapsible、Reasoning、ToolCall）内容统一 `grid-template-rows: 0fr → 1fr`；展开 `--xh-motion-duration-expand` + `--xh-motion-ease-enter-strong`，收起 `--xh-motion-duration-collapse` + `--xh-motion-ease-exit`；两支时长在减弱动效下瞬时完成。
 - 密集 disclosure（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器。
-- 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse`；内容瞬时时用 `--xh-motion-duration-micro`。
+- 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse`；内容瞬时时用 `--xh-motion-duration-nudge`。
 - 初始即展开的内容直接呈现，不播展开动画（§9.6 首帧规则）。
 - 关键帧集中在 `family/motion.css`，皮肤只引用。
 
@@ -654,6 +723,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 优先动可合成属性：`translate`、`scale`、`rotate`、`opacity`；`clip-path` 只触发重绘，可以使用。
 - 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点伸长；Layout 侧栏折叠；QuestionFlow 视口与 Toast 堆叠的高度。新增例外须登记理由。
 - `will-change` 只写在动画进行中的状态下（`data-animating`、`data-dragging`）。开态常驻会使文字模糊；不可合成的属性不写 `will-change`。
+- liquid 档的双沿指示器：起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉长时块向收到不低于 `--xh-motion-scale-squash`（0.86）。测量与绘制沿用上面的共享几何与登记例外；新的点击从当前位置与速度改向。standard 档保持曲线。
 
 ### 9.9 JS 动效
 
@@ -661,7 +731,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 时长与缓动从元素读取令牌（`readMotion`），作者对组件槽的覆盖与容器上的 `data-motion` 同时生效；无计算样式时（SSR）用由令牌生成的常量。
 - 判断减弱动效必须传入组件自己的元素或窗口，不用全局默认。
 - 停留时长（提示停留、自动播放间隔、自动前进、滚动条隐藏延迟、提示存留）不是动效，作为组件属性给出缺省值，不受减弱动效影响；自动播放例外：减弱动效下不自动播放。
-- 弹簧不进入核心组件，松手归位用 `--xh-motion-ease-release`；弹簧留给 `features/` 包与作者。
+- 弹簧只用于三处：手势松手（缺省）、切换与指示（liquid 档）。其余角色用曲线：出现与披露经 Presence 等待 `animationend`，弹簧没有确定的结束时间；数值必须精确落在终值。
 - 适配器中不写动画代码。
 
 ### 9.10 图表
@@ -678,6 +748,41 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 错开按系列，最多 5 步；同一系列内的点不错开。
 - 首次挂载播放入场；重取数据后的变化按「更新」处理，不再次播放入场。
 - 十字准线与提示框跟随指针时不做位置过渡。
+
+### 9.11 弹簧
+
+| 场景 | 档 | 参数 |
+| --- | --- | --- |
+| 手势松手：Carousel 翻页 / 归位、Drawer 与底部面板滑动关闭 / 弹回、Sortable 放下归位、ImageViewer 平移惯性、Switch 拖动拇指 | 缺省 | `smooth`（刚度 300 / 阻尼 30，超调 0.4%，落定约 283ms） |
+| 越界回弹 | 缺省 | `stiff`（600 / 42，超调 0.5%，约 195ms） |
+| 切换滑块 | liquid | `spring-toggle`（420 / 26，超调 7.5%） |
+| 指示器前沿 / 后沿 | liquid | `spring-lead`（520 / 34）/ `spring-trail`（210 / 24） |
+
+- standard 档超调不超过 3%，liquid 档不超过 8%；`bouncy` 不进入核心组件。
+- 速度交接：指针会话保留最近 80ms 的采样，松手时的速度（px/s）作为弹簧初速度；落点取「当前位置 + 速度 × 投影时间」最近的吸附点。
+- 快甩阈值（底部面板、抽屉：速度 > 900px/s 或位移 > 35% 即关闭）是停留类参数，作为组件属性缺省值，不是令牌。
+- 越界跟手按 `(1 − 1 / (x × 0.55 / d + 1)) × d` 衰减，d 为越界方向的尺寸。
+- 中途改向：以当前值与当前速度为初始条件重新求解，位置与速度都不跳变。
+- 实现：`@xihan-ui/motion` 的有状态弹簧经 `frameLoop` 驱动；减弱动效下直接落到终态。CSS 侧的弹簧曲线只有令牌 `--xh-motion-ease-spring`（`linear()`，`@supports` 守卫，兜底 `cubic-bezier`），只用于 liquid 档的点击切换；手势一律走 JS。
+- Slider 拇指、FloatingPanel、Splitter、Resizable 不用弹簧：值必须精确跟手，或松手即停在原位。
+
+### 9.12 呼吸与光
+
+呼吸只表达「正在进行、给不出进度、需要被察觉」：Badge 圆点的 `pulse`（直播、录制、通话中）、MessageFeed 已发送待首个片段、Approval 待审。有进度用 Progress，只是等待用 Spinner，静态状态（在线、已完成）不呼吸。
+
+- 周期 `--xh-motion-loop-breathe`（3600ms），缓动 `--xh-motion-ease-breathe`（正弦式缓入缓出）；圆点不透明度 0.5 ↔ 1、缩放 0.82 ↔ 1；外扩光环缩放 1 → 2.6、不透明度 0.32 → 0，只播 3 个周期后停止，圆点持续到状态结束。
+- 共享关键帧 `xh-breathe` / `xh-breathe-halo`；两道减弱开关，静态替代为满不透明度的圆点；状态必须同时有文字或可及名。
+
+光分三类：
+
+| 类别 | 例子 | 规则 |
+| --- | --- | --- |
+| 状态光 | 思考中文字、骨架屏、工具调用进行中的扫光 | 循环角色，共享 `xh-shimmer` |
+| 交互光 | Button solid 悬停时光沿描边扫过一次；可悬停 Card 的描边随指针亮起 | 只在 liquid 档、`(hover: hover) and (pointer: fine)`；不循环；`--xh-motion-duration-glint` |
+| 边缘光 | frosted 1px 顶部边界光；liquid 1px 光环 | 材质的一部分（§8.1、§8.5） |
+
+- 光只走描边，不进面：浅色档 Button solid（品牌 600 底、白字）面内叠 8% 白光，文字对比就从 5.08:1 降到 4.46:1。凡是字压在面上的部件，面内都不加光。
+- 融合分离（FloatButton 菜单展开）只作用在不含文字与图标的装饰色块层，图标在上层保持清晰；只在 liquid 档。
 
 ## 10. Anatomy
 
@@ -799,6 +904,8 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 错开 | 取消 |
 | 循环 | 停止，并显示静态替代（虚线圆、静态底色、常亮光标、半透明条） |
 | 注意动效 | 不播放 |
+| 弹簧 | 直接落到终态；跟手拖动不受影响（跟手不是动画） |
+| 交互光、融合分离 | 不播放；融合分离只剩淡变 |
 | 倒计时 | 按秒分段 |
 | 平滑滚动 | 改为 `auto` |
 
@@ -813,6 +920,34 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 强制色使用系统颜色表达边界、焦点和状态。
 - 瞬态浮层打印时隐藏。
 - 必须打印的内容转为实体背景并移除模糊、透明和动画。
+
+### 14.6 小屏与触屏
+
+尺寸档按视口，不按容器：容器查询会让组件根不再由内容撑宽，组件落在收缩包裹的祖先链里就塌掉，库无法控制作者的祖先链。
+
+| 档 | 条件 | 写法 |
+| --- | --- | --- |
+| 紧凑 | 视口宽 < 640px | `@media not all and (min-width: 640px)` |
+| 中等 | 640–1023px | `@media (min-width: 640px)` 起 |
+| 宽松 | ≥ 1024px | `@media (min-width: 1024px)` |
+| 粗指针 | `(pointer: coarse)` | 与宽度正交 |
+| 矮视口 | 视口高 < 480px | `@media not all and (min-height: 480px)`，只用于浮层与面板的高度 |
+
+- 低于断点只用补集写法：它在地板内可用，并与 `min-width` 规则在断点处严格互补。不写 `max-width` / `max-height`，不写媒体查询范围语法（`width < …`，Safari 16.4 起支持，高于地板）。
+- 验收标准（小屏巡检按 320 × 640、360 × 780、375 × 812、414 × 896 与 667 × 375 横屏断言）：
+  1. 无页面级横向滚动；登记的横滚容器（Table 主体、CodeView、DiffView、Tabs 标签带、Carousel 轨道、Marquee）除外。
+  2. 含文字的元素不被意外裁切，省略必须有完整文本出口。
+  3. 粗指针命中区 ≥ 44px。
+  4. 浮层完全落在可视视口内（含安全区），矮视口下可滚动到最后一项。
+  5. 软键盘弹出后聚焦字段仍在可视视口内。
+  6. 粗指针下可编辑元素字号 ≥ 16px（iOS Safari 聚焦字号更小的输入框会整页放大）；不用 `maximum-scale=1` 规避，它禁止用户缩放。
+  7. 触屏点按释放后没有悬停残留：`:hover` 规则一律写在 `@media (hover: hover)` 内。
+  8. 横竖屏切换后打开的浮层仍打开、仍在视口内，焦点不丢。
+- 浮层形态：`presentation` 缺省 `auto`，紧凑档且粗指针时换形态，否则保持锚定并按可用空间收缩。选择类（Select、日期 / 时间 / 颜色选择）→ 底部面板；带搜索输入的（Combobox、Mention、可搜索的 TreeSelect / Cascader、Command）→ 全屏，搜索框在面板顶部；Cascader → 底部面板逐级下钻；Menu、ContextMenu → 底部动作面板；Menubar 收成一个触发器；HoverCard 触屏不打开；Tooltip 触屏长按打开、松手 1.5 秒后关闭。
+- 底部面板由 headless 共享原语承担：抓手 + 头部 + 可滚动主体，上侧 overlay 圆角，sheet 材质；抓手与头部、或主体已滚到顶时可向下拖动，速度 > 900px/s 或位移 > 35% 关闭，否则弹回（§9.11）；焦点、`Escape`、遮罩与 Dialog 一致；减弱动效下无位移、120ms 淡变。
+- 视口高度先写 `vh` 再写 `dvh`；贴边的面板、全屏浮层、贴底输入、固定底栏、浮动钮、Toast 加安全区；宿主页需要 `viewport-fit=cover`，`env(safe-area-inset-*)` 才有值。
+- 软键盘：底部面板、全屏浮层与贴底输入按 `visualViewport` 让位，面板高度上限取可视视口高度。
+- 自动换档只用于信息不丢、结构不变的调整（Form 标签上移、Pagination 简洁模式、Steps 紧凑条、Breadcrumb 折叠）；改变结构或交互方式的（Toolbar 溢出菜单、Table 卡片形态、Drawer 滑动关闭之外的新手势）用属性开启。
 
 ## 15. 文档
 
@@ -934,6 +1069,11 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - 禁止整行 / disclosure trigger 缩放，禁止集合行零按压反馈。
 - 禁止皮肤手写 scrollbar-width / scrollbar-color，禁止总览预览缩放、内联 px 与裸 overflow。
 - 禁止 glass 材质及其兼容别名。
+- 禁止 liquid 用于内容层、瞬态浮层与模态；禁止 liquid 嵌套；禁止 liquid 上的选中用品牌色字。
+- 禁止皮肤直接取 `--xh-color-neutral-*` 原语画描边与淡底（墨色域无法重映射）。
+- 禁止面内交互光；禁止交互光循环。
+- 禁止 standard 档弹簧超调超过 3%；禁止 `bouncy` 进入核心组件；禁止数值、出现、披露用弹簧。
+- 禁止呼吸表达有进度的过程或静态状态。
 - 禁止点击波纹和组件私有按压参数。
 - 禁止只用颜色表达状态。
 - 禁止只降低 opacity 表达 disabled。
@@ -952,6 +1092,10 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - 禁止初始内容播放进场动画。
 - 禁止在 JS 中写动画时长字面量，或直接调用 `requestAnimationFrame` 做动画。
 - 禁止未登记的布局属性动画与常驻 `will-change`。
+- 禁止 `:hover` 规则写在 `@media (hover: hover)` 之外。
+- 禁止 `max-width` / `max-height` 媒体查询与媒体查询范围语法。
+- 禁止用 `maximum-scale` 或 `user-scalable=no` 规避 iOS 聚焦放大。
+- 禁止用容器查询给组件根换档。
 
 ## 19. 待落地条款
 
@@ -961,10 +1105,14 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | `--xh-chart-*` 数据色与度量令牌、分类色板门禁、`@xihan-ui/viz` 引擎、图表组件；chart 家族配方随第二个图表组件建立 |
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
-| §9 角色表、§9.4、§14.4 中的 `move`、`expand`、`collapse` 与减弱淡变 | 新增时长令牌与减弱语义调整（现状：减弱时全部时长为 1ms）；check-motion-role 增加时长映射；现有皮肤按角色替换时长 |
-| §9.5 的 `xh-sheet`、`xh-slide`、`--xh-motion-travel`；§9.6 的 `xh-item-in`；§9.7 的共享倒计时 | 关键帧收敛与登记表去重（现状：Dialog / Notification、Drawer 各用私有关键帧，倒计时在两处各定义一次） |
+| §9.5 的 `xh-sheet`、`xh-slide`；§9.6 的 `xh-item-in`；§9.7 的共享倒计时 | 关键帧收敛与登记表去重（现状：Dialog / Notification、Drawer 各用私有关键帧，倒计时在两处各定义一次） |
+| §9.5 与 §14.4 的退场淡出 | Presence 在减弱动效下改为等待 120ms 的淡出结束再卸载（现状：减弱动效下跳过退场等待，退场瞬时） |
 | §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | Toast、Notification 退场改 Presence；补 FloatButton 列表、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
-| §9.9 `readMotion`、带元素参数的减弱判断、JS 无固定毫秒 | motion 包 API 与生成常量；各 machine 迁移 |
-| §14.4 `data-motion="default"` 与 JS 同作用域 | tokens 输出与 core、motion 改造 |
+| §7.7 库自有彩色面与缺省面墨色 | 库自有彩色面（`data-tone` 实心面、Tooltip 反白面、ImageViewer 控制层）接入墨色域；缺省面改墨色表达前先审计叠边与淡底叠淡底 |
+| §8.5 liquid 与 `data-material` 轴 | liquid 令牌与六个环境取值；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；轴投影；`@xihan-ui/material` 增强包；消费者接入 |
+| §9.8 双沿指示器、§9.11 弹簧 | `@xihan-ui/motion` 有状态弹簧与弹簧令牌、`--xh-motion-ease-spring`；指针会话速度；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer）；双沿指示器随共享指示器几何迁移 |
+| §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光；FloatButton 融合分离 |
+| §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |
+| §9.9 带元素参数的减弱判断、JS 无固定毫秒；§14.4 JS 与 CSS 同作用域 | headless 各状态机（Tabs 标签带补间、NumberAnimation、Carousel 起播）与 core 的 `reducedMotion()`（Presence、贴底滚动、平滑滚动）改为按元素判断并用 `readMotion` 取时长；门禁要求判断减弱动效时传参 |
