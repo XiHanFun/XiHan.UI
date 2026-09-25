@@ -82,7 +82,8 @@
   }
 
   /* ── 无锚定弹出：原地缩放淡入，没有方向 ──
-     NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 */
+     NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层；
+     页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮 */
   @keyframes xh-pop-in {
     from {
       opacity: 0;
