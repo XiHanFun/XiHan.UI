@@ -53,7 +53,7 @@
   }"
 />
 
-页面侧栏的两档宽度只有这一处真源：[Layout](/components/layout) 的侧栏与 [SideNav](/components/side-nav) 缺省都读这两支令牌。改令牌，两件一起换宽；只改一处时写该组件的覆盖槽（`--xh-layout-sider-w` / `--xh-layout-sider-collapsed-w`、`--xh-side-nav-w` / `--xh-side-nav-collapsed-w`），槽压过令牌。
+页面侧栏的两档宽度只有这一处真源：[Layout](/components/layout) 的侧栏与 [SideNav](/components/side-nav) 缺省都读这两支令牌。改令牌，两件一起换宽；只改一处时写该组件的覆盖槽（`--xh-layout-sider-w` / `--xh-layout-sider-collapsed-w`、`--xh-side-nav-w` / `--xh-side-nav-collapsed-w`），槽压过令牌。SideNav 放进 Layout 的侧栏时，侧栏内衬缺省归零，导航正好铺满侧栏。
 
 ## 断点
 
