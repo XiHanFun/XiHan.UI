@@ -66,3 +66,14 @@ describe('读屏', () => {
     expect(indicatorOf({ count: 3 }).role).toBeUndefined()
   })
 })
+
+describe('圆点呼吸', () => {
+  it('圆点档写了 pulse 才投影 data-pulse', () => {
+    expect(indicatorOf({ dot: true, pulse: true })['data-pulse']).toBe('')
+    expect(indicatorOf({ dot: true })['data-pulse']).toBeUndefined()
+  })
+
+  it('数字角标不呼吸：明暗起伏会压低数字的对比度', () => {
+    expect(indicatorOf({ count: 3, pulse: true })['data-pulse']).toBeUndefined()
+  })
+})

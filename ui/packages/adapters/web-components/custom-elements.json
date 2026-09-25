@@ -2512,6 +2512,16 @@
             },
             {
               "kind": "field",
+              "name": "pulse",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "圆点呼吸：表达正在进行、给不出进度的状态。只在 dot 模式下生效。",
+              "attribute": "pulse"
+            },
+            {
+              "kind": "field",
               "name": "label",
               "privacy": "public",
               "type": {
@@ -2586,6 +2596,14 @@
               "description": "只显示圆点，不显示数字",
               "name": "dot",
               "fieldName": "dot"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "圆点呼吸：表达正在进行、给不出进度的状态。只在 dot 模式下生效。",
+              "name": "pulse",
+              "fieldName": "pulse"
             },
             {
               "type": {

@@ -19,6 +19,7 @@ export const easing = {
   outFluid: 'cubic-bezier(0.32, 0.72, 0, 1)',
   easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
   outBack: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  sineInOut: 'cubic-bezier(0.37, 0, 0.63, 1)',
 } as const
 
 export type EasingName = keyof typeof easing

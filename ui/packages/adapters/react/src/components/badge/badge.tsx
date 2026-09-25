@@ -30,6 +30,8 @@ interface BadgeOwnProps {
   showZero?: boolean
   /** 只显示一个点，不显示数字。 */
   dot?: boolean
+  /** 圆点呼吸：表达正在进行、给不出进度的状态。只在 dot 模式下生效。 */
+  pulse?: boolean
   /** 读屏朗读该角标的方式，例如「3 条未读」。 */
   label?: string
 }
@@ -50,11 +52,12 @@ export function XhBadgeRoot({
   max,
   showZero,
   dot,
+  pulse,
   label,
   children,
   ...rest
 }: XhBadgeRootProps): ReactNode {
-  const configured = withXhConfig('badge', { tone, size, placement, count, max, showZero, dot, label } as BadgeProps)
+  const configured = withXhConfig('badge', { tone, size, placement, count, max, showZero, dot, pulse, label } as BadgeProps)
   const api = connectBadge(configured, reactNormalize)
   return (
     <BadgeProvider value={{ api }}>

@@ -2085,6 +2085,36 @@
     }
   }
 
+  /* 呼吸：进行中、给不出进度、需要被察觉的状态点。明暗与缩放一起起伏，峰值落在 42%，
+     周期 --xh-motion-loop-breathe、缓动 --xh-motion-ease-breathe。只动 opacity 与 scale。
+     光环画在状态点的 ::after 上，同周期从点本身的大小外扩淡尽，只播 3 个周期，状态点本身持续到状态结束。
+     减弱动效下两者都停，状态点停在满不透明度。Badge 的 pulse */
+  @keyframes xh-breathe {
+    0%,
+    100% {
+      opacity: 0.5;
+      scale: var(--xh-motion-scale-breathe);
+    }
+
+    42% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes xh-breathe-halo {
+    from {
+      opacity: 0.32;
+      scale: 1;
+    }
+
+    60%,
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-halo);
+    }
+  }
+
   /* ── 数值：倒计时条从占满一整条收到零 ──
      走一遍就到头，时长由连接层写进各组件的时长槽。Toast、Notification */
   @keyframes xh-countdown {
@@ -14320,6 +14350,8 @@
 /* styles/badge.css */
 /* 定义 badge 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='badge'] {
@@ -14392,6 +14424,37 @@
     padding: 0;
     box-shadow: none;
     font-size: 0;
+  }
+
+  /* 呼吸：圆点表达正在进行、给不出进度的状态（直播、录制、通话中）。
+     明暗与缩放的起伏持续到状态结束；外扩光环画在 ::after 上，同周期播 3 轮后停在不可见。
+     数字角标不呼吸：连接层只在圆点档投影 data-pulse，明暗起伏会压低数字的对比度 */
+  [data-scope='badge'][data-part='indicator'][data-pulse] {
+    animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
+  }
+
+  [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    opacity: 0;
+    pointer-events: none;
+    animation: xh-breathe-halo var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) 3;
+  }
+
+  /* 减弱动效：两者都停，圆点停在满不透明度，光环不出现；状态仍由圆点本身与宿主的文字表达 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='badge'][data-part='indicator'][data-pulse],
+    [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='badge'][data-part='indicator'][data-pulse],
+  :where([data-motion='reduce']) [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+    animation: none;
   }
 
   /* —— 落点 —— */
