@@ -6,16 +6,15 @@
 // 提供 use dialog 相关实现。
 
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 import { connectDialog, dialogMachine } from '@xihan-ui/headless'
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface DialogContext {
@@ -40,10 +39,6 @@ export function useDialog(
   const scope = createScope(null, idGen)
   const service = useMachine(dialogMachine, () => ({ ...props, onOpenChange, onExitComplete }), scope)
 
-  // 初值取状态而不是 false：presence 只在有 DOM 时才建，服务端拿不到它。
-  // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch。
-  const rendered = ref(service.state.get() === 'open')
-
   const xhConfig = useXhConfig()
   let config: RuntimeConfig | null = null
 
@@ -62,46 +57,21 @@ export function useDialog(
       isModal: () => props.modal ?? true,
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
-    const presence: PresenceHandle = createPresence({
-      open: service.state.get() === 'open',
-      onRenderedChange: (r) => {
-        rendered.value = r
-      },
-    })
-    rendered.value = presence.rendered
-
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('presence', presence)
     service.refs.set('getContentEl', () => contentRef.value)
     service.refs.set('getTriggerEl', () => null)
     service.refs.set('branches', () => [])
-
-    // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
-    watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
-
-    // content 就位后把它的 CSS 退场动画接到 presence 退出租约，无动画时关闭即卸载
-    const tracked = new Map<HTMLElement, Cleanup>()
-    watch([contentRef, backdropRef], (nodes) => {
-      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
-      for (const node of next) {
-        if (!tracked.has(node))
-          tracked.set(node, attachCssExit(node, presence))
-      }
-      for (const [node, detach] of tracked) {
-        if (!next.has(node)) {
-          tracked.delete(node)
-          detach()
-        }
-      }
-    }, { flush: 'post' })
-
-    onBeforeUnmount(() => {
-      presence.dispose()
-      for (const detach of tracked.values()) detach()
-      tracked.clear()
-    })
   }
+
+  // 内容与遮罩的退场动画共同决定何时收起；服务端没有 DOM，可见与否跟着展开态走
+  const rendered = useOverlayExit({
+    config,
+    isOpen: () => service.state.get() === 'open',
+    contentRef,
+    additionalExitRefs: [backdropRef],
+    onPresence: presence => service.refs.set('presence', presence),
+  })
 
   const api = computed(() => connectDialog(service, vueNormalize))
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
