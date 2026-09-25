@@ -16207,8 +16207,8 @@
   overflow: hidden;
   cursor: pointer;
   transition:
-    inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
-    block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+    inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+    block-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
@@ -16476,8 +16476,8 @@
     background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
     translate: -50% -50%;
     transition:
-      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
