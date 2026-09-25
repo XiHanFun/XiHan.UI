@@ -19258,7 +19258,7 @@
   background: transparent;
   box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
   cursor: grab;
-  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
 }
 
 /* 取色区的纵轴也由连接层给（inset-block-start），回拉同样按 block-start 那侧 */
