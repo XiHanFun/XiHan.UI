@@ -7,9 +7,13 @@
 // packages/design/tokens 的断点令牌里找得到，否则各写各的、迟早对不齐。
 //
 // 扫描面是 @media 与 @container 两种查询的行内一轴：
-//   冒号写法 (min-width: 768px) / (max-inline-size: 1024px) / (width: 640px)
-//   区间写法 (width >= 768px) / (640px <= inline-size < 1024px)
-// 块向一轴（height / block-size）与 aspect-ratio 不在清单管辖内，不收。
+//   冒号写法 (min-width: 768px) / (width: 640px)
+//   区间写法 (width >= 768px) / (640px <= inline-size < 1024px)（@media 里的区间写法另由 check-css-floor 拒绝）
+// 块向一轴（height / block-size）与 aspect-ratio 的字面量不在清单管辖内，不收。
+//
+// 上界写法 max-width / max-height（及逻辑名 max-inline-size / max-block-size）两轴都拒绝：
+// 断点只用 min-width 自窄到宽接管，max-width: 640px 在 640px 上与 min-width: 640px 同时成立，
+// 同一宽度下两档规则叠在一起。窄档专属规则写 min-width 的补集 not all and (min-width: …)。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { lineCounter, stripComments } from '../lib/css-declarations.mjs'
@@ -38,6 +42,9 @@ const INLINE_AXIS = /^(?:width|inline-size)$/i
 /** 冒号写法的特性名：(min-width: 768px) 里冒号左边那一段。 */
 const COLON_FEATURE = /^(?:min-|max-)?(?:width|inline-size)$/i
 
+/** 上界写法的特性名：两轴都算。 */
+const UPPER_BOUND = /^max-(?:width|height|inline-size|block-size)$/i
+
 /** 收出一段文本里全部成对括号的内容，嵌套的也各算一组。 */
 function parenGroups(text) {
   const out = []
@@ -50,6 +57,17 @@ function parenGroups(text) {
       const start = open.pop()
       out.push(text.slice(start + 1, i))
     }
+  }
+  return out
+}
+
+/** 一段查询前奏里出现的上界写法特性名。 */
+function upperBounds(prelude) {
+  const out = []
+  for (const group of parenGroups(prelude)) {
+    const colon = group.indexOf(':')
+    if (colon !== -1 && UPPER_BOUND.test(group.slice(0, colon).trim()))
+      out.push(group.trim())
   }
   return out
 }
@@ -84,6 +102,7 @@ if (declared.size === 0) {
 }
 
 const offenders = []
+const upperBoundOffenders = []
 let mediaQueries = 0
 let containerQueries = 0
 let checked = 0
@@ -99,6 +118,8 @@ for (const file of await readdir(STYLES)) {
       mediaQueries += 1
     else
       containerQueries += 1
+    for (const feature of upperBounds(prelude))
+      upperBoundOffenders.push(`${file}:${lineAt(rule.index)} @${kind} (${feature})`)
     for (const value of widthLiterals(prelude)) {
       checked += 1
       if (!declared.has(value))
@@ -131,14 +152,22 @@ else {
     offenders.push(`${MASONRY}: 表里有 ${paired} 档，令牌里有 ${byName.size} 档`)
 }
 
+if (upperBoundOffenders.length) {
+  console.error('[check-breakpoints] 查询条件用了上界写法——断点只用 min-width 自窄到宽接管，max-* 在断点值上与 min-* 同时成立：')
+  for (const o of upperBoundOffenders) console.error(`  ${o}`)
+  console.error('  窄档专属规则写 min-width 的补集：@media not all and (min-width: …)')
+}
+
 if (offenders.length) {
   console.error('[check-breakpoints] 查询条件里的断点值不在令牌清单里：')
   for (const o of offenders) console.error(`  ${o}`)
   console.error(`  清单：${[...declared].map(([v, k]) => `${k}=${v}`).join(' · ')}`)
-  process.exit(1)
 }
+
+if (upperBoundOffenders.length || offenders.length)
+  process.exit(1)
 
 console.log(
   `[check-breakpoints] 通过：断点只有 ${[...declared].map(([v, k]) => `${k}=${v}`).join(' · ')} 这几档，`
-  + `${mediaQueries} 条 @media 与 ${containerQueries} 条 @container 里的 ${checked} 个宽度字面量都出自清单`,
+  + `${mediaQueries} 条 @media 与 ${containerQueries} 条 @container 里的 ${checked} 个宽度字面量都出自清单，没有 max-* 上界写法`,
 )
