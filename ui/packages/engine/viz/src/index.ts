@@ -10,4 +10,5 @@ export { isVizError, VizError } from './errors'
 
 export type { VizErrorCode } from './errors'
 export * from './format'
+export * from './scale'
 export * from './time'
