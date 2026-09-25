@@ -34,3 +34,11 @@
 | `xh-dialog-out` | `xh-sheet-out` |
 | `xh-notification-in` | `xh-sheet-in` |
 | `xh-notification-out` | `xh-sheet-out` |
+| `xh-drawer-in-right` | `xh-slide-in` |
+| `xh-drawer-in-left` | `xh-slide-in` |
+| `xh-drawer-in-top` | `xh-slide-in` |
+| `xh-drawer-in-bottom` | `xh-slide-in` |
+| `xh-drawer-out-right` | `xh-slide-out` |
+| `xh-drawer-out-left` | `xh-slide-out` |
+| `xh-drawer-out-top` | `xh-slide-out` |
+| `xh-drawer-out-bottom` | `xh-slide-out` |

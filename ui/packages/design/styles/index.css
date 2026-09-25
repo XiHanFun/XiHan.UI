@@ -23350,95 +23350,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-@layer xihan.motion {
-  /* 四条边各一对滑入/滑出。位移量用 translate 的百分比，参照的是面板自己的边框盒，
-     所以不管 --xh-drawer-size 被改成多少，"正好推到视口外"这件事都成立。
-
-     位移写成两个私有槽位而不是写死 ±100%：贴边用的是逻辑 inset（inset-inline-start 等），
-     RTL 下 inline-end 落在物理左边；transform 没有逻辑等价物，若这里写死物理方向，
-     就会出现"面板贴在左边、却从右边滑进来"。槽位在 RTL 下翻符号，两者才始终同向。
-     竖排书写模式下 block 轴不再是 Y 轴，位移会退化为纵向，但贴边本身仍由逻辑 inset 保证。 */
-  @keyframes xh-drawer-in-right {
-    from {
-      translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
-    }
-
-    to {
-      translate: 0 0;
-    }
-  }
-
-  @keyframes xh-drawer-out-right {
-    from {
-      translate: 0 0;
-    }
-
-    to {
-      translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
-    }
-  }
-
-  @keyframes xh-drawer-in-left {
-    from {
-      translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
-    }
-
-    to {
-      translate: 0 0;
-    }
-  }
-
-  @keyframes xh-drawer-out-left {
-    from {
-      translate: 0 0;
-    }
-
-    to {
-      translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
-    }
-  }
-
-  @keyframes xh-drawer-in-top {
-    from {
-      translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
-    }
-
-    to {
-      translate: 0 0;
-    }
-  }
-
-  @keyframes xh-drawer-out-top {
-    from {
-      translate: 0 0;
-    }
-
-    to {
-      translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
-    }
-  }
-
-  @keyframes xh-drawer-in-bottom {
-    from {
-      translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
-    }
-
-    to {
-      translate: 0 0;
-    }
-  }
-
-  @keyframes xh-drawer-out-bottom {
-    from {
-      translate: 0 0;
-    }
-
-    to {
-      translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
-    }
-  }
-}
-
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='drawer'] {
@@ -23691,39 +23602,39 @@
     border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
   }
 
-  /* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide
-     与 --xh-motion-ease-slide；退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
+  /* 滑入/滑出共用整幅滑入关键帧，四条边只在两个方向槽里写起点。位移取整幅位移令牌，
+     translate 的百分比参照面板自己的边框盒，所以不管 --xh-drawer-size 被改成多少，
+     "正好推到视口外"这件事都成立。
+
+     方向槽由上面的 --xh-_drawer-shift-* 换算而不是写死物理方向：贴边用的是逻辑 inset
+     （inset-inline-start 等），RTL 下 inline-end 落在物理左边；translate 没有逻辑等价物，
+     若这里写死物理方向，就会出现"面板贴在左边、却从右边滑进来"。shift 槽在 RTL 下翻符号，
+     两者才始终同向。竖排书写模式下 block 轴不再是 Y 轴，位移会退化为纵向，但贴边本身仍由逻辑 inset 保证。 */
+  [data-scope='drawer'][data-part='content'][data-side='right'] {
+    --xh-_slide-from-x: var(--xh-_drawer-shift-inline);
+  }
+
+  [data-scope='drawer'][data-part='content'][data-side='left'] {
+    --xh-_slide-from-x: calc(-1 * var(--xh-_drawer-shift-inline));
+  }
+
+  [data-scope='drawer'][data-part='content'][data-side='top'] {
+    --xh-_slide-from-y: calc(-1 * var(--xh-_drawer-shift-block));
+  }
+
+  [data-scope='drawer'][data-part='content'][data-side='bottom'] {
+    --xh-_slide-from-y: var(--xh-_drawer-shift-block);
+  }
+
+  /* 入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide 与 --xh-motion-ease-slide；
+     退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
      不定住终态，面板会在最后一帧弹回原位再消失。 */
-  [data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {
-    animation: xh-drawer-in-right var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
+  [data-scope='drawer'][data-part='content'][data-state='open'] {
+    animation: xh-slide-in var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
   }
 
-  [data-scope='drawer'][data-part='content'][data-side='right'][data-state='closed'] {
-    animation: xh-drawer-out-right var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-  }
-
-  [data-scope='drawer'][data-part='content'][data-side='left'][data-state='open'] {
-    animation: xh-drawer-in-left var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
-  }
-
-  [data-scope='drawer'][data-part='content'][data-side='left'][data-state='closed'] {
-    animation: xh-drawer-out-left var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-  }
-
-  [data-scope='drawer'][data-part='content'][data-side='top'][data-state='open'] {
-    animation: xh-drawer-in-top var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
-  }
-
-  [data-scope='drawer'][data-part='content'][data-side='top'][data-state='closed'] {
-    animation: xh-drawer-out-top var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-  }
-
-  [data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='open'] {
-    animation: xh-drawer-in-bottom var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
-  }
-
-  [data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='closed'] {
-    animation: xh-drawer-out-bottom var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  [data-scope='drawer'][data-part='content'][data-state='closed'] {
+    animation: xh-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* —— 面板三段 —— */

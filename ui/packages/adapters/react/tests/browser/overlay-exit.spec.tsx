@@ -356,7 +356,7 @@ describe('drawer 退场', () => {
     expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
     // side 缺省是 right，滑出按边配对
-    expectPlaying(closing!, 'xh-drawer-out-right')
+    expectPlaying(closing!, 'xh-slide-out')
   })
 
   it('遮罩同时在播淡出', async () => {
