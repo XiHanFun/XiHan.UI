@@ -5,9 +5,11 @@
 
 // @xihan-ui/viz —— 图表引擎：比例尺、刻度、形状、坐标轴布局、拾取与降采样，全部是纯函数。
 
+export { buildLinkTableModel, buildSummaryModel, buildTableModel, buildTraversal, navigate, summarize } from './a11y'
+export type { ChartSummaryModel, KeyedValue, LinkTableInput, NavTarget, SeriesInput, SeriesPointInput, SeriesSummary, SeriesTableInput, TableCell, TableColumn, TableModel, TableRow, Traversal, TraversalItem } from './a11y'
+
 export * from './array'
 export { layoutAxis, solvePlotRect } from './axis'
-
 export type { AxisLayout, AxisLayoutInput, AxisPosition, AxisScale, AxisTick, CategoryAxisScale, LabelOverflow, PlotRectInput, PlotRectResult } from './axis'
 export * from './color'
 export { isVizError, VizError } from './errors'
