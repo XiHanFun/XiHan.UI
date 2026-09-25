@@ -1,5 +1,5 @@
 {
-  "$description": "关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css（relation 按锚定关系登记：锚定列表 / 锚定面板 / 无锚定弹出 / disclosure / 遮罩），组件专属关键帧住在各自皮肤，本表登记「这个名字全库该长什么样」。duplicateContent 记的是现存的「一个视觉多个名字」，每消掉一组就删一条，删完判据 4 即对全库生效。retired 是退役名单：旧名再出现即判红。",
+  "$description": "关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css，relation 按 tooling/scripts/lib/keyframe-relations.mjs 的关系组登记；组件专属关键帧住在各自皮肤。本表登记「这个名字全库该长什么样」，同一段动画只许一个名字。retired 是退役名单：旧名再出现即判红。",
   "frames": {
     "xh-carousel-indicator-progress": {
       "content": "from{scale:var(--xh-_carousel-progress-from)}to{scale:var(--xh-_carousel-progress-to)}",
@@ -408,7 +408,6 @@
       ]
     }
   },
-  "duplicateContent": {},
   "retired": {
     "xh-accordion-expand": "并入 xh-disclosure-expand（family/motion.css）",
     "xh-accordion-collapse": "并入 xh-disclosure-collapse（family/motion.css）",
