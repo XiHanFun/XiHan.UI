@@ -62,8 +62,42 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     await settle()
 
     const content = getComputedStyle(part('content'))
-    expect(content.animationName).toBe(`xh-drawer-in-${side}`)
+    expect(content.animationName).toBe('xh-slide-in')
     expect(content.animationDuration).toBe('0.32s')
+  })
+
+  it.each([
+    ['right', '100%'],
+    ['left', '-100%'],
+    ['top', '0px -100%'],
+    ['bottom', '0px 100%'],
+  ] as const)('%s：入场首帧从所贴的那条边外整幅推入', async (side, from) => {
+    mount(side)
+    await settle()
+
+    const [slide] = part('content').getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-slide-in')
+    slide!.pause()
+    slide!.currentTime = 0
+    expect(getComputedStyle(part('content')).translate).toBe(from)
+  })
+
+  it.each([
+    ['right', '-100%'],
+    ['left', '100%'],
+  ] as const)('RTL 下 %s：行内方向的推入随书写方向翻转，与逻辑贴边同侧', async (side, from) => {
+    document.documentElement.dir = 'rtl'
+    try {
+      mount(side)
+      await settle()
+
+      const [slide] = part('content').getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-slide-in')
+      slide!.pause()
+      slide!.currentTime = 0
+      expect(getComputedStyle(part('content')).translate).toBe(from)
+    }
+    finally {
+      document.documentElement.removeAttribute('dir')
+    }
   })
 
   it('触发器与关闭钮接了 Action Control：触发器 outline 描边盒，关闭钮 ghost 正方盒', async () => {

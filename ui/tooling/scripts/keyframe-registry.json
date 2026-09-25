@@ -56,78 +56,6 @@
         "download-trigger"
       ]
     },
-    "xh-drawer-in-bottom": {
-      "content": "from{translate:0 var(--xh-_drawer-shift-block,var(--xh-motion-travel))}to{translate:0 0}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
-    "xh-drawer-in-left": {
-      "content": "from{translate:calc(-1 * var(--xh-_drawer-shift-inline,var(--xh-motion-travel))) 0}to{translate:0 0}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
-    "xh-drawer-in-right": {
-      "content": "from{translate:var(--xh-_drawer-shift-inline,var(--xh-motion-travel)) 0}to{translate:0 0}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
-    "xh-drawer-in-top": {
-      "content": "from{translate:0 calc(-1 * var(--xh-_drawer-shift-block,var(--xh-motion-travel)))}to{translate:0 0}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
-    "xh-drawer-out-bottom": {
-      "content": "from{translate:0 0}to{translate:0 var(--xh-_drawer-shift-block,var(--xh-motion-travel))}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
-    "xh-drawer-out-left": {
-      "content": "from{translate:0 0}to{translate:calc(-1 * var(--xh-_drawer-shift-inline,var(--xh-motion-travel))) 0}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
-    "xh-drawer-out-right": {
-      "content": "from{translate:0 0}to{translate:var(--xh-_drawer-shift-inline,var(--xh-motion-travel)) 0}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
-    "xh-drawer-out-top": {
-      "content": "from{translate:0 0}to{translate:0 calc(-1 * var(--xh-_drawer-shift-block,var(--xh-motion-travel)))}",
-      "definedIn": [
-        "drawer.css"
-      ],
-      "consumers": [
-        "drawer"
-      ]
-    },
     "xh-drop-in": {
       "content": "from{opacity:0;translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
       "definedIn": [
@@ -392,7 +320,9 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "drawer"
+      ],
       "relation": "slide"
     },
     "xh-slide-out": {
@@ -400,7 +330,9 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "drawer"
+      ],
       "relation": "slide"
     },
     "xh-spin": {
@@ -513,6 +445,14 @@
     "xh-dialog-in": "并入 xh-sheet-in（family/motion.css）",
     "xh-dialog-out": "并入 xh-sheet-out（family/motion.css）",
     "xh-notification-in": "并入 xh-sheet-in（family/motion.css）",
-    "xh-notification-out": "并入 xh-sheet-out（family/motion.css）"
+    "xh-notification-out": "并入 xh-sheet-out（family/motion.css）",
+    "xh-drawer-in-right": "并入 xh-slide-in（family/motion.css）",
+    "xh-drawer-in-left": "并入 xh-slide-in（family/motion.css）",
+    "xh-drawer-in-top": "并入 xh-slide-in（family/motion.css）",
+    "xh-drawer-in-bottom": "并入 xh-slide-in（family/motion.css）",
+    "xh-drawer-out-right": "并入 xh-slide-out（family/motion.css）",
+    "xh-drawer-out-left": "并入 xh-slide-out（family/motion.css）",
+    "xh-drawer-out-top": "并入 xh-slide-out（family/motion.css）",
+    "xh-drawer-out-bottom": "并入 xh-slide-out（family/motion.css）"
   }
 }
