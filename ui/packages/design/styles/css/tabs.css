@@ -468,8 +468,8 @@
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 卡片变体已经由卡片面表达状态，不再叠一条下划线。 */
@@ -495,10 +495,10 @@
     box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
     pointer-events: none;
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* line 档没放 indicator 部件时，选中标签自画一条静态指示线（导航当前页）：
@@ -547,8 +547,8 @@
     block-size: var(--xh-_tabs-indicator-h);
     inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
     transition:
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 标签之间的细线：横排时是一条竖线，竖排时躺平 */
