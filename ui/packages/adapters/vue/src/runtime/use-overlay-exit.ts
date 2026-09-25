@@ -17,8 +17,8 @@ import { getCurrentInstance, isRef, onBeforeUnmount, onMounted, ref, toValue, wa
 // 退场动画一帧都播不出来。这里把它改成跟着 presence 走：展开时可见、退场动画播完之前
 // 也可见，播完才真收。作者节点始终留在原地，被拉长的是「可见的时间」而不是「存在的时间」。
 //
-// dialog / drawer 那几个是自己在 use-*.ts 里手写这一套的（它们还要连遮罩与层一起管），
-// 浮层族这十几个只需要这一件事，所以收成一个共用件。
+// 所有带退场的部件共用这一件：dialog / drawer / command / image-viewer 的遮罩经 additionalExitRefs
+// 一并计入，轻提示与通知卡片也经它把 Presence 交给机器。
 
 export interface OverlayExitOptions {
   /**
