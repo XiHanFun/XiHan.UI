@@ -44,6 +44,8 @@
 - 需要大量互斥 props 才能解释其身份。
 - 与现有组件功能相同，仅名称不同。
 
+图表类组件按「数据任务 + 坐标系 / 布局」划分：同一坐标系里标记种类不同的是系列类型（`mark`），同一标记外观不同的是样式轴。柱状图与条形图、折线图与面积图、散点图与气泡图、饼图与环形图、矩形树图与旭日图都不是两个组件；仪表盘与子弹图是 Progress 在 meter 语义下的形态，不另建组件。
+
 ## 3. 分层实现
 
 ```text
@@ -109,6 +111,8 @@ Vue、React、Web Components 只负责：
 | Surface | Card、Alert、Panel、CodeView、DiffView、Log、JsonViewer、ToolCall、Reasoning、Approval、QuestionFlow、Accordion/Toolbar/PageHeader 的 outline 档、Tree/Listbox/Transfer/List/Descriptions/Table 容器面 | 边界三选一（§8.3）、raised 逐部件登记（§8）、标题/说明排版（§6.4）、内衬只走 `--xh-surface-*`、层级 |
 | Overlay | Popover、Menu、Select content、Dialog、Drawer、Tooltip、NavigationMenu content、日期/时间面板 | Portal、定位、遮罩、材质按内容判定（§8.4）、进退场按锚定关系（§9.5）、浮层滚动面（§6.6）、焦点归还 |
 | Feedback | Toast、Notification、Progress、Skeleton | 状态语气、sheet 面描边（§8.4）、计时、暂停、消除、加载和即时反馈 |
+| 图表家具 | 网格线、坐标轴、刻度、轴标签、十字准线、参考线 / 参考带 | 只用 `--xh-chart-*` 家具令牌；网格为 1px 实线；文字用文字令牌，不用系列色（§6.7） |
+| 数据标记 | 柱、线、面积、点、扇区、节点、流带、树图格 | 颜色只来自数据色（§7.6）；不投影 Action Control、不做按压缩放；相邻标记用 2px 表面间隙分隔，不画描边（§6.7） |
 
 新增 Family Recipe 必须满足以下任一条件：
 
@@ -134,6 +138,14 @@ Vue、React、Web Components 只负责：
 | Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger | disclosure trigger | 只换面，不缩放；见 §9.2 |
 | FloatButton、BackTop、Carousel 翻页、Log/MessageFeed 回底、ImageViewer 翻页 | Action Control `floating` profile | 形状 circle；见 §6.3 |
 | Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
+| 图表根 | 无壳 | 不画外边、不填底，透出宿主面；需要框时由作者放进 Card |
+| 图例项 | Action Control `text` profile、ghost、xs 档 | 按压 0.97；显隐标记见 §7.3「图例显隐」 |
+| 图例色标 | 标记 | 柱、面积系列为方块（inset）；折线为 2px 短线（pill）；散点为该系列的符号 |
+| 图表提示框（含 Heatmap 详情条） | Overlay：frosted | 不反白；见 §8.4 |
+| 图表十字准线标签 | 反白小标签 | 与 Tooltip 同一身份：反白底、control 4px |
+| 图表参考线 | 图表家具 | 1px 虚线 `--xh-fg-muted`：虚线只表达阈值 / 目标，网格不用虚线 |
+| 图表缩放窗口、刷选框 | 选中范围 | `--xh-bg-brand-subtle`（选中语义）；刷选框另加 1px `--xh-border-control-focus` |
+| 图表缩放手柄 | 拖动手柄 | pill；粗指针 44px 命中区 |
 
 
 ## 5. 样式确定方法
@@ -252,12 +264,12 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 4px | 嵌在 control 内的小块：checkbox 系方框、菜单项、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item |
+| inset | 4px | 嵌在 control 内的小块：checkbox 系方框、菜单项、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 4px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger |
 | surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 的轨道 |
 | overlay | 12px | Popover、Menu、Dialog、Drawer、Toast |
-| circle | 50% | 宽高相等的圆形对象：avatar、icon-wrapper、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页，走 Action Control `floating` profile） |
-| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、Tag、ToolCall status、Approval result、QuestionFlow result；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态 |
+| circle | 50% | 宽高相等的圆形对象：avatar、icon-wrapper、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
+| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、Tag、ToolCall status、Approval result、QuestionFlow result；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄 |
 
 强制规则：
 
@@ -270,6 +282,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 相连控件消除相接侧圆角，不使用负 margin 伪造连接。
 - 亮色、暗色和 compact 不改变形状身份。
 - 取 circle / pill 的新部件必须在 check-shape-scale 的身份表登记。
+- 数据标记之间用 2px 表面间隙分隔，不画描边；数据标记的圆角只取 inset 或 circle。
 
 ### 6.4 排版
 
@@ -285,6 +298,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
 | 页面级面板标题（Dialog、Drawer、Tour） | heading-3 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
+| 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |
 
 - 必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不得各画一套。
 - 禁用标签色统一 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
@@ -319,6 +333,24 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 声明了 `--xh-scrollbar-track-bg` 却未接线为宿主的皮肤视为死声明。
 - 横向控件带排不下时分两路：Toolbar / Menubar / NavigationMenu / Segmented 折行；Tabs 不折行——标签带只裁主轴（`overflow: clip visible`，不是滚动容器，交叉轴上的焦点环、粗指针外扩与 raised 影都不被裁），标签整体沿主轴 `translate` 位移（机器按 continuous 档补间写进 `--xh-_tabs-scroll`），两端 `prev-trigger` / `next-trigger` 接 Action Control icon 档 ghost 面、静息底换成所在面的盖底（`--xh-tabs-scroll-trigger-bg`，缺省 surface、segment 轨道取 subtle）、挪到头那一侧 `opacity: 0`（与 Carousel 同），横向滚轮按量位移、竖滚轮留给页面，触屏手指沿主轴拖即跟手平移（放不下时 `list` 写 `touch-action: pan-y pinch-zoom`，交叉轴仍归页面），选中 / 聚焦的标签被裁时自动挪进视野；不铺边缘渐隐。
 
+### 6.7 数据标记与图表家具
+
+| 标记 | 规格 |
+| --- | --- |
+| 柱 | 厚度 ≤ `--xh-chart-bar-max`（24px），带内余量留白；远端圆角 `--xh-shape-inset`，基线端直角；负值柱圆角在下端 |
+| 折线 | `--xh-chart-line-width`（2px），圆角连接与端点 |
+| 点、端点 | `--xh-chart-point-size`（8px），外带 2px `--xh-chart-surface` 描边环 |
+| 面积 | 系列色 × `--xh-chart-area-alpha`（10%）淡洗，上沿为 2px 折线 |
+| 相邻填充（堆叠段、相邻柱、扇区、树图格） | 2px `--xh-chart-surface` 表面间隙，不画描边 |
+| 网格线 | 1px 实线 `--xh-chart-grid`（= `--xh-border-subtle`）；不用虚线 |
+| 轴线、刻度 | 1px `--xh-chart-axis`（= `--xh-border-default`） |
+
+- `--xh-chart-surface` 是承载面：缺省 `--xh-bg-surface`；图表放在淡底容器里时由宿主下发，间隙与描边环才与底色一致。
+- 只标需要的标签：端点、极值或故事所在的那条系列，不在每个点上标数值。
+- 标签放不下时不裁切：柱的标签移到柱外，仍放不下交给提示框；堆叠中段放不下就不标，由图例、提示框与数据表承担。
+- 单系列不显示图例，标题已说明；2 个及以上系列始终显示图例，≤ 4 条折线时建议再加线端直接标签。
+- 视口块尺寸包含坐标轴带，卡片里不出现嵌套的纵向滚动。
+
 ## 7. 颜色
 
 ### 7.1 语义角色
@@ -330,7 +362,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 边界：default（一切根面外边与 raised 面描边）、subtle（仅内部分隔线与分隔伪元素）、strong（仅 contrast-more 与刻意登记的强调边）、control / control-hover / control-focus（字段与焦点边）、danger。
 
 每个实色和柔和语气必须提供匹配的 foreground；组件不得自行计算文字颜色。
-- 基础色板：十二个色相 × 11 档（`--xh-color-<red|orange|amber|yellow|lime|green|teal|cyan|blue|indigo|purple|pink>-<50…950>`），由 `tokens/palette.seeds.json` 经 `build/emit-palette.mjs` 按品牌曲线派生，同一档跨色相同一明度。它只给使用者、数据可视化与按颜色点名的色板轴（Heatmap `purple`）用；皮肤只消费语义角色与语气轴，不直接取色板。
+- 基础色板：十二个色相 × 11 档（`--xh-color-<red|orange|amber|yellow|lime|green|teal|cyan|blue|indigo|purple|pink>-<50…950>`），由 `tokens/palette.seeds.json` 经 `build/emit-palette.mjs` 按品牌曲线派生，同一档跨色相同一明度。它只给使用者、按颜色点名的色板轴（Heatmap `purple`）与数据色语义层（§7.6）用；皮肤只消费语义角色、语气轴与 `--xh-chart-*` 数据色，不直接取色板。
 
 ### 7.2 使用规则
 
@@ -360,6 +392,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起 indicator：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
 | 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` | `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle` | hover 20% → pressed 28%；`solid` 变体才允许品牌实心 | Highlight / HighlightText |
 | 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger open、Cascader in-path、SideNav in-path、Date / Time trigger open | 与所在家族 hover 同档的中性面，不用品牌色、不加粗；非颜色通道由 chevron 转向与子面板承担。Menubar / NavigationMenu trigger 投影 `data-in-path`，`nav` 语境 open-path = `--xh-bg-subtle` | — | — |
+| 图例显隐（开是常态） | 图表图例项（`aria-pressed`） | 显示：实心色标 + `--xh-fg-default` 文字；隐藏：空心色标（只留描边）+ `--xh-fg-subtle` 文字 + 删除线；不用品牌淡底，否则整排图例都成了品牌底 | hover 100 → pressed 200（白底承载面阶梯） | 色标 CanvasText；隐藏态保留空心与删除线 |
 
 - `--xh-bg-brand-subtle` 退出 today、completed、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字；Steps completed 改中性面 + 品牌对号。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
@@ -413,6 +446,49 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 快捷键是纯装饰，可及名由条目自己的文字承担；只为真正注册了的快捷键显示提示，写一个不存在的组合比不写更糟。
 - 说明与快捷键可以同时出现，此时说明占第 2 行、快捷键仍贴行尾；条目高度由说明行撑开，快捷键不额外增高。
 
+### 7.6 数据色
+
+图表颜色按职责分六类，每类只有一种结构：
+
+| 职责 | 编码 | 结构 | 令牌 |
+| --- | --- | --- | --- |
+| 分类 | 身份（哪个系列） | 8 个固定顺序的色槽，按系列声明顺序分配 | `--xh-chart-categorical-1…8`、`-other`、`--xh-chart-deemphasis` |
+| 有序 | 次序（漏斗阶段、档位） | 单色相，明度单调；最浅一档对表面 ≥ 2:1 | `--xh-chart-ordinal-*` |
+| 顺序 | 大小 | 单色相由浅到深；暗色下翻转锚点，小值贴近表面 | `--xh-chart-sequential-start / -mid / -end` |
+| 发散 | 高于 / 低于基线 | 冷暖两个色相 + 中性灰中点，两臂等档 | `--xh-chart-diverging-negative / -center / -positive` |
+| 语气 | 好坏 | 复用语气轴，必须配图标或文字 | `--xh-tone-*` |
+| 涨跌 | K 线、瀑布、盈亏 | 两色；缺省绿涨红跌，主题覆盖一行即可换为红涨绿跌 | `--xh-chart-rise / -fall` |
+
+- 颜色跟随实体：色槽按系列在 `series` 中的声明顺序分配，隐藏、筛选、排序都不重新分配；系列可用 `slot` 固定色槽。
+- 不循环、不生成第 9 色：分类系列超过 8 个立即报错，由作者合并为「其他」或拆成多张小图。散点、气泡、雷达这类任意两个标记都可能相邻的形态，只有前 3 个色槽保证两两可分，超过 3 个系列给出开发期提示。
+- 单系列用色槽 1；不按数值给名义类目上色；突出一个系列时，其余系列改用 `--xh-chart-deemphasis`。
+- 同一张图不混用分类色与语气色。
+- 文字不用系列色：数值、标签、图例文字用文字令牌，身份由旁边的色标承担；写在色块内部的标签用 `--xh-chart-on-categorical-N`（构建期按色块亮度在白字与墨字之间择一）。
+- 顺序与发散色阶在运行时不由 JS 计算颜色：headless 写入色阶位置 t，皮肤用 `color-mix(in oklch, …)` 在令牌锚点之间插值，主题与暗色自动跟随。
+- 不提供任意颜色的 prop；需要时覆盖系列部件上的组件槽 `--xh-chart-series-color`。
+
+分类色板由基础色板计算得出，亮暗两套分别通过以下检查，由门禁复验：
+
+| 检查 | 门槛 |
+| --- | --- |
+| 明度带 | OKLCH L：亮色 0.43–0.77，暗色 0.48–0.67 |
+| 彩度下限 | C ≥ 0.10 |
+| 色觉障碍分离 | 以 Machado–Oliveira–Fernandes 2009（严重度 1.0）模拟红色弱与绿色弱，相邻色槽的 OKLab ΔE×100 ≥ 8；6–8 只在有非颜色通道时合法 |
+| 正常视觉下限 | 相邻 ΔE ≥ 15，硬门槛 |
+| 对比度 | 标记对表面 ≥ 3:1；不足时必须有可见标签或数据表 |
+| 固定顺序 | 顺序本身是可分性的保证，不随主题改变 |
+
+基础色板同一档跨色相同一明度，分类色必须跨档取值，相邻色槽之间才有明度差。
+
+非颜色通道：
+
+| 通道 | 何时启用 |
+| --- | --- |
+| 图例 | 2 个及以上系列时始终存在 |
+| 符号 | 散点缺省启用；折线在点可见时启用；色槽 N 对应第 N 个符号 |
+| 线型、纹理 | 强制色、打印，或任意祖先写了 `data-xh-chart-patterns`；常规模式下不用，因为虚线表达的是预测或阈值 |
+| 数据表 | 始终存在（视觉隐藏），见 §13 |
+
 ## 8. 材质
 
 | 材质 | 用途 | 强制表达 |
@@ -462,6 +538,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - 内容为短列表、菜单、tooltip、气泡 → frosted 四件套；reduced-transparency 下退回同语义实体面。
 - 刻意例外（须登记）：Tooltip 保留反白身份，走 compact 档 frosted（`--xh-material-frosted-compact-*` 的 backdrop / shadow / alpha + 光学层），边不取 `--xh-material-frosted-border`（深色 14% 透明边压在反白深底上不可见），改取 on 色 20% 拼色承担 §8.1 的 1px 可见边界；不画 §8.1 的 1px 内侧顶部边界光（反白深底上不需要厚度提示）。
+- 刻意例外（须登记）：图表提示框（含 Heatmap 的详情条）走标准 frosted 四件套 + overlay 形状，不反白。提示框里有系列色标，色槽色按图表所在表面校准，反白深底会让色标失去校准；跟随指针时不做位置过渡；`aria-hidden`，朗读由数据标记承担（§13）。
 - 内容含网格或多列（日历、时间列、导航大面板）→ floating（solid + border-default + elevation-floating）。
 - 模态与强反馈面 → sheet 三件套；任何浮层不得只靠 box-shadow 分层，content / item 部件必须有非透明 border 或 material-*-border。
 
@@ -586,6 +663,17 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - update 保持原位置和生命周期，不先删除再创建。
 - 跨边界队列只保存可序列化数据，业务回调由宿主侧按 id 管理。
 
+### 12.5 图表
+
+- 数据用 `data`（对象数组）加系列的字段通道（`x`、`y`、`size`、`open`……）表达。`x` / `y` 表示自变量与因变量，不表示屏幕方向；`orientation: 'horizontal'` 即坐标转置。
+- 系列类型的判别键是 `mark`，注释的判别键是 `kind`；不用 `type`（§5.2）。
+- 缺失值（null、undefined、NaN）是缺失，不按 0 处理：折线断开、柱不画、提示框显示缺失文案。
+- 受控对：`hiddenSeries`、`window`、`brushSelection`、`activeKey`，各带 `default*` 与 `on*Change`。多图联动由作者把受控状态接到同一份状态上，不提供全局联动注册表。
+- 回调：`onDatumActive(details | null)`（悬停或聚焦，按数据去重）、`onDatumPress(details)`；三端载荷一致。
+- 不提供双 y 轴：两个量纲用两张联动的图，或指数化到同一基准。
+- 立即报错的输入：对数轴定义域含 0 或跨正负；柱系列所在值轴不含 0；分类系列超过 8 个；同图混用分类色与语气色；同一堆叠组的偏移方式不一致；占比类（饼、漏斗、层级）出现负值；K 线不满足 low ≤ open、close ≤ high；桑基数据成环；层级数据多根、缺父或成环。
+- 块级结构（图例、视口、提示框、缩放条）以组合部件暴露，由作者摆放；绘图区里的标记按数据生成，作者不逐个书写。
+
 ## 13. 无障碍
 
 - 优先使用原生 button、input、dialog、table、progress 等元素。
@@ -597,6 +685,10 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 非冒泡事件由适配器使用原生监听器。
 - 状态不能只靠颜色。
 - 视觉隐藏和 DOM 隐藏必须按语义选择，不能互相替代。
+- 图表的根为 `<figure>`，可及名来自 caption 部件或根上的 `aria-label` / `aria-labelledby`。绘图区 `role="graphics-document"` + `aria-roledescription`，系列 `role="graphics-object"`，数据标记 `role="graphics-symbol"` + `aria-label`；层级图改用 `tree` / `treeitem`；坐标轴、网格、注释 `aria-hidden`。
+- 图表绘图区只占一个 Tab 位，roving 真实焦点。没有逐点元素的系列（折线、面积）由绘图区为激活数据生成一个以数据 key 为 id 的焦点代理元素；焦点环是独立部件，不依赖 SVG 元素的 outline。
+- 图表必须自动生成摘要与视觉隐藏的数据表，服务端即输出；提示框只是增强，`aria-hidden`，任何数值都不能只靠提示框读到。
+- 图表命中区至少 24px，粗指针 44px；密集标记用最近点拾取，不要求指针落在标记正中。
 
 ## 14. 跨环境
 
@@ -610,11 +702,13 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - 布局、间距、边界和定位使用逻辑属性。
 - 只有物理键位、图表轴和时间方向等稳定身份可以固定方向。
+- 图表绘图区的几何不随 RTL 镜像，方向键跟随视觉次序；图例、提示框、caption、缩放条外壳按逻辑属性镜像。
 
 ### 14.3 SSR
 
 - 首屏不得读取 `document`、`navigator` 或布局测量决定结构。
 - 平台和尺寸测量在挂载后更新，服务端输出必须稳定。
+- 图表的视口块尺寸由令牌固定（含坐标轴带），绘图区在挂载测量后才生成标记；图例、摘要与数据表服务端即输出，首屏无布局偏移。
 
 ### 14.4 Reduced Motion
 
@@ -654,6 +748,8 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
   - 浮层类展示已打开的静态面板，不能只剩触发钮；trigger 走 Action Control 默认档。
 - 复杂业务组合放到模式页，不塞进基础组件专页。
 - 示例必须覆盖 Vue、React、Web Components；确实不适用时登记原因。
+- 图表的第一个示例只写根、视口与绘图区；作为双 y 轴替代的多图联动示例放在显眼处。
+- 文档另设《选图指南》：按数据任务选组件，并给出系列数量阶梯。
 
 ### 15.2 文案
 
@@ -725,6 +821,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - [ ] 组件槽、文档、CEM 和公开面闭环。
 - [ ] 示例无冗余，总览有独立预览。
 - [ ] 单测、一致性、浏览器和构建门禁通过。
+- [ ] 图表：数据色经 `--xh-chart-*` 且色板门禁通过；摘要与数据表存在；非颜色通道齐备；SSR 首屏无偏移。
 - [ ] changeset 和独立提交完成。
 
 ## 18. 禁止项
@@ -752,3 +849,17 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - 禁止脱离配置上下文创建服务实例。
 - 禁止文档重复实现过程、营销描述和无用途示例。
 - 禁止未验证就提交，或多个无关组件合并提交。
+- 禁止为同一数据任务、同一坐标系只因样式不同另建图表组件。
+- 禁止双 y 轴。
+- 禁止图表文字使用系列色；禁止网格用虚线；禁止用描边分隔相邻数据标记。
+- 禁止生成第 9 个分类色、按排名或数值给名义类目着色、随筛选重新分配颜色。
+- 禁止提示框成为读取数值的唯一途径。
+
+## 19. 待落地条款
+
+以下条款已生效，但实现尚未完成。落地前现有代码可以暂不满足；新代码不得与之冲突，也不得为了满足它们去改动尚未排期迁移的组件。完成一项即从本表删除。
+
+| 条款 | 待完成 |
+| --- | --- |
+| §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | `--xh-chart-*` 数据色与度量令牌、分类色板门禁、`@xihan-ui/viz` 引擎、图表组件；chart 家族配方随第二个图表组件建立 |
+| §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
