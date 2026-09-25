@@ -6785,18 +6785,6 @@
   display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='input-group'][data-part='root'],
-  [data-scope='input-group'][data-part='root']::before {
-    transition: none;
-  }
-}
-
-:where([data-motion='reduce']) [data-scope='input-group'][data-part='root'],
-:where([data-motion='reduce']) [data-scope='input-group'][data-part='root']::before {
-  transition: none;
-}
-
 @media (forced-colors: active) {
   [data-scope='input-group'][data-part='root'] {
     background: Canvas;
