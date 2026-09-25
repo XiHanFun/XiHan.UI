@@ -275,8 +275,10 @@ export function createBackgroundSurface(
     }
 
     const duration = morphOptions?.duration ?? (cloudCount === 0 ? 1.4 : 1.1)
-    morph = duration <= 0 ? 1 : 0
-    morphRate = duration <= 0 ? 0 : 1 / duration
+    // 减弱动效下 tick 的时间步恒为 0，形变推不动：与 duration <= 0 一样直接落到新形状
+    const instant = duration <= 0 || reduced
+    morph = instant ? 1 : 0
+    morphRate = instant ? 0 : 1 / duration
     cloudCount = count
 
     disposeCloudBuffers()
@@ -475,6 +477,9 @@ export function createBackgroundSurface(
   const stopReducedMotion = respectReducedMotion
     ? onMotionPreferenceChange((value) => {
         reduced = value === 'reduce'
+        // 形变走到一半才切到减弱动效：同样直接收尾，不停在半路
+        if (reduced)
+          morph = 1
         dirty = true
       })
     : (): void => {}
