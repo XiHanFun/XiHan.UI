@@ -11,7 +11,7 @@ description: 设计、重构或审查 XiHan.UI 组件的视觉、交互、状态
 
 1. 确认用户任务、使用边界和现有组件是否已覆盖。
 2. 定义 anatomy、状态、事件、键盘和生命周期，再确定表现。
-3. 归入 Action Control、Field Chrome、Collection Item、Surface、Overlay 或 Feedback 家族。
+3. 归入 Action Control、Field Chrome、Collection Item、Surface、Overlay 或 Feedback 家族；图表部件归图表家具或数据标记。
 4. 使用现有语义令牌、Family Recipe 和组件槽确定尺寸、层级与状态。
 5. 同步检查组件文档、首个示例和组件总览预览，删除重复示例。
 
@@ -21,6 +21,7 @@ description: 设计、重构或审查 XiHan.UI 组件的视觉、交互、状态
 - 离散 Action Control 按下 120ms 缩放至 0.97，释放 200ms 回到 1；集合项只换面、不整体缩放。
 - 禁止 glass 材质和兼容别名；透明浮层只允许 frosted 柔和模糊。
 - 颜色、间距、圆角、阴影和动效只使用令牌，不在组件中增加散值。
+- 图表按数据任务与坐标系划分组件；数据色只经 `--xh-chart-*` 语义层，图表文字不用系列色；不提供双 y 轴。
 - rest、hover、pressed、focus-visible、selected/open、disabled、loading、invalid 和退出状态按实际能力补齐。
 - 亮色、暗色、compact、RTL、粗指针、reduced motion、reduced transparency、forced colors 和 print 一并审查。
 

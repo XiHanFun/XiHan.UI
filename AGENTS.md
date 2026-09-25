@@ -149,6 +149,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - 禁止 glass 材质及兼容别名；透明浮层只允许使用 frosted 柔和模糊材质。
 - 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 canvas 底 + `--xh-border-control` + 无影。
 - 只有 Button 缺省品牌实心；交互阶梯按承载面（白底 hover 100 → pressed 200，淡底 hover 200 → pressed 300）；`--xh-bg-brand-subtle` 专属选中 / 当前。
+- 图表按数据任务与坐标系划分组件，同一标记的不同外观是样式轴，不另建组件；数据色只经 `--xh-chart-*` 语义层，图表文字不用系列色；不提供双 y 轴。
 - 不写颜色、间距、圆角、阴影和动效散值；新增槽必须被真实消费并进入生成物。
 - 亮色、暗色、comfortable/compact、RTL、粗指针、reduced motion、reduced transparency、forced colors 和 print 必须一起审查。
 
