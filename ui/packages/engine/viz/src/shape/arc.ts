@@ -30,7 +30,9 @@ const TAU = 2 * Math.PI
 const EPSILON = 1e-9
 
 function check(params: ArcParams): void {
-  for (const [name, value] of Object.entries(params)) {
+  const fields = ['innerRadius', 'outerRadius', 'startAngle', 'endAngle', 'padAngle', 'padRadius', 'cornerRadius'] as const
+  for (const name of fields) {
+    const value = params[name]
     if (value !== undefined && !Number.isFinite(value))
       throw invalidArgument(`弧的参数 ${name} 必须是有限数`, { [name]: value })
   }

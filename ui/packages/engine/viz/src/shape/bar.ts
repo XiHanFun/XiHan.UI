@@ -23,7 +23,8 @@ export interface RoundedBarOptions {
 }
 
 function drawBar(rect: Rect, options: RoundedBarOptions, sink: PathSink): void {
-  for (const [name, value] of Object.entries(rect)) {
+  for (const name of ['x', 'y', 'width', 'height'] as const) {
+    const value = rect[name]
     if (!Number.isFinite(value))
       throw invalidArgument(`柱的 ${name} 必须是有限数`, { [name]: value })
   }
