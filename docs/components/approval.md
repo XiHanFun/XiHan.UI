@@ -398,7 +398,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 
 ### 动效
 
-关键帧 `xh-approval-in` · `xh-approval-result-in` · `xh-approval-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-approval-in` · `xh-approval-result-in` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

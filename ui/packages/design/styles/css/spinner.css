@@ -5,15 +5,10 @@
 
 /* 定义 spinner 样式。 */
 
-@layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里。皮肤可以按需单独引入，
-     引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
-  @keyframes xh-spinner-rotate {
-    to {
-      transform: rotate(1turn);
-    }
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
+@layer xihan.motion {
   /* 三点档的呼吸：一拍里淡到禁用档再回来 */
   @keyframes xh-spinner-dots {
     50% {
@@ -52,7 +47,7 @@
     /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
     border-block-start-color: var(--xh-spinner-fg, currentColor);
     border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
-    animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 三档直径走字形尺寸那把尺：圆环与同一行文字里的图标同级，三档同族才不会在 compact 下错位。
@@ -77,7 +72,7 @@
 
   /*
    * 渐隐弧：一整圈的色相由角度扫过来，再用一圈环形遮罩把中心挖空，剩下的就是一段
-   * 由浓到无的弧。转的还是同一条 xh-spinner-rotate——这一档只换画法，不换节拍。
+   * 由浓到无的弧。转的还是同一条 xh-spin——这一档只换画法，不换节拍。
    * 遮罩只吃 alpha，用 currentColor 当不透明的那一端即可。
    */
   [data-scope='spinner'][data-part='root'][data-variant='arc']::before {

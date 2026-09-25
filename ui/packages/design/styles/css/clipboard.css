@@ -5,15 +5,11 @@
 
 /* 定义 clipboard 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 @import '../family/action-control.css';
 
 @layer xihan.motion {
-  @keyframes xh-clipboard-rotate {
-    to {
-      rotate: 360deg;
-    }
-  }
-
   @keyframes xh-clipboard-loading-reveal {
     to {
       opacity: 1;
@@ -249,7 +245,7 @@
     border-radius: var(--xh-shape-circle);
     opacity: 0;
     animation:
-      xh-clipboard-rotate var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+      xh-spin var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
       xh-clipboard-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 

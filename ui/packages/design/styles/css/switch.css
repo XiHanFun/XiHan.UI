@@ -5,16 +5,9 @@
 
 /* 定义 switch 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 @import '../family/action-control.css';
-
-@layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-switch-rotate {
-    to {
-      transform: rotate(1turn);
-    }
-  }
-}
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -235,7 +228,7 @@
     border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
     /* 加载环是等宽高的圆（全部加载环取 circle） */
     border-radius: var(--xh-shape-circle);
-    animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——

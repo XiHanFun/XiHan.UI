@@ -19,15 +19,6 @@
         "approval"
       ]
     },
-    "xh-approval-rotate": {
-      "content": "to{rotate:360deg}",
-      "definedIn": [
-        "approval.css"
-      ],
-      "consumers": [
-        "approval"
-      ]
-    },
     "xh-carousel-indicator-progress": {
       "content": "from{scale:var(--xh-_carousel-progress-from)}to{scale:var(--xh-_carousel-progress-to)}",
       "definedIn": [
@@ -48,15 +39,6 @@
     },
     "xh-clipboard-loading-reveal": {
       "content": "to{opacity:1}",
-      "definedIn": [
-        "clipboard.css"
-      ],
-      "consumers": [
-        "clipboard"
-      ]
-    },
-    "xh-clipboard-rotate": {
-      "content": "to{rotate:360deg}",
       "definedIn": [
         "clipboard.css"
       ],
@@ -139,15 +121,6 @@
     },
     "xh-download-trigger-loading-reveal": {
       "content": "to{opacity:1}",
-      "definedIn": [
-        "download-trigger.css"
-      ],
-      "consumers": [
-        "download-trigger"
-      ]
-    },
-    "xh-download-trigger-rotate": {
-      "content": "to{rotate:360deg}",
       "definedIn": [
         "download-trigger.css"
       ],
@@ -360,15 +333,6 @@
         "notification"
       ]
     },
-    "xh-notification-spin": {
-      "content": "to{rotate:360deg}",
-      "definedIn": [
-        "notification.css"
-      ],
-      "consumers": [
-        "notification"
-      ]
-    },
     "xh-overlay-pop-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
       "definedIn": [
@@ -460,15 +424,6 @@
         "tour"
       ],
       "relation": "anchored-panel"
-    },
-    "xh-popconfirm-rotate": {
-      "content": "to{transform:rotate(1turn)}",
-      "definedIn": [
-        "popconfirm.css"
-      ],
-      "consumers": [
-        "popconfirm"
-      ]
     },
     "xh-progress-indeterminate": {
       "content": "from{inset-inline-start:-40%}to{inset-inline-start:100%}",
@@ -591,7 +546,15 @@
         "family/motion.css"
       ],
       "consumers": [
-        "button"
+        "approval",
+        "button",
+        "clipboard",
+        "download-trigger",
+        "notification",
+        "popconfirm",
+        "spinner",
+        "switch",
+        "toast"
       ],
       "relation": "loop"
     },
@@ -602,24 +565,6 @@
       ],
       "consumers": [
         "spinner"
-      ]
-    },
-    "xh-spinner-rotate": {
-      "content": "to{transform:rotate(1turn)}",
-      "definedIn": [
-        "spinner.css"
-      ],
-      "consumers": [
-        "spinner"
-      ]
-    },
-    "xh-switch-rotate": {
-      "content": "to{transform:rotate(1turn)}",
-      "definedIn": [
-        "switch.css"
-      ],
-      "consumers": [
-        "switch"
       ]
     },
     "xh-table-loading-pulse": {
@@ -642,15 +587,6 @@
     },
     "xh-toast-out": {
       "content": "from{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-y,0px))) scale(var(--xh-toast-scale,1))}to{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-y,0px) - var(--xh-motion-travel)))) scale(var(--xh-toast-scale,1))}",
-      "definedIn": [
-        "toast.css"
-      ],
-      "consumers": [
-        "toast"
-      ]
-    },
-    "xh-toast-spin": {
-      "content": "to{rotate:360deg}",
       "definedIn": [
         "toast.css"
       ],
@@ -755,29 +691,11 @@
         "xh-tool-call-shimmer"
       ]
     },
-    "xh-approval-rotate": {
-      "$description": "5 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-approval-rotate",
-        "xh-clipboard-rotate",
-        "xh-download-trigger-rotate",
-        "xh-notification-spin",
-        "xh-toast-spin"
-      ]
-    },
     "xh-clipboard-loading-reveal": {
       "$description": "2 个名字是同一段动画，收敛前登记在案",
       "names": [
         "xh-clipboard-loading-reveal",
         "xh-download-trigger-loading-reveal"
-      ]
-    },
-    "xh-popconfirm-rotate": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-popconfirm-rotate",
-        "xh-spinner-rotate",
-        "xh-switch-rotate"
       ]
     }
   },
@@ -789,6 +707,14 @@
     "xh-reasoning-expand": "并入 xh-disclosure-expand（family/motion.css）",
     "xh-reasoning-collapse": "并入 xh-disclosure-collapse（family/motion.css）",
     "xh-tool-call-expand": "并入 xh-disclosure-expand（family/motion.css）",
-    "xh-tool-call-collapse": "并入 xh-disclosure-collapse（family/motion.css）"
+    "xh-tool-call-collapse": "并入 xh-disclosure-collapse（family/motion.css）",
+    "xh-spinner-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-popconfirm-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-switch-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-toast-spin": "并入 xh-spin（family/motion.css）",
+    "xh-approval-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-clipboard-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-download-trigger-rotate": "并入 xh-spin（family/motion.css）",
+    "xh-notification-spin": "并入 xh-spin（family/motion.css）"
   }
 }

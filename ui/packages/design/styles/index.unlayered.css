@@ -3290,12 +3290,7 @@
 /* styles/download-trigger.css */
 /* 定义 download trigger 样式。 */
 
-/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-@keyframes xh-download-trigger-rotate {
-  to {
-    rotate: 360deg;
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 @keyframes xh-download-trigger-loading-reveal {
   to {
@@ -3405,7 +3400,7 @@
   border-radius: var(--xh-shape-circle);
   opacity: 0;
   animation:
-    xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+    xh-spin var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
     xh-download-trigger-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
 }
 
@@ -9335,13 +9330,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-@keyframes xh-popconfirm-rotate {
-  to {
-    transform: rotate(1turn);
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='popconfirm'] {
   --xh-popconfirm-skin: 1;
@@ -9585,7 +9573,7 @@
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: currentcolor;
   border-radius: var(--xh-shape-circle);
-  animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  animation: xh-spin var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 取消是中性的次要出口，不参与语气：content 上的 data-tone 会把 --xh-_tone-* 一路继承下来，
@@ -13103,13 +13091,7 @@
 /* styles/spinner.css */
 /* 定义 spinner 样式。 */
 
-/* 转圈的关键帧定义在本文件里。皮肤可以按需单独引入，
-   引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
-@keyframes xh-spinner-rotate {
-  to {
-    transform: rotate(1turn);
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 /* 三点档的呼吸：一拍里淡到禁用档再回来 */
 @keyframes xh-spinner-dots {
@@ -13146,7 +13128,7 @@
   /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
   border-block-start-color: var(--xh-spinner-fg, currentColor);
   border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
-  animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  animation: xh-spin var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 三档直径走字形尺寸那把尺：圆环与同一行文字里的图标同级，三档同族才不会在 compact 下错位。
@@ -13171,7 +13153,7 @@
 
 /*
  * 渐隐弧：一整圈的色相由角度扫过来，再用一圈环形遮罩把中心挖空，剩下的就是一段
- * 由浓到无的弧。转的还是同一条 xh-spinner-rotate——这一档只换画法，不换节拍。
+ * 由浓到无的弧。转的还是同一条 xh-spin——这一档只换画法，不换节拍。
  * 遮罩只吃 alpha，用 currentColor 当不透明的那一端即可。
  */
 [data-scope='spinner'][data-part='root'][data-variant='arc']::before {
@@ -13746,10 +13728,8 @@
 /* styles/approval.css */
 /* 定义 approval 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* 独立皮肤同时传递引入授权行与两颗钮的动作控件配方，full bundle 递归去重。 */
-
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
 
 /* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
 @keyframes xh-approval-in {
@@ -13773,12 +13753,6 @@
   to {
     opacity: 1;
     scale: 1;
-  }
-}
-
-@keyframes xh-approval-rotate {
-  to {
-    rotate: 360deg;
   }
 }
 
@@ -14146,7 +14120,7 @@
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: currentColor;
   border-radius: var(--xh-shape-circle);
-  animation: xh-approval-rotate var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  animation: xh-spin var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
@@ -18117,11 +18091,7 @@
 /* styles/clipboard.css */
 /* 定义 clipboard 样式。 */
 
-@keyframes xh-clipboard-rotate {
-  to {
-    rotate: 360deg;
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 @keyframes xh-clipboard-loading-reveal {
   to {
@@ -18356,7 +18326,7 @@
   border-radius: var(--xh-shape-circle);
   opacity: 0;
   animation:
-    xh-clipboard-rotate var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+    xh-spin var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
     xh-clipboard-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
 }
 
@@ -27598,14 +27568,6 @@
   }
 }
 
-/* loading 那枚字形自己转。逐皮肤自带一份：跨皮肤共用动画名，
-   引用方那份皮肤不在场时动画就静默不跑 */
-@keyframes xh-notification-spin {
-  to {
-    rotate: 360deg;
-  }
-}
-
 @keyframes xh-notification-out {
   from {
     opacity: 1;
@@ -27837,7 +27799,7 @@
 [data-scope='notification'][data-part='item'][data-loading] [data-part='item-indicator']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
   mask-image: var(--xh-glyph-mark-rotate-right);
-  animation: xh-notification-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+  animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；
@@ -32541,12 +32503,7 @@
 /* styles/switch.css */
 /* 定义 switch 样式。 */
 
-/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-@keyframes xh-switch-rotate {
-  to {
-    transform: rotate(1turn);
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='switch'] {
@@ -32766,7 +32723,7 @@
   border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
   /* 加载环是等宽高的圆（全部加载环取 circle） */
   border-radius: var(--xh-shape-circle);
-  animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  animation: xh-spin var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——
@@ -36958,12 +36915,6 @@
   }
 }
 
-@keyframes xh-toast-spin {
-  to {
-    rotate: 360deg;
-  }
-}
-
 @keyframes xh-toast-out {
   from {
     opacity: 1;
@@ -37152,7 +37103,7 @@
 [data-scope='toast'][data-part='root'][data-loading]::before {
   -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
   mask-image: var(--xh-glyph-mark-rotate-right);
-  animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+  animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；「在等什么」由条子上的
@@ -37216,7 +37167,7 @@
 [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
   mask-image: var(--xh-glyph-mark-rotate-right);
-  animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+  animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：与 root 上那枚同一处理——转圈停下，静止的箭头仍读得出「还没好」。
