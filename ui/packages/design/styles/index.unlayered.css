@@ -33392,7 +33392,7 @@
 
   /* 这条整份改写家族的过渡列表，按压的 scale 与换底要一起带回来 */
   transition:
-    rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+    rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
