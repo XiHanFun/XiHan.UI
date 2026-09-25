@@ -442,7 +442,7 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `--xh-date-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | date-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-date-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | date-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-date-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | date-picker 的 content 部件 color 覆盖槽。 |
-| `--xh-date-picker-content-px` | `content` | `padding-inline` | `@media (width < 768px)`<br>`default` | `--xh-space-2` | date-picker 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-date-picker-content-px` | `content` | `padding-inline` | `@media not all and (min-width: 768px)`<br>`default` | `--xh-space-2` | date-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-2` | date-picker 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | date-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | date-picker 的 content 部件 box-shadow 覆盖槽。 |
@@ -489,15 +489,15 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `--xh-date-picker-time-column-gap` | `time-column` | `gap` | `default` | `0` | date-picker 的 time-column 部件 gap 覆盖槽。 |
 | `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-viewport-h-md` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
-| `--xh-date-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media (width < 768px)` | `2.75rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
+| `--xh-date-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media not all and (min-width: 768px)` | `2.75rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-time-column-offset` | `time-column` | `margin-block-start` | `default` | `--xh-control-h-sm` | date-picker 的 time-column 部件 margin-block-start 覆盖槽。 |
 | `--xh-date-picker-time-column-padding` | `time-column` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 time-column 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-time-column-px` | `time-column` | `padding-inline` | `default` | `0` | date-picker 的 time-column 部件 padding-inline 覆盖槽。 |
-| `--xh-date-picker-time-column-px-mobile` | `time-column` | `padding-inline` | `@media (width < 768px)` | `0` | date-picker 的 time-column 部件 padding-inline 覆盖槽。 |
+| `--xh-date-picker-time-column-px-mobile` | `time-column` | `padding-inline` | `@media not all and (min-width: 768px)` | `0` | date-picker 的 time-column 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-time-item-bg-hover` | `time-item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | date-picker 的 time-item 部件 background-color 覆盖槽。 |
 | `--xh-date-picker-time-item-bg-pressed` | `time-item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | date-picker 的 time-item 部件 background-color 覆盖槽。 |
 | `--xh-date-picker-time-item-check-fg` | `time-item` | `background-color` | `default` | `--xh-_date-picker-check-fg` | date-picker 的 time-item 部件 background-color 覆盖槽。 |
-| `--xh-date-picker-time-item-check-size` | `time-item` | `block-size`<br>`inline-size`<br>`inset-inline-end`<br>`padding-inline` | `@media (width < 768px)`<br>`default` | `--xh-_date-picker-time-item-check-size` | date-picker 的 time-item 部件 block-size、inline-size、inset-inline-end、padding-inline 覆盖槽。 |
+| `--xh-date-picker-time-item-check-size` | `time-item` | `block-size`<br>`inline-size`<br>`inset-inline-end`<br>`padding-inline` | `@media not all and (min-width: 768px)`<br>`default` | `--xh-_date-picker-time-item-check-size` | date-picker 的 time-item 部件 block-size、inline-size、inset-inline-end、padding-inline 覆盖槽。 |
 | `--xh-date-picker-time-item-fg` | `time-item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | date-picker 的 time-item 部件 color 覆盖槽。 |
 | `--xh-date-picker-time-item-fg-selected` | `time-item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-date-picker-time-item-fg` | date-picker 的 time-item 部件 color 覆盖槽。 |
 | `--xh-date-picker-time-item-font-weight-selected` | `time-item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | date-picker 的 time-item 部件 font-weight 覆盖槽。 |
@@ -517,7 +517,7 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 
 ### 响应式
 
-皮肤按视口分档：`min-width: 768px` · `width < 768px`。
+皮肤按视口分档：`min-width: 768px`。
 
 ### RTL
 
