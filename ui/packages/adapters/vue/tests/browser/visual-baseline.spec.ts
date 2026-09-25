@@ -388,7 +388,7 @@ async function waitForPositioned(): Promise<void> {
 /**
  * 等动画跑完。
  *
- * 八件的皮肤都带进场动画（xh-dialog-in / xh-drawer-in-* / xh-toast-in / xh-overlay-pop-in / xh-fade-in）。
+ * 八件的皮肤都带进场动画（xh-sheet-in / xh-drawer-in-* / xh-toast-in / xh-overlay-pop-in / xh-fade-in）。
  * 不能用 data-motion='reduce' 绕开：那会换掉一整块令牌取值，截出来的就不是默认档的样子了。
  *
  * 逐条等 finished，等完再看一拍有没有新动画起来——落位与重排会引出第二批。

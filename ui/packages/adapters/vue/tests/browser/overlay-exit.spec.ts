@@ -102,7 +102,7 @@ describe('dialog 退场', () => {
     // 这条是本次回归的靶心：皮肤若给 content 补了 [hidden]{display:none}，
     // 元素不生成盒子、动画不启动，退场探测直接放弃租约，动画一帧都播不出来
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expect(getComputedStyle(closing!).animationName).toBe('xh-dialog-out')
+    expect(getComputedStyle(closing!).animationName).toBe('xh-sheet-out')
   })
 
   it('遮罩同时在播淡出', async () => {
@@ -147,7 +147,7 @@ describe('dialog 退场', () => {
     await settle()
 
     expect(document.querySelectorAll('[data-scope=\'dialog\'][data-part=\'content\']')).toHaveLength(1)
-    expect(getComputedStyle(part('dialog', 'content')!).animationName).toBe('xh-dialog-in')
+    expect(getComputedStyle(part('dialog', 'content')!).animationName).toBe('xh-sheet-in')
   })
 })
 

@@ -319,7 +319,7 @@ describe('wc dialog 退场', () => {
     // 这条是本次回归的靶心：收起此前跟着 open 同帧写内联 display:none，
     // 元素当场不生成盒子，退场动画一帧都播不出来
     expect(content.style.display, '退场动画播完之前不能写 display:none').not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-dialog-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-sheet-out')
   })
 
   it('遮罩同时在播淡出', async () => {
@@ -359,7 +359,7 @@ describe('wc dialog 退场', () => {
     await settle()
 
     expect(content.style.display).not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-dialog-in')
+    expect(getComputedStyle(content).animationName).toBe('xh-sheet-in')
 
     // 再等一段，确认前一次退场的收尾没有把已经重新展开的面板收掉
     await new Promise(resolve => setTimeout(resolve, 400))

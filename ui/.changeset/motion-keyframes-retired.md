@@ -30,3 +30,7 @@
 | `xh-clipboard-loading-hide` | `xh-fade-out` |
 | `xh-diff-view-reveal` | `xh-drop-in` |
 | `xh-form-summary-enter` | `xh-drop-in` |
+| `xh-dialog-in` | `xh-sheet-in` |
+| `xh-dialog-out` | `xh-sheet-out` |
+| `xh-notification-in` | `xh-sheet-in` |
+| `xh-notification-out` | `xh-sheet-out` |
