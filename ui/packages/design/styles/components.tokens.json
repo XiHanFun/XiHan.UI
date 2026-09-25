@@ -36093,7 +36093,7 @@
         "presentation=sheet"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-_layout-sider-padding"
       ],
       "visibility": "public",
       "description": "layout 的 sider 部件 padding、padding-block-end、padding-block-start、padding-inline 覆盖槽。"

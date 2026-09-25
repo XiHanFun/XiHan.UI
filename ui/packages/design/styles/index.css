@@ -7476,11 +7476,13 @@
   [data-scope='layout'][data-part='sider'] {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+    /* 内衬缺省一档，装了 SideNav 的侧栏在下面归零；覆盖档与安全区取大时读的也是这一支 */
+    --xh-_layout-sider-padding: var(--xh-space-3);
 
     grid-area: sider;
     inline-size: var(--xh-_layout-sider-w);
     overflow: hidden;
-    padding: var(--xh-layout-sider-padding, var(--xh-space-3));
+    padding: var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding));
     background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
     transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
@@ -7489,6 +7491,14 @@
   [data-scope='layout'][data-part='sider'][data-collapsed] {
     inline-size: var(--xh-_layout-sider-collapsed-w);
     white-space: nowrap;
+  }
+
+  /* 侧栏里装着 SideNav 时内衬缺省归零：SideNav 自带一圈内衬，宽度又与侧栏同取侧栏令牌，
+     再叠一圈侧栏内衬，导航就比侧栏的内容盒宽出两侧内衬、右缘被裁掉。
+     认后代而不是子代：Web Components 在侧栏与导航根之间隔着 <xh-side-nav> 宿主。
+     不认 :has() 的引擎（Firefox 121 以前）照旧留内衬，导航右缘被裁，与改动前一致 */
+  [data-scope='layout'][data-part='sider']:has([data-scope='side-nav'][data-part='root']) {
+    --xh-_layout-sider-padding: 0;
   }
 
   [data-scope='layout'][data-part='content'] {
@@ -7617,10 +7627,10 @@
     /* 贴死视口的那一档，内衬与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出。
        桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
        行内轴上两侧同取较宽的那一段，RTL 下不会翻错边 */
-    padding-block-start: max(var(--xh-layout-sider-padding, var(--xh-space-3)), env(safe-area-inset-top));
-    padding-block-end: max(var(--xh-layout-sider-padding, var(--xh-space-3)), env(safe-area-inset-bottom));
+    padding-block-start: max(var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)), env(safe-area-inset-bottom));
     padding-inline: max(
-      var(--xh-layout-sider-padding, var(--xh-space-3)),
+      var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
