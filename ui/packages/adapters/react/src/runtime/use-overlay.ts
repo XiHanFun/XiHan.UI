@@ -87,7 +87,7 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
       return () => {}
     const { config } = parts
     // StrictMode 重建机器时必须重新建立已销毁的 Presence，不能继续使用旧租约容器。
-    const presence = createPresence({ config, open: latest.current.initialOpen, onRenderedChange: setRendered })
+    const presence = createPresence({ open: latest.current.initialOpen, onRenderedChange: setRendered })
     parts.presence = presence
     // 只提供注册函数，入栈出栈由机器的效应按展开态驱动
     const registerLayer = (): ReturnType<RuntimeConfig['layerRegistry']['register']> =>

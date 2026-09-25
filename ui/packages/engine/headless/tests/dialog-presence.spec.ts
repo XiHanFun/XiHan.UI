@@ -21,7 +21,7 @@ function fixture(options: { animated?: boolean, reducedMotion?: boolean } = {}) 
   const outside = document.createElement('button')
   document.body.append(outside, content)
   const config = createRuntimeConfig({ reducedMotion: () => options.reducedMotion ?? false })
-  const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+  const presence = createPresence({ open: false, onRenderedChange: () => {} })
   const leases: ExitLease[] = []
   if (options.animated ?? true)
     presence.onBeforeExit(() => leases.push(presence.claimExit('本次动画')))
@@ -106,14 +106,27 @@ describe('对话框行为与 Presence 共用退出生命周期', () => {
     expect(f.completed).toEqual([])
   })
 
-  it.each([{ animated: false }, { reducedMotion: true }])('无有效动画的关闭即时释放：%o', async (options) => {
-    const f = fixture(options)
+  it('无有效动画的关闭即时释放', async () => {
+    const f = fixture({ animated: false })
     f.service.send({ type: 'OPEN' })
     await flush()
     f.service.send({ type: 'CLOSE' })
     f.presence.update(false)
     expect(f.presence.rendered).toBe(false)
     expect(f.config.layerRegistry.list()).toHaveLength(0)
+    expect(f.completed).toEqual([0])
+  })
+
+  it('减弱动效下退场仍是一段淡出：等退出租约归还才释放模态资源', async () => {
+    const f = fixture({ reducedMotion: true })
+    f.service.send({ type: 'OPEN' })
+    await flush()
+    f.service.send({ type: 'CLOSE' })
+    f.presence.update(false)
+    expect(f.presence.rendered).toBe(true)
+    expect(f.config.layerRegistry.list()).toHaveLength(1)
+    f.leases[0]!.done()
+    expect(f.presence.rendered).toBe(false)
     expect(f.completed).toEqual([0])
   })
 

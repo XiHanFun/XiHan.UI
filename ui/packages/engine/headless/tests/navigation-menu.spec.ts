@@ -403,7 +403,7 @@ describe('navigationMenu 收起', () => {
       }
     })
     runtime.start()
-    const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    const presence = createPresence({ open: false, onRenderedChange: () => {} })
     service.send({ type: 'PRESENCE.SET', value: 'products', presence, connected: true })
     const api = () => connectNavigationMenu(service, normalizeProps)
 
@@ -422,8 +422,8 @@ describe('navigationMenu 收起', () => {
 
   it('从 A 切到 B 后只等待 B 的 Presence；关闭时 viewport 保留但立即退出交互树', () => {
     const h = makeLayerMenu()
-    const presenceA = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
-    const presenceB = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    const presenceA = createPresence({ open: false, onRenderedChange: () => {} })
+    const presenceB = createPresence({ open: false, onRenderedChange: () => {} })
     h.connectPresence('products', presenceA)
     h.connectPresence('docs', presenceB)
 
@@ -479,7 +479,7 @@ describe('navigationMenu 收起', () => {
 
   it('退场中重开沿用原 Layer，并撤销旧退出等待', () => {
     const h = makeLayerMenu()
-    const presence = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    const presence = createPresence({ open: false, onRenderedChange: () => {} })
     h.connectPresence('products', presence)
     h.api().setValue('products')
     presence.update(true)
@@ -509,7 +509,7 @@ describe('navigationMenu 收起', () => {
     h.api().setValue('products')
     expect(h.config.layerRegistry.list()).toHaveLength(1)
 
-    const presence = createPresence({ config: h.config, open: true, onRenderedChange: () => {} })
+    const presence = createPresence({ open: true, onRenderedChange: () => {} })
     h.connectPresence('products', presence)
     expect(h.config.layerRegistry.list()).toHaveLength(1)
 
@@ -526,8 +526,8 @@ describe('navigationMenu 收起', () => {
 
   it('旧句柄迟到注销不删新句柄；精确卸载 closing content 立即释放资源', () => {
     const h = makeLayerMenu()
-    const stale = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
-    const current = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    const stale = createPresence({ open: false, onRenderedChange: () => {} })
+    const current = createPresence({ open: false, onRenderedChange: () => {} })
     h.connectPresence('products', stale)
     h.connectPresence('products', current)
     h.disconnectPresence('products', stale)

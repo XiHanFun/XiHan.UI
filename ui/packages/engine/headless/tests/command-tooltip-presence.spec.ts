@@ -29,7 +29,7 @@ function commandHarness(onOpenChange = vi.fn()) {
     runtime,
     scope,
   })
-  const presence = createPresence({ config, open: true, onRenderedChange: () => {} })
+  const presence = createPresence({ open: true, onRenderedChange: () => {} })
   service.refs.set('config', config)
   service.refs.set('presence', presence)
   service.refs.set('registerLayer', () => config.layerRegistry.register({
@@ -60,7 +60,7 @@ function tooltipHarness(onOpenChange = vi.fn()) {
     runtime,
     scope,
   })
-  const presence: PresenceHandle = createPresence({ config, open: true, onRenderedChange: () => {} })
+  const presence: PresenceHandle = createPresence({ open: true, onRenderedChange: () => {} })
   service.refs.set('config', config)
   service.refs.set('presence', presence)
   service.refs.set('registerLayer', () => config.layerRegistry.register({

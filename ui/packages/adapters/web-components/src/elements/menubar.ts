@@ -382,7 +382,6 @@ export class XhMenubarElement extends XhPortalHostElement {
       }
       if (!entry) {
         const gate = createOverlayExit({
-          config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })

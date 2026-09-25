@@ -107,7 +107,6 @@ export class XhCollapsibleElement extends XhElement {
     const content = this.getPart('content')
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

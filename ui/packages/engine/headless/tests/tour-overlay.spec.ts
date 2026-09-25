@@ -36,7 +36,6 @@ function makeHarness(initial: TourSchema['props'] = {}): Harness {
     runtime,
   })
   const presence = createPresence({
-    config,
     open: service.state.get() === 'open',
     onRenderedChange: () => {},
   })

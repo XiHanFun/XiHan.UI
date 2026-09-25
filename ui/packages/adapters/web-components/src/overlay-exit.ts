@@ -8,7 +8,7 @@
 // Light DOM 下元素无权增删作者的节点，所以这里被 presence 拉长的不是「节点存在的时间」
 // 而是「可见的时间」——收起从跟着 open 走，改成跟着 presence 走。
 
-import type { Cleanup, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 
@@ -26,7 +26,6 @@ export interface OverlayExit {
 }
 
 export interface OverlayExitOptions {
-  config: RuntimeConfig
   open: boolean
   /** 退场结束时回调，宿主据此排一次更新，把收起真正落到 display 上。 */
   onExitComplete: () => void
@@ -37,7 +36,6 @@ export function createOverlayExit(options: OverlayExitOptions): OverlayExit {
   const tracked = new Map<HTMLElement, Cleanup>()
 
   const presence: PresenceHandle = createPresence({
-    config: options.config,
     open: options.open,
     onRenderedChange: (rendered) => {
       if (!rendered && !disposed)

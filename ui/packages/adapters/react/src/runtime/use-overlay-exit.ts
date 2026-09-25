@@ -24,8 +24,7 @@ const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : us
 
 export interface OverlayExitOptions {
   /**
-   * 运行时配置；reduce 档下 presence 直接不申领租约。
-   * 服务端没有 DOM、也就没有退场可言，传 null 即退化为可见与否跟随展开态。
+   * 运行时配置，只用来区分有没有 DOM：服务端没有退场可言，传 null 即退化为可见与否跟随展开态。
    */
   config: RuntimeConfig | null
   /** 当前逻辑上是否展开。 */
@@ -61,7 +60,7 @@ export function useOverlayExit(options: OverlayExitOptions): boolean {
   useIsomorphicLayoutEffect(() => {
     if (!config)
       return
-    const presence = createPresence({ config, open: latest.current.isOpen(), onRenderedChange: setVisible })
+    const presence = createPresence({ open: latest.current.isOpen(), onRenderedChange: setVisible })
     presenceRef.current = presence
     const onPresence = latest.current.onPresence
     onPresence?.(presence)

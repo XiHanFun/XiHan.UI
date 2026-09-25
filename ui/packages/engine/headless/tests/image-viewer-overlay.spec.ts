@@ -47,7 +47,6 @@ function makeDomHarness(initial: ImageViewerSchema['props'] = {}): DomHarness {
   const runtime = createVanillaRuntime()
   const service = createService(imageViewerMachine, { props: () => props, runtime })
   const presence = createPresence({
-    config,
     open: service.state.get() === 'open',
     onRenderedChange: () => {},
   })

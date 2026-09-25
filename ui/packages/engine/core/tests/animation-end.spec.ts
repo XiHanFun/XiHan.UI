@@ -6,7 +6,6 @@
 // jsdom 不把样式表里的 animation 简写算进 getComputedStyle（animationName 恒为空串），
 // 所以这条路在 jsdom 里天然走不到，装真实皮肤跑组件也复现不出来。
 // 这里直接桩掉 getComputedStyle，把浏览器里的取值喂进来。
-import type { RuntimeConfig } from '../src/kernel'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createPresence } from '../src/behavior/presence'
 import { attachCssExit } from '../src/behavior/presence/animation-end'
@@ -18,10 +17,6 @@ afterEach(() => {
   vi.useRealTimers()
   document.body.innerHTML = ''
 })
-
-function fakeConfig(): RuntimeConfig {
-  return { reducedMotion: () => false } as RuntimeConfig
-}
 
 /** 把节点的计算样式桩成浏览器里的取值。 */
 function stubStyle(node: HTMLElement, style: Partial<CSSStyleDeclaration>): void {
@@ -74,7 +69,7 @@ describe('attachCssExit', () => {
     const el = mount()
     stubStyle(el, { animationName: 'none' })
     const onRenderedChange = vi.fn()
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange })
+    const p = createPresence({ open: true, onRenderedChange })
     attachCssExit(el, p, { win: window })
     p.update(false)
     expect(p.rendered).toBe(false)
@@ -85,7 +80,7 @@ describe('attachCssExit', () => {
   it('元素不生成盒子时不申领租约', () => {
     const el = mount()
     stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s', display: 'none' })
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
     expect(p.rendered, 'display:none 却申领了租约，退场会永久挂住').toBe(false)
@@ -94,7 +89,7 @@ describe('attachCssExit', () => {
   it('真有动画时申领租约，animationend 到达才卸载', async () => {
     const el = mount()
     stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s' })
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
     expect(p.rendered, '动画期间要留在 DOM 里').toBe(true)
@@ -109,7 +104,7 @@ describe('attachCssExit', () => {
   it('进场被打断抛出的 animationcancel 不算退场结束', async () => {
     const el = mount()
     stubStyle(el, { animationName: 'xh-pop-out', animationDuration: '0.12s' })
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
 
@@ -128,7 +123,7 @@ describe('attachCssExit', () => {
     vi.useFakeTimers()
     const el = mount()
     stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s', animationDelay: '0.1s' })
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
     expect(p.rendered).toBe(true)
@@ -145,7 +140,7 @@ describe('attachCssExit', () => {
     const child = document.createElement('span')
     el.appendChild(child)
     stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s' })
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
 

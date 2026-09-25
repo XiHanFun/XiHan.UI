@@ -49,6 +49,7 @@ afterEach(() => {
   style?.remove()
   style = null
   setMotionOverride(null)
+  delete document.documentElement.dataset.motion
   vi.unstubAllGlobals()
   document.body.innerHTML = ''
 })
@@ -89,9 +90,10 @@ describe('命令对话框真实退出队列', () => {
     expect(document.body.textContent).not.toContain('第三问')
   })
 
-  it('减动效时不等待仍在 CSS 中声明的 600ms 动画', async () => {
-    installLongExit()
+  it('减弱动效下退场只剩 120ms 淡出，队列等它播完才推进', async () => {
+    // 与视觉环境控制器一致：JS 覆盖与根上的 data-motion 同时置为减弱
     setMotionOverride('reduce')
+    document.documentElement.dataset.motion = 'reduce'
     let first!: Promise<boolean>
     act(() => {
       service = createDialogService()
@@ -105,6 +107,19 @@ describe('命令对话框真实退出队列', () => {
     })
     await expect(first).resolves.toBe(false)
     await flush()
-    expect(title()).toBe('第二问')
+
+    const animations = closingAnimations()
+    expect(animations).toHaveLength(2)
+    expect(animations.map(animation => animation.effect?.getComputedTiming().endTime)).toEqual([120, 120])
+    animations.forEach(animation => animation.pause())
+    await new Promise(resolve => setTimeout(resolve, 200))
+    expect(title()).toBe('第一问')
+
+    await act(async () => {
+      animations.forEach(animation => animation.finish())
+      await Promise.resolve()
+    })
+    await flush()
+    await expect.poll(title).toBe('第二问')
   })
 })

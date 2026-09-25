@@ -142,7 +142,7 @@ describe('hoverCard 真实退场资源', () => {
     const c = makeCard()
     wireLayer(c)
     const config = c.service.refs.get('config')!
-    const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    const presence = createPresence({ open: false, onRenderedChange: () => {} })
     c.service.refs.set('presence', presence)
     const leases: ExitLease[] = []
     const stopExit = presence.onBeforeExit(() => {

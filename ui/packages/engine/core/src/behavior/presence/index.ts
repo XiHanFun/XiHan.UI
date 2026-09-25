@@ -5,7 +5,7 @@
 
 // 导出 presence 模块的公共接口。
 
-import type { Cleanup, Disposable, RuntimeConfig } from '../../kernel'
+import type { Cleanup, Disposable } from '../../kernel'
 import type { PresenceEvent, PresenceState } from './presence-machine'
 import { nextPresence } from './presence-machine'
 
@@ -35,19 +35,12 @@ export interface PresenceHandle extends Disposable {
 }
 
 export interface PresenceOptions {
-  config: RuntimeConfig
   open: boolean
   onRenderedChange: (rendered: boolean) => void
 }
 
-const SETTLED_LEASE: ExitLease = {
-  done: () => {},
-  cancel: () => {},
-  settled: true,
-}
-
 export function createPresence(o: PresenceOptions): PresenceHandle {
-  const { config, onRenderedChange } = o
+  const { onRenderedChange } = o
   let state: PresenceState = o.open ? 'mounted' : 'unmounted'
   let open = o.open
   let disposed = false
@@ -70,10 +63,8 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
     }
   }
 
+  // 减弱动效下退场关键帧只剩淡变，租约照样等它播完
   function claimExit(_reason: string): ExitLease {
-    if (config.reducedMotion())
-      return SETTLED_LEASE
-
     transition('EXIT_CLAIMED')
     let settled = false
     const entry: LeaseEntry = {

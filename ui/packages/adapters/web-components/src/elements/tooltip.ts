@@ -160,7 +160,6 @@ export class XhTooltipElement extends XhPortalHostElement {
       this.engine = createPositionEngine()
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open: (this.open ?? this.defaultOpen) ?? false,
       onExitComplete: () => this.requestUpdate(),
     })
@@ -210,7 +209,6 @@ export class XhTooltipElement extends XhPortalHostElement {
     const content = this.getPart('content')
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

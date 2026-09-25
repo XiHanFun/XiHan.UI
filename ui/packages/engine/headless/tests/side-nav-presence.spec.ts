@@ -15,12 +15,12 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-function presenceWithExit(config: ReturnType<typeof createRuntimeConfig>): {
+function presenceWithExit(): {
   presence: PresenceHandle
   lease: () => ExitLease | null
 } {
   let current: ExitLease | null = null
-  const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+  const presence = createPresence({ open: false, onRenderedChange: () => {} })
   presence.onBeforeExit(() => {
     current = presence.claimExit('side-nav test exit')
   })
@@ -62,8 +62,8 @@ describe('sideNav 弹出面板真实退场资源', () => {
     service.refs.set('getPopoutPositionerEl', value => nodes.get(value)?.positioner ?? null)
     runtime.start()
 
-    const products = presenceWithExit(config)
-    const docs = presenceWithExit(config)
+    const products = presenceWithExit()
+    const docs = presenceWithExit()
     service.send({ type: 'PRESENCE.SET', value: 'products', presence: products.presence, connected: true })
     service.send({ type: 'PRESENCE.SET', value: 'docs', presence: docs.presence, connected: true })
 
@@ -120,7 +120,7 @@ describe('sideNav 弹出面板真实退场资源', () => {
     service.refs.set('getPopoutContentEl', () => content)
     service.refs.set('getPopoutPositionerEl', () => content)
     runtime.start()
-    const gate = presenceWithExit(config)
+    const gate = presenceWithExit()
     service.send({ type: 'PRESENCE.SET', value: 'products', presence: gate.presence, connected: true })
     service.send({ type: 'POPOUT.OPEN', value: 'products', focus: 'none' })
     gate.presence.update(true)

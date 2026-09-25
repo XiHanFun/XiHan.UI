@@ -22,8 +22,7 @@ import { getCurrentInstance, isRef, onBeforeUnmount, onMounted, ref, toValue, wa
 
 export interface OverlayExitOptions {
   /**
-   * 运行时配置；reduce 档下 presence 直接不申领租约。
-   * 服务端没有 DOM、也就没有退场可言，传 null 即退化为可见与否跟随展开态。
+   * 运行时配置，只用来区分有没有 DOM：服务端没有退场可言，传 null 即退化为可见与否跟随展开态。
    * 客户端必须等真实根节点才能确定 realm 时传 ref/getter；挂载后仍为空会明确失败。
    */
   config: MaybeRefOrGetter<RuntimeConfig | null>
@@ -58,7 +57,6 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
     }
 
     presence = createPresence({
-      config,
       open: isOpen(),
       onRenderedChange: (rendered) => {
         visible.value = rendered
