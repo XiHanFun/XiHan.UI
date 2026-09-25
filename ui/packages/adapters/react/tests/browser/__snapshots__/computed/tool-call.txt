@@ -131,7 +131,7 @@ font-weight: 400
 color: oklch(0.52 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: rotate
-transition-duration: 0.2s
+transition-duration: 0.12s
 transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s
