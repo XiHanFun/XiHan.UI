@@ -49,6 +49,8 @@ export function connectBadge<T extends PropTypes>(
       'data-placement': placement,
       // 皮肤据此收成一个圆点：不留内边距、不出文字
       'data-dot': dataAttr(dot),
+      // 呼吸只给圆点：数字角标的明暗起伏会压低数字的对比度
+      'data-pulse': dataAttr(dot && props.pulse),
       // 算出来是空的就整枚收起，作者不必自己判
       'hidden': !visible || undefined,
       // 光念数字听不出这是什么，宿主给了整句就用整句

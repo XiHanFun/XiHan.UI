@@ -590,6 +590,26 @@
       "$type": "cubicBezier",
       "$value": "{ease.out-strong}"
     },
+    "ease-breathe": {
+      "$description": "呼吸：进行中、给不出进度的状态点的明暗起伏。只给 xh-breathe 用。",
+      "$type": "cubicBezier",
+      "$value": "{ease.sine-in-out}"
+    },
+    "loop-breathe": {
+      "$description": "呼吸一个周期：约每分钟 16 次，接近静息呼吸的节律。减弱动效下由皮肤停掉动画，周期本身不降级。",
+      "$type": "duration",
+      "$value": "3600ms"
+    },
+    "scale-breathe": {
+      "$description": "呼吸吸气前最小的一档：圆点在 0.82 与 1 之间起伏。减弱档归 1。",
+      "$type": "number",
+      "$value": 0.82
+    },
+    "scale-halo": {
+      "$description": "呼吸光环外扩到的比例，从圆点本身的大小扩到它的 2.6 倍后淡尽。减弱档归 1。",
+      "$type": "number",
+      "$value": 2.6
+    },
     "ease-settle": {
       "$description": "小件的过冲落位：勾、圆点、开关拇指、按压释放。只许打在 scale / rotate 上，且部件短边不超过 32px。",
       "$type": "cubicBezier",

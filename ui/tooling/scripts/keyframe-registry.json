@@ -1,6 +1,26 @@
 {
   "$description": "关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css，relation 按 tooling/scripts/lib/keyframe-relations.mjs 的关系组登记；组件专属关键帧住在各自皮肤。本表登记「这个名字全库该长什么样」，同一段动画只许一个名字。retired 是退役名单：旧名再出现即判红。",
   "frames": {
+    "xh-breathe": {
+      "content": "0%,100%{opacity:0.5;scale:var(--xh-motion-scale-breathe)}42%{opacity:1;scale:1}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [
+        "badge"
+      ],
+      "relation": "loop"
+    },
+    "xh-breathe-halo": {
+      "content": "from{opacity:0.32;scale:1}60%,to{opacity:0;scale:var(--xh-motion-scale-halo)}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [
+        "badge"
+      ],
+      "relation": "loop"
+    },
     "xh-carousel-indicator-progress": {
       "content": "from{scale:var(--xh-_carousel-progress-from)}to{scale:var(--xh-_carousel-progress-to)}",
       "definedIn": [
