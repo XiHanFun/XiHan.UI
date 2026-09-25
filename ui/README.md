@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 134 components, each shipping a headless core, Vue and React components, a custom element, and a default skin.
 
-> The 17 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to five recorded entries (the shared table’s `tag` and `select` disabled-tag contrast, `file-upload`’s disabled item text contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
+> The 18 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to five recorded entries (the shared table’s `tag` and `select` disabled-tag contrast, `file-upload`’s disabled item text contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
@@ -24,6 +24,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / brand / density / contrast / direction) |
 | `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
 | `@xihan-ui/pointer` | Pointer session: one pointer from press to release — tracking, filtering, teardown; self-implemented, zero dependencies |
+| `@xihan-ui/viz` | Visualization engine: scales, ticks, shapes, axis layout, picking and sampling as pure functions; self-implemented, zero dependencies |
 | `@xihan-ui/chat-stream` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
 | `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency; an optional peer of the adapters |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
@@ -54,7 +55,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 38 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 39 budgets in .size-limit.json
 ```
 
 ## Conventions

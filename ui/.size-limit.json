@@ -36,6 +36,12 @@
     "limit": "2.3 kB"
   },
   {
+    "name": "viz",
+    "path": "packages/engine/viz/dist/index.js",
+    "gzip": true,
+    "limit": "30 kB"
+  },
+  {
     "name": "code-highlight",
     "path": "packages/features/code-highlight/dist/index.js",
     "gzip": true,

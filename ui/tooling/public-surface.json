@@ -208,6 +208,9 @@
     "@xihan-ui/position": [
       "."
     ],
+    "@xihan-ui/viz": [
+      "."
+    ],
     "@xihan-ui/animations": [
       "."
     ],
@@ -8026,6 +8029,11 @@
       "isFullyClipped",
       "joinPlacement",
       "splitPlacement"
+    ],
+    "@xihan-ui/viz": [
+      "VizError",
+      "VizErrorCode",
+      "isVizError"
     ],
     "@xihan-ui/animations": [
       "BUILTIN_MOTION_NAMES",

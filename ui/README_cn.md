@@ -8,7 +8,7 @@
 
 134 个组件，每个都有 headless 内核、Vue 与 React 组件、自定义元素和默认皮肤。
 
-> 17 个公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩五条（共用表里 tag 与 select 的禁用标签对比度、file-upload 禁用条目文字的对比度、prompt-input 归作者的可访问名、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
+> 18 个公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩五条（共用表里 tag 与 select 的禁用标签对比度、file-upload 禁用条目文字的对比度、prompt-input 归作者的可访问名、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 
 ## 包一览
 
@@ -17,6 +17,7 @@
 | `@xihan-ui/core` | 运行时底座：anatomy、`mergeProps`、`normalizeProps`、Scope、id；`createMachine` 状态机运行时；dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
 | `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧、Web Animations 薄封装 |
 | `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
+| `@xihan-ui/viz` | 图表引擎：比例尺、刻度、形状、坐标轴布局、拾取与降采样，全部是纯函数，自研，零依赖 |
 | `@xihan-ui/headless` | 134 个组件的 anatomy + machine + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/react` | React 19 适配器 |
@@ -54,7 +55,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
 pnpm build
-pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 38 条产物限额
+pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 39 条产物限额
 ```
 
 ## 约定

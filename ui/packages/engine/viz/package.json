@@ -1,8 +1,8 @@
 {
-  "name": "@xihan-ui/headless",
+  "name": "@xihan-ui/viz",
   "type": "module",
   "version": "2.1.0",
-  "description": "XiHan.UI headless components — anatomy, machine, connect. No styles.",
+  "description": "XiHan.UI visualization engine — scales, ticks, shapes, axis layout, picking and sampling as pure functions, no third-party runtime dependency.",
   "author": {
     "name": "XiHanFun",
     "url": "https://github.com/XiHanFun"
@@ -12,17 +12,17 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
-    "directory": "ui/packages/engine/headless"
+    "directory": "ui/packages/engine/viz"
   },
   "bugs": {
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
   },
   "keywords": [
-    "headless-ui",
-    "unstyled",
-    "accessible",
-    "components",
-    "aria"
+    "visualization",
+    "chart",
+    "scale",
+    "svg",
+    "headless-ui"
   ],
   "sideEffects": false,
   "exports": {
@@ -48,20 +48,12 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
-    "test": "vitest run --coverage"
+    "test": "vitest run"
   },
-  "dependencies": {
-    "@internationalized/date": "catalog:",
-    "@xihan-ui/core": "workspace:^",
-    "@xihan-ui/motion": "workspace:^",
-    "@xihan-ui/pointer": "workspace:^",
-    "@xihan-ui/viz": "workspace:^"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@vitest/coverage-v8": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
-    "jsdom": "catalog:",
     "vitest": "catalog:"
   }
 }

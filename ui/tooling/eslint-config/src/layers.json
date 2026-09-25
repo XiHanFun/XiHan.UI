@@ -27,13 +27,18 @@
         "engine/core"
       ]
     },
+    "engine/viz": {
+      "level": 1,
+      "canDependOn": []
+    },
     "engine/headless": {
       "level": 3,
       "canDependOn": [
         "engine/core",
         "design/tokens",
         "engine/motion",
-        "engine/pointer"
+        "engine/pointer",
+        "engine/viz"
       ]
     },
     "design/styles": {
