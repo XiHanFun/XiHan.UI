@@ -10010,14 +10010,14 @@
   display: none;
 }
 
-/* 指示随开合转向，纯装饰。转向与正文展开取同一档时长，两件事一起收尾 */
+/* 指示随开合转向，纯装饰。转向与正文开合取同一档时长，两件事一起收尾：收起取 collapse 档，展开取 expand 档 */
 [data-scope='reasoning'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   color: var(--xh-reasoning-indicator-fg, var(--xh-fg-subtle));
-  transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -10034,6 +10034,7 @@
 
 [data-scope='reasoning'][data-part='indicator'][data-state='open'] {
   rotate: 180deg;
+  transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='reasoning'][data-part='indicator'][hidden] {
@@ -10138,11 +10139,11 @@
 /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='reasoning'][data-part='content'][data-state='open'] {
   will-change: grid-template-rows;
-  animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='reasoning'][data-part='content'][data-state='closed'] {
-  animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 尺寸档改内衬、字号与图标档 */
