@@ -6,16 +6,15 @@
 // 提供 use command 相关实现。
 
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { CommandApi, CommandSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 import { commandMachine, connectCommand } from '@xihan-ui/headless'
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface CommandContext {
@@ -44,10 +43,6 @@ export function useCommand(
   const scope = createScope(null, idGen)
   const service = useMachine(commandMachine, () => ({ ...props, ...handlers }), scope)
 
-  // 初值取状态而不是 false：presence 只在有 DOM 时才建，服务端拿不到它。
-  // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch
-  const rendered = ref(service.state.get() === 'open')
-
   const xhConfig = useXhConfig()
   let config: RuntimeConfig | null = null
 
@@ -66,17 +61,8 @@ export function useCommand(
       isModal: () => props.modal ?? true,
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
-    const presence: PresenceHandle = createPresence({
-      open: service.state.get() === 'open',
-      onRenderedChange: (r) => {
-        rendered.value = r
-      },
-    })
-    rendered.value = presence.rendered
-
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('presence', presence)
     service.refs.set('getContentEl', () => contentRef.value)
     service.refs.set('getListEl', () => listRef.value)
     service.refs.set('getInputEl', () => inputRef.value)
@@ -86,32 +72,17 @@ export function useCommand(
       service.refs.set('getListEl', () => list)
       service.refs.get('syncListVisibility')?.()
     }, { flush: 'post' })
-
-    // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
-    watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
-
-    // content 与 modal backdrop 的有限退场共同决定资源归还；动态切 modal 时精确撤旧接新。
-    const exits = new Map<HTMLElement, () => void>()
-    watch([contentRef, backdropRef], (nodes) => {
-      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
-      for (const node of next) {
-        if (!exits.has(node))
-          exits.set(node, attachCssExit(node, presence))
-      }
-      for (const [node, detach] of exits) {
-        if (!next.has(node)) {
-          exits.delete(node)
-          detach()
-        }
-      }
-    }, { flush: 'post', immediate: true })
-
-    onBeforeUnmount(() => {
-      for (const detach of exits.values()) detach()
-      exits.clear()
-      presence.dispose()
-    })
   }
+
+  // content 与 modal backdrop 的退场动画共同决定何时收起、归还资源；动态切 modal 时撤旧接新。
+  // 服务端没有 DOM，可见与否跟着展开态走
+  const rendered = useOverlayExit({
+    config,
+    isOpen: () => service.state.get() === 'open',
+    contentRef,
+    additionalExitRefs: [backdropRef],
+    onPresence: presence => service.refs.set('presence', presence),
+  })
 
   const api = computed(() => connectCommand(service, vueNormalize))
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
