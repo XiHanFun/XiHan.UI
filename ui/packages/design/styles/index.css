@@ -30091,7 +30091,7 @@
     border-radius: var(--xh-shape-circle);
     background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
     scale: 0;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-settle);
+    transition: scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle);
   }
 
   [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
