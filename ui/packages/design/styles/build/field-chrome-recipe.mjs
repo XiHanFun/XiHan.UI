@@ -377,11 +377,6 @@ export function compileFieldChromeRecipe(source) {
     `    -webkit-text-fill-color: var(--xh-field-autofill-fg, ${source.nativeInput.autofillForeground});`,
   ].join('\n'))
 
-  const reduced = []
-  rule('[data-xh-field-chrome]', '      transition: none;', 'reduced-motion', reduced, '    ')
-  chunks.push(`  @media (prefers-reduced-motion: reduce) {\n${reduced.join('\n')}\n  }`)
-  rule(':where([data-motion=\'reduce\']) [data-xh-field-chrome]', '    transition: none;')
-
   const forced = []
   const forcedRule = (selector, state, extra = []) => rule(
     selector,
