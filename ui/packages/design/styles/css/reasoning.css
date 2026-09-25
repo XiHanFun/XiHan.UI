@@ -217,7 +217,7 @@
   /* 想完那一下两句文案整句换掉，淡入接住这次替换 */
   [data-scope='reasoning'][data-part='label']:not([data-streaming]),
   [data-scope='reasoning'][data-part='duration']:not([data-streaming]) {
-    animation: xh-reasoning-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
   }
 
   /*
@@ -285,17 +285,6 @@
 }
 
 @layer xihan.motion {
-  /* 文案整句换掉时接住这次替换 */
-  @keyframes xh-reasoning-fade-in {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
   @media print {
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份

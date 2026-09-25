@@ -63,7 +63,7 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-reasoning-fade-in
+animation-name: xh-fade-in
 animation-duration: 0.2s
 animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
 outline-width: 3px
@@ -133,7 +133,7 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-reasoning-fade-in
+animation-name: xh-fade-in
 animation-duration: 0.2s
 animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
 outline-width: 3px

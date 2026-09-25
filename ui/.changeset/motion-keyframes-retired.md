@@ -24,3 +24,7 @@
 | `xh-message-feed-button-in` | `xh-pop-in` |
 | `xh-question-flow-result-in` | `xh-pop-in` |
 | `xh-log-button-in` | `xh-pop-in` |
+| `xh-reasoning-fade-in` | `xh-fade-in` |
+| `xh-clipboard-loading-reveal` | `xh-fade-in` |
+| `xh-download-trigger-loading-reveal` | `xh-fade-in` |
+| `xh-clipboard-loading-hide` | `xh-fade-out` |

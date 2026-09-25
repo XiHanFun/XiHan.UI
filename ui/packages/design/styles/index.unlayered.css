@@ -3295,12 +3295,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-@keyframes xh-download-trigger-loading-reveal {
-  to {
-    opacity: 1;
-  }
-}
-
+/* 取数在途时文字原位隐去，只换前景色，不动布局 */
 @keyframes xh-download-trigger-content-hide {
   to {
     color: transparent;
@@ -3404,7 +3399,7 @@
   opacity: 0;
   animation:
     xh-spin var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
-    xh-download-trigger-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+    xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -10165,7 +10160,7 @@
 /* 想完那一下两句文案整句换掉，淡入接住这次替换 */
 [data-scope='reasoning'][data-part='label']:not([data-streaming]),
 [data-scope='reasoning'][data-part='duration']:not([data-streaming]) {
-  animation: xh-reasoning-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
 }
 
 /*
@@ -10229,17 +10224,6 @@
   box-shadow:
     inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
     var(--xh-_reasoning-shadow);
-}
-
-/* 文案整句换掉时接住这次替换 */
-@keyframes xh-reasoning-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
 }
 
 @media print {
@@ -18046,18 +18030,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-@keyframes xh-clipboard-loading-reveal {
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-clipboard-loading-hide {
-  to {
-    opacity: 0;
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='clipboard'] {
   --xh-clipboard-skin: 1;
@@ -18280,12 +18252,12 @@
   opacity: 0;
   animation:
     xh-spin var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
-    xh-clipboard-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+    xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
 }
 
 [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
   > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
-  animation: xh-clipboard-loading-hide var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
+  animation: xh-fade-out var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
     var(--xh-motion-duration-micro) forwards;
 }
 
