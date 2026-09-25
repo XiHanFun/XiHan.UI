@@ -129,7 +129,7 @@ rest
 | 对象 | 高度 | 时长 / 曲线 |
 | --- | --- | --- |
 | Surface 级（Accordion、Collapsible、Reasoning、ToolCall） | `grid-template-rows: 0fr → 1fr` | 展开 `--xh-motion-duration-expand` / `--xh-motion-ease-enter-strong`；收起 `--xh-motion-duration-collapse` / `--xh-motion-ease-exit`；指示器同档；初始即展开的内容不播动画 |
-| 密集（Tree、TreeSelect、JsonViewer、SideNav 内联、Table 展开行、Truncate） | 不动高度，刻意瞬时 | 树族指示器 `--xh-motion-duration-micro` |
+| 密集（Tree、TreeSelect、JsonViewer、SideNav 内联、Table 展开行、Truncate） | 不动高度，刻意瞬时 | 树族指示器 `--xh-motion-duration-nudge` |
 
 ### 2.8 浮层进出场
 
@@ -144,7 +144,7 @@ rest
 | 整幅滑入（Drawer、Layout 抽屉式侧栏） | `xh-slide-in / out`，位移 `--xh-motion-travel`；入 `--xh-motion-duration-slide` / `--xh-motion-ease-slide`，出 `--xh-motion-duration-exit` / `--xh-motion-ease-exit` |
 | 遮罩与全屏面 | `xh-fade-in / out` |
 
-共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。`xh-sheet`、`xh-slide`、`--xh-motion-travel` 尚待落地（同文 §19）。
+共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。`xh-sheet`、`xh-slide` 尚待落地（同文 §19）。
 
 ## 3. Frosted 柔和模糊材质
 

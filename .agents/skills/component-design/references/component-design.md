@@ -552,7 +552,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | --- | --- | --- | --- | --- |
 | 按压 | 确认按下（§9.1–§9.3） | `scale` + 换面 | `press` / `press`，`release` / `release` | 只换面 |
 | 状态 | hover、选中、焦点、校验的换色 | 颜色、描边色、阴影、`opacity` | `micro` / `enter` | 保留淡变 |
-| 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale` | `move` / `continuous`；短边 ≤ 32px 部件的缩放可用 `settle` | 瞬时 |
+| 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale` | `nudge` / `continuous`；短边 ≤ 32px 部件的缩放可用 `settle` | 瞬时 |
 | 指示 | 选中指示器在项之间移动（§9.8） | `translate`；尺寸为登记例外 | `move` / `continuous` | 瞬时 |
 | 披露 | 内容展开收起（§9.4） | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
 | 出现 | 挂载与卸载（§9.5） | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
@@ -568,6 +568,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`。
 
 - 带位移、缩放、旋转或尺寸变化的动画不得使用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变（§14.4）。
+- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`（200ms）；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的拖拽让位、查看器缩放平移取 `nudge`（120ms）。
 - 例外：出现与列表加入、移除的关键帧用 `enter` / `exit`，其中的位移与缩放只取 `--xh-motion-distance-*`、`--xh-motion-scale-*`、`--xh-motion-travel`，减弱动效下归零，剩下的只有淡变。
 
 ### 9.1 离散动作控件
@@ -611,7 +612,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - Surface 级 disclosure（Accordion、Collapsible、Reasoning、ToolCall）内容统一 `grid-template-rows: 0fr → 1fr`；展开 `--xh-motion-duration-expand` + `--xh-motion-ease-enter-strong`，收起 `--xh-motion-duration-collapse` + `--xh-motion-ease-exit`；两支时长在减弱动效下瞬时完成。
 - 密集 disclosure（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器。
-- 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse`；内容瞬时时用 `--xh-motion-duration-micro`。
+- 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse`；内容瞬时时用 `--xh-motion-duration-nudge`。
 - 初始即展开的内容直接呈现，不播展开动画（§9.6 首帧规则）。
 - 关键帧集中在 `family/motion.css`，皮肤只引用。
 
@@ -961,10 +962,9 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | `--xh-chart-*` 数据色与度量令牌、分类色板门禁、`@xihan-ui/viz` 引擎、图表组件；chart 家族配方随第二个图表组件建立 |
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
-| §9 角色表、§9.4、§14.4 中的 `move`、`expand`、`collapse` 与减弱淡变 | 新增时长令牌与减弱语义调整（现状：减弱时全部时长为 1ms）；check-motion-role 增加时长映射；现有皮肤按角色替换时长 |
-| §9.5 的 `xh-sheet`、`xh-slide`、`--xh-motion-travel`；§9.6 的 `xh-item-in`；§9.7 的共享倒计时 | 关键帧收敛与登记表去重（现状：Dialog / Notification、Drawer 各用私有关键帧，倒计时在两处各定义一次） |
+| §9.5 的 `xh-sheet`、`xh-slide`；§9.6 的 `xh-item-in`；§9.7 的共享倒计时 | 关键帧收敛与登记表去重（现状：Dialog / Notification、Drawer 各用私有关键帧，倒计时在两处各定义一次） |
+| §9.5 与 §14.4 的退场淡出 | Presence 在减弱动效下改为等待 120ms 的淡出结束再卸载（现状：减弱动效下跳过退场等待，退场瞬时） |
 | §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | Toast、Notification 退场改 Presence；补 FloatButton 列表、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
-| §9.9 `readMotion`、带元素参数的减弱判断、JS 无固定毫秒 | motion 包 API 与生成常量；各 machine 迁移 |
-| §14.4 `data-motion="default"` 与 JS 同作用域 | tokens 输出与 core、motion 改造 |
+| §9.9 带元素参数的减弱判断、JS 无固定毫秒；§14.4 JS 与 CSS 同作用域 | headless 各状态机（Tabs 标签带补间、NumberAnimation、Carousel 起播）与 core 的 `reducedMotion()`（Presence、贴底滚动、平滑滚动）改为按元素判断并用 `readMotion` 取时长；门禁要求判断减弱动效时传参 |
