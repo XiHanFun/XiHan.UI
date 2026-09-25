@@ -53,6 +53,8 @@ export function connectBackTop<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-variant': variant,
+      // 浮在内容之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
+      'data-xh-liquid': '',
       'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'TRIGGER.CLICK' }),
       'onKeyDown': press.onKeyDown,

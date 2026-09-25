@@ -97,7 +97,7 @@ export interface FloatButtonSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackLayer'
+  effect: 'trackLayer' | 'trackLiquid'
 }
 
 export interface FloatButtonApi<T extends PropTypes = PropTypes> {
