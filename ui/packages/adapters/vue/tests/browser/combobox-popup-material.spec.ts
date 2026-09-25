@@ -140,13 +140,13 @@ describe('组合框 M2 浮层', () => {
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
   })
 
-  it('减弱动效进退场为 1ms 且位移归零', async () => {
+  it('减弱动效进退场只剩 120ms 淡变，位移归零', async () => {
     await mount('light')
     part('positioner').dataset.motion = 'reduce'
     for (const state of ['open', 'closed']) {
       part('content').dataset.state = state
       const style = getComputedStyle(part('content'))
-      expect(style.animationDuration).toBe('0.001s')
+      expect(style.animationDuration).toBe('0.12s')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
       expect(style.scale).toBe('none')
     }
