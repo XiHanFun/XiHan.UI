@@ -160,7 +160,7 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
   const presence = options.withPresence
-    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    ? createPresence({ open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
     : null
   service.refs.set('config', config)
   service.refs.set('presence', presence)

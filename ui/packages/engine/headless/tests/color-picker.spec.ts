@@ -75,7 +75,7 @@ function makePresenceService() {
   root.append(trigger, positioner)
   document.body.appendChild(root)
   const config = createRuntimeConfig()
-  const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+  const presence = createPresence({ open: false, onRenderedChange: () => {} })
   service.refs.set('config', config)
   service.refs.set('presence', presence)
   service.refs.set('registerLayer', () => config.layerRegistry.register({

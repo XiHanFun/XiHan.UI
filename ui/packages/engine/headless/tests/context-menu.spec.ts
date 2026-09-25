@@ -179,7 +179,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     config = createRuntimeConfig()
     const layerConfig = config
     presence = options.withPresence
-      ? createPresence({ config: layerConfig, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+      ? createPresence({ open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
       : null
     service.refs.set('config', layerConfig)
     service.refs.set('presence', presence)

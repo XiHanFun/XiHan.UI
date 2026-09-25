@@ -1135,8 +1135,8 @@ describe('menubar 真实退场 owner', () => {
   it('换张后只等待当前菜单 Presence；退场中重开复用共享 Layer', () => {
     const c = mount({ defaultValue: 'file' }, { layers: true })
     const config = c.service.refs.get('config')!
-    const filePresence = createPresence({ config, open: true, onRenderedChange: () => {} })
-    const editPresence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    const filePresence = createPresence({ open: true, onRenderedChange: () => {} })
+    const editPresence = createPresence({ open: false, onRenderedChange: () => {} })
     c.service.send({ type: 'PRESENCE.SET', value: 'file', presence: filePresence, connected: true })
     c.service.send({ type: 'PRESENCE.SET', value: 'edit', presence: editPresence, connected: true })
     const original = config.layerRegistry.list()[0]

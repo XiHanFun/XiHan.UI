@@ -32,7 +32,7 @@ function fixture(initial: PopoverSchema['props'] = { defaultOpen: true, modal: t
   document.body.append(outside, trigger, positioner)
 
   const config = createRuntimeConfig()
-  const presence = createPresence({ config, open: true, onRenderedChange: () => {} })
+  const presence = createPresence({ open: true, onRenderedChange: () => {} })
   const leases: ExitLease[] = []
   presence.onBeforeExit(() => leases.push(presence.claimExit('popover exit')))
   const runtime = createVanillaRuntime()

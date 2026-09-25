@@ -5,10 +5,10 @@
 
 // 提供 accordion 相关实现。
 
-import type { ControlVariant, Direction, IdGenerator, Orientation, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
+import { isItemDisabled } from '@xihan-ui/core'
 import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -42,14 +42,6 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
 export class XhAccordionElement extends XhElement {
   // 闸门按面板各持一个：手风琴模式下切换项时，一个进场一个退场是同时发生的
   private readonly exits = new Map<string, OverlayExit>()
-  private readonly exitIdGen: IdGenerator = createCounterIdGenerator()
-  private readonly exitScope = createScope(null, this.exitIdGen)
-  private exitConfig: RuntimeConfig | null = null
-
-  private ensureExitConfig(): RuntimeConfig {
-    this.exitConfig ??= createRuntimeConfig({ scope: this.exitScope, idGenerator: this.exitIdGen })
-    return this.exitConfig
-  }
 
   static override partContract = { anatomy: accordionAnatomy, meta: accordionMeta }
 
@@ -146,7 +138,6 @@ export class XhAccordionElement extends XhElement {
       let exit = this.exits.get(item.value)
       if (!exit) {
         exit = createOverlayExit({
-          config: this.ensureExitConfig(),
           open,
           onExitComplete: () => this.requestUpdate(),
         })

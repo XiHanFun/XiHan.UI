@@ -174,7 +174,6 @@ export class XhImageViewerElement extends XhPortalHostElement {
   private ensureExit(): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open: this.ctrl.service.state.get() === 'open',
       onExitComplete: () => this.requestUpdate(),
     })

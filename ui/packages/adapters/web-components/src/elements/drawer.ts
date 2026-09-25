@@ -152,7 +152,6 @@ export class XhDrawerElement extends XhPortalHostElement {
   private ensureExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open,
       onExitComplete: () => this.requestUpdate(),
     })

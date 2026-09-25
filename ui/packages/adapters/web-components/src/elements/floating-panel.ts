@@ -249,7 +249,6 @@ export class XhFloatingPanelElement extends XhElement {
     const positioner = this.getPart('positioner')
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

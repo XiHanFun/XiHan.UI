@@ -156,7 +156,7 @@ function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): H
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
   const presence = mountOptions.withPresence
-    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    ? createPresence({ open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
     : null
   service.refs.set('config', config)
   service.refs.set('presence', presence)

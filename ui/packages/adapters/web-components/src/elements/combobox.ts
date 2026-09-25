@@ -279,7 +279,6 @@ export class XhComboboxElement extends XhPortalHostElement {
   private injectRefs(svc: Service<ComboboxSchema>): void {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open: (this.open ?? this.defaultOpen) ?? false,
       onExitComplete: () => this.requestUpdate(),
     })
@@ -368,7 +367,6 @@ export class XhComboboxElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

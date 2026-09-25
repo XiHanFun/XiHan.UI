@@ -1,10 +1,5 @@
-import type { RuntimeConfig } from '../src/kernel'
 import { describe, expect, it, vi } from 'vitest'
 import { createPresence, nextPresence } from '../src/behavior/presence'
-
-function fakeConfig(reducedMotion = false): RuntimeConfig {
-  return { reducedMotion: () => reducedMotion } as RuntimeConfig
-}
 
 describe('nextPresence 三态机', () => {
   it('mounted 分支', () => {
@@ -25,7 +20,7 @@ describe('nextPresence 三态机', () => {
 describe('createPresence', () => {
   it('无租约关闭立即卸载', () => {
     const onRenderedChange = vi.fn()
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange })
+    const p = createPresence({ open: true, onRenderedChange })
     expect(p.rendered).toBe(true)
     expect(p.state).toBe('open')
     p.update(false)
@@ -35,7 +30,7 @@ describe('createPresence', () => {
   })
 
   it('有退出租约时保留 DOM，直到租约归还', () => {
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     let lease: ReturnType<typeof p.claimExit> | undefined
     p.onBeforeExit(() => {
       lease = p.claimExit('anim')
@@ -47,7 +42,7 @@ describe('createPresence', () => {
   })
 
   it('退场中被重新打开 → 取消租约、回到挂载', () => {
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     let lease: ReturnType<typeof p.claimExit> | undefined
     p.onBeforeExit(() => {
       lease = p.claimExit('anim')
@@ -60,19 +55,9 @@ describe('createPresence', () => {
     expect(lease!.settled).toBe(true)
   })
 
-  it('reducedMotion 时退出租约已 settle，立即卸载', () => {
-    const p = createPresence({ config: fakeConfig(true), open: true, onRenderedChange: () => {} })
-    p.onBeforeExit(() => {
-      const lease = p.claimExit('anim')
-      expect(lease.settled).toBe(true)
-    })
-    p.update(false)
-    expect(p.rendered).toBe(false)
-  })
-
   it('onExitComplete 在卸载时触发一次', () => {
     const done = vi.fn()
-    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
     p.onExitComplete(done)
     p.update(false)
     expect(done).toHaveBeenCalledTimes(1)

@@ -20,7 +20,7 @@ describe('pagination 省略位真实退场资源', () => {
     const content = document.createElement('div')
     const trigger = document.createElement('button')
     document.body.append(trigger, content)
-    const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    const presence = createPresence({ open: false, onRenderedChange: () => {} })
     service.refs.set('config', config)
     service.refs.set('presence', presence)
     service.refs.set('registerLayer', () => config.layerRegistry.register({

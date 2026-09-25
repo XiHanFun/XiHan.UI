@@ -295,7 +295,6 @@ export class XhSideNavElement extends XhPortalHostElement {
       if (!entry) {
         this.ensureConfig()
         const gate = createOverlayExit({
-          config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })

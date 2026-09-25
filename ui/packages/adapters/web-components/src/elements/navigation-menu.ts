@@ -271,7 +271,6 @@ export class XhNavigationMenuElement extends XhElement {
       if (!entry) {
         this.ensureConfig()
         const gate = createOverlayExit({
-          config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })

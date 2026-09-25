@@ -62,7 +62,6 @@ export function useImageViewer(
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
     const presence: PresenceHandle = createPresence({
-      config,
       open: service.state.get() === 'open',
       onRenderedChange: (r) => {
         rendered.value = r

@@ -199,7 +199,6 @@ export class XhPaginationElement extends XhPortalHostElement {
   private ensureExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: this.config!,
       open,
       onExitComplete: () => this.requestUpdate(),
     })
@@ -209,7 +208,6 @@ export class XhPaginationElement extends XhPortalHostElement {
   private ensurePageSizeExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.pageSizeExit ??= createOverlayExit({
-      config: this.config!,
       open,
       onExitComplete: () => this.requestUpdate(),
     })

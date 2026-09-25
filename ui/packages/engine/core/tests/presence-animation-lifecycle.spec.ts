@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '../src/kernel'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { attachCssExit, createPresence } from '../src/behavior/presence'
 
@@ -24,12 +23,12 @@ function animation(name: string, endTime = 400) {
   }
 }
 
-function fixture(names: string, animations: Animation[], reducedMotion = false) {
+function fixture(names: string, animations: Animation[]) {
   const node = document.createElement('div')
   document.body.append(node)
   vi.spyOn(window, 'getComputedStyle').mockReturnValue({ animationName: names, display: 'block' } as CSSStyleDeclaration)
   Object.defineProperty(node, 'getAnimations', { configurable: true, value: () => animations })
-  const presence = createPresence({ config: { reducedMotion: () => reducedMotion } as RuntimeConfig, open: true, onRenderedChange: () => {} })
+  const presence = createPresence({ open: true, onRenderedChange: () => {} })
   const detach = attachCssExit(node, presence)
   cleanup.push(detach, () => presence.dispose())
   return { node, presence, detach }
@@ -117,12 +116,5 @@ describe('浏览器动画对象与 Presence 租约', () => {
     pending.finish()
     await settle()
     expect(complete).not.toHaveBeenCalled()
-  })
-
-  it('减弱动效不等待动画对象兑现', () => {
-    const pending = animation('fade')
-    const { presence } = fixture('fade', [pending.animation], true)
-    presence.update(false)
-    expect(presence.rendered).toBe(false)
   })
 })
