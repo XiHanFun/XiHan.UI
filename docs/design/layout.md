@@ -43,6 +43,18 @@
 
 例外只有登记过的几件：日期范围选择器起止两组按日的段位放不进 16rem，缺省按内容撑开；分格输入由格数与格宽定宽；对话输入条铺满宿主；表单字段（Field）的控件铺满表单列。槽名与放开方式见 [皮肤与样式分层 · 输入类控件的缺省宽度与最小宽度](/guide/styling#输入类控件的缺省宽度与最小宽度)。
 
+## 侧栏的宽度
+
+<XhTokenTable
+  :names="['--xh-sider-w', '--xh-sider-collapsed-w']"
+  :notes="{
+    '--xh-sider-w': '展开',
+    '--xh-sider-collapsed-w': '折叠成图标栏',
+  }"
+/>
+
+页面侧栏的两档宽度只有这一处真源：[Layout](/components/layout) 的侧栏缺省读这两支令牌。改令牌，页面上的侧栏一起换宽；只改一处时写该组件的覆盖槽（`--xh-layout-sider-w` / `--xh-layout-sider-collapsed-w`），槽压过令牌。
+
 ## 断点
 
 <XhTokenTable

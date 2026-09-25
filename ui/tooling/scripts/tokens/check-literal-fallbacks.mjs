@@ -30,6 +30,7 @@ const ALLOWED = new Map([
   ['side-nav.css:--xh-side-nav-collapsed-w=56px', '侧栏折叠后的栏宽，与 56px 的字形档无关'],
   ['slider.css:--xh-slider-vertical-length=10rem', '纵向滑杆默认长度，与菜单最小宽同值是巧合'],
   ['splitter.css:--xh-splitter-disabled-opacity=0.6', '压的是宿主正文不是控件图形，地板比禁用档高；与拖动档同值是巧合'],
+  ['tags-input.css:--xh-tags-input-input-min-w=4rem', '就地输入框留给打字的最小宽度，与侧栏折叠宽同值是巧合'],
 ])
 
 /** 只认尺寸类字面量：数字带 px / rem / em / ms / s / %，或无单位数。 */
