@@ -54,6 +54,34 @@ afterEach(() => {
 })
 
 describe('减弱动效降级', () => {
+  it('按元素所在的 data-motion 作用域判断：局部减弱时不产生中间帧', async () => {
+    const scope = document.createElement('div')
+    scope.setAttribute('data-motion', 'reduce')
+    const el = document.createElement('div')
+    scope.append(el)
+    document.body.append(scope)
+    const stub = stubAnimate(el)
+
+    const handle = animate(el, [{ opacity: '0' }, { opacity: '1' }])
+
+    await expect(handle.finished).resolves.toBe('finished')
+    expect(stub.calls).toHaveLength(0)
+  })
+
+  it('局部 data-motion=default 在应用级偏好要求减弱时照常播放', () => {
+    setMotionOverride('reduce')
+    const scope = document.createElement('div')
+    scope.setAttribute('data-motion', 'default')
+    const el = document.createElement('div')
+    scope.append(el)
+    document.body.append(scope)
+    const stub = stubAnimate(el)
+
+    animate(el, [{ opacity: '0' }, { opacity: '1' }])
+
+    expect(stub.calls).toHaveLength(1)
+  })
+
   it('不产生中间帧，finished 立即以 finished 结算', async () => {
     setMotionOverride('reduce')
     const el = element()
