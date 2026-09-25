@@ -257,15 +257,16 @@ ${selection}
      只换缺省分支。排在主题块之后，同一元素上靠书写顺序压过主题块 */
 ${ink.css}
 
-  /* 减少透明：直接打到主题边界与组件作用域，避免祖先上已经解析的材质别名盖过实体替代。 */
+  /* 减少透明：直接打到主题边界、墨色域与组件作用域，避免祖先上已经解析的材质别名盖过实体替代。 */
   @media (prefers-reduced-transparency: reduce) {
-    :where(:root), :where([data-theme]), :where([data-scope]) {
+    :where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-scope]) {
 ${await declarations(transparencyReduce, '      ')}
     }
   }
 
-  /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。 */
-  :where([data-transparency='reduce']) {
+  /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。
+     子树里的主题边界与墨色域会在自己身上重新声明主题取值，钩子要一并命中它们，否则实体替代在那一层被盖回透明 */
+  :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-xh-ink]) {
 ${await declarations(transparencyReduce, '    ')}
   }
 

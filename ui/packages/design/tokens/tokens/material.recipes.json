@@ -1,10 +1,11 @@
 {
-  "$description": "M0–M4 材质配方的单一生成真源。这里保存 tint、透明度、背景光学、边缘、高光与分层阴影；semantic.*.json 的 material 子树由构建生成。order 只保持既有生成物的序列化顺序，不表达材质等级。",
+  "$description": "M0–M5 材质配方的单一生成真源。这里保存 tint、透明度、背景光学、边缘、高光与分层阴影；semantic.*.json 的 material 子树由构建生成。order 只保持既有生成物的序列化顺序，不表达材质等级。",
   "order": [
     "elevated",
     "solid",
     "soft",
-    "frosted"
+    "frosted",
+    "liquid"
   ],
   "profiles": {
     "solid": {
@@ -208,6 +209,64 @@
         "mutedForeground": "{color.neutral.300}",
         "focusSurface": "{bg.surface}"
       }
+    },
+    "liquid": {
+      "id": "M5",
+      "description": "M5 液态面：data-material=\"liquid\" 下浮在内容之上的导航层（浮动钮、媒体控制、悬浮栏）。静态形态按主题极性、取可读下限；挂载后由 core 的液态面按下层把部件设成黑墨或白墨域，按主题取值的各通道随之落到对应色调，均匀下层可换通透档。边界由墨色细线承担，1px 亮边由内阴影画在朝光源一侧。",
+      "light": {
+        "tint": "oklch(1 0 0)",
+        "alpha": "{alpha.low}",
+        "backdrop": {
+          "blur": "{blur.sm}",
+          "saturation": "140%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(0 0 0 / 0.12)",
+        "highlight": "oklch(1 0 0 / 0.9)",
+        "shadows": {
+          "contact": "0 1px 3px oklch(0.145 0.005 258 / 0.1)",
+          "ambient": "0 10px 28px -10px oklch(0.145 0.005 258 / 0.32)",
+          "sheet": "none"
+        },
+        "separator": "oklch(0 0 0 / 0.1)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{bg.surface}",
+        "liquid": {
+          "tint": "oklch(1 0 0)",
+          "clear": "0.24",
+          "floor": "0.48",
+          "rimFar": "oklch(1 0 0 / 0.36)",
+          "bezel": "18px"
+        }
+      },
+      "dark": {
+        "tint": "oklch(0.208 0.006 258)",
+        "alpha": "0.61",
+        "backdrop": {
+          "blur": "{blur.sm}",
+          "saturation": "140%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(1 0 0 / 0.14)",
+        "highlight": "oklch(1 0 0 / 0.42)",
+        "shadows": {
+          "contact": "0 1px 3px oklch(0 0 0 / 0.4)",
+          "ambient": "0 10px 28px -10px oklch(0 0 0 / 0.6)",
+          "sheet": "none"
+        },
+        "separator": "oklch(1 0 0 / 0.12)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{bg.surface}",
+        "liquid": {
+          "tint": "oklch(0.208 0.006 258)",
+          "clear": "0.34",
+          "floor": "0.61",
+          "rimFar": "oklch(1 0 0 / 0.18)",
+          "bezel": "18px"
+        }
+      }
     }
   },
   "auxiliary": {
@@ -259,6 +318,23 @@
         },
         "separator": "{border.subtle}",
         "mutedForeground": "{fg.muted}"
+      },
+      "liquid": {
+        "background": "{bg.surface}",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "separator": "{border.subtle}",
+        "focusSurface": "{bg.surface}",
+        "liquid": {
+          "clear": "1",
+          "floor": "1",
+          "rimFar": "oklch(0 0 0 / 0)"
+        }
       }
     },
     "transparency-reduce": {
@@ -296,6 +372,20 @@
         "separator": "{border.subtle}",
         "mutedForeground": "{fg.muted}",
         "focusSurface": "{bg.surface}"
+      },
+      "liquid": {
+        "background": "{bg.surface}",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "separator": "{border.subtle}",
+        "focusSurface": "{bg.surface}",
+        "liquid": {
+          "clear": "1",
+          "floor": "1"
+        }
       }
     },
     "forced-colors": {
@@ -377,6 +467,31 @@
         "foreground": "CanvasText",
         "mutedForeground": "CanvasText",
         "focusSurface": "Canvas"
+      },
+      "liquid": {
+        "background": "Canvas",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "edge": "CanvasText",
+        "highlight": "Canvas",
+        "shadows": {
+          "contact": "none",
+          "ambient": "none",
+          "sheet": "none"
+        },
+        "separator": "CanvasText",
+        "foreground": "CanvasText",
+        "mutedForeground": "CanvasText",
+        "focusSurface": "Canvas",
+        "liquid": {
+          "tint": "Canvas",
+          "clear": "1",
+          "floor": "1",
+          "rimFar": "Canvas"
+        }
       }
     },
     "print": {
@@ -433,6 +548,27 @@
           "sheet": "none"
         },
         "separator": "{border.subtle}"
+      },
+      "liquid": {
+        "background": "{bg.surface}",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "shadows": {
+          "contact": "none",
+          "ambient": "none",
+          "sheet": "none"
+        },
+        "separator": "{border.subtle}",
+        "liquid": {
+          "clear": "1",
+          "floor": "1",
+          "rimFar": "oklch(0 0 0 / 0)"
+        }
       }
     }
   }
