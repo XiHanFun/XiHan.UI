@@ -1506,16 +1506,6 @@
   display: none;
 }
 
-:where([data-motion='reduce']) [data-scope][data-xh-collection-item] {
-  transition: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-scope][data-xh-collection-item] {
-    transition: none;
-  }
-}
-
 @media (forced-colors: active) {
   [data-scope][data-xh-collection-item] {
     --xh-_collection-bg: Canvas;
