@@ -827,6 +827,19 @@
       "$value": "12rem"
     }
   },
+  "sider": {
+    "$description": "页面侧栏（Layout 的侧栏、SideNav 导航栏）的两档宽度。两件同取这一处，放在一起或各自单用都是同一个宽。",
+    "w": {
+      "$description": "展开时的侧栏宽度。",
+      "$type": "dimension",
+      "$value": "15rem"
+    },
+    "collapsed-w": {
+      "$description": "折叠成图标栏时的宽度：一枚图标居中，两侧留得下行内衬。",
+      "$type": "dimension",
+      "$value": "4rem"
+    }
+  },
   "viewport": {
     "max-h": {
       "$description": "页内滚动面（表格、树、JSON 视图）的高度上限，内容不满时按内容收。与 h-lg 同值但语义不同：这条是上限，h-lg 是定高。",

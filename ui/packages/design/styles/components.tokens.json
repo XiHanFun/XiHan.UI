@@ -36053,7 +36053,7 @@
         "sider-breakpoint"
       ],
       "defaultToken": [
-        "4rem"
+        "--xh-sider-collapsed-w"
       ],
       "visibility": "public",
       "description": "layout 的 root、sider 部件 inline-size 覆盖槽。"
@@ -36283,7 +36283,7 @@
         "sider-breakpoint=xl"
       ],
       "defaultToken": [
-        "15rem"
+        "--xh-sider-w"
       ],
       "visibility": "public",
       "description": "layout 的 root、sider 部件 inline-size 覆盖槽。"

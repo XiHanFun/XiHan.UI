@@ -12656,6 +12656,8 @@
     "--xh-shape-pill",
     "--xh-shape-surface",
     "--xh-shimmer-duration",
+    "--xh-sider-collapsed-w",
+    "--xh-sider-w",
     "--xh-space-0",
     "--xh-space-0_5",
     "--xh-space-1",

@@ -450,6 +450,8 @@
     --xh-track-thickness: 6px;
     --xh-track-thumb-size: 18px;
     --xh-nav-link-max-w: 12rem;
+    --xh-sider-w: 15rem;
+    --xh-sider-collapsed-w: 4rem;
     --xh-viewport-max-h: 24rem;
     --xh-viewport-h-sm: 12rem;
     --xh-viewport-h-md: 16rem;
