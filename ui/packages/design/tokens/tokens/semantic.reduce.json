@@ -61,6 +61,14 @@
       "$type": "number",
       "$value": 1
     },
+    "scale-breathe": {
+      "$type": "number",
+      "$value": 1
+    },
+    "scale-halo": {
+      "$type": "number",
+      "$value": 1
+    },
     "scale-drag": {
       "$type": "number",
       "$value": 1

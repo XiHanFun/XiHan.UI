@@ -274,7 +274,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 
 ### 皮肤
 
-`@xihan-ui/styles/approval.css` 使用 `[data-scope="approval"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/approval.css` 使用 `[data-scope="approval"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -398,7 +398,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 
 ### 动效
 
-关键帧 `xh-approval-in` · `xh-approval-result-in` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

@@ -5,6 +5,9 @@
 
 /* 定义 badge 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='badge'] {
@@ -77,6 +80,37 @@
     padding: 0;
     box-shadow: none;
     font-size: 0;
+  }
+
+  /* 呼吸：圆点表达正在进行、给不出进度的状态（直播、录制、通话中）。
+     明暗与缩放的起伏持续到状态结束；外扩光环画在 ::after 上，同周期播 3 轮后停在不可见。
+     数字角标不呼吸：连接层只在圆点档投影 data-pulse，明暗起伏会压低数字的对比度 */
+  [data-scope='badge'][data-part='indicator'][data-pulse] {
+    animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
+  }
+
+  [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    opacity: 0;
+    pointer-events: none;
+    animation: xh-breathe-halo var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) 3;
+  }
+
+  /* 减弱动效：两者都停，圆点停在满不透明度，光环不出现；状态仍由圆点本身与宿主的文字表达 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='badge'][data-part='indicator'][data-pulse],
+    [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='badge'][data-part='indicator'][data-pulse],
+  :where([data-motion='reduce']) [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+    animation: none;
   }
 
   /* —— 落点 —— */

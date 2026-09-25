@@ -42,6 +42,12 @@ tone 决定使用哪族颜色：角标实际以未读红点与在线/离线点�
 
 <XhDemo src="badge/04-custom-indicator" />
 
+### 呼吸
+
+pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态仍要写在文字里，减弱动效下圆点停在满亮
+
+<XhDemo src="badge/05-pulse" />
+
 ## 设计指引
 
 ### 何时使用
@@ -105,6 +111,7 @@ tone 决定使用哪族颜色：角标实际以未读红点与在线/离线点�
 | `label` | `string` |  | 读屏朗读该角标的方式。 角标挂在按钮、头像上时只朗读数字无法表达含义，需要由宿主提供「3 条未读」这类完整语句。 |
 | `max` | `number` |  | 计数上限，默认 99：超过时只显示 99+，避免角标变形。 |
 | `placement` | `BadgePlacement` |  | 挂在哪个角，默认 top-end（右上角；rtl 下自动落到左上）。 |
+| `pulse` | `boolean` |  | 圆点呼吸：表达正在进行、给不出进度的状态（直播、录制、通话中）。只在 dot 模式下生效， 数字角标不呼吸——明暗起伏会压低数字的对比度。减弱动效下停在满不透明度。 |
 | `showZero` | `boolean` |  | 计数为 0 时是否仍然显示，默认不显示：没有未读时不应出现角标。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。影响圆点直径、两位数时的最小宽度与字号。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 neutral。 角标实际使用中主要为 danger（未读红点）与 success / neutral（在线 / 离线点）。 |
@@ -169,6 +176,7 @@ tone 决定使用哪族颜色：角标实际以未读红点与在线/离线点�
 | `root` | `data-placement` | props.placement |
 | `indicator` | `data-dot` | ''（条件成立时才出现） |
 | `indicator` | `data-placement` | props.placement |
+| `indicator` | `data-pulse` | ''（条件成立时才出现） |
 | `indicator` | `data-size` | props.size |
 | `indicator` | `data-tone` | props.tone |
 
@@ -193,7 +201,9 @@ tone 决定使用哪族颜色：角标实际以未读红点与在线/离线点�
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 

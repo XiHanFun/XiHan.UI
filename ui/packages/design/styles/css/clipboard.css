@@ -9,20 +9,6 @@
 @import '../family/motion.css';
 @import '../family/action-control.css';
 
-@layer xihan.motion {
-  @keyframes xh-clipboard-loading-reveal {
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes xh-clipboard-loading-hide {
-    to {
-      opacity: 0;
-    }
-  }
-}
-
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='clipboard'] {
@@ -246,12 +232,12 @@
     opacity: 0;
     animation:
       xh-spin var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
-      xh-clipboard-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+      xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 
   [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
     > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
-    animation: xh-clipboard-loading-hide var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
+    animation: xh-fade-out var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
       var(--xh-motion-duration-micro) forwards;
   }
 

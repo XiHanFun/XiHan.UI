@@ -10,12 +10,7 @@
 @import '../family/action-control.css';
 
 @layer xihan.motion {
-  @keyframes xh-download-trigger-loading-reveal {
-    to {
-      opacity: 1;
-    }
-  }
-
+  /* 取数在途时文字原位隐去，只换前景色，不动布局 */
   @keyframes xh-download-trigger-content-hide {
     to {
       color: transparent;
@@ -121,7 +116,7 @@
     opacity: 0;
     animation:
       xh-spin var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
-      xh-download-trigger-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+      xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 
   @media (prefers-reduced-motion: reduce) {

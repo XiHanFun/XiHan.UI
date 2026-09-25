@@ -55,6 +55,7 @@ export const motionEasings = {
   'press': easing.standard,
   'release': easing.outStrong,
   'settle': easing.outBack,
+  'breathe': easing.sineInOut,
 } as const
 
 export type MotionEaseName = keyof typeof motionEasings

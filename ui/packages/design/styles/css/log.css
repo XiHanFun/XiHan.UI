@@ -5,25 +5,10 @@
 
 /* 定义 log 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 /* 独立皮肤同时传递引入回底钮的动作控件配方；full bundle 递归去重。 */
 @import '../family/action-control.css';
-
-@layer xihan.motion {
-  /* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
-     引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
-     幅度与缩放走令牌，减弱动效时由令牌层归零 */
-  @keyframes xh-log-button-in {
-    from {
-      opacity: 0;
-      scale: var(--xh-motion-scale-enter);
-    }
-
-    to {
-      opacity: 1;
-      scale: 1;
-    }
-  }
-}
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -155,7 +140,7 @@
 
   /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
   [data-scope='log'][data-part='scroll-to-end-trigger'][data-state='visible'] {
-    animation: xh-log-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中。

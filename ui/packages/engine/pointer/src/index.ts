@@ -31,4 +31,5 @@ export type {
   PointerSession,
   PointerSessionDetails,
   PointerSessionOptions,
+  PointerVelocity,
 } from './session/types'
