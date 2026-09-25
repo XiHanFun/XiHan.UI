@@ -26,7 +26,20 @@
   }"
 />
 
-组件不直接取这两组原语，取语义层的 `--xh-motion-*`：`duration-enter / exit / micro / slide / press / release`、`ease-enter / enter-strong / exit / slide / sweep / press / release / settle / continuous`、位移 `distance-sm / md`（4 / 8px）、缩放 `scale-enter 0.96 / exit 0.98 / press 0.97 / drag 1.12`、错开起播 `stagger-step`。CSS 串与 JS 侧 `@xihan-ui/motion` 的采样函数同一份来源，门禁 `check-motion-source` 比对。
+组件不直接取这两组原语，取语义层的 `--xh-motion-*`：
+
+| 时长 | 值 | 用途 |
+| --- | ---: | --- |
+| `duration-micro` | 120ms | 状态换色：背景、描边、前景、阴影、透明度 |
+| `duration-enter` / `duration-exit` | 200 / 120ms | 出现与消失：淡入淡出，以及只由幅度令牌驱动的小幅位移与缩放 |
+| `duration-nudge` | 120ms | 紧跟操作的小幅几何变化：开关滑块、勾选标记、展开箭头、拖拽让位、查看器缩放平移 |
+| `duration-move` | 200ms | 元素换位与尺寸变化：选中指示器、进度、堆叠重排、视口长高 |
+| `duration-expand` / `duration-collapse` | 200 / 120ms | 内容展开与收起 |
+| `duration-slide` | 320ms | 大尺度位移：抽屉、轮播换页 |
+| `duration-press` / `duration-release` | 120 / 200ms | 按压时间线 |
+| `stagger-step` | 40ms | 错开起播的步长 |
+
+几何变化（位移、尺寸、缩放、旋转）不用 `micro / enter / exit`。缓动取 `ease-enter / enter-strong / exit / slide / sweep / press / release / settle / continuous / loop`；幅度取位移 `distance-sm / md`（4 / 8px）、整幅位移 `travel`（100%）、缩放 `scale-enter 0.96 / exit 0.98 / press 0.97 / drag 1.12`。CSS 串与 JS 侧 `@xihan-ui/motion` 的采样函数同一份来源，门禁 `check-motion-source` 比对。
 
 ## 按压触感
 

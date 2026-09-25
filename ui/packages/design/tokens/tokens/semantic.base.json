@@ -493,14 +493,32 @@
   },
   "motion": {
     "duration-enter": {
+      "$description": "出现：节点挂载时的淡入，以及只由幅度令牌驱动的小幅位移与缩放。几何变化不走这一支，走 duration-move / nudge / expand / collapse / slide。",
       "$type": "duration",
       "$value": "{duration.normal}"
     },
     "duration-exit": {
+      "$description": "消失：节点卸载前的淡出，以及只由幅度令牌驱动的小幅位移与缩放。几何变化不走这一支。",
       "$type": "duration",
       "$value": "{duration.fast}"
     },
     "duration-micro": {
+      "$description": "状态换色：背景、描边、前景、阴影与透明度。几何变化不走这一支。",
+      "$type": "duration",
+      "$value": "{duration.fast}"
+    },
+    "duration-move": {
+      "$description": "元素换位与尺寸变化：选中指示器滑移、进度增长、堆叠重排、视口长高。",
+      "$type": "duration",
+      "$value": "{duration.normal}"
+    },
+    "duration-expand": {
+      "$description": "内容展开：披露内容的高度增长，以及随内容转向的展开指示器。",
+      "$type": "duration",
+      "$value": "{duration.normal}"
+    },
+    "duration-collapse": {
+      "$description": "内容收起：比展开短一档，收起是让路。",
       "$type": "duration",
       "$value": "{duration.fast}"
     },
@@ -510,9 +528,9 @@
       "$value": "{duration.slow}"
     },
     "duration-nudge": {
-      "$description": "几何类微交互：小件被推一下就到位，比 duration-micro 长一档，让位移看得清。",
+      "$description": "紧跟操作的小幅几何变化：开关滑块、勾选标记、展开箭头原地的位移、缩放与旋转，拖拽时的让位与查看器的缩放平移。",
       "$type": "duration",
-      "$value": "{duration.normal}"
+      "$value": "{duration.fast}"
     },
     "duration-press": {
       "$description": "统一点击触感的按下段：scale 1 → 0.97，背景进入 active。",
@@ -584,6 +602,11 @@
     "distance-md": {
       "$type": "dimension",
       "$value": "{space.2}"
+    },
+    "travel": {
+      "$description": "整幅位移：面板从所在边整条推入推出（抽屉、轻提示），以自身尺寸的百分比计。减弱动效下归零，进出场只剩淡变。",
+      "$type": "dimension",
+      "$value": "100%"
     },
     "scale-enter": {
       "$type": "number",
