@@ -8001,6 +8001,7 @@
       "PointerSession",
       "PointerSessionDetails",
       "PointerSessionOptions",
+      "PointerVelocity",
       "ResizeConstraints",
       "ResizeEdge",
       "ResizeRectInput",
