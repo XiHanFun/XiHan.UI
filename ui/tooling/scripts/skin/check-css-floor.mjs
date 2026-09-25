@@ -35,6 +35,13 @@ const REJECT = [
   { name: 'interpolate-size 插值尺寸', re: /interpolate-size\b/, since: { chrome: 129 }, reason: 'Chrome 129 起,高于底线' },
   { name: 'text-box-trim 行盒裁剪', re: /text-box-(?:trim|edge)/, since: { chrome: 133 }, reason: 'Chrome 133 起,高于底线' },
   { name: 'CSS 嵌套选择器', re: /^[^\S\n]*&[^=]|^[^\S\n]*:is\(&|^[^\S\n]*:not\(&/m, since: { chrome: 120, firefox: 117 }, reason: 'Chrome 120 / Firefox 117 起,高于底线' },
+  // 不认区间写法的引擎把整条查询判作 not all,规则静默丢失。@container 不在此列:容器查询从一开始就带区间写法
+  {
+    name: '@media 区间写法 (width < …)',
+    re: /@media\b[^{]*(?:(?<![\w-])(?:width|height)\s*[<>=]|[<>=]\s*(?:width|height)(?![\w-]))/,
+    since: { chrome: 104, firefox: 63, safari: 16.4 },
+    reason: 'Safari 16.4 起,高于底线;改写成 (min-width: …),窄档写补集 not all and (min-width: …)',
+  },
 ]
 
 /** .browserslistrc 里 `引擎 >= 版本` 的地板,取不到的引擎不进表。 */

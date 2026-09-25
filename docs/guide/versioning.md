@@ -343,6 +343,12 @@ brand  neutral  success  warning  danger  info
 
 低于硬底线不会降级，而是无样式：皮肤中刻意不写兜底值，令牌缺席是缺陷而不是降级。
 
+高于硬底线又无从兜底的特性，皮肤一律不用，由 `check-css-floor` 的拒绝名单拦截（`@scope`、`@starting-style`、嵌套选择器等）。其中容易误写的一条：
+
+| 特性 | 最早完整支持 | 底线内的引擎不认时 | 皮肤的写法 |
+| --- | --- | --- | --- |
+| 媒体查询区间写法 `(width < 768px)` | Chrome 104 / Firefox 63 / Safari 16.4 | Safari 16.2 / 16.3 把整条查询判作不成立，块内规则静默丢失 | 断点只写 `(min-width: …)`，窄档专属规则写它的补集 `not all and (min-width: …)` |
+
 可选增强层（不支持时按下表退化；新增增强特性不算破坏，前提是同时提供退化路径）：
 
 | 特性 | Chrome | Firefox | Safari | 不支持时 |
@@ -440,7 +446,7 @@ changeset 按 patch / minor 记录即可：更新基线这一动作本身不代�
 :::
 
 另有三道门禁把原本依赖自觉的条款转为机器检查。`check-css-floor` 保证浏览器硬底线：
-`.browserslistrc` 记录底线，拒绝名单拦截 `@scope` 等无兜底的抬底线特性，
+`.browserslistrc` 记录底线，拒绝名单拦截 `@scope`、媒体查询区间写法等无兜底的抬底线特性，
 `light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 18 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 保证检查系统自身：新增的
 check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截。
@@ -457,7 +463,7 @@ check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截�
 | --- | --- | --- |
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，由 `check-slot-types` 门禁的四条判据保证（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报错 | 无载荷插槽也补充声明，或明确只有带载荷的插槽进入契约 |
 | 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字移除之后，消费方的声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，因此每次移除都在 changeset 中逐条列出旧名与替换写法，供使用方在自己的代码库中全文搜索 | 无 |
-| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope` 等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
+| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope`、媒体查询区间写法等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
 | 「18 个包必须同版本」 | `check-version-lock` 门禁保证 18 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 18 个 | 提升为 peer，或把运行期比对扩展到全部包 |
 
 本页内容与实际行为不符时按缺陷处理，请提交 issue。
