@@ -50,40 +50,6 @@
             },
             {
               "kind": "field",
-              "name": "exitIdGen",
-              "type": {
-                "text": "IdGenerator"
-              },
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "exitScope",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "exitConfig",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "ensureExitConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "RuntimeConfig"
-                }
-              }
-            },
-            {
-              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
