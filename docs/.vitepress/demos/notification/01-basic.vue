@@ -1,4 +1,4 @@
-<!-- 基础用法 | create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场窗口结束后只收起不删除，宿主在 status-change 中把它移出队列 -->
+<!-- 基础用法 | create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -46,7 +46,6 @@ const itemTranslations = { close: "关闭" };
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="

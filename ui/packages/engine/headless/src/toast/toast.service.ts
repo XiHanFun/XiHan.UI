@@ -23,7 +23,6 @@ export function resolveToastServiceItem(
     tone: toast.tone ?? 'info',
     loading: toast.loading ?? false,
     duration: toast.duration ?? defaults.duration,
-    removeDelay: toast.removeDelay ?? defaults.removeDelay,
     closable: toast.closable ?? true,
     pauseOnPageIdle: defaults.pauseOnPageIdle,
     actionLabel: toast.actionLabel,

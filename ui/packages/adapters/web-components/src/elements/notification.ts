@@ -31,6 +31,7 @@ import {
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { ToastExitGate } from '../toast-exit'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -66,7 +67,6 @@ function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
  * @attr {'id'|'content'} dedupe - 重复的处理方式，默认 id；content 则同一内容合并为一条并计数
  * @attr {number} gap - 同一组内的间距（px），默认 16
  * @attr {number} duration - 单条未写 duration 时的默认停留毫秒
- * @attr {number} remove-delay - 单条未写 remove-delay 时的默认退场窗口毫秒
  * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，逐条下发
  * @fires items-change - 队列变化；detail 为 `{ items: NotificationRecord[] }`
  * @csspart root - 队列的作用域包装（display: contents，不占布局），承载 data-count / data-empty
@@ -86,7 +86,6 @@ export class XhNotificationElement extends XhElement {
     dedupe: { converter: STRING_CONVERTER },
     gap: { converter: NUMBER_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
-    removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
     pauseOnPageIdle: { converter: BOOLEAN_CONVERTER, attribute: 'pause-on-page-idle' },
     translations: { attribute: false },
   }
@@ -98,7 +97,6 @@ export class XhNotificationElement extends XhElement {
   declare dedupe?: NotificationDedupe
   declare gap?: number
   declare duration?: number
-  declare removeDelay?: number
   declare pauseOnPageIdle?: boolean
   declare translations?: Partial<NotificationTranslations>
 
@@ -118,7 +116,6 @@ export class XhNotificationElement extends XhElement {
       dedupe: this.dedupe,
       gap: this.gap,
       duration: this.duration,
-      removeDelay: this.removeDelay,
       pauseOnPageIdle: this.pauseOnPageIdle,
       translations: this.translations,
       onItemsChange: this.notify,
@@ -228,7 +225,7 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * tone="danger" 换为 alert + assertive（打断当前朗读）。指针停在卡片上、
  * 或焦点落进卡片内部都会暂停倒计时，离开后继续剩余部分。
  *
- * 退场窗口结束时只把卡片收起、不删除节点：作者写在其中的内容归作者，
+ * 退场动画播完时只把卡片收起、不删除节点：作者写在其中的内容归作者，
  * 何时把该条从队列中删除是 `<xh-notification>` 的职责（它接收本元素冒泡的 status-change）。
  *
  * @customElement xh-notification-item
@@ -238,7 +235,6 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 使用 alert + assertive
  * @attr {boolean} loading - 事情尚未完成：图标换为转圈，且不自动消失
  * @attr {number} duration - 停留毫秒，默认 5000；<=0 即关闭自动消失
- * @attr {number} remove-delay - 退场窗口毫秒，默认 200，留给退场动画
  * @attr {boolean} closable - 是否提供可用的关闭按钮，默认 true；写 closable="false" 关闭
  * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，默认关闭
  * @attr {boolean} paused - 由宿主整组一起暂停计时，默认关闭；与指针、焦点等来源并存
@@ -265,7 +261,6 @@ export class XhNotificationItemElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
-    removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
     closable: { converter: BOOLEAN_CONVERTER },
     pauseOnPageIdle: { converter: BOOLEAN_CONVERTER, attribute: 'pause-on-page-idle' },
     paused: { converter: BOOLEAN_CONVERTER },
@@ -279,7 +274,6 @@ export class XhNotificationItemElement extends XhElement {
   declare tone?: NotificationTone
   declare loading?: boolean
   declare duration?: number
-  declare removeDelay?: number
   declare closable?: boolean
   declare pauseOnPageIdle?: boolean
   declare paused?: boolean
@@ -298,6 +292,7 @@ export class XhNotificationItemElement extends XhElement {
   // 跑的是 toast 那台机器，文案桶却要跟着通知走：不写 configName 的话，
   // 改这颗叉的读屏名会连所有轻提示一起改
   private readonly ctrl = new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps(), { configName: 'notification' })
+  private readonly exitGate = new ToastExitGate(() => this.ctrl.service)
 
   private machineProps(): Partial<ToastSchema['props']> {
     return {
@@ -307,7 +302,6 @@ export class XhNotificationItemElement extends XhElement {
       tone: this.tone,
       loading: this.loading,
       duration: this.duration,
-      removeDelay: this.removeDelay,
       closable: this.closable,
       pauseOnPageIdle: this.pauseOnPageIdle,
       paused: this.paused,
@@ -369,5 +363,11 @@ export class XhNotificationItemElement extends XhElement {
     // 关闭按钮同理：不可关闭时留一个按不动的叉，比压根没有叉更让人困惑
     this.setPartHidden(this.getPart('item'), api.status === 'unmounted')
     this.setPartHidden(this.getPart('item-close-trigger'), !api.closable)
+    this.exitGate.sync(this.getPart('item'), api.status === 'visible')
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    this.exitGate.dispose()
   }
 }

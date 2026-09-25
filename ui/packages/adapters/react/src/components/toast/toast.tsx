@@ -31,7 +31,6 @@ export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'ch
   tone?: ToastTone
   loading?: boolean
   duration?: number
-  removeDelay?: number
   closable?: boolean
   pauseOnPageIdle?: boolean
   /** 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 */
@@ -49,7 +48,6 @@ export function XhToastRoot({
   tone,
   loading,
   duration,
-  removeDelay,
   closable,
   pauseOnPageIdle,
   paused,
@@ -66,7 +64,6 @@ export function XhToastRoot({
     tone,
     loading,
     duration,
-    removeDelay,
     closable,
     pauseOnPageIdle,
     paused,
@@ -81,7 +78,7 @@ export function XhToastRoot({
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onPointerEnter', 'onPointerLeave'])
   return (
     <ToastProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: ctx.rootRef })}>
         {renderSlot(children, {
           id: api.id,
           status: api.status,

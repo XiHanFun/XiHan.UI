@@ -6350,7 +6350,6 @@
       "TOAST_GAP",
       "TOAST_MAX",
       "TOAST_PLACEMENT",
-      "TOAST_REMOVE_DELAY",
       "TOOLTIP_DEFAULT_PLACEMENT",
       "TOUR_DEFAULT_OFFSET",
       "TOUR_DEFAULT_PLACEMENT",
@@ -10970,7 +10969,6 @@
       "onItemsChange",
       "pauseOnPageIdle",
       "placement",
-      "removeDelay",
       "translations"
     ],
     "number-animation": [
@@ -11658,7 +11656,6 @@
       "onStatusChange",
       "pauseOnPageIdle",
       "paused",
-      "removeDelay",
       "title",
       "tone",
       "translations"
@@ -18072,8 +18069,7 @@
         "gap",
         "max",
         "pause-on-page-idle",
-        "placement",
-        "remove-delay"
+        "placement"
       ],
       "events": [
         "items-change"
@@ -18088,7 +18084,6 @@
         "loading",
         "pause-on-page-idle",
         "paused",
-        "remove-delay",
         "title",
         "tone"
       ],
@@ -18878,7 +18873,6 @@
         "loading",
         "pause-on-page-idle",
         "paused",
-        "remove-delay",
         "title",
         "tone"
       ],

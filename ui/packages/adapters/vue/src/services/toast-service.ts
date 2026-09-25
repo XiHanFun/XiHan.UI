@@ -94,7 +94,7 @@ export interface ToastService {
   /** 入队并返回 id；同 id 已存在则就地改写，被合并的返回被并入的那一条。 */
   create: (options?: ToastCreateOptions) => string
   update: (id: string, options: Partial<ToastOptions>) => void
-  /** 立即从队列中删除。提示条自己的关闭按钮经退场窗口，带退场动画。 */
+  /** 立即从队列中删除，不播退场动画。提示条自己的关闭按钮先播退场动画再移出。 */
   dismiss: (id: string) => void
   dismissAll: () => void
   info: (message: string, options?: ToastMessageOptions) => string
@@ -133,7 +133,6 @@ function defaultToast(
     tone: item.tone,
     loading: item.loading,
     duration: item.duration,
-    removeDelay: item.removeDelay,
     closable: item.closable,
     pauseOnPageIdle: item.pauseOnPageIdle,
     paused,
@@ -215,7 +214,6 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
         max,
         dedupe,
         duration: serviceDefaults.duration,
-        removeDelay: serviceDefaults.removeDelay,
         pauseOnPageIdle: serviceDefaults.pauseOnPageIdle,
       }), undefined, { start: 'setup' })
       const api = computed(() => connectNotification(service, vueNormalize))

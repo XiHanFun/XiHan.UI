@@ -10,6 +10,7 @@ import { connectToast, toastAnatomy, toastMachine, toastMeta } from '@xihan-ui/h
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { ToastExitGate } from '../toast-exit'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -28,7 +29,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * tone="danger" 换为 alert + assertive（打断当前朗读）。指针停在提示上、
  * 或焦点落进提示内部都会暂停倒计时，离开后继续剩余部分。
  *
- * 退场窗口结束时只把 root 收起、不删除节点：作者写在其中的内容归作者，
+ * 退场动画播完时只把 root 收起、不删除节点：作者写在其中的内容归作者，
  * 何时把该条从队列中删除是全局服务的职责（它接收本元素冒泡的 status-change）。
  *
  * @customElement xh-toast
@@ -38,7 +39,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 使用 alert + assertive
  * @attr {boolean} loading - 事情尚未完成：行首换为转圈，且不自动消失
  * @attr {number} duration - 停留毫秒，默认 4000；<=0 即关闭自动消失
- * @attr {number} remove-delay - 退场窗口毫秒，默认 300，留给退场动画
  * @attr {boolean} closable - 是否提供可用的关闭按钮，默认 true；写 closable="false" 关闭
  * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，单组件默认关闭；全局服务默认开启
  * @attr {boolean} paused - 由宿主整组一起暂停计时，默认关闭；与指针、焦点等来源并存
@@ -66,7 +66,6 @@ export class XhToastElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
-    removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
     closable: { converter: BOOLEAN_CONVERTER },
     pauseOnPageIdle: { converter: BOOLEAN_CONVERTER, attribute: 'pause-on-page-idle' },
     paused: { converter: BOOLEAN_CONVERTER },
@@ -80,7 +79,6 @@ export class XhToastElement extends XhElement {
   declare tone?: ToastTone
   declare loading?: boolean
   declare duration?: number
-  declare removeDelay?: number
   declare closable?: boolean
   declare pauseOnPageIdle?: boolean
   declare paused?: boolean
@@ -98,6 +96,7 @@ export class XhToastElement extends XhElement {
   // toast 机器的副作用只有计时器与 visibilitychange，都由机器自己经 scope 拿，
   // 不需要 config/layer/定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps())
+  private readonly exitGate = new ToastExitGate(() => this.ctrl.service)
 
   private machineProps(): Partial<ToastSchema['props']> {
     return {
@@ -107,7 +106,6 @@ export class XhToastElement extends XhElement {
       tone: this.tone,
       loading: this.loading,
       duration: this.duration,
-      removeDelay: this.removeDelay,
       closable: this.closable,
       pauseOnPageIdle: this.pauseOnPageIdle,
       paused: this.paused,
@@ -170,5 +168,11 @@ export class XhToastElement extends XhElement {
     // 关闭按钮同理：不可关闭时留一个按不动的叉，比压根没有叉更让人困惑
     this.setPartHidden(this.getPart('root'), api.status === 'unmounted')
     this.setPartHidden(this.getPart('close-trigger'), !api.closable)
+    this.exitGate.sync(this.getPart('root'), api.status === 'visible')
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    this.exitGate.dispose()
   }
 }

@@ -50,7 +50,6 @@ export function createNotificationService(options: NotificationServiceOptions = 
   queue.dedupe = queueProps.dedupe
   queue.gap = queueProps.gap
   queue.duration = queueProps.duration
-  queue.removeDelay = queueProps.removeDelay
   queue.pauseOnPageIdle = queueProps.pauseOnPageIdle
   queue.translations = translations
 
@@ -125,7 +124,6 @@ export function createNotificationService(options: NotificationServiceOptions = 
     node.tone = item.tone
     node.loading = item.loading
     node.duration = item.duration
-    node.removeDelay = item.removeDelay
     node.closable = item.closable
     node.pauseOnPageIdle = item.pauseOnPageIdle
     node.paused = controller.state.paused

@@ -49,7 +49,6 @@ export interface NotificationServiceOptions {
   /** 同一堆叠内的间距（px），默认 16。 */
   gap?: number
   duration?: number
-  removeDelay?: number
   pauseOnPageIdle?: boolean
   /** 通知的文案：堆叠区的读屏名与卡片上关闭按钮的读屏名，统一在一个桶中。 */
   translations?: NotificationTranslationsSource
@@ -105,7 +104,6 @@ function DefaultCard(props: {
       tone={item.tone}
       loading={item.loading}
       duration={item.duration}
-      removeDelay={item.removeDelay}
       closable={item.closable}
       pauseOnPageIdle={item.pauseOnPageIdle}
       paused={props.paused}

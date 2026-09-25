@@ -11,6 +11,7 @@ import { connectNotification, connectNotificationItem, notificationMachine, toas
 import { useMemo, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useToastExit } from '../toast/use-toast-exit'
 import { useNotificationContextOptional } from './context'
 
 export function useNotification(props: NotificationSchema['props']): NotificationContext {
@@ -45,5 +46,8 @@ export function useNotificationItem(props: ToastSchema['props']): NotificationIt
         queue?.dismiss(details.id)
     },
   } satisfies ToastSchema['props']))
-  return { api: connectNotificationItem(service, reactNormalize), service }
+  const api = connectNotificationItem(service, reactNormalize)
+  const rootRef = useRef<HTMLElement | null>(null)
+  useToastExit({ service, isOpen: () => api.status === 'visible', rootRef })
+  return { api, service, rootRef }
 }

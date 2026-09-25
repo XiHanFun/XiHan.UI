@@ -84,7 +84,6 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     max,
     dedupe,
     duration: serviceDefaults.duration,
-    removeDelay: serviceDefaults.removeDelay,
     pauseOnPageIdle: serviceDefaults.pauseOnPageIdle,
   }, holder)
 
@@ -144,7 +143,6 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     node.tone = resolved.tone
     node.loading = resolved.loading
     node.duration = resolved.duration
-    node.removeDelay = resolved.removeDelay
     node.closable = resolved.closable
     node.pauseOnPageIdle = resolved.pauseOnPageIdle
     node.paused = controller.state.paused

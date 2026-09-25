@@ -1,4 +1,4 @@
-<!-- 上限与清空 | max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不经退场窗口 -->
+<!-- 上限与清空 | max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不播退场动画 -->
 <xh-notification id="notification-max" max="3" gap="12" duration="20000">
   <div data-xh-part="root">
     <xh-button variant="solid" data-create>
@@ -54,7 +54,6 @@
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
     count.textContent = String(notification.count);

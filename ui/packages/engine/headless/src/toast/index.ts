@@ -15,7 +15,6 @@ export {
   TOAST_GAP,
   TOAST_MAX,
   TOAST_PLACEMENT,
-  TOAST_REMOVE_DELAY,
   toastMachine,
 } from './toast.machine'
 export { toastMeta } from './toast.meta'

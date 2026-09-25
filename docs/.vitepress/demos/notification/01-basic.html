@@ -1,4 +1,4 @@
-<!-- 基础用法 | create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场窗口结束后只收起不删除，宿主在 status-change 中把它移出队列 -->
+<!-- 基础用法 | create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列 -->
 <xh-notification id="notification-basic">
   <div data-xh-part="root">
     <xh-button variant="solid" data-create="save">
@@ -54,7 +54,6 @@
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
     count.textContent = String(notification.count);

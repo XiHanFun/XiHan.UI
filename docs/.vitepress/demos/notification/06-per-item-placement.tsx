@@ -58,7 +58,6 @@ export default function Demo(): ReactNode {
                   tone={item.tone}
                   loading={item.loading}
                   duration={item.duration}
-                  removeDelay={item.removeDelay}
                   closable={item.closable}
                   translations={itemTranslations}
                   onStatusChange={({ id, status }) => {

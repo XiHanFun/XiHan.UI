@@ -111,7 +111,6 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `tone` | `ToastTone` |  | 语气，默认 info。danger 使用 alert + assertive。 |
 | `loading` | `boolean` |  | 事情尚未完成：行首换为转圈，且不自动消失（duration 不再生效），完成后改写为其他语气收尾。 |
 | `duration` | `number` |  | 停留毫秒，默认 4000。&lt;=0 或非有限数即不自动消失。 |
-| `removeDelay` | `number` |  | 退场窗口毫秒，默认 300：进入 dismissing 后停留该时长再转为 unmounted，留给退场动画。 |
 | `closable` | `boolean` |  | 是否显示可用的关闭按钮，默认 true。 |
 | `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，默认 false；全局服务默认开启。 |
 | `paused` | `boolean` |  | 由宿主暂停计时，默认 false。整组一起暂停经此路径： 置真时登记 'service' 暂停来源，置假时移除它，与指针、焦点等来源并存。 |
@@ -157,7 +156,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 **状态**：`visible` · `visible.running` · `visible.paused` · `dismissing` · `unmounted`
 
-**事件**：`TOAST.DISMISS` · `TOAST.ACTION` · `TOAST.PAUSE` · `TOAST.RESUME` · `TOAST.RESET` · `after.duration` · `after.removeDelay` · `PRESS.START` · `PRESS.END`
+**事件**：`TOAST.DISMISS` · `TOAST.ACTION` · `TOAST.PAUSE` · `TOAST.RESUME` · `TOAST.RESET` · `after.duration` · `EXIT.COMPLETE` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isLastPauseSource` · `canPress`
 
@@ -197,7 +196,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` / `Space` | focus 在 close-trigger 上且 closable | 立即进入 dismissing，走完 removeDelay 后转 unmounted |
+| `Enter` / `Space` | focus 在 close-trigger 上且 closable | 立即进入 dismissing，退场动画播完后转 unmounted |
 | `Enter` / `Space` | focus 在 action-trigger 上 | 触发 onAction 并进入 dismissing |
 | `Enter` / `Space` | held in close-trigger / action-trigger（close-trigger 须 closable） | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或进入退场撤下。notification 的卡片按钮同此 |
 
@@ -311,6 +310,8 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 ### 动效
 
 关键帧 `xh-toast-in` · `xh-toast-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

@@ -9,9 +9,10 @@ import type { NotificationSchema, ToastSchema } from '@xihan-ui/headless'
 import type { MaybeRefOrGetter } from 'vue'
 import type { NotificationContext, NotificationItemContext } from './context'
 import { connectNotification, connectNotificationItem, notificationMachine, toastMachine } from '@xihan-ui/headless'
-import { computed, toValue } from 'vue'
+import { computed, ref, toValue } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useToastExit } from '../toast/use-toast-exit'
 import { useNotificationContextOptional } from './context'
 
 /** props 接收 ref/getter 时每帧现取，文案等值可以在运行期更换。 */
@@ -48,5 +49,7 @@ export function useNotificationItem(
   }
   const service = useMachine(toastMachine, () => ({ ...props, onStatusChange: notifyStatus, onAction }))
   const api = computed(() => connectNotificationItem(service, vueNormalize))
-  return { api }
+  const rootRef = ref<HTMLElement | null>(null)
+  useToastExit({ service, isOpen: () => api.value.status === 'visible', rootRef })
+  return { api, rootRef }
 }

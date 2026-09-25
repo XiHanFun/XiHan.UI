@@ -22,9 +22,8 @@ import {
 } from './notification.machine'
 
 const parts = notificationAnatomy.build()
-// Notification 的既有停留/退场节奏独立于 Toast；两类反馈不再共享默认值。
+// Notification 的停留时长独立于 Toast，两类反馈不共享默认值。
 const NOTIFICATION_DURATION = 5000
-const NOTIFICATION_REMOVE_DELAY = 200
 
 export function connectNotification<T extends PropTypes>(
   service: Service<NotificationSchema>,
@@ -45,7 +44,6 @@ export function connectNotification<T extends PropTypes>(
     // 单条 > notification > 内置默认，逐级兜底后必定是个具体数值。
     // loading 不自动消失那条规则住在 toast 机器里，不经 notification 的单条通知同样守得住
     duration: item.duration ?? prop('duration') ?? NOTIFICATION_DURATION,
-    removeDelay: item.removeDelay ?? prop('removeDelay') ?? NOTIFICATION_REMOVE_DELAY,
     closable: item.closable ?? true,
     pauseOnPageIdle,
     count: item.count ?? 1,
@@ -169,7 +167,7 @@ export function connectNotificationItem<T extends PropTypes>(
       'data-tone': tone,
       'data-state': status,
       'data-paused': dataAttr(paused),
-      // 退场窗口走完只收起、不卸载，何时把这条从队列里删掉是宿主的决定
+      // 退场动画播完只收起、不卸载，何时把这条从队列里删掉是宿主的决定
       'hidden': unmounted || undefined,
       // 指针停在通知上就把计时按住；pointerenter / pointerleave 不冒泡，只认本条这块区域
       'onPointerEnter': () => send({ type: 'TOAST.PAUSE', src: 'pointer' }),

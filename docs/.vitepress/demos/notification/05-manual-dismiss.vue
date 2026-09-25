@@ -1,4 +1,4 @@
-<!-- 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不经退场窗口 -->
+<!-- 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -68,7 +68,6 @@ function settle(
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="(details) => settle(details, dismiss)"

@@ -19,7 +19,7 @@ export const toastKeyboard: KeyboardTable = {
       id: 'toast.kbd.close',
       keys: ['Enter', 'Space'],
       when: 'focus 在 close-trigger 上且 closable',
-      does: '立即进入 dismissing，走完 removeDelay 后转 unmounted',
+      does: '立即进入 dismissing，退场动画播完后转 unmounted',
     },
     {
       id: 'toast.kbd.action',

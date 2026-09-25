@@ -38,7 +38,6 @@ export const XhNotificationRoot = defineComponent({
     dedupe: { type: String as PropType<NotificationDedupe> },
     gap: { type: Number },
     duration: { type: Number },
-    removeDelay: { type: Number },
     pauseOnPageIdle: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<NotificationTranslations>> },
   },
@@ -114,7 +113,6 @@ export const XhNotificationItem = defineComponent({
     tone: { type: String as PropType<ToastTone> },
     loading: { type: Boolean, default: undefined },
     duration: { type: Number },
-    removeDelay: { type: Number },
     closable: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
     // 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走
@@ -139,7 +137,7 @@ export const XhNotificationItem = defineComponent({
     provideNotificationItem(ctx)
     return () => h(
       'div',
-      ctx.api.value.getItemProps() as Record<string, unknown>,
+      { ...ctx.api.value.getItemProps() as Record<string, unknown>, ref: ctx.rootRef },
       slots.default?.({ item: ctx.api.value }),
     )
   },

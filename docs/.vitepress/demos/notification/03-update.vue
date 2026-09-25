@@ -52,7 +52,6 @@ function startUpload(create: Create, update: Update): void {
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="
