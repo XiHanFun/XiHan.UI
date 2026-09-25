@@ -527,6 +527,10 @@
     --xh-material-frosted-fg: var(--xh-fg-default);
     --xh-material-frosted-fg-muted: var(--xh-fg-muted);
     --xh-material-frosted-focus-surface: var(--xh-bg-surface);
+    --xh-material-liquid-fg: var(--xh-fg-default);
+    --xh-material-liquid-fg-muted: var(--xh-fg-muted);
+    --xh-material-liquid-focus-surface: var(--xh-bg-surface);
+    --xh-material-liquid-bezel: 18px;
   }
 
   /* density 轴 · compact 档：只覆盖收紧的盒尺寸。排在基线合并块之后，
@@ -639,6 +643,8 @@
     --xh-material-soft-bg: oklch(0.995 0.001 258);
     --xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.04), 0 4px 10px -6px oklch(0.145 0.005 258 / 0.05);
     --xh-material-frosted-shadow: 0 2px 4px -2px oklch(0.145 0.005 258 / 0.1), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16);
+    --xh-material-liquid-shadow: 0 1px 3px oklch(0.145 0.005 258 / 0.1), 0 10px 28px -10px oklch(0.145 0.005 258 / 0.32);
+    --xh-material-liquid-tint: oklch(1 0 0);
     --xh-_contrast-default-border-at-limit: var(--xh-color-warning-600);
     --xh-_contrast-more-border-at-limit: var(--xh-color-warning-800);
     --xh-_contrast-more-border-control: var(--xh-color-neutral-600);
@@ -662,6 +668,13 @@
     --xh-_contrast-default-material-frosted-compact-shadow: 0 1px 2px -1px oklch(0.145 0.005 258 / 0.08), 0 6px 16px -8px oklch(0.145 0.005 258 / 0.12);
     --xh-_contrast-default-material-frosted-highlight: oklch(1 0 0 / 0.52);
     --xh-_contrast-default-material-frosted-separator: oklch(0.145 0.005 258 / 0.12);
+    --xh-_contrast-default-material-liquid-alpha-clear: 0.24;
+    --xh-_contrast-default-material-liquid-alpha-floor: 0.48;
+    --xh-_contrast-default-material-liquid-bg: oklch(1 0 0 / var(--xh-alpha-low));
+    --xh-_contrast-default-material-liquid-border: oklch(0 0 0 / 0.12);
+    --xh-_contrast-default-material-liquid-highlight: oklch(1 0 0 / 0.9);
+    --xh-_contrast-default-material-liquid-rim-far: oklch(1 0 0 / 0.36);
+    --xh-_contrast-default-material-liquid-separator: oklch(0 0 0 / 0.1);
     --xh-_contrast-default-material-soft-highlight: oklch(1 0 0 / 0.72);
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
     --xh-border-control: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
@@ -683,6 +696,14 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
+    --xh-material-liquid-alpha-clear: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-clear)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-alpha-floor: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-floor)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-sm)) saturate(140%)) var(--xh-_contrast-use-more, none);
+    --xh-material-liquid-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
+    --xh-material-liquid-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-border)) var(--xh-_contrast-use-more, var(--xh-border-default));
+    --xh-material-liquid-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-rim-far: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-rim-far)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -740,6 +761,8 @@
     --xh-material-soft-bg: oklch(0.22 0.006 258);
     --xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0 0 0 / 0.28), 0 4px 10px -6px oklch(0 0 0 / 0.24);
     --xh-material-frosted-shadow: 0 2px 4px -2px oklch(0 0 0 / 0.42), 0 12px 28px -12px oklch(0 0 0 / 0.52);
+    --xh-material-liquid-shadow: 0 1px 3px oklch(0 0 0 / 0.4), 0 10px 28px -10px oklch(0 0 0 / 0.6);
+    --xh-material-liquid-tint: oklch(0.208 0.006 258);
     --xh-_contrast-default-border-at-limit: var(--xh-color-warning-500);
     --xh-_contrast-more-border-at-limit: var(--xh-color-warning-400);
     --xh-_contrast-more-border-control: var(--xh-color-neutral-400);
@@ -763,6 +786,13 @@
     --xh-_contrast-default-material-frosted-compact-shadow: 0 1px 2px -1px oklch(0 0 0 / 0.38), 0 6px 16px -8px oklch(0 0 0 / 0.46);
     --xh-_contrast-default-material-frosted-highlight: oklch(1 0 0 / 0.14);
     --xh-_contrast-default-material-frosted-separator: oklch(1 0 0 / 0.12);
+    --xh-_contrast-default-material-liquid-alpha-clear: 0.34;
+    --xh-_contrast-default-material-liquid-alpha-floor: 0.61;
+    --xh-_contrast-default-material-liquid-bg: oklch(0.208 0.006 258 / 0.61);
+    --xh-_contrast-default-material-liquid-border: oklch(1 0 0 / 0.14);
+    --xh-_contrast-default-material-liquid-highlight: oklch(1 0 0 / 0.42);
+    --xh-_contrast-default-material-liquid-rim-far: oklch(1 0 0 / 0.18);
+    --xh-_contrast-default-material-liquid-separator: oklch(1 0 0 / 0.12);
     --xh-_contrast-default-material-soft-highlight: oklch(1 0 0 / 0.07);
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
     --xh-border-control: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
@@ -784,6 +814,14 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
+    --xh-material-liquid-alpha-clear: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-clear)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-alpha-floor: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-floor)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-sm)) saturate(140%)) var(--xh-_contrast-use-more, none);
+    --xh-material-liquid-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
+    --xh-material-liquid-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-border)) var(--xh-_contrast-use-more, var(--xh-border-default));
+    --xh-material-liquid-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-rim-far: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-rim-far)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -812,6 +850,14 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
+    --xh-material-liquid-alpha-clear: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-clear)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-alpha-floor: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-floor)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-sm)) saturate(140%)) var(--xh-_contrast-use-more, none);
+    --xh-material-liquid-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
+    --xh-material-liquid-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-border)) var(--xh-_contrast-use-more, var(--xh-border-default));
+    --xh-material-liquid-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-rim-far: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-rim-far)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -838,6 +884,14 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
+    --xh-material-liquid-alpha-clear: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-clear)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-alpha-floor: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-floor)) var(--xh-_contrast-use-more, 1);
+    --xh-material-liquid-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-sm)) saturate(140%)) var(--xh-_contrast-use-more, none);
+    --xh-material-liquid-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
+    --xh-material-liquid-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-border)) var(--xh-_contrast-use-more, var(--xh-border-default));
+    --xh-material-liquid-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-rim-far: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-rim-far)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+    --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -930,6 +984,14 @@
       --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
       --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
       --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
+      --xh-material-liquid-alpha-clear: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-clear)) var(--xh-_contrast-use-more, 1);
+      --xh-material-liquid-alpha-floor: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-alpha-floor)) var(--xh-_contrast-use-more, 1);
+      --xh-material-liquid-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-sm)) saturate(140%)) var(--xh-_contrast-use-more, none);
+      --xh-material-liquid-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
+      --xh-material-liquid-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-border)) var(--xh-_contrast-use-more, var(--xh-border-default));
+      --xh-material-liquid-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+      --xh-material-liquid-rim-far: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-rim-far)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+      --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
       --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
       --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
@@ -962,9 +1024,9 @@
     }
   }
 
-  /* 减少透明：直接打到主题边界与组件作用域，避免祖先上已经解析的材质别名盖过实体替代。 */
+  /* 减少透明：直接打到主题边界、墨色域与组件作用域，避免祖先上已经解析的材质别名盖过实体替代。 */
   @media (prefers-reduced-transparency: reduce) {
-    :where(:root), :where([data-theme]), :where([data-scope]) {
+    :where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-scope]) {
       --xh-material-elevated-bg: var(--xh-bg-surface);
       --xh-material-elevated-backdrop: none;
       --xh-material-elevated-border: var(--xh-border-default);
@@ -980,11 +1042,18 @@
       --xh-material-frosted-highlight: oklch(0 0 0 / 0);
       --xh-material-frosted-separator: var(--xh-border-subtle);
       --xh-material-frosted-focus-surface: var(--xh-bg-surface);
+      --xh-material-liquid-bg: var(--xh-bg-surface);
+      --xh-material-liquid-backdrop: none;
+      --xh-material-liquid-separator: var(--xh-border-subtle);
+      --xh-material-liquid-focus-surface: var(--xh-bg-surface);
+      --xh-material-liquid-alpha-clear: 1;
+      --xh-material-liquid-alpha-floor: 1;
     }
   }
 
-  /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。 */
-  :where([data-transparency='reduce']) {
+  /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。
+     子树里的主题边界与墨色域会在自己身上重新声明主题取值，钩子要一并命中它们，否则实体替代在那一层被盖回透明 */
+  :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-xh-ink]) {
     --xh-material-elevated-bg: var(--xh-bg-surface);
     --xh-material-elevated-backdrop: none;
     --xh-material-elevated-border: var(--xh-border-default);
@@ -1000,6 +1069,12 @@
     --xh-material-frosted-highlight: oklch(0 0 0 / 0);
     --xh-material-frosted-separator: var(--xh-border-subtle);
     --xh-material-frosted-focus-surface: var(--xh-bg-surface);
+    --xh-material-liquid-bg: var(--xh-bg-surface);
+    --xh-material-liquid-backdrop: none;
+    --xh-material-liquid-separator: var(--xh-border-subtle);
+    --xh-material-liquid-focus-surface: var(--xh-bg-surface);
+    --xh-material-liquid-alpha-clear: 1;
+    --xh-material-liquid-alpha-floor: 1;
   }
 
   /* 系统强制色拥有最终决定权；组件仍消费同一组材质名，不另开 forced-color 私有分支。 */
@@ -1042,6 +1117,19 @@
       --xh-material-frosted-fg: CanvasText;
       --xh-material-frosted-fg-muted: CanvasText;
       --xh-material-frosted-focus-surface: Canvas;
+      --xh-material-liquid-bg: Canvas;
+      --xh-material-liquid-backdrop: none;
+      --xh-material-liquid-border: CanvasText;
+      --xh-material-liquid-highlight: Canvas;
+      --xh-material-liquid-shadow: none;
+      --xh-material-liquid-separator: CanvasText;
+      --xh-material-liquid-fg: CanvasText;
+      --xh-material-liquid-fg-muted: CanvasText;
+      --xh-material-liquid-focus-surface: Canvas;
+      --xh-material-liquid-tint: Canvas;
+      --xh-material-liquid-alpha-clear: 1;
+      --xh-material-liquid-alpha-floor: 1;
+      --xh-material-liquid-rim-far: Canvas;
     }
   }
 
@@ -1143,6 +1231,15 @@
       --xh-material-frosted-highlight: oklch(0 0 0 / 0);
       --xh-material-frosted-shadow: none;
       --xh-material-frosted-separator: var(--xh-border-subtle);
+      --xh-material-liquid-bg: var(--xh-bg-surface);
+      --xh-material-liquid-backdrop: none;
+      --xh-material-liquid-border: var(--xh-border-default);
+      --xh-material-liquid-highlight: oklch(0 0 0 / 0);
+      --xh-material-liquid-shadow: none;
+      --xh-material-liquid-separator: var(--xh-border-subtle);
+      --xh-material-liquid-alpha-clear: 1;
+      --xh-material-liquid-alpha-floor: 1;
+      --xh-material-liquid-rim-far: oklch(0 0 0 / 0);
     }
   }
 }

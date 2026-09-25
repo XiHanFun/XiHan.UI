@@ -66,6 +66,28 @@ function compact(value) {
   }
 }
 
+/**
+ * liquid 档特有的通道：着色、通透档与可读下限两档不透明度、背光一侧的弱亮边、折射 bezel。
+ * 色调按下层决定：core 的液态面把部件设成黑墨或白墨域，墨色域本身是浅色 / 深色主题边界，
+ * 这几支按主题取值，就自动落到那一种色调上。
+ */
+const LIQUID_FIELDS = {
+  tint: ['tint', 'color'],
+  clear: ['alpha-clear', 'number'],
+  floor: ['alpha-floor', 'number'],
+  rimFar: ['rim-far', 'color'],
+  bezel: ['bezel', 'dimension'],
+}
+
+function liquidChannels(value) {
+  if (!value)
+    return {}
+  return Object.fromEntries(Object.entries(value).map(([field, raw]) => {
+    const [name, type] = LIQUID_FIELDS[field]
+    return [name, token(type, raw)]
+  }))
+}
+
 function compileRecipe(value, description, complete) {
   if (complete) {
     return {
@@ -80,6 +102,7 @@ function compileRecipe(value, description, complete) {
       'fg': token('color', value.foreground),
       'fg-muted': token('color', value.mutedForeground),
       'focus-surface': token('color', value.focusSurface),
+      ...liquidChannels(value.liquid),
     }
   }
 
@@ -97,6 +120,7 @@ function compileRecipe(value, description, complete) {
     ...(value.foreground !== undefined ? { fg: token('color', value.foreground) } : {}),
     ...(value.mutedForeground !== undefined ? { 'fg-muted': token('color', value.mutedForeground) } : {}),
     ...(value.focusSurface !== undefined ? { 'focus-surface': token('color', value.focusSurface) } : {}),
+    ...liquidChannels(value.liquid),
   }
 }
 
@@ -171,8 +195,18 @@ function assertCompact(value, path, complete) {
     assertShadows(value.shadows, `${path}.shadows`)
 }
 
-function assertRecipe(value, path, complete) {
-  const fields = ['background', 'tint', 'alpha', 'backdrop', 'edge', 'highlight', 'shadows', 'separator', 'foreground', 'mutedForeground', 'focusSurface', 'compact', '$description']
+function assertLiquid(value, path, complete) {
+  rejectUnknown(value, Object.keys(LIQUID_FIELDS), path)
+  for (const field of Object.keys(LIQUID_FIELDS)) {
+    if (complete && value[field] === undefined)
+      throw new Error(`[material-recipes] ${path} 缺少 liquid 通道 ${field}`)
+    if (field in value && (typeof value[field] !== 'string' || value[field].length === 0))
+      throw new Error(`[material-recipes] ${path}.${field} 必须是非空字符串`)
+  }
+}
+
+function assertRecipe(value, path, complete, liquid = false) {
+  const fields = ['background', 'tint', 'alpha', 'backdrop', 'edge', 'highlight', 'shadows', 'separator', 'foreground', 'mutedForeground', 'focusSurface', 'compact', '$description', ...(liquid ? ['liquid'] : [])]
   rejectUnknown(value, fields, path)
   if ('background' in value && ('tint' in value || 'alpha' in value))
     throw new Error(`[material-recipes] ${path} 不能同时声明 background 与 tint/alpha`)
@@ -195,6 +229,10 @@ function assertRecipe(value, path, complete) {
     assertShadows(value.shadows, `${path}.shadows`)
   if ('compact' in value)
     assertCompact(value.compact, `${path}.compact`, complete)
+  if (liquid && complete && !('liquid' in value))
+    throw new Error(`[material-recipes] ${path} 缺少 liquid 通道组`)
+  if ('liquid' in value)
+    assertLiquid(value.liquid, `${path}.liquid`, complete)
 }
 
 function assertSource(source) {
@@ -215,14 +253,14 @@ function assertSource(source) {
       throw new Error(`[material-recipes] profiles.${name} 必须声明 id 与 description`)
     ids.push(profile.id)
     for (const theme of ['light', 'dark']) {
-      assertRecipe(profile[theme], `profiles.${name}.${theme}`, true)
+      assertRecipe(profile[theme], `profiles.${name}.${theme}`, true, name === 'liquid')
     }
   }
   if (JSON.stringify(source.profiles.solid.light) !== JSON.stringify(source.profiles.solid.dark))
     throw new Error('[material-recipes] M0 必须保持主题无关，不能在 mode 边界复制实体配方')
   // order 只决定生成 JSON 与 CSS 的稳定序列，不能被解释成 M0→M4 的等级顺序。
-  if (ids.join(',') !== 'M4,M0,M1,M2')
-    throw new Error(`[material-recipes] 输出兼容序必须是 M4,M0,M1,M2，当前为 ${ids.join(',')}`)
+  if (ids.join(',') !== 'M4,M0,M1,M2,M5')
+    throw new Error(`[material-recipes] 输出兼容序必须是 M4,M0,M1,M2,M5，当前为 ${ids.join(',')}`)
   const modes = ['contrast-more', 'transparency-reduce', 'forced-colors', 'print']
   if (Object.keys(source.auxiliary).sort().join(',') !== [...modes].sort().join(','))
     throw new Error(`[material-recipes] auxiliary 必须且只能声明：${modes.join(', ')}`)
@@ -232,7 +270,7 @@ function assertSource(source) {
     if (Object.keys(values).sort().join(',') !== [...source.order].sort().join(','))
       throw new Error(`[material-recipes] auxiliary.${mode} 必须显式列出全部 profile；空对象表示继承基础配方`)
     for (const [name, value] of Object.entries(values))
-      assertRecipe(value, `auxiliary.${mode}.${name}`, false)
+      assertRecipe(value, `auxiliary.${mode}.${name}`, false, name === 'liquid')
   }
 }
 

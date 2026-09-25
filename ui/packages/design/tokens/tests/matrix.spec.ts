@@ -52,10 +52,10 @@ const ATTR_TO_AXIS: Record<string, Axis> = {
  */
 const SURFACE_ATTRS = new Set(['data-xh-ink', 'data-xh-ink-margin'])
 
-/** 选择器分支是不是只由面的声明构成。 */
+/** 选择器分支是不是落在面的声明上：分支里出现面的声明（本身或后代位置），它就只命中墨色域。 */
 function isSurfaceBranch(selector: string): boolean {
   const attrs = [...selector.matchAll(/\[([\w-]+)/g)].map(m => m[1]!)
-  return attrs.length > 0 && attrs.every(attr => SURFACE_ATTRS.has(attr))
+  return attrs.some(attr => SURFACE_ATTRS.has(attr))
 }
 
 function combinations(): Combination[] {
@@ -434,6 +434,7 @@ describe('快照的前提', () => {
     expect(supportsConditions).toHaveLength(1)
     expect(supportsConditions[0]).toMatch(/^\(color: color\(from red srgb-linear /)
     expect([...new Set(surfaceSelectors)].sort()).toEqual([
+      `:where([data-transparency='reduce'] [data-xh-ink])`,
       `:where([data-xh-ink='dark'])`,
       `:where([data-xh-ink='dark'][data-xh-ink-margin='ample'])`,
       `:where([data-xh-ink='light'])`,

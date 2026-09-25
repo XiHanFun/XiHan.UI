@@ -42,7 +42,7 @@ function flatten(value, prefix = '', result = []) {
 
 function hashLegacyRecipe(material, file) {
   const rows = flatten(material)
-    .filter(([name]) => !name.startsWith('solid.') && !(file === 'semantic.forced-colors.json' && name.startsWith('soft.')))
+    .filter(([name]) => !name.startsWith('solid.') && !name.startsWith('liquid.') && !(file === 'semantic.forced-colors.json' && name.startsWith('soft.')))
     .sort(([left], [right]) => left.localeCompare(right))
   return createHash('sha256').update(JSON.stringify(rows)).digest('hex')
 }
@@ -61,9 +61,9 @@ async function loadSource() {
 }
 
 describe('material Recipe 生成', () => {
-  it('m0-M4 的基础配方逐项声明全部原子通道', async () => {
+  it('m0-M5 的基础配方逐项声明全部原子通道', async () => {
     const source = await loadSource()
-    expect(source.order.map(name => source.profiles[name].id)).toEqual(['M4', 'M0', 'M1', 'M2'])
+    expect(source.order.map(name => source.profiles[name].id)).toEqual(['M4', 'M0', 'M1', 'M2', 'M5'])
 
     for (const name of source.order) {
       for (const theme of ['light', 'dark']) {
@@ -72,6 +72,7 @@ describe('material Recipe 生成', () => {
           'alpha',
           'backdrop',
           ...(name === 'frosted' ? ['compact'] : []),
+          ...(name === 'liquid' ? ['liquid'] : []),
           'edge',
           'focusSurface',
           'foreground',
@@ -128,6 +129,26 @@ describe('material Recipe 生成', () => {
     expect(compiled['semantic.light.json'].elevated.bg.$value).toBe('oklch(0.99 0.003 258)')
     expect(compiled['semantic.light.json'].elevated.backdrop.$value).toBe('none')
     expect(compiled['semantic.light.json'].elevated.shadow.$value.split(', ')).toHaveLength(3)
+  })
+
+  it('m5 liquid 按主题出着色、通透档与可读下限、背光亮边与 bezel；静态面取可读下限', async () => {
+    const compiled = compileMaterialRecipes(await loadSource())
+    const light = compiled['semantic.light.json'].liquid
+    const dark = compiled['semantic.dark.json'].liquid
+    for (const name of ['tint', 'alpha-clear', 'alpha-floor', 'rim-far', 'bezel']) {
+      expect(light[name], name).toBeDefined()
+      expect(dark[name], name).toBeDefined()
+    }
+    expect(light.bg.$value).toBe('oklch(1 0 0 / {alpha.low})')
+    expect(dark.bg.$value).toBe('oklch(0.208 0.006 258 / 0.61)')
+    expect([light['alpha-clear'].$value, light['alpha-floor'].$value]).toEqual(['0.24', '0.48'])
+    expect([dark['alpha-clear'].$value, dark['alpha-floor'].$value]).toEqual(['0.34', '0.61'])
+    // 减弱透明与高对比档把两档不透明度都钉到 1，面也换成实体
+    for (const mode of ['semantic.transparency.reduce.json', 'semantic.light.more.json']) {
+      expect(compiled[mode].liquid['alpha-clear'].$value, mode).toBe('1')
+      expect(compiled[mode].liquid['alpha-floor'].$value, mode).toBe('1')
+      expect(compiled[mode].liquid.bg.$value, mode).toBe('{bg.surface}')
+    }
   })
 
   it('blur、saturation 与 contrast 按原子顺序确定性合成', async () => {
