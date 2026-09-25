@@ -9,13 +9,15 @@
 //   1 皮肤里的每个 @keyframes 名字都在登记表里
 //   2 同名的块内容与登记值逐字一致（去空白归一化后比）
 //   3 登记表每条至少被一份皮肤定义（过期反查）
-//   4 内容哈希撞名：两个名字归一化后内容等价即判红，除非整组登记在 duplicateContent
+//   4 同物异名：两个名字的内容化到规范式后相同即判红，同一段动画只留一个名字
 //   5 consumers 与实际引用面双向一致
 //   6 relation 非空的名字（登记的共享关键帧）只能定义在 family/motion.css，
 //     且 family/motion.css 里的每个名字都带 relation——共享与专属的边界由这张表钉死
 //
 // 判据 4 是这套表的核心：它是唯一能拦住「同一个动作长出第 N 个名字」的机器判据。
-// 现存的等价组全部登记在 duplicateContent 里，收敛前不判红、收敛后删条目即恢复判红。
+// 规范式把同一段动画的不同写法归到一种：from / to 与 0% / 100% 同义，transform 里
+// 只有一个 rotate() 时与独立的 rotate 属性同义，角度统一折成 turn。
+// retired 记着收敛掉的旧名，旧名再出现（定义或引用）即判红。
 //
 // 登记表 tooling/scripts/keyframe-registry.json 由 `pnpm keyframes:update` 生成并入库。
 import { readdir, readFile, writeFile } from 'node:fs/promises'
@@ -36,6 +38,44 @@ function stripComments(css) {
 /** 归一化：压掉空白，末尾分号统一，好让「同一段动画」逐字可比。 */
 function normalize(body) {
   return body.replace(/\s+/g, ' ').replace(/;\s*\}/g, ' }').replace(/\s*([{}:;,])\s*/g, '$1').trim()
+}
+
+/** 角度折成 turn：360deg、1turn 与 400grad 是同一个角。 */
+function toTurn(angle) {
+  const m = /^(-?(?:\d+(?:\.\d*)?|\.\d+))(deg|turn|grad|rad)$/.exec(angle)
+  if (!m)
+    return angle
+  const perTurn = { deg: 360, turn: 1, grad: 400, rad: 2 * Math.PI }[m[2]]
+  return `${Number((Number(m[1]) / perTurn).toFixed(6))}turn`
+}
+
+/** 一条声明的规范式：transform 里只有一个 rotate() 时改写成独立的 rotate 属性。 */
+function canonicalDeclaration(decl) {
+  const colon = decl.indexOf(':')
+  let prop = decl.slice(0, colon)
+  let value = decl.slice(colon + 1)
+  if (prop === 'transform' && value.startsWith('rotate(') && value.endsWith(')') && !value.slice(7, -1).includes('(')) {
+    prop = 'rotate'
+    value = value.slice(7, -1)
+  }
+  if (prop === 'rotate')
+    value = toTurn(value)
+  return `${prop}:${value}`
+}
+
+/** 帧体的规范式：只用来判「是不是同一段动画」，登记值仍存归一化后的原文。 */
+function canonical(content) {
+  const blocks = []
+  let rest = content
+  while (rest) {
+    const open = rest.indexOf('{')
+    const close = rest.indexOf('}', open)
+    const selectors = rest.slice(0, open).split(',').map(sel => ({ from: '0%', to: '100%' })[sel] ?? sel)
+    const decls = rest.slice(open + 1, close).split(';').filter(Boolean).map(canonicalDeclaration)
+    blocks.push(`${selectors.join(',')}{${decls.join(';')}}`)
+    rest = rest.slice(close + 1)
+  }
+  return blocks.join('')
 }
 
 /** 取 @keyframes 块体：从 `{` 起做括号配平。 */
@@ -98,13 +138,14 @@ for (const { dir, file, label } of files) {
   }
 }
 
-/** 按内容分组，找出「一个视觉多个名字」。 */
+/** 按规范式分组，找出「一个视觉多个名字」。 */
 function collisionGroups() {
   const byContent = new Map()
   for (const [name, { content }] of found) {
-    if (!byContent.has(content))
-      byContent.set(content, [])
-    byContent.get(content).push(name)
+    const key = canonical(content)
+    if (!byContent.has(key))
+      byContent.set(key, [])
+    byContent.get(key).push(name)
   }
   return [...byContent.values()].filter(names => names.length > 1).map(names => names.sort())
 }
@@ -128,21 +169,15 @@ if (process.argv.includes('--update')) {
       ...(name in SHARED_RELATION ? { relation: SHARED_RELATION[name] } : {}),
     }
   }
-  const duplicateContent = {}
-  for (const names of collisionGroups()) {
-    duplicateContent[names[0]] = {
-      $description: `${names.length} 个名字是同一段动画，收敛前登记在案`,
-      names,
-    }
-  }
   const table = {
-    $description: '关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css（relation 按锚定关系登记：锚定列表 / 锚定面板 / 无锚定弹出 / disclosure / 遮罩），组件专属关键帧住在各自皮肤，本表登记「这个名字全库该长什么样」。duplicateContent 记的是现存的「一个视觉多个名字」，每消掉一组就删一条，删完判据 4 即对全库生效。retired 是退役名单：旧名再出现即判红。',
+    $description: '关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css，relation 按 tooling/scripts/lib/keyframe-relations.mjs 的关系组登记；组件专属关键帧住在各自皮肤。本表登记「这个名字全库该长什么样」，同一段动画只许一个名字。retired 是退役名单：旧名再出现即判红。',
     frames,
-    duplicateContent,
     retired,
   }
   await writeFile(TABLE, `${JSON.stringify(table, null, 2)}\n`, 'utf8')
-  console.log(`[keyframes:update] 已写入 ${TABLE}：${Object.keys(frames).length} 个名字，${Object.keys(duplicateContent).length} 组同内容多名字`)
+  console.log(`[keyframes:update] 已写入 ${TABLE}：${Object.keys(frames).length} 个名字`)
+  for (const names of collisionGroups())
+    console.warn(`  ${names.join(' / ')} 是同一段动画——收敛成一个名字，否则门禁判红`)
   process.exit(0)
 }
 
@@ -156,7 +191,7 @@ catch {
 }
 
 const problems = [...conflicts]
-const { frames = {}, duplicateContent = {}, retired = {} } = table
+const { frames = {}, retired = {} } = table
 
 // 判据 1 + 2 + 5
 for (const [name, { content, definedIn }] of found) {
@@ -188,24 +223,13 @@ for (const name of Object.keys(frames)) {
     problems.push(`${name} 登记在表里却没有任何皮肤定义它——名单过期了`)
 }
 
-// 判据 4：内容哈希撞名
-const registeredGroups = new Set(
-  Object.values(duplicateContent).map(g => [...g.names].sort().join('|')),
-)
+// 判据 4：同物异名
 for (const names of collisionGroups()) {
-  const key = names.join('|')
-  if (registeredGroups.has(key))
-    continue
-  problems.push(
-    `${names.join(' / ')} 归一化后内容等价，却是 ${names.length} 个名字——`
-    + `同一个视觉只留一个名字；确实要并存就把整组登进 duplicateContent 并写清为什么`,
-  )
-}
-for (const [id, group] of Object.entries(duplicateContent)) {
-  const key = [...group.names].sort().join('|')
-  const live = new Set(collisionGroups().map(n => n.join('|')))
-  if (!live.has(key))
-    problems.push(`duplicateContent 的 ${id} 这一组已经不再等价（或名字变了）——收敛完了就把这条删掉`)
+  const shared = names.filter(n => n in SHARED_RELATION)
+  const fix = shared.length
+    ? `改引共享关键帧 ${shared.join(' / ')}，删掉皮肤里的副本，旧名登进 retired`
+    : `只留一个名字；跨皮肤共用就收进 ${MOTION_FAMILY} 并登记 relation`
+  problems.push(`${names.join(' / ')} 是同一段动画，却有 ${names.length} 个名字——${fix}`)
 }
 
 // retired：旧名出现即判红（定义与引用都算）
@@ -249,5 +273,5 @@ const blocks = [...found.values()].reduce((n, f) => n + f.definedIn.length, 0)
 console.log(
   `[check-keyframe-registry] 通过：${found.size} 个关键帧名字 · ${blocks} 个块 · `
   + `${new Set([...found.values()].map(f => f.content)).size} 种内容，名字与内容都在册`
-  + `（共享关键帧 ${Object.keys(SHARED_RELATION).length} 个只定义在 ${MOTION_FAMILY}；同内容多名字登记 ${Object.keys(duplicateContent).length} 组，待收敛；退役 ${Object.keys(retired).length} 个）`,
+  + `（共享关键帧 ${Object.keys(SHARED_RELATION).length} 个只定义在 ${MOTION_FAMILY}；同一段动画只有一个名字；退役 ${Object.keys(retired).length} 个）`,
 )
