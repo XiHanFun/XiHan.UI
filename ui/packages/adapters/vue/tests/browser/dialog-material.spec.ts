@@ -72,7 +72,7 @@ describe('dialog 的 M4 高层实体面皮肤', () => {
     expect(backdrop.backdropFilter).toContain('blur(12px)')
   })
 
-  it('高对比与减弱动效保留实体边界，并撤掉光学效果与时长', async () => {
+  it('高对比与减弱动效保留实体边界，撤掉光学效果，进出场只剩淡变', async () => {
     document.documentElement.dataset.contrast = 'more'
     document.documentElement.dataset.motion = 'reduce'
     mount()
@@ -84,8 +84,8 @@ describe('dialog 的 M4 高层实体面皮肤', () => {
     expect(content.backdropFilter).toBe('none')
     expect(content.boxShadow).toBe('none')
     expect(backdrop.backdropFilter).toBe('none')
-    // 减弱动效以一个极短有限时长保留退场生命周期可观察性，而不是把 animation 直接删掉。
-    expect(content.animationDuration).toBe('0.001s')
-    expect(backdrop.animationDuration).toBe('0.001s')
+    // 减弱动效下进出场只剩 120ms 淡变：位移与缩放幅度归零，animation 本身保留，退场生命周期照常可观察。
+    expect(content.animationDuration).toBe('0.12s')
+    expect(backdrop.animationDuration).toBe('0.12s')
   })
 })
