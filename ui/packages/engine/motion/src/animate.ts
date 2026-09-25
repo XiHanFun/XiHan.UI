@@ -85,7 +85,7 @@ export function animate(
   options: AnimateOptions = {},
 ): AnimationHandle {
   const fill = options.fill ?? 'none'
-  const reduced = resolveMotionPreference(element.ownerDocument?.defaultView ?? undefined) === 'reduce'
+  const reduced = resolveMotionPreference(element) === 'reduce'
 
   if (reduced || typeof element.animate !== 'function') {
     const last = keyframes[keyframes.length - 1]
