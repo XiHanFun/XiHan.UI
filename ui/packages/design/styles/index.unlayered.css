@@ -30657,7 +30657,7 @@
   inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
   block-size: var(--xh-select-action-size, var(--xh-control-action-size));
   color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
