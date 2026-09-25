@@ -13534,8 +13534,8 @@
     flex: none;
     color: var(--xh-accordion-indicator-fg, var(--xh-fg-muted));
     line-height: var(--xh-leading-none);
-    /* 指示器与正文同档转向：正文 enter 档展开，箭头也用同一段时长翻过去 */
-    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    /* 指示器与正文同档转向：收起时取 collapse 档，展开时（下面的打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -13552,6 +13552,7 @@
 
   [data-scope='accordion'][data-part='indicator'][data-state='open'] {
     rotate: 180deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
@@ -13574,11 +13575,11 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='accordion'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='accordion'][data-part='content'][data-state='closed'] {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
   }
 }
 
