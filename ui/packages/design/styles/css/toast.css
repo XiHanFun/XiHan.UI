@@ -25,12 +25,6 @@
     }
   }
 
-  @keyframes xh-toast-spin {
-    to {
-      rotate: 360deg;
-    }
-  }
-
   @keyframes xh-toast-out {
     from {
       opacity: 1;
@@ -221,7 +215,7 @@
   [data-scope='toast'][data-part='root'][data-loading]::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；「在等什么」由条子上的
@@ -285,7 +279,7 @@
   [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：与 root 上那枚同一处理——转圈停下，静止的箭头仍读得出「还没好」。

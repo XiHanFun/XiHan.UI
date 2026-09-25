@@ -160,7 +160,7 @@ describe('取数与写入在途的转圈', () => {
     expect(root.getAttribute('data-state')).toBe('preparing')
     expect(styleOf(root, 'cursor')).toBe('progress')
     expect(root.getBoundingClientRect().width).toBeCloseTo(width, 4)
-    expect(beforeOf(root, 'animation-name')).toContain('xh-download-trigger-rotate')
+    expect(beforeOf(root, 'animation-name')).toContain('xh-spin')
     expect(beforeOf(root, 'animation-name')).toContain('xh-download-trigger-loading-reveal')
     expect(beforeOf(root, 'opacity')).toBe('0')
     expect(Number.parseFloat(beforeOf(root, 'width'))).toBeGreaterThan(0)
@@ -190,7 +190,7 @@ describe('取数与写入在途的转圈', () => {
     trigger.setAttribute('aria-busy', 'true')
     expect(styleOf(trigger, 'cursor')).toBe('progress')
     expect(styleOf(trigger, 'opacity')).toBe('1')
-    expect(beforeOf(trigger, 'animation-name')).toContain('xh-clipboard-rotate')
+    expect(beforeOf(trigger, 'animation-name')).toContain('xh-spin')
     expect(beforeOf(trigger, 'animation-name')).toContain('xh-clipboard-loading-reveal')
     expect(beforeOf(trigger, 'opacity')).toBe('0')
     expect(Number.parseFloat(beforeOf(trigger, 'width'))).toBeGreaterThan(0)
@@ -233,7 +233,7 @@ describe('判定闸门在途的那一档', () => {
 
     // 圆环只在在途那一格转，且真占了一格盒子
     const busyRow = part('approval', 'footer', 1)
-    expect(beforeOf(busyRow, 'animation-name')).toBe('xh-approval-rotate')
+    expect(beforeOf(busyRow, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(busyRow, 'animation-iteration-count')).toBe('infinite')
     expect(Number.parseFloat(beforeOf(busyRow, 'width'))).toBeGreaterThan(0)
     expect(beforeOf(part('approval', 'footer', 0), 'animation-name')).toBe('none')
@@ -308,7 +308,7 @@ describe('轻提示的语气字形', () => {
     const root = part('toast', 'root')
     expect(root.getAttribute('data-tone')).toBe('success')
     expect(root.hasAttribute('data-loading')).toBe(true)
-    expect(beforeOf(root, 'animation-name')).toBe('xh-toast-spin')
+    expect(beforeOf(root, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(root, 'animation-iteration-count')).toBe('infinite')
   })
 

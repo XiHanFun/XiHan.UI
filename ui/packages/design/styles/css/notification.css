@@ -29,14 +29,6 @@
     }
   }
 
-  /* loading 那枚字形自己转。逐皮肤自带一份：跨皮肤共用动画名，
-     引用方那份皮肤不在场时动画就静默不跑 */
-  @keyframes xh-notification-spin {
-    to {
-      rotate: 360deg;
-    }
-  }
-
   @keyframes xh-notification-out {
     from {
       opacity: 1;
@@ -270,7 +262,7 @@
   [data-scope='notification'][data-part='item'][data-loading] [data-part='item-indicator']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-notification-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；
