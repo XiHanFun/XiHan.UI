@@ -169,9 +169,12 @@
 --xh-measure-prose: 32rem
 --xh-motion-distance-md: 0px
 --xh-motion-distance-sm: 0px
+--xh-motion-duration-collapse: 1ms
 --xh-motion-duration-enter: 1ms
 --xh-motion-duration-exit: 1ms
+--xh-motion-duration-expand: 1ms
 --xh-motion-duration-micro: 1ms
+--xh-motion-duration-move: 1ms
 --xh-motion-duration-nudge: 1ms
 --xh-motion-duration-press: 1ms
 --xh-motion-duration-release: 1ms
@@ -191,6 +194,7 @@
 --xh-motion-scale-exit: 1
 --xh-motion-scale-press: 1
 --xh-motion-stagger-step: 0ms
+--xh-motion-travel: 0px
 --xh-nav-link-max-w: 12rem
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px

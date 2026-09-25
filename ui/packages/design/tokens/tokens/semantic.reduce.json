@@ -13,6 +13,18 @@
       "$type": "duration",
       "$value": "1ms"
     },
+    "duration-move": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "duration-expand": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "duration-collapse": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
     "duration-slide": {
       "$type": "duration",
       "$value": "1ms"
@@ -38,6 +50,10 @@
       "$value": "0px"
     },
     "distance-md": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "travel": {
       "$type": "dimension",
       "$value": "0px"
     },

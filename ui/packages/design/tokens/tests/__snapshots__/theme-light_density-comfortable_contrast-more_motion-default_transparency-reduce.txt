@@ -167,10 +167,13 @@
 --xh-measure-prose: 32rem
 --xh-motion-distance-md: 8px  ← var(--xh-space-2)
 --xh-motion-distance-sm: 4px  ← var(--xh-space-1)
+--xh-motion-duration-collapse: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-enter: 200ms  ← var(--xh-duration-normal)
 --xh-motion-duration-exit: 120ms  ← var(--xh-duration-fast)
+--xh-motion-duration-expand: 200ms  ← var(--xh-duration-normal)
 --xh-motion-duration-micro: 120ms  ← var(--xh-duration-fast)
---xh-motion-duration-nudge: 200ms  ← var(--xh-duration-normal)
+--xh-motion-duration-move: 200ms  ← var(--xh-duration-normal)
+--xh-motion-duration-nudge: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-press: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-release: 200ms  ← var(--xh-duration-normal)
 --xh-motion-duration-slide: 320ms  ← var(--xh-duration-slow)
@@ -189,6 +192,7 @@
 --xh-motion-scale-exit: 0.98
 --xh-motion-scale-press: 0.97
 --xh-motion-stagger-step: calc(200ms / 5)  ← calc(var(--xh-duration-normal) / 5)
+--xh-motion-travel: 100%
 --xh-nav-link-max-w: 12rem
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px
