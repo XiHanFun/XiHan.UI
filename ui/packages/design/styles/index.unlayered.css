@@ -26143,7 +26143,7 @@
 [data-scope='loading-bar'][data-part='range'] {
   block-size: 100%;
   background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
-  transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-continuous);
+  transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-move)) var(--xh-motion-ease-continuous);
 }
 
 /* 渲染了亮边才把进度段变成定位面：亮边贴在它的末端 */
