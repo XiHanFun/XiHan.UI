@@ -19868,13 +19868,6 @@
 
   /* hidden-input 是 type=hidden 的原生输入，浏览器本就不渲染它，这里一条声明都不给。 */
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='color-slider'][data-part='thumb'],
-    [data-scope='color-slider'][data-part='value-text'] {
-      transition: none;
-    }
-  }
-
   /*
    * 高对比档：轨道画的就是颜色本身，被系统换掉之后整条滑杆不再能调色。
    * 轨道与拇指退出强制着色保住原色，各补一圈系统描边把它们从背景里框出来。
