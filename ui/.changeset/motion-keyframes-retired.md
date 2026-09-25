@@ -14,3 +14,5 @@
 | `xh-clipboard-rotate` | `xh-spin` |
 | `xh-download-trigger-rotate` | `xh-spin` |
 | `xh-notification-spin` | `xh-spin` |
+| `xh-reasoning-shimmer` | `xh-shimmer` |
+| `xh-tool-call-shimmer` | `xh-shimmer` |

@@ -246,7 +246,9 @@
 
   /* ── 循环：匀速转圈与扫过的流光 ──
      时长取循环令牌，减弱动效下由各皮肤停掉并换成静态替代。
-     转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖 */
+     转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖。
+     流光的亮带从右扫到左：消费方把渐变画成自身两倍宽（background-size: 200% 100%），
+     只移动背景位置，不动布局也不动 transform。Reasoning、ToolCall 的在跑文字 */
   @keyframes xh-spin {
     to {
       rotate: 1turn;

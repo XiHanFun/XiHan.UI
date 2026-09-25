@@ -175,7 +175,7 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /*
@@ -293,17 +293,6 @@
 
     to {
       opacity: 1;
-    }
-  }
-
-  /* 亮带从右往左扫过文字。背景图比自身宽一倍，只移动背景位置，不动布局 */
-  @keyframes xh-reasoning-shimmer {
-    from {
-      background-position: 150% center;
-    }
-
-    to {
-      background-position: -50% center;
     }
   }
 

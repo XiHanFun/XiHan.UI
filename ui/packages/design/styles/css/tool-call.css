@@ -238,7 +238,7 @@
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
-    animation: xh-tool-call-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：整道光撤掉换回平色，"在跑"仍由状态文字本身表达——只停动画的话，
@@ -377,18 +377,6 @@
     to {
       opacity: 1;
       translate: 0 0;
-    }
-  }
-
-  /* 一道比字色亮的窄带从右扫到左。背景图比自身宽一倍，靠移动背景位置扫过去，
-     不动布局也不动 transform */
-  @keyframes xh-tool-call-shimmer {
-    from {
-      background-position: 150% center;
-    }
-
-    to {
-      background-position: -50% center;
     }
   }
 

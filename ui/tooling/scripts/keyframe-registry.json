@@ -461,15 +461,6 @@
         "reasoning"
       ]
     },
-    "xh-reasoning-shimmer": {
-      "content": "from{background-position:150% center}to{background-position:-50% center}",
-      "definedIn": [
-        "reasoning.css"
-      ],
-      "consumers": [
-        "reasoning"
-      ]
-    },
     "xh-rise-in": {
       "content": "from{opacity:0;translate:0 var(--xh-motion-distance-sm)}to{opacity:1;translate:0 0}",
       "definedIn": [
@@ -503,7 +494,10 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "reasoning",
+        "tool-call"
+      ],
       "relation": "loop"
     },
     "xh-skeleton-pulse": {
@@ -603,15 +597,6 @@
         "tool-call"
       ]
     },
-    "xh-tool-call-shimmer": {
-      "content": "from{background-position:150% center}to{background-position:-50% center}",
-      "definedIn": [
-        "tool-call.css"
-      ],
-      "consumers": [
-        "tool-call"
-      ]
-    },
     "xh-tour-spotlight-in": {
       "content": "from{opacity:0;scale:calc(2 - var(--xh-motion-scale-enter))}to{opacity:1;scale:1}",
       "definedIn": [
@@ -683,14 +668,6 @@
         "xh-sheet-out"
       ]
     },
-    "xh-reasoning-shimmer": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-reasoning-shimmer",
-        "xh-shimmer",
-        "xh-tool-call-shimmer"
-      ]
-    },
     "xh-clipboard-loading-reveal": {
       "$description": "2 个名字是同一段动画，收敛前登记在案",
       "names": [
@@ -715,6 +692,8 @@
     "xh-approval-rotate": "并入 xh-spin（family/motion.css）",
     "xh-clipboard-rotate": "并入 xh-spin（family/motion.css）",
     "xh-download-trigger-rotate": "并入 xh-spin（family/motion.css）",
-    "xh-notification-spin": "并入 xh-spin（family/motion.css）"
+    "xh-notification-spin": "并入 xh-spin（family/motion.css）",
+    "xh-reasoning-shimmer": "并入 xh-shimmer（family/motion.css）",
+    "xh-tool-call-shimmer": "并入 xh-shimmer（family/motion.css）"
   }
 }
