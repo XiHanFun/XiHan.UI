@@ -203,11 +203,13 @@ function loadThemes(blocks) {
   const light = new Map()
   const dark = new Map()
   for (const { selector, decls } of blocks) {
-    const target = selector.startsWith(':where(:root)')
+    // 主题块的选择器列表里还挂着墨色域那一支（墨色域同时是主题边界），按分支认，不按整串比
+    const branches = selector.split(',').map(branch => branch.trim())
+    const target = branches.includes(':where(:root)')
       ? root
-      : selector === ':where([data-theme=\'light\'])'
+      : branches.includes(':where([data-theme=\'light\'])')
         ? light
-        : selector === ':where([data-theme=\'dark\'])' ? dark : null
+        : branches.includes(':where([data-theme=\'dark\'])') ? dark : null
     if (!target)
       continue
     for (const [k, v] of decls) target.set(k, v)

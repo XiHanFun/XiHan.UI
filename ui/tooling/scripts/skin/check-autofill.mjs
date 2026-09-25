@@ -600,8 +600,12 @@ for (const file of (await readdir(SKIN_DIR)).filter(name => name.endsWith('.css'
     globalDeclarations.set(declaration.prop, values)
   }
 }
+/** 只写给墨色域的块：墨色域是彩色区块上的面声明，不是页面缺省环境，自动填充遮罩按缺省面求值。 */
+const isInkDomainOnly = selector => selector.split(',').every(branch => /^:where\(\[data-xh-ink[^)]*\]\)$/.test(branch.trim()))
 for (const declaration of declarations(stripComments(await readFile('packages/design/tokens/tokens.css', 'utf8')))) {
   if (!declaration.prop.startsWith('--xh-'))
+    continue
+  if (isInkDomainOnly(declaration.selectors.at(-1) ?? ''))
     continue
   const values = globalDeclarations.get(declaration.prop) ?? []
   values.push(declaration.value)
