@@ -31355,7 +31355,7 @@
   justify-content: center;
   inline-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
   block-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
