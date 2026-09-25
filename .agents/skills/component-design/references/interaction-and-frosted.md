@@ -51,11 +51,11 @@ rest
 
 | 参数 | 值 | 说明 |
 | --- | ---: | --- |
-| press duration | 120ms | 必须先于业务请求反馈 |
-| release duration | 200ms | 允许轻微回弹但不得过冲明显 |
-| press scale | 0.97 | 所有离散 Action Control 一致 |
-| press easing | standard/continuous | 按下稳定，不使用弹簧 |
-| release easing | ease-out-strong | 快速恢复，末端柔和 |
+| press duration | `--xh-motion-duration-press`（120ms） | 必须先于业务请求反馈 |
+| release duration | `--xh-motion-duration-release`（200ms） | 允许轻微回弹但不得过冲明显 |
+| press scale | `--xh-motion-scale-press`（0.97） | 所有离散 Action Control 一致 |
+| press easing | `--xh-motion-ease-press` | 按下稳定，不使用弹簧 |
+| release easing | `--xh-motion-ease-release` | 快速恢复，末端柔和 |
 | transform origin | center | 不因布局方向改变 |
 
 ### 2.2 使用范围
@@ -107,8 +107,10 @@ rest
 
 ### 2.5 Reduced Motion
 
+全库语义见《统一组件设计方案》§14.4：去位移、留淡变。
+
 - 取消 scale、translate 和回弹。
-- 保留 active 背景/前景变化，确保用户仍收到操作确认。
+- 保留 active 背景/前景变化，确保用户仍收到操作确认；颜色淡变不属于运动，减弱动效下保留。
 - 时长收敛为全局 reduced-motion 通道，不在组件内另写媒体查询散值。
 - Spinner 等持续动画停止时必须保留静态状态图形或文字。
 
@@ -126,8 +128,8 @@ rest
 
 | 对象 | 高度 | 时长 / 曲线 |
 | --- | --- | --- |
-| Surface 级（Accordion、Collapsible、Reasoning、ToolCall） | `grid-template-rows: 0fr → 1fr` | 入 `--xh-motion-duration-enter` / `--xh-motion-ease-enter-strong`；出 `--xh-motion-duration-exit` / `--xh-motion-ease-exit`；指示器同档 |
-| 密集树形（Tree、TreeSelect、JsonViewer、SideNav 内联） | 不动高度 | 指示器 `--xh-motion-duration-micro` |
+| Surface 级（Accordion、Collapsible、Reasoning、ToolCall） | `grid-template-rows: 0fr → 1fr` | 展开 `--xh-motion-duration-expand` / `--xh-motion-ease-enter-strong`；收起 `--xh-motion-duration-collapse` / `--xh-motion-ease-exit`；指示器同档；初始即展开的内容不播动画 |
+| 密集（Tree、TreeSelect、JsonViewer、SideNav 内联、Table 展开行、Truncate） | 不动高度，刻意瞬时 | 树族指示器 `--xh-motion-duration-micro` |
 
 ### 2.8 浮层进出场
 
@@ -135,13 +137,14 @@ rest
 
 | 锚定关系 | 关键帧 |
 | --- | --- |
-| 锚定列表 / 菜单 / tooltip | `xh-overlay-slide-in / out`；tooltip 入场 `--xh-motion-duration-enter` |
+| 锚定列表 / 菜单 / tooltip（含 ColorPicker） | `xh-overlay-slide-in / out`；tooltip 入场 `--xh-motion-duration-enter` |
 | 锚定面板（Popover、HoverCard、Popconfirm、Tour、Command） | `xh-overlay-pop-in` / `xh-pop-out` |
-| 无锚定弹出（NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表） | `xh-pop-in / out` |
+| 无锚定弹出（NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、BackTop、回底按钮） | `xh-pop-in / out` |
+| 面板（Dialog、Notification） | `xh-sheet-in / out` |
+| 整幅滑入（Drawer、Layout 抽屉式侧栏） | `xh-slide-in / out`，位移 `--xh-motion-travel`；入 `--xh-motion-duration-slide` / `--xh-motion-ease-slide`，出 `--xh-motion-duration-exit` / `--xh-motion-ease-exit` |
 | 遮罩与全屏面 | `xh-fade-in / out` |
-| Drawer | 入 `--xh-motion-duration-slide` / `--xh-motion-ease-slide`，出 `--xh-motion-duration-exit` / `--xh-motion-ease-exit` |
 
-共享关键帧集中在 `family/motion.css`；皮肤不得重定义。
+共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。`xh-sheet`、`xh-slide`、`--xh-motion-travel` 尚待落地（同文 §19）。
 
 ## 3. Frosted 柔和模糊材质
 
@@ -216,6 +219,7 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 - [ ] disabled、pending、selected、danger 组合状态明确。
 - [ ] reduced motion 下仍有非位移反馈。
 - [ ] disclosure 与浮层进出场按 §2.7、§2.8 取关键帧与时长。
+- [ ] 动效已按《统一组件设计方案》§9 选定角色；有进场即有退场；初始内容不播进场。
 
 ### 4.3 边界与选中
 
