@@ -58,8 +58,8 @@
 
 ## Disclosure
 
-- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容走 `grid-template-rows: 0fr → 1fr`：入场 `--xh-motion-duration-enter` + `--xh-motion-ease-enter-strong`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit`；指示器旋转与内容同档。
-- 密集树形展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层）不动高度，只旋转指示器 `--xh-motion-duration-micro`。
+- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容走 `grid-template-rows: 0fr → 1fr`：展开 `--xh-motion-duration-expand` + `--xh-motion-ease-enter-strong`，收起 `--xh-motion-duration-collapse` + `--xh-motion-ease-exit`；指示器随内容同档转向，减弱动效下两者都瞬时完成。
+- 密集展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器 `--xh-motion-duration-nudge`。
 
 ## 浮层进出场
 
