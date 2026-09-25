@@ -84,7 +84,7 @@ describe('attachCssExit', () => {
   // 但不生成盒子的元素不播动画，animationend 永远不来
   it('元素不生成盒子时不申领租约', () => {
     const el = mount()
-    stubStyle(el, { animationName: 'xh-dialog-out', animationDuration: '0.2s', display: 'none' })
+    stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s', display: 'none' })
     const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
@@ -93,13 +93,13 @@ describe('attachCssExit', () => {
 
   it('真有动画时申领租约，animationend 到达才卸载', async () => {
     const el = mount()
-    stubStyle(el, { animationName: 'xh-dialog-out', animationDuration: '0.2s' })
+    stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s' })
     const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
     expect(p.rendered, '动画期间要留在 DOM 里').toBe(true)
 
-    el.dispatchEvent(animationEvent('animationend', 'xh-dialog-out'))
+    el.dispatchEvent(animationEvent('animationend', 'xh-sheet-out'))
     await settle()
     expect(p.rendered).toBe(false)
   })
@@ -127,7 +127,7 @@ describe('attachCssExit', () => {
   it('超过声明时长也不猜测完成，实际动画取消后才归还', async () => {
     vi.useFakeTimers()
     const el = mount()
-    stubStyle(el, { animationName: 'xh-dialog-out', animationDuration: '0.2s', animationDelay: '0.1s' })
+    stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s', animationDelay: '0.1s' })
     const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)
@@ -135,7 +135,7 @@ describe('attachCssExit', () => {
 
     vi.advanceTimersByTime(10000)
     expect(p.rendered, '暂停或被业务延长的动画不能按声明时长提前结束').toBe(true)
-    el.dispatchEvent(animationEvent('animationcancel', 'xh-dialog-out'))
+    el.dispatchEvent(animationEvent('animationcancel', 'xh-sheet-out'))
     await vi.runAllTimersAsync()
     expect(p.rendered).toBe(false)
   })
@@ -144,7 +144,7 @@ describe('attachCssExit', () => {
     const el = mount()
     const child = document.createElement('span')
     el.appendChild(child)
-    stubStyle(el, { animationName: 'xh-dialog-out', animationDuration: '0.2s' })
+    stubStyle(el, { animationName: 'xh-sheet-out', animationDuration: '0.2s' })
     const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
     attachCssExit(el, p, { win: window })
     p.update(false)

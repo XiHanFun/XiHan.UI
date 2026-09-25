@@ -5,6 +5,8 @@
 
 /* 定义 form 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 /* Form 独立皮肤同时传递引入提交 / 重置钮的动作控件配方；full bundle 递归去重。 */
 @import '../family/action-control.css';
 
@@ -204,7 +206,7 @@
   /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，
      视觉这边也得有个"它是刚冒出来的"的交代，否则像一直杵在那儿 */
   [data-scope='form'][data-part='error-summary'][data-state='invalid'] {
-    animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行：悬停 / 按下只换面不缩放，
@@ -232,7 +234,7 @@
   /* 摘要显出时条目逐条入场，越靠后起步越晚。
      backwards 让还没轮到的条目停在首帧，不是先显出再重播 */
   [data-scope='form'][data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item'] {
-    animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
   /* 排序按"前面有几条露面的"数，不按 nth-child：作者一次把所有字段的条目都写上，
@@ -359,21 +361,5 @@
     --xh-action-shadow-hover: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
     --xh-action-shadow-pressed: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
     --xh-action-ring-color-focus-visible: currentColor;
-  }
-}
-
-@layer xihan.motion {
-  /* 关键帧写在自己文件里、名字带组件前缀：motion.css 是公共的，
-     往那儿加一条只服务本组件的动画会让所有组件都得跟着重下载 */
-  @keyframes xh-form-summary-enter {
-    from {
-      opacity: 0;
-      translate: 0 calc(-1 * var(--xh-motion-distance-sm));
-    }
-
-    to {
-      opacity: 1;
-      translate: 0 0;
-    }
   }
 }

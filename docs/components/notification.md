@@ -243,7 +243,7 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 
 ### 皮肤
 
-`@xihan-ui/styles/notification.css` 使用 `[data-scope="notification"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/notification.css` 使用 `[data-scope="notification"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -329,7 +329,7 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 
 ### 动效
 
-关键帧 `xh-notification-in` · `xh-notification-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-countdown` · `xh-sheet-in` · `xh-sheet-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

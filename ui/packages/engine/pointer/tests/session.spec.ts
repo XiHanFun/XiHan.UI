@@ -171,3 +171,44 @@ describe('文档解析', () => {
     expect(resolveSessionDoc(undefined)).toBe(document)
   })
 })
+
+describe('松手速度', () => {
+  /** 带时间戳的指针事件：jsdom 的 timeStamp 取创建时刻，这里钉成给定值。 */
+  function at(type: string, timeStamp: number, clientX: number, clientY = 0): PointerEvent {
+    const event = pointer(type, { clientX, clientY })
+    Object.defineProperty(event, 'timeStamp', { value: timeStamp, configurable: true })
+    return event
+  }
+
+  it('按抬起前 80ms 内的首尾位移与时间差求出，像素每秒', () => {
+    const onEnd = vi.fn()
+    const session = createPointerSession({ doc: document, onMove: vi.fn(), onEnd })
+    document.dispatchEvent(at('pointermove', 0, 0))
+    document.dispatchEvent(at('pointermove', 100, 10))
+    document.dispatchEvent(at('pointermove', 140, 30, 4))
+    document.dispatchEvent(at('pointerup', 160, 40, 8))
+    // 窗口是 80–160ms：首个采样 (100, 10, 0)，末个 (160, 40, 8)
+    expect(onEnd.mock.calls[0]![0].velocity).toEqual({ x: 500, y: (8 / 60) * 1000 })
+    session.dispose()
+  })
+
+  it('停住再抬起时速度为零', () => {
+    const onEnd = vi.fn()
+    const session = createPointerSession({ doc: document, onMove: vi.fn(), onEnd })
+    document.dispatchEvent(at('pointermove', 0, 0))
+    document.dispatchEvent(at('pointermove', 20, 40))
+    document.dispatchEvent(at('pointerup', 400, 40))
+    expect(onEnd.mock.calls[0]![0].velocity).toEqual({ x: 0, y: 0 })
+    session.dispose()
+  })
+
+  it('被系统收走时速度为零', () => {
+    const onEnd = vi.fn()
+    const session = createPointerSession({ doc: document, onMove: vi.fn(), onEnd })
+    document.dispatchEvent(at('pointermove', 0, 0))
+    document.dispatchEvent(at('pointermove', 16, 40))
+    document.dispatchEvent(at('pointercancel', 32, 80))
+    expect(onEnd.mock.calls[0]![0].velocity).toEqual({ x: 0, y: 0 })
+    session.dispose()
+  })
+})

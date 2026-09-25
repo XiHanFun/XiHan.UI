@@ -335,7 +335,9 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 关闭时 DOM 不会立即消失：[进出场原语](./behavior#进出场)会等待动画结束（或超时）后才允许卸载，因此 `[data-state='closed']` 的动画可以完整播放。
 
-跨皮肤共用的关键帧（`xh-fade-in / out`、`xh-overlay-slide-in / out`、`xh-overlay-pop-in`、`xh-pop-in / out`、`xh-rise-in`、`xh-disclosure-expand / collapse`）只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`；引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。组件专属关键帧（`xh-spinner-rotate`、`xh-drawer-in-*` 一类）仍写在各自皮肤里。要替换某段共享动画，在 `xihan.overrides` 层重定义同名关键帧即可，不必逐皮肤覆盖。
+跨皮肤共用的关键帧只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`：浮层进出场 `xh-overlay-slide-in / out`、`xh-overlay-pop-in`、`xh-pop-in / out`，面板 `xh-sheet-in / out`，整幅滑入 `xh-slide-in / out`，淡变与页内显现 `xh-fade-in / out`、`xh-rise-in`、`xh-drop-in`，列表条目 `xh-item-in`，披露 `xh-disclosure-expand / collapse`，循环 `xh-spin`、`xh-shimmer`，倒计时 `xh-countdown`。引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。同一段动画全库只有一个名字；只属于一个组件的关键帧（`xh-toast-in`、`xh-skeleton-shimmer` 一类）仍写在各自皮肤里。
+
+要替换某段动画，在 `xihan.overrides` 层重定义同名关键帧即可，不必逐皮肤覆盖。共享关键帧的重定义会作用到所有引用它的组件；只想换一个组件时，改写该组件部件上的 `animation-name`，指向自己定义的关键帧。
 
 ## 升级前的形态
 

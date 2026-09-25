@@ -25,6 +25,7 @@ import { XhElement } from '../element-base'
  * @attr {number} max - 计数上限，默认 99
  * @attr {boolean} show-zero - 计数为 0 时也显示，默认不显示
  * @attr {boolean} dot - 只显示圆点，不显示数字
+ * @attr {boolean} pulse - 圆点呼吸：表达正在进行、给不出进度的状态，只在 dot 模式下生效
  * @attr {string} label - 读屏朗读该角标的方式，例如「3 条未读」
  * @csspart root - 锚点：被标记的对象放置在其中
  * @csspart indicator - 角标本身，绝对定位在 root 的某个角
@@ -41,6 +42,7 @@ export class XhBadgeElement extends XhElement {
     max: { converter: { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) } },
     showZero: { type: Boolean, attribute: 'show-zero' },
     dot: { type: Boolean },
+    pulse: { type: Boolean },
     label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
@@ -51,6 +53,8 @@ export class XhBadgeElement extends XhElement {
   declare max?: number
   declare showZero?: boolean
   declare dot?: boolean
+  /** 圆点呼吸：表达正在进行、给不出进度的状态。只在 dot 模式下生效。 */
+  declare pulse?: boolean
   declare label?: string
 
   protected wire(): void {
@@ -66,6 +70,7 @@ export class XhBadgeElement extends XhElement {
       max: this.max,
       showZero: this.showZero,
       dot: this.dot,
+      pulse: this.pulse,
       label: this.label,
     } as BadgeProps), wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)

@@ -448,7 +448,7 @@ background-color: oklch(0.967 0.001 258)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-question-flow-result-in
+animation-name: xh-pop-in
 animation-duration: 0.2s
 animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
 outline-width: 3px
@@ -483,7 +483,7 @@ background-color: oklch(1 0 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-question-flow-in
+animation-name: xh-item-in
 animation-duration: 0.2s
 animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
 outline-width: 3px

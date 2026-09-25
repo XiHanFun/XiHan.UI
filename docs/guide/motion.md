@@ -77,7 +77,19 @@ createSpring({ duration: 0.4, bounce: 0 }); // 临界阻尼，全程单调不过
 createSpring({ duration: 0.4, bounce: -0.5 }); // 过阻尼，缓慢趋近
 ```
 
-`bounce` 落在 (−1, 1)：正数减阻尼、负数加阻尼。五个预设 `snappy` `smooth` `gentle` `bouncy` `stiff` 直接按名字取。
+`bounce` 落在 (−1, 1)：正数减阻尼、负数加阻尼。预设按名字取，取值与令牌 `--xh-motion-spring-<名>-stiffness / -damping` 同源（质量恒为 1）：
+
+| 预设 | 刚度 / 阻尼 | 超调 | 落定 | 用途 |
+| --- | --- | ---: | ---: | --- |
+| `stiff` | 600 / 42 | 0.5% | 约 195ms | 越界回弹 |
+| `smooth` | 300 / 30 | 0.4% | 约 283ms | 手势松手：归位、快甩、面板弹回 |
+| `snappy` | 380 / 30 | 2.2% | 约 369ms | 干脆的位移 |
+| `gentle` | 170 / 26 | 0 | 约 567ms | 临界阻尼的慢弹簧 |
+| `bouncy` | 400 / 18 | 20.4% | 约 581ms | 明显回弹，只供作者使用，核心组件不用 |
+| `toggle` | 420 / 26 | 7.5% | — | liquid 档的切换滑块 |
+| `lead` / `trail` | 520 / 34、210 / 24 | 2.9%、0.9% | 约 313ms、485ms | liquid 档双沿指示器的前沿与后沿 |
+
+核心组件在 standard 档只用超调不超过 3% 的预设。
 
 沉降时长按阻尼比分三支计算：欠阻尼看包络衰减、临界阻尼求解含 t 的指数方程、过阻尼由较慢的根主导。三支各有断言，并与 dt=0.1ms 的四阶龙格-库塔积分逐点比对。
 
@@ -92,6 +104,32 @@ if (supportsLinearEasing()) {
   el.style.animationTimingFunction = springToLinearEasing(spring, 32);
 }
 ```
+
+### 有状态弹簧
+
+`createSpring` 描述的是一段从 0 到 1 的固定运动。手势需要另外两件事：松手时的速度要接进动画，动画进行中目标还会变。`createSpringValue` 持有当前值、速度与目标，改目标时以当前位移与当前速度为初始条件重新求解，位置与速度都不跳变：
+
+```ts
+import { createSpringValue } from "@xihan-ui/motion";
+
+const offset = createSpringValue({
+  spring: "smooth",
+  value: 0,
+  target: sheetElement, // 取它所在的窗口驱动帧循环，并按它的 data-motion 作用域判断减弱动效
+  onUpdate: (value) => { sheetElement.style.translate = `0 ${value}px`; },
+});
+
+// 拖动中跟手，直接落位
+offset.set(dragY);
+// 松手：按位移与速度决定关闭还是弹回，速度原样交给弹簧
+const result = await offset.to(shouldClose ? sheetHeight : 0, { velocity: releaseVelocity });
+// result 是 'rest'（落定）或 'interrupted'（被新的 to()、set()、stop() 打断）
+```
+
+- 在目标处带着速度松手也会运动：先被速度带离，再回到目标。
+- 每一段运动是时间的闭式解，与帧率无关；帧由 `frameLoop` 驱动。
+- 减弱动效下 `to()` 直接落到终态并以 `'rest'` 结算，跟手的 `set()` 不受影响。
+- 刚度、阻尼、质量不大于 0，或任何数值不是有限数时立即抛 `TypeError`。
 
 ## 减弱动效
 

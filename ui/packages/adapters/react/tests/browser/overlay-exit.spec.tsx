@@ -272,7 +272,7 @@ describe('dialog 退场', () => {
     // 皮肤若给 content 补了 [hidden]{display:none}，元素不生成盒子、动画不启动，
     // 退场探测直接放弃租约，动画一帧都播不出来
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expectPlaying(closing!, 'xh-dialog-out')
+    expectPlaying(closing!, 'xh-sheet-out')
   })
 
   it('遮罩同时在播淡出', async () => {
@@ -301,13 +301,13 @@ describe('dialog 退场', () => {
     await setOpen(true)
 
     expect(document.querySelectorAll('[data-scope=\'dialog\'][data-part=\'content\']')).toHaveLength(1)
-    expectPlaying(part('dialog', 'content'), 'xh-dialog-in')
+    expectPlaying(part('dialog', 'content'), 'xh-sheet-in')
 
     // 被打断的那张退场租约要在重新展开时归还：没归还的话它会一直占着，
     // 下一次收起等不到「所有租约归还」，弹窗就永远卸不掉
     await setOpen(false)
     const closing = part('dialog', 'content')
-    expectPlaying(closing, 'xh-dialog-out', '第二次收起也要播退场')
+    expectPlaying(closing, 'xh-sheet-out', '第二次收起也要播退场')
     expect(await animationEnd(closing)).toBe(true)
     await settle()
     expect(query('dialog', 'content'), '第二次退场结束后同样应当卸载').toBeNull()
@@ -329,7 +329,7 @@ describe('dialog 退场', () => {
 
     const closing = part('dialog', 'content')
     expect(getComputedStyle(closing).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expectPlaying(closing, 'xh-dialog-out')
+    expectPlaying(closing, 'xh-sheet-out')
 
     expect(await animationEnd(closing), '退场动画应当真的结束一次').toBe(true)
     await settle()
@@ -356,7 +356,7 @@ describe('drawer 退场', () => {
     expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
     // side 缺省是 right，滑出按边配对
-    expectPlaying(closing!, 'xh-drawer-out-right')
+    expectPlaying(closing!, 'xh-slide-out')
   })
 
   it('遮罩同时在播淡出', async () => {

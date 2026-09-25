@@ -27,6 +27,8 @@ const badgeProps = {
   showZero: { type: Boolean, default: undefined },
   /** 只显示一个点，不显示数字。 */
   dot: { type: Boolean, default: undefined },
+  /** 圆点呼吸：表达正在进行、给不出进度的状态。只在 dot 模式下生效。 */
+  pulse: { type: Boolean, default: undefined },
   /** 读屏朗读该角标的方式，例如「3 条未读」。 */
   label: { type: String },
 } as const

@@ -82,7 +82,8 @@
   }
 
   /* ── 无锚定弹出：原地缩放淡入，没有方向 ──
-     NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 */
+     NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层；
+     页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮 */
   @keyframes xh-pop-in {
     from {
       opacity: 0;
@@ -192,7 +193,7 @@
   }
 
   /* ── 面板（sheet）：模态与强反馈面，竖向一小段位移叠缩放 ──
-     Dialog、Notification */
+     位移与缩放写独立属性，互不覆盖，手势期间写 translate 也不会把 scale 抹掉。Dialog、Notification */
   @keyframes xh-sheet-in {
     from {
       opacity: 0;
@@ -246,7 +247,9 @@
 
   /* ── 循环：匀速转圈与扫过的流光 ──
      时长取循环令牌，减弱动效下由各皮肤停掉并换成静态替代。
-     转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖 */
+     转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖。
+     流光的亮带从右扫到左：消费方把渐变画成自身两倍宽（background-size: 200% 100%），
+     只移动背景位置，不动布局也不动 transform。Reasoning、ToolCall 的在跑文字 */
   @keyframes xh-spin {
     to {
       rotate: 1turn;
@@ -260,6 +263,36 @@
 
     to {
       background-position: -50% center;
+    }
+  }
+
+  /* 呼吸：进行中、给不出进度、需要被察觉的状态点。明暗与缩放一起起伏，峰值落在 42%，
+     周期 --xh-motion-loop-breathe、缓动 --xh-motion-ease-breathe。只动 opacity 与 scale。
+     光环画在状态点的 ::after 上，同周期从点本身的大小外扩淡尽，只播 3 个周期，状态点本身持续到状态结束。
+     减弱动效下两者都停，状态点停在满不透明度。Badge 的 pulse */
+  @keyframes xh-breathe {
+    0%,
+    100% {
+      opacity: 0.5;
+      scale: var(--xh-motion-scale-breathe);
+    }
+
+    42% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes xh-breathe-halo {
+    from {
+      opacity: 0.32;
+      scale: 1;
+    }
+
+    60%,
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-halo);
     }
   }
 

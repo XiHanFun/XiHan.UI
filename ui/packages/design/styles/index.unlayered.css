@@ -1891,7 +1891,8 @@
 }
 
 /* ── 无锚定弹出：原地缩放淡入，没有方向 ──
-   NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 */
+   NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层；
+   页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮 */
 @keyframes xh-pop-in {
   from {
     opacity: 0;
@@ -2001,7 +2002,7 @@
 }
 
 /* ── 面板（sheet）：模态与强反馈面，竖向一小段位移叠缩放 ──
-   Dialog、Notification */
+   位移与缩放写独立属性，互不覆盖，手势期间写 translate 也不会把 scale 抹掉。Dialog、Notification */
 @keyframes xh-sheet-in {
   from {
     opacity: 0;
@@ -2055,7 +2056,9 @@
 
 /* ── 循环：匀速转圈与扫过的流光 ──
    时长取循环令牌，减弱动效下由各皮肤停掉并换成静态替代。
-   转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖 */
+   转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖。
+   流光的亮带从右扫到左：消费方把渐变画成自身两倍宽（background-size: 200% 100%），
+   只移动背景位置，不动布局也不动 transform。Reasoning、ToolCall 的在跑文字 */
 @keyframes xh-spin {
   to {
     rotate: 1turn;
@@ -2069,6 +2072,36 @@
 
   to {
     background-position: -50% center;
+  }
+}
+
+/* 呼吸：进行中、给不出进度、需要被察觉的状态点。明暗与缩放一起起伏，峰值落在 42%，
+   周期 --xh-motion-loop-breathe、缓动 --xh-motion-ease-breathe。只动 opacity 与 scale。
+   光环画在状态点的 ::after 上，同周期从点本身的大小外扩淡尽，只播 3 个周期，状态点本身持续到状态结束。
+   减弱动效下两者都停，状态点停在满不透明度。Badge 的 pulse */
+@keyframes xh-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    scale: var(--xh-motion-scale-breathe);
+  }
+
+  42% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes xh-breathe-halo {
+  from {
+    opacity: 0.32;
+    scale: 1;
+  }
+
+  60%,
+  to {
+    opacity: 0;
+    scale: var(--xh-motion-scale-halo);
   }
 }
 
@@ -2870,6 +2903,7 @@
 /* styles/diff-view.css */
 /* 定义 diff view 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* 独立皮肤同时传递引入折叠格按钮的动作控件配方；full bundle 递归去重。 */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -2989,7 +3023,7 @@
 
 /* 点开折叠格才露出来的那几行播一次入场；收起是硬切，不占一段退场窗口 */
 [data-scope='diff-view'][data-part='row'][data-revealed] {
-  animation: xh-diff-view-reveal var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 行号是画上去的不是写上去的：复制差异不带它，读屏也不逐行念数字 */
@@ -3274,30 +3308,12 @@
   }
 }
 
-/* 露出来的行从上一行底下推出来：位移走幅度令牌，减弱动效档把它归零 */
-@keyframes xh-diff-view-reveal {
-  from {
-    opacity: 0;
-    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
 /* styles/download-trigger.css */
 /* 定义 download trigger 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-@keyframes xh-download-trigger-loading-reveal {
-  to {
-    opacity: 1;
-  }
-}
-
+/* 取数在途时文字原位隐去，只换前景色，不动布局 */
 @keyframes xh-download-trigger-content-hide {
   to {
     color: transparent;
@@ -3401,7 +3417,7 @@
   opacity: 0;
   animation:
     xh-spin var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
-    xh-download-trigger-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+    xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -7707,22 +7723,8 @@
 /* styles/log.css */
 /* 定义 log 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* 独立皮肤同时传递引入回底钮的动作控件配方；full bundle 递归去重。 */
-
-/* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
-   引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
-   幅度与缩放走令牌，减弱动效时由令牌层归零 */
-@keyframes xh-log-button-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='log'] {
@@ -7853,7 +7855,7 @@
 
 /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
 [data-scope='log'][data-part='scroll-to-end-trigger'][data-state='visible'] {
-  animation: xh-log-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中。
@@ -10134,7 +10136,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
+  animation: xh-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /*
@@ -10176,7 +10178,7 @@
 /* 想完那一下两句文案整句换掉，淡入接住这次替换 */
 [data-scope='reasoning'][data-part='label']:not([data-streaming]),
 [data-scope='reasoning'][data-part='duration']:not([data-streaming]) {
-  animation: xh-reasoning-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
 }
 
 /*
@@ -10240,28 +10242,6 @@
   box-shadow:
     inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
     var(--xh-_reasoning-shadow);
-}
-
-/* 文案整句换掉时接住这次替换 */
-@keyframes xh-reasoning-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-/* 亮带从右往左扫过文字。背景图比自身宽一倍，只移动背景位置，不动布局 */
-@keyframes xh-reasoning-shimmer {
-  from {
-    background-position: 150% center;
-  }
-
-  to {
-    background-position: -50% center;
-  }
 }
 
 @media print {
@@ -13731,31 +13711,6 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* 独立皮肤同时传递引入授权行与两颗钮的动作控件配方，full bundle 递归去重。 */
 
-/* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
-@keyframes xh-approval-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-approval-result-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='approval'] {
   --xh-approval-skin: 1;
@@ -13786,7 +13741,7 @@
   background: var(--xh-approval-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-approval-shadow, none);
   transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-  animation: xh-approval-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -14008,7 +13963,7 @@
   color: var(--xh-approval-result-fg, var(--xh-fg-success));
   font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-approval-result-font-weight, var(--xh-text-label-weight));
-  animation: xh-approval-result-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='approval'][data-part='result'][hidden] {
@@ -14257,6 +14212,8 @@
 /* styles/badge.css */
 /* 定义 badge 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='badge'] {
   --xh-badge-skin: 1;
@@ -14328,6 +14285,37 @@
   padding: 0;
   box-shadow: none;
   font-size: 0;
+}
+
+/* 呼吸：圆点表达正在进行、给不出进度的状态（直播、录制、通话中）。
+   明暗与缩放的起伏持续到状态结束；外扩光环画在 ::after 上，同周期播 3 轮后停在不可见。
+   数字角标不呼吸：连接层只在圆点档投影 data-pulse，明暗起伏会压低数字的对比度 */
+[data-scope='badge'][data-part='indicator'][data-pulse] {
+  animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
+}
+
+[data-scope='badge'][data-part='indicator'][data-pulse]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: xh-breathe-halo var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) 3;
+}
+
+/* 减弱动效：两者都停，圆点停在满不透明度，光环不出现；状态仍由圆点本身与宿主的文字表达 */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='badge'][data-part='indicator'][data-pulse],
+  [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='badge'][data-part='indicator'][data-pulse],
+:where([data-motion='reduce']) [data-scope='badge'][data-part='indicator'][data-pulse]::after {
+  animation: none;
 }
 
 /* —— 落点 —— */
@@ -18093,18 +18081,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-@keyframes xh-clipboard-loading-reveal {
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-clipboard-loading-hide {
-  to {
-    opacity: 0;
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='clipboard'] {
   --xh-clipboard-skin: 1;
@@ -18327,12 +18303,12 @@
   opacity: 0;
   animation:
     xh-spin var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
-    xh-clipboard-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+    xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
 }
 
 [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
   > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
-  animation: xh-clipboard-loading-hide var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
+  animation: xh-fade-out var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
     var(--xh-motion-duration-micro) forwards;
 }
 
@@ -22874,36 +22850,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
-   两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
-@keyframes xh-dialog-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-}
-
-@keyframes xh-dialog-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-exit);
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='dialog'] {
   --xh-dialog-skin: 1;
@@ -23041,11 +22987,11 @@
 }
 
 [data-scope='dialog'][data-part='content'][data-state='open'] {
-  animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-sheet-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='dialog'][data-part='content'][data-state='closed'] {
-  animation: xh-dialog-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* —— 面板三段 —— */
@@ -23261,93 +23207,6 @@
 /* 定义 drawer 样式。 */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-/* 四条边各一对滑入/滑出。位移量用 translate 的百分比，参照的是面板自己的边框盒，
-   所以不管 --xh-drawer-size 被改成多少，"正好推到视口外"这件事都成立。
-
-   位移写成两个私有槽位而不是写死 ±100%：贴边用的是逻辑 inset（inset-inline-start 等），
-   RTL 下 inline-end 落在物理左边；transform 没有逻辑等价物，若这里写死物理方向，
-   就会出现"面板贴在左边、却从右边滑进来"。槽位在 RTL 下翻符号，两者才始终同向。
-   竖排书写模式下 block 轴不再是 Y 轴，位移会退化为纵向，但贴边本身仍由逻辑 inset 保证。 */
-@keyframes xh-drawer-in-right {
-  from {
-    translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
-  }
-
-  to {
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-drawer-out-right {
-  from {
-    translate: 0 0;
-  }
-
-  to {
-    translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
-  }
-}
-
-@keyframes xh-drawer-in-left {
-  from {
-    translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
-  }
-
-  to {
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-drawer-out-left {
-  from {
-    translate: 0 0;
-  }
-
-  to {
-    translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
-  }
-}
-
-@keyframes xh-drawer-in-top {
-  from {
-    translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
-  }
-
-  to {
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-drawer-out-top {
-  from {
-    translate: 0 0;
-  }
-
-  to {
-    translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
-  }
-}
-
-@keyframes xh-drawer-in-bottom {
-  from {
-    translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
-  }
-
-  to {
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-drawer-out-bottom {
-  from {
-    translate: 0 0;
-  }
-
-  to {
-    translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
-  }
-}
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='drawer'] {
@@ -23600,39 +23459,39 @@
   border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
 }
 
-/* 滑入/滑出按边配对。入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide
-   与 --xh-motion-ease-slide；退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
+/* 滑入/滑出共用整幅滑入关键帧，四条边只在两个方向槽里写起点。位移取整幅位移令牌，
+   translate 的百分比参照面板自己的边框盒，所以不管 --xh-drawer-size 被改成多少，
+   "正好推到视口外"这件事都成立。
+
+   方向槽由上面的 --xh-_drawer-shift-* 换算而不是写死物理方向：贴边用的是逻辑 inset
+   （inset-inline-start 等），RTL 下 inline-end 落在物理左边；translate 没有逻辑等价物，
+   若这里写死物理方向，就会出现"面板贴在左边、却从右边滑进来"。shift 槽在 RTL 下翻符号，
+   两者才始终同向。竖排书写模式下 block 轴不再是 Y 轴，位移会退化为纵向，但贴边本身仍由逻辑 inset 保证。 */
+[data-scope='drawer'][data-part='content'][data-side='right'] {
+  --xh-_slide-from-x: var(--xh-_drawer-shift-inline);
+}
+
+[data-scope='drawer'][data-part='content'][data-side='left'] {
+  --xh-_slide-from-x: calc(-1 * var(--xh-_drawer-shift-inline));
+}
+
+[data-scope='drawer'][data-part='content'][data-side='top'] {
+  --xh-_slide-from-y: calc(-1 * var(--xh-_drawer-shift-block));
+}
+
+[data-scope='drawer'][data-part='content'][data-side='bottom'] {
+  --xh-_slide-from-y: var(--xh-_drawer-shift-block);
+}
+
+/* 入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide 与 --xh-motion-ease-slide；
+   退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
    不定住终态，面板会在最后一帧弹回原位再消失。 */
-[data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {
-  animation: xh-drawer-in-right var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
+[data-scope='drawer'][data-part='content'][data-state='open'] {
+  animation: xh-slide-in var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
 }
 
-[data-scope='drawer'][data-part='content'][data-side='right'][data-state='closed'] {
-  animation: xh-drawer-out-right var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
-[data-scope='drawer'][data-part='content'][data-side='left'][data-state='open'] {
-  animation: xh-drawer-in-left var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
-}
-
-[data-scope='drawer'][data-part='content'][data-side='left'][data-state='closed'] {
-  animation: xh-drawer-out-left var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
-[data-scope='drawer'][data-part='content'][data-side='top'][data-state='open'] {
-  animation: xh-drawer-in-top var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
-}
-
-[data-scope='drawer'][data-part='content'][data-side='top'][data-state='closed'] {
-  animation: xh-drawer-out-top var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
-[data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='open'] {
-  animation: xh-drawer-in-bottom var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
-}
-
-[data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='closed'] {
-  animation: xh-drawer-out-bottom var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+[data-scope='drawer'][data-part='content'][data-state='closed'] {
+  animation: xh-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* —— 面板三段 —— */
@@ -24623,6 +24482,7 @@
 /* styles/form.css */
 /* 定义 form 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* Form 独立皮肤同时传递引入提交 / 重置钮的动作控件配方；full bundle 递归去重。 */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -24820,7 +24680,7 @@
 /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，
    视觉这边也得有个"它是刚冒出来的"的交代，否则像一直杵在那儿 */
 [data-scope='form'][data-part='error-summary'][data-state='invalid'] {
-  animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行：悬停 / 按下只换面不缩放，
@@ -24848,7 +24708,7 @@
 /* 摘要显出时条目逐条入场，越靠后起步越晚。
    backwards 让还没轮到的条目停在首帧，不是先显出再重播 */
 [data-scope='form'][data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item'] {
-  animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
 /* 排序按"前面有几条露面的"数，不按 nth-child：作者一次把所有字段的条目都写上，
@@ -24975,20 +24835,6 @@
   --xh-action-shadow-hover: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
   --xh-action-shadow-pressed: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
   --xh-action-ring-color-focus-visible: currentColor;
-}
-
-/* 关键帧写在自己文件里、名字带组件前缀：motion.css 是公共的，
-   往那儿加一条只服务本组件的动画会让所有组件都得跟着重下载 */
-@keyframes xh-form-summary-enter {
-  from {
-    opacity: 0;
-    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
 }
 
 /* styles/hover-card.css */
@@ -27013,34 +26859,8 @@
 /* styles/message-feed.css */
 /* 定义 message feed 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* 独立皮肤同时传递引入回底钮的动作控件配方，full bundle 递归去重。 */
-
-/* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
-   引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
-   幅度与缩放走令牌，减弱动效时由令牌层归零 */
-@keyframes xh-message-feed-item-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-message-feed-button-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='message-feed'] {
@@ -27096,7 +26916,7 @@
   flex-direction: column;
   gap: var(--xh-message-feed-item-gap, var(--xh-space-1));
   border-radius: var(--xh-message-feed-item-radius, var(--xh-shape-surface));
-  animation: xh-message-feed-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='message-feed'][data-part='item'][hidden] {
@@ -27148,7 +26968,7 @@
 
 /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
 [data-scope='message-feed'][data-part='scroll-to-end-trigger'][data-state='visible'] {
-  animation: xh-message-feed-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */
@@ -27547,40 +27367,8 @@
 /* styles/notification.css */
 /* 定义 notification 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* Notification 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
-
-/*
- * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
- * data-placement 反向选到卡片上，落位一改名整条动效静默失效。
- * 竖向一小段位移在九个位上都说得通。
- */
-@keyframes xh-notification-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-}
-
-@keyframes xh-notification-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-exit);
-  }
-}
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='notification'] {
@@ -27715,9 +27503,11 @@
   display: none;
 }
 
-/* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
+/* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段。
+   九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
+   data-placement 反向选到卡片上，落位一改名整条动效静默失效。竖向一小段位移在九个位上都说得通 */
 [data-scope='notification'][data-part='item'][data-state='visible'] {
-  animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  animation: xh-sheet-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
 /* 一摞里的多条按位次错开开幕。backwards 不能省：等待期间起帧不生效的话，
@@ -27745,7 +27535,7 @@
 /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
    不定住末帧的话动画跑完会弹回全不透明，卡片在被收起前先闪一下 */
 [data-scope='notification'][data-part='item'][data-state='dismissing'] {
-  animation: xh-notification-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行高，
@@ -29192,7 +28982,7 @@
   border-radius: var(--xh-question-flow-radius, var(--xh-shape-surface));
   background: var(--xh-question-flow-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-question-flow-shadow, none);
-  animation: xh-question-flow-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -29618,7 +29408,7 @@
   color: var(--xh-question-flow-result-fg, var(--xh-fg-success));
   font-size: var(--xh-question-flow-result-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-question-flow-result-font-weight, var(--xh-text-label-weight));
-  animation: xh-question-flow-result-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='question-flow'][data-part='result'][hidden] {
@@ -29636,32 +29426,6 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-
-/* 组件专属关键帧写在自己身上；共享的 xh-rise-in 由 family/motion.css 提供。 */
-/* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
-@keyframes xh-question-flow-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-question-flow-result-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-  }
 }
 
 /* styles/radio-group.css */
@@ -37957,7 +37721,7 @@
   border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
   background: var(--xh-tool-call-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-tool-call-shadow, none);
-  animation: xh-tool-call-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
+  animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -38157,7 +37921,7 @@
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: xh-tool-call-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
+  animation: xh-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：整道光撤掉换回平色，"在跑"仍由状态文字本身表达——只停动画的话，
@@ -38281,32 +38045,6 @@
   box-shadow:
     inset var(--xh-tool-call-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-tool-call-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
     var(--xh-_tool-call-shadow);
-}
-
-/* 组件专属关键帧写在自己身上；共享的 disclosure 关键帧由 family/motion.css 提供。
-   幅度走令牌，减弱动效时由令牌层归零 */
-@keyframes xh-tool-call-enter {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-/* 一道比字色亮的窄带从右扫到左。背景图比自身宽一倍，靠移动背景位置扫过去，
-   不动布局也不动 transform */
-@keyframes xh-tool-call-shimmer {
-  from {
-    background-position: 150% center;
-  }
-
-  to {
-    background-position: -50% center;
-  }
 }
 
 @media print {
