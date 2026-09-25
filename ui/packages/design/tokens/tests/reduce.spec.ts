@@ -133,6 +133,27 @@ describe('tokens.css 产物', () => {
     expect(hookDecls).toEqual(mediaDecls)
   })
 
+  it('带上了 data-motion=default 钩子块：排在减弱块之后，逐条恢复减弱档覆盖掉的基线取值', () => {
+    const reduceHook = css.indexOf(':where([data-motion=\'reduce\'])')
+    const defaultHook = css.indexOf(':where([data-motion=\'default\'])')
+    expect(defaultHook).toBeGreaterThan(reduceHook)
+    const body = css.slice(css.indexOf('{', defaultHook) + 1)
+    const decls = body
+      .slice(0, body.indexOf('}'))
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.startsWith('--xh-'))
+    const baseline = new Map(
+      [...css.slice(0, css.indexOf('@media (prefers-reduced-motion: reduce)')).matchAll(/^\s*(--xh-motion-[\w-]+): ([^;]+);$/gm)]
+        .map(m => [m[1], m[2]]),
+    )
+    expect(decls).toHaveLength(reduce.length)
+    for (const t of reduce) {
+      const name = `--xh-${t.name}`
+      expect(decls, name).toContain(`${name}: ${baseline.get(name)};`)
+    }
+  })
+
   it('层序声明仍然只有一条，且在任何 @layer 块之前', () => {
     const statements = css.match(/^@layer [^{]*;$/gm) ?? []
     expect(statements).toHaveLength(1)

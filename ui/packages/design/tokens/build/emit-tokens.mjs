@@ -250,6 +250,12 @@ ${await declarations(reduce, '      ')}
 ${await declarations(reduce)}
   }
 
+  /* 完整动效的 DOM 钩子：系统要求减弱、而应用或局部容器选择完整动效时，恢复减弱档覆盖掉的基线取值。
+     排在 @media 块与减弱钩子之后，同为零特指度靠书写顺序取胜；嵌套时元素自身命中的一块压过继承来的值，最近的一层生效 */
+  :where([data-motion='default']) {
+${await declarations(base.filter(e => reduce.some(r => r.name === e.name)))}
+  }
+
   /* 打印：海拔投影与材质光效取消。皮肤消费的是语义角色，
      角色变 none 就整层不画，皮肤一处都不用改，也不必跟皮肤里的 box-shadow 比特指度——
      那条路走不通：拆层版本里两者按特指度重新竞争，皮肤选择器最深到六个属性，赢不过。

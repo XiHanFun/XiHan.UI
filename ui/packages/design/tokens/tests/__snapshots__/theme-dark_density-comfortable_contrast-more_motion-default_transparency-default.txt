@@ -7,6 +7,7 @@
 #   [5] :where(:root), :where([data-theme='light'])
 #   [6] :where([data-theme='dark'])
 #   [8] :where([data-contrast='more'])
+#   [11] :where([data-motion='default'])
 
 --xh-action-brand-solid: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)
 --xh-action-brand-solid-active: oklch(0.424 0.164 258)  ← var(--xh-color-brand-800)
