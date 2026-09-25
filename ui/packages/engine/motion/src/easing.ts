@@ -4,7 +4,7 @@
  */
 
 // 缓动曲线：CSS 侧的 cubic-bezier 字符串，与 JS 侧同名的采样函数。
-// standard / easeIn / easeOut / outStrong 四条与 tokens primitive 的 ease.standard / in / out / out-strong 同值，真源是令牌，由门禁比对。
+// 与 tokens primitive 的 ease.* 同值的各条，真源是令牌，由门禁逐条比对；没有令牌对应的几条在门禁里登记理由。
 
 /** 命名缓动的 cubic-bezier 字符串，供 JS 动画引用。 */
 export const easing = {
@@ -16,7 +16,9 @@ export const easing = {
   easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
   easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
   outStrong: 'cubic-bezier(0.23, 1, 0.32, 1)',
+  outFluid: 'cubic-bezier(0.32, 0.72, 0, 1)',
   easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  outBack: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
 } as const
 
 export type EasingName = keyof typeof easing
@@ -124,10 +126,21 @@ function parseCubicBezier(value: string): [number, number, number, number] | nul
 
 const cache = new Map<string, EasingFunction>()
 
+/** dev 构建标志：读 import.meta.env.DEV，读不到即视为 false。 */
+function isDev(): boolean {
+  try {
+    return (import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV === true
+  }
+  catch {
+    return false
+  }
+}
+
 /**
  * 把缓动的三种写法统一成函数：名字、`cubic-bezier(...)` / `linear` 字符串、或函数本身。
  *
- * 认不出的写法退回线性——写法可能来自 DOM 特性或配置，那是一个任意字符串。
+ * 认不出的写法退回线性，开发构建下同一写法警告一次：写法可能来自 DOM 特性或配置，
+ * 那是一个任意字符串，拼错的名字（如 `ease-out`）会悄悄按匀速播放。
  */
 export function resolveEasing(value: EasingName | EasingFunction | string | undefined): EasingFunction {
   if (typeof value === 'function')
@@ -141,6 +154,8 @@ export function resolveEasing(value: EasingName | EasingFunction | string | unde
     return cached
 
   const points = parseCubicBezier(text)
+  if (points === null && text.trim() !== 'linear' && isDev())
+    console.warn(`[xh:motion] 认不出缓动写法「${text}」，按匀速播放。可用名字：${Object.keys(easing).join(' / ')}，或 cubic-bezier(x1, y1, x2, y2)`)
   const fn = points === null ? IDENTITY : cubicBezier(points[0], points[1], points[2], points[3])
   cache.set(text, fn)
   return fn
