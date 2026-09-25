@@ -312,7 +312,7 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-side-nav-branch-indicator-size` | `branch-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | side-nav 的 branch-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
-| `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `56px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
+| `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `--xh-sider-collapsed-w` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
 | `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
@@ -343,7 +343,7 @@
 | `--xh-side-nav-row-fg-active` | `branch-trigger`<br>`link` | `color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
 | `--xh-side-nav-row-fg-in-path` | `branch-trigger`<br>`link` | `color` | `in-path` | `--xh-side-nav-row-fg` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
 | `--xh-side-nav-row-font-weight-active` | `branch-trigger`<br>`link` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-font-weight-medium` | side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。 |
-| `--xh-side-nav-w` | `root` | `inline-size` | `default` | `240px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
+| `--xh-side-nav-w` | `root` | `inline-size` | `default` | `--xh-sider-w` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

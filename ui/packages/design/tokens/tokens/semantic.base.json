@@ -828,7 +828,7 @@
     }
   },
   "sider": {
-    "$description": "页面侧栏（Layout 的侧栏、SideNav 导航栏）的两档宽度。两件同取这一处，放在一起或各自单用都是同一个宽。",
+    "$description": "页面侧栏（Layout 的侧栏、SideNav 导航栏）的两档宽度，两件缺省同取这一处；只改一件时写该组件的覆盖槽。",
     "w": {
       "$description": "展开时的侧栏宽度。",
       "$type": "dimension",

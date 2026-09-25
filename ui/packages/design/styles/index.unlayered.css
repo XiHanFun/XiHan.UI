@@ -31110,8 +31110,9 @@
   --xh-_side-nav-row-font-size: var(--xh-control-font-lg);
 }
 
+/* 展开与折叠两档宽度缺省取侧栏令牌，与 Layout 的侧栏同源 */
 [data-scope='side-nav'][data-part='root'] {
-  inline-size: var(--xh-side-nav-w, 240px);
+  inline-size: var(--xh-side-nav-w, var(--xh-sider-w));
   display: flex;
   flex-direction: column;
   gap: var(--xh-side-nav-gap, var(--xh-space-1));
@@ -31121,7 +31122,7 @@
 
 /* 折叠成图标栏：整栏收窄，文字随行宽被裁掉 */
 [data-scope='side-nav'][data-part='root'][data-collapsed] {
-  inline-size: var(--xh-side-nav-collapsed-w, 56px);
+  inline-size: var(--xh-side-nav-collapsed-w, var(--xh-sider-collapsed-w));
 }
 
 [data-scope='side-nav'][data-part='list'],

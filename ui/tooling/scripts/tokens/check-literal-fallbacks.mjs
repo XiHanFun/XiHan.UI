@@ -27,7 +27,6 @@ const ALLOWED = new Map([
   ['marquee.css:--xh-marquee-span=600', '跑马灯单程像素长度的无单位数，不是字重'],
   ['marquee.css:--xh-marquee-block-size=10rem', '纵向跑马灯的视口高度，与菜单最小宽同值是巧合'],
   ['progress.css:--xh-progress-size=10rem', '环形进度大档直径，与菜单最小宽同值是巧合'],
-  ['side-nav.css:--xh-side-nav-collapsed-w=56px', '侧栏折叠后的栏宽，与 56px 的字形档无关'],
   ['slider.css:--xh-slider-vertical-length=10rem', '纵向滑杆默认长度，与菜单最小宽同值是巧合'],
   ['splitter.css:--xh-splitter-disabled-opacity=0.6', '压的是宿主正文不是控件图形，地板比禁用档高；与拖动档同值是巧合'],
   ['tags-input.css:--xh-tags-input-input-min-w=4rem', '就地输入框留给打字的最小宽度，与侧栏折叠宽同值是巧合'],
