@@ -144,7 +144,7 @@ rest
 | 整幅滑入（Drawer、Layout 抽屉式侧栏） | `xh-slide-in / out`，位移 `--xh-motion-travel`；入 `--xh-motion-duration-slide` / `--xh-motion-ease-slide`，出 `--xh-motion-duration-exit` / `--xh-motion-ease-exit` |
 | 遮罩与全屏面 | `xh-fade-in / out` |
 
-共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。`xh-sheet`、`xh-slide` 尚待落地（同文 §19）。
+共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。
 
 ## 3. Frosted 柔和模糊材质
 
