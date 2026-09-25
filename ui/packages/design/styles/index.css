@@ -16927,7 +16927,7 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-cascader-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='cascader'][data-part='indicator'][hidden] {
