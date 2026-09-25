@@ -156,7 +156,7 @@
       ]
     },
     "xh-drawer-in-bottom": {
-      "content": "from{translate:0 var(--xh-_drawer-shift-block,100%)}to{translate:0 0}",
+      "content": "from{translate:0 var(--xh-_drawer-shift-block,var(--xh-motion-travel))}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -165,7 +165,7 @@
       ]
     },
     "xh-drawer-in-left": {
-      "content": "from{translate:calc(-1 * var(--xh-_drawer-shift-inline,100%)) 0}to{translate:0 0}",
+      "content": "from{translate:calc(-1 * var(--xh-_drawer-shift-inline,var(--xh-motion-travel))) 0}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -174,7 +174,7 @@
       ]
     },
     "xh-drawer-in-right": {
-      "content": "from{translate:var(--xh-_drawer-shift-inline,100%) 0}to{translate:0 0}",
+      "content": "from{translate:var(--xh-_drawer-shift-inline,var(--xh-motion-travel)) 0}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -183,7 +183,7 @@
       ]
     },
     "xh-drawer-in-top": {
-      "content": "from{translate:0 calc(-1 * var(--xh-_drawer-shift-block,100%))}to{translate:0 0}",
+      "content": "from{translate:0 calc(-1 * var(--xh-_drawer-shift-block,var(--xh-motion-travel)))}to{translate:0 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -192,7 +192,7 @@
       ]
     },
     "xh-drawer-out-bottom": {
-      "content": "from{translate:0 0}to{translate:0 var(--xh-_drawer-shift-block,100%)}",
+      "content": "from{translate:0 0}to{translate:0 var(--xh-_drawer-shift-block,var(--xh-motion-travel))}",
       "definedIn": [
         "drawer.css"
       ],
@@ -201,7 +201,7 @@
       ]
     },
     "xh-drawer-out-left": {
-      "content": "from{translate:0 0}to{translate:calc(-1 * var(--xh-_drawer-shift-inline,100%)) 0}",
+      "content": "from{translate:0 0}to{translate:calc(-1 * var(--xh-_drawer-shift-inline,var(--xh-motion-travel))) 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -210,7 +210,7 @@
       ]
     },
     "xh-drawer-out-right": {
-      "content": "from{translate:0 0}to{translate:var(--xh-_drawer-shift-inline,100%) 0}",
+      "content": "from{translate:0 0}to{translate:var(--xh-_drawer-shift-inline,var(--xh-motion-travel)) 0}",
       "definedIn": [
         "drawer.css"
       ],
@@ -219,7 +219,7 @@
       ]
     },
     "xh-drawer-out-top": {
-      "content": "from{translate:0 0}to{translate:0 calc(-1 * var(--xh-_drawer-shift-block,100%))}",
+      "content": "from{translate:0 0}to{translate:0 calc(-1 * var(--xh-_drawer-shift-block,var(--xh-motion-travel)))}",
       "definedIn": [
         "drawer.css"
       ],

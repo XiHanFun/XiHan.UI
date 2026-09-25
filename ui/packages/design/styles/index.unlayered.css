@@ -23236,7 +23236,7 @@
    竖排书写模式下 block 轴不再是 Y 轴，位移会退化为纵向，但贴边本身仍由逻辑 inset 保证。 */
 @keyframes xh-drawer-in-right {
   from {
-    translate: var(--xh-_drawer-shift-inline, 100%) 0;
+    translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
   }
 
   to {
@@ -23250,13 +23250,13 @@
   }
 
   to {
-    translate: var(--xh-_drawer-shift-inline, 100%) 0;
+    translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
   }
 }
 
 @keyframes xh-drawer-in-left {
   from {
-    translate: calc(-1 * var(--xh-_drawer-shift-inline, 100%)) 0;
+    translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
   }
 
   to {
@@ -23270,13 +23270,13 @@
   }
 
   to {
-    translate: calc(-1 * var(--xh-_drawer-shift-inline, 100%)) 0;
+    translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
   }
 }
 
 @keyframes xh-drawer-in-top {
   from {
-    translate: 0 calc(-1 * var(--xh-_drawer-shift-block, 100%));
+    translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
   }
 
   to {
@@ -23290,13 +23290,13 @@
   }
 
   to {
-    translate: 0 calc(-1 * var(--xh-_drawer-shift-block, 100%));
+    translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
   }
 }
 
 @keyframes xh-drawer-in-bottom {
   from {
-    translate: 0 var(--xh-_drawer-shift-block, 100%);
+    translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
   }
 
   to {
@@ -23310,7 +23310,7 @@
   }
 
   to {
-    translate: 0 var(--xh-_drawer-shift-block, 100%);
+    translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
   }
 }
 
@@ -23450,9 +23450,9 @@
    不构成固定定位的包含块，两种结构下参照的都是视口，位置一致；
    contained 时上面那条把它一并换成 absolute，参照的就是作者那个容器。 */
 [data-scope='drawer'][data-part='content'] {
-  /* 位移方向的私有槽位：默认按 LTR，RTL 在下面整体翻符号 */
-  --xh-_drawer-shift-inline: 100%;
-  --xh-_drawer-shift-block: 100%;
+  /* 位移方向的私有槽位：默认按 LTR，RTL 在下面整体翻符号。幅度取整幅位移令牌，减弱动效下归零 */
+  --xh-_drawer-shift-inline: var(--xh-motion-travel);
+  --xh-_drawer-shift-block: var(--xh-motion-travel);
   /* 尺寸档只换这一个私有槽：左右放置时它是面板宽度、上下放置时是面板高度，
      两种取法都在下面「四条边」那两条规则里。声明在 content 而不是 root：
      content 会被 portal 到 body，root 上的槽位继承不过来（data-side 也是同一个道理） */
@@ -23491,7 +23491,7 @@
 }
 
 [data-scope='drawer'][data-part='content']:dir(rtl) {
-  --xh-_drawer-shift-inline: -100%;
+  --xh-_drawer-shift-inline: calc(-1 * var(--xh-motion-travel));
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致。
