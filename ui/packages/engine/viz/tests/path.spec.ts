@@ -9,7 +9,7 @@ function endPoint(d: string): [number, number] {
   return [numbers[numbers.length - 2]!, numbers[numbers.length - 1]!]
 }
 
-describe('sVG 路径', () => {
+describe('路径构建器（SVG）', () => {
   it('直线、曲线与闭合', () => {
     const p = createSvgPath()
     p.moveTo(0, 0)
