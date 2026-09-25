@@ -44,23 +44,23 @@ export interface StackOptions<Row> {
 }
 
 /** 峰值出现得越早越靠前。 */
-function appearance(values: number[][]): number[] {
+function appearance(values: readonly Float64Array[]): number[] {
   const peaks = values.map((column) => {
     let at = 0
-    column.forEach((v, j) => {
-      if (v > (column[at] as number))
+    for (let j = 1; j < column.length; j++) {
+      if ((column[j] as number) > (column[at] as number))
         at = j
-    })
+    }
     return at
   })
   return values.map((_, i) => i).sort((a, b) => (peaks[a] as number) - (peaks[b] as number) || a - b)
 }
 
-function sums(values: number[][]): number[] {
+function sums(values: readonly Float64Array[]): number[] {
   return values.map(series => series.reduce((a, b) => a + b, 0))
 }
 
-function orderOf(kind: StackOrder, values: number[][]): number[] {
+function orderOf(kind: StackOrder, values: readonly Float64Array[]): number[] {
   const indices = values.map((_, i) => i)
   switch (kind) {
     case 'none':
@@ -111,35 +111,42 @@ export function stack<Row>(rows: readonly Row[], options: StackOptions<Row>): St
     seen.add(key)
   }
   const m = rows.length
-  const defined: boolean[][] = []
-  const values: number[][] = keys.map((key, i) => {
-    const flags: boolean[] = []
-    const column = rows.map((row) => {
-      const v = options.value(row, key)
-      const present = isPresent(v) && Number.isFinite(v)
-      flags.push(present)
-      return present ? v : 0
-    })
-    defined[i] = flags
-    return column
-  })
-  if (offset === 'expand') {
-    values.forEach((series, i) => series.forEach((v, j) => {
-      if (v < 0)
-        throw new VizError('XH_VIZ_NEGATIVE_SHARE', '百分比堆叠的值不能为负', { key: keys[i], row: j, value: v })
-    }))
+  const n = keys.length
+  // 逐系列的值与存在标记放进类型化数组：一万行、十个系列时逐段建对象是主要开销，这里只建最终输出
+  const values: Float64Array[] = []
+  const defined: Uint8Array[] = []
+  for (let i = 0; i < n; i++) {
+    const key = keys[i] as string
+    const column = new Float64Array(m)
+    const flags = new Uint8Array(m)
+    for (let j = 0; j < m; j++) {
+      const v = options.value(rows[j] as Row, key)
+      if (isPresent(v) && Number.isFinite(v)) {
+        if (offset === 'expand' && v < 0)
+          throw new VizError('XH_VIZ_NEGATIVE_SHARE', '百分比堆叠的值不能为负', { key, row: j, value: v })
+        column[j] = v
+        flags[j] = 1
+      }
+    }
+    values.push(column)
+    defined.push(flags)
   }
   const sequence = orderOf(order, values)
-  const y0 = keys.map(() => Array.from<number>({ length: m }).fill(0))
-  const y1 = keys.map(() => Array.from<number>({ length: m }).fill(0))
+  const y0 = keys.map(() => new Float64Array(m))
+  const y1 = keys.map(() => new Float64Array(m))
+  const outermost = keys.map(() => new Uint8Array(m))
 
   // 每列的基线
-  const baseline = Array.from<number>({ length: m }).fill(0)
+  const baseline = new Float64Array(m)
   if (offset === 'silhouette') {
-    for (let j = 0; j < m; j++)
-      baseline[j] = -values.reduce((total, series) => total + (series[j] as number), 0) / 2
+    for (let j = 0; j < m; j++) {
+      let total = 0
+      for (let i = 0; i < n; i++)
+        total += (values[i] as Float64Array)[j] as number
+      baseline[j] = -total / 2
+    }
   }
-  else if (offset === 'wiggle' && sequence.length > 0) {
+  else if (offset === 'wiggle' && n > 0) {
     // 基线的变化量取各层斜率按厚度加权后的平均的相反数，使整体的加权摆动最小
     let g = 0
     for (let j = 1; j < m; j++) {
@@ -147,8 +154,9 @@ export function stack<Row>(rows: readonly Row[], options: StackOptions<Row>): St
       let thickness = 0
       let below = 0
       for (const i of sequence) {
-        const now = (values[i] as number[])[j] as number
-        const change = now - ((values[i] as number[])[j - 1] as number)
+        const column = values[i] as Float64Array
+        const now = column[j] as number
+        const change = now - (column[j - 1] as number)
         weighted += now * (below + change / 2)
         thickness += now
         below += change
@@ -160,55 +168,60 @@ export function stack<Row>(rows: readonly Row[], options: StackOptions<Row>): St
   }
 
   for (let j = 0; j < m; j++) {
-    const total = values.reduce((sum, series) => sum + (series[j] as number), 0)
+    let total = 1
+    if (offset === 'expand') {
+      total = 0
+      for (let i = 0; i < n; i++)
+        total += (values[i] as Float64Array)[j] as number
+    }
     let up = baseline[j] as number
-    let down = baseline[j] as number
+    let down = up
+    // 同时记下这一列朝上、朝下各自最外层的非零段
+    let top = -1
+    let topEnd = 0
+    let bottom = -1
+    let bottomEnd = 0
     for (const i of sequence) {
-      let v = (values[i] as number[])[j] as number
+      let v = (values[i] as Float64Array)[j] as number
       if (offset === 'expand')
         v = total > 0 ? v / total : 0
-      if (offset === 'diverging' && v < 0) {
-        ;(y0[i] as number[])[j] = down
-        ;(y1[i] as number[])[j] = down + v
-        down += v
-      }
-      else {
-        ;(y0[i] as number[])[j] = up
-        ;(y1[i] as number[])[j] = up + v
-        up += v
-      }
-    }
-  }
-
-  // 每列朝上、朝下各自最外层的非零段
-  const outermost = keys.map(() => Array.from<boolean>({ length: m }).fill(false))
-  for (let j = 0; j < m; j++) {
-    let top = -1
-    let bottom = -1
-    for (const i of sequence) {
-      const a = (y0[i] as number[])[j] as number
-      const b = (y1[i] as number[])[j] as number
-      if (b > a && (top < 0 || b >= ((y1[top] as number[])[j] as number)))
+      const from = offset === 'diverging' && v < 0 ? down : up
+      const to = from + v
+      ;(y0[i] as Float64Array)[j] = from
+      ;(y1[i] as Float64Array)[j] = to
+      if (offset === 'diverging' && v < 0)
+        down = to
+      else
+        up = to
+      if (to > from && (top < 0 || to >= topEnd)) {
         top = i
-      if (b < a && (bottom < 0 || b <= ((y1[bottom] as number[])[j] as number)))
+        topEnd = to
+      }
+      if (to < from && (bottom < 0 || to <= bottomEnd)) {
         bottom = i
+        bottomEnd = to
+      }
     }
     if (top >= 0)
-      (outermost[top] as boolean[])[j] = true
+      (outermost[top] as Uint8Array)[j] = 1
     if (bottom >= 0)
-      (outermost[bottom] as boolean[])[j] = true
+      (outermost[bottom] as Uint8Array)[j] = 1
   }
 
-  return keys.map((key, i) => ({
-    key,
-    index: i,
-    order: sequence.indexOf(i),
-    segments: rows.map((row, j) => ({
-      y0: (y0[i] as number[])[j] as number,
-      y1: (y1[i] as number[])[j] as number,
-      data: row,
-      defined: (defined[i] as boolean[])[j] as boolean,
-      outermost: (outermost[i] as boolean[])[j] as boolean,
-    })),
-  }))
+  const rank = new Int32Array(n)
+  sequence.forEach((i, position) => {
+    rank[i] = position
+  })
+  const out: StackSeries<Row>[] = []
+  for (let i = 0; i < n; i++) {
+    const a = y0[i] as Float64Array
+    const b = y1[i] as Float64Array
+    const flags = defined[i] as Uint8Array
+    const outer = outermost[i] as Uint8Array
+    const segments: StackSegment<Row>[] = []
+    for (let j = 0; j < m; j++)
+      segments.push({ y0: a[j] as number, y1: b[j] as number, data: rows[j] as Row, defined: flags[j] === 1, outermost: outer[j] === 1 })
+    out.push({ key: keys[i] as string, index: i, order: rank[i] as number, segments })
+  }
+  return out
 }
