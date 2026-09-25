@@ -173,7 +173,7 @@ describe('mention 单一状态表面', () => {
     expect(['up', 'down', 'left', 'right'].map(side =>
       getComputedStyle(inner).getPropertyValue(`--xh-_overlay-enter-${side}`).trim())).toEqual(['0', '1', '0', '0'])
     outer.dataset.motion = 'reduce'
-    expect(getComputedStyle(content).animationDuration).toBe('0.001s')
+    expect(getComputedStyle(content).animationDuration).toBe('0.12s')
     expect(getComputedStyle(content).scale).toBe('none')
     expect(getComputedStyle(content).getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
   })
