@@ -7,6 +7,7 @@
 
 /* Notification 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
 @import '../family/action-control.css';
+@import '../family/motion.css';
 
 @layer xihan.motion {
   /*
@@ -33,17 +34,6 @@
   @keyframes xh-notification-spin {
     to {
       rotate: 360deg;
-    }
-  }
-
-  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
-  @keyframes xh-countdown {
-    from {
-      inline-size: 100%;
-    }
-
-    to {
-      inline-size: 0%;
     }
   }
 

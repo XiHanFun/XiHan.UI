@@ -1832,9 +1832,9 @@
  * @import 去重，同名同帧体即使重复插入也无副作用。
  *
  * 本文件只放跨皮肤共用的关键帧，皮肤内不得重定义这些名字（check-keyframe-refs 判红）；
- * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm 与 --xh-motion-scale-enter /
- * -exit，减弱动效档由令牌层把它们归零。四个方向槽 --xh-_overlay-enter-* 由浮层皮肤按
- * placement 写在 positioner 上，四个都没写时位移退回 0。
+ * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm / -md 与 --xh-motion-scale-enter /
+ * -exit，整幅位移经私有槽取 --xh-motion-travel，减弱动效档由令牌层把它们归零。四个方向槽
+ * --xh-_overlay-enter-* 由浮层皮肤按 placement 写在 positioner 上，四个都没写时位移退回 0。
  */
 @layer xihan.motion {
   /* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
@@ -1980,6 +1980,117 @@
       grid-template-rows: 0fr;
       padding-block-start: 0;
       padding-block-end: 0;
+    }
+  }
+
+  /* ── 列表条目进场：淡入叠一段向上位移，比页内上浮大一档 ──
+     Approval、MessageFeed、QuestionFlow、ToolCall 的条目 */
+  @keyframes xh-item-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* 自上而下的显现：新揭开的内容从上方落位。DiffView 展开的折叠块、Form 的错误汇总 */
+  @keyframes xh-drop-in {
+    from {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* ── 面板（sheet）：模态与强反馈面，竖向一小段位移叠缩放 ──
+     Dialog、Notification */
+  @keyframes xh-sheet-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+  }
+
+  @keyframes xh-sheet-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+      scale: var(--xh-motion-scale-exit);
+    }
+  }
+
+  /* ── 整幅滑入（slide）：面板从所在边整条推入推出 ──
+     方向由皮肤在元素上写进 --xh-_slide-from-x / --xh-_slide-from-y（取正负整幅位移令牌或 0），
+     两个都没写时位移退回 0。整幅位移令牌在减弱动效下归零，进出场只剩时长。Drawer */
+  @keyframes xh-slide-in {
+    from {
+      translate: var(--xh-_slide-from-x, 0) var(--xh-_slide-from-y, 0);
+    }
+
+    to {
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-slide-out {
+    from {
+      translate: 0 0;
+    }
+
+    to {
+      translate: var(--xh-_slide-from-x, 0) var(--xh-_slide-from-y, 0);
+    }
+  }
+
+  /* ── 循环：匀速转圈与扫过的流光 ──
+     时长取循环令牌，减弱动效下由各皮肤停掉并换成静态替代。
+     转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖 */
+  @keyframes xh-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  @keyframes xh-shimmer {
+    from {
+      background-position: 150% center;
+    }
+
+    to {
+      background-position: -50% center;
+    }
+  }
+
+  /* ── 数值：倒计时条从占满一整条收到零 ──
+     走一遍就到头，时长由连接层写进各组件的时长槽。Toast、Notification */
+  @keyframes xh-countdown {
+    from {
+      inline-size: 100%;
+    }
+
+    to {
+      inline-size: 0%;
     }
   }
 }
@@ -14695,15 +14806,6 @@
 
 /* styles/button.css */
 /* 独立 Button 皮肤与 full bundle 都从同一份 Family Recipe 取得布局、状态和命中区。 */
-
-@layer xihan.motion {
-  /* 独立皮肤可单独引入，spinner 动画名不能依赖别的组件文件。 */
-  @keyframes xh-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-}
 
 @layer xihan.components {
   [data-scope='button'] {
@@ -27760,17 +27862,6 @@
     }
   }
 
-  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
-  @keyframes xh-countdown {
-    from {
-      inline-size: 100%;
-    }
-
-    to {
-      inline-size: 0%;
-    }
-  }
-
   @keyframes xh-notification-out {
     from {
       opacity: 1;
@@ -37192,17 +37283,6 @@
   @keyframes xh-toast-spin {
     to {
       rotate: 360deg;
-    }
-  }
-
-  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
-  @keyframes xh-countdown {
-    from {
-      inline-size: 100%;
-    }
-
-    to {
-      inline-size: 0%;
     }
   }
 
