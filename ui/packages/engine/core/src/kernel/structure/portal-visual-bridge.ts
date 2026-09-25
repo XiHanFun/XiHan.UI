@@ -35,10 +35,11 @@ const VISUAL_AXES = [
 ] as const
 
 /**
- * 逐项复制到壳上的属性：七个视觉轴，外加语气 data-tone。语气不是视觉轴，只是它在来源
+ * 逐项复制到壳上的属性：七个视觉轴，外加语气 data-tone 与材质 data-material。语气不是视觉轴，只是它在来源
  * 那里靠属性表达、整族 --xh-tone-* 都挂在 [data-tone] 上，所以带属性而不是带派生槽。
+ * 材质轴由作者写在根或容器上（standard / liquid），浮层里的导航层部件按它换材质，同样带属性。
  */
-const VISUAL_ATTRIBUTES = [...VISUAL_AXES, 'data-tone'] as const
+const VISUAL_ATTRIBUTES = [...VISUAL_AXES, 'data-tone', 'data-material'] as const
 
 /** 库自己的命名空间：令牌、组件槽、家族槽、私有槽与语气族都以它开头。 */
 const LIBRARY_NAMESPACE = '--xh-'

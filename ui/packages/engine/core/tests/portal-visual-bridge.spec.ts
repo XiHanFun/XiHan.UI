@@ -397,6 +397,23 @@ describe('portal 视觉环境桥', () => {
     bridge.dispose()
   })
 
+  it('材质轴经 data-material 属性带到壳上，取最近显式声明并跟随变化', async () => {
+    const { outer, inner, source, shell } = fixture()
+    outer.setAttribute('data-material', 'liquid')
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.getAttribute('data-material')).toBe('liquid')
+
+    inner.setAttribute('data-material', 'standard')
+    await settleMutations()
+    expect(shell.getAttribute('data-material')).toBe('standard')
+
+    inner.removeAttribute('data-material')
+    outer.removeAttribute('data-material')
+    await settleMutations()
+    expect(shell.hasAttribute('data-material')).toBe(false)
+    bridge.dispose()
+  })
+
   it('拒绝跨 Document 来源与壳，不把主页面视觉环境写进 iframe', () => {
     const { source } = fixture()
     const other = document.implementation.createHTMLDocument('other')
