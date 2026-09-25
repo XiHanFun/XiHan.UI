@@ -9,3 +9,4 @@ export * from './array'
 export { isVizError, VizError } from './errors'
 
 export type { VizErrorCode } from './errors'
+export * from './time'
