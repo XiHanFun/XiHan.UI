@@ -39,15 +39,6 @@
         "dialog"
       ]
     },
-    "xh-diff-view-reveal": {
-      "content": "from{opacity:0;translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
-      "definedIn": [
-        "diff-view.css"
-      ],
-      "consumers": [
-        "diff-view"
-      ]
-    },
     "xh-disclosure-collapse": {
       "content": "from{grid-template-rows:1fr;padding-block-start:var(--xh-_disclosure-pt,0);padding-block-end:var(--xh-_disclosure-pb,0)}to{grid-template-rows:0fr;padding-block-start:0;padding-block-end:0}",
       "definedIn": [
@@ -160,7 +151,10 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "diff-view",
+        "form"
+      ],
       "relation": "fade"
     },
     "xh-fade-in": {
@@ -197,15 +191,6 @@
         "tour"
       ],
       "relation": "fade"
-    },
-    "xh-form-summary-enter": {
-      "content": "from{opacity:0;translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
-      "definedIn": [
-        "form.css"
-      ],
-      "consumers": [
-        "form"
-      ]
     },
     "xh-item-in": {
       "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
@@ -522,14 +507,6 @@
     }
   },
   "duplicateContent": {
-    "xh-diff-view-reveal": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-diff-view-reveal",
-        "xh-drop-in",
-        "xh-form-summary-enter"
-      ]
-    },
     "xh-dialog-in": {
       "$description": "3 个名字是同一段动画，收敛前登记在案",
       "names": [
@@ -577,6 +554,8 @@
     "xh-reasoning-fade-in": "并入 xh-fade-in（family/motion.css）",
     "xh-clipboard-loading-reveal": "并入 xh-fade-in（family/motion.css）",
     "xh-download-trigger-loading-reveal": "并入 xh-fade-in（family/motion.css）",
-    "xh-clipboard-loading-hide": "并入 xh-fade-out（family/motion.css）"
+    "xh-clipboard-loading-hide": "并入 xh-fade-out（family/motion.css）",
+    "xh-diff-view-reveal": "并入 xh-drop-in（family/motion.css）",
+    "xh-form-summary-enter": "并入 xh-drop-in（family/motion.css）"
   }
 }
