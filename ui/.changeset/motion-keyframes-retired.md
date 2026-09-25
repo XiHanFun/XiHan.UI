@@ -16,3 +16,11 @@
 | `xh-notification-spin` | `xh-spin` |
 | `xh-reasoning-shimmer` | `xh-shimmer` |
 | `xh-tool-call-shimmer` | `xh-shimmer` |
+| `xh-approval-in` | `xh-item-in` |
+| `xh-message-feed-item-in` | `xh-item-in` |
+| `xh-question-flow-in` | `xh-item-in` |
+| `xh-tool-call-enter` | `xh-item-in` |
+| `xh-approval-result-in` | `xh-pop-in` |
+| `xh-message-feed-button-in` | `xh-pop-in` |
+| `xh-question-flow-result-in` | `xh-pop-in` |
+| `xh-log-button-in` | `xh-pop-in` |

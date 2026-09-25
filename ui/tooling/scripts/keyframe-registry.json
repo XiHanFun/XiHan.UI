@@ -1,24 +1,6 @@
 {
   "$description": "关键帧的名字与内容真源。共享关键帧只定义在 family/motion.css（relation 按锚定关系登记：锚定列表 / 锚定面板 / 无锚定弹出 / disclosure / 遮罩），组件专属关键帧住在各自皮肤，本表登记「这个名字全库该长什么样」。duplicateContent 记的是现存的「一个视觉多个名字」，每消掉一组就删一条，删完判据 4 即对全库生效。retired 是退役名单：旧名再出现即判红。",
   "frames": {
-    "xh-approval-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
-      "definedIn": [
-        "approval.css"
-      ],
-      "consumers": [
-        "approval"
-      ]
-    },
-    "xh-approval-result-in": {
-      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
-      "definedIn": [
-        "approval.css"
-      ],
-      "consumers": [
-        "approval"
-      ]
-    },
     "xh-carousel-indicator-progress": {
       "content": "from{scale:var(--xh-_carousel-progress-from)}to{scale:var(--xh-_carousel-progress-to)}",
       "definedIn": [
@@ -253,17 +235,13 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
-      "relation": "list"
-    },
-    "xh-log-button-in": {
-      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
-      "definedIn": [
-        "log.css"
-      ],
       "consumers": [
-        "log"
-      ]
+        "approval",
+        "message-feed",
+        "question-flow",
+        "tool-call"
+      ],
+      "relation": "list"
     },
     "xh-markdown-stream-caret": {
       "content": "50%{opacity:0}",
@@ -296,24 +274,6 @@
         "marquee.css"
       ],
       "consumers": []
-    },
-    "xh-message-feed-button-in": {
-      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
-      "definedIn": [
-        "message-feed.css"
-      ],
-      "consumers": [
-        "message-feed"
-      ]
-    },
-    "xh-message-feed-item-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
-      "definedIn": [
-        "message-feed.css"
-      ],
-      "consumers": [
-        "message-feed"
-      ]
     },
     "xh-notification-in": {
       "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
@@ -399,10 +359,14 @@
         "family/motion.css"
       ],
       "consumers": [
+        "approval",
         "float-button",
         "floating-panel",
+        "log",
+        "message-feed",
         "navigation-menu",
         "pagination",
+        "question-flow",
         "side-nav"
       ],
       "relation": "detached"
@@ -432,24 +396,6 @@
       ],
       "consumers": [
         "progress"
-      ]
-    },
-    "xh-question-flow-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
-      "definedIn": [
-        "question-flow.css"
-      ],
-      "consumers": [
-        "question-flow"
-      ]
-    },
-    "xh-question-flow-result-in": {
-      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
-      "definedIn": [
-        "question-flow.css"
-      ],
-      "consumers": [
-        "question-flow"
       ]
     },
     "xh-reasoning-fade-in": {
@@ -588,15 +534,6 @@
         "toast"
       ]
     },
-    "xh-tool-call-enter": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
-      "definedIn": [
-        "tool-call.css"
-      ],
-      "consumers": [
-        "tool-call"
-      ]
-    },
     "xh-tour-spotlight-in": {
       "content": "from{opacity:0;scale:calc(2 - var(--xh-motion-scale-enter))}to{opacity:1;scale:1}",
       "definedIn": [
@@ -617,31 +554,11 @@
     }
   },
   "duplicateContent": {
-    "xh-approval-result-in": {
-      "$description": "5 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-approval-result-in",
-        "xh-log-button-in",
-        "xh-message-feed-button-in",
-        "xh-pop-in",
-        "xh-question-flow-result-in"
-      ]
-    },
     "xh-fade-in": {
       "$description": "2 个名字是同一段动画，收敛前登记在案",
       "names": [
         "xh-fade-in",
         "xh-reasoning-fade-in"
-      ]
-    },
-    "xh-approval-in": {
-      "$description": "5 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-approval-in",
-        "xh-item-in",
-        "xh-message-feed-item-in",
-        "xh-question-flow-in",
-        "xh-tool-call-enter"
       ]
     },
     "xh-diff-view-reveal": {
@@ -694,6 +611,14 @@
     "xh-download-trigger-rotate": "并入 xh-spin（family/motion.css）",
     "xh-notification-spin": "并入 xh-spin（family/motion.css）",
     "xh-reasoning-shimmer": "并入 xh-shimmer（family/motion.css）",
-    "xh-tool-call-shimmer": "并入 xh-shimmer（family/motion.css）"
+    "xh-tool-call-shimmer": "并入 xh-shimmer（family/motion.css）",
+    "xh-approval-in": "并入 xh-item-in（family/motion.css）",
+    "xh-message-feed-item-in": "并入 xh-item-in（family/motion.css）",
+    "xh-question-flow-in": "并入 xh-item-in（family/motion.css）",
+    "xh-tool-call-enter": "并入 xh-item-in（family/motion.css）",
+    "xh-approval-result-in": "并入 xh-pop-in（family/motion.css）",
+    "xh-message-feed-button-in": "并入 xh-pop-in（family/motion.css）",
+    "xh-question-flow-result-in": "并入 xh-pop-in（family/motion.css）",
+    "xh-log-button-in": "并入 xh-pop-in（family/motion.css）"
   }
 }

@@ -38,7 +38,7 @@
     border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
     background: var(--xh-tool-call-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-tool-call-shadow, none);
-    animation: xh-tool-call-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -366,20 +366,6 @@
 }
 
 @layer xihan.motion {
-  /* 组件专属关键帧写在自己身上；共享的 disclosure 关键帧由 family/motion.css 提供。
-     幅度走令牌，减弱动效时由令牌层归零 */
-  @keyframes xh-tool-call-enter {
-    from {
-      opacity: 0;
-      translate: 0 var(--xh-motion-distance-md);
-    }
-
-    to {
-      opacity: 1;
-      translate: 0 0;
-    }
-  }
-
   @media print {
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
