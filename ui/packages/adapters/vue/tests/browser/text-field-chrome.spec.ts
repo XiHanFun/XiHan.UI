@@ -35,6 +35,13 @@ function field(props: Record<string, unknown> = {}, textarea = false): VNode {
   ])
 }
 
+/** 减弱动效下字段外壳只剩换色过渡，每一项都保留 120ms 的淡变，没有几何属性。 */
+function expectColorFadesOnly(style: CSSStyleDeclaration): void {
+  const properties = style.transitionProperty.split(', ')
+  expect(properties).toEqual(['background-color', 'border-color', 'box-shadow', 'outline-color'])
+  expect(style.transitionDuration.split(', ')).toEqual(properties.map(() => '0.12s'))
+}
+
 afterEach(async () => {
   await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
@@ -142,7 +149,7 @@ describe('field Chrome 状态与字段内动作', () => {
     expect(Number.parseFloat(target.minBlockSize)).toBeGreaterThanOrEqual(44)
   })
 
-  it('loading 与局部 reduced-motion 由 Field Chrome 自己解析', () => {
+  it('loading 与局部 reduced-motion 由 Field Chrome 自己解析：换色淡变保留为 120ms', () => {
     mount(() => h('div'))
     document.documentElement.dataset.motion = 'reduce'
     const loading = document.createElement('div')
@@ -153,7 +160,7 @@ describe('field Chrome 状态与字段内动作', () => {
     const style = getComputedStyle(loading)
     expect(style.cursor).toBe('progress')
     expect(style.opacity).toBe('1')
-    expect(style.transitionDuration).toBe('0s')
+    expectColorFadesOnly(style)
   })
 
   it('系统 reduced-motion 与 forced-colors 都保留状态几何通道', async () => {
@@ -164,7 +171,7 @@ describe('field Chrome 状态与字段内动作', () => {
     mount(() => h('div', null, [field({ invalid: true }), field({ disabled: true })]))
     const [invalid, disabled] = [...host!.querySelectorAll<HTMLElement>('[data-xh-field-chrome]')]
     expect(matchMedia('(prefers-reduced-motion: reduce)').matches).toBe(true)
-    expect(getComputedStyle(invalid!).transitionDuration).toBe('0s')
+    expectColorFadesOnly(getComputedStyle(invalid!))
 
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',

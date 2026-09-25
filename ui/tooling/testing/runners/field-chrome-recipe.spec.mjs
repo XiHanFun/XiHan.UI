@@ -100,13 +100,15 @@ describe('field Chrome Family Recipe', () => {
     expect(css).not.toMatch(/(?:^|\s)(?:left|right|width|height|margin-left|margin-right|padding-left|padding-right)\s*:/m)
   })
 
-  it('forced-colors 与两种 reduced-motion 入口都完整', async () => {
+  it('forced-colors 输出完整；减弱动效交给令牌，换色淡变在减弱档下保留', async () => {
     const css = compileFieldChromeRecipe(await source())
     expect(css).toContain('@media (forced-colors: active)')
     expect(css).toContain('background-color: Canvas')
     expect(css).toContain('color: GrayText')
-    expect(css).toContain('@media (prefers-reduced-motion: reduce)')
-    expect(css).toContain(':where([data-motion=\'reduce\']) [data-xh-field-chrome]')
+    // 外壳只过渡颜色，时长取 micro：减弱档下它保留为淡变，配方不另写 transition: none 把淡变关掉
+    expect(css).not.toContain('prefers-reduced-motion')
+    expect(css).not.toContain('data-motion')
+    expect(css).not.toMatch(/transition:\s*none/)
   })
 
   it('未知尺寸、布局、状态与重复登记都会明确失败', async () => {

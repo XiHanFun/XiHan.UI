@@ -950,16 +950,6 @@
   -webkit-text-fill-color: var(--xh-field-autofill-fg, var(--xh-fg-default));
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-scope][data-xh-field-chrome] {
-    transition: none;
-  }
-}
-
-:where([data-motion='reduce']) [data-scope][data-xh-field-chrome] {
-  transition: none;
-}
-
 @media (forced-colors: active) {
   [data-scope][data-xh-field-chrome] {
     background-color: Canvas;
