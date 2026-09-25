@@ -16498,7 +16498,6 @@
     "xh-question-flow-in",
     "xh-question-flow-result-in",
     "xh-reasoning-fade-in",
-    "xh-reasoning-shimmer",
     "xh-rise-in",
     "xh-sheet-in",
     "xh-sheet-out",
@@ -16513,7 +16512,6 @@
     "xh-toast-in",
     "xh-toast-out",
     "xh-tool-call-enter",
-    "xh-tool-call-shimmer",
     "xh-tour-spotlight-in",
     "xh-tour-spotlight-out"
   ],
