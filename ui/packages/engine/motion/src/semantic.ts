@@ -26,11 +26,14 @@ export const motionDurations = {
 
 export type MotionDurationName = keyof typeof motionDurations
 
-/** 减弱动效下的语义时长（毫秒），与令牌的减弱档同值。 */
+/**
+ * 减弱动效下的语义时长（毫秒），与令牌的减弱档同值。
+ * 换色与出现的淡变不属于运动，保留为 fast 一档；几何类降到 1ms。
+ */
 export const reducedMotionDurations: Readonly<Record<MotionDurationName, number>> = {
-  micro: 1,
-  enter: 1,
-  exit: 1,
+  micro: durations.fast,
+  enter: durations.fast,
+  exit: durations.fast,
   move: 1,
   expand: 1,
   collapse: 1,

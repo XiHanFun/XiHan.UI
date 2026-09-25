@@ -148,16 +148,30 @@ if (reducedJs == null) {
   problems.push(`${SEMANTIC_TS} 缺 reducedMotionDurations`)
 }
 else {
+  /** 令牌取值 `120ms` 或 `{duration.fast}` → 毫秒数；其它写法无从对账。 */
+  const tokenMs = (value) => {
+    const text = String(value)
+    if (/^\d+ms$/.test(text))
+      return Number(text.replace(/ms$/, ''))
+    const ref = /^\{duration\.(\w+)\}$/.exec(text)?.[1]
+    const primitiveValue = ref ? primitive.duration?.[ref]?.$value : null
+    return primitiveValue ? Number(String(primitiveValue).replace(/ms$/, '')) : null
+  }
+  /** JS 取值 `1` 或 `durations.fast` → 毫秒数。 */
+  const jsMs = (value) => {
+    const ref = /^durations\.(\w+)$/.exec(value)?.[1]
+    return ref ? Number(jsDurations.get(ref)) : Number(value)
+  }
   const durationKeys = Object.keys(base).filter(k => k.startsWith('duration-')).map(k => k.slice('duration-'.length))
   for (const key of durationKeys) {
     checked++
     const token = reduce[`duration-${key}`]?.$value ?? base[`duration-${key}`].$value
-    const expected = /^\d+ms$/.test(String(token)) ? Number(String(token).replace(/ms$/, '')) : null
-    const got = reducedJs.has(key) ? Number(reducedJs.get(key)) : null
+    const expected = tokenMs(token)
+    const got = reducedJs.has(key) ? jsMs(reducedJs.get(key)) : null
     if (got == null)
       problems.push(`reducedMotionDurations 缺 ${key}`)
     else if (expected == null)
-      problems.push(`--xh-motion-duration-${key} 的减弱档取值 ${token} 不是毫秒字面量，reducedMotionDurations.${key} 无从对账`)
+      problems.push(`--xh-motion-duration-${key} 的减弱档取值 ${token} 无法换算成毫秒，reducedMotionDurations.${key} 无从对账`)
     else if (got !== expected)
       problems.push(`--xh-motion-duration-${key} 的减弱档为 ${expected}ms，reducedMotionDurations.${key} 却是 ${got}`)
   }

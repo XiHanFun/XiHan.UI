@@ -907,9 +907,7 @@
      皮肤不必各写各的 @media——只要幅度与时长都引这几个语义令牌，降级自动穿透 */
   @media (prefers-reduced-motion: reduce) {
     :where(:root) {
-      --xh-motion-duration-enter: 1ms;
-      --xh-motion-duration-exit: 1ms;
-      --xh-motion-duration-micro: 1ms;
+      --xh-motion-duration-enter: var(--xh-duration-fast);
       --xh-motion-duration-move: 1ms;
       --xh-motion-duration-expand: 1ms;
       --xh-motion-duration-collapse: 1ms;
@@ -930,9 +928,7 @@
 
   /* 减弱动效的 DOM 钩子：与上面的 @media 块同源同值。打在任意容器上即局部减弱，打在 html 上即全局 */
   :where([data-motion='reduce']) {
-    --xh-motion-duration-enter: 1ms;
-    --xh-motion-duration-exit: 1ms;
-    --xh-motion-duration-micro: 1ms;
+    --xh-motion-duration-enter: var(--xh-duration-fast);
     --xh-motion-duration-move: 1ms;
     --xh-motion-duration-expand: 1ms;
     --xh-motion-duration-collapse: 1ms;
@@ -954,8 +950,6 @@
      排在 @media 块与减弱钩子之后，同为零特指度靠书写顺序取胜；嵌套时元素自身命中的一块压过继承来的值，最近的一层生效 */
   :where([data-motion='default']) {
     --xh-motion-duration-enter: var(--xh-duration-normal);
-    --xh-motion-duration-exit: var(--xh-duration-fast);
-    --xh-motion-duration-micro: var(--xh-duration-fast);
     --xh-motion-duration-move: var(--xh-duration-normal);
     --xh-motion-duration-expand: var(--xh-duration-normal);
     --xh-motion-duration-collapse: var(--xh-duration-fast);
