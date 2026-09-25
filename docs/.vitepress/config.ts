@@ -32,6 +32,7 @@ const transitiveXihanPackages = [
   "@xihan-ui/backgrounds",
   "@xihan-ui/pointer",
   "@xihan-ui/position",
+  "@xihan-ui/viz",
 ];
 const localXihanOptimizeExclusions = [
   ...new Set([...linkedXihanPackages, ...transitiveXihanPackages]),

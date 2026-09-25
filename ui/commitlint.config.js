@@ -13,6 +13,7 @@ export default {
         'motion',
         'position',
         'pointer',
+        'viz',
         'code-highlight',
         'headless',
         'tokens',

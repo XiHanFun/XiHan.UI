@@ -54,7 +54,8 @@
     "@internationalized/date": "catalog:",
     "@xihan-ui/core": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
-    "@xihan-ui/pointer": "workspace:^"
+    "@xihan-ui/pointer": "workspace:^",
+    "@xihan-ui/viz": "workspace:^"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:",

@@ -2,7 +2,7 @@
 
 ## 从 npm 安装
 
-XiHan.UI 的 17 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
+XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
 
 安装的包取决于使用的适配器：
 
@@ -23,7 +23,7 @@ pnpm add @xihan-ui/code-highlight
 
 `@xihan-ui/styles` 不是必需的：组件不依赖默认皮肤，只使用令牌自行编写样式是可行的路径，见下文“样式的三种接法”。
 
-适配器的引擎侧依赖（`core` / `motion` / `pointer` / `headless` / `position`）写在 `dependencies` 中，安装适配器时一并安装，不需要单独列出。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由项目提供。
+适配器的引擎侧依赖（`core` / `motion` / `pointer` / `viz` / `headless` / `position`）写在 `dependencies` 中，安装适配器时一并安装，不需要单独列出。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由项目提供。
 
 `backgrounds` / `sound` / `code-highlight` 是可选 peer，按需安装。未安装 `code-highlight` 时，代码视图渲染纯文本，不报错。
 
@@ -102,7 +102,7 @@ cd XiHan.UI/ui && pnpm build
 }
 ```
 
-`@xihan-ui/vue` 会通过 `dependencies` 一并引入 `core` / `motion` / `pointer` / `headless` / `position`，这些包不需要单独链接。`vue` 本身是它的 peer 依赖，由项目提供。
+`@xihan-ui/vue` 会通过 `dependencies` 一并引入 `core` / `motion` / `pointer` / `viz` / `headless` / `position`，这些包不需要单独链接。`vue` 本身是它的 peer 依赖，由项目提供。
 
 ## 接入 Vue 项目
 

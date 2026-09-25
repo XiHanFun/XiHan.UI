@@ -24,9 +24,9 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 版本号采用语义化版本 `major.minor.patch`：受约束的成员变更走 major，新增走 minor，只修正行为不改名字走 patch。
 
-## 17 个包必须同版本安装
+## 18 个包必须同版本安装
 
-17 个包锁步发布：任何一个包发新版本，全部 17 个包一起发同一个号。
+18 个包锁步发布：任何一个包发新版本，全部 18 个包一起发同一个号。
 
 ```
 @xihan-ui/core     @xihan-ui/position       @xihan-ui/tokens
@@ -34,7 +34,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 @xihan-ui/vue      @xihan-ui/web-components @xihan-ui/chat-stream
 @xihan-ui/markdown @xihan-ui/code-highlight @xihan-ui/backgrounds
 @xihan-ui/sound    @xihan-ui/motion         @xihan-ui/animations
-@xihan-ui/pointer
+@xihan-ui/pointer  @xihan-ui/viz
 ```
 
 两条后果：
@@ -46,14 +46,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-17 个包中 17 个出 JS 或类型入口，共 34 个带类型的入口。
+18 个包中 18 个出 JS 或类型入口，共 35 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
-| 包名 | 17 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 34 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| 包名 | 18 | 把代码从一个包移到另一个包 = major |
+| `exports` 子路径 | 35 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1038（134 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 102 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -202,7 +202,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 550 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 554 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -372,7 +372,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 锁步发版意味着版本号不反映稳定性，因此单独列表。
 
-下面两张表覆盖全部 17 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
+下面两张表覆盖全部 18 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
 
 ### 稳定
 
@@ -385,7 +385,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/web-components` | 137 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 134 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 550 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 554 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
@@ -394,10 +394,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 ### 实验
 
-这六个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
+这七个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
 
 | 包 | 仍在变化的原因 |
 | --- | --- |
+| `@xihan-ui/viz` | 图表组件按期接入，比例尺、形状、场景与过渡的签名随组件落地仍会调整 |
 | `@xihan-ui/code-highlight` | 承诺面是 `HighlighterPort` 端口，自研分词器（`tokenizeCode`、`langSpecOf`、`LangSpec`）随时可能整体替换 |
 | `@xihan-ui/markdown` | 公开面是 `createStreamRenderer` 与它的三个类型，外加 `blockKind` / `fenceLang` / `isFenceClosed` / `LIVE_BLOCK_KEY` 四个切块算子；解析、切块、缓存的中间件随时可能变化 |
 | `@xihan-ui/chat-stream` | AI 会话协议类型（`UIMessage`、`TextPart` 等）跟随上游生态演进 |
@@ -412,10 +413,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，15592 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，15595 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 191 条子入口、8016 个导出名、134 个 `data-scope` 与 1040 条部件配对、
+覆盖：包名与 192 条子入口、8019 个导出名、134 个 `data-scope` 与 1040 条部件配对、
 134 个组件的 1721 个 prop 名、227 种 `data-*`、33 个 `data-state` 取值、550 个令牌、
 5 个 `@layer` 名、4038 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 
@@ -440,7 +441,7 @@ changeset 按 patch / minor 记录即可：更新基线这一动作本身不代�
 
 另有三道门禁把原本依赖自觉的条款转为机器检查。`check-css-floor` 保证浏览器硬底线：
 `.browserslistrc` 记录底线，拒绝名单拦截 `@scope` 等无兜底的抬底线特性，
-`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 17 包锁步：任何一个
+`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 18 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 保证检查系统自身：新增的
 check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截。
 
@@ -457,6 +458,6 @@ check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截�
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，由 `check-slot-types` 门禁的四条判据保证（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报错 | 无载荷插槽也补充声明，或明确只有带载荷的插槽进入契约 |
 | 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字移除之后，消费方的声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，因此每次移除都在 changeset 中逐条列出旧名与替换写法，供使用方在自己的代码库中全文搜索 | 无 |
 | 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope` 等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
-| 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 17 个 | 提升为 peer，或把运行期比对扩展到全部包 |
+| 「18 个包必须同版本」 | `check-version-lock` 门禁保证 18 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 18 个 | 提升为 peer，或把运行期比对扩展到全部包 |
 
 本页内容与实际行为不符时按缺陷处理，请提交 issue。
