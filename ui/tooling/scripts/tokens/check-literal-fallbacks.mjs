@@ -60,9 +60,17 @@ function resolve(name, seen = new Set()) {
   const ref = /^var\(\s*(--xh-[a-z0-9_-]+)\s*\)$/.exec(v)
   return ref ? resolve(ref[1], seen) : v
 }
+/**
+ * 动效幅度令牌不当候选：它们在减弱动效下归零或归一，不是尺寸。
+ * 尺寸槽的兜底与它们同值（100% 的宽度 ≡ 整幅位移 100%）只是巧合，真引过去反而会在减弱档下把尺寸压没。
+ */
+const NOT_A_SIZE = /^--xh-motion-(?:travel|distance-|scale-)/
+
 /** 归一化后的最终值 → 令牌名列表。 */
 const byValue = new Map()
 for (const name of raw.keys()) {
+  if (NOT_A_SIZE.test(name))
+    continue
   const key = normalize(resolve(name) ?? '')
   if (key == null)
     continue

@@ -228,7 +228,7 @@
     align-items: center;
     justify-content: center;
     line-height: var(--xh-leading-none);
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='navigation-menu'][data-part='trigger-indicator'][hidden] {
@@ -296,8 +296,8 @@
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='navigation-menu'][data-part='indicator'][hidden] {
@@ -311,8 +311,8 @@
     inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     block-size: auto;
     transition:
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content。

@@ -113,15 +113,16 @@ describe('m2 磨砂令牌在浏览器中的组合', () => {
     expect(recipe(nested)).toEqual(expected)
   })
 
-  it.each(['light', 'dark'] as const)('%s：显式减弱动效只改变时长和距离，不改材质颜色', (theme) => {
+  it.each(['light', 'dark'] as const)('%s：显式减弱动效只把位移距离与几何时长归零，淡变时长与材质颜色不变', (theme) => {
     const view = fixture(theme)
     const before = recipe(view)
     view.surface.dataset.motion = 'reduce'
     expect(recipe(view)).toEqual(before)
-    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.001s')
+    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.12s')
     expect(getComputedStyle(view.surface).getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
+    expect(getComputedStyle(view.surface).getPropertyValue('--xh-motion-duration-move').trim()).toBe('1ms')
     view.boundary.dataset.contrast = 'more'
-    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.001s')
+    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.12s')
     expect(recipe(view).backdrop).toBe('none')
   })
 

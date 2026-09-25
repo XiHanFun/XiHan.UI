@@ -5,16 +5,11 @@
 
 /* 定义 download trigger 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 @import '../family/action-control.css';
 
 @layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-download-trigger-rotate {
-    to {
-      rotate: 360deg;
-    }
-  }
-
   @keyframes xh-download-trigger-loading-reveal {
     to {
       opacity: 1;
@@ -125,7 +120,7 @@
     border-radius: var(--xh-shape-circle);
     opacity: 0;
     animation:
-      xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+      xh-spin var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
       xh-download-trigger-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 

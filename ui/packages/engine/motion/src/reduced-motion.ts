@@ -50,9 +50,26 @@ export function getMotionOverride(): MotionPreference | null {
   return override
 }
 
-/** 最终偏好：应用级 override 优先，否则取系统偏好。 */
-export function resolveMotionPreference(win?: Window): MotionPreference {
-  return override ?? getMotionPreference(win)
+function isElement(target: Window | Element): target is Element {
+  return (target as Node).nodeType === 1 && typeof (target as Element).closest === 'function'
+}
+
+/**
+ * 最终偏好。
+ *
+ * 传入元素时，最近祖先上的 `data-motion`（`reduce` / `default`）优先，与 CSS 的作用域一致；
+ * 其次是应用级 override，最后是元素所在窗口的系统偏好。传入窗口或不传时不看 DOM。
+ */
+export function resolveMotionPreference(target?: Window | Element | null): MotionPreference {
+  if (target != null && isElement(target)) {
+    const scoped = target.closest('[data-motion]')?.getAttribute('data-motion')
+    if (scoped === 'reduce')
+      return 'reduce'
+    if (scoped === 'default')
+      return 'no-preference'
+    return override ?? getMotionPreference(target.ownerDocument?.defaultView ?? undefined)
+  }
+  return override ?? getMotionPreference(target ?? undefined)
 }
 
 /** 订阅最终偏好的变化（系统改动与 override 改动都算）；值不变不回调。返回取消订阅。 */

@@ -50,7 +50,7 @@ describe('family/motion.css 共享关键帧', () => {
     const expected = Object.keys(SHARED_RELATION).sort()
 
     expect([...found.keys()].sort()).toEqual(expected)
-    expect(expected).toHaveLength(10)
+    expect(expected).toHaveLength(19)
     for (const name of expected) {
       expect(found.get(name).count, name).toBe(1)
       expect(found.get(name).layered, `${name} 不在 @layer xihan.motion 里`).toBe(true)
@@ -59,19 +59,22 @@ describe('family/motion.css 共享关键帧', () => {
     expect(css.match(/\[data-scope/g)).toBeNull()
   })
 
-  it('幅度只引 --xh-motion-distance-sm 与 --xh-motion-scale-enter / -exit，与 check-motion-amplitude 同口径', async () => {
+  it('幅度只引 --xh-motion-distance-sm / -md 与 --xh-motion-scale-enter / -exit，与 check-motion-amplitude 同口径', async () => {
     const css = stripComments(await readFile(MOTION, 'utf8'))
     const found = keyframes(css)
-    const allowed = new Set(['--xh-motion-distance-sm', '--xh-motion-scale-enter', '--xh-motion-scale-exit'])
+    const allowed = new Set(['--xh-motion-distance-sm', '--xh-motion-distance-md', '--xh-motion-scale-enter', '--xh-motion-scale-exit'])
 
     for (const [name, { body }] of found) {
       for (const m of body.matchAll(/--xh-motion-[\w-]+/g))
         expect(allowed.has(m[0]), `${name} 引用了 ${m[0]}`).toBe(true)
-      // 位移与缩放的字面量只剩 0 / 1（退化值），没有带单位的幅度
+      // 位移与缩放不写带单位的幅度；无单位数只许 0 / 1（退化值），或是同一条值里对令牌取反、求补的系数
       for (const decl of body.matchAll(/(?:translate|scale):([^;]+);/g)) {
+        const coefficientsAllowed = decl[1].includes('var(')
         const literals = decl[1].replace(/var\([^)]*\)/g, '').replace(/--[\w-]+/g, '').match(/[+-]?\d+(?:\.\d+)?[a-z%]*/gi) ?? []
-        for (const lit of literals)
-          expect(['0', '1'].includes(lit), `${name} 的 ${decl[0].trim()} 带字面幅度 ${lit}`).toBe(true)
+        for (const lit of literals) {
+          const ok = ['0', '1'].includes(lit) || (coefficientsAllowed && /^[+-]?\d+(?:\.\d+)?$/.test(lit))
+          expect(ok, `${name} 的 ${decl[0].trim()} 带字面幅度 ${lit}`).toBe(true)
+        }
       }
     }
   })
@@ -85,8 +88,20 @@ describe('family/motion.css 共享关键帧', () => {
     expect(byRelation['anchored-list'].sort()).toEqual(['xh-overlay-slide-in', 'xh-overlay-slide-out'])
     expect(byRelation['anchored-panel'].sort()).toEqual(['xh-overlay-pop-in', 'xh-pop-out'])
     expect(byRelation.detached).toEqual(['xh-pop-in'])
-    expect(byRelation.fade.sort()).toEqual(['xh-fade-in', 'xh-fade-out', 'xh-rise-in'])
+    expect(byRelation.fade.sort()).toEqual(['xh-drop-in', 'xh-fade-in', 'xh-fade-out', 'xh-rise-in'])
     expect(byRelation.disclosure.sort()).toEqual(['xh-disclosure-collapse', 'xh-disclosure-expand'])
+    expect(byRelation.list).toEqual(['xh-item-in'])
+    expect(byRelation.sheet.sort()).toEqual(['xh-sheet-in', 'xh-sheet-out'])
+    expect(byRelation.slide.sort()).toEqual(['xh-slide-in', 'xh-slide-out'])
+    expect(byRelation.loop.sort()).toEqual(['xh-shimmer', 'xh-spin'])
+    expect(byRelation.value).toEqual(['xh-countdown'])
+  })
+
+  it('整幅滑入的方向只经私有槽传入，两个方向槽都没写时位移为 0', async () => {
+    const css = stripComments(await readFile(MOTION, 'utf8'))
+    const found = keyframes(css)
+    for (const name of ['xh-slide-in', 'xh-slide-out'])
+      expect(found.get(name).body, name).toContain('translate: var(--xh-_slide-from-x, 0) var(--xh-_slide-from-y, 0)')
   })
 
   it('disclosure 关键帧两端内缩各走私有槽，没写的那一端按 0 动', async () => {

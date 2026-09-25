@@ -111,8 +111,8 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-tool-call-indicator-fg, var(--xh-fg-subtle));
-    /* 与详情展开同时长同曲线：箭头先转完、内容后到位会像是两件事 */
-    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    /* 与详情开合同时长：箭头先转完、内容后到位会像是两件事。收起取 collapse 档，展开（下面的打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -135,6 +135,7 @@
      rtl 下 inline-start 在右侧，箭头因此要反着转 */
   [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
     rotate: 90deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   [dir='rtl'] [data-scope='tool-call'][data-part='indicator'] {
@@ -306,12 +307,12 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='tool-call'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场走 exit 档曲线 */
   [data-scope='tool-call'][data-part='content'][data-state='closed'] {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='tool-call'][data-part='input'],

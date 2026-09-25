@@ -1,5 +1,6 @@
-// 共享关键帧与锚定关系的登记：锚定列表 / 锚定面板 / 无锚定弹出三分，
-// 加上 disclosure 与遮罩淡入淡出。共享关键帧只定义在 family/motion.css，皮肤 @import 它。
+// 共享关键帧与关系组的登记：浮层按锚定关系分锚定列表 / 锚定面板 / 无锚定弹出三组，
+// 另有淡入淡出（fade）、披露（disclosure）、列表条目（list）、面板（sheet）、整幅滑入（slide）、
+// 循环（loop）与数值（value）。共享关键帧只定义在 family/motion.css，皮肤 @import 它。
 //
 // 两张门禁读同一份：check-keyframe-registry.mjs 把 relation 写进登记表并要求「relation 非空
 // 的名字只定义在 family/motion.css、family/motion.css 里没有表外的名字」；check-motion-role.mjs
@@ -20,9 +21,18 @@ export const SHARED_RELATION = Object.freeze({
   'xh-rise-in': 'fade',
   'xh-disclosure-expand': 'disclosure',
   'xh-disclosure-collapse': 'disclosure',
+  'xh-drop-in': 'fade',
+  'xh-item-in': 'list',
+  'xh-sheet-in': 'sheet',
+  'xh-sheet-out': 'sheet',
+  'xh-slide-in': 'slide',
+  'xh-slide-out': 'slide',
+  'xh-spin': 'loop',
+  'xh-shimmer': 'loop',
+  'xh-countdown': 'value',
 })
 
-export const RELATIONS = Object.freeze(['anchored-list', 'anchored-panel', 'detached', 'fade', 'disclosure'])
+export const RELATIONS = Object.freeze(['anchored-list', 'anchored-panel', 'detached', 'fade', 'disclosure', 'list', 'sheet', 'slide', 'loop', 'value'])
 
 /**
  * 浮层的三种锚定关系各自许用的进出场关键帧（表）。

@@ -138,7 +138,7 @@
     box-shadow: var(--xh-color-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition:
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -238,13 +238,6 @@
   }
 
   /* hidden-input 是 type=hidden 的原生输入，浏览器本就不渲染它，这里一条声明都不给。 */
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='color-slider'][data-part='thumb'],
-    [data-scope='color-slider'][data-part='value-text'] {
-      transition: none;
-    }
-  }
 
   /*
    * 高对比档：轨道画的就是颜色本身，被系统换掉之后整条滑杆不再能调色。

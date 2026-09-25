@@ -168,10 +168,10 @@
 --xh-motion-distance-md: 0px
 --xh-motion-distance-sm: 0px
 --xh-motion-duration-collapse: 1ms
---xh-motion-duration-enter: 1ms
---xh-motion-duration-exit: 1ms
+--xh-motion-duration-enter: 120ms  ← var(--xh-duration-fast)
+--xh-motion-duration-exit: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-expand: 1ms
---xh-motion-duration-micro: 1ms
+--xh-motion-duration-micro: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-move: 1ms
 --xh-motion-duration-nudge: 1ms
 --xh-motion-duration-press: 1ms

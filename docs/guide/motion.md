@@ -6,7 +6,7 @@
 
 ## 缓动
 
-CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源；取值的真源是令牌层的 `ease.standard / in / out` 与 `duration.fast / normal / slow`（`@xihan-ui/tokens` 的 primitive），这里的 `standard` / `easeIn` / `easeOut` 与 `durations` 三值逐字等于它们，由门禁 `check-motion-source` 比对。
+CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源；取值的真源是令牌层（`@xihan-ui/tokens` 的原语 `ease.*`、`duration.*` 与语义层 `--xh-motion-*`）。门禁 `check-motion-source` 双向比对：令牌里的每条曲线与时长在这里都有同值常量，这里多出的名字须登记理由。
 
 ```ts
 import { cubicBezier, easing, resolveEasing } from "@xihan-ui/motion";
@@ -19,11 +19,29 @@ resolveEasing("cubic-bezier(0.4, 0, 0.2, 1)")(0.5);
 resolveEasing(t => t * t)(0.5); // 0.25
 ```
 
-八条命名缓动：`linear` `standard` `emphasized` `decelerate` `accelerate` `easeIn` `easeOut` `easeInOut`。
+十一条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack`，CSS 关键字 `linear`，以及没有令牌对应的 `emphasized`（表现性进场，`@xihan-ui/animations` 的预设使用）、`decelerate`、`accelerate`。
 
 三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `durations.slow`。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
 
-`resolveEasing` 无法识别的写法退回线性：写法可能来自 DOM 特性或后端配置，是任意字符串，不应让整段动画停止。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
+`resolveEasing` 无法识别的写法退回线性，开发构建下同一写法在控制台警告一次：写法可能来自 DOM 特性或后端配置，是任意字符串，拼错的名字（如 `ease-out`，正确写法是 `easeOut`）会悄悄按匀速播放。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
+
+## 从元素读取令牌
+
+JS 动画与同一元素上的 CSS 过渡保持同步时，不要写死毫秒，从元素读取语义令牌：
+
+```ts
+import { readMotion, tweenValueAt } from "@xihan-ui/motion";
+
+const motion = readMotion(el);
+const spec = {
+  from: 0,
+  to: 1,
+  duration: motion.duration("move"), // --xh-motion-duration-move 的实际取值（毫秒）
+  easing: motion.easing("continuous"), // --xh-motion-ease-continuous 的采样函数
+};
+```
+
+计算样式里已经算进作者对组件槽的覆盖、容器上的 `data-motion` 与系统的减弱动效偏好，减弱动效下几何类时长读到的就是 1ms。读不到时（服务端、未加载样式的测试环境）取与令牌同值的常量 `motionDurations` / `motionEasings`，并按元素判断是否减弱。每次调用读一次计算样式，在动画开始前调用即可。
 
 `toLinearEasing` 把任意缓动函数采样为 CSS `linear()` 串，用于把只有 JS 能计算的曲线交回 CSS：
 
@@ -77,7 +95,7 @@ if (supportsLinearEasing()) {
 
 ## 减弱动效
 
-系统偏好之上叠加一层应用级 override，最终偏好 = override ?? 系统设置。
+系统偏好之上叠加一层应用级 override，最终偏好 = override ?? 系统设置。传入元素时，最近祖先上的 `data-motion`（`reduce` / `default`）再优先一层，与 CSS 令牌的作用域一致。
 
 ```ts
 import {
@@ -87,6 +105,7 @@ import {
 } from "@xihan-ui/motion";
 
 resolveMotionPreference(); // 'no-preference' | 'reduce'
+resolveMotionPreference(el); // 先看 el 最近祖先的 data-motion，再看 override 与系统设置
 
 // 接到产品自己的“减弱动效”设置项；传 null 交还系统
 setMotionOverride("reduce");
@@ -98,7 +117,7 @@ const off = onMotionPreferenceChange(preference => console.log(preference));
 
 没有 `matchMedia` 的宿主（SSR、jsdom）一律按不减弱处理：`prefersReducedMotion()` 返回 `false`，`getMotionPreference()` 返回 `'no-preference'`。
 
-这是仓库内唯一的探测通道：`@xihan-ui/core` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）与平滑滚动、`headless` 的数字动画、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读取，应用级 override 一处设置、处处生效。门禁 `check-reduced-motion-channel` 保证：除 motion 包自身外，源码中不允许出现 `matchMedia('(prefers-reduced-motion')`。
+JS 侧统一经 `resolveMotionPreference` 读取：`@xihan-ui/core` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）与平滑滚动、`headless` 的数字动画、反馈服务的加载弧线与 `backgrounds` 的画面，应用级 override 一处设置、处处生效。门禁 `check-reduced-motion-channel` 保证：系统信号 `(prefers-reduced-motion` 只在 motion 包的 `reduced-motion.ts` 与 core 的视觉环境探测 `visual-environment/env.ts` 两处出现。
 
 ### 七轴控制器统一入口
 
@@ -150,7 +169,7 @@ handle.finish();
 ```ts
 import { frameLoop, frameNow, isTweenDone, tweenValueAt } from "@xihan-ui/motion";
 
-const spec = { from: 0, to: 1000, duration: 800, easing: "ease-out" } as const;
+const spec = { from: 0, to: 1000, duration: 800, easing: "easeOut" } as const;
 const start = frameNow(window);
 
 const stop = frameLoop(window, () => {

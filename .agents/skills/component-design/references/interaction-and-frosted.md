@@ -129,7 +129,7 @@ rest
 | 对象 | 高度 | 时长 / 曲线 |
 | --- | --- | --- |
 | Surface 级（Accordion、Collapsible、Reasoning、ToolCall） | `grid-template-rows: 0fr → 1fr` | 展开 `--xh-motion-duration-expand` / `--xh-motion-ease-enter-strong`；收起 `--xh-motion-duration-collapse` / `--xh-motion-ease-exit`；指示器同档；初始即展开的内容不播动画 |
-| 密集（Tree、TreeSelect、JsonViewer、SideNav 内联、Table 展开行、Truncate） | 不动高度，刻意瞬时 | 树族指示器 `--xh-motion-duration-micro` |
+| 密集（Tree、TreeSelect、JsonViewer、SideNav 内联、Table 展开行、Truncate） | 不动高度，刻意瞬时 | 树族指示器 `--xh-motion-duration-nudge` |
 
 ### 2.8 浮层进出场
 
@@ -144,7 +144,7 @@ rest
 | 整幅滑入（Drawer、Layout 抽屉式侧栏） | `xh-slide-in / out`，位移 `--xh-motion-travel`；入 `--xh-motion-duration-slide` / `--xh-motion-ease-slide`，出 `--xh-motion-duration-exit` / `--xh-motion-ease-exit` |
 | 遮罩与全屏面 | `xh-fade-in / out` |
 
-共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。`xh-sheet`、`xh-slide`、`--xh-motion-travel` 尚待落地（同文 §19）。
+共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。`xh-sheet`、`xh-slide` 尚待落地（同文 §19）。
 
 ## 3. Frosted 柔和模糊材质
 
@@ -202,6 +202,22 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 - 若属于公开 API，使用 major changeset，并在迁移说明中给出显式替代：作者应改为 `frosted` 或实体材质。
 - 按组件逐个迁移和提交；先迁移真实消费者，再删除全局角色，避免未完成状态下破坏构建。
 
+### 3.6 与 liquid 的分工
+
+liquid 是导航层材质，细则见《统一组件设计方案》§8.5。它与 frosted 的分工：
+
+| | frosted | liquid |
+| --- | --- | --- |
+| 用于 | 锚定瞬态浮层（短列表、菜单、tooltip、气泡） | 浮在内容之上的导航层（浮动钮、媒体控制、悬浮栏），且只在 `data-material="liquid"` 下 |
+| 不透明度 | 约 82%–90%，固定 | 按下层：可读下限浅 0.48 / 深 0.61，均匀下层可降到浅 0.24 / 深 0.34 |
+| 模糊 / 饱和 | 16px / ≤ 1.08 | 8px / 1.4 |
+| 边界 | 1px 低对比描边 + 1px 内侧顶部边界光 | 墨色 12% 细线 + 1px 边缘光环（亮度分布随光源方向转动） |
+| 折射 | 无 | 边缘 18px 以内，仅 Chromium |
+| 色调 | 随主题 | 随下层（声明或 DOM 计算色），与主题无关 |
+
+- liquid 不是 glass 的别名，也不替代 frosted：锚定浮层在 liquid 轴下仍用 frosted。
+- 两者都不叠加：frosted 浮层里不放 liquid，liquid 栏内的子部件不再叠材质。
+
 ## 4. 新组件检查表
 
 ### 4.1 形状
@@ -216,6 +232,8 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 - [ ] 定尺离散 Action Control 接入 120ms/0.97/200ms 配方并同时换底。
 - [ ] 行级与 disclosure trigger 只换面，无零反馈。
 - [ ] 指针、触摸和键盘 Press 的视觉一致（`data-pressed`）。
+- [ ] `:hover` 规则写在 `@media (hover: hover)` 内，触屏点按后无悬停残留。
+- [ ] 手势松手用弹簧并交接松手速度；standard 档超调 ≤ 3%。
 - [ ] disabled、pending、selected、danger 组合状态明确。
 - [ ] reduced motion 下仍有非位移反馈。
 - [ ] disclosure 与浮层进出场按 §2.7、§2.8 取关键帧与时长。
@@ -238,6 +256,9 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 - [ ] frosted 仅用于允许的瞬态浮层。
 - [ ] frosted 有足够实体背景和边界，不只依赖 backdrop-filter。
 - [ ] light/dark/contrast/reduced-transparency/forced-colors/print 均验证。
+- [ ] 使用 liquid 的部件在登记表内，且只在 `data-material="liquid"` 下生效；standard 档外观不变。
+- [ ] liquid 标签文字在黑、白、品牌、黄四种下层上 ≥ 4.5:1（截图取样）；选中不用品牌色字。
+- [ ] 所在面是彩色时声明了墨色域，描边与淡底不直接取中性原语。
 
 ### 4.6 验证
 

@@ -5,15 +5,7 @@
 
 /* 独立 Button 皮肤与 full bundle 都从同一份 Family Recipe 取得布局、状态和命中区。 */
 @import '../family/action-control.css';
-
-@layer xihan.motion {
-  /* 独立皮肤可单独引入，spinner 动画名不能依赖别的组件文件。 */
-  @keyframes xh-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-}
+@import '../family/motion.css';
 
 @layer xihan.components {
   [data-scope='button'] {

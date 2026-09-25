@@ -957,16 +957,6 @@
     -webkit-text-fill-color: var(--xh-field-autofill-fg, var(--xh-fg-default));
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-xh-field-chrome] {
-      transition: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-xh-field-chrome] {
-    transition: none;
-  }
-
   @media (forced-colors: active) {
     [data-xh-field-chrome] {
       background-color: Canvas;
@@ -1524,16 +1514,6 @@
     display: none;
   }
 
-  :where([data-motion='reduce']) [data-xh-collection-item] {
-    transition: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-xh-collection-item] {
-      transition: none;
-    }
-  }
-
   @media (forced-colors: active) {
     [data-xh-collection-item] {
       --xh-_collection-bg: Canvas;
@@ -1852,9 +1832,9 @@
  * @import 去重，同名同帧体即使重复插入也无副作用。
  *
  * 本文件只放跨皮肤共用的关键帧，皮肤内不得重定义这些名字（check-keyframe-refs 判红）；
- * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm 与 --xh-motion-scale-enter /
- * -exit，减弱动效档由令牌层把它们归零。四个方向槽 --xh-_overlay-enter-* 由浮层皮肤按
- * placement 写在 positioner 上，四个都没写时位移退回 0。
+ * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm / -md 与 --xh-motion-scale-enter /
+ * -exit，整幅位移经私有槽取 --xh-motion-travel，减弱动效档由令牌层把它们归零。四个方向槽
+ * --xh-_overlay-enter-* 由浮层皮肤按 placement 写在 positioner 上，四个都没写时位移退回 0。
  */
 @layer xihan.motion {
   /* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
@@ -2000,6 +1980,117 @@
       grid-template-rows: 0fr;
       padding-block-start: 0;
       padding-block-end: 0;
+    }
+  }
+
+  /* ── 列表条目进场：淡入叠一段向上位移，比页内上浮大一档 ──
+     Approval、MessageFeed、QuestionFlow、ToolCall 的条目 */
+  @keyframes xh-item-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* 自上而下的显现：新揭开的内容从上方落位。DiffView 展开的折叠块、Form 的错误汇总 */
+  @keyframes xh-drop-in {
+    from {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* ── 面板（sheet）：模态与强反馈面，竖向一小段位移叠缩放 ──
+     Dialog、Notification */
+  @keyframes xh-sheet-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+  }
+
+  @keyframes xh-sheet-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+      scale: var(--xh-motion-scale-exit);
+    }
+  }
+
+  /* ── 整幅滑入（slide）：面板从所在边整条推入推出 ──
+     方向由皮肤在元素上写进 --xh-_slide-from-x / --xh-_slide-from-y（取正负整幅位移令牌或 0），
+     两个都没写时位移退回 0。整幅位移令牌在减弱动效下归零，进出场只剩时长。Drawer */
+  @keyframes xh-slide-in {
+    from {
+      translate: var(--xh-_slide-from-x, 0) var(--xh-_slide-from-y, 0);
+    }
+
+    to {
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-slide-out {
+    from {
+      translate: 0 0;
+    }
+
+    to {
+      translate: var(--xh-_slide-from-x, 0) var(--xh-_slide-from-y, 0);
+    }
+  }
+
+  /* ── 循环：匀速转圈与扫过的流光 ──
+     时长取循环令牌，减弱动效下由各皮肤停掉并换成静态替代。
+     转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖 */
+  @keyframes xh-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  @keyframes xh-shimmer {
+    from {
+      background-position: 150% center;
+    }
+
+    to {
+      background-position: -50% center;
+    }
+  }
+
+  /* ── 数值：倒计时条从占满一整条收到零 ──
+     走一遍就到头，时长由连接层写进各组件的时长槽。Toast、Notification */
+  @keyframes xh-countdown {
+    from {
+      inline-size: 100%;
+    }
+
+    to {
+      inline-size: 0%;
     }
   }
 }
@@ -3224,14 +3315,9 @@
 /* styles/download-trigger.css */
 /* 定义 download trigger 样式。 */
 
-@layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-download-trigger-rotate {
-    to {
-      rotate: 360deg;
-    }
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
+@layer xihan.motion {
   @keyframes xh-download-trigger-loading-reveal {
     to {
       opacity: 1;
@@ -3342,7 +3428,7 @@
     border-radius: var(--xh-shape-circle);
     opacity: 0;
     animation:
-      xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+      xh-spin var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
       xh-download-trigger-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 
@@ -6861,18 +6947,6 @@
     display: none;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='input-group'][data-part='root'],
-    [data-scope='input-group'][data-part='root']::before {
-      transition: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-scope='input-group'][data-part='root'],
-  :where([data-motion='reduce']) [data-scope='input-group'][data-part='root']::before {
-    transition: none;
-  }
-
   @media (forced-colors: active) {
     [data-scope='input-group'][data-part='root'] {
       background: Canvas;
@@ -7131,7 +7205,7 @@
   [data-scope='json-viewer'][data-part='branch-indicator'] {
     display: inline-block;
     line-height: var(--xh-leading-none);
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='json-viewer'][data-part='branch-indicator'][hidden] {
@@ -7326,7 +7400,7 @@
     overflow: hidden;
     padding: var(--xh-layout-sider-padding, var(--xh-space-3));
     background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
-    transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+    transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 折起来时不换行：窄到放不下的那几个字直接被 overflow 裁掉，不会挤成一列竖排 */
@@ -9343,15 +9417,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-@layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-popconfirm-rotate {
-    to {
-      transform: rotate(1turn);
-    }
-  }
-}
-
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='popconfirm'] {
@@ -9596,7 +9661,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentcolor;
     border-radius: var(--xh-shape-circle);
-    animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 取消是中性的次要出口，不参与语气：content 上的 data-tone 会把 --xh-_tone-* 一路继承下来，
@@ -10105,14 +10170,14 @@
     display: none;
   }
 
-  /* 指示随开合转向，纯装饰。转向与正文展开取同一档时长，两件事一起收尾 */
+  /* 指示随开合转向，纯装饰。转向与正文开合取同一档时长，两件事一起收尾：收起取 collapse 档，展开取 expand 档 */
   [data-scope='reasoning'][data-part='indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
     color: var(--xh-reasoning-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -10129,6 +10194,7 @@
 
   [data-scope='reasoning'][data-part='indicator'][data-state='open'] {
     rotate: 180deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='reasoning'][data-part='indicator'][hidden] {
@@ -10233,11 +10299,11 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='reasoning'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='reasoning'][data-part='content'][data-state='closed'] {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 尺寸档改内衬、字号与图标档 */
@@ -10788,10 +10854,10 @@
        纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位。
        投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -13153,15 +13219,9 @@
 /* styles/spinner.css */
 /* 定义 spinner 样式。 */
 
-@layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里。皮肤可以按需单独引入，
-     引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
-  @keyframes xh-spinner-rotate {
-    to {
-      transform: rotate(1turn);
-    }
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
+@layer xihan.motion {
   /* 三点档的呼吸：一拍里淡到禁用档再回来 */
   @keyframes xh-spinner-dots {
     50% {
@@ -13199,7 +13259,7 @@
     /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
     border-block-start-color: var(--xh-spinner-fg, currentColor);
     border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
-    animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 三档直径走字形尺寸那把尺：圆环与同一行文字里的图标同级，三档同族才不会在 compact 下错位。
@@ -13224,7 +13284,7 @@
 
   /*
    * 渐隐弧：一整圈的色相由角度扫过来，再用一圈环形遮罩把中心挖空，剩下的就是一段
-   * 由浓到无的弧。转的还是同一条 xh-spinner-rotate——这一档只换画法，不换节拍。
+   * 由浓到无的弧。转的还是同一条 xh-spin——这一档只换画法，不换节拍。
    * 遮罩只吃 alpha，用 currentColor 当不透明的那一端即可。
    */
   [data-scope='spinner'][data-part='root'][data-variant='arc']::before {
@@ -13534,8 +13594,8 @@
     flex: none;
     color: var(--xh-accordion-indicator-fg, var(--xh-fg-muted));
     line-height: var(--xh-leading-none);
-    /* 指示器与正文同档转向：正文 enter 档展开，箭头也用同一段时长翻过去 */
-    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    /* 指示器与正文同档转向：收起时取 collapse 档，展开时（下面的打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -13552,6 +13612,7 @@
 
   [data-scope='accordion'][data-part='indicator'][data-state='open'] {
     rotate: 180deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
@@ -13574,11 +13635,11 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='accordion'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='accordion'][data-part='content'][data-state='closed'] {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
   }
 }
 
@@ -13729,8 +13790,8 @@
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
     transition:
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* display 会盖掉 hidden 属性的 UA 规则，无激活项时显式让位 */
@@ -13745,8 +13806,8 @@
     inline-size: auto;
     block-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（导航当前页）：
@@ -13805,12 +13866,10 @@
 /* styles/approval.css */
 /* 定义 approval 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* 独立皮肤同时传递引入授权行与两颗钮的动作控件配方，full bundle 递归去重。 */
 
 @layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-
   /* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
   @keyframes xh-approval-in {
     from {
@@ -13833,12 +13892,6 @@
     to {
       opacity: 1;
       scale: 1;
-    }
-  }
-
-  @keyframes xh-approval-rotate {
-    to {
-      rotate: 360deg;
     }
   }
 }
@@ -14208,7 +14261,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentColor;
     border-radius: var(--xh-shape-circle);
-    animation: xh-approval-rotate var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
@@ -14725,15 +14778,6 @@
 
 /* styles/button.css */
 /* 独立 Button 皮肤与 full bundle 都从同一份 Family Recipe 取得布局、状态和命中区。 */
-
-@layer xihan.motion {
-  /* 独立皮肤可单独引入，spinner 动画名不能依赖别的组件文件。 */
-  @keyframes xh-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-}
 
 @layer xihan.components {
   [data-scope='button'] {
@@ -16370,8 +16414,8 @@
     overflow: hidden;
     cursor: pointer;
     transition:
-      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
@@ -16639,8 +16683,8 @@
       background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
       translate: -50% -50%;
       transition:
-        inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
-        block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+        inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+        block-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
         background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     }
 
@@ -16925,7 +16969,7 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-cascader-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='cascader'][data-part='indicator'][hidden] {
@@ -17712,7 +17756,7 @@
     scale: var(--xh-motion-scale-enter);
     transition:
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -18219,13 +18263,9 @@
 /* styles/clipboard.css */
 /* 定义 clipboard 样式。 */
 
-@layer xihan.motion {
-  @keyframes xh-clipboard-rotate {
-    to {
-      rotate: 360deg;
-    }
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
+@layer xihan.motion {
   @keyframes xh-clipboard-loading-reveal {
     to {
       opacity: 1;
@@ -18461,7 +18501,7 @@
     border-radius: var(--xh-shape-circle);
     opacity: 0;
     animation:
-      xh-clipboard-rotate var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+      xh-spin var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
       xh-clipboard-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 
@@ -18941,8 +18981,8 @@
     justify-content: center;
     color: var(--xh-collapsible-indicator-fg, var(--xh-fg-muted));
     line-height: var(--xh-leading-none);
-    /* 指示器与正文同档转向：正文 enter 档展开，箭头也用同一段时长翻过去 */
-    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    /* 指示器与正文同档转向：收起时取 collapse 档，展开时（下面的打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -18959,6 +18999,7 @@
 
   [data-scope='collapsible'][data-part='indicator'][data-state='open'] {
     rotate: 180deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
@@ -18981,11 +19022,11 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='collapsible'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='collapsible'][data-part='content'][data-state='closed'] {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
   }
 }
 
@@ -19445,7 +19486,7 @@
     background: transparent;
     box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   /* 取色区的纵轴也由连接层给（inset-block-start），回拉同样按 block-start 那侧 */
@@ -19796,7 +19837,7 @@
     box-shadow: var(--xh-color-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition:
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -19896,13 +19937,6 @@
   }
 
   /* hidden-input 是 type=hidden 的原生输入，浏览器本就不渲染它，这里一条声明都不给。 */
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='color-slider'][data-part='thumb'],
-    [data-scope='color-slider'][data-part='value-text'] {
-      transition: none;
-    }
-  }
 
   /*
    * 高对比档：轨道画的就是颜色本身，被系统换掉之后整条滑杆不再能调色。
@@ -20126,7 +20160,7 @@
     scale: 0;
     transition:
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-settle);
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle);
   }
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -20425,7 +20459,7 @@
      按钮自带悬停底色，整个按钮转会带着底色一起转；家族按压缩放的是整钮，不影响这里的转向 */
   [data-scope='combobox'][data-part='trigger']:empty::before,
   [data-scope='combobox'][data-part='trigger'] > * {
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -23453,7 +23487,7 @@
      竖排书写模式下 block 轴不再是 Y 轴，位移会退化为纵向，但贴边本身仍由逻辑 inset 保证。 */
   @keyframes xh-drawer-in-right {
     from {
-      translate: var(--xh-_drawer-shift-inline, 100%) 0;
+      translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
     }
 
     to {
@@ -23467,13 +23501,13 @@
     }
 
     to {
-      translate: var(--xh-_drawer-shift-inline, 100%) 0;
+      translate: var(--xh-_drawer-shift-inline, var(--xh-motion-travel)) 0;
     }
   }
 
   @keyframes xh-drawer-in-left {
     from {
-      translate: calc(-1 * var(--xh-_drawer-shift-inline, 100%)) 0;
+      translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
     }
 
     to {
@@ -23487,13 +23521,13 @@
     }
 
     to {
-      translate: calc(-1 * var(--xh-_drawer-shift-inline, 100%)) 0;
+      translate: calc(-1 * var(--xh-_drawer-shift-inline, var(--xh-motion-travel))) 0;
     }
   }
 
   @keyframes xh-drawer-in-top {
     from {
-      translate: 0 calc(-1 * var(--xh-_drawer-shift-block, 100%));
+      translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
     }
 
     to {
@@ -23507,13 +23541,13 @@
     }
 
     to {
-      translate: 0 calc(-1 * var(--xh-_drawer-shift-block, 100%));
+      translate: 0 calc(-1 * var(--xh-_drawer-shift-block, var(--xh-motion-travel)));
     }
   }
 
   @keyframes xh-drawer-in-bottom {
     from {
-      translate: 0 var(--xh-_drawer-shift-block, 100%);
+      translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
     }
 
     to {
@@ -23527,7 +23561,7 @@
     }
 
     to {
-      translate: 0 var(--xh-_drawer-shift-block, 100%);
+      translate: 0 var(--xh-_drawer-shift-block, var(--xh-motion-travel));
     }
   }
 }
@@ -23669,9 +23703,9 @@
      不构成固定定位的包含块，两种结构下参照的都是视口，位置一致；
      contained 时上面那条把它一并换成 absolute，参照的就是作者那个容器。 */
   [data-scope='drawer'][data-part='content'] {
-    /* 位移方向的私有槽位：默认按 LTR，RTL 在下面整体翻符号 */
-    --xh-_drawer-shift-inline: 100%;
-    --xh-_drawer-shift-block: 100%;
+    /* 位移方向的私有槽位：默认按 LTR，RTL 在下面整体翻符号。幅度取整幅位移令牌，减弱动效下归零 */
+    --xh-_drawer-shift-inline: var(--xh-motion-travel);
+    --xh-_drawer-shift-block: var(--xh-motion-travel);
     /* 尺寸档只换这一个私有槽：左右放置时它是面板宽度、上下放置时是面板高度，
        两种取法都在下面「四条边」那两条规则里。声明在 content 而不是 root：
        content 会被 portal 到 body，root 上的槽位继承不过来（data-side 也是同一个道理） */
@@ -23710,7 +23744,7 @@
   }
 
   [data-scope='drawer'][data-part='content']:dir(rtl) {
-    --xh-_drawer-shift-inline: -100%;
+    --xh-_drawer-shift-inline: calc(-1 * var(--xh-motion-travel));
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致。
@@ -24629,7 +24663,7 @@
     border-radius: inherit;
     background: var(--xh-file-upload-item-progress-fill, var(--xh-bg-brand));
     inline-size: calc(var(--xh-_file-upload-progress, 0) * 100%);
-    transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+    transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='file-upload'][data-part='item-progress'][hidden] {
@@ -25703,7 +25737,7 @@
     max-block-size: 85%;
     user-select: none;
     /* 变换是内联 style 写的，只给缩放旋转一点缓动；拖拽平移要跟手，不缓 */
-    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+    transition: transform var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
   /* 拖拽期间变换每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
@@ -26384,7 +26418,7 @@
   [data-scope='loading-bar'][data-part='range'] {
     block-size: 100%;
     background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
-    transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-continuous);
+    transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-move)) var(--xh-motion-ease-continuous);
   }
 
   /* 渲染了亮边才把进度段变成定位面：亮边贴在它的末端 */
@@ -27640,7 +27674,7 @@
     align-items: center;
     justify-content: center;
     line-height: var(--xh-leading-none);
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='navigation-menu'][data-part='trigger-indicator'][hidden] {
@@ -27708,8 +27742,8 @@
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='navigation-menu'][data-part='indicator'][hidden] {
@@ -27723,8 +27757,8 @@
     inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     block-size: auto;
     transition:
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content。
@@ -27785,25 +27819,6 @@
       opacity: 1;
       translate: 0 0;
       scale: 1;
-    }
-  }
-
-  /* loading 那枚字形自己转。逐皮肤自带一份：跨皮肤共用动画名，
-     引用方那份皮肤不在场时动画就静默不跑 */
-  @keyframes xh-notification-spin {
-    to {
-      rotate: 360deg;
-    }
-  }
-
-  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
-  @keyframes xh-countdown {
-    from {
-      inline-size: 100%;
-    }
-
-    to {
-      inline-size: 0%;
     }
   }
 
@@ -28040,7 +28055,7 @@
   [data-scope='notification'][data-part='item'][data-loading] [data-part='item-indicator']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-notification-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；
@@ -29261,7 +29276,7 @@
     block-size: 100%;
     border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
     background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
-    transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+    transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* —— 尺寸 —— */
@@ -29326,7 +29341,7 @@
   [data-scope='progress'][data-part='range'][data-variant='dashboard'] {
     stroke: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
     stroke-linecap: var(--xh-progress-linecap, round);
-    transition: stroke-dashoffset var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    transition: stroke-dashoffset var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 进度未知：线形条改为一小段来回扫。宽度交给动画，连接层算出的 inline-size 与
@@ -29514,7 +29529,7 @@
     display: block;
     overflow: hidden;
     block-size: var(--xh-question-flow-viewport-h, var(--xh-_question-flow-viewport-h));
-    transition: block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+    transition: block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='question-flow'][data-part='viewport'][hidden] {
@@ -29529,7 +29544,7 @@
     flex-direction: column;
     gap: var(--xh-question-flow-track-gap, var(--xh-_question-flow-gap));
     translate: 0 var(--xh-question-flow-track-y, var(--xh-_question-flow-track-y));
-    transition: translate var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='question-flow'][data-part='track'][hidden] {
@@ -30088,7 +30103,7 @@
     border-radius: var(--xh-shape-circle);
     background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
     scale: 0;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-settle);
+    transition: scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle);
   }
 
   [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
@@ -30313,7 +30328,7 @@
   [data-scope='rating'][data-part='item']:empty::after {
     background-color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
     clip-path: inset(0 100% 0 0);
-    transition: clip-path var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: clip-path var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
   /* 点亮的判据是 data-highlighted，不是 aria-checked：
@@ -30938,7 +30953,7 @@
     inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
     block-size: var(--xh-select-action-size, var(--xh-control-action-size));
     color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -31640,7 +31655,7 @@
     justify-content: center;
     inline-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
@@ -31839,7 +31854,7 @@
     box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition:
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -32077,7 +32092,7 @@
   /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
      其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
   [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
-    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+    transition: transform var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
   /* 抓起与放下时的抬升、压深都淡变。位移不进这条：它由连接层每帧写内联 transform */
@@ -32189,7 +32204,7 @@
     border-radius: var(--xh-sortable-drop-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-sortable-drop-indicator-bg, var(--xh-bg-brand));
     /* 落点一格一格地跳，线跟着滑过去 */
-    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+    transition: transform var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
   /* 竖排时是一条横线铺满容器，横排与换行网格时是一条竖线 */
@@ -32781,14 +32796,7 @@
 /* styles/switch.css */
 /* 定义 switch 样式。 */
 
-@layer xihan.motion {
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-switch-rotate {
-    to {
-      transform: rotate(1turn);
-    }
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -32954,8 +32962,8 @@
     line-height: 0;
     /* 状态切换只动位移与表面，按压拉伸另走 inline-size；不使用 transition-all。 */
     transition:
-      translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -33009,7 +33017,7 @@
     border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
     /* 加载环是等宽高的圆（全部加载环取 circle） */
     border-radius: var(--xh-shape-circle);
-    animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——
@@ -33693,7 +33701,7 @@
 
     /* 这条整份改写家族的过渡列表，按压的 scale 与换底要一起带回来 */
     transition:
-      rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+      rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
@@ -34695,8 +34703,8 @@
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 卡片变体已经由卡片面表达状态，不再叠一条下划线。 */
@@ -34722,10 +34730,10 @@
     box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
     pointer-events: none;
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* line 档没放 indicator 部件时，选中标签自画一条静态指示线（导航当前页）：
@@ -34774,8 +34782,8 @@
     block-size: var(--xh-_tabs-indicator-h);
     inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
     transition:
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 标签之间的细线：横排时是一条竖线，竖排时躺平 */
@@ -37210,11 +37218,11 @@
 /* Toast 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
 
 @layer xihan.motion {
-  /* 新条目从视口边缘外进入，同时落到自己的折叠层级。 */
+  /* 新条目从视口边缘外进入，同时落到自己的折叠层级。整幅位移取令牌，减弱动效下归零，只剩淡入 */
   @keyframes xh-toast-in {
     from {
       opacity: 0;
-      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - 100%)))
+      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - var(--xh-motion-travel))))
         scale(var(--xh-toast-scale-collapsed, 1));
     }
 
@@ -37222,23 +37230,6 @@
       opacity: 1;
       transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-offset-collapsed, 0px)))
         scale(var(--xh-toast-scale-collapsed, 1));
-    }
-  }
-
-  @keyframes xh-toast-spin {
-    to {
-      rotate: 360deg;
-    }
-  }
-
-  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
-  @keyframes xh-countdown {
-    from {
-      inline-size: 100%;
-    }
-
-    to {
-      inline-size: 0%;
     }
   }
 
@@ -37251,7 +37242,7 @@
 
     to {
       opacity: 0;
-      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - 100%)))
+      transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - var(--xh-motion-travel))))
         scale(var(--xh-toast-scale, 1));
     }
   }
@@ -37337,8 +37328,8 @@
     transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-y))) scale(var(--xh-toast-scale));
     transform-origin: bottom center;
     transition:
-      transform var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -37432,7 +37423,7 @@
   [data-scope='toast'][data-part='root'][data-loading]::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；「在等什么」由条子上的
@@ -37496,7 +37487,7 @@
   [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：与 root 上那枚同一处理——转圈停下，静止的箭头仍读得出「还没好」。
@@ -38365,8 +38356,8 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-tool-call-indicator-fg, var(--xh-fg-subtle));
-    /* 与详情展开同时长同曲线：箭头先转完、内容后到位会像是两件事 */
-    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    /* 与详情开合同时长：箭头先转完、内容后到位会像是两件事。收起取 collapse 档，展开（下面的打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -38389,6 +38380,7 @@
      rtl 下 inline-start 在右侧，箭头因此要反着转 */
   [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
     rotate: 90deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   [dir='rtl'] [data-scope='tool-call'][data-part='indicator'] {
@@ -38560,12 +38552,12 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='tool-call'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场走 exit 档曲线 */
   [data-scope='tool-call'][data-part='content'][data-state='closed'] {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='tool-call'][data-part='input'],
@@ -39230,10 +39222,10 @@
       0 0 0 100vmax var(--xh-_tour-spotlight-shroud);
     /* 换步时框自己滑过去，用户的视线跟得上；逻辑属性照样可过渡 */
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       border-radius var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
@@ -39400,7 +39392,7 @@
     border-radius: var(--xh-shape-circle);
     background: var(--xh-tour-progress-dot-bg, var(--xh-border-default));
     transition:
-      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -40495,7 +40487,7 @@
     justify-content: center;
     inline-size: var(--xh-_tree-indicator-size);
     color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tree'][data-part='branch-trigger'][hidden],
@@ -40940,7 +40932,7 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-tree-select-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tree-select'][data-part='indicator'][hidden] {
@@ -41302,7 +41294,7 @@
     justify-content: center;
     inline-size: var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-tree-select-branch-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tree-select'][data-part='branch-trigger'][hidden],
