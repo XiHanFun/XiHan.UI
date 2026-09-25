@@ -30316,7 +30316,7 @@
   [data-scope='rating'][data-part='item']:empty::after {
     background-color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
     clip-path: inset(0 100% 0 0);
-    transition: clip-path var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: clip-path var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
   /* 点亮的判据是 data-highlighted，不是 aria-checked：
