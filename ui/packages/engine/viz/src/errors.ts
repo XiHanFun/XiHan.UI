@@ -7,10 +7,14 @@
  * viz 抛出的错误码。每个码对应一类立即报错的输入，不做静默修正：
  * - `XH_VIZ_INVALID_ARGUMENT`：参数本身不合法（非有限数、越界的比例、空的必填表）。
  * - `XH_VIZ_DUPLICATE_KEY`：要求唯一的键出现了两次（索引、类目定义域）。
+ * - `XH_VIZ_LOG_DOMAIN`：对数比例尺的定义域含 0 或跨越正负。
+ * - `XH_VIZ_BAR_BASELINE`：与柱系列同轴的值轴被限定成不含 0，截断的柱长会误导比较。
  */
 export type VizErrorCode
   = | 'XH_VIZ_INVALID_ARGUMENT'
     | 'XH_VIZ_DUPLICATE_KEY'
+    | 'XH_VIZ_LOG_DOMAIN'
+    | 'XH_VIZ_BAR_BASELINE'
 
 /** viz 的唯一错误类型。`detail` 放定位问题所需的原始输入，由上层转成诊断。 */
 export class VizError extends Error {
