@@ -7,6 +7,7 @@
 //   easing.ts   —— 原语曲线（名字按 JS 习惯写成驼峰）
 //   durations.ts —— 原语时长
 //   semantic.ts —— 语义时长、减弱档语义时长、语义缓动（值引用上面两张表）
+//   spring.ts   —— 弹簧预设（semantic.base.json 的 motion.spring-<名>.stiffness / damping，质量恒为 1）
 // 两边互不引用，任何一边改了值另一边不会报错，只有这里对账。
 // 对账是双向的：令牌多出来的名字 JS 要补，JS 多出来的名字要么删、要么登记在 JS_ONLY 并写明理由。
 import { readFile } from 'node:fs/promises'
@@ -18,6 +19,7 @@ const REDUCE = `${TOKENS}/semantic.reduce.json`
 const EASING_TS = 'packages/engine/motion/src/easing.ts'
 const DURATIONS_TS = 'packages/engine/motion/src/durations.ts'
 const SEMANTIC_TS = 'packages/engine/motion/src/semantic.ts'
+const SPRING_TS = 'packages/engine/motion/src/spring.ts'
 
 /** 原语曲线名 → JS 常量名：连字符转驼峰，in / out / in-out 三条沿用 CSS 关键字的 ease 前缀。 */
 const EASE_NAME = { 'in': 'easeIn', 'out': 'easeOut', 'in-out': 'easeInOut' }
@@ -181,6 +183,41 @@ else {
   }
 }
 
+// —— 弹簧预设：令牌 ↔ springPresets ——
+const springTs = await readFile(SPRING_TS, 'utf8')
+// 每条预设本身是一个对象字面量，通用读取器遇到内层花括号就截断，这里逐行取「名: { … }」
+const springStart = springTs.indexOf('export const springPresets')
+const springBlock = springStart < 0 ? '' : springTs.slice(springStart, springTs.indexOf('\n}\n', springStart))
+const jsSprings = springStart < 0
+  ? null
+  : new Map([...springBlock.matchAll(/^\s*(\w+):\s*(\{[^}]*\})/gm)].map(m => [m[1], m[2]]))
+if (jsSprings == null) {
+  problems.push(`${SPRING_TS} 缺 springPresets`)
+}
+else {
+  const tokenSprings = Object.keys(base).filter(k => k.startsWith('spring-')).map(k => k.slice('spring-'.length))
+  for (const name of tokenSprings) {
+    checked++
+    const token = base[`spring-${name}`]
+    const literal = jsSprings.get(name)
+    if (literal == null) {
+      problems.push(`springPresets 缺 ${name}（对应 --xh-motion-spring-${name}-*）`)
+      continue
+    }
+    const field = key => Number(new RegExp(`${key}:\\s*([\\d.]+)`).exec(literal)?.[1])
+    for (const key of ['stiffness', 'damping']) {
+      if (field(key) !== token[key]?.$value)
+        problems.push(`--xh-motion-spring-${name}-${key} = ${token[key]?.$value}，springPresets.${name}.${key} 却是 ${field(key)}`)
+    }
+    if (field('mass') !== 1)
+      problems.push(`springPresets.${name}.mass 是 ${field('mass')}：令牌只登记刚度与阻尼，质量恒为 1`)
+  }
+  for (const name of jsSprings.keys()) {
+    if (!tokenSprings.includes(name))
+      problems.push(`springPresets.${name} 没有令牌对应：在 ${BASE} 补 motion.spring-${name} 或删掉它`)
+  }
+}
+
 if (problems.length) {
   console.error('[check-motion-source] 引擎常量与令牌不一致：')
   for (const p of problems) console.error(`  ${p}`)
@@ -188,4 +225,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-motion-source] 通过：${checked} 条缓动 / 时长常量与令牌双向一致（JS 独有 ${Object.keys(JS_ONLY).length} 条已登记）`)
+console.log(`[check-motion-source] 通过：${checked} 条缓动 / 时长 / 弹簧常量与令牌双向一致（JS 独有 ${Object.keys(JS_ONLY).length} 条已登记）`)

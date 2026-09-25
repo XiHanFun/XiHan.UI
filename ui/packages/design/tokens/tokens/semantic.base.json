@@ -625,6 +625,46 @@
       "$description": "拖拽中的拇指放大比例（滑杆、取色器）。",
       "$type": "number",
       "$value": 1.12
+    },
+    "spring-snappy": {
+      "$description": "干脆的弹簧：阻尼比 0.77，超调约 2.2%，落定约 370ms。质量恒为 1，只登记刚度与阻尼。减弱动效下由 JS 直接落到终态，不走 reduce 档。",
+      "stiffness": { "$type": "number", "$value": 380 },
+      "damping": { "$type": "number", "$value": 30 }
+    },
+    "spring-smooth": {
+      "$description": "手势松手的缺省弹簧：阻尼比 0.87，超调约 0.4%，落定约 280ms。归位、快甩与面板弹回都取它。",
+      "stiffness": { "$type": "number", "$value": 300 },
+      "damping": { "$type": "number", "$value": 30 }
+    },
+    "spring-gentle": {
+      "$description": "临界阻尼的慢弹簧：不超调，落定约 570ms。",
+      "stiffness": { "$type": "number", "$value": 170 },
+      "damping": { "$type": "number", "$value": 26 }
+    },
+    "spring-bouncy": {
+      "$description": "明显回弹的弹簧：阻尼比 0.45，超调约 20%。超过核心组件 3% 的超调上限，只供作者与功能包使用。",
+      "stiffness": { "$type": "number", "$value": 400 },
+      "damping": { "$type": "number", "$value": 18 }
+    },
+    "spring-stiff": {
+      "$description": "硬弹簧：阻尼比 0.86，超调约 0.5%，落定约 195ms。越界回弹取它。",
+      "stiffness": { "$type": "number", "$value": 600 },
+      "damping": { "$type": "number", "$value": 42 }
+    },
+    "spring-toggle": {
+      "$description": "liquid 档的切换滑块：阻尼比 0.63，超调约 7.5%，在 liquid 档 8% 的上限之内。",
+      "stiffness": { "$type": "number", "$value": 420 },
+      "damping": { "$type": "number", "$value": 26 }
+    },
+    "spring-lead": {
+      "$description": "liquid 档双沿指示器的前沿：去向那一侧的沿，超调约 2.9%，落定约 310ms。",
+      "stiffness": { "$type": "number", "$value": 520 },
+      "damping": { "$type": "number", "$value": 34 }
+    },
+    "spring-trail": {
+      "$description": "liquid 档双沿指示器的后沿：比前沿软，追随前沿并在移动中把指示器拉长，超调约 0.9%，落定约 485ms。",
+      "stiffness": { "$type": "number", "$value": 210 },
+      "damping": { "$type": "number", "$value": 24 }
     }
   },
   "spin": {

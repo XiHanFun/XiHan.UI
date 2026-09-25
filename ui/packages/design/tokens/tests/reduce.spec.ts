@@ -46,6 +46,9 @@ const DELAY = new Set(['motion-stagger-step'])
  */
 const FADE = new Set(['motion-duration-micro', 'motion-duration-enter', 'motion-duration-exit'])
 
+/** 弹簧参数：只给 JS 用，减弱动效下由 @xihan-ui/motion 直接落到终态，刚度与阻尼本身不降级。 */
+const isSpring = (name: string) => name.startsWith('motion-spring-')
+
 describe('semantic.reduce.json', () => {
   it('每一项都对应基线里的同名令牌', () => {
     const baseNames = new Set(base.map(t => t.name))
@@ -66,7 +69,7 @@ describe('semantic.reduce.json', () => {
 
   it('基线里每一个可降级的动效令牌都被覆盖到（淡变档另核）', () => {
     const covered = new Set(reduce.map(t => t.name))
-    const shouldCover = base.filter(t => t.name.startsWith('motion-') && DEGRADABLE.has(t.type) && !FADE.has(t.name))
+    const shouldCover = base.filter(t => t.name.startsWith('motion-') && DEGRADABLE.has(t.type) && !FADE.has(t.name) && !isSpring(t.name))
     expect(shouldCover.length).toBeGreaterThan(0)
     for (const t of shouldCover)
       expect(covered.has(t.name), `${t.name} 是可降级的动效令牌，但 reduce 档没有覆盖它`).toBe(true)
