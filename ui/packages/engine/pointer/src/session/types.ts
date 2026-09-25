@@ -23,8 +23,19 @@ export interface PointerSessionDetails {
 /** 会话是怎么结束的：手抬起来，还是被系统收走。 */
 export type PointerEndReason = 'pointerup' | 'pointercancel'
 
+/** 平面上的速度，单位像素每秒。 */
+export interface PointerVelocity {
+  x: number
+  y: number
+}
+
 export interface PointerEndDetails extends PointerSessionDetails {
   reason: PointerEndReason
+  /**
+   * 松手速度：抬起前最近 80ms 内的移动按首尾位移与时间差求出，像素每秒。
+   * 这段时间里不足两个采样（停住再抬起）或被系统收走时为零。
+   */
+  velocity: PointerVelocity
 }
 
 export interface PointerSessionOptions {
