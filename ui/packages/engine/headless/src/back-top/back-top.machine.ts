@@ -8,6 +8,7 @@
 import type { ScrollTrackerHandle } from '@xihan-ui/core'
 import type { BackTopSchema } from './back-top.types'
 import { createScrollTracker, scrollBlockTo, setup } from '@xihan-ui/core'
+import { trackLiquidPart } from '../shared/liquid'
 
 const { createMachine } = setup<BackTopSchema>()
 
@@ -38,7 +39,7 @@ export const backTopMachine = createMachine({
   }),
   // 起点一律收着：真实滚动量由观察器的第一次结算补上
   initialState: () => 'hidden',
-  effects: ['trackScroll'],
+  effects: ['trackScroll', 'trackLiquid'],
   on: {
     'TRIGGER.CLICK': { actions: ['scrollToTop'] },
     'PRESS.START': { actions: ['startPress'] },
@@ -86,6 +87,8 @@ export const backTopMachine = createMachine({
       },
     },
     effects: {
+      /** 触发器是浮在内容之上的导航层部件：材质轴为 liquid 时按下层换色调、亮边随指针 */
+      trackLiquid: ({ scope, flush }) => trackLiquidPart(scope, flush, 'back-top', 'trigger'),
       /**
        * 滚动观察器：滚动量过线就报露面、退回线内就报收起。
        *

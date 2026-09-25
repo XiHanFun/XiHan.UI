@@ -102,6 +102,8 @@ export function connectFloatButton<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': props.size ?? 'md',
       'data-xh-action-variant': variant,
+      // 浮在内容之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
+      'data-xh-liquid': '',
       'data-pressed': dataAttr(context.get('pressed')),
       // 点一下恒能开合：悬停只是多给一条路，触摸与键盘还得靠它
       'onClick': () => {

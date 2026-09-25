@@ -62,7 +62,7 @@ export interface BackTopSchema extends MachineSchema {
   tag: never
   guard: 'shouldShow' | 'shouldHide'
   action: 'scrollToTop' | 'invokeOnChange' | 'startPress' | 'endPress'
-  effect: 'trackScroll'
+  effect: 'trackScroll' | 'trackLiquid'
 }
 
 export interface BackTopApi<T extends PropTypes = PropTypes> {

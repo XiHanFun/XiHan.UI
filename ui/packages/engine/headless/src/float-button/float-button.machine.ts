@@ -7,6 +7,7 @@
 
 import type { FloatButtonSchema } from './float-button.types'
 import { setup } from '@xihan-ui/core'
+import { trackLiquidPart } from '../shared/liquid'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 
 const { createMachine } = setup<FloatButtonSchema>()
@@ -32,7 +33,7 @@ export const floatButtonMachine = createMachine({
   initialState: ({ prop }) => prop('open') !== undefined
     ? (prop('open') ? 'open' : 'closed')
     : (prop('defaultOpen') && !prop('disabled') ? 'open' : 'closed'),
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackLiquid'],
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('disabled')], () => action(['syncDisabled', 'releaseWhenInert']))
@@ -111,6 +112,8 @@ export const floatButtonMachine = createMachine({
       },
     },
     effects: {
+      /** 触发器是浮在内容之上的导航层部件：材质轴为 liquid 时按下层换色调、亮边随指针 */
+      trackLiquid: ({ scope, flush }) => trackLiquidPart(scope, flush, 'float-button', 'trigger'),
       trackLayer: ({ refs, state, prop, send, track, flush }) => trackPresenceResources({
         // FloatButton 的 list 收起即 hidden，没有独立退场容器；逻辑关闭当场结清资源。
         presence: null,
