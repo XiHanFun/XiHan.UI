@@ -2002,7 +2002,7 @@
 }
 
 /* ── 面板（sheet）：模态与强反馈面，竖向一小段位移叠缩放 ──
-   Dialog、Notification */
+   位移与缩放写独立属性，互不覆盖，手势期间写 translate 也不会把 scale 抹掉。Dialog、Notification */
 @keyframes xh-sheet-in {
   from {
     opacity: 0;
@@ -22787,36 +22787,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
-   两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
-@keyframes xh-dialog-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-}
-
-@keyframes xh-dialog-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-exit);
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='dialog'] {
   --xh-dialog-skin: 1;
@@ -22954,11 +22924,11 @@
 }
 
 [data-scope='dialog'][data-part='content'][data-state='open'] {
-  animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-sheet-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='dialog'][data-part='content'][data-state='closed'] {
-  animation: xh-dialog-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* —— 面板三段 —— */
@@ -27421,40 +27391,8 @@
 /* styles/notification.css */
 /* 定义 notification 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 /* Notification 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
-
-/*
- * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
- * data-placement 反向选到卡片上，落位一改名整条动效静默失效。
- * 竖向一小段位移在九个位上都说得通。
- */
-@keyframes xh-notification-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-}
-
-@keyframes xh-notification-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-exit);
-  }
-}
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='notification'] {
@@ -27589,9 +27527,11 @@
   display: none;
 }
 
-/* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
+/* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段。
+   九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
+   data-placement 反向选到卡片上，落位一改名整条动效静默失效。竖向一小段位移在九个位上都说得通 */
 [data-scope='notification'][data-part='item'][data-state='visible'] {
-  animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  animation: xh-sheet-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
 /* 一摞里的多条按位次错开开幕。backwards 不能省：等待期间起帧不生效的话，
@@ -27619,7 +27559,7 @@
 /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
    不定住末帧的话动画跑完会弹回全不透明，卡片在被收起前先闪一下 */
 [data-scope='notification'][data-part='item'][data-state='dismissing'] {
-  animation: xh-notification-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行高，

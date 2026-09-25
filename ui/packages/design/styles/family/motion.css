@@ -193,7 +193,7 @@
   }
 
   /* ── 面板（sheet）：模态与强反馈面，竖向一小段位移叠缩放 ──
-     Dialog、Notification */
+     位移与缩放写独立属性，互不覆盖，手势期间写 translate 也不会把 scale 抹掉。Dialog、Notification */
   @keyframes xh-sheet-in {
     from {
       opacity: 0;

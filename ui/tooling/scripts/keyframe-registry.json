@@ -21,24 +21,6 @@
       ],
       "relation": "value"
     },
-    "xh-dialog-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
-      "definedIn": [
-        "dialog.css"
-      ],
-      "consumers": [
-        "dialog"
-      ]
-    },
-    "xh-dialog-out": {
-      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
-      "definedIn": [
-        "dialog.css"
-      ],
-      "consumers": [
-        "dialog"
-      ]
-    },
     "xh-disclosure-collapse": {
       "content": "from{grid-template-rows:1fr;padding-block-start:var(--xh-_disclosure-pt,0);padding-block-end:var(--xh-_disclosure-pb,0)}to{grid-template-rows:0fr;padding-block-start:0;padding-block-end:0}",
       "definedIn": [
@@ -237,24 +219,6 @@
       ],
       "consumers": []
     },
-    "xh-notification-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
-      "definedIn": [
-        "notification.css"
-      ],
-      "consumers": [
-        "notification"
-      ]
-    },
-    "xh-notification-out": {
-      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
-      "definedIn": [
-        "notification.css"
-      ],
-      "consumers": [
-        "notification"
-      ]
-    },
     "xh-overlay-pop-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
       "definedIn": [
@@ -377,7 +341,10 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "dialog",
+        "notification"
+      ],
       "relation": "sheet"
     },
     "xh-sheet-out": {
@@ -385,7 +352,10 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "dialog",
+        "notification"
+      ],
       "relation": "sheet"
     },
     "xh-shimmer": {
@@ -506,24 +476,7 @@
       ]
     }
   },
-  "duplicateContent": {
-    "xh-dialog-in": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-dialog-in",
-        "xh-notification-in",
-        "xh-sheet-in"
-      ]
-    },
-    "xh-dialog-out": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
-      "names": [
-        "xh-dialog-out",
-        "xh-notification-out",
-        "xh-sheet-out"
-      ]
-    }
-  },
+  "duplicateContent": {},
   "retired": {
     "xh-accordion-expand": "并入 xh-disclosure-expand（family/motion.css）",
     "xh-accordion-collapse": "并入 xh-disclosure-collapse（family/motion.css）",
@@ -556,6 +509,10 @@
     "xh-download-trigger-loading-reveal": "并入 xh-fade-in（family/motion.css）",
     "xh-clipboard-loading-hide": "并入 xh-fade-out（family/motion.css）",
     "xh-diff-view-reveal": "并入 xh-drop-in（family/motion.css）",
-    "xh-form-summary-enter": "并入 xh-drop-in（family/motion.css）"
+    "xh-form-summary-enter": "并入 xh-drop-in（family/motion.css）",
+    "xh-dialog-in": "并入 xh-sheet-in（family/motion.css）",
+    "xh-dialog-out": "并入 xh-sheet-out（family/motion.css）",
+    "xh-notification-in": "并入 xh-sheet-in（family/motion.css）",
+    "xh-notification-out": "并入 xh-sheet-out（family/motion.css）"
   }
 }
