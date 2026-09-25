@@ -521,16 +521,6 @@ ${stateVars(source, 'error')}
     display: none;
   }
 
-  :where([data-motion='reduce']) [data-xh-collection-item] {
-    transition: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-xh-collection-item] {
-      transition: none;
-    }
-  }
-
   @media (forced-colors: active) {
     [data-xh-collection-item] {
 ${forcedStateVars(source, 'rest')}

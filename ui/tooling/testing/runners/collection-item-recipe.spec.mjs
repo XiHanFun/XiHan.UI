@@ -95,10 +95,11 @@ describe('collection Item recipe', () => {
     expect(css).toContain('[data-xh-collection-separator]')
   })
 
-  it('reduce、forced-colors 与 data-xh 命名空间都有显式输出', async () => {
+  it('forced-colors 与 data-xh 命名空间都有显式输出；减弱动效交给令牌', async () => {
     const css = compileCollectionItemRecipe(await source())
-    expect(css).toContain(':where([data-motion=\'reduce\']) [data-xh-collection-item]')
-    expect(css).toContain('@media (prefers-reduced-motion: reduce)')
+    // 换面与按压的时长都取语义令牌，减弱档下由令牌降级；配方不另写 transition: none 把换色淡变关掉
+    expect(css).not.toContain('prefers-reduced-motion')
+    expect(css).not.toContain('data-motion')
     expect(css).toContain('@media (forced-colors: active)')
     expect(css).not.toMatch(/^\s*\[data-(?!xh-collection)[^\]]+\][^{]*\{/m)
   })
