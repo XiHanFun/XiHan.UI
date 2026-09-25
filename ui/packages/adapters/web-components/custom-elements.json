@@ -35193,15 +35193,6 @@
             },
             {
               "kind": "field",
-              "name": "removeDelay",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "remove-delay"
-            },
-            {
-              "kind": "field",
               "name": "pauseOnPageIdle",
               "privacy": "public",
               "type": {
@@ -35433,14 +35424,6 @@
             },
             {
               "type": {
-                "text": "number | undefined"
-              },
-              "description": "单条未写 remove-delay 时的默认退场窗口毫秒",
-              "name": "remove-delay",
-              "fieldName": "removeDelay"
-            },
-            {
-              "type": {
                 "text": "boolean | undefined"
               },
               "description": "页面切到后台时暂停计时，逐条下发",
@@ -35588,7 +35571,7 @@
         },
         {
           "kind": "class",
-          "description": "`<xh-notification-item>`：单条通知卡片：作者写 item / item-indicator / item-title /\nitem-description / item-action-trigger / item-close-trigger 角色节点，\n元素运行生命周期状态机并把 connect 产出接上。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），\ntone=\"danger\" 换为 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会暂停倒计时，离开后继续剩余部分。\n\n退场窗口结束时只把卡片收起、不删除节点：作者写在其中的内容归作者，\n何时把该条从队列中删除是 `<xh-notification>` 的职责（它接收本元素冒泡的 status-change）。",
+          "description": "`<xh-notification-item>`：单条通知卡片：作者写 item / item-indicator / item-title /\nitem-description / item-action-trigger / item-close-trigger 角色节点，\n元素运行生命周期状态机并把 connect 产出接上。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），\ntone=\"danger\" 换为 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会暂停倒计时，离开后继续剩余部分。\n\n退场动画播完时只把卡片收起、不删除节点：作者写在其中的内容归作者，\n何时把该条从队列中删除是 `<xh-notification>` 的职责（它接收本元素冒泡的 status-change）。",
           "name": "XhNotificationItemElement",
           "cssParts": [
             {
@@ -35686,15 +35669,6 @@
             },
             {
               "kind": "field",
-              "name": "removeDelay",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "remove-delay"
-            },
-            {
-              "kind": "field",
               "name": "closable",
               "privacy": "public",
               "type": {
@@ -35746,6 +35720,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps(), { configName: 'notification' })"
+            },
+            {
+              "kind": "field",
+              "name": "exitGate",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ToastExitGate(() => this.ctrl.service)"
             },
             {
               "kind": "method",
@@ -35865,14 +35846,6 @@
               "description": "停留毫秒，默认 5000；<=0 即关闭自动消失",
               "name": "duration",
               "fieldName": "duration"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "退场窗口毫秒，默认 200，留给退场动画",
-              "name": "remove-delay",
-              "fieldName": "removeDelay"
             },
             {
               "type": {
@@ -57152,7 +57125,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toast>`：Light-DOM 行为宿主：作者写 root / title / action-trigger / close-trigger\n角色节点，元素运行 toast 状态机并把 connect 产出接上。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），\ntone=\"danger\" 换为 alert + assertive（打断当前朗读）。指针停在提示上、\n或焦点落进提示内部都会暂停倒计时，离开后继续剩余部分。\n\n退场窗口结束时只把 root 收起、不删除节点：作者写在其中的内容归作者，\n何时把该条从队列中删除是全局服务的职责（它接收本元素冒泡的 status-change）。",
+          "description": "`<xh-toast>`：Light-DOM 行为宿主：作者写 root / title / action-trigger / close-trigger\n角色节点，元素运行 toast 状态机并把 connect 产出接上。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），\ntone=\"danger\" 换为 alert + assertive（打断当前朗读）。指针停在提示上、\n或焦点落进提示内部都会暂停倒计时，离开后继续剩余部分。\n\n退场动画播完时只把 root 收起、不删除节点：作者写在其中的内容归作者，\n何时把该条从队列中删除是全局服务的职责（它接收本元素冒泡的 status-change）。",
           "name": "XhToastElement",
           "cssParts": [
             {
@@ -57254,15 +57227,6 @@
             },
             {
               "kind": "field",
-              "name": "removeDelay",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "remove-delay"
-            },
-            {
-              "kind": "field",
               "name": "closable",
               "privacy": "public",
               "type": {
@@ -57314,6 +57278,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "exitGate",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ToastExitGate(() => this.ctrl.service)"
             },
             {
               "kind": "method",
@@ -57433,14 +57404,6 @@
               "description": "停留毫秒，默认 4000；<=0 即关闭自动消失",
               "name": "duration",
               "fieldName": "duration"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "退场窗口毫秒，默认 300，留给退场动画",
-              "name": "remove-delay",
-              "fieldName": "removeDelay"
             },
             {
               "type": {

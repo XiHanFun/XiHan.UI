@@ -1,4 +1,4 @@
-// 上限与清空 | max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不经退场窗口
+// 上限与清空 | max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不播退场动画
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -44,7 +44,6 @@ export default function Demo(): ReactNode {
                 tone={item.tone}
                 loading={item.loading}
                 duration={item.duration}
-                removeDelay={item.removeDelay}
                 closable={item.closable}
                 translations={itemTranslations}
                 onStatusChange={({ id, status }) => {

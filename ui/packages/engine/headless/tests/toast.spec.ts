@@ -1,5 +1,7 @@
+import type { ExitLease } from '@xihan-ui/core/presence'
 import type { ToastSchema, ToastStatusChangeDetails } from '../src/toast'
 import { createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
@@ -42,9 +44,9 @@ describe('resolveToastDuration', () => {
 })
 
 describe('toastMachine 生命周期', () => {
-  it('起步在 visible.running；到点转 dismissing，走完退场窗口转 unmounted', () => {
+  it('起步在 visible.running；到点转 dismissing，没有渲染宿主时下一拍转 unmounted', () => {
     const seen: ToastStatusChangeDetails[] = []
-    const t = makeToast({ id: 't1', duration: 100, removeDelay: 20, onStatusChange: d => seen.push(d) })
+    const t = makeToast({ id: 't1', duration: 100, onStatusChange: d => seen.push(d) })
     expect(t.state()).toBe('visible.running')
 
     vi.advanceTimersByTime(99)
@@ -54,7 +56,7 @@ describe('toastMachine 生命周期', () => {
     expect(t.state()).toBe('dismissing')
     expect(seen).toEqual([{ id: 't1', status: 'dismissing' }])
 
-    vi.advanceTimersByTime(20)
+    vi.advanceTimersToNextTimer()
     expect(t.state()).toBe('unmounted')
     expect(seen).toEqual([
       { id: 't1', status: 'dismissing' },
@@ -74,16 +76,39 @@ describe('toastMachine 生命周期', () => {
     expect(t.state()).toBe('visible.running')
   })
 
-  it('removeDelay 非有限值时停在 dismissing，等宿主自己收尾', () => {
-    const t = makeToast({ duration: 10, removeDelay: Number.POSITIVE_INFINITY })
+  it('有渲染宿主时停在 dismissing，等 Presence 结清退场动画才转 unmounted', () => {
+    const t = makeToast({ duration: 10 })
+    const presence = createPresence({ open: true, onRenderedChange: () => {} })
+    let lease: ExitLease | undefined
+    presence.onBeforeExit(() => {
+      lease = presence.claimExit('退场动画')
+    })
+    t.service.refs.set('presence', presence)
+
     vi.advanceTimersByTime(10)
     expect(t.state()).toBe('dismissing')
+    // 宿主把 data-state 提交到 DOM 之后才驱动 Presence，退场探测读到的是这一段动画
+    presence.update(false)
     vi.advanceTimersByTime(60_000)
     expect(t.state()).toBe('dismissing')
+
+    lease!.done()
+    expect(t.state()).toBe('unmounted')
+  })
+
+  it('根节点上没有退场动画时，Presence 一收起就转 unmounted', () => {
+    const t = makeToast({ duration: 10 })
+    const presence = createPresence({ open: true, onRenderedChange: () => {} })
+    t.service.refs.set('presence', presence)
+
+    vi.advanceTimersByTime(10)
+    expect(t.state()).toBe('dismissing')
+    presence.update(false)
+    expect(t.state()).toBe('unmounted')
   })
 
   it('unmounted 之后 DISMISS 不再把它拽回来', () => {
-    const t = makeToast({ duration: 10, removeDelay: 10 })
+    const t = makeToast({ duration: 10 })
     vi.advanceTimersByTime(20)
     expect(t.state()).toBe('unmounted')
     t.service.send({ type: 'TOAST.DISMISS' })
@@ -101,7 +126,7 @@ describe('toastMachine 生命周期', () => {
 
 describe('toastMachine 暂停与恢复', () => {
   it('暂停后接着走剩余时间，而不是从头重来', () => {
-    const t = makeToast({ duration: 200, removeDelay: 10 })
+    const t = makeToast({ duration: 200 })
 
     vi.advanceTimersByTime(60)
     t.service.send({ type: 'TOAST.PAUSE', src: 'pointer' })
@@ -235,7 +260,7 @@ describe('connectToast', () => {
   })
 
   it('data-paused 随暂停出现与消失；unmounted 时 root 带 hidden', () => {
-    const t = makeToast({ duration: 10, removeDelay: 5 })
+    const t = makeToast({ duration: 10 })
     expect((t.api().getRootProps() as Record<string, unknown>)['data-paused']).toBeUndefined()
 
     t.service.send({ type: 'TOAST.PAUSE', src: 'pointer' })
@@ -378,7 +403,7 @@ describe('toastMachine 按压通道：Space / Enter 与触屏按住投影 data-p
   })
 
   it('进入退场即松开：按住 Enter 关掉条子，按钮随条目离场、不会再来 keyup，按压面由机器收；退场后按住不进', () => {
-    const t = makeToast({ duration: 0, removeDelay: 20 })
+    const t = makeToast({ duration: 0 })
     const close = (): Dict => t.api().getCloseTriggerProps() as Dict
     fire(close(), 'onKeyDown', key('Enter'))
     expect(close()['data-pressed']).toBe('')
@@ -394,7 +419,7 @@ describe('toastMachine 按压通道：Space / Enter 与触屏按住投影 data-p
   })
 
   it('到点自动退场同样松开：手指还按在操作按钮上时条子走掉，按压面不留残留', () => {
-    const t = makeToast({ duration: 100, removeDelay: 20 })
+    const t = makeToast({ duration: 100 })
     const action = (): Dict => t.api().getActionTriggerProps() as Dict
     fire(action(), 'onPointerDown', { pointerType: 'touch' })
     expect(action()['data-pressed']).toBe('')

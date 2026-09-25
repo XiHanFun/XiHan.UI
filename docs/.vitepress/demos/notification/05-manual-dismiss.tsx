@@ -1,4 +1,4 @@
-// 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不经退场窗口
+// 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画
 import type { NotificationOptions, ToastStatusChangeDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
@@ -69,7 +69,6 @@ export default function Demo(): ReactNode {
                 tone={item.tone}
                 loading={item.loading}
                 duration={item.duration}
-                removeDelay={item.removeDelay}
                 closable={item.closable}
                 translations={itemTranslations}
                 onStatusChange={details => settle(details, dismiss)}

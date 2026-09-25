@@ -32,7 +32,6 @@ export const XhToastRoot = /* @__PURE__ */ defineComponent({
     tone: { type: String as PropType<ToastTone> },
     loading: { type: Boolean, default: undefined },
     duration: { type: Number },
-    removeDelay: { type: Number },
     closable: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
     // 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走
@@ -56,7 +55,7 @@ export const XhToastRoot = /* @__PURE__ */ defineComponent({
     }
     const ctx = useToast(withXhConfig('toast', props) as ToastProps, notifyStatus, notifyAction)
     provideToast(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
       id: ctx.api.value.id,
       status: ctx.api.value.status,
       tone: ctx.api.value.tone,

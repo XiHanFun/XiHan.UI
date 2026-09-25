@@ -13,8 +13,6 @@ const { createMachine } = setup<ToastSchema>()
 
 /** 默认停留毫秒。 */
 export const TOAST_DURATION = 4000
-/** 默认退场窗口毫秒：进入 dismissing 后停留这么久再转 unmounted。 */
-export const TOAST_REMOVE_DELAY = 300
 /** 那一摞默认落在哪儿。 */
 export const TOAST_PLACEMENT: ToastPlacement = 'bottom'
 /** 摞内默认间距（px）。 */
@@ -50,6 +48,7 @@ export const toastMachine = createMachine({
     // 按压通道：正被按住的那颗按钮，与计时无关
     pressed: cell<ToastPressedPart | null>(() => ({ defaultValue: null })),
   }),
+  refs: () => ({ presence: null }),
   // 建出来就被宿主按住的那种直接落 paused 子态：watch 只在值变了才响，起手为真的这一条它看不见
   initialState: ({ prop }) => (prop('paused') ? 'visible.paused' : 'visible'),
   watch: ({ track, prop, action }) => {
@@ -109,8 +108,8 @@ export const toastMachine = createMachine({
     },
     dismissing: {
       entry: ['invokeDismissing'],
-      effects: ['waitForRemoveDelay'],
-      on: { 'after.removeDelay': { target: 'unmounted' } },
+      effects: ['waitForExit'],
+      on: { 'EXIT.COMPLETE': { target: 'unmounted' } },
     },
     // 终态：节点仍在（带 hidden），由宿主决定何时把它从队列里删掉
     unmounted: {
@@ -201,12 +200,13 @@ export const toastMachine = createMachine({
           context.set('remaining', Math.max(1, remaining - (Date.now() - startedAt)))
         }
       },
-      waitForRemoveDelay: ({ prop, send }) => {
-        const delay = prop('removeDelay') ?? TOAST_REMOVE_DELAY
-        // 非有限值即停在 dismissing 等宿主收尾；Infinity 传进 setTimeoutEffect 会抛
-        if (!Number.isFinite(delay))
-          return undefined
-        return setTimeoutEffect(() => send({ type: 'after.removeDelay' }), Math.max(0, delay))
+      // 退场时长不由这里定：宿主的 Presence 等根节点上真实的退场动画播完才结清，
+      // 减弱动效下那段动画只剩淡变，同样等它播完
+      waitForExit: ({ refs, send }) => {
+        const presence = refs.get('presence')
+        if (!presence)
+          return setTimeoutEffect(() => send({ type: 'EXIT.COMPLETE' }), 0)
+        return presence.onExitComplete(() => send({ type: 'EXIT.COMPLETE' }))
       },
       /**
        * 页面被切到后台时把计时按住。

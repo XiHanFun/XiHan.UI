@@ -12,7 +12,7 @@
 
 ## 用法
 
-create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场窗口结束后只收起不删除，宿主在 status-change 中把它移出队列
+create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列
 
 <XhDemo src="notification/01-basic" />
 
@@ -38,13 +38,13 @@ placement 决定该堆叠贴视口的哪个角，更换的只是 group 上的 da
 
 ### 上限与清空
 
-max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不经退场窗口
+max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不播退场动画
 
 <XhDemo src="notification/04-max" />
 
 ### 手动关闭
 
-create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不经退场窗口
+create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画
 
 <XhDemo src="notification/05-manual-dismiss" />
 
@@ -116,7 +116,6 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 | `dedupe` | `NotificationDedupe` |  | 重复的处理方式，默认 'id'。 |
 | `gap` | `number` |  | 同一组内的间距（px），默认 16。 |
 | `duration` | `number` |  | 单条未写 duration 时的默认停留毫秒。 |
-| `removeDelay` | `number` |  | 单条未写 removeDelay 时的默认退场窗口毫秒。 |
 | `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，逐条下发给 toast。 |
 | `translations` | `Partial<NotificationTranslations>` |  |  |
 | `onItemsChange` | `(details: NotificationItemsChangeDetails) => void` |  |  |
@@ -133,7 +132,6 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 | `tone` | `NotificationTone` |  |  |
 | `loading` | `boolean` |  | 事情尚未完成：图标换为转圈，且不自动消失。 |
 | `duration` | `number` |  |  |
-| `removeDelay` | `number` |  |  |
 | `closable` | `boolean` |  |  |
 | `placement` | `NotificationPlacement` |  | 单条覆盖落位；未提供时使用 notification 的 placement。 |
 | `actionLabel` | `string` |  | 行内动作按钮的文案。提供后才渲染动作部件。 只存放文案不存放回调：该条记录需要能被整份替换、序列化、比对， 按下之后的行为由宿主按 id 自行查询。 |
@@ -172,7 +170,6 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 | `XhNotificationItem` | `tone` | `ToastTone` |  |  |
 | `XhNotificationItem` | `loading` | `boolean` |  |  |
 | `XhNotificationItem` | `duration` | `number` |  |  |
-| `XhNotificationItem` | `removeDelay` | `number` |  |  |
 | `XhNotificationItem` | `closable` | `boolean` |  |  |
 | `XhNotificationItem` | `pauseOnPageIdle` | `boolean` |  |  |
 | `XhNotificationItem` | `paused` | `boolean` |  | 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 |

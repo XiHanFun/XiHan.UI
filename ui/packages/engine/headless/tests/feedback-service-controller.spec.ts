@@ -41,7 +41,7 @@ describe('feedback service controller', () => {
   it('toast 服务默认项只由 Headless 决定文案、语气、时长与关闭出口', () => {
     expect(resolveToastServiceItem(
       { id: 'a', title: '处理中', description: '正在同步云端数据', count: 2, actionLabel: '撤销' },
-      { duration: 3000, removeDelay: 180, pauseOnPageIdle: false },
+      { duration: 3000, pauseOnPageIdle: false },
     )).toEqual({
       id: 'a',
       title: '处理中 ×2',
@@ -49,7 +49,6 @@ describe('feedback service controller', () => {
       tone: 'info',
       loading: false,
       duration: 3000,
-      removeDelay: 180,
       closable: true,
       pauseOnPageIdle: false,
       actionLabel: '撤销',

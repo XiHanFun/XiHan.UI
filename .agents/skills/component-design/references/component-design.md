@@ -1105,7 +1105,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | `--xh-chart-*` 数据色与度量令牌、分类色板门禁、图表组件；chart 家族配方随第二个图表组件建立 |
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
-| §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | Toast、Notification 退场改 Presence；补 FloatButton 列表、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
+| §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | 补 FloatButton 列表、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
 | §7.7 库自有彩色面与缺省面墨色 | 库自有彩色面（`data-tone` 实心面、Tooltip 反白面、ImageViewer 控制层）接入墨色域；缺省面改墨色表达前先审计叠边与淡底叠淡底 |

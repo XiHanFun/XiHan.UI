@@ -1,4 +1,4 @@
-<!-- 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不经退场窗口 -->
+<!-- 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画 -->
 <xh-notification id="notification-manual">
   <div data-xh-part="root">
     <xh-button variant="solid" data-start>
@@ -62,7 +62,6 @@
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
     if (pending && !alive.has(pending)) {

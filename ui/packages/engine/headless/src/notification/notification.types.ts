@@ -33,7 +33,6 @@ export interface NotificationRecord {
   /** 事情尚未完成：图标换为转圈，且不自动消失。 */
   loading?: boolean
   duration?: number
-  removeDelay?: number
   closable?: boolean
   /** 单条覆盖落位；未提供时使用 notification 的 placement。 */
   placement?: NotificationPlacement
@@ -65,7 +64,6 @@ export interface ResolvedNotification extends NotificationRecord {
   tone: NotificationTone
   loading: boolean
   duration: number
-  removeDelay: number
   closable: boolean
   pauseOnPageIdle: boolean
   /** 合并计数，未合并时为 1。 */
@@ -103,8 +101,6 @@ export interface NotificationSchema extends MachineSchema {
     gap?: number
     /** 单条未写 duration 时的默认停留毫秒。 */
     duration?: number
-    /** 单条未写 removeDelay 时的默认退场窗口毫秒。 */
-    removeDelay?: number
     /** 页面切到后台时暂停计时，逐条下发给 toast。 */
     pauseOnPageIdle?: boolean
     translations?: Partial<NotificationTranslations>

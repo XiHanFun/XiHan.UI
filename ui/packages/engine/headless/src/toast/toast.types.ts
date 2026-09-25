@@ -6,6 +6,7 @@
 // 定义 toast 类型契约。
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /** 轻提示的语气：与全库语气轴使用同一套词，决定配色、行首字形与实时区级别。加载中不是语气，另有 loading 一位。 */
 export type ToastTone = 'info' | 'success' | 'warning' | 'danger'
@@ -42,7 +43,6 @@ export interface ToastRecord {
   /** 事情尚未完成：行首换为转圈，且不自动消失。 */
   loading?: boolean
   duration?: number
-  removeDelay?: number
   /** 是否显示关闭按钮；单组件与全局服务都默认开启。 */
   closable?: boolean
   /**
@@ -60,7 +60,6 @@ export interface ToastRecord {
 /** 命令式 Toast 服务对单条记录补充的默认值。 */
 export interface ToastServiceDefaults {
   duration?: number
-  removeDelay?: number
   pauseOnPageIdle?: boolean
 }
 
@@ -72,7 +71,6 @@ export interface ResolvedToastServiceItem {
   tone: ToastTone
   loading: boolean
   duration?: number
-  removeDelay?: number
   closable: boolean
   pauseOnPageIdle?: boolean
   actionLabel?: string
@@ -109,8 +107,6 @@ export interface ToastSchema extends MachineSchema {
     loading?: boolean
     /** 停留毫秒，默认 4000。<=0 或非有限数即不自动消失。 */
     duration?: number
-    /** 退场窗口毫秒，默认 300：进入 dismissing 后停留该时长再转为 unmounted，留给退场动画。 */
-    removeDelay?: number
     /** 是否显示可用的关闭按钮，默认 true。 */
     closable?: boolean
     /** 页面切到后台时暂停计时，默认 false；全局服务默认开启。 */
@@ -141,7 +137,13 @@ export interface ToastSchema extends MachineSchema {
     pressed: ToastPressedPart | null
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /**
+     * 渲染宿主交来的进出场闸门：进入 dismissing 后等它的退场动画播完再转 unmounted。
+     * 没有渲染宿主（无 DOM、直接驱动状态机）时为 null，没有退场可播，下一拍即转 unmounted。
+     */
+    presence: PresenceHandle | null
+  }
   state: 'visible' | 'visible.running' | 'visible.paused' | 'dismissing' | 'unmounted'
   event:
     /** 立即进入退场（关闭按钮、宿主命令）。 */
@@ -153,7 +155,8 @@ export interface ToastSchema extends MachineSchema {
     /** 时长预算被改写（loading / duration 变化），重新计算并重启计时器。 */
     | { type: 'TOAST.RESET' }
     | { type: 'after.duration' }
-    | { type: 'after.removeDelay' }
+    /** 退场动画播完（或没有退场可播）。 */
+    | { type: 'EXIT.COMPLETE' }
     /** 按压通道：某颗按钮被 Space / Enter 或触屏按住。 */
     | { type: 'PRESS.START', part: ToastPressedPart }
     /** 该按钮抬起、失焦或指针取消。 */
@@ -173,7 +176,7 @@ export interface ToastSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackDuration' | 'waitForRemoveDelay' | 'trackPageIdle'
+  effect: 'trackDuration' | 'waitForExit' | 'trackPageIdle'
 }
 
 export interface ToastApi<T extends PropTypes = PropTypes> {

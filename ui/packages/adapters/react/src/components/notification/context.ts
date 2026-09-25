@@ -7,6 +7,7 @@
 
 import type { Service } from '@xihan-ui/core'
 import type { NotificationApi, NotificationItemApi, NotificationOptions, NotificationSchema, ToastSchema } from '@xihan-ui/headless'
+import type { RefObject } from 'react'
 import { createContext, useContext } from 'react'
 
 export interface NotificationContext {
@@ -22,6 +23,8 @@ export interface NotificationContext {
 export interface NotificationItemContext {
   api: NotificationItemApi
   service: Service<ToastSchema>
+  /** 卡片根节点：退场动画从它上面探测。 */
+  rootRef: RefObject<HTMLElement | null>
 }
 
 const Ctx = createContext<NotificationContext | undefined>(undefined)

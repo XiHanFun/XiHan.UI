@@ -6,7 +6,7 @@
 // 提供 context 相关实现。
 
 import type { NotificationApi, NotificationItemApi, NotificationOptions } from '@xihan-ui/headless'
-import type { ComputedRef, InjectionKey } from 'vue'
+import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import { inject, provide } from 'vue'
 
 export interface NotificationContext {
@@ -20,6 +20,8 @@ export interface NotificationContext {
 
 export interface NotificationItemContext {
   api: ComputedRef<NotificationItemApi>
+  /** 卡片根节点：退场动画从它上面探测。 */
+  rootRef: Ref<HTMLElement | null>
 }
 
 const KEY: InjectionKey<NotificationContext> = Symbol.for('xh-notification')

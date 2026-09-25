@@ -51,7 +51,6 @@ export interface XhNotificationRootProps extends RootElementProps {
   dedupe?: NotificationDedupe
   gap?: number
   duration?: number
-  removeDelay?: number
   pauseOnPageIdle?: boolean
   translations?: NotificationProps['translations']
   onItemsChange?: NotificationProps['onItemsChange']
@@ -66,7 +65,6 @@ export function XhNotificationRoot({
   dedupe,
   gap,
   duration,
-  removeDelay,
   pauseOnPageIdle,
   translations,
   onItemsChange,
@@ -81,7 +79,6 @@ export function XhNotificationRoot({
     dedupe,
     gap,
     duration,
-    removeDelay,
     pauseOnPageIdle,
     translations,
     onItemsChange,
@@ -147,7 +144,6 @@ export interface XhNotificationItemProps {
   tone?: ToastTone
   loading?: boolean
   duration?: number
-  removeDelay?: number
   closable?: boolean
   pauseOnPageIdle?: boolean
   /** 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 */
@@ -169,7 +165,7 @@ export function XhNotificationItem({ children, ...props }: XhNotificationItemPro
   const bind = useNativeEvents(api.getItemProps() as Record<string, unknown>, ['onPointerEnter', 'onPointerLeave'])
   return (
     <NotificationItemProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: ctx.rootRef })}>
         {renderSlot(children, { item: api })}
       </div>
     </NotificationItemProvider>

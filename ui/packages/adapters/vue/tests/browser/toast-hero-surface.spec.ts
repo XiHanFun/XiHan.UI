@@ -36,7 +36,6 @@ async function mount(duration = 0, actionLabel?: string): Promise<HTMLElement> {
       description: '内容已同步到云端',
       actionLabel,
       duration,
-      removeDelay: 300,
     }, () => [
       h(XhToastIndicator),
       h(XhToastContent, () => [h(XhToastTitle), h(XhToastDescription)]),

@@ -59,7 +59,6 @@ export interface ToastServiceOptions extends ServiceHostOptions {
   /** 摞内间距（px），默认 12。 */
   gap?: number
   duration?: number
-  removeDelay?: number
   pauseOnPageIdle?: boolean
   /** toast 部件的文案（关闭按钮的读屏名等）。 */
   toastTranslations?: Partial<ToastTranslations>
@@ -69,7 +68,7 @@ export interface ToastService {
   /** 入队并返回 id；同 id 已存在则就地改写，合并掉的返回被并进的那一条。 */
   create: (options?: ToastCreateOptions) => string
   update: (id: string, options: Partial<ToastOptions>) => void
-  /** 立刻从队列里删掉。条子自己的关闭按钮走的是退场窗口，有退场动画。 */
+  /** 立刻从队列里删掉，不播退场动画。条子自己的关闭按钮先播退场动画再移出。 */
   dismiss: (id: string) => void
   dismissAll: () => void
   info: (message: string, options?: ToastMessageOptions) => string
@@ -109,7 +108,6 @@ export interface NotificationServiceOptions extends ServiceHostOptions {
   /** 同一堆叠内的间距（px），默认 16。 */
   gap?: number
   duration?: number
-  removeDelay?: number
   pauseOnPageIdle?: boolean
   /** 通知的文案：堆叠区的读屏名与卡片上关闭按钮的读屏名，统一在一个桶中。 */
   translations?: Partial<NotificationTranslations>

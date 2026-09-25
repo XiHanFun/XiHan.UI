@@ -6,14 +6,17 @@
 // 提供 use toast 相关实现。
 
 import type { ToastApi, ToastSchema } from '@xihan-ui/headless'
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { connectToast, toastMachine } from '@xihan-ui/headless'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useToastExit } from './use-toast-exit'
 
 export interface ToastContext {
   api: ComputedRef<ToastApi>
+  /** 根节点：退场动画从它上面探测。 */
+  rootRef: Ref<HTMLElement | null>
 }
 
 export function useToast(
@@ -23,5 +26,7 @@ export function useToast(
 ): ToastContext {
   const service = useMachine(toastMachine, () => ({ ...props, onStatusChange, onAction }))
   const api = computed(() => connectToast(service, vueNormalize))
-  return { api }
+  const rootRef = ref<HTMLElement | null>(null)
+  useToastExit({ service, isOpen: () => api.value.status === 'visible', rootRef })
+  return { api, rootRef }
 }
