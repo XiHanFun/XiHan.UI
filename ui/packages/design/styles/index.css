@@ -32957,8 +32957,8 @@
     line-height: 0;
     /* 状态切换只动位移与表面，按压拉伸另走 inline-size；不使用 transition-all。 */
     transition:
-      translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
