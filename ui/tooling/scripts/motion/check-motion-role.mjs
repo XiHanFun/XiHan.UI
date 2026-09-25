@@ -1,17 +1,24 @@
 #!/usr/bin/env node
-// 门禁：几何类过渡按角色选曲线档，不许用色彩档。
+// 门禁：几何类过渡按角色选曲线档与时长档，不许用色彩档。
 //
 // 动效曲线选用表把 `--xh-motion-ease-enter` 判给「仅不透明度 / 底色 / 边框色变化」，
 // 动位置、尺寸、缩放、旋转的过渡另有档位。check-motion-easing.mjs 只拦「下探原语 /
 // 手写曲线 / 字面关键字」三类写法，判不出档位选错，本脚本补的就是这一条。
 //
-// 两档的分界按被动的属性算：
-//   move  —— 元素被推到新位置或尺寸被推到新值（inset-* / inline-size / translate / transform…）→ continuous
+// 曲线两档的分界按被动的属性算：
+//   move  —— 元素被推到新位置或尺寸被推到新值（inset-* / inline-size / translate / transform / clip-path…）→ continuous
 //   shape —— 元素原地形变（scale / rotate）→ enter-strong；按压缩放的释放段走统一点击时间线的 release
+//
+// 时长另核一条：几何类不许取 micro / enter / exit 三支。这三支在减弱动效下保留为淡变，
+// 几何变化挂在它们上面，减弱档下照样会动；几何类取 move / nudge / expand / collapse / slide / press / release，
+// 这几支在减弱档下是 1ms。时长核对连同家族配方与 transition-property 长写一起扫。
 //
 // 逐项判，不逐条判：一条 transition 可以列多项，`inset-block-start` 与 `scale` 同列时两项各判各的。
 //
-// animation 另核两条：
+// animation 另核三条：
+//   时长 —— 关键帧里的几何量写的是字面量（fr / % / deg / px…）而不是幅度令牌时，不许取 micro / enter / exit；
+//           只由 --xh-motion-distance-* / --xh-motion-scale-* / --xh-motion-travel 驱动的出现类关键帧，
+//           减弱档下幅度归零、只剩淡变，照常取 enter / exit。
 //   关系 —— 浮层按锚定关系三分，登记在 OVERLAY_RELATION 里的组件，其 animation
 //           引用的共享进出场关键帧只能是本关系那一对（RELATION_KEYFRAMES）；fade / disclosure
 //           不表达锚定关系，不受限。共享关键帧住在 family/motion.css，关系表在 lib/keyframe-relations.mjs。
@@ -57,10 +64,16 @@ const MOVE = new Set([
   'margin-block-end',
   'margin-inline-start',
   'margin-inline-end',
+  'clip-path',
+  'stroke-dashoffset',
 ])
 
 /** 原地形变的属性。 */
 const SHAPE = new Set(['scale', 'rotate'])
+
+/** 几何类不许取的时长：减弱动效下保留为淡变的三支。 */
+const FADE_DURATIONS = new Set(['--xh-motion-duration-micro', '--xh-motion-duration-enter', '--xh-motion-duration-exit'])
+const GEOMETRY_DURATIONS = 'move / nudge / expand / collapse / slide / press / release'
 
 /** 各角色要求的语义档。move 有两档，按位移的尺度分；shape 另允许统一点击时间线的 release 档（按压缩放的释放段）。 */
 const REQUIRED = { move: ['--xh-motion-ease-continuous'], shape: ['--xh-motion-ease-enter-strong', '--xh-motion-ease-release'] }
@@ -130,6 +143,18 @@ function easeToken(item) {
   return all.length ? all[all.length - 1] : null
 }
 
+/** 一项实际生效的时长档：私有槽或组件槽兜底时取兜底那支。 */
+function durationToken(item) {
+  const all = [...item.matchAll(/--xh-motion-duration-[\w-]+/g)].map(m => m[0])
+  return all.length ? all[all.length - 1] : null
+}
+
+/** 去掉全部 `var(…)` 之后，取值里还剩带单位的数（fr / % / deg / px…），即字面几何量。 */
+function hasLiteralGeometry(value) {
+  const bare = value.replace(/var\([^()]*(?:\([^()]*(?:\([^()]*\)[^()]*)*\)[^()]*)*\)/g, ' ')
+  return /(?:\d+(?:\.\d+)?|\.\d+)(?:fr|%|deg|turn|rad|px|r?em|v[wh]|lh)(?![\w-])/.test(bare)
+}
+
 const TRANSITION_DECL = /(?<![\w-])transition\s*:([^;{}]+)[;}]/g
 const ANIMATION_DECL = /(?<![\w-])animation\s*:([^;{}]+)[;}]/g
 
@@ -145,18 +170,79 @@ function blockEnd(css, open) {
   return css.length
 }
 
-/** 一份 CSS 里的关键帧：名字 → 帧体内动到的属性集合。 */
+/** 一份 CSS 里的关键帧：名字 → 帧体内动到的属性集合，以及几何量是否写成字面量。 */
 function keyframeProps(css) {
   const out = new Map()
   for (const m of css.matchAll(/@keyframes\s+([\w-]+)\s*\{/g)) {
     const open = m.index + m[0].length - 1
     const body = css.slice(open + 1, blockEnd(css, open))
     const props = new Set()
-    for (const d of body.matchAll(/(?<![\w-])([a-z][a-z0-9-]*)\s*:/g))
+    let literal = false
+    for (const d of body.matchAll(/(?<![\w-])([a-z][a-z0-9-]*)\s*:([^;{}]*)/g)) {
       props.add(d[1])
-    out.set(m[1], props)
+      if ((MOVE.has(d[1]) || SHAPE.has(d[1])) && hasLiteralGeometry(d[2]))
+        literal = true
+    }
+    out.set(m[1], { props, literal })
   }
   return out
+}
+
+/**
+ * 时长核对：几何类不许取 micro / enter / exit。
+ * 扫 transition 简写的逐项、同一规则块里成对出现的 transition-property / transition-duration 长写，
+ * 以及关键帧里写了字面几何量的 animation。只核时长，曲线档另有上面的逐项判据。
+ */
+function checkDurations(label, css, keyframes) {
+  const out = []
+  let count = 0
+  const flag = (line, what, subject, dur) => out.push(
+    `${label}:${line}  ${what}\n    —— ${subject}，时长该取 ${GEOMETRY_DURATIONS}，写的是 ${dur}：`
+    + 'micro / enter / exit 在减弱动效下保留为淡变，挂在它们上面的几何变化会在减弱档下照样动起来',
+  )
+  const lineOf = index => css.slice(0, index).split('\n').length
+
+  for (const m of css.matchAll(TRANSITION_DECL)) {
+    for (const item of splitTopLevel(m[1])) {
+      const prop = animatedProp(item)
+      if (!prop || !(MOVE.has(prop) || SHAPE.has(prop)))
+        continue
+      count++
+      const dur = durationToken(item)
+      if (FADE_DURATIONS.has(dur))
+        flag(lineOf(m.index), item, `${prop} 是几何类`, dur)
+    }
+  }
+
+  for (const m of css.matchAll(/(?<![\w-])transition-property\s*:([^;{}]+)[;}]/g)) {
+    const open = css.lastIndexOf('{', m.index)
+    const block = css.slice(open, blockEnd(css, open))
+    const durations = splitTopLevel(block.match(/(?<![\w-])transition-duration\s*:([^;{}]+)[;}]/)?.[1] ?? '')
+    if (!durations.length)
+      continue
+    splitTopLevel(m[1]).forEach((prop, i) => {
+      if (!(MOVE.has(prop) || SHAPE.has(prop)))
+        return
+      count++
+      const dur = durationToken(durations[i % durations.length])
+      if (FADE_DURATIONS.has(dur))
+        flag(lineOf(m.index), `transition-property: ${prop}`, `${prop} 是几何类`, dur)
+    })
+  }
+
+  for (const m of css.matchAll(ANIMATION_DECL)) {
+    for (const part of splitTopLevel(m[1])) {
+      const name = animationName(part)
+      const info = name ? keyframes.get(name) : null
+      if (!info?.literal)
+        continue
+      count++
+      const dur = durationToken(part)
+      if (FADE_DURATIONS.has(dur))
+        flag(lineOf(m.index), `animation: ${part}`, `关键帧 ${name} 动的是字面几何量`, dur)
+    }
+  }
+  return { problems: out, count }
 }
 
 /** 一条 animation 声明引用的关键帧名：令牌名以 `--` 开头，用前置断言排掉。 */
@@ -170,8 +256,12 @@ function familyImports(css) {
 }
 
 const familyKeyframes = new Map()
-for (const file of (await readdir(FAMILY_DIR)).filter(f => f.endsWith('.css')).sort())
-  familyKeyframes.set(file, keyframeProps(stripComments(await readFile(join(FAMILY_DIR, file), 'utf8'))))
+const familySources = new Map()
+for (const file of (await readdir(FAMILY_DIR)).filter(f => f.endsWith('.css')).sort()) {
+  const css = stripComments(await readFile(join(FAMILY_DIR, file), 'utf8'))
+  familySources.set(file, css)
+  familyKeyframes.set(file, keyframeProps(css))
+}
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = [...slideBacklog.problems]
@@ -179,6 +269,13 @@ const seen = new Set()
 const relationSeen = new Set()
 let checked = 0
 let animations = 0
+let durationChecked = 0
+
+for (const [file, css] of familySources) {
+  const result = checkDurations(`family/${file}`, css, familyKeyframes.get(file))
+  problems.push(...result.problems)
+  durationChecked += result.count
+}
 
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
@@ -187,9 +284,13 @@ for (const file of files) {
   // 本皮肤能解到的关键帧：自己的 + @import 的家族文件里的
   const keyframes = new Map(keyframeProps(css))
   for (const family of familyImports(css)) {
-    for (const [name, props] of familyKeyframes.get(family) ?? [])
-      keyframes.set(name, props)
+    for (const [name, info] of familyKeyframes.get(family) ?? [])
+      keyframes.set(name, info)
   }
+
+  const durations = checkDurations(file, css, keyframes)
+  problems.push(...durations.problems)
+  durationChecked += durations.count
 
   const relation = OVERLAY_RELATION[comp]
   for (const m of css.matchAll(ANIMATION_DECL)) {
@@ -213,7 +314,7 @@ for (const file of files) {
     const ease = easeToken(value)
     if (ease === '--xh-motion-ease-exit')
       continue
-    for (const prop of keyframes.get(name) ?? []) {
+    for (const prop of keyframes.get(name)?.props ?? []) {
       const key = `${comp}:${prop}`
       if (!(key in SLIDE_REQUIRED))
         continue
@@ -279,7 +380,7 @@ for (const comp of Object.keys(OVERLAY_RELATION)) {
 }
 
 if (problems.length) {
-  console.error('[check-motion-role] ✗ 几何类过渡的曲线档位选错：')
+  console.error('[check-motion-role] ✗ 几何类过渡的曲线或时长档位选错：')
   for (const p of problems)
     console.error(`  ${p}`)
   process.exit(1)
@@ -287,5 +388,6 @@ if (problems.length) {
 
 console.log(
   `[check-motion-role] 通过：${files.length} 份皮肤 · ${checked} 项几何类过渡各按角色走 -continuous / -enter-strong / -release（例外登记 ${seen.size} 处）`
+  + ` · ${durationChecked} 处几何类时长（含家族配方、长写与字面几何量的关键帧）都不取 micro / enter / exit`
   + ` · ${animations} 条 animation 里 ${relationSeen.size} 个浮层组件的进出场关键帧与锚定关系相符，大尺度待办 ${slideBacklog.pending} 处`,
 )

@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-// 门禁：皮肤里位移与缩放的**幅度**不许写字面量，必须取 --xh-motion-distance-sm / -md 与
+// 门禁：皮肤里位移与缩放的**幅度**不许写字面量，必须取 --xh-motion-distance-sm / -md、--xh-motion-travel 与
 // --xh-motion-scale-enter / -press / -drag。
 //
 // 这条与 check-motion-primitives 拦时长是同一个机制：减弱动效档把 distance-* 重映射成 0px、
 // scale-* 重映射成 1，幅度写死的那一处，减弱通道就穿不过去——看上去照常在动。
 //
-// 难在 translate / scale 上还坐着另一类值：把元素挪到自身尺寸的一半以居中、把抽屉推出自身
-// 宽度那么远。这类值在减弱档必须原样保留，压成 0 就错位、就滑不出去，它们是几何不是幅度。
+// 难在 translate / scale 上还坐着另一类值：把元素挪到自身尺寸的一半以居中、把覆盖档侧栏收到
+// 画外一整条。这类常驻的位置在减弱档必须原样保留，压成 0 就错位、就收不回去，它们是几何不是幅度。
+// 只在进出场关键帧里出现的整幅位移（抽屉、轻提示推入推出）是幅度，取 --xh-motion-travel，减弱档归零只剩淡变。
 // 判据因此按「减弱档该不该动它」划线，落到可机检的形式上是值本身的单位与形态：
 //
 //   百分比            相对的是元素自身尺寸，压成 0 就是错位  → 几何，放行
@@ -243,6 +244,6 @@ if (problems.length > 0) {
 
 console.log(
   `[check-motion-amplitude] 通过：${files.length} 份皮肤与家族文件 · ${amplitudes} 处位移 / 缩放声明（其中 ${inKeyframes} 处在关键帧里）`
-  + ` · ${slotAssignments} 处喂给它们的槽赋值，幅度全部取自 --xh-motion-distance-* / --xh-motion-scale-*，`
+  + ` · ${slotAssignments} 处喂给它们的槽赋值，幅度全部取自 --xh-motion-distance-* / --xh-motion-travel / --xh-motion-scale-*，`
   + `字面量只剩百分比与 0 / 1 这类几何（静态几何豁免 ${exemptSeen.size} 处）`,
 )
