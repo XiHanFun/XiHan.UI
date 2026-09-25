@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { cubicBezier, easing, resolveEasing, toLinearEasing } from '../src/easing'
 
 describe('cubicBezier', () => {
@@ -98,6 +98,32 @@ describe('resolveEasing', () => {
 
   it('同一串重复解析返回同一个函数', () => {
     expect(resolveEasing('cubic-bezier(0.1, 0.2, 0.3, 0.4)')).toBe(resolveEasing('cubic-bezier(0.1, 0.2, 0.3, 0.4)'))
+  })
+
+  it('认不出的写法在开发构建下警告，同一写法只警告一次', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      resolveEasing('ease-out-unknown')
+      resolveEasing('ease-out-unknown')
+      expect(warn).toHaveBeenCalledTimes(1)
+      expect(String(warn.mock.calls[0]?.[0])).toContain('ease-out-unknown')
+    }
+    finally {
+      warn.mockRestore()
+    }
+  })
+
+  it('linear、名字与合法的 cubic-bezier 不警告', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      resolveEasing('linear')
+      resolveEasing('outFluid')
+      resolveEasing('cubic-bezier(0.5, 0.1, 0.3, 0.9)')
+      expect(warn).not.toHaveBeenCalled()
+    }
+    finally {
+      warn.mockRestore()
+    }
   })
 })
 
