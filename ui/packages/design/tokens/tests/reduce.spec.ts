@@ -40,6 +40,12 @@ const DEGRADABLE = new Set(['duration', 'dimension', 'number'])
 /** 时长里的延迟位：降级取 0ms 而不是 1ms，见下面成对的两条。 */
 const DELAY = new Set(['motion-stagger-step'])
 
+/**
+ * 淡变档：换色与出现。淡变不属于运动，减弱档保留为 fast 一档，不降到 1ms；
+ * 基线本就是 fast 的不必覆盖。几何类时长走其余各支，减弱档下 1ms。
+ */
+const FADE = new Set(['motion-duration-micro', 'motion-duration-enter', 'motion-duration-exit'])
+
 describe('semantic.reduce.json', () => {
   it('每一项都对应基线里的同名令牌', () => {
     const baseNames = new Set(base.map(t => t.name))
@@ -58,19 +64,28 @@ describe('semantic.reduce.json', () => {
       expect(t.name.startsWith('motion-'), t.name).toBe(true)
   })
 
-  it('基线里每一个可降级的动效令牌都被覆盖到', () => {
+  it('基线里每一个可降级的动效令牌都被覆盖到（淡变档另核）', () => {
     const covered = new Set(reduce.map(t => t.name))
-    const shouldCover = base.filter(t => t.name.startsWith('motion-') && DEGRADABLE.has(t.type))
+    const shouldCover = base.filter(t => t.name.startsWith('motion-') && DEGRADABLE.has(t.type) && !FADE.has(t.name))
     expect(shouldCover.length).toBeGreaterThan(0)
     for (const t of shouldCover)
       expect(covered.has(t.name), `${t.name} 是可降级的动效令牌，但 reduce 档没有覆盖它`).toBe(true)
   })
 
-  it('时长降到 1ms 而不是 0', () => {
+  it('几何类时长降到 1ms 而不是 0', () => {
     // 零时长动画仍会派发 animationstart/animationend，但历史实现有差异；
     // 取 1ms 让动画名照常变化、进出场时序与不降级时同构
-    for (const t of reduce.filter(t => t.type === 'duration' && !DELAY.has(t.name)))
+    for (const t of reduce.filter(t => t.type === 'duration' && !DELAY.has(t.name) && !FADE.has(t.name)))
       expect(t.value, t.name).toBe('1ms')
+  })
+
+  it('淡变档在减弱档下是 fast 一档：覆盖到 fast，或基线本就是 fast', () => {
+    const reduced = new Map(reduce.map(t => [t.name, t.value]))
+    const baseline = new Map(base.map(t => [t.name, t.value]))
+    for (const name of FADE) {
+      expect(baseline.has(name), `${name} 不在基线里`).toBe(true)
+      expect(reduced.get(name) ?? baseline.get(name), name).toBe('{duration.fast}')
+    }
   })
 
   it('延迟归 0ms', () => {
@@ -105,8 +120,10 @@ describe('tokens.css 产物', () => {
 
   it('reduce 块里每一条都在产物里对得上', () => {
     const block = css.slice(css.indexOf('@media (prefers-reduced-motion: reduce)'))
+    // 引用写法 {duration.fast} 在产物里是 var(--xh-duration-fast)
+    const emitted = (value: string): string => value.replace(/\{([^}]+)\}/g, (_, path: string) => `var(--xh-${path.replace(/\./g, '-')})`)
     for (const t of reduce)
-      expect(block, t.name).toContain(`--xh-${t.name}: ${t.value};`)
+      expect(block, t.name).toContain(`--xh-${t.name}: ${emitted(t.value)};`)
   })
 
   it('没有重映射任何 primitive', () => {

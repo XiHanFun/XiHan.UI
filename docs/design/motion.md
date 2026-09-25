@@ -79,7 +79,7 @@
 
 ## 减弱动效
 
-`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）取消位移与缩放，保留即时换面：按下仍然换底、浮层仍然出现，只是不再滑动与缩放。`data-motion="default"` 恢复完整动效：系统要求减弱、而产品设置或某个局部容器选择完整动效时，该子树的令牌回到基线取值。两者可以嵌套，最近的一层生效。JS 侧经 `resolveMotionPreference` 读同一个值——退场租约、贴底滚动、数字动画、加载弧线、背景层全部走这一条通道，产品自己的"减弱动效"设置用 `setMotionOverride` 一处设置、处处生效。
+`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）去掉位移、保留淡变：位移、缩放、旋转与尺寸变化瞬时完成（`move` / `nudge` / `expand` / `collapse` / `slide` / `press` / `release` 为 1ms，幅度令牌归零），换色与出现的淡变保留为 120ms（`micro` / `enter` / `exit`）。按下仍然换底、浮层仍然淡入，只是不再滑动与缩放；浮层退场在减弱动效下直接移除。`data-motion="default"` 恢复完整动效：系统要求减弱、而产品设置或某个局部容器选择完整动效时，该子树的令牌回到基线取值。两者可以嵌套，最近的一层生效。JS 侧经 `resolveMotionPreference` 读同一个值——退场租约、贴底滚动、数字动画、加载弧线、背景层全部走这一条通道，产品自己的"减弱动效"设置用 `setMotionOverride` 一处设置、处处生效。
 
 ## 相关
 
