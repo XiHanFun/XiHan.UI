@@ -118,7 +118,7 @@
   }
 
   /* 375px 复合面板要同时容下日历与时/分两列；手机档用正式小指示符，平板起恢复16px。 */
-  @media (width < 768px) {
+  @media not all and (min-width: 768px) {
     [data-scope='date-picker']:is([data-part='root'], [data-part='positioner']) {
       --xh-_date-picker-time-item-check-size: var(--xh-control-indicator-sm);
     }
@@ -628,7 +628,7 @@
     opacity: 1;
   }
 
-  @media (width < 768px) {
+  @media not all and (min-width: 768px) {
     [data-scope='date-picker'][data-part='content'] {
       padding-inline: var(--xh-date-picker-content-px, var(--xh-space-2));
     }

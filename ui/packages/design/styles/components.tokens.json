@@ -20183,7 +20183,7 @@
         "padding-inline"
       ],
       "state": [
-        "@media (width < 768px)",
+        "@media not all and (min-width: 768px)",
         "default"
       ],
       "defaultToken": [
@@ -21110,7 +21110,7 @@
         "min-inline-size"
       ],
       "state": [
-        "@media (width < 768px)"
+        "@media not all and (min-width: 768px)"
       ],
       "defaultToken": [
         "2.75rem"
@@ -21182,7 +21182,7 @@
         "padding-inline"
       ],
       "state": [
-        "@media (width < 768px)"
+        "@media not all and (min-width: 768px)"
       ],
       "defaultToken": [
         "0"
@@ -21272,7 +21272,7 @@
         "padding-inline"
       ],
       "state": [
-        "@media (width < 768px)",
+        "@media not all and (min-width: 768px)",
         "default"
       ],
       "defaultToken": [
