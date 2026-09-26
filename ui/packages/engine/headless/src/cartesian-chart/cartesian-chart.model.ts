@@ -17,10 +17,13 @@ import type {
   KeyedPoint,
   LineMark,
   Mark,
+  MarkPaint,
   NumberFormatSpec,
   PathMark,
   Rect,
   Scene,
+  SymbolMark,
+  SymbolName,
   TableModel,
   TextMark,
   TextMeasurer,
@@ -30,8 +33,10 @@ import type { ChartKey, ChartLabelBox, ChartMetrics, ChartNumbers, ChartRow, Cha
 import type {
   CartesianAxis,
   CartesianAxisFormat,
+  CartesianBarSeries,
   CartesianChartTranslations,
   CartesianCurve,
+  CartesianLineSeries,
   CartesianOrientation,
   CartesianScaleKind,
   CartesianSeries,
@@ -43,6 +48,7 @@ import {
   createScene,
   inferDomain,
   isVizError,
+  jitter,
   layoutAxis,
   scaleBand,
   scaleLinear,
@@ -52,6 +58,7 @@ import {
   scaleUtc,
   solvePlotRect,
   stack,
+  SYMBOL_NAMES,
 } from '@xihan-ui/viz'
 import { assignChartSeries, buildChartSummary, labelBox, memoizeLast, placeWithoutOverlap, settleColumn } from '../shared/chart'
 
@@ -65,9 +72,17 @@ export interface CartesianSeriesSpec {
   readonly tone: Tone | null
   /** 纹理序号：分类系列等于色槽，语义系列按声明次序。 */
   readonly pattern: number | null
-  readonly mark: 'bar' | 'line'
+  readonly mark: 'bar' | 'line' | 'scatter'
   readonly x: string
   readonly y: string
+  /** 散点：气泡大小的字段；不是气泡为 null。 */
+  readonly size: string | null
+  /** 散点的形状；其余系列为 null。 */
+  readonly symbol: SymbolName | null
+  /** 散点在类目轴上的抖动，类目步长的比例 0–1。 */
+  readonly jitter: number
+  /** 散点的数据身份字段；缺省为 null，按 x 与出现次序。 */
+  readonly datumId: string | null
   /** 声明次序。 */
   readonly order: number
   /** 堆叠组；不堆叠为 null。 */
@@ -173,17 +188,20 @@ export function normalizeCartesianSpec(
   // 字段在数据里一次都没出现，多半是拼错了：空数据不判，那时什么字段都「不存在」
   if (rows.length > 0) {
     for (const s of seriesInput) {
-      for (const field of [s.x, s.y]) {
+      const fields = s.mark === 'scatter' ? [s.x, s.y, s.size, s.datumId] : [s.x, s.y]
+      for (const field of fields) {
+        if (field == null)
+          continue
         if (!rows.some(row => field in row))
           issues.push({ code: DIAGNOSTIC_CODES.chartUnknownField, message: `系列引用的字段「${field}」在数据里不存在`, detail: { field } })
       }
     }
   }
 
-  // 同一堆叠组的堆叠方式必须一致：柱与折线各自成组
+  // 同一堆叠组的堆叠方式必须一致：柱与折线各自成组；散点不堆叠
   const offsets = new Map<string, Set<string>>()
   for (const s of seriesInput) {
-    if (s.stack == null || s.stackOffset == null)
+    if (s.mark === 'scatter' || s.stack == null || s.stackOffset == null)
       continue
     const group = `${s.mark}:${s.stack}`
     const set = offsets.get(group) ?? new Set<string>()
@@ -198,9 +216,9 @@ export function normalizeCartesianSpec(
   // 柱的堆叠组里有负值时缺省 diverging：正负各自累加，互不抵消
   const hasNegative = (s: CartesianSeries): boolean => rows.some(row => (numberOf(row[s.y]) ?? 0) < 0)
   const groupOffset = (s: CartesianSeries): 'none' | 'expand' | 'diverging' => {
-    if (s.stack == null)
+    if (s.mark === 'scatter' || s.stack == null)
       return 'none'
-    const members = seriesInput.filter(o => o.mark === s.mark && o.stack === s.stack)
+    const members = seriesInput.filter((o): o is CartesianBarSeries | CartesianLineSeries => o.mark === s.mark && o.stack === s.stack)
     const explicit = members.find(o => o.stackOffset != null)?.stackOffset
     if (explicit)
       return explicit
@@ -209,6 +227,7 @@ export function normalizeCartesianSpec(
 
   const series = seriesInput.map((s, order): CartesianSeriesSpec => {
     const identity = assignment.series[order]!
+    const scatter = s.mark === 'scatter' ? s : null
     return {
       id: identity.id,
       name: identity.name,
@@ -218,14 +237,19 @@ export function normalizeCartesianSpec(
       mark: s.mark,
       x: s.x,
       y: s.y,
+      size: scatter?.size ?? null,
+      // 缺省形状随色槽（语义系列随纹理序号）轮换：颜色分不清时形状还分得开
+      symbol: scatter ? scatter.symbol ?? SYMBOL_NAMES[((identity.slot ?? identity.pattern ?? 1) - 1) % SYMBOL_NAMES.length]! : null,
+      jitter: scatter ? Math.min(1, Math.max(0, Number.isFinite(scatter.jitter) ? scatter.jitter! : 0)) : 0,
+      datumId: scatter?.datumId ?? null,
       order,
-      stack: s.stack ?? null,
+      stack: s.mark === 'scatter' ? null : s.stack ?? null,
       stackOffset: groupOffset(s),
       curve: s.mark === 'line' ? CURVES[s.curve ?? 'linear'] : 'linear',
       area: s.mark === 'line' && s.area === true,
       symbols: s.mark === 'line' ? (s.symbols ?? 'auto') : 'none',
       connectNulls: s.mark === 'line' && s.connectNulls === true,
-      labels: s.labels ?? 'none',
+      labels: s.mark === 'scatter' ? 'none' : s.labels ?? 'none',
       endLabel: s.mark === 'line' && s.endLabel === true,
     }
   })
@@ -276,13 +300,22 @@ export function normalizeCartesianSpec(
 
 /* ---------- 派生数据 ---------- */
 
-/** 一个系列在每个键上的值与堆叠后的两端。数组按 keys 的位置对齐，缺失为 null。 */
+/**
+ * 一个系列的值与堆叠后的两端，数组按「位置」对齐：柱与折线每个键一个位置（即 keys 的位置），缺失为 null；
+ * 散点每个点一个位置，按 x 在键序里的次序、同一 x 上按数据次序排。
+ */
 export interface CartesianSeriesValues {
   readonly spec: CartesianSeriesSpec
   /** 原始值。 */
   readonly values: readonly (number | null)[]
-  /** 该键取自哪一行；没有时为 −1。 */
+  /** 这个位置取自哪一行；没有时为 −1。 */
   readonly rows: readonly number[]
+  /** 散点：位置 → 它的 x 在 keys 里的位置；柱与折线为 null（位置就是键的位置）。 */
+  readonly keyAt: readonly number[] | null
+  /** 散点：每个点的身份串，标记键与抖动的种子都取它；柱与折线为 null。 */
+  readonly pointIds: readonly string[] | null
+  /** 气泡的大小；不是气泡为 null。 */
+  readonly sizes: readonly number[] | null
   /** 贴近基线的一端。 */
   readonly low: readonly (number | null)[]
   /** 值所在的一端。 */
@@ -296,8 +329,47 @@ export interface CartesianDerived {
   /** 可见系列，按声明次序。 */
   readonly visible: readonly CartesianSeriesValues[]
   readonly issues: readonly ChartSpecIssue[]
-  /** 数据引用（系列 id → 行号）→ 在 keys 里的位置；隐藏系列与没有值的行不在表里。 */
+  /** 数据引用（系列 id → 行号）→ 在系列里的位置；隐藏系列与没有值的行不在表里。 */
   readonly keyOfRow: ReadonlyMap<string, ReadonlyMap<number, number>>
+}
+
+/**
+ * 散点的点：x 落在键序里、y 是数的行各一个点；气泡还要大小是正数。按 x 在键序里的次序排，同一 x 上按数据次序。
+ * 身份缺省是「x 的身份串#同一 x 上的出现次序」：往后追加数据、改某个点的 y，已有的点都保持身份。
+ */
+function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<CartesianSeriesValues, 'low' | 'high' | 'outermost'> {
+  const points: { row: number, at: number, value: number, size: number, id: string }[] = []
+  const seen = new Map<number, number>()
+  const ids = new Set<string>()
+  spec.rows.forEach((row, index) => {
+    const key = cartesianKeyId(row[s.x])
+    const at = key == null ? undefined : spec.keyIndex.get(key)
+    if (at === undefined)
+      return
+    // 出现次序按 x 合法的每一行数：某行的 y 由缺失变成有值时，别的点不换身份
+    const occurrence = seen.get(at) ?? 0
+    seen.set(at, occurrence + 1)
+    const value = numberOf(row[s.y])
+    const size = s.size == null ? 1 : numberOf(row[s.size])
+    if (value == null || size == null || size <= 0)
+      return
+    const own = s.datumId == null ? null : cartesianKeyId(row[s.datumId])
+    let id = own ?? `${key}#${occurrence}`
+    // 作者给的身份撞了：后来的那个加上行号，标记键不能重
+    if (ids.has(id))
+      id = `${id}#${index}`
+    ids.add(id)
+    points.push({ row: index, at, value, size, id })
+  })
+  points.sort((a, b) => a.at - b.at || a.row - b.row)
+  return {
+    spec: s,
+    values: points.map(p => p.value),
+    rows: points.map(p => p.row),
+    keyAt: points.map(p => p.at),
+    pointIds: points.map(p => p.id),
+    sizes: s.size == null ? null : points.map(p => p.size),
+  }
 }
 
 export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly string[]): CartesianDerived {
@@ -305,6 +377,8 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
   const issues: ChartSpecIssue[] = []
   const n = spec.keys.length
   const base = spec.series.filter(s => !hidden.has(s.id)).map((s) => {
+    if (s.mark === 'scatter')
+      return scatterPoints(spec, s)
     const values = filled<number | null>(n, null)
     const rows = filled(n, -1)
     spec.rows.forEach((row, index) => {
@@ -316,7 +390,7 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
       rows[at] = index
       values[at] = numberOf(row[s.y])
     })
-    return { spec: s, values, rows }
+    return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null }
   })
 
   const stacked = new Map<string, { low: (number | null)[], high: (number | null)[], outermost: boolean[] }>()
@@ -356,6 +430,8 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
     const s = stacked.get(entry.spec.id)
     if (s)
       return { ...entry, ...s }
+    if (entry.keyAt)
+      return { ...entry, low: entry.values, high: entry.values, outermost: entry.values.map(() => true) }
     return {
       ...entry,
       low: entry.values.map(v => (v == null ? null : 0)),
@@ -385,6 +461,8 @@ export interface CartesianDomains {
   readonly key: readonly [number, number] | null
   /** 百分比堆叠：数值轴刻度写成百分比。 */
   readonly percent: boolean
+  /** 气泡大小的上界：全部可见气泡共用一把尺；没有气泡为 null。 */
+  readonly size: number | null
   readonly issues: readonly ChartSpecIssue[]
 }
 
@@ -444,7 +522,12 @@ export function cartesianDomains(derived: CartesianDerived): CartesianDomains {
       key = [1, 10]
     }
   }
-  return { derived, value, key, percent, issues }
+  let size: number | null = null
+  for (const s of derived.visible) {
+    for (const v of s.sizes ?? [])
+      size = Math.max(size ?? 0, v)
+  }
+  return { derived, value, key, percent, size, issues }
 }
 
 /* ---------- 格式 ---------- */
@@ -454,6 +537,8 @@ export interface CartesianFormats {
   readonly key: (key: ChartKey) => string
   /** 数值写成文字。 */
   readonly value: (value: number) => string
+  /** 气泡大小写成文字：与坐标轴无关，按语言的缺省数字格式。 */
+  readonly size: (value: number) => string
 }
 
 function isDateFormat(format: CartesianAxisFormat | undefined): format is Intl.DateTimeFormatOptions {
@@ -479,6 +564,7 @@ export function cartesianFormats(spec: CartesianSpec, locale: string): Cartesian
       return typeof key === 'number' ? keyNumbers(key) : key
     },
     value: values,
+    size: createNumberFormat(locale, {}),
   }
 }
 
@@ -532,14 +618,23 @@ export function layoutCartesian(
   const keyOf = new Map(categoryKeys.map((k, i) => [k, spec.keys[i]!]))
   const keyAxisConfig = spec.xAxis
   const barCount = domains.derived.visible.some(s => s.spec.mark === 'bar')
+  const scatterOnly = spec.series.length > 0 && spec.series.every(s => s.mark === 'scatter')
+  // 散点落在定义域两端时整个点要在绘图区里、不压在坐标轴线上：连续轴两端各收进一截，气泡收进最大半径，
+  // 普通的点收进一个点的直径（半径加上与轴线之间的一道空隙）
+  const scattered = domains.derived.visible.some(s => s.spec.mark === 'scatter')
+  const margin = domains.size != null ? metrics.barMax : scattered ? metrics.pointSize : 0
+  const inset = ([a, b]: [number, number]): [number, number] => {
+    const dir = Math.sign(b - a) || 1
+    return Math.abs(b - a) > margin * 4 ? [a + dir * margin, b - dir * margin] : [a, b]
+  }
 
   // 自变量轴沿哪个方向；horizontal 下类目自上而下排
   const along = (plot: Rect): [number, number] => vertical
     ? (keyAxisConfig.reverse ? [plot.x + plot.width, plot.x] : [plot.x, plot.x + plot.width])
     : (keyAxisConfig.reverse ? [plot.y + plot.height, plot.y] : [plot.y, plot.y + plot.height])
-  const across = (plot: Rect): [number, number] => vertical
+  const across = (plot: Rect): [number, number] => inset(vertical
     ? (spec.yAxis.reverse ? [plot.y, plot.y + plot.height] : [plot.y + plot.height, plot.y])
-    : (spec.yAxis.reverse ? [plot.x + plot.width, plot.x] : [plot.x, plot.x + plot.width])
+    : (spec.yAxis.reverse ? [plot.x + plot.width, plot.x] : [plot.x, plot.x + plot.width]))
 
   const keyScaleOf = (plot: Rect): AxisScale => {
     const range = along(plot)
@@ -548,12 +643,14 @@ export function layoutCartesian(
     if (spec.keyScale === 'point')
       return scalePoint({ domain: categoryKeys, range, paddingOuter: 0.5 })
     const [lo, hi] = domains.key ?? [0, 1]
+    const inner = inset(range)
     if (spec.keyScale === 'time')
-      return scaleTime({ domain: [new Date(lo), new Date(hi)], range })
+      return scaleTime({ domain: [new Date(lo), new Date(hi)], range: inner })
     if (spec.keyScale === 'utc')
-      return scaleUtc({ domain: [new Date(lo), new Date(hi)], range })
-    const scale = spec.keyScale === 'log' ? scaleLog({ domain: [lo, hi], range }) : scaleLinear({ domain: [lo, hi], range })
-    return spec.xAxis.nice ? scale.nice() : scale
+      return scaleUtc({ domain: [new Date(lo), new Date(hi)], range: inner })
+    const scale = spec.keyScale === 'log' ? scaleLog({ domain: [lo, hi], range: inner }) : scaleLinear({ domain: [lo, hi], range: inner })
+    // 只有散点时自变量是一个量而不是序列：两端缺省取整到刻度上，与数值轴一致
+    return (spec.xAxis.nice ?? scatterOnly) ? scale.nice() : scale
   }
 
   const valueSpec: NumberFormatSpec = typeof spec.yAxis.format === 'object' && !isDateFormat(spec.yAxis.format)
@@ -790,8 +887,8 @@ function labelPadding(
 /** 场景里一个数据标记的归属：连接层按它写部件属性、可及名与键盘遍历。 */
 export interface CartesianMarkInfo {
   readonly seriesId: string
-  /** 在 keys 里的位置；系列分组与整条折线为 −1。 */
-  readonly keyIndex: number
+  /** 在系列里的位置（见 CartesianSeriesValues）；系列分组与整条折线为 −1。 */
+  readonly position: number
 }
 
 export interface CartesianScene {
@@ -930,7 +1027,9 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
         : gridLine(`grid:v:${tickId(tick)}`, at, plot.y, at, plot.y + plot.height))
     }
   }
-  if (spec.xAxis.grid === true) {
+  // 只有散点、自变量是连续量时两个方向都画网格：两根轴地位相同，读点的位置两边都要参照
+  const scatterOnly = spec.series.length > 0 && spec.series.every(s => s.mark === 'scatter')
+  if (spec.xAxis.grid ?? (scatterOnly && spec.keyScale !== 'band' && spec.keyScale !== 'point')) {
     for (const tick of layout.keyAxis.ticks) {
       if (!Number.isFinite(tick.offset))
         continue
@@ -986,11 +1085,14 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
       ...(s.spec.pattern != null ? { pattern: s.spec.pattern } : {}),
     }
     const children: Mark[] = []
-    const seriesAnchors = filled<{ x: number, y: number } | null>(spec.keys.length, null)
+    const seriesAnchors = filled<{ x: number, y: number } | null>(s.values.length, null)
     anchors.set(id, seriesAnchors)
-    info.set(`series:${id}`, { seriesId: id, keyIndex: -1 })
+    info.set(`series:${id}`, { seriesId: id, position: -1 })
 
-    if (s.spec.mark === 'bar') {
+    if (s.spec.mark === 'scatter') {
+      children.push(...scatterMarks(layout, s, paint, seriesAnchors, info))
+    }
+    else if (s.spec.mark === 'bar') {
       const slotIndex = barSlots.indexOf(s.spec.stack == null ? `s:${id}` : `g:${s.spec.stack}`)
       for (let j = 0; j < spec.keys.length; j++) {
         const lo = s.low[j]
@@ -1014,7 +1116,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           continue
         const key = `${id}:${cartesianDatumId(spec.keys[j]!)}`
         const rowIndex = s.rows[j]!
-        info.set(key, { seriesId: id, keyIndex: j })
+        info.set(key, { seriesId: id, position: j })
         const rect = vertical
           ? { x: start, y: Math.min(a, far), width: thickness, height: Math.abs(far - a) }
           : { x: Math.min(a, far), y: start, width: Math.abs(far - a), height: thickness }
@@ -1055,7 +1157,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           : { key: cartesianDatumId(spec.keys[j]!), x: p.x, y: p.y, x0: b.x, defined })
         if (defined) {
           seriesAnchors[j] = p
-          info.set(`${id}:${cartesianDatumId(spec.keys[j]!)}`, { seriesId: id, keyIndex: j })
+          info.set(`${id}:${cartesianDatumId(spec.keys[j]!)}`, { seriesId: id, position: j })
         }
       }
       // 单调平滑沿自变量方向求：横向时自变量是 y
@@ -1090,6 +1192,59 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
   const labels = cartesianLabels(layout, bars, anchors)
   const scene = createScene({ version, layers: { back, data, front: labels.marks }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
   return { layout, scene, info, anchors, placements: labels.placements, labelValues: labels.values }
+}
+
+/**
+ * 散点的标记：每个点一个形状，本身就是可聚焦的数据标记。气泡按面积映射大小，半径取平方根，
+ * 大的先画、小的压在上面，免得小气泡被整个盖住。类目轴上的抖动以点的身份为种子。
+ */
+function scatterMarks(
+  layout: CartesianLayout,
+  s: CartesianSeriesValues,
+  paint: MarkPaint,
+  anchors: ({ x: number, y: number } | null)[],
+  info: Map<string, CartesianMarkInfo>,
+): SymbolMark[] {
+  const { metrics, domains } = layout
+  const vertical = domains.derived.spec.orientation === 'vertical'
+  const id = s.spec.id
+  const category = isCategoryScale(layout.keyScale)
+  const step = category ? ((layout.keyScale as { step?: number }).step ?? layout.bandwidth) : 0
+  const marks: { mark: SymbolMark, radius: number }[] = []
+  s.values.forEach((v, p) => {
+    const center = layout.keyCenters[s.keyAt![p]!]!
+    const across = v == null ? Number.NaN : layout.valueScale.map(v) ?? Number.NaN
+    if (!Number.isFinite(center) || !Number.isFinite(across))
+      return
+    const pointId = s.pointIds![p]!
+    const along = center + (s.spec.jitter > 0 && step > 0 ? jitter(`${id}:${pointId}`, s.spec.jitter * step) : 0)
+    const size = s.sizes?.[p]
+    const radius = size != null && domains.size
+      ? Math.max(metrics.lineWidth, metrics.barMax * Math.sqrt(size / domains.size))
+      : metrics.pointSize / 2
+    const at = vertical ? { x: along, y: across } : { x: across, y: along }
+    const key = `${id}:${pointId}`
+    anchors[p] = at
+    info.set(key, { seriesId: id, position: p })
+    marks.push({
+      radius,
+      mark: {
+        kind: 'symbol',
+        key,
+        part: 'point',
+        x: at.x,
+        y: at.y,
+        size: Math.PI * radius * radius,
+        symbol: s.spec.symbol ?? 'circle',
+        datum: { seriesId: id, index: s.rows[p]! },
+        paint,
+        a11y: { label: '', focusable: true },
+      },
+    })
+  })
+  if (s.sizes)
+    marks.sort((a, b) => b.radius - a.radius)
+  return marks.map(m => m.mark)
 }
 
 /** 一根柱在绘图区里的矩形，以及写标签要知道的事：远端朝上（右）还是朝下（左）、是不是堆叠中的一段。 */
@@ -1384,17 +1539,59 @@ export function cartesianA11y(
   const series = unique.map(s => ({
     id: s.spec.id,
     name: s.spec.name,
-    points: spec.keys.map((key, j) => ({ key, value: s.values[j] ?? null })),
+    points: s.keyAt
+      ? s.values.map((value, p) => ({ key: spec.keys[s.keyAt![p]!]!, value }))
+      : spec.keys.map((key, j) => ({ key, value: s.values[j] ?? null })),
   }))
   const summary = translations.summary(buildChartSummary(series, { formatKey: k => formats.key(k as ChartKey), formatValue: v => formats.value(v) }))
-  const table = buildTableModel({
-    keyLabel: translations.keyLabel,
-    series,
-    formatKey: k => formats.key(k as ChartKey),
-    formatValue: v => formats.value(v),
-    missingText: translations.missingValue,
-  })
+  // 含散点时一个 x 上可以有多个点，按键对齐的宽表放不下：改成每个数据一行的长表
+  const table = unique.some(s => s.keyAt)
+    ? pointTable(unique, spec, formats, translations)
+    : buildTableModel({
+        keyLabel: translations.keyLabel,
+        series,
+        formatKey: k => formats.key(k as ChartKey),
+        formatValue: v => formats.value(v),
+        missingText: translations.missingValue,
+      })
   return { summary, table, formats }
+}
+
+/** 长表：系列、x、y 各一列，有气泡时再加大小一列；每个有值的数据一行，系列按声明次序、系列内按位置。 */
+function pointTable(
+  series: readonly CartesianSeriesValues[],
+  spec: CartesianSpec,
+  formats: CartesianFormats,
+  translations: CartesianChartTranslations,
+): TableModel {
+  const sized = series.some(s => s.sizes)
+  const rows: TableModel['rows'][number][] = []
+  for (const s of series) {
+    s.values.forEach((value, p) => {
+      if (value == null)
+        return
+      const key = spec.keys[s.keyAt ? s.keyAt[p]! : p]!
+      const size = s.sizes?.[p]
+      rows.push({
+        key: `${s.spec.id}:${s.pointIds?.[p] ?? cartesianDatumId(key)}`,
+        cells: [
+          { value: s.spec.name, text: s.spec.name },
+          { value: key, text: formats.key(key) },
+          { value, text: formats.value(value) },
+          ...(sized ? [size == null ? { value: null, text: translations.missingValue } : { value: size, text: formats.size(size) }] : []),
+        ],
+      })
+    })
+  }
+  return {
+    columns: [
+      { id: 'series', label: translations.seriesLabel },
+      { id: 'key', label: translations.keyLabel },
+      { id: 'value', label: translations.valueLabel },
+      ...(sized ? [{ id: 'size', label: translations.sizeLabel }] : []),
+    ],
+    rows,
+  }
 }
 
 /* ---------- 管线 ---------- */

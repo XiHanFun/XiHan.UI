@@ -244,6 +244,37 @@ const cases: readonly ConformanceCase[] = [
     },
   },
   {
+    name: '散点：每行一个点，点是带可及名的 graphics-symbol、roving 取 Tab 位；色标画成点的形状',
+    spec: { apg: GRAPHICS },
+    props: {
+      data: [
+        { x: 1, a: 3, b: 5 },
+        { x: 2, a: 4, b: 2 },
+        { x: 2, a: 6 },
+      ],
+      series: [
+        { mark: 'scatter', x: 'x', y: 'a', name: '甲' },
+        { mark: 'scatter', x: 'x', y: 'b', name: '乙' },
+      ],
+    },
+    initial: {
+      counts: { point: 5, bar: 0 },
+      parts: {
+        'point[0]': { 'role': 'graphics-symbol', 'aria-label': '1, 甲 3', 'tabindex': '0' },
+        'point[2]': { 'role': 'graphics-symbol', 'aria-label': '2, 甲 6', 'tabindex': '-1' },
+        'legend-swatch': [{ 'data-mark': 'point', 'data-symbol': 'circle' }, { 'data-mark': 'point', 'data-symbol': 'square' }],
+      },
+    },
+    steps: [
+      { kind: 'focus', part: 'point[0]', via: 'keyboard' },
+      {
+        kind: 'key',
+        key: 'ArrowRight',
+        expect: { activeElement: { part: 'point[1]', exact: true } },
+      },
+    ],
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },
