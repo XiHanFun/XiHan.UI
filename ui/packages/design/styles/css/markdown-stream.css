@@ -93,7 +93,7 @@
 
   /* 还没出字的那一段页面上只有这一竖，让它闪着，等的人才分得清是在等还是卡住了 */
   [data-scope='markdown-stream'][data-part='root'][data-caret]::after {
-    animation: xh-markdown-stream-caret var(--xh-markdown-stream-caret-duration, var(--xh-caret-duration)) steps(1, end) infinite;
+    animation: xh-markdown-stream-caret var(--xh-markdown-stream-caret-duration, var(--xh-motion-loop-caret)) steps(1, end) infinite;
   }
 
   /* 减少动效：等待时的光标停在实心不闪，「还在等」这件事仍然看得出来。

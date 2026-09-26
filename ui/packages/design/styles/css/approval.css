@@ -375,7 +375,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentColor;
     border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-approval-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。

@@ -5,7 +5,7 @@
 // 减弱动效只在语义层重映射（--xh-motion-duration-* 压到 1ms，循环动画由皮肤自己停掉），
 // 原语 --xh-duration-* 不动。animation / transition 直接引原语的那一处，减弱档就穿不过去——
 // 看上去照常在动。时长要么走 --xh-motion-duration-*，要么走组件自己的时长槽（--xh-<组件>-…-duration）
-// 并以 --xh-spin-duration / --xh-shimmer-duration 这类语义时长兜底。
+// 并以 --xh-motion-loop-spin / --xh-motion-loop-shimmer 这类语义时长兜底。
 //
 // !important 会把使用者按层覆盖的口子堵死；0.01ms 是「把动画压快到看不见」的做法，
 // 循环动画压快了仍在循环，停掉要写 animation: none。

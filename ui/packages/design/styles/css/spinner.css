@@ -47,7 +47,7 @@
     /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
     border-block-start-color: var(--xh-spinner-fg, currentColor);
     border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
-    animation: xh-spin var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-spinner-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 三档直径走字形尺寸那把尺：圆环与同一行文字里的图标同级，三档同族才不会在 compact 下错位。
@@ -105,7 +105,7 @@
       radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 0 50% / 25% 25% no-repeat,
       radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 50% 50% / 25% 25% no-repeat,
       radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 100% 50% / 25% 25% no-repeat;
-    animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-sweep) infinite;
+    animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-sweep) infinite;
   }
 
   [data-scope='spinner'][data-part='root'][data-variant='dots'][data-tone]::before {

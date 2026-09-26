@@ -253,7 +253,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentcolor;
     border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-popconfirm-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 取消是中性的次要出口，不参与语气：content 上的 data-tone 会把 --xh-_tone-* 一路继承下来，

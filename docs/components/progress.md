@@ -214,7 +214,7 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-progress-indeterminate-duration` | `range` | `animation` | `state=indeterminate` | `--xh-shimmer-duration` | progress 的 range 部件 animation 覆盖槽。 |
+| `--xh-progress-indeterminate-duration` | `range` | `animation` | `state=indeterminate` | `--xh-motion-loop-shimmer` | progress 的 range 部件 animation 覆盖槽。 |
 | `--xh-progress-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | progress 的 label 部件 color 覆盖槽。 |
 | `--xh-progress-label-font-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | progress 的 label 部件 font-size 覆盖槽。 |
 | `--xh-progress-linecap` | `range` | `stroke-linecap` | `variant=circle`<br>`variant=dashboard` | `round` | progress 的 range 部件 stroke-linecap 覆盖槽。 |

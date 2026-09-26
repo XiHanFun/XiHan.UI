@@ -37,7 +37,6 @@
 --xh-border-invalid: oklch(0.637 0.208 25)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid))
 --xh-border-strong: oklch(0.439 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong))
 --xh-border-subtle: oklch(0.269 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle))
---xh-caret-duration: 1000ms
 --xh-control-action-size: 24px
 --xh-control-box-lg: 48px
 --xh-control-box-md: 40px
@@ -190,6 +189,9 @@
 --xh-motion-ease-slide: cubic-bezier(0.32, 0.72, 0, 1)  ← var(--xh-ease-out-fluid)
 --xh-motion-ease-sweep: cubic-bezier(0.4, 0, 0.2, 1)  ← var(--xh-ease-in-out)
 --xh-motion-loop-breathe: 3600ms
+--xh-motion-loop-caret: 1000ms
+--xh-motion-loop-shimmer: 1600ms
+--xh-motion-loop-spin: 640ms
 --xh-motion-scale-breathe: 1
 --xh-motion-scale-drag: 1
 --xh-motion-scale-enter: 1
@@ -252,10 +254,8 @@
 --xh-shape-overlay: 12px  ← var(--xh-radius-lg)
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
 --xh-shape-surface: 8px  ← var(--xh-radius-md)
---xh-shimmer-duration: 1600ms
 --xh-sider-collapsed-w: 4rem
 --xh-sider-w: 15rem
---xh-spin-duration: 640ms
 --xh-stack-gap-lg: 24px  ← var(--xh-space-6)
 --xh-stack-gap-md: 16px  ← var(--xh-space-4)
 --xh-stack-gap-sm: 8px  ← var(--xh-space-2)

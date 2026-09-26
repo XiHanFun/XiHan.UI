@@ -676,7 +676,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `--xh-table-load-more-trigger-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-space-4` | table 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-table-load-more-trigger-py` | `load-more-trigger` | `padding-block` | `xh-action-profile=row` | `--xh-space-3` | table 的 load-more-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-table-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | table 的 load-more-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-table-loading-duration` | `loading` | `animation` | `default` | `--xh-shimmer-duration` | table 的 loading 部件 animation 覆盖槽。 |
+| `--xh-table-loading-duration` | `loading` | `animation` | `default` | `--xh-motion-loop-shimmer` | table 的 loading 部件 animation 覆盖槽。 |
 | `--xh-table-max-h` | `root` | `max-block-size` | `default` | `--xh-viewport-h-lg` | table 的 root 部件 max-block-size 覆盖槽。 |
 | `--xh-table-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-table-resize-fg` | `column-resize-trigger` | `background` | `default` | `--xh-border-default` | table 的 column-resize-trigger 部件 background 覆盖槽。 |

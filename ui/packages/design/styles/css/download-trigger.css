@@ -115,7 +115,7 @@
     border-radius: var(--xh-shape-circle);
     opacity: 0;
     animation:
-      xh-spin var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+      xh-spin var(--xh-download-trigger-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite,
       xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 

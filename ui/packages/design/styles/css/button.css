@@ -118,7 +118,7 @@
 
   [data-scope='button'][data-part='root'][data-loading] [data-scope='button'][data-part='indicator'] {
     visibility: visible;
-    animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-button-spin-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {

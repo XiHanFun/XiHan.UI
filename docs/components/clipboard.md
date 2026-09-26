@@ -278,7 +278,7 @@
 | `--xh-clipboard-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | clipboard 的 label 部件 color 覆盖槽。 |
 | `--xh-clipboard-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | clipboard 的 label 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | clipboard 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `default` | `--xh-spin-duration` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
+| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `default` | `--xh-motion-loop-spin` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

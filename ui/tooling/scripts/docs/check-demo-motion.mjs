@@ -10,7 +10,7 @@
 //   · 手写曲线：cubic-bezier()
 //   · 字面曲线关键字：ease / linear / ease-in-out / steps
 //   · 下探原语：var(--xh-ease-*)、var(--xh-duration-*)
-// 时间取 var()（语义档 --xh-motion-duration-* 与循环档 --xh-spin-duration 一类，
+// 时间取 var()（语义档 --xh-motion-duration-* 与循环档 --xh-motion-loop-spin 一类，
 // 或组件自己的时长槽），曲线取 --xh-motion-ease-*。
 //
 // 改不动的逐处登记进 EXEMPT，脚本反查两侧：登记表里没有的违规判红，登记了却没被扫到的条目
@@ -125,7 +125,7 @@ for await (const file of walk(DEMOS)) {
 
     const hits = []
     if (LITERAL_TIME.test(value) || INTERPOLATED_TIME.test(value))
-      hits.push('字面时长 —— 时间改走 var()：语义档 --xh-motion-duration-enter / -exit / -micro / -slide / -nudge，循环档 --xh-spin-duration / --xh-shimmer-duration，错峰用 --xh-motion-stagger-step')
+      hits.push('字面时长 —— 时间改走 var()：语义档 --xh-motion-duration-enter / -exit / -micro / -slide / -nudge，循环档 --xh-motion-loop-spin / --xh-motion-loop-shimmer，错峰用 --xh-motion-stagger-step')
     if (HANDWRITTEN.test(value))
       hits.push('手写 cubic-bezier() —— 曲线归令牌层：循环用 --xh-motion-ease-loop，屏内位移用 -continuous，进场用 -enter / -enter-strong，退场用 -exit')
     const literal = LITERAL_EASE.exec(value)
