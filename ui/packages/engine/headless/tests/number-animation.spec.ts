@@ -233,6 +233,21 @@ describe('numberAnimationMachine', () => {
     n.stop()
   })
 
+  it('根节点落在 data-motion=reduce 的容器里：按它所在的作用域一步到位，不看窗口', () => {
+    const region = document.createElement('section')
+    region.dataset.motion = 'reduce'
+    document.body.append(region)
+    const n = makeNumberAnimation({ from: 0, to: 500, duration: 1000 })
+    const root = document.createElement('div')
+    root.id = String(n.root().id)
+    region.append(root)
+    vi.advanceTimersByTime(FRAME)
+    expect(n.api().value).toBe(500)
+    expect(n.state()).toBe('idle')
+    n.stop()
+    region.remove()
+  })
+
   it('认不出的缓动在起跑时就报错，不拖到逐帧推进里', () => {
     expect(() => makeNumberAnimation({ from: 0, to: 100, easing: 'wobble' })).toThrow(/认不出缓动写法「wobble」/)
   })

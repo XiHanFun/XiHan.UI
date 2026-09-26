@@ -23,7 +23,7 @@ export function connectNumberAnimation<T extends PropTypes>(
   service: Service<NumberAnimationSchema>,
   normalize: NormalizeProps<T>,
 ): NumberAnimationApi<T> {
-  const { state, prop, context } = service
+  const { state, prop, context, scope } = service
 
   const phase = state.get()
   const value = context.get('value')
@@ -41,6 +41,8 @@ export function connectNumberAnimation<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 机器按 id 找到它，按它所在的作用域判断减弱动效
+      'id': scope.partId('number-animation', 'root'),
       'role': 'status',
       'aria-live': prop('live') ?? 'off',
       'data-state': phase,

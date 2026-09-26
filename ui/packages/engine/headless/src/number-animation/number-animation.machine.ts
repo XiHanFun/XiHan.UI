@@ -27,10 +27,12 @@ export function resolveNumberAnimationDuration(ms: number | undefined): number {
  *
  * 逐帧补间是 JS 动画，皮肤那条减弱动效通道压不到它——数字照样一路滚过去。
  *
- * 应用级 override 优先于系统设置；两者都问不出结果时照常跑动画。
+ * 按根节点判断：最近祖先上的 data-motion 优先，与 CSS 的作用域一致；其次应用级 override，最后系统设置。
+ * 没有渲染宿主（纯逻辑驱动）时按 scope 所在窗口判断。
  */
 function effectiveDuration(ms: number | undefined, scope: Scope): number {
-  return resolveMotionPreference(scope.getWin()) === 'reduce' ? 0 : resolveNumberAnimationDuration(ms)
+  const root = scope.getById(scope.partId('number-animation', 'root'))
+  return resolveMotionPreference(root ?? scope.getWin()) === 'reduce' ? 0 : resolveNumberAnimationDuration(ms)
 }
 
 /** 端点归一：非有限数与缺省一律按 0，免得 NaN 一路写进文本。 */
