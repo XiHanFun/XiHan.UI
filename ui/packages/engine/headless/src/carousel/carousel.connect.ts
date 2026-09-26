@@ -150,6 +150,8 @@ export function connectCarousel<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 机器按 id 找到它，按它所在的作用域判断减弱动效
+      'id': scope.partId('carousel', 'root'),
       'role': 'region',
       'aria-roledescription': 'carousel',
       'aria-label': label.root,

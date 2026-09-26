@@ -5,7 +5,7 @@
 
 // 提供 carousel 相关实现。
 
-import type { PropFn } from '@xihan-ui/core'
+import type { PropFn, Scope } from '@xihan-ui/core'
 import type { CarouselPauseSource, CarouselPressedKey, CarouselSchema } from './carousel.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { resolveMotionPreference } from '@xihan-ui/motion'
@@ -39,12 +39,16 @@ export function resolveAutoplayInterval(autoplay: boolean | number | undefined):
  * 表示"少放动画"的用户不该一进页面就被它推着走。用户按下播放开关是另一回事，
  * 那条路只看间隔（见 hasAutoplay），不看这里。
  *
- * 偏好探测走 motion 包的统一入口：应用级强制档（setMotionOverride）只有它看得见，
- * 自己拿 matchMedia 问一遍会漏掉那一层。不传窗口即取全局窗口——起播判定发生在
- * 服务构造期，此时 scope 还可能落在没有 document 的宿主上。
+ * 偏好按根节点判断：最近祖先上的 data-motion 优先，与 CSS 的作用域一致；其次应用级 override，
+ * 最后系统设置。偏好探测走 motion 包的统一入口，自己拿 matchMedia 问一遍会漏掉前两层。
  */
-function startsOnItsOwn(prop: PropFn<CarouselSchema>): boolean {
-  return resolveAutoplayInterval(prop('autoplay')) > 0 && resolveMotionPreference() !== 'reduce'
+function startsOnItsOwn(prop: PropFn<CarouselSchema>, target: Window | Element): boolean {
+  return resolveAutoplayInterval(prop('autoplay')) > 0 && resolveMotionPreference(target) !== 'reduce'
+}
+
+/** 判断偏好的目标：根节点；没有渲染宿主（纯逻辑驱动）时是 scope 所在窗口。 */
+function motionTarget(scope: Scope): Window | Element {
+  return scope.getById(scope.partId('carousel', 'root')) ?? scope.getWin()
 }
 
 /** 总页数由 props 现算，不缓存（slideCount 与两个 perX 随时会被宿主改）。 */
@@ -100,11 +104,12 @@ export const carouselMachine = createMachine({
     // 按压通道：正被按住的那个按钮，与自动播放的开合互相独立（按住播放开关时计时会停 / 起，按压面不随之丢）
     pressed: cell<CarouselPressedKey | null>(() => ({ defaultValue: null })),
   }),
-  // 间隔为 0（没开自动播放）或用户要求减弱动效时不进 playing
-  initialState: ({ prop }) => (startsOnItsOwn(prop) ? 'playing' : 'idle'),
+  // 间隔为 0（没开自动播放）时不进 playing。减弱动效要看根节点所在的作用域，构造期还没有节点，
+  // 由 respectScopedMotion 在宿主提交之后判定
+  initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
   // 跟手的会话整个生命周期都在。它不按拖动状态挂卸——常驻的代价只是几个早退的
   // pointermove，换来的是不必为了「有拆卸时机」去改状态树
-  effects: ['trackPointer'],
+  effects: ['trackPointer', 'respectScopedMotion'],
   refs: () => ({
     gesture: null,
   }),
@@ -252,8 +257,8 @@ export const carouselMachine = createMachine({
 
       // autoplay 被改写后的重挂：同样只走"自己起播"那道判据，
       // 否则减弱动效档下宿主一改间隔就把刚才没起播的这一条给点着了
-      syncAutoplay: ({ prop, send }) => {
-        send(startsOnItsOwn(prop)
+      syncAutoplay: ({ prop, scope, send }) => {
+        send(startsOnItsOwn(prop, motionTarget(scope))
           ? { type: 'AUTOPLAY.START' }
           : { type: 'AUTOPLAY.STOP' })
       },
@@ -296,6 +301,21 @@ export const carouselMachine = createMachine({
        * 监听挂在文档上：手划出轨道、划出窗口都要继续跟，系统收走指针也会收尾。
        * 只认第一根——轮播是单指划动，第二根落下时连接层不会把它交进来。
        */
+      /**
+       * 起播判定的减弱动效那一半：宿主提交之后才拿得到根节点，按它所在的作用域判断，减弱档就停下自动播放。
+       * 仍在首帧绘制之前，自动翻页的计时器在这一轮里就被撤掉，一页也不会翻。
+       */
+      respectScopedMotion: ({ prop, scope, send, flush }) => {
+        let disposed = false
+        flush(() => {
+          if (!disposed && !startsOnItsOwn(prop, motionTarget(scope)))
+            send({ type: 'AUTOPLAY.STOP' })
+        })
+        return () => {
+          disposed = true
+        }
+      },
+
       trackPointer: ({ refs, scope, send }) => {
         const session = createMultiPointerSession({
           doc: resolveSessionDoc(scope.getDoc().documentElement),

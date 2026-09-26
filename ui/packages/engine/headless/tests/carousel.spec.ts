@@ -509,26 +509,30 @@ describe('carouselMachine 减弱动效', () => {
     vi.useRealTimers()
   })
 
-  it('减弱动效档下不自动起播：给了间隔也停在 idle', () => {
+  it('减弱动效档下不自动起播：给了间隔也停在 idle', async () => {
     setMotionOverride('reduce')
     const c = makeCarousel({ ...SIX, autoplay: 100 })
+    // 按根节点所在的作用域判断，等宿主提交一次才定
+    await Promise.resolve()
     expect(c.state()).toBe('idle')
     vi.advanceTimersByTime(10_000)
     expect(c.api().page).toBe(0)
   })
 
-  it('减弱动效档下改写 autoplay 也不会把它点着', () => {
+  it('减弱动效档下改写 autoplay 也不会把它点着', async () => {
     setMotionOverride('reduce')
     const c = makeCarousel({ ...SIX, autoplay: 100 })
+    await Promise.resolve()
     c.setProps({ autoplay: 200 })
     expect(c.state()).toBe('idle')
     vi.advanceTimersByTime(10_000)
     expect(c.api().page).toBe(0)
   })
 
-  it('不许自动起播不等于不许播：按下播放开关照样走', () => {
+  it('不许自动起播不等于不许播：按下播放开关照样走', async () => {
     setMotionOverride('reduce')
     const c = makeCarousel({ ...SIX, autoplay: 100 })
+    await Promise.resolve()
     clickAutoplayTrigger(c)
     expect(c.state()).toBe('playing.running')
     vi.advanceTimersByTime(100)
@@ -537,6 +541,31 @@ describe('carouselMachine 减弱动效', () => {
 })
 
 // ── connect：属性与交互 ─────────────────────────────────────────────
+
+describe('carouselMachine 起播按根节点所在的作用域', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    document.body.innerHTML = ''
+  })
+
+  it('根节点落在 data-motion=reduce 的容器里：窗口不减弱也不自动起播', async () => {
+    const region = document.createElement('section')
+    region.dataset.motion = 'reduce'
+    document.body.append(region)
+    const c = makeCarousel({ ...SIX, autoplay: 100 })
+    const root = document.createElement('div')
+    root.id = String((c.api().getRootProps() as Record<string, unknown>).id)
+    region.append(root)
+    await Promise.resolve()
+    expect(c.state()).toBe('idle')
+    vi.advanceTimersByTime(10_000)
+    expect(c.api().page).toBe(0)
+  })
+})
 
 describe('connectCarousel 属性', () => {
   it('root 是带名字的 carousel 地标；dir 未给时不写，免得切断继承', () => {
