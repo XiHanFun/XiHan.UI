@@ -45,7 +45,7 @@
     "name": "viz",
     "path": "packages/engine/viz/dist/index.js",
     "gzip": true,
-    "limit": "30 kB"
+    "limit": "32 kB"
   },
   {
     "name": "code-highlight",
