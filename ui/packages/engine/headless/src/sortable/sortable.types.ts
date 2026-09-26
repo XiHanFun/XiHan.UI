@@ -6,6 +6,7 @@
 // 定义 sortable 类型契约。
 
 import type { Direction, MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { SpringValue } from '@xihan-ui/motion'
 import type { DndDelta, DndRect, SortableAxis } from '@xihan-ui/pointer'
 
 /** 拖动的发起方式。键盘路径没有指针位移，让位量另行计算。 */
@@ -59,6 +60,10 @@ export interface SortableRefs {
   getRootEl: () => HTMLElement | null
   /** 按下时的指针位置。跟手位移一律相对它计算，不相对上一帧。 */
   origin: { clientX: number, clientY: number } | null
+  /** 放下那一刻被拖项在视口里的位置与松手速度：宿主按新顺序重排之后，拿它量出离新位置还差多少。 */
+  drop: { id: string, left: number, top: number, velocity: { x: number, y: number } } | null
+  /** 放下后把那一项收进新位置的两支弹簧；落定、再次拾起或卸载时撤下。 */
+  settle: { x: SpringValue, y: SpringValue } | null
 }
 
 export interface SortableSchema extends MachineSchema {
@@ -92,6 +97,11 @@ export interface SortableSchema extends MachineSchema {
     mode: SortableMode | null
     /** 指针相对按下点的位移。键盘拖动恒为零。 */
     delta: DndDelta
+    /**
+     * 放下后正在归位的那一项，以及它离重排后的新位置还差的位移：弹簧带着松手速度把它收到零。
+     * 没有在归位时为 null。
+     */
+    settle: { id: string, x: number, y: number } | null
     /** 拾起时各项的矩形快照，下标与 DOM 顺序对齐。 */
     rects: DndRect[]
     /**
@@ -113,7 +123,8 @@ export interface SortableSchema extends MachineSchema {
   event:
     | { type: 'ITEM.POINTER_DOWN', id: string, point: { clientX: number, clientY: number }, pointerId: number }
     | { type: 'POINTER.MOVE', point: { clientX: number, clientY: number } }
-    | { type: 'POINTER.END' }
+    /** 指针抬起。velocity 是松手速度（像素每秒），放下归位的弹簧从它起步。 */
+    | { type: 'POINTER.END', velocity?: { x: number, y: number } }
     | { type: 'POINTER.CANCEL' }
     | { type: 'ITEM.PICKUP', id: string }
     | { type: 'KEY.MOVE', step: number }
@@ -137,11 +148,13 @@ export interface SortableSchema extends MachineSchema {
     | 'commit'
     | 'cancel'
     | 'invokeDragEnd'
+    | 'captureDrop'
+    | 'settleDrop'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackPointer' | 'trackAutoScroll'
+  effect: 'trackPointer' | 'trackAutoScroll' | 'trackSettle'
   computed: Record<string, never>
   tag: string
 }

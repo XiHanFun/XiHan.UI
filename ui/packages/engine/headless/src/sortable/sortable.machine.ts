@@ -5,10 +5,11 @@
 
 // 提供 sortable 相关实现。
 
+import type { ContextFacade, RefsFacade } from '@xihan-ui/core'
 import type { DndRect } from '@xihan-ui/pointer'
 import type { SortableSchema } from './sortable.types'
 import { ITEM_VALUE_ATTR, queryItems, setup } from '@xihan-ui/core'
-import { frameLoop } from '@xihan-ui/motion'
+import { createSpringValue, frameLoop } from '@xihan-ui/motion'
 import {
   createPointerSession,
   edgeScrollDelta,
@@ -46,6 +47,19 @@ function rootOriginOf(root: HTMLElement | null): { x: number, y: number } | null
   return { x: rect.x - root.scrollLeft, y: rect.y - root.scrollTop }
 }
 
+/** 这一项的节点。 */
+function itemEl(root: HTMLElement | null, id: string): HTMLElement | undefined {
+  return itemElements(root).find(item => item.getAttribute(ITEM_VALUE_ATTR) === id)
+}
+
+/** 撤下放下归位的弹簧，那一项停在新位置上。 */
+function stopSettle(refs: RefsFacade<SortableSchema>, context: ContextFacade<SortableSchema>): void {
+  refs.get('settle')?.x.stop()
+  refs.get('settle')?.y.stop()
+  refs.set('settle', null)
+  context.set('settle', null)
+}
+
 /** 这一项在 DOM 里排第几。找不到返回 -1。 */
 function indexOfId(root: HTMLElement | null, id: string): number {
   return itemElements(root).findIndex(el => el.getAttribute(ITEM_VALUE_ATTR) === id)
@@ -69,6 +83,10 @@ export const sortableMachine = createMachine({
       defaultValue: ZERO,
       isEqual: (a, b) => !!b && a.x === b.x && a.y === b.y,
     })),
+    settle: cell<SortableSchema['context']['settle']>(() => ({
+      defaultValue: null,
+      isEqual: (a, b) => a === b || (!!a && !!b && a.id === b.id && a.x === b.x && a.y === b.y),
+    })),
     rects: cell<DndRect[]>(() => ({
       defaultValue: [],
       // 每帧都是新数组，默认的 Object.is 会把「没变」也判成变了
@@ -86,8 +104,12 @@ export const sortableMachine = createMachine({
   refs: () => ({
     getRootEl: () => null,
     origin: null,
+    drop: null,
+    settle: null,
   }),
   initialState: () => 'idle',
+  // 放下归位的弹簧跨状态存在（回到 idle 之后才起），卸载时由它收
+  effects: ['trackSettle'],
   // 按住途中整体转禁用，或按住的把手所属项离开了 ids：不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
     track([() => prop('disabled'), () => prop('ids')], () => action(['releaseWhenInert']))
@@ -123,11 +145,12 @@ export const sortableMachine = createMachine({
       effects: ['trackPointer', 'trackAutoScroll'],
       on: {
         'POINTER.MOVE': { actions: ['trackDelta'] },
-        'POINTER.END': { target: 'idle', actions: ['commit', 'invokeDragEnd', 'clearSession'] },
+        // 放下：先记下被拖项此刻在屏幕上的位置，宿主按新顺序重排之后再把它从这里收进新位置
+        'POINTER.END': { target: 'idle', actions: ['captureDrop', 'commit', 'invokeDragEnd', 'clearSession', 'settleDrop'] },
         // 系统收走指针按取消算：顺序不动
-        'POINTER.CANCEL': { target: 'idle', actions: ['cancel', 'invokeDragEnd', 'clearSession'] },
+        'POINTER.CANCEL': { target: 'idle', actions: ['captureDrop', 'cancel', 'invokeDragEnd', 'clearSession', 'settleDrop'] },
         'KEY.MOVE': { actions: ['stepTo'] },
-        'KEY.DROP': { target: 'idle', actions: ['commit', 'invokeDragEnd', 'clearSession'] },
+        'KEY.DROP': { target: 'idle', actions: ['captureDrop', 'commit', 'invokeDragEnd', 'clearSession', 'settleDrop'] },
         'KEY.CANCEL': { target: 'idle', actions: ['cancel', 'invokeDragEnd', 'clearSession'] },
       },
     },
@@ -168,6 +191,7 @@ export const sortableMachine = createMachine({
       },
 
       setPending: ({ context, event, refs }) => {
+        stopSettle(refs, context)
         const e = event.current()
         if (e.type !== 'ITEM.POINTER_DOWN')
           return
@@ -193,6 +217,7 @@ export const sortableMachine = createMachine({
       },
 
       startKeyboardDrag: ({ context, prop, refs, event }) => {
+        stopSettle(refs, context)
         const e = event.current()
         if (e.type !== 'ITEM.PICKUP')
           return
@@ -269,6 +294,64 @@ export const sortableMachine = createMachine({
         })
       },
 
+      captureDrop: ({ context, refs, event }) => {
+        const id = context.get('activeId')
+        const el = id == null ? undefined : itemEl(refs.get('getRootEl')(), id)
+        if (id == null || !el) {
+          refs.set('drop', null)
+          return
+        }
+        const e = event.current()
+        const rect = el.getBoundingClientRect()
+        refs.set('drop', {
+          id,
+          left: rect.left,
+          top: rect.top,
+          velocity: e.type === 'POINTER.END' && e.velocity ? e.velocity : { x: 0, y: 0 },
+        })
+      },
+
+      /**
+       * 放下归位：等宿主按新顺序重排、这一帧提交之后，量那一项的新位置，差多少由两支弹簧带着松手速度收到零。
+       * 宿主不接这次排序时量到的就是原位，照样收回原位。差得很少（键盘放下本就落在槽位上）时不起弹簧。
+       */
+      settleDrop: ({ context, refs, flush }) => {
+        const drop = refs.get('drop')
+        refs.set('drop', null)
+        if (!drop)
+          return
+        flush(() => {
+          const el = itemEl(refs.get('getRootEl')(), drop.id)
+          if (!el)
+            return
+          const rect = el.getBoundingClientRect()
+          const dx = drop.left - rect.left
+          const dy = drop.top - rect.top
+          if (Math.hypot(dx, dy) < 0.5 && Math.hypot(drop.velocity.x, drop.velocity.y) < 5)
+            return
+          stopSettle(refs, context)
+          const current = { id: drop.id, x: dx, y: dy }
+          const write = (): void => {
+            const springs = refs.get('settle')
+            if (springs)
+              context.set('settle', { id: drop.id, x: springs.x.value, y: springs.y.value })
+          }
+          const springs = {
+            x: createSpringValue({ spring: 'smooth', value: dx, target: el, onUpdate: write }),
+            y: createSpringValue({ spring: 'smooth', value: dy, target: el, onUpdate: write }),
+          }
+          refs.set('settle', springs)
+          context.set('settle', current)
+          void Promise.all([
+            springs.x.to(0, { velocity: drop.velocity.x }),
+            springs.y.to(0, { velocity: drop.velocity.y }),
+          ]).then(() => {
+            if (refs.get('settle') === springs)
+              stopSettle(refs, context)
+          })
+        })
+      },
+
       clearSession: ({ context, refs }) => {
         refs.set('origin', null)
         context.set('activeId', null)
@@ -281,12 +364,14 @@ export const sortableMachine = createMachine({
       },
     },
     effects: {
+      trackSettle: ({ refs, context }) => () => stopSettle(refs, context),
+
       /** 跟手交给指针会话。pending 与 dragging 共用同一份，升级状态时不会断手。 */
       trackPointer: ({ refs, send }) => {
         const session = createPointerSession({
           doc: resolveSessionDoc(refs.get('getRootEl')()),
           onMove: ({ point }) => send({ type: 'POINTER.MOVE', point }),
-          onEnd: ({ reason }) => send({ type: reason === 'pointercancel' ? 'POINTER.CANCEL' : 'POINTER.END' }),
+          onEnd: ({ reason, velocity }) => send(reason === 'pointercancel' ? { type: 'POINTER.CANCEL' } : { type: 'POINTER.END', velocity }),
         })
         return () => session.dispose()
       },

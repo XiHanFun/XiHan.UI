@@ -32373,6 +32373,11 @@
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 放下后那一项由弹簧带着松手速度逐帧收进新位置：只在这一档备好合成层，落定即撤 */
+  [data-scope='sortable'][data-part='item'][data-animating] {
+    will-change: transform;
+  }
+
   [data-scope='sortable'][data-part='item'][data-dragging] {
     /* 拖起来的那一项浮在上面。层级由连接层写内联，这里只管观感。
        海拔取 lifted：被指针拎起、正跟着手走的东西比贴在页面上的 raised 高一档，又不到锚定浮层那一层。

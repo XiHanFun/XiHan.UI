@@ -50,6 +50,7 @@ export function connectSortable<T extends PropTypes>(
   const from = context.get('from')
   const to = context.get('to')
   const mode = context.get('mode')
+  const settle = context.get('settle')
 
   // 让位位移由几何层算，两条路径（指针 / 键盘）共用同一套规则
   const offsets = dragging
@@ -128,18 +129,21 @@ export function connectSortable<T extends PropTypes>(
     getItemProps: ({ id, disabled: itemDisabled }) => {
       const item = itemAt(id)
       const isDragging = !!item?.dragging
-      const offset = item?.offset ?? ZERO
+      // 放下后正在归位的那一项：位移由弹簧逐帧写，收到零为止
+      const settling = settle?.id === id
+      const offset = settling ? settle : (item?.offset ?? ZERO)
       const off = disabled || !!itemDisabled
       return normalize.element({
         ...parts.item.attrs,
         [ITEM_VALUE_ATTR]: id,
         'data-index': String(item?.index ?? -1),
         'data-dragging': dataAttr(isDragging),
+        'data-animating': dataAttr(settling),
         'data-disabled': dataAttr(off),
         'style': {
           transform: offset.x === 0 && offset.y === 0 ? undefined : `translate3d(${offset.x}px, ${offset.y}px, 0)`,
-          // 被拖那一项要压在让位的项之上，否则跟手时会钻到别人底下
-          zIndex: isDragging ? 1 : undefined,
+          // 被拖那一项要压在让位的项之上，否则跟手时会钻到别人底下；归位途中同样压在上面
+          zIndex: isDragging || settling ? 1 : undefined,
         },
         // 不给手柄时整项可拖。手柄在项里面，它的 pointerdown 冒泡上来会再发一次，
         // 但那时已经进了 pending，重复的这条没有转移接它，因此是幂等的。
