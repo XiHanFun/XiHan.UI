@@ -1,5 +1,5 @@
 {
-  "$description": "Chart 图表家族配方：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支只有这一份生成真源。各图表在这些部件上投影 data-xh-chart-part，并在对应部件上把自己的组件覆盖槽接进 contract 里的私有槽；色槽、数据标记与标注写在各自的皮肤里。patterns 是与色槽一一对应的 8 种纹理：angle 与 spacing（数据点直径的倍数）、cross 与 headless 的 <pattern> 几何一致，dash 是折线在纹理模式下的线型（线宽的倍数）。",
+  "$description": "Chart 图表家族配方：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支只有这一份生成真源。各图表在这些部件上投影 data-xh-chart-part，并在对应部件上把自己的组件覆盖槽接进 contract 里的私有槽；色槽、数据标记与标注写在各自的皮肤里。patterns 是与色槽一一对应的 8 种纹理：angle 与 spacing（数据点直径的倍数）、cross 与 headless 的 <pattern> 几何一致，dash 是折线在纹理模式下的线型（线宽的倍数）。sequential 是按值着色的顺序色阶：三个锚点缺省取令牌；根上写了 data-palette 时换到基础色板里同名色相，两端按承载面与正文色兑出，亮暗主题自动翻转。",
   "version": 1,
   "contract": {
     "gap": "--xh-_chart-gap",
@@ -48,6 +48,28 @@
     { "angle": 45, "spacing": 1, "cross": true, "dash": [8, 2] },
     { "angle": 0, "spacing": 1, "cross": true, "dash": [2, 2, 0, 2] }
   ],
+  "sequential": {
+    "start": "var(--xh-chart-sequential-start)",
+    "mid": "var(--xh-chart-sequential-mid)",
+    "end": "var(--xh-chart-sequential-end)",
+    "paletteStart": "color-mix(in oklab, var(--xh-_chart-palette) 16%, var(--xh-chart-surface))",
+    "paletteEnd": "color-mix(in oklab, var(--xh-_chart-palette) 55%, var(--xh-fg-default))",
+    "palettes": {
+      "red": "var(--xh-color-red-500)",
+      "orange": "var(--xh-color-orange-500)",
+      "amber": "var(--xh-color-amber-500)",
+      "yellow": "var(--xh-color-yellow-500)",
+      "lime": "var(--xh-color-lime-500)",
+      "green": "var(--xh-color-green-500)",
+      "teal": "var(--xh-color-teal-500)",
+      "cyan": "var(--xh-color-cyan-500)",
+      "blue": "var(--xh-color-blue-500)",
+      "indigo": "var(--xh-color-indigo-500)",
+      "purple": "var(--xh-color-purple-500)",
+      "pink": "var(--xh-color-pink-500)",
+      "gray": "var(--xh-color-neutral-500)"
+    }
+  },
   "patternMode": {
     "environment": "data-xh-chart-patterns",
     "lineSwatchInlineSize": "var(--xh-space-5)"

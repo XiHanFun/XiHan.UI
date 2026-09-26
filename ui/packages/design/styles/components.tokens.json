@@ -7725,6 +7725,60 @@
       "description": "cartesian-chart 的 legend 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-cartesian-chart-legend-scale-bar-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "legend-scale-bar"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 legend-scale-bar 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-legend-scale-gap",
+      "component": "cartesian-chart",
+      "part": [
+        "legend-scale"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 legend-scale 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-legend-scale-width",
+      "component": "cartesian-chart",
+      "part": [
+        "legend-scale-bar"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-8"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-cartesian-chart-legend-swatch-line-radius",
       "component": "cartesian-chart",
       "part": [

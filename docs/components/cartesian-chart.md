@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 
@@ -108,6 +108,12 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 
 <XhDemo src="cartesian-chart/15-strip" />
 
+### 按值着色
+
+color 把第三个量映射到顺序色阶，图例末尾多一条色阶；palette 把色阶换到别的色相上
+
+<XhDemo src="cartesian-chart/16-color" />
+
 ## 设计指引
 
 ### 何时使用
@@ -149,6 +155,7 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 - 标签按重要性落位：合计最先，其次线尾标签，最后逐个数据的标签；它们都只给眼睛看，数值由每个数据的可及名、摘要与数据表承担。
 - 散点每行一个点，同一个 `x` 上可以有任意多个点。只有散点时自变量按数据推断为连续轴，两端缺省取整到刻度上，两个方向都画网格。点的形状缺省随色槽依次取圆、方、菱形、三角……颜色分不清时形状还分得开；`symbol` 可指定形状，图例与提示框的色标画成同一个形状。
 - 散点的 `size` 把一个字段映射到点的面积（半径取平方根），全部散点系列共用一把尺，最大的点半径等于柱厚上限；大小缺失、为 0 或负数的行不画。大的点先画、小的压在上面。连续轴两端各收进最大半径，贴着定义域端点的气泡也整个落在绘图区里。
+- 散点的 `color` 按值着色：点的颜色取这个字段在顺序色阶上的位置，全部按值着色的系列共用一把尺，图例末尾多一条色阶（名字取 `translations.colorLabel`，两端写值域）。这样的系列不再取分类色，图例与提示框的色标取色阶中点或数据自己的颜色；字段缺失的点取色阶中点。点小，色阶最浅的一段压在承载面上看不清，点只用色阶上从 30% 起的一段，图例的渐变按同一段画。色阶的三个锚点缺省取 `--xh-chart-sequential-*`，`palette` 把它换到基础色板里同名的色相上（与热力图的色板同名），起点贴近承载面、终点贴近正文色，亮暗主题下都是值越大越显眼。
 - 散点在类目轴上用 `jitter`（类目步长的比例 0–1）左右散开，看一个类目里的分布而不是叠成一条竖线。偏移以点的身份为种子：重渲染不跳。点的身份缺省是「x 与它在同一个 x 上的出现次序」，往后追加数据、改某个点的 `y` 都不换身份；数据会换序时给 `datumId` 指定身份字段。
 - 提示框缺省按系列推断：只有散点时 `item`，否则 `axis`。`axis` 吸附到最近的键，列出该键上全部可见系列（散点在这个 x 上有点才列一行）；`item` 只报告指针命中的那一个数据，命中取离指针最近的标记，不要求指针正中。气泡的行在数值后面跟着大小，名字取 `translations.sizeLabel`。键盘聚焦与指针悬停显示同样的内容。`tooltipOrder` 改变提示框里各系列的行序：缺省 `series` 按图例次序，`descending` / `ascending` 按数值排，缺失值排在最后；回调里的 `items` 仍按图例次序。
 - 悬停图例项时，其余系列淡出到 `--xh-chart-dim-alpha`，该系列颜色不变；`trigger="item"` 时悬停或聚焦某个数据同样只保留它所在的系列。`axis` 模式不淡出：提示框列出的正是该键上的全部系列。
@@ -232,9 +239,10 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `XhCartesianChartRoot` | `xAxis` | `CartesianAxis` |  |  |
 | `XhCartesianChartRoot` | `yAxis` | `CartesianAxis` |  |  |
 | `XhCartesianChartRoot` | `orientation` | `CartesianOrientation` |  | 朝向，缺省 vertical。 |
-| `XhCartesianChartRoot` | `trigger` | `CartesianTrigger` |  | 提示框汇报什么，缺省 axis。 |
+| `XhCartesianChartRoot` | `trigger` | `CartesianTrigger` |  | 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 |
 | `XhCartesianChartRoot` | `totals` | `boolean` |  | 堆叠柱的合计：每个堆叠组在最外端写出合计。 |
 | `XhCartesianChartRoot` | `tooltipOrder` | `CartesianTooltipOrder` |  | 提示框里各系列的行序，缺省 series（按图例次序）。 |
+| `XhCartesianChartRoot` | `palette` | `ChartPalette` |  | 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上。 |
 | `XhCartesianChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）。 |
 | `XhCartesianChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
 | `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
@@ -278,6 +286,7 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）：绘图区只输出空的 svg。 |
 | `empty` | `boolean` | 没有可画的数据：空态部件据此显示。 |
 | `legendItems` | `readonly CartesianLegendItem[]` |  |
+| `legendScale` | `CartesianLegendScale \| null` | 按值着色时图例里的色阶；没有按值着色的系列时为 null。 |
 | `patterns` | `readonly ChartPattern[]` | 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时柱与面积用它填充。 |
 | `active` | `ChartDatumDetails \| null` | 激活的数据；没有时为 null。 |
 | `tooltip` | `CartesianTooltipModel \| null` | 提示框内容；收起时为 null。 |
@@ -296,6 +305,10 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `getLegendItemProps` | `(item: CartesianLegendItem) => T['button']` |  |
 | `getLegendSwatchProps` | `(item: CartesianLegendItem) => T['element']` |  |
 | `getLegendLabelProps` | `(item: CartesianLegendItem) => T['element']` |  |
+| `getLegendScaleProps` | `() => T['element']` | 色阶图例：名字、低端的值、渐变条、高端的值依次排开，只给眼睛看。 |
+| `getLegendScaleNameProps` | `() => T['element']` |  |
+| `getLegendScaleBarProps` | `() => T['element']` |  |
+| `getLegendScaleValueProps` | `(edge: 'min' \| 'max') => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getPlotProps` | `() => T['element']` |  |
 | `getDefsProps` | `() => T['element']` | 绘图区的第一个子节点：各系列的纹理定义在这里。 |
@@ -344,6 +357,7 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `legend` | `role` | 'toolbar' |
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
 | `legend-swatch` | `aria-hidden` | 'true' |
+| `legend-scale` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
 | `plot` | `aria-labelledby` | `caption` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
@@ -358,7 +372,7 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 - 绘图区是 `role="graphics-document"`，`aria-roledescription` 取 `translations.chartRoleDescription`（缺省 chart），`aria-describedby` 指向组件生成的摘要。
 - 每个系列是一个 `role="graphics-object"` 的分组，名称是系列名；每根柱、每个散点、每个焦点代理点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省“键, 系列名 值”），务必按本地语言改写。
 - 坐标轴、网格、十字准线与焦点环一律 `aria-hidden`：它们的信息由每个数据的名称、摘要与数据表承担。
-- 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名缺省取 x 轴标题，其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题），有气泡时再加大小一列。气泡的缺省名称在末尾补上大小。
+- 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名缺省取 x 轴标题，其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
 - 绘图区只占一个 Tab 位，进入后焦点落在一个真实的元素上：柱与散点直接获得焦点，散点按 x 的次序走，上下键换到另一个系列里 x 最近的点；折线没有逐点的元素，由绘图区为聚焦的数据生成一个点作为焦点代理，移动时替换并聚焦新点，读屏据此播报新的名称。
 - 焦点环是独立的 `focus-ring` 部件，画在标记之外，不依赖 SVG 元素的 outline；只在键盘聚焦时出现。
 - 图例是 `role="toolbar"`，名称取 `translations.legendLabel`；每一项是 `<button aria-pressed>`，按下表示系列可见。图例整体只占一个 Tab 位，进入后左右键在项之间移动。
@@ -383,6 +397,7 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | model.spec.orientation |
+| `root` | `data-palette` | props.palette |
 | `root` | `data-state` | 'error' \| undefined |
 | `root` | `data-xh-chart-part` | 'root' |
 | `caption` | `data-xh-chart-part` | 'caption' |
@@ -396,10 +411,12 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-part` | 'legend-item' |
 | `legend-item` | `data-xh-chart-pattern` | patternOf(item.id) |
+| `legend-item` | `data-xh-chart-scale` | 'sequential' \| undefined |
 | `legend-item` | `data-xh-chart-slot` | undefined \| String(item.slot) |
 | `legend-swatch` | `data-mark` | swatchMark(item) |
 | `legend-swatch` | `data-symbol` | item.symbol |
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
+| `legend-scale-value` | `data-edge` | edge |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-xh-chart-part` | 'plot' |
 | `defs` | `data-xh-chart-part` | 'defs' |
@@ -416,8 +433,10 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `tooltip-row` | `data-tone` | row.tone |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
 | `tooltip-row` | `data-xh-chart-pattern` | patternOf(row.seriesId) |
+| `tooltip-row` | `data-xh-chart-scale` | 'sequential' \| undefined |
 | `tooltip-row` | `data-xh-chart-slot` | undefined \| String(row.slot) |
 | `tooltip-swatch` | `data-mark` | swatchMark(row) |
+| `tooltip-swatch` | `data-seg` | undefined \| sequentialStop(row.t).seg |
 | `tooltip-swatch` | `data-symbol` | row.symbol |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
@@ -433,6 +452,7 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `mark` | `data-tone` | spec?.tone |
 | `mark` | `data-xh-chart-part` | mark.part \| undefined |
 | `mark` | `data-xh-chart-pattern` | patternOf(id) |
+| `mark` | `data-xh-chart-scale` | 'sequential' \| undefined |
 | `mark` | `data-xh-chart-slot` | undefined \| String(spec.slot) |
 
 <!-- xh-component-tokens:start -->
@@ -448,6 +468,9 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 | `--xh-cartesian-chart-gap` | `root` | `gap` | `default` | `--xh-space-3` | cartesian-chart 的 root 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | cartesian-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-cartesian-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-1` | cartesian-chart 的 legend 部件 gap 覆盖槽。 |
+| `--xh-cartesian-chart-legend-scale-bar-radius` | `legend-scale-bar` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 legend-scale-bar 部件 border-radius 覆盖槽。 |
+| `--xh-cartesian-chart-legend-scale-gap` | `legend-scale` | `gap` | `default` | `--xh-space-2` | cartesian-chart 的 legend-scale 部件 gap 覆盖槽。 |
+| `--xh-cartesian-chart-legend-scale-width` | `legend-scale-bar` | `inline-size` | `default` | `--xh-space-8` | cartesian-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-line-radius` | `legend-swatch` | `border-radius` | `mark=line` | `--xh-shape-pill` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-cartesian-chart-line-width` | `legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `background`<br>`block-size`<br>`stroke-dasharray`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`drawing`<br>`mark=line`<br>`not([data-drawing])`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | cartesian-chart 的 legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。 |
@@ -473,7 +496,7 @@ size 把第三个量映射到点的面积：面积与数值成正比，读的是
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 - 绘图区不随文字方向镜像：坐标系的方向是数据约定，时间在 rtl 页面上同样从左向右，左方向键始终向左。
 - 图例、标题与提示框的内容随文字方向排列，图例的左右键跟随视觉次序翻转。

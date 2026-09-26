@@ -113,3 +113,68 @@ describe('气泡', () => {
     expect((big!.width * big!.height) / (small!.width * small!.height)).toBeCloseTo(4, 1)
   })
 })
+
+/** 计算样式里的颜色换成 OKLab 明度：浏览器把 color-mix 算完后返回 oklch(L C H) 或 oklab(L a b)。 */
+function lightness(css: string): number {
+  const m = /okl(?:ch|ab)\(\s*([\d.]+)/.exec(css)
+  if (!m)
+    throw new Error(`颜色不是 oklch / oklab：${css}`)
+  return Number(m[1])
+}
+
+describe('按值着色', () => {
+  const HEAT = [1, 2, 3, 4, 5].map(i => ({ x: i, y: i, t: i * 10 }))
+
+  it('浅色主题下值越大越深；色板换了色相，明度走向不变', async () => {
+    mount({ data: HEAT, series: [{ mark: 'scatter', x: 'x', y: 'y', color: 't' }] })
+    await settle()
+    const ls = all('point').map(p => lightness(getComputedStyle(p).fill))
+    for (let i = 1; i < ls.length; i++)
+      expect(ls[i]!).toBeLessThan(ls[i - 1]!)
+    const before = getComputedStyle(all('point')[4]!).fill
+    app?.unmount()
+    host?.remove()
+    mount({ data: HEAT, series: [{ mark: 'scatter', x: 'x', y: 'y', color: 't' }], palette: 'teal' })
+    await settle()
+    const teal = all('point').map(p => getComputedStyle(p).fill)
+    expect(teal[4]).not.toBe(before)
+    const tl = teal.map(lightness)
+    for (let i = 1; i < tl.length; i++)
+      expect(tl[i]!).toBeLessThan(tl[i - 1]!)
+  })
+
+  it('深色主题下反过来：值越大越亮，始终是离承载面越远越显眼；写了色板也一样', async () => {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    try {
+      for (const palette of [undefined, 'teal']) {
+        mount({ data: HEAT, series: [{ mark: 'scatter', x: 'x', y: 'y', color: 't' }], palette })
+        await settle()
+        const ls = all('point').map(p => lightness(getComputedStyle(p).fill))
+        for (let i = 1; i < ls.length; i++)
+          expect(ls[i]!).toBeGreaterThan(ls[i - 1]!)
+        app?.unmount()
+        host?.remove()
+        app = null
+        host = null
+      }
+    }
+    finally {
+      document.documentElement.removeAttribute('data-theme')
+    }
+  })
+
+  it('色阶图例：渐变条有宽度、画着渐变，两端的值与名字排在一行', async () => {
+    mount({ data: HEAT, series: [{ mark: 'scatter', x: 'x', y: 'y', color: 't' }] })
+    await settle()
+    const bar = all('legend-scale-bar')[0] as unknown as HTMLElement
+    expect(bar.getBoundingClientRect().width).toBeGreaterThan(40)
+    expect(getComputedStyle(bar).backgroundImage).toMatch(/^linear-gradient/)
+    // 渐变的起点就是值最小的那个点的颜色：图例读到的颜色与点上的一致
+    const first = /linear-gradient\([^,]+,\s*(okl(?:ch|ab)\([^)]*\))/.exec(getComputedStyle(bar).backgroundImage)?.[1]
+    expect(first).toBe(getComputedStyle(all('point')[0]!).fill)
+    const [min, max] = all('legend-scale-value') as unknown as HTMLElement[]
+    expect(min!.textContent).toBe('10')
+    expect(max!.textContent).toBe('50')
+    expect(Math.abs(min!.getBoundingClientRect().top - max!.getBoundingClientRect().top)).toBeLessThan(1)
+  })
+})

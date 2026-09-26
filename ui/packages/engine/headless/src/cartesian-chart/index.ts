@@ -23,6 +23,7 @@ export type {
   CartesianCurve,
   CartesianLabelOverflow,
   CartesianLegendItem,
+  CartesianLegendScale,
   CartesianLineSeries,
   CartesianMarkTag,
   CartesianOrientation,

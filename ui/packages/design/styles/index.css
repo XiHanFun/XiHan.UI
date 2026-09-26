@@ -1848,6 +1848,69 @@
     min-inline-size: 0;
     color: var(--xh-fg-default);
     font-size: var(--xh-text-body-size);
+    --xh-_chart-seq-start: var(--xh-chart-sequential-start);
+    --xh-_chart-seq-mid: var(--xh-chart-sequential-mid);
+    --xh-_chart-seq-end: var(--xh-chart-sequential-end);
+  }
+
+  /* 顺序色阶的色板：换到基础色板里同名的色相上。起点按承载面、终点按正文色兑出，亮暗主题下都是由浅入深地
+     远离承载面；按值着色的标记与色阶图例都从这三个锚点取色 */
+  [data-xh-chart-part='root'][data-palette] {
+    --xh-_chart-seq-start: color-mix(in oklab, var(--xh-_chart-palette) 16%, var(--xh-chart-surface));
+    --xh-_chart-seq-mid: var(--xh-_chart-palette);
+    --xh-_chart-seq-end: color-mix(in oklab, var(--xh-_chart-palette) 55%, var(--xh-fg-default));
+  }
+
+  [data-xh-chart-part='root'][data-palette='red'] {
+    --xh-_chart-palette: var(--xh-color-red-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='orange'] {
+    --xh-_chart-palette: var(--xh-color-orange-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='amber'] {
+    --xh-_chart-palette: var(--xh-color-amber-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='yellow'] {
+    --xh-_chart-palette: var(--xh-color-yellow-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='lime'] {
+    --xh-_chart-palette: var(--xh-color-lime-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='green'] {
+    --xh-_chart-palette: var(--xh-color-green-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='teal'] {
+    --xh-_chart-palette: var(--xh-color-teal-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='cyan'] {
+    --xh-_chart-palette: var(--xh-color-cyan-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='blue'] {
+    --xh-_chart-palette: var(--xh-color-blue-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='indigo'] {
+    --xh-_chart-palette: var(--xh-color-indigo-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='purple'] {
+    --xh-_chart-palette: var(--xh-color-purple-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='pink'] {
+    --xh-_chart-palette: var(--xh-color-pink-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='gray'] {
+    --xh-_chart-palette: var(--xh-color-neutral-500);
   }
 
   [data-xh-chart-part='caption'] {
@@ -1949,6 +2012,20 @@
 
   [data-xh-chart-part='legend-item'][aria-pressed='false'] > [data-xh-chart-part='legend-swatch'] {
     background: transparent;
+  }
+
+  /* 按值着色的数据：连接层在标记与色标上写段号与段内百分比，这里用一层 color-mix 在相邻两个锚点之间兑出颜色，
+     放进私有槽；各图表的标记从槽里取色，提示框的色标画成数据自己的颜色 */
+  [data-xh-chart-part='root'] [data-seg='low'] {
+    --xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-mid) var(--xh-_chart-p), var(--xh-_chart-seq-start));
+  }
+
+  [data-xh-chart-part='root'] [data-seg='high'] {
+    --xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-end) var(--xh-_chart-p), var(--xh-_chart-seq-mid));
+  }
+
+  [data-xh-chart-part='tooltip-swatch'][data-seg] {
+    background: var(--xh-_chart-seq-fill);
   }
 
   /* 提示框：frosted 材质，画在根里；绘图区不随 RTL 镜像，这里的左右也是物理方向。正文排版，与根同一档：
@@ -17936,6 +18013,36 @@
     opacity: var(--xh-chart-dim-alpha);
   }
 
+  /* 色阶图例：名字、低端的值、渐变条、高端的值排成一行，跟在图例项后面；值是标注字色、等宽数字 */
+  [data-scope='cartesian-chart'][data-part='legend-scale'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-cartesian-chart-legend-scale-gap, var(--xh-space-2));
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-text-caption-size);
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='cartesian-chart'][data-part='legend-scale-name'] {
+    color: var(--xh-fg-default);
+    font-size: var(--xh-text-body-size);
+  }
+
+  [data-scope='cartesian-chart'][data-part='legend-scale-bar'] {
+    inline-size: var(--xh-cartesian-chart-legend-scale-width, calc(var(--xh-space-8) * 3));
+    block-size: var(--xh-space-2);
+    border-radius: var(--xh-cartesian-chart-legend-scale-bar-radius, var(--xh-shape-inset));
+    background: linear-gradient(to right, var(--xh-_chart-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
+    /* 点只用色阶上 0.3–1 这一段（最浅的一段压在承载面上看不见）：渐变按同一段画，起点即 0.3 处的颜色，
+       中点落在 (0.5 − 0.3) / 0.7 处 */
+    --xh-_chart-scale-from: color-mix(in oklch, var(--xh-_chart-seq-mid) 60%, var(--xh-_chart-seq-start));
+  }
+
+  /* 图例随文字方向镜像：低端的值在行首，渐变也从行首起 */
+  :where([dir='rtl']) [data-scope='cartesian-chart'][data-part='legend-scale-bar'] {
+    background: linear-gradient(to left, var(--xh-_chart-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
+  }
+
   [data-scope='cartesian-chart'][data-part='empty'][data-state='loading'] {
     --xh-_chart-empty-gap: var(--xh-cartesian-chart-empty-gap, var(--xh-space-2));
   }
@@ -17986,6 +18093,11 @@
   [data-scope='cartesian-chart'][data-tone] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-_tone));
     --xh-_chart-on-series: var(--xh-_tone-on);
+  }
+
+  /* 按值着色的系列不取分类色：系列色换成色阶中点，图例与提示框的色标跟着取它，点各自按值取色 */
+  [data-scope='cartesian-chart'][data-xh-chart-scale='sequential'] {
+    --xh-_chart-series: var(--xh-_chart-seq-mid);
   }
 
   /* —— 图表家具：不承载数据的结构线 —— */
@@ -18080,6 +18192,11 @@
     stroke-width: var(--xh-chart-gap);
   }
 
+  /* 按值着色的点：颜色由 Chart 家族配方按段号与段内百分比兑好，放在私有槽里 */
+  [data-scope='cartesian-chart'][data-part='point'][data-seg] {
+    fill: var(--xh-_chart-seq-fill);
+  }
+
   /* 数据标签、堆叠合计与线尾标签是标注：标注字色，不取系列色，不接指针 */
   [data-scope='cartesian-chart'][data-part='data-label'],
   [data-scope='cartesian-chart'][data-part='total-label'],
@@ -18162,9 +18279,16 @@
     }
 
     [data-scope='cartesian-chart'][data-part='dot'],
-    [data-scope='cartesian-chart'][data-part='point'] {
+    [data-scope='cartesian-chart'][data-part='point'],
+    [data-scope='cartesian-chart'][data-part='point'][data-seg] {
       fill: CanvasText;
       stroke: Canvas;
+    }
+
+    /* 色阶在系统色下画不出来：只留轮廓，两端的值照常可读 */
+    [data-scope='cartesian-chart'][data-part='legend-scale-bar'] {
+      border: var(--xh-stroke-thin) solid CanvasText;
+      background: Canvas;
     }
 
     [data-scope='cartesian-chart'][data-part='grid-line'] {
@@ -18235,6 +18359,11 @@
       stroke-width: var(--xh-stroke-thick);
       paint-order: stroke;
     }
+  }
+
+  /* 色阶图例随按值着色显隐：声明了 display 的部件在这里让 hidden 生效 */
+  [data-scope='cartesian-chart'][data-part='legend-scale'][hidden] {
+    display: none;
   }
 }
 

@@ -21,6 +21,69 @@
     min-inline-size: 0;
     color: var(--xh-fg-default);
     font-size: var(--xh-text-body-size);
+    --xh-_chart-seq-start: var(--xh-chart-sequential-start);
+    --xh-_chart-seq-mid: var(--xh-chart-sequential-mid);
+    --xh-_chart-seq-end: var(--xh-chart-sequential-end);
+  }
+
+  /* 顺序色阶的色板：换到基础色板里同名的色相上。起点按承载面、终点按正文色兑出，亮暗主题下都是由浅入深地
+     远离承载面；按值着色的标记与色阶图例都从这三个锚点取色 */
+  [data-xh-chart-part='root'][data-palette] {
+    --xh-_chart-seq-start: color-mix(in oklab, var(--xh-_chart-palette) 16%, var(--xh-chart-surface));
+    --xh-_chart-seq-mid: var(--xh-_chart-palette);
+    --xh-_chart-seq-end: color-mix(in oklab, var(--xh-_chart-palette) 55%, var(--xh-fg-default));
+  }
+
+  [data-xh-chart-part='root'][data-palette='red'] {
+    --xh-_chart-palette: var(--xh-color-red-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='orange'] {
+    --xh-_chart-palette: var(--xh-color-orange-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='amber'] {
+    --xh-_chart-palette: var(--xh-color-amber-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='yellow'] {
+    --xh-_chart-palette: var(--xh-color-yellow-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='lime'] {
+    --xh-_chart-palette: var(--xh-color-lime-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='green'] {
+    --xh-_chart-palette: var(--xh-color-green-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='teal'] {
+    --xh-_chart-palette: var(--xh-color-teal-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='cyan'] {
+    --xh-_chart-palette: var(--xh-color-cyan-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='blue'] {
+    --xh-_chart-palette: var(--xh-color-blue-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='indigo'] {
+    --xh-_chart-palette: var(--xh-color-indigo-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='purple'] {
+    --xh-_chart-palette: var(--xh-color-purple-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='pink'] {
+    --xh-_chart-palette: var(--xh-color-pink-500);
+  }
+
+  [data-xh-chart-part='root'][data-palette='gray'] {
+    --xh-_chart-palette: var(--xh-color-neutral-500);
   }
 
   [data-xh-chart-part='caption'] {
@@ -122,6 +185,20 @@
 
   [data-xh-chart-part='legend-item'][aria-pressed='false'] > [data-xh-chart-part='legend-swatch'] {
     background: transparent;
+  }
+
+  /* 按值着色的数据：连接层在标记与色标上写段号与段内百分比，这里用一层 color-mix 在相邻两个锚点之间兑出颜色，
+     放进私有槽；各图表的标记从槽里取色，提示框的色标画成数据自己的颜色 */
+  [data-xh-chart-part='root'] [data-seg='low'] {
+    --xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-mid) var(--xh-_chart-p), var(--xh-_chart-seq-start));
+  }
+
+  [data-xh-chart-part='root'] [data-seg='high'] {
+    --xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-end) var(--xh-_chart-p), var(--xh-_chart-seq-mid));
+  }
+
+  [data-xh-chart-part='tooltip-swatch'][data-seg] {
+    background: var(--xh-_chart-seq-fill);
   }
 
   /* 提示框：frosted 材质，画在根里；绘图区不随 RTL 镜像，这里的左右也是物理方向。正文排版，与根同一档：

@@ -47,6 +47,7 @@ export type {
   ChartKey,
   ChartMark,
   ChartMetrics,
+  ChartPalette,
   ChartRow,
   ChartSize,
   ChartSummary,

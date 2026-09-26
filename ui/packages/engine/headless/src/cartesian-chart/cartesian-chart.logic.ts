@@ -10,11 +10,11 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
-import type { CartesianChartSchema, CartesianChartTranslations, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger } from './cartesian-chart.types'
+import type { CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
-import { cartesianDatumId, cartesianKeyId } from './cartesian-chart.model'
+import { cartesianDatumId, cartesianKeyId, colorPosition } from './cartesian-chart.model'
 
 export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze({
   ...CHART_TRANSLATIONS,
@@ -22,6 +22,7 @@ export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze(
   seriesLabel: 'Series',
   valueLabel: 'Value',
   sizeLabel: 'Size',
+  colorLabel: 'Color',
   summary: defaultChartSummary,
 })
 
@@ -151,10 +152,18 @@ function detailsOf(model: CartesianModel, s: CartesianSeriesValues, position: nu
   const value = s.values[position] ?? null
   const row = s.rows[position]!
   const size = s.sizes?.[position]
+  const color = s.colors?.[position]
   const anchor = model.scene?.anchors.get(s.spec.id)?.[position] ?? null
   const formatted: Record<string, string> = { key: model.formats.key(key), value: value == null ? '' : model.formats.value(value) }
-  if (size != null)
-    formatted.size = model.formats.size(size)
+  const values: Record<string, unknown> = { key, value }
+  if (size != null) {
+    values.size = size
+    formatted.size = model.formats.measure(size)
+  }
+  if (color != null) {
+    values.color = color
+    formatted.color = model.formats.measure(color)
+  }
   return {
     seriesId: s.spec.id,
     seriesName: s.spec.name,
@@ -162,7 +171,7 @@ function detailsOf(model: CartesianModel, s: CartesianSeriesValues, position: nu
     tone: s.spec.tone,
     index: row,
     key,
-    values: size == null ? { key, value } : { key, value, size },
+    values,
     formatted,
     datum: model.spec.rows[row] ?? {},
     point: anchor ?? { x: 0, y: 0 },
@@ -473,14 +482,33 @@ function findMark(marks: readonly Mark[], key: string): Mark | null {
   return null
 }
 
+/** 数值之外的量：气泡大小与按值着色的值，各带名字，依次写出。 */
+function extraMeasures(details: ChartDatumDetails, translations: CartesianChartTranslations): string[] {
+  const out: string[] = []
+  if (details.formatted.size != null)
+    out.push(`${translations.sizeLabel} ${details.formatted.size}`)
+  if (details.formatted.color != null)
+    out.push(`${translations.colorLabel} ${details.formatted.color}`)
+  return out
+}
+
 /**
- * 数据标记的可及名。缺省文案在气泡上补上大小；作者整条替换了 datumLabel 时由作者自己从 formatted.size 取。
+ * 数据标记的可及名。缺省文案在气泡与按值着色的点上补上大小与颜色对应的值；
+ * 作者整条替换了 datumLabel 时由作者自己从 formatted.size / formatted.color 取。
  */
 export function cartesianDatumLabel(details: ChartDatumDetails, translations: CartesianChartTranslations): string {
   const label = translations.datumLabel(details)
-  if (details.formatted.size == null || translations.datumLabel !== CARTESIAN_TRANSLATIONS.datumLabel)
+  if (translations.datumLabel !== CARTESIAN_TRANSLATIONS.datumLabel)
     return label
-  return `${label}, ${translations.sizeLabel} ${details.formatted.size}`
+  return [label, ...extraMeasures(details, translations)].join(', ')
+}
+
+/** 色阶图例：名字与两端的值；没有按值着色的系列时为 null。 */
+export function cartesianLegendScale(model: CartesianModel, translations: CartesianChartTranslations): CartesianLegendScale | null {
+  const domain = model.domains.color
+  if (!domain)
+    return null
+  return { name: translations.colorLabel, min: model.formats.measure(domain[0]), max: model.formats.measure(domain[1]) }
 }
 
 /** 提示框内容：头部是自变量，每个系列一行；缺失值写 missingValue。 */
@@ -504,17 +532,18 @@ export function cartesianTooltip(
     header: details.formatted.key ?? '',
     rows: rows.map((item) => {
       const spec = model.derived.visible.find(s => s.spec.id === item.seriesId)?.spec
-      // 气泡的大小跟在数值后面：同一个点的两个量，一行读完
-      const size = item.formatted.size == null ? '' : ` · ${translations.sizeLabel} ${item.formatted.size}`
+      // 气泡的大小、按值着色的值跟在数值后面：同一个点的几个量，一行读完
+      const extra = extraMeasures(item, translations).map(text => ` · ${text}`).join('')
       return {
         seriesId: item.seriesId,
         name: item.seriesName,
-        value: item.values.value == null ? translations.missingValue : `${item.formatted.value ?? ''}${size}`,
+        value: item.values.value == null ? translations.missingValue : `${item.formatted.value ?? ''}${extra}`,
         slot: item.slot,
         tone: item.tone,
         mark: spec?.mark ?? 'bar',
         area: spec?.area ?? false,
         symbol: spec?.symbol ?? null,
+        t: colorPosition(model.domains.color, typeof item.values.color === 'number' ? item.values.color : null),
       }
     }),
   }

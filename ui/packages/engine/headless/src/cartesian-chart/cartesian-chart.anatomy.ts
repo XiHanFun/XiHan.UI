@@ -14,6 +14,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // data-label、total-label 与 end-label 是数据标签、堆叠合计与线尾标签，写在前景层，只给眼睛看；
 // 线尾标签被推开时，leader-line 把它连回线尾。
 // defs 里的 pattern 是各系列的纹理，pattern-line 是纹理的线：强制色、打印与环境开启纹理时柱与面积改用它填充。
+// legend-scale 是按值着色时图例末尾的色阶：名字、低端的值、渐变条、高端的值。
 export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'root',
   'caption',
@@ -21,6 +22,10 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'legend-item',
   'legend-swatch',
   'legend-label',
+  'legend-scale',
+  'legend-scale-name',
+  'legend-scale-bar',
+  'legend-scale-value',
   'viewport',
   'plot',
   'defs',

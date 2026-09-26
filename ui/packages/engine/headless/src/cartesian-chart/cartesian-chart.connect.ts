@@ -29,6 +29,7 @@ import {
   cartesianDetails,
   cartesianHitTest,
   cartesianKeyIndexOf,
+  cartesianLegendScale,
   cartesianMarkKey,
   cartesianModelOf,
   cartesianNavTarget,
@@ -52,6 +53,11 @@ const BASELINE = { top: 'hanging', middle: 'central', bottom: 'text-after-edge',
 /** 色标画成什么：柱与面积是方块，折线是一段短线，散点是点（形状另由 data-symbol 给出）。 */
 function swatchMark(item: { mark: CartesianLegendItem['mark'], area: boolean }): 'bar' | 'line' | 'point' {
   return item.mark === 'scatter' ? 'point' : item.mark === 'line' && !item.area ? 'line' : 'bar'
+}
+
+/** 色阶位置 0–1 换成段号与段内百分比：低段在起点与中点之间，高段在中点与终点之间。 */
+function sequentialStop(t: number): { seg: 'low' | 'high', p: string } {
+  return t <= 0.5 ? { seg: 'low', p: `${(t * 200).toFixed(1)}%` } : { seg: 'high', p: `${((t - 0.5) * 200).toFixed(1)}%` }
 }
 
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
@@ -147,8 +153,10 @@ export function connectCartesianChart<T extends PropTypes>(
     mark: s.mark,
     area: s.area,
     symbol: s.symbol,
+    sequential: s.color != null,
     hidden: hidden.includes(s.id),
   }))
+  const legendScale = cartesianLegendScale(model, translations)
   const legendAnchor = legendItems.some(item => item.id === context.get('legendFocus'))
     ? context.get('legendFocus')
     : legendItems[0]?.id ?? null
@@ -213,6 +221,7 @@ export function connectCartesianChart<T extends PropTypes>(
     measured,
     empty,
     legendItems,
+    legendScale,
     patterns,
     active: details,
     tooltip,
@@ -230,6 +239,8 @@ export function connectCartesianChart<T extends PropTypes>(
       ...parts.root.attrs,
       'data-xh-chart-part': 'root',
       'data-orientation': orientation,
+      // 顺序色阶的色相：按值着色的点与色阶图例换到这个色相上
+      'data-palette': prop('palette'),
       // 规格不合法时不画标记：诊断通道报出原因，根上留一个可观察的状态
       'data-state': invalid ? 'error' : undefined,
       'data-loading': dataAttr(prop('pending') === true),
@@ -248,8 +259,8 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-xh-chart-part': 'legend',
       'role': 'toolbar',
       'aria-label': translations.legendLabel,
-      // 只有一个系列时标题已经说明了它，图例整条收起
-      'hidden': legendItems.length < 2 || undefined,
+      // 只有一个系列时标题已经说明了它，图例整条收起；按值着色时色阶要读，图例留着
+      'hidden': (legendItems.length < 2 && legendScale == null) || undefined,
       'onKeyDown': (event: KeyboardEvent) => {
         const container = event.currentTarget as HTMLElement
         const intent = navIntentFromKey(event, { axis: 'horizontal', dir: readDirection(container) })
@@ -273,6 +284,7 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-xh-chart-slot': item.slot == null ? undefined : String(item.slot),
       'data-tone': item.tone ?? undefined,
       'data-xh-chart-pattern': patternOf(item.id),
+      'data-xh-chart-scale': item.sequential ? 'sequential' : undefined,
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-variant': 'ghost',
@@ -296,6 +308,26 @@ export function connectCartesianChart<T extends PropTypes>(
 
     getLegendLabelProps: () => normalize.element({
       ...parts['legend-label'].attrs,
+    }),
+
+    // 色阶只给眼睛看：每个点的可及名与数据表里都有它对应的值
+    getLegendScaleProps: () => normalize.element({
+      ...parts['legend-scale'].attrs,
+      'aria-hidden': true,
+      'hidden': legendScale == null || undefined,
+    }),
+
+    getLegendScaleNameProps: () => normalize.element({
+      ...parts['legend-scale-name'].attrs,
+    }),
+
+    getLegendScaleBarProps: () => normalize.element({
+      ...parts['legend-scale-bar'].attrs,
+    }),
+
+    getLegendScaleValueProps: edge => normalize.element({
+      ...parts['legend-scale-value'].attrs,
+      'data-edge': edge,
     }),
 
     getViewportProps: () => normalize.element({
@@ -432,6 +464,8 @@ export function connectCartesianChart<T extends PropTypes>(
             'data-xh-chart-pattern': patternOf(id),
             ...(spec?.pattern == null ? {} : { style: { '--xh-_chart-pattern': chartPatternFill(ids.plot, spec.pattern) } }),
             'data-mark': spec?.mark,
+            // 按值着色的系列不取分类色：系列色换成色阶中点，点各自按值取色
+            'data-xh-chart-scale': spec?.color != null ? 'sequential' : undefined,
             'data-dimmed': dataAttr(emphasis != null && emphasis !== id),
           })
         }
@@ -501,6 +535,12 @@ export function connectCartesianChart<T extends PropTypes>(
         const spec = mark.datum ? seriesById.get(mark.datum.seriesId) : undefined
         props['data-xh-chart-slot'] = spec?.slot == null ? undefined : String(spec.slot)
         props['data-tone'] = spec?.tone ?? undefined
+        // 按值着色：色阶位置换成段号与段内百分比，皮肤用一层 color-mix 在相邻两个锚点之间插值
+        const stop = mark.paint?.t == null ? null : sequentialStop(mark.paint.t)
+        if (stop) {
+          props['data-seg'] = stop.seg
+          props.style = { ...(props.style as Record<string, string> | undefined), '--xh-_chart-p': stop.p }
+        }
       }
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
@@ -536,6 +576,7 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-xh-chart-slot': row.slot == null ? undefined : String(row.slot),
       'data-tone': row.tone ?? undefined,
       'data-xh-chart-pattern': patternOf(row.seriesId),
+      'data-xh-chart-scale': seriesById.get(row.seriesId)?.color != null ? 'sequential' : undefined,
       'data-current': dataAttr(active != null && trigger === 'axis' && row.seriesId === active.ref.seriesId),
     }),
 
@@ -544,6 +585,9 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-xh-chart-part': 'tooltip-swatch',
       'data-mark': swatchMark(row),
       'data-symbol': row.symbol ?? undefined,
+      // 按值着色的数据：色标画成这个数据自己的颜色
+      'data-seg': row.t == null ? undefined : sequentialStop(row.t).seg,
+      ...(row.t == null ? {} : { style: { '--xh-_chart-p': sequentialStop(row.t).p } }),
     }),
 
     getTooltipValueProps: () => normalize.element({
