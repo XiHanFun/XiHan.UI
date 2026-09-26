@@ -9,6 +9,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -159,73 +160,39 @@
     --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-_action-profile-glyph-size));
   }
 
-  /* 缺省 outline 是 M2 磨砂面：背景、边缘、顶光、投影与磨砂从同一份配方取。
-     悬停 / 按下的底走矩阵 outline 列的画布阶梯（100 → 200），边缘与投影不动；
-     键盘聚焦时铺配方的实体 focus surface——透明面上的内收环没有稳定的底可量对比；
-     置灰只换字色（矩阵 disabled 列的前景），面仍留着，透空的面在任何内容上都读不出边界 */
+  /* 缺省 outline 是 frosted 材质面：连接层只在这一档投影 data-xh-material，面由材质家族配方给——
+     底、描边、投影、1px 顶光与背景滤镜一份取值，高对比、减少透明度、打印和强制色沿同一令牌通道降级。
+     悬停 / 按下换不透明的淡底一档、二档，边缘与投影不动；键盘聚焦时铺实体 focus surface——透明面上的
+     内收环不能依赖页面底色；置灰只换字色，面仍留着，透空的面在任何内容上都读不出边界 */
   [data-scope='float-button'][data-part='root'][data-variant='outline']
     [data-scope='float-button'][data-part='trigger'] {
-    --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_float-button-bg));
-    --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-material-frosted-focus-surface));
-    --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_float-button-bg));
-    --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_float-button-fg));
-    --xh-action-fg-hover: var(--xh-float-button-fg, var(--xh-_float-button-fg));
-    --xh-action-fg-pressed: var(--xh-float-button-fg, var(--xh-_float-button-fg));
-    --xh-action-fg-focus-visible: var(--xh-float-button-fg, var(--xh-_float-button-fg));
-    --xh-action-border-rest: var(--xh-float-button-border, var(--xh-_float-button-border));
-    --xh-action-border-hover: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
-    --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
-    --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-_float-button-border));
-    --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-_float-button-border));
-    --xh-action-shadow-rest: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
-    --xh-action-shadow-hover: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
-    --xh-action-shadow-pressed: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
-    --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
-    --xh-action-shadow-disabled: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
+    /* 面走材质家族配方（family/material.css）：frosted 档的底、交互阶梯、描边、投影、1px 顶光与背景滤镜，
+       liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
+    --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_material-bg));
+    --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_material-bg-hover));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_material-bg-focus));
+    --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_material-bg));
+    --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_material-fg));
+    --xh-action-fg-hover: var(--xh-float-button-fg, var(--xh-_material-fg));
+    --xh-action-fg-pressed: var(--xh-float-button-fg, var(--xh-_material-fg));
+    --xh-action-fg-focus-visible: var(--xh-float-button-fg, var(--xh-_material-fg));
+    --xh-action-border-rest: var(--xh-float-button-border, var(--xh-_material-border));
+    --xh-action-border-hover: var(--xh-float-button-border-hover, var(--xh-_material-border));
+    --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-_material-border));
+    --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-_material-border));
+    --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-_material-border));
+    --xh-action-shadow-rest: var(--xh-float-button-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-hover: var(--xh-float-button-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-pressed: var(--xh-float-button-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-disabled: var(--xh-float-button-shadow, var(--xh-_material-shadow));
+    --xh-action-highlight-rest: var(--xh-_material-highlight);
+    --xh-action-highlight-hover: var(--xh-_material-highlight);
+    --xh-action-highlight-pressed: var(--xh-_material-highlight);
+    --xh-action-highlight-focus-visible: var(--xh-_material-highlight);
+    --xh-action-highlight-disabled: var(--xh-_material-highlight);
     /* M2 顶光走配方的高光通道：实心、淡色与透空形态各有自身表面，不能把磨砂高光误铺上去 */
-    --xh-action-highlight-rest: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-hover: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-pressed: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-focus-visible: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-disabled: var(--xh-material-frosted-highlight);
-
-    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
-    backdrop-filter: var(--xh-material-frosted-backdrop);
-  }
-
-  /* liquid 档：data-material="liquid" 下缺省 outline 换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
-     悬停 / 按下往前景色兑，键盘聚焦铺配方的实体 focus surface。面内不加顶光，亮边已画在朝光源的一侧 */
-  :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline']
-    [data-scope='float-button'][data-part='trigger'][data-xh-liquid] {
-    --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_liquid-bg));
-    --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_liquid-bg-pressed));
-    --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-material-liquid-focus-surface));
-    --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_liquid-bg));
-    --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-hover: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-pressed: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-focus-visible: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
-    --xh-action-border-rest: var(--xh-float-button-border, var(--xh-material-liquid-border));
-    --xh-action-border-hover: var(--xh-float-button-border-hover, var(--xh-material-liquid-border));
-    --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-material-liquid-border));
-    --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-material-liquid-border));
-    --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-material-liquid-border));
-    --xh-action-shadow-rest: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-hover: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-pressed: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-disabled: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
-    --xh-action-highlight-rest: transparent;
-    --xh-action-highlight-hover: transparent;
-    --xh-action-highlight-pressed: transparent;
-    --xh-action-highlight-focus-visible: transparent;
-    --xh-action-highlight-disabled: transparent;
-
-    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
-    backdrop-filter: var(--xh-material-liquid-backdrop);
-    /* 按住时的黏滞形变由液态面逐帧写进来，松手弹回；定位壳上不能挂 transform（会抢走 fixed 的包含块），挂在触发器上 */
-    transform: var(--xh-_liquid-deform);
   }
 
   /* 液态组：液态档下触发器与展开的动作结成一组（状态机挂进 core），共用宿主最前面那层色块，

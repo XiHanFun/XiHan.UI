@@ -9,6 +9,7 @@
 @import '../family/motion.css';
 /* 独立皮肤同时传递引入回底钮的动作控件配方，full bundle 递归去重。 */
 @import '../family/action-control.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -136,49 +137,39 @@
      frosted 四件套（底 + 边 + 影 + 磨砂），这里只把使用者槽映射到桥接槽：
      字形按 xs 档取 --xh-_action-profile-glyph-size（16px），与 log / back-top 同一把尺 */
   [data-scope='message-feed'][data-part='scroll-to-end-trigger'] {
-    --xh-_message-feed-scroll-to-end-trigger-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-material-frosted-shadow));
+    /* 面走材质家族配方（family/material.css）：frosted 档的底、交互阶梯、描边、投影、1px 顶光与背景滤镜，
+       liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
+    --xh-action-bg-rest: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-_material-bg));
+    --xh-action-bg-hover: var(--xh-message-feed-scroll-to-end-trigger-bg-hover, var(--xh-_material-bg-hover));
+    --xh-action-bg-pressed: var(--xh-_material-bg-pressed);
+    --xh-action-bg-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-_material-bg-focus));
+    --xh-action-bg-disabled: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-_material-bg));
+    --xh-action-fg-rest: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-_material-fg));
+    --xh-action-fg-hover: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-_material-fg));
+    --xh-action-fg-pressed: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-_material-fg));
+    --xh-action-fg-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-_material-fg));
+    --xh-action-border-rest: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-_material-border));
+    --xh-action-border-hover: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-_material-border));
+    --xh-action-border-pressed: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-_material-border));
+    --xh-action-border-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-_material-border));
+    --xh-action-border-disabled: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-_material-border));
+    --xh-action-shadow-rest: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-hover: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-pressed: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-disabled: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-highlight-rest: var(--xh-_material-highlight);
+    --xh-action-highlight-hover: var(--xh-_material-highlight);
+    --xh-action-highlight-pressed: var(--xh-_material-highlight);
+    --xh-action-highlight-focus-visible: var(--xh-_material-highlight);
+    --xh-action-highlight-disabled: var(--xh-_material-highlight);
     --xh-action-visual-size: var(--xh-message-feed-scroll-to-end-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-message-feed-scroll-to-end-trigger-radius, var(--xh-shape-circle));
-    --xh-action-bg-rest: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-material-frosted-bg));
-    --xh-action-bg-hover: var(--xh-message-feed-scroll-to-end-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-border-rest: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
-    --xh-action-border-hover: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
-    --xh-action-border-pressed: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
-    --xh-action-border-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
-    --xh-action-shadow-rest: var(--xh-_message-feed-scroll-to-end-trigger-shadow);
-    --xh-action-shadow-hover: var(--xh-_message-feed-scroll-to-end-trigger-shadow);
-    --xh-action-shadow-pressed: var(--xh-_message-feed-scroll-to-end-trigger-shadow);
-    --xh-action-fg-rest: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-material-frosted-fg));
     --xh-icon-size: var(--xh-message-feed-icon-size, var(--xh-_action-profile-glyph-size));
 
     position: absolute;
     inset-block-end: var(--xh-message-feed-scroll-to-end-trigger-inset, var(--xh-space-4));
     inset-inline-end: var(--xh-message-feed-scroll-to-end-trigger-inset, var(--xh-space-4));
-    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
-    backdrop-filter: var(--xh-material-frosted-backdrop);
-  }
-
-  /* liquid 档：data-material="liquid" 下换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
-     悬停 / 按下往前景色兑，键盘聚焦铺实体 focus surface。按住时的黏滞形变由液态面逐帧写进来 */
-  :where([data-material='liquid']) [data-scope='message-feed'][data-part='scroll-to-end-trigger'][data-xh-liquid] {
-    --xh-_message-feed-scroll-to-end-trigger-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-_liquid-shadow));
-    --xh-action-bg-rest: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-_liquid-bg));
-    --xh-action-bg-hover: var(--xh-message-feed-scroll-to-end-trigger-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-_liquid-bg-pressed);
-    --xh-action-bg-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-material-liquid-focus-surface));
-    --xh-action-border-rest: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-border-hover: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-border-pressed: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-border-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-shadow-focus-visible: var(--xh-_message-feed-scroll-to-end-trigger-shadow);
-    --xh-action-fg-rest: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-hover: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-pressed: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
-
-    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
-    backdrop-filter: var(--xh-material-liquid-backdrop);
-    transform: var(--xh-_liquid-deform);
   }
 
   /* 连接层收起按钮时写 hidden 属性，家族那条 display 会盖掉 UA 规则，这里补回 */

@@ -7,6 +7,7 @@
 
 @import '../family/action-control.css';
 @import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -28,19 +29,6 @@
       env(safe-area-inset-right)
     );
     z-index: var(--xh-back-top-layer, var(--xh-layer-sticky));
-  }
-
-  /* —— 形态：缺省 outline 的磨砂面 ——
-     触发器接 Action Control floating 档，solid / subtle / ghost 的面由形态矩阵按 data-xh-action-variant 给；
-     缺省 outline（连接层不传 variant 时显式落）与悬浮动作钮同属 M2 磨砂面：背景、边缘、顶光、投影与磨砂
-     从一份配方取，高对比、减少透明度、打印和强制色才能沿同一令牌通道降级。钮浮在正文之上，透空的面在
-     任何内容上都读不出边界，所以 outline 这一档面留着。三支私有槽写在壳上：check-elevation-role 按赋值点
-     认海拔角色，float-button 同款 */
-  [data-scope='back-top'][data-part='root'][data-variant='outline'] {
-    --xh-_back-top-bg: var(--xh-material-frosted-bg);
-    --xh-_back-top-fg: var(--xh-material-frosted-fg);
-    --xh-_back-top-border: var(--xh-material-frosted-border);
-    --xh-_back-top-shadow: var(--xh-material-frosted-shadow);
   }
 
   /* —— 触发器 ——
@@ -75,73 +63,39 @@
     --xh-icon-size: var(--xh-back-top-icon-size, var(--xh-_action-profile-glyph-size));
   }
 
-  /* 缺省 outline 是 M2 磨砂面：背景、边缘、顶光、投影与磨砂从同一份配方取。
-     悬停 / 按下的底走矩阵 outline 列的画布阶梯（100 → 200），边缘与投影不动；
-     键盘聚焦时铺配方的实体 focus surface——透明面上的内收环不能依赖页面底色；
-     置灰只换字色（矩阵 disabled 列的前景），面仍留着 */
+  /* 缺省 outline 是 frosted 材质面：连接层只在这一档投影 data-xh-material，面由材质家族配方给——
+     底、描边、投影、1px 顶光与背景滤镜一份取值，高对比、减少透明度、打印和强制色沿同一令牌通道降级。
+     悬停 / 按下换不透明的淡底一档、二档，边缘与投影不动；键盘聚焦时铺实体 focus surface——透明面上的
+     内收环不能依赖页面底色；置灰只换字色，面仍留着 */
   [data-scope='back-top'][data-part='root'][data-variant='outline']
     [data-scope='back-top'][data-part='trigger'] {
-    --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_back-top-bg));
-    --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-material-frosted-focus-surface));
-    --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_back-top-bg));
-    --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-_back-top-fg));
-    --xh-action-fg-hover: var(--xh-back-top-fg, var(--xh-_back-top-fg));
-    --xh-action-fg-pressed: var(--xh-back-top-fg, var(--xh-_back-top-fg));
-    --xh-action-fg-focus-visible: var(--xh-back-top-fg, var(--xh-_back-top-fg));
-    --xh-action-border-rest: var(--xh-back-top-border, var(--xh-_back-top-border));
-    --xh-action-border-hover: var(--xh-back-top-border-hover, var(--xh-_back-top-border));
-    --xh-action-border-pressed: var(--xh-back-top-border-hover, var(--xh-_back-top-border));
-    --xh-action-border-focus-visible: var(--xh-back-top-border, var(--xh-_back-top-border));
-    --xh-action-border-disabled: var(--xh-back-top-border, var(--xh-_back-top-border));
-    --xh-action-shadow-rest: var(--xh-back-top-shadow, var(--xh-_back-top-shadow));
-    --xh-action-shadow-hover: var(--xh-back-top-shadow, var(--xh-_back-top-shadow));
-    --xh-action-shadow-pressed: var(--xh-back-top-shadow, var(--xh-_back-top-shadow));
-    --xh-action-shadow-focus-visible: var(--xh-back-top-shadow, var(--xh-_back-top-shadow));
-    --xh-action-shadow-disabled: var(--xh-back-top-shadow, var(--xh-_back-top-shadow));
+    /* 面走材质家族配方（family/material.css）：frosted 档的底、交互阶梯、描边、投影、1px 顶光与背景滤镜，
+       liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
+    --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_material-bg));
+    --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_material-bg-hover));
+    --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-_material-bg-focus));
+    --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_material-bg));
+    --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-_material-fg));
+    --xh-action-fg-hover: var(--xh-back-top-fg, var(--xh-_material-fg));
+    --xh-action-fg-pressed: var(--xh-back-top-fg, var(--xh-_material-fg));
+    --xh-action-fg-focus-visible: var(--xh-back-top-fg, var(--xh-_material-fg));
+    --xh-action-border-rest: var(--xh-back-top-border, var(--xh-_material-border));
+    --xh-action-border-hover: var(--xh-back-top-border-hover, var(--xh-_material-border));
+    --xh-action-border-pressed: var(--xh-back-top-border-hover, var(--xh-_material-border));
+    --xh-action-border-focus-visible: var(--xh-back-top-border, var(--xh-_material-border));
+    --xh-action-border-disabled: var(--xh-back-top-border, var(--xh-_material-border));
+    --xh-action-shadow-rest: var(--xh-back-top-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-hover: var(--xh-back-top-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-pressed: var(--xh-back-top-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-back-top-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-disabled: var(--xh-back-top-shadow, var(--xh-_material-shadow));
+    --xh-action-highlight-rest: var(--xh-_material-highlight);
+    --xh-action-highlight-hover: var(--xh-_material-highlight);
+    --xh-action-highlight-pressed: var(--xh-_material-highlight);
+    --xh-action-highlight-focus-visible: var(--xh-_material-highlight);
+    --xh-action-highlight-disabled: var(--xh-_material-highlight);
     /* M2 顶光走配方的高光通道：实心、淡色与透空形态各有自身表面，不能把磨砂高光误铺上去 */
-    --xh-action-highlight-rest: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-hover: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-pressed: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-focus-visible: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-disabled: var(--xh-material-frosted-highlight);
-
-    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
-    backdrop-filter: var(--xh-material-frosted-backdrop);
-  }
-
-  /* liquid 档：data-material="liquid" 下缺省 outline 换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
-     悬停 / 按下往前景色兑，键盘聚焦铺配方的实体 focus surface。面内不加顶光，亮边已画在朝光源的一侧 */
-  :where([data-material='liquid']) [data-scope='back-top'][data-part='root'][data-variant='outline']
-    [data-scope='back-top'][data-part='trigger'][data-xh-liquid] {
-    --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_liquid-bg));
-    --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_liquid-bg-pressed));
-    --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-material-liquid-focus-surface));
-    --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_liquid-bg));
-    --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-hover: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-pressed: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-focus-visible: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
-    --xh-action-border-rest: var(--xh-back-top-border, var(--xh-material-liquid-border));
-    --xh-action-border-hover: var(--xh-back-top-border-hover, var(--xh-material-liquid-border));
-    --xh-action-border-pressed: var(--xh-back-top-border-hover, var(--xh-material-liquid-border));
-    --xh-action-border-focus-visible: var(--xh-back-top-border, var(--xh-material-liquid-border));
-    --xh-action-border-disabled: var(--xh-back-top-border, var(--xh-material-liquid-border));
-    --xh-action-shadow-rest: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-hover: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-pressed: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-focus-visible: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-disabled: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
-    --xh-action-highlight-rest: transparent;
-    --xh-action-highlight-hover: transparent;
-    --xh-action-highlight-pressed: transparent;
-    --xh-action-highlight-focus-visible: transparent;
-    --xh-action-highlight-disabled: transparent;
-
-    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
-    backdrop-filter: var(--xh-material-liquid-backdrop);
-    /* 按住时的黏滞形变由液态面逐帧写进来，松手弹回；根上不能挂 transform（会抢走 fixed 的包含块），挂在触发器上 */
-    transform: var(--xh-_liquid-deform);
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——

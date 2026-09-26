@@ -570,6 +570,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 允许 1px 内侧顶部边界光（`--xh-material-frosted-highlight`）：它是 1px 边界的内侧一半，只表达面的厚度，不是玻璃反射；不允许更大范围的高光、反射线或高透明玻璃效果。Tooltip 反白 compact 档不画（§8.4）。
 - 大段正文、表单、Card、Table、Toast、Dialog 主阅读面默认不使用 frosted。
 - reduced transparency、forced colors 和 print 下移除 blur，使用同语义实体面。
+- 实现只有一份：材质家族配方 `family/material.css`。连接层在部件上投影 `data-xh-material="frosted"`，配方声明私有槽 `--xh-_material-*`（底、悬停 / 按下 / 键盘聚焦面、前景、描边、投影、背景滤镜、顶光）；锚定浮层的内容面由配方直接画四件套与顶光，皮肤只把使用者槽接到桥接槽 `--xh-frosted-*`；浮动钮（BackTop / FloatButton 的 outline 档、Carousel 控制钮、Log / MessageFeed 回到底部）的面归 Action Control，皮肤把 `--xh-action-*` 指向这组私有槽，悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 focus surface。1px 顶光画在背景最上一层，不用伪元素：滚动的内容面里伪元素会跟着内容滚走。
 
 ### 8.2 禁止 Glass
 
@@ -632,6 +633,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 选中不用品牌色字：品牌字压在彩色下层上会失去对比。选中只用指示块 + 字重。
 - 形状：不贴边的一维栏取 pill，浮动钮与媒体控制钮取 circle，贴边铺满的栏不取圆角。
 - 环境：reduced transparency 下不透明度 1、无背景滤镜与折射，细线与边缘光保留；contrast more 下不透明度 1、细线 3:1、无光环；forced colors 下 `Canvas` / `CanvasText` + 系统边框；print 随导航层隐藏；reduced motion 下色调切换保留 120ms 淡变、光源固定。
+- 投影了 `data-xh-material` 的部件，液态档的取值由材质家族配方在同一组私有槽上换出（皮肤不另写液态块）；其余液态部件（Carousel 分页条、ImageViewer 控制层、Layout 顶栏）直接读液态层的 `--xh-_liquid-*`。
 - 下层判定、折射与光源由 core 的液态面（`@xihan-ui/core/visual-environment` 的 `trackLiquidSurface`）承担，同一文档的部件共用一套监听；组件的状态机在启动时把投影了 `data-xh-liquid` 的部件挂进去，作者只需写 `data-material`，不再额外安装或调用。这些行为不改变结构、语义与状态表达；服务端与挂载前输出静态形态（色调随主题、不透明度取可读下限）。
 - 按下形变：按住液态面时面朝手指鼓出、沿指向拉长、另一个方向压扁（不低于 `--xh-motion-scale-squash`）；拖离时越拉越长，按越界跟手的衰减趋近上限（沿指向伸长 35%）。松手由 `spring-toggle` 带回原形。形变写成 `--xh-_liquid-deform`，只挂在可交互的面上，定位壳上不挂 transform（会抢走 fixed 的包含块）；减弱动效下不形变。
 - 液态组：同一宿主里的几块液态面可结成一组（core 的 `trackLiquidGoo`），共用一层库生成的装饰色块层（`aria-hidden`、不接指针，与装滤镜的 `<svg>` 一起插在宿主最前面）。粘连滤镜把边缘相距约 15px 以内的块连成一片；底色、墨色细线、1px 亮边与投影都沿整组外形画，连起来的液桥同样有边、投影不落进液桥；块自身只留前景与磨砂。色块层跟源块的色调、通透档与光源方向走。强制色下色块层撤掉、块取系统边框。现有组：FloatButton 触发器与列表项（缺省 outline 的液态面；其余形态的面是实心的，不结组）。
@@ -1135,7 +1137,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | 图表组件；chart 家族配方随第二个图表组件建立 |
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
-| §8.5 liquid | 共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
+| §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring`；Drawer 与底部面板的滑动关闭（随 §14.6 底部面板原语） |
 | §9.12 呼吸与光 | 可悬停 Card 的描边光：Card 还没有可交互形态，静态卡片随指针发光会被误认为能点，等可交互 Card 落地再接 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |
