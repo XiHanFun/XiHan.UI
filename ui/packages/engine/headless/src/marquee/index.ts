@@ -8,5 +8,13 @@
 export { marqueeAnatomy } from './marquee.anatomy'
 export { connectMarquee } from './marquee.connect'
 export { marqueeKeyboard } from './marquee.keyboard'
+export { marqueeMachine } from './marquee.machine'
 export { marqueeMeta } from './marquee.meta'
-export type { MarqueeApi, MarqueeDirection, MarqueeProps, MarqueeTranslations } from './marquee.types'
+export type {
+  MarqueeApi,
+  MarqueeDirection,
+  MarqueePausedChangeDetails,
+  MarqueeProps,
+  MarqueeSchema,
+  MarqueeTranslations,
+} from './marquee.types'

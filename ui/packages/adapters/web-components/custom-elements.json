@@ -31117,7 +31117,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-marquee>`：Light-DOM 行为宿主，无状态机，把 connectMarquee 产出接到 root 与 content 上。\n\n作者写一个 root 窗口，其中写一条 content 轨道，内容放进轨道。\n滚动整段在皮肤中：横竖各一条",
+          "description": "`<xh-marquee>`：Light-DOM 行为宿主，把 connectMarquee 产出接到 root、content 与 autoplay-trigger 上。\n\n作者写一个 root 窗口，其中写一条 content 轨道，内容放进轨道；暂停开关写成 root 里的一颗 `<button>`。\n滚动整段在皮肤中：横竖各一条",
           "name": "XhMarqueeElement",
           "cssParts": [
             {
@@ -31127,6 +31127,10 @@
             {
               "description": "在窗口中移动的轨道，动画挂在它身上",
               "name": "content"
+            },
+            {
+              "description": "暂停开关，须写为 `<button>`；可及名随状态在 translations 的两条文案间切换，不给内容时皮肤画图标",
+              "name": "autoplay-trigger"
             }
           ],
           "members": [
@@ -31177,12 +31181,70 @@
             },
             {
               "kind": "field",
+              "name": "defaultPaused",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-paused"
+            },
+            {
+              "kind": "field",
               "name": "autoFill",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
               "attribute": "auto-fill"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<MarqueeTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<MarqueeSchema>(this, marqueeMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<MarqueeSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setPaused",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "paused",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "程序化停住或继续，与按暂停开关走同一路径。"
             },
             {
               "kind": "method",
@@ -31192,6 +31254,15 @@
                 "type": {
                   "text": "void"
                 }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "暂停状态变化（暂停开关、setPaused 或受控写回）；detail 为 `{ paused: boolean }`",
+              "name": "paused-change",
+              "type": {
+                "text": "MarqueePausedChangeDetails"
               }
             }
           ],
@@ -31216,7 +31287,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "指针停在窗口上时暂停，键盘焦点落进窗口时同样暂停",
+              "description": "指针停在窗口上、或键盘焦点落进窗口时暂停，默认开启；写 \"false\" 关掉",
               "name": "pause-on-hover",
               "fieldName": "pauseOnHover"
             },
@@ -31224,9 +31295,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控暂停：停在当前位置，优先于 pause-on-hover",
+              "description": "受控暂停：停在当前位置；给了它，暂停开关只派发 paused-change，由作者写回",
               "name": "paused",
               "fieldName": "paused"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控暂停的初值",
+              "name": "default-paused",
+              "fieldName": "defaultPaused"
             },
             {
               "type": {
@@ -31251,10 +31330,25 @@
               "name": "--xh-marquee-gap"
             },
             {
+              "name": "--xh-marquee-icon-size"
+            },
+            {
               "name": "--xh-marquee-span"
             },
             {
               "name": "--xh-marquee-speed"
+            },
+            {
+              "name": "--xh-marquee-trigger-bg"
+            },
+            {
+              "name": "--xh-marquee-trigger-bg-active"
+            },
+            {
+              "name": "--xh-marquee-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-marquee-trigger-inset"
             }
           ]
         }

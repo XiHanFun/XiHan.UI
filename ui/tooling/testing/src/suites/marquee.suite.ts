@@ -1,10 +1,13 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { marqueeAnatomy, marqueeKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from './shared/native-activation'
+import { heldPress } from './shared/press-channel'
 
-// 跑马灯是容器，APG 没有对应模式；判据锁三件：方向连同它所在的轴如实落到根上、
-// 两个开关关掉时不留空属性、速度只走内联变量不占语义属性。
+// 跑马灯是容器，APG 没有对应模式；判据锁四件：方向连同它所在的轴如实落到根上、
+// 悬停暂停缺省开而铺满缺省关、速度只走内联变量不占语义属性、暂停开关按按钮模式给名字与状态。
 // 滚多快、怎么滚归皮肤，这里不验动画本身——动画是样式层的事实，不是结构契约。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/'
+const BUTTON = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
 function rootEl(doc: Document): Element {
   const el = doc.querySelector('[data-scope="marquee"][data-part="root"]')
@@ -35,21 +38,35 @@ export const marqueeSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'content', text: '曦寒前端组件库' },
+      // 不给内容：皮肤按状态画暂停 / 播放图标，名字全靠 aria-label
+      { part: 'autoplay-trigger', tag: 'button' },
     ],
   },
   cases: [
     {
-      name: '缺省：往左滚、轴是横的，两个开关不输出，根不写 role',
+      name: '缺省：往左滚、轴是横的，悬停暂停开、铺满关，根不写 role',
       spec: { apg: APG },
       initial: {
         parts: {
-          root: {
+          'root': {
             'role': null,
             'data-direction': 'left',
             'data-orientation': 'horizontal',
-            'data-pause-on-hover': null,
+            'data-pause-on-hover': '',
             'data-paused': null,
             'data-auto-fill': null,
+          },
+          // 名字是下一步的动作，不带 aria-pressed：名字与按压态各说各的会念成「暂停 已按下」
+          'autoplay-trigger': {
+            'type': 'button',
+            'aria-label': 'Pause scrolling',
+            'aria-pressed': null,
+            'aria-controls': '@part(content)',
+            'data-state': 'running',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
           },
         },
       },
@@ -101,17 +118,83 @@ export const marqueeSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '两个开关落成 data-*，关掉时不留空属性',
+      name: '悬停暂停写 false 才关，铺满写 true 才开；关掉时不留空属性',
       spec: { apg: APG },
-      props: { pauseOnHover: true, autoFill: false },
+      props: { pauseOnHover: false, autoFill: true },
       initial: {
         parts: {
           root: {
-            'data-pause-on-hover': '',
-            'data-auto-fill': null,
+            'data-pause-on-hover': null,
+            'data-auto-fill': '',
           },
         },
       },
+    },
+    {
+      name: '按一下暂停开关停住、再按一下继续：名字、状态与根上的 data-paused 一起换',
+      spec: { apg: BUTTON },
+      steps: [
+        {
+          kind: 'click',
+          part: 'autoplay-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-paused': '' },
+              'autoplay-trigger': { 'aria-label': 'Resume scrolling', 'data-state': 'paused', 'aria-pressed': null },
+            },
+            events: [{ type: 'paused-change', detail: { paused: true } }],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'autoplay-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-paused': null },
+              'autoplay-trigger': { 'aria-label': 'Pause scrolling', 'data-state': 'running' },
+            },
+            events: [{ type: 'paused-change', detail: { paused: false } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'defaultPaused 给非受控初值：一进来就停着，开关的名字是继续',
+      spec: { apg: BUTTON },
+      props: { defaultPaused: true },
+      initial: {
+        parts: {
+          'root': { 'data-paused': '' },
+          'autoplay-trigger': { 'aria-label': 'Resume scrolling', 'data-state': 'paused' },
+        },
+      },
+    },
+    {
+      name: 'translations 换掉两种状态下的名字',
+      spec: { apg: BUTTON },
+      props: { translations: { autoplayTriggerPause: '暂停滚动', autoplayTriggerPlay: '继续滚动' } },
+      initial: {
+        parts: { 'autoplay-trigger': { 'aria-label': '暂停滚动' } },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'autoplay-trigger',
+          expect: { parts: { 'autoplay-trigger': { 'aria-label': '继续滚动' } } },
+        },
+      ],
+    },
+    {
+      name: 'Enter / Space 由原生按钮负责：暂停开关得是 <button type="button">',
+      spec: { apg: `${BUTTON}#keyboardinteraction` },
+      covers: ['marquee.kbd.activate'],
+      steps: [nativeActivation('marquee', 'autoplay-trigger')],
+    },
+    {
+      name: '按住暂停开关期间投影 data-pressed，抬起或失焦撤下',
+      spec: { apg: BUTTON },
+      covers: ['marquee.kbd.press'],
+      steps: [heldPress('marquee', 'autoplay-trigger')],
     },
     {
       name: '速度只走内联变量，不占 data-*、也不改语义',
@@ -147,11 +230,11 @@ export const marqueeSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '两个部件各一份，按窗口 / 轨道的文档序排列',
+      name: '三个部件各一份，按窗口 / 轨道 / 开关的文档序排列',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'content'],
-        counts: { root: 1, content: 1 },
+        order: ['root', 'content', 'autoplay-trigger'],
+        counts: { 'root': 1, 'content': 1, 'autoplay-trigger': 1 },
       },
     },
   ],

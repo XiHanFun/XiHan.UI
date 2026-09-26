@@ -653,7 +653,7 @@ export { useMarkdownStream } from './components/markdown-stream/use-markdown-str
 export type { MarkdownStreamContext } from './components/markdown-stream/use-markdown-stream'
 export { provideMarquee, useMarqueeContext } from './components/marquee/context'
 export type { MarqueeContext } from './components/marquee/context'
-export { XhMarqueeContent, XhMarqueeRoot } from './components/marquee/marquee'
+export { XhMarqueeAutoplayTrigger, XhMarqueeContent, XhMarqueeRoot } from './components/marquee/marquee'
 export { XhMasonry } from './components/masonry/masonry'
 export { provideMatrixCode, useMatrixCodeContext } from './components/matrix-code/context'
 export type { MatrixCodeContext } from './components/matrix-code/context'
