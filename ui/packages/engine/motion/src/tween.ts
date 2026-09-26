@@ -17,7 +17,7 @@ export interface TweenSpec {
   to: number
   /** 总时长毫秒；<=0 或非有限数表示一步到位。 */
   duration: number
-  /** 缓动：曲线名、`cubic-bezier(...)` / `linear` 串，或函数本身。缺省线性。 */
+  /** 缓动：曲线名、CSS 缓动函数串，或函数本身；认不出的写法报错，见 resolveEasing。缺省线性。 */
   easing?: EasingName | EasingFunction | string
 }
 

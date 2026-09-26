@@ -109,53 +109,206 @@ export function cubicBezier(x1: number, y1: number, x2: number, y2: number): Eas
   }
 }
 
-/** 从 `cubic-bezier(a, b, c, d)` 字符串取四个分量，格式不符返回 null。 */
-function parseCubicBezier(value: string): [number, number, number, number] | null {
-  const inner = /^cubic-bezier\(([^)]*)\)$/.exec(value.trim())?.[1]
-  if (inner === undefined)
+/** CSS 的 <number>：可带符号、小数与指数。 */
+const NUMBER = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/
+/** CSS 的 <integer>：可带符号，不带小数点与指数。 */
+const INTEGER = /^[+-]?\d+$/
+
+function parseNumber(text: string): number | null {
+  return NUMBER.test(text) ? Number(text) : null
+}
+
+function parsePercent(text: string): number | null {
+  if (!text.endsWith('%'))
     return null
-  const parts = inner.split(',')
-  if (parts.length !== 4)
+  const value = parseNumber(text.slice(0, -1))
+  return value === null ? null : value / 100
+}
+
+/** CSS 缓动关键字的控制点，取值与 CSS 规范一致。 */
+const CSS_BEZIER_KEYWORDS: ReadonlyMap<string, readonly [number, number, number, number]> = new Map([
+  ['ease', [0.25, 0.1, 0.25, 1]],
+  ['ease-in', [0.42, 0, 1, 1]],
+  ['ease-out', [0, 0, 0.58, 1]],
+  ['ease-in-out', [0.42, 0, 0.58, 1]],
+])
+
+type StepPosition = 'jump-start' | 'jump-end' | 'jump-none' | 'jump-both'
+
+/** steps() 的位置词；start / end 是 jump-start / jump-end 的别名。 */
+const STEP_POSITIONS: ReadonlyMap<string, StepPosition> = new Map([
+  ['jump-start', 'jump-start'],
+  ['jump-end', 'jump-end'],
+  ['jump-none', 'jump-none'],
+  ['jump-both', 'jump-both'],
+  ['start', 'jump-start'],
+  ['end', 'jump-end'],
+])
+
+/** 阶跃缓动：count 段，position 决定起点与终点各算不算一跳。 */
+function stepsEasing(count: number, position: StepPosition): EasingFunction {
+  const jumps = position === 'jump-none' ? count - 1 : position === 'jump-both' ? count + 1 : count
+  const leading = position === 'jump-start' || position === 'jump-both' ? 1 : 0
+  return (t) => {
+    const step = Math.floor(clampProgress(t) * count) + leading
+    return Math.min(step, jumps) / jumps
+  }
+}
+
+/** `cubic-bezier(x1, y1, x2, y2)` 的参数：四个数，两个 x 分量在 [0,1] 内。 */
+function parseCubicBezierArgs(args: string[]): EasingFunction | null {
+  if (args.length !== 4)
     return null
-  const [a = Number.NaN, b = Number.NaN, c = Number.NaN, d = Number.NaN] = parts.map(part => Number.parseFloat(part))
-  if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(c) || !Number.isFinite(d))
+  const [x1, y1, x2, y2] = args.map(parseNumber)
+  if (x1 == null || y1 == null || x2 == null || y2 == null)
     return null
-  return [a, b, c, d]
+  if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1)
+    return null
+  return cubicBezier(x1, y1, x2, y2)
+}
+
+/** `steps(<integer>[, <step-position>])` 的参数。 */
+function parseStepsArgs(args: string[]): EasingFunction | null {
+  if (args.length < 1 || args.length > 2 || !INTEGER.test(args[0]!))
+    return null
+  const count = Number(args[0])
+  const position = args.length === 2 ? STEP_POSITIONS.get(args[1]!) : 'jump-end'
+  if (position === undefined || count < (position === 'jump-none' ? 2 : 1))
+    return null
+  return stepsEasing(count, position)
+}
+
+interface LinearPoint {
+  input: number
+  output: number
+}
+
+/**
+ * `linear(...)` 的参数：至少两个停靠点，每个停靠点一个输出值，前后可带一到两个百分比输入位。
+ *
+ * 缺了输入位的：首个取 0，末个取 1，中间的在前后已知输入位之间等分；
+ * 输入位比前面最大的还小时抬到前面最大的那个，保证单调。
+ */
+function parseLinearArgs(args: string[]): EasingFunction | null {
+  if (args.length < 2)
+    return null
+  const draft: Array<{ input: number | null, output: number }> = []
+  let largest = Number.NEGATIVE_INFINITY
+  for (const [index, stop] of args.entries()) {
+    const parts = stop.split(/\s+/)
+    if (parts.length > 3)
+      return null
+    // 输出值写在最前或最后，百分比挨在一起
+    const at = NUMBER.test(parts[0]!) ? 0 : parts.length - 1
+    const output = parseNumber(parts[at]!)
+    const inputs = parts.filter((_, i) => i !== at).map(parsePercent)
+    if (output === null || inputs.includes(null))
+      return null
+    if (inputs.length > 0) {
+      for (const input of inputs as number[]) {
+        largest = Math.max(input, largest)
+        draft.push({ input: largest, output })
+      }
+    }
+    else if (index === 0) {
+      largest = 0
+      draft.push({ input: 0, output })
+    }
+    else if (index === args.length - 1) {
+      largest = Math.max(1, largest)
+      draft.push({ input: largest, output })
+    }
+    else {
+      draft.push({ input: null, output })
+    }
+  }
+
+  const points: LinearPoint[] = []
+  for (const [index, point] of draft.entries()) {
+    if (point.input !== null) {
+      points.push({ input: point.input, output: point.output })
+      continue
+    }
+    const before = points[index - 1]!
+    const after = draft.findIndex((next, i) => i > index && next.input !== null)
+    const span = after - (index - 1)
+    points.push({ input: before.input + (draft[after]!.input! - before.input) / span, output: point.output })
+  }
+
+  return (t) => {
+    const x = clampProgress(t)
+    let a = 0
+    for (const [index, point] of points.entries()) {
+      if (point.input <= x)
+        a = index
+    }
+    if (a === points.length - 1)
+      a -= 1
+    const from = points[a]!
+    const to = points[a + 1]!
+    if (from.input === to.input)
+      return to.output
+    return from.output + (x - from.input) / (to.input - from.input) * (to.output - from.output)
+  }
+}
+
+/** 按 CSS 缓动函数的语法解释一段文本，认不出返回 null。关键字与函数名不分大小写。 */
+function parseCssEasing(text: string): EasingFunction | null {
+  const value = text.trim().toLowerCase()
+  if (value === 'linear')
+    return IDENTITY
+  const keyword = CSS_BEZIER_KEYWORDS.get(value)
+  if (keyword !== undefined)
+    return cubicBezier(keyword[0], keyword[1], keyword[2], keyword[3])
+  if (value === 'step-start')
+    return stepsEasing(1, 'jump-start')
+  if (value === 'step-end')
+    return stepsEasing(1, 'jump-end')
+
+  const call = /^([a-z-]+)\(([^()]*)\)$/.exec(value)
+  if (call === null)
+    return null
+  const args = call[2]!.split(',').map(arg => arg.trim())
+  switch (call[1]) {
+    case 'cubic-bezier':
+      return parseCubicBezierArgs(args)
+    case 'steps':
+      return parseStepsArgs(args)
+    case 'linear':
+      return parseLinearArgs(args)
+    default:
+      return null
+  }
 }
 
 const cache = new Map<string, EasingFunction>()
 
-/** dev 构建标志：读 import.meta.env.DEV，读不到即视为 false。 */
-function isDev(): boolean {
-  try {
-    return (import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV === true
-  }
-  catch {
-    return false
-  }
-}
-
 /**
- * 把缓动的三种写法统一成函数：名字、`cubic-bezier(...)` / `linear` 字符串、或函数本身。
+ * 把缓动的几种写法统一成函数：命名缓动、CSS 缓动函数串、或函数本身；缺省为线性。
  *
- * 认不出的写法退回线性，开发构建下同一写法警告一次：写法可能来自 DOM 特性或配置，
- * 那是一个任意字符串，拼错的名字（如 `ease-out`）会悄悄按匀速播放。
+ * CSS 串按 CSS 缓动函数的语法与取值解释：`linear`、`ease` / `ease-in` / `ease-out` / `ease-in-out`、
+ * `step-start` / `step-end`、`cubic-bezier()`、`steps()`、`linear()`，写法不合 CSS 的一律不认。
+ * 写法可能来自 DOM 特性、元素的计算样式或配置，认不出时抛 TypeError：
+ * 拼错的名字若悄悄按匀速播放，比报错更难察觉。
  */
 export function resolveEasing(value: EasingName | EasingFunction | string | undefined): EasingFunction {
   if (typeof value === 'function')
     return value
   if (value === undefined)
     return IDENTITY
+  if (typeof value !== 'string')
+    throw new TypeError(`[resolveEasing] 缓动须是名字、CSS 缓动函数串或函数，拿到的是 ${String(value)}`)
 
-  const text = value in easing ? easing[value as EasingName] : value
+  const text = Object.hasOwn(easing, value) ? easing[value as EasingName] : value
   const cached = cache.get(text)
   if (cached !== undefined)
     return cached
 
-  const points = parseCubicBezier(text)
-  if (points === null && text.trim() !== 'linear' && isDev())
-    console.warn(`[xh:motion] 认不出缓动写法「${text}」，按匀速播放。可用名字：${Object.keys(easing).join(' / ')}，或 cubic-bezier(x1, y1, x2, y2)`)
-  const fn = points === null ? IDENTITY : cubicBezier(points[0], points[1], points[2], points[3])
+  const fn = parseCssEasing(text)
+  if (fn === null) {
+    throw new TypeError(`[resolveEasing] 认不出缓动写法「${text}」。可用：命名缓动 ${Object.keys(easing).join(' / ')}，`
+      + `或 CSS 缓动函数 linear / ease / ease-in / ease-out / ease-in-out / step-start / step-end / cubic-bezier() / steps() / linear()`)
+  }
   cache.set(text, fn)
   return fn
 }
