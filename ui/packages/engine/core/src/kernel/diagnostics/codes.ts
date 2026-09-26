@@ -41,6 +41,26 @@ export const DIAGNOSTIC_CODES = {
   scrollbarMissingScrollable: 'scrollbar.missing-scrollable',
   /** 浮层展开了却没有锚点：坐标与触发区都缺席，位置无从算起。 */
   overlayMissingAnchor: 'overlay.missing-anchor',
+  /** 图表没有可及名：caption 部件、aria-label、aria-labelledby 都没有。 */
+  chartMissingName: 'chart.missing-name',
+  /** 系列引用的字段在数据里不存在。 */
+  chartUnknownField: 'chart.unknown-field',
+  /** 两个系列的 id 相同。 */
+  chartDuplicateSeries: 'chart.duplicate-series',
+  /** 分类系列超过 8 个：没有第 9 色。 */
+  chartTooManySeries: 'chart.too-many-series',
+  /** 同一张图混用分类色与语气色。 */
+  chartMixedColorRoles: 'chart.mixed-color-roles',
+  /** 固定色槽越界，或两个系列固定到同一槽。 */
+  chartInvalidSlot: 'chart.invalid-slot',
+  /** 同一堆叠组的 stackOffset 不一致。 */
+  chartStackOffsetConflict: 'chart.stack-offset-conflict',
+  /** 对数轴的定义域含 0 或跨越正负。 */
+  chartLogDomain: 'chart.log-domain',
+  /** 柱系列所在的值轴不含 0。 */
+  chartBarBaseline: 'chart.bar-baseline',
+  /** 占比类图表出现负值。 */
+  chartNegativeShare: 'chart.negative-share',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]
