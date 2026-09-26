@@ -1464,6 +1464,9 @@ function renderIndex() {
       const statusAttr = status ? ` status="${status}"` : ''
       L.push(`<XhComponentCard src="${entry.id}" name="${pascal(entry.id)}" label="${entry.name}" href="/components/${entry.id}"${statusAttr}${renderless} />`)
     }
+    // 分类之间的引用：功能归在别的分类、这一类的读者也要找得到它（仪表盘与子弹图归进度条，从图表总览引过去）
+    for (const ref of c.references ?? [])
+      L.push(`<XhComponentCard src="${ref.preview}" name="${pascal(ref.id)}" label="${ref.name}" href="/components/${ref.id}${ref.anchor ? `#${ref.anchor}` : ''}" />`)
     L.push('', '</div>', '')
   }
   return L.join('\n')

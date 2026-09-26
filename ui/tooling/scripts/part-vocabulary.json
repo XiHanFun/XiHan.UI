@@ -1029,6 +1029,9 @@
     "move-up-trigger": [
       "field-array"
     ],
+    "needle": [
+      "progress"
+    ],
     "next-trigger": [
       "calendar-picker",
       "calendar-range-picker",
@@ -1369,6 +1372,15 @@
     "saturation-area": [
       "color-picker"
     ],
+    "scale": [
+      "progress"
+    ],
+    "scale-label": [
+      "progress"
+    ],
+    "scale-tick": [
+      "progress"
+    ],
     "scroll-to-end-trigger": [
       "log",
       "message-feed"
@@ -1498,6 +1510,9 @@
     "tag-list": [
       "select"
     ],
+    "target": [
+      "progress"
+    ],
     "target-panel": [
       "transfer"
     ],
@@ -1506,6 +1521,9 @@
       "json-viewer",
       "switch",
       "typography"
+    ],
+    "threshold": [
+      "progress"
     ],
     "thumb": [
       "color-slider",
@@ -1783,6 +1801,7 @@
     "media": true,
     "meter": true,
     "name": true,
+    "needle": true,
     "note": true,
     "number": true,
     "output": true,
@@ -1810,6 +1829,7 @@
     "ring": true,
     "root": true,
     "row": true,
+    "scale": true,
     "scrollbar": true,
     "search": true,
     "segment": true,
@@ -1828,7 +1848,9 @@
     "summary": true,
     "swatch": true,
     "table": true,
+    "target": true,
     "text": true,
+    "threshold": true,
     "thumb": true,
     "tick": true,
     "time": true,

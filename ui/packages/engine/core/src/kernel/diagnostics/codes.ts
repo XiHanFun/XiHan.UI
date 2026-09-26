@@ -63,6 +63,8 @@ export const DIAGNOSTIC_CODES = {
   chartNegativeShare: 'chart.negative-share',
   /** 区间不合法：两端不是有限数，或下界大于上界。 */
   chartInvalidRange: 'chart.invalid-range',
+  /** Progress 在非 meter 语义下用了分段、目标、量程刻度或指示方式。 */
+  chartMeterOnly: 'chart.meter-only',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]
