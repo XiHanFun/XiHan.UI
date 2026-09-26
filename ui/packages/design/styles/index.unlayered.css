@@ -21031,32 +21031,12 @@
   user-select: none;
 }
 
-/* 开幕：结果自上而下逐条冒出来。筛掉的条目带 hidden 不生成盒子，重新露面时这段动画重新起跑，
-   所以每改一次检索串都会重播一遍。backwards 让每条在自己那份延迟里保持起始帧 */
-[data-scope='command'][data-part='list'] [data-part='item'] {
+/* 检索串换掉一批结果时，新露面的条目自上而下逐条冒出来，同一批按到达顺序错开（序号封顶，命令再多也
+   不会拖出一条越来越慢的尾巴）。打开时已有的结果直接呈现：自己或本列表带 data-instant。
+   筛掉的条目带 hidden 不生成盒子，重新露面算新到。backwards 让每条在自己那份延迟里保持起始帧 */
+[data-scope='command'][data-part='list'] [data-part='item']:not([data-instant], [data-scope='command'][data-part='list'][data-instant] *) {
   animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
-}
-
-/* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，命令再多也不会拖出一条越来越慢的尾巴。
-   列表里同时挂着被筛掉的条目（收起态），计数把它们排掉，序号才对得上看得见的那几条 */
-[data-scope='command'][data-part='list'] [data-part='item']:nth-child(2 of :not([hidden])) {
-  animation-delay: var(--xh-motion-stagger-step);
-}
-
-[data-scope='command'][data-part='list'] [data-part='item']:nth-child(3 of :not([hidden])) {
-  animation-delay: calc(2 * var(--xh-motion-stagger-step));
-}
-
-[data-scope='command'][data-part='list'] [data-part='item']:nth-child(4 of :not([hidden])) {
-  animation-delay: calc(3 * var(--xh-motion-stagger-step));
-}
-
-[data-scope='command'][data-part='list'] [data-part='item']:nth-child(5 of :not([hidden])) {
-  animation-delay: calc(4 * var(--xh-motion-stagger-step));
-}
-
-[data-scope='command'][data-part='list'] [data-part='item']:nth-child(n + 6 of :not([hidden])) {
-  animation-delay: calc(5 * var(--xh-motion-stagger-step));
+  animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
 }
 
 [data-scope='command'][data-part='item-text'] {
