@@ -210,6 +210,9 @@ function makeAnchor(initial: Props = {}, options: AnchorFixtureOptions = {}) {
   }
 }
 
+/** 一帧的名义间隔，与假时钟里 requestAnimationFrame 的节拍一致。 */
+const FRAME = 16
+
 /** 观察器是 flush 推迟挂上的（首帧 DOM 还没就位）；等一个微任务它才开始工作。 */
 async function settle(): Promise<void> {
   await Promise.resolve()
@@ -581,7 +584,7 @@ describe('anchor 平滑滚动期间的锁', () => {
     expect(c.value()).toBe('install')
   })
 
-  it('永远滚不到也不会卡死：兜底计时器到点就解锁', async () => {
+  it('永远滚不到也不会卡死：滚动停稳就解锁', async () => {
     const c = makeAnchor({ smooth: true })
     await settle()
     c.click(2)
@@ -594,18 +597,36 @@ describe('anchor 平滑滚动期间的锁', () => {
     expect(c.value()).toBe('install')
   })
 
-  it('锁着的时候又点了别处：换目标重滚，兜底计时器跟着重开', async () => {
+  it('锁着的时候又点了别处：换目标重滚，停稳判定从头来过', async () => {
     const c = makeAnchor({ smooth: true })
     await settle()
     c.click(2)
-    vi.advanceTimersByTime(800)
+    // 一直没动过要等满 12 帧；等到还差两帧时换目标
+    vi.advanceTimersByTime(FRAME * 10)
     c.click(0)
     expect(c.value()).toBe('intro')
-    // 若计时器没重开，这一下就会解锁
-    vi.advanceTimersByTime(300)
+    // 若判定没有从头来，再过两帧就会解锁
+    vi.advanceTimersByTime(FRAME * 4)
     expect(c.state()).toBe('scrolling')
-    vi.advanceTimersByTime(700)
+    vi.advanceTimersByTime(FRAME * 12)
     expect(c.state()).toBe('idle')
+  })
+
+  it('滚动动过之后几帧不再变就算停稳，不必等满一直没动时的那些帧', async () => {
+    const scrollEl = document.createElement('div')
+    document.body.append(scrollEl)
+    const c = makeAnchor({ smooth: true }, { scrollEl })
+    await settle()
+    c.click(2)
+    scrollEl.scrollTop = 120
+    vi.advanceTimersByTime(FRAME)
+    scrollEl.scrollTop = 240
+    vi.advanceTimersByTime(FRAME)
+    expect(c.state()).toBe('scrolling')
+    // 位置不再变：三帧后停稳，远早于一直没动时的十二帧
+    vi.advanceTimersByTime(FRAME * 4)
+    expect(c.state()).toBe('idle')
+    scrollEl.remove()
   })
 
   it('smooth 关时不上锁：原生跳转是瞬时的，观察器下一拍就该说了算', async () => {

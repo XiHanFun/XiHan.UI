@@ -35,9 +35,7 @@ const RAF_LOOPS = {
 }
 
 /** 待办：已知的违规，只减不增。键与上面三张表同形，时长表一条写「相对路径:durations」。 */
-const BACKLOG = {
-  'headless/src/anchor/anchor.machine.ts:SCROLL_LOCK_MS': '猜平滑滚动要多久来锁住高亮；改为滚动静止判定',
-}
+const BACKLOG = {}
 
 async function collect(dir, out) {
   for (const entry of await readdir(dir)) {
