@@ -25,28 +25,34 @@ export interface IndicatorBox {
  * 沿 offsetParent 链累加到容器，量的是排布位而不是屏幕上的矩形：祖先的 transform
  * （对话框进场时的缩放、标签带的平移）不改变结果；getBoundingClientRect 在这些时候量到的
  * 是缩放后或位移半路上的值，指示器会跟着偏小、偏位。容器必须是条目的定位祖先
- * （指示器绝对定位于它），条目不在它的定位链里时返回 null。
+ * （指示器绝对定位于它）：条目不在容器里、或定位链越过了容器时返回 null。
+ * 链上没有定位祖先可循（宿主不排版、祖先 display: none）时按已经量到的那一段算。
  *
  * 起始缘按书写方向算：RTL 下从容器内衬盒的右缘往左量。方向缺省从容器的计算样式现读，
  * 祖先链上任意一处 dir 或 CSS direction 都算数。
  */
 export function measureIndicatorBox(container: HTMLElement, item: HTMLElement, dir?: Direction): IndicatorBox | null {
+  if (!container.contains(item))
+    return null
   let left = 0
   let top = 0
-  let node: HTMLElement | null = item
-  while (node && node !== container) {
+  let node = item
+  while (node !== container) {
     left += node.offsetLeft
     top += node.offsetTop
     const parent = node.offsetParent as HTMLElement | null
+    if (!parent)
+      break
+    // 容器不是定位祖先：偏移量的是容器外的参照系
+    if (parent !== container && !container.contains(parent))
+      return null
     // offset* 从定位祖先的内衬边量起；越过中间一层定位祖先时补上它自己的描边
-    if (parent && parent !== container) {
+    if (parent !== container) {
       left += parent.clientLeft
       top += parent.clientTop
     }
     node = parent
   }
-  if (node !== container)
-    return null
   const rtl = (dir ?? readDirection(container)) === 'rtl'
   return {
     inlineStart: rtl ? container.clientWidth - left - item.offsetWidth : left,
