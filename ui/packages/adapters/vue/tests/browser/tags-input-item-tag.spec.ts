@@ -109,9 +109,9 @@ function part(name: string): HTMLElement {
 const ITEM = `[data-scope='tags-input'][data-part='item']`
 const TAG = (name: string): string => `[data-scope='tag'][data-part='${name}']`
 
-/** 条目里的标签（tag 的 root），文档序。 */
+/** 在场条目里的标签（tag 的 root），文档序；刚删掉、还在原处淡出的替身（data-state="closed"）不算。 */
 function pills(): HTMLElement[] {
-  return Array.from(host?.querySelectorAll<HTMLElement>(`${ITEM} > ${TAG('root')}`) ?? [])
+  return Array.from(host?.querySelectorAll<HTMLElement>(`${ITEM}:not([data-state='closed']) > ${TAG('root')}`) ?? [])
 }
 
 function tagPart(name: string, index = 0): HTMLElement {
