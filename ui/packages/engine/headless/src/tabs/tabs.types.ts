@@ -6,10 +6,10 @@
 // 定义 tabs 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
-import type { LiquidIndicator } from '../shared/indicator'
 import type { EasingFunction } from '@xihan-ui/motion'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
+import type { LiquidIndicator } from '../shared/indicator'
 
 /** 视觉变体。line 是默认档，segment 用于需要浮起选中面的主导航。 */
 export type TabsVariant = 'line' | 'card' | 'segment'

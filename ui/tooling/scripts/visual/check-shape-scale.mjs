@@ -55,6 +55,8 @@ const NO_SLOT = {
   'download-trigger:root::before': '转圈的加载环，正方盒取 circle',
   'clipboard:copy-trigger::before': '转圈的加载环，正方盒取 circle',
   'approval:footer::before': '转圈的加载环',
+  'cartesian-chart:empty::before': '取数中空态里转圈的加载环，正方盒取 circle',
+  'pie-chart:empty::before': '取数中空态里转圈的加载环，正方盒取 circle',
   // reset 层的原生细条：主体是 :where([data-scope][data-part], [data-xh-scroll], …) 一组宿主，
   // 部件位记作 *；原生滑块与自绘 scrollbar:thumb 同为一维对象，pill 是它的身份
   'reset:*::-webkit-scrollbar-thumb': '原生细条的滑块，与自绘 scrollbar:thumb 同身份',
@@ -89,6 +91,8 @@ const IDENTITY = {
   'download-trigger:root::before': 'circle',
   'clipboard:copy-trigger::before': 'circle',
   'approval:footer::before': 'circle',
+  'cartesian-chart:empty::before': 'circle',
+  'pie-chart:empty::before': 'circle',
   'color-swatch-picker:indicator::before': 'circle',
   'skeleton:item[data-shape=\'circle\']': 'circle',
   // 位置指示点：8px 圆点，当前项拉长成 20px 胶囊；粗指针下点由 ::after 画、进度条由 ::before 画，同一张表

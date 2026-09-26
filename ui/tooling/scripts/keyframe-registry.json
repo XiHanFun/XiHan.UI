@@ -422,9 +422,11 @@
       "consumers": [
         "approval",
         "button",
+        "cartesian-chart",
         "clipboard",
         "download-trigger",
         "notification",
+        "pie-chart",
         "popconfirm",
         "spinner",
         "switch",

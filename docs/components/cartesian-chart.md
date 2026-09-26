@@ -113,7 +113,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 - 同一 `stack` 名的系列堆叠在一起：柱逐段累加，折线成为堆叠面积。`stackOffset: 'expand'` 把每个键归一成百分比，数值轴随之换成百分比格式；柱的堆叠含负值时缺省 `diverging`，正值向上、负值向下各自累加。同一堆叠组的 `stackOffset` 必须一致，不一致时报错。
 - 多个柱系列不堆叠时并排分组：组内按系列次序排列，柱的厚度不超过 `--xh-chart-bar-max`（缺省 24px），类目很宽时柱不会被拉成大色块，多出的空间留作类目之间的间距。
 - 堆叠的相邻两段之间留 `--xh-chart-gap`（2px）的表面缝，靠缝区分而不是靠描边。只有离基线最远的一端有圆角，基线一端始终是直角，读者据此判断柱是从哪里长出来的。
-- 折线的 `curve` 缺省 `linear`；`monotone` 平滑且不越过数据点，不会画出数据中没有的峰谷。`area` 在折线下铺一层系列色的淡洗。缺失值（`null`、`undefined`、`NaN`）处折线断开，`connectNulls` 可改为连上。
+- 折线的 `curve` 缺省 `linear`；`monotone` 平滑且不越过数据点，不会画出数据中没有的峰谷；`step` / `step-before` / `step-after` 画成阶梯，台阶分别落在两点正中、前一点与后一点处，适合价格、库存这类在某一刻跳变的量。`area` 在折线下铺一层系列色的淡洗。缺失值（`null`、`undefined`、`NaN`）处折线断开，`connectNulls` 可改为连上。
 - 折线的数据点 `symbols` 缺省 `auto`：相邻点间距不小于 16px 时才画，点密到连成一片时不画。键盘聚焦或悬停到折线上的数据时，那一个点总会画出来作为指示与焦点落点。
 - 颜色按系列次序依次取分类色 1–8；`slot` 可把一个系列固定在某一色槽，同一业务实体在不同图表里保持同色。图例把某个系列隐藏后，其余系列的颜色不变。颜色本身带有好坏含义时（收入与支出、达标与超标）改写 `tone`，系列改用语气色；同一张图不混用分类色与语气色。
 - 系列多于 8 个时报错：分类色只有 8 个可区分的色槽，第 9 个开始会与前面的系列撞色。需要更多系列时先合并或分成几张图。
@@ -121,12 +121,12 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 - `totals` 让每个堆叠组在整叠外侧写出合计，含负值时正负两端各写一个；百分比堆叠不写合计。
 - 折线的 `endLabel` 在线尾写系列名与末值，几条线的末端挤在一起时上下推开，挤不下去掉末值最小的；右边留出它要的地方。
 - 标签按重要性落位：合计最先，其次线尾标签，最后逐个数据的标签；它们都只给眼睛看，数值由每个数据的可及名、摘要与数据表承担。
-- 提示框缺省 `trigger="axis"`：指针吸附到最近的键，列出该键上全部可见系列；`trigger="item"` 只报告指针命中的那一个数据。键盘聚焦与指针悬停显示同样的内容。
+- 提示框缺省 `trigger="axis"`：指针吸附到最近的键，列出该键上全部可见系列；`trigger="item"` 只报告指针命中的那一个数据。键盘聚焦与指针悬停显示同样的内容。`tooltipOrder` 改变提示框里各系列的行序：缺省 `series` 按图例次序，`descending` / `ascending` 按数值排，缺失值排在最后；回调里的 `items` 仍按图例次序。
 - 悬停图例项时，其余系列淡出到 `--xh-chart-dim-alpha`，该系列颜色不变；`trigger="item"` 时悬停或聚焦某个数据同样只保留它所在的系列。`axis` 模式不淡出：提示框列出的正是该键上的全部系列。
 - 提示框放在根内部，按指针所在的一侧翻转，不越出绘图区；它不进入浮层引擎，不参与浮层的层级与关闭协议。
 - 坐标轴标签字体、柱的最大厚度、线宽、点的直径等几何量的真源是 CSS 组件槽：组件从根的计算样式读取它们再计算几何，改写组件槽就能改变几何，不需要布局属性。密度档切换时重新读取。
 - 尺寸由视口决定：宽度随容器，高度取 `--xh-cartesian-chart-height`（缺省 `--xh-chart-height`）。视口尺寸变化时重新布局，服务端与首帧只输出空的绘图区、不占位跳动。
-- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`，不闪骨架，也不跳布局。
+- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`，不闪骨架，也不跳布局。首次取数、手里还没有数据时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时播放入场：柱沿数值轴从基线长出，折线从头描到尾，数据点等笔尖扫到才出现，面积、坐标轴与标签淡入，多个系列按图例次序错开（至多 5 步）。数据层的标记多于 1000 个时不做几何插值，只淡入淡出。之后的数据变化与图例切换从当前位置插值到新位置：留下的柱原地伸缩，新增的柱从基线长出，隐藏的系列收回基线并淡出后才移除；坐标轴刻度随之移动。标记按自变量的值对齐而不是按位置：类目换了次序时柱滑到新位置，时间序列往后推一格时整条线平移、新点从边上进来。`pending` 结束后到来的新数据按更新处理，不再重播入场。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化与字体加载完成后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。折线的描出与入场同一个时长。
@@ -205,6 +205,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 | `XhCartesianChartRoot` | `orientation` | `CartesianOrientation` |  | 朝向，缺省 vertical。 |
 | `XhCartesianChartRoot` | `trigger` | `CartesianTrigger` |  | 提示框汇报什么，缺省 axis。 |
 | `XhCartesianChartRoot` | `totals` | `boolean` |  | 堆叠柱的合计：每个堆叠组在最外端写出合计。 |
+| `XhCartesianChartRoot` | `tooltipOrder` | `CartesianTooltipOrder` |  | 提示框里各系列的行序，缺省 series（按图例次序）。 |
 | `XhCartesianChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）。 |
 | `XhCartesianChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
 | `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
@@ -230,6 +231,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 | --- | --- |
 | `root` | 'error' \| undefined |
 | `tooltip` | 'visible' \| 'hidden' |
+| `empty` | 'loading' \| undefined |
 
 以下名称仅用于内部状态机。
 
@@ -365,6 +367,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 | `tooltip-row` | `data-tone` | row.tone |
 | `tooltip-row` | `data-xh-chart-slot` | undefined \| String(row.slot) |
 | `tooltip-swatch` | `data-mark` | 'line' \| 'bar' |
+| `empty` | `data-state` | 'loading' \| undefined |
 | `mark` | `data-axis` | mark.key.slice('axis:'.length) \| undefined |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | ''（条件成立时才出现） |
@@ -383,6 +386,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-cartesian-chart-bar-max` | `root` | `--xh-_chart-metric-bar-max` | `default` | `--xh-chart-bar-max` | cartesian-chart 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。 |
 | `--xh-cartesian-chart-bar-radius` | `root` | `--xh-_chart-metric-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。 |
+| `--xh-cartesian-chart-empty-gap` | `empty` | `gap` | `state=loading` | `--xh-space-2` | cartesian-chart 的 empty 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-gap` | `root` | `gap` | `default` | `--xh-space-3` | cartesian-chart 的 root 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | cartesian-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-cartesian-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-1` | cartesian-chart 的 legend 部件 gap 覆盖槽。 |
@@ -403,9 +407,9 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 
 ### 动效
 
-动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-draw` · `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-draw` · `xh-fade-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

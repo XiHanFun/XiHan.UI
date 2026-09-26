@@ -29,6 +29,9 @@ export type CartesianOrientation = 'vertical' | 'horizontal'
 /** 提示框汇报什么：axis 同一个键上的全部系列，item 只报指针命中的那一个。 */
 export type CartesianTrigger = 'axis' | 'item'
 
+/** 提示框里各系列的行序：series 按图例次序，descending / ascending 按数值由大到小 / 由小到大。 */
+export type CartesianTooltipOrder = 'series' | 'descending' | 'ascending'
+
 /** 坐标轴的比例尺；缺省按数据类型与系列推断。 */
 export type CartesianScaleKind = 'band' | 'point' | 'linear' | 'log' | 'time' | 'utc'
 
@@ -171,6 +174,8 @@ export interface CartesianChartSchema extends MachineSchema {
     trigger?: CartesianTrigger
     /** 堆叠柱的合计：每个堆叠组在最外端写出合计，含负值时正负两端各写一个；百分比堆叠不写。缺省 false。 */
     totals?: boolean
+    /** 提示框里各系列的行序，缺省 series（按图例次序）；系列多、要一眼找到最大的时按数值排。 */
+    tooltipOrder?: CartesianTooltipOrder
     translations?: Partial<CartesianChartTranslations>
   }
   context: ChartBaseContext

@@ -88,10 +88,10 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 - 相邻扇区之间留 `--xh-chart-gap`（2px）的表面缝，靠缝区分扇区而不是靠描边；缝宽沿半径保持不变。
 - 悬停或键盘聚焦一个扇区时，其余扇区淡出到 `--xh-chart-dim-alpha`；被指着的扇区不位移、不放大，位移会改变读者对面积的判断。
 - 图例一个扇区一项，点击切换显隐；隐藏的扇区从合计中移除，其余扇区的占比随之重新计算。
-- 环形中心是 HTML 叠层，缺省显示合计与说明文字（`translations.centerLabel`，缺省 Total）；Vue 用 `center` 插槽、React 用 `renderCenter`、Web Components 在 center 部件里写内容，都可以替换。
+- 环形中心是 HTML 叠层，缺省显示合计与说明文字（`translations.centerLabel`，缺省 Total）；悬停、键盘聚焦或联动到一个扇区时换成它的占比与名字，离开后回到合计；Vue 用 `center` 插槽、React 用 `renderCenter`、Web Components 在 center 部件里写内容，都可以替换。
 - `format` 指定数值格式（数字格式或函数），提示框、标签、中心合计与数据表共用；占比固定写成一位小数的百分数。
 - 多张图接到同一个受控的 `activeKey` 上时，饼图按扇区名与其他图的类目对齐：在柱状图上悬停「华东」，饼图的「华东」扇区一起指示。
-- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。
+- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有扇区时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时整圈从起始角顺着扫开，标签与引导线等扫开的边缘到了才出现，环形中心等整圈扫完再淡入，合计从 0 数上去；之后的数据变化与图例切换从当前角度插值到新角度，合计从旧值滚到新值，隐藏的扇区收拢并淡出后才移除。按数据次序排列（`sort="none"`）时扇区不换位，只在原处伸缩。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。
@@ -193,6 +193,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | --- | --- |
 | `root` | 'error' \| undefined |
 | `tooltip` | 'visible' \| 'hidden' |
+| `empty` | 'loading' \| undefined |
 
 以下名称仅用于内部状态机。
 
@@ -318,6 +319,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip-row` | `data-series-id` | row.key |
 | `tooltip-row` | `data-xh-chart-slot` | slotAttr(row.slot, row.other) |
+| `empty` | `data-state` | 'loading' \| undefined |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | '' |
 | `mark` | `data-xh-chart-slot` | slotAttr(slice.slot, slice.other) \| undefined |
@@ -331,6 +333,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-pie-chart-center-gap` | `center` | `gap` | `default` | `--xh-space-0_5` | pie-chart 的 center 部件 gap 覆盖槽。 |
 | `--xh-pie-chart-center-value-font-size` | `center-value` | `font-size` | `default` | `--xh-text-heading-3-size` | pie-chart 的 center-value 部件 font-size 覆盖槽。 |
+| `--xh-pie-chart-empty-gap` | `empty` | `gap` | `state=loading` | `--xh-space-2` | pie-chart 的 empty 部件 gap 覆盖槽。 |
 | `--xh-pie-chart-gap` | `root` | `gap` | `default` | `--xh-space-3` | pie-chart 的 root 部件 gap 覆盖槽。 |
 | `--xh-pie-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | pie-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-pie-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-1` | pie-chart 的 legend 部件 gap 覆盖槽。 |
@@ -349,11 +352,11 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 
 ### 动效
 
-动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 

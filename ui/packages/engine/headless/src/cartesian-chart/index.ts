@@ -30,6 +30,7 @@ export type {
   CartesianSeries,
   CartesianSeriesBase,
   CartesianTooltipModel,
+  CartesianTooltipOrder,
   CartesianTooltipRow,
   CartesianTrigger,
 } from './cartesian-chart.types'

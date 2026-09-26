@@ -201,6 +201,19 @@ describe('折线', () => {
 })
 
 describe('悬停、提示框与记忆', () => {
+  it('tooltipOrder：提示框里的行按数值排，回调里的 items 仍按图例次序', async () => {
+    const onDatumActive = vi.fn()
+    const rig = await makeRig({ ...BARS, tooltipOrder: 'ascending', onDatumActive })
+    const bar = marksOf(rig.api(), 'bar').find(m => m.key === 'online:s二月') as RectMark
+    rig.service.send({ type: 'HOVER', hover: { ref: { seriesId: 'online', index: 1 }, x: bar.x + 1, y: bar.y + 1 }, key: '二月' })
+    await settle()
+    expect(rig.api().tooltip?.rows.map(r => r.seriesId)).toEqual(['offline', 'online'])
+    const items = (onDatumActive.mock.lastCall![0] as ChartDatumDetails).items!.map(i => i.seriesId)
+    expect(items).toEqual(['online', 'offline'])
+    rig.setProps({ tooltipOrder: 'descending' })
+    expect(rig.api().tooltip?.rows.map(r => r.seriesId)).toEqual(['online', 'offline'])
+  })
+
   it('悬停命中一个键：axis 模式提示框列出该键的全部系列，柱图的准线是整条类目带', async () => {
     const rig = await makeRig(BARS)
     const bar = marksOf(rig.api(), 'bar').find(m => m.key === 'online:s二月') as RectMark
@@ -505,6 +518,15 @@ describe('无障碍', () => {
     const bar = marksOf(api, 'bar').find(m => m.key === 'online:s二月')!
     expect((api.getMarkProps(bar) as Dict)['aria-label']).toBe('二月, 线上 200')
     expect((api.getPlotProps() as Dict)['aria-describedby']).toBe((api.getSummaryProps() as Dict).id)
+  })
+
+  it('取数中还没有数据：空态写「加载中」并带加载状态；取完仍没有数据写「没有数据」', async () => {
+    const rig = await makeRig({ data: [], series: BARS.series, pending: true })
+    expect(rig.api().emptyText).toBe('Loading…')
+    expect(rig.api().getEmptyProps() as Dict).toMatchObject({ 'data-state': 'loading' })
+    rig.setProps({ pending: false })
+    expect(rig.api().emptyText).toBe('No data')
+    expect((rig.api().getEmptyProps() as Dict)['data-state']).toBeUndefined()
   })
 
   it('pending：根上 aria-busy', async () => {

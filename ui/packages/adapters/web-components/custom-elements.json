@@ -5943,6 +5943,15 @@
             },
             {
               "kind": "field",
+              "name": "tooltipOrder",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianTooltipOrder | undefined"
+              },
+              "attribute": "tooltip-order"
+            },
+            {
+              "kind": "field",
               "name": "pending",
               "privacy": "public",
               "type": {
@@ -6366,6 +6375,14 @@
             },
             {
               "type": {
+                "text": "CartesianTooltipOrder | undefined"
+              },
+              "description": "提示框里各系列的行序，默认 series（按图例次序）",
+              "name": "tooltip-order",
+              "fieldName": "tooltipOrder"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
@@ -6409,6 +6426,9 @@
             },
             {
               "name": "--xh-cartesian-chart-bar-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-empty-gap"
             },
             {
               "name": "--xh-cartesian-chart-gap"
@@ -39856,6 +39876,9 @@
             },
             {
               "name": "--xh-pie-chart-center-value-font-size"
+            },
+            {
+              "name": "--xh-pie-chart-empty-gap"
             },
             {
               "name": "--xh-pie-chart-gap"

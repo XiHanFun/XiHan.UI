@@ -86,6 +86,8 @@ export interface ChartTranslations {
   missingValue: string
   /** 没有数据时空态的文字。 */
   emptyText: string
+  /** 取数中、还没有可画的数据时空态的文字。 */
+  loadingText: string
   /** 合并后的「其他」。 */
   otherLabel: string
   /** 数据表的标题。 */

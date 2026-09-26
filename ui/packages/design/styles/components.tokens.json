@@ -7653,6 +7653,24 @@
       "description": "cartesian-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
     },
     {
+      "name": "--xh-cartesian-chart-empty-gap",
+      "component": "cartesian-chart",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 empty 部件 gap 覆盖槽。"
+    },
+    {
       "name": "--xh-cartesian-chart-gap",
       "component": "cartesian-chart",
       "part": [
@@ -47103,6 +47121,24 @@
       ],
       "visibility": "public",
       "description": "pie-chart 的 center-value 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-empty-gap",
+      "component": "pie-chart",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 empty 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-pie-chart-gap",

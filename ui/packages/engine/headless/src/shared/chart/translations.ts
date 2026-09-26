@@ -20,6 +20,7 @@ export const CHART_TRANSLATIONS: ChartTranslations = Object.freeze({
   legendLabel: 'Legend',
   missingValue: 'No value',
   emptyText: 'No data',
+  loadingText: 'Loading…',
   otherLabel: 'Other',
   tableCaption: 'Data table',
   datumLabel: defaultChartDatumLabel,
