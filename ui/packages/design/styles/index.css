@@ -2146,6 +2146,19 @@
     }
   }
 
+  /* ── 交互光：一道光沿 1px 描边环扫过一次 ──
+     光带画在三倍宽的背景里、居中，遮罩只留描边环；背景位置从 100% 走到 0%，光带从起始缘外扫到末缘外。
+     只动背景位置，不动几何；只播一遍，不循环 */
+  @keyframes xh-glint {
+    from {
+      background-position: 100% 0;
+    }
+
+    to {
+      background-position: 0% 0;
+    }
+  }
+
   /* ── 数值：倒计时条从占满一整条收到零 ──
      条子自己不改尺寸，靠裁切从行尾往行首收：只重绘、不重排。裁掉哪一侧随书写方向由
      --xh-_countdown-cut-left / -right 给出，缺省按 LTR 收掉右侧；前端的圆角取
@@ -15268,6 +15281,35 @@
     border: var(--xh-ring-width) solid var(--xh-ring-focus);
     border-radius: inherit;
     pointer-events: none;
+  }
+
+  /* liquid 档的交互光：实心钮进入悬停时，一道光沿 1px 描边环扫过一次。光只走描边、不进面——
+     面内叠一层白光，品牌实心面上白字的对比就从 5.08:1 往下掉。光用面上前景色（currentColor），
+     各语气自动跟随；只在细指针可悬停的设备上播，粗指针下 ::after 另有用处（44px 热区）。
+     减弱动效下时长归 1ms，一闪即过、看不见；强制色下系统配色，不画装饰光 */
+  @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+    :where([data-material='liquid'])
+      [data-scope='button'][data-part='root'][data-xh-action-variant='solid']:not([data-disabled]):not([data-loading]):hover::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-stroke-thin));
+      padding: var(--xh-stroke-thin);
+      border-radius: inherit;
+      background: linear-gradient(100deg, transparent 42%, currentColor 50%, transparent 58%) no-repeat;
+      background-size: 300% 100%;
+      background-position: 0% 0;
+      pointer-events: none;
+      mask:
+        linear-gradient(currentColor 0 0) content-box exclude,
+        linear-gradient(currentColor 0 0);
+      animation: xh-glint var(--xh-button-glint-duration, var(--xh-motion-duration-glint)) var(--xh-motion-ease-enter) both;
+    }
+
+    /* 从右往左书写时光从行首（右缘）扫起 */
+    :where([data-material='liquid'])
+      [data-scope='button'][data-part='root'][data-xh-action-variant='solid']:not([data-disabled]):not([data-loading]):dir(rtl):hover::after {
+      animation-direction: reverse;
+    }
   }
 
   /* icon profile 已经给出正方视觉盒；Button 的公开 px 槽不能把它重新撑开。 */

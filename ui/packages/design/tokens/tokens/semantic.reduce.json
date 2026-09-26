@@ -37,6 +37,10 @@
       "$type": "duration",
       "$value": "1ms"
     },
+    "duration-glint": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
     "stagger-step": {
       "$type": "duration",
       "$value": "0ms"

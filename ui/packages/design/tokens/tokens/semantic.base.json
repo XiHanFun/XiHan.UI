@@ -547,6 +547,11 @@
       "$type": "duration",
       "$value": "calc({duration.slow} * 2)"
     },
+    "duration-glint": {
+      "$description": "交互光扫过一次：liquid 档的实心按钮悬停时，一道光沿 1px 描边环扫过去，只播一遍、不循环。减弱动效下不播，归 1ms。",
+      "$type": "duration",
+      "$value": "calc({duration.slow} * 2)"
+    },
     "stagger-step": {
       "$description": "交错进场的相邻两项间隔。派生自 duration-enter 的五分之一，改进场时长它跟着走。减弱档显式归 0ms，不靠 calc 传递。",
       "$type": "duration",

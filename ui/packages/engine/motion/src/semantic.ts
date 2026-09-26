@@ -24,6 +24,7 @@ export const motionDurations = {
   press: durations.fast,
   release: durations.normal,
   attention: durations.slow * 2,
+  glint: durations.slow * 2,
 } as const
 
 export type MotionDurationName = keyof typeof motionDurations
@@ -44,6 +45,7 @@ export const reducedMotionDurations: Readonly<Record<MotionDurationName, number>
   press: 1,
   release: 1,
   attention: 1,
+  glint: 1,
 }
 
 /** 语义缓动，键对应 `--xh-motion-ease-<name>`。 */

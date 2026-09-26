@@ -4030,6 +4030,32 @@
       "description": "button 的 root 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-button-glint-duration",
+      "component": "button",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "animation"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine) and (forced-colors: none)",
+        "disabled",
+        "hover",
+        "loading",
+        "material=liquid",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "where([data-material='liquid'])",
+        "xh-action-variant=solid"
+      ],
+      "defaultToken": [
+        "--xh-motion-duration-glint"
+      ],
+      "visibility": "public",
+      "description": "button 的 root 部件 animation 覆盖槽。"
+    },
+    {
       "name": "--xh-button-h",
       "component": "button",
       "part": [
@@ -70545,7 +70571,7 @@
         "root"
       ],
       "property": [
-        "transform"
+        "translate"
       ],
       "state": [
         "@keyframes xh-toast-in",
@@ -70556,7 +70582,7 @@
         "1"
       ],
       "visibility": "public",
-      "description": "toast 的 *、root 部件 transform 覆盖槽。"
+      "description": "toast 的 *、root 部件 translate 覆盖槽。"
     },
     {
       "name": "--xh-toast-fg",
@@ -70798,7 +70824,7 @@
       ],
       "property": [
         "--xh-toast-y",
-        "transform"
+        "translate"
       ],
       "state": [
         "@keyframes xh-toast-in",
@@ -70808,7 +70834,7 @@
         "0px"
       ],
       "visibility": "public",
-      "description": "toast 的 *、root 部件 --xh-toast-y、transform 覆盖槽。"
+      "description": "toast 的 *、root 部件 --xh-toast-y、translate 覆盖槽。"
     },
     {
       "name": "--xh-toast-offset-expanded",
@@ -70943,7 +70969,7 @@
         "*"
       ],
       "property": [
-        "transform"
+        "scale"
       ],
       "state": [
         "@keyframes xh-toast-out"
@@ -70952,7 +70978,7 @@
         "1"
       ],
       "visibility": "public",
-      "description": "toast 的 * 部件 transform 覆盖槽。"
+      "description": "toast 的 * 部件 scale 覆盖槽。"
     },
     {
       "name": "--xh-toast-scale-collapsed",
@@ -70963,7 +70989,7 @@
       ],
       "property": [
         "--xh-toast-scale",
-        "transform"
+        "scale"
       ],
       "state": [
         "@keyframes xh-toast-in",
@@ -70973,7 +70999,7 @@
         "--xh-_toast-stack-scale"
       ],
       "visibility": "public",
-      "description": "toast 的 *、root 部件 --xh-toast-scale、transform 覆盖槽。"
+      "description": "toast 的 *、root 部件 --xh-toast-scale、scale 覆盖槽。"
     },
     {
       "name": "--xh-toast-shadow",
@@ -71072,7 +71098,7 @@
         "*"
       ],
       "property": [
-        "transform"
+        "translate"
       ],
       "state": [
         "@keyframes xh-toast-out"
@@ -71081,7 +71107,7 @@
         "0px"
       ],
       "visibility": "public",
-      "description": "toast 的 * 部件 transform 覆盖槽。"
+      "description": "toast 的 * 部件 translate 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg",
