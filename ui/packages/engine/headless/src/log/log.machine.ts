@@ -8,6 +8,7 @@
 import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { LogSchema } from './log.types'
 import { createStickToBottom, setup } from '@xihan-ui/core'
+import { trackLiquidPart } from '../shared/liquid'
 import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<LogSchema>()
@@ -34,7 +35,7 @@ export const logMachine = createMachine({
   }),
   initialState: () => 'idle',
   // 粘底与回到底部按钮的进退场两路副作用全程挂载
-  effects: ['trackStickToBottom', 'trackTriggerPresence'],
+  effects: ['trackStickToBottom', 'trackTriggerPresence', 'trackLiquid'],
   states: {
     idle: {
       on: {
@@ -78,6 +79,9 @@ export const logMachine = createMachine({
       },
     },
     effects: {
+      /** 回到底部是浮在内容之上的导航层部件：材质轴为 liquid 时按下层换色调、亮边随指针 */
+      trackLiquid: ({ scope, flush }) => trackLiquidPart(scope, flush, 'log', 'scroll-to-end-trigger'),
+
       /** 回到底部按钮离底时冒出来、回底时播完退场再藏起。 */
       trackTriggerPresence: ({ context, scope, send, track, flush }) => trackPartPresence({
         scope,
