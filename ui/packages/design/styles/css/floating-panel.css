@@ -8,6 +8,7 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 @import '../family/action-control.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -95,26 +96,19 @@
   }
 
   [data-scope='floating-panel'][data-part='content'] {
+    /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+       这里只把使用者槽接进来 */
+    --xh-frosted-bg: var(--xh-floating-panel-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-floating-panel-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-floating-panel-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-floating-panel-shadow, var(--xh-_material-shadow));
+
     position: relative;
     block-size: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* 默认态是 M2 磨砂面：背景、边缘、高光、投影与光学采样同出一张配方。
-       作者既有的面板槽仍排在外层；没有覆写时才落进这套磨砂令牌。 */
-    border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-floating-panel-radius, var(--xh-shape-overlay));
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      var(--xh-floating-panel-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-floating-panel-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-floating-panel-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
-    backdrop-filter: var(--xh-material-frosted-backdrop);
     /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
     transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

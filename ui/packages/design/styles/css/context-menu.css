@@ -8,6 +8,7 @@
 /* 共享关键帧由 family/motion.css 提供，条目走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 @import '../family/collection-item.css';
 @import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -83,6 +84,15 @@
   }
 
   [data-scope='context-menu'][data-part='content'] {
+    /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+       这里只把使用者槽接进来 */
+    --xh-frosted-bg: var(--xh-context-menu-content-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-context-menu-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-context-menu-content-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-context-menu-content-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-context-menu-backdrop, var(--xh-_material-backdrop));
+    --xh-frosted-highlight: var(--xh-context-menu-highlight, var(--xh-_material-highlight));
+
     position: relative;
     display: flex;
     flex-direction: column;
@@ -94,30 +104,12 @@
     max-block-size: min(var(--xh-context-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_context-menu-available-h));
     padding-block: var(--xh-context-menu-content-py, var(--xh-surface-pad-xs));
     padding-inline: var(--xh-context-menu-content-px, var(--xh-surface-pad-xs));
-    border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-context-menu-content-radius, var(--xh-shape-overlay));
-    background: var(--xh-context-menu-content-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-context-menu-content-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-context-menu-content-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
     /* 条目超过上限就在菜单内部滚；内收焦点环不会被内边距缘裁掉。
        浮层滚动面：到底后不把滚动链穿透给页面 */
     overflow-y: auto;
     overscroll-behavior: contain;
     pointer-events: auto;
-  }
-
-  /* 顶光单独叠在真实四边 border 内侧；强制色归零后轮廓仍在。 */
-  [data-scope='context-menu'][data-part='content']::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    block-size: var(--xh-stroke-thin);
-    border-radius: inherit;
-    background: var(--xh-context-menu-highlight, var(--xh-material-frosted-highlight));
-    pointer-events: none;
   }
 
   [data-scope='context-menu'][data-part='root'][hidden] {

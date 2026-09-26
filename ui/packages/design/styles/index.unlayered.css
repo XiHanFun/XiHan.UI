@@ -226,7 +226,7 @@
   cursor: not-allowed;
 }
 
-/* Family Recipe 的内联点：emit-entries 把 family/ 下五份配方在这里内联一次。
+/* Family Recipe 的内联点：emit-entries 把 family/ 下六份配方在这里内联一次。
    位置必须在上面四份公共层之后（配方要像组件皮肤一样压过公共层，field-chrome 把内嵌 input 的
    聚焦环置 none 就靠排在 focus.css 之后）、在下面一切组件皮肤之前（皮肤对配方物理属性的覆盖
    只有配方先出现才成立）。皮肤自带的 family @import 由生成器剥掉。 */
@@ -1817,6 +1817,67 @@
     forced-color-adjust: none;
     border-color: CanvasText;
   }
+}
+
+/* family/material.css */
+/*
+ * 材质家族配方：frosted 面，以及它在 liquid 档的替身。
+ *
+ * 连接层在部件上投影 data-xh-material="frosted"：锚定瞬态浮层的内容面（菜单、选择、气泡、浮动面板……）
+ * 与浮在内容之上的圆钮（回到顶部、浮动钮、轮播控制、回到底部）。配方在部件上声明一组私有槽
+ * --xh-_material-*，一种材质一套取值：底、交互阶梯（悬停 / 按下 / 键盘聚焦面）、前景、描边、投影、
+ * 背景滤镜与 1px 内侧顶光。
+ *
+ *   面      配方直接画描边、背景（1px 顶光叠在底色之上，随面本身不随内容滚动）、前景、投影与背景滤镜，
+ *           读桥接槽 --xh-frosted-*；皮肤只把使用者槽接进来：--xh-frosted-bg: var(使用者槽, var(--xh-_material-bg))
+ *   圆钮    面由 Action Control 家族画，皮肤把 --xh-action-* 桥接槽指向这组私有槽；配方只补背景滤镜
+ *
+ * data-material="liquid" 下，同时投影了 data-xh-liquid 的部件把这组私有槽换成液态面的取值（液态层
+ * liquid.css 在同一部件上声明 --xh-_liquid-*），皮肤不必为液态档再写一遍；可按的圆钮挂上按住形变。
+ * 减少透明、高对比、强制色与打印由材质令牌在令牌层降级，这里不另写。
+ */
+
+[data-xh-material='frosted'] {
+  --xh-_material-bg: var(--xh-material-frosted-bg);
+  --xh-_material-fg: var(--xh-material-frosted-fg);
+  --xh-_material-border: var(--xh-material-frosted-border);
+  --xh-_material-shadow: var(--xh-material-frosted-shadow);
+  --xh-_material-backdrop: var(--xh-material-frosted-backdrop);
+  --xh-_material-highlight: var(--xh-material-frosted-highlight);
+
+  -webkit-backdrop-filter: var(--xh-frosted-backdrop, var(--xh-_material-backdrop));
+  backdrop-filter: var(--xh-frosted-backdrop, var(--xh-_material-backdrop));
+}
+
+/* 面：四件套加 1px 顶光。顶光是背景的最上一层，只占内侧一像素、画在面本身上，滚动的内容面也钉在顶上；
+   高对比与强制色下令牌把它归零，四边描边照常完整 */
+[data-xh-material='frosted']:not([data-scope][data-xh-action-control]) {
+  border: var(--xh-stroke-thin) solid var(--xh-frosted-border, var(--xh-_material-border));
+  background:
+    linear-gradient(
+      to bottom,
+      var(--xh-frosted-highlight, var(--xh-_material-highlight)) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    ),
+    var(--xh-frosted-bg, var(--xh-_material-bg));
+  color: var(--xh-frosted-fg, var(--xh-_material-fg));
+  box-shadow: var(--xh-frosted-shadow, var(--xh-_material-shadow));
+}
+
+/* liquid 档：浮在内容之上的导航层部件换成液态面。同一组私有槽换值，皮肤的桥接照旧；面内不加顶光，
+   亮边已由液态层画在朝光源的一侧 */
+:where([data-material='liquid']) [data-xh-material][data-xh-liquid] {
+  --xh-_material-bg: var(--xh-_liquid-bg);
+  --xh-_material-fg: var(--xh-material-liquid-fg);
+  --xh-_material-border: var(--xh-material-liquid-border);
+  --xh-_material-shadow: var(--xh-_liquid-shadow);
+  --xh-_material-backdrop: var(--xh-material-liquid-backdrop);
+  --xh-_material-highlight: transparent;
+}
+
+/* 按住液态圆钮时的黏滞形变由液态面逐帧写进来，松手弹回。只挂在可按的面上 */
+:where([data-material='liquid']) [data-scope][data-xh-action-control][data-xh-material][data-xh-liquid] {
+  transform: var(--xh-_liquid-deform);
 }
 
 /* family/motion.css */
@@ -4517,26 +4578,19 @@
 }
 
 [data-scope='floating-panel'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-floating-panel-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-floating-panel-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-floating-panel-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-floating-panel-shadow, var(--xh-_material-shadow));
+
   position: relative;
   block-size: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* 默认态是 M2 磨砂面：背景、边缘、高光、投影与光学采样同出一张配方。
-     作者既有的面板槽仍排在外层；没有覆写时才落进这套磨砂令牌。 */
-  border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-floating-panel-radius, var(--xh-shape-overlay));
-  background:
-    linear-gradient(
-      to bottom,
-      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-      transparent var(--xh-stroke-thin)
-    ),
-    var(--xh-floating-panel-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-floating-panel-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-floating-panel-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
-  backdrop-filter: var(--xh-material-frosted-backdrop);
   /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
   transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -8937,6 +8991,15 @@
 }
 
 [data-scope='mention'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-mention-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-mention-content-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-mention-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-mention-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-mention-content-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-mention-content-highlight, var(--xh-_material-highlight));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -8950,29 +9013,11 @@
   max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
   padding-block: var(--xh-mention-content-py, var(--xh-space-1));
   padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
-  border: var(--xh-stroke-thin) solid var(--xh-mention-content-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-mention-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-mention-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-mention-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-mention-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-mention-content-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-mention-content-backdrop, var(--xh-material-frosted-backdrop));
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
   pointer-events: auto;
-}
-
-/* 光效仅属于唯一外壳，不拦截候选或同级状态文字。 */
-[data-scope='mention'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-mention-content-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -9770,6 +9815,14 @@
 /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
    标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
 [data-scope='popconfirm'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-popconfirm-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-popconfirm-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-popconfirm-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-popconfirm-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-popconfirm-backdrop, var(--xh-_material-backdrop));
+
   /* 作者塞进面板里的图标按控件档取；两颗动作钮另由家族配方按 sm 档下发字形尺 */
   --xh-icon-size: var(--xh-popconfirm-icon-size, var(--xh-glyph-size-md));
   /* 尺寸档只换这两个私有槽 */
@@ -9791,20 +9844,7 @@
   overscroll-behavior: contain;
   padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
   padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
-  border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-popconfirm-radius, var(--xh-shape-overlay));
-  /* 与 Popover 共用 M2 配方：透明 tint 在底层，内侧一像素顶光只表达材质厚度。 */
-  background:
-    linear-gradient(
-      to bottom,
-      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-      transparent var(--xh-stroke-thin)
-    ),
-    var(--xh-popconfirm-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-popconfirm-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-popconfirm-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-popconfirm-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-popconfirm-backdrop, var(--xh-material-frosted-backdrop));
   pointer-events: auto;
   /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
@@ -17559,6 +17599,15 @@
 /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
    横向随列数增减，因此不设固定宽度，只给每列自己的宽度 */
 [data-scope='cascader'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-cascader-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-cascader-content-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-cascader-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-cascader-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-cascader-content-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-cascader-content-highlight, var(--xh-_material-highlight));
+
   position: relative;
   display: flex;
   flex-direction: row;
@@ -17566,13 +17615,7 @@
   /* 静态档与落位后的可用宽度取小：列多起来时外框自己就宽过了可用区，
      盒内不产生溢出，下面那条 overflow-x 便一直没事可做，最右那一列落在屏外点不到 */
   max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl)), var(--xh-_cascader-available-w));
-  border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-cascader-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-cascader-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-cascader-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-cascader-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
   /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
   overflow-x: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -17581,18 +17624,6 @@
   /* 各列与搜索列表的竖条贴在自己的盒子上、挂在这一层里（它已是定位盒）：轨道不画底，
      条子随列一起横滚，列与列之间才不会各多出一道灰带 */
   --xh-scrollbar-track-bg: transparent;
-}
-
-/* 唯一外壳的内侧顶光；列和状态部件不另画材质面。 */
-[data-scope='cascader'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-cascader-content-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -20990,6 +21021,15 @@
 }
 
 [data-scope='combobox'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-combobox-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-combobox-content-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-combobox-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-combobox-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-combobox-content-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-combobox-content-highlight, var(--xh-_material-highlight));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -21008,29 +21048,11 @@
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
-  border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-combobox-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-combobox-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-combobox-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-combobox-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
   pointer-events: auto;
-}
-
-/* 顶光只沿表面上边缘绘制，不参与列表布局、不拦截候选交互。 */
-[data-scope='combobox'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-combobox-content-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -21689,6 +21711,15 @@
 }
 
 [data-scope='context-menu'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-context-menu-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-context-menu-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-context-menu-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-context-menu-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-context-menu-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-context-menu-highlight, var(--xh-_material-highlight));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -21700,30 +21731,12 @@
   max-block-size: min(var(--xh-context-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_context-menu-available-h));
   padding-block: var(--xh-context-menu-content-py, var(--xh-surface-pad-xs));
   padding-inline: var(--xh-context-menu-content-px, var(--xh-surface-pad-xs));
-  border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-context-menu-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-context-menu-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-context-menu-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-context-menu-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-context-menu-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目超过上限就在菜单内部滚；内收焦点环不会被内边距缘裁掉。
      浮层滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
-}
-
-/* 顶光单独叠在真实四边 border 内侧；强制色归零后轮廓仍在。 */
-[data-scope='context-menu'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-context-menu-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 [data-scope='context-menu'][data-part='root'][hidden] {
@@ -25635,6 +25648,14 @@
 /* 与 tooltip 不同：卡片本体承载交互，必须吃指针——
    指针停在卡片上就不该收起，里面的链接与按钮也要点得到 */
 [data-scope='hover-card'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-hover-card-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-hover-card-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-hover-card-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-hover-card-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-hover-card-backdrop, var(--xh-_material-backdrop));
+
   /* 尺寸档只换这两个私有槽。size 落在 content 上而非 root：root 是可选部件，
      面板几何也长在 content 上。语气不接：卡片是内容容器，语气该由里面的内容表达 */
   --xh-_hover-card-pad: var(--xh-surface-pad-md);
@@ -25654,20 +25675,7 @@
   overscroll-behavior: contain;
   padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-pad));
   padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-pad));
-  border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-hover-card-radius, var(--xh-shape-overlay));
-  /* 与气泡族共用 M2：顶光只占一像素，正文保持实体，只在内容层采样一次背景。 */
-  background:
-    linear-gradient(
-      to bottom,
-      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-      transparent var(--xh-stroke-thin)
-    ),
-    var(--xh-hover-card-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-hover-card-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-hover-card-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-hover-card-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-hover-card-backdrop, var(--xh-material-frosted-backdrop));
   pointer-events: auto;
   /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
@@ -26941,6 +26949,15 @@
 }
 
 [data-scope='menu'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-menu-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-menu-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-menu-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-menu-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-menu-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-menu-highlight, var(--xh-_material-highlight));
+
   /* 条目外的字形（分组标题等）按档取尺，缺省 md，随 data-size 换档；条目里作者放的图标由家族随
      data-xh-collection-size 下发。菜单自绘的状态字形（标记位的盒、子菜单的展开 chevron）不读这支：
      它们是指示符，走 --xh-control-indicator-* 一族——标记位在自己身上把 --xh-icon-size 改接到盒的尺，
@@ -26966,30 +26983,12 @@
   max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
   padding-block: var(--xh-menu-content-py, var(--xh-surface-pad-xs));
   padding-inline: var(--xh-menu-content-px, var(--xh-surface-pad-xs));
-  border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-menu-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-menu-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-menu-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-menu-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
      浮层滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
-}
-
-/* 顶光是独立装饰层，不替换真实边框；高对比/强制色归零后四边轮廓仍完整。 */
-[data-scope='menu'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-menu-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -27383,6 +27382,15 @@
 }
 
 [data-scope='menubar'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-menubar-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-menubar-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-menubar-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-menubar-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-menubar-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-menubar-highlight, var(--xh-_material-highlight));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -27395,30 +27403,12 @@
   max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
   padding-block: var(--xh-menubar-content-py, var(--xh-surface-pad-xs));
   padding-inline: var(--xh-menubar-content-px, var(--xh-surface-pad-xs));
-  border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-menubar-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-menubar-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-menubar-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-menubar-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
      浮层滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
-}
-
-/* 顶光叠在真实四边 border 内侧；强制色撤掉装饰后，完整轮廓仍然存在。 */
-[data-scope='menubar'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-menubar-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位。
@@ -29507,6 +29497,14 @@
 }
 
 [data-scope='popover'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-popover-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-popover-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-popover-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-popover-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-popover-backdrop, var(--xh-_material-backdrop));
+
   /* 作者塞进面板里的图标按控件档取；关闭钮另由家族配方按 sm 档下发字形尺 */
   --xh-icon-size: var(--xh-popover-icon-size, var(--xh-glyph-size-md));
 
@@ -29529,20 +29527,7 @@
   overscroll-behavior: contain;
   padding-block: var(--xh-popover-py, var(--xh-_popover-pad));
   padding-inline: var(--xh-popover-px, var(--xh-_popover-pad));
-  border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-popover-radius, var(--xh-shape-overlay));
-  /* 顶光只占内侧一像素；透明 tint 是底层，正文自己保持不透明。 */
-  background:
-    linear-gradient(
-      to bottom,
-      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-      transparent var(--xh-stroke-thin)
-    ),
-    var(--xh-popover-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-popover-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-popover-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-popover-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-popover-backdrop, var(--xh-material-frosted-backdrop));
   pointer-events: auto;
   /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
@@ -31402,6 +31387,15 @@
 /* 浮层外壳：描边、底色、阴影与整体尺寸归它。它自己不滚——滚的是里面的 list，
    底部操作区因此留在视口里，不随条目滚走 */
 [data-scope='select'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-select-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-select-content-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-select-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-select-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-select-content-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-select-content-highlight, var(--xh-_material-highlight));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -31416,28 +31410,10 @@
   max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
   padding-block: var(--xh-select-content-py, var(--xh-space-1));
   padding-inline: var(--xh-select-content-px, var(--xh-space-1));
-  border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-select-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-select-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-select-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-select-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-select-content-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-select-content-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
   overflow: hidden;
   pointer-events: auto;
-}
-
-/* 顶光单独叠在真实四边 border 内侧；强制色归零后轮廓仍在。 */
-[data-scope='select'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-select-content-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 /* 列表框本体：只管滚动，留白归外壳。
@@ -41420,6 +41396,15 @@
 }
 
 [data-scope='tree-select'][data-part='content'] {
+  /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来 */
+  --xh-frosted-bg: var(--xh-tree-select-content-bg, var(--xh-_material-bg));
+  --xh-frosted-border: var(--xh-tree-select-content-border, var(--xh-_material-border));
+  --xh-frosted-fg: var(--xh-tree-select-content-fg, var(--xh-_material-fg));
+  --xh-frosted-shadow: var(--xh-tree-select-content-shadow, var(--xh-_material-shadow));
+  --xh-frosted-backdrop: var(--xh-tree-select-content-backdrop, var(--xh-_material-backdrop));
+  --xh-frosted-highlight: var(--xh-tree-select-content-highlight, var(--xh-_material-highlight));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -41433,30 +41418,12 @@
   max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_tree-select-available-h));
   padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-select-content-px, var(--xh-space-1));
-  border: var(--xh-stroke-thin) solid var(--xh-tree-select-content-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-tree-select-content-radius, var(--xh-shape-overlay));
-  background: var(--xh-tree-select-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-tree-select-content-fg, var(--xh-material-frosted-fg));
-  box-shadow: var(--xh-tree-select-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-tree-select-content-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-tree-select-content-backdrop, var(--xh-material-frosted-backdrop));
   /* 两轴一起给：深层节点靠缩进往行末推，横向溢出是常态，得够得着 */
   overflow: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
   pointer-events: auto;
-}
-
-/* 顶光位于真实边框内侧，不参与布局或拦截树行操作。 */
-[data-scope='tree-select'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-tree-select-content-highlight, var(--xh-material-frosted-highlight));
-  pointer-events: none;
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：

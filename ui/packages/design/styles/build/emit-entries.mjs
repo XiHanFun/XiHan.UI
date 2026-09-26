@@ -6,7 +6,7 @@
 // 就不去重），Action Control 家族会被内联 65 份、Collection Item 69 份，产物翻倍；更要命的是
 // 有副本排在皮肤之后——配方与皮肤同在 xihan.components 层，同层只剩特指度与源序竞争，皮肤对配方
 // 物理属性的直接覆盖被后出现的副本反超（手机上表头排序箭头被家族热区撑成整格）。
-// 所以主入口改为：家族五份在源入口标出的内联点（`/* emit-entries: family */`，四份公共层之后、
+// 所以主入口改为：家族六份在源入口标出的内联点（`/* emit-entries: family */`，四份公共层之后、
 // 一切组件皮肤之前）内联一次；各皮肤按源序内联，皮肤自带的 `@import '../family/*.css'` 剥掉。
 // 引用图里家族只剩一份，与打包器无关。@layer 结构原样保留。
 //
@@ -57,7 +57,7 @@ const FAMILY_ROOT_ATTR = /\[data-xh-(?:action-control|field-chrome|collection-it
  * 先于一切皮肤内联的配方，顺序固定：四个家族互不引用，谁先谁后不影响级联；
  * 顺序定死只为产物可比对。motion.css 只装 @keyframes，提前只为去重。
  */
-const FAMILY_FILES = ['action-control.css', 'field-chrome.css', 'collection-item.css', 'swatch.css', 'motion.css']
+const FAMILY_FILES = ['action-control.css', 'field-chrome.css', 'collection-item.css', 'swatch.css', 'material.css', 'motion.css']
 
 /** 两份产物：主入口保留 @layer 壳；无层版拆壳并把配方抬到皮肤同档。 */
 const ENTRIES = [

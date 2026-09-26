@@ -468,6 +468,8 @@ export function connectCascader<T extends PropTypes>(
     // 键盘全在 content 上收口，左右键要跨列走。Escape 归消解层管，不在这里收
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       'id': ids.content,
       // 浮层壳只是焦点域与消解层的根节点，列表框语义在每一列上，它自己不承载焦点：
       // 有锚点时 Tab 位归锚点条目，没有锚点时归根列（见 getColumnProps）。

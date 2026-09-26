@@ -110,6 +110,7 @@
       "./markdown-stream.css",
       "./marquee.css",
       "./masonry.css",
+      "./material.css",
       "./matrix-code.css",
       "./mention.css",
       "./menu.css",
@@ -12183,6 +12184,7 @@
     "data-xh-ink",
     "data-xh-ink-surface",
     "data-xh-liquid",
+    "data-xh-material",
     "data-xh-swatch",
     "data-xh-swatch-size"
   ],

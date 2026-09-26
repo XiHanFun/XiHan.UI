@@ -66,6 +66,13 @@ afterEach(() => {
   host = null
 })
 
+
+/** 1px 顶光：材质配方把它画在背景最上一层渐变里（钉在面本身上，不随内容滚动），取那层的第一个色标。 */
+function highlightOf(el: Element): string {
+  const image = getComputedStyle(el).backgroundImage
+  return /linear-gradient\((?:to [a-z ]+,\s*)?([a-z]+\([^)]*\)|[a-z]+)/.exec(image)?.[1] ?? 'rgba(0, 0, 0, 0)'
+}
+
 describe('树选择 M2 浮层', () => {
   it.each(['light', 'dark'] as const)('%s：实体输入与单一磨砂浮层分层，局部主题跨 Portal 生效', async (theme) => {
     await mount(theme)
@@ -78,9 +85,7 @@ describe('树选择 M2 浮层', () => {
     expect(alpha(content.backgroundColor)).toBeLessThan(255)
     expect(alpha(content.backgroundColor)).toBeGreaterThan(220)
     expect(content.boxShadow).not.toBe('none')
-    const highlight = getComputedStyle(part('content'), '::before')
-    expect(alpha(highlight.backgroundColor)).toBeGreaterThan(0)
-    expect(highlight.pointerEvents).toBe('none')
+    expect(alpha(highlightOf(part('content')))).toBeGreaterThan(0)
     const tree = getComputedStyle(part('tree'))
     expect(tree.backdropFilter).toBe('none')
     expect(tree.borderTopWidth).toBe('0px')
@@ -94,7 +99,7 @@ describe('树选择 M2 浮层', () => {
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.borderTopStyle).toBe('solid')
-    expect(alpha(getComputedStyle(part('content'), '::before').backgroundColor)).toBe(0)
+    expect(alpha(highlightOf(part('content')))).toBe(0)
   })
 
   it.each([false, true])('loading=%s：状态面仅承载文字，不新增边框或滤镜', async (loading) => {

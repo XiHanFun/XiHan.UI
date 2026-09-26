@@ -297,6 +297,8 @@ export function connectMention<T extends PropTypes>(
 
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       'id': ids.content,
       'role': 'listbox',
       // role=listbox 必须有可及名字，而这里没有可指的标题部件，只能自带一句

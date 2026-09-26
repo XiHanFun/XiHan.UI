@@ -267,6 +267,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-xh-material` | 'frosted' |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
@@ -283,9 +284,9 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-popover-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | popover 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
-| `--xh-popover-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | popover 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-popover-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | popover 的 arrow、content 部件 background 覆盖槽。 |
-| `--xh-popover-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | popover 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-popover-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | popover 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-popover-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | popover 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-popover-border` | `arrow`<br>`content` | `border` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border`<br>`--xh-material-frosted-border` | popover 的 arrow、content 部件 border 覆盖槽。 |
 | `--xh-popover-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | popover 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-popover-close-bg-focus` | `close-trigger` | `background-color` | `focus-visible` | `--xh-_action-variant-bg-focus-visible` | popover 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-popover-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | popover 的 close-trigger 部件 background-color 覆盖槽。 |
@@ -296,7 +297,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `--xh-popover-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='popover'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | popover 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-popover-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | popover 的 description 部件 color 覆盖槽。 |
 | `--xh-popover-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | popover 的 description 部件 font-size 覆盖槽。 |
-| `--xh-popover-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 content 部件 color 覆盖槽。 |
+| `--xh-popover-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | popover 的 content 部件 color 覆盖槽。 |
 | `--xh-popover-gap` | `content` | `gap` | `default` | `--xh-space-2` | popover 的 content 部件 gap 覆盖槽。 |
 | `--xh-popover-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | popover 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-popover-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popover 的 positioner 部件 z-index 覆盖槽。 |
@@ -305,7 +306,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | popover 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-popover-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | popover 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-popover-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | popover 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-popover-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 title 部件 color 覆盖槽。 |
 | `--xh-popover-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popover 的 title 部件 font-size 覆盖槽。 |
 | `--xh-popover-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | popover 的 title 部件 font-weight 覆盖槽。 |

@@ -241,6 +241,8 @@ export function connectContextMenu<T extends PropTypes>(
     // 键盘全在 content 上收口；Escape 不在这里收，归消解层管（只有栈顶层响应）。
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       'id': ids.content,
       'role': 'menu',
       // 名字只能自己给：触发区是作者的一整块内容且不带 role，指过去会把整块区域的文字

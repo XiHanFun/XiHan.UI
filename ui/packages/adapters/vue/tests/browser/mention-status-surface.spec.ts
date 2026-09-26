@@ -125,6 +125,13 @@ afterEach(() => {
   host = null
 })
 
+
+/** 1px 顶光：材质配方把它画在背景最上一层渐变里（钉在面本身上，不随内容滚动），取那层的第一个色标。 */
+function highlightOf(el: Element): string {
+  const image = getComputedStyle(el).backgroundImage
+  return /linear-gradient\((?:to [a-z ]+,\s*)?([a-z]+\([^)]*\)|[a-z]+)/.exec(image)?.[1] ?? 'rgba(0, 0, 0, 0)'
+}
+
 describe('mention 单一状态表面', () => {
   it.each(['light', 'dark'] as const)('%s：输入实体、候选面磨砂，状态文字保持在面板上方', async (theme) => {
     const state = mountMention(true, false, theme)
@@ -136,7 +143,7 @@ describe('mention 单一状态表面', () => {
     expect(getComputedStyle(byTestId('input')).backdropFilter).toBe('none')
     expect(getComputedStyle(content).backdropFilter).toContain('blur(16px)')
     expect(alpha(getComputedStyle(content).backgroundColor)).toBeLessThan(255)
-    expect(alpha(getComputedStyle(content, '::before').backgroundColor)).toBeGreaterThan(0)
+    expect(alpha(highlightOf(content))).toBeGreaterThan(0)
     // 临时允许命中状态层以核验实际绘制顺序，避免只有几何正确、文字却被材质壳覆盖。
     empty.style.pointerEvents = 'auto'
     const rect = empty.getBoundingClientRect()
@@ -151,7 +158,7 @@ describe('mention 单一状态表面', () => {
     positioner.dataset.contrast = 'more'
     expect(getComputedStyle(content).backdropFilter).toBe('none')
     expect(alpha(getComputedStyle(content).backgroundColor)).toBe(255)
-    expect(alpha(getComputedStyle(content, '::before').backgroundColor)).toBe(0)
+    expect(alpha(highlightOf(content))).toBe(0)
   })
 
   it('窄空间下壳和状态层共同收窄，嵌套方向隔离并支持减弱动效', async () => {

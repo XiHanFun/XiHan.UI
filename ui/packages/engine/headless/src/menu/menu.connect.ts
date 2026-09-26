@@ -181,6 +181,8 @@ export function connectMenu<T extends PropTypes>(
     // 键盘在 content 上靠冒泡统一处理，Escape 由消解层负责
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       'id': ids.content,
       'role': 'menu',
       // 作者给了名字就用它，没给仍由触发器代为命名

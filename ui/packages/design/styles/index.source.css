@@ -26,7 +26,7 @@
 /* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
 @import './css/pointer.css';
 
-/* Family Recipe 的内联点：emit-entries 把 family/ 下五份配方在这里内联一次。
+/* Family Recipe 的内联点：emit-entries 把 family/ 下六份配方在这里内联一次。
    位置必须在上面四份公共层之后（配方要像组件皮肤一样压过公共层，field-chrome 把内嵌 input 的
    聚焦环置 none 就靠排在 focus.css 之后）、在下面一切组件皮肤之前（皮肤对配方物理属性的覆盖
    只有配方先出现才成立）。皮肤自带的 family @import 由生成器剥掉。 */

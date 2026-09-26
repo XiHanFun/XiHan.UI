@@ -188,6 +188,8 @@ export function connectFloatingPanel<T extends PropTypes>(
 
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       ...panelAttrs(),
       'id': ids.content,
       'role': 'dialog',

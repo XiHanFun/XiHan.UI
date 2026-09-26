@@ -349,6 +349,8 @@ export function connectPopconfirm<T extends PropTypes>(
     }),
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       'id': ids.content,
       // Popconfirm 是不陷焦点、不锁页面的非模态确认面；dialog 与这份交互合同一致。
       'role': 'dialog',
