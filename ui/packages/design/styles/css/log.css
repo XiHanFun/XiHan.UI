@@ -133,6 +133,29 @@
     backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
+  /* liquid 档：data-material="liquid" 下换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
+     悬停 / 按下往前景色兑，键盘聚焦铺实体 focus surface。按住时的黏滞形变由液态面逐帧写进来 */
+  :where([data-material='liquid']) [data-scope='log'][data-part='scroll-to-end-trigger'][data-xh-liquid] {
+    --xh-_log-scroll-to-end-trigger-shadow: var(--xh-log-scroll-to-end-trigger-shadow, var(--xh-_liquid-shadow));
+    --xh-action-bg-rest: var(--xh-log-scroll-to-end-trigger-bg, var(--xh-_liquid-bg));
+    --xh-action-bg-hover: var(--xh-log-scroll-to-end-trigger-bg-hover, var(--xh-_liquid-bg-hover));
+    --xh-action-bg-pressed: var(--xh-_liquid-bg-pressed);
+    --xh-action-bg-focus-visible: var(--xh-log-scroll-to-end-trigger-bg, var(--xh-material-liquid-focus-surface));
+    --xh-action-border-rest: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-border-hover: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-border-pressed: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-border-focus-visible: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-shadow-focus-visible: var(--xh-_log-scroll-to-end-trigger-shadow);
+    --xh-action-fg-rest: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-hover: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-pressed: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-focus-visible: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-material-liquid-fg));
+
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
+    transform: var(--xh-_liquid-deform);
+  }
+
   /* 连接层收起按钮时写 hidden 属性，上面的 display 会盖掉 UA 规则，这里补回 */
   [data-scope='log'][data-part='scroll-to-end-trigger'][hidden] {
     display: none;

@@ -98,6 +98,8 @@ export function connectLog<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      // 浮在内容之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
+      'data-xh-liquid': '',
       'id': scope.partId('log', 'scroll-to-end-trigger'),
       'aria-label': label.scrollToBottom,
       'data-state': showScrollToEndTrigger ? 'visible' : 'hidden',

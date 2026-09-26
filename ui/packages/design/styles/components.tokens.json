@@ -38174,10 +38174,16 @@
       ],
       "state": [
         "default",
-        "xh-ink-surface"
+        "focus-visible",
+        "material=liquid",
+        "where([data-material='liquid'])",
+        "xh-ink-surface",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-_liquid-bg",
+        "--xh-material-frosted-bg",
+        "--xh-material-liquid-focus-surface"
       ],
       "visibility": "public",
       "description": "log 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
@@ -38195,11 +38201,15 @@
         "disabled",
         "hover",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-_action-variant-bg-hover"
+        "--xh-_action-variant-bg-hover",
+        "--xh-_liquid-bg-hover"
       ],
       "visibility": "public",
       "description": "log 的 scroll-to-end-trigger 部件 background-color 覆盖槽。"
@@ -38221,12 +38231,16 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-material-frosted-border",
+        "--xh-material-liquid-border"
       ],
       "visibility": "public",
       "description": "log 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。"
@@ -38241,10 +38255,22 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "material=liquid",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-material-frosted-fg",
+        "--xh-material-liquid-fg"
       ],
       "visibility": "public",
       "description": "log 的 scroll-to-end-trigger 部件 color 覆盖槽。"
@@ -38298,14 +38324,19 @@
       "state": [
         "default",
         "disabled",
+        "focus-visible",
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
+        "--xh-_liquid-shadow",
         "--xh-material-frosted-shadow"
       ],
       "visibility": "public",

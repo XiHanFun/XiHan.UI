@@ -80,7 +80,7 @@ export interface LogSchema extends MachineSchema {
   tag: never
   guard: 'canPress'
   action: 'setStickState' | 'invokeScrollToBottom' | 'startPress' | 'endPress' | 'setTriggerRendered'
-  effect: 'trackStickToBottom' | 'trackTriggerPresence'
+  effect: 'trackStickToBottom' | 'trackTriggerPresence' | 'trackLiquid'
 }
 
 export interface LogProps {
