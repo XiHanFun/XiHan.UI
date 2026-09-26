@@ -9,11 +9,13 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { NumberAnimationApi, NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { createScope } from '@xihan-ui/core'
 import { connectNumberAnimation, numberAnimationMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
 import { useMachine } from '../../runtime/use-machine'
+import { createVueIdGenerator } from '../../runtime/vue-id'
 
 type NumberAnimationProps = NumberAnimationSchema['props']
 
@@ -51,7 +53,7 @@ export const XhNumberAnimation = defineComponent({
     const notify: NumberAnimationProps['onComplete'] = (details: NumberAnimationCompleteDetails) => {
       emit('complete', details)
     }
-    const service = useMachine(numberAnimationMachine, () => ({ ...props, onComplete: notify }))
+    const service = useMachine(numberAnimationMachine, () => ({ ...props, onComplete: notify }), createScope(null, createVueIdGenerator()))
     const api = computed(() => connectNumberAnimation(service, vueNormalize))
 
     return () => {
