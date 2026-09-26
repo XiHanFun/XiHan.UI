@@ -542,6 +542,11 @@
       "$type": "duration",
       "$value": "{duration.normal}"
     },
+    "duration-attention": {
+      "$description": "注意动效播一遍：抖动、脉冲、心跳这类从静息态出发再回到静息态的强调，只给 @xihan-ui/animations 的注意预设用，核心组件不用注意动效。减弱动效下预设不播，归 1ms。",
+      "$type": "duration",
+      "$value": "calc({duration.slow} * 2)"
+    },
     "stagger-step": {
       "$description": "交错进场的相邻两项间隔。派生自 duration-enter 的五分之一，改进场时长它跟着走。减弱档显式归 0ms，不靠 calc 传递。",
       "$type": "duration",
@@ -630,6 +635,11 @@
       "$type": "cubicBezier",
       "$value": "{ease.out-back}"
     },
+    "ease-emphasis": {
+      "$description": "表现性进场：@xihan-ui/animations 的上浮、落入、旋入预设取这一条。组件皮肤不用，组件的出现走 ease-enter / ease-enter-strong。",
+      "$type": "cubicBezier",
+      "$value": "{ease.emphasized}"
+    },
     "distance-sm": {
       "$type": "dimension",
       "$value": "{space.1}"
@@ -637,6 +647,11 @@
     "distance-md": {
       "$type": "dimension",
       "$value": "{space.2}"
+    },
+    "distance-lg": {
+      "$description": "表现性进场的位移：@xihan-ui/animations 的淡入位移预设取这一档，上浮、落入取它的 1.5 倍。组件皮肤不用。减弱动效下归零。",
+      "$type": "dimension",
+      "$value": "{space.4}"
     },
     "travel": {
       "$description": "整幅位移：面板从所在边整条推入推出（抽屉、轻提示），以自身尺寸的百分比计。减弱动效下归零，进出场只剩淡变。",

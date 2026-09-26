@@ -478,6 +478,11 @@
       "$description": "正弦式缓入缓出：两端比 in-out 更软，起伏像一次呼吸。与 easing.ts 的 sineInOut 逐值相同。",
       "$type": "cubicBezier",
       "$value": "cubic-bezier(0.37, 0, 0.63, 1)"
+    },
+    "emphasized": {
+      "$description": "表现性进场：起步稍缓、收尾一路压平，比 out-strong 更舒展。与 easing.ts 的 emphasized 逐值相同。",
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.3, 0, 0, 1)"
     }
   }
 }

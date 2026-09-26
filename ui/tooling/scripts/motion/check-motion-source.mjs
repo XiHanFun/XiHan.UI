@@ -6,7 +6,7 @@
 // @xihan-ui/motion 是 engine 组，不能依赖 design 组，所以它把同一批值抄成常量：
 //   easing.ts   —— 原语曲线（名字按 JS 习惯写成驼峰）
 //   durations.ts —— 原语时长
-//   semantic.ts —— 语义时长、减弱档语义时长、语义缓动（值引用上面两张表）
+//   semantic.ts —— 语义时长、减弱档语义时长、语义缓动、错开步长（值引用上面两张表）与语义位移
 //   spring.ts   —— 弹簧预设（semantic.base.json 的 motion.spring-<名>.stiffness / damping，质量恒为 1）
 // 两边互不引用，任何一边改了值另一边不会报错，只有这里对账。
 // 对账是双向的：令牌多出来的名字 JS 要补，JS 多出来的名字要么删、要么登记在 JS_ONLY 并写明理由。
@@ -28,7 +28,6 @@ const jsEaseName = token => EASE_NAME[token] ?? token.replace(/-(\w)/g, (_, c) =
 /** JS 缓动表里没有令牌对应的名字，逐条写理由。登记了却不在表里的判过期。 */
 const JS_ONLY = {
   linear: 'CSS 关键字本身，语义层 ease-loop 直接取 linear，原语层不设这一条',
-  emphasized: '表现性进场曲线，供 @xihan-ui/animations 的预设使用；组件皮肤不用',
 }
 
 /** 读 `key: 'value'` 形式的字符串常量。 */
@@ -109,12 +108,19 @@ for (const key of jsDurations.keys()) {
     problems.push(`durations.${key} 没有令牌对应：在 ${PRIMITIVE} 补 duration.${key} 或删掉它`)
 }
 
-/** 语义令牌取值 `{duration.normal}` / `{ease.out}` / 字面值 → 期望的 JS 引用。 */
+/**
+ * 语义令牌取值 → 期望的 JS 写法：单个原语引用 `{duration.normal}` / `{ease.out}` 取同名常量，
+ * 原语的倍数 `calc({duration.slow} * 2)` 取 `durations.slow * 2`；其余写法无从对账，返回 null。
+ */
 function expectedRef(value, table) {
-  const ref = /^\{(duration|ease)\.([\w-]+)\}$/.exec(String(value))
-  if (!ref)
-    return table === 'easing' && value === 'linear' ? 'easing.linear' : null
-  return ref[1] === 'duration' ? `durations.${ref[2]}` : `easing.${jsEaseName(ref[2])}`
+  const text = String(value)
+  const ref = /^\{(duration|ease)\.([\w-]+)\}$/.exec(text)
+  if (ref)
+    return ref[1] === 'duration' ? `durations.${ref[2]}` : `easing.${jsEaseName(ref[2])}`
+  const scaled = /^calc\(\{duration\.(\w+)\} ([*/]) (\d+(?:\.\d+)?)\)$/.exec(text)
+  if (scaled && table === 'durations')
+    return `durations.${scaled[1]} ${scaled[2]} ${scaled[3]}`
+  return table === 'easing' && text === 'linear' ? 'easing.linear' : null
 }
 
 // —— 语义时长与语义缓动：令牌 ↔ semantic.ts ——
@@ -132,7 +138,7 @@ for (const [prefix, constName, table] of [['duration-', 'motionDurations', 'dura
     if (got == null)
       problems.push(`${constName} 缺 ${key}（对应 --xh-motion-${prefix}${key}）`)
     else if (want == null)
-      problems.push(`--xh-motion-${prefix}${key} 的取值 ${base[`${prefix}${key}`].$value} 不是单个原语引用，${constName}.${key} 无从对账`)
+      problems.push(`--xh-motion-${prefix}${key} 的取值 ${base[`${prefix}${key}`].$value} 既不是单个原语引用、也不是原语的倍数，${constName}.${key} 无从对账`)
     else if (got !== want)
       problems.push(`--xh-motion-${prefix}${key} 取 ${base[`${prefix}${key}`].$value}，${constName}.${key} 却是 ${got}（应为 ${want}）`)
   }
@@ -181,6 +187,51 @@ else {
   }
 }
 
+// —— 错开步长：令牌 ↔ motionStaggerStep ——
+{
+  checked++
+  const token = base['stagger-step']?.$value
+  const want = expectedRef(token, 'durations')
+  const got = /^export const motionStaggerStep(?::\s*\w+)?\s*=\s*(.+)$/m.exec(semanticTs)?.[1]?.trim()
+  if (got == null)
+    problems.push(`${SEMANTIC_TS} 缺 motionStaggerStep（对应 --xh-motion-stagger-step）`)
+  else if (want == null)
+    problems.push(`--xh-motion-stagger-step 的取值 ${token} 既不是单个原语引用、也不是原语的倍数，motionStaggerStep 无从对账`)
+  else if (got !== want)
+    problems.push(`--xh-motion-stagger-step 取 ${token}，motionStaggerStep 却是 ${got}（应为 ${want}）`)
+}
+
+// —— 语义位移：令牌 ↔ motionDistances ——
+// 令牌取 `{space.N}`，JS 写对应的 px 数；位移在减弱动效下一律归零，JS 侧不另设减弱表，这里一并核减弱档
+{
+  const js = readObjectEntries(semanticTs, 'motionDistances')
+  const tokenKeys = Object.keys(base).filter(k => k.startsWith('distance-')).map(k => k.slice('distance-'.length))
+  if (js == null) {
+    problems.push(`${SEMANTIC_TS} 缺 motionDistances`)
+  }
+  else {
+    for (const key of tokenKeys) {
+      checked++
+      const value = String(base[`distance-${key}`].$value)
+      const space = /^\{space\.(\w+)\}$/.exec(value)?.[1]
+      const px = space ? Number.parseFloat(String(primitive.space?.[space]?.$value)) : Number.NaN
+      const got = js.has(key) ? Number(js.get(key)) : null
+      if (got == null)
+        problems.push(`motionDistances 缺 ${key}（对应 --xh-motion-distance-${key}）`)
+      else if (!Number.isFinite(px))
+        problems.push(`--xh-motion-distance-${key} 的取值 ${value} 不是 {space.N} 引用，motionDistances.${key} 无从对账`)
+      else if (got !== px)
+        problems.push(`--xh-motion-distance-${key} 是 ${px}px，motionDistances.${key} 却是 ${got}`)
+      if (reduce[`distance-${key}`]?.$value !== '0px')
+        problems.push(`--xh-motion-distance-${key} 的减弱档不是 0px：位移在减弱动效下必须归零`)
+    }
+    for (const key of js.keys()) {
+      if (!tokenKeys.includes(key))
+        problems.push(`motionDistances.${key} 没有令牌对应：在 ${BASE} 补 motion.distance-${key} 或删掉它`)
+    }
+  }
+}
+
 // —— 弹簧预设：令牌 ↔ springPresets ——
 const springTs = await readFile(SPRING_TS, 'utf8')
 // 每条预设本身是一个对象字面量，通用读取器遇到内层花括号就截断，这里逐行取「名: { … }」
@@ -223,4 +274,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-motion-source] 通过：${checked} 条缓动 / 时长 / 弹簧常量与令牌双向一致（JS 独有 ${Object.keys(JS_ONLY).length} 条已登记）`)
+console.log(`[check-motion-source] 通过：${checked} 条缓动 / 时长 / 位移 / 弹簧常量与令牌双向一致（JS 独有 ${Object.keys(JS_ONLY).length} 条已登记）`)

@@ -36,8 +36,8 @@ export {
 } from './reduced-motion'
 export type { MotionPreference } from './reduced-motion'
 // 语义动效常量
-export { motionDurations, motionEasings } from './semantic'
-export type { MotionDurationName, MotionEaseName } from './semantic'
+export { motionDistances, motionDurations, motionEasings, motionStaggerStep } from './semantic'
+export type { MotionDistanceName, MotionDurationName, MotionEaseName } from './semantic'
 // 弹簧
 export { createSpring, springFromPerceptual, springPresets, springToLinearEasing, supportsLinearEasing } from './spring'
 export type { SpringPerceptual, SpringPhysical, SpringPresetName, SpringSolver, SpringSpec } from './spring'
