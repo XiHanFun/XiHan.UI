@@ -25,6 +25,7 @@ import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 import {
   cartesianActive,
   cartesianAnchor,
+  cartesianDatumLabel,
   cartesianDetails,
   cartesianHitTest,
   cartesianKeyIndexOf,
@@ -47,6 +48,11 @@ const EMPTY_SCENE: Scene = createScene({ version: 0, layers: {}, bounds: { x: 0,
 
 /** 文字基线的写法：场景里是 top / middle / bottom，SVG 的 dominant-baseline 各有对应。 */
 const BASELINE = { top: 'hanging', middle: 'central', bottom: 'text-after-edge', alphabetic: 'alphabetic' } as const
+
+/** 色标画成什么：柱与面积是方块，折线是一段短线，散点是点（形状另由 data-symbol 给出）。 */
+function swatchMark(item: { mark: CartesianLegendItem['mark'], area: boolean }): 'bar' | 'line' | 'point' {
+  return item.mark === 'scatter' ? 'point' : item.mark === 'line' && !item.area ? 'line' : 'bar'
+}
 
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function cartesianMarkTag(mark: Mark): CartesianMarkTag {
@@ -93,7 +99,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const ids = scope.ids('cartesian-chart', 'caption', 'summary', 'plot')
   const model = cartesianModelOf(service)
   const translations = cartesianTranslations(prop('translations'))
-  const trigger = cartesianTrigger(prop('trigger'))
+  const trigger = cartesianTrigger(prop('trigger'), model)
   const orientation = model.spec.orientation
   const size = context.get('size')
   const hidden = context.get('hiddenSeries')
@@ -110,8 +116,9 @@ export function connectCartesianChart<T extends PropTypes>(
   const focusWithin = context.get('focusWithin')
   const anchor = cartesianAnchor(model, focused)
   const anchorKey = anchor ? cartesianMarkKey(model, anchor) : null
-  // 锚点落在柱上时柱自己占 Tab 位；落在折线上时绘图区占，聚焦时再转投给焦点代理
-  const anchorIsBar = anchor != null && model.derived.visible.find(s => s.spec.id === anchor.seriesId)?.spec.mark === 'bar'
+  // 锚点落在柱或散点上时标记自己占 Tab 位；落在折线上时绘图区占，聚焦时再转投给焦点代理
+  const anchorMark = anchor == null ? undefined : model.derived.visible.find(s => s.spec.id === anchor.seriesId)?.spec.mark
+  const anchorIsBar = anchorMark === 'bar' || anchorMark === 'scatter'
 
   const active: CartesianActive | null = cartesianActive(model, {
     hover: context.get('hover'),
@@ -139,6 +146,7 @@ export function connectCartesianChart<T extends PropTypes>(
     tone: s.tone,
     mark: s.mark,
     area: s.area,
+    symbol: s.symbol,
     hidden: hidden.includes(s.id),
   }))
   const legendAnchor = legendItems.some(item => item.id === context.get('legendFocus'))
@@ -277,12 +285,13 @@ export function connectCartesianChart<T extends PropTypes>(
     }),
 
     // 色标只给眼睛看：名字由项里的文字承担
-    // 色标随标记：柱与面积是方块，折线是一段短线
+    // 色标随标记：柱与面积是方块，折线是一段短线，散点是它的形状
     getLegendSwatchProps: item => normalize.element({
       ...parts['legend-swatch'].attrs,
       'data-xh-chart-part': 'legend-swatch',
       'aria-hidden': true,
-      'data-mark': item.mark === 'line' && !item.area ? 'line' : 'bar',
+      'data-mark': swatchMark(item),
+      'data-symbol': item.symbol ?? undefined,
     }),
 
     getLegendLabelProps: () => normalize.element({
@@ -363,11 +372,11 @@ export function connectCartesianChart<T extends PropTypes>(
         }
         const key = target.getAttribute('data-key')
         const info = key == null ? undefined : model.scene?.info.get(key)
-        if (!info || info.keyIndex < 0)
+        if (!info || info.position < 0)
           return
         const s = model.derived.visible.find(v => v.spec.id === info.seriesId)
         if (s)
-          focusTo({ seriesId: s.spec.id, index: s.rows[info.keyIndex]! }, visible, false)
+          focusTo({ seriesId: s.spec.id, index: s.rows[info.position]! }, visible, false)
       },
       'onFocusOut': (event: FocusEvent) => {
         // 绘图区内部换焦点不算离场，提示框要跟着焦点继续显示
@@ -476,12 +485,14 @@ export function connectCartesianChart<T extends PropTypes>(
         props['aria-hidden'] = true
       }
       else if (mark.part === 'bar' || (mark.part === 'point' && mark.a11y?.focusable)) {
+        // 散点的点与柱一样本身就是数据标记，roving 取 Tab 位；折线上的点是焦点代理，出现即占
+        const proxy = mark.part === 'point' && (mark.datum == null || seriesById.get(mark.datum.seriesId)?.mark !== 'scatter')
         const ref = mark.datum ?? null
         const own = ref ? cartesianDetails(model, ref, 'item') : null
         props.role = 'graphics-symbol'
-        props['aria-label'] = own ? translations.datumLabel(own) : undefined
+        props['aria-label'] = own ? cartesianDatumLabel(own, translations) : undefined
         props['data-key'] = mark.key
-        props.tabindex = mark.part === 'point' ? 0 : mark.key === anchorKey ? 0 : -1
+        props.tabindex = proxy ? 0 : mark.key === anchorKey ? 0 : -1
       }
       else {
         props['aria-hidden'] = true
@@ -531,7 +542,8 @@ export function connectCartesianChart<T extends PropTypes>(
     getTooltipSwatchProps: row => normalize.element({
       ...parts['tooltip-swatch'].attrs,
       'data-xh-chart-part': 'tooltip-swatch',
-      'data-mark': row.mark === 'line' && !row.area ? 'line' : 'bar',
+      'data-mark': swatchMark(row),
+      'data-symbol': row.symbol ?? undefined,
     }),
 
     getTooltipValueProps: () => normalize.element({

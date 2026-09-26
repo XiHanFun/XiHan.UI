@@ -27,6 +27,7 @@ export type {
   CartesianMarkTag,
   CartesianOrientation,
   CartesianScaleKind,
+  CartesianScatterSeries,
   CartesianSeries,
   CartesianSeriesBase,
   CartesianTooltipModel,

@@ -6,7 +6,7 @@
 // 定义 cartesian chart 类型契约。
 
 import type { MachineSchema, PropTypes, Tone } from '@xihan-ui/core'
-import type { Mark, NumberFormatSpec, Scene, TableModel } from '@xihan-ui/viz'
+import type { Mark, NumberFormatSpec, Scene, SymbolName, TableModel } from '@xihan-ui/viz'
 import type {
   ChartBaseAction,
   ChartBaseComputed,
@@ -100,7 +100,22 @@ export interface CartesianLineSeries extends CartesianSeriesBase {
   endLabel?: boolean
 }
 
-export type CartesianSeries = CartesianBarSeries | CartesianLineSeries
+/** 散点系列：每行一个点，看两个量的分布与相关；给 size 即气泡。 */
+export interface CartesianScatterSeries extends CartesianSeriesBase {
+  mark: 'scatter'
+  x: string
+  y: string
+  /** 气泡：按面积映射这个字段（半径取平方根），全部散点系列共用一把尺；缺失、负值或 0 的行不画。 */
+  size?: string
+  /** 点的形状；缺省按色槽依次取圆、方、菱形、三角……颜色之外再多一道身份。 */
+  symbol?: SymbolName
+  /** 类目轴上的横向抖动：类目步长的比例 0–1。以数据身份为种子，重渲染不跳；数据会换序时给 datumId，同一个点才落在同一处。缺省 0。 */
+  jitter?: number
+  /** 数据身份字段：过渡里同一个点从旧位置滑到新位置、抖动的种子都取它；缺省按 x 与同一 x 上的出现次序。 */
+  datumId?: string
+}
+
+export type CartesianSeries = CartesianBarSeries | CartesianLineSeries | CartesianScatterSeries
 
 /** 一根坐标轴的配置。x 是自变量轴，y 是数值轴，与屏幕方向无关（orientation 决定画在哪边）。 */
 export interface CartesianAxis {
@@ -132,9 +147,11 @@ export interface CartesianLegendItem {
   readonly name: string
   readonly slot: number | null
   readonly tone: Tone | null
-  readonly mark: 'bar' | 'line'
+  readonly mark: 'bar' | 'line' | 'scatter'
   /** 有面积的折线：图例色标画成方块。 */
   readonly area: boolean
+  /** 散点的形状：色标画成同一个形状；其余系列为 null。 */
+  readonly symbol: SymbolName | null
   readonly hidden: boolean
 }
 
@@ -145,8 +162,9 @@ export interface CartesianTooltipRow {
   readonly value: string
   readonly slot: number | null
   readonly tone: Tone | null
-  readonly mark: 'bar' | 'line'
+  readonly mark: 'bar' | 'line' | 'scatter'
   readonly area: boolean
+  readonly symbol: SymbolName | null
 }
 
 /** 提示框的内容：头部是自变量的格式化值，每个系列一行。 */
@@ -158,6 +176,12 @@ export interface CartesianTooltipModel {
 export interface CartesianChartTranslations extends ChartTranslations {
   /** 数据表第一列的列名，缺省取 x 轴标题。 */
   keyLabel: string
+  /** 含散点时数据表改为每个数据一行：系列列的列名。 */
+  seriesLabel: string
+  /** 含散点时数据表数值列的列名，缺省取 y 轴标题。 */
+  valueLabel: string
+  /** 气泡大小在数据表、提示框与可及名里的名字。 */
+  sizeLabel: string
   /** 摘要模板。 */
   summary: (model: ChartSummary) => string
 }
@@ -171,7 +195,7 @@ export interface CartesianChartSchema extends MachineSchema {
     yAxis?: CartesianAxis
     /** 朝向，缺省 vertical。 */
     orientation?: CartesianOrientation
-    /** 提示框汇报什么；缺省含柱或折线时 axis。 */
+    /** 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 */
     trigger?: CartesianTrigger
     /** 堆叠柱的合计：每个堆叠组在最外端写出合计，含负值时正负两端各写一个；百分比堆叠不写。缺省 false。 */
     totals?: boolean

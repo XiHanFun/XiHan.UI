@@ -7838,6 +7838,7 @@
         "area-fill",
         "bar",
         "dot",
+        "legend-item",
         "legend-swatch",
         "line",
         "pattern-line",
@@ -7854,6 +7855,10 @@
         "@media (forced-colors: active)",
         "@media print",
         "mark=line",
+        "mark=point",
+        "not([data-symbol='circle'], [data-symbol='square'])",
+        "symbol=circle",
+        "symbol=square",
         "tone",
         "where([data-xh-chart-patterns])",
         "xh-chart-pattern",
@@ -7887,7 +7892,7 @@
         "--xh-chart-categorical-8"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 area-fill、bar、dot、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
+      "description": "cartesian-chart 的 area-fill、bar、dot、legend-item、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-tooltip-gap",

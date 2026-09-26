@@ -17892,6 +17892,50 @@
     --xh-_chart-tooltip-swatch-line-radius: var(--xh-cartesian-chart-tooltip-swatch-line-radius, var(--xh-shape-pill));
   }
 
+  /* 散点的色标画成点的形状：圆取整圆，方块沿用色标的缺省圆角，其余形状按裁切多边形画出 */
+  [data-scope='cartesian-chart'][data-part='legend-swatch'][data-symbol='circle'] {
+    --xh-_chart-legend-swatch-radius: var(--xh-shape-circle);
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip-swatch'][data-symbol='circle'] {
+    --xh-_chart-tooltip-swatch-radius: var(--xh-shape-circle);
+  }
+
+  [data-scope='cartesian-chart'][data-symbol='diamond'] {
+    --xh-_chart-symbol-clip: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+
+  [data-scope='cartesian-chart'][data-symbol='triangle'] {
+    --xh-_chart-symbol-clip: polygon(50% 0, 100% 100%, 0 100%);
+  }
+
+  [data-scope='cartesian-chart'][data-symbol='triangleDown'] {
+    --xh-_chart-symbol-clip: polygon(0 0, 100% 0, 50% 100%);
+  }
+
+  [data-scope='cartesian-chart'][data-symbol='cross'] {
+    --xh-_chart-symbol-clip: polygon(35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%, 0 35%, 35% 35%);
+  }
+
+  [data-scope='cartesian-chart'][data-symbol='star'] {
+    --xh-_chart-symbol-clip: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
+
+  [data-scope='cartesian-chart'][data-symbol='wye'] {
+    --xh-_chart-symbol-clip: polygon(38% 0, 62% 0, 62% 42%, 98% 70%, 86% 88%, 50% 60%, 14% 88%, 2% 70%, 38% 42%);
+  }
+
+  [data-scope='cartesian-chart'][data-part='legend-swatch'][data-mark='point'],
+  [data-scope='cartesian-chart'][data-part='tooltip-swatch'][data-mark='point'] {
+    clip-path: var(--xh-_chart-symbol-clip, none);
+  }
+
+  /* 裁切出来的形状画不出空心：隐藏的项改为淡出，名字的删除线与次级字色照常 */
+  [data-scope='cartesian-chart'][data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'][data-mark='point']:not([data-symbol='circle'], [data-symbol='square']) {
+    background: var(--xh-_chart-series);
+    opacity: var(--xh-chart-dim-alpha);
+  }
+
   [data-scope='cartesian-chart'][data-part='empty'][data-state='loading'] {
     --xh-_chart-empty-gap: var(--xh-cartesian-chart-empty-gap, var(--xh-space-2));
   }

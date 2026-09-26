@@ -90,7 +90,7 @@ export const cartesianChartMachine = createMachine({
         // 联动过来的键不算本图的激活：那是另一张图在报，本图再报一次就成了回声
         const details = active == null || active.source === 'linked'
           ? null
-          : cartesianDetails(model, active.ref, cartesianTrigger(params.prop('trigger')))
+          : cartesianDetails(model, active.ref, cartesianTrigger(params.prop('trigger'), model))
         notifyChartActive(params, details)
       },
       reportIssues: (params) => {
