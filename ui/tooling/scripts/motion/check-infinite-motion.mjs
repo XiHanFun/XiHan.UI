@@ -2,8 +2,8 @@
 // 门禁：皮肤里每一处无限循环的动画，都必须在同一份皮肤里被减弱动效停掉——两个触发条件各一份。
 //
 // 令牌层的减弱档只把时长压到 1ms，压不住 `infinite`：1ms 一圈的转圈仍然在转，只是快到看不清。
-// 所以写了 `infinite` 的那个部件，要在 `@media (prefers-reduced-motion: reduce)` 里被 `animation: none`，
-// 还要有一份 `:where([data-motion='reduce']) <同样的选择器>`——作者在容器上打 data-motion="reduce"
+// 所以写了 `infinite` 的那个部件，要在 `@media (prefers-reduced-motion: reduce)` 里被 `animation: none`
+// 或换成一段不再循环的动画（减弱档保留的淡入），还要有一份 `:where([data-motion='reduce']) <同样的选择器>`——作者在容器上打 data-motion="reduce"
 // 局部减弱时，媒体查询不会命中，只有这份选择器版本接得住。
 // 停掉的规则可以落在部件本身，也可以落在它的 ::before / ::after 上（转圈多画在伪元素上）。
 import { readdir, readFile } from 'node:fs/promises'
@@ -79,8 +79,12 @@ function isInfinite(decls) {
   return count !== null && /(?<![\w-])infinite(?![\w-])/.test(count)
 }
 
+/** 循环停了：整条换成 none，或换成不带 infinite 的有限几段（减弱动效下保留的淡入淡出）。 */
 function isStopped(decls) {
-  return valueOf(decls, 'animation') === 'none' || valueOf(decls, 'animation-name') === 'none'
+  if (valueOf(decls, 'animation-name') === 'none')
+    return true
+  const animation = valueOf(decls, 'animation')
+  return animation !== null && !/(?<![\w-])infinite(?![\w-])/.test(animation)
 }
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
@@ -117,7 +121,7 @@ for (const file of files) {
       const part = partOf(selector)
       const at = `${file}:${rule.line}  ${selector}`
       if (!mediaStops.has(part))
-        problems.push(`${at}  —— 无限循环的动画没有在 @media (prefers-reduced-motion: reduce) 里被 animation: none 停掉`)
+        problems.push(`${at}  —— 无限循环的动画没有在 @media (prefers-reduced-motion: reduce) 里停掉（animation: none，或换成不循环的一段）`)
       if (!dataStops.has(part))
         problems.push(`${at}  —— 缺 :where([data-motion='reduce']) ${part} 这份规则，作者在容器上打 data-motion 时停不下来`)
     }
@@ -128,7 +132,7 @@ if (problems.length) {
   console.error('[check-infinite-motion] ✗ 无限循环动画没有被减弱动效停掉：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('写了 infinite 的部件，在同一份皮肤里要有 @media (prefers-reduced-motion: reduce) 与 :where([data-motion=\'reduce\']) 两份 animation: none。')
+  console.error('写了 infinite 的部件，在同一份皮肤里要有 @media (prefers-reduced-motion: reduce) 与 :where([data-motion=\'reduce\']) 两份停掉循环的规则：animation: none，或换成不循环的一段。')
   process.exit(1)
 }
 
