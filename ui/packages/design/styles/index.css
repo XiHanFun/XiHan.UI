@@ -32344,8 +32344,8 @@
     --xh-sortable-skin: 1;
   }
 
-  /* 分工：**每一项的位移**由连接层每帧写进内联 transform（让位与跟手都在那儿算）。
-     这份皮肤一条都不碰 transform——内联优先级更高，写了不但是死声明，
+  /* 分工：**每一项的位移**由连接层每帧写进内联 translate（让位与跟手都在那儿算）。
+     这份皮肤一条都不碰 translate——内联优先级更高，写了不但是死声明，
      还会在拖动的每一帧跟连接层抢位置。皮肤只管排布方向、间距、光标与状态表现。 */
 
   [data-scope='sortable'][data-part='root'] {
@@ -32379,10 +32379,10 @@
   /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
      其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
   [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
-    transition: transform var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
+    transition: translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
-  /* 抓起与放下时的抬升、压深都淡变。位移不进这条：它由连接层每帧写内联 transform */
+  /* 抓起与放下时的抬升、压深都淡变。位移不进这条：它由连接层每帧写内联 translate */
   [data-scope='sortable'][data-part='item'] {
     transition:
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -32391,7 +32391,7 @@
 
   /* 放下后那一项由弹簧带着松手速度逐帧收进新位置：只在这一档备好合成层，落定即撤 */
   [data-scope='sortable'][data-part='item'][data-animating] {
-    will-change: transform;
+    will-change: translate;
   }
 
   [data-scope='sortable'][data-part='item'][data-dragging] {
@@ -32496,7 +32496,7 @@
     border-radius: var(--xh-sortable-drop-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-sortable-drop-indicator-bg, var(--xh-bg-brand));
     /* 落点一格一格地跳，线跟着滑过去 */
-    transition: transform var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
+    transition: translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
   /* 竖排时是一条横线铺满容器，横排与换行网格时是一条竖线 */

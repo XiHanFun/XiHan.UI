@@ -39,7 +39,7 @@ const ID_LIST_CONVERTER = {
  * 单独禁用某一项写 `item-disabled`。未提供 item-drag-trigger 时整项可拖动。
  *
  * 拖动落点采用乐观投影：拖动过程中其余项实时让位，松手即确定。让位与跟手的位移由元素每帧
- * 写入内联 transform，作者的样式表不应再修改该属性。
+ * 写入内联 translate，作者的样式表不应再修改该属性。
  *
  * 键盘全部在手柄上：空格或回车拾起、方向键移动一格、再按空格放下、Esc 取消。
  * 拖动中的 Tab 会被拦截：焦点一旦移走，本场拖动就没有出口。
@@ -55,7 +55,7 @@ const ID_LIST_CONVERTER = {
  * @fires drag-start - 拾起；detail 为 `{ id, from, mode }`
  * @fires drag-end - 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`
  * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器
- * @csspart item - 一项；位移由内联 transform 给出，被拖动的项带 data-dragging
+ * @csspart item - 一项；位移由内联 translate 给出，被拖动的项带 data-dragging
  * @csspart item-drag-trigger - role=button 的拖拽手柄，指针与键盘交互全部在它身上
  * @csspart drop-indicator - 落点线；拖动中绘制在松手后该项将插入的缝隙上，位置由内联样式给出，节点排在末项之后
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里

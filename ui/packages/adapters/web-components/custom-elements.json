@@ -47831,7 +47831,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-sortable>`：Light-DOM 行为宿主：作者写 root / item / item-drag-trigger / live-region 角色节点，\n元素运行 sortable 状态机并把 connect 产出接上。\n\n顺序的唯一真源是 `ids`，DOM 中项的先后必须与它一致：几何按 DOM 测量，事件按 `ids` 计算。\n每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明所属的项（与 Vue 侧的 `:item-id` 同一份声明）。\n单独禁用某一项写 `item-disabled`。未提供 item-drag-trigger 时整项可拖动。\n\n拖动落点采用乐观投影：拖动过程中其余项实时让位，松手即确定。让位与跟手的位移由元素每帧\n写入内联 transform，作者的样式表不应再修改该属性。\n\n键盘全部在手柄上：空格或回车拾起、方向键移动一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦截：焦点一旦移走，本场拖动就没有出口。",
+          "description": "`<xh-sortable>`：Light-DOM 行为宿主：作者写 root / item / item-drag-trigger / live-region 角色节点，\n元素运行 sortable 状态机并把 connect 产出接上。\n\n顺序的唯一真源是 `ids`，DOM 中项的先后必须与它一致：几何按 DOM 测量，事件按 `ids` 计算。\n每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明所属的项（与 Vue 侧的 `:item-id` 同一份声明）。\n单独禁用某一项写 `item-disabled`。未提供 item-drag-trigger 时整项可拖动。\n\n拖动落点采用乐观投影：拖动过程中其余项实时让位，松手即确定。让位与跟手的位移由元素每帧\n写入内联 translate，作者的样式表不应再修改该属性。\n\n键盘全部在手柄上：空格或回车拾起、方向键移动一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦截：焦点一旦移走，本场拖动就没有出口。",
           "name": "XhSortableElement",
           "cssParts": [
             {
@@ -47839,7 +47839,7 @@
               "name": "root"
             },
             {
-              "description": "一项；位移由内联 transform 给出，被拖动的项带 data-dragging",
+              "description": "一项；位移由内联 translate 给出，被拖动的项带 data-dragging",
               "name": "item"
             },
             {

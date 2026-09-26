@@ -90,7 +90,7 @@ describe('排序放下归位', () => {
     expect(moved.hasAttribute('data-animating')).toBe(true)
     expect(Math.abs(moved.getBoundingClientRect().top - (start + dy))).toBeLessThan(20)
     await expect.poll(() => moved.hasAttribute('data-animating'), { timeout: 2000 }).toBe(false)
-    expect(moved.style.transform).toBe('')
+    expect(moved.style.translate).toBe('')
     // 新位置：b、c 两项让出来的地方
     expect(moved.getBoundingClientRect().top).toBeCloseTo(rects[2]!.bottom - rects[0]!.height, 0)
   })
@@ -116,6 +116,6 @@ describe('排序放下归位', () => {
     await nextTick()
     await frames(1)
     expect(itemA().hasAttribute('data-animating')).toBe(false)
-    expect(itemA().style.transform).toBe('')
+    expect(itemA().style.translate).toBe('')
   })
 })
