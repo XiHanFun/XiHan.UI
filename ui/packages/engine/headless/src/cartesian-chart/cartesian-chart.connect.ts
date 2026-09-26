@@ -375,14 +375,17 @@ export function connectCartesianChart<T extends PropTypes>(
           'opacity': mark.opacity,
         })
       }
-      // 新出现的折线由描线关键帧从头描到尾：路径长度归一，虚线偏移从 1 走到 0
-      const drawing = mark.part === 'line' && frame?.entering.has(mark.key) === true
+      // 新出现的折线由描线关键帧从头描到尾：路径长度归一，虚线偏移从 1 走到 0；
+      // 数据点等笔尖扫到才淡入：内核按描线的曲线换算出它占入场时长的比例，样式乘上时长得到延迟
+      const stroke = mark.part === 'line' && frame?.entering.has(mark.key) === true
+      const at = frame?.revealAt.get(mark.key)
       const props: Record<string, unknown> = {
         ...base,
         'd': pathOf(mark),
         'opacity': mark.opacity,
-        'pathLength': drawing ? 1 : undefined,
-        'data-drawing': dataAttr(drawing),
+        'pathLength': stroke ? 1 : undefined,
+        'data-drawing': dataAttr(stroke || at != null),
+        ...(at == null ? {} : { style: { '--xh-_chart-reveal-at': at.toFixed(3) } }),
       }
       // 退出中的标记只剩收场的样子：不可聚焦、不进可访问树
       if (mark.exiting) {

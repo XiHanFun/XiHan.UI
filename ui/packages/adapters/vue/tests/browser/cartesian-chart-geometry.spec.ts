@@ -219,6 +219,10 @@ describe('过渡', () => {
     const offset = Number.parseFloat(getComputedStyle(line).strokeDashoffset)
     expect(offset).toBeGreaterThan(0)
     expect(offset).toBeLessThan(1)
+    // 数据点等笔尖扫到才出现：笔尖还在起点附近，末端的点仍是透明的
+    const dots = all('dot')
+    expect(dots.length).toBeGreaterThan(1)
+    expect(Number(getComputedStyle(dots.at(-1)!).opacity)).toBe(0)
 
     state.animated = false
     await settle()

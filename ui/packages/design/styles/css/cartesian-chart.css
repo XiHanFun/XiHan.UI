@@ -5,7 +5,7 @@
 
 /* 定义 cartesian chart 样式。 */
 
-/* 描线关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 描线与淡入关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -173,6 +173,13 @@
   [data-scope='cartesian-chart'][data-part='line'][data-drawing] {
     stroke-dasharray: 1;
     animation: xh-draw var(--xh-motion-duration-reveal) var(--xh-motion-ease-continuous) both;
+  }
+
+  /* 数据点等描线的笔尖扫到才淡入：连接层写入它占入场时长的比例，乘上入场时长就是延迟，
+     作者改时长、系统开减弱动效时跟着缩放 */
+  [data-scope='cartesian-chart'][data-part='dot'][data-drawing] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
+    animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
   }
 
   /* 减弱动效下折线直接在场，只随过渡淡入：作者在图上放慢了时长也不描线，与柱的几何直接到位同一条规则。

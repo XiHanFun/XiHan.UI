@@ -8,7 +8,7 @@
 
 import type { ActionFn, Bindable, ContextParams, EffectFn, MachineSchema, Params, TransitionMap } from '@xihan-ui/core'
 import type { Scene, TextMeasurer } from '@xihan-ui/viz'
-import type { ChartFrame, ChartShown, ChartTransitionOptions, ChartTransitionRun, ChartTransitionState } from './transition'
+import type { ChartFrame, ChartNumbers, ChartShown, ChartTransitionOptions, ChartTransitionRun, ChartTransitionState } from './transition'
 import type {
   ChartCommonProps,
   ChartDatumDetails,
@@ -247,12 +247,19 @@ function markElement(root: HTMLElement, key: string): HTMLElement | null {
   return root.querySelector<HTMLElement>(`[data-key="${escaped}"][tabindex]`)
 }
 
+/** 各图表交给内核的过渡设定；numbers 是随过渡滚动的数，按当前数据算出。 */
+export type ChartBaseTransition<S extends ChartBaseSchema> = ChartTransitionOptions & {
+  readonly numbers?: (params: Params<S>) => ChartNumbers
+}
+
 /** 把机器的几片状态交给过渡。 */
-function transitionState<S extends ChartBaseSchema>({ context, refs, prop, scope, computed, send }: Params<S>): ChartTransitionState {
+function transitionState<S extends ChartBaseSchema>(params: Params<S>, transition: ChartBaseTransition<S>): ChartTransitionState {
+  const { context, refs, prop, scope, computed, send } = params
   const root = refs.get('getRootEl')()
   return {
     animated: prop('animated') !== false,
     target: computed('scene'),
+    numbers: transition.numbers?.(params) ?? {},
     size: context.get('size'),
     metrics: context.get('metrics'),
     measurerVersion: context.get('measurerVersion'),
@@ -275,7 +282,7 @@ function transitionState<S extends ChartBaseSchema>({ context, refs, prop, scope
  */
 export function chartBaseActions<S extends ChartBaseSchema>(options: {
   markKeyOf: (params: Params<S>, ref: ChartDatumRef) => string | null
-  transition: ChartTransitionOptions
+  transition: ChartBaseTransition<S>
 }): Record<ChartBaseAction, ActionFn<S>> {
   return {
     setSize: ({ context, event }) => {
@@ -421,9 +428,9 @@ export function chartBaseActions<S extends ChartBaseSchema>(options: {
       })
     },
 
-    syncTransition: params => syncChartTransition(transitionState(params), options.transition),
+    syncTransition: params => syncChartTransition(transitionState(params, options.transition), options.transition),
 
-    advanceTransition: params => advanceChartTransition(transitionState(params)),
+    advanceTransition: params => advanceChartTransition(transitionState(params, options.transition)),
   }
 }
 

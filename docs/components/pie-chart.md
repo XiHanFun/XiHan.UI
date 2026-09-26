@@ -92,7 +92,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 - `format` 指定数值格式（数字格式或函数），提示框、标签、中心合计与数据表共用；占比固定写成一位小数的百分数。
 - 多张图接到同一个受控的 `activeKey` 上时，饼图按扇区名与其他图的类目对齐：在柱状图上悬停「华东」，饼图的「华东」扇区一起指示。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。
-- 首次出现时整圈从起始角顺着扫开，标签与引导线随之淡入；之后的数据变化与图例切换从当前角度插值到新角度，隐藏的扇区收拢并淡出后才移除。按数据次序排列（`sort="none"`）时扇区不换位，只在原处伸缩。
+- 首次出现时整圈从起始角顺着扫开，标签与引导线等扫开的边缘到了才出现，环形中心等整圈扫完再淡入，合计从 0 数上去；之后的数据变化与图例切换从当前角度插值到新角度，合计从旧值滚到新值，隐藏的扇区收拢并淡出后才移除。按数据次序排列（`sort="none"`）时扇区不换位，只在原处伸缩。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、环形中心、空态、提示框）；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 center、empty 与 tooltip），扇区、标签与图例项由元素生成进去。
@@ -312,12 +312,14 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-slot` | slotAttr(item.slot, item.other) |
+| `center` | `data-drawing` | ''（条件成立时才出现） |
 | `center` | `data-placement` | 'top' \| undefined |
 | `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip-row` | `data-series-id` | row.key |
 | `tooltip-row` | `data-xh-chart-slot` | slotAttr(row.slot, row.other) |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
+| `mark` | `data-drawing` | '' |
 | `mark` | `data-xh-chart-slot` | slotAttr(slice.slot, slice.other) \| undefined |
 
 <!-- xh-component-tokens:start -->
@@ -347,9 +349,9 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 
 ### 动效
 
-动效角色：状态（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

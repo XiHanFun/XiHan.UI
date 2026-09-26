@@ -8,6 +8,7 @@ import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cartesianChartMachine, connectCartesianChart } from '../src/cartesian-chart'
+import { CHART_ANIMATION_MARK_LIMIT } from '../src/shared/chart'
 
 type Dict = Record<string, any>
 type Props = Partial<CartesianChartSchema['props']>
@@ -399,6 +400,36 @@ describe('过渡', () => {
     vi.advanceTimersByTime(1000)
     expect(rig.api().scene).toBe(target)
     expect((rig.api().getMarkProps(line) as Dict)['data-drawing']).toBeUndefined()
+  })
+
+  it('入场：数据点等笔尖扫到才出现，越靠后的点延迟越大', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({
+      data: [{ m: 'a', v: 1 }, { m: 'b', v: 3 }, { m: 'c', v: 2 }],
+      series: [{ mark: 'line', x: 'm', y: 'v' }],
+      animated: true,
+    })
+    const delays = marksOf(rig.api(), 'dot').map((dot) => {
+      const props = rig.api().getMarkProps(dot) as Dict
+      expect(props['data-drawing']).toBe('')
+      return Number.parseFloat(props.style['--xh-_chart-reveal-at'])
+    })
+    expect(delays).toHaveLength(3)
+    expect(delays[0]).toBe(0)
+    expect(delays[1]).toBeGreaterThan(delays[0]!)
+    expect(delays[2]).toBeGreaterThan(delays[1]!)
+    vi.advanceTimersByTime(2000)
+    expect((rig.api().getMarkProps(marksOf(rig.api(), 'dot')[0]!) as Dict)['data-drawing']).toBeUndefined()
+  })
+
+  it('标记太多时不做几何插值：柱第一帧就是终值高度，只淡入', async () => {
+    vi.useFakeTimers(FRAMES)
+    const many = Array.from({ length: CHART_ANIMATION_MARK_LIMIT + 1 }, (_, i) => ({ m: `k${i}`, v: (i % 7) + 1 }))
+    const rig = await makeRig({ data: many, series: [{ mark: 'bar', x: 'm', y: 'v' }], animated: true })
+    const target = walk(rig.api().model.scene!.scene.layers.data).filter(m => m.part === 'bar') as RectMark[]
+    const first = marksOf(rig.api(), 'bar') as RectMark[]
+    expect(first.map(b => b.height)).toEqual(target.map(b => b.height))
+    expect(first.every(b => b.opacity === 0)).toBe(true)
   })
 
   it('animated 为 false：直接画目标场景', async () => {

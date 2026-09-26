@@ -108,6 +108,7 @@
       ],
       "consumers": [
         "avatar",
+        "cartesian-chart",
         "cascader",
         "clipboard",
         "command",
@@ -116,6 +117,7 @@
         "drawer",
         "image",
         "image-viewer",
+        "pie-chart",
         "reasoning",
         "tour"
       ],
