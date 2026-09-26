@@ -30512,7 +30512,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "到达 100 之后的淡出窗口毫秒，默认 200",
+              "description": "到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽；不给按退场令牌。淡出过渡真正播完才归零收起",
               "name": "fade-duration",
               "fieldName": "fadeDuration"
             }

@@ -11,7 +11,6 @@ export { loadingBarAnatomy } from './loading-bar.anatomy'
 export { connectLoadingBar } from './loading-bar.connect'
 export { loadingBarKeyboard } from './loading-bar.keyboard'
 export {
-  LOADING_BAR_FADE_DURATION,
   LOADING_BAR_HEIGHT,
   LOADING_BAR_TRICKLE_SPEED,
   loadingBarMachine,

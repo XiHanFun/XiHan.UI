@@ -9,7 +9,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { LoadingBarApi, LoadingBarSchema } from './loading-bar.types'
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
 import { loadingBarAnatomy } from './loading-bar.anatomy'
-import { LOADING_BAR_HEIGHT } from './loading-bar.machine'
+import { LOADING_BAR_HEIGHT, resolveLoadingBarFadeDuration } from './loading-bar.machine'
 import { clampLoadingBarValue, isLoadingBarDeterminate, LOADING_BAR_MAX } from './loading-bar.trickle'
 
 const parts = loadingBarAnatomy.build()
@@ -25,7 +25,8 @@ export function connectLoadingBar<T extends PropTypes>(
   service: Service<LoadingBarSchema>,
   normalize: NormalizeProps<T>,
 ): LoadingBarApi<T> {
-  const { state, prop, context } = service
+  const { state, prop, context, scope } = service
+  const fade = resolveLoadingBarFadeDuration(prop('fadeDuration'))
 
   const phase = state.get()
   const visible = phase !== 'idle'
@@ -40,6 +41,8 @@ export function connectLoadingBar<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 机器按 id 找到它，等它的淡出过渡播完再收尾
+      'id': scope.partId('loading-bar', 'root'),
       'role': 'progressbar',
       // progressbar 没有可见标题，可及名字只能由这里给
       'aria-label': prop('translations')?.root ?? 'Loading',
@@ -55,8 +58,11 @@ export function connectLoadingBar<T extends PropTypes>(
       [DATA_INERT_EXEMPT]: '',
       // 收起时留着节点，只加 hidden
       'hidden': !visible || undefined,
-      // 厚度由连接层写内联样式
-      'style': { blockSize: toBlockSize(prop('height')) },
+      // 厚度由连接层写内联样式；给了淡出时长就写进皮肤的淡出时长槽，机器等的正是这一段
+      'style': {
+        'blockSize': toBlockSize(prop('height')),
+        '--xh-loading-bar-fade': fade === undefined ? '' : `${fade}ms`,
+      },
     }),
 
     getTrackProps: () => normalize.element({

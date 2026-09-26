@@ -55,3 +55,27 @@ export function trackPartPresence(options: PartPresenceOptions): () => void {
     presence.dispose()
   }
 }
+
+/**
+ * 等节点上某个属性正在播的 CSS 过渡播完（或被取消）再回调；没有在播的即刻回调。返回撤销函数。
+ *
+ * 过渡在样式提交之后才起播，调用方在宿主提交之后再调；getAnimations 会先把挂起的样式算完。
+ * 按浏览器实际创建的过渡对象等，不按声明的时长猜：作者改了时长槽照样对得上。
+ */
+export function waitForTransition(node: Element | null, property: string, done: () => void): () => void {
+  let cancelled = false
+  const transitions = node && typeof node.getAnimations === 'function'
+    ? node.getAnimations().filter(animation => 'transitionProperty' in animation && animation.transitionProperty === property)
+    : []
+  if (!transitions.length) {
+    done()
+    return () => {}
+  }
+  void Promise.allSettled(transitions.map(transition => transition.finished)).then(() => {
+    if (!cancelled)
+      done()
+  })
+  return () => {
+    cancelled = true
+  }
+}
