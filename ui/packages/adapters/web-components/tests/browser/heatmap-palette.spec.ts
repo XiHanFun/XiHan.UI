@@ -12,14 +12,27 @@ import '@xihan-ui/styles'
 
 defineXhElements()
 
-/** 与皮肤里 [data-palette] 六条规则一一对上的满档实心底。 */
+/**
+ * 与皮肤里 [data-palette] 各条规则一一对上的满档实心底：十二个色相都取基础色板的 600 档，
+ * 与 brand 同明度，只换色相与各自的彩度上限；gray 取中性色，深色态换到 450 档。
+ */
+const HUES: Record<string, string> = {
+  red: 'oklch(0.546 0.216 25)',
+  orange: 'oklch(0.546 0.216 50)',
+  amber: 'oklch(0.546 0.183 70)',
+  yellow: 'oklch(0.546 0.171 95)',
+  lime: 'oklch(0.546 0.206 125)',
+  green: 'oklch(0.546 0.205 149)',
+  teal: 'oklch(0.546 0.131 180)',
+  cyan: 'oklch(0.546 0.129 215)',
+  blue: 'oklch(0.546 0.163 237)',
+  indigo: 'oklch(0.546 0.216 258)',
+  purple: 'oklch(0.546 0.216 302)',
+  pink: 'oklch(0.546 0.216 345)',
+}
+
 const INK: Record<string, { light: string, dark: string }> = {
-  green: { light: 'oklch(0.648 0.165 149)', dark: 'oklch(0.648 0.165 149)' },
-  blue: { light: 'oklch(0.62 0.16 237)', dark: 'oklch(0.62 0.16 237)' },
-  orange: { light: 'oklch(0.705 0.16 70)', dark: 'oklch(0.705 0.16 70)' },
-  // purple 取基础色板的 600 档：与 brand 同明度同彩度，只换色相
-  purple: { light: 'oklch(0.546 0.216 302)', dark: 'oklch(0.546 0.216 302)' },
-  red: { light: 'oklch(0.577 0.213 25)', dark: 'oklch(0.577 0.213 25)' },
+  ...Object.fromEntries(Object.entries(HUES).map(([hue, ink]) => [hue, { light: ink, dark: ink }])),
   gray: { light: 'oklch(0.439 0.006 258)', dark: 'oklch(0.65 0.006 258)' },
 }
 
@@ -89,7 +102,7 @@ describe('热力图色板轴：属性接到私有槽', () => {
   })
 
   it('拼错取值退回不写色板那一档，不是悬空', async () => {
-    expect(ink(await mount(' palette="pink"'))).toBe(DEFAULT_INK)
+    expect(ink(await mount(' palette="magenta"'))).toBe(DEFAULT_INK)
   })
 })
 
