@@ -3,7 +3,8 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 语义动效常量：与令牌 --xh-motion-duration-* / --xh-motion-ease-* 同名同值。
+// 语义动效常量：与令牌 --xh-motion-duration-* / --xh-motion-ease-* / --xh-motion-distance-* 及
+// --xh-motion-stagger-step 同名同值。
 // 真源是 tokens 的 semantic.base.json 与 semantic.reduce.json，由门禁逐条比对。
 // 读得到计算样式时以样式为准（readMotion），这里是服务端与未加载样式时的取值。
 
@@ -22,6 +23,7 @@ export const motionDurations = {
   nudge: durations.fast,
   press: durations.fast,
   release: durations.normal,
+  attention: durations.slow * 2,
 } as const
 
 export type MotionDurationName = keyof typeof motionDurations
@@ -41,6 +43,7 @@ export const reducedMotionDurations: Readonly<Record<MotionDurationName, number>
   nudge: 1,
   press: 1,
   release: 1,
+  attention: 1,
 }
 
 /** 语义缓动，键对应 `--xh-motion-ease-<name>`。 */
@@ -56,6 +59,19 @@ export const motionEasings = {
   'release': easing.outStrong,
   'settle': easing.outBack,
   'breathe': easing.sineInOut,
+  'emphasis': easing.emphasized,
 } as const
 
 export type MotionEaseName = keyof typeof motionEasings
+
+/** 交错进场的相邻两项间隔（毫秒），对应 `--xh-motion-stagger-step`：进场时长的五分之一。 */
+export const motionStaggerStep: number = durations.normal / 5
+
+/** 语义位移（px），键对应 `--xh-motion-distance-<name>`。减弱动效下三档都归零。 */
+export const motionDistances = {
+  sm: 4,
+  md: 8,
+  lg: 16,
+} as const
+
+export type MotionDistanceName = keyof typeof motionDistances

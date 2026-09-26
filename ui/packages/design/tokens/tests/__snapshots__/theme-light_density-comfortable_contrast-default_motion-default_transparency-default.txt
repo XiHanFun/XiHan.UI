@@ -164,8 +164,10 @@
 --xh-list-option-py-md: 6px  ← var(--xh-space-1_5)
 --xh-list-option-py-sm: 4px  ← var(--xh-space-1)
 --xh-measure-prose: 32rem
+--xh-motion-distance-lg: 16px  ← var(--xh-space-4)
 --xh-motion-distance-md: 8px  ← var(--xh-space-2)
 --xh-motion-distance-sm: 4px  ← var(--xh-space-1)
+--xh-motion-duration-attention: calc(320ms * 2)  ← calc(var(--xh-duration-slow) * 2)
 --xh-motion-duration-collapse: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-enter: 200ms  ← var(--xh-duration-normal)
 --xh-motion-duration-exit: 120ms  ← var(--xh-duration-fast)
@@ -178,6 +180,7 @@
 --xh-motion-duration-slide: 320ms  ← var(--xh-duration-slow)
 --xh-motion-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1)  ← var(--xh-ease-sine-in-out)
 --xh-motion-ease-continuous: cubic-bezier(0.2, 0, 0, 1)  ← var(--xh-ease-standard)
+--xh-motion-ease-emphasis: cubic-bezier(0.3, 0, 0, 1)  ← var(--xh-ease-emphasized)
 --xh-motion-ease-enter: cubic-bezier(0, 0, 0.2, 1)  ← var(--xh-ease-out)
 --xh-motion-ease-enter-strong: cubic-bezier(0.23, 1, 0.32, 1)  ← var(--xh-ease-out-strong)
 --xh-motion-ease-exit: cubic-bezier(0.4, 0, 1, 1)  ← var(--xh-ease-in)

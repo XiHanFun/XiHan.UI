@@ -33,6 +33,10 @@
       "$type": "duration",
       "$value": "1ms"
     },
+    "duration-attention": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
     "stagger-step": {
       "$type": "duration",
       "$value": "0ms"
@@ -42,6 +46,10 @@
       "$value": "0px"
     },
     "distance-md": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "distance-lg": {
       "$type": "dimension",
       "$value": "0px"
     },
