@@ -624,6 +624,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 形状：不贴边的一维栏取 pill，浮动钮与媒体控制钮取 circle，贴边铺满的栏不取圆角。
 - 环境：reduced transparency 下不透明度 1、无背景滤镜与折射，细线与边缘光保留；contrast more 下不透明度 1、细线 3:1、无光环；forced colors 下 `Canvas` / `CanvasText` + 系统边框；print 随导航层隐藏；reduced motion 下色调切换保留 120ms 淡变、光源固定。
 - 下层判定、折射与光源由 core 的液态面（`@xihan-ui/core/visual-environment` 的 `trackLiquidSurface`）承担，同一文档的部件共用一套监听；组件的状态机在启动时把投影了 `data-xh-liquid` 的部件挂进去，作者只需写 `data-material`，不再额外安装或调用。这些行为不改变结构、语义与状态表达；服务端与挂载前输出静态形态（色调随主题、不透明度取可读下限）。
+- 按下形变：按住液态面时面朝手指鼓出、沿指向拉长、另一个方向压扁（不低于 `--xh-motion-scale-squash`）；拖离时越拉越长，按越界跟手的衰减趋近上限（沿指向伸长 35%）。松手由 `spring-toggle` 带回原形。形变写成 `--xh-_liquid-deform`，只挂在可交互的面上，定位壳上不挂 transform（会抢走 fixed 的包含块）；减弱动效下不形变。
 
 ## 9. 动效
 
@@ -770,6 +771,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 越界回弹 | 缺省 | `stiff`（600 / 42，超调 0.5%，约 195ms） |
 | 切换滑块 | liquid | `spring-toggle`（420 / 26，超调 7.5%） |
 | 指示器前沿 / 后沿 | liquid | `spring-lead`（520 / 34）/ `spring-trail`（210 / 24） |
+| 按下形变回弹 | liquid | `spring-toggle` |
 
 - standard 档超调不超过 3%，liquid 档不超过 8%；`bouncy` 不进入核心组件。
 - 速度交接：指针会话保留最近 80ms 的采样，松手时的速度（px/s）作为弹簧初速度；落点取「当前位置 + 速度 × 投影时间」最近的吸附点。

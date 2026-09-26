@@ -12,13 +12,17 @@
 //   光源方向  细指针移动时把指向指针的单位向量写进 --xh-_liquid-light-x / -y，1px 亮边随之转到朝指针的一侧；
 //             减弱动效与粗指针下不跟随，光源留在皮肤缺省的左上方
 //   边缘折射  Chromium 内核下把部件的 backdrop-filter 换成一段 SVG 位移滤镜
+//   按下形变  按住时面朝手指鼓出、沿指向拉长、另一个方向压扁，拖离时越拉越长（有上限），
+//             松手由弹簧带回；写成 --xh-_liquid-deform，组件皮肤拿它当 transform。减弱动效下不形变
 //
 // 同一文档里的部件共用一套监听与按帧调度；材质轴不是 liquid 时部件留在原样，写过的东西随时撤回。
 // 撤出最后一个部件时整套监听拆掉，滤镜库一并移除。
 
+import type { SpringValue } from '@xihan-ui/motion'
 import type { LiquidTone } from './reading'
-import { resolveMotionPreference } from '@xihan-ui/motion'
+import { createSpringValue, resolveMotionPreference } from '@xihan-ui/motion'
 import { ensureLens, lensLibrary, MAX_REFRACT_HEIGHT, MAX_REFRACT_WIDTH, parseBackdrop, supportsRefraction } from './lens'
+import { deformTransform, pullOf } from './press'
 import { lightDirection, readBackdrop, relativeLuminance, sampleAt, samplePoints } from './reading'
 
 /** 同一视口里最多这么多个部件同时折射，超出的只取样不折射。 */
@@ -47,6 +51,18 @@ function release(el: HTMLElement): void {
   el.style.removeProperty('backdrop-filter')
   el.style.removeProperty('--xh-_liquid-light-x')
   el.style.removeProperty('--xh-_liquid-light-y')
+  el.style.removeProperty('--xh-_liquid-deform')
+}
+
+/** 正被按住的那一个液态部件：拉扯向量两个分量各一支弹簧，跟手时直接落位，松手时弹回。 */
+interface Press {
+  el: HTMLElement
+  pointerId: number
+  center: { x: number, y: number }
+  radius: number
+  squash: number
+  x: SpringValue
+  y: SpringValue
 }
 
 function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coordinator {
@@ -203,9 +219,77 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     ? new MutationObserver(() => schedule({ sync: true }))
     : null
 
+  let press: Press | null = null
+
+  const writeDeform = (current: Press): void => {
+    // 弹回途中部件被撤出或材质轴改走：不再写，形变随 release 一起撤掉
+    if (!active.has(current.el)) {
+      current.el.style.removeProperty('--xh-_liquid-deform')
+      return
+    }
+    const transform = deformTransform({ x: current.x.value, y: current.y.value }, current.radius, current.squash)
+    if (transform)
+      current.el.style.setProperty('--xh-_liquid-deform', transform)
+    else current.el.style.removeProperty('--xh-_liquid-deform')
+  }
+
+  const follow = (event: PointerEvent): void => {
+    if (!press || event.pointerId !== press.pointerId)
+      return
+    const pull = pullOf(event.clientX - press.center.x, event.clientY - press.center.y, press.radius)
+    press.x.set(pull.x)
+    press.y.set(pull.y)
+  }
+
+  /** 松手或被系统收走：两支弹簧带回原形，停稳后撤掉行内形变。 */
+  const letGo = (): void => {
+    const current = press
+    if (!current)
+      return
+    press = null
+    void Promise.all([current.x.to(0), current.y.to(0)]).then((results) => {
+      if (results.every(result => result === 'rest') && press?.el !== current.el)
+        current.el.style.removeProperty('--xh-_liquid-deform')
+    })
+  }
+
+  const onPointerDown = (event: PointerEvent): void => {
+    if (event.button !== 0 || !(event.target instanceof Node))
+      return
+    const target = event.target
+    let el: HTMLElement | undefined
+    for (const member of active.keys()) {
+      if (member.contains(target))
+        el = member
+    }
+    // 减弱动效下不形变：形变是位移
+    if (!el || resolveMotionPreference(el) === 'reduce')
+      return
+    letGo()
+    const rect = el.getBoundingClientRect()
+    const squash = Number.parseFloat(win.getComputedStyle(el).getPropertyValue('--xh-motion-scale-squash'))
+    const current = {
+      el,
+      pointerId: event.pointerId,
+      center: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+      radius: Math.min(rect.width, rect.height) / 2,
+      squash: Number.isFinite(squash) ? squash : 1,
+    } as Press
+    const onUpdate = (): void => writeDeform(current)
+    current.x = createSpringValue({ spring: 'toggle', value: 0, target: el, onUpdate })
+    current.y = createSpringValue({ spring: 'toggle', value: 0, target: el, onUpdate })
+    press = current
+    follow(event)
+  }
+  const onPointerEnd = (event: PointerEvent): void => {
+    if (press && event.pointerId === press.pointerId)
+      letGo()
+  }
+
   const onScroll = (): void => schedule({ probe: true })
   const onResize = (): void => schedule({ probe: true, refract: true })
   const onPointerMove = (event: PointerEvent): void => {
+    follow(event)
     if (event.pointerType !== 'mouse' && event.pointerType !== 'pen')
       return
     pointer = { x: event.clientX, y: event.clientY }
@@ -221,6 +305,9 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     doc.addEventListener('scroll', onScroll, { capture: true, passive: true })
     win.addEventListener('resize', onResize, { passive: true })
     doc.addEventListener('pointermove', onPointerMove, { passive: true })
+    doc.addEventListener('pointerdown', onPointerDown, { capture: true, passive: true })
+    doc.addEventListener('pointerup', onPointerEnd, { capture: true, passive: true })
+    doc.addEventListener('pointercancel', onPointerEnd, { capture: true, passive: true })
     doc.documentElement.addEventListener('pointerleave', onPointerLeave)
   }
 
@@ -233,7 +320,13 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     doc.removeEventListener('scroll', onScroll, { capture: true })
     win.removeEventListener('resize', onResize)
     doc.removeEventListener('pointermove', onPointerMove)
+    doc.removeEventListener('pointerdown', onPointerDown, { capture: true })
+    doc.removeEventListener('pointerup', onPointerEnd, { capture: true })
+    doc.removeEventListener('pointercancel', onPointerEnd, { capture: true })
     doc.documentElement.removeEventListener('pointerleave', onPointerLeave)
+    press?.x.stop()
+    press?.y.stop()
+    press = null
     doc.querySelector('svg[data-xh-liquid-lenses]')?.remove()
   }
 

@@ -37,14 +37,16 @@ async function moveMouse(x: number, y: number): Promise<void> {
   await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x / scale, y: y / scale })
 }
 
-const frames = (count = 3) => new Promise<void>((resolve) => {
-  const step = (left: number): void => {
-    if (left === 0)
-      resolve()
-    else requestAnimationFrame(() => step(left - 1))
-  }
-  step(count)
-})
+function frames(count = 3) {
+  return new Promise<void>((resolve) => {
+    const step = (left: number): void => {
+      if (left === 0)
+        resolve()
+      else requestAnimationFrame(() => step(left - 1))
+    }
+    step(count)
+  })
+}
 
 /** 铺一层全视口的下层，再把浮动钮挂上去：浮动钮是 fixed 定位，压在这层下层上。 */
 async function mount(under: { style: string, attrs?: Record<string, string>, text?: string }, material: string | null = 'liquid'): Promise<HTMLElement> {
@@ -131,6 +133,45 @@ describe('折射、光源与卸载', () => {
     await moveMouse(rect.left - 100, rect.top + 4)
     await frames()
     expect(trigger.style.getPropertyValue('--xh-_liquid-light-x')).toBe('')
+  })
+
+  it('按住时面朝手指鼓出、拖远拉得更长，松手弹回后撤掉形变；减弱动效下不形变', async () => {
+    const trigger = await mount({ style: 'background: oklch(0.96 0.02 100)' })
+    const rect = trigger.getBoundingClientRect()
+    const scale = await mouseScale()
+    const at = (x: number, y: number) => ({ x: x / scale, y: y / scale })
+    const stretchOf = (): number => {
+      const match = /scale\(([\d.]+),/.exec(trigger.style.getPropertyValue('--xh-_liquid-deform'))
+      return match ? Number(match[1]) : 1
+    }
+    const centerY = rect.top + rect.height / 2
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at(rect.right - 4, centerY) })
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(rect.right - 4, centerY) })
+    await frames()
+    const pressed = stretchOf()
+    expect(pressed).toBeGreaterThan(1)
+    // 往外拖：拉得更长，但有上限
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', ...at(rect.right + 120, centerY) })
+    await frames()
+    const pulled = stretchOf()
+    expect(pulled).toBeGreaterThan(pressed)
+    expect(pulled).toBeLessThanOrEqual(1.35)
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(rect.right + 120, centerY) })
+    // 欠阻尼回弹会越过零点，越零那一帧形变也是空的：连续几帧都空才算停稳
+    await expect.poll(async () => {
+      const seen: string[] = []
+      for (let i = 0; i < 4; i++) {
+        seen.push(trigger.style.getPropertyValue('--xh-_liquid-deform'))
+        await frames(1)
+      }
+      return seen.join('')
+    }, { timeout: 2000 }).toBe('')
+
+    host!.dataset.motion = 'reduce'
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(rect.right - 4, centerY) })
+    await frames()
+    expect(trigger.style.getPropertyValue('--xh-_liquid-deform')).toBe('')
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(rect.right - 4, centerY) })
   })
 
   it('卸载后写过的属性、行内样式与滤镜库全部撤回', async () => {
