@@ -118,7 +118,7 @@ const seenRoles = new Set()
 /** raised 退役的存量：登在 edge 段、键以 :raised 结尾的那些。 */
 const backlog = await openBacklog('edge', { owns: key => key.endsWith(':raised') })
 /** raised 的描边必须是这两种边色之一。 */
-const RAISED_BORDER = new Set(['--xh-border-default', '--xh-material-solid-border'])
+const RAISED_BORDER = new Set(['--xh-border-default', '--xh-border-default-opaque', '--xh-material-solid-border'])
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = [...backlog.problems]

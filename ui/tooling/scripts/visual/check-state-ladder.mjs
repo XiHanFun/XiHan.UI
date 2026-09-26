@@ -56,7 +56,8 @@ const ALLOWED = [
   /^currentcolor$/i,
   /^inherit$/,
   /^none$/,
-  /^--xh-bg-subtle(?:-hover|-active)?$/,
+  // -opaque 是同一档叠在缺省面上的实色，给要盖住下层内容的面用，档位不变
+  /^--xh-bg-subtle(?:-hover|-active)?(?:-opaque)?$/,
   /^--xh-bg-brand(?:-hover|-active)?$/,
   /^--xh-bg-brand-subtle(?:-hover|-active)?$/,
   /^--xh-bg-surface(?:-raised)?$/,
@@ -202,7 +203,7 @@ for (const { comp, file, rules } of await readSkins()) {
           if (role !== 'background')
             continue
           // ② 阶梯：只核中性 subtle 阶梯，brand 阶梯的档位由各自 -hover / -active 令牌表达
-          const step = /^--xh-bg-subtle(?:-(hover|active))?$/.exec(token)
+          const step = /^--xh-bg-subtle(?:-(hover|active))?(?:-opaque)?$/.exec(token)
           if (!step)
             continue
           const level = step[1] === 'active' ? 300 : step[1] === 'hover' ? 200 : 100
