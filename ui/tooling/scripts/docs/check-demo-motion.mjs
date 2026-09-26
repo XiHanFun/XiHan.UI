@@ -15,9 +15,14 @@
 //
 // 改不动的逐处登记进 EXEMPT，脚本反查两侧：登记表里没有的违规判红，登记了却没被扫到的条目
 // 同样判红。
+//
+// 另核一条：交给组件或动效原语的缓动写法（easing 属性 / 选项、以及列举缓动的字符串数组）必须是
+// @xihan-ui/motion 认得的名字或合法的 CSS 缓动函数——按 resolveEasing 判，它就是运行时解析缓动的那一个，
+// 本脚本直接导入它的源码。拼错的名字在运行时才抛错，示例被照抄时错也跟着抄走。
 import { readdir, readFile } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import process from 'node:process'
+import { resolveEasing } from '../../../packages/engine/motion/src/easing.ts'
 
 /** 文档站在仓库根，跟 ui/ 是兄弟。 */
 const DEMOS = '../docs/.vitepress/demos'
@@ -109,6 +114,22 @@ const problems = []
 const seen = new Set()
 let files = 0
 let checked = 0
+let easings = 0
+
+/** 交给组件或原语的缓动写法：easing="…"、:easing="'…'"、easing: "…"，以及名字里带 easing 的字符串数组。 */
+const EASING_ATTR = /(?<![\w-])(:?)easing\s*[=:]\s*(?:"'([^'"]+)'"|"([^"]+)"|'([^']+)')/g
+const EASING_LIST = /\b\w*easings?\w*\s*=\s*\[([^\]]*)\]/gi
+
+/** resolveEasing 认不认得这个写法：认不得返回错误信息。 */
+function easingProblem(value) {
+  try {
+    resolveEasing(value)
+    return null
+  }
+  catch (error) {
+    return error.message
+  }
+}
 
 const prefix = `${DEMOS.split('\\').join('/')}/`
 
@@ -145,6 +166,20 @@ for await (const file of walk(DEMOS)) {
     const line = src.slice(0, start).split('\n').length
     problems.push(`${rel}:${line}  ${prop}: ${value}\n    —— ${hits.join('\n    —— ')}`)
   }
+
+  const values = [
+    // Vue 的 :easing 绑定里只有被内层引号包住的才是字面写法，其余是表达式，运行时由组件校验
+    ...[...src.matchAll(EASING_ATTR)].map(m => ({ value: m[2] ?? (m[1] ? undefined : m[3] ?? m[4]), index: m.index })),
+    ...[...src.matchAll(EASING_LIST)].flatMap(m => [...m[1].matchAll(/["']([^"']+)["']/g)].map(n => ({ value: n[1], index: m.index }))),
+  ]
+  for (const { value, index } of values) {
+    if (value === undefined)
+      continue
+    easings += 1
+    const why = easingProblem(value)
+    if (why)
+      problems.push(`${rel}:${src.slice(0, index).split('\n').length}  缓动写法 ${value}\n    —— ${why}`)
+  }
 }
 
 for (const [key, reason] of Object.entries(EXEMPT)) {
@@ -156,8 +191,8 @@ if (problems.length) {
   console.error('[check-demo-motion] ✗ 示例里手写了时长或曲线：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('\n示例是照抄的范本：一处手写的节拍会被抄进使用者的项目，从此不随令牌层一起改。')
+  console.error('\n示例是照抄的范本：一处手写的节拍会被抄进使用者的项目，从此不随令牌层一起改；拼错的缓动名也会一起被抄走。')
   process.exit(1)
 }
 
-console.log(`[check-demo-motion] 通过：${files} 份示例 · ${checked} 条时长与曲线声明全部走令牌（登记豁免 ${seen.size} 处）`)
+console.log(`[check-demo-motion] 通过：${files} 份示例 · ${checked} 条时长与曲线声明全部走令牌（登记豁免 ${seen.size} 处）· ${easings} 处缓动写法都认得`)

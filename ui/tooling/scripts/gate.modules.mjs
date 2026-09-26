@@ -168,7 +168,7 @@ export const MODULES = [
     steps: [
       'node tooling/scripts/docs/check-demo-frameworks.mjs',
       'node tooling/scripts/docs/check-demo-tokens.mjs',
-      'node tooling/scripts/docs/check-demo-motion.mjs',
+      'node --disable-warning=ExperimentalWarning tooling/scripts/docs/check-demo-motion.mjs',
       'node tooling/scripts/docs/check-doc-design-language.mjs',
       'node tooling/scripts/docs/check-doc-media-placeholders.mjs',
       'node tooling/scripts/docs/check-demo-imports.mjs',
