@@ -100,8 +100,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 136 | **受约束**（新增第 137 个组件是 minor） |
-| `data-part` 取值（部件名） | 287 个不同名字 / 1099 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 287 个 | **受约束** |
+| `data-part` 取值（部件名） | 290 个不同名字 / 1102 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 290 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 300 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
@@ -213,8 +213,8 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 139（`defineXhElements()` 注册 138 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1355 条声明 / 391 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 391 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| observed attribute | 1356 条声明 / 392 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 392 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 96 个名字 / 210 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（195 处中 193 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 188 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
@@ -419,11 +419,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，16356 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，16360 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 197 条子入口、8512 个导出名、136 个 `data-scope` 与 1099 条部件配对、
-136 个组件的 1761 个 prop 名、238 种 `data-*`、33 个 `data-state` 取值、660 个令牌、
+覆盖：包名与 197 条子入口、8512 个导出名、136 个 `data-scope` 与 1102 条部件配对、
+136 个组件的 1762 个 prop 名、238 种 `data-*`、33 个 `data-state` 取值、660 个令牌、
 5 个 `@layer` 名、4086 个组件覆盖槽、138 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改

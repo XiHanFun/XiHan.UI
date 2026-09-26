@@ -85,39 +85,48 @@
      分组、激活的点、图例项与提示框的行都带着色槽，各自从这里取系列色 */
   [data-scope='cartesian-chart'][data-xh-chart-slot='1'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-1));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-1);
   }
 
   [data-scope='cartesian-chart'][data-xh-chart-slot='2'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-2));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-2);
   }
 
   [data-scope='cartesian-chart'][data-xh-chart-slot='3'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-3));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-3);
   }
 
   [data-scope='cartesian-chart'][data-xh-chart-slot='4'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-4));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-4);
   }
 
   [data-scope='cartesian-chart'][data-xh-chart-slot='5'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-5));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-5);
   }
 
   [data-scope='cartesian-chart'][data-xh-chart-slot='6'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-6));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-6);
   }
 
   [data-scope='cartesian-chart'][data-xh-chart-slot='7'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-7));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-7);
   }
 
   [data-scope='cartesian-chart'][data-xh-chart-slot='8'] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-8));
+    --xh-_chart-on-series: var(--xh-chart-on-categorical-8);
   }
 
   /* 语义系列取语气的实心色：语气层在 [data-tone] 上给出整族取值 */
   [data-scope='cartesian-chart'][data-tone] {
     --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-_tone));
+    --xh-_chart-on-series: var(--xh-_tone-on);
   }
 
   /* —— 图表家具：不承载数据的结构线 —— */
@@ -175,9 +184,12 @@
     animation: xh-draw var(--xh-motion-duration-reveal) var(--xh-motion-ease-continuous) both;
   }
 
-  /* 数据点等描线的笔尖扫到才淡入：连接层写入它占入场时长的比例，乘上入场时长就是延迟，
-     作者改时长、系统开减弱动效时跟着缩放 */
-  [data-scope='cartesian-chart'][data-part='dot'][data-drawing] {
+  /* 数据点与折线上的标签等描线的笔尖扫到才淡入，柱的标签等柱快长完、合计与线尾标签最后淡入：
+     连接层写入它占入场时长的比例，乘上入场时长就是延迟，作者改时长、系统开减弱动效时跟着缩放 */
+  [data-scope='cartesian-chart'][data-part='dot'][data-drawing],
+  [data-scope='cartesian-chart'][data-part='data-label'][data-drawing],
+  [data-scope='cartesian-chart'][data-part='total-label'][data-drawing],
+  [data-scope='cartesian-chart'][data-part='end-label'][data-drawing] {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
     animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
   }
@@ -207,6 +219,31 @@
     fill: var(--xh-_chart-series);
     stroke: var(--xh-chart-surface);
     stroke-width: var(--xh-chart-gap);
+  }
+
+  /* 数据标签、堆叠合计与线尾标签是标注：标注字色，不取系列色，不接指针 */
+  [data-scope='cartesian-chart'][data-part='data-label'],
+  [data-scope='cartesian-chart'][data-part='total-label'],
+  [data-scope='cartesian-chart'][data-part='end-label'] {
+    fill: var(--xh-chart-label);
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 压在柱上的标签：取与色槽配对的前景色 */
+  [data-scope='cartesian-chart'][data-part='data-label'][data-placement='inside'] {
+    fill: var(--xh-_chart-on-series);
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  [data-scope='cartesian-chart'][data-part='total-label'] {
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  /* 所属系列被淡出时，它的标签一起淡出 */
+  [data-scope='cartesian-chart'][data-part='data-label'][data-dimmed],
+  [data-scope='cartesian-chart'][data-part='end-label'][data-dimmed] {
+    opacity: var(--xh-chart-dim-alpha);
   }
 
   /* —— 前景：随激活变化，不改几何 —— */
@@ -421,7 +458,11 @@
     }
 
     [data-scope='cartesian-chart'][data-part='tick-label'],
-    [data-scope='cartesian-chart'][data-part='axis-title'] {
+    [data-scope='cartesian-chart'][data-part='axis-title'],
+    [data-scope='cartesian-chart'][data-part='data-label'],
+    [data-scope='cartesian-chart'][data-part='data-label'][data-placement='inside'],
+    [data-scope='cartesian-chart'][data-part='total-label'],
+    [data-scope='cartesian-chart'][data-part='end-label'] {
       fill: CanvasText;
     }
 

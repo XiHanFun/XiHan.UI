@@ -205,6 +205,63 @@ describe('状态', () => {
   })
 })
 
+describe('数据标签', () => {
+  it('柱端标签立在柱顶之上、不出视口；堆叠合计在整叠之上', async () => {
+    const STACKED = [
+      { month: '一月', online: 120, store: 80 },
+      { month: '二月', online: 200, store: 100 },
+      { month: '三月', online: 150, store: 60 },
+    ]
+    mount({
+      data: STACKED,
+      series: [
+        { mark: 'bar', x: 'month', y: 'online', stack: 's' },
+        { mark: 'bar', x: 'month', y: 'store', stack: 's' },
+      ],
+      totals: true,
+    })
+    await settle()
+    const viewport = one('viewport').getBoundingClientRect()
+    const totals = all('total-label')
+    expect(totals.map(t => t.textContent)).toEqual(['200', '300', '210'])
+    const bars = all('bar').map(el => el.getBoundingClientRect())
+    totals.forEach((label, i) => {
+      const box = label.getBoundingClientRect()
+      const top = Math.min(bars[i]!.top, bars[i + 3]!.top)
+      expect(box.bottom).toBeLessThanOrEqual(top + 0.5)
+      expect(box.top).toBeGreaterThanOrEqual(viewport.top - 0.5)
+    })
+  })
+
+  it('横向柱内的标签整个落在柱里，字取配对的前景色', async () => {
+    mount({ data: SALES, series: [{ mark: 'bar', x: 'month', y: 'amount', labels: 'inside' }], orientation: 'horizontal' }, 600)
+    await settle()
+    const labels = all('data-label')
+    expect(labels.length).toBe(3)
+    labels.forEach((label, i) => {
+      const box = label.getBoundingClientRect()
+      const bar = all('bar')[i]!.getBoundingClientRect()
+      expect(box.left).toBeGreaterThanOrEqual(bar.left - 0.5)
+      expect(box.right).toBeLessThanOrEqual(bar.right + 0.5)
+      expect(box.top).toBeGreaterThanOrEqual(bar.top - 0.5)
+      expect(box.bottom).toBeLessThanOrEqual(bar.bottom + 0.5)
+    })
+    expect(getComputedStyle(labels[0]!).fill).not.toBe(getComputedStyle(all('tick-label')[0]!).fill)
+  })
+
+  it('线尾标签写在最后一个点右边，整个落在视口里', async () => {
+    mount({ data: SALES, series: [{ mark: 'line', x: 'month', y: 'amount', name: '销售额', endLabel: true }] })
+    await settle()
+    const label = one('end-label')
+    expect(label.textContent).toBe('销售额 150')
+    const box = label.getBoundingClientRect()
+    const viewport = one('viewport').getBoundingClientRect()
+    const line = one('line').getBoundingClientRect()
+    expect(box.left).toBeGreaterThanOrEqual(line.right)
+    expect(box.right).toBeLessThanOrEqual(viewport.right + 0.5)
+  })
+})
+
 describe('过渡', () => {
   // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响。写在根上随挂载生效，不与起跑抢先后
   const SLOW = '--xh-motion-duration-reveal: 4s; --xh-motion-duration-morph: 4s; --xh-motion-duration-enter: 4s'

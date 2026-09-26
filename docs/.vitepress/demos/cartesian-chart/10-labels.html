@@ -1,0 +1,29 @@
+<!-- 数据标签与合计 | labels="inside" 把每一段的数写在柱内，totals 在整叠外侧写合计；段太矮放不下时不写 -->
+<div style="width: 100%">
+  <xh-cartesian-chart id="cartesian-chart-labels" totals>
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">各季度销售额（万元）</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("cartesian-chart-labels");
+  chart.data = [
+    { quarter: "一季度", online: 42, store: 28, partner: 15 },
+    { quarter: "二季度", online: 51, store: 26, partner: 18 },
+    { quarter: "三季度", online: 48, store: 31, partner: 9 },
+    { quarter: "四季度", online: 63, store: 34, partner: 21 },
+  ];
+  chart.series = [
+    { mark: "bar", x: "quarter", y: "online", name: "线上", stack: "sales", labels: "inside" },
+    { mark: "bar", x: "quarter", y: "store", name: "门店", stack: "sales", labels: "inside" },
+    { mark: "bar", x: "quarter", y: "partner", name: "渠道", stack: "sales", labels: "inside" },
+  ];
+</script>

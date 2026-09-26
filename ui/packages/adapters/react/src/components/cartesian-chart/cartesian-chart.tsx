@@ -106,6 +106,8 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   orientation?: CartesianOrientation
   /** 提示框汇报什么，缺省 axis。 */
   trigger?: CartesianTrigger
+  /** 堆叠柱的合计：每个堆叠组在最外端写出合计。 */
+  totals?: boolean
   /** 隐藏的系列（受控）。 */
   hiddenSeries?: string[]
   /** 初始隐藏的系列（非受控）。 */
@@ -139,6 +141,7 @@ export function XhCartesianChartRoot({
   yAxis,
   orientation,
   trigger,
+  totals,
   hiddenSeries,
   defaultHiddenSeries,
   activeKey,
@@ -163,6 +166,7 @@ export function XhCartesianChartRoot({
     yAxis,
     orientation,
     trigger,
+    totals,
     hiddenSeries,
     defaultHiddenSeries,
     activeKey,
@@ -287,6 +291,7 @@ export function XhCartesianChartPlot(props: XhCartesianChartPlotProps): ReactNod
     ...api.scene.layers.back,
     ...api.overlay.under,
     ...api.scene.layers.data,
+    ...api.scene.layers.front,
     ...api.overlay.over,
   ]
   return (
