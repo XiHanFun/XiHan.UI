@@ -3,8 +3,10 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 交互行为原语：焦点域、消解层、滚动锁、存在性、粘底、按压通道。
+// 交互行为原语：焦点域、消解层、滚动锁、存在性、粘底、按压通道、条目到达。
 
+export { hasUserActivated, INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY, trackArrivals } from './arrival'
+export type { TrackArrivalsOptions } from './arrival'
 export { cascadeState, cascadeToggle, collapseChecked } from './collection/cascade'
 export type { CascadeNodeLike, CascadeState, CascadeStrategy } from './collection/cascade'
 export { readDirection } from './collection/direction'
