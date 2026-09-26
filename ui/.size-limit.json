@@ -6,6 +6,12 @@
     "limit": "30.3 kB"
   },
   {
+    "name": "core/date",
+    "path": "packages/engine/core/dist/date.js",
+    "gzip": true,
+    "limit": "7 kB"
+  },
+  {
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,

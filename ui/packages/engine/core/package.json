@@ -33,6 +33,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./date": {
+      "types": "./dist/date.d.ts",
+      "import": "./dist/date.js"
+    },
     "./metadata": {
       "types": "./dist/metadata.d.ts",
       "import": "./dist/metadata.js"
