@@ -13,17 +13,10 @@ import { durations, frameLoop, frameNow, isTweenDone, resolveMotionPreference, t
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
+import { measureIndicatorBox, sameIndicatorBox } from '../shared/indicator'
 import { tabsAnatomy, tabsTriggerQuery } from './tabs.anatomy'
 
 const { createMachine } = setup<TabsSchema>()
-
-/** 两次量测是否一样。作 cell 的 isEqual 用：不给的话每次量测都是新对象，版本号会一直空转自增。 */
-function sameRect(a: TabsIndicatorRect | null, b: TabsIndicatorRect | null | undefined): boolean {
-  if (a == null || b == null)
-    return a === b
-  return a.blockStart === b.blockStart && a.blockSize === b.blockSize
-    && a.inlineStart === b.inlineStart && a.inlineSize === b.inlineSize
-}
 
 /** 一页翻多远：标签带可见长度的八成，翻页前后总有一截重叠，用户看得出接上了哪一段。 */
 const SCROLL_PAGE_RATIO = 0.8
@@ -107,7 +100,7 @@ export const tabsMachine = createMachine({
     dropTarget: cell<DropTarget | null>(() => ({ defaultValue: null })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
     // 量测结果不受控、不对外通知
-    indicator: cell<TabsIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
+    indicator: cell<TabsIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
     // 标签带的位移：放不下时整条标签带沿主轴往起始端挪了多少（px，≥ 0），上限是内容长度超出可见长度的那一截；
     // 放得下时上限为 0。两者都不受控、不对外通知，翻页钮的显隐与禁用由它们推出
     scroll: cell<number>(() => ({ defaultValue: 0 })),
@@ -504,19 +497,10 @@ export const tabsMachine = createMachine({
             context.set('indicator', null)
             return
           }
-          // 指示条是 list 的绝对定位后代，落点以 list 的内衬盒为原点，offset* 量的正是相对 offsetParent
-          // 内衬盒的排布位（边框已经扣掉，segment 档的标签带带一圈占位边）。不量 rect：标签带放不下时
-          // 整条标签带用 translate 挪，指示条跟着同一个位移走，位移中途 rect 是半路上的值，排布位不动
-          const host = (trigger.offsetParent as HTMLElement | null) ?? list
-          context.set('indicator', {
-            blockStart: trigger.offsetTop,
-            blockSize: trigger.offsetHeight,
-            // 起始缘按逻辑方向算，RTL 从右边缘量起
-            inlineStart: (prop('dir') ?? 'ltr') === 'rtl'
-              ? host.clientWidth - trigger.offsetLeft - trigger.offsetWidth
-              : trigger.offsetLeft,
-            inlineSize: trigger.offsetWidth,
-          })
+          // 指示条是 list 的绝对定位后代，落点以 list 的内衬盒为原点，量排布位而不是 rect：
+          // 标签带放不下时整条标签带用 translate 挪，指示条跟着同一个位移走，位移中途 rect 是半路上的值；
+          // 祖先带缩放时 rect 也跟着缩。方向缺省从 list 现读，与皮肤按 :dir(rtl) 翻转位移同一个来源
+          context.set('indicator', measureIndicatorBox(list, trigger, prop('dir')))
         }
         run()
         flush(run)
