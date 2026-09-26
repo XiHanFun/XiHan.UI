@@ -20,11 +20,15 @@ export const accordionMachine = createMachine({
     })),
     // 按压通道：正被按住的 trigger，与展开集合互相独立（按住途中 Enter 在 keydown 即翻面，按压面不能随之丢）
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    moved: cell<string[]>(() => ({ defaultValue: [] })),
   }),
+  refs: ({ prop }) => ({ lastValue: prop('value') ?? prop('defaultValue') ?? [] }),
   initialState: () => 'idle',
-  // 按住途中整组转禁用：trigger 只是 aria-disabled、仍有焦点，但按压面不该留在禁用面上
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, context, action }) => {
+    // 按住途中整组转禁用：trigger 只是 aria-disabled、仍有焦点，但按压面不该留在禁用面上
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
+    // 开合变了（用户操作或受控值）：变动的条目从此按动效走
+    track([() => context.get('value')], () => action(['markMoved']))
   },
   states: {
     idle: {
@@ -55,6 +59,16 @@ export const accordionMachine = createMachine({
         const e = event.current()
         if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
           context.set('pressedValue', null)
+      },
+      markMoved: ({ context, refs }) => {
+        const last = refs.get('lastValue')
+        const next = context.get('value')
+        const flipped = [...last.filter(v => !next.includes(v)), ...next.filter(v => !last.includes(v))]
+        refs.set('lastValue', next)
+        const moved = context.get('moved')
+        const fresh = flipped.filter(v => !moved.includes(v))
+        if (fresh.length)
+          context.set('moved', [...moved, ...fresh])
       },
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled'))

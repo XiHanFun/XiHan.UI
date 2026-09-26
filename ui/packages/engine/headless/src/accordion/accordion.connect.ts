@@ -51,6 +51,9 @@ export function connectAccordion<T extends PropTypes>(
   })
 
   const isOpen = (target: string): boolean => value.includes(target)
+  // 挂载后没开合过的条目：首帧就在的展开 / 收起直接呈现
+  const moved = context.get('moved')
+  const instant = (item: AccordionItemProps): '' | undefined => dataAttr(!moved.includes(item.value))
   const stateAttr = (item: AccordionItemProps): 'open' | 'closed' => (isOpen(item.value) ? 'open' : 'closed')
   const triggerId = (target: string): string => scope.partId(accordionAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(accordionAnatomy.name, `content:${target}`)
@@ -146,6 +149,7 @@ export function connectAccordion<T extends PropTypes>(
       'role': 'region',
       'aria-labelledby': triggerId(item.value),
       'data-state': stateAttr(item),
+      'data-instant': instant(item),
       'hidden': !isOpen(item.value) || undefined,
       // 收起动画播完之前 content 还在渲染，此时 hidden 已被皮肤的 display 盖掉，
       // 靠 inert 把这一段窗口里的内容挡在读屏与 Tab 序之外
@@ -155,6 +159,7 @@ export function connectAccordion<T extends PropTypes>(
       ...parts.indicator.attrs,
       'aria-hidden': true,
       'data-state': stateAttr(item),
+      'data-instant': instant(item),
       'data-disabled': dataAttr(itemDisabled(item)),
     }),
   }

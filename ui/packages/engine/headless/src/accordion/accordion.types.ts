@@ -78,9 +78,17 @@ export interface AccordionSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按住途中整组转为禁用时撤下。
      */
     pressedValue: string | null
+    /**
+     * 挂载之后开合变过的条目。没变过的条目，内容与箭头投影 data-instant：首帧就在的展开 / 收起直接呈现，
+     * 不播展开、收起动画；第一次开合起才按动效走。
+     */
+    moved: string[]
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /** 上一次看到的展开集合，与当前的对比出这一次开合变动的条目。 */
+    lastValue: string[]
+  }
   state: 'idle'
   event:
     | { type: 'ITEM.TOGGLE', value: string }
@@ -91,7 +99,7 @@ export interface AccordionSchema extends MachineSchema {
     | { type: 'PRESS.END', value: string }
   tag: never
   guard: 'canPress'
-  action: 'toggleItem' | 'setValue' | 'startPress' | 'endPress' | 'releaseWhenInert'
+  action: 'toggleItem' | 'setValue' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markMoved'
   effect: never
 }
 
