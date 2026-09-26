@@ -234,7 +234,6 @@ liquid 是导航层材质，细则见《统一组件设计方案》§8.5。它�
 - [ ] 定尺离散 Action Control 接入 120ms/0.97/200ms 配方并同时换底。
 - [ ] 行级与 disclosure trigger 只换面，无零反馈。
 - [ ] 指针、触摸和键盘 Press 的视觉一致（`data-pressed`）。
-- [ ] `:hover` 规则写在 `@media (hover: hover)` 内，触屏点按后无悬停残留。
 - [ ] 手势松手用弹簧并交接松手速度；standard 档超调 ≤ 3%。
 - [ ] disabled、pending、selected、danger 组合状态明确。
 - [ ] reduced motion 下仍有非位移反馈。
