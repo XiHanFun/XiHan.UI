@@ -16,6 +16,7 @@ export const collapsibleMachine = createMachine({
   context: ({ cell }) => ({
     // 按压通道：trigger 被 Space / Enter 或触屏按住，与开合互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    moved: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   watch: ({ track, prop, action }) => {
@@ -34,26 +35,26 @@ export const collapsibleMachine = createMachine({
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['markMoved', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['markMoved', 'invokeOnOpen'] },
         ],
-        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.OPEN': { target: 'open', actions: ['markMoved'] },
       },
     },
     open: {
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['markMoved', 'invokeOnClose'] },
         ],
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['markMoved', 'invokeOnClose'] },
         ],
-        'CONTROLLED.CLOSE': { target: 'closed' },
+        'CONTROLLED.CLOSE': { target: 'closed', actions: ['markMoved'] },
       },
     },
   },
@@ -63,6 +64,8 @@ export const collapsibleMachine = createMachine({
       canPress: ({ prop }) => !prop('disabled'),
     },
     actions: {
+      // 第一次开合（用户操作或受控改写）起，内容与箭头按动效走
+      markMoved: ({ context }) => context.set('moved', true),
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
       releaseWhenInert: ({ context, prop }) => {

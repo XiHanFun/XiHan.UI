@@ -211,8 +211,10 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 | `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->

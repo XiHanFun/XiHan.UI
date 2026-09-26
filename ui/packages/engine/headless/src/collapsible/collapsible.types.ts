@@ -31,6 +31,11 @@ export interface CollapsibleSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按住途中转为禁用时撤下；与开合互相独立。
      */
     pressed: boolean
+    /**
+     * 挂载之后开合变过没有。没变过时内容与箭头投影 data-instant：首帧就在的展开 / 收起直接呈现，
+     * 不播展开、收起动画；第一次开合起才按动效走。
+     */
+    moved: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -48,7 +53,7 @@ export interface CollapsibleSchema extends MachineSchema {
     | { type: 'PRESS.END' }
   tag: never
   guard: 'isOpenControlled' | 'canPress'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markMoved'
   effect: never
 }
 
