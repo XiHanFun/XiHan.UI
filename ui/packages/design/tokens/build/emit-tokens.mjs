@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { applyFileHeader } from '../../../../tooling/file-header.mjs'
-import { INK_TOKENS, inkBlocks } from './ink.mjs'
+import { INK_SURFACE_CONTENT, INK_TOKENS, inkBlocks } from './ink.mjs'
 import { attachMaterialRecipes, emitMaterialRecipes } from './material-recipes.mjs'
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
@@ -214,8 +214,8 @@ ${await declarations(basePlain)}
   }
 
   /* 材质里跨主题同源的通道：值是指向主题语义的 var() 引用，自定义属性在声明处求值，
-     只写在 :root 上会冻结成根主题的取值；同时挂在每个主题边界上，引用才在该边界自己的主题里解析 */
-  :where(:root), :where([data-theme]), :where([data-xh-ink]) {
+     只写在 :root 上会冻结成根主题的取值；同时挂在每个主题边界与墨色域上，引用才在那里自己的取值里解析 */
+  :where(:root), :where([data-theme]), :where([data-xh-ink]), ${INK_SURFACE_CONTENT} {
 ${await declarations(boundaryMaterial)}
   }
 
@@ -259,20 +259,21 @@ ${ink.css}
 
   /* 减少透明：直接打到主题边界、墨色域与组件作用域，避免祖先上已经解析的材质别名盖过实体替代。 */
   @media (prefers-reduced-transparency: reduce) {
-    :where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-scope]) {
+    :where(:root), :where([data-theme]), :where([data-xh-ink]), ${INK_SURFACE_CONTENT}, :where([data-scope]) {
 ${await declarations(transparencyReduce, '      ')}
     }
   }
 
   /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。
      子树里的主题边界与墨色域会在自己身上重新声明主题取值，钩子要一并命中它们，否则实体替代在那一层被盖回透明 */
-  :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-xh-ink]) {
+  :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-xh-ink]), :where([data-transparency='reduce'] [data-xh-ink-surface] > *) {
 ${await declarations(transparencyReduce, '    ')}
   }
 
-  /* 系统强制色拥有最终决定权；组件仍消费同一组材质名，不另开 forced-color 私有分支。 */
+  /* 系统强制色拥有最终决定权；组件仍消费同一组材质名，不另开 forced-color 私有分支。
+     墨色域会在自己身上重新声明材质取值，这里一并命中 */
   @media (forced-colors: active) {
-    :where(:root), :where([data-theme]), :where([data-scope]) {
+    :where(:root), :where([data-theme]), :where([data-xh-ink]), ${INK_SURFACE_CONTENT}, :where([data-scope]) {
 ${await declarations(forcedColors, '      ')}
     }
   }

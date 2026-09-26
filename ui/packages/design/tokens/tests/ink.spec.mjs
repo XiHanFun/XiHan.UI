@@ -31,7 +31,16 @@ describe('tokens.css 里的墨色域', () => {
   it('dark / light 域挂在浅色 / 深色取值块与材质边界上', () => {
     expect(css).toContain(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
     expect(css).toContain(`:where([data-theme='dark']), :where([data-xh-ink='light']) {`)
-    expect(css).toContain(`:where(:root), :where([data-theme]), :where([data-xh-ink]) {`)
+    expect(css).toContain(`:where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *) {`)
+  })
+
+  it('库自有彩色面的内容按 auto 成域，减少透明与强制色一并命中它们', () => {
+    // 域落在面的直接子元素上，不落在面自己身上：面的底色取自被域改写的令牌，落在自身会成环
+    expect(css).toContain(`:where([data-xh-ink='auto']), :where([data-xh-ink-surface] > *) {`)
+    expect(css).not.toMatch(/\[data-xh-ink-surface\](?! > \*)/)
+    expect(css).toContain(`:where([data-transparency='reduce'] [data-xh-ink-surface] > *)`)
+    const forced = css.slice(css.indexOf('@media (forced-colors: active)'))
+    expect(forced.slice(0, forced.indexOf('{', forced.indexOf('{') + 1))).toContain(':where([data-xh-ink-surface] > *)')
   })
 
   it('墨色块排在主题块与对比度块之后，参与对比度路由的令牌保留高对比分支', () => {

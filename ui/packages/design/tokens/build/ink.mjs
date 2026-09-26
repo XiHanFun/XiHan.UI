@@ -14,6 +14,10 @@
 //   data-xh-ink="auto"   由 --xh-ink-surface 用相对颜色语法按 0.179 选墨色，只决定墨色与中性装饰，
 //                        其余语义沿用外层主题；引擎不认相对颜色语法时整块丢弃，等于未声明
 // data-xh-ink-margin="ample" 表示底色离分界足够远，弱化文字可以取墨色 72%；缺省时弱化文字等于墨色。
+//
+// 库自己渲染的彩色面（实心语气面、Tooltip 反白面）打 data-xh-ink-surface，皮肤把自己的底色填进
+// --xh-ink-surface，面内的子元素按 auto 同一套规则成域。域不落在面自己身上：面的底色就是从
+// --xh-bg-brand、--xh-fg-default 这些被域改写的令牌取的，落在自身会让底色与墨色互相引用成环。
 
 /** 由面上对比度等价推出墨色比例的令牌。 */
 const EQUIVALENT = [
@@ -65,6 +69,9 @@ export const INK_TOKENS = new Set([
   ...FIXED.map(([name]) => name),
   ...EQUIVALENT,
 ])
+
+/** 库自有彩色面里的内容：面的直接子元素成为 auto 域，更深的后代沿继承拿到同一套取值。 */
+export const INK_SURFACE_CONTENT = ':where([data-xh-ink-surface] > *)'
 
 /** 与语气层同一个探针：只测得起 color(from …) 的引擎不会落进半截支持。 */
 const RELATIVE_COLOR_PROBE = 'color: color(from red srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) 0 0 / 1)'
@@ -147,8 +154,8 @@ export function inkBlocks({ color, moreRoutes, reevaluate }, indent = '  ') {
     return more == null ? value : `var(--xh-_contrast-use-default, ${value}) var(--xh-_contrast-use-more, ${more})`
   }
 
-  // 底色是作者在自己的区块上填的输入：每个域都从未声明开始，不从外层域继承，未填时各处 var() 走兜底
-  // 底色是作者在自己的区块上填的输入：每个域都从未声明开始，不从外层域继承，未填时各处 var() 走兜底
+  // 底色是作者在自己的区块上填的输入：每个域都从未声明开始，不从外层域继承，未填时各处 var() 走兜底。
+  // 库自有彩色面里的内容不在此列：底色由面声明、沿继承流进来
   const blocks = [`${indent}:where([data-xh-ink]) {\n${inner}--xh-ink-surface: initial;\n${indent}}`]
   for (const theme of ['light', 'dark']) {
     const p = polarity[theme]
@@ -186,7 +193,7 @@ ${indent}}`)
     ...EQUIVALENT.map(name => `${inner}  ${name}: ${routed(name, fromSurface(between(alphas.light[name], alphas.dark[name])))};`),
   ]
   blocks.push(`${indent}@supports (${RELATIVE_COLOR_PROBE}) {
-${inner}:where([data-xh-ink='auto']) {
+${inner}:where([data-xh-ink='auto']), ${INK_SURFACE_CONTENT} {
 ${autoLines.join('\n')}
 ${inner}}
 ${indent}}`)

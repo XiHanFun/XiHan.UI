@@ -47,10 +47,11 @@ const ATTR_TO_AXIS: Record<string, Axis> = {
 }
 
 /**
- * 面的声明而不是页面环境：墨色域写在彩色区块上，这 32 格模拟的是没有声明域的缺省面，
- * 所以只写了这些属性的选择器分支在矩阵里永不命中。它们的取值由 ink.spec 与浏览器用例对账。
+ * 面的声明而不是页面环境：墨色域写在彩色区块上（库自有彩色面打 data-xh-ink-surface、域落在面内的内容上），
+ * 这 32 格模拟的是没有声明域的缺省面，所以只写了这些属性的选择器分支在矩阵里永不命中。
+ * 它们的取值由 ink.spec 与浏览器用例对账。
  */
-const SURFACE_ATTRS = new Set(['data-xh-ink', 'data-xh-ink-margin'])
+const SURFACE_ATTRS = new Set(['data-xh-ink', 'data-xh-ink-margin', 'data-xh-ink-surface'])
 
 /** 选择器分支是不是落在面的声明上：分支里出现面的声明（本身或后代位置），它就只命中墨色域。 */
 function isSurfaceBranch(selector: string): boolean {
@@ -434,7 +435,9 @@ describe('快照的前提', () => {
     expect(supportsConditions).toHaveLength(1)
     expect(supportsConditions[0]).toMatch(/^\(color: color\(from red srgb-linear /)
     expect([...new Set(surfaceSelectors)].sort()).toEqual([
+      `:where([data-transparency='reduce'] [data-xh-ink-surface] > *)`,
       `:where([data-transparency='reduce'] [data-xh-ink])`,
+      `:where([data-xh-ink-surface] > *)`,
       `:where([data-xh-ink='dark'])`,
       `:where([data-xh-ink='dark'][data-xh-ink-margin='ample'])`,
       `:where([data-xh-ink='light'])`,
