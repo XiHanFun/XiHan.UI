@@ -80,7 +80,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
 | `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 等。它们是内核实现的一部分，实现变化时签名随之变化。所需默认值应从组件 props 的文档默认值读取，不应 import 常量再自行比对 |
-| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，45 个）、`ColorHsva`、`CascaderLevel` 等，是上述函数的参数与返回类型 |
+| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，46 个）、`ColorHsva`、`CascaderLevel` 等，是上述函数的参数与返回类型 |
 | `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 134 | 它们描述的 part 名单受约束（见第二节），但这三个对象本身的组织方式不受约束。部件名单以组件文档页的解剖表为准，不应 import 这些对象 |
 | Vue 的 `provide*` / `use*Context` 函数 | 115 | [Vue 适配器](../adapters/vue) 已写明父子组件之间的 provide / inject 是内部实现，不对外开放。需要下探时使用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字形似组合式函数，实际是 inject 管道，与上一行同类 |
@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 231 个不同的 `data-*` 属性名、1611 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 231 个不同的 `data-*` 属性名、1612 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 181 个属性名 / 784 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 181 个属性名 / 785 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -419,10 +419,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，16081 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，16084 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 194 条子入口、8372 个导出名、134 个 `data-scope` 与 1043 条部件配对、
+覆盖：包名与 194 条子入口、8375 个导出名、134 个 `data-scope` 与 1043 条部件配对、
 134 个组件的 1723 个 prop 名、233 种 `data-*`、33 个 `data-state` 取值、658 个令牌、
 5 个 `@layer` 名、4052 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 

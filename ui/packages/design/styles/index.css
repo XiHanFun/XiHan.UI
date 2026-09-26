@@ -13513,12 +13513,13 @@
   }
 
   /* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
-     backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去 */
-  [data-scope='empty-state'][data-part='media'],
-  [data-scope='empty-state'][data-part='indicator'],
-  [data-scope='empty-state'][data-part='title'],
-  [data-scope='empty-state'][data-part='description'],
-  [data-scope='empty-state'][data-part='action'] {
+     backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去。
+     随页面首屏就在的空状态带 data-instant 直接呈现，之后每一次出现才开幕 */
+  [data-scope='empty-state'][data-part='media']:not([data-instant]),
+  [data-scope='empty-state'][data-part='indicator']:not([data-instant]),
+  [data-scope='empty-state'][data-part='title']:not([data-instant]),
+  [data-scope='empty-state'][data-part='description']:not([data-instant]),
+  [data-scope='empty-state'][data-part='action']:not([data-instant]) {
     animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 

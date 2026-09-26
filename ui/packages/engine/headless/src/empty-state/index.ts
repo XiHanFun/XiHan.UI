@@ -8,5 +8,6 @@
 export { emptyStateAnatomy } from './empty-state.anatomy'
 export { connectEmptyState } from './empty-state.connect'
 export { emptyStateKeyboard } from './empty-state.keyboard'
+export { emptyStateMachine } from './empty-state.machine'
 export { emptyStateMeta } from './empty-state.meta'
-export type { EmptyStateApi, EmptyStateLive, EmptyStateProps, EmptyStateStatus, EmptyStateTranslations } from './empty-state.types'
+export type { EmptyStateApi, EmptyStateLive, EmptyStateProps, EmptyStateRefs, EmptyStateSchema, EmptyStateStatus, EmptyStateTranslations } from './empty-state.types'

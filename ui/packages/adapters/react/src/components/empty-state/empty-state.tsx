@@ -29,7 +29,12 @@ export function XhEmptyStateRoot({ size, live, status, tone, children, ...rest }
   const ctx = useEmptyState(withXhConfig('empty-state', { size, live, status, tone }) as EmptyStateProps)
   return (
     <EmptyStateProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div
+        {...mergeReactProps(
+          { ...ctx.api.getRootProps() as Record<string, unknown>, ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+          rest as Record<string, unknown>,
+        )}
+      >
         {children}
       </div>
     </EmptyStateProvider>

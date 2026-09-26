@@ -5,7 +5,7 @@
 
 // 定义 empty state 类型契约。
 
-import type { PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 播报方式：polite 使 root 成为 role=status 活区，off 使它只是普通容器。 */
 export type EmptyStateLive = 'polite' | 'off'
@@ -22,6 +22,34 @@ export interface EmptyStateProps {
   status?: EmptyStateStatus
   /** 语气：brand / neutral / success / warning / danger / info，决定图标区使用哪族颜色；与 status 都提供时以它为准。未提供时保持中性。 */
   tone?: Tone
+}
+
+export interface EmptyStateRefs {
+  /** 根节点：出现与否按它是否生成盒判断。 */
+  getRootEl: () => HTMLElement | null
+  /** 根节点来自服务端渲染的 HTML（水合）：即使在页面加载完成之后才挂上，也属于首屏。 */
+  adopted: boolean
+}
+
+export interface EmptyStateSchema extends MachineSchema {
+  props: EmptyStateProps
+  context: {
+    /**
+     * 开幕不播：随页面首屏就在的空状态直接呈现，各部件投影 data-instant。
+     * 页面加载完成之后挂上、挂上时本就不可见、或首屏那一份第一次收起之后翻为 false，此后每次显出都播开幕。
+     */
+    instant: boolean
+  }
+  computed: Record<string, never>
+  refs: EmptyStateRefs
+  state: 'idle'
+  event:
+    /** 这一次出现不属于首屏：撤掉 data-instant。 */
+    | { type: 'APPEARANCE.RELEASE' }
+  tag: never
+  guard: never
+  action: 'release'
+  effect: 'trackAppearance'
 }
 
 export interface EmptyStateApi<T extends PropTypes = PropTypes> {
