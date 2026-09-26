@@ -106,6 +106,7 @@
 - **首帧不播进场**：初始渲染时已存在的内容（默认展开的披露、默认打开的浮层、历史消息、初始列表）直接呈现，只有用户操作或新数据带来的出现才播进场。Headless 以 `data-instant` 标记这类内容，皮肤把进场写在 `:not([data-instant])` 下；标记挂在条目上，只有它自己变了才撤，撤掉祖先上的标记会让下面所有静止的元素同时重播进场。
 - **打断与反转**：退场中途重新打开时取消退场，从当前透明度继续进场，不先跳回不可见；换位中途再换，从当前位置接着走。
 - **焦点与事件**：进场开始即移入焦点，退场开始即归还；退场中的节点不可命中、不接收键盘；业务回调不等待动画。
+- **不闪**：任意一秒内明暗交替不超过三次（WCAG 2.3.1）。皮肤里的 CSS 动画由门禁 `check-attention-flash` 核，`@xihan-ui/animations` 的配方在播放入口按同一套数法校验。
 
 ## 按压触感
 
@@ -166,12 +167,15 @@
 | Switch 滑块按下伸长、Carousel 当前指示点伸长 | 部件很小，影响范围只有自己 |
 | Layout 侧栏折叠 | 必须让出内容区宽度 |
 | QuestionFlow 视口高度、Toast 堆叠高度 | 容器必须随内容增减高度 |
+| Tour 聚光框的位置与尺寸、进度点伸长 | 聚光框是 `position: fixed` 的独立框，不在文档流里；进度点只有几像素 |
+
+新增一处布局动画，要么改成可合成的写法，要么把理由登记进门禁 `check-motion-layout` 的例外表。
 
 `will-change` 只写在正在动的状态下：拖拽中（`data-dragging`）、机器驱动的补间进行中（`data-animating`），以及 Presence 管理的部件的收起态（`data-state="closed"`，只在退场那一段留在屏上）。常驻的 `will-change` 一直占着合成层，静止画面的文字与 1px 分隔线会发虚；不可合成的属性不写 `will-change`。
 
 ## 书写
 
-transition 列表写长名：`background-color`、`border-color`、`outline-color`、`box-shadow`、`opacity`、`translate`、`scale`、`rotate`，不写 `background`、`border`、`outline` 简写（门禁 `check-motion-role`）。位置用独立的 `translate` 属性；只有需要一次性组合多个变换且顺序敏感时才写 `transform`。不写 `transition: all`。
+transition 列表写长名：`background-color`、`border-color`、`outline-color`、`box-shadow`、`opacity`、`translate`、`scale`、`rotate`，不写 `background`、`border`、`outline` 与 `transform` 简写（门禁 `check-motion-role`）。位置、旋转与缩放用独立的 `translate` / `rotate` / `scale`，连接层内联写的位移也一样；只有独立属性表达不了的组合才写 `transform` 并登记理由——现在只有 Tabs 的指示条：标签带滚动已经占了 `translate`，指示条的位置叠在 `transform` 上。不写 `transition: all`。
 
 ## 弹簧与 JS 动画
 
