@@ -300,6 +300,10 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 
 ### 动效
 
+动效角色：状态 · 切换（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-color-slider-thumb-scale-dragging`。
+
 `box-shadow` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

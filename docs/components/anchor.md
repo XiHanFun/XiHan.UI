@@ -224,6 +224,8 @@
 
 ### 动效
 
+动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+
 `block-size` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：值由内核逐帧算出（`frameLoop`），皮肤里看不到这段。

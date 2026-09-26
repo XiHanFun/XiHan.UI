@@ -316,6 +316,8 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 
 ### 动效
 
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+
 `background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

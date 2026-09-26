@@ -133,6 +133,8 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时暂�
 
 ### 动效
 
+可覆盖的动效槽：`--xh-marquee-span` · `--xh-marquee-speed`。
+
 关键帧 `xh-marquee-x` · `xh-marquee-y` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。

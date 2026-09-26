@@ -414,6 +414,8 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 
 ### 动效
 
+动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+
 `background-color` · `border-color` · `box-shadow` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

@@ -354,6 +354,10 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 ### 动效
 
+动效角色：按压 · 状态 · 切换 · 导航（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-carousel-duration` · `--xh-carousel-ease`。
+
 关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background-color` · `block-size` · `inline-size` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。

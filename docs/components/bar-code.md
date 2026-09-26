@@ -200,6 +200,8 @@ text 关闭后只剩条；EAN 的守卫条按规范比数据条长 5X，不随�
 
 ### 动效
 
+动效角色：状态（见[动效规范](../design/motion#角色)）。
+
 `background-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

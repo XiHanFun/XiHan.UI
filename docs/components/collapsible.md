@@ -247,6 +247,8 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 
 ### 动效
 
+动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
+
 共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。

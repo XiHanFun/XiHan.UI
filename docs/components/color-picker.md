@@ -423,6 +423,10 @@ alpha 开启后值串带透明度，浮层中多一条透明度滑块；两条�
 
 ### 动效
 
+动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-color-picker-thumb-scale-dragging`。
+
 共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。

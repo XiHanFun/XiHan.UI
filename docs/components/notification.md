@@ -326,6 +326,10 @@ create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dism
 
 ### 动效
 
+动效角色：按压 · 状态 · 出现（面板） · 导航 · 数值 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-notification-progress-duration`。
+
 共享关键帧 `xh-countdown` · `xh-sheet-in` · `xh-sheet-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。

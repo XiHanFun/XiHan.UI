@@ -22,6 +22,7 @@ import {
   componentTokensByComponent,
   renderComponentTokenDocs,
 } from '../tooling/scripts/lib/component-token-manifest.mjs'
+import { SHARED_RELATION } from '../tooling/scripts/lib/keyframe-relations.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const uiRoot = path.resolve(here, '..')
@@ -413,6 +414,76 @@ function transitionProps(decls) {
   return [...out].sort()
 }
 
+/** 时长档 → 动效角色；角色名与设计规范的角色表一致。 */
+const DURATION_ROLE = {
+  'duration-press': '按压',
+  'duration-release': '按压',
+  'duration-micro': '状态',
+  'duration-nudge': '切换',
+  'duration-move': '指示与换位',
+  'duration-expand': '披露',
+  'duration-collapse': '披露',
+  'duration-enter': '出现',
+  'duration-exit': '出现',
+  'duration-slide': '导航',
+}
+
+/** 共享关键帧的锚定关系 → 动效角色。 */
+const RELATION_ROLE = {
+  'anchored-list': '出现（锚定列表）',
+  'anchored-panel': '出现（锚定面板）',
+  'detached': '出现（无锚定弹出）',
+  'sheet': '出现（面板）',
+  'fade': '出现',
+  'disclosure': '披露',
+  'list': '列表',
+  'slide': '导航（整幅滑入）',
+  'loop': '循环',
+  'value': '数值',
+}
+
+/** 角色的排列顺序，照设计规范的角色表。 */
+const ROLE_ORDER = ['按压', '状态', '切换', '指示与换位', '披露', '出现', '列表', '导航', '数值', '循环']
+
+/** 从皮肤读出本组件承担的动效角色：时长档、共享关键帧的关系、循环周期与按压配方。 */
+function motionRoles(sk) {
+  if (!sk)
+    return []
+  const roles = new Set()
+  // 按压配方自带换面的状态过渡
+  if (sk.pressFamily) {
+    roles.add('按压')
+    roles.add('状态')
+  }
+  for (const token of sk.motionTokens) {
+    if (token.startsWith('loop-'))
+      roles.add('循环')
+    else if (DURATION_ROLE[token])
+      roles.add(DURATION_ROLE[token])
+  }
+  for (const name of sk.sharedKeyframes) {
+    const role = RELATION_ROLE[SHARED_RELATION[name]]
+    if (role)
+      roles.add(role)
+  }
+  // 细分过的出现与导航压掉笼统的那一条
+  if ([...roles].some(role => role.startsWith('出现（')))
+    roles.delete('出现')
+  if (roles.has('导航（整幅滑入）'))
+    roles.delete('导航')
+  const rank = role => ROLE_ORDER.indexOf(role.replace(/（.*$/, ''))
+  return [...roles].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
+}
+
+/** 组件槽里管动效的那几支：默认值落在动效令牌上，或覆盖的就是过渡与动画本身。 */
+function motionSlots(componentTokens) {
+  return (componentTokens ?? [])
+    .filter(token => token.defaultToken?.some(name => name.startsWith('--xh-motion-'))
+      || token.property?.some(prop => /^(?:transition|animation)(?:-|$)/.test(prop)))
+    .map(token => token.name)
+    .sort()
+}
+
 /** 默认皮肤里能直接读出来的几件事；没有皮肤返回 null，对应章节整个不出。 */
 function skinTraits(id) {
   const file = path.join(uiRoot, 'packages/design/styles/css', `${id}.css`)
@@ -436,6 +507,10 @@ function skinTraits(id) {
     .map(m => ({ suffix: m[1] ?? '', value: m[2] }))
     .filter(d => !motionOff(d.value))
   const queries = uniq(/@(?:container|media)[^({]*\(([^)]+)\)/g)
+  // 正文里引到的时长与循环周期令牌：动效角色按它们判（角色与时长档一一对应，门禁 check-motion-role 守着这张表）
+  const motionTokens = uniq(/--xh-motion-((?:duration|loop)-[\w-]+)/g, base)
+  // 引入了动作控件或集合项配方的皮肤，按压反馈由家族配方给
+  const pressFamily = /^@import\s+'\.\.\/family\/(?:action-control|collection-item)\.css';/m.test(css)
   return {
     keyframes: named.length ? named : (animations.length ? declared : []),
     sharedKeyframes,
@@ -447,6 +522,8 @@ function skinTraits(id) {
     inputQueries: queries.filter(q => /(?:any-)?(?:pointer|hover)\s*:/.test(q)),
     forcedColors: queries.some(q => q.includes('forced-colors')),
     reduceMotion: css.includes('prefers-reduced-motion'),
+    motionTokens,
+    pressFamily,
     logical: /(?:margin|padding|inset|border)-inline|inline-(?:start|end)/.test(css),
     dirRules: /\[dir=|:dir\(/.test(css),
   }
@@ -1298,6 +1375,12 @@ function renderComponent(entry, category) {
 
   if (sk || outsideSkin.length) {
     push('### 动效', '')
+    const roles = motionRoles(sk)
+    if (roles.length)
+      push(`动效角色：${roles.join(' · ')}（见[动效规范](../design/motion#角色)）。`, '')
+    const slots = motionSlots(es.componentTokens)
+    if (slots.length)
+      push(`可覆盖的动效槽：${slots.map(code).join(' · ')}。`, '')
     if (inSkin.length) {
       push(`${inSkin.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
       if (outsideSkin.length)
@@ -1305,8 +1388,8 @@ function renderComponent(entry, category) {
     }
     else if (outsideSkin.length) {
       push(
-        `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。`
-        + (sm.reads ? '时长与缓动从元素读[动效令牌](../guide/motion)。' : '时长与缓动由组件属性给出。'),
+        `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。${
+          sm.reads ? '时长与缓动从元素读[动效令牌](../guide/motion)。' : '时长与缓动由组件属性给出。'}`,
         '',
       )
     }
