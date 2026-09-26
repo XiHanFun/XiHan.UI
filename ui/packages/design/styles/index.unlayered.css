@@ -6259,6 +6259,8 @@
 /* styles/heatmap.css */
 /* 定义 heatmap 样式。 */
 
+/* 详情条与对照条走 Chart 家族配方：与其余图表的提示框、图例同一副外观。本皮肤 @import 它，单独引入仍成立。 */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='heatmap'] {
   --xh-heatmap-skin: 1;
@@ -6322,36 +6324,65 @@
 }
 
 /* —— 色板 —— */
-/* 直接按颜色点名，定的是满档那一端的实心底；0 档的空格底与中间各档的兑法一概不动。
-   六条规则与上面那条语气规则同特指度，排在它之后：两个都写时色板赢——
+/* 直接按颜色点名，定的是满档那一端的实心底：取基础色板里同名色相的 600 档；0 档的空格底与中间各档的兑法一概不动。
+   基础色板同一档跨色相同一明度，十二个色相摊出来的五档深浅一致，换色板不换可读性。
+   这几条规则与上面那条语气规则同特指度，排在它之后：两个都写时色板赢——
    色板指名了一个具体颜色，语气只是推得出一个颜色，指名的那个更具体。
    取值一律逐值写死原语、不经 --xh-_tone：那一族槽位是语气层的派生结果，
    色板借道它就会连带把语气的悬停 / 淡底 / 前景一起绑进来，也会被祖先的 data-tone 染色。
-   色板拼错取值时六条都不命中，落回上面两条，与没写一样 */
-[data-scope='heatmap'][data-part='root'][data-palette='green'] {
-  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-success-600));
-}
-
-[data-scope='heatmap'][data-part='root'][data-palette='blue'] {
-  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-info-600));
+   色板拼错取值时一条都不命中，落回上面两条，与没写一样 */
+[data-scope='heatmap'][data-part='root'][data-palette='red'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-red-600));
 }
 
 [data-scope='heatmap'][data-part='root'][data-palette='orange'] {
-  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-warning-600));
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-orange-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='amber'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-amber-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='yellow'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-yellow-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='lime'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-lime-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='green'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-green-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='teal'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-teal-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='cyan'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-cyan-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='blue'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-blue-600));
+}
+
+[data-scope='heatmap'][data-part='root'][data-palette='indigo'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-indigo-600));
 }
 
 [data-scope='heatmap'][data-part='root'][data-palette='purple'] {
   --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-purple-600));
 }
 
-[data-scope='heatmap'][data-part='root'][data-palette='red'] {
-  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-danger-600));
+[data-scope='heatmap'][data-part='root'][data-palette='pink'] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-pink-600));
 }
 
-/* 灰是唯一按主题换档的一族：五个彩色族的 600 档明度在 0.577–0.705，
+/* 灰是唯一按主题换档的一族：十二个色相的 600 档明度都是 0.546，
    深色态的空格底（neutral-800，明度 0.269）离得够远；中性 600 档只有 0.439，
    五档摊下来每档只差 0.0425、相邻两档对比度 1.16–1.20，等于看不出分档。
-   深色态改取 neutral-450（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，与彩色族齐平。
+   深色态改取 neutral-450（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，不输彩色族。
    不取更亮的 neutral-400：高对比档的 border-default 正是那一档，满档格子的描边会与底色同色。
    data-theme 写在自己身上还是写在祖先上都算，两种用法都成立 */
 [data-scope='heatmap'][data-part='root'][data-palette='gray'] {
@@ -6574,22 +6605,21 @@
   /* 至少与格子同宽，一两个字的详情也不会瘦成一条 */
   min-inline-size: var(--xh-_heatmap-tip-w);
   max-inline-size: var(--xh-heatmap-tooltip-max-w, var(--xh-overlay-max-w));
-  padding-block: var(--xh-heatmap-tooltip-py, var(--xh-space-1));
-  padding-inline: var(--xh-heatmap-tooltip-px, var(--xh-space-2));
-  border-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-control));
-  /* 与 Tooltip 同一副反白气泡：任何浮层都得有一圈非透明描边，描边从字色里兑两成，
-     深浅主题与语气换色时跟着字色走；影走 frosted 紧凑档，与 Tooltip 的 content 同深 */
-  border: var(--xh-stroke-thin) solid var(--xh-heatmap-tooltip-border, color-mix(in oklab, var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface)) 20%, transparent));
-  background: var(--xh-heatmap-tooltip-bg, var(--xh-fg-default));
-  color: var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface));
-  /* 字号与 Tooltip 缺省档同一把尺（次级标注档 13px） */
-  font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-control-caption-md));
+  /* 配方按物理左缘与平移落位，详情条自己按格子的逻辑缘落位：把配方那两处让开 */
+  translate: none;
+  /* 材质、圆角、内边距与影走配方：frosted、overlay 圆角、正文排版，不反白 */
+  --xh-_chart-tip-x: auto;
+  --xh-_chart-tooltip-gap: var(--xh-space-1);
+  --xh-_chart-tooltip-py: var(--xh-heatmap-tooltip-py, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-px: var(--xh-heatmap-tooltip-px, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-overlay));
+  --xh-_chart-tooltip-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-material-frosted-shadow));
+  /* 作者覆盖的底、字与描边压在配方的材质上：只换颜色那一层，顶部的边界光与模糊照旧 */
+  border-color: var(--xh-heatmap-tooltip-border, var(--xh-material-frosted-border));
+  background-color: var(--xh-heatmap-tooltip-bg, var(--xh-material-frosted-bg));
+  color: var(--xh-heatmap-tooltip-fg, var(--xh-material-frosted-fg));
+  font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-text-body-size));
   line-height: var(--xh-leading-normal);
-  white-space: nowrap;
-  box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-material-frosted-compact-shadow));
-  /* 详情条不接指针：压在格子上时指针要能穿过去，否则一进条里就算离开了格子，
-     详情自己把自己收起来，来回闪 */
-  pointer-events: none;
 }
 
 /* 从格子的末缘往回长：条比一格宽得多，格子后面的地方比前面少时往后长会伸出滚动容器被裁掉，
@@ -6614,10 +6644,13 @@
   inset-block-end: calc(100% - var(--xh-_heatmap-tip-y) + var(--xh-_heatmap-gap));
 }
 
+/* 对照条的排布走配方，间距由配方的私有槽给出；色阶是一条连续的尺，不折行：
+   「少」、一排色块、「多」断开就读不出哪端表示多 */
 [data-scope='heatmap'][data-part='legend'] {
-  display: flex;
+  --xh-_chart-legend-gap: var(--xh-heatmap-legend-gap, var(--xh-_heatmap-gap));
+
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--xh-heatmap-legend-gap, var(--xh-_heatmap-gap));
   color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
 }
 

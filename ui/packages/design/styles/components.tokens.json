@@ -32866,25 +32866,39 @@
       "state": [
         "default",
         "is([data-theme='dark'] *, [data-theme='dark'])",
+        "palette=amber",
         "palette=blue",
+        "palette=cyan",
         "palette=gray",
         "palette=green",
+        "palette=indigo",
+        "palette=lime",
         "palette=orange",
+        "palette=pink",
         "palette=purple",
         "palette=red",
+        "palette=teal",
+        "palette=yellow",
         "theme=dark",
         "tone"
       ],
       "defaultToken": [
         "--xh-_tone",
         "--xh-bg-brand",
-        "--xh-color-danger-600",
-        "--xh-color-info-600",
+        "--xh-color-amber-600",
+        "--xh-color-blue-600",
+        "--xh-color-cyan-600",
+        "--xh-color-green-600",
+        "--xh-color-indigo-600",
+        "--xh-color-lime-600",
         "--xh-color-neutral-450",
         "--xh-color-neutral-600",
+        "--xh-color-orange-600",
+        "--xh-color-pink-600",
         "--xh-color-purple-600",
-        "--xh-color-success-600",
-        "--xh-color-warning-600"
+        "--xh-color-red-600",
+        "--xh-color-teal-600",
+        "--xh-color-yellow-600"
       ],
       "visibility": "public",
       "description": "heatmap 的 cell、legend-item、root 部件 background 覆盖槽。"
@@ -33042,16 +33056,16 @@
         "tooltip"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-material-frosted-bg"
       ],
       "visibility": "public",
-      "description": "heatmap 的 tooltip 部件 background 覆盖槽。"
+      "description": "heatmap 的 tooltip 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-heatmap-tooltip-border",
@@ -33060,16 +33074,16 @@
         "tooltip"
       ],
       "property": [
-        "border"
+        "border-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-heatmap-tooltip-fg"
+        "--xh-material-frosted-border"
       ],
       "visibility": "public",
-      "description": "heatmap 的 tooltip 部件 border 覆盖槽。"
+      "description": "heatmap 的 tooltip 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-heatmap-tooltip-fg",
@@ -33078,17 +33092,16 @@
         "tooltip"
       ],
       "property": [
-        "border",
         "color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-material-frosted-fg"
       ],
       "visibility": "public",
-      "description": "heatmap 的 tooltip 部件 border、color 覆盖槽。"
+      "description": "heatmap 的 tooltip 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-heatmap-tooltip-font-size",
@@ -33103,7 +33116,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-md"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "heatmap 的 tooltip 部件 font-size 覆盖槽。"
@@ -33157,7 +33170,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-surface-pad-sm"
       ],
       "visibility": "public",
       "description": "heatmap 的 tooltip 部件 padding-inline 覆盖槽。"
@@ -33175,7 +33188,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-surface-pad-sm"
       ],
       "visibility": "public",
       "description": "heatmap 的 tooltip 部件 padding-block 覆盖槽。"
@@ -33193,7 +33206,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "heatmap 的 tooltip 部件 border-radius 覆盖槽。"
@@ -33211,7 +33224,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-compact-shadow"
+        "--xh-material-frosted-shadow"
       ],
       "visibility": "public",
       "description": "heatmap 的 tooltip 部件 box-shadow 覆盖槽。"

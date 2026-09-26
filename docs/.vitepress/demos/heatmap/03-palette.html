@@ -1,4 +1,4 @@
-<!-- 色板换色 | palette 直接按颜色指定，六个色板只更换色阶满档一端，分档与空格底色都不变 -->
+<!-- 色板换色 | palette 直接按颜色指定，取基础色板同名色相的满档一端；分档与空格底色都不变 -->
 <div id="heatmap-palette-mount" style="display: flex; flex-wrap: wrap; gap: 20px"></div>
 
 <!-- 元素不生成结构：外壳只写 root，月份行、七行星期与图例由脚本照 grid 铺 -->
@@ -13,7 +13,7 @@
 </template>
 
 <script type="module">
-  // 同一份数据铺六遍，肉眼比的就只有颜色这一件事
+  // 同一份数据按色板各铺一遍，肉眼比的就只有颜色这一件事
   const activity = [
     { date: "2024-01-02", count: 1 },
     { date: "2024-01-04", count: 3 },
@@ -26,7 +26,7 @@
     { date: "2024-01-27", count: 2 },
   ];
 
-  const palettes = ["green", "blue", "orange", "purple", "red", "gray"];
+  const palettes = ["red", "orange", "amber", "yellow", "lime", "green", "teal", "cyan", "blue", "indigo", "purple", "pink", "gray"];
 
   /** 一个角色节点：身份写在 value 上，元素照它回网格里查数值与档位。 */
   function part(tag, name, value, text) {

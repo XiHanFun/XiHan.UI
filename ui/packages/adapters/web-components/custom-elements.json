@@ -25997,7 +25997,7 @@
               "type": {
                 "text": "HeatmapPalette | undefined"
               },
-              "description": "色板，直接指定色阶满档的颜色；同时提供 tone 时以色板为准",
+              "description": "色板，取基础色板同名色相作色阶满档的颜色；同时提供 tone 时以色板为准",
               "name": "palette",
               "fieldName": "palette"
             },

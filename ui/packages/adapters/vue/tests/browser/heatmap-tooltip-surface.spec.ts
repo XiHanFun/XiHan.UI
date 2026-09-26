@@ -1,5 +1,5 @@
-// Heatmap 的详情条与 Tooltip 同一副反白气泡：非透明描边（浮层不得只靠影分层）、
-// frosted 紧凑档影、次级标注档 13px 字号。描边与影的计算值依赖真实级联，只在 Chromium 验证。
+// Heatmap 的详情条与其余图表的提示框同一副 frosted 材质（Chart 家族配方）：非透明描边、背景模糊、
+// frosted 影、overlay 圆角、正文字号，不反白；色板取基础色板同名色相的满档。计算值依赖真实级联，只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -11,11 +11,12 @@ import '@xihan-ui/styles'
 let app: App | null = null
 let host: HTMLElement | null = null
 
-function mountHeatmap(): void {
+function mountHeatmap(extra: Record<string, unknown> = {}): void {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
     render: () => h(XhHeatmapRoot, {
+      ...extra,
       startDate: '2026-01-05',
       endDate: '2026-01-18',
       value: [{ date: '2026-01-06', count: 3 }, { date: '2026-01-12', count: 9 }],
@@ -39,7 +40,7 @@ function part(name: string): HTMLElement {
 }
 
 /** 把令牌解析成这台浏览器上的最终取值，用来与详情条的计算值对账。 */
-function tokenValue(property: 'box-shadow' | 'color', token: string): string {
+function tokenValue(property: 'box-shadow' | 'color' | 'border-radius' | 'font-size', token: string): string {
   const probe = document.createElement('span')
   probe.style.setProperty(property, `var(${token})`)
   document.body.append(probe)
@@ -57,7 +58,7 @@ afterEach(async () => {
 })
 
 describe('热力图的详情条', () => {
-  it('悬停到一格后详情条现身，带一圈非透明描边、frosted 紧凑档影与 13px 字号', async () => {
+  it('悬停到一格后详情条现身：frosted 材质、非透明描边、overlay 圆角、正文字号，不反白', async () => {
     mountHeatmap()
     await settle()
     const cell = document.querySelector<HTMLElement>('[data-scope=\'heatmap\'][data-part=\'cell\'][data-value=\'2026-01-12\']')
@@ -73,10 +74,43 @@ describe('热力图的详情条', () => {
     expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.borderTopColor).not.toBe(style.backgroundColor)
-    // 影走 frosted 紧凑档，与 Tooltip 的 content 同深；不再是锚定浮层的 floating 档
-    expect(style.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-frosted-compact-shadow'))
-    expect(style.boxShadow).not.toBe(tokenValue('box-shadow', '--xh-elevation-floating'))
-    // 字号与 Tooltip 缺省档同一把尺：次级标注档 13px
-    expect(style.fontSize).toBe('13px')
+    // 与图表提示框同一副：frosted 影与背景模糊、overlay 圆角、正文字号，字色不反白
+    expect(style.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-frosted-shadow'))
+    expect(style.backdropFilter).not.toBe('none')
+    expect(style.borderTopLeftRadius).toBe(tokenValue('border-radius', '--xh-shape-overlay'))
+    expect(style.fontSize).toBe(tokenValue('font-size', '--xh-text-body-size'))
+    expect(style.color).toBe(tokenValue('color', '--xh-material-frosted-fg'))
+    expect(style.color).not.toBe(tokenValue('color', '--xh-bg-surface'))
+    // 配方的物理左缘与平移让开，详情条仍按格子的逻辑缘落位
+    expect(style.translate).toBe('none')
+    const tip = tooltip.getBoundingClientRect()
+    const box = cell!.getBoundingClientRect()
+    expect(tip.right).toBeGreaterThan(box.left)
+    expect(tip.left).toBeLessThan(box.right)
+  })
+
+  it('对照条接配方后仍是一行：容器再窄，「少」、色块与「多」也不折行', async () => {
+    host = document.createElement('div')
+    host.style.inlineSize = '60px'
+    document.body.append(host)
+    app = createApp({ render: () => h(XhHeatmapRoot, { startDate: '2026-01-05', endDate: '2026-01-18', value: [] }) })
+    app.mount(host)
+    await settle()
+    const tops = [...document.querySelectorAll<HTMLElement>('[data-scope=\'heatmap\'][data-part=\'legend\'] > *')].map(el => Math.round(el.getBoundingClientRect().top + el.getBoundingClientRect().height / 2))
+    expect(tops.length).toBeGreaterThan(2)
+    expect(new Set(tops).size).toBe(1)
+  })
+
+  it('色板取基础色板同名色相的 600 档作满档', async () => {
+    mountHeatmap({ palette: 'amber' })
+    await settle()
+    const root = part('root')
+    const ink = getComputedStyle(root).getPropertyValue('--xh-_heatmap-ink').trim()
+    const probe = document.createElement('span')
+    probe.style.color = ink
+    document.body.append(probe)
+    const resolved = getComputedStyle(probe).color
+    probe.remove()
+    expect(resolved).toBe(tokenValue('color', '--xh-color-amber-600'))
   })
 })

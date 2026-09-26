@@ -7661,6 +7661,7 @@
       "normalizeGridTier",
       "normalizeHeatmapNumber",
       "normalizeHeatmapString",
+      "normalizeHeatmapThresholds",
       "normalizeHighlightKeywords",
       "normalizeMarkValues",
       "normalizeMaxFiles",

@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 240 个不同的 `data-*` 属性名、1669 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 240 个不同的 `data-*` 属性名、1670 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -419,10 +419,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，16449 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，16450 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 199 条子入口、8543 个导出名、137 个 `data-scope` 与 1122 条部件配对、
+覆盖：包名与 199 条子入口、8544 个导出名、137 个 `data-scope` 与 1122 条部件配对、
 137 个组件的 1781 个 prop 名、242 种 `data-*`、34 个 `data-state` 取值、660 个令牌、
 5 个 `@layer` 名、4101 个组件覆盖槽、139 个自定义元素及其 attribute 与事件。
 

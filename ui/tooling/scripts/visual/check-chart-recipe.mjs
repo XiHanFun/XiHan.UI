@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 // 门禁：Chart 家族配方的生成物与真源一致；配方与 headless 的纹理形状逐项相同；每份 @import 了它的图表皮肤，都在部件上把自己的组件槽
 // 接进了配方要的私有槽。漏接一条，配方里那处取值就落空（gap 变 normal、圆角变 0），而且不报错。
+// 只核组件的 connect 真投影了 data-xh-chart-part 的那些部件：热力图只把图例与提示框交给配方。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { CHART_CONTRACT_FIELDS, CHART_LINE_CONTRACT_FIELDS, emitChartRecipe } from '../../../packages/design/styles/build/chart-recipe.mjs'
+import { CHART_CONTRACT_FIELDS, CHART_CONTRACT_PARTS, CHART_LINE_CONTRACT_FIELDS, emitChartRecipe } from '../../../packages/design/styles/build/chart-recipe.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const HEADLESS = 'packages/engine/headless/src'
 const RECIPE = 'packages/design/styles/recipes/chart.recipe.json'
 const PATTERNS = 'packages/engine/headless/src/shared/chart/patterns.ts'
 const IMPORT = `@import '../family/chart.css';`
@@ -21,8 +23,21 @@ try {
     skins.push(file)
     // 画折线色标（data-mark="line"）的图表才要接折线那两条
     const lines = css.includes(`[data-mark='line']`)
+    // 组件在哪些部件上投影了家族部件名：字面量 'data-xh-chart-part': 'x'，或按标记部件名判定的 mark.part === 'x'
+    const component = file.replace(/\.css$/, '')
+    let connect = ''
+    try {
+      connect = await readFile(join(HEADLESS, component, `${component}.connect.ts`), 'utf8')
+    }
+    catch {
+      problems.push(`css/${file} 引入了配方，但找不到 ${HEADLESS}/${component}/${component}.connect.ts 核它投影了哪些家族部件`)
+      continue
+    }
+    const projected = new Set([...connect.matchAll(/'data-xh-chart-part':\s*'([a-z-]+)'/g)].map(m => m[1]))
     for (const field of CHART_CONTRACT_FIELDS) {
       if (!lines && CHART_LINE_CONTRACT_FIELDS.includes(field))
+        continue
+      if (!projected.has(CHART_CONTRACT_PARTS[field]))
         continue
       const slot = result.contract[field]
       if (!new RegExp(`${slot}\\s*:`).test(css))
