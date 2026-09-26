@@ -5807,7 +5807,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-cartesian-chart>`：直角坐标图宿主，柱、折线与散点共用一根自变量轴与一根数值轴。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`、tooltip，\n可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，\n按标记的 key 复用节点，只写变化的属性；图例项与按值着色时的色阶生成进 legend；tooltip 留空时写入缺省内容，\n作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据、系列与坐标轴是对象，只走 JS property。",
+          "description": "`<xh-cartesian-chart>`：直角坐标图宿主，柱、折线与散点共用一根自变量轴与一根数值轴。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`、tooltip，\n可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，\n按标记的 key 复用节点，只写变化的属性；图例项与按值着色时的色阶生成进 legend；tooltip 留空时写入缺省内容，\n作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据、系列、坐标轴与注释是对象，只走 JS property。",
           "name": "XhCartesianChartElement",
           "cssParts": [
             {
@@ -5912,6 +5912,14 @@
               "privacy": "public",
               "type": {
                 "text": "Partial<CartesianChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "annotations",
+              "privacy": "public",
+              "type": {
+                "text": "readonly CartesianAnnotation[] | undefined"
               }
             },
             {

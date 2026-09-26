@@ -31,6 +31,8 @@ import type {
 } from '@xihan-ui/viz'
 import type { ChartKey, ChartLabelBox, ChartMetrics, ChartNumbers, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
 import type {
+  CartesianAnnotation,
+  CartesianAnnotationSummary,
   CartesianAxis,
   CartesianAxisFormat,
   CartesianBarSeries,
@@ -50,6 +52,8 @@ import {
   isVizError,
   jitter,
   layoutAxis,
+  linearRegression,
+  movingAverage,
   scaleBand,
   scaleLinear,
   scaleLog,
@@ -478,7 +482,27 @@ function toNumber(value: number | Date | undefined): number | undefined {
   return value instanceof Date ? value.valueOf() : value
 }
 
-export function cartesianDomains(derived: CartesianDerived): CartesianDomains {
+/** 注释落在某根轴上的值（数与日期）：参考线的值、参考带的两端。类目名不在此列。 */
+function annotationExtent(annotations: readonly CartesianAnnotation[], axis: 'x' | 'y'): number[] {
+  const out: number[] = []
+  const push = (value: unknown): void => {
+    const n = value instanceof Date ? value.valueOf() : value
+    if (typeof n === 'number' && Number.isFinite(n))
+      out.push(n)
+  }
+  for (const a of annotations) {
+    if (a.kind === 'line' && a.axis === axis) {
+      push(a.value)
+    }
+    else if (a.kind === 'band' && a.axis === axis) {
+      push(a.from)
+      push(a.to)
+    }
+  }
+  return out
+}
+
+export function cartesianDomains(derived: CartesianDerived, annotations: readonly CartesianAnnotation[]): CartesianDomains {
   const { spec } = derived
   const issues: ChartSpecIssue[] = []
   const bars = derived.visible.some(s => s.spec.mark === 'bar')
@@ -496,6 +520,8 @@ export function cartesianDomains(derived: CartesianDerived): CartesianDomains {
         values.push(lo)
     }
   }
+  // 参考线与参考带的值计入所在轴的定义域：数据范围之外的目标值也看得到
+  values.push(...annotationExtent(annotations, 'y'))
   const log = spec.valueScale === 'log'
   let value: [number, number]
   try {
@@ -521,7 +547,7 @@ export function cartesianDomains(derived: CartesianDerived): CartesianDomains {
 
   let key: [number, number] | null = null
   if (spec.keyScale !== 'band' && spec.keyScale !== 'point') {
-    const numbers = spec.keys.map(k => (k instanceof Date ? k.valueOf() : Number(k))).filter(Number.isFinite)
+    const numbers = [...spec.keys.map(k => (k instanceof Date ? k.valueOf() : Number(k))), ...annotationExtent(annotations, 'x')].filter(Number.isFinite)
     const low = toNumber(spec.xAxis.min) ?? Math.min(...numbers)
     const high = toNumber(spec.xAxis.max) ?? Math.max(...numbers)
     key = numbers.length === 0 && spec.xAxis.min == null ? [0, 1] : low === high ? [low - 1, high + 1] : [low, high]
@@ -604,6 +630,10 @@ export interface CartesianLayout {
   readonly formats: CartesianFormats
   /** 堆叠柱写合计。 */
   readonly totals: boolean
+  /** 注释：参考线、参考带、标出的数据、平均线与趋势线。 */
+  readonly annotations: readonly CartesianAnnotation[]
+  /** 平均线缺省标签的前缀。 */
+  readonly averageLabel: string
 }
 
 function isCategoryScale(scale: AxisScale): scale is BandScale<string | number> {
@@ -623,6 +653,8 @@ export function layoutCartesian(
   measurerVersion: number,
   locale: string,
   totals: boolean,
+  annotations: readonly CartesianAnnotation[],
+  averageLabel: string,
 ): CartesianLayout {
   void measurerVersion
   const { spec } = domains.derived
@@ -802,6 +834,8 @@ export function layoutCartesian(
     measurer,
     formats,
     totals,
+    annotations,
+    averageLabel,
   }
 }
 
@@ -917,6 +951,16 @@ export interface CartesianScene {
   readonly placements: ReadonlyMap<string, 'inside' | 'end'>
   /** 标签键 → 它写的数与写法：更新过渡里标签上的数从旧值滚到新值，逐帧按同一写法重写。 */
   readonly labelValues: ReadonlyMap<string, CartesianLabelValue>
+  /** 注释的标记与标签键 → 它是哪种注释、跟着哪个系列（参考线与参考带不跟系列）。 */
+  readonly annotations: ReadonlyMap<string, CartesianAnnotationInfo>
+}
+
+/** 注释标记的归属：连接层据此写 data-kind、系列的色槽与淡出。 */
+export interface CartesianAnnotationInfo {
+  readonly kind: CartesianAnnotation['kind']
+  readonly seriesId: string | null
+  /** 趋势线的算法：最小二乘直线是推算（虚线），移动平均是数据的平滑（实线）。 */
+  readonly method?: 'linear' | 'moving-average'
 }
 
 /** 标签写的数，以及把数写成标签文字的写法。 */
@@ -1204,9 +1248,12 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
     data.push({ kind: 'group', key: `series:${id}`, part: 'series', children })
   }
 
-  const labels = cartesianLabels(layout, bars, anchors)
-  const scene = createScene({ version, layers: { back, data, front: labels.marks }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
-  return { layout, scene, info, anchors, placements: labels.placements, labelValues: labels.values }
+  // 参考带垫在网格之上、数据之下；参考线、标出的点、平均线与趋势线压在数据之上；注释的标签与数据标签一起落位
+  const notes = cartesianAnnotations(layout, anchors)
+  back.splice(1, 0, ...notes.back)
+  const labels = cartesianLabels(layout, bars, anchors, notes.labels)
+  const scene = createScene({ version, layers: { back, data, front: [...notes.front, ...labels.marks] }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
+  return { layout, scene, info, anchors, placements: labels.placements, labelValues: labels.values, annotations: notes.info }
 }
 
 /**
@@ -1278,6 +1325,269 @@ export function colorPosition(domain: readonly [number, number] | null, value: n
   return POINT_COLOR_FLOOR + (1 - POINT_COLOR_FLOOR) * t
 }
 
+/* ---------- 注释 ---------- */
+
+/** 注释的产物：垫在数据下的参考带、压在数据上的线与点、待落位的标签，以及每个标记归哪种注释。 */
+interface CartesianAnnotationMarks {
+  readonly back: Mark[]
+  readonly front: Mark[]
+  readonly labels: LabelCandidate[]
+  readonly info: Map<string, CartesianAnnotationInfo>
+}
+
+/** 趋势线移动平均的缺省窗口。 */
+const TREND_WINDOW = 3
+
+/** 注释的标签排在数据标签之前落位：数据标签挤不下时让给注释。 */
+const ANNOTATION_LABEL_PRIORITY = 4
+
+/**
+ * 注释指向的系列不存在、指向的类目不在轴上时报出来：这条注释不画，图照常画。
+ * 系列被图例隐藏不算：那是读者的操作，注释随系列一起收起。
+ */
+export function cartesianAnnotationIssues(spec: CartesianSpec, annotations: readonly CartesianAnnotation[]): ChartSpecIssue[] {
+  const issues: ChartSpecIssue[] = []
+  const ids = new Set(spec.series.map(s => s.id))
+  const category = spec.keyScale === 'band' || spec.keyScale === 'point'
+  const onAxis = (value: unknown): boolean => {
+    const id = cartesianKeyId(value)
+    return id != null && spec.keyIndex.has(id)
+  }
+  annotations.forEach((a, index) => {
+    if (a.kind === 'point' || a.kind === 'average' || a.kind === 'trend') {
+      if (!ids.has(a.series))
+        issues.push({ code: DIAGNOSTIC_CODES.chartAnnotationTarget, message: `注释指向的系列「${a.series}」不存在`, detail: { index, series: a.series } })
+      if (a.kind === 'point' && typeof a.at === 'object' && !onAxis(a.at.x))
+        issues.push({ code: DIAGNOSTIC_CODES.chartAnnotationTarget, message: '注释要标出的 x 不在自变量轴上', detail: { index, x: a.at.x } })
+      return
+    }
+    if (a.axis !== 'x' || !category)
+      return
+    const keys = a.kind === 'line' ? [a.value] : [a.from, a.to]
+    for (const key of keys) {
+      if (!onAxis(key))
+        issues.push({ code: DIAGNOSTIC_CODES.chartAnnotationTarget, message: `注释指向的类目「${String(key)}」不在自变量轴上`, detail: { index, key } })
+    }
+  })
+  return issues
+}
+
+/**
+ * 注释的几何：参考线横跨（纵贯）绘图区，参考带铺满另一个方向；标出的点画一圈环；平均线是系列均值处的一条线；
+ * 趋势线是最小二乘直线或移动平均折线。标签缺省写值，与数据标签一起按重要性落位，注释优先。
+ * 指向隐藏系列、不在轴上的注释不画（后者由规格那一段报诊断）。
+ */
+function cartesianAnnotations(
+  layout: CartesianLayout,
+  anchors: ReadonlyMap<string, readonly ({ x: number, y: number } | null)[]>,
+): CartesianAnnotationMarks {
+  const { domains, plot, metrics, formats, font, measurer, annotations, averageLabel } = layout
+  const { spec, visible } = domains.derived
+  const vertical = spec.orientation === 'vertical'
+  const gap = metrics.labelGap
+  const out: CartesianAnnotationMarks = { back: [], front: [], labels: [], info: new Map() }
+  if (annotations.length === 0)
+    return out
+  const category = isCategoryScale(layout.keyScale)
+  const time = spec.keyScale === 'time' || spec.keyScale === 'utc'
+  const step = category ? ((layout.keyScale as { step?: number }).step ?? layout.bandwidth) : 0
+  const [valueLo, valueHi] = [Math.min(...layout.valueScale.range), Math.max(...layout.valueScale.range)]
+  const clampAcross = (v: number): number => Math.min(valueHi, Math.max(valueLo, v))
+
+  // 数值轴上的一个值 → 像素；自变量轴上的一个键（或它的数值）→ 像素中心
+  const valueAt = (v: unknown): number => {
+    const n = v instanceof Date ? v.valueOf() : v
+    return typeof n === 'number' && Number.isFinite(n) ? layout.valueScale.map(n) ?? Number.NaN : Number.NaN
+  }
+  const keyAt = (k: unknown): number => {
+    if (category) {
+      const id = cartesianKeyId(k)
+      const j = id == null ? undefined : spec.keyIndex.get(id)
+      return j == null ? Number.NaN : layout.keyCenters[j]!
+    }
+    const n = k instanceof Date ? k.valueOf() : k
+    if (typeof n !== 'number' || !Number.isFinite(n))
+      return Number.NaN
+    return (layout.keyScale.map as (v: unknown) => number | undefined)(time ? new Date(n) : n) ?? Number.NaN
+  }
+  /** 一个位置在趋势计算里的横坐标：类目轴取键的序号，连续轴取键的数值。 */
+  const trendX = (s: CartesianSeriesValues, p: number): number => {
+    const j = s.keyAt ? s.keyAt[p]! : p
+    if (category)
+      return j
+    const key = spec.keys[j]!
+    return key instanceof Date ? key.valueOf() : Number(key)
+  }
+  const trendAlong = (x: number): number => (category ? layout.keyCenters[Math.round(x)] ?? Number.NaN : keyAt(x))
+  const pointOf = (along: number, across: number): { x: number, y: number } => (vertical ? { x: along, y: across } : { x: across, y: along })
+
+  /** 标签：主落点越出视口（线或点贴着上沿、右沿）时改用备选落点，翻到线或点的另一侧。 */
+  const label = (key: string, text: CartesianLabelValue, at: LabelAt, fallback?: LabelAt): void => {
+    const shown = text.format(text.value)
+    const width = measurer.measure(shown, font).width
+    const boxOf = ([x, y, anchor, baseline]: LabelAt): ChartLabelBox => labelBox(x, y, width, font.lineHeight, anchor, baseline)
+    const fits = (box: ChartLabelBox): boolean => box.x >= 0 && box.y >= 0 && box.x + box.width <= layout.size.width && box.y + box.height <= layout.size.height
+    const chosen = fallback && !fits(boxOf(at)) ? fallback : at
+    const [x, y, anchor, baseline] = chosen
+    out.labels.push({
+      mark: { kind: 'text', key, part: 'annotation-label', x, y, text: shown, anchor, baseline },
+      box: boxOf(chosen),
+      priority: ANNOTATION_LABEL_PRIORITY,
+      placement: 'end',
+      label: text,
+    })
+  }
+  const fixed = (text: string): CartesianLabelValue => ({ value: 0, format: () => text })
+  const twoPoints = (key: string, a: { x: number, y: number }, b: { x: number, y: number }): LineMark => ({
+    kind: 'line',
+    key,
+    part: 'annotation',
+    curve: 'linear',
+    points: [{ key: 'a', ...a }, { key: 'b', ...b }],
+  })
+  /** 一条横跨（纵贯）绘图区的线：cross 为真时它沿自变量方向铺开（落在数值轴上的某个值处）。 */
+  const spanLine = (key: string, at: number, onValueAxis: boolean): LineMark => {
+    const horizontal = onValueAxis === vertical
+    const c = crisp(at)
+    return horizontal
+      ? twoPoints(key, { x: plot.x, y: c }, { x: plot.x + plot.width, y: c })
+      : twoPoints(key, { x: c, y: plot.y }, { x: c, y: plot.y + plot.height })
+  }
+  /** 线的标签：横线写在右端的上方（贴着上沿时写在下方），竖线写在上端的右侧（贴着右沿时写在左侧）。 */
+  const spanLabelAt = (at: number, onValueAxis: boolean): [LabelAt, LabelAt] => (onValueAxis === vertical
+    ? [[plot.x + plot.width - gap, at - gap, 'end', 'bottom'], [plot.x + plot.width - gap, at + gap, 'end', 'top']]
+    : [[at + gap, plot.y + gap, 'start', 'top'], [at - gap, plot.y + gap, 'end', 'top']])
+
+  annotations.forEach((a, index) => {
+    const key = `annotation:${index}`
+    const labelKey = `annotation-label:${index}`
+    if (a.kind === 'line') {
+      const onValueAxis = a.axis === 'y'
+      const at = onValueAxis ? valueAt(a.value) : keyAt(a.value)
+      if (!Number.isFinite(at))
+        return
+      out.front.push(spanLine(key, at, onValueAxis))
+      out.info.set(key, { kind: 'line', seriesId: null })
+      const n = a.value instanceof Date ? a.value.valueOf() : a.value
+      const text: CartesianLabelValue = a.label != null
+        ? fixed(a.label)
+        : onValueAxis && typeof n === 'number'
+          ? { value: n, format: formats.value }
+          : fixed(formats.key(a.value))
+      label(labelKey, text, ...spanLabelAt(at, onValueAxis))
+      out.info.set(labelKey, { kind: 'line', seriesId: null })
+      return
+    }
+    if (a.kind === 'band') {
+      const onValueAxis = a.axis === 'y'
+      let [from, to] = onValueAxis ? [valueAt(a.from), valueAt(a.to)] : [keyAt(a.from), keyAt(a.to)]
+      if (!Number.isFinite(from) || !Number.isFinite(to))
+        return
+      // 类目轴上的参考带盖满两端类目的整条带
+      if (!onValueAxis && category) {
+        const [lo, hi] = [Math.min(from, to), Math.max(from, to)]
+        ;[from, to] = [lo - step / 2, hi + step / 2]
+      }
+      const lo = Math.min(from, to)
+      const hi = Math.max(from, to)
+      const horizontal = onValueAxis === vertical
+      const rect = horizontal
+        ? { x: plot.x, y: Math.max(plot.y, lo), width: plot.width, height: Math.max(0, Math.min(plot.y + plot.height, hi) - Math.max(plot.y, lo)) }
+        : { x: Math.max(plot.x, lo), y: plot.y, width: Math.max(0, Math.min(plot.x + plot.width, hi) - Math.max(plot.x, lo)), height: plot.height }
+      out.back.push({ kind: 'rect', key, part: 'annotation', ...rect })
+      out.info.set(key, { kind: 'band', seriesId: null })
+      const format = (v: unknown): string => (onValueAxis && typeof v === 'number' ? formats.value(v) : formats.key(v as ChartKey))
+      const toNumber = (v: unknown): unknown => (v instanceof Date && onValueAxis ? v.valueOf() : v)
+      label(labelKey, fixed(a.label ?? `${format(toNumber(a.from))} – ${format(toNumber(a.to))}`), [rect.x + gap, rect.y + gap, 'start', 'top'])
+      out.info.set(labelKey, { kind: 'band', seriesId: null })
+      return
+    }
+    const s = visible.find(v => v.spec.id === a.series)
+    if (!s)
+      return
+    const seriesAnchors = anchors.get(s.spec.id) ?? []
+    const present = s.values.map((v, p) => (v == null ? -1 : p)).filter(p => p >= 0)
+    if (present.length === 0)
+      return
+    if (a.kind === 'point') {
+      let p = -1
+      if (a.at === 'last') {
+        p = present.at(-1)!
+      }
+      else if (a.at === 'max' || a.at === 'min') {
+        const sign = a.at === 'max' ? 1 : -1
+        p = present.reduce((best, q) => (sign * s.values[q]! > sign * s.values[best]! ? q : best), present[0]!)
+      }
+      else {
+        const id = cartesianKeyId(a.at.x)
+        const j = id == null ? undefined : spec.keyIndex.get(id)
+        p = j == null ? -1 : s.keyAt ? s.keyAt.indexOf(j) : j
+      }
+      const anchor = p < 0 || s.values[p] == null ? null : seriesAnchors[p]
+      if (!anchor)
+        return
+      const r = metrics.pointSize / 2 + metrics.gap * 2
+      out.front.push({ kind: 'symbol', key, part: 'annotation', x: anchor.x, y: anchor.y, size: Math.PI * r * r, symbol: 'circle' })
+      out.info.set(key, { kind: 'point', seriesId: s.spec.id })
+      const value = s.values[p]!
+      const text: CartesianLabelValue = a.label != null ? fixed(a.label) : { value, format: formats.value }
+      label(
+        labelKey,
+        text,
+        vertical ? [anchor.x, anchor.y - r - gap, 'middle', 'bottom'] : [anchor.x + r + gap, anchor.y, 'start', 'middle'],
+        vertical ? [anchor.x, anchor.y + r + gap, 'middle', 'top'] : [anchor.x - r - gap, anchor.y, 'end', 'middle'],
+      )
+      out.info.set(labelKey, { kind: 'point', seriesId: s.spec.id })
+      return
+    }
+    if (a.kind === 'average') {
+      let sum = 0
+      for (const p of present)
+        sum += s.values[p]!
+      const mean = sum / present.length
+      const at = valueAt(mean)
+      if (!Number.isFinite(at))
+        return
+      out.front.push(spanLine(key, at, true))
+      out.info.set(key, { kind: 'average', seriesId: s.spec.id })
+      const own = a.label
+      label(labelKey, { value: mean, format: v => own ?? `${averageLabel} ${formats.value(v)}` }, ...spanLabelAt(at, true))
+      out.info.set(labelKey, { kind: 'average', seriesId: s.spec.id })
+      return
+    }
+    // 趋势线：最小二乘直线从最左画到最右；移动平均沿每个位置一个点，凑不满窗口的位置断开
+    let line: LineMark | null = null
+    if (a.method === 'linear') {
+      const fit = linearRegression(present.map(p => ({ x: trendX(s, p), y: s.values[p]! })))
+      if (!fit)
+        return
+      const xs = present.map(p => trendX(s, p))
+      const [x0, x1] = [Math.min(...xs), Math.max(...xs)]
+      const a0 = pointOf(trendAlong(x0), clampAcross(valueAt(fit.predict(x0))))
+      const a1 = pointOf(trendAlong(x1), clampAcross(valueAt(fit.predict(x1))))
+      if (![a0.x, a0.y, a1.x, a1.y].every(Number.isFinite))
+        return
+      line = twoPoints(key, a0, a1)
+    }
+    else {
+      const smooth = movingAverage(s.values, Math.max(1, Math.floor(a.window ?? TREND_WINDOW)))
+      const points: KeyedPoint[] = s.values.map((_, p) => {
+        const v = smooth[p]
+        const at = pointOf(trendAlong(trendX(s, p)), v == null ? Number.NaN : valueAt(v))
+        return { key: s.pointIds?.[p] ?? cartesianDatumId(spec.keys[p]!), x: at.x, y: at.y, defined: v != null && Number.isFinite(at.x) && Number.isFinite(at.y) }
+      })
+      line = { kind: 'line', key, part: 'annotation', curve: 'linear', points }
+    }
+    out.front.push(line)
+    out.info.set(key, { kind: 'trend', seriesId: s.spec.id, method: a.method })
+    const last = [...line.points].reverse().find(p => p.defined !== false)
+    if (a.label != null && last)
+      label(labelKey, fixed(a.label), vertical ? [last.x, last.y - gap, 'end', 'bottom'] : [last.x + gap, last.y, 'start', 'middle'])
+    out.info.set(labelKey, { kind: 'trend', seriesId: s.spec.id })
+  })
+  return out
+}
+
 /** 一根柱在绘图区里的矩形，以及写标签要知道的事：远端朝上（右）还是朝下（左）、是不是堆叠中的一段。 */
 interface BarBox extends Rect {
   /** 远端朝上（竖向）或朝右（横向）。 */
@@ -1306,6 +1616,7 @@ function cartesianLabels(
   layout: CartesianLayout,
   bars: ReadonlyMap<string, BarBox>,
   anchors: ReadonlyMap<string, readonly ({ x: number, y: number } | null)[]>,
+  extra: readonly LabelCandidate[],
 ): { marks: Mark[], placements: ReadonlyMap<string, 'inside' | 'end'>, values: ReadonlyMap<string, CartesianLabelValue> } {
   const { domains, metrics, font, formats, measurer, size, plot } = layout
   const { spec, visible } = domains.derived
@@ -1466,6 +1777,7 @@ function cartesianLabels(
     }
   }
 
+  candidates.push(...extra)
   const kept = placeWithoutOverlap(candidates, { x: 0, y: 0, width: size.width, height: size.height })
   // 标签没落位，它的引导线也不画
   const lines = kept.map(c => leaders.get(c.mark.key)).filter((line): line is LineMark => line != null)
@@ -1494,7 +1806,7 @@ export function cartesianEntryScene(target: Scene): Scene {
   return createScene({ version: 0, layers: { data: seed(target.layers.data), front: target.layers.front }, bounds: target.bounds })
 }
 
-/** 柱的标签在柱长到八成多时出现；合计与线尾标签等全部长完、描完再出现。 */
+/** 柱的标签在柱长到八成多时出现；合计、线尾标签与注释等全部长完、描完再出现。 */
 const BAR_LABEL_AT = 0.85
 const TOTAL_LABEL_AT = 0.95
 const END_LABEL_AT = 1
@@ -1543,7 +1855,7 @@ export function cartesianRevealAt(target: Scene): ReadonlyMap<string, number> {
     if (mark.part === 'total-label') {
       at.set(mark.key, TOTAL_LABEL_AT)
     }
-    else if (mark.part === 'end-label' || mark.part === 'leader-line') {
+    else if (mark.part === 'end-label' || mark.part === 'leader-line' || mark.part === 'annotation' || mark.part === 'annotation-label') {
       at.set(mark.key, END_LABEL_AT)
     }
     else if (mark.part === 'data-label') {
@@ -1557,10 +1869,44 @@ export function cartesianRevealAt(target: Scene): ReadonlyMap<string, number> {
 
 /* ---------- 无障碍 ---------- */
 
+/**
+ * 摘要里的注释：参考线、参考带与平均线写出名字与值（注释本身对读屏隐藏，信息由摘要承担）；
+ * 标出的点与趋势线不写：前者的值在数据表里，后者是由数据推出来的。
+ */
+function annotationSummaryItems(
+  derived: CartesianDerived,
+  annotations: readonly CartesianAnnotation[],
+  formats: CartesianFormats,
+  translations: CartesianChartTranslations,
+): CartesianAnnotationSummary[] {
+  const items: CartesianAnnotationSummary[] = []
+  const text = (axis: 'x' | 'y', v: unknown): string => {
+    const n = v instanceof Date && axis === 'y' ? v.valueOf() : v
+    return axis === 'y' && typeof n === 'number' ? formats.value(n) : formats.key(v as ChartKey)
+  }
+  for (const a of annotations) {
+    if (a.kind === 'line') {
+      items.push({ kind: 'line', label: a.label ?? translations.referenceLabel, series: null, value: text(a.axis, a.value) })
+    }
+    else if (a.kind === 'band') {
+      items.push({ kind: 'band', label: a.label ?? translations.referenceLabel, series: null, value: `${text(a.axis, a.from)} – ${text(a.axis, a.to)}` })
+    }
+    else if (a.kind === 'average') {
+      const s = derived.visible.find(v => v.spec.id === a.series)
+      const values = s?.values.filter((v): v is number => v != null) ?? []
+      if (!s || values.length === 0)
+        continue
+      items.push({ kind: 'average', label: a.label ?? translations.averageLabel, series: s.spec.name, value: formats.value(values.reduce((sum, v) => sum + v, 0) / values.length) })
+    }
+  }
+  return items
+}
+
 export function cartesianA11y(
   derived: CartesianDerived,
   locale: string,
   translations: CartesianChartTranslations,
+  annotations: readonly CartesianAnnotation[],
 ): { summary: string, table: TableModel, formats: CartesianFormats } {
   const { spec } = derived
   const formats = cartesianFormats(spec, locale)
@@ -1574,7 +1920,11 @@ export function cartesianA11y(
       ? s.values.map((value, p) => ({ key: spec.keys[s.keyAt![p]!]!, value }))
       : spec.keys.map((key, j) => ({ key, value: s.values[j] ?? null })),
   }))
-  const summary = translations.summary(buildChartSummary(series, { formatKey: k => formats.key(k as ChartKey), formatValue: v => formats.value(v) }))
+  const notes = annotationSummaryItems(derived, annotations, formats, translations)
+  const summary = [
+    translations.summary(buildChartSummary(series, { formatKey: k => formats.key(k as ChartKey), formatValue: v => formats.value(v) })),
+    ...(notes.length > 0 ? [translations.annotationSummary(notes)] : []),
+  ].join(' ')
   // 含散点时一个 x 上可以有多个点，按键对齐的宽表放不下：改成每个数据一行的长表
   const table = unique.some(s => s.keyAt)
     ? pointTable(unique, spec, formats, translations)
@@ -1645,6 +1995,7 @@ export interface CartesianPipelineInput {
   readonly locale: string
   readonly translations: CartesianChartTranslations
   readonly totals: boolean | undefined
+  readonly annotations: readonly CartesianAnnotation[] | undefined
 }
 
 export interface CartesianModel {
@@ -1654,6 +2005,8 @@ export interface CartesianModel {
   readonly formats: CartesianFormats
   /** 规格不合法的原因；非空时不画标记。 */
   readonly issues: readonly ChartSpecIssue[]
+  /** 画得出来但有一部分没画的原因（注释指错了目标）：开发期提醒，不挡住整张图。 */
+  readonly warnings: readonly ChartSpecIssue[]
   /** 尚未测量时为 null。 */
   readonly scene: CartesianScene | null
   readonly summary: string
@@ -1661,6 +2014,9 @@ export interface CartesianModel {
 }
 
 export type CartesianPipeline = (input: CartesianPipelineInput) => CartesianModel
+
+/** 没有注释：同一个空数组，管线各段的记忆不因作者没写而失效。 */
+const NO_ANNOTATIONS: readonly CartesianAnnotation[] = Object.freeze([])
 
 /** 建一条管线：每个图表实例一条，放在机器的 refs 里。 */
 export function createCartesianPipeline(): CartesianPipeline {
@@ -1671,17 +2027,19 @@ export function createCartesianPipeline(): CartesianPipeline {
   let version = 0
   const sceneOf = memoizeLast((layout: CartesianLayout) => cartesianScene(layout, ++version))
   const a11yOf = memoizeLast(cartesianA11y)
+  const warningsOf = memoizeLast(cartesianAnnotationIssues)
   // 隐藏系列按内容记忆：受控时作者可能每次给一个新数组，内容没变不该重算
   const hiddenOf = memoizeLast((key: string): readonly string[] => JSON.parse(key) as string[])
   return (input) => {
     const spec = normalize(input.data, input.series, input.xAxis, input.yAxis, input.orientation)
     const derived = derive(spec, hiddenOf(JSON.stringify([...input.hiddenSeries].sort())))
-    const domains = domainsOf(derived)
-    const a11y = a11yOf(derived, input.locale, input.translations)
+    const annotations = input.annotations ?? NO_ANNOTATIONS
+    const domains = domainsOf(derived, annotations)
+    const a11y = a11yOf(derived, input.locale, input.translations, annotations)
     const issues = [...spec.issues, ...derived.issues, ...domains.issues]
     const scene = input.size == null || issues.length > 0
       ? null
-      : sceneOf(layoutOf(domains, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, input.totals === true))
-    return { spec, derived, domains, formats: a11y.formats, issues, scene, summary: a11y.summary, table: a11y.table }
+      : sceneOf(layoutOf(domains, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, input.totals === true, annotations, input.translations.averageLabel))
+    return { spec, derived, domains, formats: a11y.formats, issues, warnings: warningsOf(spec, annotations), scene, summary: a11y.summary, table: a11y.table }
   }
 }

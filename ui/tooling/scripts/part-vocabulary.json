@@ -17,6 +17,12 @@
     "alpha-slider": [
       "color-picker"
     ],
+    "annotation": [
+      "cartesian-chart"
+    ],
+    "annotation-label": [
+      "cartesian-chart"
+    ],
     "approval": [
       "tool-call"
     ],
@@ -1739,6 +1745,7 @@
   "tails": {
     "action": true,
     "actions": true,
+    "annotation": true,
     "approval": true,
     "area": true,
     "arrow": true,

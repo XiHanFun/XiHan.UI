@@ -17998,7 +17998,9 @@
 [data-scope='cartesian-chart'][data-part='dot'][data-drawing],
 [data-scope='cartesian-chart'][data-part='data-label'][data-drawing],
 [data-scope='cartesian-chart'][data-part='total-label'][data-drawing],
-[data-scope='cartesian-chart'][data-part='end-label'][data-drawing] {
+[data-scope='cartesian-chart'][data-part='end-label'][data-drawing],
+[data-scope='cartesian-chart'][data-part='annotation'][data-drawing],
+[data-scope='cartesian-chart'][data-part='annotation-label'][data-drawing] {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
   animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
 }
@@ -18048,6 +18050,53 @@
 [data-scope='cartesian-chart'][data-part='leader-line'] {
   pointer-events: none;
   transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* —— 注释：帮读者读数的参照，只给眼睛看、不接指针。参考线是结构色的虚线（虚线表达阈值与推算），
+   参考带是整条的淡底；标出的点、平均线与趋势线跟着系列取系列色，随系列淡出 —— */
+[data-scope='cartesian-chart'][data-part='annotation'] {
+  fill: none;
+  stroke: var(--xh-chart-label);
+  stroke-width: var(--xh-stroke-thin);
+  stroke-dasharray: calc(var(--xh-_chart-metric-line-width) * 2) calc(var(--xh-_chart-metric-line-width) * 2);
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='cartesian-chart'][data-part='annotation'][data-kind='band'] {
+  fill: var(--xh-chart-band-highlight);
+  stroke: none;
+}
+
+[data-scope='cartesian-chart'][data-part='annotation'][data-kind='average'],
+[data-scope='cartesian-chart'][data-part='annotation'][data-kind='trend'] {
+  stroke: var(--xh-_chart-series);
+  stroke-width: var(--xh-stroke-thick);
+}
+
+/* 三种线各有线型：数据是实线，移动平均是圆点线（数据的平滑），最小二乘直线是虚线（推算） */
+[data-scope='cartesian-chart'][data-part='annotation'][data-kind='trend'][data-method='moving-average'] {
+  stroke-dasharray: 0 calc(var(--xh-_chart-metric-line-width) * 2);
+  stroke-linecap: round;
+}
+
+/* 标出的点是一圈实线环：套在数据点外，隔一道表面间隙 */
+[data-scope='cartesian-chart'][data-part='annotation'][data-kind='point'] {
+  stroke: var(--xh-_chart-series);
+  stroke-width: var(--xh-stroke-thick);
+  stroke-dasharray: none;
+}
+
+[data-scope='cartesian-chart'][data-part='annotation-label'] {
+  fill: var(--xh-chart-label);
+  font-weight: var(--xh-font-weight-medium);
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='cartesian-chart'][data-part='annotation'][data-dimmed],
+[data-scope='cartesian-chart'][data-part='annotation-label'][data-dimmed] {
+  opacity: var(--xh-chart-dim-alpha);
 }
 
 /* 压在柱上的标签：取与色槽配对的前景色 */
@@ -18121,6 +18170,22 @@
   [data-scope='cartesian-chart'][data-part='point'][data-seg] {
     fill: CanvasText;
     stroke: Canvas;
+  }
+
+  [data-scope='cartesian-chart'][data-part='annotation'],
+  [data-scope='cartesian-chart'][data-part='annotation'][data-kind='average'],
+  [data-scope='cartesian-chart'][data-part='annotation'][data-kind='trend'],
+  [data-scope='cartesian-chart'][data-part='annotation'][data-kind='point'] {
+    stroke: CanvasText;
+  }
+
+  [data-scope='cartesian-chart'][data-part='annotation'][data-kind='band'] {
+    fill: none;
+    stroke: GrayText;
+  }
+
+  [data-scope='cartesian-chart'][data-part='annotation-label'] {
+    fill: CanvasText;
   }
 
   /* 色阶在系统色下画不出来：只留轮廓，两端的值照常可读 */

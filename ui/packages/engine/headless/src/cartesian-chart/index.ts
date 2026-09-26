@@ -8,12 +8,14 @@
 export { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 export { cartesianMarkTag, connectCartesianChart } from './cartesian-chart.connect'
 export { cartesianChartKeyboard } from './cartesian-chart.keyboard'
-export { CARTESIAN_TRANSLATIONS } from './cartesian-chart.logic'
+export { CARTESIAN_TRANSLATIONS, defaultCartesianAnnotationSummary } from './cartesian-chart.logic'
 export type { CartesianOverlay } from './cartesian-chart.logic'
 export { cartesianChartMachine } from './cartesian-chart.machine'
 export { cartesianChartMeta } from './cartesian-chart.meta'
 export type { CartesianModel } from './cartesian-chart.model'
 export type {
+  CartesianAnnotation,
+  CartesianAnnotationSummary,
   CartesianAxis,
   CartesianAxisFormat,
   CartesianBarSeries,

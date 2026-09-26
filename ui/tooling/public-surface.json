@@ -5458,6 +5458,8 @@
       "CarouselSchema",
       "CarouselSlideRange",
       "CarouselTranslations",
+      "CartesianAnnotation",
+      "CartesianAnnotationSummary",
       "CartesianAxis",
       "CartesianAxisFormat",
       "CartesianBarSeries",
@@ -7333,6 +7335,7 @@
       "dateSegmentRange",
       "dateSegmentText",
       "dayPeriodLabel",
+      "defaultCartesianAnnotationSummary",
       "defaultChartDatumLabel",
       "defaultChartSummary",
       "defaultPieDatumLabel",
@@ -8995,6 +8998,8 @@
       "viewport"
     ],
     "cartesian-chart": [
+      "annotation",
+      "annotation-label",
       "area-fill",
       "axis",
       "axis-line",
@@ -10461,6 +10466,7 @@
     "cartesian-chart": [
       "activeKey",
       "animated",
+      "annotations",
       "data",
       "defaultHiddenSeries",
       "hiddenSeries",

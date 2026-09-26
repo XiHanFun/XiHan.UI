@@ -123,6 +123,56 @@ export interface CartesianScatterSeries extends CartesianSeriesBase {
 
 export type CartesianSeries = CartesianBarSeries | CartesianLineSeries | CartesianScatterSeries
 
+/**
+ * 注释：画在数据之外、帮读者读数的参照。axis 是 x（自变量轴）或 y（数值轴），与屏幕方向无关；
+ * 参考线与参考带的值计入该轴的定义域，数据范围之外的目标值也看得到。标签缺省写值。
+ */
+export type CartesianAnnotation
+  = | {
+    /** 参考线：目标、阈值、上一期的水平。 */
+    kind: 'line'
+    axis: 'x' | 'y'
+    value: number | string | Date
+    label?: string
+  }
+  | {
+    /** 参考带：正常区间、促销期、夜间。 */
+    kind: 'band'
+    axis: 'x' | 'y'
+    from: number | string | Date
+    to: number | string | Date
+    label?: string
+  }
+  | {
+    /** 标出某个系列上的一个数据：最大、最小、最后一个，或指定 x 上的那个。 */
+    kind: 'point'
+    series: string
+    at: 'max' | 'min' | 'last' | { x: number | string | Date }
+    label?: string
+  }
+  | {
+    /** 平均线：系列在可见数据上的均值。 */
+    kind: 'average'
+    series: string
+    label?: string
+  }
+  | {
+    /** 趋势线：最小二乘直线，或尾随窗口的移动平均（缺省 3 个位置）。 */
+    kind: 'trend'
+    series: string
+    method: 'linear' | 'moving-average'
+    window?: number
+    label?: string
+  }
+
+/** 摘要里的一条注释：名字、所属系列（参考线与参考带为 null）与已写成文字的值。 */
+export interface CartesianAnnotationSummary {
+  readonly kind: 'line' | 'band' | 'average'
+  readonly label: string
+  readonly series: string | null
+  readonly value: string
+}
+
 /** 一根坐标轴的配置。x 是自变量轴，y 是数值轴，与屏幕方向无关（orientation 决定画在哪边）。 */
 export interface CartesianAxis {
   /** 比例尺；缺省按数据推断：含柱或非数值的自变量为 band，日期为 time，数值为 linear。 */
@@ -201,6 +251,12 @@ export interface CartesianChartTranslations extends ChartTranslations {
   sizeLabel: string
   /** 按值着色的那个量在色阶图例、数据表、提示框与可及名里的名字。 */
   colorLabel: string
+  /** 没写标签的参考线与参考带在摘要里的名字。 */
+  referenceLabel: string
+  /** 平均线的名字：缺省标签写「名字 均值」，摘要里写「名字（系列）：均值」。 */
+  averageLabel: string
+  /** 摘要末尾写注释的模板：参考线、参考带与平均线逐条写出名字与值。 */
+  annotationSummary: (items: readonly CartesianAnnotationSummary[]) => string
   /** 摘要模板。 */
   summary: (model: ChartSummary) => string
 }
@@ -222,6 +278,8 @@ export interface CartesianChartSchema extends MachineSchema {
     tooltipOrder?: CartesianTooltipOrder
     /** 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上；不写时取顺序色阶令牌。 */
     palette?: ChartPalette
+    /** 注释：参考线、参考带、标出的数据、平均线与趋势线；只给眼睛看，摘要写出参考线、参考带与平均线。 */
+    annotations?: readonly CartesianAnnotation[]
     translations?: Partial<CartesianChartTranslations>
   }
   context: ChartBaseContext

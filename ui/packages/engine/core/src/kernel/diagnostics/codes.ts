@@ -65,6 +65,8 @@ export const DIAGNOSTIC_CODES = {
   chartInvalidRange: 'chart.invalid-range',
   /** Progress 在非 meter 语义下用了分段、目标、量程刻度或指示方式。 */
   chartMeterOnly: 'chart.meter-only',
+  /** 图表注释指向的系列不存在，或指向的类目不在轴上：这条注释不画。 */
+  chartAnnotationTarget: 'chart.annotation-target',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

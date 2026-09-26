@@ -6,6 +6,7 @@
 // 提供 cartesian chart 相关实现。
 
 import type {
+  CartesianAnnotation,
   CartesianAxis,
   CartesianChartApi,
   CartesianChartSchema,
@@ -201,6 +202,7 @@ export const XhCartesianChartRoot = defineComponent({
     totals: { type: Boolean, default: undefined },
     tooltipOrder: { type: String as PropType<CartesianTooltipOrder> },
     palette: { type: String as PropType<ChartPalette> },
+    annotations: { type: Array as PropType<readonly CartesianAnnotation[]> },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },
     activeKey: { type: [String, Number, Date, null] as PropType<ChartKey | null> },

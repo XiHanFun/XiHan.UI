@@ -298,6 +298,26 @@ const cases: readonly ConformanceCase[] = [
     },
   },
   {
+    name: '注释：参考带垫在数据下、平均线压在数据上，标签与标记都只给眼睛看',
+    spec: { adr: 'chart-annotations' },
+    props: {
+      annotations: [
+        { kind: 'band', axis: 'y', from: 60, to: 100, label: '常态' },
+        { kind: 'average', series: 'online' },
+      ],
+    },
+    initial: {
+      counts: { 'annotation': 2, 'annotation-label': 2 },
+      parts: {
+        'annotation': [
+          { 'data-kind': 'band', 'aria-hidden': 'true' },
+          { 'data-kind': 'average', 'aria-hidden': 'true' },
+        ],
+        'annotation-label': [{ 'data-kind': 'band', 'aria-hidden': 'true' }, { 'data-kind': 'average', 'aria-hidden': 'true' }],
+      },
+    },
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },

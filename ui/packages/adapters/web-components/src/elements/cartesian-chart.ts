@@ -7,6 +7,7 @@
 
 import type { Service } from '@xihan-ui/core'
 import type {
+  CartesianAnnotation,
   CartesianAxis,
   CartesianChartApi,
   CartesianChartSchema,
@@ -49,7 +50,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。
  * 摘要与数据表由元素追加在 root 末尾，视觉隐藏。
  *
- * 数据、系列与坐标轴是对象，只走 JS property。
+ * 数据、系列、坐标轴与注释是对象，只走 JS property。
  *
  * @customElement xh-cartesian-chart
  * @attr {'vertical'|'horizontal'} orientation - 朝向，默认 vertical；horizontal 即条形图
@@ -91,6 +92,7 @@ export class XhCartesianChartElement extends XhElement {
     defaultHiddenSeries: { attribute: false },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
     translations: { attribute: false },
+    annotations: { attribute: false },
     orientation: { converter: STRING_CONVERTER },
     trigger: { converter: STRING_CONVERTER },
     totals: { converter: BOOLEAN_CONVERTER },
@@ -109,6 +111,7 @@ export class XhCartesianChartElement extends XhElement {
   declare defaultHiddenSeries?: string[]
   declare activeKey?: ChartKey | null
   declare translations?: Partial<CartesianChartTranslations>
+  declare annotations?: readonly CartesianAnnotation[]
   declare orientation?: CartesianOrientation
   declare trigger?: CartesianTrigger
   declare totals?: boolean
@@ -152,6 +155,7 @@ export class XhCartesianChartElement extends XhElement {
       totals: this.totals,
       tooltipOrder: this.tooltipOrder,
       palette: this.palette,
+      annotations: this.annotations,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,

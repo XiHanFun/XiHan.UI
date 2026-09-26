@@ -484,6 +484,8 @@ export function connectCartesianChart<T extends PropTypes>(
         const placement = label ? model.scene?.placements.get(mark.key) : undefined
         const owner = mark.datum ? seriesById.get(mark.datum.seriesId) : undefined
         const inside = placement === 'inside'
+        // 注释的标签：只给眼睛看，名字与值由摘要承担；跟着系列的注释随系列淡出
+        const note = model.scene?.annotations.get(mark.key)
         const at = frame?.revealAt.get(mark.key)
         return normalize.element({
           ...base,
@@ -493,11 +495,14 @@ export function connectCartesianChart<T extends PropTypes>(
           'dominant-baseline': BASELINE[text.baseline],
           'transform': text.rotate ? `rotate(${text.rotate} ${text.x} ${text.y})` : undefined,
           'opacity': mark.opacity,
-          'aria-hidden': label || undefined,
+          'aria-hidden': label || note != null || undefined,
+          'data-kind': note?.kind,
           'data-placement': mark.part === 'data-label' ? placement : undefined,
           'data-xh-chart-slot': inside && owner?.slot != null ? String(owner.slot) : undefined,
           'data-tone': inside ? owner?.tone ?? undefined : undefined,
-          'data-dimmed': label ? dataAttr(emphasis != null && owner != null && emphasis !== owner.id) : undefined,
+          'data-dimmed': label
+            ? dataAttr(emphasis != null && owner != null && emphasis !== owner.id)
+            : note ? dataAttr(emphasis != null && note.seriesId != null && emphasis !== note.seriesId) : undefined,
           'data-drawing': dataAttr(at != null),
           ...(at == null ? {} : { style: { '--xh-_chart-reveal-at': at.toFixed(3) } }),
         })
@@ -544,6 +549,17 @@ export function connectCartesianChart<T extends PropTypes>(
       }
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
+      // 注释：参考线与参考带是结构色，跟着系列的（标出的点、平均线、趋势线）取系列色、随系列淡出
+      if (mark.part === 'annotation') {
+        const note = model.scene?.annotations.get(mark.key)
+        const owner = note?.seriesId == null ? undefined : seriesById.get(note.seriesId)
+        props['data-kind'] = note?.kind
+        props['data-method'] = note?.method
+        props['data-xh-chart-slot'] = owner?.slot == null ? undefined : String(owner.slot)
+        props['data-tone'] = owner?.tone ?? undefined
+        props['data-xh-chart-scale'] = owner?.color != null ? 'sequential' : undefined
+        props['data-dimmed'] = dataAttr(emphasis != null && note?.seriesId != null && emphasis !== note.seriesId)
+      }
       // 线尾标签的引导线随所属系列淡出
       if (mark.part === 'leader-line')
         props['data-dimmed'] = dataAttr(emphasis != null && mark.datum != null && emphasis !== mark.datum.seriesId)

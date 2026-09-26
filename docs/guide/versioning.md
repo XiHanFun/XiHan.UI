@@ -100,8 +100,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 137 | **受约束**（新增第 138 个组件是 minor） |
-| `data-part` 取值（部件名） | 304 个不同名字 / 1126 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 304 个 | **受约束** |
+| `data-part` 取值（部件名） | 306 个不同名字 / 1128 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 306 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 301 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 243 个不同的 `data-*` 属性名、1675 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 243 个不同的 `data-*` 属性名、1676 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 192 个属性名 / 807 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 193 个属性名 / 808 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -218,7 +218,7 @@ brand  neutral  success  warning  danger  info
 | `CustomEvent` 名 | 96 个名字 / 210 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（195 处中 193 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 188 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 229 条（涉及 77 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
+| `attribute: false` 的 JS 字段 | 230 条（涉及 78 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
 | 命令式方法 | 97（分布在 50 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
@@ -419,11 +419,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，16492 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，16498 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 199 条子入口、8575 个导出名、137 个 `data-scope` 与 1126 条部件配对、
-137 个组件的 1782 个 prop 名、245 种 `data-*`、34 个 `data-state` 取值、660 个令牌、
+覆盖：包名与 199 条子入口、8578 个导出名、137 个 `data-scope` 与 1128 条部件配对、
+137 个组件的 1783 个 prop 名、245 种 `data-*`、34 个 `data-state` 取值、660 个令牌、
 5 个 `@layer` 名、4104 个组件覆盖槽、139 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
