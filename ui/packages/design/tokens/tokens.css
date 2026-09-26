@@ -427,6 +427,8 @@
     --xh-motion-spring-lead-damping: 34;
     --xh-motion-spring-trail-stiffness: 210;
     --xh-motion-spring-trail-damping: 24;
+    --xh-motion-spring-merge-stiffness: 320;
+    --xh-motion-spring-merge-damping: 24;
     --xh-layer-sticky: var(--xh-z-sticky);
     --xh-layer-drawer: var(--xh-z-modal);
     --xh-layer-modal: var(--xh-z-modal);

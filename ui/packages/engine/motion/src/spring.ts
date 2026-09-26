@@ -21,7 +21,7 @@ export interface SpringPerceptual {
   bounce: number
 }
 
-export type SpringPresetName = 'snappy' | 'smooth' | 'gentle' | 'bouncy' | 'stiff' | 'toggle' | 'lead' | 'trail'
+export type SpringPresetName = 'snappy' | 'smooth' | 'gentle' | 'bouncy' | 'stiff' | 'toggle' | 'lead' | 'trail' | 'merge'
 
 export type SpringSpec = SpringPhysical | SpringPerceptual | SpringPresetName
 
@@ -52,6 +52,7 @@ export const springPresets: Readonly<Record<SpringPresetName, SpringPhysical>> =
   toggle: { stiffness: 420, damping: 26, mass: 1 },
   lead: { stiffness: 520, damping: 34, mass: 1 },
   trail: { stiffness: 210, damping: 24, mass: 1 },
+  merge: { stiffness: 320, damping: 24, mass: 1 },
 }
 
 function isPreset(spec: SpringSpec): spec is SpringPresetName {

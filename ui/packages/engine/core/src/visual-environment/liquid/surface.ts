@@ -15,12 +15,17 @@
 //   按下形变  按住时面朝手指鼓出、沿指向拉长、另一个方向压扁，拖离时越拉越长（有上限），
 //             松手由弹簧带回；写成 --xh-_liquid-deform，组件皮肤拿它当 transform。减弱动效下不形变
 //
+// 同一宿主里的几块还可以结成液态组（trackLiquidGoo，见 goo.ts）：共用一层套粘连滤镜的色块，
+// 靠近时边缘连起来，并能从源块中分离、融回。组跟着同一根材质轴开关，色调与通透档跟源块的读数走。
+//
 // 同一文档里的部件共用一套监听与按帧调度；材质轴不是 liquid 时部件留在原样，写过的东西随时撤回。
 // 撤出最后一个部件时整套监听拆掉，滤镜库一并移除。
 
 import type { SpringValue } from '@xihan-ui/motion'
+import type { GooGroup, LiquidGoo, LiquidGooOptions } from './goo'
 import type { LiquidTone } from './reading'
 import { createSpringValue, resolveMotionPreference } from '@xihan-ui/motion'
+import { createGooGroup } from './goo'
 import { ensureLens, lensLibrary, MAX_REFRACT_HEIGHT, MAX_REFRACT_WIDTH, parseBackdrop, supportsRefraction } from './lens'
 import { deformTransform, pullOf } from './press'
 import { lightDirection, readBackdrop, relativeLuminance, sampleAt, samplePoints } from './reading'
@@ -35,6 +40,8 @@ interface Tracked {
 interface Coordinator {
   add: (el: HTMLElement) => void
   remove: (el: HTMLElement) => void
+  addGroup: (group: GooGroup) => void
+  removeGroup: (group: GooGroup) => void
 }
 
 const coordinators = new WeakMap<Document, Coordinator>()
@@ -68,6 +75,7 @@ interface Press {
 function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coordinator {
   const members = new Set<HTMLElement>()
   const active = new Map<HTMLElement, Tracked>()
+  const groups = new Set<GooGroup>()
   const canRefract = supportsRefraction(win.navigator)
   const canSample = typeof doc.elementsFromPoint === 'function'
 
@@ -121,6 +129,8 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
         release(el)
       }
     }
+    for (const group of groups)
+      group.setActive(group.host.isConnected && isLiquidMaterial(group.host))
   }
 
   function probe(): void {
@@ -143,6 +153,10 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
         el.setAttribute('data-xh-liquid-clarity', 'clear')
       else
         el.removeAttribute('data-xh-liquid-clarity')
+      for (const group of groups) {
+        if (group.source === el)
+          group.mirror()
+      }
     }
   }
 
@@ -185,6 +199,10 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
       else {
         el.style.removeProperty('--xh-_liquid-light-x')
         el.style.removeProperty('--xh-_liquid-light-y')
+      }
+      for (const group of groups) {
+        if (group.source === el)
+          group.mirror()
       }
     }
   }
@@ -231,6 +249,11 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     if (transform)
       current.el.style.setProperty('--xh-_liquid-deform', transform)
     else current.el.style.removeProperty('--xh-_liquid-deform')
+    // 按住的块在液态组里：色块跟着一起形变
+    for (const group of groups) {
+      if (group.includes(current.el))
+        group.wake()
+    }
   }
 
   const follow = (event: PointerEvent): void => {
@@ -332,7 +355,7 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
 
   return {
     add(el) {
-      if (members.size === 0)
+      if (members.size === 0 && groups.size === 0)
         start()
       members.add(el)
       schedule({ sync: true })
@@ -344,12 +367,36 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
         resizer?.unobserve(el)
         release(el)
       }
-      if (members.size === 0) {
+      if (members.size === 0 && groups.size === 0) {
+        stop()
+        onEmpty()
+      }
+    },
+    addGroup(group) {
+      if (members.size === 0 && groups.size === 0)
+        start()
+      groups.add(group)
+      schedule({ sync: true })
+    },
+    removeGroup(group) {
+      if (!groups.delete(group))
+        return
+      group.setActive(false)
+      if (members.size === 0 && groups.size === 0) {
         stop()
         onEmpty()
       }
     },
   }
+}
+
+function coordinatorOf(doc: Document, win: Window): Coordinator {
+  let coordinator = coordinators.get(doc)
+  if (!coordinator) {
+    coordinator = createCoordinator(doc, win, () => coordinators.delete(doc))
+    coordinators.set(doc, coordinator)
+  }
+  return coordinator
 }
 
 /**
@@ -361,12 +408,7 @@ export function trackLiquidSurface(el: HTMLElement): () => void {
   const win = doc.defaultView
   if (!win)
     return () => {}
-  let coordinator = coordinators.get(doc)
-  if (!coordinator) {
-    coordinator = createCoordinator(doc, win, () => coordinators.delete(doc))
-    coordinators.set(doc, coordinator)
-  }
-  const target = coordinator
+  const target = coordinatorOf(doc, win)
   target.add(el)
   let done = false
   return () => {
@@ -375,4 +417,27 @@ export function trackLiquidSurface(el: HTMLElement): () => void {
     done = true
     target.remove(el)
   }
+}
+
+/**
+ * 把宿主里的几块液态面结成一组，返回组的句柄。组在宿主的材质轴为 liquid 时生效：宿主最前面插入
+ * 粘连滤镜与一层色块，靠近的块边缘连起来。色块层不设层号、靠排在最前压在各块之下：宿主须是定位元素，
+ * 组里的块须是定位元素（或装在定位容器里）。源块须已挂进液态面（trackLiquidSurface），组的色调、
+ * 通透档与光源方向跟它走。
+ */
+export function trackLiquidGoo(host: HTMLElement, options: LiquidGooOptions): LiquidGoo {
+  const doc = host.ownerDocument
+  const win = doc.defaultView
+  if (!win) {
+    return {
+      active: false,
+      animated: false,
+      split: () => Promise.resolve('rest'),
+      dispose: () => {},
+    }
+  }
+  const coordinator = coordinatorOf(doc, win)
+  const group = createGooGroup(host, options, win, done => coordinator.removeGroup(done))
+  coordinator.addGroup(group)
+  return group.api
 }

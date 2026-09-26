@@ -73,7 +73,7 @@ export function Example() {
 ## 4. Web Components
 
 - 先调用 `defineXhElements()`；主入口 import 不自动注册。
-- 自定义元素使用 Light DOM，不自动生成作者结构。
+- 自定义元素使用 Light DOM，不自动生成作者结构。唯一例外是 core 在 liquid 档生成的装饰节点：液态组的色块层与装滤镜的 `<svg>`（例如 FloatButton 的 root 里），`aria-hidden`、不接指针、不是部件，三端由同一段 core 代码插入与撤回，适配器不感知。
 - 作者用 `data-xh-part` 声明节点角色。
 - 元素升级后写入 `data-scope`、`data-part`、ARIA 和事件。
 - `data-xh-part` 是输入声明，`data-part` 是接线结果，不能混用。

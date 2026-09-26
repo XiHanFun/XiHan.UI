@@ -710,6 +710,11 @@
       "$description": "liquid 档双沿指示器的后沿：比前沿软，追随前沿并在移动中把指示器拉长，超调约 0.9%，落定约 485ms。",
       "stiffness": { "$type": "number", "$value": 210 },
       "damping": { "$type": "number", "$value": 24 }
+    },
+    "spring-merge": {
+      "$description": "liquid 档的融合分离：液态组里的块从源块中分出来、收起时融回，超调约 5.8%，在 liquid 档 8% 的上限之内。",
+      "stiffness": { "$type": "number", "$value": 320 },
+      "damping": { "$type": "number", "$value": 24 }
     }
   },
   "layer": {
