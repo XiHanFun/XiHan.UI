@@ -117,6 +117,7 @@
   },
   "boolean": {
     "$description": "布尔状态属性（有即真，缺席即假，一律经 dataAttr 发）。同一含义只用一个名字。connect 里发出的布尔属性必须逐个登记在这里，登记项写明它是什么语义；登记了却没人发的算名单过期。一件事只准有一个名字：新名字登记前先与已有的比对一遍，同义即用既有的那个。",
+    "data-animating": "机器驱动的一段补间正在进行：手势松手后弹簧把位置收到落定处（轮播轨道、图片查看器的平移、排序项归位、开关滑块）。样式层据此让开位移过渡、只在这一档备好合成层；落定即撤。",
     "data-at-bottom": "log 的滚动位置已经在最底部。",
     "data-at-max": "已经到上限：field-array 的行数、tags-input 的标签数顶到 max，text-field 的字数顶到 maxLength。与 data-at-min 成对。",
     "data-at-max-horizontal": "scroll-area 的视口横向已经滚到末端，那一侧不再铺渐隐带。",

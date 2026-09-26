@@ -930,6 +930,66 @@ describe('connectCarousel 指针', () => {
     expect((c.api().getListProps() as Dict).style).toEqual({ transform: 'translateX(-100%)' })
   })
 
+  function timed(type: string, timeStamp: number, clientX: number, clientY = 0): PointerEvent {
+    const event = new PointerEvent(type, { pointerId: 1, clientX, clientY, bubbles: true })
+    Object.defineProperty(event, 'timeStamp', { value: timeStamp, configurable: true })
+    return event
+  }
+
+  it('不回绕的首页往上一页拖：拖出去的那段按橡皮筋衰减，越拉越沉；往下一页拖不衰减', () => {
+    const c = makeCarousel({ ...SIX, allowPointerDrag: true })
+    pressViewport(c, 300)
+    movePointer(400)
+    const near = c.service.context.get('dragOffset')
+    expect(near).toBeGreaterThan(0)
+    expect(near).toBeLessThan(100)
+    movePointer(800)
+    const far = c.service.context.get('dragOffset')
+    expect(far).toBeGreaterThan(near)
+    expect(far).toBeLessThan(60)
+    movePointer(200)
+    expect(c.service.context.get('dragOffset')).toBe(-100)
+    releasePointer()
+  })
+
+  it('回绕时首页往上一页拖同样跟手，不衰减', () => {
+    const c = makeCarousel({ ...SIX, loop: true, allowPointerDrag: true })
+    pressViewport(c, 300)
+    movePointer(400)
+    expect(c.service.context.get('dragOffset')).toBe(100)
+    releasePointer()
+  })
+
+  it('松手落点顺着速度投影：没过阈值的轻甩也翻页，拖过阈值后往回甩则收回', () => {
+    const flick = makeCarousel({ ...SIX, allowPointerDrag: true })
+    pressViewport(flick, 300)
+    document.dispatchEvent(timed('pointermove', 0, 300))
+    document.dispatchEvent(timed('pointermove', 20, 290))
+    document.dispatchEvent(timed('pointerup', 30, 280))
+    // 只拖了 20px，没过 40px 的阈值；但 -1000px/s 的松手速度往前投影 0.2s 就过了
+    expect(flick.api().page).toBe(1)
+
+    const back = makeCarousel({ ...SIX, defaultPage: 2, allowPointerDrag: true })
+    pressViewport(back, 300)
+    document.dispatchEvent(timed('pointermove', 0, 240))
+    document.dispatchEvent(timed('pointermove', 20, 250))
+    document.dispatchEvent(timed('pointerup', 40, 260))
+    // 已经往下一页拖了 50px，松手时正往回甩（+500px/s），投影落到起点另一侧：是「算了」，收回原页
+    expect(back.api().page).toBe(2)
+  })
+
+  it('纵向轮播按 clientY 跟手', () => {
+    const c = makeCarousel({ ...SIX, orientation: 'vertical', allowPointerDrag: true })
+    ;((c.api().getViewportProps() as Dict).onPointerDown as (e: PointerEvent) => void)(
+      { button: 0, pointerId: 1, clientX: 50, clientY: 300, currentTarget: {} } as unknown as PointerEvent,
+    )
+    document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX: 50, clientY: 240, bubbles: true }))
+    expect(c.service.context.get('dragOffset')).toBe(-60)
+    expect((c.api().getListProps() as Dict).style).toEqual({ transform: 'translateY(calc(0% - 60px))' })
+    releasePointer()
+    expect(c.api().page).toBe(1)
+  })
+
   it('没过阈值就弹回原页；反向拖时位移用减号拼进 calc', () => {
     const c = makeCarousel({ ...SIX, defaultPage: 2, allowPointerDrag: true })
     pressViewport(c, 300)
@@ -952,9 +1012,9 @@ describe('connectCarousel 指针', () => {
     pressViewport(on, 300)
     movePointer(200)
     cancelPointer()
-    // 取消同样清干净拖拽态，否则轨道会永久挂着那段像素
+    // 取消同样清干净拖拽态，否则轨道会永久挂着那段像素；被系统收走不算落定，弹回原页
     expect(on.api().dragging).toBe(false)
-    expect(on.api().page).toBe(1)
+    expect(on.api().page).toBe(0)
   })
 
   it('自动播放跑着时拖拽照样翻页，并把计时重起', () => {

@@ -6,6 +6,7 @@
 // 定义 carousel 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes } from '@xihan-ui/core'
+import type { SpringValue } from '@xihan-ui/motion'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 
 /** 暂停自动播放的来源。可同时存在多个暂停，最后一个解除后才继续。 */
@@ -106,8 +107,20 @@ export interface CarouselSchema extends MachineSchema {
     pausedBy: CarouselPauseSource[]
     /** 本次拖拽的起点坐标（沿轨道轴），null 即当前未在拖拽。 */
     dragStart: number | null
-    /** 本次拖拽已产生的像素位移，连接层把它叠加进轨道位移，画面才能跟随手势。 */
+    /** 本次拖拽已产生的像素位移，连接层把它叠加进轨道位移，画面才能跟随手势。不回绕的首末页往外拖时按橡皮筋衰减。 */
     dragOffset: number
+    /**
+     * 按下那一刻轨道已有的像素位移：接住还在落定的弹簧时不为 0。翻不翻页只看这次按下之后拖出去的那一段，
+     * 接住时轨道离页位还差的那一截不算用户的意图。
+     */
+    dragBase: number
+    /**
+     * 松手后轨道离落定位置还差的像素：弹簧带着松手速度把它收到 0，连接层把它叠加进轨道位移。
+     * 只有手势松手走弹簧；按钮、指示点、键盘与自动播放翻页仍走样式层的过渡曲线。
+     */
+    settleOffset: number
+    /** 松手后的弹簧正在把轨道收到落定位置，投影 data-animating（样式层据此关掉过渡）。 */
+    settling: boolean
     /**
      * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个按钮，该部件投影 data-pressed；
      * 没有按住时为 null。抬起、失焦、指针取消，或按住途中该按钮转为禁用时撤下；与自动播放的开合互相独立。
@@ -118,6 +131,8 @@ export interface CarouselSchema extends MachineSchema {
   refs: {
     /** 跟随在轨道上划动的指针。整个生命周期存在，状态机停止时移除。 */
     gesture: MultiPointerSession | null
+    /** 松手后正在落定的弹簧，以及它要落到的那一页；落定、被新的拖拽接住或被别的翻页打断时撤下。 */
+    settle: { spring: SpringValue, page: number } | null
   }
   /** 自动播放是唯一有阶段可分的部分：运行 / 暂停 / 未开启。翻页本身存放在 context 的 cell 中。 */
   state: 'idle' | 'playing' | 'playing.running' | 'playing.paused'
@@ -135,7 +150,11 @@ export interface CarouselSchema extends MachineSchema {
     /** 拖拽起点，position 是沿轨道轴的坐标。 */
     | { type: 'DRAG.START', position: number }
     | { type: 'DRAG.MOVE', position: number }
-    | { type: 'DRAG.END' }
+    /**
+     * 拖拽收尾。velocity 是沿轨道轴的松手速度（像素每秒），落点按它往前投影；
+     * canceled 表示指针被系统收走，这时不翻页、弹回原页。
+     */
+    | { type: 'DRAG.END', velocity?: number, canceled?: boolean }
     /**
      * 按压通道（shared/press）：某个按钮被 Space / Enter 或触屏按住，key 说的是哪一个；
      * 到边界的翻页钮与没配自动播放的开关是原生 disabled，那份事实只有 connect 知道，随事件带给守卫。

@@ -60,6 +60,8 @@ export function connectCarousel<T extends PropTypes>(
   const isDragging = (): boolean => context.get('dragStart') != null
   const dragging = isDragging()
   const dragOffset = context.get('dragOffset')
+  // 松手后弹簧正把轨道收到落定位置：这段位移由弹簧逐帧写，样式层的过渡让开
+  const settling = context.get('settling')
 
   const autoplaying = state.matches('playing.running')
   const paused = state.matches('playing.paused')
@@ -92,7 +94,7 @@ export function connectCarousel<T extends PropTypes>(
   const trackStyle = (): Dict => {
     const percent = carouselTranslatePercent(range.start, slidesPerPage, flipped)
     const fn = horizontal ? 'translateX' : 'translateY'
-    const offset = dragging ? dragOffset : 0
+    const offset = dragging ? dragOffset : settling ? context.get('settleOffset') : 0
     if (offset === 0)
       return { transform: `${fn}(${percent}%)` }
     // calc 里 `+ -60px` 各家解析不一致，符号拆成 `- 60px`
@@ -218,7 +220,7 @@ export function connectCarousel<T extends PropTypes>(
         const session = service.refs.get('gesture')
         if (!session || session.points().length > 0)
           return
-        session.add({ pointerId: event.pointerId, clientX: pointerPosition(event), clientY: 0 })
+        session.add({ pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
         send({ type: 'DRAG.START', position: pointerPosition(event) })
       },
     }),
@@ -226,8 +228,9 @@ export function connectCarousel<T extends PropTypes>(
     getListProps: () => normalize.element({
       ...parts.list.attrs,
       'data-orientation': orientation,
-      // 供样式层在拖拽期间关掉过渡
+      // 供样式层在拖拽期间与松手落定期间关掉过渡
       'data-dragging': dataAttr(dragging),
+      'data-animating': dataAttr(settling && !dragging),
       'style': trackStyle(),
     }),
 

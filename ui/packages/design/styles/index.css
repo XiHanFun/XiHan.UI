@@ -16673,6 +16673,12 @@
     will-change: transform;
   }
 
+  /* 松手后由弹簧带着松手速度逐帧把轨道收到落定位置，同样不能再叠一层过渡；落定即撤 */
+  [data-scope='carousel'][data-part='list'][data-animating] {
+    transition: none;
+    will-change: transform;
+  }
+
   /* 一张幻灯片。
      尺寸（flex-basis）与间距（padding）同样归连接层：一屏放几张只有它知道，
      CSS 拿不到那个数（属性值参与不了计算）。这里只补三件配套的事：
