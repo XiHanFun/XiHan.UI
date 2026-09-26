@@ -529,8 +529,11 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 选中面（原 `--xh-bg-brand-subtle`） | 墨色 12% + 选中字重 |
 | Switch 打开 | 墨色轨道 + 域底色拇指 |
 
-- 未声明域的缺省面同样用墨色表达中性装饰，墨色取主题极性；作者自建的彩色区块即使不声明，描边与淡底也是洁净的，只剩文字需要声明域。
-- 比例由令牌构建按「与缺省面上的现行取值对比度相等」生成，按主题分别计算（暗色档 neutral 700 描边在 neutral 900 面上约等于白墨 17.5%），皮肤与作者不手填。
+- 未声明域的缺省面同样用墨色表达描边与淡底，墨色取主题极性；作者自建的彩色区块即使不声明，描边与淡底也是洁净的，只剩文字需要声明域。置灰字属于文字，缺省面上保持实色，只在域里换成墨色：多段描边拼成的图标置灰时，半透明的交点会叠深。
+- 比例由令牌构建生成，皮肤与作者不手填，按「与原中性色对比度相等」求：描边画在面上，在页面底、画布、缺省面与 elevated 面上各求一个比例取最大值，哪种面上都不比原中性色淡；淡底是承载文字、对号与焦点环的面，只按缺省面求，压在它上面的内容对比度不降。浅色档与原中性色一致；深色档描边按最深的页面底（neutral 950）定为 22%，缺省面上略重，淡底 6.2%。
+- 墨色淡底与描边是半透明的：要盖住下层内容的面（粘性表头、固定列、浮在内容上的钮、层叠的头像、自动填充遮罩）与压在任意内容上的框（滑杆拇指、裁剪把手）取 `-opaque` 不透明档——同一比例的墨色叠在缺省面上的实色，淡底四支与 `--xh-border-default-opaque`。
+- 淡底叠淡底、描边压在自身淡底上会按墨色叠深，这是墨色的本义，不另处理；与半透明色做 color-mix 时取不透明档，否则混出来的面也跟着半透明。
+- 半透明色的取色：相对颜色语法只看分量、不看透明度，给 `--xh-ink-surface` 写淡底时写它的不透明档。
 - 半透明描边相叠会加深：段间共用描边的组合控件（ButtonGroup、InputGroup、ToggleGroup、Pagination、日历网格、表格单元格）只画一侧，不以负外边距叠边。
 - 正文墨色取纯黑 / 纯白，不取 neutral 950 / 50：底色相对亮度 0.15–0.24 时，后两者都到不了 4.5:1。
 - 余量：黑墨在相对亮度 ≥ 0.5 的底上、白墨在 ≤ 0.05 的底上才声明 `ample`。
@@ -1118,7 +1121,6 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | 补 FloatButton 列表、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
-| §7.7 缺省面墨色 | 缺省面改墨色表达前先审计叠边与淡底叠淡底 |
 | §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（FloatButton 列表项、Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
 | §9.8 双沿指示器、§9.11 弹簧 | `@xihan-ui/motion` 有状态弹簧与弹簧令牌、`--xh-motion-ease-spring`；指针会话速度；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer）；双沿指示器随共享指示器几何迁移 |
 | §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光；FloatButton 融合分离 |

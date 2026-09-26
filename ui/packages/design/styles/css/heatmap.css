@@ -34,8 +34,9 @@
        改写这个槽为一个看得见的颜色（`var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`）即七行全画。
        周首日是星期一时留下的是二 / 四 / 六，是星期日时留下的是一 / 三 / 五 */
     --xh-_heatmap-week-day-skip: var(--xh-heatmap-week-day-skip, transparent);
-    /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 也没写 data-palette 时就是这里的取值 */
-    --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle));
+    /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 也没写 data-palette 时就是这里的取值。
+       空格底取淡底的不透明档：中间各档由两端按比例兑出，一端半透明，整条色阶都会跟着半透明、偏色 */
+    --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle-opaque));
     --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-bg-brand));
     /* 钉住的行首那一列自带的底色：格子从它下面滚过去时不能透出来。
        整块摆在别的底色上（卡片、分区）时改写 --xh-heatmap-bg，否则那一列会是一块补丁 */

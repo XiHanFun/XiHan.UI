@@ -118,6 +118,8 @@ describe('field Chrome 状态与字段内动作', () => {
     const ready = controls[0]!
     const input = ready.querySelector<HTMLInputElement>('[data-xh-field-input]')!
     const clear = ready.querySelector<HTMLButtonElement>('[data-xh-action-profile="field-inset"]')!
+    // 关掉过渡：悬停一换边就读，读到的是过渡第 0 帧，与静息逐字相同
+    ready.style.transition = 'none'
     const restBorder = getComputedStyle(ready).borderTopColor
     await userEvent.hover(ready)
     expect(getComputedStyle(ready).borderTopColor).not.toBe(restBorder)

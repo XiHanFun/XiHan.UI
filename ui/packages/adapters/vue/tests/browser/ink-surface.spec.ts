@@ -101,11 +101,11 @@ describe('实心语气面', () => {
     expectInk(probeBorder(), 0)
   })
 
-  it('非实心档不成域，描边仍是不透明的中性色', async () => {
+  it('非实心档不成域：描边取页面的黑墨，不取实心面的白墨', async () => {
     await mount(() => h(XhButton, { variant: 'subtle' }, () => ['取消', probe()]))
     const button = document.querySelector<HTMLElement>('[data-scope="button"][data-part="root"]')!
     expect(button.hasAttribute('data-xh-ink-surface')).toBe(false)
-    expect(probeBorder()[3]).toBe(1)
+    expectInk(probeBorder(), 0)
   })
 
   it('实心标签里的描边取白墨', async () => {

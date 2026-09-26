@@ -186,11 +186,11 @@
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
     border-block-end: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
-    background: var(--xh-table-header-bg, var(--xh-bg-subtle));
+    background: var(--xh-table-header-bg, var(--xh-bg-subtle-opaque));
   }
 
   /* 吸顶：滚动容器是 root，表头钉在它的上沿。背景必须是实色——
-     透明的表头会让底下滚过的行透出来 */
+     透明的表头会让底下滚过的行透出来，所以表头底取淡底的不透明档 */
   [data-scope='table'][data-part='header'][data-fixed] {
     position: sticky;
     z-index: var(--xh-table-sticky-header-layer, var(--xh-layer-sticky));
@@ -209,11 +209,12 @@
      行是 flex 容器（列宽由单元格的内联尺寸决定，不进家族网格）、不内衬、不圆角、字号与光标随表格本身
      （行不是按钮，selectable 与否都不改光标）。表头 / 脚注行不投影家族，只共用这一副 flex 盒 */
   [data-scope='table'][data-part='row'] {
-    /* rest 底要实色：横向吸附的单元格靠 inherit 取它，透明会让滚过的内容透出来 */
+    /* 各态的底都要实色：横向吸附的单元格靠 inherit 取它，透明会让滚过的内容透出来。
+       悬停、按下取淡底的不透明档 */
     --xh-collection-bg-rest: var(--xh-table-row-bg, var(--xh-bg-surface));
-    --xh-collection-bg-hover: var(--xh-table-row-bg-hover, var(--xh-bg-subtle));
-    --xh-collection-bg-keyboard-highlight: var(--xh-table-row-bg-hover, var(--xh-bg-subtle));
-    --xh-collection-bg-pressed: var(--xh-table-row-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-hover: var(--xh-table-row-bg-hover, var(--xh-bg-subtle-opaque));
+    --xh-collection-bg-keyboard-highlight: var(--xh-table-row-bg-hover, var(--xh-bg-subtle-opaque));
+    --xh-collection-bg-pressed: var(--xh-table-row-bg-pressed, var(--xh-bg-subtle-hover-opaque));
     --xh-collection-bg-selected: var(--xh-table-row-bg-selected, var(--xh-bg-brand-subtle));
     --xh-collection-fg-rest: currentColor;
     --xh-collection-fg-hover: currentColor;
@@ -334,7 +335,7 @@
   /* 表头行本身透明（露出表头底），吸附的列头继承到的就是透明——得自己带表头底，
      否则横向滚动时其它列头从它下面穿过去 */
   [data-scope='table'][data-part='column-header'][data-frozen] {
-    background: var(--xh-table-header-bg, var(--xh-bg-subtle));
+    background: var(--xh-table-header-bg, var(--xh-bg-subtle-opaque));
   }
 
   /* —— 三个可叠加的外观开关 —— */
@@ -345,7 +346,7 @@
   :where([data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body']) > [data-scope='table'][data-part='row']:where(:nth-of-type(even)) {
     /* 改的是家族的 rest 槽而不是 background 本身：悬停、选中、按下各态由家族在同一支私有槽上解算，
        直接写 background 会把它们全压掉 */
-    --xh-collection-bg-rest: var(--xh-table-row-bg-striped, var(--xh-bg-subtle));
+    --xh-collection-bg-rest: var(--xh-table-row-bg-striped, var(--xh-bg-subtle-opaque));
   }
 
   /* 形态：outline 画一圈描边加圆角；ghost 即基础规则，只留行间横线，圆角也随之无意义 */
@@ -847,7 +848,7 @@
      禁用的行不接换父落点，:not([data-disabled]) 不会漏画任何一处高亮 */
   [data-scope='table'][data-part='root'] [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row'][data-drop='inside']:not([data-disabled]) {
     /* 落点不是选中：品牌淡底专属选中，落点面取悬停之上一档的中性面 */
-    background: var(--xh-table-drop-inside-bg, var(--xh-bg-subtle-hover));
+    background: var(--xh-table-drop-inside-bg, var(--xh-bg-subtle-hover-opaque));
   }
 
   /* 换父那一档的描边：与底色分两层画，因为它得压在横向吸附的格子之上——

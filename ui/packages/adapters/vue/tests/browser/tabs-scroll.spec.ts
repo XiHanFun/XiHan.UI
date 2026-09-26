@@ -196,7 +196,7 @@ describe('标签页 · 放不下时位移而不折行', () => {
     host!.remove()
     const segment = mountTabs({ variant: 'segment' })
     await expect.poll(() => segment.next.hidden).toBe(false)
-    expect(getComputedStyle(segment.next).backgroundColor).toBe(tokenColor('--xh-bg-subtle', segment.root))
+    expect(getComputedStyle(segment.next).backgroundColor).toBe(tokenColor('--xh-bg-subtle-opaque', segment.root))
     // 坐在轨道的内衬里，不压到轨道边上（轨道带一圈透明占位边，内衬盒从边里侧算起）
     const listStyle = getComputedStyle(segment.list)
     const inset = Number.parseFloat(listStyle.paddingRight) + Number.parseFloat(listStyle.borderRightWidth)

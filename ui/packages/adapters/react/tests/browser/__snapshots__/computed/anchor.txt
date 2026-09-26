@@ -158,7 +158,7 @@ border-left-width: 1px
 border-top-color: oklch(0.439 0.006 258)
 border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
-border-left-color: oklch(0.922 0.002 258)
+border-left-color: oklab(0 0 0 / 0.102)
 min-height: 0px
 font-size: 14px
 line-height: 21px

@@ -52,7 +52,9 @@ describe('剪贴板视觉', () => {
     const inputStyle = getComputedStyle(input)
     const triggerStyle = getComputedStyle(trigger)
 
-    expect(input.getBoundingClientRect().right).toBeCloseTo(trigger.getBoundingClientRect().left + 1, 1)
+    // 共边只画一次：复制钮不画起始边、紧贴输入框，两条半透明的墨色描边不叠在一起
+    expect(input.getBoundingClientRect().right).toBeCloseTo(trigger.getBoundingClientRect().left, 1)
+    expect(triggerStyle.borderInlineStartWidth).toBe('0px')
     expect(inputStyle.borderStartEndRadius).toBe('0px')
     expect(inputStyle.borderEndEndRadius).toBe('0px')
     expect(triggerStyle.borderStartStartRadius).toBe('0px')

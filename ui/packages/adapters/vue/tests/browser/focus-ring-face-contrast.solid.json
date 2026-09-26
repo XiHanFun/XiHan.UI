@@ -15,13 +15,18 @@
     "tone": null
   },
   "heatmap [data-palette='gray'][data-part='root'][data-scope='heatmap'][data-theme='dark'] [data-part='cell'][data-scope='heatmap']": {
-    "ratio": 2.98,
+    "ratio": 2.97,
     "theme": "light",
     "tone": null
   },
   "scrollbar [data-disabled][data-part='source-panel'][data-scope='transfer'] [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
-    "ratio": 1.86,
-    "theme": "dark",
+    "ratio": 1.99,
+    "theme": "light",
+    "tone": null
+  },
+  "scrollbar [data-disabled][data-part='target-panel'][data-scope='transfer'] [data-disabled][data-part='source-panel'][data-scope='transfer'] [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
+    "ratio": 1.81,
+    "theme": "light",
     "tone": null
   },
   "scrollbar [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
@@ -54,6 +59,16 @@
     "theme": "light",
     "tone": "neutral"
   },
+  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
+    "ratio": 2.32,
+    "theme": "light",
+    "tone": "neutral"
+  },
+  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
+    "ratio": 1.79,
+    "theme": "dark",
+    "tone": "warning"
+  },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 2.82,
     "theme": "light",
@@ -75,7 +90,7 @@
     "tone": "neutral"
   },
   "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-    "ratio": 2.04,
+    "ratio": 2.33,
     "theme": "dark",
     "tone": null
   },

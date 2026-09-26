@@ -171,7 +171,8 @@ describe('选择器分组与选项反馈', () => {
     const indicator = selected.querySelector<HTMLElement>(`[data-part='item-indicator']`)!
 
     expect(selected.matches(':focus-visible')).toBe(true)
-    expect(colorAlpha(style.backgroundColor)).toBe(255)
+    // 中性底是墨色按比例透明：铺了就不是 0，不再是实色
+    expect(colorAlpha(style.backgroundColor)).toBeGreaterThan(0)
     expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.outlineStyle).toBe('solid')
     expect(Number.parseFloat(style.outlineWidth)).toBeGreaterThan(0)

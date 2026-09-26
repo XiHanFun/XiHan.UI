@@ -113,7 +113,8 @@ describe('日期选择浮层', () => {
     expect(content.padding).toBe('8px')
     // floating 材质：实体底 + 可见描边 + 落影，不画顶光伪元素
     expect(content.borderTopStyle).toBe('solid')
-    expect(alpha(content.borderTopColor)).toBe(255)
+    // 描边是墨色按比例透明：画了就不是 0，不再是实色
+    expect(alpha(content.borderTopColor)).toBeGreaterThan(0)
     expect(getComputedStyle(part('content'), '::before').content).toBe('none')
     const calendar = getComputedStyle(part('calendar'))
     expect(calendar.backdropFilter).toBe('none')

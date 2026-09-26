@@ -43,8 +43,11 @@
     --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
     /* 翻页钮的盖底：标签带放不下时它浮在两端，挪到它底下的那截标签要被盖住。line / card 档的标签带是透明的，
-       盖底取 surface；坐在别的面上（画布、淡底面板）时由使用者槽换成所在的面。segment 档取轨道的淡底 */
+       盖底取 surface；坐在别的面上（画布、淡底面板）时由使用者槽换成所在的面。segment 档取轨道的淡底。
+       悬停与按下同样要盖得住：淡底阶梯取不透明档，line / card 在白底上 100 → 200，segment 在轨道上 200 → 300 */
     --xh-_tabs-scroll-trigger-bg: var(--xh-bg-surface);
+    --xh-_tabs-scroll-trigger-bg-hover: var(--xh-bg-subtle-opaque);
+    --xh-_tabs-scroll-trigger-bg-pressed: var(--xh-bg-subtle-hover-opaque);
 
     display: flex;
     flex-direction: column;
@@ -124,7 +127,9 @@
     --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle, var(--xh-bg-surface-raised));
     --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
     --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
-    --xh-_tabs-scroll-trigger-bg: var(--xh-bg-subtle);
+    --xh-_tabs-scroll-trigger-bg: var(--xh-bg-subtle-opaque);
+    --xh-_tabs-scroll-trigger-bg-hover: var(--xh-bg-subtle-hover-opaque);
+    --xh-_tabs-scroll-trigger-bg-pressed: var(--xh-bg-subtle-active-opaque);
   }
 
   /* 一行排不下不折行：标签整条沿主轴位移露出被裁掉的那截，两端的翻页钮与滚轮驱动，位移量由机器写在
@@ -584,11 +589,13 @@
   /* 标签带放不下时浮在两端的单图标钮，接 Action Control icon 档 ghost 面（连接层投影 profile / variant / size）：
      盒取标签同高的正方形，四态面、0.97 按压与粗指针 44px 命中区由家族配方给。绝对定位贴在标签带两端、
      不随标签位移；挪到它底下的那截标签由静息底盖住（透明 ghost 面盖不住字，静息 / 焦点 / 禁用三列换成盖底槽，
-     悬停与按下仍走 ghost 的阶梯——line / card 在白底上 100 → 200，segment 由轨道下发 200 → 300） */
+     悬停与按下换成盖底档的不透明阶梯——line / card 在白底上 100 → 200，segment 在轨道上 200 → 300） */
   [data-scope='tabs'][data-part='prev-trigger'],
   [data-scope='tabs'][data-part='next-trigger'] {
     --xh-action-visual-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
     --xh-action-bg-rest: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
+    --xh-action-bg-hover: var(--xh-_tabs-scroll-trigger-bg-hover);
+    --xh-action-bg-pressed: var(--xh-_tabs-scroll-trigger-bg-pressed);
     --xh-action-bg-focus-visible: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
     --xh-action-bg-disabled: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
     --xh-action-fg-rest: var(--xh-tabs-scroll-trigger-fg, var(--xh-fg-muted));

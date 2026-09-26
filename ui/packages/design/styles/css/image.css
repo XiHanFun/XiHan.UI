@@ -42,14 +42,15 @@
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
-  /* 铺满图位的占位层：加载期间占住画面，作者往里放骨架屏或模糊小图 */
+  /* 铺满图位的占位层：加载期间占住画面，作者往里放骨架屏或模糊小图。它叠在图位自己的淡底上，
+     取不透明档，不与底下那层叠深 */
   [data-scope='image'][data-part='placeholder'] {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--xh-image-placeholder-bg, var(--xh-bg-subtle-hover));
+    background: var(--xh-image-placeholder-bg, var(--xh-bg-subtle-hover-opaque));
     color: var(--xh-image-placeholder-fg, var(--xh-fg-subtle));
   }
 

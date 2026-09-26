@@ -24,7 +24,8 @@
     inline-size: var(--xh-avatar-size, var(--xh-control-h-md));
     block-size: var(--xh-avatar-size, var(--xh-control-h-md));
     border-radius: var(--xh-avatar-radius, var(--xh-shape-circle));
-    background: var(--xh-avatar-bg, var(--xh-bg-subtle));
+    /* 头像在头像组里层叠：底取淡底的不透明档，半透明会透出压在下面的那一枚 */
+    background: var(--xh-avatar-bg, var(--xh-bg-subtle-opaque));
     color: var(--xh-avatar-fg, var(--xh-fg-muted));
     font-size: var(--xh-avatar-font-size, var(--xh-text-secondary-size));
     font-weight: var(--xh-avatar-font-weight, var(--xh-font-weight-medium));
@@ -53,7 +54,7 @@
      两条声明都把 --xh-avatar-bg / --xh-avatar-fg 排在语气值前面：使用者槽仍是最外那一层，
      写了 tone 的那一枚照样受外层统一控制。整块带 [data-tone] 限定，没写语气的头像逐值不变 */
   [data-scope='avatar'][data-part='root'][data-tone] {
-    background: var(--xh-avatar-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
+    background: var(--xh-avatar-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque)));
     color: var(--xh-avatar-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
   }
 

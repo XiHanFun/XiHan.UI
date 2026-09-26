@@ -1,12 +1,19 @@
-// 墨色域：彩色面声明自身底色的极性，域内的中性装饰改由墨色按比例透明表达。
+// 墨色：中性装饰（描边、分隔、淡底、交互阶梯、置灰字）由墨色按比例透明表达。
 //
 // 墨色是所在面的前景基色：浅色面上是纯黑，深色面上是纯白。不透明的中性灰落在彩色底上
 // 显著度随底色变化十几倍（neutral 200 描边在黄底上 1.06:1、黑底上 16.68:1），而墨色按固定
 // 比例透明后，在任何底色上显著度一致，颜色取底色自身的深浅变体。
 //
-// 比例不手填：对每一支中性装饰令牌，在该主题的面（浅色 bg.surface、深色 bg.surface）上
-// 求一个透明度，让「墨色按该透明度合成到面上」与「令牌原色」对面的对比度相等。合成按浏览器的
-// 做法在 gamma sRGB 空间进行，对比度用 WCAG 相对亮度。
+// 缺省面同样用墨色：浅色 / 深色主题块里墨色取主题极性，描边与淡底写成墨色按比例透明，
+// 令牌源里的中性色原值只作为对比度等价的目标。置灰字属于文字，与正文一样只在域里换成墨色：
+// 缺省面上它保持实色，多段描边拼成的图标置灰时交点才不会叠深。
+// 另给淡底与装饰边各配一支不透明档（-opaque），是墨色按同一比例叠在缺省面上的实色，给要盖住下层内容的面
+// 与压在任意内容上的框用。
+//
+// 比例不手填：对每一支中性装饰令牌，在该主题承载组件的每种容器面上各求一个透明度，让「墨色按该
+// 透明度合成到面上」与「令牌原色」对面的对比度相等。描边与置灰字画在面上，取其中最大的那个，哪种面上
+// 都不比原中性色淡；淡底是承载文字、对号与焦点环的面，按缺省面（bg.surface）求，卡片、菜单、表格上与原
+// 中性色一致，压在它上面的内容对比度不降。合成按浏览器的做法在 gamma sRGB 空间进行，对比度用 WCAG 相对亮度。
 //
 // 三种域：
 //   data-xh-ink="dark"   浅色底，黑墨；同时是浅色主题边界，语气色、表面随浅色档
@@ -31,6 +38,24 @@ const EQUIVALENT = [
   '--xh-border-control-hover',
   '--xh-fg-disabled',
 ]
+
+/**
+ * 描边与置灰字求等价比例用的容器面：页面底、画布、缺省面，以及对话框、抽屉那层 elevated 面，取最大值。
+ * 浅色档由白底定，与原中性色一致；深色档页面底与画布同为最深的 neutral 950，比例按它定，缺省面上略重。
+ */
+const BASES = ['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-material-elevated-bg']
+
+/** 淡底：承载内容的面，只按缺省面求等价比例，不因更深的页面底加重，也不因更浅的页面底变淡。 */
+const FILLS = new Set(['--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-muted'])
+
+/** 缺省面上改写成墨色的令牌：描边与淡底。置灰字只在域里改写。 */
+const GLOBAL = EQUIVALENT.filter(name => name !== '--xh-fg-disabled')
+
+/**
+ * 不透明档：按同一比例叠在缺省面上的实色，名字加 -opaque。淡底四支给要盖住下层内容的面用；
+ * 装饰边一支给压在任意内容上、必须自带一道浅框的部件用（滑杆拇指）。
+ */
+export const OPAQUE = [...FILLS, '--xh-border-default'].map(name => [`${name}-opaque`, name])
 
 /** 比例固定、与主题无关的墨色表达。 */
 const FIXED = [
@@ -133,7 +158,8 @@ const inkMix = alpha => `color-mix(in oklab, var(--xh-ink) ${percent(alpha)}, tr
  * @param {string[]} input.reevaluate auto 域要重声明的主题边界声明（「名: 值」）：它们引用了墨色域改写的令牌，
  *   而自定义属性里的 var() 在声明处就求值，auto 域不是主题边界，不重声明就只继承到外层求好的旧值
  * @param {string} indent 块内缩进
- * @returns {{ alphas: Record<'light' | 'dark', Record<string, number>>, css: string }} 比例表与 CSS
+ * @returns {{ alphas: Record<'light' | 'dark', Record<string, number>>, defaults: Record<'light' | 'dark', Map<string, string>>, additions: Record<'light' | 'dark', Map<string, string>>, css: string }}
+ *   比例表、主题块里改写成墨色的令牌、主题块里新增的名字（墨色本身与不透明档）与墨色域的 CSS
  */
 export function inkBlocks({ color, moreRoutes, reevaluate }, indent = '  ') {
   const inner = `${indent}  `
@@ -143,9 +169,13 @@ export function inkBlocks({ color, moreRoutes, reevaluate }, indent = '  ') {
   }
   const alphas = { light: {}, dark: {} }
   for (const theme of ['light', 'dark']) {
-    const surface = parseOklch(color(theme, '--xh-bg-surface'))
-    for (const name of EQUIVALENT)
-      alphas[theme][name] = equivalentAlpha(parseOklch(color(theme, name)), surface, polarity[theme].ink)
+    const bases = BASES.map(name => parseOklch(color(theme, name)))
+    for (const name of EQUIVALENT) {
+      const target = parseOklch(color(theme, name))
+      alphas[theme][name] = FILLS.has(name)
+        ? equivalentAlpha(target, parseOklch(color(theme, '--xh-bg-surface')), polarity[theme].ink)
+        : Math.max(...bases.map(base => equivalentAlpha(target, base, polarity[theme].ink)))
+    }
   }
 
   /** 参与对比度路由的令牌只换缺省分支，高对比分支沿用主题边界上的候选。 */
@@ -154,17 +184,31 @@ export function inkBlocks({ color, moreRoutes, reevaluate }, indent = '  ') {
     return more == null ? value : `var(--xh-_contrast-use-default, ${value}) var(--xh-_contrast-use-more, ${more})`
   }
 
+  // 缺省面同样用墨色表达描边与淡底：墨色取主题极性，比例按上面的对比度等价求得，所以白底与暗面上
+  // 外观与原中性色一致，作者没声明域的彩色区块上描边与淡底也是底色自身的深浅变体。
+  // 这份取值写进浅色 / 深色主题块；dark / light 两种域本身挂在主题块上，不必再声明一遍。
+  // additions 是主题块里新增的名字：墨色本身与淡底的不透明档（按 sRGB 叠在缺省面上，与浏览器合成同一算法）
+  const defaults = { light: new Map(), dark: new Map() }
+  const additions = { light: new Map(), dark: new Map() }
+  for (const theme of ['light', 'dark']) {
+    additions[theme].set('--xh-ink', polarity[theme].inkLiteral)
+    for (const name of GLOBAL)
+      defaults[theme].set(name, inkMix(alphas[theme][name]))
+    for (const [opaque, name] of OPAQUE)
+      additions[theme].set(opaque, `color-mix(in srgb, var(--xh-ink) ${percent(alphas[theme][name])}, var(--xh-bg-surface))`)
+  }
+
   // 底色是作者在自己的区块上填的输入：每个域都从未声明开始，不从外层域继承，未填时各处 var() 走兜底。
   // 库自有彩色面里的内容不在此列：底色由面声明、沿继承流进来
   const blocks = [`${indent}:where([data-xh-ink]) {\n${inner}--xh-ink-surface: initial;\n${indent}}`]
+  // 域比缺省面多改的是文字、焦点环与品牌：正文取墨色本身，置灰字取墨色按比例透明，品牌实心换成墨色实心
   for (const theme of ['light', 'dark']) {
     const p = polarity[theme]
     const lines = [
-      `${inner}--xh-ink: ${p.inkLiteral};`,
       ...SOLID.map(name => `${inner}${name}: var(--xh-ink);`),
       `${inner}--xh-fg-on-brand: var(--xh-ink-surface, ${p.opposite});`,
       ...FIXED.map(([name, alpha]) => `${inner}${name}: ${inkMix(alpha)};`),
-      ...EQUIVALENT.map(name => `${inner}${name}: ${routed(name, inkMix(alphas[theme][name]))};`),
+      `${inner}--xh-fg-disabled: ${inkMix(alphas[theme]['--xh-fg-disabled'])};`,
     ]
     blocks.push(`${indent}${p.selector} {\n${lines.join('\n')}\n${indent}}`)
   }
@@ -198,5 +242,5 @@ ${autoLines.join('\n')}
 ${inner}}
 ${indent}}`)
 
-  return { alphas, css: blocks.join('\n\n') }
+  return { alphas, defaults, additions, css: blocks.join('\n\n') }
 }

@@ -88,7 +88,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-muted', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-overlay']"
+  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-muted', '--xh-bg-subtle-opaque', '--xh-bg-subtle-hover-opaque', '--xh-bg-subtle-active-opaque', '--xh-bg-muted-opaque', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-overlay']"
   :notes="{
     '--xh-bg-page': '页面底：面之下那一层，铺满视口',
     '--xh-bg-canvas': '不透明画布：自动填充遮罩、色块选中环等必须不透明的地方；控件盒静息不再填它',
@@ -98,6 +98,10 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-bg-subtle-hover': '白底上的 pressed；淡底上的 hover',
     '--xh-bg-subtle-active': '淡底上的 pressed，只留给按下',
     '--xh-bg-muted': '禁用实心钮退到的中性面',
+    '--xh-bg-subtle-opaque': '淡底的不透明档：要盖住下层内容的面（吸顶表头、浮动钮、层叠头像）',
+    '--xh-bg-subtle-hover-opaque': '淡底 hover 档的不透明档',
+    '--xh-bg-subtle-active-opaque': '淡底 active 档的不透明档',
+    '--xh-bg-muted-opaque': '中性面的不透明档',
     '--xh-bg-brand': '主要动作实心底',
     '--xh-bg-brand-subtle': '选中 / 当前专属，12% 品牌拼色',
     '--xh-bg-overlay': '模态遮罩',
@@ -124,9 +128,10 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-border-default', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-invalid']"
+  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-invalid']"
   :notes="{
     '--xh-border-default': '一切根面外边与 raised 面描边',
+    '--xh-border-default-opaque': '装饰边的不透明档：压在任意内容上、必须自带浅框的部件（滑杆拇指）',
     '--xh-border-subtle': '只作内部分隔线',
     '--xh-border-strong': '只作高对比档与刻意登记的强调边',
     '--xh-border-control': '控件边界，缺省档与 border-default 同色；高对比档才加深到 3:1',
@@ -155,7 +160,9 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhDemo src="ink/02-auto" />
 
-- 比例不手填：构建按「墨色合成到缺省面上与原中性色对比度相等」求出，浅色档描边约 10%、淡底约 4%，深色档描边约 17%、淡底约 6%。所以把一个没有底色的区块声明成域，外观与缺省面相同。
+- 没声明域的地方同样用墨色表达描边与淡底：墨色取主题极性（浅色档纯黑、深色档纯白），所以作者自己的彩色区块即使不声明，描边、分隔与淡底也是底色自身的深浅变体，只有文字需要声明域。置灰字属于文字，同样只在域里换成墨色。
+- 比例不手填，按「与原中性色对比度相等」求：描边在页面底、画布、缺省面与对话框面上各求一个比例取最大值，哪种面上都不比原来淡；淡底只按缺省面求，压在上面的字与焦点环对比度不降。浅色档描边约 10%、淡底约 4%，与原中性色一致；深色档描边 22%（卡片面上比原来略重）、淡底约 6%。
+- 淡底是半透明的，叠在别的淡底上会加深。要盖住下层内容的面（粘性表头、固定列、浮在内容上的钮）取 `-opaque` 档：同一比例的墨色叠在缺省面上的实色。
 - 放文字的彩色面避开相对亮度 0.15–0.24：neutral 950 与 neutral 50 在这一段都到不了 4.5:1，只有纯黑、纯白勉强达标。品牌色阶 500 落在其中，浅色档的品牌实心因此取 600。
 - 域内的品牌实心换成墨色实心，文字取 `--xh-ink-surface`（未提供时取与墨色相反的纯白 / 纯黑）；选中面换成墨色 12%。语气色保留自己的实心或淡底面。
 - 高对比档（`data-contrast="more"`）下域内描边回到实色；强制色下取系统色。

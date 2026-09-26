@@ -61,7 +61,7 @@ describe('slider 字段标签、拇指描边与禁用面', () => {
   it('拇指是 raised 面：品牌实心 + border-default 描边 + raised 影；刻度点取 circle', () => {
     const { thumb, ticks } = mount()
     const style = getComputedStyle(thumb)
-    expect(style.borderTopColor).toBe(resolvedToken('--xh-border-default'))
+    expect(style.borderTopColor).toBe(resolvedToken('--xh-border-default-opaque'))
     expect(style.borderTopWidth).toBe('2px')
     expect(style.backgroundColor).toBe(resolvedToken('--xh-bg-brand', 'background-color'))
     expect(style.boxShadow).not.toBe('none')
@@ -76,7 +76,7 @@ describe('slider 字段标签、拇指描边与禁用面', () => {
     expect(getComputedStyle(range).backgroundColor).toBe(resolvedToken('--xh-fg-disabled', 'background-color'))
     const thumbStyle = getComputedStyle(thumb)
     expect(thumbStyle.backgroundColor).toBe(resolvedToken('--xh-bg-surface', 'background-color'))
-    expect(thumbStyle.borderTopColor).toBe(resolvedToken('--xh-border-default'))
+    expect(thumbStyle.borderTopColor).toBe(resolvedToken('--xh-border-default-opaque'))
     expect(thumbStyle.boxShadow).toBe('none')
     expect(thumbStyle.cursor).toBe('not-allowed')
     expect(getComputedStyle(ticks[0]!).backgroundColor).toBe(resolvedToken('--xh-fg-disabled', 'background-color'))

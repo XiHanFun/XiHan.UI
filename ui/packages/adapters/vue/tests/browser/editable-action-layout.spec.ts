@@ -111,7 +111,7 @@ function expectUnifiedControl(...partNames: string[]): void {
 /** 动作组第一颗钮与内容段之间的分隔线画在背景层，::after 留给家族热区。 */
 function expectDivider(name: string, rtl = false): void {
   const style = getComputedStyle(part(name))
-  const separator = token('--xh-material-soft-separator')
+  const separator = tokenColor('--xh-material-soft-separator')
   expect(style.backgroundImage).toBe(`linear-gradient(${separator}, ${separator})`)
   expect(style.backgroundSize).toBe('1px 50%')
   expect(style.backgroundPosition).toBe(rtl ? '100% 50%' : '0px 50%')

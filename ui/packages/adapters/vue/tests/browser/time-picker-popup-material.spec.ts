@@ -93,11 +93,13 @@ describe('时间选择浮层', () => {
     expect(content.padding).toBe('4px')
     // floating 材质：实体底 + 可见描边 + 落影，不画顶光伪元素
     expect(content.borderTopStyle).toBe('solid')
-    expect(alpha(content.borderTopColor)).toBe(255)
+    // 描边是墨色按比例透明：画了就不是 0，不再是实色
+    expect(alpha(content.borderTopColor)).toBeGreaterThan(0)
     expect(getComputedStyle(part('content'), '::before').content).toBe('none')
     // 输入行是描边式字段外壳：描边 + 无影
     expect(control.borderTopStyle).toBe('solid')
-    expect(alpha(control.borderTopColor)).toBe(255)
+    // 描边是墨色按比例透明：画了就不是 0，不再是实色
+    expect(alpha(control.borderTopColor)).toBeGreaterThan(0)
     expect(control.boxShadow).toBe('none')
     for (const name of ['column', 'preset-group']) {
       const style = getComputedStyle(part(name))

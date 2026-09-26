@@ -599,14 +599,20 @@
   /* mode 轴 · 浅色基线与显式取值完全同源；合并选择器避免把整套候选重复输出两次。 */
   :where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {
     color-scheme: light;
+    --xh-ink: oklch(0 0 0);
+    --xh-bg-subtle-opaque: color-mix(in srgb, var(--xh-ink) 4.3%, var(--xh-bg-surface));
+    --xh-bg-subtle-hover-opaque: color-mix(in srgb, var(--xh-ink) 10.2%, var(--xh-bg-surface));
+    --xh-bg-subtle-active-opaque: color-mix(in srgb, var(--xh-ink) 16.9%, var(--xh-bg-surface));
+    --xh-bg-muted-opaque: color-mix(in srgb, var(--xh-ink) 4.3%, var(--xh-bg-surface));
+    --xh-border-default-opaque: color-mix(in srgb, var(--xh-ink) 10.2%, var(--xh-bg-surface));
     --xh-bg-page: var(--xh-color-neutral-50);
     --xh-bg-canvas: var(--xh-color-neutral-0);
     --xh-bg-surface: var(--xh-color-neutral-0);
     --xh-bg-surface-raised: var(--xh-color-neutral-0);
-    --xh-bg-subtle: var(--xh-color-neutral-100);
-    --xh-bg-subtle-hover: var(--xh-color-neutral-200);
-    --xh-bg-subtle-active: var(--xh-color-neutral-300);
-    --xh-bg-muted: var(--xh-color-neutral-100);
+    --xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 4.3%, transparent);
+    --xh-bg-subtle-hover: color-mix(in oklab, var(--xh-ink) 10.2%, transparent);
+    --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 16.9%, transparent);
+    --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 4.3%, transparent);
     --xh-bg-brand: var(--xh-color-brand-600);
     --xh-bg-brand-hover: var(--xh-color-brand-700);
     --xh-bg-brand-active: var(--xh-color-brand-800);
@@ -651,15 +657,15 @@
     --xh-_contrast-default-border-at-limit: var(--xh-color-warning-600);
     --xh-_contrast-more-border-at-limit: var(--xh-color-warning-800);
     --xh-_contrast-more-border-control: var(--xh-color-neutral-600);
-    --xh-_contrast-default-border-control-hover: var(--xh-color-neutral-400);
+    --xh-_contrast-default-border-control-hover: color-mix(in oklab, var(--xh-ink) 37%, transparent);
     --xh-_contrast-more-border-control-hover: var(--xh-color-neutral-700);
-    --xh-_contrast-default-border-default: var(--xh-color-neutral-200);
+    --xh-_contrast-default-border-default: color-mix(in oklab, var(--xh-ink) 10.2%, transparent);
     --xh-_contrast-more-border-default: var(--xh-color-neutral-550);
     --xh-_contrast-default-border-invalid: var(--xh-color-danger-600);
     --xh-_contrast-more-border-invalid: var(--xh-color-danger-700);
-    --xh-_contrast-default-border-strong: var(--xh-color-neutral-300);
+    --xh-_contrast-default-border-strong: color-mix(in oklab, var(--xh-ink) 16.9%, transparent);
     --xh-_contrast-more-border-strong: var(--xh-color-neutral-600);
-    --xh-_contrast-default-border-subtle: var(--xh-color-neutral-100);
+    --xh-_contrast-default-border-subtle: color-mix(in oklab, var(--xh-ink) 4.3%, transparent);
     --xh-_contrast-more-border-subtle: var(--xh-color-neutral-500);
     --xh-_contrast-default-material-elevated-bg: oklch(0.99 0.003 258);
     --xh-_contrast-default-material-elevated-border: oklch(0.145 0.005 258 / 0.28);
@@ -713,14 +719,20 @@
   /* mode 轴 · 深色取值块（color-scheme 必须在此，嵌套深色区才能拿到深色原生控件） */
   :where([data-theme='dark']), :where([data-xh-ink='light']) {
     color-scheme: dark;
+    --xh-ink: oklch(1 0 0);
+    --xh-bg-subtle-opaque: color-mix(in srgb, var(--xh-ink) 6.2%, var(--xh-bg-surface));
+    --xh-bg-subtle-hover-opaque: color-mix(in srgb, var(--xh-ink) 17.4%, var(--xh-bg-surface));
+    --xh-bg-subtle-active-opaque: color-mix(in srgb, var(--xh-ink) 20.7%, var(--xh-bg-surface));
+    --xh-bg-muted-opaque: color-mix(in srgb, var(--xh-ink) 6.2%, var(--xh-bg-surface));
+    --xh-border-default-opaque: color-mix(in srgb, var(--xh-ink) 22%, var(--xh-bg-surface));
     --xh-bg-page: var(--xh-color-neutral-950);
     --xh-bg-canvas: var(--xh-color-neutral-950);
     --xh-bg-surface: var(--xh-color-neutral-900);
     --xh-bg-surface-raised: var(--xh-color-neutral-750);
-    --xh-bg-subtle: var(--xh-color-neutral-800);
-    --xh-bg-subtle-hover: var(--xh-color-neutral-700);
-    --xh-bg-subtle-active: var(--xh-color-neutral-650);
-    --xh-bg-muted: var(--xh-color-neutral-800);
+    --xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 6.2%, transparent);
+    --xh-bg-subtle-hover: color-mix(in oklab, var(--xh-ink) 17.4%, transparent);
+    --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 20.7%, transparent);
+    --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 6.2%, transparent);
     --xh-bg-brand: var(--xh-color-brand-500);
     --xh-bg-brand-hover: var(--xh-color-brand-400);
     --xh-bg-brand-active: var(--xh-color-brand-300);
@@ -769,15 +781,15 @@
     --xh-_contrast-default-border-at-limit: var(--xh-color-warning-500);
     --xh-_contrast-more-border-at-limit: var(--xh-color-warning-400);
     --xh-_contrast-more-border-control: var(--xh-color-neutral-400);
-    --xh-_contrast-default-border-control-hover: var(--xh-color-neutral-550);
+    --xh-_contrast-default-border-control-hover: color-mix(in oklab, var(--xh-ink) 38.7%, transparent);
     --xh-_contrast-more-border-control-hover: var(--xh-color-neutral-300);
-    --xh-_contrast-default-border-default: var(--xh-color-neutral-700);
+    --xh-_contrast-default-border-default: color-mix(in oklab, var(--xh-ink) 22%, transparent);
     --xh-_contrast-more-border-default: var(--xh-color-neutral-400);
     --xh-_contrast-default-border-invalid: var(--xh-color-danger-500);
     --xh-_contrast-more-border-invalid: var(--xh-color-danger-400);
-    --xh-_contrast-default-border-strong: var(--xh-color-neutral-600);
+    --xh-_contrast-default-border-strong: color-mix(in oklab, var(--xh-ink) 29.4%, transparent);
     --xh-_contrast-more-border-strong: var(--xh-color-neutral-300);
-    --xh-_contrast-default-border-subtle: var(--xh-color-neutral-800);
+    --xh-_contrast-default-border-subtle: color-mix(in oklab, var(--xh-ink) 11.5%, transparent);
     --xh-_contrast-more-border-subtle: var(--xh-color-neutral-450);
     --xh-_contrast-default-material-elevated-bg: oklch(0.19 0.008 258);
     --xh-_contrast-default-material-elevated-border: oklch(1 0 0 / 0.28);
@@ -907,7 +919,6 @@
   }
 
   :where([data-xh-ink='dark']) {
-    --xh-ink: oklch(0 0 0);
     --xh-fg-default: var(--xh-ink);
     --xh-fg-muted: var(--xh-ink);
     --xh-fg-subtle: var(--xh-ink);
@@ -922,19 +933,10 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-ink) 12%, transparent);
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-ink) 20%, transparent);
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-ink) 28%, transparent);
-    --xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 4.3%, transparent);
-    --xh-bg-subtle-hover: color-mix(in oklab, var(--xh-ink) 10.2%, transparent);
-    --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 16.9%, transparent);
-    --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 4.3%, transparent);
-    --xh-border-default: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 10.2%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
-    --xh-border-subtle: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 4.3%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
-    --xh-border-strong: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 16.9%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
-    --xh-border-control-hover: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 37%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
     --xh-fg-disabled: color-mix(in oklab, var(--xh-ink) 37%, transparent);
   }
 
   :where([data-xh-ink='light']) {
-    --xh-ink: oklch(1 0 0);
     --xh-fg-default: var(--xh-ink);
     --xh-fg-muted: var(--xh-ink);
     --xh-fg-subtle: var(--xh-ink);
@@ -949,15 +951,7 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-ink) 12%, transparent);
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-ink) 20%, transparent);
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-ink) 28%, transparent);
-    --xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 6.2%, transparent);
-    --xh-bg-subtle-hover: color-mix(in oklab, var(--xh-ink) 17.4%, transparent);
-    --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 20.7%, transparent);
-    --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 6.2%, transparent);
-    --xh-border-default: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 17.4%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
-    --xh-border-subtle: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 6.2%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
-    --xh-border-strong: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 25.2%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
-    --xh-border-control-hover: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink) 35%, transparent)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
-    --xh-fg-disabled: color-mix(in oklab, var(--xh-ink) 25.2%, transparent);
+    --xh-fg-disabled: color-mix(in oklab, var(--xh-ink) 29.4%, transparent);
   }
 
   :where([data-xh-ink='dark'][data-xh-ink-margin='ample']), :where([data-xh-ink='light'][data-xh-ink-margin='ample']) {
@@ -1019,11 +1013,11 @@
       --xh-bg-subtle-hover: color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.102 + 0.072 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)));
       --xh-bg-subtle-active: color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.169 + 0.038 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)));
       --xh-bg-muted: color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.043 + 0.019 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)));
-      --xh-border-default: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.102 + 0.072 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
-      --xh-border-subtle: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.043 + 0.019 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
-      --xh-border-strong: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.169 + 0.083 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
-      --xh-border-control-hover: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.37 + -0.02 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
-      --xh-fg-disabled: color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.37 + -0.118 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)));
+      --xh-border-default: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.102 + 0.118 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default));
+      --xh-border-subtle: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.043 + 0.072 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
+      --xh-border-strong: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.169 + 0.125 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
+      --xh-border-control-hover: var(--xh-_contrast-use-default, color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.37 + 0.017 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)))) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover));
+      --xh-fg-disabled: color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / calc(0.37 + -0.076 * clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1)));
     }
   }
 

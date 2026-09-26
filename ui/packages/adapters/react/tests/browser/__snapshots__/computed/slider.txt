@@ -190,10 +190,10 @@ border-top-width: 2px
 border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
-border-top-color: oklch(0.922 0.002 258)
-border-right-color: oklch(0.922 0.002 258)
-border-bottom-color: oklch(0.922 0.002 258)
-border-left-color: oklch(0.922 0.002 258)
+border-top-color: color(srgb 0.897884 0.898048 0.898063)
+border-right-color: color(srgb 0.897884 0.898048 0.898063)
+border-bottom-color: color(srgb 0.897884 0.898048 0.898063)
+border-left-color: color(srgb 0.897884 0.898048 0.898063)
 min-height: 0px
 font-size: 16px
 line-height: normal
@@ -234,7 +234,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklch(0.87 0.003 258)
+background-color: oklab(0 0 0 / 0.169)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease

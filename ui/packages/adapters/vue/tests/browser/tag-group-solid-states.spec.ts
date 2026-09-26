@@ -27,10 +27,13 @@ const NON_TEXT_MIN = 3
 const canvas = document.createElement('canvas')
 const ctx = canvas.getContext('2d', { willReadFrequently: true })!
 
-/** 把一串颜色按从下到上的顺序叠在白底上，返回叠完的 sRGB 三分量。 */
+/**
+ * 把一串颜色按从下到上的顺序叠在当前主题的画布上，返回叠完的 sRGB 三分量。
+ * 主题写在 <html> 上而页面本身不铺底，所以最底下一层取画布色：半透明的面要叠在真实的底上算。
+ */
 function composite(layers: readonly string[]): [number, number, number] {
   ctx.clearRect(0, 0, 1, 1)
-  ctx.fillStyle = '#fff'
+  ctx.fillStyle = resolve('var(--xh-bg-canvas)')
   ctx.fillRect(0, 0, 1, 1)
   for (const layer of layers) {
     ctx.fillStyle = 'transparent'

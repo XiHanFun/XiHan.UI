@@ -97,10 +97,11 @@
     --xh-_float-button-shadow: none;
   }
 
+  /* 浮动钮钉在内容之上，面要盖得住底下的内容：没写语气时淡底取不透明档（ghost 静息就透景，不在此列） */
   [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
-    --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_float-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque));
+    --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover-opaque));
+    --xh-_float-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active-opaque));
     --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_float-button-border: transparent;
     --xh-_float-button-border-hover: transparent;
@@ -109,8 +110,8 @@
 
   [data-scope='float-button'][data-part='root'][data-variant='outline'] {
     --xh-_float-button-bg: var(--xh-material-frosted-bg);
-    --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque));
+    --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover-opaque));
     --xh-_float-button-fg: var(--xh-material-frosted-fg);
     --xh-_float-button-border: var(--xh-material-frosted-border);
     --xh-_float-button-border-hover: var(--xh-material-frosted-border);

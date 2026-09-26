@@ -90,17 +90,17 @@
       linear-gradient(
         to right,
         transparent 0 33.3333%,
-        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+        var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
         transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
-        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+        var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
         transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
       ),
       linear-gradient(
         to bottom,
         transparent 0 33.3333%,
-        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+        var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
         transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
-        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+        var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
         transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
       );
     pointer-events: none;
@@ -145,9 +145,10 @@
     content: '';
   }
 
-  /* 把手静息是白面（bg-surface），悬停从同一语义面派生一档，不切到品牌淡底；拖动中才是品牌实心 */
+  /* 把手静息是白面（bg-surface），悬停从同一语义面派生一档，不切到品牌淡底；拖动中才是品牌实心。
+     把手与网格线都压在照片上，取淡底的不透明档，照片深浅不一时才看得见 */
   [data-scope='image-cropper'][data-part='crop-handle']:hover:not([data-disabled], [data-readonly]) {
-    --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-subtle));
+    --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-subtle-opaque));
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {

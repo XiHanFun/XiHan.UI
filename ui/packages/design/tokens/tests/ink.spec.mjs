@@ -43,13 +43,40 @@ describe('tokens.css 里的墨色域', () => {
     expect(forced.slice(0, forced.indexOf('{', forced.indexOf('{') + 1))).toContain(':where([data-xh-ink-surface] > *)')
   })
 
-  it('墨色块排在主题块与对比度块之后，参与对比度路由的令牌保留高对比分支', () => {
+  it('缺省面同样用墨色：主题块写墨色本身与按比例透明的中性装饰，参与对比度路由的只换缺省分支', () => {
+    const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
+    const light = css.slice(lightAt, css.indexOf('\n  }', lightAt))
+    expect(light).toContain('--xh-ink: oklch(0 0 0);')
+    expect(light).toContain('--xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 4.3%, transparent);')
+    expect(light).toContain('--xh-_contrast-default-border-default: color-mix(in oklab, var(--xh-ink) 10.2%, transparent);')
+    // 高对比分支仍取实色
+    expect(light).toMatch(/--xh-_contrast-more-border-default: var\(--xh-color-neutral-\d+\);/)
+    const darkAt = css.indexOf(`:where([data-theme='dark']), :where([data-xh-ink='light']) {`)
+    const dark = css.slice(darkAt, css.indexOf('\n  }', darkAt))
+    expect(dark).toContain('--xh-ink: oklch(1 0 0);')
+    // 深色档比例按最深的页面底 / 画布定，缺省面上比原中性色略重
+    expect(dark).toContain('--xh-_contrast-default-border-default: color-mix(in oklab, var(--xh-ink) 22%, transparent);')
+  })
+
+  it('dark / light 域排在主题块与对比度块之后，只多改正文、焦点环与品牌', () => {
     // 行首的独立块，不是浅色取值块选择器里的同名分支
     const inkAt = css.indexOf(`\n  :where([data-xh-ink='dark']) {`)
     expect(inkAt).toBeGreaterThan(css.indexOf(`:where([data-contrast='more']) {`))
     const block = css.slice(inkAt, css.indexOf('}', inkAt))
-    expect(block).toContain('--xh-border-default: var(--xh-_contrast-use-default, color-mix(in oklab, var(--xh-ink)')
-    expect(block).toContain('var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default))')
+    expect(block).toContain('--xh-fg-default: var(--xh-ink);')
+    expect(block).toContain('--xh-bg-brand: var(--xh-ink);')
+    // 中性装饰由主题块给出，域块不再重复；置灰字属于文字，只在域里换成墨色
+    expect(block).not.toContain('--xh-border-default:')
+    expect(block).not.toContain('--xh-ink:')
+    expect(block).toContain('--xh-fg-disabled: color-mix(in oklab, var(--xh-ink) 37%, transparent);')
+  })
+
+  it('缺省面上置灰字保持实色；淡底各有一支叠在缺省面上的不透明档', () => {
+    const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
+    const light = css.slice(lightAt, css.indexOf('\n  }', lightAt))
+    expect(light).toMatch(/--xh-fg-disabled: var\(--xh-color-neutral-\d+\);/)
+    for (const [name, alpha] of [['subtle', '4.3%'], ['subtle-hover', '10.2%'], ['subtle-active', '16.9%'], ['muted', '4.3%']])
+      expect(light).toContain(`--xh-bg-${name}-opaque: color-mix(in srgb, var(--xh-ink) ${alpha}, var(--xh-bg-surface));`)
   })
 
   it('auto 块整体落在相对颜色语法的探针里，底色缺省时取外层主题的面', () => {
