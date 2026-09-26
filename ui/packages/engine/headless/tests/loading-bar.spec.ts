@@ -508,9 +508,9 @@ describe('connectLoadingBar', () => {
     expect((makeLoadingBar({ height: '0.5rem' }).root().style as Dict).blockSize).toBe('0.5rem')
   })
 
-  it('range 的内联样式只有宽度那条轴：颜色归皮肤的语气槽，不走内联', () => {
+  it('range 的内联样式只有进度比例：颜色归皮肤的语气槽，不走内联', () => {
     const plain = makeLoadingBar({ loading: true, value: 37.5 }).range()
-    expect(plain.style).toEqual({ inlineSize: '37.5%' })
+    expect(plain.style).toEqual({ '--xh-_loading-bar-value': '0.375' })
   })
 
   it('三个角色节点的 data-state 同步推进', () => {
