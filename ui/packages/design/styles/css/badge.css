@@ -33,9 +33,11 @@
      不是药丸那套内衬与行高：那是 tag 的活 */
   [data-scope='badge'][data-part='indicator'] {
     /* 每一档的盒都要大于字号：两位数在等高的盒里会被撑破。
-       字号刻度最小就是 12px，所以往上抬盒子而不是往下压字 */
+       字号刻度最小就是 12px，所以往上抬盒子而不是往下压字。
+       盒只比字高一档：20px 扣掉两道 1px 描边还剩 18px 内高，13px 的两位数与「99+」立得住，
+       角标又不会大过它贴着的宿主文字 */
     --xh-_badge-dot: var(--xh-space-2);
-    --xh-_badge-min: var(--xh-space-7);
+    --xh-_badge-min: var(--xh-space-5);
     --xh-_badge-px: var(--xh-space-1);
     --xh-_badge-font: var(--xh-text-secondary-size);
 
@@ -166,9 +168,10 @@
     --xh-_badge-font: var(--xh-text-caption-size);
   }
 
+  /* 大号只往上抬一级：盒 24px、字 14px，仍是角标，不长成与宿主同级的一枚按钮 */
   [data-scope='badge'][data-part='indicator'][data-size='lg'] {
     --xh-_badge-dot: var(--xh-space-2_5);
-    --xh-_badge-min: var(--xh-space-8);
+    --xh-_badge-min: var(--xh-space-6);
     --xh-_badge-px: var(--xh-space-1_5);
     --xh-_badge-font: var(--xh-text-body-size);
   }
