@@ -10,6 +10,7 @@ export default defineXihanPackage({
     'vite': 'src/kernel/vite.ts',
     'vanilla': 'src/machine/vanilla.ts',
     'presence': 'src/behavior/presence.ts',
+    'date': 'src/date/index.ts',
     'visual-environment': 'src/visual-environment/index.ts',
   },
 })

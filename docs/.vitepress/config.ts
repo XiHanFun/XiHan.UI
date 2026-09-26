@@ -135,6 +135,7 @@ const guideChapters: [text: string, name: string][] = [
   ["皮肤与样式分层", "styling"],
   ["图标集", "icons"],
   ["国际化", "i18n"],
+  ["日期与时间", "date"],
   ["表单参与与重置", "forms"],
   ["无障碍与键盘规格", "a11y"],
   ["诊断通道", "diagnostics"],

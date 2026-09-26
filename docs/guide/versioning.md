@@ -46,14 +46,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-18 个包中 18 个出 JS 或类型入口，共 35 个带类型的入口。
+18 个包中 18 个出 JS 或类型入口，共 36 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | 包名 | 18 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 35 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| `exports` 子路径 | 36 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1038（134 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 102 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -393,7 +393,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/styles` | 134 份组件皮肤、5 个层名 |
 | `@xihan-ui/tokens` | 601 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
-| `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
+| `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime`、时区换算、周规则、边界函数与格式化器） |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
 | `@xihan-ui/motion` | 缓动名、时长常量、`animate`、补间与弹簧算子。三值与令牌层同源（`check-motion-source` 比对），`core` / `headless` 与各适配器均建立在它之上，改名会先破坏库自身 |
 | `@xihan-ui/pointer` | `createPointerSession` / `createMultiPointerSession` 与四层几何纯函数。`headless` 与各适配器的拖拽、缩放、划动全部经由它，同上 |
@@ -419,10 +419,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，15934 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，15988 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 193 条子入口、8304 个导出名、134 个 `data-scope` 与 1040 条部件配对、
+覆盖：包名与 194 条子入口、8358 个导出名、134 个 `data-scope` 与 1040 条部件配对、
 134 个组件的 1720 个 prop 名、231 种 `data-*`、33 个 `data-state` 取值、601 个令牌、
 5 个 `@layer` 名、4038 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 

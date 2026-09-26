@@ -6,7 +6,7 @@
 - **状态机**：声明式的状态 / 事件 / 动作 / 守卫，外加一层响应式适配口——同一份机器在 Vue 的响应式与原生信号上跑出同样的行为。
 - **交互行为**：焦点域、消解层、滚动锁、滚动位置观察、出入场存在性、粘底。
 
-**谁会装它**：一般不用直接装——装了适配器就有它。自己写适配器、自研端口实现或在自研组件里复用焦点陷阱与消解层时才会直接引。
+**谁会装它**：一般不用直接装——装了适配器就有它。自己写适配器、自研端口实现、在自研组件里复用焦点陷阱与消解层，或在组件之外做日期运算时才会直接引。
 
 ## 用法
 
@@ -15,7 +15,7 @@ import type { PositionEnginePort } from '@xihan-ui/core'
 import { createAnatomy, createDismissLayer, createFocusScope, createMachine, createScope } from '@xihan-ui/core'
 ```
 
-子入口：`@xihan-ui/core/metadata`（锁步版本检查与框架元数据）、`@xihan-ui/core/skin-check`（皮肤缺失诊断）、`@xihan-ui/core/vite`（终端启动横幅，只跑在 Node 侧）、`@xihan-ui/core/vanilla`（原生信号响应式运行时）、`@xihan-ui/core/presence`（出入场存在性）。
+子入口：`@xihan-ui/core/metadata`（锁步版本检查与框架元数据）、`@xihan-ui/core/skin-check`（皮肤缺失诊断）、`@xihan-ui/core/vite`（终端启动横幅，只跑在 Node 侧）、`@xihan-ui/core/vanilla`（原生信号响应式运行时）、`@xihan-ui/core/presence`（出入场存在性）、`@xihan-ui/core/date`（不带时区的日期值、公历运算、时区换算、按地区的周与格式化）。
 
 ## 装
 
