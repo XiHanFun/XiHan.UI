@@ -99,7 +99,7 @@ export interface LayoutSchema extends MachineSchema {
   tag: never
   guard: 'isSiderCollapsedControlled'
   action: 'invokeOnCollapse' | 'invokeOnExpand' | 'syncSiderCollapsed' | 'startPress' | 'endPress'
-  effect: 'trackSiderBreakpoint' | 'dismissSiderSheet'
+  effect: 'trackSiderBreakpoint' | 'dismissSiderSheet' | 'trackLiquid'
 }
 
 export interface LayoutApi<T extends PropTypes = PropTypes> {

@@ -73,7 +73,10 @@ export function connectLayout<T extends PropTypes>(
 
     getHeaderProps: () => normalize.element({
       ...parts.header.attrs,
+      'id': scope.partId('layout', 'header'),
       'data-fixed': dataAttr(headerFixed),
+      // 吸顶时内容从它下面滚过，是导航层：data-material="liquid" 下换成液态面；不吸顶的顶栏是版面的一部分
+      'data-xh-liquid': dataAttr(headerFixed),
     }),
 
     // 遮罩只在覆盖档在场：占位档下带 hidden，既不占位也不吃指针。

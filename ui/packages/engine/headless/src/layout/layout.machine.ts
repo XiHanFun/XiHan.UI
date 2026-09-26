@@ -7,6 +7,7 @@
 
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPresentation } from './layout.types'
 import { createEscapeFallback, setup } from '@xihan-ui/core'
+import { trackLiquidPart } from '../shared/liquid'
 import { trackSiderBreakpoint } from './layout.breakpoint'
 
 const { createMachine } = setup<LayoutSchema>()
@@ -39,7 +40,7 @@ export const layoutMachine = createMachine({
   initialState: ({ prop }) => ((prop('siderCollapsed') ?? prop('defaultSiderCollapsed')) ? 'collapsed' : 'expanded'),
   watch: ({ track, prop, action }) => track([() => prop('siderCollapsed')], () => action(['syncSiderCollapsed'])),
   // 挂根级：断点与折叠态无关，跟着状态挂会在每次折叠时重挂并重发一次当前值
-  effects: ['trackSiderBreakpoint'],
+  effects: ['trackSiderBreakpoint', 'trackLiquid'],
   // 按压通道挂根级：把手在两个折叠态下都在场；它没有禁用态，按住一律进，不设守卫
   on: {
     'PRESS.START': { actions: ['startPress'] },
@@ -95,6 +96,17 @@ export const layoutMachine = createMachine({
     },
     effects: {
       trackSiderBreakpoint,
+      /** 吸顶的顶栏浮在内容之上：材质轴为 liquid 时按下层换色调、亮边随指针。随 headerFixed 挂撤 */
+      trackLiquid: ({ prop, scope, flush, track }) => {
+        let stop: (() => void) | undefined
+        const sync = (): void => {
+          stop?.()
+          stop = prop('headerFixed') ? trackLiquidPart(scope, flush, 'layout', 'header') : undefined
+        }
+        sync()
+        track([() => prop('headerFixed')], sync)
+        return () => stop?.()
+      },
       /**
        * 覆盖档的 Escape 后备出口。Hub 在 capture 阶段先让 Layer 消费本次按键，
        * 只有这条 lane 当时为空且票据一直有效，才在 bubble 阶段收起最近展开的侧栏。
