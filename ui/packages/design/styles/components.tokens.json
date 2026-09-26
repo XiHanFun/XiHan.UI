@@ -41832,9 +41832,12 @@
       "name": "--xh-message-feed-p",
       "component": "message-feed",
       "part": [
-        "list"
+        "list",
+        "pending-indicator"
       ],
       "property": [
+        "margin-block-end",
+        "margin-inline-start",
         "padding"
       ],
       "state": [
@@ -41844,7 +41847,62 @@
         "--xh-_message-feed-p"
       ],
       "visibility": "public",
-      "description": "message-feed 的 list 部件 padding 覆盖槽。"
+      "description": "message-feed 的 list、pending-indicator 部件 margin-block-end、margin-inline-start、padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-pending-indicator-color",
+      "component": "message-feed",
+      "part": [
+        "pending-indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 pending-indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-pending-indicator-radius",
+      "component": "message-feed",
+      "part": [
+        "pending-indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 pending-indicator 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-pending-indicator-size",
+      "component": "message-feed",
+      "part": [
+        "pending-indicator"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 pending-indicator 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-message-feed-scroll-to-end-trigger-bg",

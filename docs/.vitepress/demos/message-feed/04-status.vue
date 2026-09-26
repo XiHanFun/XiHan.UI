@@ -1,4 +1,4 @@
-<!-- 运行态与播报 | status 由宿主持有，组件只把它透出为 root 上的 data-state；播报只发生在 live-region 中，一轮结束后才写入一句 -->
+<!-- 运行态与播报 | status 由宿主持有，组件只把它透出为 root 上的 data-state；已发送、等首个片段时列表之后的呼吸点亮起，首个片段一到就收；播报只发生在 live-region 中，一轮结束后才写入一句 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -6,6 +6,7 @@ import {
   XhMessageFeedItemLabel,
   XhMessageFeedList,
   XhMessageFeedLiveRegion,
+  XhMessageFeedPendingIndicator,
   XhMessageFeedRoot,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
@@ -64,6 +65,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
             <div>{{ message.text }}</div>
           </XhMessageFeedItem>
         </XhMessageFeedList>
+        <XhMessageFeedPendingIndicator />
       </XhMessageFeedViewport>
       <XhMessageFeedLiveRegion>{{ announcement }}</XhMessageFeedLiveRegion>
     </XhMessageFeedRoot>

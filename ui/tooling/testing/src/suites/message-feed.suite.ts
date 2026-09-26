@@ -72,6 +72,7 @@ export const messageFeedSuite: ConformanceSuite = {
               item('m3', 2, 'assistant'),
             ],
           },
+          { part: 'pending-indicator', tag: 'span' },
         ],
       },
       { part: 'scroll-to-end-trigger', tag: 'button' },
@@ -104,10 +105,34 @@ export const messageFeedSuite: ConformanceSuite = {
             { 'role': 'article', 'aria-posinset': '3', 'aria-setsize': '3', 'tabindex': '-1', 'data-role': 'assistant', 'data-value': 'm3' },
           ],
           'live-region': { 'role': null, 'aria-live': 'polite', 'aria-atomic': 'true' },
+          // 等首个片段的呼吸点只在 submitted 时出现，平时收着；装饰，对读屏隐藏
+          'pending-indicator': { 'aria-hidden': 'true', 'data-state': 'idle', 'hidden': '' },
         },
         activeElement: null,
         events: [],
       },
+    },
+    {
+      name: '已发送、等首个片段：呼吸点出现；首个片段到了就收起',
+      spec: { apg: APG },
+      props: { count: 3, status: 'submitted' },
+      initial: {
+        parts: {
+          'root': { 'data-state': 'submitted' },
+          'pending-indicator': { 'aria-hidden': 'true', 'data-state': 'submitted', 'hidden': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { status: 'streaming' },
+          expect: {
+            parts: {
+              'pending-indicator': { 'data-state': 'streaming', 'hidden': '' },
+            },
+          },
+        },
+      ],
     },
     {
       name: '不给 count 时报 -1：ARIA 规定的「总数未知」，虚拟化或分页时 DOM 里的条数不等于会话长度',

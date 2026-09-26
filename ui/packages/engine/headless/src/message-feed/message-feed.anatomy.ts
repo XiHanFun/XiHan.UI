@@ -11,6 +11,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // root 是最外层，承载容器兜底的 Tab 位与键盘模型；viewport 是 overflow:auto 的那层；
 // list 是内容包裹层，条目必须是它的直接子节点；item 是一条消息（role=article）；
 // item-label 是作者名那一格，渲了它就成为该条消息的可访问名；
+// pending-indicator 是已发送、等首个片段时的呼吸点（装饰，对读屏隐藏）；
 // scroll-to-end-trigger 是回到底部；live-region 是视觉隐藏的原子播报区。
 export const messageFeedAnatomy = createAnatomy('message-feed', [
   'root',
@@ -18,6 +19,7 @@ export const messageFeedAnatomy = createAnatomy('message-feed', [
   'list',
   'item',
   'item-label',
+  'pending-indicator',
   'scroll-to-end-trigger',
   'live-region',
 ])

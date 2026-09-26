@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `scroll-to-end-trigger` · `live-region`
+`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `pending-indicator` · `scroll-to-end-trigger` · `live-region`
 
 ## 示例
 
@@ -38,7 +38,7 @@
 
 ### 运行态与播报
 
-status 由宿主持有，组件只把它透出为 root 上的 data-state；播报只发生在 live-region 中，一轮结束后才写入一句
+status 由宿主持有，组件只把它透出为 root 上的 data-state；已发送、等首个片段时列表之后的呼吸点亮起，首个片段一到就收；播报只发生在 live-region 中，一轮结束后才写入一句
 
 <XhDemo src="message-feed/04-status" />
 
@@ -80,6 +80,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 - 整份消息列表只占一个 Tab 停靠位：`PageDown` / `PageUp` 在消息之间移动，`Ctrl+End` / `Ctrl+Home` 一步移到消息流之外（会话界面中通常是输入框）。
 - 消息内容全部由作者编写：气泡、头像、时间、动作条都不是本组件的部件。
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
+- 已发送、等首个片段（`status` 为 `submitted`）时，放在列表之后的 `pending-indicator` 显示为一颗呼吸的圆点，首个片段到来即收起；它只给视觉看，进度由宿主写进播报区。减弱动效下圆点静止。
 - “回到底部”留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
 
 ### 组合
@@ -109,7 +110,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-message-feed>` |
-| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedViewport` |
+| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedPendingIndicator` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedViewport` |
 | 组合式函数 | `useMessageFeed` |
 | 状态机 | `messageFeedMachine` |
 | 皮肤 | `@xihan-ui/styles/message-feed.css` |
@@ -163,6 +164,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | 部件 | 取值 |
 | --- | --- |
 | `root` | props.status |
+| `pending-indicator` | props.status |
 | `scroll-to-end-trigger` | 'hidden' \| 'visible' |
 
 以下名称仅用于内部状态机。
@@ -193,6 +195,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `getItemProps` | `(props: MessageFeedItemProps) => T['element']` |  |
 | `getItemLabelProps` | `(props: Pick<MessageFeedItemProps, 'id'>) => T['element']` |  |
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
+| `getPendingIndicatorProps` | `() => T['element']` | 已发送、等首个片段时的呼吸点：status 为 submitted 时出现，对读屏隐藏。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -225,6 +228,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `item` | `aria-posinset` | item.index + 1 |
 | `item` | `aria-setsize` | props.count |
 | `item` | `role` | 'article' |
+| `pending-indicator` | `aria-hidden` | 'true' |
 | `scroll-to-end-trigger` | `aria-label` | translations?.scrollToBottom |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
@@ -233,12 +237,15 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 - 集合语义落在内容层而不是最外层：`role=feed` 只识别 `role=article` 的子节点，而播报区与回到底部按钮都是最外层的子节点。最外层只作为 Tab 停靠点与键盘宿主。
 - 播报使用独立的原子区域：一份会话只应有一个活动区域，每条消息各开一个会互相打断。
 - 消息流本身不发 `aria-busy`：它会压制同一棵子树内播报区的播报。
+- 等首个片段的呼吸点对读屏隐藏，不单靠动画表达状态。
 
 ## 样式参考
 
 ### 皮肤
 
 `@xihan-ui/styles/message-feed.css` 使用 `[data-scope="message-feed"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -251,6 +258,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `list` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-role` | item.role |
 | `item` | `data-streaming` | ''（条件成立时才出现） |
+| `pending-indicator` | `data-state` | props.status |
 | `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
@@ -272,7 +280,10 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `--xh-message-feed-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | message-feed 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-message-feed-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | message-feed 的 item-label 部件 color 覆盖槽。 |
 | `--xh-message-feed-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 item-label 部件 font-size 覆盖槽。 |
-| `--xh-message-feed-p` | `list` | `padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list 部件 padding 覆盖槽。 |
+| `--xh-message-feed-p` | `list`<br>`pending-indicator` | `margin-block-end`<br>`margin-inline-start`<br>`padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list、pending-indicator 部件 margin-block-end、margin-inline-start、padding 覆盖槽。 |
+| `--xh-message-feed-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-fg-muted` | message-feed 的 pending-indicator 部件 background 覆盖槽。 |
+| `--xh-message-feed-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 pending-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | message-feed 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-material-frosted-bg` | message-feed 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-border` | message-feed 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
@@ -285,11 +296,11 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出） · 列表（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出） · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 

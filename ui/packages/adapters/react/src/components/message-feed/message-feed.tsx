@@ -250,6 +250,13 @@ export function XhMessageFeedScrollToEndTrigger({ children, ...rest }: XhMessage
   )
 }
 
+export interface XhMessageFeedPendingIndicatorProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {}
+/** 已发送、等首个片段时的呼吸点：放在列表之后，只在 status 为 submitted 时出现。 */
+export function XhMessageFeedPendingIndicator(props: XhMessageFeedPendingIndicatorProps): ReactNode {
+  const ctx = useMessageFeedContext()
+  return <span {...mergeReactProps(ctx.api.getPendingIndicatorProps() as Record<string, unknown>, props as Record<string, unknown>)} />
+}
+
 export interface XhMessageFeedLiveRegionProps extends ComponentPropsWithRef<'div'> {}
 /** 播报文本由宿主在一轮流结束时写入。 */
 export function XhMessageFeedLiveRegion({ children, ...rest }: XhMessageFeedLiveRegionProps): ReactNode {
