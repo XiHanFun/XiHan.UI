@@ -233,7 +233,7 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  /* 传输进度条：只在传输中露面，宽度按连接层写下的比例走。
+  /* 传输进度条：只在传输中露面，填充按连接层写下的比例平移到位。
      进度是连续量，走 continuous 曲线，不是入场曲线 */
   [data-scope='file-upload'][data-part='item-progress'] {
     display: none;
@@ -255,8 +255,15 @@
     block-size: 100%;
     border-radius: inherit;
     background: var(--xh-file-upload-item-progress-fill, var(--xh-bg-brand));
-    inline-size: calc(var(--xh-_file-upload-progress, 0) * 100%);
-    transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 铺满轨道，往行首平移藏起未完成的那一截、由轨道裁掉：推进只走合成，不重排也不重绘 */
+    inline-size: 100%;
+    translate: calc((var(--xh-_file-upload-progress, 0) - 1) * 100%) 0;
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* translate 只认物理方向：RTL 下行首在右边，平移方向翻转 */
+  [data-scope='file-upload'][data-part='item-progress'][data-state='uploading']:dir(rtl)::before {
+    translate: calc((1 - var(--xh-_file-upload-progress, 0)) * 100%) 0;
   }
 
   [data-scope='file-upload'][data-part='item-progress'][hidden] {
