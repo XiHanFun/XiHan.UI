@@ -6,10 +6,10 @@
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 188 页正文，示例已内联为代码块
-- [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 135 页组件参考
-- [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 29 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 550 支设计令牌的名字、类型与缺省取值
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 192 页正文，示例已内联为代码块
+- [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 137 页组件参考
+- [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 30 页核心概念、适配器与运行时
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 660 支设计令牌的名字、类型与缺省取值
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/components/button.md
 
 ## 开始
@@ -17,7 +17,7 @@
 - [更新日志 · XiHan.UI](https://ui.docs.xihanfun.com/changelog): 本文件记录 XiHan.UI 各版本的变更。
 - [常见问题](https://ui.docs.xihanfun.com/faq): BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的前端整体使用本库重建。
 - [曦寒视图组件](https://ui.docs.xihanfun.com/): 快速 轻量 高效 用心的框架无关跨端组件库
-- [安装与接入](https://ui.docs.xihanfun.com/installation): XiHan.UI 的 17 个公开包都已发布到 npm，同属一个版本组、始终同号。
+- [安装与接入](https://ui.docs.xihanfun.com/installation): XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。
 - [XiHan.UI 视图组件](https://ui.docs.xihanfun.com/introduction): XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑位于无头内核，每个前端框架只有一层薄适配器。
 - [包与依赖关系](https://ui.docs.xihanfun.com/npm-package-dependency): XiHan.UI 是一个 pnpm workspace。
 - [架构总览](https://ui.docs.xihanfun.com/overview): XiHan.UI 是一个 pnpm + turbo 的 monorepo。
@@ -27,10 +27,11 @@
 
 - [色彩](https://ui.docs.xihanfun.com/design/colors): 颜色分三层：基础色板（primitive，只声明一次的原始值）、语义角色（semantic，`bg-*` / `fg-*` / `border-*` / `ring-*`，皮肤只消费这一层）、组件覆盖槽（`--xh-<组件>-*`）。
 - [暗黑模式](https://ui.docs.xihanfun.com/design/dark): 深色不是把浅色反相。
+- [停留时长](https://ui.docs.xihanfun.com/design/dwell): 提示延迟、自动播放间隔、轻提示停留、滚动条隐藏延迟这类时间是等待，不是动效：它们决定一件事什么时候发生，不决定变化本身怎么过渡。
 - [图标](https://ui.docs.xihanfun.com/design/icons): 图标是界面里最小的一种"字"：跟着文字的字号、颜色与基线走，不自己发光。
 - [设计体系](https://ui.docs.xihanfun.com/design/): XiHan.UI 的设计不是一套画好的稿子，而是一组写进代码、由门禁守着的规则：组件行为住在框架无关的 Headless 层，颜色、间距、圆角、阴影、动效全部是 DTCG 令牌，皮肤只消费语义令牌与部件角色。
 - [布局](https://ui.docs.xihanfun.com/design/layout): 布局的尺度只有一把尺：4px 网格。
-- [动效](https://ui.docs.xihanfun.com/design/motion): 动效只做三件事：告诉你按到了、告诉你东西从哪来到哪去、告诉你什么在变。
+- [动效](https://ui.docs.xihanfun.com/design/motion): 动效只做四件事：确认操作、交代去向、提示进行中与变化，以及在极少数情况下引导注意。
 - [组件家族与模式](https://ui.docs.xihanfun.com/design/patterns): 新组件先归族，再决定局部样式。
 - [设计原则](https://ui.docs.xihanfun.com/design/principles): 这几条贯穿所有组件，其余页面里的每张表都是它们在某个维度上的展开。
 - [阴影与材质](https://ui.docs.xihanfun.com/design/shadow): 阴影在这里只表达"离页面多远"，不表达边界——边界归描边。
@@ -46,6 +47,7 @@
 - [背景层](https://ui.docs.xihanfun.com/guide/backgrounds): `@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。
 - [行为原语](https://ui.docs.xihanfun.com/guide/behavior): `@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。
 - [connect 与属性产出](https://ui.docs.xihanfun.com/guide/connect): `connect` 是无头内核的出口：输入是服务与归一化器，输出是一组 props-getter。
+- [日期与时间](https://ui.docs.xihanfun.com/guide/date): `@xihan-ui/core/date` 提供不带时区的日期值、公历运算、时区换算、按地区划分的周与格式化。
 - [诊断通道](https://ui.docs.xihanfun.com/guide/diagnostics): 组件在运行期发现契约问题时不直接 `console.warn`，而是向诊断通道投递一条结构化记录。
 - [表单参与与重置](https://ui.docs.xihanfun.com/guide/forms): 复合控件的值保存在自己的状态机中，浏览器不可见。
 - [国际化](https://ui.docs.xihanfun.com/guide/i18n): 默认行为：组件内建的文本是英文，其余全部跟随 `locale`，`locale` 未提供时跟随宿主浏览器。
@@ -102,6 +104,7 @@
 - [CalendarRangePicker 日历范围选择器](https://ui.docs.xihanfun.com/components/calendar-range-picker): 在日历网格中先选起点再选终点，选出一段连续的天、周、月、季度或年。
 - [Card 卡片](https://ui.docs.xihanfun.com/components/card): 用于组织相关内容与操作的中性表面。
 - [Carousel 走马灯](https://ui.docs.xihanfun.com/components/carousel): 在同一块区域内轮播若干张内容，一次显示一屏。
+- [CartesianChart 直角坐标图](https://ui.docs.xihanfun.com/components/cartesian-chart): 在直角坐标系里画柱与折线：一根自变量轴（类目、数值或时间），一根数值轴，任意多个系列共用这两根轴。
 - [Cascader 级联选择](https://ui.docs.xihanfun.com/components/cascader): 用于从多层分类中选择完整路径。
 - [CheckboxGroup 复选框组](https://ui.docs.xihanfun.com/components/checkbox-group): 从一组选项中选择任意多项。
 - [Checkbox 复选框](https://ui.docs.xihanfun.com/components/checkbox): 用于选择一个或多个独立选项。
@@ -169,6 +172,7 @@
 - [PageHeader 页头](https://ui.docs.xihanfun.com/components/page-header): 统一呈现页面标题、说明、导航和主要操作。
 - [Pagination 分页](https://ui.docs.xihanfun.com/components/pagination): 用于在分页结果之间导航。
 - [PasswordInput 密码输入](https://ui.docs.xihanfun.com/components/password-input): 一格密码框，带明暗切换按钮，并在大写锁定开启时给出提示。
+- [PieChart 饼图](https://ui.docs.xihanfun.com/components/pie-chart): 一眼看出少量类目在整体中的占比。
 - [PinInput 分格输入](https://ui.docs.xihanfun.com/components/pin-input): 把一串短码拆成若干格子，一格一个字符。
 - [Popconfirm 弹出确认](https://ui.docs.xihanfun.com/components/popconfirm): 贴着触发器的一句确认：比对话框轻，但仍能拦住一次误操作。
 - [Popover 气泡卡片](https://ui.docs.xihanfun.com/components/popover): 由点击触发、贴着触发器的一小块浮层，可以放任意内容与交互。

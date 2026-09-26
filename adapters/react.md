@@ -6,7 +6,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。当前版本只支持 React 19：状态机要求宿主提交完当前帧、DOM 落定之后再运行回调，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的基础。
 
-覆盖进度：134 个组件中已覆盖 134 个，与 Vue 侧一致。
+覆盖进度：136 个组件中已覆盖 136 个，与 Vue 侧一致。
 登记在 `ui/tooling/scripts/react-coverage.json`，多项门禁按它决定核对哪些组件：登记多余会核对不存在的组件，登记缺失会静默漏检，两种情况都判失败。
 
 ## 组件命名
@@ -77,7 +77,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 ## 全局配置
 
-`XhConfigProvider` 向下提供 locale、文案覆盖、尺寸、浮层落点与七轴视觉环境：
+`XhConfigProvider` 向下提供 locale、文案覆盖、尺寸、浮层落点与八轴视觉环境：
 
 ```tsx
 <XhConfigProvider config={{ locale: "zh-CN", size: "sm" }}>
@@ -112,7 +112,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 | `flush` | `flushSync` 强制一次提交，回调在 DOM 落定之后运行 |
 | `onMount` / `onCleanup` | `useLayoutEffect` 的挂载与清理 |
 
-`track` 是拉式的，与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源变化即通知；React 中 props 的变化不经过任何可订阅的源，它是下一次渲染函数的入参。推式实现在这里永远收不到 props 变化：83 个状态机中的 `track` 与 82 个 `watch` 块会全部静默失效且不报错。
+`track` 是拉式的，与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源变化即通知；React 中 props 的变化不经过任何可订阅的源，它是下一次渲染函数的入参。推式实现在这里永远收不到 props 变化：85 个状态机中的 `track` 与 84 个 `watch` 块会全部静默失效且不报错。
 
 `useMachine(machine, getProps, options)` 封装了它。props 传的是 getter：每次渲染读取，状态机读到的始终是当前帧的值。
 

@@ -1012,7 +1012,7 @@ function snap(next: string) {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-time-field-action-bg` | `clear-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-time-field-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | time-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-time-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-time-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-time-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
@@ -1058,7 +1058,9 @@ function snap(next: string) {
 
 ### 动效
 
-`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+
+`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

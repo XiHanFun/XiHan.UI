@@ -1324,7 +1324,7 @@ function valueText({ value }: { value: number }) {
 | `--xh-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_tone` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-bg-disabled` | `thumb` | `background` | `disabled` | `--xh-bg-surface` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-bg-invalid` | `thumb` | `background` | `invalid` | `--xh-border-invalid` | slider 的 thumb 部件 background 覆盖槽。 |
-| `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | slider 的 thumb 部件 border 覆盖槽。 |
+| `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | slider 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb 部件 scale 覆盖槽。 |
 | `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
@@ -1357,6 +1357,10 @@ function valueText({ value }: { value: number }) {
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：状态 · 切换（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-slider-thumb-scale-dragging`。
 
 `box-shadow` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

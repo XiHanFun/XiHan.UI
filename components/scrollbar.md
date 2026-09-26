@@ -611,7 +611,9 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 
 ### 动效
 
-`background` · `color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
+
+`background-color` · `color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

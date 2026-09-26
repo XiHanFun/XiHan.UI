@@ -376,6 +376,52 @@ import {
 </div>
 ```
 
+### 呼吸
+
+pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态仍要写在文字里，减弱动效下圆点停在满亮
+
+```vue
+<script setup lang="ts">
+import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <div style="display: flex; align-items: center; gap: 24px">
+    <XhBadge dot pulse tone="danger" label="录制中">
+      <XhButton variant="outline">录制中</XhButton>
+    </XhBadge>
+
+    <XhBadge dot pulse tone="success" placement="bottom-end" label="通话中">
+      <XhAvatarRoot>
+        <XhAvatarFallback>曦</XhAvatarFallback>
+      </XhAvatarRoot>
+    </XhBadge>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; align-items: center; gap: 24px">
+  <xh-badge dot pulse tone="danger" label="录制中">
+    <span data-xh-part="root">
+      <xh-button variant="outline"><button data-xh-part="root">录制中</button></xh-button>
+      <span data-xh-part="indicator"></span>
+    </span>
+  </xh-badge>
+
+  <xh-badge dot pulse tone="success" placement="bottom-end" label="通话中">
+    <span data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="indicator"></span>
+    </span>
+  </xh-badge>
+</div>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -400,7 +446,7 @@ import {
 - `count` 输出数字，超过 `max`（默认 99）时显示为“99+”。
 - 计数为 0 时整个收起，需要显示 0 时开启 `showZero`。
 - `dot` 收成一个圆点，只表示存在，不表示数量。
-- 计数盒三档最小尺寸为 14 / 28 / 32px，角标只探出宿主四分之一，保持与宿主的视觉连接；sm 是贴在图标按钮角上的小号，字仍是 12px。
+- 计数盒三档最小尺寸为 14 / 20 / 24px，字号为 12 / 13 / 14px，角标只探出宿主四分之一，保持与宿主的视觉连接；sm 是贴在图标按钮角上的小号。
 - `label` 为读屏提供完整语句，避免只读出一个数字。
 
 ### 组合
@@ -439,6 +485,7 @@ import {
 | `label` | `string` |  | 读屏朗读该角标的方式。 角标挂在按钮、头像上时只朗读数字无法表达含义，需要由宿主提供「3 条未读」这类完整语句。 |
 | `max` | `number` |  | 计数上限，默认 99：超过时只显示 99+，避免角标变形。 |
 | `placement` | `BadgePlacement` |  | 挂在哪个角，默认 top-end（右上角；rtl 下自动落到左上）。 |
+| `pulse` | `boolean` |  | 圆点呼吸：表达正在进行、给不出进度的状态（直播、录制、通话中）。只在 dot 模式下生效， 数字角标不呼吸——明暗起伏会压低数字的对比度。减弱动效下停在满不透明度。 |
 | `showZero` | `boolean` |  | 计数为 0 时是否仍然显示，默认不显示：没有未读时不应出现角标。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。影响圆点直径、两位数时的最小宽度与字号。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 neutral。 角标实际使用中主要为 danger（未读红点）与 success / neutral（在线 / 离线点）。 |
@@ -503,6 +550,7 @@ import {
 | `root` | `data-placement` | props.placement |
 | `indicator` | `data-dot` | ''（条件成立时才出现） |
 | `indicator` | `data-placement` | props.placement |
+| `indicator` | `data-pulse` | ''（条件成立时才出现） |
 | `indicator` | `data-size` | props.size |
 | `indicator` | `data-tone` | props.tone |
 
@@ -527,7 +575,11 @@ import {
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：循环（见[动效规范](../design/motion#角色)）。
+
+共享关键帧 `xh-breathe` · `xh-breathe-halo` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 

@@ -42,7 +42,7 @@ features:
 
   - title: 无障碍是判据
     icon: ♿
-    details: 每个组件都有一份机读的键盘规格表，共 672 条，它同时是测试的分母，用例少覆盖一条即判套件失败。扫描运行在真实 Chromium 上。
+    details: 每个组件都有一份机读的键盘规格表，共 695 条，它同时是测试的分母，用例少覆盖一条即判套件失败。扫描运行在真实 Chromium 上。
     link: /guide/a11y
     linkText: "了解无障碍规格"
 
@@ -54,7 +54,7 @@ features:
 
   - title: 依赖面收敛
     icon: 📦
-    details: 全部库包的运行时第三方依赖只有一个。浮层定位、代码着色、虚拟滚动、Web Components 响应式基类、流式 Markdown 均为自研。
+    details: 全部库包都没有运行时第三方依赖。日期运算、浮层定位、代码着色、虚拟滚动、Web Components 响应式基类、流式 Markdown 均为自研。
     link: /npm-package-dependency
     linkText: "查看包与依赖关系"
 

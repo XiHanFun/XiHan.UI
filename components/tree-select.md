@@ -3476,6 +3476,7 @@ const doc = ref<string[]>(["guide"]);
 | `positioner` | `data-variant` | props.variant |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-xh-material` | 'frosted' |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-empty` | ''（条件成立时才出现） |
 | `tree` | `data-state` | 'open' \| 'closed' |
@@ -3617,7 +3618,7 @@ const doc = ref<string[]>(["guide"]);
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-tree-select-action-bg` | `clear-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | tree-select 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tree-select-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | tree-select 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-tree-select-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | tree-select 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tree-select 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | tree-select 的 clear-trigger 部件 color 覆盖槽。 |
@@ -3629,18 +3630,18 @@ const doc = ref<string[]>(["guide"]);
 | `--xh-tree-select-branch-gap` | `branch` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch 部件 gap 覆盖槽。 |
 | `--xh-tree-select-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree-select 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-select-branch-indicator-size` | `branch-indicator`<br>`branch-trigger`<br>`item` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 branch-indicator、branch-trigger、item 部件 --xh-icon-size、inline-size 覆盖槽。 |
-| `--xh-tree-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | tree-select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-tree-select-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | tree-select 的 content 部件 background 覆盖槽。 |
-| `--xh-tree-select-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | tree-select 的 content 部件 border 覆盖槽。 |
-| `--xh-tree-select-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | tree-select 的 content 部件 color 覆盖槽。 |
-| `--xh-tree-select-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | tree-select 的 content 部件 background 覆盖槽。 |
+| `--xh-tree-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | tree-select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-tree-select-content-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | tree-select 的 content 部件 background 覆盖槽。 |
+| `--xh-tree-select-content-border` | `content` | `border` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border` | tree-select 的 content 部件 border 覆盖槽。 |
+| `--xh-tree-select-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | tree-select 的 content 部件 color 覆盖槽。 |
+| `--xh-tree-select-content-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | tree-select 的 content 部件 background 覆盖槽。 |
 | `--xh-tree-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | tree-select 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-tree-select-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | tree-select 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-tree-select-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | tree-select 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | tree-select 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-tree-select-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | tree-select 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tree-select-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | tree-select 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-tree-select-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | tree-select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | tree-select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | tree-select 的 control 部件 background-color 覆盖槽。 |
@@ -3702,6 +3703,8 @@ const doc = ref<string[]>(["guide"]);
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

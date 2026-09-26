@@ -367,6 +367,7 @@ import { XhButton } from "@xihan-ui/vue";
 - 支持文字、图标、图标加文字与全宽按钮。
 - `loading` 保留焦点并阻止重复操作。
 - `as="a"` 保留原生链接能力。
+- 应用设为 `data-material="liquid"` 时，实心按钮在细指针悬停的一刻有一道光沿描边扫过一次；光只走描边、不进面，文字对比不受影响。粗指针、减弱动效与强制色下不播。
 
 ### 组合
 
@@ -473,7 +474,7 @@ import { XhButton } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/button.css` 使用 `[data-scope="button"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/button.css` 使用 `[data-scope="button"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -496,6 +497,7 @@ import { XhButton } from "@xihan-ui/vue";
 | `root` | `data-xh-action-profile` | 'icon' \| 'text' |
 | `root` | `data-xh-action-size` | props.size |
 | `root` | `data-xh-action-variant` | props.variant |
+| `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -504,28 +506,37 @@ import { XhButton } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-button-bg` | `root` | `background-color` | `default`<br>`focus-visible`<br>`loading` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg` | `root` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`loading`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | button 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-button-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | button 的 root 部件 color 覆盖槽。 |
 | `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_button-group-font-size` | button 的 root 部件 font-size 覆盖槽。 |
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` | button 的 root 部件 gap 覆盖槽。 |
+| `--xh-button-glint-duration` | `root` | `animation` | `@media (hover: hover) and (pointer: fine) and (forced-colors: none)`<br>`disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-action-variant=solid` | `--xh-motion-duration-glint` | button 的 root 部件 animation 覆盖槽。 |
 | `--xh-button-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_button-group-h` | button 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-button-px` | `root` | `padding-inline` | `default` | `--xh-_button-group-px` | button 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` | button 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-button-shadow` | `root` | `box-shadow` | `default` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-button-shadow-hover` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-spin-duration` | button 的 indicator、root 部件 animation 覆盖槽。 |
+| `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-motion-loop-spin` | button 的 indicator、root 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-button-glint-duration` · `--xh-button-spin-duration`。
+
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

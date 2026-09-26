@@ -30,7 +30,7 @@
 - **同一档跨色相同一明度。** 600 档 L 0.546，任何色相的 600 档上铺白字都过 3:1（大字与图形档），700 档上铺白字都过 4.5:1；50 – 200 档上铺 `--xh-fg-default` 正文超过 9:1，100 档上铺同色相的 700 档文字过 4.5:1。给数据图、标签、头像按颜色点名时，换色相不必重算对比度。
 - **600 是锚点。** 实心底取 600（配白字的正文档取 700），悬停 700、按下 800；淡底取 100 / 200，淡底上的文字取 700。
 - **黄、青这类天然明亮的色相中档偏沉。** 这是"同档同明度"的代价：要一块亮黄，取 200 / 300 档，而不是把 600 调亮。
-- **皮肤不直接消费色板。** 组件皮肤只认语义角色与语气轴；色板给使用者、数据可视化与自定义语气用。
+- **皮肤不直接消费色板。** 组件皮肤只认语义角色、语气轴与图表数据色（`--xh-chart-*`）；色板给使用者、按颜色点名的色板轴与自定义语气用，图表数据色也从它算出（见[数据色板](#数据色板)）。
 
 色板由 `packages/design/tokens/build/emit-palette.mjs` 从 `tokens/palette.seeds.json` 的十二个色相角派生，改色相只改种子；`tests/palette.spec.ts` 逐档核对生成物、明度与运行时 `deriveBrandScale` 同源。
 
@@ -90,7 +90,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-muted', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-overlay']"
+  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-muted', '--xh-bg-subtle-opaque', '--xh-bg-subtle-hover-opaque', '--xh-bg-subtle-active-opaque', '--xh-bg-muted-opaque', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-overlay']"
   :notes="{
     '--xh-bg-page': '页面底：面之下那一层，铺满视口',
     '--xh-bg-canvas': '不透明画布：自动填充遮罩、色块选中环等必须不透明的地方；控件盒静息不再填它',
@@ -100,6 +100,10 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-bg-subtle-hover': '白底上的 pressed；淡底上的 hover',
     '--xh-bg-subtle-active': '淡底上的 pressed，只留给按下',
     '--xh-bg-muted': '禁用实心钮退到的中性面',
+    '--xh-bg-subtle-opaque': '淡底的不透明档：要盖住下层内容的面（吸顶表头、浮动钮、层叠头像）',
+    '--xh-bg-subtle-hover-opaque': '淡底 hover 档的不透明档',
+    '--xh-bg-subtle-active-opaque': '淡底 active 档的不透明档',
+    '--xh-bg-muted-opaque': '中性面的不透明档',
     '--xh-bg-brand': '主要动作实心底',
     '--xh-bg-brand-subtle': '选中 / 当前专属，12% 品牌拼色',
     '--xh-bg-overlay': '模态遮罩',
@@ -126,9 +130,10 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-border-default', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-invalid']"
+  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-invalid']"
   :notes="{
     '--xh-border-default': '一切根面外边与 raised 面描边',
+    '--xh-border-default-opaque': '装饰边的不透明档：压在任意内容上、必须自带浅框的部件（滑杆拇指）',
     '--xh-border-subtle': '只作内部分隔线',
     '--xh-border-strong': '只作高对比档与刻意登记的强调边',
     '--xh-border-control': '控件边界，缺省档与 border-default 同色；高对比档才加深到 3:1',
@@ -141,6 +146,133 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 ## 语气轴
 
 `data-tone` 是六族语气的切换轴：brand、neutral、danger、warning、success、info。写在任何节点上，节点内即可取到整族 `--xh-tone-*`：实心底、实心底上的前景、淡底、淡底文字、描边、控件边界。组件按语气换色只经这条轴，不自行挑原语。取用方式与全表见 [皮肤与样式分层 · 在自定义节点上使用语气](/guide/styling#在自定义节点上使用语气)。
+
+## 彩色面与墨色域
+
+组件放在彩色区块上时，在区块上声明它的底色极性。域内的中性描边、淡底与交互阶梯改取墨色（浅底为纯黑、深底为纯白）按比例透明，正文、焦点环与主要动作取墨色本身。不透明的中性灰在彩色底上显著度随底色变化十几倍（neutral 200 描边在黄底上 1.06:1、黑底上 16.68:1）；墨色在任何底色上显著度一致，颜色取底色自身的深浅变体。
+
+```vue
+<script setup lang="ts">
+import { XhButton, XhSwitch, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <div style="width: 100%; display: grid; gap: 12px">
+    <section
+      data-xh-ink="dark"
+      style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-color-yellow-300)"
+    >
+      <XhButton>发布</XhButton>
+      <XhButton variant="outline">取消</XhButton>
+      <XhSwitch default-checked aria-label="通知" />
+      <XhTextFieldRoot>
+        <XhTextFieldControl><XhTextFieldInput placeholder="搜索成员" aria-label="搜索成员" /></XhTextFieldControl>
+      </XhTextFieldRoot>
+    </section>
+    <section
+      data-xh-ink="light"
+      style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-color-indigo-800)"
+    >
+      <XhButton>发布</XhButton>
+      <XhButton variant="outline">取消</XhButton>
+      <XhSwitch default-checked aria-label="通知" />
+      <XhTextFieldRoot>
+        <XhTextFieldControl><XhTextFieldInput placeholder="搜索成员" aria-label="搜索成员" /></XhTextFieldControl>
+      </XhTextFieldRoot>
+    </section>
+  </div>
+</template>
+```
+
+```html
+<div style="width: 100%; display: grid; gap: 12px">
+  <section data-xh-ink="dark" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-color-yellow-300)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-switch default-checked>
+      <button data-xh-part="root" aria-label="通知"><span data-xh-part="thumb"></span></button>
+    </xh-switch>
+    <xh-text-field placeholder="搜索成员">
+      <div data-xh-part="root">
+        <div data-xh-part="control"><input data-xh-part="input" aria-label="搜索成员" /></div>
+      </div>
+    </xh-text-field>
+  </section>
+  <section data-xh-ink="light" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-color-indigo-800)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-switch default-checked>
+      <button data-xh-part="root" aria-label="通知"><span data-xh-part="thumb"></span></button>
+    </xh-switch>
+    <xh-text-field placeholder="搜索成员">
+      <div data-xh-part="root">
+        <div data-xh-part="control"><input data-xh-part="input" aria-label="搜索成员" /></div>
+      </div>
+    </xh-text-field>
+  </section>
+</div>
+```
+
+| 声明 | 含义 |
+| --- | --- |
+| `data-xh-ink="dark"` | 浅色底，黑墨；区块同时是浅色主题边界，语气色、表面与原生控件取浅色档 |
+| `data-xh-ink="light"` | 深色底，白墨；区块同时是深色主题边界 |
+| `data-xh-ink="auto"` + `--xh-ink-surface` | 由底色的相对亮度按 0.179 选墨（与语气实心底的黑白字同一分界）；只决定墨色与中性装饰，语气色与表面沿用外层主题。需要相对颜色语法（Chrome 119、Firefox 128、Safari 16.4 起），更早的引擎里等于未声明 |
+| `data-xh-ink-margin="ample"` | 底色离分界足够远（黑墨时相对亮度 ≥ 0.5，白墨时 ≤ 0.05），次要文字与占位取墨色 72%；缺省时它们等于墨色，层级只靠字号与字重 |
+
+```vue
+<script setup lang="ts">
+import { XhButton } from "@xihan-ui/vue";
+
+const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var(--xh-color-purple-700)"];
+</script>
+
+<template>
+  <div style="width: 100%; display: grid; gap: 12px">
+    <section
+      v-for="surface in surfaces"
+      :key="surface"
+      data-xh-ink="auto"
+      :style="`--xh-ink-surface: ${surface}; background: ${surface}; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface)`"
+    >
+      <XhButton>发布</XhButton>
+      <XhButton variant="outline">取消</XhButton>
+      <XhButton variant="ghost">稍后</XhButton>
+    </section>
+  </div>
+</template>
+```
+
+```html
+<div style="width: 100%; display: grid; gap: 12px">
+  <section data-xh-ink="auto" style="--xh-ink-surface: var(--xh-color-orange-500); background: var(--xh-color-orange-500); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-button variant="ghost"><button data-xh-part="root">稍后</button></xh-button>
+  </section>
+  <section data-xh-ink="auto" style="--xh-ink-surface: var(--xh-color-teal-300); background: var(--xh-color-teal-300); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-button variant="ghost"><button data-xh-part="root">稍后</button></xh-button>
+  </section>
+  <section data-xh-ink="auto" style="--xh-ink-surface: var(--xh-color-purple-700); background: var(--xh-color-purple-700); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-button variant="ghost"><button data-xh-part="root">稍后</button></xh-button>
+  </section>
+</div>
+```
+
+- 没声明域的地方同样用墨色表达描边与淡底：墨色取主题极性（浅色档纯黑、深色档纯白），所以作者自己的彩色区块即使不声明，描边、分隔与淡底也是底色自身的深浅变体，只有文字需要声明域。置灰字属于文字，同样只在域里换成墨色。
+- 比例不手填，按「与原中性色对比度相等」求：描边在页面底、画布、缺省面与对话框面上各求一个比例取最大值，哪种面上都不比原来淡；淡底只按缺省面求，压在上面的字与焦点环对比度不降。浅色档描边约 10%、淡底约 4%，与原中性色一致；深色档描边 22%（卡片面上比原来略重）、淡底约 6%。
+- 淡底是半透明的，叠在别的淡底上会加深。要盖住下层内容的面（粘性表头、固定列、浮在内容上的钮）取 `-opaque` 档：同一比例的墨色叠在缺省面上的实色。
+- 放文字的彩色面避开相对亮度 0.15–0.24：neutral 950 与 neutral 50 在这一段都到不了 4.5:1，只有纯黑、纯白勉强达标。品牌色阶 500 落在其中，浅色档的品牌实心因此取 600。
+- 域内的品牌实心换成墨色实心，文字取 `--xh-ink-surface`（未提供时取与墨色相反的纯白 / 纯黑）；选中面换成墨色 12%。语气色保留自己的实心或淡底面。
+- 高对比档（`data-contrast="more"`）下域内描边回到实色；强制色下取系统色。
+- 浮层经 Portal 渲染到文档末尾，不在域内：弹出的菜单、选择面板保持自己的材质。
+- 声明了域的区块，底色取原语（如 `--xh-color-indigo-800`）或在区块外取值。`--xh-bg-brand`、`--xh-fg-default` 这类令牌在域内被改写为墨色，区块用它们画自己的底，底色会随域翻转。
+
+库自己渲染的彩色面自动成为域，不需要声明：实心按钮与实心标签、Tooltip 反白面里的内容按那块面的底色取墨色（与作者的 `auto` 同一套规则，面自身的底色不变），ImageViewer 的看片层整层是白墨域。把快捷键、分隔线或小徽标放进这些面时，它们的描边与淡底不会是一块不透明的灰。
 
 ## 对比度判据
 
@@ -158,6 +290,77 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 控件边界这一条是刻意的取舍：输入框壳、勾选框、单选圈与旁边的浮层面板、卡片描边同一重量，页面里只有一种边线；缺省档靠占位文字、标签与聚焦环辨认控件，需要 3:1 边界的场景打开高对比档。
 
 ## 数据色板
+
+图表颜色只经 `--xh-chart-*` 这一层取，按职责分六类，每类只有一种结构：分类（哪个系列）、有序（阶段与档位）、顺序（大小）、发散（高于或低于基线）、语气（好坏，复用语气轴并配图标或文字）、涨跌。图表里的文字不用系列色：数值、标签与图例文字取文字令牌，身份由旁边的色标承担。
+
+### 分类
+
+<XhTokenSwatches prefix="--xh-chart-categorical-" :steps="['1', '2', '3', '4', '5', '6', '7', '8', 'other']" on-prefix="--xh-chart-on-categorical-" compact />
+
+- 8 个色槽按系列在 `series` 里的声明顺序分配，隐藏、筛选、排序都不重新分配。不循环、没有第 9 色：超过 8 个系列时合并成「其他」（`--xh-chart-categorical-other`），或拆成多张小图。
+- 单系列用色槽 1；突出一个系列时，其余系列改用 `--xh-chart-deemphasis`。
+- 写在色块内部的数值用 `--xh-chart-on-categorical-N`，按对比度在纯白与最深的中性档之间取一个，对色块 ≥ 4.5:1；上面色块里的序号就是用它写的。
+
+色板不是手挑的。`packages/design/tokens/build/emit-chart-palette.mjs` 在基础色板上为 8 个色槽搜索色相、顺序与亮暗两套档位，同一份基础色板永远得到同一套结果；`check-chart-palette` 门禁再从 `tokens.css` 复验。基础色板同一档跨色相同一明度，所以色板必须跨档取值，相邻色槽之间才有明度差——色觉障碍读者主要靠明度差分辨颜色。亮暗两套各自校验，承载面取各自的 `--xh-bg-surface`：
+
+| 检查 | 门槛 |
+| --- | --- |
+| 明度带 | OKLCH L：亮色 0.43–0.77，暗色 0.48–0.67 |
+| 彩度下限 | C ≥ 0.10 |
+| 对比度 | 每个色槽对承载面 ≥ 3:1 |
+| 相邻色槽 | 正常视觉 ΔE ≥ 15；红色弱、绿色弱模拟下 ΔE ≥ 8 |
+| 前 3 个色槽两两 | 同相邻：散点、气泡这类任意两个标记都可能挨着的形态，只有前 3 个色槽保证两两可分 |
+| 任意两色 | 正常视觉 ΔE ≥ 10：隐藏一个系列后，原本不相邻的两色就挨在了一起 |
+| 色相分散 | 任意 45° 扇区（8 个色槽的平均间隔）里至多 2 个色槽，同一色系不挤在一起 |
+| 离开告警色 | 与 danger 语气每一档的正常视觉 ΔE ≥ 10：图里的红色会被读成告警 |
+| 固定顺序 | 亮暗同一色槽同一色相，色槽 1 是品牌色相 |
+
+满足全部检查的排法里，取相邻色槽在两种色觉障碍模拟下最小 ΔE 最大的一种。red 与发红的 orange 被「离开告警色」挡在外面；yellow 整族不取，同档同明度的色板里，它在对白底 3:1 的明度上只剩橄榄色。颜色按浏览器在 sRGB 显示器上的画法换算：基础色板的中档允许略出 sRGB 色域，出界的通道逐个截断。色觉障碍的模拟用 Machado–Oliveira–Fernandes 2009（严重度 1.0），与 `@xihan-ui/viz` 校验色板的函数同一口径，使用者可以用它复验自己覆盖后的色板。
+
+### 有序、顺序与发散
+
+<XhTokenSwatches prefix="--xh-chart-ordinal-" label="有序：漏斗阶段、档位" compact auto-ink />
+<XhTokenSwatches prefix="--xh-chart-sequential-" :steps="['start', 'mid', 'end']" label="顺序：大小" compact auto-ink />
+<XhTokenSwatches prefix="--xh-chart-diverging-" :steps="['negative', 'center', 'positive']" label="发散：高于 / 低于基线" compact auto-ink />
+
+- 有序：单色相，1 对承载面最强、逐档减弱，最弱一档仍 ≥ 2:1。
+- 顺序：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带自己在色阶上的位置，皮肤用 `color-mix(in oklch, …)` 在锚点之间插值，切换主题时颜色跟着令牌走，不由脚本算色。
+- 发散：amber 与 blue 两臂同档，同一幅度读起来一样重；中点是贴近承载面的中性色。插值用 `in oklab`：中点没有色相，oklch 插值会绕着色相环走出一段杂色。
+
+### 涨跌与图表家具
+
+<XhTokenTable
+  kind="color"
+  :names="['--xh-chart-rise', '--xh-chart-fall', '--xh-chart-deemphasis', '--xh-chart-surface', '--xh-chart-grid', '--xh-chart-axis', '--xh-chart-label', '--xh-chart-crosshair', '--xh-chart-band-highlight']"
+  :notes="{
+    '--xh-chart-rise': '上涨：缺省成功色相',
+    '--xh-chart-fall': '下跌：缺省危险色相，与上涨在色觉障碍模拟下靠明度拉开',
+    '--xh-chart-deemphasis': '强调一个系列时其余系列的颜色，比任何色槽都弱',
+    '--xh-chart-surface': '承载面：相邻填充之间的间隙与点外的描边环取它，放进淡底容器时由宿主改写',
+    '--xh-chart-grid': '网格线，内部分隔；高对比档升到装饰边',
+    '--xh-chart-axis': '轴线与刻度线；高对比档升到强调边',
+    '--xh-chart-label': '轴标签与数据标签',
+    '--xh-chart-crosshair': '折线图的十字准线',
+    '--xh-chart-band-highlight': '柱图按类目悬停时整条类目带的淡底',
+  }"
+/>
+
+涨跌缺省绿涨红跌。要换成红涨绿跌，在主题边界上对调两支令牌，档位保持不变，两色的对比度与可分性就仍然成立：
+
+```css
+:root,
+[data-theme="light"] {
+  --xh-chart-rise: var(--xh-color-danger-700);
+  --xh-chart-fall: var(--xh-color-success-600);
+}
+
+[data-theme="dark"] {
+  --xh-chart-rise: var(--xh-color-danger-600);
+  --xh-chart-fall: var(--xh-color-success-500);
+}
+```
+
+### 按颜色点名的色板轴
 
 热力图这类按颜色点名的组件走 `data-palette` 轴，六个色板各取一族的满档：green（success 600）、blue（info 600）、orange（warning 600）、purple（基础色板 purple 600）、red（danger 600）、gray（中性 600，深色档换 450）。色阶从 `--xh-bg-subtle` 到满档逐档明度严格单调，明暗两套都验过。更多颜色点名的场景直接取基础色板。
 

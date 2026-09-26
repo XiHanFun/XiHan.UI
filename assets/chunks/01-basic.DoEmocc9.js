@@ -1,0 +1,1 @@
+import{ge as e}from"./theme.C6dHip5i.js";import{d as o,o as t,b as a,k as r}from"./framework.DxrHb2fb.js";const _=o({__name:"01-basic",setup(s){return(n,c)=>(t(),a(r(e),{"auto-start":""}))}});export{_ as default};

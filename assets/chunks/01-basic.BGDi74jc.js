@@ -1,1 +1,0 @@
-import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as o}from"./timer.CDoRQVNo.js";import"./jsx-runtime.BldOFNXa.js";import"./theme.DFLq0s3F.js";import"./framework.DxrHb2fb.js";import"./config.BnyuxM-0.js";import"./index.CVfUds7h.js";import"./slot-content.DPoKlr88.js";import"./use-machine.CcwghP7s.js";function n(){return t.jsx(o,{autoStart:!0})}export{n as default};

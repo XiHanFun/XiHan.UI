@@ -11,7 +11,7 @@
 ```ts
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
-defineXhElements(); // 注册全部 136 个 xh-* 元素
+defineXhElements(); // 注册全部 138 个 xh-* 元素
 ```
 
 主入口的 `import` 本身不注册，必须显式调用这一行。注册是幂等的：同版本重复调用直接返回；同标签不同版本，或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
@@ -26,7 +26,7 @@ defineXhBackground();
 
 ## 配置与视觉环境
 
-`<xh-config>` 本身就是 Light DOM 局部 scope，七轴一次声明后会投影为 Core Portal 能桥接的标准属性：
+`<xh-config>` 本身就是 Light DOM 局部 scope，八轴一次声明后会投影为 Core Portal 能桥接的标准属性：
 
 ```html
 <xh-config
@@ -141,7 +141,7 @@ document.querySelector("xh-dialog")
 
 ## 自定义元素清单
 
-包内附带 `custom-elements.json`（CEM 格式），包含 136 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
+包内附带 `custom-elements.json`（CEM 格式），包含 138 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
 
 清单由构建生成，`pnpm gate:cem` 会重新生成后比对，修改元素后未重新生成会被拦截。
 

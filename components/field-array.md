@@ -489,6 +489,7 @@ function patch(index: number, key: keyof Header, next: string) {
 - `createItem` 设置新增行的初始值。
 - 每行可以包含一个或多个字段。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
+- 行的增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行淡入，删掉的行在原处淡出，上移、下移与增删带来的换位滑到新位置。行照常按 `items` 渲染，删掉即卸载。
 
 ### 组合
 
@@ -566,7 +567,7 @@ function patch(index: number, key: keyof Header, next: string) {
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
 **判据**：`canAdd` · `canRemove` · `canMove` · `canPress`
 
@@ -639,6 +640,7 @@ function patch(index: number, key: keyof Header, next: string) {
 | `root` | `data-at-min` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-movable` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
@@ -708,7 +710,7 @@ function patch(index: number, key: keyof Header, next: string) {
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-field-array-action-gap` | `add-trigger`<br>`item-action` | `gap` | `default` | `--xh-space-1` | field-array 的 add-trigger、item-action 部件 gap 覆盖槽。 |
-| `--xh-field-array-add-bg` | `add-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-add-bg` | `add-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 add-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-field-array-add-bg-active` | `add-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-add-bg-hover` | `add-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-add-border` | `add-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | field-array 的 add-trigger 部件 border 覆盖槽。 |
@@ -728,7 +730,7 @@ function patch(index: number, key: keyof Header, next: string) {
 | `--xh-field-array-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-trigger-fg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
@@ -740,7 +742,11 @@ function patch(index: number, key: keyof Header, next: string) {
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
+
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

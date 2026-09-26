@@ -1,0 +1,1 @@
+import{am as o}from"./theme.C6dHip5i.js";import{d as n,o as r,b as s,w as d,a as c,k as m,p}from"./framework.DxrHb2fb.js";const l=n({__name:"02-indeterminate",setup(i){const t=p("indeterminate");return(f,e)=>(r(),s(m(o),{checked:t.value,"onUpdate:checked":e[0]||(e[0]=a=>t.value=a)},{default:d(()=>[...e[1]||(e[1]=[c("选择全部",-1)])]),_:1},8,["checked"]))}});export{l as default};

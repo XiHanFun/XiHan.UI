@@ -776,6 +776,7 @@ const text = "导出会把当前筛选条件下的全部行写进文件，行数
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-tone` | props.tone |
+| `content` | `data-xh-ink-surface` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
@@ -787,7 +788,7 @@ const text = "导出会把当前筛选条件下的全部行写进文件，行数
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tooltip-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | tooltip 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
 | `--xh-tooltip-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-compact-backdrop` | tooltip 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-tooltip-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-_tooltip-solid` | tooltip 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-tooltip-bg` | `arrow`<br>`content` | `--xh-ink-surface`<br>`background` | `default`<br>`xh-ink-surface` | `--xh-_tooltip-solid` | tooltip 的 arrow、content 部件 --xh-ink-surface、background 覆盖槽。 |
 | `--xh-tooltip-border` | `arrow`<br>`content` | `border` | `default` | `--xh-_tooltip-border` | tooltip 的 arrow、content 部件 border 覆盖槽。 |
 | `--xh-tooltip-fg` | `content` | `color` | `default` | `--xh-_tooltip-on` | tooltip 的 content 部件 color 覆盖槽。 |
 | `--xh-tooltip-font-size` | `content` | `font-size` | `default` | `--xh-_tooltip-font-size` | tooltip 的 content 部件 font-size 覆盖槽。 |
@@ -802,6 +803,8 @@ const text = "导出会把当前筛选条件下的全部行写进文件，行数
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：出现（锚定列表）（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

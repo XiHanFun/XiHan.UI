@@ -1,0 +1,1 @@
+import{cQ as a}from"./theme.C6dHip5i.js";import{d as o,b as t,k as s,o as r}from"./framework.DxrHb2fb.js";const m=o({__name:"json-viewer",setup(n){const e={name:"曦寒视图",stars:128,active:!0,tags:["框架无关","跨端"]};return(c,i)=>(r(),t(s(a),{value:e,style:{"inline-size":"var(--xh-doc-catalog-w)"}}))}});export{m as default};

@@ -1,0 +1,1 @@
+import{fr as e}from"./theme.C6dHip5i.js";import{d as r,o as s,c as o,E as a,k as t,F as c}from"./framework.DxrHb2fb.js";const i=r({__name:"03-disabled",setup(n){return(d,l)=>(s(),o(c,null,[a(t(e),{disabled:""}),a(t(e),{disabled:"","default-checked":""})],64))}});export{i as default};

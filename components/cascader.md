@@ -1305,6 +1305,7 @@ const regions = [
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-searching` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-xh-material` | 'frosted' |
 | `search-list` | `data-empty` | ''（条件成立时才出现） |
 | `search-item` | `data-disabled` | ''（条件成立时才出现） |
 | `search-item` | `data-highlighted` | ''（条件成立时才出现） |
@@ -1358,7 +1359,7 @@ const regions = [
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-cascader-action-bg` | `clear-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | cascader 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-cascader-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | cascader 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-cascader-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | cascader 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-cascader-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | cascader 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
@@ -1374,14 +1375,14 @@ const regions = [
 | `--xh-cascader-column-min-w` | `column`<br>`empty`<br>`loading` | `min-inline-size` | `default` | `7rem` | cascader 的 column、empty、loading 部件 min-inline-size 覆盖槽。 |
 | `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-column-py` | `column` | `padding-block` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-block 覆盖槽。 |
-| `--xh-cascader-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | cascader 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-cascader-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | cascader 的 content 部件 background 覆盖槽。 |
-| `--xh-cascader-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | cascader 的 content 部件 border 覆盖槽。 |
-| `--xh-cascader-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | cascader 的 content 部件 color 覆盖槽。 |
-| `--xh-cascader-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | cascader 的 content 部件 background 覆盖槽。 |
+| `--xh-cascader-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | cascader 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-cascader-content-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | cascader 的 content 部件 background 覆盖槽。 |
+| `--xh-cascader-content-border` | `content` | `border` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border` | cascader 的 content 部件 border 覆盖槽。 |
+| `--xh-cascader-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | cascader 的 content 部件 color 覆盖槽。 |
+| `--xh-cascader-content-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | cascader 的 content 部件 background 覆盖槽。 |
 | `--xh-cascader-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w-xl` | cascader 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-cascader-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | cascader 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-cascader-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | cascader 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-cascader-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | cascader 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-cascader-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | cascader 的 control 部件 background-color 覆盖槽。 |
 | `--xh-cascader-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | cascader 的 control 部件 background-color 覆盖槽。 |
 | `--xh-cascader-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | cascader 的 control 部件 background-color 覆盖槽。 |
@@ -1459,6 +1460,8 @@ const regions = [
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-fade-in` · `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

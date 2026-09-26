@@ -329,7 +329,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 ### 皮肤
 
-`@xihan-ui/styles/clipboard.css` 使用 `[data-scope="clipboard"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/clipboard.css` 使用 `[data-scope="clipboard"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -356,6 +356,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `copy-trigger` | `data-xh-action-profile` | 'text' |
 | `copy-trigger` | `data-xh-action-size` | props.size |
 | `copy-trigger` | `data-xh-action-variant` | props.variant |
+| `copy-trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `indicator` | `data-copied` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `status` | `data-state` | 'idle' \| 'copying' \| 'copied' |
@@ -372,9 +373,9 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-clipboard-control-min-w` | `root` | `min-inline-size` | `has([data-scope='clipboard'][data-part='control'])` | `--xh-control-min-w` | clipboard 的 root 部件 min-inline-size 覆盖槽。 |
 | `--xh-clipboard-control-w` | `root` | `inline-size`<br>`min-inline-size` | `has([data-scope='clipboard'][data-part='control'])` | `--xh-control-w` | clipboard 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-attached-radius` | `control`<br>`copy-trigger` | `border-end-end-radius`<br>`border-start-end-radius` | `not(:first-child)` | `--xh-clipboard-input-radius` | clipboard 的 control、copy-trigger 部件 border-end-end-radius、border-start-end-radius 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-bg` | `copy-trigger` | `background-color` | `default`<br>`focus-visible`<br>`loading` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | clipboard 的 copy-trigger 部件 background-color 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-bg` | `copy-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`loading`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | clipboard 的 copy-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg-active` | `copy-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | clipboard 的 copy-trigger 部件 background-color 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-bg-disabled` | `copy-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | clipboard 的 copy-trigger 部件 background-color 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-bg-disabled` | `copy-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | clipboard 的 copy-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg-hover` | `copy-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | clipboard 的 copy-trigger 部件 background-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border` | `control`<br>`copy-trigger` | `border`<br>`border-color` | `default`<br>`focus-visible`<br>`not(:first-child)` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-border-control` | clipboard 的 control、copy-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border-disabled` | `copy-trigger` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
@@ -391,7 +392,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-clipboard-gap` | `root` | `gap` | `default` | `--xh-space-1` | clipboard 的 root 部件 gap 覆盖槽。 |
 | `--xh-clipboard-indicator-fg-copied` | `indicator` | `color` | `copied` | `--xh-fg-success` | clipboard 的 indicator 部件 color 覆盖槽。 |
 | `--xh-clipboard-indicator-gap` | `indicator` | `gap` | `default` | `--xh-clipboard-copy-trigger-gap` | clipboard 的 indicator 部件 gap 覆盖槽。 |
-| `--xh-clipboard-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-subtle` | clipboard 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-clipboard-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-subtle-opaque` | clipboard 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-clipboard-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | clipboard 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-clipboard-input-bg` | `input` | `background` | `default` | `--xh-bg-subtle` | clipboard 的 input 部件 background 覆盖槽。 |
 | `--xh-clipboard-input-border` | `input` | `border` | `default` | `--xh-border-control` | clipboard 的 input 部件 border 覆盖槽。 |
@@ -404,12 +405,16 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-clipboard-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | clipboard 的 label 部件 color 覆盖槽。 |
 | `--xh-clipboard-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | clipboard 的 label 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | clipboard 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `default` | `--xh-spin-duration` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
+| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `default` | `--xh-motion-loop-spin` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-clipboard-loading-hide` · `xh-clipboard-loading-reveal` · `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；`opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-clipboard-loading-duration`。
+
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

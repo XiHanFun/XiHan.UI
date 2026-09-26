@@ -1,0 +1,31 @@
+const t=`<!-- 基础用法 | 一个柱系列：x 取类目字段，y 取数值字段，悬停或用方向键逐个查看 -->
+<!-- 元素只认作者写的外壳：网格、坐标轴、柱与图例项由它按数据生成进 plot 与 legend -->
+<!-- 宿主元素缺省是行内元素，放进 flex / grid 时给它一个宽度，图才铺得开 -->
+<div style="width: 100%">
+  <xh-cartesian-chart id="cartesian-chart-basic">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">月度销售额</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+</div>
+
+<script type="module">
+  // 数据与系列是数组，只走 property
+  const chart = document.getElementById("cartesian-chart-basic");
+  chart.data = [
+    { month: "一月", amount: 1204 },
+    { month: "二月", amount: 986 },
+    { month: "三月", amount: 1530 },
+    { month: "四月", amount: 1382 },
+    { month: "五月", amount: 1745 },
+    { month: "六月", amount: 1618 },
+  ];
+  chart.series = [{ mark: "bar", x: "month", y: "amount", name: "销售额" }];
+<\/script>
+`;export{t as default};

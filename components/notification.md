@@ -14,7 +14,7 @@
 
 ## 用法
 
-create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场窗口结束后只收起不删除，宿主在 status-change 中把它移出队列
+create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列
 
 ```vue
 <script setup lang="ts">
@@ -64,7 +64,6 @@ const itemTranslations = { close: "关闭" };
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="
@@ -138,7 +137,6 @@ const itemTranslations = { close: "关闭" };
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
     count.textContent = String(notification.count);
@@ -229,7 +227,6 @@ const itemTranslations = { close: "关闭" };
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="
@@ -315,7 +312,6 @@ const itemTranslations = { close: "关闭" };
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
   }
@@ -400,7 +396,6 @@ function startUpload(create: Create, update: Update): void {
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="
@@ -468,7 +463,6 @@ function startUpload(create: Create, update: Update): void {
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
   }
@@ -502,7 +496,7 @@ function startUpload(create: Create, update: Update): void {
 
 ### 上限与清空
 
-max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不经退场窗口
+max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不播退场动画
 
 ```vue
 <script setup lang="ts">
@@ -552,7 +546,6 @@ function nextTitle(): string {
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="
@@ -626,7 +619,6 @@ function nextTitle(): string {
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
     count.textContent = String(notification.count);
@@ -650,7 +642,7 @@ function nextTitle(): string {
 
 ### 手动关闭
 
-create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不经退场窗口
+create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画
 
 ```vue
 <script setup lang="ts">
@@ -722,7 +714,6 @@ function settle(
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="(details) => settle(details, dismiss)"
@@ -802,7 +793,6 @@ function settle(
       node.tone = item.tone;
       node.loading = item.loading;
       node.duration = item.duration;
-      node.removeDelay = item.removeDelay;
       node.closable = item.closable;
     }
     if (pending && !alive.has(pending)) {
@@ -892,7 +882,6 @@ function pop(create: Create, placement: string, label: string): void {
           :tone="item.tone"
           :loading="item.loading"
           :duration="item.duration"
-          :remove-delay="item.removeDelay"
           :closable="item.closable"
           :translations="itemTranslations"
           @status-change="
@@ -972,7 +961,6 @@ function pop(create: Create, placement: string, label: string): void {
         node.tone = item.tone;
         node.loading = item.loading;
         node.duration = item.duration;
-        node.removeDelay = item.removeDelay;
         node.closable = item.closable;
       }
     }
@@ -1055,7 +1043,6 @@ function pop(create: Create, placement: string, label: string): void {
 | `dedupe` | `NotificationDedupe` |  | 重复的处理方式，默认 'id'。 |
 | `gap` | `number` |  | 同一组内的间距（px），默认 16。 |
 | `duration` | `number` |  | 单条未写 duration 时的默认停留毫秒。 |
-| `removeDelay` | `number` |  | 单条未写 removeDelay 时的默认退场窗口毫秒。 |
 | `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，逐条下发给 toast。 |
 | `translations` | `Partial<NotificationTranslations>` |  |  |
 | `onItemsChange` | `(details: NotificationItemsChangeDetails) => void` |  |  |
@@ -1072,7 +1059,6 @@ function pop(create: Create, placement: string, label: string): void {
 | `tone` | `NotificationTone` |  |  |
 | `loading` | `boolean` |  | 事情尚未完成：图标换为转圈，且不自动消失。 |
 | `duration` | `number` |  |  |
-| `removeDelay` | `number` |  |  |
 | `closable` | `boolean` |  |  |
 | `placement` | `NotificationPlacement` |  | 单条覆盖落位；未提供时使用 notification 的 placement。 |
 | `actionLabel` | `string` |  | 行内动作按钮的文案。提供后才渲染动作部件。 只存放文案不存放回调：该条记录需要能被整份替换、序列化、比对， 按下之后的行为由宿主按 id 自行查询。 |
@@ -1111,7 +1097,6 @@ function pop(create: Create, placement: string, label: string): void {
 | `XhNotificationItem` | `tone` | `ToastTone` |  |  |
 | `XhNotificationItem` | `loading` | `boolean` |  |  |
 | `XhNotificationItem` | `duration` | `number` |  |  |
-| `XhNotificationItem` | `removeDelay` | `number` |  |  |
 | `XhNotificationItem` | `closable` | `boolean` |  |  |
 | `XhNotificationItem` | `pauseOnPageIdle` | `boolean` |  |  |
 | `XhNotificationItem` | `paused` | `boolean` |  | 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 |
@@ -1182,7 +1167,7 @@ function pop(create: Create, placement: string, label: string): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/notification.css` 使用 `[data-scope="notification"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/notification.css` 使用 `[data-scope="notification"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -1221,7 +1206,7 @@ function pop(create: Create, placement: string, label: string): void {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-notification-action-bg` | `item-action-trigger` | `background-color` | `default` | `transparent` | notification 的 item-action-trigger 部件 background-color 覆盖槽。 |
+| `--xh-notification-action-bg` | `item-action-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `transparent` | notification 的 item-action-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-notification-action-bg-active` | `item-action-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | notification 的 item-action-trigger 部件 background-color 覆盖槽。 |
 | `--xh-notification-action-bg-hover` | `item-action-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | notification 的 item-action-trigger 部件 background-color 覆盖槽。 |
 | `--xh-notification-action-border` | `item-action-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control`<br>`--xh-border-control-hover` | notification 的 item-action-trigger 部件 border、border-color 覆盖槽。 |
@@ -1258,7 +1243,7 @@ function pop(create: Create, placement: string, label: string): void {
 | `--xh-notification-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | notification 的 group 部件 z-index 覆盖槽。 |
 | `--xh-notification-progress-bg` | `item-progress` | `background` | `default` | `--xh-_tone-soft` | notification 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-notification-progress-duration` | `item-progress` | `animation` | `default` | `--xh-motion-duration-slide` | notification 的 item-progress 部件 animation 覆盖槽。 |
-| `--xh-notification-progress-radius` | `item-progress` | `border-radius` | `default` | `--xh-shape-pill` | notification 的 item-progress 部件 border-radius 覆盖槽。 |
+| `--xh-notification-progress-radius` | `item-progress` | `border-radius`<br>`clip-path` | `@keyframes xh-countdown`<br>`default` | `--xh-shape-pill` | notification 的 item-progress 部件 border-radius、clip-path 覆盖槽。 |
 | `--xh-notification-progress-thickness` | `item-progress` | `block-size` | `default` | `--xh-space-0_5` | notification 的 item-progress 部件 block-size 覆盖槽。 |
 | `--xh-notification-title-fg` | `item-title` | `color` | `default` | `--xh-fg-default` | notification 的 item-title 部件 color 覆盖槽。 |
 | `--xh-notification-title-font-size` | `item-indicator`<br>`item-title` | `block-size`<br>`font-size` | `default` | `--xh-text-label-size` | notification 的 item-indicator、item-title 部件 block-size、font-size 覆盖槽。 |
@@ -1268,10 +1253,14 @@ function pop(create: Create, placement: string, label: string): void {
 
 ### 动效
 
-关键帧 `xh-countdown` · `xh-notification-in` · `xh-notification-out` · `xh-notification-spin` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 出现（面板） · 导航 · 数值 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-notification-progress-duration`。
+
+共享关键帧 `xh-countdown` · `xh-sheet-in` · `xh-sheet-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

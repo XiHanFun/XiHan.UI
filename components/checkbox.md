@@ -427,10 +427,10 @@ import { XhCheckbox } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-checkbox-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `transparent` | checkbox 的 root 部件 background-color 覆盖槽。 |
-| `--xh-checkbox-bg-checked` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg` | `root` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`xh-ink-surface` | `transparent` | checkbox 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-checkbox-bg-checked` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate`<br>`xh-ink-surface` | `--xh-_checkbox-accent` | checkbox 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-checkbox-bg-checked-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked`<br>`state=indeterminate` | `--xh-_tone-active` | checkbox 的 root 部件 background-color 覆盖槽。 |
-| `--xh-checkbox-bg-disabled` | `root` | `background-color` | `disabled` | `--xh-bg-subtle` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg-disabled` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-bg-subtle` | checkbox 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-checkbox-bg-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | checkbox 的 root 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-border` | `label`<br>`root` | `border`<br>`border-color` | `@media (hover: hover)`<br>`contrast=more`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | checkbox 的 label、root 部件 border、border-color 覆盖槽。 |
 | `--xh-checkbox-border-checked` | `label`<br>`root` | `border`<br>`border-color` | `@media (hover: hover)`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 label、root 部件 border、border-color 覆盖槽。 |
@@ -452,6 +452,8 @@ import { XhCheckbox } from "@xihan-ui/vue";
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
 `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

@@ -22,7 +22,7 @@
 | `data-motion` | `default` / `reduce`（偏好可写 `system`） | 局部关闭位移与缩放动效 |
 | `data-transparency` | `default` / `reduce`（偏好可写 `system`） | 磨砂材质切成实体配方 |
 
-主题与对比度可以分别落在不同层级：每一层采用最近的 `data-theme` 与 `data-contrast`，子主题不撤销祖先的高对比；深色取值块里声明了 `color-scheme`，嵌套深色区域的原生控件也跟着走。接法见 [设计令牌与主题 · 七轴视觉环境运行时](/guide/theme#七轴视觉环境运行时)。
+主题与对比度可以分别落在不同层级：每一层采用最近的 `data-theme` 与 `data-contrast`，子主题不撤销祖先的高对比；深色取值块里声明了 `color-scheme`，嵌套深色区域的原生控件也跟着走。接法见 [设计令牌与主题 · 八轴视觉环境运行时](/guide/theme#八轴视觉环境运行时)。
 
 ## 语义角色怎么翻
 

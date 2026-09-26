@@ -45,6 +45,16 @@ export const DIAGNOSTIC_CODES = {
   overlayStackingTrap: "overlay.stacking-trap", // 浮层的祖先建了层叠上下文，浮层的层号被困在其中
   scrollbarMissingScrollable: "scrollbar.missing-scrollable", // 滚动条挂载时找不到它要管的滚动容器
   overlayMissingAnchor: "overlay.missing-anchor", // 浮层展开了却没有锚点，位置无从算起
+  chartMissingName: "chart.missing-name", // 图表没有可及名：caption 部件、aria-label、aria-labelledby 都没有
+  chartUnknownField: "chart.unknown-field", // 系列引用的字段在数据里不存在
+  chartDuplicateSeries: "chart.duplicate-series", // 两个系列的 id 相同
+  chartTooManySeries: "chart.too-many-series", // 分类系列超过 8 个：没有第 9 色
+  chartMixedColorRoles: "chart.mixed-color-roles", // 同一张图混用分类色与语气色
+  chartInvalidSlot: "chart.invalid-slot", // 固定色槽越界，或两个系列固定到同一槽
+  chartStackOffsetConflict: "chart.stack-offset-conflict", // 同一堆叠组的 stackOffset 不一致
+  chartLogDomain: "chart.log-domain", // 对数轴的定义域含 0 或跨越正负
+  chartBarBaseline: "chart.bar-baseline", // 柱系列所在的值轴不含 0
+  chartNegativeShare: "chart.negative-share", // 占比类图表出现负值
 };
 ```
 

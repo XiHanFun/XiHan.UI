@@ -1,1 +1,0 @@
-import{cq as e}from"./theme.DFLq0s3F.js";import{d as t,c as o,E as a,k as n,o as r}from"./framework.DxrHb2fb.js";const i={style:{"inline-size":"var(--xh-doc-catalog-w)","line-height":"var(--xh-leading-normal)"}},d=t({__name:"highlight",setup(s){return(c,h)=>(r(),o("div",i,[a(n(e),{text:"曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。",keyword:"组件"})]))}});export{d as default};

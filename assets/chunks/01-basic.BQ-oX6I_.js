@@ -1,0 +1,1 @@
+import{fr as e}from"./theme.C6dHip5i.js";import{d as r,o as c,c as o,E as a,k as t,F as n}from"./framework.DxrHb2fb.js";const l=r({__name:"01-basic",setup(s){return(m,f)=>(c(),o(n,null,[a(t(e)),a(t(e),{"default-checked":""})],64))}});export{l as default};

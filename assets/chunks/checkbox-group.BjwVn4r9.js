@@ -1,0 +1,1 @@
+import{al as a}from"./theme.C6dHip5i.js";import{d as o,b as l,k as s,o as t}from"./framework.DxrHb2fb.js";const m=o({__name:"checkbox-group",setup(c){const e=[{value:"email",label:"邮件"},{value:"sms",label:"短信"},{value:"push",label:"推送通知"}];return(r,u)=>(t(),l(s(a),{collection:e,"default-value":["email","push"],label:"通知方式"}))}});export{m as default};

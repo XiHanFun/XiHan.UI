@@ -494,7 +494,6 @@ function save(): void {
 | `tone` | `ToastTone` |  | 语气，默认 info。danger 使用 alert + assertive。 |
 | `loading` | `boolean` |  | 事情尚未完成：行首换为转圈，且不自动消失（duration 不再生效），完成后改写为其他语气收尾。 |
 | `duration` | `number` |  | 停留毫秒，默认 4000。&lt;=0 或非有限数即不自动消失。 |
-| `removeDelay` | `number` |  | 退场窗口毫秒，默认 300：进入 dismissing 后停留该时长再转为 unmounted，留给退场动画。 |
 | `closable` | `boolean` |  | 是否显示可用的关闭按钮，默认 true。 |
 | `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，默认 false；全局服务默认开启。 |
 | `paused` | `boolean` |  | 由宿主暂停计时，默认 false。整组一起暂停经此路径： 置真时登记 'service' 暂停来源，置假时移除它，与指针、焦点等来源并存。 |
@@ -540,7 +539,7 @@ function save(): void {
 
 **状态**：`visible` · `visible.running` · `visible.paused` · `dismissing` · `unmounted`
 
-**事件**：`TOAST.DISMISS` · `TOAST.ACTION` · `TOAST.PAUSE` · `TOAST.RESUME` · `TOAST.RESET` · `after.duration` · `after.removeDelay` · `PRESS.START` · `PRESS.END`
+**事件**：`TOAST.DISMISS` · `TOAST.ACTION` · `TOAST.PAUSE` · `TOAST.RESUME` · `TOAST.RESET` · `after.duration` · `EXIT.COMPLETE` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isLastPauseSource` · `canPress`
 
@@ -580,7 +579,7 @@ function save(): void {
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` / `Space` | focus 在 close-trigger 上且 closable | 立即进入 dismissing，走完 removeDelay 后转 unmounted |
+| `Enter` / `Space` | focus 在 close-trigger 上且 closable | 立即进入 dismissing，退场动画播完后转 unmounted |
 | `Enter` / `Space` | focus 在 action-trigger 上 | 触发 onAction 并进入 dismissing |
 | `Enter` / `Space` | held in close-trigger / action-trigger（close-trigger 须 closable） | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或进入退场撤下。notification 的卡片按钮同此 |
 
@@ -638,7 +637,7 @@ function save(): void {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toast-action-bg` | `action-trigger` | `background-color` | `default` | `transparent` | toast 的 action-trigger 部件 background-color 覆盖槽。 |
+| `--xh-toast-action-bg` | `action-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `transparent` | toast 的 action-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toast-action-bg-active` | `action-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | toast 的 action-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-action-bg-hover` | `action-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | toast 的 action-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-action-border` | `action-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control`<br>`--xh-border-control-hover` | toast 的 action-trigger 部件 border、border-color 覆盖槽。 |
@@ -649,7 +648,7 @@ function save(): void {
 | `--xh-toast-action-radius` | `action-trigger` | `border-radius` | `default` | `--xh-shape-control` | toast 的 action-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-toast-bg` | `root` | `background` | `default` | `--xh-material-elevated-bg` | toast 的 root 部件 background 覆盖槽。 |
 | `--xh-toast-border` | `root` | `border` | `default` | `--xh-material-elevated-border` | toast 的 root 部件 border 覆盖槽。 |
-| `--xh-toast-close-bg` | `close-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | toast 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-toast-close-bg` | `close-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | toast 的 close-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toast-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | toast 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | toast 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-close-border` | `close-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | toast 的 close-trigger 部件 border 覆盖槽。 |
@@ -660,7 +659,7 @@ function save(): void {
 | `--xh-toast-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | toast 的 description 部件 color 覆盖槽。 |
 | `--xh-toast-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | toast 的 description 部件 font-size 覆盖槽。 |
 | `--xh-toast-description-leading` | `description` | `line-height` | `default` | `--xh-leading-normal` | toast 的 description 部件 line-height 覆盖槽。 |
-| `--xh-toast-dir` | `*`<br>`root` | `transform` | `@keyframes xh-toast-in`<br>`@keyframes xh-toast-out`<br>`default` | `1` | toast 的 *、root 部件 transform 覆盖槽。 |
+| `--xh-toast-dir` | `*`<br>`root` | `translate` | `@keyframes xh-toast-in`<br>`@keyframes xh-toast-out`<br>`default` | `1` | toast 的 *、root 部件 translate 覆盖槽。 |
 | `--xh-toast-fg` | `root` | `color` | `default` | `--xh-material-elevated-fg` | toast 的 root 部件 color 覆盖槽。 |
 | `--xh-toast-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | toast 的 root 部件 font-size 覆盖槽。 |
 | `--xh-toast-front-height` | `root` | `block-size` | `expanded`<br>`frontmost`<br>`not([data-expanded])`<br>`not([data-frontmost])`<br>`stack-index` | `auto` | toast 的 root 部件 block-size 覆盖槽。 |
@@ -673,7 +672,7 @@ function save(): void {
 | `--xh-toast-inset` | `group` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `placement=-end`<br>`placement=-start`<br>`placement=bottom`<br>`placement=top` | `--xh-space-4` | toast 的 group 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-toast-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | toast 的 group 部件 z-index 覆盖槽。 |
 | `--xh-toast-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 root 部件 line-height 覆盖槽。 |
-| `--xh-toast-offset-collapsed` | `*`<br>`root` | `--xh-toast-y`<br>`transform` | `@keyframes xh-toast-in`<br>`default` | `0px` | toast 的 *、root 部件 --xh-toast-y、transform 覆盖槽。 |
+| `--xh-toast-offset-collapsed` | `*`<br>`root` | `--xh-toast-y`<br>`translate` | `@keyframes xh-toast-in`<br>`default` | `0px` | toast 的 *、root 部件 --xh-toast-y、translate 覆盖槽。 |
 | `--xh-toast-offset-expanded` | `root` | `--xh-toast-y` | `expanded` | `0px` | toast 的 root 部件 --xh-toast-y 覆盖槽。 |
 | `--xh-toast-progress-bg` | `progress` | `background` | `default` | `--xh-_tone-soft` | toast 的 progress 部件 background 覆盖槽。 |
 | `--xh-toast-progress-duration` | `progress` | `animation` | `default` | `--xh-motion-duration-slide` | toast 的 progress 部件 animation 覆盖槽。 |
@@ -681,19 +680,25 @@ function save(): void {
 | `--xh-toast-px` | `root` | `padding-inline` | `default` | `--xh-space-4` | toast 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toast-py` | `root` | `padding-block` | `default` | `--xh-space-3` | toast 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toast-radius` | `root` | `border-radius` | `default` | `--xh-shape-overlay` | toast 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-toast-scale` | `*` | `transform` | `@keyframes xh-toast-out` | `1` | toast 的 * 部件 transform 覆盖槽。 |
-| `--xh-toast-scale-collapsed` | `*`<br>`root` | `--xh-toast-scale`<br>`transform` | `@keyframes xh-toast-in`<br>`default` | `1` | toast 的 *、root 部件 --xh-toast-scale、transform 覆盖槽。 |
+| `--xh-toast-scale` | `*` | `scale` | `@keyframes xh-toast-out` | `1` | toast 的 * 部件 scale 覆盖槽。 |
+| `--xh-toast-scale-collapsed` | `*`<br>`root` | `--xh-toast-scale`<br>`scale` | `@keyframes xh-toast-in`<br>`default` | `--xh-_toast-stack-scale` | toast 的 *、root 部件 --xh-toast-scale、scale 覆盖槽。 |
 | `--xh-toast-shadow` | `root` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | toast 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-toast-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | toast 的 title 部件 color 覆盖槽。 |
 | `--xh-toast-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | toast 的 title 部件 font-size 覆盖槽。 |
 | `--xh-toast-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | toast 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-toast-title-leading` | `title` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 title 部件 line-height 覆盖槽。 |
-| `--xh-toast-y` | `*` | `transform` | `@keyframes xh-toast-out` | `0px` | toast 的 * 部件 transform 覆盖槽。 |
+| `--xh-toast-y` | `*` | `translate` | `@keyframes xh-toast-out` | `0px` | toast 的 * 部件 translate 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-countdown` · `xh-toast-in` · `xh-toast-out` · `xh-toast-spin` 随皮肤自带，不引用别处文件里的名字；`block-size` · `opacity` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 导航 · 数值 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-toast-progress-duration`。
+
+关键帧 `xh-toast-in` · `xh-toast-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -703,4 +708,4 @@ function save(): void {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

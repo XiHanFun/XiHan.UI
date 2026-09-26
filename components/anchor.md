@@ -751,7 +751,7 @@ function isGroupActive(group: {
 
 **状态**：`idle` · `scrolling`
 
-**事件**：`SPY.RESOLVE` · `LINK.CLICK` · `VALUE.SET` · `after.scrollLock` · `PRESS.START` · `PRESS.END`
+**事件**：`SPY.RESOLVE` · `LINK.CLICK` · `VALUE.SET` · `SCROLL.SETTLE` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isSmooth` · `isTargetReached` · `canPress`
 
@@ -849,10 +849,14 @@ function isGroupActive(group: {
 
 ### 动效
 
-`block-size` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+
+`block-size` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：值由内核逐帧算出（`frameLoop`），皮肤里看不到这段。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

@@ -775,7 +775,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-progress-indeterminate-duration` | `range` | `animation` | `state=indeterminate` | `--xh-shimmer-duration` | progress 的 range 部件 animation 覆盖槽。 |
+| `--xh-progress-indeterminate-duration` | `range` | `animation` | `state=indeterminate` | `--xh-motion-loop-shimmer` | progress 的 range 部件 animation 覆盖槽。 |
 | `--xh-progress-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | progress 的 label 部件 color 覆盖槽。 |
 | `--xh-progress-label-font-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | progress 的 label 部件 font-size 覆盖槽。 |
 | `--xh-progress-linecap` | `range` | `stroke-linecap` | `variant=circle`<br>`variant=dashboard` | `round` | progress 的 range 部件 stroke-linecap 覆盖槽。 |
@@ -789,10 +789,14 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 动效
 
-关键帧 `xh-progress-indeterminate` 随皮肤自带，不引用别处文件里的名字；`inline-size` · `stroke-dashoffset` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-progress-indeterminate-duration`。
+
+关键帧 `xh-progress-indeterminate` 随皮肤自带，不引用别处文件里的名字；`stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

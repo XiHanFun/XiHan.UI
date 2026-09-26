@@ -994,6 +994,7 @@ const filtered = computed(() => {
 | `positioner` | `data-variant` | props.variant |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-xh-material` | 'frosted' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -1023,12 +1024,12 @@ const filtered = computed(() => {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-mention-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | mention 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-mention-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | mention 的 content 部件 background 覆盖槽。 |
-| `--xh-mention-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | mention 的 content 部件 border 覆盖槽。 |
-| `--xh-mention-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | mention 的 content 部件 color 覆盖槽。 |
+| `--xh-mention-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | mention 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-mention-content-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | mention 的 content 部件 background 覆盖槽。 |
+| `--xh-mention-content-border` | `content` | `border` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border` | mention 的 content 部件 border 覆盖槽。 |
+| `--xh-mention-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | mention 的 content 部件 color 覆盖槽。 |
 | `--xh-mention-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | mention 的 content 部件 gap 覆盖槽。 |
-| `--xh-mention-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | mention 的 content 部件 background 覆盖槽。 |
+| `--xh-mention-content-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | mention 的 content 部件 background 覆盖槽。 |
 | `--xh-mention-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | mention 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-mention-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | mention 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-mention-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_mention-h` | mention 的 content 部件 min-block-size 覆盖槽。 |
@@ -1036,7 +1037,7 @@ const filtered = computed(() => {
 | `--xh-mention-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | mention 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | mention 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-mention-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | mention 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-mention-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | mention 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | mention 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-mention-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 empty 部件 color 覆盖槽。 |
 | `--xh-mention-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-mention-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 empty 部件 padding-inline 覆盖槽。 |
@@ -1082,6 +1083,8 @@ const filtered = computed(() => {
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

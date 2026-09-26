@@ -832,7 +832,7 @@ import {
 | `--xh-password-input-strength-radius` | `strength-meter` | `border-radius` | `default` | `--xh-shape-pill` | password-input 的 strength-meter 部件 border-radius 覆盖槽。 |
 | `--xh-password-input-strength-thickness` | `strength-meter` | `block-size` | `default` | `--xh-track-thickness` | password-input 的 strength-meter 部件 block-size 覆盖槽。 |
 | `--xh-password-input-strength-track` | `strength-meter` | `background` | `default` | `--xh-bg-subtle-active` | password-input 的 strength-meter 部件 background 覆盖槽。 |
-| `--xh-password-input-trigger-bg` | `visibility-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | password-input 的 visibility-trigger 部件 background-color 覆盖槽。 |
+| `--xh-password-input-trigger-bg` | `visibility-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | password-input 的 visibility-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-password-input-trigger-bg-active` | `visibility-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | password-input 的 visibility-trigger 部件 background-color 覆盖槽。 |
 | `--xh-password-input-trigger-bg-hover` | `visibility-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | password-input 的 visibility-trigger 部件 background-color 覆盖槽。 |
 | `--xh-password-input-trigger-fg` | `visibility-trigger` | `color` | `default` | `--xh-fg-muted` | password-input 的 visibility-trigger 部件 color 覆盖槽。 |
@@ -845,6 +845,8 @@ import {
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 

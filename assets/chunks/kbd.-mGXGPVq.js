@@ -1,0 +1,1 @@
+import{cR as e}from"./theme.C6dHip5i.js";import{d as o,b as r,k as a,o as s}from"./framework.DxrHb2fb.js";const m=o({__name:"kbd",setup(t){return(n,c)=>(s(),r(a(e),{keys:["Mod","K"]}))}});export{m as default};

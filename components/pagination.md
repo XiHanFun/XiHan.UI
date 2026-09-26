@@ -653,8 +653,8 @@ import {
 | `translations` | `Partial<PaginationTranslations>` |  |  |
 | `placement` | `Placement` |  | 省略位展开后的落点，默认 bottom-start（列表类浮层）。 |
 | `offset` | `number` |  | 浮层与省略位之间的间距（px），默认 8。 |
-| `openDelay` | `number` |  | 指针停在省略位多久后才展开（ms），默认 200。 |
-| `closeDelay` | `number` |  | 指针离开后多久收起（ms），默认 300：留出斜向划入浮层的时间。 |
+| `openDelay` | `number` |  | 指针停在省略位多久后才展开（ms），默认 200；只收有限非负数。 |
+| `closeDelay` | `number` |  | 指针离开后多久收起（ms），默认 300：留出斜向划入浮层的时间；只收有限非负数。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onPageChange` | `(details: PaginationPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
@@ -858,10 +858,10 @@ import {
 | `--xh-pagination-font-size` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `font-size` | `default` | `--xh-_pagination-font-size` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 font-size 覆盖槽。 |
 | `--xh-pagination-gap` | `content`<br>`root` | `gap` | `default` | `--xh-space-1` | pagination 的 content、root 部件 gap 覆盖槽。 |
 | `--xh-pagination-icon-size` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`positioner`<br>`prev-trigger`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | pagination 的 ellipsis-trigger、item、next-trigger、positioner、prev-trigger、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-pagination-item-bg` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-bg` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-pagination-item-bg-active` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-pagination-item-bg-hover` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
-| `--xh-pagination-item-bg-selected` | `item` | `background-color` | `current`<br>`focus-visible` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 background-color 覆盖槽。 |
+| `--xh-pagination-item-bg-selected` | `item` | `--xh-ink-surface`<br>`background-color` | `current`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-pagination-item-bg-selected-active` | `item` | `background-color` | `current`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 background-color 覆盖槽。 |
 | `--xh-pagination-item-bg-selected-hover` | `item` | `background-color` | `current`<br>`disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 background-color 覆盖槽。 |
 | `--xh-pagination-item-border-selected` | `item` | `border`<br>`border-color` | `current`<br>`focus-visible` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 border、border-color 覆盖槽。 |
@@ -886,7 +886,9 @@ import {
 
 ### 动效
 
-共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+
+共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

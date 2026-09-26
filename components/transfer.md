@@ -2685,7 +2685,7 @@ const rows = [
 | `--xh-transfer-select-all-font-size` | `select-all-trigger` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-select-all-gap` | `select-all-trigger` | `gap` | `default` | `--xh-control-gap-sm` | transfer 的 select-all-trigger 部件 gap 覆盖槽。 |
 | `--xh-transfer-select-all-radius` | `select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 select-all-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-trigger-bg` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-trigger-bg` | `to-source-trigger`<br>`to-target-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-transfer-trigger-bg-active` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
 | `--xh-transfer-trigger-bg-hover` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
 | `--xh-transfer-trigger-border` | `to-source-trigger`<br>`to-target-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_action-variant-border-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 border、border-color 覆盖槽。 |
@@ -2700,7 +2700,9 @@ const rows = [
 
 ### 动效
 
-`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+
+`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

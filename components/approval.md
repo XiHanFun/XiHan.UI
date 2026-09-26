@@ -31,6 +31,7 @@ import {
   XhApprovalLiveRegion,
   XhApprovalResult,
   XhApprovalRoot,
+  XhApprovalPendingIndicator,
   XhApprovalTitle,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -52,6 +53,8 @@ const decided = ref("");
       tone="warning"
       @decision="decided = `${$event.decision}（来源 ${$event.source}，范围 ${$event.scopes.join('、') || '无'}）`"
     >
+      <!-- 待决时右上角的呼吸点，判过即收 -->
+      <XhApprovalPendingIndicator />
       <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
       <XhApprovalDescription>它想读一遍 src/ 并写回改动。</XhApprovalDescription>
       <XhApprovalGroup>
@@ -84,6 +87,8 @@ const decided = ref("");
   <!-- 必选项没勾满就批不了；拒绝这条路不受它影响 -->
   <xh-approval id="approval-basic" tone="warning">
     <div data-xh-part="root">
+      <!-- 待决时右上角的呼吸点，判过即收 -->
+      <span data-xh-part="pending-indicator"></span>
       <h3 data-xh-part="title">要动你的工作区</h3>
       <p data-xh-part="description">它想读一遍 src/ 并写回改动。</p>
       <div data-xh-part="group">
@@ -130,7 +135,7 @@ const decided = ref("");
 
 加粗的是必需部件。
 
-`data-scope="approval"`：**`root`** · `title` · `description` · `live-region` · `group` · `item` · `item-indicator` · `item-text` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
+`data-scope="approval"`：**`root`** · `pending-indicator` · `title` · `description` · `live-region` · `group` · `item` · `item-indicator` · `item-text` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
 
 ## 示例
 
@@ -478,6 +483,7 @@ const rows = [
 - `requestId` 变化即重新进入待决并按新时长重启计时；不为上一轮补发拒绝，旧结果由宿主自行作废。重入时勾选与备注回到各自默认值。
 - 判定落定后 `result` 部件才显示，语气随判定变化：批准取成功档，拒绝与超时取危险档。它对读屏隐藏，同一句话由播报区读出一次。
 - 两个按钮位于 `actions` 行内，间距与对齐由库统一处理，使用者不需要另写容器。
+- 待决时 `pending-indicator` 在右上角显示一颗呼吸的圆点，颜色随语气、缺省取警示色，判定落定即收起；它不占作者排的版面。减弱动效下圆点静止。
 
 ### 组合
 
@@ -504,7 +510,7 @@ const rows = [
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-approval>` |
-| Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalGroup` `XhApprovalItem` `XhApprovalItemIndicator` `XhApprovalItemText` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalTimer` `XhApprovalTitle` |
+| Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalGroup` `XhApprovalItem` `XhApprovalItemIndicator` `XhApprovalItemText` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalPendingIndicator` `XhApprovalResult` `XhApprovalRoot` `XhApprovalTimer` `XhApprovalTitle` |
 | 组合式函数 | `useApproval` |
 | 状态机 | `approvalMachine` |
 | 皮肤 | `@xihan-ui/styles/approval.css` |
@@ -586,6 +592,7 @@ const rows = [
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `pending-indicator` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `item` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `note` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
@@ -621,6 +628,7 @@ const rows = [
 | `setNote` | `(next: string) => void` |  |
 | `isScopeGranted` | `(value: string) => boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
+| `getPendingIndicatorProps` | `() => T['element']` | 待决时的呼吸点：判过即收，对读屏隐藏。 |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
@@ -659,6 +667,7 @@ const rows = [
 | `root` | `aria-describedby` | `description` 部件的 id |
 | `root` | `aria-labelledby` | `title` 部件的 id |
 | `root` | `role` | 'group' |
+| `pending-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | props.live |
 | `group` | `aria-label` | translations?.scopes |
@@ -681,14 +690,16 @@ const rows = [
 - 闸门是 `role=group`，由标题命名、由说明描述。
 - 待决时批准键使用 `aria-disabled` 而不是原生 `disabled`：保持可聚焦，读屏可以读出不可用的原因。
 - 授权项是 `role=checkbox`，各占一个 Tab 停靠点，只响应 `Space`，与原生复选框一致。
-- 剩余时间与结果条都对读屏隐藏：逐秒变化的数字进入活动区域会持续打断，判定结果与截止事件由播报区各读出一次。
+- 剩余时间、结果条与待决的呼吸点都对读屏隐藏：逐秒变化的数字进入活动区域会持续打断，判定结果与截止事件由播报区各读出一次。
 - 备注取 `translations.note` 作为可访问名称（默认 `Note`），占位文字取 `translations.notePlaceholder`。
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/approval.css` 使用 `[data-scope="approval"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/approval.css` 使用 `[data-scope="approval"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -701,6 +712,7 @@ const rows = [
 | `root` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `pending-indicator` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
@@ -725,6 +737,7 @@ const rows = [
 | `approve-trigger` | `data-xh-action-profile` | 'text' |
 | `approve-trigger` | `data-xh-action-size` | props.size |
 | `approve-trigger` | `data-xh-action-variant` | 'solid' |
+| `approve-trigger` | `data-xh-ink-surface` | '' |
 | `deny-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `deny-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `deny-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -747,17 +760,17 @@ const rows = [
 | `--xh-approval-action-h` | `approve-trigger`<br>`deny-trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=row` | `--xh-_approval-action-h` | approval 的 approve-trigger、deny-trigger 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-approval-action-px` | `approve-trigger`<br>`deny-trigger` | `padding-inline` | `default` | `--xh-_approval-action-px` | approval 的 approve-trigger、deny-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-action-radius` | `approve-trigger`<br>`deny-trigger` | `border-radius` | `default` | `--xh-shape-control` | approval 的 approve-trigger、deny-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-approval-approve-bg` | `approve-trigger` | `background-color` | `default`<br>`loading` | `--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | approval 的 approve-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-approve-bg` | `approve-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`loading`<br>`xh-ink-surface` | `--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | approval 的 approve-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-approve-bg-hover` | `approve-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | approval 的 approve-trigger 部件 background-color 覆盖槽。 |
-| `--xh-approval-approve-bg-off` | `approve-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | approval 的 approve-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-approve-bg-off` | `approve-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | approval 的 approve-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-approve-fg` | `approve-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | approval 的 approve-trigger 部件 color 覆盖槽。 |
 | `--xh-approval-approve-shadow` | `approve-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_highlight-tone` | approval 的 approve-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-approval-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | approval 的 root 部件 background 覆盖槽。 |
 | `--xh-approval-border` | `root` | `border`<br>`border-color` | `default`<br>`tone` | `--xh-_tone`<br>`--xh-border-default` | approval 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-approval-border-settled` | `root` | `border-color` | `not([data-state='pending'])`<br>`state=pending` | `--xh-border-default` | approval 的 root 部件 border-color 覆盖槽。 |
-| `--xh-approval-deny-bg` | `deny-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | approval 的 deny-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-deny-bg` | `deny-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | approval 的 deny-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-deny-bg-hover` | `deny-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | approval 的 deny-trigger 部件 background-color 覆盖槽。 |
-| `--xh-approval-deny-bg-off` | `deny-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | approval 的 deny-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-deny-bg-off` | `deny-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | approval 的 deny-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-deny-border` | `deny-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | approval 的 deny-trigger 部件 border 覆盖槽。 |
 | `--xh-approval-deny-border-off` | `deny-trigger` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | approval 的 deny-trigger 部件 border-color 覆盖槽。 |
 | `--xh-approval-deny-fg` | `deny-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | approval 的 deny-trigger 部件 color 覆盖槽。 |
@@ -782,7 +795,7 @@ const rows = [
 | `--xh-approval-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | approval 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-approval-item-text-fg` | `item-text` | `color` | `default` | `--xh-fg-muted` | approval 的 item-text 部件 color 覆盖槽。 |
 | `--xh-approval-item-text-fg-checked` | `item`<br>`item-text` | `color` | `state=checked` | `--xh-fg-default` | approval 的 item、item-text 部件 color 覆盖槽。 |
-| `--xh-approval-loading-duration` | `footer`<br>`root` | `animation` | `loading` | `--xh-spin-duration` | approval 的 footer、root 部件 animation 覆盖槽。 |
+| `--xh-approval-loading-duration` | `footer`<br>`root` | `animation` | `loading` | `--xh-motion-loop-spin` | approval 的 footer、root 部件 animation 覆盖槽。 |
 | `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |
@@ -790,7 +803,10 @@ const rows = [
 | `--xh-approval-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | approval 的 note 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | approval 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-approval-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | approval 的 note 部件 border-radius 覆盖槽。 |
-| `--xh-approval-p` | `root` | `padding` | `default` | `--xh-_approval-p` | approval 的 root 部件 padding 覆盖槽。 |
+| `--xh-approval-p` | `pending-indicator`<br>`root` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
+| `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone` | approval 的 pending-indicator 部件 background 覆盖槽。 |
+| `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-approval-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | approval 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-approval-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | approval 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-approval-result-bg` | `result` | `background` | `default` | `--xh-fg-success` | approval 的 result 部件 background 覆盖槽。 |
 | `--xh-approval-result-bg-denied` | `result` | `background` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-fg-danger` | approval 的 result 部件 background 覆盖槽。 |
@@ -812,7 +828,11 @@ const rows = [
 
 ### 动效
 
-关键帧 `xh-approval-in` · `xh-approval-result-in` · `xh-approval-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 出现（无锚定弹出） · 列表 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-approval-loading-duration`。
+
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

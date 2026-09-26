@@ -1,0 +1,1 @@
+import{u as s}from"./use-overlay-exit.ShCSkQ8E.js";import{r as t}from"./index.CVfUds7h.js";import{nN as n}from"./theme.C6dHip5i.js";function u(e){const{service:o}=e;s({config:t.useMemo(()=>typeof document>"u"?null:n({scope:o.scope}),[o]),isOpen:e.isOpen,contentRef:e.rootRef,onPresence:r=>o.refs.set("presence",r)})}export{u};

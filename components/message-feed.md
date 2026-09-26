@@ -90,7 +90,7 @@ const messages = [
 
 加粗的是必需部件。
 
-`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `scroll-to-end-trigger` · `live-region`
+`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `pending-indicator` · `scroll-to-end-trigger` · `live-region`
 
 ## 示例
 
@@ -294,7 +294,7 @@ const bubble = {
 
 ### 运行态与播报
 
-status 由宿主持有，组件只把它透出为 root 上的 data-state；播报只发生在 live-region 中，一轮结束后才写入一句
+status 由宿主持有，组件只把它透出为 root 上的 data-state；已发送、等首个片段时列表之后的呼吸点亮起，首个片段一到就收；播报只发生在 live-region 中，一轮结束后才写入一句
 
 ```vue
 <script setup lang="ts">
@@ -304,6 +304,7 @@ import {
   XhMessageFeedItemLabel,
   XhMessageFeedList,
   XhMessageFeedLiveRegion,
+  XhMessageFeedPendingIndicator,
   XhMessageFeedRoot,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
@@ -362,6 +363,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
             <div>{{ message.text }}</div>
           </XhMessageFeedItem>
         </XhMessageFeedList>
+        <XhMessageFeedPendingIndicator />
       </XhMessageFeedViewport>
       <XhMessageFeedLiveRegion>{{ announcement }}</XhMessageFeedLiveRegion>
     </XhMessageFeedRoot>
@@ -386,6 +388,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
             <div>帮我写一段开场白。</div>
           </article>
         </div>
+        <span data-xh-part="pending-indicator"></span>
       </div>
       <div data-xh-part="live-region" id="message-feed-status-live"></div>
     </div>
@@ -917,7 +920,9 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 - 整份消息列表只占一个 Tab 停靠位：`PageDown` / `PageUp` 在消息之间移动，`Ctrl+End` / `Ctrl+Home` 一步移到消息流之外（会话界面中通常是输入框）。
 - 消息内容全部由作者编写：气泡、头像、时间、动作条都不是本组件的部件。
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
+- 已发送、等首个片段（`status` 为 `submitted`）时，放在列表之后的 `pending-indicator` 显示为一颗呼吸的圆点，首个片段到来即收起；它只给视觉看，进度由宿主写进播报区。减弱动效下圆点静止。
 - “回到底部”留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
+- 应用设为 `data-material="liquid"` 时，“回到底部”换成液态面：按下层换色调，按住时液面随手指形变。
 
 ### 组合
 
@@ -946,7 +951,7 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-message-feed>` |
-| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedViewport` |
+| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedPendingIndicator` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedViewport` |
 | 组合式函数 | `useMessageFeed` |
 | 状态机 | `messageFeedMachine` |
 | 皮肤 | `@xihan-ui/styles/message-feed.css` |
@@ -1000,13 +1005,14 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | 部件 | 取值 |
 | --- | --- |
 | `root` | props.status |
+| `pending-indicator` | props.status |
 | `scroll-to-end-trigger` | 'hidden' \| 'visible' |
 
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
-**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `ITEM.FOCUS` · `FEED.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `ITEM.FOCUS` · `FEED.BLUR` · `PRESS.START` · `PRESS.END` · `ARRIVALS.TRACKED` · `TRIGGER.RENDERED`
 
 **判据**：`canPress`
 
@@ -1030,6 +1036,7 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `getItemProps` | `(props: MessageFeedItemProps) => T['element']` |  |
 | `getItemLabelProps` | `(props: Pick<MessageFeedItemProps, 'id'>) => T['element']` |  |
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
+| `getPendingIndicatorProps` | `() => T['element']` | 已发送、等首个片段时的呼吸点：status 为 submitted 时出现，对读屏隐藏。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -1062,6 +1069,7 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `item` | `aria-posinset` | item.index + 1 |
 | `item` | `aria-setsize` | props.count |
 | `item` | `role` | 'article' |
+| `pending-indicator` | `aria-hidden` | 'true' |
 | `scroll-to-end-trigger` | `aria-label` | translations?.scrollToBottom |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
@@ -1070,12 +1078,15 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 - 集合语义落在内容层而不是最外层：`role=feed` 只识别 `role=article` 的子节点，而播报区与回到底部按钮都是最外层的子节点。最外层只作为 Tab 停靠点与键盘宿主。
 - 播报使用独立的原子区域：一份会话只应有一个活动区域，每条消息各开一个会互相打断。
 - 消息流本身不发 `aria-busy`：它会压制同一棵子树内播报区的播报。
+- 等首个片段的呼吸点对读屏隐藏，不单靠动画表达状态。
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/message-feed.css` 使用 `[data-scope="message-feed"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/message-feed.css` 使用 `[data-scope="message-feed"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -1085,8 +1096,10 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | props.status |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-role` | item.role |
 | `item` | `data-streaming` | ''（条件成立时才出现） |
+| `pending-indicator` | `data-state` | props.status |
 | `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
@@ -1094,6 +1107,8 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
 | `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
+| `scroll-to-end-trigger` | `data-xh-liquid` | '' |
+| `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -1108,22 +1123,27 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `--xh-message-feed-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | message-feed 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-message-feed-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | message-feed 的 item-label 部件 color 覆盖槽。 |
 | `--xh-message-feed-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 item-label 部件 font-size 覆盖槽。 |
-| `--xh-message-feed-p` | `list` | `padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list 部件 padding 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background-color` | `default` | `--xh-material-frosted-bg` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-border` | message-feed 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-material-frosted-fg` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
+| `--xh-message-feed-p` | `list`<br>`pending-indicator` | `margin-block-end`<br>`margin-inline-start`<br>`padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list、pending-indicator 部件 margin-block-end、margin-inline-start、padding 覆盖槽。 |
+| `--xh-message-feed-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-fg-muted` | message-feed 的 pending-indicator 部件 background 覆盖槽。 |
+| `--xh-message-feed-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 pending-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | message-feed 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_material-bg`<br>`--xh-_material-bg-focus` | message-feed 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_material-bg-hover` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-border` | message-feed 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-fg` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-4` | message-feed 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-shadow` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-shadow` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-message-feed-button-in` · `xh-message-feed-item-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出） · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 

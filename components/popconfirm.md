@@ -614,7 +614,7 @@ function onConfirm() {
 
 ### 皮肤
 
-`@xihan-ui/styles/popconfirm.css` 使用 `[data-scope="popconfirm"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/popconfirm.css` 使用 `[data-scope="popconfirm"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -639,6 +639,7 @@ function onConfirm() {
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-xh-material` | 'frosted' |
 | `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `confirm-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `confirm-trigger` | `data-xh-action-control` | '' |
@@ -646,6 +647,7 @@ function onConfirm() {
 | `confirm-trigger` | `data-xh-action-profile` | 'text' |
 | `confirm-trigger` | `data-xh-action-size` | 'sm' |
 | `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
 | `cancel-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `cancel-trigger` | `data-xh-action-control` | '' |
 | `cancel-trigger` | `data-xh-action-display` | 'always' |
@@ -666,10 +668,10 @@ function onConfirm() {
 | `--xh-popconfirm-action-radius` | `cancel-trigger`<br>`confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | popconfirm 的 cancel-trigger、confirm-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-popconfirm-action-shadow` | `cancel-trigger`<br>`confirm-trigger` | `box-shadow` | `default` | `none` | popconfirm 的 cancel-trigger、confirm-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-popconfirm-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | popconfirm 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
-| `--xh-popconfirm-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | popconfirm 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-popconfirm-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | popconfirm 的 arrow、content 部件 background 覆盖槽。 |
-| `--xh-popconfirm-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | popconfirm 的 arrow、content 部件 border 覆盖槽。 |
-| `--xh-popconfirm-cancel-bg` | `cancel-trigger` | `background-color` | `default`<br>`focus-visible` | `transparent` | popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。 |
+| `--xh-popconfirm-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | popconfirm 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-popconfirm-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | popconfirm 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-popconfirm-border` | `arrow`<br>`content` | `border` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border`<br>`--xh-material-frosted-border` | popconfirm 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-popconfirm-cancel-bg` | `cancel-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `transparent` | popconfirm 的 cancel-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-popconfirm-cancel-bg-active` | `cancel-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。 |
 | `--xh-popconfirm-cancel-bg-focus` | `cancel-trigger` | `background-color` | `focus-visible` | `--xh-popconfirm-cancel-bg` | popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。 |
 | `--xh-popconfirm-cancel-bg-hover` | `cancel-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。 |
@@ -677,22 +679,22 @@ function onConfirm() {
 | `--xh-popconfirm-cancel-border-hover` | `cancel-trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control-hover` | popconfirm 的 cancel-trigger 部件 border-color 覆盖槽。 |
 | `--xh-popconfirm-cancel-fg` | `cancel-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | popconfirm 的 cancel-trigger 部件 color 覆盖槽。 |
 | `--xh-popconfirm-cancel-fg-focus` | `cancel-trigger` | `color` | `focus-visible` | `--xh-popconfirm-cancel-fg` | popconfirm 的 cancel-trigger 部件 color 覆盖槽。 |
-| `--xh-popconfirm-confirm-bg` | `confirm-trigger` | `background-color` | `default`<br>`focus-visible`<br>`loading` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | popconfirm 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-popconfirm-confirm-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`loading`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | popconfirm 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-popconfirm-confirm-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | popconfirm 的 confirm-trigger 部件 color 覆盖槽。 |
 | `--xh-popconfirm-confirm-shadow` | `confirm-trigger` | `box-shadow` | `default` | `--xh-popconfirm-action-shadow` | popconfirm 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-popconfirm-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | popconfirm 的 description 部件 color 覆盖槽。 |
 | `--xh-popconfirm-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | popconfirm 的 description 部件 font-size 覆盖槽。 |
-| `--xh-popconfirm-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | popconfirm 的 content 部件 color 覆盖槽。 |
+| `--xh-popconfirm-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | popconfirm 的 content 部件 color 覆盖槽。 |
 | `--xh-popconfirm-gap` | `content` | `gap` | `default` | `--xh-space-2` | popconfirm 的 content 部件 gap 覆盖槽。 |
 | `--xh-popconfirm-icon-size` | `cancel-trigger`<br>`confirm-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | popconfirm 的 cancel-trigger、confirm-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-popconfirm-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popconfirm 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-popconfirm-loading-duration` | `confirm-trigger` | `animation` | `loading` | `--xh-spin-duration` | popconfirm 的 confirm-trigger 部件 animation 覆盖槽。 |
+| `--xh-popconfirm-loading-duration` | `confirm-trigger` | `animation` | `loading` | `--xh-motion-loop-spin` | popconfirm 的 confirm-trigger 部件 animation 覆盖槽。 |
 | `--xh-popconfirm-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | popconfirm 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-popconfirm-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popconfirm-max-w` | popconfirm 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-popconfirm-px` | `content` | `padding-inline` | `default` | `--xh-_popconfirm-pad` | popconfirm 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-popconfirm-py` | `content` | `padding-block` | `default` | `--xh-_popconfirm-pad` | popconfirm 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-popconfirm-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | popconfirm 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-popconfirm-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | popconfirm 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-popconfirm-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | popconfirm 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-popconfirm-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popconfirm 的 title 部件 color 覆盖槽。 |
 | `--xh-popconfirm-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popconfirm 的 title 部件 font-size 覆盖槽。 |
 | `--xh-popconfirm-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | popconfirm 的 title 部件 font-weight 覆盖槽。 |
@@ -700,7 +702,11 @@ function onConfirm() {
 
 ### 动效
 
-关键帧 `xh-popconfirm-rotate` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 出现（锚定面板） · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-popconfirm-loading-duration`。
+
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

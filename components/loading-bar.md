@@ -605,7 +605,7 @@ function reload(): void {
 | `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
 | `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
 | `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到该值。 |
-| `fadeDuration` | `number` |  | 到达 100 之后留给淡出的窗口毫秒，默认 200。窗口结束才归零并收起。 |
+| `fadeDuration` | `number` |  | 到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 |
 | `translations` | `Partial<LoadingBarTranslations>` |  |  |
 | `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 |
 
@@ -648,7 +648,7 @@ function reload(): void {
 
 **状态**：`idle` · `loading` · `finishing`
 
-**事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `after.fadeDuration`
+**事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `FADE.DONE`
 
 ### connect API
 
@@ -717,16 +717,20 @@ function reload(): void {
 | `--xh-loading-bar-peg-fg` | `peg` | `background` | `default` | `--xh-loading-bar-range` | loading-bar 的 peg 部件 background 覆盖槽。 |
 | `--xh-loading-bar-peg-w` | `peg` | `inline-size` | `default` | `--xh-space-8` | loading-bar 的 peg 部件 inline-size 覆盖槽。 |
 | `--xh-loading-bar-range` | `peg`<br>`range` | `background` | `default` | `--xh-_tone-soft` | loading-bar 的 peg、range 部件 background 覆盖槽。 |
-| `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-enter` | loading-bar 的 range 部件 transition 覆盖槽。 |
+| `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-move` | loading-bar 的 range 部件 transition 覆盖槽。 |
 | `--xh-loading-bar-track` | `track` | `background` | `default` | `transparent` | loading-bar 的 track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`inline-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-loading-bar-fade` · `--xh-loading-bar-speed`。
+
+`opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

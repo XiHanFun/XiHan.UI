@@ -600,9 +600,9 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |
 | `--xh-signature-pad-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-default` | signature-pad 的 control 部件 border-color 覆盖槽。 |
 | `--xh-signature-pad-border-drawing` | `control` | `border-color` | `drawing` | `--xh-border-control-hover` | signature-pad 的 control 部件 border-color 覆盖槽。 |
-| `--xh-signature-pad-clear-bg` | `clear-trigger` | `background-color` | `default`<br>`focus-visible` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | signature-pad 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-signature-pad-clear-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | signature-pad 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-signature-pad-clear-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-signature-pad-clear-border` | `clear-trigger` | `border`<br>`border-color` | `default`<br>`focus-visible` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest` | signature-pad 的 clear-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-signature-pad-clear-border-hover` | `clear-trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed` | signature-pad 的 clear-trigger 部件 border-color 覆盖槽。 |
@@ -631,7 +631,9 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 
 ### 动效
 
-`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+
+`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

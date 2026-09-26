@@ -1,0 +1,27 @@
+const t=`<!-- 时间轴 | 自变量给 Date，横轴换成时间比例尺：刻度按日期取整，间隔不均的日期按真实间距排开 -->
+<div style="width: 100%">
+  <xh-cartesian-chart id="cartesian-chart-time">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">日订单量</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("cartesian-chart-time");
+  // 两个月的日订单量，由日序号算出，每次打开都长一样
+  chart.data = Array.from({ length: 61 }, (_, i) => ({
+    date: new Date(2026, 6, 1 + i),
+    count: Math.round(420 + i * 3 + Math.sin(i / 5) * 40 + Math.cos(i / 11) * 25),
+  }));
+  // monotone 平滑且不越过数据点，不会画出数据里没有的峰谷
+  chart.series = [{ mark: "line", x: "date", y: "count", name: "订单量", curve: "monotone", area: true }];
+  chart.xAxis = { format: { month: "numeric", day: "numeric" } };
+<\/script>
+`;export{t as default};

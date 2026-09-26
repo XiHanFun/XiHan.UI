@@ -327,9 +327,9 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 | `--xh-skeleton-bg` | `item` | `background-color` | `default` | `--xh-bg-subtle` | skeleton 的 item 部件 background-color 覆盖槽。 |
 | `--xh-skeleton-circle-radius` | `item` | `border-radius` | `shape=circle` | `--xh-shape-circle` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-circle-size` | `item` | `inline-size` | `shape=circle` | `--xh-control-h-lg` | skeleton 的 item 部件 inline-size 覆盖槽。 |
-| `--xh-skeleton-duration` | `item` | `animation` | `default` | `--xh-shimmer-duration` | skeleton 的 item 部件 animation 覆盖槽。 |
+| `--xh-skeleton-duration` | `item` | `animation` | `default` | `--xh-motion-loop-shimmer` | skeleton 的 item 部件 animation 覆盖槽。 |
 | `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-3` | skeleton 的 root 部件 gap 覆盖槽。 |
-| `--xh-skeleton-pulse-duration` | `item`<br>`root` | `animation` | `animation=pulse` | `--xh-shimmer-duration` | skeleton 的 item、root 部件 animation 覆盖槽。 |
+| `--xh-skeleton-pulse-duration` | `item`<br>`root` | `animation` | `animation=pulse` | `--xh-motion-loop-shimmer` | skeleton 的 item、root 部件 animation 覆盖槽。 |
 | `--xh-skeleton-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-rect-block-size` | `item` | `min-block-size` | `shape=rect` | `--xh-control-h-lg` | skeleton 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-skeleton-rect-radius` | `item` | `border-radius` | `shape=rect` | `--xh-shape-surface` | skeleton 的 item 部件 border-radius 覆盖槽。 |
@@ -339,6 +339,10 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-skeleton-duration` · `--xh-skeleton-pulse-duration`。
 
 关键帧 `xh-skeleton-pulse` · `xh-skeleton-shimmer` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

@@ -1537,8 +1537,10 @@ const panels = [
 | `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
+| `content` | `data-instant` | '' |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | '' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
@@ -1559,7 +1561,7 @@ const panels = [
 | `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`is([data-variant='outline'], [data-variant='subtle'])`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-accordion-item-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | accordion 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=outline`<br>`variant=subtle` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-accordion-trigger-bg` | `trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | accordion 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-accordion-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | accordion 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-accordion-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | accordion 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-accordion-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` | accordion 的 trigger 部件 color 覆盖槽。 |
@@ -1574,6 +1576,8 @@ const panels = [
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

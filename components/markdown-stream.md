@@ -580,7 +580,7 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-markdown-stream-caret-bg` | `block`<br>`root` | `background` | `caret` | `--xh-fg-default` | markdown-stream 的 block、root 部件 background 覆盖槽。 |
-| `--xh-markdown-stream-caret-duration` | `root` | `animation` | `caret` | `--xh-caret-duration` | markdown-stream 的 root 部件 animation 覆盖槽。 |
+| `--xh-markdown-stream-caret-duration` | `root` | `animation` | `caret` | `--xh-motion-loop-caret` | markdown-stream 的 root 部件 animation 覆盖槽。 |
 | `--xh-markdown-stream-caret-enter-duration` | `block` | `animation` | `caret` | `--xh-motion-duration-enter` | markdown-stream 的 block 部件 animation 覆盖槽。 |
 | `--xh-markdown-stream-caret-gap` | `block`<br>`root` | `margin-inline-start` | `caret` | `0.1em` | markdown-stream 的 block、root 部件 margin-inline-start 覆盖槽。 |
 | `--xh-markdown-stream-caret-h` | `block`<br>`root` | `block-size` | `caret` | `1.05em` | markdown-stream 的 block、root 部件 block-size 覆盖槽。 |
@@ -595,6 +595,10 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：出现 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-markdown-stream-caret-duration` · `--xh-markdown-stream-caret-enter-duration`。
 
 关键帧 `xh-markdown-stream-caret` · `xh-markdown-stream-caret-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

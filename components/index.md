@@ -127,6 +127,11 @@
 - [Tree 树](/components/tree)
 - [Virtualizer 虚拟滚动](/components/virtualizer)
 
+## 图表
+
+- [CartesianChart 直角坐标图](/components/cartesian-chart)
+- [PieChart 饼图](/components/pie-chart)
+
 ## 反馈
 
 - [Alert 警告提示](/components/alert)

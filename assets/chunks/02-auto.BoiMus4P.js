@@ -1,0 +1,19 @@
+const t=`<!-- 按底色选墨 | data-xh-ink="auto" 由 --xh-ink-surface 算相对亮度，浅底取黑墨、深底取白墨 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <section data-xh-ink="auto" style="--xh-ink-surface: var(--xh-color-orange-500); background: var(--xh-color-orange-500); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-button variant="ghost"><button data-xh-part="root">稍后</button></xh-button>
+  </section>
+  <section data-xh-ink="auto" style="--xh-ink-surface: var(--xh-color-teal-300); background: var(--xh-color-teal-300); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-button variant="ghost"><button data-xh-part="root">稍后</button></xh-button>
+  </section>
+  <section data-xh-ink="auto" style="--xh-ink-surface: var(--xh-color-purple-700); background: var(--xh-color-purple-700); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border-radius: var(--xh-shape-surface)">
+    <xh-button><button data-xh-part="root">发布</button></xh-button>
+    <xh-button variant="outline"><button data-xh-part="root">取消</button></xh-button>
+    <xh-button variant="ghost"><button data-xh-part="root">稍后</button></xh-button>
+  </section>
+</div>
+`;export{t as default};

@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 核心概念与运行时
 
-共 29 页：核心概念、两个适配器的接法、以及命令式服务与运行时。
+共 30 页：核心概念、两个适配器的接法、以及命令式服务与运行时。
 索引见 https://ui.docs.xihanfun.com/llms.txt
 
 ---
@@ -13,7 +13,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。当前版本只支持 React 19：状态机要求宿主提交完当前帧、DOM 落定之后再运行回调，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的基础。
 
-覆盖进度：134 个组件中已覆盖 134 个，与 Vue 侧一致。
+覆盖进度：136 个组件中已覆盖 136 个，与 Vue 侧一致。
 登记在 `ui/tooling/scripts/react-coverage.json`，多项门禁按它决定核对哪些组件：登记多余会核对不存在的组件，登记缺失会静默漏检，两种情况都判失败。
 
 ## 组件命名
@@ -84,7 +84,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 ## 全局配置
 
-`XhConfigProvider` 向下提供 locale、文案覆盖、尺寸、浮层落点与七轴视觉环境：
+`XhConfigProvider` 向下提供 locale、文案覆盖、尺寸、浮层落点与八轴视觉环境：
 
 ```tsx
 <XhConfigProvider config={{ locale: "zh-CN", size: "sm" }}>
@@ -119,7 +119,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 | `flush` | `flushSync` 强制一次提交，回调在 DOM 落定之后运行 |
 | `onMount` / `onCleanup` | `useLayoutEffect` 的挂载与清理 |
 
-`track` 是拉式的，与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源变化即通知；React 中 props 的变化不经过任何可订阅的源，它是下一次渲染函数的入参。推式实现在这里永远收不到 props 变化：83 个状态机中的 `track` 与 82 个 `watch` 块会全部静默失效且不报错。
+`track` 是拉式的，与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源变化即通知；React 中 props 的变化不经过任何可订阅的源，它是下一次渲染函数的入参。推式实现在这里永远收不到 props 变化：85 个状态机中的 `track` 与 84 个 `watch` 块会全部静默失效且不报错。
 
 `useMachine(machine, getProps, options)` 封装了它。props 传的是 getter：每次渲染读取，状态机读到的始终是当前帧的值。
 
@@ -231,13 +231,13 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1034 个导出组件按组件分组列在[组件参考](../components/)。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1052 个导出组件按组件分组列在[组件参考](../components/)。
 
 没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
 
 ## 配置与视觉环境
 
-`provideXhConfig` 接收响应式配置。七轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
+`provideXhConfig` 接收响应式配置。八轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
 
 ```ts
 provideXhConfig({
@@ -249,7 +249,7 @@ provideXhConfig({
 });
 ```
 
-物理 Portal 会由 Core 从该根桥接已解析七轴到实例壳，Vue 适配器不复制视觉状态。
+物理 Portal 会由 Core 从该根桥接已解析八轴到实例壳，Vue 适配器不复制视觉状态。
 
 ## 事件与 v-model
 
@@ -450,7 +450,7 @@ Vue 项目使用本适配器；需要在多个框架或无框架页面中复用�
 ```ts
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
-defineXhElements(); // 注册全部 136 个 xh-* 元素
+defineXhElements(); // 注册全部 138 个 xh-* 元素
 ```
 
 主入口的 `import` 本身不注册，必须显式调用这一行。注册是幂等的：同版本重复调用直接返回；同标签不同版本，或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
@@ -465,7 +465,7 @@ defineXhBackground();
 
 ## 配置与视觉环境
 
-`<xh-config>` 本身就是 Light DOM 局部 scope，七轴一次声明后会投影为 Core Portal 能桥接的标准属性：
+`<xh-config>` 本身就是 Light DOM 局部 scope，八轴一次声明后会投影为 Core Portal 能桥接的标准属性：
 
 ```html
 <xh-config
@@ -580,7 +580,7 @@ document.querySelector("xh-dialog")
 
 ## 自定义元素清单
 
-包内附带 `custom-elements.json`（CEM 格式），包含 136 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
+包内附带 `custom-elements.json`（CEM 格式），包含 138 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
 
 清单由构建生成，`pnpm gate:cem` 会重新生成后比对，修改元素后未重新生成会被拦截。
 
@@ -628,7 +628,7 @@ export const accordionKeyboard: KeyboardTable = {
 };
 ```
 
-每一行有稳定的 `id`、触发按键、生效前置条件与效果。全库共 672 条，分布在 134 个组件上。
+每一行有稳定的 `id`、触发按键、生效前置条件与效果。全库共 695 条，分布在 136 个组件上。
 
 规格表由三方共同消费：
 
@@ -1054,7 +1054,7 @@ export function connectAccordion<T extends PropTypes>(
 
 `@xihan-ui/animations` 提供现成的动效：11 个进场预设、6 个注意预设，外加错开起播与文字拆分。零第三方依赖，框架无关，任何框架（或无框架）都可直接安装使用。
 
-它建立在 [动效原语](/guide/motion) 之上：减弱动效的降级由该层统一处理，本层不另开通道。
+它建立在 [动效原语](/guide/motion) 之上：减弱动效的降级由该层统一处理，本层不另开通道。减弱动效下两族预设都不播，元素直接呈现终态：它们是表现性的动效，不承载信息。
 
 ```vue
 <script setup lang="ts">
@@ -1157,7 +1157,12 @@ const riseUp: MotionSpec = {
 
 一帧可以修改六个属性：`opacity` `x` `y` `scale` `rotate` `blur`。位移写数字按 px，写字符串原样透传（`'100%'`）。省略的字段表示该帧不参与该属性的插值。
 
-配方是纯数据，因此可以存入数据库、由界面下拉切换、由用户修改后存回。播放前一律经过一道钳制（`clampSpec`）：越界钳住、非有限值丢弃、帧数与时长有上限，异常数据不会导致播放失败。
+配方是纯数据，因此可以存入数据库、由界面下拉切换、由用户修改后存回。播放器在入口按 `validateMotionSpec` 校验合上本次选项与时长系数之后的配方，不合法时同步抛错、不起播，不做钳制或补值：
+
+- 帧数 1–60（`MAX_FRAMES`），时长与起播延迟 0–60000ms（`MAX_DURATION`），有限播放次数不超过 1000（`MAX_ITERATIONS`）。
+- `opacity` 在 0–1，`scale` 与 `blur` 不为负，位移与旋转是有限数，偏移量在 0–1 且按帧序不减。
+- 整段与逐帧缓动必须是命名缓动或合法的 CSS 缓动函数，由 [`resolveEasing`](/guide/motion#缓动) 判定。
+- 闪烁：任意一秒内明暗交替不得超过三次（`MAX_FLASHES_PER_SECOND`，WCAG 2.3.1）。按不透明度计算，同一方向连续变化满 0.1 算一次起落，一明一暗算一次闪烁；连播时上一遍末帧跳回下一遍首帧也算一次变化。`peakFlashesPerSecond(spec)` 返回一份配方任意一秒内最多闪几次。
 
 展开为宿主可识别的关键帧时有一条规则：某个属性只要有一帧声明过，其余帧就补上它的中性值。只在中间帧出现的属性，宿主会以元素当前的计算值作为端点，而该值随皮肤变化：同一份配方在不同皮肤下会成为不同的动画。
 
@@ -1175,6 +1180,17 @@ const riseUp: MotionSpec = {
 
 `fade-start` / `fade-end` 标了 `logical`，横向位移在 RTL 下自动取反；`fade-up` 这类纵向的不受影响。
 
+预设的时长、位移与曲线取自 [动效令牌](/design/motion)，由 `@xihan-ui/motion` 的语义常量传过来，与令牌逐条对账：
+
+| 预设 | 时长 | 位移 | 缓动 |
+| --- | --- | --- | --- |
+| `fade` | `--xh-motion-duration-enter` | — | `--xh-motion-ease-enter` |
+| `fade-up` `fade-down` `fade-start` `fade-end` `zoom-in` `zoom-out` `blur-in` | `--xh-motion-duration-slide` | `--xh-motion-distance-lg` | `--xh-motion-ease-enter` |
+| `rise` `drop-in` `spin-in` | `slide` 加 `enter` | `--xh-motion-distance-lg` 的 1.5 倍 | `--xh-motion-ease-emphasis` |
+| `shake` `pulse` `bounce` `wobble` `flash` `heartbeat` | `--xh-motion-duration-attention` | `--xh-motion-distance-md` 为准 | 各预设自带 |
+
+缩放、旋转与模糊的幅度是各预设自身的形状，不对应令牌。核心组件不使用注意一族：校验失败用颜色、图标与文字表达，是否抖动由应用决定。
+
 ## 播
 
 ```ts
@@ -1189,7 +1205,7 @@ motion.play(el, { frames: [{ opacity: 0 }, { opacity: 1 }], duration: 500 }); //
 
 同一元素上再次播放会先撤销上一段：两段同时写同一批属性时，后一段会从被修改的中间态起步。被撤销的 `play` 以 `'cancelled'` 结算，不抛异常。
 
-播放器上有开关、时长系数与预设表：
+播放器上有开关、时长系数与预设表。时长系数取 (0, 100]，越界时 `createMotionPlayer` 抛错：
 
 ```ts
 const motion = createMotionPlayer({
@@ -1295,7 +1311,7 @@ onBeforeUnmount(() => motion.cancel());
 await motion.playAll(list.children, "rise", { stagger: 40, from: "center" });
 ```
 
-`from` 决定从哪一端铺开：`first` 从头、`last` 从尾、`center` 从中间向两侧。间隔叠加在给定的基础延迟上。任意一个被打断，整体即视为被打断。
+`from` 决定从哪一端铺开：`first` 从头、`last` 从尾、`center` 从中间向两侧。间隔缺省取 `--xh-motion-stagger-step`（40ms），叠加在给定的基础延迟上。任意一个被打断，整体即视为被打断。
 
 ## 文字拆分
 
@@ -1585,7 +1601,7 @@ const bridge = createPortalVisualBridge({ source, shell });
 bridge.dispose();
 ```
 
-桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`，以及语气 `data-tone`。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`，以及语气 `data-tone` 与材质轴 `data-material`。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
 ## 在 Vue 中使用
 
@@ -1823,7 +1839,7 @@ export interface PresenceHandle {
 }
 ```
 
-关闭时先同步触发 `onBeforeExit`，动画探测器在此申领租约；所有租约归还之前 `rendered` 保持 `true`，DOM 不移除。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。自定义动画租约由创建方明确完成或取消。
+关闭时先同步触发 `onBeforeExit`，动画探测器在此申领租约；所有租约归还之前 `rendered` 保持 `true`，DOM 不移除。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。减弱动效下退场关键帧去掉位移、只剩 120ms 淡出，租约照样等它播完。自定义动画租约由创建方明确完成或取消。
 
 Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，保持浮层登记、滚动锁与背景失活直到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
 
@@ -2047,6 +2063,161 @@ runtime.subscribe(() => {
 
 ---
 
+来源：https://ui.docs.xihanfun.com/guide/date
+
+# 日期与时间
+
+`@xihan-ui/core/date` 提供不带时区的日期值、公历运算、时区换算、按地区划分的周与格式化。日期族的 8 个组件（日期字段、时间字段、日期选择器、日期范围选择器、日历选择器、日历范围选择器、时间选择器、时间范围选择器）都建立在它之上。自研实现，零运行时依赖，整个子入口压缩后 6.52 kB。
+
+命名、取值范围与越界规则沿用 Temporal：`PlainDate` / `PlainTime` / `PlainDateTime` 与 `Temporal.PlainDate` 等同名同义，运行环境普遍提供 Temporal 之后，调用点可以逐个换成原生对象。
+
+## 存在的原因
+
+组件对外的值一律是 ISO 串（`2026-09-26`、`14:05`、`2026-09-26T14:05`）。把串换成可运算的值时，以下细节写错一处，症状就是边界日期错位：
+
+- 月份加减要夹住日号。1 月 31 日加一个月是 2 月 28 日（闰年 29 日），不是 3 月 3 日。
+- `Date` 表示时刻而不是日期。以 `Date` 做日期运算时，运行环境所在的时区隐式参与，跨越夏令时的那一天会多出或少掉一小时；`Date.UTC` 还会把 0–99 年映射到 1900 年代。
+- 一周从星期几开始由地区决定：美国、日本从星期日开始，中国、欧洲多数国家从星期一开始，埃及从星期六开始。月历的首列与行数都随之变化。
+- ISO 周固定从星期一开始，跨年的那一周归星期四所在的年：2027-01-01 属于 2026 年的第 53 周。
+- 墙上时间在某些时区里不唯一：夏令时开始时有一段时间不存在，结束时有一段时间出现两次，换成时刻前必须决定取哪一刻。
+
+## 用法
+
+```ts
+import { PlainDate, today } from "@xihan-ui/core/date";
+
+PlainDate.from("2026-01-31").add({ months: 1 }).toString(); // '2026-02-28'
+today("Asia/Shanghai").toString(); // 上海此刻的日期
+```
+
+组件内部已经接入，日常使用不涉及这一层。需要在组件之外计算日期（快捷预设、查询参数、min / max）时直接使用。
+
+## 值类型
+
+| 类型 | 字段 | 字符串形态 |
+| --- | --- | --- |
+| `PlainDate` | `year` `month` `day` | `YYYY-MM-DD`；0–9999 以外的年份写成 `±YYYYYY-MM-DD` |
+| `PlainTime` | `hour` `minute` `second` `millisecond` | `HH`、`HH:mm`、`HH:mm:ss`、`HH:mm:ss.SSS`，可带前缀 `T` |
+| `PlainDateTime` | 以上全部 | `YYYY-MM-DD`（时间取 00:00）或 `YYYY-MM-DDTHH[:mm[:ss[.SSS]]]`，分隔符可以是 `T` 或空格 |
+
+三种值都不可变，实例冻结，所有运算返回新值。月份从 1 起算，星期几按 ISO 8601 编号：1 = 星期一 … 7 = 星期日。日期范围与 Temporal 相同：-271821-04-19 至 +275760-09-13。
+
+字符串解析是严格的：`2026-02-29`、`2026-1-1`、带时区偏移的串（`...Z`、`...+08:00`）都抛 `RangeError`。组件内部把解析失败当作「没有值」处理，不会抛给使用者。
+
+### 构造与越界
+
+构造函数只接受合法字段，越界抛 `RangeError`。`from(fields)` 与 `with(fields)` 缺省把越界的字段夹到最近的合法值，传 `{ overflow: 'reject' }` 改为抛错：
+
+```ts
+import { PlainDate } from "@xihan-ui/core/date";
+
+PlainDate.from({ year: 2026, month: 2, day: 31 }).toString(); // '2026-02-28'
+PlainDate.from("2026-01-31").with({ month: 2 }).toString(); // '2026-02-28'
+PlainDate.from({ year: 2026, month: 2, day: 31 }, { overflow: "reject" }); // RangeError
+```
+
+### 运算
+
+| 方法 | 说明 |
+| --- | --- |
+| `add(duration)` / `subtract(duration)` | 先加年月并夹住日号，再加周与日。`PlainDateTime` 先加时间部分、满一天进位，再按同样规则加日期部分。`PlainTime` 跨过午夜时绕回 |
+| `with(fields)` | 换掉部分字段 |
+| `until(other, { largestUnit })` / `since(other, ...)` | 两者之差，`since` 是 `until` 的相反数。`largestUnit` 缺省为天；取月或年时，月数取「不越过终点」的最大值，起点加上结果恰好落在终点 |
+| `round({ smallestUnit, roundingIncrement, roundingMode })` | `PlainTime` 与 `PlainDateTime` 按单位与步长取整。步长须整除上一级单位，例如按 15 分钟取整；取整方式与 Temporal 相同的九种 |
+| `compare(a, b)` / `equals(other)` | 先后比较与相等判断 |
+
+值对象不能直接比大小或做算术：`a < b`、`a + 1` 会抛 `TypeError`，比较一律用 `compare`。`toString()` 与 `toJSON()` 输出 ISO 串，放进模板字符串与 `JSON.stringify` 都得到 ISO 串。
+
+`PlainDate` 与 `PlainDateTime` 另有只读字段 `dayOfWeek`、`dayOfYear`、`weekOfYear`、`yearOfWeek`、`daysInMonth`、`daysInYear`、`inLeapYear`。其中 `weekOfYear` 与 `yearOfWeek` 按 ISO 周计算。
+
+## 时区
+
+值对象不带时区。与时刻互换时显式给出时区，不给时取运行环境所在的时区：
+
+| 导出 | 说明 |
+| --- | --- |
+| `today(timeZone?)` / `now(timeZone?)` | 某个时区里的今天与此刻 |
+| `PlainDate.fromDate(instant, timeZone?)` / `PlainDateTime.fromDate(...)` | 时刻（`Date` 或毫秒数）在某个时区里的日期与日期时间 |
+| `plainDate.toDate(timeZone?)` | 这一天在某个时区里开始的时刻 |
+| `plainDateTime.toDate(timeZone?, { disambiguation })` | 墙上时间在某个时区里对应的时刻 |
+| `getLocalTimeZone()` | 运行环境所在时区的 IANA 名 |
+| `getTimeZoneOffset(instant, timeZone?)` | 该时刻的偏移量，毫秒，东正西负 |
+| `isValidTimeZone(timeZone)` | 运行环境是否认得这个时区名 |
+
+偏移量向 `Intl` 询问，库里不带时区数据库。墙上时间不唯一时按 `disambiguation` 取舍：
+
+| 取值 | 夏令时跳过的时间 | 夏令时重复的时间 |
+| --- | --- | --- |
+| `compatible`（缺省） | 跳过之后的那一刻 | 较早的一次 |
+| `earlier` | 跳过之前的那一刻 | 较早的一次 |
+| `later` | 跳过之后的那一刻 | 较晚的一次 |
+| `reject` | 抛 `RangeError` | 抛 `RangeError` |
+
+零点被夏令时跳过的日子（例如智利），`plainDate.toDate()` 取当天第一个存在的时刻。
+
+日期类组件的 `timeZone` prop 只决定「今天」是哪一天（聚焦日的兜底、今天的标记、快捷预设）与日期字段的 `valueAsDate`。格式化只由日期字段决定，与时区无关。
+
+## 周与地区
+
+```ts
+import { getWeekInfo, PlainDate, startOfWeek, weeksInMonth } from "@xihan-ui/core/date";
+
+getWeekInfo("en-US"); // { firstDay: 7, weekend: [6, 7] }
+startOfWeek(PlainDate.from("2026-09-26"), "zh-CN").toString(); // '2026-09-21'
+weeksInMonth(PlainDate.from("2026-08-01"), "en-US"); // 6
+```
+
+| 导出 | 说明 |
+| --- | --- |
+| `getWeekInfo(locale)` | 周首日与周末 |
+| `startOfWeek(date, weekStart)` / `endOfWeek(date, weekStart)` | 所在那一周的第一天与最后一天 |
+| `dayOfWeekIn(date, weekStart)` | 在那一周里排第几，0 即周首日 |
+| `weeksInMonth(date, weekStart)` | 所在月份在月历上占几行（4–6） |
+| `isWeekend(date, locale)` | 是否周末 |
+
+`weekStart` 可以是 locale，也可以直接给出星期几（`1` 即 ISO 周的周一起算）。周规则取自 Unicode CLDR 48 的 weekData，按地区查表；只写语言时按语言推断地区（`zh` 按中国、`ar` 按埃及）。认 `-u-fw-`（`en-US-u-fw-mon`）、`-u-ca-iso8601`（周一起）与 `-u-rg-`（`en-US-u-rg-gbzzzz` 按英国）三种扩展。
+
+不向 `Intl.Locale#getWeekInfo` 询问：各浏览器对它的支持与数据版本不一，同一个 locale 会排出不同的月历。
+
+## 月、季度与年
+
+| 导出 | 说明 |
+| --- | --- |
+| `startOfMonth` / `endOfMonth` | 月初与月末 |
+| `startOfQuarter` / `endOfQuarter` / `quarterOf` | 季初、季末与第几季度 |
+| `startOfYear` / `endOfYear` | 年初与年末 |
+| `fromIsoWeek(yearOfWeek, week, dayOfWeek?)` | ISO 周年的第几周、星期几是哪一天 |
+| `isoWeeksInYear(year)` | 一个 ISO 周年有 52 周还是 53 周 |
+| `isLeapYear` / `daysInMonth` / `daysInYear` | 按年份与月份的公历常识 |
+
+边界函数对 `PlainDateTime` 只挪日期，保留时间部分。
+
+## 格式化
+
+```ts
+import { createDateFormatter, PlainDate } from "@xihan-ui/core/date";
+
+const heading = createDateFormatter("zh-CN", { year: "numeric", month: "long" });
+heading.format(PlainDate.from("2026-02-01")); // '2026年2月'
+```
+
+`createDateFormatter(locales, options)` 建一个可复用的格式化器，提供 `format`、`formatToParts`、`formatRange`、`formatRangeToParts` 与 `resolvedOptions`，参数同 `Intl.DateTimeFormat`，不含时区。值对象上的 `toLocaleString(locales, options)` 做同样的事。
+
+值本身不带时区，格式化按字段原样呈现，结果与运行环境所在的时区无关。没有给任何日期或时间字段时，日期按年月日、时间按时分秒、日期时间两者都输出。`Intl.DateTimeFormat` 的构造开销较大，同一组参数只构造一次。
+
+## 与 Temporal 的差异
+
+| 方面 | 本模块 | Temporal |
+| --- | --- | --- |
+| 精度 | 毫秒 | 纳秒 |
+| 历法 | 只有 ISO 8601 推及历 | 支持多种历法 |
+| 字符串解析 | 只认上文列出的扩展格式，不收时区偏移与时区注记 | 另收基本格式、偏移与注记 |
+| 带时区的值 | 与 `Date` 互换（`toDate` / `fromDate`） | `ZonedDateTime` |
+| 时长 | 冻结的普通对象 | `Temporal.Duration` |
+| 周与季度 | 另有按地区的周规则、季度与边界函数 | 无 |
+
+---
+
 来源：https://ui.docs.xihanfun.com/guide/diagnostics
 
 # 诊断通道
@@ -2094,6 +2265,16 @@ export const DIAGNOSTIC_CODES = {
   overlayStackingTrap: "overlay.stacking-trap", // 浮层的祖先建了层叠上下文，浮层的层号被困在其中
   scrollbarMissingScrollable: "scrollbar.missing-scrollable", // 滚动条挂载时找不到它要管的滚动容器
   overlayMissingAnchor: "overlay.missing-anchor", // 浮层展开了却没有锚点，位置无从算起
+  chartMissingName: "chart.missing-name", // 图表没有可及名：caption 部件、aria-label、aria-labelledby 都没有
+  chartUnknownField: "chart.unknown-field", // 系列引用的字段在数据里不存在
+  chartDuplicateSeries: "chart.duplicate-series", // 两个系列的 id 相同
+  chartTooManySeries: "chart.too-many-series", // 分类系列超过 8 个：没有第 9 色
+  chartMixedColorRoles: "chart.mixed-color-roles", // 同一张图混用分类色与语气色
+  chartInvalidSlot: "chart.invalid-slot", // 固定色槽越界，或两个系列固定到同一槽
+  chartStackOffsetConflict: "chart.stack-offset-conflict", // 同一堆叠组的 stackOffset 不一致
+  chartLogDomain: "chart.log-domain", // 对数轴的定义域含 0 或跨越正负
+  chartBarBaseline: "chart.bar-baseline", // 柱系列所在的值轴不含 0
+  chartNegativeShare: "chart.negative-share", // 占比类图表出现负值
 };
 ```
 
@@ -2893,24 +3074,45 @@ setMetadataAutoPrint(true);
 
 ## 缓动
 
-CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源；取值的真源是令牌层的 `ease.standard / in / out` 与 `duration.fast / normal / slow`（`@xihan-ui/tokens` 的 primitive），这里的 `standard` / `easeIn` / `easeOut` 与 `durations` 三值逐字等于它们，由门禁 `check-motion-source` 比对。
+CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源；取值的真源是令牌层（`@xihan-ui/tokens` 的原语 `ease.*`、`duration.*` 与语义层 `--xh-motion-*`）。门禁 `check-motion-source` 双向比对：令牌里的每条曲线与时长在这里都有同值常量，这里多出的名字须登记理由。
 
 ```ts
 import { cubicBezier, easing, resolveEasing } from "@xihan-ui/motion";
 
 easing.easeOut; // 'cubic-bezier(0, 0, 0.2, 1)'
 
-// 名字、CSS 串、函数三种写法统一成函数
-resolveEasing("easeOut")(0.5); // 0.79…
+// 名字、CSS 缓动函数、函数三种写法统一成函数
+resolveEasing("easeOut")(0.5); // 0.84…
 resolveEasing("cubic-bezier(0.4, 0, 0.2, 1)")(0.5);
+resolveEasing("steps(4)")(0.5); // 0.5
 resolveEasing(t => t * t)(0.5); // 0.25
 ```
 
-八条命名缓动：`linear` `standard` `emphasized` `decelerate` `accelerate` `easeIn` `easeOut` `easeInOut`。
+十条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack` `sineInOut` `emphasized`（表现性进场，语义令牌 `--xh-motion-ease-emphasis`，`@xihan-ui/animations` 的预设使用），以及 CSS 关键字 `linear`。
 
-三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `durations.slow`。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
+三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
 
-`resolveEasing` 无法识别的写法退回线性：写法可能来自 DOM 特性或后端配置，是任意字符串，不应让整段动画停止。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
+字符串先查命名缓动，查不到再按 CSS 缓动函数的语法解释：`linear`、`ease` / `ease-in` / `ease-out` / `ease-in-out`、`step-start` / `step-end`、`cubic-bezier()`、`steps()`、`linear()`，取值与浏览器一致，所以 `readMotion` 读到样式里改写成任何合法缓动都能换成函数。CSS 关键字 `ease-out` 与命名缓动 `easeOut` 是两条曲线。认不出的写法抛 `TypeError`，消息里列出可用写法：写法可能来自 DOM 特性或后端配置，拼错的名字若悄悄按匀速播放，比报错更难察觉。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
+
+## 从元素读取令牌
+
+JS 动画与同一元素上的 CSS 过渡保持同步时，不要写死毫秒，从元素读取语义令牌：
+
+```ts
+import { readMotion, tweenValueAt } from "@xihan-ui/motion";
+
+const motion = readMotion(el);
+const spec = {
+  from: 0,
+  to: 1,
+  duration: motion.duration("move"), // --xh-motion-duration-move 的实际取值（毫秒）
+  easing: motion.easing("continuous"), // --xh-motion-ease-continuous 的采样函数
+};
+```
+
+计算样式里已经算进作者对组件槽的覆盖、容器上的 `data-motion` 与系统的减弱动效偏好，减弱动效下几何类时长读到的就是 1ms。读不到时（服务端、未加载样式的测试环境）取与令牌同值的常量 `motionDurations` / `motionEasings`，按元素判断为减弱时取减弱档的时长。每次调用读一次计算样式，在动画开始前调用即可。
+
+`readMotion` 只读时长与缓动。语义位移与错开步长另有同值常量：`motionDistances`（`sm` / `md` / `lg`，4 / 8 / 16px，减弱动效下令牌归零）与 `motionStaggerStep`（40ms）。
 
 `toLinearEasing` 把任意缓动函数采样为 CSS `linear()` 串，用于把只有 JS 能计算的曲线交回 CSS：
 
@@ -3052,7 +3254,20 @@ createSpring({ duration: 0.4, bounce: 0 }); // 临界阻尼，全程单调不过
 createSpring({ duration: 0.4, bounce: -0.5 }); // 过阻尼，缓慢趋近
 ```
 
-`bounce` 落在 (−1, 1)：正数减阻尼、负数加阻尼。五个预设 `snappy` `smooth` `gentle` `bouncy` `stiff` 直接按名字取。
+`bounce` 落在 (−1, 1)：正数减阻尼、负数加阻尼。预设按名字取，取值与令牌 `--xh-motion-spring-<名>-stiffness / -damping` 同源（质量恒为 1）：
+
+| 预设 | 刚度 / 阻尼 | 超调 | 落定 | 用途 |
+| --- | --- | ---: | ---: | --- |
+| `stiff` | 600 / 42 | 0.5% | 约 195ms | 越界回弹 |
+| `smooth` | 300 / 30 | 0.4% | 约 283ms | 手势松手：归位、快甩、面板弹回 |
+| `snappy` | 380 / 30 | 2.2% | 约 369ms | 干脆的位移 |
+| `gentle` | 170 / 26 | 0 | 约 567ms | 临界阻尼的慢弹簧 |
+| `bouncy` | 400 / 18 | 20.4% | 约 581ms | 明显回弹，只供作者使用，核心组件不用 |
+| `toggle` | 420 / 26 | 7.5% | — | liquid 档的切换滑块 |
+| `lead` / `trail` | 520 / 34、210 / 24 | 2.9%、0.9% | 约 313ms、485ms | liquid 档双沿指示器的前沿与后沿 |
+| `merge` | 320 / 24 | 5.8% | — | liquid 档的融合与分离 |
+
+核心组件在 standard 档只用超调不超过 3% 的预设。
 
 沉降时长按阻尼比分三支计算：欠阻尼看包络衰减、临界阻尼求解含 t 的指数方程、过阻尼由较慢的根主导。三支各有断言，并与 dt=0.1ms 的四阶龙格-库塔积分逐点比对。
 
@@ -3068,9 +3283,35 @@ if (supportsLinearEasing()) {
 }
 ```
 
+### 有状态弹簧
+
+`createSpring` 描述的是一段从 0 到 1 的固定运动。手势需要另外两件事：松手时的速度要接进动画，动画进行中目标还会变。`createSpringValue` 持有当前值、速度与目标，改目标时以当前位移与当前速度为初始条件重新求解，位置与速度都不跳变：
+
+```ts
+import { createSpringValue } from "@xihan-ui/motion";
+
+const offset = createSpringValue({
+  spring: "smooth",
+  value: 0,
+  target: sheetElement, // 取它所在的窗口驱动帧循环，并按它的 data-motion 作用域判断减弱动效
+  onUpdate: (value) => { sheetElement.style.translate = `0 ${value}px`; },
+});
+
+// 拖动中跟手，直接落位
+offset.set(dragY);
+// 松手：按位移与速度决定关闭还是弹回，速度原样交给弹簧
+const result = await offset.to(shouldClose ? sheetHeight : 0, { velocity: releaseVelocity });
+// result 是 'rest'（落定）或 'interrupted'（被新的 to()、set()、stop() 打断）
+```
+
+- 在目标处带着速度松手也会运动：先被速度带离，再回到目标。
+- 每一段运动是时间的闭式解，与帧率无关；帧由 `frameLoop` 驱动。
+- 减弱动效下 `to()` 直接落到终态并以 `'rest'` 结算，跟手的 `set()` 不受影响。
+- 刚度、阻尼、质量不大于 0，或任何数值不是有限数时立即抛 `TypeError`。
+
 ## 减弱动效
 
-系统偏好之上叠加一层应用级 override，最终偏好 = override ?? 系统设置。
+系统偏好之上叠加一层应用级 override，最终偏好 = override ?? 系统设置。传入元素时，最近祖先上的 `data-motion`（`reduce` / `default`）再优先一层，与 CSS 令牌的作用域一致。
 
 ```ts
 import {
@@ -3080,6 +3321,7 @@ import {
 } from "@xihan-ui/motion";
 
 resolveMotionPreference(); // 'no-preference' | 'reduce'
+resolveMotionPreference(el); // 先看 el 最近祖先的 data-motion，再看 override 与系统设置
 
 // 接到产品自己的“减弱动效”设置项；传 null 交还系统
 setMotionOverride("reduce");
@@ -3091,11 +3333,11 @@ const off = onMotionPreferenceChange(preference => console.log(preference));
 
 没有 `matchMedia` 的宿主（SSR、jsdom）一律按不减弱处理：`prefersReducedMotion()` 返回 `false`，`getMotionPreference()` 返回 `'no-preference'`。
 
-这是仓库内唯一的探测通道：`@xihan-ui/core` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）与平滑滚动、`headless` 的数字动画、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读取，应用级 override 一处设置、处处生效。门禁 `check-reduced-motion-channel` 保证：除 motion 包自身外，源码中不允许出现 `matchMedia('(prefers-reduced-motion')`。
+JS 侧统一经 `resolveMotionPreference` 读取，并传入动效作用的元素：最近祖先上的 `data-motion` 与 CSS 的作用域一致地生效，其次是应用级 override，最后是系统设置。`@xihan-ui/core` 的贴底与平滑滚动、`headless` 的数字动画与走马灯自动播放、反馈服务的加载弧线与 `backgrounds` 的画面都按此读取，容器上写一次 `data-motion="reduce"`，CSS 与 JS 动效一起停。门禁 `check-reduced-motion-channel` 保证：系统信号 `(prefers-reduced-motion` 只在 motion 包的 `reduced-motion.ts` 与 core 的视觉环境探测 `visual-environment/env.ts` 两处出现，且 `resolveMotionPreference` 处处传参。
 
-### 七轴控制器统一入口
+### 八轴控制器统一入口
 
-应用根只设置一次视觉环境，解析后的 motion 会同时投影到 DOM，并经显式 sink 驱动 JS 动画、Presence 与平滑滚动：
+应用根只设置一次视觉环境，解析后的 motion 会同时投影到 DOM，并经显式 sink 驱动 JS 动画与平滑滚动：
 
 ```ts
 import { setMotionOverride } from "@xihan-ui/motion";
@@ -3143,7 +3385,7 @@ handle.finish();
 ```ts
 import { frameLoop, frameNow, isTweenDone, tweenValueAt } from "@xihan-ui/motion";
 
-const spec = { from: 0, to: 1000, duration: 800, easing: "ease-out" } as const;
+const spec = { from: 0, to: 1000, duration: 800, easing: "easeOut" } as const;
 const start = frameNow(window);
 
 const stop = frameLoop(window, () => {
@@ -3227,7 +3469,7 @@ session.dispose(); // 移除监听，重复调用是安全的
 
 ## 使用的组件
 
-跟手期间的指针监听统一经过这一层，15 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
+跟手期间的指针监听统一经过这一层，16 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
 
 在状态机中的接法是把会话挂进拖动态的效应，效应拆卸时 `dispose`：状态一离开拖动态，监听自动移除：
 
@@ -4186,7 +4428,7 @@ import { brandId, createVisualEnvironmentController, registerBrand } from "@xiha
 // 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
 registerBrand("acme", "#16a34a");
 
-// 切换：品牌是七轴视觉环境之一
+// 切换：品牌是八轴视觉环境之一
 const visual = createVisualEnvironmentController({ root: document.documentElement });
 visual.setPreference({ brand: brandId("acme") });
 ```
@@ -4230,7 +4472,9 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 关闭时 DOM 不会立即消失：[进出场原语](./behavior#进出场)会等待动画结束（或超时）后才允许卸载，因此 `[data-state='closed']` 的动画可以完整播放。
 
-跨皮肤共用的关键帧（`xh-fade-in / out`、`xh-overlay-slide-in / out`、`xh-overlay-pop-in`、`xh-pop-in / out`、`xh-rise-in`、`xh-disclosure-expand / collapse`）只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`；引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。组件专属关键帧（`xh-spinner-rotate`、`xh-drawer-in-*` 一类）仍写在各自皮肤里。要替换某段共享动画，在 `xihan.overrides` 层重定义同名关键帧即可，不必逐皮肤覆盖。
+跨皮肤共用的关键帧只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`：浮层进出场 `xh-overlay-slide-in / out`、`xh-overlay-pop-in`、`xh-pop-in / out`，面板 `xh-sheet-in / out`，整幅滑入 `xh-slide-in / out`，淡变与页内显现 `xh-fade-in / out`、`xh-rise-in`、`xh-drop-in`，列表条目 `xh-item-in`，披露 `xh-disclosure-expand / collapse`，循环 `xh-spin`、`xh-shimmer`，倒计时 `xh-countdown`。引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。同一段动画全库只有一个名字；只属于一个组件的关键帧（`xh-toast-in`、`xh-skeleton-shimmer` 一类）仍写在各自皮肤里。
+
+要替换某段动画，在 `xihan.overrides` 层重定义同名关键帧即可，不必逐皮肤覆盖。共享关键帧的重定义会作用到所有引用它的组件；只想换一个组件时，改写该组件部件上的 `animation-name`，指向自己定义的关键帧。
 
 ## 升级前的形态
 
@@ -4513,7 +4757,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 122 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 128 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -4523,6 +4767,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-overlay-strategy` | 浮层坐标系在机器 / `connect` / 皮肤三处不一致 |
 | `check-token-refs` | 皮肤引用了不存在的令牌名（整条声明会静默失效） |
 | `check-tone-tokens` | 语气轴对外的 `--xh-tone-*` 没声明在语气层的 `[data-tone]` 上，或与私有槽的取值分叉 |
+| `check-chart-palette` | 图表数据色在亮色或暗色下不过色板检查：分类色的明度带、对比度、相邻与任意两色的色差、色觉障碍分离、色相分散与离开告警色，以及有序、顺序、发散、涨跌色阶的结构 |
 | `check-shared-slots` | 同一字面量在多个组件中作为默认值，却未建立语义令牌 |
 | `check-motion-easing` | 皮肤的缓动下探到 `--xh-ease-*` 原语、手写 `cubic-bezier()`，或使用了未登记的字面曲线 |
 | `check-motion-amplitude` | 位移与缩放的幅度写成字面量（减弱动效档把 `--xh-motion-distance-*` 压成 `0px`、`--xh-motion-scale-*` 压成 `1`，写死的位置无法压缩）；居中用的百分比与 `0` / `1` 是几何，不在此列 |
@@ -4534,7 +4779,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-part-wiring` | 解剖声明、`connect` 产出、适配器却未接线的部件 |
 | `check-dead-state-attr` | `connect` 发出的 `data-*` 在本组件的作用域中没有任何规则消费：其他组件的同名规则不计入，该规则永远无法选中它。信息钩子逐条登记，登记项过期同样判失败 |
 | `check-skin-parts` | 皮肤选择器中的 `[data-part]` 不在所属 scope 的解剖中：部件退役后遗留的规则永远无法选中节点，`surface:update` 还会把它的覆盖槽收回公开面。scope 按选择器计算（逐分支、逐复合：写在 `[data-part]` 前后的 `[data-scope]` 都约束这一节，未写的沿用左侧最近一节，`:is()` / `:where()` 中一致的 scope 带回外层，`:not()` / `:has()` 中各自计算），解剖外的名字逐条登记，登记项过期同样判失败；`data-scope` / `data-part` 的属性选择器无法读取的（转义、匹配符不是全等）同样判失败 |
-| `check-breakpoints` | 皮肤 `@media` 中的断点字面量不在令牌清单中（自定义属性在媒体条件中不生效，只能写字面量） |
+| `check-breakpoints` | 皮肤 `@media` 中的断点字面量不在令牌清单中（自定义属性在媒体条件中不生效，只能写字面量）；查询用了 `max-width` / `max-height` 上界写法：它在断点值上与 `min-width` 同时成立，窄档专属规则写补集 `not all and (min-width: …)` |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
 | `check-focus-ring-surface` | 可聚焦部件的面与环的对比度不足 3:1（按计算结果，不按形态推断），该档却未把 `--xh-_ring-color` 设为 `currentColor`：键盘焦点在该面上等于未绘制。`currentColor` 覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记环由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
@@ -4542,6 +4787,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
 | `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |
 | `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
+| `check-material-scope` | liquid 落在没登记的部件上：连接层投影 `data-xh-liquid` 的部件、皮肤里与 `[data-xh-liquid]` 写在同一个复合选择器上的部件，都必须是登记过的导航层（浮动钮、媒体控制、悬浮栏），每条写明它浮在什么之上；过期的登记同样判失败 |
 | `check-changeset-packages` | changeset 头部写了 `.changeset/config.json` ignore 表里的私有包（如 `@xihan-ui/testing`）或不在工作区的包：前者与发布包混写时 `changeset version` 直接报 Mixed changesets，只写它时整份被丢掉、正文进不了 CHANGELOG；后者报 not in the workspace。不依赖 git 基线，头部读不成「包名: 档位」也判红 |
 | `check-surface-edge` / `check-selection-marker` / `check-state-ladder` / `check-text-role` 与扩展后的 `check-elevation-role` / `check-shape-scale` / `check-press-feedback` / `check-family-parity` | 七条家族门禁：根面边界三选一、选中与当前态按语义分类、交互态按承载面阶梯、排版与图标按角色、raised 逐部件登记且必带描边、形状身份表、按压几何与换底、同族同值。尚未迁移的存量登在 `tooling/scripts/family-backlog.json`，每条必须真被放行过一次（登记了却没命中判过期），`check-family-backlog`（`gate:family` 里的 `family-backlog.spec.mjs`）把每段条目数钉在快照与 CEILING 上、键集合只许是快照的子集——表只减不增 |
 
@@ -4574,7 +4820,7 @@ pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合
 pnpm size
 ```
 
-38 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+40 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
 
 
 ## 相关
@@ -4685,9 +4931,9 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 
 必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不各画一套；禁用标签色统一 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
 
-## 七轴视觉环境运行时
+## 八轴视觉环境运行时
 
-`VisualEnvironmentController` 是 mode、brand、density、dir、contrast、motion、transparency 的唯一状态与 DOM 投影入口。一次 `setPreference` 同步提交同一 scope 的完整七轴：
+`VisualEnvironmentController` 是 mode、brand、density、dir、contrast、motion、transparency、material 的唯一状态与 DOM 投影入口。一次 `setPreference` 同步提交同一 scope 的完整八轴：
 
 ```ts
 import { setMotionOverride } from "@xihan-ui/motion";
@@ -4710,6 +4956,7 @@ const visual = createVisualEnvironmentController({
     contrast: "system",
     motion: "system",
     transparency: "system",
+    material: "standard",
   },
 });
 
@@ -4723,10 +4970,10 @@ visual.dispose();
 
 根控制器的 `motionSink` 是显式依赖注入：它把解析后的 motion 同步到 Presence、平滑滚动和 JS 动画。只有 `documentElement` 根作用域允许传；局部控制器只改当前 DOM scope，不能隐式污染全局 JS override。
 
-七轴状态会投影成 Portal 可桥接的完整属性面：
+八轴状态会投影成 Portal 可桥接的完整属性面：
 
 ```html
-<html data-theme="dark" data-brand="xihan" data-density="compact" data-contrast="more" data-motion="reduce" data-transparency="reduce" dir="rtl">
+<html data-theme="dark" data-brand="xihan" data-density="compact" data-contrast="more" data-motion="reduce" data-transparency="reduce" data-material="liquid" dir="rtl">
 ```
 
 ## 偏好、状态与系统轴
@@ -4734,12 +4981,12 @@ visual.dispose();
 | | `VisualEnvironmentPreference` | `VisualEnvironmentState` |
 | --- | --- | --- |
 | 含义 | 用户或服务端提交的意图 | 已完全定型的事实 |
-| `undefined` | 清除本层覆盖，继承父控制器 | 不存在，七轴全部非空 |
+| `undefined` | 清除本层覆盖，继承父控制器 | 不存在，八轴全部非空 |
 | `'system'` | 仅 mode / contrast / motion / transparency 合法 | 不存在，已解析成具体值 |
 
-brand、density、dir 没有平台媒体查询，因此不接受伪造的 `system`。其余四轴分别读取 `prefers-color-scheme`、`prefers-contrast`、`prefers-reduced-motion`、`prefers-reduced-transparency`。没有 `window` / `matchMedia` 的 SSR 环境使用浅色、默认对比度、默认动效和默认透明度，不猜测客户端偏好。
+brand、density、dir、material 没有平台媒体查询，因此不接受伪造的 `system`。其余四轴分别读取 `prefers-color-scheme`、`prefers-contrast`、`prefers-reduced-motion`、`prefers-reduced-transparency`。没有 `window` / `matchMedia` 的 SSR 环境使用浅色、默认对比度、默认动效和默认透明度，不猜测客户端偏好。
 
-基线七轴为 light、xihan、comfortable、ltr、default、default、default。`contrast='default'` 是显式恢复常规对比度的正式值；旧的 `base` 不再接受。
+基线八轴为 light、xihan、comfortable、ltr、default、default、default、standard。`contrast='default'` 是显式恢复常规对比度的正式值；旧的 `base` 不再接受。
 
 | DOM 轴 | 说明 |
 | --- | --- |
@@ -4750,10 +4997,11 @@ brand、density、dir 没有平台媒体查询，因此不接受伪造的 `syste
 | `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把磨砂材质切成实体配方 |
+| `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
 
 ## 父作用域、Portal 与回收
 
-局部控制器通过 `parent` 明确继承。父状态变化时，子控制器只重算没有本地偏好的轴；`setPreference({ motion: undefined })` 会删除本层覆盖，立即恢复继承。dispose 会退订父作用域和系统媒体，并把根元素七个属性精确还原到接管前。
+局部控制器通过 `parent` 明确继承。父状态变化时，子控制器只重算没有本地偏好的轴；`setPreference({ motion: undefined })` 会删除本层覆盖，立即恢复继承。dispose 会退订父作用域和系统媒体，并把根元素八个属性精确还原到接管前。
 
 ```ts
 const page = createVisualEnvironmentController({
@@ -4767,17 +5015,17 @@ const editor = createVisualEnvironmentController({
 });
 ```
 
-React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析七轴，适配器不另存一份视觉状态。
+React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`、`material`。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析八轴，适配器不另存一份视觉状态。
 
 ## 五轴旧视图
 
-`createThemeController`、`resolveTheme` 与 `applyThemeAttrs` 继续存在，但只是新控制器的明确五轴视图：没有独立 resolver、媒体查询或持久化实现。新代码应使用七轴控制器；独立的 `applyThemeAttrs` 只写五轴，控制器则始终维护完整七轴 DOM 合同。
+`createThemeController`、`resolveTheme` 与 `applyThemeAttrs` 继续存在，但只是新控制器的明确五轴视图：没有独立 resolver、媒体查询或持久化实现。新代码应使用八轴控制器；独立的 `applyThemeAttrs` 只写五轴，控制器则始终维护完整八轴 DOM 合同。
 
-`color-scheme` 声明写在深色取值块里，所以嵌套深色区域的原生控件也会跟随。SSR 首屏应直接输出七个已解析属性，避免客户端接管前闪烁。
+`color-scheme` 声明写在深色取值块里，所以嵌套深色区域的原生控件也会跟随。SSR 首屏应直接输出八个已解析属性，避免客户端接管前闪烁。
 
 ## 材质配方
 
-令牌配方四档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
+令牌配方五档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`；M5 liquid 另有五项专用令牌。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
@@ -4785,6 +5033,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
 | M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Toast、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
+| M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
 | raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Segmented、Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
 | floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
 
@@ -4795,6 +5044,8 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | `separator` | 内部分段线 |
 | `fg` / `fg-muted` | 正文与次要文字，始终不透明 |
 | `focus-surface` | 键盘聚焦时铺在焦点环内侧的实体隔离底 |
+
+M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、1px 顶光、前景、投影与背景滤镜；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
 
 Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
@@ -4819,6 +5070,36 @@ Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、�
 | `--xh-material-frosted-compact-shadow` | 明暗独立的两层小投影 |
 
 高对比、强制颜色和打印分别改为不透明、无模糊、无投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
+
+### 液态材质
+
+`data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。用了视觉环境控制器时，经它的 `material` 偏好设置（控制器始终维护根上的这个属性）。
+
+现有的液态部件：FloatButton 触发器与展开的动作、BackTop、MessageFeed / Log 的回到底部、Carousel 的翻页与播放钮和分页条（托在一条液态胶囊上）、ImageViewer 的工具条、计数、翻页与关闭钮，以及 Layout 固定时的顶栏。瞬态浮层、模态、Toast / Notification、Card、Table、表单与正文容器不用液态，由门禁 `check-material-scope` 守住。
+
+```html
+<html data-material="liquid">
+  <!-- 图片、视频、画布这类读不到颜色的区域，由作者声明下层的明暗 -->
+  <section data-xh-backdrop="dark" data-xh-backdrop-busy>…</section>
+</html>
+```
+
+作者只写这一个属性。组件挂载后由 `@xihan-ui/core/visual-environment` 的液态面接管，同一文档的部件共用一套监听，不需要额外安装或调用：
+
+- 按部件下层的计算底色与作者声明选色调：下层亮取浅色调、下层暗取深色调，部件随之成为黑墨或白墨域（相对亮度 0.179 ± 0.04 滞回，内容滚过分界附近不来回闪）。
+- 下层均匀且色调已知时换通透档（浅 0.24 / 深 0.34）；下层有文字、渐变、图片、视频、画布或读不到时留在可读下限，标签在任何下层上至少 4.5:1。模态打开、背景被设为 inert 而命中不到时同样按读不到处理。
+- 滚动、窗口缩放、图片加载完、过渡或动画播完、状态机驱动的平移落定（轮播翻页、看图惯性）时重读下层。
+- 细指针移动时 1px 边缘光转向指针；粗指针、无指针与减弱动效下固定左上（RTL 右上）。
+- Chromium 内核下距边缘 18px 以内折射下层；其余引擎、尺寸超过 640 × 120 或同一视口超过 3 个时只模糊不折射。
+
+| 专用令牌 | 用途 |
+| --- | --- |
+| `--xh-material-liquid-tint` | 通透档的着色 |
+| `--xh-material-liquid-alpha-clear` / `-alpha-floor` | 通透档与可读下限的不透明度 |
+| `--xh-material-liquid-rim-far` | 背光一侧的弱亮边 |
+| `--xh-material-liquid-bezel` | 折射带宽度 |
+
+服务端与挂载前输出静态形态：色调随主题，不透明度取可读下限。减少透明、打印时不透明度 1 且无背景滤镜与折射，高对比档不透明度 1，强制色改由系统色表达。
 
 ## 直接取用令牌
 
@@ -4866,9 +5147,9 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 版本号采用语义化版本 `major.minor.patch`：受约束的成员变更走 major，新增走 minor，只修正行为不改名字走 patch。
 
-## 17 个包必须同版本安装
+## 18 个包必须同版本安装
 
-17 个包锁步发布：任何一个包发新版本，全部 17 个包一起发同一个号。
+18 个包锁步发布：任何一个包发新版本，全部 18 个包一起发同一个号。
 
 ```
 @xihan-ui/core     @xihan-ui/position       @xihan-ui/tokens
@@ -4876,7 +5157,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 @xihan-ui/vue      @xihan-ui/web-components @xihan-ui/chat-stream
 @xihan-ui/markdown @xihan-ui/code-highlight @xihan-ui/backgrounds
 @xihan-ui/sound    @xihan-ui/motion         @xihan-ui/animations
-@xihan-ui/pointer
+@xihan-ui/pointer  @xihan-ui/viz
 ```
 
 两条后果：
@@ -4888,18 +5169,18 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-17 个包中 17 个出 JS 或类型入口，共 34 个带类型的入口。
+18 个包中 18 个出 JS 或类型入口，共 36 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
-| 包名 | 17 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 34 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
-| Vue 组件导出 `Xh*` | 1038（134 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
-| Vue 组合式函数 `use<家族>` | 102 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
+| 包名 | 18 | 把代码从一个包移到另一个包 = major |
+| `exports` 子路径 | 36 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| Vue 组件导出 `Xh*` | 1056（136 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组合式函数 `use<家族>` | 104 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
-| 无头内核 `connect*` | 134 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
+| 无头内核 `connect*` | 136 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
 | 无头内核 `*Machine` | 80 | 机器 schema 的形状 |
 | 类型 `*Props` / `*Api` / `*ChangeDetails` / `*Schema` | 145 / 120 / 103 / 80 | 删字段、改字段名、把可选改必填都是 major |
 | Vue prop 名与未传入语义 | 373 个不同名字 / 1335 处声明 | 见下方说明 |
@@ -4915,20 +5196,20 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | Vue 上下文类型 `*Context` / `*Callbacks` | 108 | 用于给透传的 `api` 标注类型。只保证可读，不保证可构造：新增可选字段不算破坏，因此不要写 `const c: SelectContext = { … }` 这类字面量赋值 |
-| `custom-elements.json`（CEM） | 1 份 / 136 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
+| `custom-elements.json`（CEM） | 1 份 / 138 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
 
 ### 排除
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
 | `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 等。它们是内核实现的一部分，实现变化时签名随之变化。所需默认值应从组件 props 的文档默认值读取，不应 import 常量再自行比对 |
-| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，45 个）、`ColorHsva`、`CascaderLevel` 等，是上述函数的参数与返回类型 |
-| `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 134 | 它们描述的 part 名单受约束（见第二节），但这三个对象本身的组织方式不受约束。部件名单以组件文档页的解剖表为准，不应 import 这些对象 |
+| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，46 个）、`ColorHsva`、`CascaderLevel` 等，是上述函数的参数与返回类型 |
+| `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 136 | 它们描述的 part 名单受约束（见第二节），但这三个对象本身的组织方式不受约束。部件名单以组件文档页的解剖表为准，不应 import 这些对象 |
 | Vue 的 `provide*` / `use*Context` 函数 | 115 | [Vue 适配器](../adapters/vue) 已写明父子组件之间的 provide / inject 是内部实现，不对外开放。需要下探时使用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字形似组合式函数，实际是 inject 管道，与上一行同类 |
 | 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createLitRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型未从同一个包导出，无法构造调用 |
-| WC 的元素类导出 `Xh*Element` | 108 | 仅用于 `instanceof` 与手动 `customElements.define`，不支持 `extends`（基类不导出、`wire()` 是 protected abstract）。获取元素使用 `document.querySelector` |
-| WC 元素上的 `static partContract` | 134 | 部件校验的输入数据，实现细节 |
+| WC 的元素类导出 `Xh*Element` | 110 | 仅用于 `instanceof` 与手动 `customElements.define`，不支持 `extends`（基类不导出、`wire()` 是 protected abstract）。获取元素使用 `document.querySelector` |
+| WC 元素上的 `static partContract` | 136 | 部件校验的输入数据，实现细节 |
 | `dist/` 内部文件名 | — | `element-Bx4xCiT2.js` 这类打包 chunk 每次构建都可能变化，不得 deep import |
 | `.d.ts` 的文件布局 | — | 类型从包入口获取，不引用具体 `.d.ts` 路径 |
 | `ui/tooling/`、`ui/apps/playground-*` | — | 不发布 |
@@ -4941,15 +5222,15 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
-| `data-scope` 取值（组件身份） | 134 | **受约束**（新增第 135 个组件是 minor） |
-| `data-part` 取值（部件名） | 261 个不同名字 / 1040 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 261 个 | **受约束** |
-| `meta.requiredParts`（必备部件） | 294 条 | **受约束**（加条目 = major），方向见下 |
+| `data-scope` 取值（组件身份） | 136 | **受约束**（新增第 137 个组件是 minor） |
+| `data-part` 取值（部件名） | 290 个不同名字 / 1103 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 290 个 | **受约束** |
+| `meta.requiredParts`（必备部件） | 300 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 
-::: warning `data-xh-part` 与 `data-xh-scroll` 是 `data-xh-` 前缀里仅有的两个例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 37 个）是库自用标记，排除在承诺之外。两个例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
+::: warning `data-xh-part`、`data-xh-scroll`、墨色域与液态下层的声明是 `data-xh-` 前缀里仅有的例外
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 53 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
 :::
 
 ### requiredParts 的方向是反的
@@ -4963,7 +5244,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 225 个不同的 `data-*` 属性名、1567 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 237 个不同的 `data-*` 属性名、1662 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -4975,7 +5256,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 170 个属性名 / 731 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 183 个属性名 / 793 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -4996,7 +5277,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 份数低不等于使用少：`data-tone` 的规则集中在 `tone.css` 一份文件中，浮层的 `data-placement`
 同样集中在定位块中，逐份皮肤只在需要额外微调时才单独选中它们。属性名与取值的约束不按份数区分。
 
-取值同样受约束。属性名变更会破坏皮肤，取值变更同样破坏且更隐蔽：`[data-state='open']` 在取值改为 `expanded` 之后仍是合法 CSS，只是永远不匹配。自带皮肤当前用到的 33 个 `data-state` 取值全部受约束：
+取值同样受约束。属性名变更会破坏皮肤，取值变更同样破坏且更隐蔽：`[data-state='open']` 在取值改为 `expanded` 之后仍是合法 CSS，只是永远不匹配。自带皮肤当前用到的 34 个 `data-state` 取值全部受约束：
 
 ```
 open  closed  checked  unchecked  indeterminate  on
@@ -5027,11 +5308,11 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层均为 major。`xihan.overrides` 刻意留空，专供使用方覆盖，不会作为未使用的层被清理 |
 | 全局令牌 · 原语层 | 115 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤中不应直接使用它们，但接入品牌轴必须写 `--xh-color-brand-*`，因此它们是公开的 |
 | 全局令牌 · 语义层 | 302 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 4038（覆盖 133 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
+| 组件覆盖槽 | 4088（覆盖 135 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 58 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
-| 关键帧名 | 63 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
+| 关键帧名 | 40 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 4 | `--xh-_truncate-lines`、`--xh-_float-button-offset`、`--xh-_tour-spotlight-radius`、`--xh-_carousel-autoplay-duration`。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，文本截断、浮动按钮贴边、引导目标圆角或轮播进度会失效，且不报任何错误 |
-| `@xihan-ui/styles` 的 CSS 子路径 | 155 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./motion.css`，与 145 条 `.css`：134 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
+| `@xihan-ui/styles` 的 CSS 子路径 | 160 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./motion.css`，与 148 条 `.css`：136 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
 ### 排除
@@ -5044,7 +5325,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 550 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 660 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -5053,15 +5334,15 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
-| 自定义元素标签 `xh-*` | 137（`defineXhElements()` 注册 136 + `xh-background`） | **受约束** |
+| 自定义元素标签 `xh-*` | 139（`defineXhElements()` 注册 138 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1337 条声明 / 378 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 378 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 91 个名字 / 201 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（186 处中 184 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
-| 事件 `detail` 形状 | 184 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 210 条（涉及 70 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
-| 命令式方法 | 92（分布在 47 个元素） | **受约束**，含参数与返回类型 |
+| observed attribute | 1357 条声明 / 393 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 393 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| `CustomEvent` 名 | 96 个名字 / 210 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（195 处中 193 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
+| 事件 `detail` 形状 | 188 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| `attribute: false` 的 JS 字段 | 223 条（涉及 76 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
+| 命令式方法 | 97（分布在 50 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
 
@@ -5082,7 +5363,7 @@ brand  neutral  success  warning  danger  info
 
 以下与包结构有关的事实同样在承诺内：
 
-- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全量注册：调用即注册全部 136 个元素，没有逐个的 `defineXhButton()`。（补充细粒度 define 是 minor；补充后 `defineXhElements` 的全量语义即成为承诺。）
+- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全量注册：调用即注册全部 138 个元素，没有逐个的 `defineXhButton()`。（补充细粒度 define 是 minor；补充后 `defineXhElements` 的全量语义即成为承诺。）
 - `xh-background` 单独在 `@xihan-ui/web-components/backgrounds`，因为它依赖可选 peer。把它移入 `./define` 会强制所有使用方安装 WebGL 引擎，属于破坏性变更。
 - 元素全部是 Light DOM，没有 shadow root，`::part()` 不生效。CEM 中的 `cssParts` 条目在本包读作 `data-xh-part`，不是 shadow part。
 
@@ -5185,6 +5466,12 @@ brand  neutral  success  warning  danger  info
 
 低于硬底线不会降级，而是无样式：皮肤中刻意不写兜底值，令牌缺席是缺陷而不是降级。
 
+高于硬底线又无从兜底的特性，皮肤一律不用，由 `check-css-floor` 的拒绝名单拦截（`@scope`、`@starting-style`、嵌套选择器等）。其中容易误写的一条：
+
+| 特性 | 最早完整支持 | 底线内的引擎不认时 | 皮肤的写法 |
+| --- | --- | --- | --- |
+| 媒体查询区间写法 `(width < 768px)` | Chrome 104 / Firefox 63 / Safari 16.4 | Safari 16.2 / 16.3 把整条查询判作不成立，块内规则静默丢失 | 断点只写 `(min-width: …)`，窄档专属规则写它的补集 `not all and (min-width: …)` |
+
 可选增强层（不支持时按下表退化；新增增强特性不算破坏，前提是同时提供退化路径）：
 
 | 特性 | Chrome | Firefox | Safari | 不支持时 |
@@ -5214,7 +5501,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 锁步发版意味着版本号不反映稳定性，因此单独列表。
 
-下面两张表覆盖全部 17 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
+下面两张表覆盖全部 18 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
 
 ### 稳定
 
@@ -5222,24 +5509,25 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 1038 个组件、102 个组合式函数 |
+| `@xihan-ui/vue` | 1056 个组件、104 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
-| `@xihan-ui/web-components` | 137 个自定义元素 |
+| `@xihan-ui/web-components` | 139 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
-| `@xihan-ui/styles` | 134 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 550 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/styles` | 136 份组件皮肤、5 个层名 |
+| `@xihan-ui/tokens` | 660 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
-| `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
+| `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime`、时区换算、周规则、边界函数与格式化器） |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
 | `@xihan-ui/motion` | 缓动名、时长常量、`animate`、补间与弹簧算子。三值与令牌层同源（`check-motion-source` 比对），`core` / `headless` 与各适配器均建立在它之上，改名会先破坏库自身 |
 | `@xihan-ui/pointer` | `createPointerSession` / `createMultiPointerSession` 与四层几何纯函数。`headless` 与各适配器的拖拽、缩放、划动全部经由它，同上 |
 
 ### 实验
 
-这六个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
+这七个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
 
 | 包 | 仍在变化的原因 |
 | --- | --- |
+| `@xihan-ui/viz` | 图表组件按期接入，比例尺、形状、场景与过渡的签名随组件落地仍会调整 |
 | `@xihan-ui/code-highlight` | 承诺面是 `HighlighterPort` 端口，自研分词器（`tokenizeCode`、`langSpecOf`、`LangSpec`）随时可能整体替换 |
 | `@xihan-ui/markdown` | 公开面是 `createStreamRenderer` 与它的三个类型，外加 `blockKind` / `fenceLang` / `isFenceClosed` / `LIVE_BLOCK_KEY` 四个切块算子；解析、切块、缓存的中间件随时可能变化 |
 | `@xihan-ui/chat-stream` | AI 会话协议类型（`UIMessage`、`TextPart` 等）跟随上游生态演进 |
@@ -5254,12 +5542,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，15592 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，16366 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 191 条子入口、8016 个导出名、134 个 `data-scope` 与 1040 条部件配对、
-134 个组件的 1721 个 prop 名、227 种 `data-*`、33 个 `data-state` 取值、550 个令牌、
-5 个 `@layer` 名、4038 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
+覆盖：包名与 198 条子入口、8513 个导出名、136 个 `data-scope` 与 1103 条部件配对、
+136 个组件的 1763 个 prop 名、239 种 `data-*`、34 个 `data-state` 取值、660 个令牌、
+5 个 `@layer` 名、4088 个组件覆盖槽、138 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
@@ -5281,13 +5569,13 @@ changeset 按 patch / minor 记录即可：更新基线这一动作本身不代�
 :::
 
 另有三道门禁把原本依赖自觉的条款转为机器检查。`check-css-floor` 保证浏览器硬底线：
-`.browserslistrc` 记录底线，拒绝名单拦截 `@scope` 等无兜底的抬底线特性，
-`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 17 包锁步：任何一个
+`.browserslistrc` 记录底线，拒绝名单拦截 `@scope`、媒体查询区间写法等无兜底的抬底线特性，
+`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 18 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 保证检查系统自身：新增的
 check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截。
 
 三条视觉轴已收敛为联合类型，`tone` / `size` / `variant` 不再是裸 `string`，
-写错取值在编译期报错。Vue 事件载荷已有类型，98 个组件的 `emits` 全是对象式，
+写错取值在编译期报错。Vue 事件载荷已有类型，101 个组件的 `emits` 全是对象式，
 产物 `.d.ts` 中不再出现 `(...args: any[]) => any`。
 
 ### 尚无门禁的条款
@@ -5298,8 +5586,8 @@ check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截�
 | --- | --- | --- |
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，由 `check-slot-types` 门禁的四条判据保证（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报错 | 无载荷插槽也补充声明，或明确只有带载荷的插槽进入契约 |
 | 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字移除之后，消费方的声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，因此每次移除都在 changeset 中逐条列出旧名与替换写法，供使用方在自己的代码库中全文搜索 | 无 |
-| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope` 等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
-| 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 17 个 | 提升为 peer，或把运行期比对扩展到全部包 |
+| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope`、媒体查询区间写法等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
+| 「18 个包必须同版本」 | `check-version-lock` 门禁保证 18 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 18 个 | 提升为 peer，或把运行期比对扩展到全部包 |
 
 本页内容与实际行为不符时按缺陷处理，请提交 issue。
 

@@ -1,0 +1,52 @@
+const e=`<!-- 两张图联动 | 两个量纲不共用一根 y 轴：两张图接到同一个受控的 activeKey，在同一个键上一起指示 -->
+<div style="display: grid; gap: var(--xh-space-6); width: 100%">
+  <xh-cartesian-chart id="cartesian-chart-linked-orders">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">周订单量</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+  <xh-cartesian-chart id="cartesian-chart-linked-rate">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">周转化率</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+</div>
+
+<script type="module">
+  const weeks = [
+    { week: "第 1 周", orders: 1320, rate: 0.031 },
+    { week: "第 2 周", orders: 1485, rate: 0.034 },
+    { week: "第 3 周", orders: 1610, rate: 0.029 },
+    { week: "第 4 周", orders: 1540, rate: 0.036 },
+    { week: "第 5 周", orders: 1790, rate: 0.041 },
+    { week: "第 6 周", orders: 1720, rate: 0.038 },
+  ];
+  const orders = document.getElementById("cartesian-chart-linked-orders");
+  const rate = document.getElementById("cartesian-chart-linked-rate");
+  orders.data = weeks;
+  orders.series = [{ mark: "bar", x: "week", y: "orders", name: "订单量" }];
+  rate.data = weeks;
+  rate.series = [{ mark: "line", x: "week", y: "rate", name: "转化率" }];
+  rate.yAxis = { format: { style: "percent", precision: { type: "fixed", digits: 1 } } };
+
+  // 任一张图上的指针或键盘换了键，另一张跟着显示十字准线与提示框
+  for (const chart of [orders, rate]) {
+    chart.addEventListener("active-key-change", (event) => {
+      orders.activeKey = event.detail.activeKey;
+      rate.activeKey = event.detail.activeKey;
+    });
+  }
+<\/script>
+`;export{e as default};

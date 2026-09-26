@@ -659,8 +659,10 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
@@ -677,7 +679,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `--xh-collapsible-header-gap` | `header` | `gap` | `default` | `--xh-_collapsible-trigger-gap` | collapsible 的 header 部件 gap 覆盖槽。 |
 | `--xh-collapsible-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | collapsible 的 root、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-collapsible-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | collapsible 的 indicator 部件 color 覆盖槽。 |
-| `--xh-collapsible-trigger-bg` | `trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | collapsible 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-collapsible-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | collapsible 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-collapsible-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | collapsible 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-collapsible-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` | collapsible 的 trigger 部件 color 覆盖槽。 |
@@ -692,6 +694,8 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

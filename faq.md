@@ -10,7 +10,7 @@ BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xiha
 
 ## 共有多少个组件
 
-134 个。每个组件同时有无头内核、Vue / React 组件、自定义元素与默认皮肤。[组件总览](./components/)按分类列出全部组件，每个组件一页。
+136 个。每个组件同时有无头内核、Vue / React 组件、自定义元素与默认皮肤。[组件总览](./components/)按分类列出全部组件，每个组件一页。
 
 ## 组件的 props 在哪里查看
 
@@ -40,7 +40,7 @@ BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xiha
 
 品牌轴需要注册后才会换色：`registerBrand(id, 种子色)` 注入该 id 的原语取值块，切换到该品牌才有视觉变化；不注册只会把 `data-brand` 写到 DOM 上。
 
-明暗、对比度、密度、书写方向四条轴默认即有取值，切换即生效。见[设计令牌与主题](./guide/theme#七轴视觉环境运行时)。
+明暗、对比度、密度、书写方向四条轴默认即有取值，切换即生效。见[设计令牌与主题](./guide/theme#八轴视觉环境运行时)。
 
 ## 皮肤中的某条样式未生效
 
@@ -109,4 +109,4 @@ BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xiha
 ## 其他问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 文档站的组件示例覆盖全部 134 个组件，Vue、React 与自定义元素的写法并排，行为问题优先在那里复现
+- 文档站的组件示例覆盖全部 136 个组件，Vue、React 与自定义元素的写法并排，行为问题优先在那里复现

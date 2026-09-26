@@ -647,9 +647,9 @@ function restart(): void {
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-timer-completed-fg` | `display` | `color` | `state=completed` | `--xh-fg-muted` | timer 的 display 部件 color 覆盖槽。 |
-| `--xh-timer-control-bg` | `control` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg` | `control` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | timer 的 control 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-timer-control-bg-active` | `control` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | timer 的 control 部件 background-color 覆盖槽。 |
-| `--xh-timer-control-bg-disabled` | `control` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg-disabled` | `control` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | timer 的 control 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-timer-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | timer 的 control 部件 background-color 覆盖槽。 |
 | `--xh-timer-control-border` | `control` | `border` | `default` | `--xh-_action-variant-border-rest` | timer 的 control 部件 border 覆盖槽。 |
 | `--xh-timer-control-border-disabled` | `control` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | timer 的 control 部件 border-color 覆盖槽。 |
@@ -673,6 +673,8 @@ function restart(): void {
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
 `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

@@ -5,13 +5,13 @@ description: 设计、重构或审查 XiHan.UI 组件的视觉、交互、状态
 
 # XiHan.UI 组件设计
 
-组件设计和视觉修改必须先读 `references/component-design.md`。涉及点击触感、圆角、透明浮层、glass 迁移或动画时，再读 `references/interaction-and-frosted.md`。
+组件设计和视觉修改必须先读 `references/component-design.md`。涉及点击触感、圆角、透明浮层、liquid、glass 迁移或动画时，再读 `references/interaction-and-frosted.md`。
 
 ## 设计顺序
 
 1. 确认用户任务、使用边界和现有组件是否已覆盖。
 2. 定义 anatomy、状态、事件、键盘和生命周期，再确定表现。
-3. 归入 Action Control、Field Chrome、Collection Item、Surface、Overlay 或 Feedback 家族。
+3. 归入 Action Control、Field Chrome、Collection Item、Surface、Overlay 或 Feedback 家族；图表部件归图表家具或数据标记。
 4. 使用现有语义令牌、Family Recipe 和组件槽确定尺寸、层级与状态。
 5. 同步检查组件文档、首个示例和组件总览预览，删除重复示例。
 
@@ -19,8 +19,12 @@ description: 设计、重构或审查 XiHan.UI 组件的视觉、交互、状态
 
 - 普通 control 4px、surface 8px、overlay 12px；pill 只用于明确的胶囊身份。
 - 离散 Action Control 按下 120ms 缩放至 0.97，释放 200ms 回到 1；集合项只换面、不整体缩放。
-- 禁止 glass 材质和兼容别名；透明浮层只允许 frosted 柔和模糊。
+- 动效按 §9 的角色取令牌：几何动画不用 `micro` / `enter` / `exit` 时长；有进场即有退场；初始内容不播进场；减弱动效去位移、留淡变（§14.4）。
+- 禁止 glass 材质和兼容别名；透明浮层只允许 frosted 柔和模糊；导航层在 `data-material="liquid"` 下可用 liquid（§8.5），内容层、浮层与模态不用。
+- 彩色面声明墨色域（§7.7），中性描边与淡底取墨色比例，不直接取中性原语。
+- 弹簧只用于手势松手（缺省）与 liquid 档的切换、指示（§9.11）；断点按视口，低于断点用补集写法，不用容器查询（§14.6）。
 - 颜色、间距、圆角、阴影和动效只使用令牌，不在组件中增加散值。
+- 图表按数据任务与坐标系划分组件；数据色只经 `--xh-chart-*` 语义层，图表文字不用系列色；不提供双 y 轴。
 - rest、hover、pressed、focus-visible、selected/open、disabled、loading、invalid 和退出状态按实际能力补齐。
 - 亮色、暗色、compact、RTL、粗指针、reduced motion、reduced transparency、forced colors 和 print 一并审查。
 

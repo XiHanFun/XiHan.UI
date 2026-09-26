@@ -45,6 +45,18 @@
 
 例外只有登记过的几件：日期范围选择器起止两组按日的段位放不进 16rem，缺省按内容撑开；分格输入由格数与格宽定宽；对话输入条铺满宿主；表单字段（Field）的控件铺满表单列。槽名与放开方式见 [皮肤与样式分层 · 输入类控件的缺省宽度与最小宽度](/guide/styling#输入类控件的缺省宽度与最小宽度)。
 
+## 侧栏的宽度
+
+<XhTokenTable
+  :names="['--xh-sider-w', '--xh-sider-collapsed-w']"
+  :notes="{
+    '--xh-sider-w': '展开',
+    '--xh-sider-collapsed-w': '折叠成图标栏',
+  }"
+/>
+
+页面侧栏的两档宽度只有这一处真源：[Layout](/components/layout) 的侧栏与 [SideNav](/components/side-nav) 缺省都读这两支令牌。改令牌，两件一起换宽；只改一处时写该组件的覆盖槽（`--xh-layout-sider-w` / `--xh-layout-sider-collapsed-w`、`--xh-side-nav-w` / `--xh-side-nav-collapsed-w`），槽压过令牌。SideNav 放进 Layout 的侧栏时，侧栏内衬缺省归零，导航正好铺满侧栏。
+
 ## 断点
 
 <XhTokenTable
@@ -57,7 +69,7 @@
   }"
 />
 
-断点只用 `min-width` 自窄到宽依次接管，写了哪档就在哪档切换；媒体查询不改选择器权重。多数"窄处坏掉"的问题不靠断点解决：flex-wrap、`min-inline-size: 0`、`overflow-wrap`、把死地板改成能让步的 `min(…, 100%)`，这些规则在窄视口与窄容器（1280 宽屏里的 260px 侧栏）两种情形下同时成立。
+断点只用 `min-width` 自窄到宽依次接管，写了哪档就在哪档切换；只在窄档生效的规则写它的补集 `not all and (min-width: …)`，不写 `max-width`（它在断点值上与 `min-width` 同时成立），也不写区间写法 `(width < …)`（Safari 16.4 起才认）。媒体查询不改选择器权重。多数"窄处坏掉"的问题不靠断点解决：flex-wrap、`min-inline-size: 0`、`overflow-wrap`、把死地板改成能让步的 `min(…, 100%)`，这些规则在窄视口与窄容器（1280 宽屏里的 260px 侧栏）两种情形下同时成立。
 
 ## 布局组件
 

@@ -29,13 +29,14 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 | 1 | `tokens` | — |
 | 1 | `icons` | — |
 | 1 | `pointer` | — |
+| 1 | `viz` | — |
 | 2 | `position` | `core` |
 | 2 | `code-highlight` | `core` |
 | 2 | `chat-stream` | `core` |
 | 2 | `markdown` | `core` |
 | 2 | `sound` | `core` |
 | 2 | `animations` | `core` `motion` |
-| 3 | `headless` | `core` `tokens` `motion` `pointer` |
+| 3 | `headless` | `core` `tokens` `motion` `pointer` `viz` |
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
 | 3 | `backgrounds` | `core` `motion` |
 | 4 | `vue` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
@@ -44,7 +45,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 
 除分层外还有三条硬规则，同样由门禁执行：
 
-- 库包的运行时代码不引入第三方依赖。唯一登记的例外是 `@internationalized/date`，只有 `headless` 的日期族使用。
+- 库包的运行时代码不引入第三方依赖。登记在案的例外只有适配器的宿主框架（`vue`、`react` 与 `react-dom`）。
 - `styles` 是纯 CSS。它不依赖任何 JS 包，可以脱离整个 JS 层单独使用。
 - 依赖版本只从 workspace catalog 取。包内一律使用 `catalog:` 或 `workspace:` 协议引用，不内联版本号。
 
@@ -88,12 +89,13 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧 |
 | `@xihan-ui/position` | 浮层定位引擎，自研，零第三方依赖 |
 | `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
+| `@xihan-ui/viz` | 图表引擎：比例尺、刻度、形状、坐标轴布局、拾取与降采样，全部是纯函数，自研，零依赖 |
 
 **组件与适配器**
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/headless` | 134 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
+| `@xihan-ui/headless` | 136 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/react` | React 19 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器，自研响应式基类 |
@@ -128,7 +130,7 @@ XiHan.UI/
 │   │   ├── adapters/        # vue · react · web-components，按宿主选择
 │   │   ├── design/          # tokens · styles · icons，外观
 │   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight，按需选用
-│   │   └── engine/          # core · motion · pointer · position · headless
+│   │   └── engine/          # core · motion · pointer · position · viz · headless
 │   └── tooling/             # 内部构建与质量工具
 │       ├── build/           # 打包配置与 exports 回写
 │       ├── eslint-config/   # lint 规则 + 分层拓扑事实源

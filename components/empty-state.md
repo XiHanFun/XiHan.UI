@@ -612,6 +612,7 @@ const results = [
 - 图标、标题、描述、操作四段都可选。
 - `live` 决定内容出现时读屏如何播报，搜索结果变空时尤其重要。
 - `status` 只接受 404 / 403 / 500 三个状态码，各并入最接近的一族语气色；`tone` 直接指定语气，两者都写时以 `tone` 为准。
+- 开幕只在出现时播放：页面加载完成之前挂上或服务端渲染后水合的空状态直接呈现；筛选、删除或新数据带来的出现，以及 root 从 `hidden` 恢复显示，图标、标题、说明、操作依次开幕。
 
 ### 组合
 
@@ -638,7 +639,7 @@ const results = [
 | --- | --- |
 | 自定义元素 | `<xh-empty-state>` |
 | Vue 组件 | `XhEmptyStateAction` `XhEmptyStateDescription` `XhEmptyStateIndicator` `XhEmptyStateMedia` `XhEmptyStateRoot` `XhEmptyStateTitle` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `emptyStateMachine` |
 | 皮肤 | `@xihan-ui/styles/empty-state.css` |
 
 ### Props
@@ -649,6 +650,14 @@ const results = [
 | `size` | `Size` |  | 尺寸档位，只影响留白与字号，不改变语义。 |
 | `status` | `EmptyStateStatus` |  | 结果页的状态码，只写为 root 的 data-status；皮肤据此把图标区并入最接近的一族语气色，图标内容由作者放入图标槽。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定图标区使用哪族颜色；与 status 都提供时以它为准。未提供时保持中性。 |
+
+### 状态
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`APPEARANCE.RELEASE`
 
 ### connect API
 
@@ -697,6 +706,11 @@ const results = [
 | `root` | `data-size` | props.size |
 | `root` | `data-status` | props.status |
 | `root` | `data-tone` | props.tone |
+| `media` | `data-instant` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
+| `title` | `data-instant` | ''（条件成立时才出现） |
+| `description` | `data-instant` | ''（条件成立时才出现） |
+| `action` | `data-instant` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -726,6 +740,8 @@ const results = [
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：出现（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

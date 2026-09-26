@@ -4,7 +4,7 @@
 
 ## 从 npm 安装
 
-XiHan.UI 的 17 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
+XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
 
 安装的包取决于使用的适配器：
 
@@ -25,13 +25,13 @@ pnpm add @xihan-ui/code-highlight
 
 `@xihan-ui/styles` 不是必需的：组件不依赖默认皮肤，只使用令牌自行编写样式是可行的路径，见下文“样式的三种接法”。
 
-适配器的引擎侧依赖（`core` / `motion` / `pointer` / `headless` / `position`）写在 `dependencies` 中，安装适配器时一并安装，不需要单独列出。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由项目提供。
+适配器的引擎侧依赖（`core` / `motion` / `pointer` / `viz` / `headless` / `position`）写在 `dependencies` 中，安装适配器时一并安装，不需要单独列出。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由项目提供。
 
 `backgrounds` / `sound` / `code-highlight` 是可选 peer，按需安装。未安装 `code-highlight` 时，代码视图渲染纯文本，不报错。
 
 除了从 npm 安装，还有两条本地路径：
 
-1. 克隆仓库直接开发：构建库包后运行文档站，134 个组件的示例都是真实组件；
+1. 克隆仓库直接开发：构建库包后运行文档站，136 个组件的示例都是真实组件；
 2. 本地构建后链接进项目：适合跟随仓库最新改动。
 
 ::: warning
@@ -74,7 +74,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 122 项结构门禁
+pnpm gate         # 128 项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -104,7 +104,7 @@ cd XiHan.UI/ui && pnpm build
 }
 ```
 
-`@xihan-ui/vue` 会通过 `dependencies` 一并引入 `core` / `motion` / `pointer` / `headless` / `position`，这些包不需要单独链接。`vue` 本身是它的 peer 依赖，由项目提供。
+`@xihan-ui/vue` 会通过 `dependencies` 一并引入 `core` / `motion` / `pointer` / `viz` / `headless` / `position`，这些包不需要单独链接。`vue` 本身是它的 peer 依赖，由项目提供。
 
 ## 接入 Vue 项目
 
@@ -117,7 +117,7 @@ import App from "./App.vue";
 // 皮肤入口自带层序声明与令牌，只引这一行；单独引 tokens.css 是只要令牌不要皮肤的路径
 import "@xihan-ui/styles";
 
-// 把七轴视觉环境写到 <html> 上，并显式处理持久化失败
+// 把八轴视觉环境写到 <html> 上，并显式处理持久化失败
 createVisualEnvironmentController({
   root: document.documentElement,
   storageKey: "app-visual-environment",
@@ -203,7 +203,7 @@ import "@xihan-ui/tokens/tokens.css";
 2. 顺序按 `index.css` 里各皮肤段的相对顺序。同一个 `@layer xihan.components` 内，等特异性的规则由源序决定。自行排序（按字母、按目录读取序）当前可能看不出差别，将来增加跨组件规则后会与全量引入的渲染不同。需要按需引入时，按 `index.css` 里 `/* styles/xxx.css */` 段标记的顺序过滤，不自行排序。
 3. 混用多份单皮肤时，每份都各带一份家族 `@import`。打包器对同一 URL 的 `@import` 去重（Vite 默认的 postcss 路径会去重）时没有代价；不去重的内联器（例如 `@tailwindcss/vite` 自带的那条）会把家族复制多份，产物随之翻倍，而且后出现的副本会排在前面的皮肤之后。家族的关键覆盖点已按特指度而非源序设计，但多份副本仍是纯浪费——引入的皮肤超过几份时改用主入口。
 
-全量是 145 份皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
+全量是 148 份皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
 :::
 
 ### 开发模式下查漏引
@@ -279,7 +279,7 @@ import "@xihan-ui/styles/index.unlayered.css";
 
 ## 服务端渲染
 
-- 视觉环境运行时在 `document` / `window` 缺席时自动进入 SSR 分支：不读媒体查询、不写 DOM，使用七轴基线。要避免首屏闪烁，在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` 七个属性直接渲染到 `<html>` 上。
+- 视觉环境运行时在 `document` / `window` 缺席时自动进入 SSR 分支：不读媒体查询、不写 DOM，使用八轴基线。要避免首屏闪烁，在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` 七个属性直接渲染到 `<html>` 上。
 - 自定义元素在 JS 到达之前不会升级。`@xihan-ui/styles` 中的 `undefined.css` 处理这段窗口：用 `:not(:defined)` 选中作者编写的 `data-xh-part`，先把浮层族的 `content` / `positioner` / `backdrop` / `viewport` 收起，避免内容以裸文本出现在页面流中被读屏和搜索引擎视为正文。
 
 ## 下一步

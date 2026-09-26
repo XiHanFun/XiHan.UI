@@ -318,7 +318,7 @@ function next(): void {
 | `from` | `number` |  | 起点，默认 0。改写它会把显示值立即落到新起点，并从那里重新运行本轮。 |
 | `to` | `number` |  | 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 |
 | `duration` | `number` |  | 时长毫秒，默认 1000；&lt;=0 即一步到位。 |
-| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，默认线性。 |
+| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 |
 | `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]。 |
 | `separator` | `string` |  | 千位分隔符，默认不分隔。 |
 | `active` | `boolean` |  | 是否运行，默认 true。变为假即停在当前值，变为真从当前值继续走向终点。 |
@@ -425,6 +425,6 @@ function next(): void {
 
 ### 动效
 
-皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核读系统的减弱动效偏好，据此决定要不要动。时长与缓动仍读[动效令牌](../guide/motion)。
+皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。时长与缓动由组件属性给出。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+系统开启减弱动效时由内核按元素判断后自行降级，不经令牌层。

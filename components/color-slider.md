@@ -636,7 +636,7 @@ import {
 | `--xh-color-slider-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-slider 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-slider-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-slider 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_color-slider-thumb-color` | color-slider 的 thumb 部件 background 覆盖槽。 |
-| `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | color-slider 的 thumb 部件 border 覆盖槽。 |
+| `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | color-slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-color-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` | color-slider 的 thumb 部件 border-color 覆盖槽。 |
 | `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-slider 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb 部件 scale 覆盖槽。 |
@@ -659,9 +659,13 @@ import {
 
 ### 动效
 
+动效角色：状态 · 切换（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-color-slider-thumb-scale-dragging`。
+
 `box-shadow` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

@@ -1,0 +1,5 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{createHighlighter as i}from"./index.Dl0MBU8T.js";import{bs as o}from"./theme.C6dHip5i.js";import{X as s,a as r,d as e,b as n,c}from"./diff-view.BVi48QYH.js";import"./framework.DxrHb2fb.js";import"./jsx-runtime.DPGahqKA.js";import"./config.CD2yLwhf.js";import"./index.CVfUds7h.js";import"./slot-content.DPoKlr88.js";import"./react-id.DLuXQvch.js";import"./use-machine.caZM2_UD.js";const m=`const endpoint = "https://api.example.com/v1/workspaces/{id}/documents?include=revisions&limit=50"
+const timeout = 3000
+export const client = createClient({ endpoint, timeout })`,p=`const endpoint = "https://api.example.com/v2/workspaces/{id}/documents?include=revisions,authors&limit=100"
+const timeout = 8000
+export const client = createClient({ endpoint, timeout })`,a=o(m,p,{lang:"typescript",highlighter:i()});function X(){return t.jsxs(s,{model:a,wrap:!0,children:[t.jsxs(r,{children:[t.jsx("span",{children:"src/client.ts"}),t.jsx(e,{change:"added"}),t.jsx(e,{change:"removed"})]}),t.jsx(n,{children:t.jsx(c,{})})]})}export{X as default};

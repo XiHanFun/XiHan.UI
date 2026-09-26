@@ -1,0 +1,1 @@
+import{eL as a}from"./theme.C6dHip5i.js";import{d as o,b as l,k as t,o as n}from"./framework.DxrHb2fb.js";const _=o({__name:"select",setup(c){const e=[{value:"apple",label:"苹果"},{value:"banana",label:"香蕉"}];return(s,r)=>(n(),l(t(a),{collection:e,"default-value":["banana"],label:"水果"}))}});export{_ as default};

@@ -417,7 +417,7 @@ const variants = [
 
 **状态**：`hidden` · `visible`
 
-**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK` · `PRESS.START` · `PRESS.END`
+**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK` · `PRESS.START` · `PRESS.END` · `TRIGGER.RENDERED`
 
 **判据**：`shouldShow` · `shouldHide`
 
@@ -475,6 +475,9 @@ const variants = [
 | `trigger` | `data-xh-action-profile` | 'floating' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | props.variant |
+| `trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
+| `trigger` | `data-xh-liquid` | '' |
+| `trigger` | `data-xh-material` | 'frosted' \| undefined |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -483,24 +486,28 @@ const variants = [
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-back-top-bg` | `root`<br>`trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_back-top-bg`<br>`--xh-material-frosted-focus-surface` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-bg-active` | `trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | back-top 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-back-top-border` | `root`<br>`trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline` | `--xh-_action-variant-border-disabled`<br>`--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-_back-top-border` | back-top 的 root、trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-back-top-border-hover` | `root`<br>`trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_back-top-border` | back-top 的 root、trigger 部件 border-color 覆盖槽。 |
-| `--xh-back-top-fg` | `root`<br>`trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-_back-top-fg` | back-top 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-back-top-bg` | `root`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_material-bg`<br>`--xh-_material-bg-focus` | back-top 的 root、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-back-top-bg-active` | `root`<br>`trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-bg-pressed`<br>`--xh-_material-bg-pressed` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-bg-hover` | `root`<br>`trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`variant=outline` | `--xh-_action-variant-bg-hover`<br>`--xh-_material-bg-hover` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-border` | `root`<br>`trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=outline` | `--xh-_action-variant-border-disabled`<br>`--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-_material-border` | back-top 的 root、trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-back-top-border-hover` | `root`<br>`trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_material-border` | back-top 的 root、trigger 部件 border-color 覆盖槽。 |
+| `--xh-back-top-fg` | `root`<br>`trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-_material-fg` | back-top 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-back-top-icon-size` | `trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | back-top 的 trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-back-top-inset-block` | `root` | `inset-block-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-block-end 覆盖槽。 |
 | `--xh-back-top-inset-inline` | `root` | `inset-inline-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-inline-end 覆盖槽。 |
 | `--xh-back-top-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | back-top 的 root 部件 z-index 覆盖槽。 |
 | `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
-| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_back-top-shadow`<br>`none` | back-top 的 root、trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_material-shadow`<br>`none` | back-top 的 root、trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | back-top 的 trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+
+共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

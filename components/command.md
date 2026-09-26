@@ -756,7 +756,7 @@ function onSelect(details: { label: string }) {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `INPUT.CHANGE` · `INPUT.SET` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `INPUT.CHANGE` · `INPUT.SET` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `PRESS.START` · `PRESS.END` · `ARRIVALS.TRACKED`
 
 **判据**：`isOpenControlled` · `keepsOpenOnSelect` · `canPress`
 
@@ -866,6 +866,7 @@ function onSelect(details: { label: string }) {
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
@@ -960,6 +961,8 @@ function onSelect(details: { label: string }) {
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

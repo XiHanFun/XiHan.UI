@@ -1,0 +1,1 @@
+import{dz as t,dA as d,dB as n,dC as o,dD as u}from"./theme.C6dHip5i.js";import{d as l,b as m,w as a,k as e,o as s,E as r}from"./framework.DxrHb2fb.js";const b=l({__name:"number-field",setup(i){return(c,f)=>(s(),m(e(u),{"default-value":"8",min:0},{default:a(()=>[r(e(o),null,{default:a(()=>[r(e(t)),r(e(d)),r(e(n))]),_:1})]),_:1}))}});export{b as default};

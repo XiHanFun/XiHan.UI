@@ -1,1 +1,0 @@
-import{cl as t}from"./theme.DFLq0s3F.js";import{d as o,o as a,c as s,E as n,w as r,a as c,k as i}from"./framework.DxrHb2fb.js";const p={style:{"font-size":"32px","font-weight":"700"}},m=o({__name:"01-basic",setup(f){return(l,e)=>(a(),s("p",p,[n(i(t),null,{default:r(()=>[...e[0]||(e[0]=[c("曦寒前端组件库",-1)])]),_:1})]))}});export{m as default};

@@ -660,7 +660,8 @@ function onSubmit(event: Event) {
 - `readOnly` 与 `disabled` 分开：只读仍可聚焦。
 - 轨道保持实体表单控件：未选中使用中性底和明确内边界，选中使用实心语气色，只读选中回到中性底；不使用 backdrop 或透明材质。
 - 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影，无顶光；静息即抬起，悬停不再升档，按住时沿行进方向拉长并在释放时回圆。loading、只读与禁用不产生按压反馈。
-- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
+- 滑块可以拖：横向拖过中点松手即切换，拖出两端越拉越沉，松手后滑块带着松手速度落到那一端；纵向划动留给页面滚动，不拖的点按照常切换。
+- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程与拖动方向，三尺寸与密度轴保持同一比例。
 - 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
 
 ### 组合
@@ -743,7 +744,7 @@ function onSubmit(event: Event) {
 
 **状态**：`off` · `on`
 
-**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `FORM.RESET` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `CLICK.SWALLOW` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isCheckedControlled` · `defaultsToChecked` · `canPress`
 
@@ -790,7 +791,7 @@ function onSubmit(event: Event) {
 
 ### 皮肤
 
-`@xihan-ui/styles/switch.css` 使用 `[data-scope="switch"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/switch.css` 使用 `[data-scope="switch"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -801,6 +802,7 @@ function onSubmit(event: Event) {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-pressed` | ''（条件成立时才出现） |
@@ -814,7 +816,9 @@ function onSubmit(event: Event) {
 | `root` | `data-xh-action-profile` | 'text' |
 | `root` | `data-xh-action-size` | props.size |
 | `root` | `data-xh-action-variant` | 'outline' |
+| `thumb` | `data-animating` | ''（条件成立时才出现） |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
+| `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-loading` | ''（条件成立时才出现） |
 | `thumb` | `data-state` | 'checked' \| 'unchecked' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
@@ -830,11 +834,11 @@ function onSubmit(event: Event) {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-switch-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle-active` | switch 的 root 部件 background-color 覆盖槽。 |
-| `--xh-switch-bg-checked` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-_switch-accent` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-bg` | `root` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`xh-ink-surface` | `--xh-bg-subtle-active` | switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-switch-bg-checked` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`xh-ink-surface` | `--xh-_switch-accent` | switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-switch-bg-checked-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-_tone-active` | switch 的 root 部件 background-color 覆盖槽。 |
-| `--xh-switch-bg-checked-readonly` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked` | `--xh-bg-subtle-active` | switch 的 root 部件 background-color 覆盖槽。 |
-| `--xh-switch-bg-disabled` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly` | `--xh-bg-subtle` | switch 的 root 部件 background-color 覆盖槽。 |
+| `--xh-switch-bg-checked-readonly` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`xh-ink-surface` | `--xh-bg-subtle-active` | switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-switch-bg-disabled` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`xh-ink-surface` | `--xh-bg-subtle` | switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-switch-bg-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_switch-track-bg` | switch 的 root 部件 background-color 覆盖槽。 |
 | `--xh-switch-border` | `root` | `box-shadow` | `contrast=more`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-switch-border-checked` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-_switch-accent` | switch 的 root 部件 box-shadow 覆盖槽。 |
@@ -850,7 +854,7 @@ function onSubmit(event: Event) {
 | `--xh-switch-label-font-size` | `label` | `font-size` | `default` | `--xh-_switch-label-font-size` | switch 的 label 部件 font-size 覆盖槽。 |
 | `--xh-switch-label-gap` | `label` | `gap` | `default` | `--xh-control-gap-md` | switch 的 label 部件 gap 覆盖槽。 |
 | `--xh-switch-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` | switch 的 label 部件 line-height 覆盖槽。 |
-| `--xh-switch-loading-duration` | `thumb` | `animation` | `loading` | `--xh-spin-duration` | switch 的 thumb 部件 animation 覆盖槽。 |
+| `--xh-switch-loading-duration` | `thumb` | `animation` | `loading` | `--xh-motion-loop-spin` | switch 的 thumb 部件 animation 覆盖槽。 |
 | `--xh-switch-loading-fg` | `thumb` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`loading`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-_switch-accent` | switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。 |
 | `--xh-switch-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | switch 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-switch-thumb` | `thumb` | `background` | `default` | `--xh-bg-surface-raised` | switch 的 thumb 部件 background 覆盖槽。 |
@@ -867,7 +871,11 @@ function onSubmit(event: Event) {
 
 ### 动效
 
-关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`box-shadow` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 切换 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-switch-loading-duration` · `--xh-switch-thumb-press-stretch`。
+
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`box-shadow` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

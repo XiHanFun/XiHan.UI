@@ -1813,6 +1813,7 @@ function onValueChange(details: { value: string[] }) {
 - 标签的值可以是对象，不限于字符串。
 - `showCount` 显示计数部件，数字取 `count` 与 `max`，达到上限与越界各换一档颜色。
 - `required` 经 `aria-required` 上报必填。
+- 标签增删有进退场：首次渲染时已有的标签直接呈现，新落下的淡入、同一批按到达顺序错开，删掉的在原处淡出，其余标签滑到新位置。标签照常按值渲染，删掉即卸载，不必为退场改写法。
 
 ### 组合
 
@@ -1902,7 +1903,7 @@ function onValueChange(details: { value: string[] }) {
 
 **状态**：`idle` · `navigating` · `editing`
 
-**事件**：`VALUE.SET` · `TAG.ADD` · `VALUE.CLEAR` · `INPUT.CHANGE` · `INPUT.COMMIT` · `INPUT.BLUR` · `TAG.HIGHLIGHT` · `TAG.DELETE` · `TAG.EDIT` · `EDIT.CHANGE` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `ITEM.FOCUS_LOST` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `TAG.ADD` · `VALUE.CLEAR` · `INPUT.CHANGE` · `INPUT.COMMIT` · `INPUT.BLUR` · `TAG.HIGHLIGHT` · `TAG.DELETE` · `TAG.EDIT` · `EDIT.CHANGE` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `ITEM.FOCUS_LOST` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
 **判据**：`canEdit` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget` · `canPress`
 
@@ -2012,6 +2013,7 @@ function onValueChange(details: { value: string[] }) {
 | `control` | `data-at-max` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-empty` | ''（条件成立时才出现） |
+| `control` | `data-instant` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-overflowing` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
@@ -2048,7 +2050,7 @@ function onValueChange(details: { value: string[] }) {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-tags-input-action-bg` | `clear-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | tags-input 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | tags-input 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-tags-input-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | tags-input 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tags-input-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tags-input 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tags-input-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
@@ -2104,7 +2106,11 @@ function onValueChange(details: { value: string[] }) {
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
+
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as r}from"./gradient-text.T7ZOjOcB.js";import"./jsx-runtime.DPGahqKA.js";import"./theme.C6dHip5i.js";import"./framework.DxrHb2fb.js";function p(){return t.jsx("p",{style:{fontSize:"32px",fontWeight:700},children:t.jsx(r,{children:"曦寒前端组件库"})})}export{p as default};

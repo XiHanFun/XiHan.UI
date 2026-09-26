@@ -1199,7 +1199,7 @@ async function remove(): Promise<void> {
 
 ### 皮肤
 
-`@xihan-ui/styles/dialog.css` 使用 `[data-scope="dialog"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/dialog.css` 使用 `[data-scope="dialog"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -1285,7 +1285,9 @@ async function remove(): Promise<void> {
 
 ### 动效
 
-关键帧 `xh-dialog-in` · `xh-dialog-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+动效角色：按压 · 状态 · 出现（面板）（见[动效规范](../design/motion#角色)）。
+
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-sheet-in` · `xh-sheet-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

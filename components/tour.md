@@ -829,6 +829,7 @@ const translations = {
 | `next-trigger` | `data-xh-action-profile` | 'text' |
 | `next-trigger` | `data-xh-action-size` | 'sm' |
 | `next-trigger` | `data-xh-action-variant` | 'solid' |
+| `next-trigger` | `data-xh-ink-surface` | '' |
 | `skip-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `skip-trigger` | `data-state` | 'open' \| 'closed' |
 | `skip-trigger` | `data-xh-action-control` | '' |
@@ -869,7 +870,7 @@ const translations = {
 | `--xh-tour-icon-size` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`root`<br>`skip-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | tour 的 close-trigger、content、next-trigger、prev-trigger、root、skip-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tour-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | tour 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-tour-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w-lg` | tour 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-tour-next-bg` | `next-trigger` | `background-color` | `default`<br>`focus-visible` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | tour 的 next-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tour-next-bg` | `next-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | tour 的 next-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-tour-next-bg-hover` | `next-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tour 的 next-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tour-next-fg` | `next-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | tour 的 next-trigger 部件 color 覆盖槽。 |
 | `--xh-tour-next-shadow` | `next-trigger` | `box-shadow` | `default` | `none` | tour 的 next-trigger 部件 box-shadow 覆盖槽。 |
@@ -896,6 +897,8 @@ const translations = {
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
 关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

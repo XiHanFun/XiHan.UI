@@ -652,6 +652,7 @@ const clicks = ref(0);
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-xh-material` | 'frosted' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
@@ -662,12 +663,12 @@ const clicks = ref(0);
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-hover-card-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | hover-card 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
-| `--xh-hover-card-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | hover-card 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-hover-card-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | hover-card 的 arrow、content 部件 background 覆盖槽。 |
-| `--xh-hover-card-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | hover-card 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-hover-card-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | hover-card 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-hover-card-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | hover-card 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-hover-card-border` | `arrow`<br>`content` | `border` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border`<br>`--xh-material-frosted-border` | hover-card 的 arrow、content 部件 border 覆盖槽。 |
 | `--xh-hover-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | hover-card 的 description 部件 color 覆盖槽。 |
 | `--xh-hover-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | hover-card 的 description 部件 font-size 覆盖槽。 |
-| `--xh-hover-card-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | hover-card 的 content 部件 color 覆盖槽。 |
+| `--xh-hover-card-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | hover-card 的 content 部件 color 覆盖槽。 |
 | `--xh-hover-card-gap` | `content` | `gap` | `default` | `--xh-space-2` | hover-card 的 content 部件 gap 覆盖槽。 |
 | `--xh-hover-card-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | hover-card 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-hover-card-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | hover-card 的 content 部件 max-block-size 覆盖槽。 |
@@ -675,7 +676,7 @@ const clicks = ref(0);
 | `--xh-hover-card-px` | `content` | `padding-inline` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-hover-card-py` | `content` | `padding-block` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-hover-card-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | hover-card 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-hover-card-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | hover-card 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-hover-card-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | hover-card 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-hover-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | hover-card 的 title 部件 color 覆盖槽。 |
 | `--xh-hover-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | hover-card 的 title 部件 font-size 覆盖槽。 |
 | `--xh-hover-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | hover-card 的 title 部件 font-weight 覆盖槽。 |
@@ -683,6 +684,8 @@ const clicks = ref(0);
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

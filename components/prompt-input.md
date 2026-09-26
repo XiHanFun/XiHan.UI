@@ -1170,13 +1170,13 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `--xh-prompt-input-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | prompt-input 的 input 部件 color 覆盖槽。 |
 | `--xh-prompt-input-radius` | `root` | `border-radius` | `xh-field-chrome` | `--xh-shape-surface` | prompt-input 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-prompt-input-row-gap` | `control` | `gap` | `default` | `--xh-_prompt-input-gap` | prompt-input 的 control 部件 gap 覆盖槽。 |
-| `--xh-prompt-input-send-bg` | `submit-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | prompt-input 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-prompt-input-send-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-prompt-input-send-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | prompt-input 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-prompt-input-send-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | prompt-input 的 submit-trigger 部件 background-color 覆盖槽。 |
-| `--xh-prompt-input-send-bg-off` | `submit-trigger` | `background-color` | `disabled` | `--xh-bg-muted` | prompt-input 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-prompt-input-send-bg-off` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-bg-muted` | prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-prompt-input-send-fg` | `submit-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | prompt-input 的 submit-trigger 部件 color 覆盖槽。 |
 | `--xh-prompt-input-shadow` | `root` | `box-shadow` | `xh-field-chrome` | `none` | prompt-input 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-prompt-input-stop-bg` | `submit-trigger` | `background-color` | `mode=stop` | `--xh-_action-variant-bg-rest` | prompt-input 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-prompt-input-stop-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `mode=stop`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-prompt-input-stop-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`mode=stop`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | prompt-input 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-prompt-input-stop-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`mode=stop`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | prompt-input 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-prompt-input-stop-fg` | `submit-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`mode=stop`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | prompt-input 的 submit-trigger 部件 color 覆盖槽。 |
@@ -1190,6 +1190,8 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
 `border-radius` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

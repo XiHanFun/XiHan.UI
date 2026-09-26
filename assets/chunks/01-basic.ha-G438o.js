@@ -1,0 +1,1 @@
+import{ep as e}from"./theme.C6dHip5i.js";import{d as o,o as l,b as n,k as r}from"./framework.DxrHb2fb.js";const d=o({__name:"01-basic",setup(t){const a=[{value:"free",label:"免费版"},{value:"standard",label:"标准版"},{value:"pro",label:"专业版"}];return(s,p)=>(l(),n(r(e),{collection:a,"default-value":"standard",label:"套餐",name:"plan"}))}});export{d as default};

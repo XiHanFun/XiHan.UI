@@ -319,7 +319,7 @@ import {
 
 ### 响应式
 
-皮肤按视口分档：`max-width: 640px`。
+皮肤按视口分档：`min-width: 640px`。
 
 ### RTL
 

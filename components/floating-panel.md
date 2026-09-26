@@ -806,6 +806,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 | `content` | `data-resizing` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-window-state` | context.get('windowState') |
+| `content` | `data-xh-material` | 'frosted' |
 | `header` | `data-dragging` | ''（条件成立时才出现） |
 | `header` | `data-window-state` | context.get('windowState') |
 | `drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -839,7 +840,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 | --- | --- | --- | --- | --- | --- |
 | `--xh-floating-panel-action-bg-active` | `close-trigger`<br>`window-state-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | floating-panel 的 close-trigger、window-state-trigger 部件 background-color 覆盖槽。 |
 | `--xh-floating-panel-action-bg-hover` | `close-trigger`<br>`window-state-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | floating-panel 的 close-trigger、window-state-trigger 部件 background-color 覆盖槽。 |
-| `--xh-floating-panel-action-bg-on` | `window-state-trigger` | `background-color` | `focus-visible`<br>`state=on` | `--xh-bg-brand-subtle` | floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。 |
+| `--xh-floating-panel-action-bg-on` | `window-state-trigger` | `--xh-ink-surface`<br>`background-color` | `focus-visible`<br>`state=on`<br>`xh-ink-surface` | `--xh-bg-brand-subtle` | floating-panel 的 window-state-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-floating-panel-action-bg-on-active` | `window-state-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-bg-brand-subtle-active` | floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。 |
 | `--xh-floating-panel-action-bg-on-hover` | `window-state-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-bg-brand-subtle-hover` | floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。 |
 | `--xh-floating-panel-action-fg` | `close-trigger`<br>`window-state-trigger` | `color` | `default` | `--xh-material-frosted-fg-muted` | floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。 |
@@ -848,14 +849,14 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 | `--xh-floating-panel-action-fg-on` | `window-state-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-fg-on-brand-subtle` | floating-panel 的 window-state-trigger 部件 color 覆盖槽。 |
 | `--xh-floating-panel-action-radius` | `window-state-trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 window-state-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-floating-panel-action-size` | `window-state-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | floating-panel 的 window-state-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-floating-panel-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | floating-panel 的 content 部件 background 覆盖槽。 |
+| `--xh-floating-panel-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | floating-panel 的 content 部件 background 覆盖槽。 |
 | `--xh-floating-panel-body-px` | `body` | `padding-inline` | `default` | `--xh-surface-px-sm` | floating-panel 的 body 部件 padding-inline 覆盖槽。 |
 | `--xh-floating-panel-body-py` | `body` | `padding-block` | `default` | `--xh-surface-py-sm` | floating-panel 的 body 部件 padding-block 覆盖槽。 |
-| `--xh-floating-panel-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | floating-panel 的 content 部件 border 覆盖槽。 |
+| `--xh-floating-panel-border` | `content` | `border` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border` | floating-panel 的 content 部件 border 覆盖槽。 |
 | `--xh-floating-panel-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-floating-panel-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | floating-panel 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-floating-panel-corner-size` | `positioner`<br>`resize-trigger` | `height`<br>`width` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-4` | floating-panel 的 positioner、resize-trigger 部件 height、width 覆盖槽。 |
-| `--xh-floating-panel-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | floating-panel 的 content 部件 color 覆盖槽。 |
+| `--xh-floating-panel-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | floating-panel 的 content 部件 color 覆盖槽。 |
 | `--xh-floating-panel-handle-size` | `positioner`<br>`resize-trigger` | `height`<br>`width` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | floating-panel 的 positioner、resize-trigger 部件 height、width 覆盖槽。 |
 | `--xh-floating-panel-header-bg` | `header` | `background` | `default` | `--xh-material-frosted-bg` | floating-panel 的 header 部件 background 覆盖槽。 |
 | `--xh-floating-panel-header-border` | `header` | `border-block-end` | `default` | `--xh-material-frosted-separator` | floating-panel 的 header 部件 border-block-end 覆盖槽。 |
@@ -865,11 +866,11 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 | `--xh-floating-panel-icon-size` | `close-trigger`<br>`content`<br>`root`<br>`trigger`<br>`window-state-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | floating-panel 的 close-trigger、content、root、trigger、window-state-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-floating-panel-layer` | `positioner` | `z-index` | `default` | `--xh-layer-drawer` | floating-panel 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-floating-panel-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | floating-panel 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-floating-panel-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | floating-panel 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-floating-panel-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | floating-panel 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-floating-panel-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | floating-panel 的 title 部件 color 覆盖槽。 |
 | `--xh-floating-panel-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | floating-panel 的 title 部件 font-size 覆盖槽。 |
 | `--xh-floating-panel-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | floating-panel 的 title 部件 font-weight 覆盖槽。 |
-| `--xh-floating-panel-trigger-bg` | `trigger` | `background-color` | `default`<br>`focus-visible` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | floating-panel 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-floating-panel-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | floating-panel 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-floating-panel-trigger-border` | `trigger` | `border`<br>`border-color` | `default`<br>`focus-visible` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest` | floating-panel 的 trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-floating-panel-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | floating-panel 的 trigger 部件 color 覆盖槽。 |
 | `--xh-floating-panel-trigger-h` | `trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | floating-panel 的 trigger 部件 block-size、inline-size 覆盖槽。 |
@@ -878,6 +879,8 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
