@@ -25,6 +25,7 @@ import { XhCalendarPickerElement } from './elements/calendar-picker'
 import { XhCalendarRangePickerElement } from './elements/calendar-range-picker'
 import { XhCardElement } from './elements/card'
 import { XhCarouselElement } from './elements/carousel'
+import { XhCartesianChartElement } from './elements/cartesian-chart'
 import { XhCascaderElement } from './elements/cascader'
 import { XhCheckboxElement } from './elements/checkbox'
 import { XhCheckboxGroupElement } from './elements/checkbox-group'
@@ -153,6 +154,7 @@ export function defineXhElements(): void {
   defineElement('xh-back-top', XhBackTopElement, VERSION)
   defineElement('xh-bar-code', XhBarCodeElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
+  defineElement('xh-cartesian-chart', XhCartesianChartElement, VERSION)
   defineElement('xh-color-field', XhColorFieldElement, VERSION)
   defineElement('xh-color-slider', XhColorSliderElement, VERSION)
   defineElement('xh-color-swatch', XhColorSwatchElement, VERSION)
@@ -306,6 +308,7 @@ export {
   XhCalendarPickerElement,
   XhCalendarRangePickerElement,
   XhCarouselElement,
+  XhCartesianChartElement,
   XhCascaderElement,
   XhCheckboxElement,
   XhCheckboxGroupElement,

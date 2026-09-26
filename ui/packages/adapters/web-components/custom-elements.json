@@ -5803,6 +5803,640 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/cartesian-chart.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-cartesian-chart>`：直角坐标图宿主，柱与折线共用一根自变量轴与一根数值轴。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`、tooltip，\n可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，\n按标记的 key 复用节点，只写变化的属性；图例项生成进 legend；tooltip 留空时写入缺省内容，\n作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据、系列与坐标轴是对象，只走 JS property。",
+          "name": "XhCartesianChartElement",
+          "cssParts": [
+            {
+              "description": "`<figure>`，承载 orientation、pending 与错误状态",
+              "name": "root"
+            },
+            {
+              "description": "`<figcaption>`，图表的可及名来源",
+              "name": "caption"
+            },
+            {
+              "description": "图例工具条，项由元素生成",
+              "name": "legend"
+            },
+            {
+              "description": "尺寸观测的宿主",
+              "name": "viewport"
+            },
+            {
+              "description": "绘图区 `<svg>`，标记由元素生成",
+              "name": "plot"
+            },
+            {
+              "description": "提示框，留空时由元素写入缺省内容",
+              "name": "tooltip"
+            },
+            {
+              "description": "没有可画的数据时显示",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: cartesianChartAnatomy, meta: cartesianChartMeta, // plot 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { plot: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "readonly ChartRow[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "privacy": "public",
+              "type": {
+                "text": "readonly CartesianSeries[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "xAxis",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianAxis | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "yAxis",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianAxis | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultHiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "attribute": "active-key"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<CartesianChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianOrientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "trigger",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianTrigger | undefined"
+              },
+              "attribute": "trigger"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "notifyHidden",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CartesianChartSchema>( this, cartesianChartMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CartesianChartSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<CartesianChartSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "CartesianChartApi | null"
+                }
+              },
+              "description": "连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "legendItems",
+              "type": {
+                "text": "readonly CartesianLegendItem[]"
+              },
+              "description": "图例项：一个系列一项，带色槽、语气、标记与显隐；自行铺图例时照它生成节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "ChartDatumDetails | null"
+              },
+              "description": "激活的数据（悬停或聚焦），axis 模式带同一个键上的全部系列；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "CartesianTooltipModel | null"
+              },
+              "description": "提示框的缺省内容模型：头部与逐系列的行；收起时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "没有可画的数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentHiddenSeries",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻隐藏的系列。hiddenSeries 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "ChartKey | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "toggleSeries",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "切换某个系列的显隐，与点图例项同一条路。"
+            },
+            {
+              "kind": "method",
+              "name": "setFocusedDatum",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "ref",
+                  "type": {
+                    "text": "{ seriesId: string, index: number } | null"
+                  }
+                }
+              ],
+              "description": "移动键盘锚点：只改锚点，不移动 DOM 焦点，也不派发事件。"
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "field",
+              "name": "#tooltipKey",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "上一次写进提示框与数据表的内容：没变就不重建。"
+            },
+            {
+              "kind": "field",
+              "name": "#table",
+              "privacy": "private",
+              "type": {
+                "text": "CartesianChartApi['table'] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableHost",
+              "privacy": "private",
+              "type": {
+                "text": "Element | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintMarks",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintLegend",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "legend",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "图例项：一个系列一个按钮，色标与名字各一个 span。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintTooltip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tooltip",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "提示框留空时写缺省内容：头部是自变量，每个系列一行（色标、数值、系列名）。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintOwnText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "host",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "作者没写内容的部件里放一段缺省文字。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintA11y",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。"
+            }
+          ],
+          "events": [
+            {
+              "description": "图例切换显隐；detail 为 `{ hiddenSeries: string[] }`",
+              "name": "hidden-series-change",
+              "type": {
+                "text": "ChartHiddenSeriesChangeDetails"
+              }
+            },
+            {
+              "description": "指针或键盘换了激活的键；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
+              "type": {
+                "text": "ChartActiveKeyChangeDetails"
+              }
+            },
+            {
+              "description": "悬停或聚焦到某个数据；detail 为数据详情，收起时为 null",
+              "name": "datum-active",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            },
+            {
+              "description": "指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情",
+              "name": "datum-press",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "CartesianOrientation | undefined"
+              },
+              "description": "朝向，默认 vertical；horizontal 即条形图",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "CartesianTrigger | undefined"
+              },
+              "description": "提示框汇报什么，默认 axis：同一个键上的全部系列",
+              "name": "trigger",
+              "fieldName": "trigger"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数字、日期与内建文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "description": "激活的类目键（受控）；数值与日期键走 activeKey property",
+              "name": "active-key",
+              "fieldName": "activeKey"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-cartesian-chart",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-cartesian-chart-bar-max"
+            },
+            {
+              "name": "--xh-cartesian-chart-gap"
+            },
+            {
+              "name": "--xh-cartesian-chart-height"
+            },
+            {
+              "name": "--xh-cartesian-chart-legend-gap"
+            },
+            {
+              "name": "--xh-cartesian-chart-legend-swatch-line-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-legend-swatch-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-line-width"
+            },
+            {
+              "name": "--xh-cartesian-chart-point-size"
+            },
+            {
+              "name": "--xh-cartesian-chart-series-color"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-gap"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-px"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-py"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-row-gap"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-shadow"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-swatch-line-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-tooltip-swatch-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCartesianChartElement",
+          "declaration": {
+            "name": "XhCartesianChartElement",
+            "module": "src/elements/cartesian-chart.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/cascader.ts",
       "declarations": [
         {

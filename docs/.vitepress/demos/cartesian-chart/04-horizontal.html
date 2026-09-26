@@ -1,0 +1,27 @@
+<!-- 横向条形图 | orientation="horizontal" 把整张图转置：类目名竖排可以读全，数值横向延伸 -->
+<div style="width: 100%">
+  <xh-cartesian-chart id="cartesian-chart-horizontal" orientation="horizontal">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">本月各团队工单数</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("cartesian-chart-horizontal");
+  // 条形图的次序就是阅读次序：先按数值排好再交给组件，组件不排序
+  chart.data = [
+    { team: "支付与结算平台", count: 184 },
+    { team: "会员与营销中心", count: 152 },
+    { team: "订单履约服务", count: 131 },
+    { team: "商品与库存系统", count: 97 },
+    { team: "客服工作台", count: 64 },
+  ];
+  chart.series = [{ mark: "bar", x: "team", y: "count", name: "工单数" }];
+</script>

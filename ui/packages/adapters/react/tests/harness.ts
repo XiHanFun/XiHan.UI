@@ -37,6 +37,10 @@ const PUBLIC_EVENTS = {
   'submit': 'onSubmit',
   'tab-move': 'onTabMove',
   'value-change': 'onValueChange',
+  'hidden-series-change': 'onHiddenSeriesChange',
+  'active-key-change': 'onActiveKeyChange',
+  'datum-active': 'onDatumActive',
+  'datum-press': 'onDatumPress',
 } as const
 
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }

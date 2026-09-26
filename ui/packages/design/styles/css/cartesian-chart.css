@@ -1,0 +1,435 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 cartesian chart 样式。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='cartesian-chart'] {
+    --xh-cartesian-chart-skin: 1;
+  }
+
+  /* 根不画外边、不填底，透出宿主面；需要框时由作者放进 Card。
+     几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
+  [data-scope='cartesian-chart'][data-part='root'] {
+    --xh-_chart-metric-bar-max: var(--xh-cartesian-chart-bar-max, var(--xh-chart-bar-max));
+    --xh-_chart-metric-gap: var(--xh-chart-gap);
+    --xh-_chart-metric-line-width: var(--xh-cartesian-chart-line-width, var(--xh-chart-line-width));
+    --xh-_chart-metric-point-size: var(--xh-cartesian-chart-point-size, var(--xh-chart-point-size));
+    --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+    --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+    --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+    --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+    --xh-_chart-metric-leading: var(--xh-leading-tight);
+
+    /* 提示框按根的内边距盒绝对定位，参照系就是它；它抬的那一层只在根里排序 */
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-cartesian-chart-gap, var(--xh-space-3));
+    /* 图随容器铺满：在 flex / grid 里也不按内容收缩成默认的 300px */
+    inline-size: 100%;
+    margin: 0;
+    min-inline-size: 0;
+    color: var(--xh-fg-default);
+    font-size: var(--xh-text-body-size);
+  }
+
+  [data-scope='cartesian-chart'][data-part='caption'] {
+    font-size: var(--xh-text-label-size);
+    font-weight: var(--xh-text-label-weight);
+    color: var(--xh-fg-default);
+  }
+
+  /* 视口的块尺寸含坐标轴带，宽度铺满；卡片里不出现嵌套的纵向滚动 */
+  [data-scope='cartesian-chart'][data-part='viewport'] {
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--xh-cartesian-chart-height, var(--xh-chart-height));
+    min-inline-size: 0;
+  }
+
+  /* 重取数据：保留上一帧，整体淡下去，不闪骨架、不跳布局 */
+  [data-scope='cartesian-chart'][data-part='root'][data-loading] > [data-part='viewport'] {
+    opacity: var(--xh-chart-pending-alpha);
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 绘图区脱离文档流：svg 的 width 属性来自测得的视口宽，留在流里会反过来撑住视口，容器收窄时图不跟着缩 */
+  [data-scope='cartesian-chart'][data-part='plot'] {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    /* 斜排的刻度标签会伸出绘图区的盒子 */
+    overflow: visible;
+    font-size: var(--xh-_chart-metric-font-size);
+    font-variant-numeric: tabular-nums;
+    /* 焦点环由 focus-ring 部件画在标记外，不靠 SVG 元素自己的 outline */
+    outline: none;
+  }
+
+  [data-scope='cartesian-chart'][data-part='plot'] [tabindex] {
+    outline: none;
+  }
+
+  /* —— 色槽：身份由色槽承担，作者可以在系列上覆盖 --xh-cartesian-chart-series-color ——
+     分组、激活的点、图例项与提示框的行都带着色槽，各自从这里取系列色 */
+  [data-scope='cartesian-chart'][data-xh-chart-slot='1'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-1));
+  }
+
+  [data-scope='cartesian-chart'][data-xh-chart-slot='2'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-2));
+  }
+
+  [data-scope='cartesian-chart'][data-xh-chart-slot='3'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-3));
+  }
+
+  [data-scope='cartesian-chart'][data-xh-chart-slot='4'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-4));
+  }
+
+  [data-scope='cartesian-chart'][data-xh-chart-slot='5'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-5));
+  }
+
+  [data-scope='cartesian-chart'][data-xh-chart-slot='6'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-6));
+  }
+
+  [data-scope='cartesian-chart'][data-xh-chart-slot='7'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-7));
+  }
+
+  [data-scope='cartesian-chart'][data-xh-chart-slot='8'] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-chart-categorical-8));
+  }
+
+  /* 语义系列取语气的实心色：语气层在 [data-tone] 上给出整族取值 */
+  [data-scope='cartesian-chart'][data-tone] {
+    --xh-_chart-series: var(--xh-cartesian-chart-series-color, var(--xh-_tone));
+  }
+
+  /* —— 图表家具：不承载数据的结构线 —— */
+  [data-scope='cartesian-chart'][data-part='grid-line'] {
+    fill: none;
+    stroke: var(--xh-chart-grid);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='cartesian-chart'][data-part='axis-line'],
+  [data-scope='cartesian-chart'][data-part='tick'] {
+    fill: none;
+    stroke: var(--xh-chart-axis);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  /* 轴标签是次级标注：文字不用系列色 */
+  [data-scope='cartesian-chart'][data-part='tick-label'] {
+    fill: var(--xh-chart-label);
+  }
+
+  [data-scope='cartesian-chart'][data-part='axis-title'] {
+    fill: var(--xh-chart-label);
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  /* —— 数据标记 —— */
+  [data-scope='cartesian-chart'][data-part='series'] {
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 悬停图例或强调一个系列时，其余系列淡出；被强调的保持原样 */
+  [data-scope='cartesian-chart'][data-part='series'][data-dimmed] {
+    opacity: var(--xh-chart-dim-alpha);
+  }
+
+  /* 柱：相邻柱之间的间隙由几何留出，不画描边 */
+  [data-scope='cartesian-chart'][data-part='bar'] {
+    fill: var(--xh-_chart-series);
+    stroke: none;
+  }
+
+  [data-scope='cartesian-chart'][data-part='line'] {
+    fill: none;
+    stroke: var(--xh-_chart-series);
+    stroke-width: var(--xh-_chart-metric-line-width);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  /* 面积：系列色淡洗，上沿是同一条实色折线 */
+  [data-scope='cartesian-chart'][data-part='area-fill'] {
+    fill: var(--xh-_chart-series);
+    fill-opacity: var(--xh-chart-area-alpha);
+    stroke: none;
+  }
+
+  /* 点带一圈承载面色的描边环，压在线上也分得开 */
+  [data-scope='cartesian-chart'][data-part='dot'],
+  [data-scope='cartesian-chart'][data-part='point'] {
+    fill: var(--xh-_chart-series);
+    stroke: var(--xh-chart-surface);
+    stroke-width: var(--xh-chart-gap);
+  }
+
+  /* —— 前景：随激活变化，不改几何 —— */
+  [data-scope='cartesian-chart'][data-part='crosshair'][data-kind='line'] {
+    fill: none;
+    stroke: var(--xh-chart-crosshair);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  /* 柱图的准线是整条类目带的淡底：一条细线落在柱缝里看不出指的是哪一组 */
+  [data-scope='cartesian-chart'][data-part='crosshair'][data-kind='band'] {
+    fill: var(--xh-chart-band-highlight);
+    stroke: none;
+  }
+
+  [data-scope='cartesian-chart'][data-part='focus-ring'] {
+    fill: none;
+    stroke: var(--xh-ring-focus);
+    stroke-width: var(--xh-ring-width);
+  }
+
+  /* —— 图例：工具条，项是 Action Control 的 text 档 —— */
+  [data-scope='cartesian-chart'][data-part='legend'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--xh-cartesian-chart-legend-gap, var(--xh-space-1));
+  }
+
+  [data-scope='cartesian-chart'][data-part='legend'][hidden] {
+    display: none;
+  }
+
+  [data-scope='cartesian-chart'][data-part='legend-item'] {
+    color: var(--xh-fg-default);
+  }
+
+  /* 色标：柱与面积是 inset 圆角的方块，折线是一段短线；隐藏时只留描边（空心）。
+     方块边长取 12px：inset 圆角是 4px，再小就成了圆点，与散点的符号分不开 */
+  [data-scope='cartesian-chart'][data-part='legend-swatch'] {
+    flex: none;
+    inline-size: var(--xh-space-3);
+    block-size: var(--xh-space-3);
+    border: var(--xh-stroke-thick) solid var(--xh-_chart-series);
+    border-radius: var(--xh-cartesian-chart-legend-swatch-radius, var(--xh-shape-inset));
+    background: var(--xh-_chart-series);
+  }
+
+  [data-scope='cartesian-chart'][data-part='legend-swatch'][data-mark='line'] {
+    inline-size: var(--xh-space-3);
+    block-size: 0;
+    border-width: var(--xh-stroke-thin);
+    border-radius: var(--xh-cartesian-chart-legend-swatch-line-radius, var(--xh-shape-pill));
+  }
+
+  /* 显隐标记：开是常态，不用品牌淡底；隐藏的项空心色标、次级字色、删除线 */
+  [data-scope='cartesian-chart'][data-part='legend-item'][aria-pressed='false'] {
+    color: var(--xh-fg-subtle);
+    text-decoration: line-through;
+  }
+
+  [data-scope='cartesian-chart'][data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'] {
+    background: transparent;
+  }
+
+  /* —— 提示框：frosted 材质，画在根里；绘图区不随 RTL 镜像，这里的左右也是物理方向 —— */
+  [data-scope='cartesian-chart'][data-part='tooltip'] {
+    position: absolute;
+    inset-block-start: var(--xh-_chart-tip-y, 0);
+    /* stylelint-disable-next-line property-disallowed-list -- 绘图区不随 RTL 镜像，锚点横坐标由连接层按物理左缘写入 */
+    left: var(--xh-_chart-tip-x, 0);
+    z-index: 1;
+    display: grid;
+    gap: var(--xh-cartesian-chart-tooltip-gap, var(--xh-space-1));
+    min-inline-size: 8rem;
+    padding-block: var(--xh-cartesian-chart-tooltip-py, var(--xh-surface-pad-sm));
+    padding-inline: var(--xh-cartesian-chart-tooltip-px, var(--xh-surface-pad-sm));
+    border: var(--xh-stroke-thin) solid var(--xh-material-frosted-border);
+    border-radius: var(--xh-cartesian-chart-tooltip-radius, var(--xh-shape-overlay));
+    background:
+      linear-gradient(
+        to bottom,
+        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
+        transparent var(--xh-stroke-thin)
+      ),
+      var(--xh-material-frosted-bg);
+    color: var(--xh-material-frosted-fg);
+    box-shadow: var(--xh-cartesian-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
+    backdrop-filter: var(--xh-material-frosted-backdrop);
+    /* 正文排版，与根同一档：不反白、不缩字，色标按承载面校准 */
+    font-size: var(--xh-text-body-size);
+    white-space: nowrap;
+    /* 提示框不接指针：跟着指针走时压住下面的标记，命中就断了 */
+    pointer-events: none;
+    translate: var(--xh-space-3) calc(-100% - var(--xh-space-2));
+  }
+
+  /* 落点：锚点在右半边时长在左侧，在上半边时向下长 */
+  [data-scope='cartesian-chart'][data-part='tooltip'][data-placement='top-left'] {
+    translate: calc(-100% - var(--xh-space-3)) calc(-100% - var(--xh-space-2));
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip'][data-placement='bottom-right'] {
+    translate: var(--xh-space-3) var(--xh-space-2);
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip'][data-placement='bottom-left'] {
+    translate: calc(-100% - var(--xh-space-3)) var(--xh-space-2);
+  }
+
+  /* 露不露是从激活的数据算出来的派生显隐：首次出现淡入，跟着指针移动时不做位置过渡 */
+  [data-scope='cartesian-chart'][data-part='tooltip'][data-state='hidden'] {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip'][data-state='visible'] {
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip-header'] {
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  /* 一行：色标、数值、系列名。数值在前并加重，系列名在后是次级文字——读者已知系列，要看的是数 */
+  [data-scope='cartesian-chart'][data-part='tooltip-row'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-cartesian-chart-tooltip-row-gap, var(--xh-space-2));
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip-swatch'] {
+    flex: none;
+    inline-size: var(--xh-space-3);
+    block-size: var(--xh-space-3);
+    border-radius: var(--xh-cartesian-chart-tooltip-swatch-radius, var(--xh-shape-inset));
+    background: var(--xh-_chart-series);
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip-swatch'][data-mark='line'] {
+    inline-size: var(--xh-space-3);
+    block-size: var(--xh-stroke-thick);
+    border-radius: var(--xh-cartesian-chart-tooltip-swatch-line-radius, var(--xh-shape-pill));
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip-value'] {
+    font-weight: var(--xh-font-weight-medium);
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='cartesian-chart'][data-part='tooltip-name'] {
+    color: var(--xh-fg-muted);
+  }
+
+  /* 指针或焦点所在的那个系列：系列名升为正文色，axis 模式里一眼找到自己指着的那一行 */
+  [data-scope='cartesian-chart'][data-part='tooltip-row'][data-current] > [data-part='tooltip-name'] {
+    color: var(--xh-fg-default);
+  }
+
+  /* 空态叠在视口上，居中 */
+  [data-scope='cartesian-chart'][data-part='empty'] {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-text-secondary-size);
+  }
+
+  [data-scope='cartesian-chart'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  /* 声明了 display 的部件：作者写 hidden 时照样收起 */
+  [data-scope='cartesian-chart'][data-part='root'][hidden],
+  [data-scope='cartesian-chart'][data-part='plot'][hidden],
+  [data-scope='cartesian-chart'][data-part='tooltip'][hidden],
+  [data-scope='cartesian-chart'][data-part='tooltip-row'][hidden] {
+    display: none;
+  }
+
+  /* 强制色：数据标记改成系统色的描边，焦点环取高亮色，网格取灰字色；图例隐藏态保留空心与删除线 */
+  @media (forced-colors: active) {
+    [data-scope='cartesian-chart'][data-part='bar'] {
+      fill: Canvas;
+      stroke: CanvasText;
+      stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='cartesian-chart'][data-part='line'] {
+      stroke: CanvasText;
+    }
+
+    [data-scope='cartesian-chart'][data-part='area-fill'] {
+      fill: none;
+    }
+
+    [data-scope='cartesian-chart'][data-part='dot'],
+    [data-scope='cartesian-chart'][data-part='point'] {
+      fill: CanvasText;
+      stroke: Canvas;
+    }
+
+    [data-scope='cartesian-chart'][data-part='grid-line'] {
+      stroke: GrayText;
+    }
+
+    [data-scope='cartesian-chart'][data-part='axis-line'],
+    [data-scope='cartesian-chart'][data-part='tick'] {
+      stroke: CanvasText;
+    }
+
+    [data-scope='cartesian-chart'][data-part='tick-label'],
+    [data-scope='cartesian-chart'][data-part='axis-title'] {
+      fill: CanvasText;
+    }
+
+    [data-scope='cartesian-chart'][data-part='crosshair'][data-kind='band'] {
+      fill: none;
+      stroke: Highlight;
+    }
+
+    [data-scope='cartesian-chart'][data-part='focus-ring'] {
+      stroke: Highlight;
+    }
+
+    [data-scope='cartesian-chart'][data-part='legend-swatch'],
+    [data-scope='cartesian-chart'][data-part='tooltip-swatch'] {
+      forced-color-adjust: none;
+      border-color: CanvasText;
+      background: CanvasText;
+    }
+
+    [data-scope='cartesian-chart'][data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'] {
+      background: Canvas;
+    }
+
+    [data-scope='cartesian-chart'][data-part='tooltip'] {
+      background-image: none;
+    }
+  }
+
+  /* 打印：纸上没有指针，提示框、准线与焦点环不印；数据色照印 */
+  @media print {
+    [data-scope='cartesian-chart'][data-part='root'] {
+      print-color-adjust: exact;
+    }
+
+    [data-scope='cartesian-chart'][data-part='tooltip'],
+    [data-scope='cartesian-chart'][data-part='crosshair'],
+    [data-scope='cartesian-chart'][data-part='focus-ring'] {
+      display: none;
+    }
+  }
+}

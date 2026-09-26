@@ -70,6 +70,8 @@ const EXPECTED = {
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },
   'context-menu': { content: ['frosted'] },
+  // 画在根里、跟着数据走的提示框：与 Tooltip 同一副气泡，描边 + frosted 紧凑影
+  'cartesian-chart': { tooltip: ['frosted'] },
   // 含日历网格与时间列的锚定面板：floating（实体底 + border-default + elevation-floating）
   'date-picker': { content: ['floating'] },
   // 含两张日历网格的锚定面板：floating

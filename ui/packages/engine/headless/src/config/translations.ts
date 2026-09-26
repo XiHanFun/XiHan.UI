@@ -24,6 +24,7 @@ import type { CalendarPickerTranslations } from '../calendar-picker/calendar-pic
 import type { CalendarRangePickerTranslations } from '../calendar-range-picker/calendar-range-picker.types'
 import type { CardTranslations } from '../card/card.types'
 import type { CarouselTranslations } from '../carousel/carousel.types'
+import type { CartesianChartTranslations } from '../cartesian-chart/cartesian-chart.types'
 import type { CascaderTranslations } from '../cascader/cascader.types'
 import type { CheckboxGroupTranslations } from '../checkbox-group/checkbox-group.types'
 import type { CheckboxTranslations } from '../checkbox/checkbox.types'
@@ -161,6 +162,7 @@ export interface XhTranslationOverrides {
   'calendar-range-picker'?: Partial<CalendarRangePickerTranslations>
   'card'?: Partial<CardTranslations>
   'carousel'?: Partial<CarouselTranslations>
+  'cartesian-chart'?: Partial<CartesianChartTranslations>
   'cascader'?: Partial<CascaderTranslations>
   'checkbox'?: Partial<CheckboxTranslations>
   'checkbox-group'?: Partial<CheckboxGroupTranslations>

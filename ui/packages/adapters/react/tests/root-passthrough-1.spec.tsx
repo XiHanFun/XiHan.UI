@@ -16,6 +16,7 @@ import {
   XhCalendarPickerRoot,
   XhCalendarRangePickerRoot,
   XhCarouselRoot,
+  XhCartesianChartRoot,
   XhCascaderRoot,
   XhCheckboxGroupRoot,
   XhClipboardRoot,
@@ -162,6 +163,19 @@ const cases: Case[] = [
     name: 'carousel',
     render: extra => <XhCarouselRoot slideCount={3} spacing="8px" onPageChange={noop} {...extra} />,
     schemaKeys: ['slideCount', 'spacing', 'onPageChange'],
+  },
+  {
+    name: 'cartesian-chart',
+    render: extra => (
+      <XhCartesianChartRoot
+        data={[{ month: '一月', sales: 1 }]}
+        series={[{ mark: 'bar', x: 'month', y: 'sales' }]}
+        orientation="horizontal"
+        onDatumActive={noop}
+        {...extra}
+      />
+    ),
+    schemaKeys: ['data', 'series', 'orientation', 'onDatumActive'],
   },
   {
     name: 'cascader',

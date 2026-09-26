@@ -72,6 +72,8 @@ const HOOK_ATTRS = {
   'data-required': '必填。星号由 label.css 公共层按 label / legend 上的 data-required 画，控件自身这一位是钩子',
   'data-empty': '空。空与非空的差别由内容本身表出——占位文字通道、空态部件，或者干脆没有东西可画',
   'data-scrolling': '正在滚。滚动条露不露面由 data-state=visible|hidden 表出，这一位是同一件事的数据面',
+  'data-series-id': '哪个系列。取值是系列 id，作者按它改写单个系列的颜色槽，测试拿它定位',
+  'data-axis': '哪根轴（x / y）。两根轴的刻度版式由几何承载，这一位留给作者按轴分别写样式',
 }
 
 /**
@@ -116,6 +118,7 @@ const HOOKS = {
   'prompt-input:data-state': '输入框的机器态；能看见的运行态在提交钮的 data-mode 上',
   'rating:data-state': '星的填充走 data-highlighted 与 data-half',
   'number-animation:data-state': '数字滚动的外观不随相位变，相位只留给作者接线',
+  'cartesian-chart:data-orientation': '朝向的版式由几何承载：柱沿哪个方向长、刻度落在哪条边都在场景里算好；根上这一位留给作者按朝向写样式',
   // 禁用不在这张表里：pointer.css 那条与组件无关的规则消费全库的 data-disabled
   // 集合件取条目在途：那一格由只在取数期在场的 loading 部件顶上来
 

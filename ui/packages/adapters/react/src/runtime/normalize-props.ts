@@ -39,6 +39,8 @@ const ATTR_ALIAS: Record<string, string> = {
   'clip-path': 'clipPath',
   'stop-color': 'stopColor',
   'stop-opacity': 'stopOpacity',
+  'text-anchor': 'textAnchor',
+  'dominant-baseline': 'dominantBaseline',
 }
 
 // React 合成事件名，按全小写形式索引。headless 里同一个事件有两种写法并存

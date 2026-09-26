@@ -102,6 +102,8 @@ const PRESSABLE = {
   'listbox': [{ part: 'load-more-trigger', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
   // 组里的一枚标签就是 tag 的 root，整枚就是点击目标；摘除钮是 tag 的 close-trigger，按压归 tag.css
   'tag-group': ['tag/root'],
+  // 图例项是 Action Control 的 text 档，按压由配方投影
+  'cartesian-chart': ['legend-item'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'search-item', feedback: 'surface' }],
   'tree-select': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],

@@ -43,6 +43,9 @@
     "variant"
   ],
   "carousel": [],
+  "cartesian-chart": [
+    "tone"
+  ],
   "cascader": [
     "size"
   ],

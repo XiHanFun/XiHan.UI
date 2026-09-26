@@ -57,6 +57,7 @@
     "./calendar-range-picker.css": "./css/calendar-range-picker.css",
     "./card.css": "./css/card.css",
     "./carousel.css": "./css/carousel.css",
+    "./cartesian-chart.css": "./css/cartesian-chart.css",
     "./cascader.css": "./css/cascader.css",
     "./checkbox-group.css": "./css/checkbox-group.css",
     "./checkbox.css": "./css/checkbox.css",
