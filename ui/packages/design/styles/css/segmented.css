@@ -217,14 +217,14 @@
     --xh-_segmented-indicator-h: 0;
     --xh-_segmented-indicator-stretch: 0;
 
-    /* 摆在行首块首，位置交给 transform（只走合成），尺寸跟着段宽走 */
+    /* 摆在行首块首，位置交给 translate（只走合成），尺寸跟着段宽走 */
     position: absolute;
     display: block;
     inset-inline-start: 0;
     inset-block-start: 0;
     inline-size: var(--xh-_segmented-indicator-w);
     block-size: var(--xh-_segmented-indicator-h);
-    transform: translate(var(--xh-_segmented-indicator-x), var(--xh-_segmented-indicator-y));
+    translate: var(--xh-_segmented-indicator-x) var(--xh-_segmented-indicator-y);
     /* 白色抬起面三件（有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
        尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
     border: var(--xh-stroke-thin) solid var(--xh-segmented-indicator-border, var(--xh-border-default));
@@ -237,7 +237,7 @@
        纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位。
        投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
     transition:
-      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -245,7 +245,7 @@
 
   /* translate 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
   [data-scope='segmented'][data-part='indicator']:dir(rtl) {
-    transform: translate(calc(-1 * var(--xh-_segmented-indicator-x)), var(--xh-_segmented-indicator-y));
+    translate: calc(-1 * var(--xh-_segmented-indicator-x)) var(--xh-_segmented-indicator-y);
   }
 
   /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
