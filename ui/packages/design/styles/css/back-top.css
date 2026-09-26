@@ -6,6 +6,7 @@
 /* 定义 back top 样式。 */
 
 @import '../family/action-control.css';
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -160,6 +161,16 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+  }
+
+  /* 过线露面时弹出；退回线内时先播完退场、连接层才给根写 hidden 收起。退场途中不再接指针 */
+  [data-scope='back-top'][data-part='trigger'][data-state='visible'] {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='back-top'][data-part='trigger'][data-state='hidden'] {
+    pointer-events: none;
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 配方声明过 display，会盖掉 UA 的 [hidden]{display:none}，收起态得自己还回去。

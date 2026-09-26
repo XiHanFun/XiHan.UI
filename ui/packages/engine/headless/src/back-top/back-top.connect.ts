@@ -17,7 +17,7 @@ export function connectBackTop<T extends PropTypes>(
   service: Service<BackTopSchema>,
   normalize: NormalizeProps<T>,
 ): BackTopApi<T> {
-  const { state, context, prop, send } = service
+  const { state, context, prop, send, scope } = service
 
   const visible = state.matches('visible')
   // 缺省 outline：描边 + 磨砂面的中性圆钮（只有 Button 缺省品牌实心）
@@ -36,12 +36,15 @@ export function connectBackTop<T extends PropTypes>(
       'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
-      // 收起时留着节点，只加 hidden：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到
-      'hidden': !visible || undefined,
+      // 收起时留着节点，只加 hidden：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到。
+      // 按钮的退场动画播完才写，否则 hidden 一落下退场一帧都播不出来
+      'hidden': (!visible && !context.get('triggerRendered')) || undefined,
     }),
 
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
+      // 机器按 id 找到它：等它的退场动画、给它接液态面
+      'id': scope.partId('back-top', 'trigger'),
       // 写死 button：不写的话放在表单里会当成提交按钮
       'type': 'button',
       // 按钮里通常只有一个图标，可及名字只能由这里给

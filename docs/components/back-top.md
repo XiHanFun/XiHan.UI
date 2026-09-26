@@ -135,7 +135,7 @@
 
 **状态**：`hidden` · `visible`
 
-**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK` · `PRESS.START` · `PRESS.END`
+**事件**：`SCROLL.RESOLVE` · `TRIGGER.CLICK` · `PRESS.START` · `PRESS.END` · `TRIGGER.RENDERED`
 
 **判据**：`shouldShow` · `shouldHide`
 
@@ -220,7 +220,9 @@
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
