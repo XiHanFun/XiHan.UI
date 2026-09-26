@@ -210,6 +210,7 @@ export type ComponentTokenName
     | '--xh-button-font-size'
     | '--xh-button-font-weight'
     | '--xh-button-gap'
+    | '--xh-button-glint-duration'
     | '--xh-button-group-outline-color'
     | '--xh-button-group-radius'
     | '--xh-button-group-separator-color'

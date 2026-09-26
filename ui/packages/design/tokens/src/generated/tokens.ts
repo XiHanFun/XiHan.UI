@@ -379,6 +379,7 @@ export const tokens = {
   "--xh-motion-duration-press": "var(--xh-duration-fast)",
   "--xh-motion-duration-release": "var(--xh-duration-normal)",
   "--xh-motion-duration-attention": "calc(var(--xh-duration-slow) * 2)",
+  "--xh-motion-duration-glint": "calc(var(--xh-duration-slow) * 2)",
   "--xh-motion-stagger-step": "calc(var(--xh-duration-normal) / 5)",
   "--xh-motion-ease-continuous": "var(--xh-ease-standard)",
   "--xh-motion-ease-loop": "linear",

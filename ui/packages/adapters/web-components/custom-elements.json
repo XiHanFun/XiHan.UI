@@ -3729,6 +3729,9 @@
               "name": "--xh-button-gap"
             },
             {
+              "name": "--xh-button-glint-duration"
+            },
+            {
               "name": "--xh-button-h"
             },
             {
