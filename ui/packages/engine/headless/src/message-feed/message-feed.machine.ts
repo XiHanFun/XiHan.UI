@@ -8,6 +8,7 @@
 import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { MessageFeedSchema } from './message-feed.types'
 import { createStickToBottom, setup, trackArrivals } from '@xihan-ui/core'
+import { trackLiquidPart } from '../shared/liquid'
 import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<MessageFeedSchema>()
@@ -40,7 +41,7 @@ export const messageFeedMachine = createMachine({
   }),
   initialState: () => 'idle',
   // 粘底、条目到达与回到底部按钮的进退场三路副作用全程挂载
-  effects: ['trackStickToBottom', 'trackArrivals', 'trackTriggerPresence'],
+  effects: ['trackStickToBottom', 'trackArrivals', 'trackTriggerPresence', 'trackLiquid'],
   states: {
     idle: {
       on: {
@@ -102,6 +103,9 @@ export const messageFeedMachine = createMachine({
       },
     },
     effects: {
+      /** 回到底部是浮在内容之上的导航层部件：材质轴为 liquid 时按下层换色调、亮边随指针 */
+      trackLiquid: ({ scope, flush }) => trackLiquidPart(scope, flush, 'message-feed', 'scroll-to-end-trigger'),
+
       /** 在 flush 时创建粘底句柄并存入 refs，卸载时释放；config 缺席则不创建。 */
       trackStickToBottom: ({ refs, prop, send, flush }) => {
         let disposed = false

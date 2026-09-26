@@ -82,6 +82,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
 - 已发送、等首个片段（`status` 为 `submitted`）时，放在列表之后的 `pending-indicator` 显示为一颗呼吸的圆点，首个片段到来即收起；它只给视觉看，进度由宿主写进播报区。减弱动效下圆点静止。
 - “回到底部”留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
+- 应用设为 `data-material="liquid"` 时，“回到底部”换成液态面：按下层换色调，按住时液面随手指形变。
 
 ### 组合
 
@@ -266,6 +267,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
 | `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
+| `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -284,13 +286,13 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `--xh-message-feed-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-fg-muted` | message-feed 的 pending-indicator 部件 background 覆盖槽。 |
 | `--xh-message-feed-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 pending-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-message-feed-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | message-feed 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-material-frosted-bg` | message-feed 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-border` | message-feed 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-material-frosted-fg` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-ink-surface`<br>`xh-liquid` | `--xh-_liquid-bg`<br>`--xh-material-frosted-bg`<br>`--xh-material-liquid-focus-surface` | message-feed 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-bg-hover`<br>`--xh-_liquid-bg-hover` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-material-frosted-border`<br>`--xh-material-liquid-border` | message-feed 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-material-frosted-fg`<br>`--xh-material-liquid-fg` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-4` | message-feed 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-shadow` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_liquid-shadow`<br>`--xh-material-frosted-shadow` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
