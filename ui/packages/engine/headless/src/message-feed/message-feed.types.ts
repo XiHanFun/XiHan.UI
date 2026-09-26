@@ -95,6 +95,11 @@ export interface MessageFeedSchema extends MachineSchema {
      * 接上时已在的条目各自带上 data-instant，之后新到的一批按到达顺序错开进场。
      */
     arrivalsTracked: boolean
+    /**
+     * 回到底部按钮是否还留着（没有 hidden）。离底时立即为真；回到底部后等它的退场动画播完才为假，
+     * 期间 data-state 已经是 hidden、退场动画在播。
+     */
+    triggerRendered: boolean
   }
   computed: Record<string, never>
   refs: MessageFeedRefs
@@ -114,10 +119,12 @@ export interface MessageFeedSchema extends MachineSchema {
     | { type: 'PRESS.END' }
     /** 条目到达的追踪已接上：首帧已在的条目都带上了 data-instant。 */
     | { type: 'ARRIVALS.TRACKED' }
+    /** 回到底部按钮的进退场报来「该不该留着」。 */
+    | { type: 'TRIGGER.RENDERED', rendered: boolean }
   tag: never
   guard: 'canPress'
-  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress' | 'markArrivalsTracked'
-  effect: 'trackStickToBottom' | 'trackArrivals'
+  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress' | 'markArrivalsTracked' | 'setTriggerRendered'
+  effect: 'trackStickToBottom' | 'trackArrivals' | 'trackTriggerPresence'
 }
 
 export interface MessageFeedApi<T extends PropTypes = PropTypes> {

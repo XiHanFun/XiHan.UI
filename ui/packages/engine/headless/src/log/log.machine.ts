@@ -8,6 +8,7 @@
 import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { LogSchema } from './log.types'
 import { createStickToBottom, setup } from '@xihan-ui/core'
+import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<LogSchema>()
 
@@ -22,6 +23,8 @@ export const logMachine = createMachine({
     atBottom: cell<boolean>(() => ({ defaultValue: true })),
     sticking: cell<boolean>(() => ({ defaultValue: true })),
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    // 与 atBottom 的初值对上：起步在底，按钮收着
+    triggerRendered: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -30,8 +33,8 @@ export const logMachine = createMachine({
     stick: null,
   }),
   initialState: () => 'idle',
-  // 粘底副作用全程挂载
-  effects: ['trackStickToBottom'],
+  // 粘底与回到底部按钮的进退场两路副作用全程挂载
+  effects: ['trackStickToBottom', 'trackTriggerPresence'],
   states: {
     idle: {
       on: {
@@ -39,6 +42,7 @@ export const logMachine = createMachine({
         'SCROLL_TO_BOTTOM': { actions: ['invokeScrollToBottom'] },
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
+        'TRIGGER.RENDERED': { actions: ['setTriggerRendered'] },
       },
     },
   },
@@ -48,6 +52,11 @@ export const logMachine = createMachine({
       canPress: ({ context }) => !context.get('atBottom'),
     },
     actions: {
+      setTriggerRendered: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TRIGGER.RENDERED')
+          context.set('triggerRendered', e.rendered)
+      },
       setStickState: ({ event, context, prop }) => {
         const e = event.current()
         if (e.type !== 'STICK.CHANGE')
@@ -69,6 +78,16 @@ export const logMachine = createMachine({
       },
     },
     effects: {
+      /** 回到底部按钮离底时冒出来、回底时播完退场再藏起。 */
+      trackTriggerPresence: ({ context, scope, send, track, flush }) => trackPartPresence({
+        scope,
+        id: scope.partId('log', 'scroll-to-end-trigger'),
+        open: () => !context.get('atBottom'),
+        track,
+        flush,
+        onRenderedChange: rendered => send({ type: 'TRIGGER.RENDERED', rendered }),
+      }),
+
       /** 在 flush 时创建粘底句柄并存入 refs，卸载时释放；config 缺席则不创建。 */
       trackStickToBottom: ({ refs, prop, send, flush }) => {
         let disposed = false

@@ -57,6 +57,11 @@ export interface LogSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按住途中视口回到底部（按钮随之收起）时撤下。
      */
     pressed: boolean
+    /**
+     * 回到底部按钮是否还留着（没有 hidden）。离底时立即为真；回到底部后等它的退场动画播完才为假，
+     * 期间 data-state 已经是 hidden、退场动画在播。
+     */
+    triggerRendered: boolean
   }
   computed: Record<string, never>
   refs: LogRefs
@@ -70,10 +75,12 @@ export interface LogSchema extends MachineSchema {
     | { type: 'PRESS.START' }
     /** 回到底部按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
+    /** 回到底部按钮的进退场报来「该不该留着」。 */
+    | { type: 'TRIGGER.RENDERED', rendered: boolean }
   tag: never
   guard: 'canPress'
-  action: 'setStickState' | 'invokeScrollToBottom' | 'startPress' | 'endPress'
-  effect: 'trackStickToBottom'
+  action: 'setStickState' | 'invokeScrollToBottom' | 'startPress' | 'endPress' | 'setTriggerRendered'
+  effect: 'trackStickToBottom' | 'trackTriggerPresence'
 }
 
 export interface LogProps {

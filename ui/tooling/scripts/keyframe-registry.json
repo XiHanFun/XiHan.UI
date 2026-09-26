@@ -254,6 +254,8 @@
         "command",
         "floating-panel",
         "hover-card",
+        "log",
+        "message-feed",
         "navigation-menu",
         "pagination",
         "popconfirm",

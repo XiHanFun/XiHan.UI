@@ -205,10 +205,11 @@ export function connectMessageFeed<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      'id': scope.partId('message-feed', 'scroll-to-end-trigger'),
       'aria-label': translations?.scrollToBottom ?? 'Scroll to bottom',
       'data-state': atBottom ? 'hidden' : 'visible',
-      // 收起不卸载：按钮反复建删会让它的进场动画每次从头播
-      'hidden': atBottom || undefined,
+      // 收起不卸载：按钮反复建删会让它的进场动画每次从头播。回底后先播完退场再藏起
+      'hidden': (atBottom && !context.get('triggerRendered')) || undefined,
       // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；在底收起时不进
       'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'SCROLL_TO_BOTTOM' }),

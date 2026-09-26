@@ -28,7 +28,7 @@ export function connectLog<T extends PropTypes>(
   props: LogProps,
   normalize: NormalizeProps<T>,
 ): LogApi<T> {
-  const { context, send } = service
+  const { context, send, scope } = service
 
   const atBottom = context.get('atBottom')
   const sticking = context.get('sticking')
@@ -87,7 +87,7 @@ export function connectLog<T extends PropTypes>(
       'data-level': line?.level,
     }),
 
-    // 收起时置 hidden，不卸载节点
+    // 收起时置 hidden，不卸载节点：按钮反复建删会让它的进场动画每次从头播
     // 回底钮是浮在内容之上的单图标动作：接 Action Control 的 floating 档（circle 正方盒），ghost 形态、
     // 固定 xs（--xh-control-box-sm 32px，与此前 --xh-control-h-sm 同尺寸），材质由皮肤按角落浮钮族给 frosted
     getScrollToEndTriggerProps: () => normalize.button({
@@ -98,9 +98,11 @@ export function connectLog<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
+      'id': scope.partId('log', 'scroll-to-end-trigger'),
       'aria-label': label.scrollToBottom,
       'data-state': showScrollToEndTrigger ? 'visible' : 'hidden',
-      'hidden': !showScrollToEndTrigger || undefined,
+      // 回底后先播完退场再藏起
+      'hidden': (!showScrollToEndTrigger && !context.get('triggerRendered')) || undefined,
       // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；在底收起时不进
       'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'SCROLL_TO_BOTTOM' }),

@@ -120,9 +120,15 @@
     display: none;
   }
 
-  /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
+  /* 收起不卸载：离底时冒出来播进场，回底时先播完退场、连接层才写 hidden 藏起。
+     不写 display，可见性归上面那条 [hidden] 管；退场途中不再接指针 */
   [data-scope='message-feed'][data-part='scroll-to-end-trigger'][data-state='visible'] {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger'][data-state='hidden']:not([hidden]) {
+    pointer-events: none;
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */

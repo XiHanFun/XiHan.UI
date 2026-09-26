@@ -203,7 +203,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(rig.api().sticking).toBe(false)
   })
 
-  it('在底时按钮带 hidden，按住不进；按住途中回到底部、按钮收起时自收；再离底后照常', () => {
+  it('在底时按钮带 hidden，按住不进；按住途中回到底部、按钮收起时自收；再离底后照常', async () => {
     const rig = mount()
     const trigger = (): Dict => rig.api().getScrollToEndTriggerProps() as Dict
     expect(trigger().hidden).toBe(true)
@@ -217,8 +217,11 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(trigger()['data-pressed']).toBe('')
     // Enter 在 keydown 即 click：滚回底部、按钮收起，不会再来 keyup
     rig.service.send({ type: 'STICK.CHANGE', atBottom: true, sticking: true })
-    expect(trigger().hidden).toBe(true)
+    // 回底即转 hidden 态、按压面随之收；hidden 属性等宿主提交一次、确认没有退场动画可等才落下
+    expect(trigger()['data-state']).toBe('hidden')
     expect(trigger()['data-pressed']).toBeUndefined()
+    await settle()
+    expect(trigger().hidden).toBe(true)
 
     rig.service.send({ type: 'STICK.CHANGE', atBottom: false, sticking: true })
     fire(trigger(), 'onKeyDown', key(' '))

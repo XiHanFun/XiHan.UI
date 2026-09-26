@@ -8,6 +8,7 @@
 import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { MessageFeedSchema } from './message-feed.types'
 import { createStickToBottom, setup, trackArrivals } from '@xihan-ui/core'
+import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<MessageFeedSchema>()
 
@@ -27,6 +28,8 @@ export const messageFeedMachine = createMachine({
     focusedId: cell<string | null>(() => ({ defaultValue: null })),
     pressed: cell<boolean>(() => ({ defaultValue: false })),
     arrivalsTracked: cell<boolean>(() => ({ defaultValue: false })),
+    // 与 atBottom 的初值对上：起步在底，按钮收着
+    triggerRendered: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -36,8 +39,8 @@ export const messageFeedMachine = createMachine({
     stick: null,
   }),
   initialState: () => 'idle',
-  // 粘底与条目到达两路副作用全程挂载
-  effects: ['trackStickToBottom', 'trackArrivals'],
+  // 粘底、条目到达与回到底部按钮的进退场三路副作用全程挂载
+  effects: ['trackStickToBottom', 'trackArrivals', 'trackTriggerPresence'],
   states: {
     idle: {
       on: {
@@ -48,6 +51,7 @@ export const messageFeedMachine = createMachine({
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
         'ARRIVALS.TRACKED': { actions: ['markArrivalsTracked'] },
+        'TRIGGER.RENDERED': { actions: ['setTriggerRendered'] },
       },
     },
   },
@@ -70,6 +74,11 @@ export const messageFeedMachine = createMachine({
         prop('onStickChange')?.({ atBottom: e.atBottom, sticking: e.sticking })
       },
       markArrivalsTracked: ({ context }) => context.set('arrivalsTracked', true),
+      setTriggerRendered: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TRIGGER.RENDERED')
+          context.set('triggerRendered', e.rendered)
+      },
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
 
@@ -121,6 +130,16 @@ export const messageFeedMachine = createMachine({
           refs.set('stick', null)
         }
       },
+
+      /** 回到底部按钮离底时冒出来、回底时播完退场再藏起。 */
+      trackTriggerPresence: ({ context, scope, send, track, flush }) => trackPartPresence({
+        scope,
+        id: scope.partId('message-feed', 'scroll-to-end-trigger'),
+        open: () => !context.get('atBottom'),
+        track,
+        flush,
+        onRenderedChange: rendered => send({ type: 'TRIGGER.RENDERED', rendered }),
+      }),
 
       /**
        * 条目到达：接上时已在的条目是历史消息，打上 data-instant 直接呈现；之后同一批新到的消息
