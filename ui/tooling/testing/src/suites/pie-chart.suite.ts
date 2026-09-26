@@ -53,6 +53,7 @@ const cases: readonly ConformanceCase[] = [
       {
         kind: 'focus',
         part: 'slice[0]',
+        via: 'keyboard',
         expect: {
           activeElement: { part: 'slice[0]', exact: true },
           parts: { tooltip: { 'data-state': 'visible' } },
@@ -65,7 +66,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['pie-chart.kbd.next', 'pie-chart.kbd.prev'],
     steps: [
-      { kind: 'focus', part: 'slice[0]' },
+      { kind: 'focus', part: 'slice[0]', via: 'keyboard' },
       {
         kind: 'key',
         key: 'ArrowRight',
@@ -84,7 +85,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['pie-chart.kbd.first', 'pie-chart.kbd.last'],
     steps: [
-      { kind: 'focus', part: 'slice[1]' },
+      { kind: 'focus', part: 'slice[1]', via: 'keyboard' },
       { kind: 'key', key: 'End', expect: { activeElement: { part: 'slice[3]', exact: true } } },
       { kind: 'key', key: 'Home', expect: { activeElement: { part: 'slice[0]', exact: true } } },
     ],
@@ -94,7 +95,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['pie-chart.kbd.press'],
     steps: [
-      { kind: 'focus', part: 'slice[2]' },
+      { kind: 'focus', part: 'slice[2]', via: 'keyboard' },
       { kind: 'key', key: 'Enter', expect: { events: [{ type: 'datum-press' }] } },
       { kind: 'key', key: 'Space', expect: { events: [{ type: 'datum-press' }] } },
     ],
@@ -104,7 +105,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['pie-chart.kbd.dismiss'],
     steps: [
-      { kind: 'focus', part: 'slice[1]', expect: { parts: { tooltip: { 'data-state': 'visible' } } } },
+      { kind: 'focus', part: 'slice[1]', via: 'keyboard', expect: { parts: { tooltip: { 'data-state': 'visible' } } } },
       {
         kind: 'key',
         key: 'Escape',
@@ -120,7 +121,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['pie-chart.kbd.legend-move', 'pie-chart.kbd.legend-toggle'],
     steps: [
-      { kind: 'focus', part: 'legend-item[0]' },
+      { kind: 'focus', part: 'legend-item[0]', via: 'keyboard' },
       {
         kind: 'key',
         key: 'ArrowRight',
