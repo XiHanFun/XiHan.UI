@@ -59,9 +59,11 @@ function collapsed(mark: Mark, style: EnterStyle): Mark {
     case 'arc':
       return { ...mark, endAngle: mark.startAngle }
     case 'area':
-      return style === 'baseline'
-        ? { ...mark, points: mark.points.map(p => ({ ...p, y: p.y0 ?? p.y })) }
-        : { ...mark, opacity: 0 }
+      if (style !== 'baseline')
+        return { ...mark, opacity: 0 }
+      return mark.orientation === 'horizontal'
+        ? { ...mark, points: mark.points.map(p => ({ ...p, x: p.x0 ?? p.x })) }
+        : { ...mark, points: mark.points.map(p => ({ ...p, y: p.y0 ?? p.y })) }
     default:
       return { ...mark, opacity: 0 }
   }

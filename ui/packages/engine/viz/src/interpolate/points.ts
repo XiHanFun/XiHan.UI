@@ -12,8 +12,10 @@ export interface KeyedPoint {
   readonly key: string
   readonly x: number
   readonly y: number
-  /** 面积的基线；缺省时视作与 y 重合。 */
+  /** 纵向面积的基线；缺省时视作与 y 重合。 */
   readonly y0?: number
+  /** 横向面积的基线；缺省时视作与 x 重合。 */
+  readonly x0?: number
   /** false 表示该键的值缺失，折线在此断开；缺省 true。 */
   readonly defined?: boolean
 }
@@ -87,19 +89,21 @@ export function interpolatePoints(from: readonly KeyedPoint[], to: readonly Keye
     const start = track.start ?? neighbour(k, 'start') ?? own
     const end = track.end ?? neighbour(k, 'end') ?? own
     const hasBaseline = start.y0 !== undefined || end.y0 !== undefined
+    const hasSideBaseline = start.x0 !== undefined || end.x0 !== undefined
     return {
       key: track.key,
       start,
       end,
       hasBaseline,
+      hasSideBaseline,
       defined: track.start && track.end
         ? track.start.defined !== false && track.end.defined !== false
         : own.defined !== false,
     }
   })
 
-  return t => resolved.map(({ key, start, end, hasBaseline, defined }) => {
-    const point: { key: string, x: number, y: number, y0?: number, defined: boolean } = {
+  return t => resolved.map(({ key, start, end, hasBaseline, hasSideBaseline, defined }) => {
+    const point: { key: string, x: number, y: number, y0?: number, x0?: number, defined: boolean } = {
       key,
       x: start.x + (end.x - start.x) * t,
       y: start.y + (end.y - start.y) * t,
@@ -109,6 +113,11 @@ export function interpolatePoints(from: readonly KeyedPoint[], to: readonly Keye
       const b0 = start.y0 ?? start.y
       const b1 = end.y0 ?? end.y
       point.y0 = b0 + (b1 - b0) * t
+    }
+    if (hasSideBaseline) {
+      const b0 = start.x0 ?? start.x
+      const b1 = end.x0 ?? end.x
+      point.x0 = b0 + (b1 - b0) * t
     }
     return point
   })

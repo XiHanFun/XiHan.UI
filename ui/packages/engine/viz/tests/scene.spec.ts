@@ -103,6 +103,11 @@ describe('标记转路径', () => {
     expect(markPath({ kind: 'area', key: 'r', part: 'area', points: [{ key: 'a', x: 0, y: 10, y0: 50 }, { key: 'b', x: 10, y: 20, y0: 50 }], curve: 'linear' })).toBe('M0,10L10,20L10,50L0,50Z')
   })
 
+  it('横向面积沿 y 铺开，基线取 x0', () => {
+    const points = [{ key: 'a', x: 30, y: 0, x0: 0 }, { key: 'b', x: 40, y: 10, x0: 0 }]
+    expect(markPath({ kind: 'area', key: 'r', part: 'area', orientation: 'horizontal', points, curve: 'linear' })).toBe('M30,0L40,10L0,10L0,0Z')
+  })
+
   it('未知的曲线名报错', () => {
     expect(() => curveOf('spline' as 'linear')).toThrow(/曲线/)
   })
