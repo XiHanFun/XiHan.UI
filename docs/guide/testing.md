@@ -220,7 +220,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 127 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 128 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -250,6 +250,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
 | `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |
 | `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
+| `check-material-scope` | liquid 落在没登记的部件上：连接层投影 `data-xh-liquid` 的部件、皮肤里与 `[data-xh-liquid]` 写在同一个复合选择器上的部件，都必须是登记过的导航层（浮动钮、媒体控制、悬浮栏），每条写明它浮在什么之上；过期的登记同样判失败 |
 | `check-changeset-packages` | changeset 头部写了 `.changeset/config.json` ignore 表里的私有包（如 `@xihan-ui/testing`）或不在工作区的包：前者与发布包混写时 `changeset version` 直接报 Mixed changesets，只写它时整份被丢掉、正文进不了 CHANGELOG；后者报 not in the workspace。不依赖 git 基线，头部读不成「包名: 档位」也判红 |
 | `check-surface-edge` / `check-selection-marker` / `check-state-ladder` / `check-text-role` 与扩展后的 `check-elevation-role` / `check-shape-scale` / `check-press-feedback` / `check-family-parity` | 七条家族门禁：根面边界三选一、选中与当前态按语义分类、交互态按承载面阶梯、排版与图标按角色、raised 逐部件登记且必带描边、形状身份表、按压几何与换底、同族同值。尚未迁移的存量登在 `tooling/scripts/family-backlog.json`，每条必须真被放行过一次（登记了却没命中判过期），`check-family-backlog`（`gate:family` 里的 `family-backlog.spec.mjs`）把每段条目数钉在快照与 CEILING 上、键集合只许是快照的子集——表只减不增 |
 

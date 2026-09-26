@@ -608,7 +608,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 ### 8.5 Liquid
 
-liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、自身内容很短的控制面。它只在应用级轴 `data-material="liquid"` 下出现（缺省 `standard`，与现有 7 个视觉轴并列，由 Portal 视觉桥投影，最近的祖先生效）；standard 档下同一部件取原材质。
+liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、自身内容很短的控制面。它只在应用级轴 `data-material="liquid"` 下出现（视觉环境控制器的 `material` 轴，缺省 `standard`，由 Portal 视觉桥投影，最近的祖先生效）；standard 档下同一部件取原材质。
 
 | 允许 | 部件 |
 | --- | --- |
@@ -616,7 +616,8 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 媒体控制 | Carousel 翻页钮与指示器、ImageViewer 工具条 / 翻页钮 / 关闭钮 / 计数 |
 | 悬浮栏 | Layout 顶栏、底栏（sticky 或 fixed 时）、Toolbar 悬浮档 |
 
-- 不允许：瞬态浮层、模态、Toast / Notification、Card、Table、表单、正文容器；liquid 内再嵌 liquid。栏内的 Segmented、Tabs 继承栏的材质，自身不叠材质。
+- 不允许：瞬态浮层、模态、Toast / Notification、Card、Table、表单、正文容器；liquid 内再嵌 liquid。栏内的 Segmented、Tabs 继承栏的材质，自身不叠材质。允许的部件逐个登记在门禁 `check-material-scope`，连接层投影 `data-xh-liquid`（Layout 顶栏只在吸顶时投影）。
+- 液态档下的形态：Carousel 分页条托在一条液态胶囊上；ImageViewer 的工具条与计数取 pill、叉取 circle，前景随墨色域在黑白之间切换，不再钉在浅字上；Layout 吸顶顶栏贴边铺满、不取圆角，边界由下沿墨色细线承担。
 - 结构五层，自下而上：
   1. 取样：`--xh-material-liquid-backdrop`（blur sm 8px + saturate 140%）。
   2. 折射：只在距边缘 `--xh-material-liquid-bezel`（18px）以内，按边缘法线向内位移。
@@ -624,7 +625,8 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
   4. 边界：墨色 12% 细线承担可见边界，外加 1px 边缘光环；面内无高光、无反射线。
   5. 投影：`--xh-elevation-floating`。
 - 可读下限：浅色调不透明度 ≥ 0.48、深色调 ≥ 0.61，标签文字在任何下层上 ≥ 4.5:1。下层均匀且色调已知时可降到通透档（浅 0.24 / 深 0.34）；下层杂乱、有文字、未知，以及首次判定完成前，一律取可读下限。
-- 色调按下层决定，不按主题：作者在图片、视频、画布区域声明 `data-xh-backdrop="light | dark"`（杂乱时加 `data-xh-backdrop-busy`），其余读 DOM 计算色；相对亮度 0.179 ± 0.04 滞回。不读像素、不申请设备方向权限。
+- 色调按下层决定，不按主题：作者在图片、视频、画布区域声明 `data-xh-backdrop="light | dark"`（杂乱时加 `data-xh-backdrop-busy`），其余读 DOM 计算色；相对亮度 0.179 ± 0.04 滞回。不读像素、不申请设备方向权限。图片、视频、画布、内嵌 SVG 没有声明时按未知；模态把背景设为 inert、命中栈里读不到时同样只按主题猜色调，不换通透档。库自己知道的下层由连接层声明（ImageViewer 的定位层替被 inert 的深色遮罩声明 `dark`，透明遮罩不声明）。
+- 重读时机：滚动、窗口缩放、进入视口，以及下层原地变样——媒体加载完、过渡与动画播完、状态机驱动的平移落定（`data-animating` 撤掉）。
 - 光源：细指针下 1px 边缘光沿周长的亮度随指针方向转动；粗指针与无指针固定左上（RTL 右上）。
 - 折射只在 Chromium 内核启用，按内核品牌门控（其余引擎能解析 SVG 背景滤镜却不渲染，不能用 `CSS.supports` 判断）；其余引擎为模糊 + 饱和。尺寸超过 640 × 120 或同一视口超过 3 个时只取样不折射。
 - 选中不用品牌色字：品牌字压在彩色下层上会失去对比。选中只用指示块 + 字重。
@@ -1133,7 +1135,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | 图表组件；chart 家族配方随第二个图表组件建立 |
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
-| §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档；悬浮栏里相邻的分段按液态组结组）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
+| §8.5 liquid | 共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring`；Drawer 与底部面板的滑动关闭（随 §14.6 底部面板原语） |
 | §9.12 呼吸与光 | 可悬停 Card 的描边光：Card 还没有可交互形态，静态卡片随指针发光会被误认为能点，等可交互 Card 落地再接 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |
