@@ -45,6 +45,8 @@ const TIMING_CONSTANTS = {
   'headless/src/calendar-range-picker/calendar-range-picker.connect.ts:TOUCH_DRAG_DELAY': '判定：触屏按住多久才算开始拖选，内部取值：用来区分拖选与滚动页面，调短会误把滚动当拖选',
   'headless/src/virtualizer/virtualizer.kernel.ts:VIRTUALIZER_SCROLL_IDLE_DELAY': '判定：停手多久算滚动静止，内部取值：只决定何时重量条目尺寸',
   'headless/src/download-trigger/download-trigger.machine.ts:DOWNLOAD_TRIGGER_REVOKE_DELAY': '资源回收：临时下载地址延迟撤销，等浏览器接走下载；不是给人看的停留',
+  'core/src/behavior/hover-intent/track-hover-intent.ts:HOVER_INTENT_OPEN_DELAY': '停留：悬停意图从进触发器到报开的等待，选项 openDelay 的缺省值，也是 Menu hoverOpenDelay 的缺省值',
+  'core/src/behavior/hover-intent/track-hover-intent.ts:HOVER_INTENT_CLOSE_DELAY': '停留：离开到报关的等待与安全三角的停滞上限，选项 closeDelay 的缺省值，也是 Menu hoverCloseDelay 的缺省值',
   'core/src/behavior/collection/typeahead.ts:RESET_AFTER': '停留：首字母检索在最后一次按键后多久清空前缀，集合共用的内部取值',
 }
 

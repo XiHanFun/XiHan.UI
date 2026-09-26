@@ -4877,6 +4877,8 @@
       "GuardCombinators",
       "GuardExpr",
       "GuardFn",
+      "HOVER_INTENT_CLOSE_DELAY",
+      "HOVER_INTENT_OPEN_DELAY",
       "HideOutsideOptions",
       "HighlighterPort",
       "HoverIntentOptions",

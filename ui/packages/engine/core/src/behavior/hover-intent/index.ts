@@ -8,4 +8,4 @@
 export type { HoverPoint, HoverRect } from './safe-polygon'
 export { pointInPolygon, safeTriangle } from './safe-polygon'
 export type { HoverIntentOptions } from './track-hover-intent'
-export { trackHoverIntent } from './track-hover-intent'
+export { HOVER_INTENT_CLOSE_DELAY, HOVER_INTENT_OPEN_DELAY, trackHoverIntent } from './track-hover-intent'
