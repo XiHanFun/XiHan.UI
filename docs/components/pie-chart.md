@@ -306,22 +306,37 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-xh-chart-part` | 'root' |
+| `caption` | `data-xh-chart-part` | 'caption' |
+| `legend` | `data-xh-chart-part` | 'legend' |
 | `legend-item` | `data-pressed` | ''（条件成立时才出现） |
 | `legend-item` | `data-value` | item.id |
 | `legend-item` | `data-xh-action-control` | '' |
 | `legend-item` | `data-xh-action-profile` | 'text' |
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
+| `legend-item` | `data-xh-chart-part` | 'legend-item' |
 | `legend-item` | `data-xh-chart-slot` | slotAttr(item.slot, item.other) |
+| `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
+| `viewport` | `data-xh-chart-part` | 'viewport' |
+| `plot` | `data-xh-chart-part` | 'plot' |
 | `center` | `data-drawing` | ''（条件成立时才出现） |
 | `center` | `data-placement` | 'top' \| undefined |
 | `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
+| `tooltip` | `data-xh-chart-part` | 'tooltip' |
+| `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-series-id` | row.key |
+| `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
 | `tooltip-row` | `data-xh-chart-slot` | slotAttr(row.slot, row.other) |
+| `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
+| `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
+| `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-xh-chart-part` | 'empty' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | '' |
+| `mark` | `data-xh-chart-part` | mark.part \| undefined |
 | `mark` | `data-xh-chart-slot` | slotAttr(slice.slot, slice.other) \| undefined |
 
 <!-- xh-component-tokens:start -->

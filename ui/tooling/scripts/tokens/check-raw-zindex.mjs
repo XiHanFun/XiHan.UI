@@ -13,6 +13,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_DIR = 'packages/design/styles/family'
 const HEADLESS = 'packages/engine/headless/src'
 
 /**
@@ -30,20 +31,20 @@ const IN_COMPONENT_STACKING = {
   'avatar-group.css': { reason: '头像相互压边，靠悬停项抬一层盖住相邻头像', isolatedBy: 'root' },
   'button-group.css': { reason: '相邻段的边框重叠，靠悬停段抬一层盖住邻段边框', isolatedBy: 'root' },
   'carousel.css': { reason: '导航与分页覆盖在视口内容之上，层号只在走马灯内部排序', isolatedBy: 'root' },
-  'cartesian-chart.css': { reason: '提示框画在根里，抬一层压住绘图区的标记与前景层', isolatedBy: 'root' },
   'clipboard.css': { reason: '输入框与复制按钮共边，靠聚焦或悬停项抬一层覆盖接缝', isolatedBy: 'root' },
   'color-slider.css': { reason: '隔离的 track 内，透明度那一路的棋盘格伪元素压在渐变后方且不参与页面层序', isolatedBy: 'track', levels: new Set(['-1']) },
   'heatmap.css': { reason: '行首那一列钉住时抬到格子之上，详情条再抬一层压住它', isolatedBy: 'root' },
   'image-viewer.css': { reason: '工具条与关闭钮压在图上，浮层内部的两层', isolatedBy: 'content' },
   'input-group.css': { reason: '相邻段的边框重叠，靠悬停或聚焦的那一段抬一层盖住邻段边框', isolatedBy: 'root' },
   'marquee.css': { reason: '暂停开关压在滚动的轨道之上，层号只在窗口内部排序', isolatedBy: 'root' },
-  'pie-chart.css': { reason: '提示框画在根里，抬一层压住绘图区的扇区与标签', isolatedBy: 'root' },
   'resizable.css': { reason: '把手压在容器边上，四个角再抬一层盖住相邻两条边', isolatedBy: 'root' },
   'table.css': { reason: '粘性列抬到普通单元格之上，表内的列间层序', isolatedBy: 'root' },
   'tabs.css': { reason: 'segment 档的标签抬一层压在滑动的抬起面（indicator 部件）之上，两端翻页钮再抬一层压在位移的标签之上，层号只在标签带内排序', isolatedBy: 'list' },
   'toggle-group.css': { reason: '条目的边框重叠与选中态抬升，组内三档', isolatedBy: 'root' },
   'tooltip.css': { reason: '隔离的 content 内，负一层着色面位于正文后方且不参与页面层序', isolatedBy: 'content', levels: new Set(['-1']) },
   'watermark.css': { reason: '水印压在内容之上，容器内的两层', isolatedBy: 'root' },
+  // 家族配方按 family/ 路径登记；它的部件由 data-xh-chart-part 指认
+  'family/chart.css': { reason: '图表的提示框画在根里，抬一层压住绘图区的标记、标签与前景层', isolatedBy: 'root' },
 }
 
 /** 组件内堆叠允许的层号档位。 */
@@ -128,7 +129,12 @@ function* declarations(src) {
 }
 
 const { result: layeredParts, seen: layeredPartsSeen } = await collectLayeredParts()
-const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
+/** 扫描面：组件皮肤按文件名，家族配方按 family/<名>。 */
+const paths = new Map([
+  ...(await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).map(f => [f, join(STYLES_DIR, f)]),
+  ...(await readdir(FAMILY_DIR)).filter(f => f.endsWith('.css')).map(f => [`family/${f}`, join(FAMILY_DIR, f)]),
+])
+const files = [...paths.keys()]
 const problems = []
 const usedWhitelist = new Set()
 let onLayeredPart = 0
@@ -140,7 +146,7 @@ const sources = new Map()
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   // 去掉注释但保留它占的行数，报错行号才对得上源文件
-  const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
+  const src = (await readFile(paths.get(file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
   sources.set(file, src)
 
   src.split(/\r?\n/).forEach((line, i) => {
@@ -226,7 +232,7 @@ for (const [file, entry] of Object.entries(IN_COMPONENT_STACKING)) {
   const scope = file.replace(/\.css$/, '')
   const src = sources.get(file) ?? ''
   const isolates = [...src.matchAll(/([^{}]+)\{([^{}]*)\}/g)].some(([, selector, body]) =>
-    selector.includes(`[data-part='${entry.isolatedBy}']`) && /isolation:\s*isolate/.test(body))
+    (selector.includes(`[data-part='${entry.isolatedBy}']`) || selector.includes(`[data-xh-chart-part='${entry.isolatedBy}']`)) && /isolation:\s*isolate/.test(body))
   if (!isolates) {
     problems.push(
       `${file}：登记说层号关在 ${scope} 的 ${entry.isolatedBy} 里，但那个部件没有 isolation: isolate——`

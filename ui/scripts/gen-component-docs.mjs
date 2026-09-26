@@ -489,7 +489,11 @@ function skinTraits(id) {
   const file = path.join(uiRoot, 'packages/design/styles/css', `${id}.css`)
   if (!fs.existsSync(file))
     return null
-  const css = fs.readFileSync(file, 'utf8')
+  const own = fs.readFileSync(file, 'utf8')
+  // Chart 家族配方画的是图表自己的部件（标题、图例、提示框、空态与焦点环），它的规则按皮肤正文读；
+  // 动作控件、集合项这类配方给的是交互反馈，另由 pressFamily 表达
+  const css = [own, ...[...own.matchAll(/^@import\s+'\.\.\/family\/(chart\.css)';/gm)]
+    .map(m => fs.readFileSync(path.join(uiRoot, 'packages/design/styles/family', m[1]), 'utf8'))].join('\n')
   const uniq = (re, text = css) => [...new Set([...text.matchAll(re)].map(m => m[1].trim()))].sort()
   // 减弱动效、高对比与打印这三类块里写的是「关掉」，判动效只看剥掉它们之后的正文
   const base = stripMedia(css, /prefers-reduced-motion|forced-colors|print/)

@@ -189,6 +189,7 @@ export function connectPieChart<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'data-xh-chart-part': 'root',
       // 规格不合法时不画扇区：诊断通道报出原因，根上留一个可观察的状态
       'data-state': invalid ? 'error' : undefined,
       'data-loading': dataAttr(prop('pending') === true),
@@ -197,12 +198,14 @@ export function connectPieChart<T extends PropTypes>(
 
     getCaptionProps: () => normalize.element({
       ...parts.caption.attrs,
-      id: ids.caption,
+      'data-xh-chart-part': 'caption',
+      'id': ids.caption,
     }),
 
     // 图例是工具条：整体一个 Tab 位，左右键在项之间走；图例随文字方向镜像，左右跟随视觉次序
     getLegendProps: () => normalize.element({
       ...parts.legend.attrs,
+      'data-xh-chart-part': 'legend',
       'role': 'toolbar',
       'aria-label': translations.legendLabel,
       // 只有一个扇区时标题已经说明了它，图例整条收起
@@ -222,6 +225,7 @@ export function connectPieChart<T extends PropTypes>(
     // 图例项是开关：开是常态，按下切换显隐；按 Action Control 的 text profile、ghost、xs 档接家族
     getLegendItemProps: item => normalize.button({
       ...parts['legend-item'].attrs,
+      'data-xh-chart-part': 'legend-item',
       'type': 'button',
       'aria-pressed': item.hidden ? 'false' : 'true',
       'tabindex': item.id === legendAnchor ? 0 : -1,
@@ -241,6 +245,7 @@ export function connectPieChart<T extends PropTypes>(
     // 色标只给眼睛看：名字由项里的文字承担
     getLegendSwatchProps: () => normalize.element({
       ...parts['legend-swatch'].attrs,
+      'data-xh-chart-part': 'legend-swatch',
       'aria-hidden': true,
     }),
 
@@ -250,10 +255,12 @@ export function connectPieChart<T extends PropTypes>(
 
     getViewportProps: () => normalize.element({
       ...parts.viewport.attrs,
+      'data-xh-chart-part': 'viewport',
     }),
 
     getPlotProps: () => normalize.element({
       ...parts.plot.attrs,
+      'data-xh-chart-part': 'plot',
       'id': ids.plot,
       'role': 'graphics-document',
       'aria-roledescription': translations.chartRoleDescription,
@@ -327,7 +334,8 @@ export function connectPieChart<T extends PropTypes>(
 
     getMarkProps: (mark) => {
       const part = parts[mark.part as keyof typeof parts]
-      const base = part ? part.attrs : {}
+      // 焦点环与引导线由 Chart 家族配方画：投影家族部件名
+      const base = part ? { ...part.attrs, 'data-xh-chart-part': mark.part === 'focus-ring' || mark.part === 'leader-line' ? mark.part : undefined } : {}
       // 标签与引导线等扫开的边缘到了才淡入：内核按扫开的曲线换算出它占入场时长的比例，样式乘上时长得到延迟
       const at = frame?.revealAt.get(mark.key)
       const reveal = at == null
@@ -418,6 +426,7 @@ export function connectPieChart<T extends PropTypes>(
     // 提示框不进读屏：每个扇区的可及名已经念全了名字、数值与占比，再念一遍是重复
     getTooltipProps: () => normalize.element({
       ...parts.tooltip.attrs,
+      'data-xh-chart-part': 'tooltip',
       'aria-hidden': true,
       'data-state': tooltip ? 'visible' : 'hidden',
       // 落在锚点的哪个角：绘图区不随 RTL 镜像，左右是物理方向
@@ -430,28 +439,34 @@ export function connectPieChart<T extends PropTypes>(
 
     getTooltipHeaderProps: () => normalize.element({
       ...parts['tooltip-header'].attrs,
+      'data-xh-chart-part': 'tooltip-header',
     }),
 
     getTooltipRowProps: (row: PieTooltipRow) => normalize.element({
       ...parts['tooltip-row'].attrs,
+      'data-xh-chart-part': 'tooltip-row',
       'data-series-id': row.key,
       'data-xh-chart-slot': slotAttr(row.slot, row.other),
     }),
 
     getTooltipSwatchProps: () => normalize.element({
       ...parts['tooltip-swatch'].attrs,
+      'data-xh-chart-part': 'tooltip-swatch',
     }),
 
     getTooltipValueProps: () => normalize.element({
       ...parts['tooltip-value'].attrs,
+      'data-xh-chart-part': 'tooltip-value',
     }),
 
     getTooltipNameProps: () => normalize.element({
       ...parts['tooltip-name'].attrs,
+      'data-xh-chart-part': 'tooltip-name',
     }),
 
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      'data-xh-chart-part': 'empty',
       // 空态随数据显隐：全部为 0、没有数据或全部隐藏
       'hidden': !empty || undefined,
       'data-state': loading ? 'loading' : undefined,

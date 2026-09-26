@@ -5,8 +5,10 @@
 
 /* 定义 pie chart 样式。 */
 
-/* 淡入与转圈关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 淡入关键帧由 family/motion.css 提供；标题、视口、图例、提示框、空态、焦点环与引导线走 Chart 家族配方。
+   本皮肤 @import 它们，单独引入仍成立。 */
 @import '../family/motion.css';
+@import '../family/chart.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -14,8 +16,7 @@
     --xh-pie-chart-skin: 1;
   }
 
-  /* 根不画外边、不填底，透出宿主面；需要框时由作者放进 Card。
-     几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
+  /* 几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
   [data-scope='pie-chart'][data-part='root'] {
     --xh-_chart-metric-bar-max: var(--xh-chart-bar-max);
     --xh-_chart-metric-gap: var(--xh-pie-chart-slice-gap, var(--xh-chart-gap));
@@ -27,58 +28,41 @@
     --xh-_chart-metric-radius: var(--xh-pie-chart-slice-radius, var(--xh-shape-inset));
     --xh-_chart-metric-font-size: var(--xh-text-caption-size);
     --xh-_chart-metric-leading: var(--xh-leading-tight);
-
-    /* 提示框按根的内边距盒绝对定位，参照系就是它；它抬的那一层只在根里排序 */
-    position: relative;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    gap: var(--xh-pie-chart-gap, var(--xh-space-3));
-    /* 图随容器铺满：在 flex / grid 里也不按内容收缩成默认的 300px */
-    inline-size: 100%;
-    margin: 0;
-    min-inline-size: 0;
-    color: var(--xh-fg-default);
-    font-size: var(--xh-text-body-size);
+    --xh-_chart-gap: var(--xh-pie-chart-gap, var(--xh-space-3));
   }
 
-  [data-scope='pie-chart'][data-part='caption'] {
-    font-size: var(--xh-text-label-size);
-    font-weight: var(--xh-text-label-weight);
-    color: var(--xh-fg-default);
-  }
-
-  /* 视口的块尺寸含外侧标签带，宽度铺满 */
+  /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
+     对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   [data-scope='pie-chart'][data-part='viewport'] {
-    position: relative;
-    inline-size: 100%;
-    block-size: var(--xh-pie-chart-height, var(--xh-chart-height));
-    min-inline-size: 0;
+    --xh-_chart-height: var(--xh-pie-chart-height, var(--xh-chart-height));
   }
 
-  /* 重取数据：保留上一帧，整体淡下去，不闪骨架、不跳布局 */
-  [data-scope='pie-chart'][data-part='root'][data-loading] > [data-part='viewport'] {
-    opacity: var(--xh-chart-pending-alpha);
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  [data-scope='pie-chart'][data-part='legend'] {
+    --xh-_chart-legend-gap: var(--xh-pie-chart-legend-gap, var(--xh-space-1));
   }
 
-  /* 绘图区脱离文档流：svg 的 width 属性来自测得的视口宽，留在流里会反过来撑住视口，容器收窄时图不跟着缩 */
-  [data-scope='pie-chart'][data-part='plot'] {
-    position: absolute;
-    inset: 0;
-    display: block;
-    inline-size: 100%;
-    block-size: 100%;
-    /* 外侧标签靠近视口边缘时不裁掉 */
-    overflow: visible;
-    font-size: var(--xh-_chart-metric-font-size);
-    font-variant-numeric: tabular-nums;
-    /* 焦点环由 focus-ring 部件画在扇区外，不靠 SVG 元素自己的 outline */
-    outline: none;
+  [data-scope='pie-chart'][data-part='legend-swatch'] {
+    --xh-_chart-legend-swatch-radius: var(--xh-pie-chart-legend-swatch-radius, var(--xh-shape-inset));
   }
 
-  [data-scope='pie-chart'][data-part='plot'] [tabindex] {
-    outline: none;
+  [data-scope='pie-chart'][data-part='tooltip'] {
+    --xh-_chart-tooltip-gap: var(--xh-pie-chart-tooltip-gap, var(--xh-space-1));
+    --xh-_chart-tooltip-py: var(--xh-pie-chart-tooltip-py, var(--xh-surface-pad-sm));
+    --xh-_chart-tooltip-px: var(--xh-pie-chart-tooltip-px, var(--xh-surface-pad-sm));
+    --xh-_chart-tooltip-radius: var(--xh-pie-chart-tooltip-radius, var(--xh-shape-overlay));
+    --xh-_chart-tooltip-shadow: var(--xh-pie-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
+  }
+
+  [data-scope='pie-chart'][data-part='tooltip-row'] {
+    --xh-_chart-tooltip-row-gap: var(--xh-pie-chart-tooltip-row-gap, var(--xh-space-2));
+  }
+
+  [data-scope='pie-chart'][data-part='tooltip-swatch'] {
+    --xh-_chart-tooltip-swatch-radius: var(--xh-pie-chart-tooltip-swatch-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='pie-chart'][data-part='empty'][data-state='loading'] {
+    --xh-_chart-empty-gap: var(--xh-pie-chart-empty-gap, var(--xh-space-2));
   }
 
   /* —— 色槽：身份由色槽承担，作者可以在扇区上覆盖 --xh-pie-chart-series-color ——
@@ -136,18 +120,11 @@
   }
 
   [data-scope='pie-chart'][data-part='slice'][data-dimmed],
-  [data-scope='pie-chart'][data-part='leader-line'][data-dimmed],
   [data-scope='pie-chart'][data-part='slice-label'][data-dimmed] {
     opacity: var(--xh-chart-dim-alpha);
   }
 
-  /* 引导线与外侧标签是标注：结构线色与标注字色，不取扇区色 */
-  [data-scope='pie-chart'][data-part='leader-line'] {
-    fill: none;
-    stroke: var(--xh-chart-axis);
-    stroke-width: var(--xh-stroke-thin);
-  }
-
+  /* 外侧标签是标注：标注字色，不取扇区色；引导线的画法在配方里 */
   [data-scope='pie-chart'][data-part='slice-label'] {
     fill: var(--xh-chart-label);
   }
@@ -158,17 +135,10 @@
     font-weight: var(--xh-font-weight-medium);
   }
 
-  [data-scope='pie-chart'][data-part='focus-ring'] {
-    fill: none;
-    stroke: var(--xh-ring-focus);
-    stroke-width: var(--xh-ring-width);
-  }
-
   /* —— 环形中心：叠在视口上，圆心与内径由几何给出；文字不超出内圈 —— */
-  /* 首次出现：标签与引导线等扫开的边缘到了才淡入，连接层写入它占入场时长的比例，乘上入场时长就是延迟；
+  /* 首次出现：外侧标签等扫开的边缘到了才淡入，连接层写入它占入场时长的比例，乘上入场时长就是延迟；
      环形中心等整圈扫完再淡入 */
-  [data-scope='pie-chart'][data-part='slice-label'][data-drawing],
-  [data-scope='pie-chart'][data-part='leader-line'][data-drawing] {
+  [data-scope='pie-chart'][data-part='slice-label'][data-drawing] {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
     animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
   }
@@ -215,179 +185,7 @@
     font-size: var(--xh-text-secondary-size);
   }
 
-  /* —— 图例：工具条，项是 Action Control 的 text 档 —— */
-  [data-scope='pie-chart'][data-part='legend'] {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--xh-pie-chart-legend-gap, var(--xh-space-1));
-  }
-
-  [data-scope='pie-chart'][data-part='legend'][hidden] {
-    display: none;
-  }
-
-  [data-scope='pie-chart'][data-part='legend-item'] {
-    color: var(--xh-fg-default);
-  }
-
-  /* 色标：扇区是面，色标取 inset 圆角的方块；隐藏时只留描边（空心） */
-  [data-scope='pie-chart'][data-part='legend-swatch'] {
-    flex: none;
-    inline-size: var(--xh-space-3);
-    block-size: var(--xh-space-3);
-    border: var(--xh-stroke-thick) solid var(--xh-_chart-series);
-    border-radius: var(--xh-pie-chart-legend-swatch-radius, var(--xh-shape-inset));
-    background: var(--xh-_chart-series);
-  }
-
-  /* 显隐标记：开是常态，不用品牌淡底；隐藏的项空心色标、次级字色、删除线 */
-  [data-scope='pie-chart'][data-part='legend-item'][aria-pressed='false'] {
-    color: var(--xh-fg-subtle);
-    text-decoration: line-through;
-  }
-
-  [data-scope='pie-chart'][data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'] {
-    background: transparent;
-  }
-
-  /* —— 提示框：frosted 材质，画在根里；绘图区不随 RTL 镜像，这里的左右也是物理方向 —— */
-  [data-scope='pie-chart'][data-part='tooltip'] {
-    position: absolute;
-    inset-block-start: var(--xh-_chart-tip-y, 0);
-    /* stylelint-disable-next-line property-disallowed-list -- 绘图区不随 RTL 镜像，锚点横坐标由连接层按物理左缘写入 */
-    left: var(--xh-_chart-tip-x, 0);
-    z-index: 1;
-    display: grid;
-    gap: var(--xh-pie-chart-tooltip-gap, var(--xh-space-1));
-    min-inline-size: 8rem;
-    padding-block: var(--xh-pie-chart-tooltip-py, var(--xh-surface-pad-sm));
-    padding-inline: var(--xh-pie-chart-tooltip-px, var(--xh-surface-pad-sm));
-    border: var(--xh-stroke-thin) solid var(--xh-material-frosted-border);
-    border-radius: var(--xh-pie-chart-tooltip-radius, var(--xh-shape-overlay));
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      var(--xh-material-frosted-bg);
-    color: var(--xh-material-frosted-fg);
-    box-shadow: var(--xh-pie-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
-    backdrop-filter: var(--xh-material-frosted-backdrop);
-    /* 正文排版，与根同一档：不反白、不缩字，色标按承载面校准 */
-    font-size: var(--xh-text-body-size);
-    white-space: nowrap;
-    /* 提示框不接指针：跟着指针走时压住下面的扇区，命中就断了 */
-    pointer-events: none;
-    translate: var(--xh-space-3) calc(-100% - var(--xh-space-2));
-  }
-
-  /* 落点：锚点在右半边时长在左侧，在上半边时向下长 */
-  [data-scope='pie-chart'][data-part='tooltip'][data-placement='top-left'] {
-    translate: calc(-100% - var(--xh-space-3)) calc(-100% - var(--xh-space-2));
-  }
-
-  [data-scope='pie-chart'][data-part='tooltip'][data-placement='bottom-right'] {
-    translate: var(--xh-space-3) var(--xh-space-2);
-  }
-
-  [data-scope='pie-chart'][data-part='tooltip'][data-placement='bottom-left'] {
-    translate: calc(-100% - var(--xh-space-3)) var(--xh-space-2);
-  }
-
-  /* 露不露是从激活的扇区算出来的派生显隐：首次出现淡入，跟着指针移动时不做位置过渡 */
-  [data-scope='pie-chart'][data-part='tooltip'][data-state='hidden'] {
-    visibility: hidden;
-    opacity: 0;
-  }
-
-  [data-scope='pie-chart'][data-part='tooltip'][data-state='visible'] {
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  [data-scope='pie-chart'][data-part='tooltip-header'] {
-    font-weight: var(--xh-font-weight-medium);
-  }
-
-  /* 一行：色标、数值、说明。数值在前并加重，说明在后是次级文字 */
-  [data-scope='pie-chart'][data-part='tooltip-row'] {
-    display: flex;
-    align-items: center;
-    gap: var(--xh-pie-chart-tooltip-row-gap, var(--xh-space-2));
-  }
-
-  [data-scope='pie-chart'][data-part='tooltip-swatch'] {
-    flex: none;
-    inline-size: var(--xh-space-3);
-    block-size: var(--xh-space-3);
-    border-radius: var(--xh-pie-chart-tooltip-swatch-radius, var(--xh-shape-inset));
-    background: var(--xh-_chart-series);
-  }
-
-  [data-scope='pie-chart'][data-part='tooltip-value'] {
-    font-weight: var(--xh-font-weight-medium);
-    font-variant-numeric: tabular-nums;
-  }
-
-  [data-scope='pie-chart'][data-part='tooltip-name'] {
-    color: var(--xh-fg-muted);
-  }
-
-  /* 空态叠在视口上，居中 */
-  [data-scope='pie-chart'][data-part='empty'] {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--xh-fg-muted);
-    font-size: var(--xh-text-secondary-size);
-  }
-
-  /* 取数中、还没有可画的数据：文字前转一个圈，与 Spinner 同一副画法——整圈是轨道色，起始边是前景色 */
-  [data-scope='pie-chart'][data-part='empty'][data-state='loading'] {
-    gap: var(--xh-pie-chart-empty-gap, var(--xh-space-2));
-  }
-
-  [data-scope='pie-chart'][data-part='empty'][data-state='loading']::before {
-    content: '';
-    box-sizing: border-box;
-    flex: none;
-    inline-size: var(--xh-glyph-size-md);
-    block-size: var(--xh-glyph-size-md);
-    border: var(--xh-stroke-thick) solid var(--xh-border-default);
-    border-block-start-color: currentColor;
-    border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;
-  }
-
-  /* 减弱动效与打印：圈停下、换成点线，文字照写。两组规则是同一件事的几个触发条件 */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='pie-chart'][data-part='empty'][data-state='loading']::before {
-      border-style: dotted;
-      animation: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-scope='pie-chart'][data-part='empty'][data-state='loading']::before {
-    border-style: dotted;
-    animation: none;
-  }
-
-  [data-scope='pie-chart'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 声明了 display 的部件：作者写 hidden 时照样收起 */
-  [data-scope='pie-chart'][data-part='root'][hidden],
-  [data-scope='pie-chart'][data-part='plot'][hidden],
-  [data-scope='pie-chart'][data-part='tooltip'][hidden],
-  [data-scope='pie-chart'][data-part='tooltip-row'][hidden] {
-    display: none;
-  }
-
-  /* 强制色：扇区改成系统色的面与描边，焦点环取高亮色；图例隐藏态保留空心与删除线 */
+  /* 强制色：扇区改成系统色的面与描边；焦点环、引导线与色标在配方里 */
   @media (forced-colors: active) {
     [data-scope='pie-chart'][data-part='slice'] {
       fill: Canvas;
@@ -395,44 +193,9 @@
       stroke-width: var(--xh-stroke-thin);
     }
 
-    [data-scope='pie-chart'][data-part='leader-line'] {
-      stroke: CanvasText;
-    }
-
     [data-scope='pie-chart'][data-part='slice-label'],
     [data-scope='pie-chart'][data-part='slice-label'][data-xh-chart-slot] {
       fill: CanvasText;
-    }
-
-    [data-scope='pie-chart'][data-part='focus-ring'] {
-      stroke: Highlight;
-    }
-
-    [data-scope='pie-chart'][data-part='legend-swatch'],
-    [data-scope='pie-chart'][data-part='tooltip-swatch'] {
-      forced-color-adjust: none;
-      border-color: CanvasText;
-      background: CanvasText;
-    }
-
-    [data-scope='pie-chart'][data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'] {
-      background: Canvas;
-    }
-
-    [data-scope='pie-chart'][data-part='tooltip'] {
-      background-image: none;
-    }
-  }
-
-  /* 打印：纸上没有指针，提示框与焦点环不印；数据色照印 */
-  @media print {
-    [data-scope='pie-chart'][data-part='root'] {
-      print-color-adjust: exact;
-    }
-
-    [data-scope='pie-chart'][data-part='tooltip'],
-    [data-scope='pie-chart'][data-part='focus-ring'] {
-      display: none;
     }
   }
 }

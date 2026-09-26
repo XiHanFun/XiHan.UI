@@ -209,7 +209,8 @@ function withoutRelational(selector) {
 }
 
 function partsOf(selector) {
-  const parts = [...withoutRelational(selector).matchAll(/\[data-part\s*=\s*['"]([^'"]+)['"]\]/g)].map(match => match[1])
+  // 家族配方用 data-xh-chart-part 指部件，取值与 data-part 相同
+  const parts = [...withoutRelational(selector).matchAll(/\[data-(?:xh-chart-)?part\s*=\s*['"]([^'"]+)['"]\]/g)].map(match => match[1])
   return parts.length ? sorted(parts) : ['*']
 }
 
@@ -222,7 +223,7 @@ function statesOf(selector, atRules) {
     const declaration = content.slice('data-'.length)
     const equal = declaration.indexOf('=')
     const attribute = (equal === -1 ? declaration : declaration.slice(0, equal)).replace(/[~|^$*]\s*$/, '').trim()
-    if (attribute === 'scope' || attribute === 'part' || attribute === 'xh-action-control' || attribute === 'xh-collection-item')
+    if (attribute === 'scope' || attribute === 'part' || attribute === 'xh-chart-part' || attribute === 'xh-action-control' || attribute === 'xh-collection-item')
       continue
     if (equal === -1) {
       states.push(attribute)
