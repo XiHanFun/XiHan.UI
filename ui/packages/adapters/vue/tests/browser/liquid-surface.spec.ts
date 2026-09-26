@@ -49,7 +49,7 @@ function frames(count = 3) {
 }
 
 /** 铺一层全视口的下层，再把浮动钮挂上去：浮动钮是 fixed 定位，压在这层下层上。 */
-async function mount(under: { style: string, attrs?: Record<string, string>, text?: string }, material: string | null = 'liquid'): Promise<HTMLElement> {
+async function mount(under: { style: string, attrs?: Record<string, string>, text?: string, image?: string }, material: string | null = 'liquid'): Promise<HTMLElement> {
   if (material)
     document.documentElement.setAttribute('data-material', material)
   backdrop = document.createElement('div')
@@ -58,6 +58,8 @@ async function mount(under: { style: string, attrs?: Record<string, string>, tex
     backdrop.setAttribute(k, v)
   if (under.text)
     backdrop.innerHTML = `<p style="margin: 0; font-size: 64px; line-height: 1; word-break: break-all">${under.text.repeat(200)}</p>`
+  if (under.image)
+    backdrop.innerHTML = `<img alt="" src="${under.image}" style="display: block; inline-size: 100%; block-size: 100%">`
   document.body.append(backdrop)
   host = document.createElement('div')
   document.body.append(host)
@@ -85,6 +87,22 @@ describe('液态面按下层取色调与通透档', () => {
     const trigger = await mount({ style: 'background: linear-gradient(oklch(0.8 0.1 40), oklch(0.3 0.1 300))', attrs: { 'data-xh-backdrop': 'dark', 'data-xh-backdrop-busy': '' } })
     expect(trigger.getAttribute('data-xh-ink')).toBe('light')
     expect(trigger.hasAttribute('data-xh-liquid-clarity')).toBe(false)
+  })
+
+  it('下层是没有声明的图片：底色透明也不往下看，按未知算，留在静态形态', async () => {
+    // 图片本身是亮的，底下垫的是深色：往下看就会误判成均匀的深下层
+    const bright = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="#fff8d0"/></svg>')}`
+    const trigger = await mount({ style: 'background: oklch(0.2 0 0)', image: bright })
+    // 一个点都读不到：留在静态形态（色调随主题、不透明度取可读下限），不写墨色域也不换通透档
+    expect(trigger.hasAttribute('data-xh-ink')).toBe(false)
+    expect(trigger.hasAttribute('data-xh-liquid-clarity')).toBe(false)
+  })
+
+  it('下层原地变样（过渡播完）时重读，不必等滚动', async () => {
+    const trigger = await mount({ style: 'background: oklch(0.96 0.02 100); transition: background-color 60ms' })
+    expect(trigger.getAttribute('data-xh-ink')).toBe('dark')
+    backdrop!.style.backgroundColor = 'oklch(0.3 0.1 258)'
+    await expect.poll(() => trigger.getAttribute('data-xh-ink'), { timeout: 1000 }).toBe('light')
   })
 
   it('下层有文字：按杂乱算，不换通透档', async () => {

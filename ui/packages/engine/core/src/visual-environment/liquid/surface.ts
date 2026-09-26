@@ -46,6 +46,9 @@ interface Coordinator {
 
 const coordinators = new WeakMap<Document, Coordinator>()
 
+/** 下层会在原地变样的时刻：媒体加载完、CSS 过渡与动画播完。 */
+const SETTLE_EVENTS = ['load', 'transitionend', 'animationend'] as const
+
 /** 元素所在的材质轴：最近一层 data-material 声明为 liquid 才算液态档。 */
 export function isLiquidMaterial(el: Element): boolean {
   return el.closest('[data-material]')?.getAttribute('data-material') === 'liquid'
@@ -136,11 +139,13 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
   function probe(): void {
     if (!canSample)
       return
+    // 模态把背景设成 inert：那些内容照样画在下面，命中栈里却没有它们
+    const obscured = doc.querySelector('[inert]') !== null
     for (const [el, state] of active) {
       const rect = el.getBoundingClientRect()
       if (!visible(rect))
         continue
-      const samples = samplePoints(rect).map(([x, y]) => sampleAt(doc, x, y, exclude, luminanceOf))
+      const samples = samplePoints(rect).map(([x, y]) => sampleAt(doc, x, y, exclude, luminanceOf, obscured))
       const reading = readBackdrop(samples, state.tone)
       if (!reading)
         continue
@@ -232,9 +237,14 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     })
   }
 
-  // 材质轴可以写在任意祖先上，也可以随时改：盯住文档里所有 data-material 的变化
+  // 材质轴可以写在任意祖先上，也可以随时改：盯住文档里所有 data-material 的变化。
+  // 同一个观察者顺带盯 data-animating：状态机驱动的平移（轮播翻页、看图惯性）落定时撤掉它，
+  // 下层这时才停在新位置上，重读一次
   const axis = typeof MutationObserver === 'function'
-    ? new MutationObserver(() => schedule({ sync: true }))
+    ? new MutationObserver((records) => {
+        const material = records.some(record => record.attributeName === 'data-material')
+        schedule(material ? { sync: true } : { probe: true })
+      })
     : null
 
   let press: Press | null = null
@@ -310,6 +320,8 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
   }
 
   const onScroll = (): void => schedule({ probe: true })
+  // 下层不滚动也会变：图片、视频加载完，CSS 过渡与动画驱动的翻页、进出场播完，都重读一次
+  const onSettle = (): void => schedule({ probe: true })
   const onResize = (): void => schedule({ probe: true, refract: true })
   const onPointerMove = (event: PointerEvent): void => {
     follow(event)
@@ -324,8 +336,10 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
   }
 
   function start(): void {
-    axis?.observe(doc.documentElement, { subtree: true, attributes: true, attributeFilter: ['data-material'] })
+    axis?.observe(doc.documentElement, { subtree: true, attributes: true, attributeFilter: ['data-material', 'data-animating'] })
     doc.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    for (const type of SETTLE_EVENTS)
+      doc.addEventListener(type, onSettle, { capture: true, passive: true })
     win.addEventListener('resize', onResize, { passive: true })
     doc.addEventListener('pointermove', onPointerMove, { passive: true })
     doc.addEventListener('pointerdown', onPointerDown, { capture: true, passive: true })
@@ -341,6 +355,8 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     axis?.disconnect()
     resizer?.disconnect()
     doc.removeEventListener('scroll', onScroll, { capture: true })
+    for (const type of SETTLE_EVENTS)
+      doc.removeEventListener(type, onSettle, { capture: true })
     win.removeEventListener('resize', onResize)
     doc.removeEventListener('pointermove', onPointerMove)
     doc.removeEventListener('pointerdown', onPointerDown, { capture: true })
