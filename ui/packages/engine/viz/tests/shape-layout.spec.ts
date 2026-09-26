@@ -78,6 +78,26 @@ describe('弧', () => {
     expect(tip).toBeDefined()
   })
 
+  it('实心扇区的尖端也按圆角半径倒圆：路径不再经过边线交点，削掉的面积合乎两切线夹一段圆弧', () => {
+    const base: ArcParams = { innerRadius: 0, outerRadius: 100, startAngle: 0, endAngle: Math.PI / 2, padAngle: 0.04, padRadius: 100 }
+    const h = 100 * Math.sin(0.02)
+    const sink = flatten()
+    arc({ ...base, cornerRadius: 4 }, sink)
+    const near = sink.subpaths[0]!.filter(([x, y]) => Math.hypot(x - h, y + h) < 0.5)
+    expect(near).toHaveLength(0)
+    // 直角尖端倒圆削掉 (1 − π/4)c²；两个外角各削掉不到这么多
+    const plain = areaOf(k => arc(base, k))
+    const rounded = areaOf(k => arc({ ...base, cornerRadius: 4 }, k))
+    expect(plain - rounded).toBeGreaterThan((1 - Math.PI / 4) * 16 * 0.9)
+    expect(plain - rounded).toBeLessThan(3 * (1 - Math.PI / 4) * 16 * 1.1)
+  })
+
+  it('不小于半圈的实心扇区尖端是凹角，保持尖', () => {
+    const sink = flatten()
+    arc({ innerRadius: 0, outerRadius: 100, startAngle: 0, endAngle: 4, cornerRadius: 4 }, sink)
+    expect(sink.subpaths[0]!.some(([x, y]) => Math.hypot(x, y) < 1e-6)).toBe(true)
+  })
+
   it('圆角让面积单调减小，超大的圆角被夹到可容纳的范围', () => {
     const base: ArcParams = { innerRadius: 50, outerRadius: 100, startAngle: 0, endAngle: 1 }
     const areas = [0, 4, 8, 16, 1000].map(cornerRadius => areaOf(sink => arc({ ...base, cornerRadius }, sink)))
