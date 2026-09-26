@@ -129,12 +129,21 @@ for (const { dir, file, label } of files) {
   // 家族文件只放关键帧，不是引用面
   if (dir === FAMILY)
     continue
+  const consume = (name) => {
+    if (!consumers.has(name))
+      consumers.set(name, new Set())
+    consumers.get(name).add(comp)
+  }
   for (const m of css.matchAll(/animation(?:-name)?\s*:[^;}]*/g)) {
-    for (const n of m[0].matchAll(/(?<![-\w])(xh-[a-z0-9-]+)/g)) {
-      if (!consumers.has(n[1]))
-        consumers.set(n[1], new Set())
-      consumers.get(n[1]).add(comp)
-    }
+    for (const n of m[0].matchAll(/(?<![-\w])(xh-[a-z0-9-]+)/g))
+      consume(n[1])
+  }
+  // 关键帧名经自定义属性转一道：槽里装的是名字，animation / animation-name 引的是这个槽
+  const referencedSlots = new Set([...css.matchAll(/animation(?:-name)?\s*:[^;}]*/g)]
+    .flatMap(m => [...m[0].matchAll(/var\(\s*(--[\w-]+)/g)].map(n => n[1])))
+  for (const m of css.matchAll(/(--[\w-]+)\s*:\s*(xh-[a-z0-9-]+)\s*[;}]/g)) {
+    if (referencedSlots.has(m[1]))
+      consume(m[2])
   }
 }
 

@@ -11,6 +11,7 @@
 // 循环动画压快了仍在循环，停掉要写 animation: none。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { declarations, lineCounter, stripComments } from '../lib/css-declarations.mjs'
 
 /** 扫描面：组件皮肤 + 家族文件（family/motion.css 装着共享关键帧，其余家族文件没有时长与幅度声明）。 */
 const STYLES_DIRS = ['packages/design/styles/css', 'packages/design/styles/family']
@@ -28,11 +29,6 @@ const PRIMITIVE = /--xh-duration-(?:fast|normal|slow)(?![\w-])/
 const DELAY_PROPS = new Set(['animation-delay', 'transition-delay'])
 const STAGGER = /var\(\s*--xh-motion-stagger-step\s*[,)]/
 
-/** 去掉块注释但保留换行，报错行号才对得上源文件。 */
-function stripComments(css) {
-  return css.replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
-}
-
 const files = (await Promise.all(STYLES_DIRS.map(async dir =>
   (await readdir(dir)).filter(f => f.endsWith('.css')).sort().map(f => ({ dir, file: dir.endsWith('/family') ? `family/${f}` : f })),
 ))).flat()
@@ -41,21 +37,22 @@ let timings = 0
 
 for (const { dir, file } of files) {
   const css = stripComments(await readFile(join(dir, file.replace(/^family\//, '')), 'utf8'))
+  const lineOf = lineCounter(css)
 
-  // 声明可能跨行（transition 列表一行一项），按 `属性: 值;` 整体匹配再换算行号
-  for (const m of css.matchAll(/(?<![\w-])([\w-]+)\s*:([^;{}]+);/g)) {
-    const [, prop, raw] = m
+  // 按结构逐条取声明：跨行的 transition 列表、挤在一行的几条、块尾省略分号的最后一条都取得到
+  for (const d of declarations(css)) {
+    const { prop, value: raw } = d
     if (!TIMING_PROPS.has(prop))
       continue
     timings++
     if (PRIMITIVE.test(raw)) {
-      const line = css.slice(0, m.index).split('\n').length
+      const line = lineOf(d.index)
       problems.push(`${file}:${line}  ${prop}: ${raw.replace(/\s+/g, ' ').trim()}  —— 时长别直接引 --xh-duration-* 原语，走 --xh-motion-duration-* 或组件时长槽`)
     }
     // 延迟位只许由 stagger-step 派生：写死 40ms 的那一处，减弱档归不掉，
     // 而 TIMING_PROPS 只测「有没有下探原语」，字面值它一个字都看不见
     if (DELAY_PROPS.has(prop) && raw.trim() !== '0s' && raw.trim() !== '0ms' && !STAGGER.test(raw)) {
-      const line = css.slice(0, m.index).split('\n').length
+      const line = lineOf(d.index)
       problems.push(`${file}:${line}  ${prop}: ${raw.replace(/\s+/g, ' ').trim()}  —— 交错的间隔要走 var(--xh-motion-stagger-step)（可乘序号），写死的值在减弱档归不掉`)
     }
   }
