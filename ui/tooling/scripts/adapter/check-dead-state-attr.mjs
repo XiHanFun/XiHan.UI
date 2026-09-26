@@ -104,6 +104,7 @@ const HOOKS = {
   'tag:data-state': '关掉后置 hidden',
   // 墨色域的取值块写在 tokens.css 里、对全部元素生效，不经组件皮肤
   'image-viewer:data-xh-ink': '看片层整层是白墨域：由 tokens.css 的墨色域取值块消费，控件、焦点环与作者放进来的动作随之取深色档',
+  'image-viewer:data-xh-backdrop': '定位层替被模态设成 inert 的遮罩声明「身后是深色遮罩」：由 core 液态面的下层判定读取，不画任何东西',
   // 让位判据改走 DOM 查询后，这一位留给作者按可清空态自取样式
   'select:data-clearable': '箭头让位的判据是盒里有没有一颗没收起的清空钮，走 :has() 查 DOM；这一位供作者自取',
   'cascader:data-clearable': '同 select',

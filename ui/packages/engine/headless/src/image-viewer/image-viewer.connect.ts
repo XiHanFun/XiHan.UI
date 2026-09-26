@@ -97,6 +97,7 @@ export function connectImageViewer<T extends PropTypes>(
   const toolButton = (part: keyof typeof parts, aria: string, onClick: () => void, disabled: boolean, action: Record<string, unknown>): T['button'] =>
     normalize.button({
       ...parts[part].attrs,
+      'id': scope.partId('image-viewer', part),
       'type': 'button',
       'aria-label': aria,
       'data-state': stateAttr,
@@ -159,6 +160,9 @@ export function connectImageViewer<T extends PropTypes>(
       'data-state': stateAttr,
       // 由皮肤的 inset 直接摆，不问引擎要坐标，没有「还没量完」的窗口：恒已落位
       'data-positioned': '',
+      // 液态档的控制层要知道身后是什么：遮罩被模态设成 inert、命中不到，由铺满视口的定位层替它声明
+      // 「身后是深色遮罩」；透明遮罩那一档身后就是页面，不声明，交给液态面自己判
+      'data-xh-backdrop': prop('variant') === 'transparent' ? undefined : 'dark',
     }),
 
     getContentProps: () => normalize.element({
@@ -269,9 +273,12 @@ export function connectImageViewer<T extends PropTypes>(
     // 真要那套走位就往里放一个 Toolbar，与 table 的控件带同一条路子
     getToolbarProps: () => normalize.element({
       ...parts.toolbar.attrs,
+      'id': scope.partId('image-viewer', 'toolbar'),
       'role': 'group',
       'aria-label': label.toolbar,
       'data-state': stateAttr,
+      // 浮在图上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
+      'data-xh-liquid': '',
     }),
 
     getZoomInTriggerProps: () => toolButton('zoom-in-trigger', label.zoomIn, () => send({ type: 'ZOOM.BY', delta: 1 }), transform.scale >= maxScale, {
@@ -336,6 +343,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      'data-xh-liquid': '',
       ...press('prev-trigger', !canPrev),
     }),
     getNextTriggerProps: () => toolButton('next-trigger', label.next, () => send({ type: 'INDEX.NEXT' }), !canNext, {
@@ -344,16 +352,19 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      'data-xh-liquid': '',
       ...press('next-trigger', !canNext),
     }),
 
     getCounterProps: () => normalize.element({
       ...parts.counter.attrs,
+      'id': scope.partId('image-viewer', 'counter'),
       'data-state': stateAttr,
       // 翻页时读屏跟着报「第几张」
       'aria-live': 'polite',
       'data-index': String(index + 1),
       'data-count': String(count),
+      'data-xh-liquid': '',
     }),
 
     getCloseTriggerProps: () => toolButton('close-trigger', label.close, () => send({ type: 'CLOSE', src: 'close-trigger' }), false, {
@@ -362,6 +373,7 @@ export function connectImageViewer<T extends PropTypes>(
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'lg',
+      'data-xh-liquid': '',
       ...press('close-trigger'),
     }),
   }

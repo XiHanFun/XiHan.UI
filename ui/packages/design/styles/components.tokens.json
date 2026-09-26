@@ -34147,11 +34147,16 @@
         "disabled",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
+        "--xh-_liquid-bg-pressed",
+        "--xh-bg-subtle-hover",
         "--xh-color-neutral-950"
       ],
       "visibility": "public",
@@ -34174,10 +34179,15 @@
         "disabled",
         "hover",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
+        "--xh-_liquid-bg-hover",
+        "--xh-bg-subtle",
         "--xh-color-neutral-950"
       ],
       "visibility": "public",
@@ -34258,10 +34268,15 @@
         "default",
         "disabled",
         "focus-visible",
-        "xh-ink-surface"
+        "material=liquid",
+        "where([data-material='liquid'])",
+        "xh-ink-surface",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-color-neutral-950"
+        "--xh-_liquid-bg",
+        "--xh-color-neutral-950",
+        "--xh-material-liquid-focus-surface"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 --xh-ink-surface、background、background-color 覆盖槽。"
@@ -34279,12 +34294,16 @@
         "disabled",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-_image-viewer-chrome-bg-active"
+        "--xh-_image-viewer-chrome-bg-active",
+        "--xh-_liquid-bg-pressed"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger 部件 background-color 覆盖槽。"
@@ -34302,11 +34321,15 @@
         "disabled",
         "hover",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-_image-viewer-chrome-bg-hover"
+        "--xh-_image-viewer-chrome-bg-hover",
+        "--xh-_liquid-bg-hover"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger 部件 background-color 覆盖槽。"
@@ -34327,11 +34350,15 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
+        "--xh-material-liquid-fg",
         "currentColor"
       ],
       "visibility": "public",
@@ -34347,9 +34374,13 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "material=liquid",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
+        "--xh-shape-circle",
         "--xh-shape-control"
       ],
       "visibility": "public",
@@ -34404,7 +34435,10 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "material=liquid",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-image-viewer-overlay-radius"
@@ -34539,11 +34573,15 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "material=liquid",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-profile-radius",
         "--xh-shape-control",
+        "--xh-shape-pill",
         "--xh-shape-surface"
       ],
       "visibility": "public",
@@ -34613,7 +34651,10 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "material=liquid",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-image-viewer-overlay-radius"

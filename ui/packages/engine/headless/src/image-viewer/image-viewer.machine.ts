@@ -13,6 +13,7 @@ import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { createSpringValue, glideSpring, projectRelease, rubberClamp } from '@xihan-ui/motion'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
+import { trackLiquidPart } from '../shared/liquid'
 import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 
 const { createMachine } = setup<ImageViewerSchema>()
@@ -258,7 +259,7 @@ export const imageViewerMachine = createMachine({
     open: {
       // 每次展开都从基准态看起
       entry: ['resetTransform', 'resetImageStatus'],
-      effects: ['trackPointers'],
+      effects: ['trackPointers', 'trackLiquid'],
       // 收起即松开：按住 Enter 关掉浮层，关闭钮随内容一起藏起，不会再来 keyup 或 blur
       exit: ['pointersEnd', 'releasePress'],
       on: {
@@ -465,6 +466,13 @@ export const imageViewerMachine = createMachine({
       },
     },
     effects: {
+      /** 打开期间，工具条、计数与三颗钮浮在图上：材质轴为 liquid 时按下层换色调、亮边随指针 */
+      trackLiquid: ({ scope, flush }) => {
+        const stops = ['toolbar', 'counter', 'prev-trigger', 'next-trigger', 'close-trigger']
+          .map(part => trackLiquidPart(scope, flush, 'image-viewer', part))
+        return () => stops.forEach(stop => stop())
+      },
+
       // 装配顺序照 dialog：dismiss → focus → scroll 锁 → 背景失活。看片恒为模态。
       /**
        * 跟住落在图上的那几根手指。会话的生死跟着 open：离开时摘干净，

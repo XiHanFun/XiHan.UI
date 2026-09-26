@@ -264,6 +264,73 @@
     inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
   }
 
+  /* liquid 档：data-material="liquid" 下控制层换成液态面，深色纱那一套只属于 standard 档。
+     液态面按下层（使用者的图片、遮罩）写墨色域，前景跟着墨色走，不再钉在浅字上。
+     工具条是不贴边的一维栏、计数是一行字的 chip，取 pill；翻页与关闭是媒体控制钮，取 circle */
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid],
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='counter'][data-xh-liquid] {
+    border: var(--xh-stroke-thin) solid var(--xh-material-liquid-border);
+    background: var(--xh-image-viewer-chrome-bg, var(--xh-_liquid-bg));
+    color: var(--xh-material-liquid-fg);
+    box-shadow: var(--xh-_liquid-shadow);
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
+  }
+
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid] {
+    border-radius: var(--xh-image-viewer-toolbar-radius-outer, var(--xh-image-viewer-overlay-radius, var(--xh-shape-pill)));
+  }
+
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='counter'][data-xh-liquid] {
+    border-radius: var(--xh-image-viewer-counter-radius, var(--xh-image-viewer-overlay-radius, var(--xh-shape-pill)));
+  }
+
+  /* 工具条里的钮：悬停 / 按下取墨色淡底阶梯，工具条这块液态面就是它们的墨色域 */
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid] > [data-part] {
+    --xh-action-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-bg-subtle));
+    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-active, var(--xh-bg-subtle-hover));
+  }
+
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='prev-trigger'][data-xh-liquid],
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='next-trigger'][data-xh-liquid],
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='close-trigger'][data-xh-liquid] {
+    --xh-action-bg-rest: var(--xh-image-viewer-chrome-bg, var(--xh-_liquid-bg));
+    --xh-action-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-_liquid-bg-hover));
+    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-image-viewer-chrome-bg, var(--xh-material-liquid-focus-surface));
+    --xh-action-bg-disabled: var(--xh-image-viewer-chrome-bg, var(--xh-_liquid-bg));
+    --xh-action-fg-rest: var(--xh-material-liquid-fg);
+    --xh-action-fg-hover: var(--xh-material-liquid-fg);
+    --xh-action-fg-pressed: var(--xh-material-liquid-fg);
+    --xh-action-fg-focus-visible: var(--xh-material-liquid-fg);
+    --xh-action-border-rest: var(--xh-material-liquid-border);
+    --xh-action-border-hover: var(--xh-material-liquid-border);
+    --xh-action-border-pressed: var(--xh-material-liquid-border);
+    --xh-action-border-focus-visible: var(--xh-material-liquid-border);
+    --xh-action-border-disabled: var(--xh-material-liquid-border);
+    --xh-action-shadow-rest: var(--xh-_liquid-shadow);
+    --xh-action-shadow-hover: var(--xh-_liquid-shadow);
+    --xh-action-shadow-pressed: var(--xh-_liquid-shadow);
+    --xh-action-shadow-focus-visible: var(--xh-_liquid-shadow);
+    --xh-action-shadow-disabled: var(--xh-_liquid-shadow);
+
+    color: var(--xh-material-liquid-fg);
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
+    transform: var(--xh-_liquid-deform);
+  }
+
+  /* 叉的前景仍认使用者的那支槽；圆钮取 circle */
+  :where([data-material='liquid']) [data-scope='image-viewer'][data-part='close-trigger'][data-xh-liquid] {
+    --xh-action-fg-rest: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-hover: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-pressed: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-focus-visible: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
+    --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_liquid-bg-hover));
+    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-circle));
+  }
+
   /* 三颗钮的面是一层深色纱，纱底下是使用者的图片，环色算不出稳定的取值。
      content 把前景钉死在浅字上、三颗钮的前景随它继承，环取 currentColor 即是那支浅字，
      不随图片内容也不随主题翻 */
