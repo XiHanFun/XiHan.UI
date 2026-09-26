@@ -124,7 +124,7 @@ export interface MessageFeedSchema extends MachineSchema {
   tag: never
   guard: 'canPress'
   action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress' | 'markArrivalsTracked' | 'setTriggerRendered'
-  effect: 'trackStickToBottom' | 'trackArrivals' | 'trackTriggerPresence'
+  effect: 'trackStickToBottom' | 'trackArrivals' | 'trackTriggerPresence' | 'trackLiquid'
 }
 
 export interface MessageFeedApi<T extends PropTypes = PropTypes> {
