@@ -228,10 +228,10 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 ### 动效
 
-关键帧 `xh-progress-indeterminate` 随皮肤自带，不引用别处文件里的名字；`inline-size` · `stroke-dashoffset` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-progress-indeterminate` 随皮肤自带，不引用别处文件里的名字；`stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

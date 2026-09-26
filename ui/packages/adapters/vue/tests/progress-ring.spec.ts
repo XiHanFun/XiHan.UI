@@ -90,11 +90,11 @@ describe('环形进度', () => {
 
     const line = mount({ value: 50 })
     expect(line.querySelector('[data-part="canvas"]')).toBeNull()
-    expect(part(line, 'range').style.inlineSize).toBe('50%')
+    expect(part(line, 'range').style.getPropertyValue('--xh-_progress-value')).toBe('0.5')
     expect(part(line, 'range').getAttribute('r')).toBeNull()
   })
 
-  it('线形的长度不取整：3/8 是 37.5% 而不是 38%', () => {
-    expect(part(mount({ value: 3, max: 8 }), 'range').style.inlineSize).toBe('37.5%')
+  it('线形的比例不取整：3/8 是 0.375 而不是 0.38', () => {
+    expect(part(mount({ value: 3, max: 8 }), 'range').style.getPropertyValue('--xh-_progress-value')).toBe('0.375')
   })
 })

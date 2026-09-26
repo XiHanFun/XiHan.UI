@@ -264,7 +264,7 @@
       "relation": "anchored-panel"
     },
     "xh-progress-indeterminate": {
-      "content": "from{inset-inline-start:-40%}to{inset-inline-start:100%}",
+      "content": "from{translate:var(--xh-_progress-sweep-from,-100%) 0}to{translate:var(--xh-_progress-sweep-to,250%) 0}",
       "definedIn": [
         "progress.css"
       ],

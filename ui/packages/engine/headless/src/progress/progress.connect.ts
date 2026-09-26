@@ -117,8 +117,8 @@ export function connectProgress<T extends PropTypes>(
               strokeDashoffset: String(ring.offset),
             },
           }
-        // 线形不取整：3/8 是 37.5%，取整会让相邻两档看起来一样长
-        : { style: { inlineSize: `${ratio * 100}%` } }),
+        // 线形交出 0–1 的比例，皮肤据此裁出走完的那段；不取整：3/8 是 0.375，取整会让相邻两档看起来一样长
+        : { style: { '--xh-_progress-value': String(ratio) } }),
     }),
 
     getLabelProps: () => normalize.element({
