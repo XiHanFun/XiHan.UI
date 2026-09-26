@@ -141,9 +141,8 @@ describe('强调与焦点', () => {
 
 describe('过渡', () => {
   it('入场：整圈从 12 点顺着扫开，外接框还没合成整圆；关掉 animated 直接落到整圈', async () => {
-    const state = mount({ labels: 'none', animated: true })
-    // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响
-    host!.style.cssText += '--xh-motion-duration-reveal: 4s'
+    // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响。写在根上随挂载生效，不与起跑抢先后
+    const state = mount({ labels: 'none', animated: true, style: '--xh-motion-duration-reveal: 4s' })
     await settle()
     const early = union(all('slice').map(el => el.getBoundingClientRect()))
     state.animated = false

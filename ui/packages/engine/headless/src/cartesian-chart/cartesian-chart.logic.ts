@@ -14,7 +14,7 @@ import type { CartesianChartSchema, CartesianChartTranslations, CartesianTooltip
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
-import { cartesianKeyId } from './cartesian-chart.model'
+import { cartesianDatumId, cartesianKeyId } from './cartesian-chart.model'
 
 export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze({
   ...CHART_TRANSLATIONS,
@@ -96,7 +96,7 @@ export function cartesianRefAt(model: CartesianModel, seriesId: string, keyIndex
 /** 标记与焦点代理写在 data-key 上的身份。 */
 export function cartesianMarkKey(model: CartesianModel, ref: ChartDatumRef): string | null {
   const j = cartesianKeyIndexOf(model, ref)
-  return j < 0 ? null : `${ref.seriesId}:${j}`
+  return j < 0 ? null : `${ref.seriesId}:${cartesianDatumId(model.spec.keys[j]!)}`
 }
 
 /** 第一个可见系列的第一个有值的数据：键盘首次进入时的落点。 */
@@ -351,7 +351,7 @@ export function cartesianOverlay(
     const paint = { ...(s.spec.slot != null ? { slot: s.spec.slot } : {}), ...(s.spec.tone != null ? { tone: s.spec.tone } : {}) }
     over.push({
       kind: 'symbol',
-      key: `${id}:${j}`,
+      key: `${id}:${cartesianDatumId(model.spec.keys[j]!)}`,
       part: 'point',
       x: anchor.x,
       y: anchor.y,
@@ -366,7 +366,7 @@ export function cartesianOverlay(
   // 焦点环：画在标记外，隔一道表面间隙；形状随标记（柱是圆角矩形，点是圆）
   if (focused?.ring && focusKey >= 0) {
     const inset = metrics.gap + 1
-    const key = `${focused.ref.seriesId}:${focusKey}`
+    const key = cartesianMarkKey(model, focused.ref) ?? ''
     const bar = findMark(scene.scene.layers.data, key)
     if (bar?.kind === 'rect') {
       // 立在基线上的那一端不外扩：环越过基线会压到坐标轴与刻度标签
