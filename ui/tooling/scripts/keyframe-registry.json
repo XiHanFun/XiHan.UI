@@ -162,14 +162,18 @@
       "definedIn": [
         "marquee.css"
       ],
-      "consumers": []
+      "consumers": [
+        "marquee"
+      ]
     },
     "xh-marquee-y": {
       "content": "from{transform:translateY(var(--xh-_marquee-from))}to{transform:translateY(var(--xh-_marquee-to))}",
       "definedIn": [
         "marquee.css"
       ],
-      "consumers": []
+      "consumers": [
+        "marquee"
+      ]
     },
     "xh-overlay-pop-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
