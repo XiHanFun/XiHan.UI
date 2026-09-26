@@ -88,7 +88,13 @@ export function XhNotificationRoot({
   // 根节点是地标容器，children 的作用域里一并暴露队列与增删改命令
   return (
     <NotificationProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
+      >
         {renderSlot(children, {
           items: api.visibleNotifications,
           placements: api.placements,

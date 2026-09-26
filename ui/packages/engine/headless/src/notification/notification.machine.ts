@@ -6,7 +6,7 @@
 // 提供 notification 相关实现。
 
 import type { NotificationDedupe, NotificationPlacement, NotificationRecord, NotificationSchema } from './notification.types'
-import { setup } from '@xihan-ui/core'
+import { setup, trackArrivals } from '@xihan-ui/core'
 
 const { createMachine } = setup<NotificationSchema>()
 
@@ -109,7 +109,9 @@ export const notificationMachine = createMachine({
     })),
     seq: cell<number>(() => ({ defaultValue: 0 })),
   }),
+  refs: () => ({ getRootEl: () => null }),
   initialState: () => 'idle',
+  effects: ['trackArrivals'],
   // 四个入口从哪个状态发出都一样，因此挂根级
   on: {
     'ITEMS.CREATE': { actions: ['createItem'] },
@@ -119,6 +121,29 @@ export const notificationMachine = createMachine({
   },
   states: { idle: {} },
   implementations: {
+    effects: {
+      /**
+       * 条目到达：同一批新到的卡片按到达顺序错开进场，不按它在那一摞里排第几。每一条通知都是一件新事，
+       * 接上时已在的卡片也算第一批，照常进场。React 的祖先 ref 在子组件 layout effect 之后才附着，
+       * 延到提交后的微任务再取，仍在首帧绘制之前。
+       */
+      trackArrivals: ({ refs, scope, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            const root = refs.get('getRootEl')()
+            if (disposed || !root)
+              return
+            stop = trackArrivals(root, { item: '[data-scope="notification"][data-part="item"]', initial: 'arrive' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+    },
     actions: {
       createItem: ({ context, prop, event }) => {
         const e = event.current()

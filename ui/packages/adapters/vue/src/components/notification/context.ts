@@ -11,6 +11,8 @@ import { inject, provide } from 'vue'
 
 export interface NotificationContext {
   api: ComputedRef<NotificationApi>
+  /** 作用域包装节点：条目到达的追踪挂在它上面。 */
+  rootRef: Ref<HTMLElement | null>
   /** 入队并返回 id；同 id 已存在则就地改写，位置不变。 */
   create: (options?: NotificationOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void

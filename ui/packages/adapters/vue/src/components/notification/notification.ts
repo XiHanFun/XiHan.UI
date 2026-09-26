@@ -57,7 +57,7 @@ export const XhNotificationRoot = defineComponent({
     const ctx = useNotification(withXhConfig('notification', props) as NotificationProps, notify)
     provideNotification(ctx)
     // 根节点是地标容器，插槽作用域里一并暴露队列与增删改命令
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
       items: ctx.api.value.visibleNotifications,
       placements: ctx.api.value.placements,
       count: ctx.api.value.count,

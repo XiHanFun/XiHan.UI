@@ -13,6 +13,10 @@ import {
   XhMessageFeedList,
   XhMessageFeedRoot,
   XhMessageFeedViewport,
+  XhNotificationGroup,
+  XhNotificationItem,
+  XhNotificationItemTitle,
+  XhNotificationRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -100,5 +104,38 @@ describe('command 条目到达', () => {
     expect(running(item('e'))).toEqual(['xh-rise-in'])
     expect([staggerSteps(item('e')), staggerSteps(item('f'))]).toEqual([0, 1])
     expect(running(item('a'))).toEqual([])
+  })
+})
+
+describe('notification 条目到达', () => {
+  it('一摞里已有 6 条时新来的一批从 0 起错开，不等排在前面的那几条；页面载入时就在的卡片也照常进场', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    let create: ((options: { title: string, duration: number }) => string) | undefined
+    const initial = Array.from({ length: 6 }, (_, i) => ({ id: `n${i}`, title: `第 ${i} 条`, duration: Number.POSITIVE_INFINITY }))
+    app = createApp({
+      render: () => h(XhNotificationRoot, { defaultItems: initial, max: 20 }, {
+        default: (scope: { create: typeof create }) => {
+          create = scope.create
+          return [h(XhNotificationGroup, null, {
+            default: ({ item }: { item: { id: string, title?: string } }) => [
+              h(XhNotificationItem, { key: item.id, id: item.id, title: item.title }, () => [h(XhNotificationItemTitle)]),
+            ],
+          })]
+        },
+      }),
+    })
+    app.mount(host)
+    await settle()
+    const cards = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="notification"][data-part="item"]')]
+    expect(cards().map(el => running(el)[0])).toEqual(Array.from({ length: 6 }).fill('xh-sheet-in'))
+    expect(cards().slice(0, 5).map(staggerSteps)).toEqual([0, 1, 2, 3, 4])
+
+    create!({ title: '新来的一条', duration: Number.POSITIVE_INFINITY })
+    create!({ title: '紧跟着的一条', duration: Number.POSITIVE_INFINITY })
+    await nextTick()
+    const fresh = cards().filter(el => running(el).length > 0 && el.textContent?.includes('一条'))
+    expect(fresh).toHaveLength(2)
+    expect(fresh.map(staggerSteps)).toEqual([0, 1])
   })
 })

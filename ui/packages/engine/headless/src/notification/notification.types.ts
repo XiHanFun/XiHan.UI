@@ -112,7 +112,13 @@ export interface NotificationSchema extends MachineSchema {
     seq: number
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /**
+     * 作用域包装节点。条目到达的追踪挂在它上面：九个位置的卡片都在它底下，同一批新到的卡片
+     * 按到达顺序错开进场。没有渲染宿主时为 null，追踪不接。
+     */
+    getRootEl: () => HTMLElement | null
+  }
   /** 队列本身就是全部状态，没有第二种模式，因此只有一个状态位。 */
   state: 'idle'
   event:
@@ -124,7 +130,7 @@ export interface NotificationSchema extends MachineSchema {
   tag: never
   guard: never
   action: 'createItem' | 'updateItem' | 'dismissItem' | 'dismissAllItems'
-  effect: never
+  effect: 'trackArrivals'
 }
 
 export interface NotificationApi<T extends PropTypes = PropTypes> {
