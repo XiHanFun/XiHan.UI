@@ -63,7 +63,7 @@
     );
     background-repeat: no-repeat;
     background-size: 200% 100%;
-    animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-motion-loop-shimmer)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
@@ -93,7 +93,7 @@
    */
   [data-scope='skeleton'][data-part='root'][data-animation='pulse'] [data-part='item'] {
     background-image: none;
-    animation: xh-skeleton-pulse var(--xh-skeleton-pulse-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-sweep) infinite alternate;
+    animation: xh-skeleton-pulse var(--xh-skeleton-pulse-duration, var(--xh-motion-loop-shimmer)) var(--xh-motion-ease-sweep) infinite alternate;
   }
 
   /* 静止档：底色留着，两层动效都撤掉 */

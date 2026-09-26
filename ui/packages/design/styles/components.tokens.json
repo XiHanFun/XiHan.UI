@@ -2145,7 +2145,7 @@
         "loading"
       ],
       "defaultToken": [
-        "--xh-spin-duration"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
       "description": "approval 的 footer、root 部件 animation 覆盖槽。"
@@ -4157,7 +4157,7 @@
         "loading"
       ],
       "defaultToken": [
-        "--xh-spin-duration"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
       "description": "button 的 indicator、root 部件 animation 覆盖槽。"
@@ -11481,7 +11481,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-spin-duration"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
       "description": "clipboard 的 copy-trigger 部件 animation 覆盖槽。"
@@ -24848,7 +24848,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-spin-duration"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 animation 覆盖槽。"
@@ -38292,7 +38292,7 @@
         "caret"
       ],
       "defaultToken": [
-        "--xh-caret-duration"
+        "--xh-motion-loop-caret"
       ],
       "visibility": "public",
       "description": "markdown-stream 的 root 部件 animation 覆盖槽。"
@@ -47354,7 +47354,7 @@
         "loading"
       ],
       "defaultToken": [
-        "--xh-spin-duration"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
       "description": "popconfirm 的 confirm-trigger 部件 animation 覆盖槽。"
@@ -48051,7 +48051,7 @@
         "state=indeterminate"
       ],
       "defaultToken": [
-        "--xh-shimmer-duration"
+        "--xh-motion-loop-shimmer"
       ],
       "visibility": "public",
       "description": "progress 的 range 部件 animation 覆盖槽。"
@@ -51679,7 +51679,7 @@
         "streaming"
       ],
       "defaultToken": [
-        "--xh-shimmer-duration"
+        "--xh-motion-loop-shimmer"
       ],
       "visibility": "public",
       "description": "reasoning 的 label 部件 animation 覆盖槽。"
@@ -55933,7 +55933,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shimmer-duration"
+        "--xh-motion-loop-shimmer"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 animation 覆盖槽。"
@@ -55970,7 +55970,7 @@
         "animation=pulse"
       ],
       "defaultToken": [
-        "--xh-shimmer-duration"
+        "--xh-motion-loop-shimmer"
       ],
       "visibility": "public",
       "description": "skeleton 的 item、root 部件 animation 覆盖槽。"
@@ -57211,7 +57211,7 @@
         "variant=dots"
       ],
       "defaultToken": [
-        "--xh-spin-duration"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
       "description": "spinner 的 root 部件 animation 覆盖槽。"
@@ -59231,7 +59231,7 @@
         "loading"
       ],
       "defaultToken": [
-        "--xh-spin-duration"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
       "description": "switch 的 thumb 部件 animation 覆盖槽。"
@@ -60335,7 +60335,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shimmer-duration"
+        "--xh-motion-loop-shimmer"
       ],
       "visibility": "public",
       "description": "table 的 loading 部件 animation 覆盖槽。"
@@ -72535,7 +72535,7 @@
         "loading"
       ],
       "defaultToken": [
-        "--xh-shimmer-duration"
+        "--xh-motion-loop-shimmer"
       ],
       "visibility": "public",
       "description": "tool-call 的 root、status 部件 animation 覆盖槽。"

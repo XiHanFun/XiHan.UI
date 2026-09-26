@@ -228,7 +228,7 @@
     border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
     /* 加载环是等宽高的圆（全部加载环取 circle） */
     border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-spin var(--xh-switch-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——

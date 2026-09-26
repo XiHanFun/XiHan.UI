@@ -243,7 +243,7 @@
 | `--xh-download-trigger-gap` | `root` | `gap` | `default` | `--xh-_action-profile-gap` | download-trigger 的 root 部件 gap 覆盖槽。 |
 | `--xh-download-trigger-h` | `root` | `block-size` | `default` | `--xh-_action-profile-visual-size` | download-trigger 的 root 部件 block-size 覆盖槽。 |
 | `--xh-download-trigger-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | download-trigger 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-download-trigger-loading-duration` | `root` | `animation` | `default` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
+| `--xh-download-trigger-loading-duration` | `root` | `animation` | `default` | `--xh-motion-loop-spin` | download-trigger 的 root 部件 animation 覆盖槽。 |
 | `--xh-download-trigger-loading-fg` | `root` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`default`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-download-trigger-fg` | download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。 |
 | `--xh-download-trigger-px` | `root` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | download-trigger 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | download-trigger 的 root 部件 border-radius 覆盖槽。 |

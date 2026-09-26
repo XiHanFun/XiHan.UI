@@ -369,7 +369,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `--xh-approval-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | approval 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-approval-item-text-fg` | `item-text` | `color` | `default` | `--xh-fg-muted` | approval 的 item-text 部件 color 覆盖槽。 |
 | `--xh-approval-item-text-fg-checked` | `item`<br>`item-text` | `color` | `state=checked` | `--xh-fg-default` | approval 的 item、item-text 部件 color 覆盖槽。 |
-| `--xh-approval-loading-duration` | `footer`<br>`root` | `animation` | `loading` | `--xh-spin-duration` | approval 的 footer、root 部件 animation 覆盖槽。 |
+| `--xh-approval-loading-duration` | `footer`<br>`root` | `animation` | `loading` | `--xh-motion-loop-spin` | approval 的 footer、root 部件 animation 覆盖槽。 |
 | `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |

@@ -983,7 +983,7 @@
   }
 
   [data-scope='table'][data-part='loading'] {
-    animation: xh-table-loading-pulse var(--xh-table-loading-duration, var(--xh-shimmer-duration))
+    animation: xh-table-loading-pulse var(--xh-table-loading-duration, var(--xh-motion-loop-shimmer))
       var(--xh-motion-ease-sweep) infinite;
   }
 

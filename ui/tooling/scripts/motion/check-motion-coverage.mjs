@@ -9,7 +9,7 @@
 // 算「有动效」的两种形式：
 //   ① transition / animation（含 -duration 长属性）的值里走 --xh-motion-duration-*
 //   ② 无限循环动画（animation-iteration-count: infinite，或简写里的 infinite）——
-//      循环的时长走的是 --xh-spin-duration / --xh-shimmer-duration 那一族，不在语义时长档里，
+//      循环的时长走的是 --xh-motion-loop-spin / --xh-motion-loop-shimmer 那一族，不在语义时长档里，
 //      但转圈、流光、跑马灯本身就是动效
 //
 // 判之前先剥掉三种块，它们里面的声明不算「这个组件有动效」：
