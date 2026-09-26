@@ -5,7 +5,7 @@
 
 // 提供 date picker.presets 相关实现。
 
-import { getLocalTimeZone, today } from '@internationalized/date'
+import { getLocalTimeZone, today } from '@xihan-ui/core/date'
 
 /**
  * 快捷选项的值：单日就是一条 ISO 日期串，多天用 `/` 拼在一起（`2026-08-15/2026-08-21`）。

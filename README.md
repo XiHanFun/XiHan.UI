@@ -38,7 +38,7 @@ XiHan.UI is built around a framework-agnostic headless core: a component's state
 
 - **Framework-agnostic** - state and accessibility live in the headless core; Vue, React and Web Components share the same component contracts
 - **134 components** - covering general, layout, navigation, data entry, data display, feedback, overlay and AI chat — eight groups
-- **Almost dependency-free** - the only third-party runtime dependency is `@internationalized/date`; floating positioning, pointer sessions, code highlighting and streaming markdown are all first-party
+- **No third-party runtime dependencies** - apart from the host framework, nothing third-party ships at runtime; date arithmetic, floating positioning, pointer sessions, code highlighting and streaming markdown are all first-party
 - **Build-time styling** - tokens are generated from DTCG sources into CSS variables and skins are layered with `@layer`; no CSS-in-JS at runtime
 - **Themeable** - color mode, brand, density, contrast and writing direction switch independently
 - **Accessible** - keyboard interaction follows the W3C APG; accessibility is scanned in real Chromium

@@ -1,4 +1,4 @@
-import { CalendarDate } from '@internationalized/date'
+import { PlainDate } from '@xihan-ui/core/date'
 import { describe, expect, it } from 'vitest'
 import {
   applyDayPeriod,
@@ -10,7 +10,6 @@ import {
   constrainBlocks,
   hasTimeSegment,
   isoToBlocks,
-  isoWeekOf,
   isoWeeksInYear,
   isoWeekStart,
   monthToQuarter,
@@ -60,25 +59,25 @@ describe('季度与月互推', () => {
   })
 })
 
-describe('iSO 周与日期互推', () => {
+describe('按 ISO 周与日期互推', () => {
   it('周序号 → 周首日；再推回去是同一个周号', () => {
     expect(isoWeekStart(2026, 33).toString()).toBe('2026-08-10')
-    expect(isoWeekOf(isoWeekStart(2026, 33))).toBe(33)
+    expect(isoWeekStart(2026, 33).weekOfYear).toBe(33)
   })
 
   it('一周之内的任何一天都算同一个周号', () => {
     const start = isoWeekStart(2026, 33)
     for (let offset = 0; offset < 7; offset++)
-      expect(isoWeekOf(start.add({ days: offset }))).toBe(33)
+      expect(start.add({ days: offset }).weekOfYear).toBe(33)
   })
 
   it('第 1 周必定含 1 月 4 日', () => {
     for (const year of [2024, 2025, 2026, 2027]) {
       const start = isoWeekStart(year, 1)
       const end = start.add({ days: 6 })
-      // 起点可能落在上一年（2026 第 1 周从 2025-12-29 起），不能拿 start.set 造 1 月 4 日
-      const jan4 = new CalendarDate(year, 1, 4)
-      expect(start.compare(jan4) <= 0 && end.compare(jan4) >= 0).toBe(true)
+      // 起点可能落在上一年（2026 第 1 周从 2025-12-29 起），不能拿 start.with 造 1 月 4 日
+      const jan4 = new PlainDate(year, 1, 4)
+      expect(PlainDate.compare(start, jan4) <= 0 && PlainDate.compare(end, jan4) >= 0).toBe(true)
     }
   })
 
@@ -101,7 +100,7 @@ describe('iSO 周与日期互推', () => {
   it('上界与往返口径一致：末周推回去还是末周，不许翻到下一年', () => {
     for (const year of [2024, 2025, 2026, 2027]) {
       const last = isoWeeksInYear(year)
-      expect(isoWeekOf(isoWeekStart(year, last))).toBe(last)
+      expect(isoWeekStart(year, last).weekOfYear).toBe(last)
     }
   })
 })

@@ -112,7 +112,7 @@ export function connectDatePicker<T extends PropTypes>(
         calendar.granularity,
         'single',
         value.map(datePickerDatePart),
-        { locale: prop('locale'), timeZone: prop('timeZone') },
+        { locale: prop('locale') },
       )
 
   // —— showTime：值升格为 datetime，面板里多出时间列，收口交给确认按钮 ——

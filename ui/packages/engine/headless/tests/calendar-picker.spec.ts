@@ -7,19 +7,17 @@ import {
   buildWeekDays,
   CALENDAR_PERIOD_COLUMNS,
   calendarDrillAnchor,
-  calendarHeadingPieces,
   calendarNavFromKey,
   calendarNavTarget,
   calendarPageMonths,
   calendarPeriodIndex,
   calendarPeriodMonths,
   calendarPeriodOf,
-  calendarPeriodStart,
   calendarWeekRange,
   calendarZoomIn,
-  isoWeekNumber,
   parseCalendarDate,
 } from '../src/shared/calendar'
+import { calendarHeadingPieces, calendarPeriodStart } from '../src/shared/calendar/grid'
 import { click, createCalendarHarness, focused, pointerDown, pointerUp, press, settle, tabStops } from './calendar-harness'
 
 const { mount, mountDrill } = createCalendarHarness(calendarPickerMachine, connectCalendarPicker)
@@ -86,8 +84,8 @@ describe('buildMonthGrid 月份矩阵', () => {
 
 describe('buildWeekDays 表头', () => {
   it('列序跟着 locale 的周首日走', () => {
-    const zh = buildWeekDays({ reference: '2024-02-01', locale: 'zh-CN', timeZone: 'UTC' })
-    const en = buildWeekDays({ reference: '2024-02-01', locale: 'en-US', timeZone: 'UTC' })
+    const zh = buildWeekDays({ reference: '2024-02-01', locale: 'zh-CN' })
+    const en = buildWeekDays({ reference: '2024-02-01', locale: 'en-US' })
     expect(zh[0]!.long).toBe('星期一')
     expect(zh.at(-1)!.long).toBe('星期日')
     expect(en[0]!.long).toBe('Sunday')
@@ -96,8 +94,8 @@ describe('buildWeekDays 表头', () => {
   })
 
   it('weekdayFormat 只改可见缩写，全称照旧给读屏用', () => {
-    const narrow = buildWeekDays({ reference: '2024-02-01', locale: 'en-US', weekdayFormat: 'narrow', timeZone: 'UTC' })
-    const short = buildWeekDays({ reference: '2024-02-01', locale: 'en-US', weekdayFormat: 'short', timeZone: 'UTC' })
+    const narrow = buildWeekDays({ reference: '2024-02-01', locale: 'en-US', weekdayFormat: 'narrow' })
+    const short = buildWeekDays({ reference: '2024-02-01', locale: 'en-US', weekdayFormat: 'short' })
     expect(narrow[0]!.label).toBe('S')
     expect(short[0]!.label).toBe('Sun')
     expect(narrow[0]!.long).toBe(short[0]!.long)
@@ -454,12 +452,12 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
     expect(h.api().getWeekNumberText({ value: '' })).toBe('')
   })
 
-  it('iSO 周序号：周一起算，含当年第一个周四那周是第 1 周', () => {
-    expect(isoWeekNumber('2026-01-01')).toBe(1)
-    expect(isoWeekNumber('2026-08-10')).toBe(33)
-    expect(isoWeekNumber('2026-12-31')).toBe(53)
+  it('周序号按 ISO 周：周一起算，含当年第一个周四那周是第 1 周', () => {
+    const h = mount({ defaultFocusedValue: '2026-12-31', locale: 'zh-CN' })
+    expect(h.api().getWeekNumberText({ value: '2026-01-01' })).toBe('1')
+    expect(h.api().getWeekNumberText({ value: '2026-12-31' })).toBe('53')
     // 跨年那几天归上一年的末周：2027-01-01 是周五，仍属 2026 的第 53 周
-    expect(isoWeekNumber('2027-01-01')).toBe(53)
+    expect(h.api().getWeekNumberText({ value: '2027-01-01' })).toBe('53')
   })
 
   it('周粒度也支持单选', () => {
@@ -1034,13 +1032,13 @@ describe('标题钻取的纯函数', () => {
   it('标题拆成年月两截，先后随 locale', () => {
     const date = parseCalendarDate('2026-02-18')!
     // zh-CN：两截各带自己的单位，年在前
-    expect(calendarHeadingPieces(date, 'zh-CN', 'UTC')).toEqual({
+    expect(calendarHeadingPieces(date, 'zh-CN')).toEqual({
       year: '2026年',
       month: '2月',
       order: ['year', 'month'],
     })
     // en-US：月在前，月名是格式上下文里那一个（不是独立形）
-    expect(calendarHeadingPieces(date, 'en-US', 'UTC')).toEqual({
+    expect(calendarHeadingPieces(date, 'en-US')).toEqual({
       year: '2026',
       month: 'February',
       order: ['month', 'year'],

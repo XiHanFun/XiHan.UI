@@ -5,12 +5,11 @@
 
 // 日历状态机的共同部分：视窗、聚焦日、钻层与焦点搬运。选择模型（单选/多选 vs 区间）由各自的机器追加。
 
-import type { CalendarDate } from '@internationalized/date'
 import type { ActionFn, Bindable, ContextParams, EffectFn, ItemQuery, MachineSchema, Params } from '@xihan-ui/core'
 import type { CalendarGranularity, CalendarView } from './grid'
 import type { CalendarBaseAction, CalendarBaseContext, CalendarBaseEvent, CalendarBaseProps, CalendarBaseRefs } from './types'
-import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { focusItem, itemValue, queryItems } from '@xihan-ui/core'
+import { getLocalTimeZone, PlainDate, startOfMonth, today } from '@xihan-ui/core/date'
 import { sameArray as sameValues, toArray as toValues } from '../array'
 import { calendarPageMonths, calendarPeriodOf, calendarPeriodStart, calendarWeekListedIn, parseCalendarDate, visibleCountOf } from './grid'
 
@@ -62,7 +61,7 @@ export function alignVisibleStart(
     return
   // 一页跨多少个月由视图定；按月算会把落在窗内的格子判成走出去，于是每点一下就整窗翻一页
   const page = calendarPageMonths(view)
-  const align = (d: CalendarDate): CalendarDate => (view === 'day' ? startOfMonth(d) : calendarPeriodStart(d, view))
+  const align = (d: PlainDate): PlainDate => (view === 'day' ? startOfMonth(d) : calendarPeriodStart(d, view))
   const first = align(start)
   const cell = align(target)
   const span = (visibleCountOf(prop('visibleCount')) - 1) * page
@@ -73,11 +72,11 @@ export function alignVisibleStart(
         return
     }
   }
-  if (cell.compare(first) < 0) {
+  if (PlainDate.compare(cell, first) < 0) {
     context.set('visibleStart', cell.toString())
     return
   }
-  if (cell.compare(first.add({ months: span })) > 0)
+  if (PlainDate.compare(cell, first.add({ months: span })) > 0)
     context.set('visibleStart', cell.subtract({ months: span }).toString())
 }
 

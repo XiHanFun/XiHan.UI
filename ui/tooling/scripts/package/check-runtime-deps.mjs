@@ -9,9 +9,6 @@ const PACKAGES_DIR = 'packages'
 // 外层键是包名：包改名或删掉之后，这一整段登记就再也对不上任何一个包，
 // 里面的依赖也就不再受「登记在案」这句话约束——下面逐个核验包名真的扫到过。
 const ALLOWLIST = {
-  '@xihan-ui/headless': {
-    '@internationalized/date': '历法与时区运算；目标浏览器基线普遍支持 Temporal 后摘除',
-  },
   '@xihan-ui/vue': {
     vue: '适配器的宿主框架，由使用者自带；这个包存在的意义就是接它，摘不掉',
   },

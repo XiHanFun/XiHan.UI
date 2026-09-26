@@ -43,7 +43,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 
 除分层外还有三条硬规则，同样由门禁执行：
 
-- 库包的运行时代码不引入第三方依赖。唯一登记的例外是 `@internationalized/date`，只有 `headless` 的日期族使用。
+- 库包的运行时代码不引入第三方依赖。登记在案的例外只有适配器的宿主框架（`vue`、`react` 与 `react-dom`）。
 - `styles` 是纯 CSS。它不依赖任何 JS 包，可以脱离整个 JS 层单独使用。
 - 依赖版本只从 workspace catalog 取。包内一律使用 `catalog:` 或 `workspace:` 协议引用，不内联版本号。
 

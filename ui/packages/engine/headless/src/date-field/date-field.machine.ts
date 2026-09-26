@@ -14,8 +14,8 @@ import type {
   DateSegmentSet,
   DateSegmentType,
 } from './date-field.types'
-import { CalendarDate, getLocalTimeZone, parseDateTime, Time, today } from '@internationalized/date'
 import { resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
+import { daysInMonth as daysInCalendarMonth, getLocalTimeZone, PlainDate, PlainDateTime, PlainTime, today } from '@xihan-ui/core/date'
 import { dayPeriodLabel } from '../shared/day-period'
 import {
   blockRange,
@@ -227,8 +227,8 @@ function pad(value: number, width: number): string {
 function daysInMonth(year: number | undefined, month: number | undefined): number {
   if (year == null || month == null)
     return 31
-  const probe = new CalendarDate(year, month, 1)
-  return probe.calendar.getDaysInMonth(probe)
+  // 正在敲的月段可能暂时越界（0、13），按夹进 1–12 的那个月算
+  return daysInCalendarMonth(year, Math.min(Math.max(month, 1), 12))
 }
 
 /** 逐段比。段位每次写入都是新对象，不比内容的话值没变也会通知一遍。 */
@@ -262,8 +262,8 @@ export function parseIsoSegments(
   if (!iso)
     return {}
   try {
-    // parseDateTime 同时吃 'YYYY-MM-DD' 与带 T 的串，时间位缺席按 0 补
-    const dt = parseDateTime(iso)
+    // PlainDateTime.from 同时吃 'YYYY-MM-DD' 与带 T 的串，时间位缺席按 0 补
+    const dt = PlainDateTime.from(iso)
     const all: Partial<Record<DateSegmentType, number>> = {
       year: dt.year,
       month: dt.month,
@@ -297,11 +297,11 @@ export function segmentsToIso(
   const need = granularitySegments(granularity)
   if (need.some(key => segments[key] == null))
     return null
-  const date = new CalendarDate(segments.year!, segments.month!, segments.day!)
+  const date = PlainDate.from({ year: segments.year!, month: segments.month!, day: segments.day! })
   const day = date.toString()
   if (granularity === 'day')
     return day
-  const time = new Time(segments.hour!, segments.minute ?? 0, segments.second ?? 0)
+  const time = PlainTime.from({ hour: segments.hour!, minute: segments.minute ?? 0, second: segments.second ?? 0 })
   if (granularity === 'hour')
     return `${day}T${pad(time.hour, 2)}`
   const hm = `${day}T${pad(time.hour, 2)}:${pad(time.minute, 2)}`
@@ -318,7 +318,7 @@ export function constrainSegments(segments: DateSegments): DateSegments {
   const { year, month, day } = segments
   if (year == null || month == null || day == null)
     return segments
-  const date = new CalendarDate(year, month, day)
+  const date = PlainDate.from({ year, month, day })
   if (date.year === year && date.month === month && date.day === day)
     return segments
   return { ...segments, year: date.year, month: date.month, day: date.day }

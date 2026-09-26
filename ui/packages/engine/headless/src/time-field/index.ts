@@ -29,7 +29,6 @@ export {
   TIME_FIELD_HOUR_CYCLE,
   TIME_FIELD_PLACEHOLDER,
   timeFieldMachine,
-  timeFromDraft,
   timeSegments,
   timeSegmentText,
   to12Hour,

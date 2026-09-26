@@ -5,11 +5,11 @@
 
 // 提供 calendar range picker 相关实现。
 
-import type { CalendarDate } from '@internationalized/date'
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarCellBaseState, CalendarCellProps, CalendarPeriod } from '../shared/calendar'
 import type { CalendarRangePickerApi, CalendarRangePickerPress, CalendarRangePickerPressedKey, CalendarRangePickerSchema, CalendarRangePickerTranslations } from './calendar-range-picker.types'
 import { createPressTracker, dataAttr, isElement, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { PlainDate } from '@xihan-ui/core/date'
 import { calendarNavTarget, calendarPageMonths, createCalendarFrame, parseCalendarDate } from '../shared/calendar'
 import { calendarRangePickerAnatomy } from './calendar-range-picker.anatomy'
 
@@ -87,7 +87,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
     let first = origin
     for (;;) {
       const beforeStart = parseCalendarDate(first.start)!.subtract({ days: 1 })
-      if (beforeStart.compare(lower) < 0)
+      if (PlainDate.compare(beforeStart, lower) < 0)
         break
       const prev = periodAt(beforeStart.toString())
       if (!prev || blockedBy(prev, rangeStart))
@@ -97,7 +97,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
     let last = origin
     for (;;) {
       const afterEnd = parseCalendarDate(last.end)!.add({ days: 1 })
-      if (afterEnd.compare(upper) > 0)
+      if (PlainDate.compare(afterEnd, upper) > 0)
         break
       const next = periodAt(afterEnd.toString())
       if (!next || blockedBy(next, rangeStart))
@@ -123,7 +123,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
   const isUnavailable = (v: string): boolean => unavailableFor(v)
 
   /** 两端归一成周期后取外缘：五种粒度共用同一套预览算法。 */
-  const bounds = (from: string, to: string): [CalendarDate, CalendarDate] | null => {
+  const bounds = (from: string, to: string): [PlainDate, PlainDate] | null => {
     const a = periodAt(from)
     const b = periodAt(to)
     if (!a || !b)
@@ -141,7 +141,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
    * 此刻亮着的区间：挑到一半是「起点 → 悬停 / 聚焦」，否则是已落定的两端；
    * 只落了一端时把那一端当成首尾同一格的区间。
    */
-  const highlighted = ((): [CalendarDate, CalendarDate] | null => {
+  const highlighted = ((): [PlainDate, PlainDate] | null => {
     if (anchored)
       return bounds(rangeAnchor, hovered?.toString() ?? focusedValue)
     const [a, b] = committed
@@ -160,7 +160,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       return false
     const start = parseCalendarDate(period.start)
     const end = parseCalendarDate(period.end)
-    return !!start && !!end && start.compare(highlighted[0]) >= 0 && end.compare(highlighted[1]) <= 0
+    return !!start && !!end && PlainDate.compare(start, highlighted[0]) >= 0 && PlainDate.compare(end, highlighted[1]) <= 0
   }
   // 区间看两端之间，且不可用的格子不算在内
   const isSelected = (v: string): boolean => {
@@ -183,8 +183,8 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       inRange,
       rangePreview: inRange && anchored,
       // 两端也算 in-range
-      rangeStart: inRange && !!(highlighted && periodStart && periodStart.compare(highlighted[0]) === 0),
-      rangeEnd: inRange && !!(highlighted && periodEnd && periodEnd.compare(highlighted[1]) === 0),
+      rangeStart: inRange && !!(highlighted && periodStart && periodStart.equals(highlighted[0])),
+      rangeEnd: inRange && !!(highlighted && periodEnd && periodEnd.equals(highlighted[1])),
       // 挑到一半时亮的是新区间，旧的不合法与否先不提
       invalid: invalid && !anchored && covered,
     }

@@ -14,8 +14,8 @@ import type {
   DateSegments,
   DateSegmentType,
 } from './date-field.types'
-import { getLocalTimeZone, parseDateTime } from '@internationalized/date'
 import { dataAttr, focusSafely, navIntentFromKey, queryItems, readDirection, resolveLocale, stepIndex } from '@xihan-ui/core'
+import { getLocalTimeZone, PlainDateTime } from '@xihan-ui/core/date'
 import { pressHandlers } from '../shared/press'
 import { dateFieldAnatomy } from './date-field.anatomy'
 import { isMetaSegment } from './date-field.blocks'
@@ -393,7 +393,7 @@ function toDate(iso: string | null, timeZone: string): Date | null {
   if (!iso)
     return null
   try {
-    return parseDateTime(iso).toDate(timeZone)
+    return PlainDateTime.from(iso).toDate(timeZone)
   }
   catch {
     return null

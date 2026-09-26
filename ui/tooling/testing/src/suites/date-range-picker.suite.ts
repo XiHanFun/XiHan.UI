@@ -17,7 +17,7 @@ const BASE_PROPS = { defaultValue: [START, END], locale: LOCALE, timeZone: 'UTC'
 const EMPTY_PROPS = { defaultValue: [], locale: LOCALE, timeZone: 'UTC' } as const
 
 const GRID = buildMonthGrid(START, { locale: LOCALE })
-const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE, timeZone: 'UTC' })
+const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE })
 
 /** 作者写足六个段位节点，用不上的由连接层收起、不卸载。 */
 const SEGMENT_NODES = 6

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { DateFieldSchema } from '../src/date-field'
-import { today } from '@internationalized/date'
 import { createService, normalizeProps } from '@xihan-ui/core'
+import { today } from '@xihan-ui/core/date'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -16,7 +16,6 @@ import {
   granularitySegments,
   hasSegmentSet,
   isoToSegments,
-  isoWeekStart,
   localeDateOrder,
   parseBoundary,
   parseIsoSegments,
@@ -29,6 +28,7 @@ import {
   toValueString,
   wrapSegment,
 } from '../src/date-field'
+import { isoWeekStart } from '../src/date-field/date-field.blocks'
 
 type Props = DateFieldSchema['props']
 
