@@ -20,7 +20,8 @@
 //
 // 书写另核一条：transition 列表（简写与 transition-property 长写，皮肤与家族配方）只写长名。
 // 简写会把同组的属性一起挂上过渡，计算样式里的 transition-property 也对不上真正在动的那一个；
-// background 与 background-color 这类混写，同一种换面在不同皮肤里读出两种名字。
+// background 与 background-color 这类混写，同一种换面在不同皮肤里读出两种名字。位移、旋转、缩放
+// 写独立的 translate / rotate / scale，transform 只留给独立属性表达不了的情形，逐个登记在 TRANSFORM_KEPT。
 //
 // animation 另核三条：
 //   时长 —— 关键帧里的几何量写的是字面量（fr / % / deg / px…）而不是幅度令牌时，不许取 micro / enter / exit；
@@ -227,10 +228,20 @@ const LONGHAND = {
   background: 'background-color',
   border: 'border-color',
   outline: 'outline-color',
+  transform: 'translate / rotate / scale',
 }
 
-/** 书写核对：transition 列表逐项只写长名。 */
-function checkLonghand(label, css) {
+/**
+ * transition 列表里保留 transform 的组件，值写为什么独立属性表达不了。
+ * 登记了却没被扫到的键会判红，名单不会悄悄过期。
+ */
+const TRANSFORM_KEPT = {
+  tabs: '标签带滚动已经占了 translate 属性（整条标签带随滚动平移），指示条的位置叠在 transform 上，两者互不覆盖，过渡只挂位置',
+}
+const transformKeptSeen = new Set()
+
+/** 书写核对：transition 列表逐项只写长名。comp 是组件名（家族配方传 null）。 */
+function checkLonghand(label, css, comp = null) {
   const out = []
   let count = 0
   for (const decl of [TRANSITION_DECL, TRANSITION_PROPERTY_DECL]) {
@@ -241,6 +252,10 @@ function checkLonghand(label, css) {
         if (!prop || prop === 'none')
           continue
         count++
+        if (prop === 'transform' && comp && comp in TRANSFORM_KEPT) {
+          transformKeptSeen.add(comp)
+          continue
+        }
         if (prop in LONGHAND)
           out.push(`${label}:${line}  ${item}\n    —— transition 列表写长名：${prop} 是简写，写 ${LONGHAND[prop]}`)
       }
@@ -390,7 +405,7 @@ for (const file of files) {
   const durations = checkDurations(file, css, keyframes)
   problems.push(...durations.problems)
   durationChecked += durations.count
-  const longhand = checkLonghand(file, css)
+  const longhand = checkLonghand(file, css, comp)
   problems.push(...longhand.problems)
   longhandChecked += longhand.count
 
@@ -474,6 +489,10 @@ for (const file of files) {
 for (const key of Object.keys(ROLE_OVERRIDE)) {
   if (!seen.has(key))
     problems.push(`${key}  登记在 ROLE_OVERRIDE 里却没被扫到——名单过期了`)
+}
+for (const comp of Object.keys(TRANSFORM_KEPT)) {
+  if (!transformKeptSeen.has(comp))
+    problems.push(`${comp}  登记在 TRANSFORM_KEPT 里，但它的 transition 列表已经没有 transform——名单过期了`)
 }
 for (const key of Object.keys(SLIDE_REQUIRED)) {
   if (!seen.has(key))
