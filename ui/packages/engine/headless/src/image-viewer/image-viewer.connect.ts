@@ -6,7 +6,7 @@
 // 提供 image viewer 相关实现。
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { ImageViewerApi, ImageViewerPressedPart, ImageViewerSchema } from './image-viewer.types'
+import type { ImageViewerApi, ImageViewerPressedPart, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { imageViewerAnatomy } from './image-viewer.anatomy'
 import {
@@ -17,6 +17,20 @@ import {
 } from './image-viewer.machine'
 
 const parts = imageViewerAnatomy.build()
+
+/**
+ * 图的平移、旋转与翻转缩放，写成浏览器序列化后的样子：纵向位移为 0 时只给横向一支，
+ * 两轴缩放相同时只写一个数。jsdom 与浏览器读回同一个串。
+ */
+function imageStyle(transform: ImageViewerTransform): Record<string, string> {
+  const sx = transform.flipX ? -transform.scale : transform.scale
+  const sy = transform.flipY ? -transform.scale : transform.scale
+  return {
+    translate: transform.y === 0 ? `${transform.x}px` : `${transform.x}px ${transform.y}px`,
+    rotate: `${transform.rotate}deg`,
+    scale: sx === sy ? String(sx) : `${sx} ${sy}`,
+  }
+}
 
 export function connectImageViewer<T extends PropTypes>(
   service: Service<ImageViewerSchema>,
@@ -243,14 +257,8 @@ export function connectImageViewer<T extends PropTypes>(
       // 原图动辄几 MB，取图相位由这张图自己回送
       'onLoad': () => send({ type: 'IMAGE.LOAD' }),
       'onError': () => send({ type: 'IMAGE.ERROR' }),
-      'style': {
-        transform: [
-          `translate(${transform.x}px, ${transform.y}px)`,
-          `rotate(${transform.rotate}deg)`,
-          `scaleX(${transform.flipX ? -transform.scale : transform.scale})`,
-          `scaleY(${transform.flipY ? -transform.scale : transform.scale})`,
-        ].join(' '),
-      },
+      // 三个独立属性的作用顺序固定是先位移、再旋转、再缩放，与看片要的顺序一致
+      'style': imageStyle(transform),
     }),
 
     // 不给 role=toolbar：那个角色承诺的是整条只占一个 Tab 位、条内靠方向键走。

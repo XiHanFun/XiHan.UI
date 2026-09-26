@@ -26018,20 +26018,23 @@
     max-inline-size: 90%;
     max-block-size: 85%;
     user-select: none;
-    /* 变换是内联 style 写的，只给缩放旋转一点缓动；拖拽平移要跟手，不缓 */
-    transition: transform var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
+    /* 位移、旋转与缩放都是内联 style 写的，只给按钮带来的缩放旋转一点缓动；拖拽平移要跟手，不缓 */
+    transition:
+      translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
-  /* 拖拽期间变换每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
+  /* 拖拽期间平移每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
   [data-scope='image-viewer'][data-part='image'][data-dragging] {
     transition: none;
-    will-change: transform;
+    will-change: translate;
   }
 
   /* 松手后弹簧带着平移惯性滑行、越出范围时回弹，同样逐帧写变换，不能再叠一层过渡；落定即撤 */
   [data-scope='image-viewer'][data-part='image'][data-animating] {
     transition: none;
-    will-change: transform;
+    will-change: translate;
   }
 
   /* —— 悬浮件共用：半透明深底加浅字 ——

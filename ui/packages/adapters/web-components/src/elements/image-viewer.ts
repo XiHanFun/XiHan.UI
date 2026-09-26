@@ -46,7 +46,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart positioner - 浮层定位容器
  * @csspart content - 查看容器（role=dialog + aria-modal；方向键翻页在这里）
  * @csspart viewport - 手势视口（滚轮缩放、拖拽平移）
- * @csspart image - 当前图片（src / alt / transform 由元素填入）
+ * @csspart image - 当前图片（src、alt 与位移、旋转、缩放由元素填入）
  * @csspart toolbar - 工具条容器
  * @csspart zoom-in-trigger - 放大
  * @csspart zoom-out-trigger - 缩小
