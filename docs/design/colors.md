@@ -28,7 +28,7 @@
 - **同一档跨色相同一明度。** 600 档 L 0.546，任何色相的 600 档上铺白字都过 3:1（大字与图形档），700 档上铺白字都过 4.5:1；50 – 200 档上铺 `--xh-fg-default` 正文超过 9:1，100 档上铺同色相的 700 档文字过 4.5:1。给数据图、标签、头像按颜色点名时，换色相不必重算对比度。
 - **600 是锚点。** 实心底取 600（配白字的正文档取 700），悬停 700、按下 800；淡底取 100 / 200，淡底上的文字取 700。
 - **黄、青这类天然明亮的色相中档偏沉。** 这是"同档同明度"的代价：要一块亮黄，取 200 / 300 档，而不是把 600 调亮。
-- **皮肤不直接消费色板。** 组件皮肤只认语义角色与语气轴；色板给使用者、数据可视化与自定义语气用。
+- **皮肤不直接消费色板。** 组件皮肤只认语义角色、语气轴与图表数据色（`--xh-chart-*`）；色板给使用者、按颜色点名的色板轴与自定义语气用，图表数据色也从它算出（见[数据色板](#数据色板)）。
 
 色板由 `packages/design/tokens/build/emit-palette.mjs` 从 `tokens/palette.seeds.json` 的十二个色相角派生，改色相只改种子；`tests/palette.spec.ts` 逐档核对生成物、明度与运行时 `deriveBrandScale` 同源。
 
@@ -187,6 +187,77 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 控件边界这一条是刻意的取舍：输入框壳、勾选框、单选圈与旁边的浮层面板、卡片描边同一重量，页面里只有一种边线；缺省档靠占位文字、标签与聚焦环辨认控件，需要 3:1 边界的场景打开高对比档。
 
 ## 数据色板
+
+图表颜色只经 `--xh-chart-*` 这一层取，按职责分六类，每类只有一种结构：分类（哪个系列）、有序（阶段与档位）、顺序（大小）、发散（高于或低于基线）、语气（好坏，复用语气轴并配图标或文字）、涨跌。图表里的文字不用系列色：数值、标签与图例文字取文字令牌，身份由旁边的色标承担。
+
+### 分类
+
+<XhTokenSwatches prefix="--xh-chart-categorical-" :steps="['1', '2', '3', '4', '5', '6', '7', '8', 'other']" on-prefix="--xh-chart-on-categorical-" compact />
+
+- 8 个色槽按系列在 `series` 里的声明顺序分配，隐藏、筛选、排序都不重新分配。不循环、没有第 9 色：超过 8 个系列时合并成「其他」（`--xh-chart-categorical-other`），或拆成多张小图。
+- 单系列用色槽 1；突出一个系列时，其余系列改用 `--xh-chart-deemphasis`。
+- 写在色块内部的数值用 `--xh-chart-on-categorical-N`，按对比度在纯白与最深的中性档之间取一个，对色块 ≥ 4.5:1；上面色块里的序号就是用它写的。
+
+色板不是手挑的。`packages/design/tokens/build/emit-chart-palette.mjs` 在基础色板上为 8 个色槽搜索色相、顺序与亮暗两套档位，同一份基础色板永远得到同一套结果；`check-chart-palette` 门禁再从 `tokens.css` 复验。基础色板同一档跨色相同一明度，所以色板必须跨档取值，相邻色槽之间才有明度差——色觉障碍读者主要靠明度差分辨颜色。亮暗两套各自校验，承载面取各自的 `--xh-bg-surface`：
+
+| 检查 | 门槛 |
+| --- | --- |
+| 明度带 | OKLCH L：亮色 0.43–0.77，暗色 0.48–0.67 |
+| 彩度下限 | C ≥ 0.10 |
+| 对比度 | 每个色槽对承载面 ≥ 3:1 |
+| 相邻色槽 | 正常视觉 ΔE ≥ 15；红色弱、绿色弱模拟下 ΔE ≥ 8 |
+| 前 3 个色槽两两 | 同相邻：散点、气泡这类任意两个标记都可能挨着的形态，只有前 3 个色槽保证两两可分 |
+| 任意两色 | 正常视觉 ΔE ≥ 10：隐藏一个系列后，原本不相邻的两色就挨在了一起 |
+| 色相分散 | 任意 45° 扇区（8 个色槽的平均间隔）里至多 2 个色槽，同一色系不挤在一起 |
+| 离开告警色 | 与 danger 语气每一档的正常视觉 ΔE ≥ 10：图里的红色会被读成告警 |
+| 固定顺序 | 亮暗同一色槽同一色相，色槽 1 是品牌色相 |
+
+满足全部检查的排法里，取相邻色槽在两种色觉障碍模拟下最小 ΔE 最大的一种。red 与发红的 orange 被「离开告警色」挡在外面；yellow 整族不取，同档同明度的色板里，它在对白底 3:1 的明度上只剩橄榄色。颜色按浏览器在 sRGB 显示器上的画法换算：基础色板的中档允许略出 sRGB 色域，出界的通道逐个截断。色觉障碍的模拟用 Machado–Oliveira–Fernandes 2009（严重度 1.0），与 `@xihan-ui/viz` 校验色板的函数同一口径，使用者可以用它复验自己覆盖后的色板。
+
+### 有序、顺序与发散
+
+<XhTokenSwatches prefix="--xh-chart-ordinal-" label="有序：漏斗阶段、档位" compact />
+<XhTokenSwatches prefix="--xh-chart-sequential-" :steps="['start', 'mid', 'end']" label="顺序：大小" compact />
+<XhTokenSwatches prefix="--xh-chart-diverging-" :steps="['negative', 'center', 'positive']" label="发散：高于 / 低于基线" compact />
+
+- 有序：单色相，1 对承载面最强、逐档减弱，最弱一档仍 ≥ 2:1。
+- 顺序：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带自己在色阶上的位置，皮肤用 `color-mix(in oklch, …)` 在锚点之间插值，切换主题时颜色跟着令牌走，不由脚本算色。
+- 发散：amber 与 blue 两臂同档，同一幅度读起来一样重；中点是贴近承载面的中性色。插值用 `in oklab`：中点没有色相，oklch 插值会绕着色相环走出一段杂色。
+
+### 涨跌与图表家具
+
+<XhTokenTable
+  kind="color"
+  :names="['--xh-chart-rise', '--xh-chart-fall', '--xh-chart-deemphasis', '--xh-chart-surface', '--xh-chart-grid', '--xh-chart-axis', '--xh-chart-label', '--xh-chart-crosshair', '--xh-chart-band-highlight']"
+  :notes="{
+    '--xh-chart-rise': '上涨：缺省成功色相',
+    '--xh-chart-fall': '下跌：缺省危险色相，与上涨在色觉障碍模拟下靠明度拉开',
+    '--xh-chart-deemphasis': '强调一个系列时其余系列的颜色，比任何色槽都弱',
+    '--xh-chart-surface': '承载面：相邻填充之间的间隙与点外的描边环取它，放进淡底容器时由宿主改写',
+    '--xh-chart-grid': '网格线，内部分隔；高对比档升到装饰边',
+    '--xh-chart-axis': '轴线与刻度线；高对比档升到强调边',
+    '--xh-chart-label': '轴标签与数据标签',
+    '--xh-chart-crosshair': '折线图的十字准线',
+    '--xh-chart-band-highlight': '柱图按类目悬停时整条类目带的淡底',
+  }"
+/>
+
+涨跌缺省绿涨红跌。要换成红涨绿跌，在主题边界上对调两支令牌，档位保持不变，两色的对比度与可分性就仍然成立：
+
+```css
+:root,
+[data-theme="light"] {
+  --xh-chart-rise: var(--xh-color-danger-700);
+  --xh-chart-fall: var(--xh-color-success-600);
+}
+
+[data-theme="dark"] {
+  --xh-chart-rise: var(--xh-color-danger-600);
+  --xh-chart-fall: var(--xh-color-success-500);
+}
+```
+
+### 按颜色点名的色板轴
 
 热力图这类按颜色点名的组件走 `data-palette` 轴，六个色板各取一族的满档：green（success 600）、blue（info 600）、orange（warning 600）、purple（基础色板 purple 600）、red（danger 600）、gray（中性 600，深色档换 450）。色阶从 `--xh-bg-subtle` 到满档逐档明度严格单调，明暗两套都验过。更多颜色点名的场景直接取基础色板。
 

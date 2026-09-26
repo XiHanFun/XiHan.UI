@@ -72,5 +72,101 @@
     "lifted": { "$description": "深色档同样落在两档中间：三层的偏移与模糊照浅色档的几何，主层不透明度 0.4→0.45→0.5。", "$type": "shadow", "$value": "0 1px 2px -0.5px oklch(0 0 0 / 0.45), 0 3px 6px -2px oklch(0 0 0 / 0.42), 0 6px 12px -5px oklch(0 0 0 / 0.36), inset 0 1px 0 0 oklch(1 0 0 / 0.06)" },
     "floating": { "$type": "shadow", "$value": "0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)" },
     "sheet": { "$type": "shadow", "$value": "0 1px 3px -0.5px oklch(0 0 0 / 0.6), 0 8px 16px -4px oklch(0 0 0 / 0.5), 0 20px 40px -12px oklch(0 0 0 / 0.45), 0 0 0 1px oklch(1 0 0 / 0.08)" }
+  },
+  "chart": {
+    "categorical-other": {
+      "$type": "color",
+      "$value": "{color.neutral.500}"
+    },
+    "deemphasis": {
+      "$type": "color",
+      "$value": "{color.neutral.700}"
+    },
+    "sequential": {
+      "start": {
+        "$type": "color",
+        "$value": "{color.indigo.900}"
+      },
+      "mid": {
+        "$type": "color",
+        "$value": "{color.indigo.500}"
+      },
+      "end": {
+        "$type": "color",
+        "$value": "{color.indigo.200}"
+      }
+    },
+    "ordinal": {
+      "1": {
+        "$type": "color",
+        "$value": "{color.indigo.200}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{color.indigo.300}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{color.indigo.400}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{color.indigo.500}"
+      },
+      "5": {
+        "$type": "color",
+        "$value": "{color.indigo.600}"
+      },
+      "6": {
+        "$type": "color",
+        "$value": "{color.indigo.700}"
+      }
+    },
+    "diverging": {
+      "negative": {
+        "$type": "color",
+        "$value": "{color.amber.400}"
+      },
+      "center": {
+        "$type": "color",
+        "$value": "{color.neutral.800}"
+      },
+      "positive": {
+        "$type": "color",
+        "$value": "{color.blue.400}"
+      }
+    },
+    "rise": {
+      "$type": "color",
+      "$value": "{color.success.500}"
+    },
+    "fall": {
+      "$type": "color",
+      "$value": "{color.danger.600}"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "{bg.surface}"
+    },
+    "grid": {
+      "$type": "color",
+      "$value": "{border.subtle}"
+    },
+    "axis": {
+      "$type": "color",
+      "$value": "{border.default}"
+    },
+    "label": {
+      "$type": "color",
+      "$value": "{fg.muted}"
+    },
+    "crosshair": {
+      "$type": "color",
+      "$value": "{fg.subtle}"
+    },
+    "band-highlight": {
+      "$type": "color",
+      "$value": "{bg.subtle}"
+    }
   }
 }

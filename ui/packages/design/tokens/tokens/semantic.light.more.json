@@ -1,5 +1,5 @@
 {
-  "$description": "浅色 · 高对比档（data-contrast='more'）。只覆盖边界一族：这一档的判据是每条边界对 bg.canvas 与 bg.surface 都不低于 4.5:1，与正文 AA 同一条线，取值一律从既有中性色阶里挑。",
+  "$description": "浅色 · 高对比档（data-contrast='more'）。只覆盖边界一族与图表的网格、轴线：这一档的判据是每条边界对 bg.canvas 与 bg.surface 都不低于 4.5:1，与正文 AA 同一条线，取值一律从既有中性色阶里挑；网格升到装饰边、轴线升到强调边，随边界一起加重。",
   "border": {
     "default": { "$type": "color", "$value": "{color.neutral.550}" },
     "subtle": { "$type": "color", "$value": "{color.neutral.500}" },
@@ -8,5 +8,9 @@
     "control-hover": { "$type": "color", "$value": "{color.neutral.700}" },
     "invalid": { "$type": "color", "$value": "{color.danger.700}" },
     "at-limit": { "$type": "color", "$value": "{color.warning.800}" }
+  },
+  "chart": {
+    "grid": { "$type": "color", "$value": "{border.default}" },
+    "axis": { "$type": "color", "$value": "{border.strong}" }
   }
 }

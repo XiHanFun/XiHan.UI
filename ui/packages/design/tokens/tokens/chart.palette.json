@@ -1,0 +1,151 @@
+{
+  "$description": "由 build/emit-chart-palette.mjs 从基础色板计算，不要手改；emit-tokens.mjs 把 light / dark 两组并进对应主题的 chart 组。相邻色槽在红色弱、绿色弱模拟下的最小 ΔE 17.94，任意两色正常视觉 ΔE 的最小值 12.61。",
+  "light": {
+    "chart": {
+      "categorical": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.indigo.500}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.lime.500}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.pink.600}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.amber.500}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.blue.700}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.green.700}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.purple.500}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.teal.500}"
+        },
+        "$description": "分类色槽：按系列在 series 中的声明顺序分配，隐藏、筛选、排序都不重新分配；不循环，没有第 9 色。"
+      },
+      "on-categorical": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "$description": "写在对应色块内部的文字色，按对比度在纯白与最深的中性档之间取一个，对色块 ≥ 4.5:1。色块外的文字一律用文字令牌。"
+      }
+    }
+  },
+  "dark": {
+    "chart": {
+      "categorical": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.indigo.500}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.lime.500}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.pink.600}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.amber.500}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.blue.700}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.green.700}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.purple.500}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.teal.500}"
+        },
+        "$description": "分类色槽：按系列在 series 中的声明顺序分配，隐藏、筛选、排序都不重新分配；不循环，没有第 9 色。"
+      },
+      "on-categorical": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "$description": "写在对应色块内部的文字色，按对比度在纯白与最深的中性档之间取一个，对色块 ≥ 4.5:1。色块外的文字一律用文字令牌。"
+      }
+    }
+  }
+}

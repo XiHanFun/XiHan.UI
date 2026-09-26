@@ -351,9 +351,13 @@ const SEMANTIC_SOURCES = [
  * 都不改变快照内容。放进来是为了让「只在这一档里存在」的名字当场判红：那种名字在
  * @media 不命中的时候整支没有取值，皮肤引到它的那条声明会静默失效。
  */
-const SEMANTIC_NAMES = [...new Set(
-  SEMANTIC_SOURCES.flatMap(file => flatten(loadJson(file)).map(t => t.name)),
-)].sort()
+/** 图表分类色板由生成器写在 chart.palette.json 的 light / dark 两组里，构建时并进两档主题。 */
+const chartPalette = loadJson('chart.palette.json')
+
+const SEMANTIC_NAMES = [...new Set([
+  ...SEMANTIC_SOURCES.flatMap(file => flatten(loadJson(file)).map(t => t.name)),
+  ...['light', 'dark'].flatMap(mode => flatten(chartPalette[mode]).map(t => t.name)),
+])].sort()
 
 /* ---------- 快照文本 ---------- */
 

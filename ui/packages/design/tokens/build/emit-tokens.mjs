@@ -20,6 +20,20 @@ async function load(name, material) {
   return material ? attachMaterialRecipes(document, material, name) : document
 }
 
+/**
+ * 图表分类色板由 emit-chart-palette.mjs 从基础色板算出，写在 chart.palette.json 的 light / dark 两组里；
+ * 这里把它并进对应主题令牌源的 chart 组，与手写的 chart 令牌同名就抛。
+ */
+function attachChartPalette(document, fragment, name) {
+  const chart = document.chart ?? (document.chart = {})
+  for (const [key, value] of Object.entries(fragment.chart)) {
+    if (key in chart)
+      throw new Error(`[emit-tokens] chart.palette.json 的 chart.${key} 与 ${name} 手写的令牌重名`)
+    chart[key] = value
+  }
+  return document
+}
+
 // 把 DTCG 组树展开成 [{ name: '--xh-a-b-c', value, type }]
 function flatten(obj, path = []) {
   const out = []
@@ -101,8 +115,9 @@ async function main() {
   const primitive = flatten(primitiveSource)
   const base = flatten(await load('semantic.base.json', materials.fragments['semantic.base.json']))
   const compact = flatten(await load('semantic.compact.json'))
-  const lightAll = flatten(await load('semantic.light.json', materials.fragments['semantic.light.json']))
-  const darkAll = flatten(await load('semantic.dark.json', materials.fragments['semantic.dark.json']))
+  const chartPalette = await load('chart.palette.json')
+  const lightAll = flatten(attachChartPalette(await load('semantic.light.json', materials.fragments['semantic.light.json']), chartPalette.light, 'semantic.light.json'))
+  const darkAll = flatten(attachChartPalette(await load('semantic.dark.json', materials.fragments['semantic.dark.json']), chartPalette.dark, 'semantic.dark.json'))
   const lightMore = flatten(await load('semantic.light.more.json', materials.fragments['semantic.light.more.json']))
   const darkMore = flatten(await load('semantic.dark.more.json', materials.fragments['semantic.dark.more.json']))
   const transparencyReduce = flatten(await load('semantic.transparency.reduce.json', materials.fragments['semantic.transparency.reduce.json']))

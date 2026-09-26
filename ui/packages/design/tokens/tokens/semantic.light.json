@@ -227,5 +227,114 @@
       "$type": "color",
       "$value": "oklch(0.5 0.2 300)"
     }
+  },
+  "chart": {
+    "categorical-other": {
+      "$description": "「其他」：合并进一个系列的剩余类目。中性色，照常可读，与每个分类色槽都拉得开。",
+      "$type": "color",
+      "$value": "{color.neutral.500}"
+    },
+    "deemphasis": {
+      "$description": "强调一个系列时其余系列的颜色，也是缩放条里的缩略线。中性色，比任何分类色槽都弱。",
+      "$type": "color",
+      "$value": "{color.neutral.300}"
+    },
+    "sequential": {
+      "$description": "顺序色阶（大小）的三个锚点：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带色阶位置，皮肤在锚点之间以 oklch 插值；缺省色相与分类色槽 1 相同。",
+      "start": {
+        "$type": "color",
+        "$value": "{color.indigo.100}"
+      },
+      "mid": {
+        "$type": "color",
+        "$value": "{color.indigo.400}"
+      },
+      "end": {
+        "$type": "color",
+        "$value": "{color.indigo.800}"
+      }
+    },
+    "ordinal": {
+      "1": {
+        "$type": "color",
+        "$value": "{color.indigo.900}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{color.indigo.800}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{color.indigo.700}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{color.indigo.600}"
+      },
+      "5": {
+        "$type": "color",
+        "$value": "{color.indigo.500}"
+      },
+      "6": {
+        "$type": "color",
+        "$value": "{color.indigo.400}"
+      },
+      "$description": "有序色阶（漏斗阶段、档位）：单色相，1 对承载面最强、逐档减弱，最弱一档仍 ≥ 2:1。"
+    },
+    "diverging": {
+      "$description": "发散色阶（高于 / 低于基线）：冷暖两臂等档，中点是贴近承载面的中性色。插值用 oklab：中点没有色相，oklch 插值会绕着色相环走出一段杂色。",
+      "negative": {
+        "$type": "color",
+        "$value": "{color.amber.600}"
+      },
+      "center": {
+        "$type": "color",
+        "$value": "{color.neutral.100}"
+      },
+      "positive": {
+        "$type": "color",
+        "$value": "{color.blue.600}"
+      }
+    },
+    "rise": {
+      "$description": "上涨（K 线、瀑布、盈亏）：缺省取成功色相。换成红涨绿跌时在主题边界上把 rise 与 fall 的取值对调。",
+      "$type": "color",
+      "$value": "{color.success.600}"
+    },
+    "fall": {
+      "$description": "下跌：缺省取危险色相，与上涨在红色弱、绿色弱模拟下靠明度拉开。",
+      "$type": "color",
+      "$value": "{color.danger.700}"
+    },
+    "surface": {
+      "$description": "图表的承载面：相邻填充之间的间隙与点外的描边环取它。图表放进淡底容器时由宿主改写，间隙才与底色一致。",
+      "$type": "color",
+      "$value": "{bg.surface}"
+    },
+    "grid": {
+      "$description": "网格线：内部分隔，1px 实线。",
+      "$type": "color",
+      "$value": "{border.subtle}"
+    },
+    "axis": {
+      "$description": "轴线与刻度线。",
+      "$type": "color",
+      "$value": "{border.default}"
+    },
+    "label": {
+      "$description": "轴标签与数据标签：图表文字不用系列色。",
+      "$type": "color",
+      "$value": "{fg.muted}"
+    },
+    "crosshair": {
+      "$description": "折线图的十字准线。",
+      "$type": "color",
+      "$value": "{fg.subtle}"
+    },
+    "band-highlight": {
+      "$description": "柱图按类目悬停时整条类目带的淡底。",
+      "$type": "color",
+      "$value": "{bg.subtle}"
+    }
   }
 }
