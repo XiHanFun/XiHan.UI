@@ -799,7 +799,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 周期 `--xh-motion-loop-breathe`（3600ms），缓动 `--xh-motion-ease-breathe`（正弦式缓入缓出）；圆点不透明度 0.5 ↔ 1、缩放 0.82 ↔ 1；外扩光环缩放 1 → 2.6、不透明度 0.32 → 0，只播 3 个周期后停止，圆点持续到状态结束。
 - 共享关键帧 `xh-breathe` / `xh-breathe-halo`；两道减弱开关，静态替代为满不透明度的圆点；状态必须同时有文字或可及名。
-- 状态点是装饰部件、对读屏隐藏，出现与收起跟着状态走：MessageFeed 的 `pending-indicator` 放在列表之后，只在 `status` 为 `submitted` 时出现，首个片段到来即收；Approval 的 `status-indicator` 钉在右上角（不占版面），颜色随语气、缺省取警示色，判定落定即收。强制色下取 `CanvasText`，打印时隐藏。
+- 状态点是装饰部件、对读屏隐藏，只在等待时出现，各组件统一叫 `pending-indicator`：MessageFeed 的放在列表之后，只在 `status` 为 `submitted` 时出现，首个片段到来即收；Approval 的钉在右上角（不占版面），颜色随语气、缺省取警示色，判定落定即收。强制色下取 `CanvasText`，打印时隐藏。
 
 光分三类：
 

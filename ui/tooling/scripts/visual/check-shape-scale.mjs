@@ -111,6 +111,9 @@ const IDENTITY = {
   'image-viewer:next-trigger': { shape: 'circle', floating: true },
   // 角标圆点档是宽高同槽的正方盒：计数档是胶囊，圆点档必须取 circle
   'badge:indicator[data-dot]': 'circle',
+  // 等待中的呼吸点：宽高同槽的正方盒
+  'message-feed:pending-indicator': 'circle',
+  'approval:pending-indicator': 'circle',
   // pill：(a) 状态 chip
   'badge:indicator': 'pill',
   'tag:root': 'pill',

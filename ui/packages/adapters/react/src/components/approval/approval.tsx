@@ -243,11 +243,11 @@ export function XhApprovalNote({ ...rest }: XhApprovalNoteProps): ReactNode {
   )
 }
 
-export interface XhApprovalStatusIndicatorProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {}
+export interface XhApprovalPendingIndicatorProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {}
 /** 待决时的呼吸点：放在标题旁，判过即收。 */
-export function XhApprovalStatusIndicator(props: XhApprovalStatusIndicatorProps): ReactNode {
+export function XhApprovalPendingIndicator(props: XhApprovalPendingIndicatorProps): ReactNode {
   const ctx = useApprovalContext()
-  return <span {...mergeReactProps(ctx.api.getStatusIndicatorProps() as Record<string, unknown>, props as Record<string, unknown>)} />
+  return <span {...mergeReactProps(ctx.api.getPendingIndicatorProps() as Record<string, unknown>, props as Record<string, unknown>)} />
 }
 
 export interface XhApprovalTimerProps extends ComponentPropsWithRef<'div'> {}

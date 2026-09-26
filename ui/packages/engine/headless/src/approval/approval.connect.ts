@@ -197,8 +197,8 @@ export function connectApproval<T extends PropTypes>(
      * 待决时一颗呼吸的圆点：这道闸门正等着人来判，表达「正在进行、需要被察觉」。
      * 判过了就收起，由结果那一格接着表达。对读屏隐藏：待决与否由播报区与两颗按钮说清
      */
-    getStatusIndicatorProps: () => normalize.element({
-      ...parts['status-indicator'].attrs,
+    getPendingIndicatorProps: () => normalize.element({
+      ...parts['pending-indicator'].attrs,
       'aria-hidden': true,
       'hidden': settled || undefined,
       'data-state': status,

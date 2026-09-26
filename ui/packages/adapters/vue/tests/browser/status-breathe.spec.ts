@@ -8,7 +8,7 @@ import {
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalRoot,
-  XhApprovalStatusIndicator,
+  XhApprovalPendingIndicator,
   XhApprovalTitle,
   XhMessageFeedItem,
   XhMessageFeedList,
@@ -42,7 +42,7 @@ describe('消息流：已发送、等首个片段', () => {
     app = createApp({
       render: () => h(XhMessageFeedRoot, { status: status.value, count: 1 }, () => [
         h(XhMessageFeedViewport, () => [
-          h(XhMessageFeedList, () => h(XhMessageFeedItem, { index: 0, value: 'm1', role: 'user' }, () => '帮我写个函数')),
+          h(XhMessageFeedList, () => h(XhMessageFeedItem, { itemId: 'm1', itemIndex: 0, itemRole: 'user' }, () => '帮我写个函数')),
           h(XhMessageFeedPendingIndicator),
         ]),
       ]),
@@ -89,7 +89,7 @@ describe('审批：待决', () => {
   it('待决时右上角的圆点呼吸，判过即收起', async () => {
     app = createApp({
       render: () => h(XhApprovalRoot, null, () => [
-        h(XhApprovalStatusIndicator),
+        h(XhApprovalPendingIndicator),
         h(XhApprovalTitle, () => '要写文件'),
         h(XhApprovalApproveTrigger, () => '批准'),
         h(XhApprovalDenyTrigger, () => '拒绝'),
@@ -98,7 +98,7 @@ describe('审批：待决', () => {
     app.mount(mountHost())
     await nextTick()
     const root = host!.querySelector<HTMLElement>('[data-scope="approval"][data-part="root"]')!
-    const dot = root.querySelector<HTMLElement>('[data-part="status-indicator"]')!
+    const dot = root.querySelector<HTMLElement>('[data-part="pending-indicator"]')!
     expect(dot.hidden).toBe(false)
     expect(dot.getAttribute('aria-hidden')).toBe('true')
     expect(getComputedStyle(dot).animationName).toBe('xh-breathe')

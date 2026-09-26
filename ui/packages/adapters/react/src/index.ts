@@ -86,9 +86,9 @@ export {
   XhApprovalItemText,
   XhApprovalLiveRegion,
   XhApprovalNote,
+  XhApprovalPendingIndicator,
   XhApprovalResult,
   XhApprovalRoot,
-  XhApprovalStatusIndicator,
   XhApprovalTimer,
   XhApprovalTitle,
 } from './components/approval/approval'
@@ -105,9 +105,9 @@ export type {
   XhApprovalItemTextProps,
   XhApprovalLiveRegionProps,
   XhApprovalNoteProps,
+  XhApprovalPendingIndicatorProps,
   XhApprovalResultProps,
   XhApprovalRootProps,
-  XhApprovalStatusIndicatorProps,
   XhApprovalTimerProps,
   XhApprovalTitleProps,
 } from './components/approval/approval'

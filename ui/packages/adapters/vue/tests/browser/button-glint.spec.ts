@@ -53,7 +53,7 @@ describe('按钮交互光', () => {
     expect(light.animationDuration).toBe('0.64s')
     // 盒子贴着描边外沿，遮罩只留 1px 描边环
     expect(light.position).toBe('absolute')
-    expect(light.paddingTop).toBe('1px')
+    expect(light.borderTopWidth).toBe('1px')
     expect(light.maskComposite || light.getPropertyValue('-webkit-mask-composite')).toMatch(/exclude|xor/)
   })
 

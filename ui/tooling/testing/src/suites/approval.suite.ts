@@ -40,7 +40,7 @@ export const approvalSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      { part: 'status-indicator', tag: 'span' },
+      { part: 'pending-indicator', tag: 'span' },
       { part: 'title', tag: 'h3', text: '要写文件' },
       { part: 'description', tag: 'p', text: '它想改 src/index.ts。' },
       { part: 'live-region' },
@@ -63,7 +63,7 @@ export const approvalSuite: ConformanceSuite = {
         parts: {
           'root': { 'role': 'group', 'data-state': 'pending', 'data-loading': null },
           // 待决时的呼吸点：装饰，对读屏隐藏
-          'status-indicator': { 'aria-hidden': 'true', 'data-state': 'pending', 'hidden': null },
+          'pending-indicator': { 'aria-hidden': 'true', 'data-state': 'pending', 'hidden': null },
           // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦、让读屏念得到为什么按不动；
           // 两颗钮接 Action Control text 档（批准 solid / 拒绝 outline），没勾满那档只在批准上投 data-disabled
           'approve-trigger': {
@@ -147,7 +147,7 @@ export const approvalSuite: ConformanceSuite = {
           part: 'approve-trigger',
           expect: {
             // 判过即收起呼吸点
-            parts: { 'root': { 'data-state': 'approved' }, 'status-indicator': { 'data-state': 'approved', 'hidden': '' } },
+            parts: { 'root': { 'data-state': 'approved' }, 'pending-indicator': { 'data-state': 'approved', 'hidden': '' } },
             events: [{ type: 'decision', detail: { decision: 'approved', source: 'user', scopes: ['read'] } }],
           },
         },
