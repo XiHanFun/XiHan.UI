@@ -1837,7 +1837,7 @@
 
 /* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
    Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、
-   Date / Time picker、Tooltip */
+   Date / Time picker、ColorPicker、Tooltip */
 @keyframes xh-overlay-slide-in {
   from {
     opacity: 0;
