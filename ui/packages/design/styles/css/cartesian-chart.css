@@ -169,10 +169,10 @@
   }
 
   /* 新出现的折线从头描到尾：连接层在它入场的这一轮写 data-drawing 与 pathLength="1"，
-     过渡结束即撤掉；与柱从基线长出同一档时长与曲线 */
+     过渡结束即撤掉；与柱从基线长出同一档时长 */
   [data-scope='cartesian-chart'][data-part='line'][data-drawing] {
     stroke-dasharray: 1;
-    animation: xh-draw var(--xh-motion-duration-move) var(--xh-motion-ease-continuous) both;
+    animation: xh-draw var(--xh-motion-duration-reveal) var(--xh-motion-ease-continuous) both;
   }
 
   /* 减弱动效下折线直接在场，只随过渡淡入：作者在图上放慢了时长也不描线，与柱的几何直接到位同一条规则。

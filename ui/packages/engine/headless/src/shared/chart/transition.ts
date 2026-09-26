@@ -148,7 +148,9 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
   const entry = base == null
   const timing: TransitionOptions = reduced
     ? { duration: motion.duration('enter'), easing: motion.easing('enter'), reducedMotion: true }
-    : { duration: motion.duration('move'), easing: motion.easing(entry ? 'enter-strong' : 'continuous'), stagger: options.stagger ? motionStaggerStep : 0 }
+    : entry
+      ? { duration: motion.duration('reveal'), easing: motion.easing('enter-strong'), stagger: options.stagger ? motionStaggerStep : 0 }
+      : { duration: motion.duration('morph'), easing: motion.easing('continuous'), stagger: options.stagger ? motionStaggerStep : 0 }
   run?.stop()
   // 作者把时长改成 0 就是不要过渡
   if (!(timing.duration > 0)) {

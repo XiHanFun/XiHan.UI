@@ -348,7 +348,7 @@
 
   /* ── 数据：新出现的折线从头描到尾 ──
      连接层给路径写 pathLength="1" 把长度归一，消费方把虚线设成一整段（stroke-dasharray: 1），
-     虚线偏移从 1 走到 0。只动 stroke-dashoffset，不动几何。时长取 move、曲线取 continuous，
+     虚线偏移从 1 走到 0。只动 stroke-dashoffset，不动几何。时长取 reveal、曲线取 continuous，
      与柱从基线长出同一档；减弱动效下时长降到 1ms，折线直接在场。CartesianChart */
   @keyframes xh-draw {
     from {

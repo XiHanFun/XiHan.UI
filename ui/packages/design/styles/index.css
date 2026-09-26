@@ -2244,7 +2244,7 @@
 
   /* ── 数据：新出现的折线从头描到尾 ──
      连接层给路径写 pathLength="1" 把长度归一，消费方把虚线设成一整段（stroke-dasharray: 1），
-     虚线偏移从 1 走到 0。只动 stroke-dashoffset，不动几何。时长取 move、曲线取 continuous，
+     虚线偏移从 1 走到 0。只动 stroke-dashoffset，不动几何。时长取 reveal、曲线取 continuous，
      与柱从基线长出同一档；减弱动效下时长降到 1ms，折线直接在场。CartesianChart */
   @keyframes xh-draw {
     from {
@@ -17543,10 +17543,10 @@
   }
 
   /* 新出现的折线从头描到尾：连接层在它入场的这一轮写 data-drawing 与 pathLength="1"，
-     过渡结束即撤掉；与柱从基线长出同一档时长与曲线 */
+     过渡结束即撤掉；与柱从基线长出同一档时长 */
   [data-scope='cartesian-chart'][data-part='line'][data-drawing] {
     stroke-dasharray: 1;
-    animation: xh-draw var(--xh-motion-duration-move) var(--xh-motion-ease-continuous) both;
+    animation: xh-draw var(--xh-motion-duration-reveal) var(--xh-motion-ease-continuous) both;
   }
 
   /* 减弱动效下折线直接在场，只随过渡淡入：作者在图上放慢了时长也不描线，与柱的几何直接到位同一条规则。
