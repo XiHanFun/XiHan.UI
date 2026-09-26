@@ -70,6 +70,8 @@ async function mount(): Promise<void> {
   scrollTop = 240
   scroller.dispatchEvent(new Event('scroll'))
   await settle()
+  // 过线露面时按钮播弹出进场，缩放中的几何不是静止皮肤；这里验的是静止态，先把进场播完
+  await finishMotion()
 }
 
 /** 在同一继承边界下解析令牌，避免把字面色值写进组件验收。 */
