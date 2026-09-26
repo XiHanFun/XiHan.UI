@@ -57,10 +57,28 @@ describe('measureIndicatorBox', () => {
     expect(measureIndicatorBox(container, item)).toEqual({ inlineStart: 31, blockStart: 9, inlineSize: 50, blockSize: 20 })
   })
 
-  it('条目不在容器的定位链里时量不出来', () => {
+  it('条目不在容器里时量不出来', () => {
     const { container } = fixture()
     const stray = layout(document.createElement('button'), { left: 5, width: 10, parent: null })
     expect(measureIndicatorBox(container, stray)).toBeNull()
+  })
+
+  it('容器不是条目的定位祖先时量不出来：偏移量的是容器外的参照系', () => {
+    const outer = document.createElement('section')
+    const container = layout(document.createElement('div'), { clientWidth: 300 })
+    const item = layout(document.createElement('button'), { left: 140, width: 60, parent: outer })
+    container.append(item)
+    outer.append(container)
+    document.body.append(outer)
+    expect(measureIndicatorBox(container, item)).toBeNull()
+  })
+
+  it('链上没有定位祖先可循时按已经量到的那一段算', () => {
+    const container = layout(document.createElement('div'), { clientWidth: 300 })
+    const item = layout(document.createElement('button'), { left: 12, top: 3, width: 60, height: 28, parent: null })
+    container.append(item)
+    document.body.append(container)
+    expect(measureIndicatorBox(container, item)).toEqual({ inlineStart: 12, blockStart: 3, inlineSize: 60, blockSize: 28 })
   })
 
   it('sameIndicatorBox 逐项比较，null 只与 null 相等', () => {
