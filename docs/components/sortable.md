@@ -57,7 +57,7 @@
 ### 特性
 
 - 支持垂直、水平和换行网格排序。
-- 拖动时实时显示让位和落点。
+- 拖动时实时显示让位和落点；放下后项目从松手处带着松手速度落进新位置。
 - 支持边缘自动滚动。
 - `sort` 事件返回重排后的 `ids`。
 
@@ -217,6 +217,7 @@
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `item` | `data-animating` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-dragging` | ''（条件成立时才出现） |
 | `item` | `data-index` | String(item?.index ?? -1) |
@@ -258,6 +259,8 @@
 ### 动效
 
 `box-shadow` · `opacity` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：值由内核逐帧算出（`frameLoop`），皮肤里看不到这段。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
