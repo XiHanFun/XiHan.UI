@@ -40,6 +40,11 @@ export interface TagsInputItemProps {
   value: string
 }
 
+/** 宿主交给机器的节点：标签所在的容器（control 部件），列表动效在它上面盯标签的到达、离场与换位。 */
+export interface TagsInputRefs {
+  getControlEl: () => HTMLElement | null
+}
+
 export interface TagsInputSchema extends MachineSchema {
   props: {
     /** 受控标签集合；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 */
@@ -100,9 +105,11 @@ export interface TagsInputSchema extends MachineSchema {
     editedValue: string
     /** 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true；抬起、失焦、指针取消或清不了时即撤下。 */
     pressed: boolean
+    /** 列表动效已经接到标签容器上；接上之前容器带 data-instant，首帧的标签一律不播进场。 */
+    listTracked: boolean
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: TagsInputRefs
   /**
    * idle = 焦点在输入框、没有标签被选中；
    * navigating = 光标在标签之间移动（Backspace 第一次、方向键）；
@@ -136,6 +143,8 @@ export interface TagsInputSchema extends MachineSchema {
     | { type: 'PRESS.START' }
     /** 按住的清空按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
+    /** 列表动效接上了标签容器（机器自己发）。 */
+    | { type: 'LIST.TRACKED' }
   tag: never
   guard: 'canEdit' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget' | 'canPress'
   action:
@@ -156,7 +165,8 @@ export interface TagsInputSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'focusEditInput'
+    | 'markListTracked'
+  effect: 'focusEditInput' | 'trackListMotion'
 }
 
 export interface TagsInputApi<T extends PropTypes = PropTypes> {

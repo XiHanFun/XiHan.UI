@@ -118,6 +118,7 @@
         "dialog",
         "drawer",
         "image-viewer",
+        "tags-input",
         "tour"
       ],
       "relation": "fade"
@@ -131,6 +132,7 @@
         "approval",
         "message-feed",
         "question-flow",
+        "tags-input",
         "tool-call"
       ],
       "relation": "list"

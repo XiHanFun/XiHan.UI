@@ -21,16 +21,25 @@ export interface TagsInputContext {
   service: Service<TagsInputSchema>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
+  /** 标签所在的容器：列表动效接在它上面。 */
+  controlRef: RefObject<HTMLElement | null>
 }
 
 export function useTagsInput(props: TagsInputSchema['props']): TagsInputContext {
   // 就地编辑框的 id 由 scope 按标签值派生，机器的聚焦副作用照它捞节点
   const scope = useReactScope()
   const rootRef = useRef<HTMLElement | null>(null)
-  const service = useMachine(tagsInputMachine, () => props, { scope })
+  const controlRef = useRef<HTMLElement | null>(null)
+  const service = useMachine(tagsInputMachine, () => props, {
+    scope,
+    // 列表动效在机器的挂载效应里取容器，取值口得赶在那之前交出去
+    onCreate: (svc: Service<TagsInputSchema>) => {
+      svc.refs.set('getControlEl', () => controlRef.current)
+    },
+  })
 
   // 标签集合攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生
   useFormReset(service, rootRef)
 
-  return { api: connectTagsInput(service, reactNormalize), service, rootRef }
+  return { api: connectTagsInput(service, reactNormalize), service, rootRef, controlRef }
 }

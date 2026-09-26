@@ -7,7 +7,7 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { TagsInputSchema } from './tags-input.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray } from '../shared/array'
 import { tagsInputEditInputId } from './tags-input.anatomy'
 
@@ -123,6 +123,12 @@ function commitTags(params: Params<TagsInputSchema>, incoming: readonly string[]
 }
 
 /**
+ * 标签条目：库写的部件属性；Web Components 里作者刚插进来的节点只带 data-xh-part，
+ * 下一轮接线才写上部件属性，到达得在插入的那一刻认出来。后者只认容器的直接子节点，标签里嵌的别的组件不算。
+ */
+const TAGS_INPUT_ITEM_SELECTOR = '[data-scope="tags-input"][data-part="item"], [data-scope="tags-input"][data-part="control"] > [data-xh-part="item"]'
+
+/**
  * 标签集合与输入文本各住在自己的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。
  * FSM 只表达光标此刻在哪儿：在输入框、在标签之间、还是在改某个标签。
  */
@@ -146,8 +152,11 @@ export const tagsInputMachine = createMachine({
     editedValue: cell<string>(() => ({ defaultValue: '' })),
     // 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
+  refs: () => ({ getControlEl: () => null }),
   initialState: () => 'idle',
+  effects: ['trackListMotion'],
   // 按住途中转入禁用 / 只读，或标签与文本都被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, context, action }) => {
     track([() => prop('disabled'), () => prop('readOnly'), context.dep('value'), context.dep('inputValue')], () => action(['releaseWhenInert']))
@@ -163,6 +172,7 @@ export const tagsInputMachine = createMachine({
     'PRESS.END': { actions: ['endPress'] },
     // 承载焦点的标签节点没了，一律退回输入框
     'ITEM.FOCUS_LOST': { target: 'idle', actions: ['cancelEdit'] },
+    'LIST.TRACKED': { actions: ['markListTracked'] },
   },
   states: {
     idle: {
@@ -360,12 +370,35 @@ export const tagsInputMachine = createMachine({
 
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
+      markListTracked: ({ context }) => context.set('listTracked', true),
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled') || prop('readOnly') || (context.get('value').length === 0 && context.get('inputValue') === ''))
           context.set('pressed', false)
       },
     },
     effects: {
+      /**
+       * 标签的到达、离场与换位：首帧就在的标签直接呈现，新落下的播进场、同一批按到达顺序错开，
+       * 删掉的在原处播完退场，其余标签滑到新位置。React 的祖先 ref 在子组件 layout effect 之后才附着，
+       * 延到提交后的微任务再取，仍在首帧绘制之前。没有 DOM 的宿主里取不到容器，不接。
+       */
+      trackListMotion: ({ refs, send, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          queueMicrotask(() => {
+            const control = refs.get('getControlEl')()
+            if (disposed || !control)
+              return
+            stop = trackListMotion(control, { item: TAGS_INPUT_ITEM_SELECTOR })
+            send({ type: 'LIST.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
       /**
        * 进编辑态就把焦点送进编辑框。
        * 必须等宿主渲染完这一帧：进入编辑态这一刻编辑框还带着 hidden，聚焦隐藏元素是空操作。
