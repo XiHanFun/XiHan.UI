@@ -104,11 +104,13 @@ describe('semantic.reduce.json', () => {
     }
   })
 
-  it('幅度归零、缩放归一', () => {
+  it('幅度归零、缩放归一、整幅位移两端的不透明度归零', () => {
     for (const t of reduce.filter(t => t.type === 'dimension'))
       expect(t.value, t.name).toBe('0px')
-    for (const t of reduce.filter(t => t.type === 'number'))
+    for (const t of reduce.filter(t => t.type === 'number' && t.name !== 'motion-travel-opacity'))
       expect(t.value, t.name).toBe('1')
+    // 整幅位移归零后，进出场改由这一端的不透明度淡出淡入
+    expect(reduce.find(t => t.name === 'motion-travel-opacity')?.value).toBe('0')
   })
 })
 

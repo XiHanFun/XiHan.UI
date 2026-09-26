@@ -245,6 +245,29 @@
     }
   }
 
+  /* 整幅滑入配套的淡变：起止端取 --xh-motion-travel-opacity，缺省为 1 即不淡变，
+     减弱动效下为 0，整幅位移归零后由它接住进出场。与 xh-slide-in / -out 并列播放，
+     时长取淡变档（enter / exit），不随几何时长一起归零。Drawer */
+  @keyframes xh-slide-fade-in {
+    from {
+      opacity: var(--xh-motion-travel-opacity);
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes xh-slide-fade-out {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: var(--xh-motion-travel-opacity);
+    }
+  }
+
   /* ── 循环：匀速转圈与扫过的流光 ──
      时长取循环令牌，减弱动效下由各皮肤停掉并换成静态替代。
      转圈写独立的 rotate 属性，与元素自身的 transform 叠加而不互相覆盖。

@@ -628,6 +628,11 @@
       "$type": "dimension",
       "$value": "100%"
     },
+    "travel-opacity": {
+      "$description": "整幅位移起止两端的不透明度：缺省 1，面板整条推入推出、不淡变；减弱动效下 0，整幅位移归零后进出场改由淡变表达。",
+      "$type": "number",
+      "$value": 1
+    },
     "scale-enter": {
       "$type": "number",
       "$value": 0.96
