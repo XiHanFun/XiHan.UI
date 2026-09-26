@@ -5,6 +5,9 @@
 
 /* 定义 pie chart 样式。 */
 
+/* 淡入关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='pie-chart'] {
@@ -162,6 +165,19 @@
   }
 
   /* —— 环形中心：叠在视口上，圆心与内径由几何给出；文字不超出内圈 —— */
+  /* 首次出现：标签与引导线等扫开的边缘到了才淡入，连接层写入它占入场时长的比例，乘上入场时长就是延迟；
+     环形中心等整圈扫完再淡入 */
+  [data-scope='pie-chart'][data-part='slice-label'][data-drawing],
+  [data-scope='pie-chart'][data-part='leader-line'][data-drawing] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
+    animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
+  }
+
+  [data-scope='pie-chart'][data-part='center'][data-drawing] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
+    animation-delay: var(--xh-motion-duration-reveal);
+  }
+
   [data-scope='pie-chart'][data-part='center'] {
     position: absolute;
     inset-block-start: var(--xh-_chart-center-y, 50%);

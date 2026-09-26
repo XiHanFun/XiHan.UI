@@ -25,9 +25,12 @@ const TIMING_PROPS = new Set([
 ])
 const PRIMITIVE = /--xh-duration-(?:fast|normal|slow)(?![\w-])/
 
-/** 延迟位专查：交错的间隔只许由 stagger-step 派生。 */
+/**
+ * 延迟位专查：延迟只许由 stagger-step（交错的间隔）或语义时长 --xh-motion-duration-*（等上一段播完、
+ * 按进程比例出现）派生——两者在减弱档都归零或归 1ms，写死的毫秒数归不掉。
+ */
 const DELAY_PROPS = new Set(['animation-delay', 'transition-delay'])
-const STAGGER = /var\(\s*--xh-motion-stagger-step\s*[,)]/
+const STAGGER = /var\(\s*--xh-motion-(?:stagger-step|duration-[a-z-]+)\s*[,)]/
 
 const files = (await Promise.all(STYLES_DIRS.map(async dir =>
   (await readdir(dir)).filter(f => f.endsWith('.css')).sort().map(f => ({ dir, file: dir.endsWith('/family') ? `family/${f}` : f })),
@@ -49,11 +52,11 @@ for (const { dir, file } of files) {
       const line = lineOf(d.index)
       problems.push(`${file}:${line}  ${prop}: ${raw.replace(/\s+/g, ' ').trim()}  —— 时长别直接引 --xh-duration-* 原语，走 --xh-motion-duration-* 或组件时长槽`)
     }
-    // 延迟位只许由 stagger-step 派生：写死 40ms 的那一处，减弱档归不掉，
+    // 延迟位只许由 stagger-step 或语义时长派生：写死 40ms 的那一处，减弱档归不掉，
     // 而 TIMING_PROPS 只测「有没有下探原语」，字面值它一个字都看不见
     if (DELAY_PROPS.has(prop) && raw.trim() !== '0s' && raw.trim() !== '0ms' && !STAGGER.test(raw)) {
       const line = lineOf(d.index)
-      problems.push(`${file}:${line}  ${prop}: ${raw.replace(/\s+/g, ' ').trim()}  —— 交错的间隔要走 var(--xh-motion-stagger-step)（可乘序号），写死的值在减弱档归不掉`)
+      problems.push(`${file}:${line}  ${prop}: ${raw.replace(/\s+/g, ' ').trim()}  —— 延迟要走 var(--xh-motion-stagger-step)（可乘序号）或 var(--xh-motion-duration-*)（可乘比例），写死的值在减弱档归不掉`)
     }
   }
 

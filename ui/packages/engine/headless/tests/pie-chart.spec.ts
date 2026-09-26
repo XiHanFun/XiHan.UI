@@ -265,15 +265,28 @@ describe('过渡', () => {
 
   afterEach(() => vi.useRealTimers())
 
-  it('入场：扇区都收在 12 点，整圈顺着扫开，标签淡入；走完落到目标场景', async () => {
+  it('入场：扇区都收在 12 点，整圈顺着扫开；标签随扫开逐个出现，中心等扫完再出现，合计从 0 数上去', async () => {
     vi.useFakeTimers(FRAMES)
     const rig = await makeRig({ ...BASE, animated: true })
     const target = rig.api().model.scene!.scene
     const start = slices(rig.api())
     expect(start.every(a => a.startAngle === 0 && a.endAngle === 0)).toBe(true)
-    expect(rig.api().scene.layers.front.every(m => m.opacity === 0)).toBe(true)
+    // 标签的延迟按扇区中线在整圈里的位置：越靠后的扇区越晚
+    const delayOf = (key: string): number => {
+      const label = rig.api().scene.layers.front.find(m => m.key === key)!
+      const props = rig.api().getMarkProps(label) as Dict
+      expect(props['data-drawing']).toBe('')
+      return Number.parseFloat(props.style['--xh-_chart-reveal-at'])
+    }
+    expect(delayOf('label:华东')).toBeLessThan(delayOf('label:华南'))
+    expect(delayOf('label:华南')).toBeLessThan(delayOf('label:东北'))
+    expect((rig.api().getCenterProps() as Dict)['data-drawing']).toBe('')
+    expect(rig.api().center.value).toBe('0')
 
     vi.advanceTimersByTime(80)
+    const counting = Number(rig.api().center.value)
+    expect(counting).toBeGreaterThan(0)
+    expect(counting).toBeLessThan(100)
     const mid = slices(rig.api())
     const last = mid[mid.length - 1]!
     expect(last.endAngle).toBeGreaterThan(0)
@@ -283,6 +296,25 @@ describe('过渡', () => {
 
     vi.advanceTimersByTime(1000)
     expect(rig.api().scene).toBe(target)
+    expect(rig.api().center.value).toBe('100')
+    expect((rig.api().getCenterProps() as Dict)['data-drawing']).toBeUndefined()
+  })
+
+  it('图例隐藏一个扇区后合计从旧值滚到新值', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    vi.advanceTimersByTime(1000)
+    rig.api().toggleSeries('华东')
+    const values: number[] = []
+    for (let i = 0; i < 5; i++) {
+      vi.advanceTimersByTime(60)
+      values.push(Number(rig.api().center.value))
+    }
+    expect(values[0]).toBeLessThan(100)
+    expect(values[0]).toBeGreaterThan(60)
+    values.slice(1).forEach((v, i) => expect(v).toBeLessThanOrEqual(values[i]!))
+    vi.advanceTimersByTime(1000)
+    expect(rig.api().center.value).toBe('60')
   })
 
   it('图例隐藏一个扇区：它收拢并淡出，颜色留着，收场期间不可聚焦', async () => {

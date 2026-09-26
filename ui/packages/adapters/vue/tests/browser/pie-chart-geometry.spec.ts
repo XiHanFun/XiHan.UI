@@ -145,6 +145,8 @@ describe('过渡', () => {
     const state = mount({ labels: 'none', animated: true, style: '--xh-motion-duration-reveal: 4s' })
     await settle()
     const early = union(all('slice').map(el => el.getBoundingClientRect()))
+    // 环形中心等整圈扫完再出现：扫开途中是透明的
+    expect(Number(getComputedStyle(one('center')).opacity)).toBe(0)
     state.animated = false
     await settle()
     const final = union(all('slice').map(el => el.getBoundingClientRect()))
@@ -152,5 +154,6 @@ describe('过渡', () => {
     expect(early.right - early.left).toBeLessThan((final.right - final.left) * 0.6)
     expect(early.left).toBeGreaterThanOrEqual((final.left + final.right) / 2 - 1)
     expect(Math.abs(early.top - final.top)).toBeLessThanOrEqual(1)
+    expect(Number(getComputedStyle(one('center')).opacity)).toBe(1)
   })
 })

@@ -419,7 +419,7 @@ export function pieScene(layout: PieLayout, version: number): PieScene {
 
 /**
  * 首次出现从哪一帧起跑：扇区都收在整圈的起始角上，起止角一起按比例放开，整圈顺着扫开；
- * 标签与引导线不在场，淡入。
+ * 标签与引导线原样在场，等扫开的边缘到了由样式淡入。
  */
 export function pieEntryScene(target: Scene): Scene {
   const arcs = target.layers.data.filter((mark): mark is ArcMark => mark.kind === 'arc')
@@ -428,9 +428,31 @@ export function pieEntryScene(target: Scene): Scene {
   const origin = Math.min(...arcs.map(arc => arc.startAngle))
   return createScene({
     version: 0,
-    layers: { data: arcs.map(arc => ({ ...arc, startAngle: origin, endAngle: origin })) },
+    layers: { data: arcs.map(arc => ({ ...arc, startAngle: origin, endAngle: origin })), front: target.layers.front },
     bounds: target.bounds,
   })
+}
+
+/**
+ * 标签与引导线随扫开出现：每个扇区的中线角在整圈扫过的角度里所处的位置（0–1），
+ * 标签与它的引导线在扫开的边缘到达中线时出现。
+ */
+export function pieRevealAt(target: Scene): ReadonlyMap<string, number> {
+  const arcs = target.layers.data.filter((mark): mark is ArcMark => mark.kind === 'arc')
+  const at = new Map<string, number>()
+  if (arcs.length === 0)
+    return at
+  const origin = Math.min(...arcs.map(arc => arc.startAngle))
+  const span = Math.max(...arcs.map(arc => arc.endAngle)) - origin
+  for (const arc of arcs) {
+    const id = arc.datum?.seriesId
+    if (id == null)
+      continue
+    const position = span > 0 ? ((arc.startAngle + arc.endAngle) / 2 - origin) / span : 0
+    at.set(`label:${id}`, position)
+    at.set(`leader:${id}`, position)
+  }
+  return at
 }
 
 /* ---------- 无障碍 ---------- */

@@ -71,7 +71,8 @@ export function connectPieChart<T extends PropTypes>(
   const hidden = context.get('hiddenSeries')
   const measured = size != null && model.scene != null
   // 过渡中画正在显示的那一帧；拾取、焦点与提示框仍按目标场景算
-  const scene = context.get('frame')?.scene ?? model.scene?.scene ?? EMPTY_SCENE
+  const frame = context.get('frame')
+  const scene = frame?.scene ?? model.scene?.scene ?? EMPTY_SCENE
   const invalid = model.issues.length > 0
   const empty = !invalid && model.derived.visible.length === 0
   const donut = (prop('variant') ?? 'donut') === 'donut'
@@ -157,7 +158,8 @@ export function connectPieChart<T extends PropTypes>(
     }
   }
 
-  const center = { value: model.formats.value(model.derived.total), label: translations.centerLabel }
+  // 合计随过渡滚动：首次出现从 0 数上去，数据变了从旧值滚到新值
+  const center = { value: model.formats.value(frame?.numbers.total ?? model.derived.total), label: translations.centerLabel }
   const layout = model.scene?.layout
 
   return {
@@ -321,6 +323,11 @@ export function connectPieChart<T extends PropTypes>(
     getMarkProps: (mark) => {
       const part = parts[mark.part as keyof typeof parts]
       const base = part ? part.attrs : {}
+      // 标签与引导线等扫开的边缘到了才淡入：内核按扫开的曲线换算出它占入场时长的比例，样式乘上时长得到延迟
+      const at = frame?.revealAt.get(mark.key)
+      const reveal = at == null
+        ? {}
+        : { 'data-drawing': '', 'style': { '--xh-_chart-reveal-at': at.toFixed(3) } }
       if (mark.kind === 'text') {
         const text = mark as TextMark
         const id = mark.key.slice('label:'.length)
@@ -337,6 +344,7 @@ export function connectPieChart<T extends PropTypes>(
           // 内侧标签压在扇区色上，带色槽取配对的前景色；外侧标签不带，是普通标注色
           'data-xh-chart-slot': inside && slice ? slotAttr(slice.slot, slice.other) : undefined,
           'data-dimmed': dataAttr(emphasis != null && emphasis !== id),
+          ...reveal,
         })
       }
       const props: Record<string, unknown> = {
@@ -368,6 +376,7 @@ export function connectPieChart<T extends PropTypes>(
         if (mark.part === 'leader-line') {
           const id = mark.key.slice('leader:'.length)
           props['data-dimmed'] = dataAttr(emphasis != null && emphasis !== id)
+          Object.assign(props, reveal)
         }
       }
       return normalize.element(props)
@@ -377,6 +386,8 @@ export function connectPieChart<T extends PropTypes>(
     getCenterProps: () => normalize.element({
       ...parts.center.attrs,
       'hidden': !donut || !measured || empty || !layout || undefined,
+      // 首次出现时等整圈扫完再淡入
+      'data-drawing': dataAttr(frame?.entry === true),
       // 半环的圆心在弦上：中心内容整块放到弦的上方，落在内圈里
       'data-placement': (prop('sweep') ?? 'full') === 'half' ? 'top' : undefined,
       // 量过才给这个键：给 undefined 会把作者写在中心上的整条内联样式删掉

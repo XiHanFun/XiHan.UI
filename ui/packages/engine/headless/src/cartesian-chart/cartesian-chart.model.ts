@@ -932,20 +932,57 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
 }
 
 /**
- * 首次出现从哪一帧起跑：折线原样在场，由描线关键帧从头描到尾；面积在场但全透明，随描线一起淡入；
- * 柱不在场，从基线长出；坐标轴、点与标签不在场，淡入。
+ * 首次出现从哪一帧起跑：折线原样在场，由描线关键帧从头描到尾；数据点原样在场，等笔尖到了由样式淡入；
+ * 面积在场但全透明，随描线一起淡入；柱不在场，从基线长出；坐标轴与标签不在场，淡入。
  */
 export function cartesianEntryScene(target: Scene): Scene {
   const seed = (marks: readonly Mark[]): Mark[] => marks.flatMap((mark): Mark[] => {
     if (mark.kind === 'group')
       return [{ ...mark, children: seed(mark.children) }]
-    if (mark.kind === 'line')
+    if (mark.kind === 'line' || mark.part === 'dot')
       return [mark]
     if (mark.kind === 'area')
       return [{ ...mark, opacity: 0 }]
     return []
   })
   return createScene({ version: 0, layers: { data: seed(target.layers.data) }, bounds: target.bounds })
+}
+
+/**
+ * 数据点随描线出现：每个点在它那条折线上的位置，按从起点量起的折线长度占全长的比例（0–1）。
+ * 描线关键帧按路径长度推进，点在笔尖扫到时出现；平滑曲线按折线段近似，差不了几个像素。
+ */
+export function cartesianRevealAt(target: Scene): ReadonlyMap<string, number> {
+  const at = new Map<string, number>()
+  for (const group of target.layers.data) {
+    if (group.kind !== 'group')
+      continue
+    const line = group.children.find((m): m is LineMark => m.kind === 'line')
+    if (!line)
+      continue
+    const along = new Map<string, number>()
+    let total = 0
+    let last: { x: number, y: number } | null = null
+    for (const p of line.points) {
+      if (p.defined === false) {
+        last = null
+        continue
+      }
+      if (last)
+        total += Math.hypot(p.x - last.x, p.y - last.y)
+      along.set(p.key, total)
+      last = p
+    }
+    const prefix = `${group.key.slice('series:'.length)}:m:`
+    for (const mark of group.children) {
+      if (mark.part !== 'dot' || !mark.key.startsWith(prefix))
+        continue
+      const length = along.get(mark.key.slice(prefix.length))
+      if (length != null)
+        at.set(mark.key, total > 0 ? length / total : 0)
+    }
+  }
+  return at
 }
 
 /* ---------- 无障碍 ---------- */

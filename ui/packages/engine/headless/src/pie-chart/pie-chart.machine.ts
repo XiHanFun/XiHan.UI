@@ -16,7 +16,7 @@ import {
   trackChartViewport,
 } from '../shared/chart'
 import { pieActive, pieDetails, pieMarkKey, pieModelOf, pieTranslations } from './pie-chart.logic'
-import { createPiePipeline, pieEntryScene } from './pie-chart.model'
+import { createPiePipeline, pieEntryScene, pieRevealAt } from './pie-chart.model'
 
 const { createMachine } = setup<PieChartSchema>()
 
@@ -64,8 +64,14 @@ export const pieChartMachine = createMachine({
     actions: {
       ...chartBaseActions<PieChartSchema>({
         markKeyOf: (params, ref) => pieMarkKey(pieModelOf(params), ref),
-        // 扇区是同一整圈里的几块，错开就断成了几段，整圈一起扫开
-        transition: { entry: pieEntryScene, stagger: false },
+        // 扇区是同一整圈里的几块，错开就断成了几段，整圈一起扫开；标签随扫开出现，合计随过渡滚动
+        transition: {
+          entry: pieEntryScene,
+          stagger: false,
+          revealAt: pieRevealAt,
+          revealEasing: 'enter-strong',
+          numbers: params => ({ total: pieModelOf(params).derived.total }),
+        },
       }),
       notifyActive: (params) => {
         const model = pieModelOf(params)
