@@ -91,7 +91,7 @@ duration 决定时长，easing 决定快慢的分配；同一段距离四档并�
 | `from` | `number` |  | 起点，默认 0。改写它会把显示值立即落到新起点，并从那里重新运行本轮。 |
 | `to` | `number` |  | 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 |
 | `duration` | `number` |  | 时长毫秒，默认 1000；&lt;=0 即一步到位。 |
-| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，默认线性。 |
+| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 |
 | `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]。 |
 | `separator` | `string` |  | 千位分隔符，默认不分隔。 |
 | `active` | `boolean` |  | 是否运行，默认 true。变为假即停在当前值，变为真从当前值继续走向终点。 |

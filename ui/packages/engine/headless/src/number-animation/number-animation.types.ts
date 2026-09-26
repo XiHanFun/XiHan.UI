@@ -6,9 +6,9 @@
 // 定义 number animation 类型契约。
 
 import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
-import type { EasingName } from '@xihan-ui/motion'
+import type { EasingFunction, EasingName } from '@xihan-ui/motion'
 
-/** 缓动：曲线名，或一条 `cubic-bezier(...)` / `linear` 串。取值与 CSS 侧同源。 */
+/** 缓动：曲线名，或一条 CSS 缓动函数串（`ease-out`、`cubic-bezier(...)`、`steps(...)`、`linear(...)` 等）。取值与 CSS 侧同源。 */
 export type NumberAnimationEasing = EasingName | (string & {})
 
 /** 尺寸档位，只影响字号。 */
@@ -34,7 +34,7 @@ export interface NumberAnimationSchema extends MachineSchema {
     to?: number
     /** 时长毫秒，默认 1000；<=0 即一步到位。 */
     duration?: number
-    /** 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，默认线性。 */
+    /** 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 */
     easing?: NumberAnimationEasing
     /** 小数位，默认 0。夹进 [0, 20]。 */
     precision?: number
@@ -61,6 +61,8 @@ export interface NumberAnimationSchema extends MachineSchema {
     origin: number
     /** 本轮的起始时刻。 */
     startedAt: number
+    /** 本轮的缓动：起跑时解析一次。 */
+    ease: EasingFunction
   }
   state: 'idle' | 'running'
   event:
