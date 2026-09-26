@@ -9,6 +9,7 @@ import type { ScrollTrackerHandle } from '@xihan-ui/core'
 import type { BackTopSchema } from './back-top.types'
 import { createScrollTracker, scrollBlockTo, setup } from '@xihan-ui/core'
 import { trackLiquidPart } from '../shared/liquid'
+import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<BackTopSchema>()
 
@@ -33,15 +34,18 @@ export const backTopMachine = createMachine({
   // 按压通道（context.pressed）与显隐无关：两个状态都认 PRESS.*；组件没有禁用轴，按住即进入
   context: ({ cell }) => ({
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    // 与初态对上：起点收着
+    triggerRendered: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     getTargetEl: () => null,
   }),
   // 起点一律收着：真实滚动量由观察器的第一次结算补上
   initialState: () => 'hidden',
-  effects: ['trackScroll', 'trackLiquid'],
+  effects: ['trackScroll', 'trackLiquid', 'trackTriggerPresence'],
   on: {
     'TRIGGER.CLICK': { actions: ['scrollToTop'] },
+    'TRIGGER.RENDERED': { actions: ['setTriggerRendered'] },
     'PRESS.START': { actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
   },
@@ -75,6 +79,11 @@ export const backTopMachine = createMachine({
     actions: {
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
+      setTriggerRendered: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TRIGGER.RENDERED')
+          context.set('triggerRendered', e.rendered)
+      },
       invokeOnChange: ({ prop, event }) => {
         const e = event.current()
         if (e.type !== 'SCROLL.RESOLVE')
@@ -89,6 +98,15 @@ export const backTopMachine = createMachine({
     effects: {
       /** 触发器是浮在内容之上的导航层部件：材质轴为 liquid 时按下层换色调、亮边随指针 */
       trackLiquid: ({ scope, flush }) => trackLiquidPart(scope, flush, 'back-top', 'trigger'),
+      /** 过线露面时按钮弹出，退回线内时先播完退场、根上才写 hidden 收起。 */
+      trackTriggerPresence: ({ state, scope, send, track, flush }) => trackPartPresence({
+        scope,
+        id: scope.partId('back-top', 'trigger'),
+        open: () => state.matches('visible'),
+        track,
+        flush,
+        onRenderedChange: rendered => send({ type: 'TRIGGER.RENDERED', rendered }),
+      }),
       /**
        * 滚动观察器：滚动量过线就报露面、退回线内就报收起。
        *

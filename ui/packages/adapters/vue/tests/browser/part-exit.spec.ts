@@ -3,7 +3,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
-import { XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedScrollToEndTrigger, XhMessageFeedViewport } from '../../src'
+import { XhBackTopRoot, XhBackTopTrigger, XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedScrollToEndTrigger, XhMessageFeedViewport } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -13,6 +13,7 @@ afterEach(() => {
   app?.unmount()
   app = null
   document.body.innerHTML = ''
+  window.scrollTo(0, 0)
 })
 
 function running(el: Element): string[] {
@@ -54,5 +55,34 @@ describe('message-feed 回到底部按钮', () => {
     expect(running(trigger)).toEqual(['xh-pop-out'])
     expect(getComputedStyle(trigger).pointerEvents).toBe('none')
     await until(() => trigger.hidden === true)
+  })
+})
+
+describe('back-top 按钮', () => {
+  it('滚过线弹出；退回线内先播完退场，根上才带 hidden，退场途中不接指针', async () => {
+    const host = document.createElement('div')
+    // 撑出一页可滚的高度
+    host.style.blockSize = '3000px'
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhBackTopRoot, { visibilityHeight: 200 }, () => h(XhBackTopTrigger)),
+    })
+    app.mount(host)
+    await nextTick()
+    const root = document.querySelector<HTMLElement>('[data-scope="back-top"][data-part="root"]')!
+    const trigger = document.querySelector<HTMLElement>('[data-scope="back-top"][data-part="trigger"]')!
+    expect(root.hidden).toBe(true)
+
+    window.scrollTo(0, 600)
+    await until(() => root.hidden === false)
+    expect(trigger.dataset.state).toBe('visible')
+    expect(running(trigger)).toEqual(['xh-pop-in'])
+
+    window.scrollTo(0, 0)
+    await until(() => trigger.dataset.state === 'hidden')
+    expect(root.hidden).toBe(false)
+    expect(running(trigger)).toEqual(['xh-pop-out'])
+    expect(getComputedStyle(trigger).pointerEvents).toBe('none')
+    await until(() => root.hidden === true)
   })
 })

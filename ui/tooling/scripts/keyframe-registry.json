@@ -234,6 +234,7 @@
       ],
       "consumers": [
         "approval",
+        "back-top",
         "float-button",
         "floating-panel",
         "log",
@@ -251,6 +252,7 @@
         "family/motion.css"
       ],
       "consumers": [
+        "back-top",
         "command",
         "floating-panel",
         "hover-card",

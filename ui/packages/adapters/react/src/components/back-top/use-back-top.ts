@@ -10,6 +10,7 @@ import type { BackTopApi, BackTopSchema } from '@xihan-ui/headless'
 import { backTopMachine, connectBackTop } from '@xihan-ui/headless'
 import { useCallback, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface BackTopContext {
@@ -31,6 +32,7 @@ export function useBackTop(
     service.refs.set('getTargetEl', () => targetEl.current())
   }, [])
 
-  const service = useMachine(backTopMachine, () => props, { onCreate })
+  // 按钮带 id（机器按它等退场、接液态面）：用 useId 派生的 scope，服务端与水合两侧同号
+  const service = useMachine(backTopMachine, () => props, { onCreate, scope: useReactScope() })
   return { api: connectBackTop(service, reactNormalize), service }
 }

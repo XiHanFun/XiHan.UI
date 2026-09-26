@@ -46,6 +46,11 @@ export interface BackTopSchema extends MachineSchema {
   context: {
     /** 触发器正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
     pressed: boolean
+    /**
+     * 按钮是否还留着（根上没有 hidden）。露面时立即为真；收起时等按钮的退场动画播完才为假，
+     * 期间 data-state 已经是 hidden、退场动画在播。
+     */
+    triggerRendered: boolean
   }
   computed: Record<string, never>
   refs: BackTopRefs
@@ -59,10 +64,12 @@ export interface BackTopSchema extends MachineSchema {
     // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
     | { type: 'PRESS.START' }
     | { type: 'PRESS.END' }
+    /** 按钮的进退场报来「该不该留着」。 */
+    | { type: 'TRIGGER.RENDERED', rendered: boolean }
   tag: never
   guard: 'shouldShow' | 'shouldHide'
-  action: 'scrollToTop' | 'invokeOnChange' | 'startPress' | 'endPress'
-  effect: 'trackScroll' | 'trackLiquid'
+  action: 'scrollToTop' | 'invokeOnChange' | 'startPress' | 'endPress' | 'setTriggerRendered'
+  effect: 'trackScroll' | 'trackLiquid' | 'trackTriggerPresence'
 }
 
 export interface BackTopApi<T extends PropTypes = PropTypes> {
