@@ -650,3 +650,56 @@ describe('connectPagination 跳页输入框', () => {
     expect(api(s).page).toBe(10)
   })
 })
+
+describe('省略位浮层的悬停延时', () => {
+  it('悬停先等 openDelay 才摊开，等待期离开就地撤销', () => {
+    vi.useFakeTimers()
+    try {
+      const s = makeService({ count: 200, pageSize: 10, defaultPage: 1, openDelay: 150 })
+      s.send({ type: 'ELLIPSIS.ENTER', side: 'end' })
+      vi.advanceTimersByTime(149)
+      expect(s.state.get()).toBe('opening')
+      vi.advanceTimersByTime(1)
+      expect(api(s).openEllipsis).toBe('end')
+
+      const early = makeService({ count: 200, pageSize: 10, defaultPage: 1, openDelay: 150 })
+      early.send({ type: 'ELLIPSIS.ENTER', side: 'end' })
+      early.send({ type: 'ELLIPSIS.LEAVE' })
+      vi.advanceTimersByTime(500)
+      expect(early.state.get()).toBe('closed')
+    }
+    finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('离开后等 closeDelay 才收起，等待期落回来就撤销收起', () => {
+    vi.useFakeTimers()
+    try {
+      const s = makeService({ count: 200, pageSize: 10, defaultPage: 1, closeDelay: 120 })
+      s.send({ type: 'ELLIPSIS.TOGGLE', side: 'end' })
+      s.send({ type: 'ELLIPSIS.LEAVE' })
+      vi.advanceTimersByTime(119)
+      expect(api(s).openEllipsis).toBe('end')
+      s.send({ type: 'ELLIPSIS.ENTER', side: 'end' })
+      vi.advanceTimersByTime(500)
+      expect(api(s).openEllipsis).toBe('end')
+      s.send({ type: 'ELLIPSIS.LEAVE' })
+      vi.advanceTimersByTime(120)
+      expect(api(s).openEllipsis).toBeNull()
+    }
+    finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('延时只收有限非负数：负数、NaN 与无穷按机器延时的统一校验报 INVALID_DELAY', () => {
+    for (const openDelay of [-1, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const s = makeService({ count: 200, pageSize: 10, defaultPage: 1, openDelay })
+      expect(() => s.send({ type: 'ELLIPSIS.ENTER', side: 'end' })).toThrow(/delay must be a finite non-negative number/)
+    }
+    const closing = makeService({ count: 200, pageSize: 10, defaultPage: 1, closeDelay: -5 })
+    closing.send({ type: 'ELLIPSIS.TOGGLE', side: 'end' })
+    expect(() => closing.send({ type: 'ELLIPSIS.LEAVE' })).toThrow(/delay must be a finite non-negative number/)
+  })
+})

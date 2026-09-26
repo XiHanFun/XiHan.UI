@@ -9,7 +9,7 @@ import type { PositionResult, PropFn, Service } from '@xihan-ui/core'
 import type { SelectSchema } from '../select'
 import type { PaginationEllipsisSide } from './pagination.range'
 import type { PaginationPressedKey, PaginationSchema, PaginationTranslations } from './pagination.types'
-import { setup } from '@xihan-ui/core'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { clampPage, normalizePageSize, pageForResize, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
@@ -187,14 +187,11 @@ export const paginationMachine = createMachine({
       },
     },
     effects: {
-      waitForOpenDelay: ({ prop, send }) => {
-        const timer = setTimeout(send, prop('openDelay') ?? PAGINATION_OPEN_DELAY, { type: 'after.openDelay' })
-        return () => clearTimeout(timer)
-      },
-      waitForCloseDelay: ({ prop, send }) => {
-        const timer = setTimeout(send, prop('closeDelay') ?? PAGINATION_CLOSE_DELAY, { type: 'after.closeDelay' })
-        return () => clearTimeout(timer)
-      },
+      // 延时经机器的定时原语：负数、NaN 与无穷不会被 setTimeout 悄悄当成 0，而是报 INVALID_DELAY
+      waitForOpenDelay: ({ prop, send }) =>
+        setTimeoutEffect(() => send({ type: 'after.openDelay' }), prop('openDelay') ?? PAGINATION_OPEN_DELAY),
+      waitForCloseDelay: ({ prop, send }) =>
+        setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? PAGINATION_CLOSE_DELAY),
       /** 摊开期间跟着锚点定位；坐标算出来之前皮肤把浮层藏着。 */
       trackPosition: ({ refs, prop, context, flush }) => {
         // 进入可见态先清上一次的坐标：不清的话重开会按上次的位置判「已落位」，

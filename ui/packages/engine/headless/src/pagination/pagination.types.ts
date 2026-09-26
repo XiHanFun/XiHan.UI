@@ -83,9 +83,9 @@ export interface PaginationSchema extends MachineSchema {
     placement?: Placement
     /** 浮层与省略位之间的间距（px），默认 8。 */
     offset?: number
-    /** 指针停在省略位多久后才展开（ms），默认 200。 */
+    /** 指针停在省略位多久后才展开（ms），默认 200；只收有限非负数。 */
     openDelay?: number
-    /** 指针离开后多久收起（ms），默认 300：留出斜向划入浮层的时间。 */
+    /** 指针离开后多久收起（ms），默认 300：留出斜向划入浮层的时间；只收有限非负数。 */
     closeDelay?: number
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
