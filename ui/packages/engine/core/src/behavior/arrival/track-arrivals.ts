@@ -83,14 +83,3 @@ function arrive(batch: readonly Element[]): void {
     ;(el as HTMLElement).style.setProperty(STAGGER_INDEX_PROPERTY, String(Math.min(index, STAGGER_CAP)))
   })
 }
-
-/**
- * 页面上的用户是否已经动过手（点按、按键）。还没有时挂载的内容属于页面载入时就在的内容，不播进场。
- *
- * 读 `navigator.userActivation.hasBeenActive`。宿主没有这个接口时按已动过手算：进场照常播，
- * 与没有这条规则时一致。
- */
-export function hasUserActivated(win: Window): boolean {
-  const activation = (win.navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation
-  return activation === undefined || activation.hasBeenActive
-}

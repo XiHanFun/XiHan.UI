@@ -5062,7 +5062,6 @@
       "getTabbables",
       "getXiHanUiBanner",
       "groupAdjacentRuns",
-      "hasUserActivated",
       "hideOutside",
       "hostLocale",
       "indexOfValue",
