@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-import type { TagsInputSchema } from '../src/tags-input'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
