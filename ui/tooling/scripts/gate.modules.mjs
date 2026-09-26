@@ -34,6 +34,7 @@ export const MODULES = [
       'node tooling/scripts/tokens/check-color-literals.mjs',
       'node tooling/scripts/tokens/check-tone-contrast.mjs',
       'node tooling/scripts/tokens/check-tone-tokens.mjs',
+      'node tooling/scripts/tokens/check-chart-palette.mjs',
       'node tooling/scripts/tokens/check-private-slots.mjs',
       'node tooling/scripts/tokens/check-disabled-contrast.mjs',
       'node tooling/scripts/tokens/check-breakpoints.mjs',
