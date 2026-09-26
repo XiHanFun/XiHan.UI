@@ -7,6 +7,7 @@
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type { LiquidIndicator } from '../shared/indicator'
+import type { EasingFunction } from '@xihan-ui/motion'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
@@ -166,6 +167,9 @@ export interface TabsSchema extends MachineSchema {
       from: number
       to: number
       startedAt: number
+      /** 起步时从标签带读到的 move 时长（毫秒）与 continuous 曲线 */
+      duration: number
+      ease: EasingFunction
       /** 停掉帧循环 */
       stop: VoidFunction
     } | null

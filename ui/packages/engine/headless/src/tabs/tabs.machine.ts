@@ -9,7 +9,7 @@ import type { ItemQuery, Params } from '@xihan-ui/core'
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { TabsIndicatorRect, TabsSchema } from './tabs.types'
 import { itemValue, queryItems, setup } from '@xihan-ui/core'
-import { durations, frameLoop, frameNow, isTweenDone, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
+import { frameLoop, frameNow, isTweenDone, readMotion, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
@@ -448,8 +448,8 @@ export const tabsMachine = createMachine({
         if (!tween)
           return
         const elapsed = frameNow(scope.getWin()) - tween.startedAt
-        context.set('scroll', clampScroll(tweenValueAt({ from: tween.from, to: tween.to, duration: durations.normal, easing: 'standard' }, elapsed), context.get('scrollMax')))
-        if (isTweenDone(elapsed, durations.normal)) {
+        context.set('scroll', clampScroll(tweenValueAt({ from: tween.from, to: tween.to, duration: tween.duration, easing: tween.ease }, elapsed), context.get('scrollMax')))
+        if (isTweenDone(elapsed, tween.duration)) {
           tween.stop()
           refs.set('scrollTween', null)
         }
@@ -548,10 +548,11 @@ function scrollTarget({ refs, context }: ScrollParams): number {
 }
 
 /**
- * 把标签带挪到目标位移。屏内的像素级推移，走 continuous 一档（normal 时长 + standard 曲线，
- * 与皮肤里指示条滑动的那一档同值）；补间在 JS 里跑、逐帧写进 scroll，不交给 CSS transition——
- * 标签带里的孩子各有自己的过渡清单（line 档的标签归家族），往每一份里都加一条 translate 会把
- * 家族与皮肤的过渡耦在一起。目标换了从当前显示值接着走；减弱动效下一步到位。
+ * 把标签带挪到目标位移。屏内的像素级推移，时长与曲线从标签带上读 move / continuous 两支令牌，
+ * 与皮肤里指示条滑动的那一档同源：作者改令牌、容器写 data-motion 都一起生效。补间在 JS 里跑、
+ * 逐帧写进 scroll，不交给 CSS transition——标签带里的孩子各有自己的过渡清单（line 档的标签归家族），
+ * 往每一份里都加一条 translate 会把家族与皮肤的过渡耦在一起。目标换了从当前显示值接着走；
+ * 标签带所在处是减弱动效档、或还没有标签带节点时一步到位。
  */
 function startScroll({ refs, scope, context, send }: ScrollParams, target: number): void {
   const to = clampScroll(target, context.get('scrollMax'))
@@ -560,13 +561,15 @@ function startScroll({ refs, scope, context, send }: ScrollParams, target: numbe
   const from = context.get('scroll')
   if (from === to)
     return
-  const win = scope.getWin()
-  if (resolveMotionPreference(win) === 'reduce') {
+  const list = refs.get('getListEl')()
+  if (!list || resolveMotionPreference(list) === 'reduce') {
     context.set('scroll', to)
     return
   }
+  const win = scope.getWin()
+  const motion = readMotion(list)
   const stop = frameLoop(win, () => send({ type: 'SCROLL.FRAME' }))
-  refs.set('scrollTween', { from, to, startedAt: frameNow(win), stop })
+  refs.set('scrollTween', { from, to, startedAt: frameNow(win), duration: motion.duration('move'), ease: motion.easing('continuous'), stop })
 }
 
 /**
