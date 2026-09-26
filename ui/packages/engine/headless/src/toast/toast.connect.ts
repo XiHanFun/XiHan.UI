@@ -9,7 +9,7 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { ToastApi, ToastPressedPart, ToastSchema, ToastStatus } from './toast.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { toastAnatomy } from './toast.anatomy'
-import { resolveToastDuration, resolveToastId } from './toast.machine'
+import { countdownSteps, resolveToastDuration, resolveToastId } from './toast.machine'
 
 const parts = toastAnatomy.build()
 
@@ -144,14 +144,17 @@ export function connectToast<T extends PropTypes>(
       'onClick': () => send({ type: 'TOAST.ACTION' }),
     }),
 
-    // 倒计时条：时长交给皮肤的时长槽，走一遍就到头，按住计时时由皮肤停住动画。
-    // 不自动消失的那些没有可走的计时，整条收起
+    // 倒计时条：时长交给皮肤的时长槽，走一遍就到头，按住计时时由皮肤停住动画；
+    // 减弱动效下皮肤按秒分段，段数随时长一起交出。不自动消失的那些没有可走的计时，整条收起
     getProgressProps: () => normalize.element({
       ...parts.progress.attrs,
       'aria-hidden': true,
       'data-state': status,
       'hidden': !autoDismiss || undefined,
-      'style': { '--xh-toast-progress-duration': autoDismiss ? `${duration}ms` : '' },
+      'style': {
+        '--xh-toast-progress-duration': autoDismiss ? `${duration}ms` : '',
+        '--xh-_toast-progress-steps': autoDismiss ? String(countdownSteps(duration)) : '',
+      },
     }),
 
     getCloseTriggerProps: () => normalize.button({

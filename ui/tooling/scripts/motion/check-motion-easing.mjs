@@ -45,8 +45,10 @@ const LITERAL = /(?<![\w-])(linear|ease|ease-in|ease-out|ease-in-out|steps)(?![\
  */
 const NO_CURVE = {
   'markdown-stream:xh-markdown-stream-caret': '等字的光标，steps(1) 硬切成亮灭两态，不淡入淡出',
+  'notification:animation-timing-function': '减弱动效下倒计时按秒分段走，段数由连接层随时长交出',
   'scroll-area:transition': 'visibility 走 0s 阶跃，linear 只是补齐这一项的曲线位',
   'scrollbar:transition': 'visibility 走 0s 阶跃，linear 只是补齐这一项的曲线位',
+  'toast:animation-timing-function': '减弱动效下倒计时按秒分段走，段数由连接层随时长交出',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */

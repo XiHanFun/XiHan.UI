@@ -297,14 +297,16 @@
   }
 
   /* ── 数值：倒计时条从占满一整条收到零 ──
-     走一遍就到头，时长由连接层写进各组件的时长槽。Toast、Notification */
+     条子自己不改尺寸，靠裁切从行尾往行首收：只重绘、不重排。裁掉哪一侧随书写方向由
+     --xh-_countdown-cut-left / -right 给出，缺省按 LTR 收掉右侧；前端的圆角取
+     --xh-_countdown-radius。走一遍就到头，时长由连接层写进各组件的时长槽。Toast、Notification */
   @keyframes xh-countdown {
     from {
-      inline-size: 100%;
+      clip-path: inset(0 0 0 0 round var(--xh-_countdown-radius, 0));
     }
 
     to {
-      inline-size: 0%;
+      clip-path: inset(0 var(--xh-_countdown-cut-right, 100%) 0 var(--xh-_countdown-cut-left, 0) round var(--xh-_countdown-radius, 0));
     }
   }
 }
