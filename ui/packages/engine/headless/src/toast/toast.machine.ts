@@ -28,6 +28,11 @@ export function resolveToastId(id: string | undefined, scope: Scope): string {
   return id ?? scope.id
 }
 
+/** 倒计时按秒分段的段数：不足一秒也算一段。减弱动效下倒计时条按它一格一格走。 */
+export function countdownSteps(duration: number): number {
+  return Math.max(1, Math.ceil(duration / 1000))
+}
+
 /**
  * 停留时长归一。返回 Infinity 表示不起计时器：
  * loading 一律不自动消失；duration <= 0 或非有限数同样按不自动消失处理。

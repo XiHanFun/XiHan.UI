@@ -11,6 +11,7 @@ import type { NotificationApi, NotificationItemApi, NotificationPlacement, Notif
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
 import { resolveToastDuration, resolveToastId } from '../toast'
 import { toastPressHandlers } from '../toast/toast.connect'
+import { countdownSteps } from '../toast/toast.machine'
 import { notificationAnatomy } from './notification.anatomy'
 import {
   NOTIFICATION_GAP,
@@ -228,7 +229,10 @@ export function connectNotificationItem<T extends PropTypes>(
       'aria-hidden': true,
       'data-state': status,
       'hidden': !autoDismiss || undefined,
-      'style': { '--xh-notification-progress-duration': autoDismiss ? `${duration}ms` : '' },
+      'style': {
+        '--xh-notification-progress-duration': autoDismiss ? `${duration}ms` : '',
+        '--xh-_notification-progress-steps': autoDismiss ? String(countdownSteps(duration)) : '',
+      },
     }),
 
     getItemCloseTriggerProps: () => normalize.button({

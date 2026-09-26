@@ -293,12 +293,32 @@
    * 取装饰档 --xh-_tone-soft：压在卡片底色上仍看得出来。
    */
   [data-scope='notification'][data-part='item-progress'] {
+    --xh-_countdown-radius: var(--xh-notification-progress-radius, var(--xh-shape-pill));
+
     overflow: hidden;
     inline-size: 100%;
     block-size: var(--xh-notification-progress-thickness, var(--xh-space-0_5));
-    border-radius: var(--xh-notification-progress-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-_countdown-radius);
     background: var(--xh-notification-progress-bg, var(--xh-_tone-soft));
     animation: xh-countdown var(--xh-notification-progress-duration, var(--xh-motion-duration-slide)) var(--xh-motion-ease-loop) forwards;
+  }
+
+  /* 裁切只认物理方向：RTL 下行尾在左边，从左往右收 */
+  [data-scope='notification'][data-part='item-progress']:dir(rtl) {
+    --xh-_countdown-cut-left: 100%;
+    --xh-_countdown-cut-right: 0;
+  }
+
+  /* 减弱动效：倒计时不连续地缩，按秒一格一格走，段数由连接层随时长交出。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='notification'][data-part='item-progress'] {
+      animation-timing-function: steps(var(--xh-_notification-progress-steps, 1), end);
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='notification'][data-part='item-progress'] {
+    animation-timing-function: steps(var(--xh-_notification-progress-steps, 1), end);
   }
 
   [data-scope='notification'][data-part='item'][data-paused] [data-part='item-progress'] {

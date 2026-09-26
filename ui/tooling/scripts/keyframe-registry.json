@@ -31,7 +31,7 @@
       ]
     },
     "xh-countdown": {
-      "content": "from{inline-size:100%}to{inline-size:0%}",
+      "content": "from{clip-path:inset(0 0 0 0 round var(--xh-_countdown-radius,0))}to{clip-path:inset(0 var(--xh-_countdown-cut-right,100%) 0 var(--xh-_countdown-cut-left,0) round var(--xh-_countdown-radius,0))}",
       "definedIn": [
         "family/motion.css"
       ],
