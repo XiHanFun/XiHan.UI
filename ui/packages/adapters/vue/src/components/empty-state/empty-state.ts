@@ -25,7 +25,7 @@ export const XhEmptyStateRoot = defineComponent({
   setup(props, { slots }) {
     const ctx = useEmptyState(withXhConfig('empty-state', props as EmptyStateProps))
     provideEmptyState(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.())
   },
 })
 

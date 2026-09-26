@@ -6,19 +6,23 @@
 // 提供 empty state 相关实现。
 
 import type { Tone } from '@xihan-ui/core'
-import type { EmptyStateLive, EmptyStateProps, EmptyStateStatus } from '@xihan-ui/headless'
-import { connectEmptyState, emptyStateAnatomy, emptyStateMeta } from '@xihan-ui/headless'
+import type { EmptyStateLive, EmptyStateSchema, EmptyStateStatus } from '@xihan-ui/headless'
+import { connectEmptyState, emptyStateAnatomy, emptyStateMachine, emptyStateMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-empty-state>`：空状态行为宿主，无状态机，把 connectEmptyState 产出的属性接到角色节点上。
+ * `<xh-empty-state>`：空状态行为宿主，把 connectEmptyState 产出的属性接到角色节点上。
  *
  * root 默认是 role=status 的活区：节点应当常驻、用 hidden 收起，
  * 整块插入文档的活区读屏通常不播报。首屏静态占位写 live="off"。
+ *
+ * 开幕只在出现时播：页面加载期间接上、此刻可见的空状态直接呈现；页面加载完之后插入的、
+ * 或 root 从 hidden 翻成显出的，才逐段开幕。
  *
  * @customElement xh-empty-state
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
@@ -48,10 +52,21 @@ export class XhEmptyStateElement extends XhElement {
   declare status?: EmptyStateStatus
   declare tone?: Tone
 
+  private readonly ctrl = new MachineController<EmptyStateSchema>(this, emptyStateMachine, () => ({
+    size: this.size,
+    live: this.live,
+    status: this.status,
+    tone: this.tone,
+  }), {
+    onBuilt: (svc) => {
+      // Light DOM 没有水合：随 HTML 解析进来、加载期间升级的元素，由页面加载进度判为首屏
+      svc.refs.set('getRootEl', () => this.getPart('root'))
+    },
+  })
+
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const props: EmptyStateProps = { size: this.size, live: this.live, status: this.status, tone: this.tone }
-    const api = connectEmptyState(this.configured('empty-state', props), wcNormalize)
+    const api = connectEmptyState(this.ctrl.service, wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)

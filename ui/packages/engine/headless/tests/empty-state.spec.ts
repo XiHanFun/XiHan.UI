@@ -1,13 +1,66 @@
 // @vitest-environment jsdom
-import type { EmptyStateProps } from '../src/empty-state'
-import { normalizeProps } from '@xihan-ui/core'
-import { describe, expect, it } from 'vitest'
-import { connectEmptyState, emptyStateAnatomy, emptyStateMeta } from '../src/empty-state'
+import type { EmptyStateApi, EmptyStateProps } from '../src/empty-state'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { connectEmptyState, emptyStateAnatomy, emptyStateMachine, emptyStateMeta } from '../src/empty-state'
 
 type Props = Record<string, unknown>
 
-function api(props: EmptyStateProps = {}) {
-  return connectEmptyState(props, normalizeProps)
+let stops: Array<() => void> = []
+
+afterEach(() => {
+  stops.forEach(stop => stop())
+  stops = []
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
+  document.body.innerHTML = ''
+})
+
+interface MountOptions {
+  /** 交给机器的根节点；不给就是没有 DOM 的宿主。 */
+  root?: HTMLElement
+  adopted?: boolean
+}
+
+/** 起一台空状态机器；返回的 api 每次现取。 */
+function mount(props: EmptyStateProps = {}, options: MountOptions = {}): () => EmptyStateApi {
+  const runtime = createVanillaRuntime()
+  const service = createService(emptyStateMachine, { props: () => props, runtime })
+  service.refs.set('getRootEl', () => options.root ?? null)
+  service.refs.set('adopted', options.adopted ?? false)
+  runtime.start()
+  stops.push(() => runtime.stop())
+  return () => connectEmptyState(service, normalizeProps)
+}
+
+function api(props: EmptyStateProps = {}): EmptyStateApi {
+  return mount(props)()
+}
+
+/** 出现追踪接在提交后的微任务里。 */
+async function settle(): Promise<void> {
+  await Promise.resolve()
+  await Promise.resolve()
+}
+
+// jsdom 不排版：根节点生成不生成盒、页面加载完没有都由桩给出
+function layout({ visible, loaded }: { visible: boolean, loaded: boolean }): HTMLElement {
+  const root = document.createElement('div')
+  document.body.append(root)
+  vi.spyOn(root, 'getClientRects').mockReturnValue((visible ? [new DOMRect(0, 0, 10, 10)] : []) as unknown as DOMRectList)
+  vi.spyOn(document, 'readyState', 'get').mockReturnValue(loaded ? 'complete' : 'interactive')
+  vi.stubGlobal('ResizeObserver', class {
+    observe(): void {}
+    disconnect(): void {}
+  })
+  return root
+}
+
+const ANIMATED = ['getMediaProps', 'getIndicatorProps', 'getTitleProps', 'getDescriptionProps', 'getActionProps'] as const
+
+function instantOf(current: EmptyStateApi): unknown[] {
+  return ANIMATED.map(getter => (current[getter]() as Props)['data-instant'])
 }
 
 describe('connectEmptyState', () => {
@@ -34,14 +87,54 @@ describe('connectEmptyState', () => {
     expect((api().getIndicatorProps() as Props)['aria-hidden']).toBe(true)
   })
 
-  it('标题、说明、操作只带身份标记：活区会把整段读完，补 role 或标题层级都是多余的', () => {
-    expect(api().getTitleProps()).toEqual({ 'data-scope': 'empty-state', 'data-part': 'title' })
-    expect(api().getDescriptionProps()).toEqual({ 'data-scope': 'empty-state', 'data-part': 'description' })
-    expect(api().getActionProps()).toEqual({ 'data-scope': 'empty-state', 'data-part': 'action' })
+  it('标题、说明、操作不补 role 与标题层级：活区会把整段读完', () => {
+    for (const getter of ['getTitleProps', 'getDescriptionProps', 'getActionProps'] as const) {
+      const props = api()[getter]() as Props
+      expect(props.role).toBeUndefined()
+      expect(props['aria-level']).toBeUndefined()
+    }
   })
 
   it('meta 的必备 part 都在 anatomy 里', () => {
     const declared = new Set<string>(emptyStateAnatomy.parts)
     expect(emptyStateMeta.requiredParts.filter(p => !declared.has(p))).toEqual([])
+  })
+})
+
+describe('空状态的开幕', () => {
+  it('首帧五个开幕部件都投影 data-instant，根节点不带：服务端与水合两侧一致', () => {
+    const current = api()
+    expect(instantOf(current)).toEqual(['', '', '', '', ''])
+    expect((current.getRootProps() as Props)['data-instant']).toBeUndefined()
+  })
+
+  it('没有根节点的宿主不追踪，保持首帧呈现', async () => {
+    const current = mount()
+    await settle()
+    expect(instantOf(current())).toEqual(['', '', '', '', ''])
+  })
+
+  it('页面加载完成之前挂上、此刻可见：随页面首屏就在，不播开幕', async () => {
+    const current = mount({}, { root: layout({ visible: true, loaded: false }) })
+    await settle()
+    expect(instantOf(current())).toEqual(['', '', '', '', ''])
+  })
+
+  it('页面加载完成之后挂上：是筛选、删除或新数据带来的，撤掉 data-instant 播开幕', async () => {
+    const current = mount({}, { root: layout({ visible: true, loaded: true }) })
+    await settle()
+    expect(instantOf(current())).toEqual([undefined, undefined, undefined, undefined, undefined])
+  })
+
+  it('水合来的根节点即使在加载完成之后挂上也属于首屏', async () => {
+    const current = mount({}, { root: layout({ visible: true, loaded: true }), adopted: true })
+    await settle()
+    expect(instantOf(current())).toEqual(['', '', '', '', ''])
+  })
+
+  it('挂上时收着（hidden 常挂）：下一次显出就播开幕', async () => {
+    const current = mount({}, { root: layout({ visible: false, loaded: false }), adopted: true })
+    await settle()
+    expect(instantOf(current())).toEqual([undefined, undefined, undefined, undefined, undefined])
   })
 })
