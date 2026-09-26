@@ -23653,14 +23653,19 @@
 }
 
 /* 入场是整面板从画外推入的大尺度位移：走 --xh-motion-duration-slide 与 --xh-motion-ease-slide；
-   退场仍走 exit 档。退场一律 forwards：presence 要等 animationend 才卸载，
+   退场仍走 exit 档。并列的一段淡变取淡变档：缺省起止都是不透明、看不出来，减弱动效下
+   整幅位移归零、进出场由它表达。退场一律 forwards：presence 要等 animationend 才卸载，
    不定住终态，面板会在最后一帧弹回原位再消失。 */
 [data-scope='drawer'][data-part='content'][data-state='open'] {
-  animation: xh-slide-in var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
+  animation:
+    xh-slide-in var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
+    xh-slide-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='drawer'][data-part='content'][data-state='closed'] {
-  animation: xh-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation:
+    xh-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards,
+    xh-slide-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* —— 面板三段 —— */
