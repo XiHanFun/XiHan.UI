@@ -5734,6 +5734,12 @@
               "name": "--xh-carousel-indicator-gap"
             },
             {
+              "name": "--xh-carousel-indicator-group-p"
+            },
+            {
+              "name": "--xh-carousel-indicator-group-radius"
+            },
+            {
               "name": "--xh-carousel-indicator-inset"
             },
             {
