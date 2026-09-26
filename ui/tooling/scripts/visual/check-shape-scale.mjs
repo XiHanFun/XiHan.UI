@@ -121,6 +121,8 @@ const IDENTITY = {
   'approval:result': 'pill',
   'question-flow:result': 'pill',
   // pill：(b) 一维对象
+  // liquid 档下不贴边的一维栏：轮播分页条（standard 档没有面）
+  'carousel:indicator-group[data-xh-liquid]': 'pill',
   'switch:root': 'pill',
   'slider:track': 'pill',
   'slider:range': 'pill',

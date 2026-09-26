@@ -257,6 +257,7 @@ export function connectCarousel<T extends PropTypes>(
     // 单体控件用原生 disabled（集合条目才用 aria-disabled）
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
+      'id': scope.partId('carousel', 'prev-trigger'),
       'type': 'button',
       'aria-label': label.prevTrigger,
       'aria-controls': ids.viewport,
@@ -269,6 +270,8 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
+      'data-xh-liquid': '',
       ...press('prev', !canScrollPrev),
       // 边界由机器守住，这里不再判一次 canScrollPrev
       'onClick': () => send({ type: 'PAGE.PREV' }),
@@ -276,6 +279,7 @@ export function connectCarousel<T extends PropTypes>(
 
     getNextTriggerProps: () => normalize.button({
       ...parts['next-trigger'].attrs,
+      'id': scope.partId('carousel', 'next-trigger'),
       'type': 'button',
       'aria-label': label.nextTrigger,
       'aria-controls': ids.viewport,
@@ -288,6 +292,8 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
+      'data-xh-liquid': '',
       ...press('next', !canScrollNext),
       'onClick': () => send({ type: 'PAGE.NEXT' }),
     }),
@@ -301,6 +307,7 @@ export function connectCarousel<T extends PropTypes>(
      */
     getAutoplayTriggerProps: () => normalize.button({
       ...parts['autoplay-trigger'].attrs,
+      'id': scope.partId('carousel', 'autoplay-trigger'),
       'type': 'button',
       'aria-label': autoplayStopped ? label.autoplayTriggerPlay : label.autoplayTriggerPause,
       'aria-controls': ids.viewport,
@@ -314,6 +321,8 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
+      // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
+      'data-xh-liquid': '',
       // 按住开关时计时会停 / 起（状态在 idle / playing 之间切），按压面与之无关
       ...press('autoplay', autoplayInterval <= 0),
       // 三条出口各对一种停法：从没起播过要 START，被自己按住的要 RESUME，
@@ -337,9 +346,12 @@ export function connectCarousel<T extends PropTypes>(
 
     getIndicatorGroupProps: () => normalize.element({
       ...parts['indicator-group'].attrs,
+      'id': scope.partId('carousel', 'indicator-group'),
       'role': 'group',
       'aria-label': label.indicatorGroup,
       'data-orientation': orientation,
+      // liquid 档下分页点托在一条液态胶囊上，压在任何媒体上都看得清
+      'data-xh-liquid': '',
     }),
 
     getIndicatorProps: (indicator) => {

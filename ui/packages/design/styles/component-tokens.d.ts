@@ -361,6 +361,8 @@ export type ComponentTokenName
     | '--xh-carousel-indicator-bg-track'
     | '--xh-carousel-indicator-fg-selected'
     | '--xh-carousel-indicator-gap'
+    | '--xh-carousel-indicator-group-p'
+    | '--xh-carousel-indicator-group-radius'
     | '--xh-carousel-indicator-inset'
     | '--xh-carousel-indicator-radius'
     | '--xh-carousel-indicator-radius-current'

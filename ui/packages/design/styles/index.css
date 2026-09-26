@@ -16949,6 +16949,41 @@
     backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
+  /* liquid 档：data-material="liquid" 下三颗控制钮换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
+     悬停 / 按下往前景色兑，键盘聚焦铺实体 focus surface，面内不加顶光。按住时的黏滞形变由液态面逐帧写进来 */
+  :where([data-material='liquid']) [data-scope='carousel'][data-part='prev-trigger'][data-xh-liquid],
+  :where([data-material='liquid']) [data-scope='carousel'][data-part='next-trigger'][data-xh-liquid],
+  :where([data-material='liquid']) [data-scope='carousel'][data-part='autoplay-trigger'][data-xh-liquid] {
+    --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_liquid-bg));
+    --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-_liquid-bg-hover));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-material-liquid-focus-surface));
+    --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_liquid-bg));
+    --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-hover: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-pressed: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-focus-visible: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
+    --xh-action-border-rest: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-border-hover: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-border-pressed: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-border-focus-visible: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-border-disabled: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
+    --xh-action-shadow-rest: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-hover: var(--xh-carousel-trigger-shadow-hover, var(--xh-_liquid-shadow));
+    --xh-action-shadow-pressed: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-disabled: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-highlight-hover: transparent;
+    --xh-action-highlight-pressed: transparent;
+    --xh-action-highlight-focus-visible: transparent;
+    --xh-action-highlight-disabled: transparent;
+
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
+    transform: var(--xh-_liquid-deform);
+  }
+
   [data-scope='carousel'][data-part='prev-trigger'],
   [data-scope='carousel'][data-part='next-trigger'] {
     inset-block-start: 50%;
@@ -17017,6 +17052,18 @@
     inset-block-end: var(--xh-carousel-indicator-inset, var(--xh-space-3));
     inset-inline-start: 50%;
     translate: -50% 0;
+  }
+
+  /* liquid 档：分页点托在一条液态胶囊上（不贴边的一维栏取 pill），压在任何媒体上都看得清。
+     胶囊是墨色域，点的中性色随之取墨色；胶囊本身不可按，不挂按住形变 */
+  :where([data-material='liquid']) [data-scope='carousel'][data-part='indicator-group'][data-xh-liquid] {
+    padding: var(--xh-carousel-indicator-group-p, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-material-liquid-border);
+    border-radius: var(--xh-carousel-indicator-group-radius, var(--xh-shape-pill));
+    background: var(--xh-_liquid-bg);
+    box-shadow: var(--xh-_liquid-shadow);
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
   }
 
   /* 分页点与 Tour 的步骤点同一种语言：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
@@ -17155,6 +17202,12 @@
     inset-inline-end: auto;
     translate: -50% 0;
     rotate: 90deg;
+  }
+
+  /* 纵轨的翻页钮整颗转了 90°，形变会跟着转到错的方向，这一档不挂 */
+  :where([data-material='liquid']) [data-scope='carousel'][data-part='root'][data-orientation='vertical']
+    > :is([data-part='prev-trigger'], [data-part='next-trigger'])[data-xh-liquid] {
+    transform: none;
   }
 
   [data-scope='carousel'][data-part='root'][data-orientation='vertical']

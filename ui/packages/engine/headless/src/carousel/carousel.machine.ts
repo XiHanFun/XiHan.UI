@@ -10,6 +10,7 @@ import type { CarouselPauseSource, CarouselPressedKey, CarouselSchema } from './
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createSpringValue, projectRelease, resolveMotionPreference, rubberBand } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { trackLiquidPart } from '../shared/liquid'
 import {
   carouselDragDelta,
   carouselPageCount,
@@ -216,7 +217,7 @@ export const carouselMachine = createMachine({
   initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
   // 跟手的会话整个生命周期都在。它不按拖动状态挂卸——常驻的代价只是几个早退的
   // pointermove，换来的是不必为了「有拆卸时机」去改状态树
-  effects: ['trackPointer', 'respectScopedMotion'],
+  effects: ['trackPointer', 'respectScopedMotion', 'trackLiquid'],
   refs: () => ({
     gesture: null,
     settle: null,
@@ -436,6 +437,13 @@ export const carouselMachine = createMachine({
       },
     },
     effects: {
+      /** 三颗控制钮与分页条浮在媒体之上：材质轴为 liquid 时按下层换色调、亮边随指针 */
+      trackLiquid: ({ scope, flush }) => {
+        const stops = ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator-group']
+          .map(part => trackLiquidPart(scope, flush, 'carousel', part))
+        return () => stops.forEach(stop => stop())
+      },
+
       /**
        * 跟住划在轨道上的那根手指。
        *
