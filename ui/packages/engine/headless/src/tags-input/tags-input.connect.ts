@@ -205,6 +205,8 @@ export function connectTagsInput<T extends PropTypes>(
       'data-xh-field-size': prop('size') ?? 'md',
       'data-xh-field-layout': 'multi-tag',
       'data-variant': variant,
+      // 列表动效接上之前的这一帧（含服务端渲染）里的标签都属于首帧，不播进场
+      'data-instant': dataAttr(!context.get('listTracked')),
       // 一排标签加一个输入框在读屏那里是一个整体，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': ids.label,

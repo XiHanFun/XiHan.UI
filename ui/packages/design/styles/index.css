@@ -35506,6 +35506,7 @@
 
 /* styles/tags-input.css */
 /* TagsInput 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
+/* 标签的进场与退场取共享关键帧。 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -35613,6 +35614,8 @@
        上限取滚动面最小的那一档，与页面上其它滚动面用同一把尺 */
     max-block-size: var(--xh-tags-input-control-max-h, var(--xh-viewport-h-sm));
     overflow-y: auto;
+    /* 删掉的标签由替身绝对定位在原处播完退场，定位基准是这个框（随框内滚动一起走） */
+    position: relative;
   }
 
   [data-scope='tags-input'][data-part='control'][hidden] {
@@ -35651,6 +35654,19 @@
     flex: none;
     align-items: center;
     max-inline-size: 100%;
+    /* 前面的标签增删、其余标签换到新位置时，由列表动效先反向补偿、再沿这条过渡滑过去 */
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新落下的标签进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或 control 带 data-instant） */
+  [data-scope='tags-input'][data-part='item']:not([data-instant], [data-instant] > *) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 删掉的标签：替身留在原处淡出，播完即移除 */
+  [data-scope='tags-input'][data-part='item'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='tags-input'][data-part='item'][hidden] {

@@ -147,9 +147,11 @@ export class XhTagsInputElement extends XhElement {
     this.dispatchEvent(new CustomEvent('input-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // 机器只有一个聚焦副作用（自己经 scope 取节点），不需要 config/layer/定位引擎，
-  // 故 controller 只带 props。
-  private readonly ctrl = new MachineController<TagsInputSchema>(this, tagsInputMachine, () => this.machineProps())
+  // 机器的副作用只有聚焦（自己经 scope 取节点）与列表动效（经 getControlEl 取标签容器），
+  // 不需要 config/layer/定位引擎。
+  private readonly ctrl = new MachineController<TagsInputSchema>(this, tagsInputMachine, () => this.machineProps(), {
+    onBuilt: svc => svc.refs.set('getControlEl', () => this.getPart('control')),
+  })
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */

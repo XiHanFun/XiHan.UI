@@ -124,7 +124,7 @@ export const XhTagsInputControl = defineComponent({
   name: 'XhTagsInputControl',
   setup(_, { slots }) {
     const ctx = useTagsInputContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', { ...(ctx.api.value.getControlProps() as Record<string, unknown>), ref: ctx.controlRef }, slots.default?.())
   },
 })
 

@@ -182,7 +182,13 @@ export interface XhTagsInputControlProps extends ComponentPropsWithRef<'div'> {}
 export function XhTagsInputControl({ children, ...rest }: XhTagsInputControlProps): ReactNode {
   const ctx = useTagsInputContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div
+      {...mergeReactProps(
+        ctx.api.getControlProps() as Record<string, unknown>,
+        rest as Record<string, unknown>,
+        { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
+      )}
+    >
       {children}
     </div>
   )
