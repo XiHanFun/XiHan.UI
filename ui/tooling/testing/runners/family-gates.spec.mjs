@@ -187,6 +187,33 @@ gateSuite('check-shape-scale.mjs', {
   redText: '却没在 IDENTITY 登记',
 })
 
+describe('check-shape-scale.mjs 正方盒判据', () => {
+  it('定尺同值的正方盒取 pill 判红', () => {
+    const root = createFixture()
+    write(root, 'packages/design/styles/css/demo.css', LAYER(`
+  [data-scope='demo'][data-part='dot'] {
+    inline-size: var(--xh-space-2);
+    block-size: var(--xh-space-2);
+    border-radius: var(--xh-demo-dot-radius, var(--xh-shape-pill));
+  }`))
+    const result = run('check-shape-scale.mjs', root)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('demo:dot  inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill')
+  }, SPAWN_TIMEOUT)
+
+  it('百分比同值不是正方盒：铺满细长轨道的 100% × 100% 填充条取 pill 放行', () => {
+    const root = createFixture()
+    write(root, 'packages/design/styles/css/demo.css', LAYER(`
+  [data-scope='demo'][data-part='fill'] {
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: var(--xh-demo-fill-radius, var(--xh-shape-pill));
+  }`))
+    const result = run('check-shape-scale.mjs', root)
+    expect(result.stderr).not.toContain('正方盒取了 pill')
+  }, SPAWN_TIMEOUT)
+})
+
 gateSuite('check-press-feedback.mjs', {
   section: 'press',
   red: LAYER(`
