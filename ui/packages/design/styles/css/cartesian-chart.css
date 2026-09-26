@@ -240,6 +240,23 @@
     stroke: none;
   }
 
+  /* 瀑布：一步涨取涨色、跌取跌色，小计保持系列色；纹理模式在后面，颜色不可靠时让给纹理，涨跌仍由柱的走向看出 */
+  [data-scope='cartesian-chart'][data-part='bar'][data-trend='rise'] {
+    fill: var(--xh-chart-rise);
+  }
+
+  [data-scope='cartesian-chart'][data-part='bar'][data-trend='fall'] {
+    fill: var(--xh-chart-fall);
+  }
+
+  /* 瀑布的连接线：上一步的终点连到下一步的起点，结构色的细线 */
+  [data-scope='cartesian-chart'][data-part='connector'] {
+    fill: none;
+    stroke: var(--xh-chart-axis);
+    stroke-width: var(--xh-stroke-thin);
+    pointer-events: none;
+  }
+
   [data-scope='cartesian-chart'][data-part='line'] {
     fill: none;
     stroke: var(--xh-_chart-series);
@@ -413,10 +430,15 @@
 
   /* 强制色：数据标记改成系统色的描边，网格取灰字色；纹理总是开启；焦点环、引导线与色标在配方里 */
   @media (forced-colors: active) {
-    [data-scope='cartesian-chart'][data-part='bar'] {
+    [data-scope='cartesian-chart'][data-part='bar'],
+    [data-scope='cartesian-chart'][data-part='bar'][data-trend] {
       fill: Canvas;
       stroke: CanvasText;
       stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='cartesian-chart'][data-part='connector'] {
+      stroke: CanvasText;
     }
 
     [data-scope='cartesian-chart'][data-part='line'] {

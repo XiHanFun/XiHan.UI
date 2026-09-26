@@ -15,6 +15,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // 线尾标签被推开时，leader-line 把它连回线尾。
 // defs 里的 pattern 是各系列的纹理，pattern-line 是纹理的线：强制色、打印与环境开启纹理时柱与面积改用它填充。
 // legend-scale 是按值着色时图例末尾的色阶：名字、低端的值、渐变条、高端的值。
+// connector 是瀑布相邻两步之间的连接线，只给眼睛看。
 // annotation 是注释（参考线、参考带、标出的点、平均线、趋势线），annotation-label 是它的标签，都只给眼睛看。
 export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'root',
@@ -41,6 +42,7 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'axis-title',
   'series',
   'bar',
+  'connector',
   'line',
   'area-fill',
   'dot',

@@ -318,6 +318,25 @@ const cases: readonly ConformanceCase[] = [
     },
   },
   {
+    name: '瀑布：一步按涨跌写 data-trend，小计不写；相邻两步之间的连接线只给眼睛看',
+    spec: { adr: 'chart-waterfall' },
+    props: {
+      data: [
+        { item: 'a', v: 100 },
+        { item: 'b', v: -40 },
+        { item: 'c', total: true },
+      ],
+      series: [{ mark: 'bar', x: 'item', y: 'v', waterfall: { total: 'total' } }],
+    },
+    initial: {
+      counts: { bar: 3, connector: 2 },
+      parts: {
+        bar: [{ 'data-trend': 'rise' }, { 'data-trend': 'fall' }, { 'data-trend': null, 'aria-label': 'c, v 60' }],
+        connector: [{ 'aria-hidden': 'true' }, { 'aria-hidden': 'true' }],
+      },
+    },
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },

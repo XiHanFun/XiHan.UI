@@ -76,6 +76,11 @@ export interface CartesianBarSeries extends CartesianSeriesBase {
    * 放不下、与更要紧的标签重叠时不写。缺省 none。
    */
   labels?: 'none' | 'inside' | 'end'
+  /**
+   * 瀑布：每一步接在上一步的累计值上，涨取涨色、跌取跌色；total 字段为真的行是小计，从 0 画到当前累计值，
+   * 它的 y 被忽略。相邻两步之间连一道细线。瀑布不参与堆叠。
+   */
+  waterfall?: { total?: string }
 }
 
 /** 折线系列。 */
