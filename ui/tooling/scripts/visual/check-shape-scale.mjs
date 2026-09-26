@@ -13,7 +13,7 @@
 //
 // 第三条判据是形状身份：IDENTITY 逐部件登记该取哪一档，登记部件的
 // radius 兜底值（私有槽在赋值点解）必须等于登记档；取 circle / pill 的部件必须在表里；
-// 同一规则块里 inline-size 与 block-size 同槽 / 同值的正方盒不得取 pill（用 pill 冒充圆）。
+// 同一规则块里 inline-size 与 block-size 同槽 / 同值的正方盒不得取 pill（用 pill 冒充圆；纯百分比同值不算正方）。
 // 登记为 floating 的悬浮圆钮，connect 还得投影 data-xh-action-profile: 'floating'——手写圆钮不算。
 // 接了 Action Control 的部件圆角由家族配方按 profile 给，皮肤只在桥接槽 --xh-action-radius 上映射
 // 使用者槽；这条桥接槽就是该部件的圆角声明，原语判据与逐部件登记的身份判据同样对它生效
@@ -39,6 +39,8 @@ const RADIUS_PROP = /^border(?:-[\w-]+)?-radius$/
 const ACTION_RADIUS = '--xh-action-radius'
 /** 私有槽赋值：原语先灌进私有槽再消费同样是下探。 */
 const RADIUS_SLOT = /^--xh-_[\w-]*radius[\w-]*$/
+/** 纯百分比尺寸：两轴各按容器取值，同值判不出正方。 */
+const PERCENT = /^\d+(?:\.\d+)?%$/
 
 /**
  * 圆角可以没有使用者覆盖槽的地方：形状本身就是这个部件的身份，换掉它就不是那个东西了。
@@ -338,12 +340,13 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
         else if (shapes.some(shape => shape === 'circle' || shape === 'pill') && !backlog.excuse(hit.key)) {
           identity.push(`${where}  ${hit.key}  取了 ${shapes.join(' / ')} 却没在 IDENTITY 登记——circle 只给等宽高对象与悬浮单图标钮，pill 只给状态 chip 与一维对象`)
         }
-        // 正方盒不得用 pill 冒充圆
+        // 正方盒不得用 pill 冒充圆。百分比各按容器的一轴取值，同值不等于正方：
+        // 铺满细长轨道的填充条写的就是 100% × 100%，形状跟着轨道走
         if (shapes.includes('pill')) {
           const block = blockOf(selectors)
           const inline = block.find(d => d.prop === 'inline-size')?.value.replace(/\s+/g, ' ')
           const size = block.find(d => d.prop === 'block-size')?.value.replace(/\s+/g, ' ')
-          if (inline && size && inline === size && !backlog.excuse(hit.key))
+          if (inline && size && inline === size && !PERCENT.test(inline) && !backlog.excuse(hit.key))
             identity.push(`${where}  ${hit.key}  inline-size 与 block-size 同值（${inline.slice(0, 40)}）的正方盒取了 pill——正方盒必须取 circle`)
         }
       }
