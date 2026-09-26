@@ -1,5 +1,5 @@
 {
-  "$description": "Chart 图表家族配方：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支只有这一份生成真源。各图表在这些部件上投影 data-xh-chart-part，并在对应部件上把自己的组件覆盖槽接进 contract 里的私有槽；色槽、数据标记与标注写在各自的皮肤里。",
+  "$description": "Chart 图表家族配方：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支只有这一份生成真源。各图表在这些部件上投影 data-xh-chart-part，并在对应部件上把自己的组件覆盖槽接进 contract 里的私有槽；色槽、数据标记与标注写在各自的皮肤里。patterns 是与色槽一一对应的 8 种纹理：angle 与 spacing（数据点直径的倍数）、cross 与 headless 的 <pattern> 几何一致，dash 是折线在纹理模式下的线型（线宽的倍数）。",
   "version": 1,
   "contract": {
     "gap": "--xh-_chart-gap",
@@ -37,6 +37,20 @@
     "ringSize": "var(--xh-glyph-size-md)",
     "ringWidth": "var(--xh-stroke-thick)",
     "track": "var(--xh-border-default)"
+  },
+  "patterns": [
+    { "angle": 45, "spacing": 1, "cross": false, "dash": [] },
+    { "angle": 135, "spacing": 1, "cross": false, "dash": [4, 2] },
+    { "angle": 45, "spacing": 0.75, "cross": false, "dash": [0, 2] },
+    { "angle": 135, "spacing": 0.75, "cross": false, "dash": [4, 2, 0, 2] },
+    { "angle": 45, "spacing": 0.5, "cross": false, "dash": [2, 2] },
+    { "angle": 135, "spacing": 0.5, "cross": false, "dash": [4, 2, 0, 2, 0, 2] },
+    { "angle": 45, "spacing": 1, "cross": true, "dash": [8, 2] },
+    { "angle": 0, "spacing": 1, "cross": true, "dash": [2, 2, 0, 2] }
+  ],
+  "patternMode": {
+    "environment": "data-xh-chart-patterns",
+    "lineSwatchInlineSize": "var(--xh-space-5)"
   },
   "print": {
     "strategy": "exact-color"

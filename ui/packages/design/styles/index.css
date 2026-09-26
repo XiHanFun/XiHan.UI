@@ -2096,8 +2096,79 @@
     display: none;
   }
 
+  /* 纹理的序号：与 defs 里的纹理一一对应。每个序号给出色标上的纹理（线距按数据点直径换算，与纹理的格子同尺）、
+     折线的线型与色标上的线型（线宽的倍数） */
+  [data-xh-chart-pattern='1'] {
+    --xh-_chart-hatch: repeating-linear-gradient(135deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 var(--xh-_chart-metric-point-size));
+    --xh-_chart-dash: none;
+    --xh-_chart-dash-swatch: var(--xh-_chart-series);
+  }
+
+  [data-xh-chart-pattern='2'] {
+    --xh-_chart-hatch: repeating-linear-gradient(45deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 var(--xh-_chart-metric-point-size));
+    --xh-_chart-dash: calc(var(--xh-_chart-metric-line-width) * 4) calc(var(--xh-_chart-metric-line-width) * 2);
+    --xh-_chart-dash-swatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 4), transparent 0 calc(var(--xh-_chart-metric-line-width) * 6));
+  }
+
+  [data-xh-chart-pattern='3'] {
+    --xh-_chart-hatch: repeating-linear-gradient(135deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 calc(var(--xh-_chart-metric-point-size) * 0.75));
+    --xh-_chart-dash: 0 calc(var(--xh-_chart-metric-line-width) * 2);
+    --xh-_chart-dash-swatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 var(--xh-_chart-metric-line-width), transparent 0 calc(var(--xh-_chart-metric-line-width) * 2));
+  }
+
+  [data-xh-chart-pattern='4'] {
+    --xh-_chart-hatch: repeating-linear-gradient(45deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 calc(var(--xh-_chart-metric-point-size) * 0.75));
+    --xh-_chart-dash: calc(var(--xh-_chart-metric-line-width) * 4) calc(var(--xh-_chart-metric-line-width) * 2) 0 calc(var(--xh-_chart-metric-line-width) * 2);
+    --xh-_chart-dash-swatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 4), transparent 0 calc(var(--xh-_chart-metric-line-width) * 6), var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 7), transparent 0 calc(var(--xh-_chart-metric-line-width) * 8));
+  }
+
+  [data-xh-chart-pattern='5'] {
+    --xh-_chart-hatch: repeating-linear-gradient(135deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 calc(var(--xh-_chart-metric-point-size) * 0.5));
+    --xh-_chart-dash: calc(var(--xh-_chart-metric-line-width) * 2) calc(var(--xh-_chart-metric-line-width) * 2);
+    --xh-_chart-dash-swatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 2), transparent 0 calc(var(--xh-_chart-metric-line-width) * 4));
+  }
+
+  [data-xh-chart-pattern='6'] {
+    --xh-_chart-hatch: repeating-linear-gradient(45deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 calc(var(--xh-_chart-metric-point-size) * 0.5));
+    --xh-_chart-dash: calc(var(--xh-_chart-metric-line-width) * 4) calc(var(--xh-_chart-metric-line-width) * 2) 0 calc(var(--xh-_chart-metric-line-width) * 2) 0 calc(var(--xh-_chart-metric-line-width) * 2);
+    --xh-_chart-dash-swatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 4), transparent 0 calc(var(--xh-_chart-metric-line-width) * 6), var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 7), transparent 0 calc(var(--xh-_chart-metric-line-width) * 8), var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 9), transparent 0 calc(var(--xh-_chart-metric-line-width) * 10));
+  }
+
+  [data-xh-chart-pattern='7'] {
+    --xh-_chart-hatch: repeating-linear-gradient(135deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 var(--xh-_chart-metric-point-size)), repeating-linear-gradient(45deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 var(--xh-_chart-metric-point-size));
+    --xh-_chart-dash: calc(var(--xh-_chart-metric-line-width) * 8) calc(var(--xh-_chart-metric-line-width) * 2);
+    --xh-_chart-dash-swatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 8), transparent 0 calc(var(--xh-_chart-metric-line-width) * 10));
+  }
+
+  [data-xh-chart-pattern='8'] {
+    --xh-_chart-hatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 var(--xh-_chart-metric-point-size)), repeating-linear-gradient(0deg, var(--xh-_chart-series) 0 var(--xh-stroke-thin), transparent 0 var(--xh-_chart-metric-point-size));
+    --xh-_chart-dash: calc(var(--xh-_chart-metric-line-width) * 2) calc(var(--xh-_chart-metric-line-width) * 2) 0 calc(var(--xh-_chart-metric-line-width) * 2);
+    --xh-_chart-dash-swatch: repeating-linear-gradient(90deg, var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 2), transparent 0 calc(var(--xh-_chart-metric-line-width) * 4), var(--xh-_chart-series) 0 calc(var(--xh-_chart-metric-line-width) * 5), transparent 0 calc(var(--xh-_chart-metric-line-width) * 6));
+  }
+
+  /* 纹理的线取所属系列色：每个 pattern 带着它的色槽 */
+  [data-xh-chart-part='pattern-line'] {
+    fill: none;
+    stroke: var(--xh-_chart-series);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  /* 作者在祖先上写 data-xh-chart-patterns 即开启纹理；强制色与打印下总是开启，规则写在下面两个块里 */
+  :where([data-xh-chart-patterns]) [data-xh-chart-pattern] > [data-xh-chart-part='legend-swatch'],
+  :where([data-xh-chart-patterns]) [data-xh-chart-pattern] > [data-xh-chart-part='tooltip-swatch'] {
+    background: var(--xh-_chart-hatch);
+  }
+
+  :where([data-xh-chart-patterns]) [data-xh-chart-pattern] > [data-xh-chart-part='legend-swatch'][data-mark='line'],
+  :where([data-xh-chart-patterns]) [data-xh-chart-pattern] > [data-xh-chart-part='tooltip-swatch'][data-mark='line'] {
+    inline-size: var(--xh-space-5);
+    block-size: var(--xh-_chart-metric-line-width);
+    border: none;
+    background: var(--xh-_chart-dash-swatch);
+  }
+
   /* 强制色：焦点环取高亮色，引导线取系统前景色；色标退出强制着色保住形状，填系统前景色；
-     图例隐藏态保留空心与删除线 */
+     图例隐藏态保留空心与删除线。纹理总是开启，纹理的线与色标上的纹理都取系统前景色 */
   @media (forced-colors: active) {
     [data-xh-chart-part='focus-ring'] {
       stroke: Highlight;
@@ -2121,9 +2192,35 @@
     [data-xh-chart-part='tooltip'] {
       background-image: none;
     }
+
+    [data-xh-chart-part='pattern'] {
+      forced-color-adjust: none;
+    }
+
+    [data-xh-chart-part='pattern-line'] {
+      stroke: CanvasText;
+    }
+
+    [data-xh-chart-part='legend-item'][data-xh-chart-pattern],
+    [data-xh-chart-part='tooltip-row'][data-xh-chart-pattern] {
+      --xh-_chart-series: CanvasText;
+    }
+
+    [data-xh-chart-pattern] > [data-xh-chart-part='legend-swatch'],
+    [data-xh-chart-pattern] > [data-xh-chart-part='tooltip-swatch'] {
+      background: var(--xh-_chart-hatch);
+    }
+
+    [data-xh-chart-pattern] > [data-xh-chart-part='legend-swatch'][data-mark='line'],
+    [data-xh-chart-pattern] > [data-xh-chart-part='tooltip-swatch'][data-mark='line'] {
+      inline-size: var(--xh-space-5);
+      block-size: var(--xh-_chart-metric-line-width);
+      border: none;
+      background: var(--xh-_chart-dash-swatch);
+    }
   }
 
-  /* 打印：纸上没有指针，提示框与焦点环不印；数据色照印 */
+  /* 打印：纸上没有指针，提示框与焦点环不印；数据色照印，纹理开启 */
   @media print {
     [data-xh-chart-part='root'] {
       print-color-adjust: exact;
@@ -2132,6 +2229,19 @@
     [data-xh-chart-part='tooltip'],
     [data-xh-chart-part='focus-ring'] {
       display: none;
+    }
+
+    [data-xh-chart-pattern] > [data-xh-chart-part='legend-swatch'],
+    [data-xh-chart-pattern] > [data-xh-chart-part='tooltip-swatch'] {
+      background: var(--xh-_chart-hatch);
+    }
+
+    [data-xh-chart-pattern] > [data-xh-chart-part='legend-swatch'][data-mark='line'],
+    [data-xh-chart-pattern] > [data-xh-chart-part='tooltip-swatch'][data-mark='line'] {
+      inline-size: var(--xh-space-5);
+      block-size: var(--xh-_chart-metric-line-width);
+      border: none;
+      background: var(--xh-_chart-dash-swatch);
     }
   }
 }
@@ -17937,7 +18047,28 @@
     stroke: none;
   }
 
-  /* 强制色：数据标记改成系统色的描边，网格取灰字色；焦点环、引导线与色标在配方里 */
+  /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），柱与面积改用本系列在
+     defs 里的纹理填充、描出轮廓，折线换线型；压在柱上的标签改用标签色、描一圈承载面色。色标的纹理在配方里 —— */
+  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar'],
+  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+    fill: var(--xh-_chart-pattern);
+    fill-opacity: 1;
+    stroke: var(--xh-_chart-series);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+    stroke-dasharray: var(--xh-_chart-dash);
+  }
+
+  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-part='data-label'][data-placement='inside'] {
+    fill: var(--xh-chart-label);
+    stroke: var(--xh-chart-surface);
+    stroke-width: var(--xh-stroke-thick);
+    paint-order: stroke;
+  }
+
+  /* 强制色：数据标记改成系统色的描边，网格取灰字色；纹理总是开启；焦点环、引导线与色标在配方里 */
   @media (forced-colors: active) {
     [data-scope='cartesian-chart'][data-part='bar'] {
       fill: Canvas;
@@ -17981,12 +18112,51 @@
       fill: none;
       stroke: Highlight;
     }
+
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar'],
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+      forced-color-adjust: none;
+      fill: var(--xh-_chart-pattern);
+      fill-opacity: 1;
+      stroke: CanvasText;
+      stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+      stroke-dasharray: var(--xh-_chart-dash);
+    }
+
+    [data-scope='cartesian-chart'][data-part='data-label'][data-placement='inside'] {
+      fill: CanvasText;
+      stroke: Canvas;
+      stroke-width: var(--xh-stroke-thick);
+      paint-order: stroke;
+    }
   }
 
-  /* 打印：纸上没有指针，准线不印；提示框与焦点环在配方里 */
+  /* 打印：纸上没有指针，准线不印；纹理开启；提示框与焦点环在配方里 */
   @media print {
     [data-scope='cartesian-chart'][data-part='crosshair'] {
       display: none;
+    }
+
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar'],
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+      fill: var(--xh-_chart-pattern);
+      fill-opacity: 1;
+      stroke: var(--xh-_chart-series);
+      stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+      stroke-dasharray: var(--xh-_chart-dash);
+    }
+
+    [data-scope='cartesian-chart'][data-part='data-label'][data-placement='inside'] {
+      fill: var(--xh-chart-label);
+      stroke: var(--xh-chart-surface);
+      stroke-width: var(--xh-stroke-thick);
+      paint-order: stroke;
     }
   }
 }
@@ -30155,7 +30325,22 @@
     font-size: var(--xh-text-secondary-size);
   }
 
-  /* 强制色：扇区改成系统色的面与描边；焦点环、引导线与色标在配方里 */
+  /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），扇区改用本色槽在 defs 里的
+     纹理填充、描出轮廓（「其他」不带纹理）；压在扇区上的标签改用标签色、描一圈承载面色。色标的纹理在配方里 —— */
+  :where([data-xh-chart-patterns]) [data-scope='pie-chart'][data-part='slice'][data-xh-chart-pattern] {
+    fill: var(--xh-_chart-pattern);
+    stroke: var(--xh-_chart-series);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  :where([data-xh-chart-patterns]) [data-scope='pie-chart'][data-part='slice-label'][data-xh-chart-slot] {
+    fill: var(--xh-chart-label);
+    stroke: var(--xh-chart-surface);
+    stroke-width: var(--xh-stroke-thick);
+    paint-order: stroke;
+  }
+
+  /* 强制色：扇区改成系统色的面与描边；纹理总是开启；焦点环、引导线与色标在配方里 */
   @media (forced-colors: active) {
     [data-scope='pie-chart'][data-part='slice'] {
       fill: Canvas;
@@ -30166,6 +30351,36 @@
     [data-scope='pie-chart'][data-part='slice-label'],
     [data-scope='pie-chart'][data-part='slice-label'][data-xh-chart-slot] {
       fill: CanvasText;
+    }
+
+    [data-scope='pie-chart'][data-part='slice'][data-xh-chart-pattern] {
+      forced-color-adjust: none;
+      fill: var(--xh-_chart-pattern);
+      stroke: CanvasText;
+      stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='pie-chart'][data-part='slice-label'][data-xh-chart-slot] {
+      fill: CanvasText;
+      stroke: Canvas;
+      stroke-width: var(--xh-stroke-thick);
+      paint-order: stroke;
+    }
+  }
+
+  /* 打印：纹理开启；提示框与焦点环在配方里 */
+  @media print {
+    [data-scope='pie-chart'][data-part='slice'][data-xh-chart-pattern] {
+      fill: var(--xh-_chart-pattern);
+      stroke: var(--xh-_chart-series);
+      stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='pie-chart'][data-part='slice-label'][data-xh-chart-slot] {
+      fill: var(--xh-chart-label);
+      stroke: var(--xh-chart-surface);
+      stroke-width: var(--xh-stroke-thick);
+      paint-order: stroke;
     }
   }
 }

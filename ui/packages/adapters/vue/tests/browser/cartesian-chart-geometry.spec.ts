@@ -4,7 +4,7 @@
 // jsdom 量不出这些，只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { userEvent } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick, reactive } from 'vue'
 import { XhCartesianChartRoot } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -303,5 +303,72 @@ describe('过渡', () => {
     mount({ data: SALES, series: [{ mark: 'bar', x: 'month', y: 'amount' }] })
     await settle()
     all('bar').forEach((el, i) => expect(Math.abs(el.getBoundingClientRect().height - early[i]!.height)).toBeLessThanOrEqual(0.5))
+  })
+})
+
+describe('纹理', () => {
+  const MIXED = {
+    data: [{ month: '一月', a: 100, b: 60 }, { month: '二月', a: 200, b: 90 }, { month: '三月', a: 150, b: 120 }],
+    series: [{ mark: 'bar', x: 'month', y: 'a', name: '甲' }, { mark: 'line', x: 'month', y: 'b', name: '乙' }],
+  }
+
+  afterEach(async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
+    document.documentElement.removeAttribute('data-xh-chart-patterns')
+  })
+
+  /** 系列 1 的柱与它在 defs 里的纹理。 */
+  function barAndPattern(): { bar: HTMLElement, pattern: Element } {
+    const bar = all('bar')[0]!
+    const pattern = all('pattern').find(el => el.getAttribute('data-xh-chart-slot') === '1')!
+    return { bar, pattern }
+  }
+
+  function lineSeries(): HTMLElement {
+    return all('series').find(el => el.getAttribute('data-mark') === 'line')!.querySelector<HTMLElement>('[data-part="line"]')!
+  }
+
+  it('常态下柱填系列色、折线是实线，defs 里的纹理备而不用', async () => {
+    mount(MIXED)
+    await settle()
+    const { bar, pattern } = barAndPattern()
+    expect(pattern).toBeInstanceOf(SVGPatternElement)
+    expect(getComputedStyle(bar).fill).not.toContain('url(')
+    expect(getComputedStyle(lineSeries()).strokeDasharray).toBe('none')
+  })
+
+  it('祖先写了 data-xh-chart-patterns：柱改用本系列的纹理并描出轮廓，折线换线型，图例色标画成同一副纹理', async () => {
+    document.documentElement.setAttribute('data-xh-chart-patterns', '')
+    mount(MIXED)
+    await settle()
+    const { bar, pattern } = barAndPattern()
+    expect(getComputedStyle(bar).fill).toBe(`url("#${pattern.id}")`)
+    expect(getComputedStyle(bar).strokeWidth).not.toBe('0px')
+    expect(getComputedStyle(lineSeries()).strokeDasharray).not.toBe('none')
+    const [barSwatch, lineSwatch] = all('legend-swatch')
+    expect(getComputedStyle(barSwatch!).backgroundImage).toContain('repeating-linear-gradient')
+    expect(getComputedStyle(lineSwatch!).backgroundImage).toContain('repeating-linear-gradient(90deg')
+  })
+
+  it('强制色下总是开启纹理：纹理的线取系统前景色，柱的填充仍是纹理', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [{ name: 'forced-colors', value: 'active' }] })
+    mount(MIXED)
+    await settle()
+    const { bar, pattern } = barAndPattern()
+    expect(getComputedStyle(bar).fill).toBe(`url("#${pattern.id}")`)
+    const line = pattern.querySelector<SVGPathElement>('[data-part="pattern-line"]')!
+    const probe = document.createElement('span')
+    probe.style.cssText = 'color: CanvasText; forced-color-adjust: none'
+    document.body.append(probe)
+    expect(getComputedStyle(line).stroke).toBe(getComputedStyle(probe).color)
+    probe.remove()
+  })
+
+  it('打印时开启纹理', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { media: 'print', features: [] })
+    mount(MIXED)
+    await settle()
+    const { bar, pattern } = barAndPattern()
+    expect(getComputedStyle(bar).fill).toBe(`url("#${pattern.id}")`)
   })
 })

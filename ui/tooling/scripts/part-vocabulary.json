@@ -342,6 +342,10 @@
     "decrement-trigger": [
       "number-field"
     ],
+    "defs": [
+      "cartesian-chart",
+      "pie-chart"
+    ],
     "deny-trigger": [
       "approval"
     ],
@@ -1066,6 +1070,14 @@
     "path": [
       "signature-pad"
     ],
+    "pattern": [
+      "cartesian-chart",
+      "pie-chart"
+    ],
+    "pattern-line": [
+      "cartesian-chart",
+      "pie-chart"
+    ],
     "peg": [
       "loading-bar"
     ],
@@ -1720,6 +1732,7 @@
     "counter": true,
     "crosshair": true,
     "day": true,
+    "defs": true,
     "description": true,
     "display": true,
     "dot": true,
@@ -1766,6 +1779,7 @@
     "panel": true,
     "paragraph": true,
     "path": true,
+    "pattern": true,
     "peg": true,
     "picker": true,
     "placeholder": true,

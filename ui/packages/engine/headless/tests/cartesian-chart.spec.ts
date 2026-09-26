@@ -354,6 +354,61 @@ describe('图例与联动', () => {
   })
 })
 
+describe('纹理', () => {
+  it('每个系列一种纹理，序号等于色槽；defs 里的 pattern 由绘图区的 id 派生，带着系列的色槽', async () => {
+    const rig = await makeRig(BARS)
+    const api = rig.api()
+    const plotId = (api.getPlotProps() as Dict).id as string
+    expect(api.patterns.map(p => [p.index, p.id, p.slot])).toEqual([
+      [1, `${plotId}-pattern-1`, 1],
+      [2, `${plotId}-pattern-2`, 2],
+    ])
+    const [first, second] = api.patterns
+    expect(api.getPatternProps(first!) as Dict).toMatchObject({
+      'data-part': 'pattern',
+      'data-xh-chart-part': 'pattern',
+      'id': `${plotId}-pattern-1`,
+      'patternUnits': 'userSpaceOnUse',
+      'patternTransform': 'rotate(45)',
+      'data-xh-chart-slot': '1',
+    })
+    expect((api.getPatternProps(second!) as Dict).patternTransform).toBe('rotate(135)')
+    // 线画在格子正中，格子边长按数据点直径
+    const size = first!.size
+    expect(size).toBe(api.model.scene!.layout.metrics.pointSize)
+    expect((api.getPatternLineProps(first!) as Dict).d).toBe(`M${size / 2},0V${size}`)
+  })
+
+  it('系列分组、图例项与提示框的行带纹理序号，分组把本系列的纹理写进内联样式', async () => {
+    const rig = await makeRig(BARS)
+    const api = rig.api()
+    const plotId = (api.getPlotProps() as Dict).id as string
+    const group = walk(api.scene.layers.data).find(m => m.key === 'series:offline')!
+    expect(api.getMarkProps(group) as Dict).toMatchObject({
+      'data-xh-chart-pattern': '2',
+      'style': { '--xh-_chart-pattern': `url(#${plotId}-pattern-2)` },
+    })
+    expect((api.getLegendItemProps(api.legendItems[0]!) as Dict)['data-xh-chart-pattern']).toBe('1')
+    const bar = marksOf(api, 'bar').find(m => m.key === 'online:s二月') as RectMark
+    rig.service.send({ type: 'HOVER', hover: { ref: { seriesId: 'online', index: 1 }, x: bar.x + 1, y: bar.y + 1 }, key: '二月' })
+    await settle()
+    const row = rig.api().tooltip!.rows.find(r => r.seriesId === 'offline')!
+    expect((rig.api().getTooltipRowProps(row) as Dict)['data-xh-chart-pattern']).toBe('2')
+  })
+
+  it('语义系列按声明次序取纹理', async () => {
+    const rig = await makeRig({
+      data: DATA,
+      series: [
+        { mark: 'bar', x: 'month', y: 'online', tone: 'success' },
+        { mark: 'bar', x: 'month', y: 'offline', tone: 'danger' },
+      ],
+    })
+    expect(rig.api().patterns.map(p => [p.index, p.slot, p.tone])).toEqual([[1, null, 'success'], [2, null, 'danger']])
+    expect(rig.api().getPatternProps(rig.api().patterns[1]!) as Dict).toMatchObject({ 'data-tone': 'danger' })
+  })
+})
+
 describe('横向数值轴', () => {
   it('取整后的两端都落在刻度上：各种宽度与量级下，第一个与最后一个刻度就是定义域的两端', async () => {
     for (const [width, max] of [[400, 230], [600, 1830], [320, 97], [900, 48000], [500, 7.3]] as const) {

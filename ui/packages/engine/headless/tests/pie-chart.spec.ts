@@ -117,6 +117,27 @@ describe('规格与「其他」', () => {
   })
 })
 
+describe('纹理', () => {
+  it('每个色槽一种纹理，扇区带序号并把纹理写进内联样式；「其他」没有纹理', async () => {
+    const rig = await makeRig({ ...BASE, maxSlices: 4 })
+    const api = rig.api()
+    const plotId = (api.getPlotProps() as Record<string, unknown>).id as string
+    expect(api.patterns.map(p => p.index)).toEqual([1, 2, 3])
+    const east = slices(api).find(m => m.datum!.seriesId === '华东')!
+    expect(api.getMarkProps(east) as Record<string, unknown>).toMatchObject({
+      'data-xh-chart-pattern': '1',
+      'style': { '--xh-_chart-pattern': `url(#${plotId}-pattern-1)` },
+    })
+    const other = slices(api).find(m => m.datum!.seriesId === '__other__')!
+    const props = api.getMarkProps(other) as Record<string, unknown>
+    expect(props['data-xh-chart-pattern']).toBeUndefined()
+    expect(props.style).toBeUndefined()
+    const legend = api.legendItems
+    expect((api.getLegendItemProps(legend[0]!) as Record<string, unknown>)['data-xh-chart-pattern']).toBe('1')
+    expect((api.getLegendItemProps(legend.at(-1)!) as Record<string, unknown>)['data-xh-chart-pattern']).toBeUndefined()
+  })
+})
+
 describe('几何', () => {
   it('环形：内半径是外半径的 0.6；扇区首尾相接闭成一整圈', async () => {
     const rig = await makeRig(BASE)

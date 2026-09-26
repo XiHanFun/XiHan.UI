@@ -68,8 +68,35 @@ function assertFields(value, fields, path) {
     assertString(value[field], `${path}.${field}`)
 }
 
+/** 纹理的格子只转这几个角度：0 是正向交叉，45 与 135 是两个斜向。 */
+const PATTERN_ANGLES = [0, 45, 135]
+
+function assertPatterns(patterns) {
+  if (!Array.isArray(patterns) || patterns.length !== 8)
+    fail('patterns 必须是 8 项：与分类色槽一一对应')
+  patterns.forEach((pattern, i) => {
+    const path = `patterns[${i}]`
+    assertExactKeys(pattern, ['angle', 'spacing', 'cross', 'dash'], path)
+    if (!PATTERN_ANGLES.includes(pattern.angle))
+      fail(`${path}.angle 只能是 ${PATTERN_ANGLES.join(' / ')}`)
+    if (!(typeof pattern.spacing === 'number' && pattern.spacing > 0 && pattern.spacing <= 1))
+      fail(`${path}.spacing 必须是 (0, 1] 之间的数：线距按数据点直径的倍数算`)
+    if (typeof pattern.cross !== 'boolean')
+      fail(`${path}.cross 必须是布尔`)
+    if (!Array.isArray(pattern.dash) || pattern.dash.length % 2 !== 0 || !pattern.dash.every(n => Number.isInteger(n) && n >= 0))
+      fail(`${path}.dash 必须是偶数项的非负整数（线宽的倍数），实线写空数组`)
+  })
+  const shapes = patterns.map(p => `${p.angle}/${p.spacing}/${p.cross}`)
+  if (new Set(shapes).size !== shapes.length)
+    fail('patterns 里有两项纹理一模一样：相邻系列分不开')
+}
+
 export function assertChartRecipe(source) {
-  assertExactKeys(source, ['$description', 'version', 'contract', 'layout', 'legend', 'tooltip', 'loading', 'print', 'forcedColors'], 'root')
+  assertExactKeys(source, ['$description', 'version', 'contract', 'layout', 'legend', 'tooltip', 'loading', 'patterns', 'patternMode', 'print', 'forcedColors'], 'root')
+  assertPatterns(source.patterns)
+  assertFields(source.patternMode, ['environment', 'lineSwatchInlineSize'], 'root.patternMode')
+  if (!/^data-xh-chart-[a-z-]+$/.test(source.patternMode.environment))
+    fail('patternMode.environment 必须是 data-xh-chart- 开头的环境属性')
   assertString(source.$description, 'root.$description')
   if (source.version !== 1)
     fail('version 只支持 1')
@@ -332,7 +359,64 @@ export function compileChartRecipe(source) {
     `${part('empty')}[hidden]`,
   ].join(', '), 'display: none;')
 
-  comment('强制色：焦点环取高亮色，引导线取系统前景色；色标退出强制着色保住形状，填系统前景色；\n     图例隐藏态保留空心与删除线')
+  // 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了环境属性），读者靠纹理与线型区分系列
+  const series = 'var(--xh-_chart-series)'
+  const thin = 'var(--xh-stroke-thin)'
+  const point = 'var(--xh-_chart-metric-point-size)'
+  const width = 'var(--xh-_chart-metric-line-width)'
+  const times = (unit, n) => (n === 1 ? unit : `calc(${unit} * ${n})`)
+  const stripes = (angle, gap) => `repeating-linear-gradient(${angle}deg, ${series} 0 ${thin}, transparent 0 ${gap})`
+  const hatchOf = (pattern) => {
+    // <pattern> 把竖线转 angle 度；CSS 渐变的条纹与渐变方向垂直，角度再转 90° 才是同一个方向
+    const angle = (pattern.angle + 90) % 180
+    const gap = times(point, pattern.spacing)
+    return pattern.cross ? `${stripes(angle, gap)}, ${stripes((angle + 90) % 180, gap)}` : stripes(angle, gap)
+  }
+  const dashOf = pattern => (pattern.dash.length === 0 ? 'none' : pattern.dash.map(n => (n === 0 ? '0' : times(width, n))).join(' '))
+  const dashSwatchOf = (pattern) => {
+    if (pattern.dash.length === 0)
+      return series
+    // 线型摊成横向色段：长度为 0 的一段是圆头画出的点，色标上画成一个线宽，其后的空当让出这一个线宽
+    const stops = []
+    let at = 0
+    let owed = 0
+    pattern.dash.forEach((n, i) => {
+      const ink = i % 2 === 0
+      at += ink ? Math.max(n, 1) : n - owed
+      owed = ink && n === 0 ? 1 : 0
+      stops.push(`${ink ? series : 'transparent'} 0 ${times(width, at)}`)
+    })
+    return `repeating-linear-gradient(90deg, ${stops.join(', ')})`
+  }
+  comment('纹理的序号：与 defs 里的纹理一一对应。每个序号给出色标上的纹理（线距按数据点直径换算，与纹理的格子同尺）、\n     折线的线型与色标上的线型（线宽的倍数）')
+  source.patterns.forEach((pattern, i) => {
+    rule(`[data-xh-chart-pattern='${i + 1}']`, [
+      `--xh-_chart-hatch: ${hatchOf(pattern)};`,
+      `--xh-_chart-dash: ${dashOf(pattern)};`,
+      `--xh-_chart-dash-swatch: ${dashSwatchOf(pattern)};`,
+    ])
+  })
+  comment('纹理的线取所属系列色：每个 pattern 带着它的色槽')
+  rule(part('pattern-line'), [
+    'fill: none;',
+    `stroke: ${series};`,
+    `stroke-width: ${thin};`,
+  ])
+  // 纹理模式下的色标：面画成同一副纹理，折线画成同一副线型
+  const patternSwatches = (prefix, context, target, indent) => {
+    const at = name => `${prefix}[data-xh-chart-pattern] > ${part(name)}`
+    rule(`${at('legend-swatch')}, ${at('tooltip-swatch')}`, 'background: var(--xh-_chart-hatch);', context, target, indent)
+    rule(`${at('legend-swatch')}[data-mark='line'], ${at('tooltip-swatch')}[data-mark='line']`, [
+      `inline-size: ${source.patternMode.lineSwatchInlineSize};`,
+      `block-size: ${width};`,
+      'border: none;',
+      'background: var(--xh-_chart-dash-swatch);',
+    ], context, target, indent)
+  }
+  comment(`作者在祖先上写 ${source.patternMode.environment} 即开启纹理；强制色与打印下总是开启，规则写在下面两个块里`)
+  patternSwatches(`:where([${source.patternMode.environment}]) `, 'root', chunks, '  ')
+
+  comment('强制色：焦点环取高亮色，引导线取系统前景色；色标退出强制着色保住形状，填系统前景色；\n     图例隐藏态保留空心与删除线。纹理总是开启，纹理的线与色标上的纹理都取系统前景色')
   const forced = []
   rule(part('focus-ring'), `stroke: ${forcedColors.focusRing};`, 'forced-colors', forced, '    ')
   rule(part('leader-line'), `stroke: ${forcedColors.mark};`, 'forced-colors', forced, '    ')
@@ -343,12 +427,17 @@ export function compileChartRecipe(source) {
   ], 'forced-colors', forced, '    ')
   rule(`${part('legend-item')}[aria-pressed='false'] > ${part('legend-swatch')}`, `background: ${forcedColors.hidden};`, 'forced-colors', forced, '    ')
   rule(part('tooltip'), 'background-image: none;', 'forced-colors', forced, '    ')
+  rule(part('pattern'), 'forced-color-adjust: none;', 'forced-colors', forced, '    ')
+  rule(part('pattern-line'), `stroke: ${forcedColors.mark};`, 'forced-colors', forced, '    ')
+  rule(`${part('legend-item')}[data-xh-chart-pattern], ${part('tooltip-row')}[data-xh-chart-pattern]`, `--xh-_chart-series: ${forcedColors.mark};`, 'forced-colors', forced, '    ')
+  patternSwatches('', 'forced-colors', forced, '    ')
   chunks.push(`${lead('  ')}  @media (forced-colors: active) {\n${forced.join('\n\n')}\n  }`)
 
-  comment('打印：纸上没有指针，提示框与焦点环不印；数据色照印')
+  comment('打印：纸上没有指针，提示框与焦点环不印；数据色照印，纹理开启')
   const print = []
   rule(part('root'), 'print-color-adjust: exact;', 'print', print, '    ')
   rule(`${part('tooltip')}, ${part('focus-ring')}`, 'display: none;', 'print', print, '    ')
+  patternSwatches('', 'print', print, '    ')
   chunks.push(`${lead('  ')}  @media print {\n${print.join('\n\n')}\n  }`)
 
   const head = [

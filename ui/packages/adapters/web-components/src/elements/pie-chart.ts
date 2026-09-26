@@ -27,6 +27,9 @@ import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectPieChart, pieChartAnatomy, pieChartMachine, pieChartMeta } from '@xihan-ui/headless'
 import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'
+
+/** 纹理定义在绘图区生成节点里的 key：标记的 key 都带前缀或是部件名，不会与它相同。 */
+const DEFS_KEY = 'defs'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -250,7 +253,7 @@ export class XhPieChartElement extends XhElement {
 
     const plot = put('plot', api.getPlotProps() as Record<string, unknown>)
     if (plot)
-      this.#paintMarks(plot, [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over], api)
+      this.#paintPlot(plot, [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over], api)
 
     const center = put('center', api.getCenterProps() as Record<string, unknown>)
     if (center)
@@ -272,20 +275,48 @@ export class XhPieChartElement extends XhElement {
       this.#paintA11y(root, api)
   }
 
+  /** 绘图区：纹理定义排在最前，其后是场景标记；两者同一次排序，重画时一起复用。 */
+  #paintPlot(plot: Element, marks: readonly ChartMark[], api: PieChartApi): void {
+    reconcile<ChartMark | null>(plot, [null, ...marks], this.#keys, mark => mark?.key ?? DEFS_KEY, (mark, reuse) =>
+      mark == null ? this.#paintDefs(plot.ownerDocument, reuse, api) : this.#paintMark(plot.ownerDocument, mark, reuse, api))
+  }
+
   /** 场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。 */
   #paintMarks(parent: Element, marks: readonly ChartMark[], api: PieChartApi): void {
-    const doc = parent.ownerDocument
-    reconcile(parent, marks, this.#keys, mark => mark.key, (mark, reuse) => {
-      const tag = api.markTag(mark)
-      const node = reuse?.localName === tag ? reuse : doc.createElementNS(SVG_NS, tag)
+    reconcile(parent, marks, this.#keys, mark => mark.key, (mark, reuse) => this.#paintMark(parent.ownerDocument, mark, reuse, api))
+  }
+
+  #paintMark(doc: Document, mark: ChartMark, reuse: Element | undefined, api: PieChartApi): Element {
+    const tag = api.markTag(mark)
+    const node = reuse?.localName === tag ? reuse : doc.createElementNS(SVG_NS, tag)
+    node.setAttribute(GEN_ATTR, '')
+    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark) as Record<string, unknown>)
+    if (mark.kind === 'group')
+      this.#paintMarks(node, mark.children, api)
+    else if (mark.kind === 'text' && node.textContent !== mark.text)
+      node.textContent = mark.text
+    return node
+  }
+
+  /** 纹理定义：每种纹理一个 pattern、里面一条线。 */
+  #paintDefs(doc: Document, reuse: Element | undefined, api: PieChartApi): Element {
+    const defs = reuse?.localName === 'defs' ? reuse : doc.createElementNS(SVG_NS, 'defs')
+    defs.setAttribute(GEN_ATTR, '')
+    this.spreader.spread(defs as HTMLElement, api.getDefsProps() as Record<string, unknown>)
+    reconcile(defs, api.patterns, this.#keys, pattern => pattern.id, (pattern, old) => {
+      const node = old ?? doc.createElementNS(SVG_NS, 'pattern')
       node.setAttribute(GEN_ATTR, '')
-      this.spreader.spread(node as HTMLElement, api.getMarkProps(mark) as Record<string, unknown>)
-      if (mark.kind === 'group')
-        this.#paintMarks(node, mark.children, api)
-      else if (mark.kind === 'text' && node.textContent !== mark.text)
-        node.textContent = mark.text
+      this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern) as Record<string, unknown>)
+      let line = generated(node)[0]
+      if (!line) {
+        line = doc.createElementNS(SVG_NS, 'path')
+        line.setAttribute(GEN_ATTR, '')
+        node.append(line)
+      }
+      this.spreader.spread(line as HTMLElement, api.getPatternLineProps(pattern) as Record<string, unknown>)
       return node
     })
+    return defs
   }
 
   /** 图例项：一个扇区一个按钮，色标与名字各一个 span。 */

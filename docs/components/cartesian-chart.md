@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 
@@ -84,6 +84,12 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 
 <XhDemo src="cartesian-chart/11-end-label" />
 
+### 纹理
+
+祖先写上 data-xh-chart-patterns，柱改用纹理、折线换线型，图例画成同一副；强制色与打印下总是这样
+
+<XhDemo src="cartesian-chart/12-patterns" />
+
 ## 设计指引
 
 ### 何时使用
@@ -116,6 +122,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 - 折线的 `curve` 缺省 `linear`；`monotone` 平滑且不越过数据点，不会画出数据中没有的峰谷；`step` / `step-before` / `step-after` 画成阶梯，台阶分别落在两点正中、前一点与后一点处，适合价格、库存这类在某一刻跳变的量。`area` 在折线下铺一层系列色的淡洗。缺失值（`null`、`undefined`、`NaN`）处折线断开，`connectNulls` 可改为连上。
 - 折线的数据点 `symbols` 缺省 `auto`：相邻点间距不小于 16px 时才画，点密到连成一片时不画。键盘聚焦或悬停到折线上的数据时，那一个点总会画出来作为指示与焦点落点。
 - 颜色按系列次序依次取分类色 1–8；`slot` 可把一个系列固定在某一色槽，同一业务实体在不同图表里保持同色。图例把某个系列隐藏后，其余系列的颜色不变。颜色本身带有好坏含义时（收入与支出、达标与超标）改写 `tone`，系列改用语气色；同一张图不混用分类色与语气色。
+- 颜色不可用或不可靠时改用纹理区分系列：强制色与打印下总是开启，作者在任意祖先上写 `data-xh-chart-patterns` 也会开启。柱与面积改用本系列的斜线纹理填充并描出轮廓，折线换成各自的线型（实线、长虚线、点线、点划线……），图例与提示框的色标画成同一副纹理与线型。8 种纹理与色槽一一对应，定义在绘图区的 `<defs>` 里，id 由绘图区的 id 派生，服务端渲染与客户端一致。
 - 系列多于 8 个时报错：分类色只有 8 个可区分的色槽，第 9 个开始会与前面的系列撞色。需要更多系列时先合并或分成几张图。
 - 数据标签由系列的 `labels` 打开：柱写 `inside`（柱内居中）或 `end`（柱的远端外侧，负值翻到另一侧；堆叠中的段写在段内的远端），折线写 `end`（每个点的上方）。柱内的字取与色槽配对的前景色；放不下、与更要紧的标签重叠时不写。柱端外侧的标签写在绘图区里：数值轴两端各收进一截，最高的那根柱上面也有地方写。
 - `totals` 让每个堆叠组在整叠外侧写出合计，含负值时正负两端各写一个；百分比堆叠不写合计。
@@ -249,6 +256,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）：绘图区只输出空的 svg。 |
 | `empty` | `boolean` | 没有可画的数据：空态部件据此显示。 |
 | `legendItems` | `readonly CartesianLegendItem[]` |  |
+| `patterns` | `readonly ChartPattern[]` | 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时柱与面积用它填充。 |
 | `active` | `ChartDatumDetails \| null` | 激活的数据；没有时为 null。 |
 | `tooltip` | `CartesianTooltipModel \| null` | 提示框内容；收起时为 null。 |
 | `summary` | `string` | 摘要文字。 |
@@ -268,6 +276,9 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `getLegendLabelProps` | `(item: CartesianLegendItem) => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getPlotProps` | `() => T['element']` |  |
+| `getDefsProps` | `() => T['element']` | 绘图区的第一个子节点：各系列的纹理定义在这里。 |
+| `getPatternProps` | `(pattern: ChartPattern) => T['element']` |  |
+| `getPatternLineProps` | `(pattern: ChartPattern) => T['element']` |  |
 | `getMarkProps` | `(mark: Mark) => T['element']` | 场景里一个标记的属性（含 path 的 d、文字的坐标）。 |
 | `getTooltipProps` | `() => T['element']` |  |
 | `getTooltipHeaderProps` | `() => T['element']` |  |
@@ -332,7 +343,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 - 提示框 `aria-hidden`：它显示的内容与数据的可访问名称是同一份，读两遍反而干扰。
 - Escape 收起提示框但不拦截按键，外层浮层的关闭仍由其自身处理。
 - 过渡只改画面：数据的名称、摘要、数据表与焦点次序在数据变化的那一刻就按新数据更新；收场中的标记 `aria-hidden`、不可聚焦，也不响应指针。
-- 颜色不是区分系列的唯一线索：图例文字、提示框中的系列名与数据名称都写出系列；折线与柱的色标形状也不同。
+- 颜色不是区分系列的唯一线索：图例文字、提示框中的系列名与数据名称都写出系列；折线与柱的色标形状也不同；强制色与打印下柱与面积还有各自的纹理，折线还有各自的线型。
 
 ## 样式参考
 
@@ -362,11 +373,17 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-part` | 'legend-item' |
+| `legend-item` | `data-xh-chart-pattern` | patternOf(item.id) |
 | `legend-item` | `data-xh-chart-slot` | undefined \| String(item.slot) |
 | `legend-swatch` | `data-mark` | 'line' \| 'bar' |
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-xh-chart-part` | 'plot' |
+| `defs` | `data-xh-chart-part` | 'defs' |
+| `pattern` | `data-tone` | pattern.tone |
+| `pattern` | `data-xh-chart-part` | 'pattern' |
+| `pattern` | `data-xh-chart-slot` | undefined \| String(pattern.slot) |
+| `pattern-line` | `data-xh-chart-part` | 'pattern-line' |
 | `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
@@ -375,6 +392,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `tooltip-row` | `data-series-id` | row.seriesId |
 | `tooltip-row` | `data-tone` | row.tone |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
+| `tooltip-row` | `data-xh-chart-pattern` | patternOf(row.seriesId) |
 | `tooltip-row` | `data-xh-chart-slot` | undefined \| String(row.slot) |
 | `tooltip-swatch` | `data-mark` | 'line' \| 'bar' |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
@@ -390,6 +408,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `mark` | `data-series-id` | mark.key.slice('series:'.length) |
 | `mark` | `data-tone` | spec?.tone |
 | `mark` | `data-xh-chart-part` | mark.part \| undefined |
+| `mark` | `data-xh-chart-pattern` | patternOf(id) |
 | `mark` | `data-xh-chart-slot` | undefined \| String(spec.slot) |
 
 <!-- xh-component-tokens:start -->
@@ -407,9 +426,9 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `--xh-cartesian-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-1` | cartesian-chart 的 legend 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-line-radius` | `legend-swatch` | `border-radius` | `mark=line` | `--xh-shape-pill` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
-| `--xh-cartesian-chart-line-width` | `line`<br>`root` | `stroke-width` | `default` | `--xh-chart-line-width` | cartesian-chart 的 line、root 部件 stroke-width 覆盖槽。 |
-| `--xh-cartesian-chart-point-size` | `root` | `--xh-_chart-metric-point-size` | `default` | `--xh-chart-point-size` | cartesian-chart 的 root 部件 --xh-_chart-metric-point-size 覆盖槽。 |
-| `--xh-cartesian-chart-series-color` | `area-fill`<br>`bar`<br>`dot`<br>`legend-swatch`<br>`line`<br>`point`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `tone`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-_tone`<br>`--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | cartesian-chart 的 area-fill、bar、dot、legend-swatch、line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
+| `--xh-cartesian-chart-line-width` | `legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `background`<br>`block-size`<br>`stroke-dasharray`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`drawing`<br>`mark=line`<br>`not([data-drawing])`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | cartesian-chart 的 legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。 |
+| `--xh-cartesian-chart-point-size` | `legend-swatch`<br>`root`<br>`tooltip-swatch` | `background` | `@media (forced-colors: active)`<br>`@media print`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-point-size` | cartesian-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。 |
+| `--xh-cartesian-chart-series-color` | `area-fill`<br>`bar`<br>`dot`<br>`legend-swatch`<br>`line`<br>`pattern-line`<br>`point`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`mark=line`<br>`tone`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-_tone`<br>`--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | cartesian-chart 的 area-fill、bar、dot、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | cartesian-chart 的 tooltip 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-surface-pad-sm` | cartesian-chart 的 tooltip 部件 padding-inline 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-surface-pad-sm` | cartesian-chart 的 tooltip 部件 padding-block 覆盖槽。 |

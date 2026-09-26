@@ -13,6 +13,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // dot 是折线上逐点画出的小圆（只给眼睛看）；point 是激活数据上那一个点，键盘聚焦时它就是焦点代理。
 // data-label、total-label 与 end-label 是数据标签、堆叠合计与线尾标签，写在前景层，只给眼睛看；
 // 线尾标签被推开时，leader-line 把它连回线尾。
+// defs 里的 pattern 是各系列的纹理，pattern-line 是纹理的线：强制色、打印与环境开启纹理时柱与面积改用它填充。
 export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'root',
   'caption',
@@ -22,6 +23,9 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'legend-label',
   'viewport',
   'plot',
+  'defs',
+  'pattern',
+  'pattern-line',
   'grid',
   'grid-line',
   'axis',

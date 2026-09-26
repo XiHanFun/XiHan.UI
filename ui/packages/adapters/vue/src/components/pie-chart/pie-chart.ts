@@ -44,6 +44,14 @@ export interface PieChartCenterSlotProps {
   active: ChartDatumDetails | null
 }
 
+/** 纹理定义：绘图区的第一个子节点，每种纹理一个 pattern、里面一条线。 */
+function renderDefs(api: PieChartApi): VNode {
+  return h('defs', api.getDefsProps() as Record<string, unknown>, api.patterns.map(pattern =>
+    h('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, [
+      h('path', api.getPatternLineProps(pattern) as Record<string, unknown>),
+    ])))
+}
+
 /** 一个场景标记画成 SVG 元素；文字标记带文字。 */
 function renderMark(api: PieChartApi, mark: ChartMark): VNode {
   const props = { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key }
@@ -128,7 +136,7 @@ export const XhPieChartPlot = defineComponent({
     return () => {
       const api = ctx.api.value
       const marks = [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over]
-      return h('svg', api.getPlotProps() as Record<string, unknown>, marks.map(mark => renderMark(api, mark)))
+      return h('svg', api.getPlotProps() as Record<string, unknown>, [renderDefs(api), ...marks.map(mark => renderMark(api, mark))])
     }
   },
 })
