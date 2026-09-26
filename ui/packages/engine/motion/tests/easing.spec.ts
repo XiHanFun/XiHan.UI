@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { cubicBezier, easing, resolveEasing, toLinearEasing } from '../src/easing'
 
 describe('cubicBezier', () => {
@@ -78,52 +78,121 @@ describe('resolveEasing', () => {
     expect(resolveEasing(fn)).toBe(fn)
   })
 
-  it('认不出的写法退回线性并钳制到 [0,1]', () => {
-    const fn = resolveEasing('wobble(3)')
-    expect(fn(0.25)).toBe(0.25)
-    expect(fn(-1)).toBe(0)
-    expect(fn(9)).toBe(1)
-    expect(fn(Number.NaN)).toBe(0)
+  it('认不出的写法报错，消息里带原文与可用写法', () => {
+    expect(() => resolveEasing('wobble(3)')).toThrow(TypeError)
+    expect(() => resolveEasing('wobble(3)')).toThrow(/wobble\(3\).*easeOut.*cubic-bezier\(\)/)
+    expect(() => resolveEasing('')).toThrow(TypeError)
   })
 
-  it('linear 与缺省都是线性', () => {
-    expect(resolveEasing('linear')(0.3)).toBe(0.3)
-    expect(resolveEasing(undefined)(0.3)).toBe(0.3)
+  it('名字只认表里自有的键，原型上的属性名不算', () => {
+    expect(() => resolveEasing('toString')).toThrow(TypeError)
+    expect(() => resolveEasing('constructor')).toThrow(TypeError)
   })
 
-  it('分量个数不对的 cubic-bezier 退回线性', () => {
-    expect(resolveEasing('cubic-bezier(0, 0, 1)')(0.4)).toBe(0.4)
-    expect(resolveEasing('cubic-bezier(a, b, c, d)')(0.4)).toBe(0.4)
+  it('既不是字符串也不是函数的值报错', () => {
+    expect(() => resolveEasing(3 as never)).toThrow(TypeError)
+    expect(() => resolveEasing(null as never)).toThrow(TypeError)
+  })
+
+  it('linear 与缺省都是线性，进度钳制到 [0,1]', () => {
+    for (const fn of [resolveEasing('linear'), resolveEasing(undefined)]) {
+      expect(fn(0.3)).toBe(0.3)
+      expect(fn(-1)).toBe(0)
+      expect(fn(9)).toBe(1)
+      expect(fn(Number.NaN)).toBe(0)
+    }
+  })
+
+  it('不合 CSS 语法的 cubic-bezier 报错：分量个数、非数字、带单位、x 越出 [0,1]、函数名后有空格', () => {
+    for (const text of [
+      'cubic-bezier(0, 0, 1)',
+      'cubic-bezier(a, b, c, d)',
+      'cubic-bezier(0.2px, 0, 0, 1)',
+      'cubic-bezier(1.2, 0, 0, 1)',
+      'cubic-bezier(0, 0, -0.1, 1)',
+      'cubic-bezier (0, 0, 1, 1)',
+    ])
+      expect(() => resolveEasing(text), text).toThrow(TypeError)
+  })
+
+  it('cubic-bezier 的 y 分量可以越界，用来写过冲', () => {
+    expect(resolveEasing('cubic-bezier(0.34, 1.56, 0.64, 1)')(0.5)).toBeCloseTo(resolveEasing('outBack')(0.5), 10)
+  })
+
+  it('ease 一族关键字按 CSS 规范的控制点取值，不分大小写', () => {
+    expect(resolveEasing('ease')(0.5)).toBeCloseTo(cubicBezier(0.25, 0.1, 0.25, 1)(0.5), 10)
+    expect(resolveEasing('ease-in')(0.5)).toBeCloseTo(cubicBezier(0.42, 0, 1, 1)(0.5), 10)
+    expect(resolveEasing('ease-out')(0.5)).toBeCloseTo(cubicBezier(0, 0, 0.58, 1)(0.5), 10)
+    expect(resolveEasing('ease-in-out')(0.5)).toBeCloseTo(cubicBezier(0.42, 0, 0.58, 1)(0.5), 10)
+    expect(resolveEasing(' EASE-OUT ')(0.3)).toBeCloseTo(resolveEasing('ease-out')(0.3), 10)
+    // CSS 关键字与同名意思的命名缓动是两条曲线
+    expect(resolveEasing('ease-out')(0.3)).not.toBeCloseTo(resolveEasing('easeOut')(0.3), 3)
+  })
+
+  it('steps() 按 CSS 的阶跃规则：缺省 jump-end，start / end 是 jump-start / jump-end 的别名', () => {
+    const end = resolveEasing('steps(4)')
+    expect([0, 0.24, 0.25, 0.99, 1].map(end)).toEqual([0, 0, 0.25, 0.75, 1])
+    const start = resolveEasing('steps(4, jump-start)')
+    expect([0, 0.5, 1].map(start)).toEqual([0.25, 0.75, 1])
+    expect([0, 0.5, 1].map(resolveEasing('steps(4, start)'))).toEqual([0.25, 0.75, 1])
+    expect([0, 0.99, 1].map(resolveEasing('steps(4, end)'))).toEqual([0, 0.75, 1])
+    const none = resolveEasing('steps(4, jump-none)')
+    expect([0, 0.25, 0.5, 1].map(none)).toEqual([0, 1 / 3, 2 / 3, 1])
+    const both = resolveEasing('steps(4, jump-both)')
+    expect([0, 0.5, 1].map(both)).toEqual([0.2, 0.6, 1])
+  })
+
+  it('step-start / step-end 是单段阶跃', () => {
+    expect([0, 0.5, 1].map(resolveEasing('step-start'))).toEqual([1, 1, 1])
+    expect([0, 0.99, 1].map(resolveEasing('step-end'))).toEqual([0, 0, 1])
+  })
+
+  it('不合 CSS 语法的 steps() 报错：段数须为正整数，jump-none 至少两段，位置只认规范里的六个词', () => {
+    for (const text of ['steps(0)', 'steps(-2)', 'steps(2.5)', 'steps(1, jump-none)', 'steps(3, sideways)', 'steps()', 'steps(2, end, end)'])
+      expect(() => resolveEasing(text), text).toThrow(TypeError)
+  })
+
+  it('linear() 在停靠点之间逐段插值，缺了输入位的在前后已知位之间等分', () => {
+    const fn = resolveEasing('linear(0, 0.25, 1)')
+    expect(fn(0.25)).toBeCloseTo(0.125, 10)
+    expect(fn(0.75)).toBeCloseTo(0.625, 10)
+    expect(fn(1)).toBe(1)
+  })
+
+  it('linear() 的停靠点可带两个输入位，拉出一段平台', () => {
+    const fn = resolveEasing('linear(0, 0.5 25% 75%, 1)')
+    expect(fn(0.125)).toBeCloseTo(0.25, 10)
+    expect(fn(0.5)).toBeCloseTo(0.5, 10)
+    expect(fn(0.875)).toBeCloseTo(0.75, 10)
+  })
+
+  it('linear() 的输入位比前面小时抬到前面最大的那个', () => {
+    const fn = resolveEasing('linear(0, 1 50%, 0.5 20%, 1)')
+    expect(fn(0.25)).toBeCloseTo(0.5, 10)
+    expect(fn(0.5)).toBeCloseTo(0.5, 10)
+    expect(fn(0.75)).toBeCloseTo(0.75, 10)
+  })
+
+  it('linear() 在首末停靠点之外沿最近两点外推', () => {
+    const fn = resolveEasing('linear(0 20%, 1 80%)')
+    expect(fn(0.1)).toBeCloseTo(-1 / 6, 10)
+    expect(fn(0.9)).toBeCloseTo(7 / 6, 10)
+  })
+
+  it('不合 CSS 语法的 linear() 报错：少于两个停靠点、停靠点缺输出值、输入位超过两个或被输出值隔开', () => {
+    for (const text of ['linear()', 'linear(1)', 'linear(0, 50%, 1)', 'linear(0, 0.5 10% 20% 30%, 1)', 'linear(0, 10% 0.5 20%, 1)', 'linear(0, 0.5 10px, 1)'])
+      expect(() => resolveEasing(text), text).toThrow(TypeError)
+  })
+
+  it('toLinearEasing 的产出能原样读回，逐点贴合原曲线', () => {
+    const curve = cubicBezier(0.4, 0, 0.2, 1)
+    const back = resolveEasing(toLinearEasing(curve, 60))
+    for (let i = 0; i <= 20; i++)
+      expect(back(i / 20)).toBeCloseTo(curve(i / 20), 2)
   })
 
   it('同一串重复解析返回同一个函数', () => {
     expect(resolveEasing('cubic-bezier(0.1, 0.2, 0.3, 0.4)')).toBe(resolveEasing('cubic-bezier(0.1, 0.2, 0.3, 0.4)'))
-  })
-
-  it('认不出的写法在开发构建下警告，同一写法只警告一次', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    try {
-      resolveEasing('ease-out-unknown')
-      resolveEasing('ease-out-unknown')
-      expect(warn).toHaveBeenCalledTimes(1)
-      expect(String(warn.mock.calls[0]?.[0])).toContain('ease-out-unknown')
-    }
-    finally {
-      warn.mockRestore()
-    }
-  })
-
-  it('linear、名字与合法的 cubic-bezier 不警告', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    try {
-      resolveEasing('linear')
-      resolveEasing('outFluid')
-      resolveEasing('cubic-bezier(0.5, 0.1, 0.3, 0.9)')
-      expect(warn).not.toHaveBeenCalled()
-    }
-    finally {
-      warn.mockRestore()
-    }
   })
 })
 

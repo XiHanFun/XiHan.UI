@@ -45,7 +45,7 @@ const TIMING_KEYS = new Set(['offset', 'easing', 'composite'])
 function resolveEasingString(value: AnimateOptions['easing']): string {
   if (value === undefined)
     return easing.standard
-  return value in easing ? easing[value as EasingName] : value
+  return Object.hasOwn(easing, value) ? easing[value as EasingName] : value
 }
 
 /** 把关键帧里的样式写到元素上。 */
