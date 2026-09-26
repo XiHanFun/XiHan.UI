@@ -36,7 +36,7 @@ afterEach(() => {
 })
 
 describe('web Components 浮层的局部视觉环境', () => {
-  it('<xh-config> 的单一七轴设置经来源 scope 桥接到物理 Portal 实例壳', async () => {
+  it('<xh-config> 的单一八轴设置经来源 scope 桥接到物理 Portal 实例壳', async () => {
     const region = document.createElement('xh-config') as ConfigScope
     region.setAttribute('mode', 'dark')
     region.setAttribute('brand', 'acme')

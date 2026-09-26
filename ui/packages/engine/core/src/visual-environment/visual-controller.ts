@@ -26,6 +26,7 @@ const PREFERENCE_KEYS = [
   'contrast',
   'motion',
   'transparency',
+  'material',
 ] as const satisfies readonly PreferenceKey[]
 
 const VALUES: Record<PreferenceKey, readonly string[]> = {
@@ -36,6 +37,7 @@ const VALUES: Record<PreferenceKey, readonly string[]> = {
   contrast: ['default', 'more', 'system'],
   motion: ['default', 'reduce', 'system'],
   transparency: ['default', 'reduce', 'system'],
+  material: ['standard', 'liquid'],
 }
 
 export interface VisualEnvironmentStorageError {
@@ -53,7 +55,7 @@ export function createMotionOverrideSink(setOverride: MotionOverrideSetter): Vis
 }
 
 interface VisualEnvironmentControllerBaseOptions {
-  /** 应用七轴属性的作用域根；省略时取传入 Window 的 documentElement。 */
+  /** 应用八轴属性的作用域根；省略时取传入 Window 的 documentElement。 */
   root?: Element
   /** 本作用域的初始偏好；undefined 的轴继承 parent。 */
   initial?: VisualEnvironmentPreference
@@ -160,6 +162,7 @@ function sameState(a: VisualEnvironmentState, b: VisualEnvironmentState): boolea
     && a.contrast === b.contrast
     && a.motion === b.motion
     && a.transparency === b.transparency
+    && a.material === b.material
 }
 
 function mergePreference(

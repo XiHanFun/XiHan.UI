@@ -13946,7 +13946,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-config>`：配置作用域。包裹一棵子树，其中的元素解析 locale / size / translations\n时先查最近的这一层，再向外层与全局配置回退。\n\n它不渲染任何内容、不接线任何角色节点：作者编写的子节点原样保留在 Light DOM 中，\n该元素只是 DOM 树上的一个标记。皮肤中没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：Vue 侧沿组件树查找，这里沿 DOM 祖先链查找。\n逐键合并，本层只覆盖自身写了的项：只修改文案的子树不会把外层的 locale 一并抹除。\n\n`translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能通过 property 设置；七个视觉轴均可通过属性或 property 设置。\n七轴只投影到当前元素；局部 motion 不会修改全局 JS override。",
+          "description": "`<xh-config>`：配置作用域。包裹一棵子树，其中的元素解析 locale / size / translations\n时先查最近的这一层，再向外层与全局配置回退。\n\n它不渲染任何内容、不接线任何角色节点：作者编写的子节点原样保留在 Light DOM 中，\n该元素只是 DOM 树上的一个标记。皮肤中没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：Vue 侧沿组件树查找，这里沿 DOM 祖先链查找。\n逐键合并，本层只覆盖自身写了的项：只修改文案的子树不会把外层的 locale 一并抹除。\n\n`translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能通过 property 设置；八个视觉轴均可通过属性或 property 设置。\n八轴只投影到当前元素；局部 motion 不会修改全局 JS override。",
           "name": "XhConfigElement",
           "members": [
             {
@@ -14029,6 +14029,15 @@
                 "text": "Transparency | 'system' | undefined"
               },
               "attribute": "transparency"
+            },
+            {
+              "kind": "field",
+              "name": "material",
+              "privacy": "public",
+              "type": {
+                "text": "Material | undefined"
+              },
+              "attribute": "material"
             },
             {
               "kind": "field",
@@ -14175,6 +14184,14 @@
               "description": "透明材质偏好",
               "name": "transparency",
               "fieldName": "transparency"
+            },
+            {
+              "type": {
+                "text": "Material | undefined"
+              },
+              "description": "材质档；liquid 下浮在内容之上的导航层部件换成液态面",
+              "name": "material",
+              "fieldName": "material"
             }
           ],
           "superclass": {

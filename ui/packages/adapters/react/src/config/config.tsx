@@ -27,7 +27,7 @@ export interface XhConfig extends XhConfigBase {
    * 应用级默认，实例上写了容器时以实例为准。
    */
   portalContainer?: () => Element | null
-  /** 本 Provider 的七轴视觉环境；root 必须显式给出，不推测 DOM 边界。 */
+  /** 本 Provider 的八轴视觉环境；root 必须显式给出，不推测 DOM 边界。 */
   visualEnvironment?: XhVisualEnvironmentConfig
 }
 

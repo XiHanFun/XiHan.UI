@@ -75,7 +75,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 ## 全局配置
 
-`XhConfigProvider` 向下提供 locale、文案覆盖、尺寸、浮层落点与七轴视觉环境：
+`XhConfigProvider` 向下提供 locale、文案覆盖、尺寸、浮层落点与八轴视觉环境：
 
 ```tsx
 <XhConfigProvider config={{ locale: "zh-CN", size: "sm" }}>

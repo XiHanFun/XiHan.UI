@@ -291,7 +291,7 @@ import { brandId, createVisualEnvironmentController, registerBrand } from "@xiha
 // 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
 registerBrand("acme", "#16a34a");
 
-// 切换：品牌是七轴视觉环境之一
+// 切换：品牌是八轴视觉环境之一
 const visual = createVisualEnvironmentController({ root: document.documentElement });
 visual.setPreference({ brand: brandId("acme") });
 ```

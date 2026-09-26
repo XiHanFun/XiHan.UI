@@ -21,7 +21,7 @@ function fakeEnv(mode: 'light' | 'dark' = 'dark', contrast: 'default' | 'more' =
 }
 
 describe('resolveVisualEnvironment', () => {
-  it('空偏好取七轴基线，system 只解析平台支持的四轴', () => {
+  it('空偏好取八轴基线，system 只解析平台支持的四轴', () => {
     expect(resolveVisualEnvironment({}, fakeEnv())).toEqual(BASELINE_VISUAL_ENVIRONMENT)
     expect(resolveVisualEnvironment({
       mode: 'system',
@@ -31,7 +31,7 @@ describe('resolveVisualEnvironment', () => {
     }, fakeEnv())).toMatchObject({ mode: 'dark', contrast: 'more', motion: 'reduce', transparency: 'reduce' })
   })
 
-  it('七轴一次投影成 PortalVisualBridge 的完整属性面', () => {
+  it('八轴一次投影成 PortalVisualBridge 的完整属性面', () => {
     expect(toVisualEnvironmentAttrs({
       mode: 'dark',
       brand: brandId('acme'),
@@ -40,6 +40,7 @@ describe('resolveVisualEnvironment', () => {
       contrast: 'more',
       motion: 'reduce',
       transparency: 'reduce',
+      material: 'liquid',
     })).toEqual({
       'data-theme': 'dark',
       'data-brand': 'acme',
@@ -47,6 +48,7 @@ describe('resolveVisualEnvironment', () => {
       'data-contrast': 'more',
       'data-motion': 'reduce',
       'data-transparency': 'reduce',
+      'data-material': 'liquid',
       'dir': 'rtl',
     })
   })

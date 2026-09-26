@@ -161,7 +161,7 @@ const off = onMotionPreferenceChange(preference => console.log(preference));
 
 JS 侧统一经 `resolveMotionPreference` 读取，并传入动效作用的元素：最近祖先上的 `data-motion` 与 CSS 的作用域一致地生效，其次是应用级 override，最后是系统设置。`@xihan-ui/core` 的贴底与平滑滚动、`headless` 的数字动画与走马灯自动播放、反馈服务的加载弧线与 `backgrounds` 的画面都按此读取，容器上写一次 `data-motion="reduce"`，CSS 与 JS 动效一起停。门禁 `check-reduced-motion-channel` 保证：系统信号 `(prefers-reduced-motion` 只在 motion 包的 `reduced-motion.ts` 与 core 的视觉环境探测 `visual-environment/env.ts` 两处出现，且 `resolveMotionPreference` 处处传参。
 
-### 七轴控制器统一入口
+### 八轴控制器统一入口
 
 应用根只设置一次视觉环境，解析后的 motion 会同时投影到 DOM，并经显式 sink 驱动 JS 动画与平滑滚动：
 
