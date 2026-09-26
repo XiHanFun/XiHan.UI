@@ -65,7 +65,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {string} locale - 月份名与星期名的书写 locale；未提供时按宿主语言，宿主也没有时按 en-US
  * @attr {'ltr'|'rtl'} dir - 文字方向；只作显式覆盖，未提供时方向从 DOM 读取
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @attr {'green'|'blue'|'orange'|'purple'|'red'|'gray'} palette - 色板，直接指定色阶满档的颜色；同时提供 tone 时以色板为准
+ * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 色板，取基础色板同名色相作色阶满档的颜色；同时提供 tone 时以色板为准
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }`
  * @fires cell-active - 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null

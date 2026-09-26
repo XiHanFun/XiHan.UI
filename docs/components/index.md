@@ -124,7 +124,6 @@
 <XhComponentCard src="color-swatch" name="ColorSwatch" label="颜色色块" href="/components/color-swatch" />
 <XhComponentCard src="descriptions" name="Descriptions" label="描述列表" href="/components/descriptions" />
 <XhComponentCard src="empty-state" name="EmptyState" label="空状态" href="/components/empty-state" />
-<XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" />
 <XhComponentCard src="highlight" name="Highlight" label="文本高亮" href="/components/highlight" />
 <XhComponentCard src="image" name="Image" label="图片" href="/components/image" />
 <XhComponentCard src="image-viewer" name="ImageViewer" label="图片预览" href="/components/image-viewer" />
@@ -152,6 +151,7 @@
 <XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" />
 <XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" />
 <XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" />
+<XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" />
 <XhComponentCard src="progress-meter" name="Progress" label="仪表盘与子弹图" href="/components/progress#仪表盘" />
 
 </div>

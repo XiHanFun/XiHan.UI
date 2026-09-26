@@ -37,6 +37,7 @@ export {
   heatmapScaleOfValues,
   heatmapStatsOf,
   heatmapTipPlacement,
+  normalizeHeatmapThresholds,
   parseHeatmapDate,
   resolveHeatmapTip,
   sameHeatmapCell,

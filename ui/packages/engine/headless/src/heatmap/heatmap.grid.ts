@@ -6,9 +6,12 @@
 // 提供 heatmap.grid 相关实现。
 
 import type { Direction } from '@xihan-ui/core'
+import type { LevelScale } from '@xihan-ui/viz'
+import { scaleQuantize, scaleThreshold } from '@xihan-ui/viz'
 
 // 热力图的纯数学与纯格式化：把一段日期区间摊成「周列 × 星期行」的网格，把计数分成档位，
 // 再把方向键翻成落点。不碰 DOM、不认识状态机，也不引日期库——日期一律是 ISO 的 YYYY-MM-DD 串。
+// 分档交给图表引擎的分档比例尺：档数给定时有数据的那几档等宽分开，给了分界时按分界分档。
 
 /** 一天的毫秒数。日期加减一律以 UTC 计，避开夏令时那两天的 23/25 小时。 */
 const DAY_MS = 86_400_000
@@ -278,30 +281,43 @@ export function heatmapCountsOf(value: readonly HeatmapValue[] | undefined): Map
 
 /**
  * 按最大值均分出各档的下界，升序，长度 levels-1：计数 ≥ thresholds[i] 即进第 i+1 档。
+ * 有数据的那几档把 (0, 最大值] 等宽分开，分界取整；第一档从 1 起。
  * 逐档至少加 1，数据只有一两个不同取值时低档也不会被挤空。
  */
 export function buildHeatmapThresholds(max: number, levels: number): number[] {
   const steps = Math.max(1, Math.floor(levels) - 1)
   const peak = Math.max(1, Math.floor(max))
+  const edges = steps > 1 ? scaleQuantize({ domain: [0, peak], levels: steps }).thresholds() : []
   const out: number[] = []
-  for (let i = 0; i < steps; i++) {
-    const even = Math.ceil((peak * i) / steps)
-    const previous = out[i - 1] ?? 0
-    out.push(Math.max(previous + 1, even))
+  for (const edge of [0, ...edges]) {
+    const previous = out.at(-1) ?? 0
+    out.push(Math.max(previous + 1, Math.ceil(edge)))
   }
   return out
+}
+
+/** 分界值整理成分档比例尺要的样子：有限、升序、互不相同。 */
+export function normalizeHeatmapThresholds(thresholds: readonly number[]): number[] {
+  return [...new Set(thresholds.filter(Number.isFinite))].sort((a, b) => a - b)
+}
+
+/** 同一组分界只建一次比例尺：一张网格几百格都查同一把尺。 */
+const levelScales = new WeakMap<readonly number[], LevelScale>()
+
+function levelScaleOf(thresholds: readonly number[]): LevelScale {
+  let scale = levelScales.get(thresholds)
+  if (!scale) {
+    scale = scaleThreshold({ thresholds: normalizeHeatmapThresholds(thresholds) })
+    levelScales.set(thresholds, scale)
+  }
+  return scale
 }
 
 /** 计数落在第几档：没有数据恒是第 0 档，thresholds 每越过一条就进一档。 */
 export function heatmapLevelOf(count: number, thresholds: readonly number[]): number {
   if (!(count > 0))
     return 0
-  let level = 0
-  for (let i = 0; i < thresholds.length; i++) {
-    if (count >= thresholds[i]!)
-      level = i + 1
-  }
-  return level
+  return levelScaleOf(thresholds).map(count) ?? 0
 }
 
 /** 档位在色阶上的位置，0-100；皮肤按它把主色兑进空格底色，档数随便改都不必再写选择器。 */
@@ -326,11 +342,9 @@ export function heatmapScaleOfValues(
     if (value > max)
       max = value
   }
-  const declared = options.thresholds
-  if (declared && declared.length > 0) {
-    const thresholds = [...declared].sort((a, b) => a - b)
-    return { levels: thresholds.length + 1, thresholds, max, total }
-  }
+  const declared = options.thresholds ? normalizeHeatmapThresholds(options.thresholds) : []
+  if (declared.length > 0)
+    return { levels: declared.length + 1, thresholds: declared, max, total }
   // 档数非数字（属性写成 levels="abc" 就是 NaN）时退回缺省：
   // Math.max(2, NaN) 还是 NaN，一路漏下去会让标尺为空、内联样式写成 NaN%
   const declaredLevels = options.levels

@@ -25,6 +25,26 @@ export const CHART_CONTRACT_FIELDS = [
   'tooltipSwatchLineRadius',
   'emptyGap',
 ]
+/**
+ * 每支合同槽由配方里哪个家族部件消费：图表只接自己投影了的那些部件的槽。
+ * 热力图只把图例与提示框交给配方，根、视口与空态的槽就不必接。
+ */
+export const CHART_CONTRACT_PARTS = {
+  gap: 'root',
+  height: 'viewport',
+  legendGap: 'legend',
+  legendSwatchRadius: 'legend-swatch',
+  legendSwatchLineRadius: 'legend-swatch',
+  tooltipGap: 'tooltip',
+  tooltipPadBlock: 'tooltip',
+  tooltipPadInline: 'tooltip',
+  tooltipRadius: 'tooltip',
+  tooltipShadow: 'tooltip',
+  tooltipRowGap: 'tooltip-row',
+  tooltipSwatchRadius: 'tooltip-swatch',
+  tooltipSwatchLineRadius: 'tooltip-swatch',
+  emptyGap: 'empty',
+}
 /** 只有画折线色标的图表才要接的槽：没有折线的图表不投影 data-mark="line"，这两条规则不生效。 */
 export const CHART_LINE_CONTRACT_FIELDS = ['legendSwatchLineRadius', 'tooltipSwatchLineRadius']
 const LAYOUT_FIELDS = ['fontSize']

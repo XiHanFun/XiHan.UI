@@ -32,7 +32,7 @@ tone 决定使用哪族颜色，色阶两端随之更换，格子的分档不变
 
 ### 色板换色
 
-palette 直接按颜色指定，六个色板只更换色阶满档一端，分档与空格底色都不变
+palette 直接按颜色指定，取基础色板同名色相的满档一端；分档与空格底色都不变
 
 <XhDemo src="heatmap/03-palette" />
 
@@ -117,29 +117,30 @@ levels 决定分几档，图例与格子共用同一条色阶
 - 格距四周相同：数据行的高度固定为格子边长，不由行首星期名的文字撑开。三档尺寸的横向与纵向格距是同一个值（默认 4px），格子 sm 8px / md 10px / lg 12px。
 - 行首的星期名隔行绘制：只保留第 0/2/4/6 行之外的三行，周首日是星期一时是“二 / 四 / 六”，是星期日时是“一 / 三 / 五”。一行只有 10px 高而字号是 12px，七个连续书写会上下重叠；隔行后每个保留的字有两行高度可用。三档尺寸一致，不随档位变化。需要七行全部绘制时把 `--xh-heatmap-week-day-skip` 改为可见颜色，例如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会较为紧凑）。跳过的是文字着色而不是盒子：节点、文字、盒子与底色都在，固定列的实色底不能缺四行，否则格子会从行首透出，那四行也会不再参与命中测试。
 - 色阶对照条两端各有一个词（默认 `Less` `More`），一排色块本身无法说明哪端表示多。文案使用 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 为 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出，WC 侧从元素的 `legendText` 属性读取。
-- 配色有两条路径，默认为品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其他组件共用；另一条是 `palette` 色板轴（green / blue / orange / purple / red / gray），直接按颜色指定。色板只决定色阶满档一端的实心底，0 档的空格底与中间各档的混合方式不变，也不参与语气层的悬停 / 淡底 / 前景派生；它是装饰性的轴，不是语义轴。两者都写时以色板为准：色板指定了具体颜色，语气只能推导出颜色。
-- 档数可调：未提供 `thresholds` 时按网格内的最大值均分，提供时以其为准。
+- 配色有两条路径，默认为品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其他组件共用；另一条是 `palette` 色板轴（基础色板的十二个色相 red / orange / amber / yellow / lime / green / teal / cyan / blue / indigo / purple / pink，加上 gray），直接按颜色指定，满档取同名色相的 600 档。色板只决定色阶满档一端的实心底，0 档的空格底与中间各档的混合方式不变，也不参与语气层的悬停 / 淡底 / 前景派生；它是装饰性的轴，不是语义轴。两者都写时以色板为准：色板指定了具体颜色，语气只能推导出颜色。
+- 档数可调：未提供 `thresholds` 时把有数据的那几档在 (0, 最大值] 上等宽分开（分界取整、逐档至少加 1），提供时以其为准。分档由图表引擎的分档比例尺完成；`thresholds` 里有重复或不是有限数的值时剔除并在诊断通道报 `chart.invalid-range`，档数按剩下的算。
 - 在图外报告“总天数 / 空白天数与占比 / 最大值 / 平均值”不需要再次遍历数据：三张网格都带 `max`（最大值）、`total`（总和）与 `emptyCount`（值为 0 的格子数），格子总数从 `cells.size` 读取。`emptyCount` 统计值为 0 的格子：没有数据的日期与写了 0 的日期都计入。它不是色阶第 0 档的格子数：未提供 `thresholds` 时首个下界始终为 1，两个数相等；提供 `thresholds` 后第 0 档还会包含低于首个下界的非零值，两个数不再相等。
-- 悬停或键盘聚焦到某一格时显示详情条，内容由作者编写；组件只提供身份、位置与该格的数据（日期或行列、原始值、档位、在色阶中的位置）。
+- 悬停或键盘聚焦到某一格时显示详情条，内容由作者编写；组件只提供身份、位置与该格的数据（日期或行列、原始值、档位、在色阶中的位置）。详情条与对照条走 Chart 家族配方：详情条是与其余图表提示框同一副 frosted 材质、overlay 圆角与正文排版，不反白，`--xh-heatmap-tooltip-bg` / `-fg` / `-border` 只换颜色那一层，顶部的边界光与背景模糊照旧。
 - 语气与尺寸两轴与其他组件同源；色板轴是热力图独有的。
 - 两个适配器的作者侧写法不同，最终 DOM 一致：Vue 侧不写默认插槽时按形态自动铺开整棵树，另有 `cell` 插槽向每格放入内容（三种形态都铺，载荷是日历格或矩阵格，用 `'date' in cell` 区分）、`tooltip` 插槽编写详情条内容（写了才铺出详情条）；Web Components 侧元素不生成任何结构，各部件由作者写进标记，元素只按部件名打属性。
 - Web Components 侧铺一整年不需要手写三百多个格子：`<xh-heatmap>` 上有 `grid` / `monthGrid` / `matrixGrid` 三个只读属性，分别对应三种形态推导出的网格（行、列、月份段、星期名、档位标尺都在其中），按其循环生成节点即可；元素连接后即可读取，接线在此之后进行，当场铺出的格子能被接上。每次读取都重算整张网格，读取一次后缓存使用。两个插槽是 Vue 专属，WC 侧通过 `cell-active` 事件自行填充详情条。
 - 自行编写默认插槽铺网格时，锚点从载荷的 `focusedCell` / `anchorCell` 读取、用 `setFocusedCell` 移动：这一组三种形态通用，带 `Date` 的一组在矩阵形态下始终为 null。
 
-从其他库迁移时的对照表。左列是那些库写在 `color-theme` 上的取值，右侧两列是本库的两条路径，写任一条都可以，同一行的两种写法在默认主题下产出同一个颜色（`gray` 是唯一例外，见表下说明）：
+从其他库迁移时的对照表。左列是那些库写在 `color-theme` 上的取值，右侧是本库的色板轴。色板取基础色板的色相，语气轴取的是语气色（专表好坏），两者的颜色不再相同：只想换颜色时写色板，颜色本身带好坏含义时才写语气：
 
-| 其他库的 `color-theme` | 色板轴（推荐） | 语气轴 | 满档实心底取的原语 |
-| --- | --- | --- | --- |
-| `green` | `palette="green"` | `tone="success"` | `--xh-color-success-600` |
-| `blue` | `palette="blue"` | `tone="info"` | `--xh-color-info-600` |
-| `orange` | `palette="orange"` | `tone="warning"` | `--xh-color-warning-600` |
-| `purple` | `palette="purple"` | 语气轴没有紫色 | `--xh-color-purple-600` |
-| `red` | `palette="red"` | `tone="danger"` | `--xh-color-danger-600` |
-| （多数库没有） | `palette="gray"` | `tone="neutral"` | `--xh-color-neutral-600`；深色态换 `--xh-color-neutral-450` |
-| （多数库默认为绿） | 不写 | 不写 | `--xh-bg-brand`，跟随使用者的品牌色 |
+| 其他库的 `color-theme` | 色板轴 | 满档实心底取的原语 |
+| --- | --- | --- |
+| `green` | `palette="green"` | `--xh-color-green-600` |
+| `blue` | `palette="blue"` | `--xh-color-blue-600` |
+| `orange` | `palette="orange"` | `--xh-color-orange-600` |
+| `purple` | `palette="purple"` | `--xh-color-purple-600` |
+| `red` | `palette="red"` | `--xh-color-red-600` |
+| 其余色相 | `palette="amber"` 等十二个色相名 | `--xh-color-<色相>-600` |
+| （多数库没有） | `palette="gray"` | `--xh-color-neutral-600`；深色态换 `--xh-color-neutral-450` |
+| （多数库默认为绿） | 不写 | `--xh-bg-brand`，跟随使用者的品牌色 |
 
-- 灰色是唯一按主题换档的一族：五个彩色族的 600 档明度在 0.577–0.705，深色态的空格底（`neutral-800`，明度 0.269）距离足够；中性 600 档只有 0.439，五档均分后每档只差 0.0425、相邻两档对比度 1.16–1.20，几乎无法分辨。因此深色态改取 `neutral-450`（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，与彩色族一致；不取更亮的 `neutral-400` 是因为高对比档的 `border-default` 正是该档，满档格子的描边会与底色同色。`tone="neutral"` 没有这层处理，需要灰色热力图时写 `palette="gray"`。
-- 这七种之外的颜色可以直接指定：改写 `--xh-heatmap-ink`（满档的实心底）与 `--xh-heatmap-empty`（0 档的空格底），中间各档由两端在 oklab 中混合。这个入口优先级最高，色板与语气都不能覆盖它。
+- 灰色是唯一按主题换档的一族：十二个色相的 600 档明度都是 0.546，深色态的空格底（`neutral-800`，明度 0.269）距离足够；中性 600 档只有 0.439，五档均分后每档只差 0.0425、相邻两档对比度 1.16–1.20，几乎无法分辨。因此深色态改取 `neutral-450`（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，不输彩色族；不取更亮的 `neutral-400` 是因为高对比档的 `border-default` 正是该档，满档格子的描边会与底色同色。`tone="neutral"` 没有这层处理，需要灰色热力图时写 `palette="gray"`。
+- 色板之外的颜色可以直接指定：改写 `--xh-heatmap-ink`（满档的实心底）与 `--xh-heatmap-empty`（0 档的空格底），中间各档由两端在 oklab 中混合。这个入口优先级最高，色板与语气都不能覆盖它。
 
 ### 组合
 
@@ -196,7 +197,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `locale` | `string` |  | 月份名与星期名的书写 locale，未提供时按宿主语言，宿主也没有时按 en-US。 |
 | `dir` | `Direction` |  | 文字方向。只作显式覆盖：未提供时方向从 DOM 读取， 左右方向键的语义跟随视觉次序，上下键与它无关。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
-| `palette` | `HeatmapPalette` |  | 色板：green / blue / orange / purple / red / gray，直接指定色阶满档一端的颜色；同时提供 tone 时以色板为准。 |
+| `palette` | `HeatmapPalette` |  | 色板：基础色板的十二个色相加 gray，直接指定色阶满档一端的颜色；同时提供 tone 时以色板为准。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<HeatmapTranslations>` |  |  |
 | `onCellFocus` | `(details: HeatmapCellFocusDetails) => void` |  | DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。 只由真实的聚焦触发，程序化移动锚点（`setFocusedCell`）不派发该回调。 |
@@ -378,6 +379,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
 | `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |
 | `tooltip` | `data-state` | 'hidden' \| 'visible' |
+| `tooltip` | `data-xh-chart-part` | 'tooltip' |
+| `legend` | `data-xh-chart-part` | 'legend' |
 | `legend-label` | `data-bound` | label.bound |
 | `legend-item` | `data-level` | String(item.level) |
 
@@ -402,7 +405,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `--xh-heatmap-gap` | `root` | `gap` | `default` | `--xh-space-2` | heatmap 的 root 部件 gap 覆盖槽。 |
 | `--xh-heatmap-grid-gap` | `grid` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 grid 部件 gap 覆盖槽。 |
 | `--xh-heatmap-gutter` | `grid`<br>`root`<br>`row-label`<br>`week-day` | `gap`<br>`inline-size`<br>`scroll-padding-inline-start` | `default`<br>`size=sm`<br>`variant=month` | `--xh-space-6`<br>`--xh-space-8` | heatmap 的 grid、root、row-label、week-day 部件 gap、inline-size、scroll-padding-inline-start 覆盖槽。 |
-| `--xh-heatmap-ink` | `cell`<br>`legend-item`<br>`root` | `background` | `default`<br>`is([data-theme='dark'] *, [data-theme='dark'])`<br>`palette=blue`<br>`palette=gray`<br>`palette=green`<br>`palette=orange`<br>`palette=purple`<br>`palette=red`<br>`theme=dark`<br>`tone` | `--xh-_tone`<br>`--xh-bg-brand`<br>`--xh-color-danger-600`<br>`--xh-color-info-600`<br>`--xh-color-neutral-450`<br>`--xh-color-neutral-600`<br>`--xh-color-purple-600`<br>`--xh-color-success-600`<br>`--xh-color-warning-600` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
+| `--xh-heatmap-ink` | `cell`<br>`legend-item`<br>`root` | `background` | `default`<br>`is([data-theme='dark'] *, [data-theme='dark'])`<br>`palette=amber`<br>`palette=blue`<br>`palette=cyan`<br>`palette=gray`<br>`palette=green`<br>`palette=indigo`<br>`palette=lime`<br>`palette=orange`<br>`palette=pink`<br>`palette=purple`<br>`palette=red`<br>`palette=teal`<br>`palette=yellow`<br>`theme=dark`<br>`tone` | `--xh-_tone`<br>`--xh-bg-brand`<br>`--xh-color-amber-600`<br>`--xh-color-blue-600`<br>`--xh-color-cyan-600`<br>`--xh-color-green-600`<br>`--xh-color-indigo-600`<br>`--xh-color-lime-600`<br>`--xh-color-neutral-450`<br>`--xh-color-neutral-600`<br>`--xh-color-orange-600`<br>`--xh-color-pink-600`<br>`--xh-color-purple-600`<br>`--xh-color-red-600`<br>`--xh-color-teal-600`<br>`--xh-color-yellow-600` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
 | `--xh-heatmap-label-fg` | `column-label`<br>`legend`<br>`month-label`<br>`root`<br>`row-label`<br>`week-day` | `color` | `default`<br>`variant=month`<br>`week-day=0`<br>`week-day=2`<br>`week-day=4`<br>`week-day=6` | `--xh-fg-subtle` | heatmap 的 column-label、legend、month-label、root、row-label、week-day 部件 color 覆盖槽。 |
 | `--xh-heatmap-legend-gap` | `legend` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 legend 部件 gap 覆盖槽。 |
 | `--xh-heatmap-py` | `root` | `padding-block` | `default` | `--xh-_heatmap-gap` | heatmap 的 root 部件 padding-block 覆盖槽。 |
@@ -410,26 +413,26 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `--xh-heatmap-row-h` | `cell`<br>`column-label`<br>`root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm`<br>`variant=matrix` | `--xh-space-4`<br>`--xh-space-5`<br>`--xh-space-6` | heatmap 的 cell、column-label、root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-heatmap-sticky-layer` | `row-label`<br>`week-day` | `z-index` | `default` | `1` | heatmap 的 row-label、week-day 部件 z-index 覆盖槽。 |
 | `--xh-heatmap-title-fg` | `month-label`<br>`root` | `color` | `variant=month` | `--xh-fg-default` | heatmap 的 month-label、root 部件 color 覆盖槽。 |
-| `--xh-heatmap-tooltip-bg` | `tooltip` | `background` | `default` | `--xh-fg-default` | heatmap 的 tooltip 部件 background 覆盖槽。 |
-| `--xh-heatmap-tooltip-border` | `tooltip` | `border` | `default` | `--xh-heatmap-tooltip-fg` | heatmap 的 tooltip 部件 border 覆盖槽。 |
-| `--xh-heatmap-tooltip-fg` | `tooltip` | `border`<br>`color` | `default` | `--xh-bg-surface` | heatmap 的 tooltip 部件 border、color 覆盖槽。 |
-| `--xh-heatmap-tooltip-font-size` | `tooltip` | `font-size` | `default` | `--xh-control-caption-md` | heatmap 的 tooltip 部件 font-size 覆盖槽。 |
+| `--xh-heatmap-tooltip-bg` | `tooltip` | `background-color` | `default` | `--xh-material-frosted-bg` | heatmap 的 tooltip 部件 background-color 覆盖槽。 |
+| `--xh-heatmap-tooltip-border` | `tooltip` | `border-color` | `default` | `--xh-material-frosted-border` | heatmap 的 tooltip 部件 border-color 覆盖槽。 |
+| `--xh-heatmap-tooltip-fg` | `tooltip` | `color` | `default` | `--xh-material-frosted-fg` | heatmap 的 tooltip 部件 color 覆盖槽。 |
+| `--xh-heatmap-tooltip-font-size` | `tooltip` | `font-size` | `default` | `--xh-text-body-size` | heatmap 的 tooltip 部件 font-size 覆盖槽。 |
 | `--xh-heatmap-tooltip-layer` | `tooltip` | `z-index` | `default` | `2` | heatmap 的 tooltip 部件 z-index 覆盖槽。 |
 | `--xh-heatmap-tooltip-max-w` | `tooltip` | `max-inline-size` | `default` | `--xh-overlay-max-w` | heatmap 的 tooltip 部件 max-inline-size 覆盖槽。 |
-| `--xh-heatmap-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-space-2` | heatmap 的 tooltip 部件 padding-inline 覆盖槽。 |
-| `--xh-heatmap-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-space-1` | heatmap 的 tooltip 部件 padding-block 覆盖槽。 |
-| `--xh-heatmap-tooltip-radius` | `tooltip` | `border-radius` | `default` | `--xh-shape-control` | heatmap 的 tooltip 部件 border-radius 覆盖槽。 |
-| `--xh-heatmap-tooltip-shadow` | `tooltip` | `box-shadow` | `default` | `--xh-material-frosted-compact-shadow` | heatmap 的 tooltip 部件 box-shadow 覆盖槽。 |
+| `--xh-heatmap-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-surface-pad-sm` | heatmap 的 tooltip 部件 padding-inline 覆盖槽。 |
+| `--xh-heatmap-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-surface-pad-sm` | heatmap 的 tooltip 部件 padding-block 覆盖槽。 |
+| `--xh-heatmap-tooltip-radius` | `tooltip` | `border-radius` | `default` | `--xh-shape-overlay` | heatmap 的 tooltip 部件 border-radius 覆盖槽。 |
+| `--xh-heatmap-tooltip-shadow` | `tooltip` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | heatmap 的 tooltip 部件 box-shadow 覆盖槽。 |
 | `--xh-heatmap-week-day-skip` | `root`<br>`week-day` | `color` | `week-day=0`<br>`week-day=2`<br>`week-day=4`<br>`week-day=6` | `transparent` | heatmap 的 root、week-day 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：状态（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-`background-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 

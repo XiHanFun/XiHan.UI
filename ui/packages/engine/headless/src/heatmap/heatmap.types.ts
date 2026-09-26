@@ -26,12 +26,25 @@ import type {
 export type HeatmapCellFocusDetails = HeatmapCellDetails
 
 /**
- * 色板：直接按颜色命名，决定色阶满档一端的实心底色。
+ * 色板：直接按颜色命名，决定色阶满档一端的实心底色，取基础色板里同名色相的那一档。
  * 它是装饰性的一条轴，不是第四条语义轴：取值即颜色本身，
  * 与 tone 的六个语气词不同源，也不参与语气层的悬停 / 淡底 / 前景派生。
  * 两者都提供时以色板为准：色板指定了具体颜色，语气只能推导出一个颜色。
  */
-export type HeatmapPalette = 'blue' | 'gray' | 'green' | 'orange' | 'purple' | 'red'
+export type HeatmapPalette
+  = | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'lime'
+    | 'green'
+    | 'teal'
+    | 'cyan'
+    | 'blue'
+    | 'indigo'
+    | 'purple'
+    | 'pink'
+    | 'gray'
 
 /**
  * 格子的声明：日期形态提供 date，矩阵形态提供 row 与 column。
@@ -156,7 +169,7 @@ export interface HeatmapSchema extends MachineSchema {
     dir?: Direction
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
-    /** 色板：green / blue / orange / purple / red / gray，直接指定色阶满档一端的颜色；同时提供 tone 时以色板为准。 */
+    /** 色板：基础色板的十二个色相加 gray，直接指定色阶满档一端的颜色；同时提供 tone 时以色板为准。 */
     palette?: HeatmapPalette
     /** 尺寸：sm / md / lg。 */
     size?: Size

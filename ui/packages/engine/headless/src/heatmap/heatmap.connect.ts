@@ -17,7 +17,7 @@ import type {
   HeatmapTipRect,
 } from './heatmap.grid'
 import type { HeatmapApi, HeatmapSchema } from './heatmap.types'
-import { contains, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems, readDirection } from '@xihan-ui/core'
+import { contains, DIAGNOSTIC_CODES, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems, readDirection, reportDiagnostic } from '@xihan-ui/core'
 import { heatmapAnatomy, heatmapCellQuery } from './heatmap.anatomy'
 import {
   buildHeatmapGrid,
@@ -32,6 +32,7 @@ import {
   heatmapNavIntentFromKey,
   heatmapNavTarget,
   heatmapTipPlacement,
+  normalizeHeatmapThresholds,
   resolveHeatmapTip,
 } from './heatmap.grid'
 import { heatmapActiveCell, heatmapActiveTip, heatmapGridOptions } from './heatmap.machine'
@@ -82,6 +83,17 @@ export function connectHeatmap<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): HeatmapApi<T> {
   const { context, prop, send, scope } = service
+  // 分界值里有重复或不是有限数：剔掉并报一声，档数按剩下的算
+  const declaredThresholds = prop('thresholds')
+  if (declaredThresholds && normalizeHeatmapThresholds(declaredThresholds).length !== declaredThresholds.length) {
+    reportDiagnostic({
+      code: DIAGNOSTIC_CODES.chartInvalidRange,
+      level: 'warn',
+      scope: heatmapAnatomy.name,
+      message: '分界值要是互不相同的有限数：重复的与不是有限数的已剔除，档数按剩下的算',
+      detail: { thresholds: declaredThresholds },
+    })
+  }
   const options = heatmapGridOptions(prop, scope)
   const variant = prop('variant') ?? 'calendar'
 
@@ -476,8 +488,10 @@ export function connectHeatmap<T extends PropTypes>(
 
     // 详情条不进读屏：每格的可及名字已经把日期/行列与数值念全了，
     // 再念一遍是重复。写进条里的文字必须与 cellLabel 同源，别只写在这里
+    // 详情条的材质与排版走 Chart 家族配方：与其余图表的提示框同一副 frosted 外观
     getTooltipProps: () => normalize.element({
       ...parts.tooltip.attrs,
+      'data-xh-chart-part': 'tooltip',
       'aria-hidden': true,
       // 露不露是从「哪一格是活的」算出来的派生显隐，皮肤按这一位把它藏掉
       'data-state': activeRef == null ? 'hidden' : 'visible',
@@ -503,6 +517,7 @@ export function connectHeatmap<T extends PropTypes>(
     // 整块藏起来这句话对读屏用户就没了。名字自己给一份：一排色块说不出这是干什么用的
     getLegendProps: () => normalize.element({
       ...parts.legend.attrs,
+      'data-xh-chart-part': 'legend',
       'role': 'group',
       'aria-label': legendLabel,
     }),

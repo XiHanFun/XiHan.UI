@@ -1,9 +1,9 @@
-// 色板换色 | palette 直接按颜色指定，六个色板只更换色阶满档一端，分档与空格底色都不变
+// 色板换色 | palette 直接按颜色指定，取基础色板同名色相的满档一端；分档与空格底色都不变
 import type { HeatmapPalette } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";
 
-// 同一份数据铺六遍，肉眼比的就只有颜色这一件事
+// 同一份数据按色板各铺一遍，肉眼比的就只有颜色这一件事
 const activity = [
   { date: "2024-01-02", count: 1 },
   { date: "2024-01-04", count: 3 },
@@ -16,7 +16,7 @@ const activity = [
   { date: "2024-01-27", count: 2 },
 ];
 
-const palettes: HeatmapPalette[] = ["green", "blue", "orange", "purple", "red", "gray"];
+const palettes: HeatmapPalette[] = ["red", "orange", "amber", "yellow", "lime", "green", "teal", "cyan", "blue", "indigo", "purple", "pink", "gray"];
 
 export default function Demo(): ReactNode {
   return (

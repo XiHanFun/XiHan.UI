@@ -48,9 +48,7 @@ const COLOR_LITERAL_OK = new Set(['color-picker.css'])
  * 反白浮层同理正当：它把「面的颜色」当字色使。
  */
 const FOREGROUND_PROP = /^\s*(?:color|-webkit-text-fill-color)\s*:/
-const BG_AS_FOREGROUND_OK = {
-  'heatmap.css': '提示气泡是反白的实心面，字色取的就是面色',
-}
+const BG_AS_FOREGROUND_OK = {}
 const roleSwaps = []
 const roleOkSeen = new Set()
 for (const [file, src] of sources) {
