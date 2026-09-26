@@ -460,16 +460,24 @@
     --xh-_tabs-indicator-w: 0;
     --xh-_tabs-indicator-h: 0;
 
+    /* 摆在行首，落点交给 transform（只走合成），长度跟着标签宽走。标签带挪动时整条孩子
+       共用的 translate 叠在它之上，两者互不覆盖，过渡也只挂在 transform 上 */
     position: absolute;
     inset-block-end: 0;
-    inset-inline-start: var(--xh-_tabs-indicator-x);
+    inset-inline-start: 0;
     inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+    transform: translate(var(--xh-_tabs-indicator-x), 0);
     transition:
-      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* transform 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
+  [data-scope='tabs'][data-part='indicator']:dir(rtl) {
+    transform: translate(calc(-1 * var(--xh-_tabs-indicator-x)), 0);
   }
 
   /* 卡片变体已经由卡片面表达状态，不再叠一条下划线。 */
@@ -484,8 +492,8 @@
   [data-scope='tabs'][data-part='indicator'][data-variant='segment'] {
     inset-block-end: auto;
     inset-inline-end: auto;
-    inset-inline-start: var(--xh-_tabs-indicator-x);
-    inset-block-start: var(--xh-_tabs-indicator-y);
+    inset-inline-start: 0;
+    inset-block-start: 0;
     inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-_tabs-indicator-h);
     box-sizing: border-box;
@@ -494,11 +502,15 @@
     background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
     box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
     pointer-events: none;
+    transform: translate(var(--xh-_tabs-indicator-x), var(--xh-_tabs-indicator-y));
     transition:
-      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='tabs'][data-part='indicator'][data-variant='segment']:dir(rtl) {
+    transform: translate(calc(-1 * var(--xh-_tabs-indicator-x)), var(--xh-_tabs-indicator-y));
   }
 
   /* line 档没放 indicator 部件时，选中标签自画一条静态指示线（导航当前页）：
@@ -543,11 +555,12 @@
     inset-block-end: auto;
     inset-inline-start: auto;
     inset-inline-end: 0;
-    inset-block-start: var(--xh-_tabs-indicator-y);
+    inset-block-start: 0;
     block-size: var(--xh-_tabs-indicator-h);
     inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
+    transform: translate(0, var(--xh-_tabs-indicator-y));
     transition:
-      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 

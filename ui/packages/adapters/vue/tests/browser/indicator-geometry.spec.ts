@@ -3,7 +3,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot } from '../../src'
+import { XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -85,5 +85,71 @@ describe('segmented 的滑块几何', () => {
     expect(style.transitionProperty.split(', ')).toEqual(['transform', 'inline-size', 'block-size', 'box-shadow'])
     await settle()
     expectCovers('month')
+  })
+})
+
+describe('tabs 的指示条几何', () => {
+  const TABS = [
+    { value: 'overview', label: '概览' },
+    { value: 'members', label: '成员与权限' },
+    { value: 'billing', label: '账单' },
+  ]
+
+  async function mountTabs(options: { scale?: number, variant?: 'line' | 'segment', orientation?: 'horizontal' | 'vertical' } = {}): Promise<void> {
+    const host = document.createElement('div')
+    host.style.inlineSize = '480px'
+    if (options.scale)
+      host.style.transform = `scale(${options.scale})`
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhTabsRoot, { defaultValue: 'members', variant: options.variant, orientation: options.orientation }, () => [
+        h(XhTabsList, null, () => [
+          h(XhTabsIndicator),
+          ...TABS.map(tab => h(XhTabsTrigger, { value: tab.value }, () => tab.label)),
+        ]),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    for (const animation of document.querySelector<HTMLElement>('[data-scope="tabs"][data-part="indicator"]')!.getAnimations())
+      animation.finish()
+  }
+
+  function tabPart(name: string, value?: string): DOMRect {
+    const selector = value ? `[data-scope='tabs'][data-part='${name}'][data-value='${value}']` : `[data-scope='tabs'][data-part='${name}']`
+    return document.querySelector<HTMLElement>(selector)!.getBoundingClientRect()
+  }
+
+  it('横排 line：祖先带 scale(0.5) 时指示条的主轴与选中标签对齐', async () => {
+    await mountTabs({ scale: 0.5 })
+    const indicator = tabPart('indicator')
+    const trigger = tabPart('trigger', 'members')
+    expect(indicator.left).toBeCloseTo(trigger.left, 0)
+    expect(indicator.width).toBeCloseTo(trigger.width, 0)
+  })
+
+  it('segment 档：整页 RTL 而没传 dir，滑块与选中标签重合', async () => {
+    document.documentElement.dir = 'rtl'
+    await mountTabs({ variant: 'segment' })
+    const indicator = tabPart('indicator')
+    const trigger = tabPart('trigger', 'members')
+    expect(indicator.left).toBeCloseTo(trigger.left, 0)
+    expect(indicator.top).toBeCloseTo(trigger.top, 0)
+    expect(indicator.width).toBeCloseTo(trigger.width, 0)
+    expect(indicator.height).toBeCloseTo(trigger.height, 0)
+  })
+
+  it('竖排 line：指示条沿块轴落在选中标签旁，RTL 下也不横向错开', async () => {
+    document.documentElement.dir = 'rtl'
+    await mountTabs({ orientation: 'vertical' })
+    const indicator = tabPart('indicator')
+    const trigger = tabPart('trigger', 'members')
+    const list = tabPart('list')
+    expect(indicator.top).toBeCloseTo(trigger.top, 0)
+    expect(indicator.height).toBeCloseTo(trigger.height, 0)
+    // 贴在行向末端那条轨道上：RTL 下行尾在左边
+    expect(indicator.left).toBeCloseTo(list.left + Number.parseFloat(getComputedStyle(document.querySelector('[data-part="list"]')!).borderLeftWidth), 0)
   })
 })

@@ -58,6 +58,8 @@ function mount(props: Partial<TabsSchema['props']> = {}, options: { viewport?: n
     geometry(el, horizontal
       ? { offsetLeft: slot * SPAN, offsetTop: 0, offsetWidth: SPAN, offsetHeight: 36 }
       : { offsetLeft: 0, offsetTop: slot * SPAN, offsetWidth: 120, offsetHeight: SPAN })
+    // 标签带是标签的定位祖先（指示条绝对定位于它），offset* 从它的内衬边量起
+    Object.defineProperty(el, 'offsetParent', { configurable: true, value: list })
     list.append(el)
   })
   if (options.arrows !== false)
