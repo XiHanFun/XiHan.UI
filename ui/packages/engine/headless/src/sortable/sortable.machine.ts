@@ -8,6 +8,7 @@
 import type { DndRect } from '@xihan-ui/pointer'
 import type { SortableSchema } from './sortable.types'
 import { ITEM_VALUE_ATTR, queryItems, setup } from '@xihan-ui/core'
+import { frameLoop } from '@xihan-ui/motion'
 import {
   createPointerSession,
   edgeScrollDelta,
@@ -301,7 +302,7 @@ export const sortableMachine = createMachine({
         if (typeof win.requestAnimationFrame !== 'function')
           return undefined
 
-        let frame = win.requestAnimationFrame(function tick(): void {
+        return frameLoop(win, () => {
           const root = refs.get('getRootEl')()
           const origin = refs.get('origin')
           // scrollBy 不是哪儿都有：无头 DOM 与非 HTML 元素上都可能缺席，缺了就当这一轮不滚
@@ -314,9 +315,7 @@ export const sortableMachine = createMachine({
             if (step.x !== 0 || step.y !== 0)
               root.scrollBy(step.x, step.y)
           }
-          frame = win.requestAnimationFrame(tick)
         })
-        return () => win.cancelAnimationFrame(frame)
       },
     },
   },
