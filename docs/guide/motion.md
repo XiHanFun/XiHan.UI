@@ -19,7 +19,7 @@ resolveEasing("cubic-bezier(0.4, 0, 0.2, 1)")(0.5);
 resolveEasing(t => t * t)(0.5); // 0.25
 ```
 
-十一条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack`，CSS 关键字 `linear`，以及没有令牌对应的 `emphasized`（表现性进场，`@xihan-ui/animations` 的预设使用）、`decelerate`、`accelerate`。
+十条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack` `sineInOut`，CSS 关键字 `linear`，以及没有令牌对应的 `emphasized`（表现性进场，`@xihan-ui/animations` 的预设使用）。
 
 三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `durations.slow`。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
 
