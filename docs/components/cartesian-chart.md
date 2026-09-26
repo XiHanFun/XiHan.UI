@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 
@@ -80,7 +80,7 @@ labels="inside" 把每一段的数写在柱内，totals 在整叠外侧写合计
 
 ### 线尾标签
 
-endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折线不多时读者不用对照图例
+endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用引导线连回线尾；折线不多时读者不用对照图例
 
 <XhDemo src="cartesian-chart/11-end-label" />
 
@@ -119,7 +119,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开；折�
 - 系列多于 8 个时报错：分类色只有 8 个可区分的色槽，第 9 个开始会与前面的系列撞色。需要更多系列时先合并或分成几张图。
 - 数据标签由系列的 `labels` 打开：柱写 `inside`（柱内居中）或 `end`（柱的远端外侧，负值翻到另一侧；堆叠中的段写在段内的远端），折线写 `end`（每个点的上方）。柱内的字取与色槽配对的前景色；放不下、与更要紧的标签重叠时不写。柱端外侧的标签写在绘图区里：数值轴两端各收进一截，最高的那根柱上面也有地方写。
 - `totals` 让每个堆叠组在整叠外侧写出合计，含负值时正负两端各写一个；百分比堆叠不写合计。
-- 折线的 `endLabel` 在线尾写系列名与末值，几条线的末端挤在一起时上下推开，挤不下去掉末值最小的；右边留出它要的地方。
+- 折线的 `endLabel` 在线尾写系列名与末值，几条线的末端挤在一起时上下推开，推开的标签用引导线连回线尾，挤不下去掉末值最小的；右边留出它要的地方。
 - 标签按重要性落位：合计最先，其次线尾标签，最后逐个数据的标签；它们都只给眼睛看，数值由每个数据的可及名、摘要与数据表承担。
 - 提示框缺省 `trigger="axis"`：指针吸附到最近的键，列出该键上全部可见系列；`trigger="item"` 只报告指针命中的那一个数据。键盘聚焦与指针悬停显示同样的内容。`tooltipOrder` 改变提示框里各系列的行序：缺省 `series` 按图例次序，`descending` / `ascending` 按数值排，缺失值排在最后；回调里的 `items` 仍按图例次序。
 - 悬停图例项时，其余系列淡出到 `--xh-chart-dim-alpha`，该系列颜色不变；`trigger="item"` 时悬停或聚焦某个数据同样只保留它所在的系列。`axis` 模式不淡出：提示框列出的正是该键上的全部系列。

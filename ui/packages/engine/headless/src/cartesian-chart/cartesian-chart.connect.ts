@@ -425,6 +425,9 @@ export function connectCartesianChart<T extends PropTypes>(
       }
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
+      // 线尾标签的引导线随所属系列淡出
+      if (mark.part === 'leader-line')
+        props['data-dimmed'] = dataAttr(emphasis != null && mark.datum != null && emphasis !== mark.datum.seriesId)
       return normalize.element(props)
     },
 

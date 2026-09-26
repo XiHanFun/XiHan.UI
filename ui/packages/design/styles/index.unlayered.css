@@ -17402,7 +17402,8 @@
 [data-scope='cartesian-chart'][data-part='dot'][data-drawing],
 [data-scope='cartesian-chart'][data-part='data-label'][data-drawing],
 [data-scope='cartesian-chart'][data-part='total-label'][data-drawing],
-[data-scope='cartesian-chart'][data-part='end-label'][data-drawing] {
+[data-scope='cartesian-chart'][data-part='end-label'][data-drawing],
+[data-scope='cartesian-chart'][data-part='leader-line'][data-drawing] {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
   animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
 }
@@ -17441,6 +17442,19 @@
   fill: var(--xh-chart-label);
   pointer-events: none;
   transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 线尾标签被推开时的引导线：结构线色的细线，与饼图的引导线同一副 */
+[data-scope='cartesian-chart'][data-part='leader-line'] {
+  fill: none;
+  stroke: var(--xh-chart-axis);
+  stroke-width: var(--xh-stroke-thin);
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='cartesian-chart'][data-part='leader-line'][data-dimmed] {
+  opacity: var(--xh-chart-dim-alpha);
 }
 
 /* 压在柱上的标签：取与色槽配对的前景色 */
@@ -17707,6 +17721,10 @@
   [data-scope='cartesian-chart'][data-part='total-label'],
   [data-scope='cartesian-chart'][data-part='end-label'] {
     fill: CanvasText;
+  }
+
+  [data-scope='cartesian-chart'][data-part='leader-line'] {
+    stroke: CanvasText;
   }
 
   [data-scope='cartesian-chart'][data-part='crosshair'][data-kind='band'] {
