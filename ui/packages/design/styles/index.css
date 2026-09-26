@@ -37391,7 +37391,7 @@
     transform-origin: top center;
   }
 
-  /* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
+  /* 退场动画播完连接层给的是 hidden 属性，而上面声明了 display——
      漏掉这条，已经"卸载"的提示会一直杵在屏幕上，且再也没人来收 */
   [data-scope='toast'][data-part='root'][hidden] {
     display: none;
@@ -37422,7 +37422,7 @@
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* forwards 不能省：退场窗口（removeDelay 默认 300ms）比退场动画长，
+  /* forwards 不能省：动画播完到条子真正收起之间还隔着一次提交，
      不定住末帧的话动画跑完会弹回全不透明，条子在被收起前先闪一下 */
   [data-scope='toast'][data-part='root'][data-state='dismissing'] {
     animation: xh-toast-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
