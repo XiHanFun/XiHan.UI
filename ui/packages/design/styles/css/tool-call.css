@@ -41,7 +41,7 @@
   }
 
   /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  [data-scope='tool-call'][data-part='root']:not([data-part='item'][data-instant] *) {
+  [data-scope='tool-call'][data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
   }
 
