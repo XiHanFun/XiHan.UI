@@ -50,7 +50,7 @@ features:
 
   - title: 依赖面收敛
     icon: 📦
-    details: 全部库包的运行时第三方依赖只有一个。浮层定位、代码着色、虚拟滚动、Web Components 响应式基类、流式 Markdown 均为自研。
+    details: 全部库包都没有运行时第三方依赖。日期运算、浮层定位、代码着色、虚拟滚动、Web Components 响应式基类、流式 Markdown 均为自研。
     link: /npm-package-dependency
     linkText: "查看包与依赖关系"
 

@@ -32,7 +32,10 @@ const HEADLESS_INDEX = 'packages/engine/headless/src/index.ts'
 const EXEMPT = {
   vue: {},
   react: {},
-  headless: {},
+  headless: {
+    // 时间族内部共用的值解析：time-picker 与 time-range-picker 经 time-field 入口取用，对外的日期运算在 @xihan-ui/core/date
+    './time-field': ['draftFromTime', 'parseTimeValue'],
+  },
 }
 
 const RE_REEXPORT = /export\s+(type\s+)?\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g

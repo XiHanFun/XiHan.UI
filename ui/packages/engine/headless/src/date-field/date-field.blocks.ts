@@ -6,7 +6,7 @@
 // 提供 date field.blocks 相关实现。
 
 import type { DateSegments, DateSegmentSet, DateSegmentType } from './date-field.types'
-import { CalendarDate, parseDateTime, startOfWeek } from '@internationalized/date'
+import { fromIsoWeek, PlainDate, PlainDateTime, isoWeeksInYear as weeksInIsoYear } from '@xihan-ui/core/date'
 
 // 段位当积木用的那一层：段集是一份有序清单，作者要哪几块就写哪几块，
 // 不再由一个 granularity 阶梯替他决定。
@@ -87,32 +87,12 @@ export function monthToQuarter(month: number): number {
 }
 
 /**
- * ISO 周序号 → 那一周的周首日。
+ * ISO 周序号 → 那一周的周首日（星期一）。
  *
- * 锚点取「1 月 4 日」：ISO 规定第 1 周必定含 1 月 4 日，于是它所在那一周的周首日
- * 就是第 1 周的起点，往后每周加七天。ISO 周固定周一开始，不随显示语言改变。
+ * 周序号越过该年的周数时顺延到下一年，不报错：段位里暂存的周号要到收敛时才夹回来。
  */
-export function isoWeekStart(year: number, week: number): CalendarDate {
-  const firstWeek = startOfWeek(new CalendarDate(year, 1, 4), 'en-GB')
-  return firstWeek.add({ weeks: week - 1 })
-}
-
-/** ISO 周序年；跨年周看这一周的周四落在哪一年。 */
-function isoWeekYearOf(date: CalendarDate): number {
-  const day = date.toDate('UTC').getUTCDay()
-  return date.add({ days: ((day === 0 ? 7 : day) * -1) + 4 }).year
-}
-
-/** 某一天落在 ISO 的第几周。与周首日的换算互为逆运算。 */
-export function isoWeekOf(date: CalendarDate): number {
-  // 归到本周周首日再比，免得同一周里不同的日子算出不同的周号
-  const start = startOfWeek(date, 'en-GB')
-  const weekYear = isoWeekYearOf(date)
-  const firstWeek = startOfWeek(new CalendarDate(weekYear, 1, 4), 'en-GB')
-  const diff = Math.round(
-    (start.toDate('UTC').getTime() - firstWeek.toDate('UTC').getTime()) / 604800000,
-  )
-  return diff + 1
+export function isoWeekStart(year: number, week: number): PlainDate {
+  return fromIsoWeek(year, 1).add({ weeks: week - 1 })
 }
 
 /** 段集与 locale：新出的几块要靠这两样才算得出区间与文字。 */
@@ -143,16 +123,12 @@ export function blockRange(
   return null
 }
 
-/**
- * 某一年有 52 周还是 53 周：拿 12 月 28 日算——ISO 规定它必定落在该年最后一周。
- *
- * 周数由 ISO 周历决定，不随显示语言改变。
- */
+/** 某一年有 52 周还是 53 周。周数由 ISO 周历决定，不随显示语言改变。 */
 export function isoWeeksInYear(year: number | undefined): number {
   // 年还没填时给上界，免得把可选值先限死
   if (year == null)
     return ISO_WEEKS_MAX
-  return isoWeekOf(new CalendarDate(year, 12, 28))
+  return weeksInIsoYear(year)
 }
 
 /**
@@ -168,7 +144,7 @@ export function blocksFilled(segments: DateSegments, set: DateSegmentSet): boole
  * 缺的粗段按「那一段的头」补：没有月就按 1 月，没有日就按 1 号。
  * 于是「只有年」得到 1 月 1 日、「年 + 季度」得到那一季的头一天，与面板那边落的值一致。
  */
-export function blocksToDate(segments: DateSegments, set: DateSegmentSet, _locale: string): CalendarDate | null {
+export function blocksToDate(segments: DateSegments, set: DateSegmentSet, _locale: string): PlainDate | null {
   const normalized = normalizeSegmentSet(set)
   const year = segments.year
   if (year == null)
@@ -186,7 +162,8 @@ export function blocksToDate(segments: DateSegments, set: DateSegmentSet, _local
   const day = normalized.includes('day') ? segments.day : 1
   if (day == null)
     return null
-  return new CalendarDate(year, month, day)
+  // 越界的日号夹到当月末日（2 月 31 日 → 2 月 28/29 日）
+  return PlainDate.from({ year, month, day })
 }
 
 /**
@@ -248,14 +225,14 @@ export function blocksToIso(segments: DateSegments, set: DateSegmentSet, locale:
 export function isoToBlocks(iso: string | null | undefined, set: DateSegmentSet, _locale: string): DateSegments {
   if (!iso)
     return {}
-  let dt
+  let dt: PlainDateTime
   try {
-    dt = parseDateTime(iso)
+    dt = PlainDateTime.from(iso)
   }
   catch {
     return {}
   }
-  const date = new CalendarDate(dt.year, dt.month, dt.day)
+  const date = dt.toPlainDate()
   const normalized = normalizeSegmentSet(set)
   const half = splitDayPeriod(dt.hour)
   const twelve = normalized.includes('dayPeriod')
@@ -263,7 +240,7 @@ export function isoToBlocks(iso: string | null | undefined, set: DateSegmentSet,
   for (const type of normalized) {
     switch (type) {
       case 'year':
-        out.year = normalized.includes('week') ? isoWeekYearOf(date) : dt.year
+        out.year = normalized.includes('week') ? date.yearOfWeek : dt.year
         break
       case 'quarter':
         out.quarter = monthToQuarter(dt.month)
@@ -272,7 +249,7 @@ export function isoToBlocks(iso: string | null | undefined, set: DateSegmentSet,
         out.month = dt.month
         break
       case 'week':
-        out.week = isoWeekOf(date)
+        out.week = date.weekOfYear
         break
       case 'day':
         out.day = dt.day
@@ -326,9 +303,9 @@ export function blocksReference(reference: DateSegments, set: DateSegmentSet, _l
     touched = true
   }
   if (normalized.includes('week') && year != null && month != null && day != null) {
-    const date = new CalendarDate(year, month, day)
-    out.year = isoWeekYearOf(date)
-    out.week = isoWeekOf(date)
+    const date = PlainDate.from({ year, month, day })
+    out.year = date.yearOfWeek
+    out.week = date.weekOfYear
     touched = true
   }
   if (normalized.includes('dayPeriod') && hour != null) {

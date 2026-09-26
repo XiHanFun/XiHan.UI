@@ -6,7 +6,7 @@
 // 提供 time range picker.presets 相关实现。
 
 import type { TimeGranularity } from '../time-field'
-import { getLocalTimeZone, now } from '@internationalized/date'
+import { getLocalTimeZone, now } from '@xihan-ui/core/date'
 import { formatTimeValue } from '../time-field'
 
 /**

@@ -4,7 +4,7 @@ const { readdirSync } = require('node:fs')
 const { layers } = require('./tooling/eslint-config/src/layers.json')
 
 // 库包允许引用的第三方运行时依赖，与 tooling/scripts/package/check-runtime-deps.mjs 的 ALLOWLIST 对应。
-const RUNTIME_DEP_ALLOWLIST = ['@internationalized/date']
+const RUNTIME_DEP_ALLOWLIST = []
 
 const names = Object.keys(layers)
 
@@ -93,7 +93,7 @@ module.exports = {
       to: {
         // 只咬会随包发出去的与压根没声明的。peer 不算：适配器引宿主框架正是它的契约。
         dependencyTypes: ['npm', 'npm-optional', 'npm-bundled', 'npm-no-pkg', 'npm-unknown'],
-        pathNot: RUNTIME_DEP_ALLOWLIST.map(d => `node_modules/${d}/`),
+        ...(RUNTIME_DEP_ALLOWLIST.length ? { pathNot: RUNTIME_DEP_ALLOWLIST.map(d => `node_modules/${d}/`) } : {}),
       },
     },
     ...layerRules,

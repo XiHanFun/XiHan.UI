@@ -104,7 +104,7 @@ export function connectDateRangePicker<T extends PropTypes>(
   const calendar = connectCalendarRangePicker(services.calendar, normalize)
   // 两端都在才有连续区间可言
   const periodValue = value[0] && value[1]
-    ? calendarPeriodValue(calendar.granularity, 'range', [value[0], value[1]], { locale: prop('locale'), timeZone: prop('timeZone') })
+    ? calendarPeriodValue(calendar.granularity, 'range', [value[0], value[1]], { locale: prop('locale') })
     : null
 
   // —— 快捷选项：一条选项就是一次整份写值 ——

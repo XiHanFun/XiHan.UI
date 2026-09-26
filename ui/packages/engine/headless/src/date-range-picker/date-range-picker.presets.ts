@@ -5,7 +5,7 @@
 
 // 提供 date range picker.presets 相关实现。
 
-import { getLocalTimeZone, startOfMonth, startOfYear, today } from '@internationalized/date'
+import { getLocalTimeZone, startOfMonth, startOfYear, today } from '@xihan-ui/core/date'
 import { datePickerPresetValue } from '../date-picker'
 
 /**

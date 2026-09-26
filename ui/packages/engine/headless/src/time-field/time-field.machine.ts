@@ -14,8 +14,8 @@ import type {
   TimeHourCycle,
   TimeSegmentType,
 } from './time-field.types'
-import { parseTime, Time } from '@internationalized/date'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { PlainTime } from '@xihan-ui/core/date'
 import { dayPeriodLabel } from '../shared/day-period'
 
 const { createMachine } = setup<TimeFieldSchema>()
@@ -54,11 +54,11 @@ function withField(draft: TimeDraft, field: NumericSegment, value: number | null
 }
 
 /** 解析 ISO 时间串；解析不了返回 null，不抛。 */
-export function parseTimeValue(value: string | null | undefined): Time | null {
+export function parseTimeValue(value: string | null | undefined): PlainTime | null {
   if (!value)
     return null
   try {
-    return parseTime(value)
+    return PlainTime.from(value)
   }
   catch {
     return null
@@ -66,15 +66,21 @@ export function parseTimeValue(value: string | null | undefined): Time | null {
 }
 
 /** 时间对象 → 逐段缓冲。小时一旦有值，上午/下午由它决定，故 dayPeriod 归零。 */
-export function draftFromTime(time: Time | null): TimeDraft {
+export function draftFromTime(time: PlainTime | null): TimeDraft {
   if (!time)
     return emptyTimeDraft()
   return { hour: time.hour, minute: time.minute, second: time.second, dayPeriod: null }
 }
 
-/** 逐段缓冲 → 时间对象；空段按 0 补，仅作加减的基准。 */
-export function timeFromDraft(draft: TimeDraft): Time {
-  return new Time(draft.hour ?? 0, draft.minute ?? 0, draft.second ?? 0)
+/** 逐段缓冲 → 时间对象；空段按 0 补，越界的段夹到合法值。 */
+export function timeFromDraft(draft: TimeDraft): PlainTime {
+  return PlainTime.from({ hour: draft.hour ?? 0, minute: draft.minute ?? 0, second: draft.second ?? 0 })
+}
+
+/** 在 [min, max] 里绕圈加减：越过一端从另一端接着走。 */
+function cycleWithin(value: number, delta: number, min: number, max: number): number {
+  const size = max - min + 1
+  return ((((value - min + delta) % size) + size) % size) + min
 }
 
 /**
@@ -235,10 +241,12 @@ export function cycleTimeSegment(
   if (current == null)
     return setTimeSegment(draft, segment, delta > 0 ? range.min : range.max, hourCycle)
   const base = timeFromDraft(draft)
-  const next = segment === 'hour'
-    ? base.cycle('hour', delta, { hourCycle })
-    : base.cycle(segment, delta)
-  return withField(draft, segment, next[segment])
+  if (segment !== 'hour')
+    return withField(draft, segment, cycleWithin(base[segment], delta, 0, 59))
+  // 12 小时制只在同一个半天里绕：上午 11 点再加一是 0 点，不跨到下午
+  const pm = base.hour >= 12
+  const next = hourCycle === 12 ? cycleWithin(base.hour, delta, pm ? 12 : 0, pm ? 23 : 11) : cycleWithin(base.hour, delta, 0, 23)
+  return withField(draft, 'hour', next)
 }
 
 /**
@@ -309,7 +317,7 @@ export function isTimeOutOfRange(value: string, min?: string, max?: string): boo
     return false
   const lo = parseTimeValue(min)
   const hi = parseTimeValue(max)
-  return (!!lo && time.compare(lo) < 0) || (!!hi && time.compare(hi) > 0)
+  return (!!lo && PlainTime.compare(time, lo) < 0) || (!!hi && PlainTime.compare(time, hi) > 0)
 }
 
 /** 此刻该编辑哪一份逐段值；须与 connect 显示用的是同一条规则。 */

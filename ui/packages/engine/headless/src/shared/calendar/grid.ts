@@ -5,19 +5,14 @@
 
 // 日历网格的纯数学：日期矩阵、周期格、表头与方向键落点，日历选择器与日历范围选择器共用。
 
-import type { CalendarDate } from '@internationalized/date'
-import {
-  DateFormatter,
-  endOfWeek,
-  getWeeksInMonth,
-  parseDate,
-  startOfMonth,
-  startOfWeek,
-} from '@internationalized/date'
+import { createDateFormatter, endOfWeek, PlainDate, startOfMonth, startOfWeek, weeksInMonth } from '@xihan-ui/core/date'
 
 // 月视图的纯数学与纯格式化：不碰 DOM、不认识状态机，把「哪一天 + locale」翻成
 // 一张日期矩阵、一排星期几表头、一个方向键落点。日期运算全部委托给
-// @internationalized/date 的不可变值对象。
+// @xihan-ui/core/date 的不可变值对象；格式化只由日期字段决定，与时区无关。
+
+/** ISO 周固定从星期一开始，不随显示语言改变。 */
+const ISO_WEEK_START = 1
 
 /**
  * 这些纯函数没拿到 locale 时用的兜底。周首日（周日还是周一）由它决定。
@@ -99,7 +94,6 @@ export interface CalendarWeekDaysOptions {
   reference: string
   locale?: string
   weekdayFormat?: 'narrow' | 'short'
-  timeZone?: string
 }
 
 /** 方向键/翻页键的落点意图。 */
@@ -124,12 +118,12 @@ export interface CalendarNavKeyEventLike {
   shiftKey?: boolean
 }
 
-/** ISO 串 → 日期值对象；解析不了一律给 null（parseDate 遇脏值会抛）。 */
-export function parseCalendarDate(value: string | null | undefined): CalendarDate | null {
+/** ISO 串 → 日期值对象；解析不了一律给 null（PlainDate.from 遇脏值会抛）。 */
+export function parseCalendarDate(value: string | null | undefined): PlainDate | null {
   if (!value)
     return null
   try {
-    return parseDate(value)
+    return PlainDate.from(value)
   }
   catch {
     return null
@@ -146,8 +140,8 @@ export function parseCalendarDate(value: string | null | undefined): CalendarDat
  */
 export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions = {}): CalendarMonthGrid {
   const { locale = CALENDAR_LOCALE, fixedWeeks = false } = options
-  const first = startOfMonth(parseDate(anchor))
-  const weekCount = fixedWeeks ? CALENDAR_FIXED_WEEKS : getWeeksInMonth(first, locale)
+  const first = startOfMonth(PlainDate.from(anchor))
+  const weekCount = fixedWeeks ? CALENDAR_FIXED_WEEKS : weeksInMonth(first, locale)
 
   const weeks: CalendarDay[][] = []
   let cursor = startOfWeek(first, locale)
@@ -176,14 +170,14 @@ export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions
 
 /** 生成七列表头。取参照日所在那一周逐日格式化，列序与 buildMonthGrid 一致。 */
 export function buildWeekDays(options: CalendarWeekDaysOptions): CalendarWeekDay[] {
-  const { reference, locale = CALENDAR_LOCALE, weekdayFormat = 'short', timeZone = 'UTC' } = options
-  const start = startOfWeek(parseDate(reference), locale)
-  const shortFormatter = new DateFormatter(locale, { weekday: weekdayFormat, timeZone })
-  const longFormatter = new DateFormatter(locale, { weekday: 'long', timeZone })
+  const { reference, locale = CALENDAR_LOCALE, weekdayFormat = 'short' } = options
+  const start = startOfWeek(PlainDate.from(reference), locale)
+  const shortFormatter = createDateFormatter(locale, { weekday: weekdayFormat })
+  const longFormatter = createDateFormatter(locale, { weekday: 'long' })
 
   const out: CalendarWeekDay[] = []
   for (let i = 0; i < CALENDAR_WEEK_LENGTH; i++) {
-    const date = start.add({ days: i }).toDate(timeZone)
+    const date = start.add({ days: i })
     out.push({ value: i, label: shortFormatter.format(date), long: longFormatter.format(date) })
   }
   return out
@@ -234,7 +228,7 @@ export function calendarNavTarget(
 ): string {
   if (view !== 'day')
     return periodNavTarget(anchor, intent, view)
-  const date = parseDate(anchor)
+  const date = PlainDate.from(anchor)
   switch (intent) {
     case 'day.prev':
       return date.subtract({ days: 1 }).toString()
@@ -307,7 +301,7 @@ function periodCellCount(view: Exclude<CalendarView, 'day'>): number {
  * 月视图按月、季度视图按季、年视图按它在这个十年里的第几年。
  */
 export function calendarPeriodIndex(value: string, view: Exclude<CalendarView, 'day'>): number {
-  const date = parseDate(value)
+  const date = PlainDate.from(value)
   if (view === 'week')
     return 0
   if (view === 'year')
@@ -323,7 +317,7 @@ export function calendarPeriodIndex(value: string, view: Exclude<CalendarView, '
  * 细的位（日号）一路沿用，钻回日视图时人还落在原来那一天上。
  */
 function periodNavTarget(anchor: string, intent: CalendarNavIntent, view: Exclude<CalendarView, 'day'>): string {
-  const date = parseDate(anchor)
+  const date = PlainDate.from(anchor)
   if (view === 'week') {
     switch (intent) {
       case 'day.prev':
@@ -394,7 +388,7 @@ export function calendarPeriodOf(
   const date = parseCalendarDate(value)
   if (!date)
     return null
-  const { locale = CALENDAR_LOCALE, timeZone = 'UTC' } = options
+  const { locale = CALENDAR_LOCALE } = options
 
   if (granularity === 'day') {
     const iso = date.toString()
@@ -402,20 +396,20 @@ export function calendarPeriodOf(
   }
 
   if (granularity === 'week') {
-    const start = startOfWeek(date, 'en-GB')
+    const start = startOfWeek(date, ISO_WEEK_START)
     const end = start.add({ days: CALENDAR_WEEK_LENGTH - 1 })
-    const rangeFormat = new DateFormatter(locale, { month: '2-digit', day: '2-digit', timeZone })
+    const rangeFormat = createDateFormatter(locale, { month: '2-digit', day: '2-digit' })
     return {
-      key: `${isoWeekYear(start.toString())}-W${String(isoWeekNumber(start.toString())).padStart(2, '0')}`,
+      key: `${start.yearOfWeek}-W${String(start.weekOfYear).padStart(2, '0')}`,
       start: start.toString(),
       end: end.toString(),
-      label: `${rangeFormat.format(start.toDate(timeZone))}–${rangeFormat.format(end.toDate(timeZone))}`,
+      label: `${rangeFormat.format(start)}–${rangeFormat.format(end)}`,
       outside: false,
     }
   }
 
   if (granularity === 'year') {
-    const start = date.set({ month: 1, day: 1 })
+    const start = date.with({ month: 1, day: 1 })
     return {
       key: String(start.year),
       start: start.toString(),
@@ -427,7 +421,7 @@ export function calendarPeriodOf(
 
   const months = calendarPeriodMonths(granularity)
   const month = Math.floor((date.month - 1) / months) * months + 1
-  const start = date.set({ month, day: 1 })
+  const start = date.with({ month, day: 1 })
   const end = start.add({ months }).subtract({ days: 1 })
   if (granularity === 'quarter') {
     const quarter = Math.floor((month - 1) / 3) + 1
@@ -443,7 +437,7 @@ export function calendarPeriodOf(
     key: `${start.year}-${String(start.month).padStart(2, '0')}`,
     start: start.toString(),
     end: end.toString(),
-    label: new DateFormatter(locale, { month: 'short', timeZone }).format(start.toDate(timeZone)),
+    label: createDateFormatter(locale, { month: 'short' }).format(start),
     outside: false,
   }
 }
@@ -487,13 +481,8 @@ export interface CalendarHeadingPieces {
  * zh-CN 会出「二月」而不是标题里那个「2月」。先后也只能这么问出来——
  * 拆出来的两截要摆成这个语言读得顺的顺序。
  */
-export function calendarHeadingPieces(
-  anchor: CalendarDate,
-  locale = CALENDAR_LOCALE,
-  timeZone = 'UTC',
-): CalendarHeadingPieces {
-  const parts = new DateFormatter(locale, { year: 'numeric', month: 'long', timeZone })
-    .formatToParts(anchor.toDate(timeZone))
+export function calendarHeadingPieces(anchor: PlainDate, locale = CALENDAR_LOCALE): CalendarHeadingPieces {
+  const parts = createDateFormatter(locale, { year: 'numeric', month: 'long' }).formatToParts(anchor)
   const order: ('year' | 'month')[] = []
   let year = ''
   let month = ''
@@ -552,9 +541,9 @@ export function calendarDrillAnchor(anchor: string, picked: string, next: Calend
   if (!from || !to)
     return picked
   if (next === 'month' || next === 'quarter')
-    return to.set({ month: from.month, day: from.day }).toString()
+    return to.with({ month: from.month, day: from.day }).toString()
   if (next === 'day' || next === 'week')
-    return to.set({ day: from.day }).toString()
+    return to.with({ day: from.day }).toString()
   return picked
 }
 
@@ -581,26 +570,26 @@ export function calendarPageMonths(view: CalendarView): number {
  * 一页列的是从当月首日所在周到当月末日所在周，首尾两周常跨到邻月——与日视图首尾行带上邻月日子同一套做法。
  * 判归属只能按这份名单来：拿周首日归月会把 8 月 31 日起的那一周归到 8 月，而人是在 9 月那一页点到它的。
  */
-export function calendarWeekListedIn(weekStart: CalendarDate, monthStart: CalendarDate): boolean {
+export function calendarWeekListedIn(weekStart: PlainDate, monthStart: PlainDate): boolean {
   const first = startOfMonth(monthStart)
   const last = first.add({ months: 1 }).subtract({ days: 1 })
-  return weekStart.compare(startOfWeek(first, 'en-GB')) >= 0 && weekStart.compare(startOfWeek(last, 'en-GB')) <= 0
+  return PlainDate.compare(weekStart, startOfWeek(first, ISO_WEEK_START)) >= 0
+    && PlainDate.compare(weekStart, startOfWeek(last, ISO_WEEK_START)) <= 0
 }
 
 /** 面板跨度的起点：日/周归到当月，月/季度归到当年，年归到当个十年。 */
-export function calendarPeriodStart(anchor: CalendarDate, view: CalendarView): CalendarDate {
+export function calendarPeriodStart(anchor: PlainDate, view: CalendarView): PlainDate {
   if (view === 'day' || view === 'week')
     return startOfMonth(anchor)
   if (view === 'year') {
     const decade = Math.floor(anchor.year / CALENDAR_YEARS_PER_PAGE) * CALENDAR_YEARS_PER_PAGE
-    return startOfMonth(anchor.set({ year: decade, month: 1, day: 1 }))
+    return anchor.with({ year: decade, month: 1, day: 1 })
   }
-  return startOfMonth(anchor.set({ month: 1, day: 1 }))
+  return anchor.with({ month: 1, day: 1 })
 }
 
 export interface CalendarPeriodGridOptions {
   locale?: string
-  timeZone?: string
 }
 
 /**
@@ -614,17 +603,17 @@ export function buildPeriodGrid(
   view: Exclude<CalendarView, 'day'>,
   options: CalendarPeriodGridOptions = {},
 ): CalendarPeriodGrid {
-  const { locale = CALENDAR_LOCALE, timeZone = 'UTC' } = options
-  const base = parseDate(anchor)
+  const { locale = CALENDAR_LOCALE } = options
+  const base = PlainDate.from(anchor)
   const start = calendarPeriodStart(base, view)
   const cells: CalendarPeriod[] = []
 
   if (view === 'week') {
     const monthStart = startOfMonth(base)
     const monthEnd = monthStart.add({ months: 1 }).subtract({ days: 1 })
-    let cursor = startOfWeek(monthStart, 'en-GB')
-    const last = startOfWeek(monthEnd, 'en-GB')
-    while (cursor.compare(last) <= 0) {
+    let cursor = startOfWeek(monthStart, ISO_WEEK_START)
+    const last = startOfWeek(monthEnd, ISO_WEEK_START)
+    while (PlainDate.compare(cursor, last) <= 0) {
       const period = calendarPeriodOf(cursor.toString(), 'week', options)!
       cells.push({
         ...period,
@@ -635,27 +624,27 @@ export function buildPeriodGrid(
     }
     return {
       startValue: monthStart.toString(),
-      headingLabel: new DateFormatter(locale, { year: 'numeric', month: 'long', timeZone }).format(monthStart.toDate(timeZone)),
+      headingLabel: createDateFormatter(locale, { year: 'numeric', month: 'long' }).format(monthStart),
       cells,
     }
   }
 
   if (view === 'month' || view === 'quarter') {
     const step = view === 'quarter' ? 3 : 1
-    const fmt = new DateFormatter(locale, { month: 'short', timeZone })
+    const fmt = createDateFormatter(locale, { month: 'short' })
     for (let i = 0; i < 12; i += step) {
       const cell = start.add({ months: i })
       const period = calendarPeriodOf(cell.toString(), view, options)!
-      cells.push({ ...period, label: view === 'quarter' ? `Q${i / 3 + 1}` : fmt.format(cell.toDate(timeZone)) })
+      cells.push({ ...period, label: view === 'quarter' ? `Q${i / 3 + 1}` : fmt.format(cell) })
     }
     return {
       startValue: start.toString(),
-      headingLabel: new DateFormatter(locale, { year: 'numeric', timeZone }).format(start.toDate(timeZone)),
+      headingLabel: createDateFormatter(locale, { year: 'numeric' }).format(start),
       cells,
     }
   }
 
-  const yearFmt = new DateFormatter(locale, { year: 'numeric', timeZone })
+  const yearFmt = createDateFormatter(locale, { year: 'numeric' })
   for (let i = -1; i <= CALENDAR_YEARS_PER_PAGE; i++) {
     const cell = start.add({ years: i })
     const period = calendarPeriodOf(cell.toString(), 'year', options)!
@@ -664,7 +653,7 @@ export function buildPeriodGrid(
   const last = start.add({ years: CALENDAR_YEARS_PER_PAGE - 1 })
   return {
     startValue: start.toString(),
-    headingLabel: `${yearFmt.format(start.toDate(timeZone))}-${yearFmt.format(last.toDate(timeZone))}`,
+    headingLabel: `${yearFmt.format(start)}-${yearFmt.format(last)}`,
     cells,
   }
 }
@@ -673,32 +662,6 @@ export function buildPeriodGrid(
  * 一天所在 ISO 周的起止（含两端），固定周一到周日。
  */
 export function calendarWeekRange(value: string): [string, string] {
-  const date = parseDate(value)
-  const start = startOfWeek(date, 'en-GB')
+  const start = startOfWeek(PlainDate.from(value), ISO_WEEK_START)
   return [start.toString(), start.add({ days: CALENDAR_WEEK_LENGTH - 1 }).toString()]
-}
-
-/**
- * ISO 8601 周序号：周一起算，含当年第一个周四的那一周是第 1 周。
- *
- * 自己算而不走 Intl：`Intl.DateTimeFormat` 至今没有周序号字段，
- * 各家 polyfill 的口径也不统一（有按周日起算的），而周选的标签必须与 min/max 的判断同源。
- */
-export function isoWeekNumber(value: string): number {
-  const date = parseDate(value)
-  // 挪到本周周四：ISO 规定「这一周归哪一年」看的就是周四落在哪一年
-  const day = date.toDate('UTC').getUTCDay()
-  const thursday = date.add({ days: ((day === 0 ? 7 : day) * -1) + 4 })
-  const jan1 = thursday.set({ month: 1, day: 1 })
-  const days = Math.round(
-    (thursday.toDate('UTC').getTime() - jan1.toDate('UTC').getTime()) / 86400000,
-  )
-  return Math.floor(days / 7) + 1
-}
-
-/** ISO 周所属的周序年；跨年周按周四落在哪一年判断。 */
-export function isoWeekYear(value: string): number {
-  const date = parseDate(value)
-  const day = date.toDate('UTC').getUTCDay()
-  return date.add({ days: ((day === 0 ? 7 : day) * -1) + 4 }).year
 }

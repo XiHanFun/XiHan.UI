@@ -225,7 +225,7 @@ export const calendarRangePickerMachine = createMachine({
         if (anchor == null)
           return
         const granularity = (prop('granularity') ?? 'day') as CalendarGranularity
-        const options = { locale: prop('locale'), timeZone: prop('timeZone') }
+        const options = { locale: prop('locale') }
         const end = context.get('hoveredValue')
           ?? calendarPeriodOf(context.get('focusedValue') ?? anchor, granularity, options)?.start
           ?? anchor

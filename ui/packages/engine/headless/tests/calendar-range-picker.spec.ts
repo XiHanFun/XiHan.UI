@@ -453,7 +453,7 @@ describe('区间模式', () => {
         seen.push(anchor)
         if (anchor == null)
           return false
-        const diff = Math.abs(parseCalendarDate(value)!.compare(parseCalendarDate(anchor)!))
+        const diff = Math.abs(parseCalendarDate(value)!.until(parseCalendarDate(anchor)!).days)
         return diff > 3
       },
     })

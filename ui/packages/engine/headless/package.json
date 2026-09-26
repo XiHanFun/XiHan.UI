@@ -51,7 +51,6 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@internationalized/date": "catalog:",
     "@xihan-ui/core": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",

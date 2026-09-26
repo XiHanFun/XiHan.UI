@@ -844,16 +844,11 @@ const truth = {
       return countTopLevelKeys(await read('tooling/testing/src/a11y/known.ts'), 'replayExempt')
     },
   },
-  运行时第三方依赖数: {
-    how: '公开包 dependencies 里非 @xihan-ui/ 开头的名字去重数（宿主框架 vue 是 peer，不算在内）',
+  运行时第三方依赖名单: {
+    how: '公开包 dependencies 里非 @xihan-ui/ 开头的名字，顿号分隔；一个都没有时为「无」（宿主框架是 peer，不算在内）',
     async value() {
-      return (await once('thirdParty', thirdPartyRuntimeDeps)).length
-    },
-  },
-  运行时第三方依赖名: {
-    how: '同上口径的名字本身，逗号分隔',
-    async value() {
-      return (await once('thirdParty', thirdPartyRuntimeDeps)).join('、')
+      const names = await once('thirdParty', thirdPartyRuntimeDeps)
+      return names.length ? names.join('、') : '无'
     },
   },
   消费端Node主版本下限: {
@@ -1344,12 +1339,12 @@ const TABLE = [
   ['docs/installation.md', /\| Node（安装使用） \| ≥ (\d+)，/, '消费端Node主版本下限'],
   ['docs/installation.md', /（参与本仓库开发） \| ≥ ([\d.]+) \/ ≥ [\d.]+ \|/, '开发期Node下限'],
   ['docs/installation.md', /（参与本仓库开发） \| ≥ [\d.]+ \/ ≥ ([\d.]+) \|/, '开发期pnpm下限'],
-  ['docs/index.md', /运行时第三方依赖只有([\d一二三四五六七八九十两]+)个/, '运行时第三方依赖数'],
-  ['docs/introduction.md', /运行时第三方依赖只有([\d一二三四五六七八九十两]+)个/, '运行时第三方依赖数'],
-  ['docs/introduction.md', /运行时第三方依赖只有[\d一二三四五六七八九十两]+个（`([^`]+)`/, '运行时第三方依赖名'],
-  ['docs/overview.md', /唯一登记的例外是 `([^`]+)`/, '运行时第三方依赖名'],
-  ['README.md', /the only third-party runtime dependency is `([^`]+)`/, '运行时第三方依赖名'],
-  ['README_cn.md', /运行时第三方依赖只有 `([^`]+)`/, '运行时第三方依赖名'],
+  // 「没有第三方运行时依赖」的几处陈述：命中即记作「无」，将来真有了依赖，真值变成名字就对不上
+  ['docs/index.md', /(全部库包都没有运行时第三方依赖)/, '运行时第三方依赖名单', () => '无'],
+  ['docs/introduction.md', /(库包的运行时代码不引入第三方依赖)/, '运行时第三方依赖名单', () => '无'],
+  ['docs/overview.md', /(库包的运行时代码不引入第三方依赖)/, '运行时第三方依赖名单', () => '无'],
+  ['README.md', /(apart from the host framework, nothing third-party ships at runtime)/, '运行时第三方依赖名单', () => '无'],
+  ['README_cn.md', /(除宿主框架外，运行时不引入任何第三方包)/, '运行时第三方依赖名单', () => '无'],
   ['docs/faq.md', /另有 breadcrumb ([\d一二三四五六七八九十两]+)条步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/guide/a11y.md', /当前共([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
   ['docs/guide/a11y.md', /只有([\d一二三四五六七八九十两]+)个组件在真实浏览器中无法推进到用例终态/, 'a11y重放豁免条数'],

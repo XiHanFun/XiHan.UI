@@ -7,13 +7,12 @@
 // 它只算值、只给动作，不产出任何 DOM 属性——属性字典由两个组件各自的 connect 写，
 // 门禁按「哪份 connect 发了哪些属性」逐组件对账，属性得写在组件自己那份文件里。
 
-import type { CalendarDate } from '@internationalized/date'
 import type { Service } from '@xihan-ui/core'
 import type { CalendarPeriod, CalendarView, CalendarWeekDay } from './grid'
 import type { CalendarBaseSchema } from './machine-base'
 import type { CalendarCellProps, CalendarPanel } from './types'
-import { DateFormatter, endOfMonth, getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { resolveLocale } from '@xihan-ui/core'
+import { createDateFormatter, endOfMonth, getLocalTimeZone, PlainDate, startOfMonth, today } from '@xihan-ui/core/date'
 import {
   buildMonthGrid,
   buildPeriodGrid,
@@ -27,7 +26,6 @@ import {
   calendarPeriodStart,
   calendarWeekListedIn,
   calendarZoomIn,
-  isoWeekNumber,
   parseCalendarDate,
   visibleCountOf,
 } from './grid'
@@ -54,7 +52,7 @@ export type CalendarPart
 
 /** 一格与选择模型无关的派生状态。连接层每帧按作者声明现算，不留任何缓存。 */
 export interface CalendarCellBaseState {
-  date: CalendarDate | null
+  date: PlainDate | null
   period: CalendarPeriod | null
   panel: CalendarPanel
   /** 认领这一天的是并排的另一张面板：这一张只显示日号，选中与区间都不画。 */
@@ -83,13 +81,12 @@ export interface CalendarCellClickOptions {
 /** 骨架对外露出的那一面：算好的值与导航动作，两个组件的 connect 据此写属性。 */
 export interface CalendarFrame {
   locale: string
-  timeZone: string
   disabled: boolean
   readOnly: boolean
-  min: CalendarDate | null
-  max: CalendarDate | null
+  min: PlainDate | null
+  max: PlainDate | null
   /** 聚焦日三路收口后的落点。 */
-  anchor: CalendarDate
+  anchor: PlainDate
   focusedValue: string
   todayValue: string
   granularity: CalendarView
@@ -97,7 +94,7 @@ export interface CalendarFrame {
   /** 钻回选择粒度的下一站；非空即「点一格是往下钻，不是选中」。 */
   zoomIn: CalendarView | null
   visibleCount: number
-  visibleStart: CalendarDate
+  visibleStart: PlainDate
   panels: CalendarPanel[]
   grid: CalendarPanel
   weekDays: CalendarWeekDay[]
@@ -117,7 +114,7 @@ export interface CalendarFrame {
   /** 面板各自的标题 id。首个面板沿用原来那一份，旧标记不受影响。 */
   headingId: (index?: number) => string
   /** 完整日期文案（日视图）或周期标签（粗粒度），给读屏用；解析不出时为 undefined。 */
-  dateLabel: (date: CalendarDate | null, fallback: CalendarPeriod | null) => string | undefined
+  dateLabel: (date: PlainDate | null, fallback: CalendarPeriod | null) => string | undefined
   /** 这一行该显示的周序号文字；解析不了给空串，让它只占住列宽。 */
   weekNumberText: (value: string) => string
   /**
@@ -183,9 +180,9 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
    * 两件事必须分开——多面板下点第二个面板里的日子，聚焦日落到了下个月，
    * 视窗要是跟着聚焦日走，每点一下就整窗往后推一个月，看着就像"点一下翻一页、选不中"。
    */
-  const visibleStart = ((): CalendarDate => {
+  const visibleStart = ((): PlainDate => {
     // 粗粒度视图的"一页"不是一个月，视窗起点要归到跨度的头上，否则标题与格子对不齐
-    const align = (d: CalendarDate): CalendarDate => (view === 'day' ? startOfMonth(d) : calendarPeriodStart(d, view))
+    const align = (d: PlainDate): PlainDate => (view === 'day' ? startOfMonth(d) : calendarPeriodStart(d, view))
     const target = align(anchor)
     const stored = parseCalendarDate(context.get('visibleStart'))
     if (!stored)
@@ -203,18 +200,18 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
           return first
       }
     }
-    if (target.compare(first) < 0)
+    if (PlainDate.compare(target, first) < 0)
       return target
-    if (target.compare(first.add({ months: (visibleCount - 1) * pageMonths })) > 0)
+    if (PlainDate.compare(target, first.add({ months: (visibleCount - 1) * pageMonths })) > 0)
       return target.subtract({ months: (visibleCount - 1) * pageMonths })
     return first
   })()
-  const headingFormatter = new DateFormatter(locale, { year: 'numeric', month: 'long', timeZone })
+  const headingFormatter = createDateFormatter(locale, { year: 'numeric', month: 'long' })
   // 一个锚点铺出 N 个连续月：翻页只动锚点，整窗一起走
   const panels: CalendarPanel[] = Array.from({ length: visibleCount }, (_, index) => {
     // 一页跨多少个月由视图定：日视图一个月，月/季度一年，年视图十年
     const start = visibleStart.add({ months: index * pageMonths })
-    const pieces = calendarHeadingPieces(start, locale, timeZone)
+    const pieces = calendarHeadingPieces(start, locale)
     if (view === 'day') {
       const g = buildMonthGrid(start.toString(), { locale, fixedWeeks: !!prop('fixedWeeks') })
       return {
@@ -224,15 +221,15 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
         startValue: g.monthStart,
         weeks: g.weeks,
         // 每行取行中那天算周序号：行首日随 locale 变（周日或周一），行中那天恒落在这一行覆盖的那个 ISO 周里
-        weekNumbers: g.weeks.map(row => isoWeekNumber(row[3]!.start)),
+        weekNumbers: g.weeks.map(row => PlainDate.from(row[3]!.start).weekOfYear),
         periods: g.weeks.flat(),
         cells: [],
-        headingLabel: headingFormatter.format(start.toDate(timeZone)),
+        headingLabel: headingFormatter.format(start),
         headingYear: pieces.year,
         headingMonth: pieces.month,
       }
     }
-    const g = buildPeriodGrid(start.toString(), view, { locale, timeZone })
+    const g = buildPeriodGrid(start.toString(), view, { locale })
     const first = parseCalendarDate(g.startValue)!
     return {
       index,
@@ -255,26 +252,24 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
     reference: grid.startValue,
     locale,
     weekdayFormat: prop('weekdayFormat') ?? 'short',
-    timeZone,
   })
-  const cellLabelFormatter = new DateFormatter(locale, {
+  const cellLabelFormatter = createDateFormatter(locale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    timeZone,
   })
 
   const periodAt = (v: string, unit: CalendarView = granularity): CalendarPeriod | null =>
-    calendarPeriodOf(v, unit, { locale, timeZone })
+    calendarPeriodOf(v, unit, { locale })
 
   /** 一个周期越过 min/max 任一边界即不可选：最终查询范围不能跑出边界。 */
   const boundsBlocked = (period: CalendarPeriod): boolean => {
     const start = parseCalendarDate(period.start)!
     const end = parseCalendarDate(period.end)!
-    if (min && start.compare(min) < 0)
+    if (min && PlainDate.compare(start, min) < 0)
       return true
-    if (max && end.compare(max) > 0)
+    if (max && PlainDate.compare(end, max) > 0)
       return true
     return false
   }
@@ -339,13 +334,13 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
   const prevMonthEnd = endOfMonth(visibleStart.subtract({ months: pageMonths }))
   // 往后翻新露出来的是窗口末尾再往后一个月；单面板时 visibleCount 为 1，与从前逐字一致
   const nextMonthStart = startOfMonth(visibleStart.add({ months: visibleCount * pageMonths }))
-  const canGoPrev = !calendarDisabled && (min == null || prevMonthEnd.compare(min) >= 0)
-  const canGoNext = !calendarDisabled && (max == null || nextMonthStart.compare(max) <= 0)
+  const canGoPrev = !calendarDisabled && (min == null || PlainDate.compare(prevMonthEnd, min) >= 0)
+  const canGoNext = !calendarDisabled && (max == null || PlainDate.compare(nextMonthStart, max) <= 0)
   // 大步翻的边界同理，只是把步长换成大步
   const prevYearEnd = endOfMonth(visibleStart.subtract({ months: bigMonths }))
   const nextYearStart = startOfMonth(visibleStart.add({ months: visibleCount * pageMonths + bigMonths - pageMonths }))
-  const canGoPrevYear = !calendarDisabled && (min == null || prevYearEnd.compare(min) >= 0)
-  const canGoNextYear = !calendarDisabled && (max == null || nextYearStart.compare(max) <= 0)
+  const canGoPrevYear = !calendarDisabled && (min == null || PlainDate.compare(prevYearEnd, min) >= 0)
+  const canGoNextYear = !calendarDisabled && (max == null || PlainDate.compare(nextYearStart, max) <= 0)
 
   /**
    * 钻上去还有没有地方可去。
@@ -412,12 +407,11 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
       send({ type: 'CELL.SELECT', value: period.start } as S['event'])
   }
 
-  const dateLabel = (date: CalendarDate | null, fallback: CalendarPeriod | null): string | undefined =>
-    (view === 'day' && date ? cellLabelFormatter.format(date.toDate(timeZone)) : fallback?.label)
+  const dateLabel = (date: PlainDate | null, fallback: CalendarPeriod | null): string | undefined =>
+    (view === 'day' && date ? cellLabelFormatter.format(date) : fallback?.label)
 
   return {
     locale,
-    timeZone,
     disabled: calendarDisabled,
     readOnly,
     min,
@@ -433,7 +427,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
     panels,
     grid,
     weekDays,
-    headingOrder: calendarHeadingPieces(visibleStart, locale, timeZone).order,
+    headingOrder: calendarHeadingPieces(visibleStart, locale).order,
     focusedCell,
     canGoPrev,
     canGoNext,
@@ -447,7 +441,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
     headingId,
     dateLabel,
     // 表头那一格是占位、不带值：解析不了就给空串，让它只占住列宽
-    weekNumberText: v => (parseCalendarDate(v) ? String(isoWeekNumber(v)) : ''),
+    weekNumberText: v => String(parseCalendarDate(v)?.weekOfYear ?? ''),
     focusAt,
     focusInGrid,
     stepMonth,

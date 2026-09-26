@@ -18,7 +18,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/markdown` | — | — | 2 |
 | `@xihan-ui/sound` | `core` | — | 2 |
 | `@xihan-ui/animations` | `core` `motion` | — | 2 |
-| `@xihan-ui/headless` | `core` `motion` `pointer` `viz` + `@internationalized/date` | — | 3 |
+| `@xihan-ui/headless` | `core` `motion` `pointer` `viz` | — | 3 |
 | `@xihan-ui/styles` | `tokens`（只取其 CSS 产物） | — | 3 |
 | `@xihan-ui/backgrounds` | `core` `motion` | — | 3 |
 | `@xihan-ui/vue` | `core` `motion` `pointer` `viz` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
@@ -41,7 +41,6 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
        │   headless   │  │    backgrounds    │   │ styles（纯CSS）│
        └──────┬───────┘  └─────────┬─────────┘   └───────┬────────┘
    core·motion·pointer·viz         core·motion            tokens 的 CSS 产物
-    + @internationalized/date
               │                    │
               ▼                    ▼
 层 2   ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌────────────┐ ┌──────────┐
@@ -76,12 +75,13 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ## 第三方运行时依赖
 
-全库只有一个：`@internationalized/date`，只在 `@xihan-ui/headless` 的日期族中使用（零框架的纯数据包，无副作用）。
+没有。登记在案的例外只有适配器的宿主框架：`@xihan-ui/vue` 的 `vue`，`@xihan-ui/react` 的 `react` 与 `react-dom`。
 
 以下能力均为自研，不引入第三方：
 
 | 能力 | 包 | 常见的第三方选择 |
 | --- | --- | --- |
+| 日期运算、时区换算与按地区的周 | `core`（`@xihan-ui/core/date`） | date-fns / Day.js / @internationalized/date |
 | 浮层定位 | `position` | Floating UI |
 | 代码着色 | `code-highlight` | Shiki / Prism |
 | Web Components 响应式基类 | `web-components` | Lit |

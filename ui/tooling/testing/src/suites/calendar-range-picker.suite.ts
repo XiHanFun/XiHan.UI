@@ -18,7 +18,7 @@ const LOCALE = 'zh-CN'
 const BASE_PROPS = { defaultFocusedValue: ANCHOR, locale: LOCALE, timeZone: 'UTC' } as const
 
 const GRID = buildMonthGrid(ANCHOR, { locale: LOCALE })
-const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE, timeZone: 'UTC' })
+const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE })
 /** 网格里全部日期，文档序；下标即 cell/cell-trigger 的 part 下标。 */
 const DAYS = GRID.weeks.flat().map(d => d.start)
 
