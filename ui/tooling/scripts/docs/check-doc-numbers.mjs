@@ -1181,6 +1181,8 @@ const DWELL = {
   '首字母检索清空': ['packages/engine/core/src/behavior/collection/typeahead.ts', 'RESET_AFTER'],
   'Menu 子菜单打开延迟': ['packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'HOVER_INTENT_OPEN_DELAY'],
   'Menu 子菜单关闭延迟': ['packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'HOVER_INTENT_CLOSE_DELAY'],
+  'SideNav 弹出打开延迟': ['packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'HOVER_INTENT_OPEN_DELAY'],
+  'SideNav 弹出关闭延迟': ['packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'HOVER_INTENT_CLOSE_DELAY'],
 }
 for (const [key, [path, name]] of Object.entries(DWELL))
   truth[`停留:${key}`] = { how: `${path} 的 ${name}（毫秒）`, value: () => constantIn(path, name) }
@@ -1468,6 +1470,8 @@ const TABLE = [
   ['docs/design/dwell.md', /\| HoverCard \| `openDelay` \/ `closeDelay` \| \d+ \/ (\d+)ms/, '停留:HoverCard 关闭延迟'],
   ['docs/design/dwell.md', /\| Menu 子菜单 \| `hoverOpenDelay` \/ `hoverCloseDelay` \| (\d+) \/ \d+ms/, '停留:Menu 子菜单打开延迟'],
   ['docs/design/dwell.md', /\| Menu 子菜单 \| `hoverOpenDelay` \/ `hoverCloseDelay` \| \d+ \/ (\d+)ms/, '停留:Menu 子菜单关闭延迟'],
+  ['docs/design/dwell.md', /\| SideNav 折叠态弹出 \| 无 \| (\d+) \/ \d+ms/, '停留:SideNav 弹出打开延迟'],
+  ['docs/design/dwell.md', /\| SideNav 折叠态弹出 \| 无 \| \d+ \/ (\d+)ms/, '停留:SideNav 弹出关闭延迟'],
   ['docs/design/dwell.md', /\| NavigationMenu \| `delayDuration` \/ `skipDelayDuration` \| (\d+) \/ \d+ms/, '停留:NavigationMenu 展开延迟'],
   ['docs/design/dwell.md', /\| NavigationMenu \| `delayDuration` \/ `skipDelayDuration` \| \d+ \/ (\d+)ms/, '停留:NavigationMenu 免延迟窗口'],
   ['docs/design/dwell.md', /\| Pagination 省略位浮层 \| `openDelay` \/ `closeDelay` \| (\d+) \/ \d+ms/, '停留:Pagination 浮层打开延迟'],

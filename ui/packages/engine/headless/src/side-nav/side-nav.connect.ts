@@ -14,9 +14,6 @@ import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-na
 
 const parts = sideNavAnatomy.build()
 
-// 悬停弹出的延时句柄：整页同时只有一个指针，单句柄即可
-let popoutHoverTimer: ReturnType<typeof setTimeout> | undefined
-
 export function connectSideNav<T extends PropTypes>(
   service: Service<SideNavSchema>,
   normalize: NormalizeProps<T>,
@@ -332,21 +329,15 @@ export function connectSideNav<T extends PropTypes>(
             return
           send({ type: 'BRANCH.TOGGLE', value: v })
         },
-        // 悬停延时弹出；触摸没有悬停，tap 走 click
+        // 悬停延时弹出，等待归机器；触摸没有悬停，tap 走 click
         'onPointerenter': (event: PointerEvent) => {
           if (!popoutTrigger || event.pointerType === 'touch' || isDisabled(v))
             return
-          clearTimeout(popoutHoverTimer)
-          if (livePopout() === v)
-            return
-          popoutHoverTimer = setTimeout(() => {
-            if (livePopout() !== v)
-              openPopout(v, 'none')
-          }, 100)
+          send({ type: 'POPOUT.HOVER', value: v })
         },
         'onPointerleave': () => {
           if (popoutTrigger)
-            clearTimeout(popoutHoverTimer)
+            send({ type: 'POPOUT.HOVER_END' })
         },
         'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
         // 同一个 keydown 先过跟踪器再走导航：React 把 onKeydown 与 onKeyDown 归成同一个合成事件，两个键会互相覆盖
