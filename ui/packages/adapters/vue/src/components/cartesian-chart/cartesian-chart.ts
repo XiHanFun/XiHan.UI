@@ -127,6 +127,7 @@ export const XhCartesianChartPlot = defineComponent({
         ...api.scene.layers.back,
         ...api.overlay.under,
         ...api.scene.layers.data,
+        ...api.scene.layers.front,
         ...api.overlay.over,
       ]
       return h('svg', api.getPlotProps() as Record<string, unknown>, marks.map(mark => renderMark(api, mark)))
@@ -171,6 +172,7 @@ export const XhCartesianChartRoot = defineComponent({
     yAxis: { type: Object as PropType<CartesianAxis> },
     orientation: { type: String as PropType<CartesianOrientation> },
     trigger: { type: String as PropType<CartesianTrigger> },
+    totals: { type: Boolean, default: undefined },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },
     activeKey: { type: [String, Number, Date, null] as PropType<ChartKey | null> },

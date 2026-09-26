@@ -66,6 +66,11 @@ export interface CartesianBarSeries extends CartesianSeriesBase {
   stack?: string
   /** 堆叠方式：none 逐段累加，expand 每列归一成百分比，diverging 正值向上、负值向下；同一堆叠组须一致。含负值时缺省 diverging。 */
   stackOffset?: 'none' | 'expand' | 'diverging'
+  /**
+   * 数据标签：inside 写在柱内居中，end 写在柱的远端外侧（负值翻到另一侧；堆叠中的段写在段内的远端）。
+   * 放不下、与更要紧的标签重叠时不写。缺省 none。
+   */
+  labels?: 'none' | 'inside' | 'end'
 }
 
 /** 折线系列。 */
@@ -85,6 +90,10 @@ export interface CartesianLineSeries extends CartesianSeriesBase {
   symbols?: 'auto' | 'always' | 'none'
   /** 缺失值处连上而不断开，缺省 false。 */
   connectNulls?: boolean
+  /** 数据标签：end 把数值写在每个点的上方（横向时在右侧）。与更要紧的标签重叠时不写。缺省 none。 */
+  labels?: 'none' | 'end'
+  /** 线尾标签：在折线末端写系列名与末值，几条线挤在一起时上下推开；系列不多时可以代替图例。缺省 false。 */
+  endLabel?: boolean
 }
 
 export type CartesianSeries = CartesianBarSeries | CartesianLineSeries
@@ -160,6 +169,8 @@ export interface CartesianChartSchema extends MachineSchema {
     orientation?: CartesianOrientation
     /** 提示框汇报什么；缺省含柱或折线时 axis。 */
     trigger?: CartesianTrigger
+    /** 堆叠柱的合计：每个堆叠组在最外端写出合计，含负值时正负两端各写一个；百分比堆叠不写。缺省 false。 */
+    totals?: boolean
     translations?: Partial<CartesianChartTranslations>
   }
   context: ChartBaseContext

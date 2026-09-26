@@ -365,6 +365,13 @@ export function connectCartesianChart<T extends PropTypes>(
       }
       if (mark.kind === 'text') {
         const text = mark as TextMark
+        // 数据标签、合计与线尾标签只给眼睛看：数值已在每个数据的可及名里。压在色块上的标签带色槽，
+        // 字取配对的前景色；所属系列被淡出时一起淡出；首次出现等柱长到、笔尖扫到才淡入
+        const label = mark.part === 'data-label' || mark.part === 'total-label' || mark.part === 'end-label'
+        const placement = label ? model.scene?.placements.get(mark.key) : undefined
+        const owner = mark.datum ? seriesById.get(mark.datum.seriesId) : undefined
+        const inside = placement === 'inside'
+        const at = frame?.revealAt.get(mark.key)
         return normalize.element({
           ...base,
           'x': text.x,
@@ -373,6 +380,13 @@ export function connectCartesianChart<T extends PropTypes>(
           'dominant-baseline': BASELINE[text.baseline],
           'transform': text.rotate ? `rotate(${text.rotate} ${text.x} ${text.y})` : undefined,
           'opacity': mark.opacity,
+          'aria-hidden': label || undefined,
+          'data-placement': mark.part === 'data-label' ? placement : undefined,
+          'data-xh-chart-slot': inside && owner?.slot != null ? String(owner.slot) : undefined,
+          'data-tone': inside ? owner?.tone ?? undefined : undefined,
+          'data-dimmed': label ? dataAttr(emphasis != null && owner != null && emphasis !== owner.id) : undefined,
+          'data-drawing': dataAttr(at != null),
+          ...(at == null ? {} : { style: { '--xh-_chart-reveal-at': at.toFixed(3) } }),
         })
       }
       // 新出现的折线由描线关键帧从头描到尾：路径长度归一，虚线偏移从 1 走到 0；

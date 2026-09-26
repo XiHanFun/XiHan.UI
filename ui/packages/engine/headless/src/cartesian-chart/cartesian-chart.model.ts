@@ -22,10 +22,11 @@ import type {
   Rect,
   Scene,
   TableModel,
+  TextMark,
   TextMeasurer,
   TimeScale,
 } from '@xihan-ui/viz'
-import type { ChartKey, ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
+import type { ChartKey, ChartLabelBox, ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
 import type {
   CartesianAxis,
   CartesianAxisFormat,
@@ -51,7 +52,7 @@ import {
   solvePlotRect,
   stack,
 } from '@xihan-ui/viz'
-import { assignChartSeries, buildChartSummary, memoizeLast } from '../shared/chart'
+import { assignChartSeries, buildChartSummary, labelBox, memoizeLast, placeWithoutOverlap, settleColumn } from '../shared/chart'
 
 /* ---------- 规格 ---------- */
 
@@ -73,6 +74,10 @@ export interface CartesianSeriesSpec {
   readonly area: boolean
   readonly symbols: 'auto' | 'always' | 'none'
   readonly connectNulls: boolean
+  /** 数据标签：柱可写 inside / end，折线只写 end。 */
+  readonly labels: 'none' | 'inside' | 'end'
+  /** 折线的线尾标签。 */
+  readonly endLabel: boolean
 }
 
 export interface CartesianSpec {
@@ -216,6 +221,8 @@ export function normalizeCartesianSpec(
       area: s.mark === 'line' && s.area === true,
       symbols: s.mark === 'line' ? (s.symbols ?? 'auto') : 'none',
       connectNulls: s.mark === 'line' && s.connectNulls === true,
+      labels: s.labels ?? 'none',
+      endLabel: s.mark === 'line' && s.endLabel === true,
     }
   })
 
@@ -488,6 +495,10 @@ export interface CartesianLayout {
   readonly bandwidth: number
   readonly font: FontSpec
   readonly metrics: ChartMetrics
+  readonly measurer: TextMeasurer
+  readonly formats: CartesianFormats
+  /** 堆叠柱写合计。 */
+  readonly totals: boolean
 }
 
 function isCategoryScale(scale: AxisScale): scale is BandScale<string | number> {
@@ -506,6 +517,7 @@ export function layoutCartesian(
   measurer: TextMeasurer,
   measurerVersion: number,
   locale: string,
+  totals: boolean,
 ): CartesianLayout {
   void measurerVersion
   const { spec } = domains.derived
@@ -544,8 +556,12 @@ export function layoutCartesian(
   const valueTickCount = (range: readonly number[]): number => typeof spec.yAxis.ticks === 'number'
     ? spec.yAxis.ticks
     : Math.max(2, Math.floor(Math.abs(range[1]! - range[0]!) / (vertical ? font.lineHeight * 2.5 : 80)))
+  // 柱端外侧的标签与合计写在绘图区里：值域两端各收进一截，最高（最低）的那根柱外面也有地方写
+  const pad = labelPadding(domains.derived, totals, formats, measurer, font, metrics)
   const valueScaleOf = (plot: Rect): ContinuousScale => {
-    const range = across(plot)
+    const [r0, r1] = across(plot)
+    const dir = Math.sign(r1 - r0) || 1
+    const range: [number, number] = [r0 + dir * pad.low, r1 - dir * pad.high]
     const [lo, hi] = domains.value
     const base = spec.valueScale === 'log' ? scaleLog({ domain: [lo, hi], range }) : scaleLinear({ domain: [lo, hi], range })
     if (spec.yAxis.nice === false || domains.percent)
@@ -592,10 +608,12 @@ export function layoutCartesian(
   const rightInset = !vertical || (spec.keyScale !== 'band' && spec.keyScale !== 'point')
     ? Math.ceil(measurer.measure(vertical ? formats.key(spec.keys.at(-1) ?? '') : lastValueLabel, font).width / 2)
     : 0
+  // 竖向的线尾标签写在最后一个点的右边：右边距取它与连续横轴末端标签所需的较大者
+  const endInset = vertical ? pad.end : 0
   const outer: Rect = {
     x: 0,
     y: Math.ceil(font.lineHeight / 2),
-    width: Math.max(0, size.width - rightInset),
+    width: Math.max(0, size.width - Math.max(rightInset, endInset)),
     height: Math.max(0, size.height - Math.ceil(font.lineHeight / 2)),
   }
 
@@ -652,7 +670,101 @@ export function layoutCartesian(
     bandwidth,
     font,
     metrics,
+    measurer,
+    formats,
+    totals,
   }
+}
+
+/** 堆叠组的合计：每个键上正值与负值各自的和。百分比堆叠不写合计。 */
+function stackTotals(derived: CartesianDerived): Map<string, { positive: (number | null)[], negative: (number | null)[], members: CartesianSeriesValues[] }> {
+  const groups = new Map<string, { positive: (number | null)[], negative: (number | null)[], members: CartesianSeriesValues[] }>()
+  const n = derived.spec.keys.length
+  for (const s of derived.visible) {
+    if (s.spec.mark !== 'bar' || s.spec.stack == null || s.spec.stackOffset === 'expand')
+      continue
+    const group = groups.get(s.spec.stack) ?? { positive: filled<number | null>(n, null), negative: filled<number | null>(n, null), members: [] }
+    group.members.push(s)
+    s.values.forEach((v, j) => {
+      if (v == null)
+        return
+      if (v >= 0)
+        group.positive[j] = (group.positive[j] ?? 0) + v
+      else
+        group.negative[j] = (group.negative[j] ?? 0) + v
+    })
+    groups.set(s.spec.stack, group)
+  }
+  return groups
+}
+
+/** 线尾标签的文字：系列名与末值。 */
+function endLabelText(s: CartesianSeriesValues, formats: CartesianFormats): { text: string, index: number } | null {
+  for (let j = s.values.length - 1; j >= 0; j--) {
+    const v = s.values[j]
+    if (v != null)
+      return { text: `${s.spec.name} ${formats.value(v)}`, index: j }
+  }
+  return null
+}
+
+/**
+ * 标签要占的地方：high 与 low 是数值轴两端要收进的像素（柱端外侧的标签、合计、折线点上的标签），
+ * end 是竖向时线尾标签要的右边距。竖向只要一行字高，横向要最宽的那个标签。
+ */
+function labelPadding(
+  derived: CartesianDerived,
+  totals: boolean,
+  formats: CartesianFormats,
+  measurer: TextMeasurer,
+  font: FontSpec,
+  metrics: ChartMetrics,
+): { high: number, low: number, end: number } {
+  const vertical = derived.spec.orientation === 'vertical'
+  const gap = metrics.labelGap
+  const across = (text: string): number => (vertical ? font.lineHeight : measurer.measure(text, font).width) + gap
+  let high = 0
+  let low = 0
+  let end = 0
+  for (const s of derived.visible) {
+    const outside = s.spec.mark === 'bar' && s.spec.labels === 'end' && s.spec.stack == null
+    const onPoints = s.spec.mark === 'line' && s.spec.labels === 'end'
+    if (outside || onPoints) {
+      for (const v of s.values) {
+        if (v == null)
+          continue
+        const need = across(formats.value(v)) + (onPoints ? metrics.pointSize / 2 : 0)
+        // 折线点上的标签总写在点的上方（横向在右侧），不随正负翻面
+        if (v >= 0 || onPoints)
+          high = Math.max(high, need)
+        else
+          low = Math.max(low, need)
+      }
+    }
+    if (s.spec.endLabel) {
+      const label = endLabelText(s, formats)
+      if (label) {
+        const width = measurer.measure(label.text, font).width + gap * 2 + metrics.pointSize / 2
+        if (vertical)
+          end = Math.max(end, width)
+        else
+          high = Math.max(high, width)
+      }
+    }
+  }
+  if (totals) {
+    for (const group of stackTotals(derived).values()) {
+      for (const v of group.positive) {
+        if (v != null)
+          high = Math.max(high, across(formats.value(v)))
+      }
+      for (const v of group.negative) {
+        if (v != null)
+          low = Math.max(low, across(formats.value(v)))
+      }
+    }
+  }
+  return { high: Math.ceil(high), low: Math.ceil(low), end: Math.ceil(end) }
 }
 
 /* ---------- 场景 ---------- */
@@ -671,6 +783,8 @@ export interface CartesianScene {
   readonly info: ReadonlyMap<string, CartesianMarkInfo>
   /** 数据在绘图区里的锚点：系列 id → 每个键上的 (x, y)，没有值为 null。 */
   readonly anchors: ReadonlyMap<string, readonly ({ x: number, y: number } | null)[]>
+  /** 数据标签写在哪儿：inside 压在色块上（字取配对的前景色），end 写在标记外。 */
+  readonly placements: ReadonlyMap<string, 'inside' | 'end'>
 }
 
 /** 1px 线对齐到像素中心，避免被抗锯齿拉成两像素的灰线。 */
@@ -823,6 +937,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
   const baseline = toValue(spec.valueScale === 'log' ? layout.valueScale.domain[0]! : 0)
 
   const data: Mark[] = []
+  const bars = new Map<string, BarBox>()
   for (const s of domains.derived.visible) {
     const id = s.spec.id
     const paint = { ...(s.spec.slot != null ? { slot: s.spec.slot } : {}), ...(s.spec.tone != null ? { tone: s.spec.tone } : {}) }
@@ -873,6 +988,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           a11y: { label: '', focusable: true },
         })
         seriesAnchors[j] = point(start + thickness / 2, b)
+        bars.set(key, { ...rect, positive, stacked: s.spec.stack != null, row: rowIndex })
       }
     }
     else {
@@ -927,8 +1043,172 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
     data.push({ kind: 'group', key: `series:${id}`, part: 'series', children })
   }
 
-  const scene = createScene({ version, layers: { back, data }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
-  return { layout, scene, info, anchors }
+  const labels = cartesianLabels(layout, bars, anchors)
+  const scene = createScene({ version, layers: { back, data, front: labels.marks }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
+  return { layout, scene, info, anchors, placements: labels.placements }
+}
+
+/** 一根柱在绘图区里的矩形，以及写标签要知道的事：远端朝上（右）还是朝下（左）、是不是堆叠中的一段。 */
+interface BarBox extends Rect {
+  /** 远端朝上（竖向）或朝右（横向）。 */
+  readonly positive: boolean
+  readonly stacked: boolean
+  readonly row: number
+}
+
+type LabelAnchor = 'start' | 'middle' | 'end'
+type LabelBaseline = 'top' | 'middle' | 'bottom'
+type LabelAt = readonly [number, number, LabelAnchor, LabelBaseline]
+
+interface LabelCandidate {
+  readonly mark: TextMark
+  readonly box: ChartLabelBox
+  readonly priority: number
+  readonly placement: 'inside' | 'end'
+}
+
+/**
+ * 数据标签、堆叠合计与线尾标签，写在前景层。按重要性落位：合计最先，其次线尾标签，最后逐个数据的标签；
+ * 与已落位的重叠、越出视口就不写。柱内的标签放不下（字比柱宽、比柱短）不写。
+ */
+function cartesianLabels(
+  layout: CartesianLayout,
+  bars: ReadonlyMap<string, BarBox>,
+  anchors: ReadonlyMap<string, readonly ({ x: number, y: number } | null)[]>,
+): { marks: Mark[], placements: ReadonlyMap<string, 'inside' | 'end'> } {
+  const { domains, metrics, font, formats, measurer, size, plot } = layout
+  const { spec, visible } = domains.derived
+  const vertical = spec.orientation === 'vertical'
+  const gap = metrics.labelGap
+  const lineHeight = font.lineHeight
+  const half = metrics.pointSize / 2
+  const candidates: LabelCandidate[] = []
+  const widthOf = (text: string): number => measurer.measure(text, font).width
+  const add = (
+    key: string,
+    part: string,
+    text: string,
+    at: LabelAt,
+    placement: 'inside' | 'end',
+    priority: number,
+    extra: Partial<Pick<TextMark, 'datum' | 'paint'>> = {},
+  ): void => {
+    const [x, y, anchor, baseline] = at
+    candidates.push({
+      mark: { kind: 'text', key, part, x, y, text, anchor, baseline, ...extra },
+      box: labelBox(x, y, widthOf(text), lineHeight, anchor, baseline),
+      priority,
+      placement,
+    })
+  }
+  // 柱内放得下：字不比柱厚宽，柱长容得下一行字与两端的间隙
+  const fits = (text: string, box: BarBox): boolean => {
+    const width = widthOf(text)
+    return vertical
+      ? width + 2 <= box.width && lineHeight + gap * 2 <= box.height
+      : lineHeight + 2 <= box.height && width + gap * 2 <= box.width
+  }
+  const outside = (box: BarBox): LabelAt => {
+    const cx = box.x + box.width / 2
+    const cy = box.y + box.height / 2
+    if (vertical)
+      return box.positive ? [cx, box.y - gap, 'middle', 'bottom'] : [cx, box.y + box.height + gap, 'middle', 'top']
+    return box.positive ? [box.x + box.width + gap, cy, 'start', 'middle'] : [box.x - gap, cy, 'end', 'middle']
+  }
+
+  for (const s of visible) {
+    const id = s.spec.id
+    const paint = { ...(s.spec.slot != null ? { slot: s.spec.slot } : {}), ...(s.spec.tone != null ? { tone: s.spec.tone } : {}) }
+    if (s.spec.mark === 'bar' && s.spec.labels !== 'none') {
+      spec.keys.forEach((k, j) => {
+        const key = `${id}:${cartesianDatumId(k)}`
+        const box = bars.get(key)
+        const v = s.values[j]
+        if (!box || v == null)
+          return
+        const text = formats.value(v)
+        const datum = { seriesId: id, index: box.row }
+        const cx = box.x + box.width / 2
+        const cy = box.y + box.height / 2
+        if (s.spec.labels === 'inside' || box.stacked) {
+          if (!fits(text, box))
+            return
+          // 堆叠中的段写 end：段外是下一段，写在段内的远端
+          const at: LabelAt = s.spec.labels === 'inside'
+            ? [cx, cy, 'middle', 'middle']
+            : vertical
+              ? (box.positive ? [cx, box.y + gap, 'middle', 'top'] : [cx, box.y + box.height - gap, 'middle', 'bottom'])
+              : (box.positive ? [box.x + box.width - gap, cy, 'end', 'middle'] : [box.x + gap, cy, 'start', 'middle'])
+          add(`label:${key}`, 'data-label', text, at, 'inside', 1, { datum, paint })
+        }
+        else {
+          add(`label:${key}`, 'data-label', text, outside(box), 'end', 1, { datum, paint })
+        }
+      })
+    }
+    if (s.spec.mark === 'line' && s.spec.labels === 'end') {
+      anchors.get(id)?.forEach((p, j) => {
+        const v = s.values[j]
+        if (!p || v == null)
+          return
+        const at: LabelAt = vertical
+          ? [p.x, p.y - half - gap, 'middle', 'bottom']
+          : [p.x + half + gap, p.y, 'start', 'middle']
+        add(`label:${id}:${cartesianDatumId(spec.keys[j]!)}`, 'data-label', formats.value(v), at, 'end', 1, { datum: { seriesId: id, index: s.rows[j]! }, paint })
+      })
+    }
+  }
+
+  if (layout.totals) {
+    for (const [stack, group] of stackTotals(domains.derived)) {
+      spec.keys.forEach((k, j) => {
+        for (const sign of ['positive', 'negative'] as const) {
+          const sum = group[sign][j]
+          if (sum == null)
+            continue
+          const boxes = group.members
+            .filter(m => m.values[j] != null && (sign === 'positive' ? m.values[j]! >= 0 : m.values[j]! < 0))
+            .map(m => bars.get(`${m.spec.id}:${cartesianDatumId(k)}`))
+            .filter((b): b is BarBox => b != null)
+          const first = boxes[0]
+          if (!first)
+            continue
+          // 这一侧最外层那段的远端：把它收成一条零宽（零高）的边，外侧落位与单根柱相同
+          const edge: BarBox = vertical
+            ? (first.positive
+                ? { ...first, y: Math.min(...boxes.map(b => b.y)), height: 0 }
+                : { ...first, y: Math.max(...boxes.map(b => b.y + b.height)), height: 0 })
+            : (first.positive
+                ? { ...first, x: Math.max(...boxes.map(b => b.x + b.width)), width: 0 }
+                : { ...first, x: Math.min(...boxes.map(b => b.x)), width: 0 })
+          add(`total:${stack}:${cartesianDatumId(k)}:${sign === 'positive' ? '+' : '-'}`, 'total-label', formats.value(sum), outside(edge), 'end', 3)
+        }
+      })
+    }
+  }
+
+  // 线尾标签写在最后一个点的右边；竖向时几条线挤在一起，上下推开，挤不下去掉末值最小的
+  const ends: { s: CartesianSeriesValues, text: string, x: number, y: number, value: number }[] = []
+  for (const s of visible) {
+    if (!s.spec.endLabel)
+      continue
+    const label = endLabelText(s, formats)
+    const p = label ? anchors.get(s.spec.id)?.[label.index] : null
+    if (!label || !p)
+      continue
+    ends.push({ s, text: label.text, x: p.x + half + gap * 2, y: p.y, value: Math.abs(s.values[label.index] ?? 0) })
+  }
+  const settled = vertical ? settleColumn(ends, plot.y + lineHeight / 2, plot.y + plot.height - lineHeight / 2, lineHeight) : ends
+  for (const end of settled) {
+    const paint = { ...(end.s.spec.slot != null ? { slot: end.s.spec.slot } : {}), ...(end.s.spec.tone != null ? { tone: end.s.spec.tone } : {}) }
+    add(`end:${end.s.spec.id}`, 'end-label', end.text, [end.x, end.y, 'start', 'middle'], 'end', 2, { datum: { seriesId: end.s.spec.id, index: 0 }, paint })
+  }
+
+  const kept = placeWithoutOverlap(candidates, { x: 0, y: 0, width: size.width, height: size.height })
+  return {
+    marks: kept.map(c => c.mark),
+    placements: new Map(kept.map(c => [c.mark.key, c.placement])),
+  }
 }
 
 /**
@@ -945,22 +1225,32 @@ export function cartesianEntryScene(target: Scene): Scene {
       return [{ ...mark, opacity: 0 }]
     return []
   })
-  return createScene({ version: 0, layers: { data: seed(target.layers.data) }, bounds: target.bounds })
+  // 标签原样在场，等柱长到或笔尖扫到由样式淡入
+  return createScene({ version: 0, layers: { data: seed(target.layers.data), front: target.layers.front }, bounds: target.bounds })
 }
 
+/** 柱的标签在柱长到八成多时出现；合计与线尾标签等全部长完、描完再出现。 */
+const BAR_LABEL_AT = 0.85
+const TOTAL_LABEL_AT = 0.95
+const END_LABEL_AT = 1
+
 /**
- * 数据点随描线出现：每个点在它那条折线上的位置，按从起点量起的折线长度占全长的比例（0–1）。
- * 描线关键帧按路径长度推进，点在笔尖扫到时出现；平滑曲线按折线段近似，差不了几个像素。
+ * 首次出现时逐个出现的标记在入场进程里的位置（0–1）：
+ * 数据点与折线上的标签按从起点量起的折线长度占全长的比例，笔尖扫到时出现（平滑曲线按折线段近似）；
+ * 柱的标签等柱快长完，合计与线尾标签最后出现。
  */
 export function cartesianRevealAt(target: Scene): ReadonlyMap<string, number> {
   const at = new Map<string, number>()
+  // 系列 id → 折线上每个点（按点的 key）的位置
+  const along = new Map<string, Map<string, number>>()
   for (const group of target.layers.data) {
     if (group.kind !== 'group')
       continue
     const line = group.children.find((m): m is LineMark => m.kind === 'line')
     if (!line)
       continue
-    const along = new Map<string, number>()
+    const id = group.key.slice('series:'.length)
+    const lengths = new Map<string, number>()
     let total = 0
     let last: { x: number, y: number } | null = null
     for (const p of line.points) {
@@ -970,16 +1260,31 @@ export function cartesianRevealAt(target: Scene): ReadonlyMap<string, number> {
       }
       if (last)
         total += Math.hypot(p.x - last.x, p.y - last.y)
-      along.set(p.key, total)
+      lengths.set(p.key, total)
       last = p
     }
-    const prefix = `${group.key.slice('series:'.length)}:m:`
+    const fractions = new Map([...lengths].map(([key, length]) => [key, total > 0 ? length / total : 0]))
+    along.set(id, fractions)
+    const prefix = `${id}:m:`
     for (const mark of group.children) {
-      if (mark.part !== 'dot' || !mark.key.startsWith(prefix))
-        continue
-      const length = along.get(mark.key.slice(prefix.length))
-      if (length != null)
-        at.set(mark.key, total > 0 ? length / total : 0)
+      if (mark.part === 'dot' && mark.key.startsWith(prefix)) {
+        const fraction = fractions.get(mark.key.slice(prefix.length))
+        if (fraction != null)
+          at.set(mark.key, fraction)
+      }
+    }
+  }
+  for (const mark of target.layers.front) {
+    if (mark.part === 'total-label') {
+      at.set(mark.key, TOTAL_LABEL_AT)
+    }
+    else if (mark.part === 'end-label') {
+      at.set(mark.key, END_LABEL_AT)
+    }
+    else if (mark.part === 'data-label') {
+      const id = mark.datum?.seriesId
+      const fraction = id == null ? undefined : along.get(id)?.get(mark.key.slice(`label:${id}:`.length))
+      at.set(mark.key, fraction ?? BAR_LABEL_AT)
     }
   }
   return at
@@ -1028,6 +1333,7 @@ export interface CartesianPipelineInput {
   readonly measurerVersion: number
   readonly locale: string
   readonly translations: CartesianChartTranslations
+  readonly totals: boolean | undefined
 }
 
 export interface CartesianModel {
@@ -1064,7 +1370,7 @@ export function createCartesianPipeline(): CartesianPipeline {
     const issues = [...spec.issues, ...derived.issues, ...domains.issues]
     const scene = input.size == null || issues.length > 0
       ? null
-      : sceneOf(layoutOf(domains, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale))
+      : sceneOf(layoutOf(domains, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, input.totals === true))
     return { spec, derived, domains, formats: a11y.formats, issues, scene, summary: a11y.summary, table: a11y.table }
   }
 }

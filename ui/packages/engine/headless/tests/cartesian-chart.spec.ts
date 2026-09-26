@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // 直角坐标图：规格归一与诊断、柱与折线的几何、悬停命中与提示框、键盘导航、图例显隐、联动的激活键、通知去重与管线记忆。
 import type { DiagnosticRecord, Service } from '@xihan-ui/core'
-import type { LineMark, Mark, RectMark } from '@xihan-ui/viz'
+import type { LineMark, Mark, RectMark, TextMark } from '@xihan-ui/viz'
 import type { CartesianChartApi, CartesianChartSchema } from '../src/cartesian-chart'
 import type { ChartDatumDetails } from '../src/shared/chart'
 import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@xihan-ui/core'
@@ -338,6 +338,155 @@ describe('图例与联动', () => {
   it('只有一个系列时图例整条收起', async () => {
     const rig = await makeRig({ data: DATA, series: [{ mark: 'bar', x: 'month', y: 'online' }] })
     expect((rig.api().getLegendProps() as Dict).hidden).toBe(true)
+  })
+})
+
+describe('数据标签', () => {
+  let rigMeasure: (text: string) => number = () => 0
+  const labelsOf = (api: CartesianChartApi, part = 'data-label'): TextMark[] => api.scene.layers.front.filter(m => m.part === part) as TextMark[]
+  const barOf = (api: CartesianChartApi, key: string): RectMark => marksOf(api, 'bar').find(m => m.key === key) as RectMark
+  const boxOf = (api: CartesianChartApi, label: TextMark): { top: number, bottom: number, left: number, right: number } => {
+    const width = rigMeasure(label.text)
+    const height = api.model.scene!.layout.font.lineHeight
+    const left = label.anchor === 'start' ? label.x : label.anchor === 'end' ? label.x - width : label.x - width / 2
+    const top = label.baseline === 'top' ? label.y : label.baseline === 'bottom' ? label.y - height : label.y - height / 2
+    return { top, bottom: top + height, left, right: left + width }
+  }
+
+  async function labelRig(props: Props, size?: { width: number, height: number }): Promise<Rig> {
+    const rig = await makeRig(props, size)
+    const layout = rig.api().model.scene!.layout
+    rigMeasure = text => layout.measurer.measure(text, layout.font).width
+    return rig
+  }
+
+  it('end：柱端外侧写数值，最高的那根柱上面也有地方写', async () => {
+    const rig = await labelRig({ data: DATA, series: [{ mark: 'bar', x: 'month', y: 'online', labels: 'end' }] })
+    const api = rig.api()
+    const labels = labelsOf(api)
+    expect(labels.map(l => l.text)).toEqual(['120', '200', '150'])
+    const feb = labels.find(l => l.key === 'label:online:s二月')!
+    expect(boxOf(api, feb).bottom).toBeLessThanOrEqual(barOf(api, 'online:s二月').y)
+    expect(boxOf(api, feb).top).toBeGreaterThanOrEqual(0)
+    const props = api.getMarkProps(feb) as Dict
+    expect(props).toMatchObject({ 'aria-hidden': true, 'data-placement': 'end' })
+    expect(props['data-xh-chart-slot']).toBeUndefined()
+  })
+
+  it('end：负值柱的标签翻到柱的下端', async () => {
+    const rig = await labelRig({ data: [{ m: 'a', v: 40 }, { m: 'b', v: -30 }], series: [{ mark: 'bar', x: 'm', y: 'v', labels: 'end' }] })
+    const api = rig.api()
+    const neg = labelsOf(api).find(l => l.key === 'label:v:sb')!
+    const bar = barOf(api, 'v:sb')
+    expect(boxOf(api, neg).top).toBeGreaterThanOrEqual(bar.y + bar.height)
+  })
+
+  it('inside：放得下写在柱内正中，带色槽取配对的前景色；柱太短不写', async () => {
+    const rig = await labelRig({
+      data: [{ m: 'a', v: 100 }, { m: 'b', v: 2 }],
+      series: [{ mark: 'bar', x: 'm', y: 'v', labels: 'inside' }],
+      orientation: 'horizontal',
+    })
+    const api = rig.api()
+    const labels = labelsOf(api)
+    expect(labels.map(l => l.key)).toEqual(['label:v:sa'])
+    const bar = barOf(api, 'v:sa')
+    const box = boxOf(api, labels[0]!)
+    expect(box.left).toBeGreaterThanOrEqual(bar.x)
+    expect(box.right).toBeLessThanOrEqual(bar.x + bar.width)
+    expect(api.getMarkProps(labels[0]!) as Dict).toMatchObject({ 'data-placement': 'inside', 'data-xh-chart-slot': '1' })
+  })
+
+  it('堆叠的段写 end：写在段内的远端；totals 在整叠外侧写合计', async () => {
+    const rig = await labelRig({
+      data: [{ m: 'a', x: 60, y: 40 }, { m: 'b', x: 30, y: 50 }],
+      series: [
+        { mark: 'bar', x: 'm', y: 'x', stack: 's', labels: 'end' },
+        { mark: 'bar', x: 'm', y: 'y', stack: 's', labels: 'end' },
+      ],
+      totals: true,
+    }, { width: 400, height: 320 })
+    const api = rig.api()
+    const inner = labelsOf(api).find(l => l.key === 'label:x:sa')
+    const bar = barOf(api, 'x:sa')
+    if (inner) {
+      expect((api.getMarkProps(inner) as Dict)['data-placement']).toBe('inside')
+      expect(boxOf(api, inner).top).toBeGreaterThanOrEqual(bar.y)
+    }
+    const totals = labelsOf(api, 'total-label')
+    expect(totals.map(t => t.text)).toEqual(['100', '80'])
+    const top = Math.min(barOf(api, 'x:sa').y, barOf(api, 'y:sa').y)
+    expect(boxOf(api, totals[0]!).bottom).toBeLessThanOrEqual(top)
+  })
+
+  it('百分比堆叠不写合计', async () => {
+    const rig = await labelRig({
+      data: DATA,
+      series: [
+        { mark: 'bar', x: 'month', y: 'online', stack: 's', stackOffset: 'expand' },
+        { mark: 'bar', x: 'month', y: 'offline', stack: 's', stackOffset: 'expand' },
+      ],
+      totals: true,
+    })
+    expect(labelsOf(rig.api(), 'total-label')).toEqual([])
+  })
+
+  it('折线的 end 写在每个点的上方', async () => {
+    const rig = await labelRig({ data: DATA, series: [{ mark: 'line', x: 'month', y: 'online', labels: 'end' }] })
+    const api = rig.api()
+    const anchors = api.model.scene!.anchors.get('online')!
+    for (const label of labelsOf(api)) {
+      const j = DATA.findIndex(d => label.key.endsWith(`s${d.month}`))
+      expect(boxOf(api, label).bottom).toBeLessThan(anchors[j]!.y)
+    }
+  })
+
+  it('线尾标签：写系列名与末值，两条线的末端挨着时上下推开', async () => {
+    const rig = await labelRig({
+      data: [{ m: 'a', p: 10, q: 11 }, { m: 'b', p: 50, q: 51 }],
+      series: [
+        { mark: 'line', x: 'm', y: 'p', name: '甲', endLabel: true },
+        { mark: 'line', x: 'm', y: 'q', name: '乙', endLabel: true },
+      ],
+    })
+    const api = rig.api()
+    const ends = labelsOf(api, 'end-label')
+    expect(ends.map(e => e.text).sort()).toEqual(['乙 51', '甲 50'])
+    const [a, b] = ends
+    expect(Math.abs(a!.y - b!.y)).toBeGreaterThanOrEqual(api.model.scene!.layout.font.lineHeight - 0.5)
+    const last = api.model.scene!.anchors.get('p')![1]!
+    expect(ends.find(e => e.key === 'end:p')!.x).toBeGreaterThan(last.x)
+    expect(boxOf(api, ends[0]!).right).toBeLessThanOrEqual(400)
+  })
+
+  it('标签彼此重叠时只留一个，留下的互不相交', async () => {
+    const data = Array.from({ length: 30 }, (_, i) => ({ m: `k${i}`, v: 1_000_000 + i }))
+    const rig = await labelRig({ data, series: [{ mark: 'bar', x: 'm', y: 'v', labels: 'end' }] })
+    const api = rig.api()
+    const labels = labelsOf(api)
+    expect(labels.length).toBeGreaterThan(0)
+    expect(labels.length).toBeLessThan(30)
+    const boxes = labels.map(l => boxOf(api, l))
+    boxes.forEach((a, i) => boxes.slice(i + 1).forEach((b) => {
+      const apart = a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top
+      expect(apart).toBe(true)
+    }))
+  })
+
+  it('悬停图例淡出其余系列时，标签随所属系列一起淡出', async () => {
+    const rig = await labelRig({
+      data: DATA,
+      series: [
+        { mark: 'bar', x: 'month', y: 'online', labels: 'end' },
+        { mark: 'bar', x: 'month', y: 'offline', labels: 'end' },
+      ],
+    })
+    rig.service.send({ type: 'LEGEND.HOVER', id: 'online' })
+    const api = rig.api()
+    const offline = labelsOf(api).find(l => l.datum?.seriesId === 'offline')!
+    const online = labelsOf(api).find(l => l.datum?.seriesId === 'online')!
+    expect((api.getMarkProps(offline) as Dict)['data-dimmed']).toBe('')
+    expect((api.getMarkProps(online) as Dict)['data-dimmed']).toBeUndefined()
   })
 })
 

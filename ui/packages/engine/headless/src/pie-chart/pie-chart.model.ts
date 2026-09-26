@@ -11,7 +11,7 @@ import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../share
 import type { PieChartTranslations, PieLabels, PieSort, PieSummary, PieSweep, PieVariant } from './pie-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, ellipsize, foldSmall, pie, pointRadial } from '@xihan-ui/viz'
-import { CHART_SLOT_COUNT, memoizeLast } from '../shared/chart'
+import { CHART_SLOT_COUNT, memoizeLast, settleColumn } from '../shared/chart'
 
 /** 合并出来的「其他」扇区的 id：不与作者的扇区名混用。 */
 export const PIE_OTHER_ID = '__other__'
@@ -206,26 +206,6 @@ export interface PieLayout {
 function point(cx: number, cy: number, angle: number, radius: number): PiePoint {
   const [x, y] = pointRadial(angle, radius)
   return { x: cx + x, y: cy + y }
-}
-
-/** 一侧的外侧标签：自上而下推开，再自下而上回推；仍放不下就去掉数值最小的那个，直到放得下。 */
-function settleColumn<T extends { y: number, value: number }>(items: T[], min: number, max: number, lineHeight: number): T[] {
-  let kept = [...items].sort((a, b) => a.y - b.y)
-  for (;;) {
-    const ys = kept.map(item => item.y)
-    for (let i = 0; i < ys.length; i++)
-      ys[i] = Math.max(ys[i]!, i === 0 ? min : ys[i - 1]! + lineHeight)
-    for (let i = ys.length - 1; i >= 0; i--)
-      ys[i] = Math.min(ys[i]!, i === ys.length - 1 ? max : ys[i + 1]! - lineHeight)
-    if (ys.length === 0 || ys[0]! >= min - 0.5)
-      return kept.map((item, i) => ({ ...item, y: ys[i]! }))
-    let smallest = 0
-    kept.forEach((item, i) => {
-      if (item.value < kept[smallest]!.value)
-        smallest = i
-    })
-    kept = kept.filter((_, i) => i !== smallest)
-  }
 }
 
 export function layoutPie(

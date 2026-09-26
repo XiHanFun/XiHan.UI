@@ -8937,8 +8937,10 @@
       "bar",
       "caption",
       "crosshair",
+      "data-label",
       "dot",
       "empty",
+      "end-label",
       "focus-ring",
       "grid",
       "grid-line",
@@ -8961,6 +8963,7 @@
       "tooltip-row",
       "tooltip-swatch",
       "tooltip-value",
+      "total-label",
       "viewport"
     ],
     "cascader": [
@@ -10378,6 +10381,7 @@
       "orientation",
       "pending",
       "series",
+      "totals",
       "translations",
       "trigger",
       "xAxis",
@@ -17521,6 +17525,7 @@
         "locale",
         "orientation",
         "pending",
+        "totals",
         "trigger"
       ],
       "events": [

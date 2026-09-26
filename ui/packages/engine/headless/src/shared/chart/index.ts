@@ -5,6 +5,8 @@
 
 // 导出 shared/chart 模块的公共接口：各图表组件共用的内核。
 
+export { labelBox, placeWithoutOverlap, settleColumn } from './labels'
+export type { ChartLabelBox } from './labels'
 export {
   chartActiveSource,
   chartBaseActions,

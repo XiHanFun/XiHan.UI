@@ -336,6 +336,9 @@
     "crosshair": [
       "cartesian-chart"
     ],
+    "data-label": [
+      "cartesian-chart"
+    ],
     "decrement-trigger": [
       "number-field"
     ],
@@ -403,6 +406,9 @@
       "transfer",
       "tree",
       "tree-select"
+    ],
+    "end-label": [
+      "cartesian-chart"
     ],
     "error": [
       "tool-call"
@@ -1563,6 +1569,9 @@
     "tooltip-value": [
       "cartesian-chart",
       "pie-chart"
+    ],
+    "total-label": [
+      "cartesian-chart"
     ],
     "track": [
       "color-slider",

@@ -229,6 +229,21 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: '堆叠合计：每个类目在整叠外侧写合计，只给眼睛看',
+    spec: { adr: 'chart-labels' },
+    props: {
+      series: [
+        { ...SERIES[0], stack: 's' },
+        { ...SERIES[1], stack: 's' },
+      ],
+      totals: true,
+    },
+    initial: {
+      counts: { 'total-label': 3 },
+      parts: { 'total-label': [{ 'aria-hidden': 'true' }, { 'aria-hidden': 'true' }, { 'aria-hidden': 'true' }] },
+    },
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },

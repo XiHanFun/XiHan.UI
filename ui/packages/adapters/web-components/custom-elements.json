@@ -5934,6 +5934,15 @@
             },
             {
               "kind": "field",
+              "name": "totals",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "totals"
+            },
+            {
+              "kind": "field",
               "name": "pending",
               "privacy": "public",
               "type": {
@@ -6346,6 +6355,14 @@
               "description": "提示框汇报什么，默认 axis：同一个键上的全部系列",
               "name": "trigger",
               "fieldName": "trigger"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "堆叠柱的合计：每个堆叠组在最外端写出合计",
+              "name": "totals",
+              "fieldName": "totals"
             },
             {
               "type": {

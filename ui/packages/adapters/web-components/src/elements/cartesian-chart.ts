@@ -49,6 +49,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-cartesian-chart
  * @attr {'vertical'|'horizontal'} orientation - 朝向，默认 vertical；horizontal 即条形图
  * @attr {'axis'|'item'} trigger - 提示框汇报什么，默认 axis：同一个键上的全部系列
+ * @attr {boolean} totals - 堆叠柱的合计：每个堆叠组在最外端写出合计
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字、日期与内建文案的语言；未提供时按宿主语言
@@ -85,6 +86,7 @@ export class XhCartesianChartElement extends XhElement {
     translations: { attribute: false },
     orientation: { converter: STRING_CONVERTER },
     trigger: { converter: STRING_CONVERTER },
+    totals: { converter: BOOLEAN_CONVERTER },
     pending: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
@@ -100,6 +102,7 @@ export class XhCartesianChartElement extends XhElement {
   declare translations?: Partial<CartesianChartTranslations>
   declare orientation?: CartesianOrientation
   declare trigger?: CartesianTrigger
+  declare totals?: boolean
   declare pending?: boolean
   declare animated?: boolean
   declare locale?: string
@@ -135,6 +138,7 @@ export class XhCartesianChartElement extends XhElement {
       yAxis: this.yAxis,
       orientation: this.orientation,
       trigger: this.trigger,
+      totals: this.totals,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
@@ -229,6 +233,7 @@ export class XhCartesianChartElement extends XhElement {
         ...api.scene.layers.back,
         ...api.overlay.under,
         ...api.scene.layers.data,
+        ...api.scene.layers.front,
         ...api.overlay.over,
       ], api)
     }

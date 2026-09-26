@@ -59,6 +59,7 @@ export function cartesianModelOf(source: CartesianModelSource): CartesianModel {
     xAxis: prop('xAxis'),
     yAxis: prop('yAxis'),
     orientation: prop('orientation'),
+    totals: prop('totals'),
     hiddenSeries: context.get('hiddenSeries'),
     size: context.get('size'),
     metrics: context.get('metrics'),
