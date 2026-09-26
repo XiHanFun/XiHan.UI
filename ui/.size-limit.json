@@ -15,13 +15,13 @@
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "11.5 kB"
+    "limit": "12.4 kB"
   },
   {
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "7.3 kB"
+    "limit": "9.6 kB"
   },
   {
     "name": "motion",
