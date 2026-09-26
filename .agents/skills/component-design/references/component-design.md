@@ -648,10 +648,10 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 出现 | 挂载与卸载（§9.5） | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
 | 列表 | 加入、移除、重排、错开（§9.6） | 同出现；重排用 `translate` | 同出现；重排 `move` / `continuous` | 淡变，无错开 |
 | 导航 | 抽屉、侧栏、走马灯、标签带滚动、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
-| 数值 | 进度、计数、倒计时（§9.7） | `clip-path`、文本 | `move` / `continuous` | 瞬时；倒计时分段 |
+| 数值 | 进度、计数、倒计时（§9.7） | `translate`、`clip-path`、文本 | `move` / `continuous` | 瞬时；倒计时分段 |
 | 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale`（`scale-drag`） | 跟手无过渡；松手用弹簧并交接松手速度（§9.11）：归位与快甩 `smooth`、越界回弹 `stiff` | 瞬时归位 |
 | 循环 | 转圈、微光、脉冲、光标、不定进度、呼吸（§9.12） | `rotate`、`background-position`、`opacity`、`translate`；呼吸只动 `opacity`、`scale` | 循环时长 / `loop`；呼吸 `loop-breathe` / `breathe` | 停止并显示静态替代 |
-| 注意 | 抖动、脉冲强调 | — | 只在 `@xihan-ui/animations` 中使用 | 不播放 |
+| 注意 | 抖动、脉冲强调 | — | 只在 `@xihan-ui/animations` 中使用：`attention`，摆幅以 `--xh-motion-distance-md` 为准 | 不播放 |
 | 数据 | 图表入场、更新、退出（§9.10） | 几何参数、`scale`、`stroke-dashoffset`、`opacity` | `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
@@ -728,23 +728,25 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 ### 9.6 列表
 
 - 加入用 `xh-item-in`，移除用 `xh-fade-out`，都经 Presence。重排用 FLIP：读取旧位置、写入新布局、以 `translate` 反向补偿后过渡到 0，`--xh-motion-duration-move` + `--xh-motion-ease-continuous`。
+- 条目由作者渲染、删掉即卸载的集合，离场由列表动效在原位置放一个退场态的替身：绝对定位在原排布位、`inert`、摘掉 id 与表单名，播完即移除。作者的列表写法不为退场改变。
 - 错开步长 `--xh-motion-stagger-step`，只对同一批到达的条目按到达顺序计数，最多 5 步；不按 DOM 位置（`nth-child`）计数。
 - 首帧规则：初始渲染时已存在的内容（默认展开的披露、默认打开的浮层、历史消息、初始列表）直接呈现，只有用户操作或新数据导致的出现才播进场。headless 以共享状态属性 `data-instant` 标记这类内容，皮肤的进场写在 `:not([data-instant])` 下。
 - 启用列表增删动效的集合：TagsInput、FieldArray，以及已有的 Toast、Notification、MessageFeed、Command、Cascader 等；Transfer（两侧同时变化）与 InfiniteScroll（批量追加）不启用。
 
 ### 9.7 数值
 
-- 进度类填充（Progress、LoadingBar、FileUpload 进度、倒计时）不动 `inline-size`：填充铺满轨道，以 `clip-path: inset(…)` 显示进度，保留 pill 端头。
+- 进度类填充（Progress、LoadingBar、FileUpload 进度）不动 `inline-size`：填充铺满轨道、按比例 `translate`，由轨道裁掉，只走合成；前端圆角保留，行首由轨道圆角裁出。倒计时条自己就是填充、父级不裁，以 `clip-path: inset(…)` 裁切收起。
 - 不定进度以固定宽度的段做 `translate` 往复。
 - 倒计时共用一份关键帧；减弱动效下按秒分段显示剩余时间。
 - 数值补间（NumberAnimation）的时长由属性给出，减弱动效下直接落到终值。
 
 ### 9.8 指示器与性能
 
-- 滑动指示器（Tabs、Segmented、Anchor、NavigationMenu）与 Tour 聚光框共用一套测量：取当前项相对列表容器的 `offset*` 几何，投影为私有槽。不用 `getBoundingClientRect`，因为祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`。
+- 滑动指示器（Tabs、Segmented、Anchor、NavigationMenu）共用一套测量：取当前项相对列表容器的 `offset*` 几何，投影为私有槽。不用 `getBoundingClientRect`，因为祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`；Tabs 的标签带滚动已占用 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。Tour 聚光框是 `position: fixed` 的视口坐标，按目标的屏幕矩形定位。
 - 优先动可合成属性：`translate`、`scale`、`rotate`、`opacity`；`clip-path` 只触发重绘，可以使用。
 - 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点伸长；Layout 侧栏折叠；QuestionFlow 视口与 Toast 堆叠的高度。新增例外须登记理由。
-- `will-change` 只写在动画进行中的状态下（`data-animating`、`data-dragging`）。开态常驻会使文字模糊；不可合成的属性不写 `will-change`。
+- `will-change` 只写在动画进行中的状态下：拖拽中（`data-dragging`）、机器驱动的补间进行中（`data-animating`），以及 Presence 管理的部件的收起态（`data-state='closed'`，只在退场那一段留在屏上）。开态常驻会使文字模糊；不可合成的属性不写 `will-change`。
+- transition 列表写长名：`background-color`、`border-color`、`outline-color`、`box-shadow`、`opacity`、`translate`、`scale`、`rotate`；不写 `background`、`border`、`outline` 与 `transform` 简写。需要一次性组合多个变换、且顺序是独立属性表达不了的，才写 `transform`，并登记理由。
 - liquid 档的双沿指示器：起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉长时块向收到不低于 `--xh-motion-scale-squash`（0.86）。测量与绘制沿用上面的共享几何与登记例外；新的点击从当前位置与速度改向。standard 档保持曲线。
 
 ### 9.9 JS 动效
@@ -1130,11 +1132,8 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | 图表组件；chart 家族配方随第二个图表组件建立 |
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
-| §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | 补 FloatButton 列表（standard 档；liquid 档已由融回承担）、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
-| §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
-| §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
+| §9.8 布局例外登记、transition 长名 | 布局例外登记门禁；`transform` 过渡迁到独立属性：Carousel 轨道、Sortable 条目与 ImageViewer 图片（连接层内联写 `transform`）、Toast 叠放（方向槽随之改写）；门禁核 `transform` 一半 |
 | §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档；悬浮栏里相邻的分段按液态组结组）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
 | §9.11 弹簧 | `--xh-motion-ease-spring`；Drawer 与底部面板的滑动关闭（随 §14.6 底部面板原语） |
 | §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |
-| §9.9 带元素参数的减弱判断、JS 无固定毫秒；§14.4 JS 与 CSS 同作用域 | headless 各状态机（Tabs 标签带补间、NumberAnimation、Carousel 起播）与 core 的 `reducedMotion()`（Presence、贴底滚动、平滑滚动）改为按元素判断并用 `readMotion` 取时长；门禁要求判断减弱动效时传参 |
