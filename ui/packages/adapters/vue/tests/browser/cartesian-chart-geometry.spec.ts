@@ -207,7 +207,7 @@ describe('状态', () => {
 
 describe('过渡', () => {
   // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响
-  const SLOW = '--xh-motion-duration-move: 4s; --xh-motion-duration-enter: 4s'
+  const SLOW = '--xh-motion-duration-reveal: 4s; --xh-motion-duration-morph: 4s; --xh-motion-duration-enter: 4s'
   const MIXED = [{ mark: 'bar', x: 'month', y: 'amount' }, { mark: 'line', x: 'month', y: 'amount', id: 'trend' }]
 
   it('入场：柱从基线长出、底边不动，折线由描线关键帧描出；关掉 animated 直接落到终态', async () => {
