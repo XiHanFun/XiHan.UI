@@ -150,27 +150,26 @@ describe('image-viewer', () => {
     t.handle().zoomIn()
     t.handle().zoomIn()
     await tick()
-    expect(imageEl().style.transform).toContain('scaleX(2)')
+    expect(imageEl().style.scale).toBe('2')
     const zoomIn = document.querySelector<HTMLButtonElement>('[data-part="zoom-in-trigger"]')
     expect(zoomIn?.disabled).toBe(true)
   })
 
-  it('旋转与翻转叠进 transform，reset 归零', async () => {
+  it('旋转与翻转写进独立的 rotate 与 scale，reset 归零', async () => {
     const t = mountViewer()
     await tick()
     t.handle().rotateRight()
     t.handle().zoomIn()
     t.handle().flipHorizontal()
     await tick()
-    const style = imageEl().style.transform
-    expect(style).toContain('rotate(90deg)')
-    expect(style).toContain('scaleX(-1.5)')
-    expect(style).toContain('scaleY(1.5)')
+    expect(imageEl().style.rotate).toBe('90deg')
+    // 水平翻转只把横轴取反，两轴不等时写成两个数
+    expect(imageEl().style.scale).toBe('-1.5 1.5')
 
     t.handle().reset()
     await tick()
-    expect(imageEl().style.transform).toContain('rotate(0deg)')
-    expect(imageEl().style.transform).toContain('scaleX(1)')
+    expect(imageEl().style.rotate).toBe('0deg')
+    expect(imageEl().style.scale).toBe('1')
   })
 
   it('换图把上一张的变换归零', async () => {
@@ -178,10 +177,10 @@ describe('image-viewer', () => {
     await tick()
     t.handle().zoomIn()
     await tick()
-    expect(imageEl().style.transform).toContain('scaleX(1.5)')
+    expect(imageEl().style.scale).toBe('1.5')
     t.handle().next()
     await tick()
-    expect(imageEl().style.transform).toContain('scaleX(1)')
+    expect(imageEl().style.scale).toBe('1')
   })
 
   it('方向键在浮层内翻页', async () => {
@@ -201,7 +200,7 @@ describe('image-viewer', () => {
     const viewport = document.querySelector<HTMLElement>('[data-part="viewport"]')!
     viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: -120, bubbles: true, cancelable: true }))
     await tick()
-    expect(imageEl().style.transform).toContain('scaleX(1.5)')
+    expect(imageEl().style.scale).toBe('1.5')
   })
 
   it('setOpen 关闭：content 收起', async () => {
