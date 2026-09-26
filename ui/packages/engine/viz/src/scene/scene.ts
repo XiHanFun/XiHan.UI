@@ -229,13 +229,21 @@ function drawMark(mark: ShapeMark, sink: PathSink): void {
       })(mark.points, sink)
       return
     case 'area':
-      area<typeof mark.points[number]>({
-        x: p => p.x,
-        y0: p => p.y0 ?? p.y,
-        y1: p => p.y,
-        defined: p => p.defined !== false && Number.isFinite(p.x) && Number.isFinite(p.y),
-        curve: curveOf(mark.curve),
-      })(mark.points, sink)
+      area<typeof mark.points[number]>(mark.orientation === 'horizontal'
+        ? {
+            y: p => p.y,
+            x0: p => p.x0 ?? p.x,
+            x1: p => p.x,
+            defined: p => p.defined !== false && Number.isFinite(p.x) && Number.isFinite(p.y),
+            curve: curveOf(mark.curve),
+          }
+        : {
+            x: p => p.x,
+            y0: p => p.y0 ?? p.y,
+            y1: p => p.y,
+            defined: p => p.defined !== false && Number.isFinite(p.x) && Number.isFinite(p.y),
+            curve: curveOf(mark.curve),
+          })(mark.points, sink)
       return
     default:
       throw invalidArgument('不是形状标记', { kind: (mark as Mark).kind })

@@ -46,6 +46,15 @@ describe('过渡计划', () => {
     expect(find<RectMark>(sceneAt(fade, 25), 'a')).toMatchObject({ height: 60, opacity: 0.25 })
   })
 
+  it('进入：面积从基线升起，横向面积从 x0 展开', () => {
+    const vertical: Mark = { kind: 'area', key: 'v', part: 'area', curve: 'linear', points: [{ key: 'a', x: 0, y: 20, y0: 100 }] }
+    const horizontal: Mark = { kind: 'area', key: 'h', part: 'area', curve: 'linear', orientation: 'horizontal', points: [{ key: 'a', x: 80, y: 0, x0: 0 }] }
+    const plan = planTransition(scene([]), scene([vertical, horizontal]), { duration: 100, easing: linear })
+    expect(find(sceneAt(plan, 0), 'v')).toMatchObject({ points: [{ y: 100 }] })
+    expect(find(sceneAt(plan, 0), 'h')).toMatchObject({ points: [{ x: 0 }] })
+    expect(find(sceneAt(plan, 50), 'h')).toMatchObject({ points: [{ x: 40 }] })
+  })
+
   it('进入：折线与点总是淡入', () => {
     const line: LineMark = { kind: 'line', key: 'l', part: 'line', curve: 'linear', points: [{ key: 'a', x: 0, y: 0 }] }
     const plan = planTransition(scene([]), scene([line]), { duration: 100, easing: linear })

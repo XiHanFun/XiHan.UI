@@ -145,6 +145,11 @@ describe('按键对齐的点序列插值', () => {
     expect(mid[1]?.defined).toBe(false)
   })
 
+  it('横向面积的基线 x0 跟着插值', () => {
+    const tween = interpolatePoints([{ key: 'a', x: 10, y: 0, x0: 0 }], [{ key: 'a', x: 30, y: 0, x0: 10 }])
+    expect(tween(0.5)[0]).toMatchObject({ x: 20, x0: 5 })
+  })
+
   it('一边为空时点在原地出现或消失', () => {
     expect(interpolatePoints([], [p('a', 3, 4)])(0)).toEqual([{ key: 'a', x: 3, y: 4, defined: true }])
     expect(interpolatePoints([p('a', 3, 4)], [])(1)).toEqual([{ key: 'a', x: 3, y: 4, defined: true }])

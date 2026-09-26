@@ -99,11 +99,12 @@ export interface LineMark extends MarkBase {
   readonly curve: CurveName
 }
 
-/** 面积：点带基线 y0。 */
+/** 面积：纵向（缺省）沿 x 铺开、点带基线 y0；横向沿 y 铺开、点带基线 x0。 */
 export interface AreaMark extends MarkBase {
   readonly kind: 'area'
   readonly points: readonly KeyedPoint[]
   readonly curve: CurveName
+  readonly orientation?: 'vertical' | 'horizontal'
 }
 
 /** 符号，(x, y) 是中心，size 是面积（px²）。 */
