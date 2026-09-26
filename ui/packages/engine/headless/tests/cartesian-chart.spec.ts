@@ -743,6 +743,38 @@ describe('过渡', () => {
     expect(mid.x).toBeGreaterThan(target.x)
   })
 
+  it('数据更新：标签上的数随柱从旧值滚到新值；首次出现直接写终值', async () => {
+    vi.useFakeTimers(FRAMES)
+    const series = [{ mark: 'bar' as const, x: 'm', y: 'v', labels: 'end' as const }]
+    const rig = await makeRig({ data: [{ m: 'a', v: 100 }], series, animated: true })
+    const text = (): string | undefined => (rig.api().scene.layers.front.find(m => m.key === 'label:v:sa') as TextMark | undefined)?.text
+    expect(text()).toBe('100')
+    vi.advanceTimersByTime(1000)
+    rig.setProps({ data: [{ m: 'a', v: 200 }] })
+    vi.advanceTimersByTime(100)
+    const mid = Number(text())
+    expect(mid).toBeGreaterThan(100)
+    expect(mid).toBeLessThan(200)
+    expect(Number.isInteger(mid)).toBe(true)
+    vi.advanceTimersByTime(1000)
+    expect(text()).toBe('200')
+    expect(rig.api().scene).toBe(rig.api().model.scene!.scene)
+  })
+
+  it('数据更新：线尾标签的末值同样滚动，系列名不变', async () => {
+    vi.useFakeTimers(FRAMES)
+    const series = [{ mark: 'line' as const, x: 'm', y: 'v', name: '甲', endLabel: true }]
+    const rig = await makeRig({ data: [{ m: 'a', v: 10 }, { m: 'b', v: 10 }], series, animated: true })
+    vi.advanceTimersByTime(1000)
+    rig.setProps({ data: [{ m: 'a', v: 10 }, { m: 'b', v: 90 }] })
+    vi.advanceTimersByTime(100)
+    const label = rig.api().scene.layers.front.find(m => m.key === 'end:v') as TextMark
+    const [name, value] = label.text.split(' ')
+    expect(name).toBe('甲')
+    expect(Number(value)).toBeGreaterThan(10)
+    expect(Number(value)).toBeLessThan(90)
+  })
+
   it('减弱动效：几何直接落到终态，只淡入', async () => {
     vi.useFakeTimers(FRAMES)
     document.body.setAttribute('data-motion', 'reduce')
