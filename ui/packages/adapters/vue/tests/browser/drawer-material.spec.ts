@@ -61,9 +61,10 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     mount(side)
     await settle()
 
+    // 第一段是整幅位移，第二段是并列的淡变（缺省档两端都是不透明）
     const content = getComputedStyle(part('content'))
-    expect(content.animationName).toBe('xh-slide-in')
-    expect(content.animationDuration).toBe('0.32s')
+    expect(content.animationName.split(', ')).toEqual(['xh-slide-in', 'xh-slide-fade-in'])
+    expect(content.animationDuration.split(', ')[0]).toBe('0.32s')
   })
 
   it.each([

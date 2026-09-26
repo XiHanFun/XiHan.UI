@@ -340,7 +340,9 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "drawer"
+      ],
       "relation": "slide"
     },
     "xh-slide-fade-out": {
@@ -348,7 +350,9 @@
       "definedIn": [
         "family/motion.css"
       ],
-      "consumers": [],
+      "consumers": [
+        "drawer"
+      ],
       "relation": "slide"
     },
     "xh-slide-in": {
