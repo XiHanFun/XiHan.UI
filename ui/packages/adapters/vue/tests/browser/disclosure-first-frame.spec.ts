@@ -2,7 +2,7 @@
 // 动画是否在播只有真实浏览器量得出来：jsdom 不跑 CSS 动画。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h, nextTick } from 'vue'
+import { createApp, h, nextTick, ref } from 'vue'
 import {
   XhAccordionContent,
   XhAccordionHeader,
@@ -14,6 +14,15 @@ import {
   XhCollapsibleIndicator,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
+  XhReasoningContent,
+  XhReasoningLabel,
+  XhReasoningRoot,
+  XhReasoningTrigger,
+  XhToolCallContent,
+  XhToolCallIndicator,
+  XhToolCallLabel,
+  XhToolCallRoot,
+  XhToolCallTrigger,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -116,5 +125,52 @@ describe('collapsible 首帧不播开合', () => {
     trigger.click()
     await nextTick()
     expect(running(content)).toEqual(['xh-disclosure-collapse'])
+  })
+})
+
+describe('tool-call 首帧不播开合', () => {
+  it('在跑时挂载即自动展开：内容没有在播的展开动画；跑完自动收起时播收起', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const phase = ref<'input-streaming' | 'output-available'>('input-streaming')
+    app = createApp({
+      render: () => h(XhToolCallRoot, { phase: phase.value }, () => [
+        h(XhToolCallTrigger, () => [h(XhToolCallLabel, () => '搜索'), h(XhToolCallIndicator)]),
+        h(XhToolCallContent, () => '入参与结果'),
+      ]),
+    })
+    app.mount(host)
+    await settle()
+    const content = host.querySelector<HTMLElement>('[data-scope="tool-call"][data-part="content"]')!
+    expect(content.getAttribute('data-state')).toBe('open')
+    expect(running(content)).toEqual([])
+
+    phase.value = 'output-available'
+    await nextTick()
+    expect(running(content)).toEqual(['xh-disclosure-collapse'])
+  })
+})
+
+describe('reasoning 首帧不播', () => {
+  it('挂载时已经想完：标签不播整句替换的淡入；挂载后想完那一下才播', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const streaming = ref(false)
+    app = createApp({
+      render: () => h(XhReasoningRoot, { streaming: streaming.value }, () => [
+        h(XhReasoningTrigger, () => [h(XhReasoningLabel)]),
+        h(XhReasoningContent, () => '推理过程'),
+      ]),
+    })
+    app.mount(host)
+    await settle()
+    const label = host.querySelector<HTMLElement>('[data-scope="reasoning"][data-part="label"]')!
+    expect(running(label)).toEqual([])
+
+    streaming.value = true
+    await settle()
+    streaming.value = false
+    await nextTick()
+    expect(running(label)).toEqual(['xh-fade-in'])
   })
 })

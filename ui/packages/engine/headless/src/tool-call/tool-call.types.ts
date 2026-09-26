@@ -75,9 +75,22 @@ export interface ToolCallSchema extends MachineSchema {
      * 本机器同时服务 tool-call 与 reasoning，两家的 trigger 都读它。
      */
     pressed: boolean
+    /**
+     * 挂载之后开合变过没有（用户操作、自动开合、程序化与受控改写都算）。没变过时内容与箭头投影 data-instant：
+     * 首帧就在的展开 / 收起直接呈现，不播展开、收起动画；第一次开合起才按动效走。
+     */
+    moved: boolean
+    /**
+     * 挂载之后 running 翻过没有。Reasoning 的文案在「想完」那一下整句换掉，淡入只接挂载后真的发生的这一下：
+     * 没翻过时文案投影 data-instant，首帧就已想完的直接呈现。
+     */
+    phaseMoved: boolean
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /** 叶态的 entry 是否已经跑过启动那一次：之后的每一次进入都是开合真的变了。 */
+    entered: boolean
+  }
   state: 'auto.collapsed' | 'auto.expanded' | 'held.collapsed' | 'held.expanded'
   event:
     | { type: 'TOGGLE' }
@@ -108,6 +121,7 @@ export interface ToolCallSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
+    | 'markMoved'
   effect: never
 }
 

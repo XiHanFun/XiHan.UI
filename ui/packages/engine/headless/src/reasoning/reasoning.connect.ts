@@ -37,6 +37,9 @@ export function connectReasoning<T extends PropTypes>(
   const streaming = !!props.streaming
   const ids = scope.ids('reasoning', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
+  // 挂载后没开合过：首帧就在的展开 / 收起直接呈现；挂载后没想完过：文案不播替换的淡入
+  const instant = dataAttr(!context.get('moved'))
+  const settledInstant = dataAttr(!context.get('phaseMoved'))
   const durationMs = reasoningDuration(props.startTime, props.endTime)
 
   const setOpen = (next: boolean): void => {
@@ -109,16 +112,19 @@ export function connectReasoning<T extends PropTypes>(
       ...parts.indicator.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
+      'data-instant': instant,
     }),
 
     getLabelProps: () => normalize.element({
       ...parts.label.attrs,
       'data-streaming': dataAttr(streaming),
+      'data-instant': settledInstant,
     }),
 
     getDurationProps: () => normalize.element({
       ...parts.duration.attrs,
       'data-streaming': dataAttr(streaming),
+      'data-instant': settledInstant,
     }),
 
     getContentProps: () => normalize.element({
@@ -127,6 +133,7 @@ export function connectReasoning<T extends PropTypes>(
       'role': 'region',
       'aria-labelledby': ids.trigger,
       'data-state': stateAttr,
+      'data-instant': instant,
       'hidden': !open || undefined,
       // 收起动画播完之前内容还在渲染，inert 把这段窗口挡在读屏与 Tab 序之外
       'inert': !open || undefined,

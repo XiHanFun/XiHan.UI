@@ -143,6 +143,27 @@ describe('connectReasoning 开合', () => {
   })
 })
 
+describe('connectReasoning 首帧不播', () => {
+  const attr = (props: unknown): unknown => (props as Record<string, unknown>)['data-instant']
+
+  it('首帧就在的展开与已经想完的文案带 data-instant：内容、箭头、标签与时长直接呈现', () => {
+    const r = makeReasoning({ defaultOpen: true })
+    const api = r.api()
+    expect([api.getContentProps(), api.getIndicatorProps(), api.getLabelProps(), api.getDurationProps()].map(attr))
+      .toEqual(['', '', '', ''])
+    r.stop()
+  })
+
+  it('挂载后想完：文案撤掉标记，接住整句替换的淡入；自动收起同时撤掉内容与箭头的标记', () => {
+    const r = makeReasoning({ running: true })
+    r.setProps({ running: false })
+    const api = r.api()
+    expect([api.getLabelProps(), api.getDurationProps()].map(attr)).toEqual([undefined, undefined])
+    expect([api.getContentProps(), api.getIndicatorProps()].map(attr)).toEqual([undefined, undefined])
+    r.stop()
+  })
+})
+
 // ══ 按压通道 ══
 
 type Dict = Record<string, unknown>

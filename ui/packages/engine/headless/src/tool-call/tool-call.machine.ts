@@ -26,7 +26,10 @@ export const toolCallMachine = createMachine({
   context: ({ cell }) => ({
     // 按压通道：trigger 被 Space / Enter 或触屏按住，与开合、阶段互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    moved: cell<boolean>(() => ({ defaultValue: false })),
+    phaseMoved: cell<boolean>(() => ({ defaultValue: false })),
   }),
+  refs: () => ({ entered: false }),
   initialState: ({ prop }) => {
     const explicit = prop('open') ?? prop('defaultOpen')
     if (explicit !== undefined)
@@ -65,8 +68,10 @@ export const toolCallMachine = createMachine({
         'CONTROLLED.OPEN': { target: '.expanded' },
         'CONTROLLED.CLOSE': { target: '.collapsed' },
       },
+      // 四个叶态的 entry 记开合变动：同态转移不重入，进入叶态就是开合真的变了（启动那一次除外）
       states: {
         collapsed: {
+          entry: ['markMoved'],
           on: {
             // 用户动手即锁存：这一次开合同时把自动开合永久停用
             TOGGLE: [
@@ -76,6 +81,7 @@ export const toolCallMachine = createMachine({
           },
         },
         expanded: {
+          entry: ['markMoved'],
           on: {
             TOGGLE: [
               { guard: 'isOpenControlled', actions: ['invokeOnUserClose'] },
@@ -101,6 +107,7 @@ export const toolCallMachine = createMachine({
       },
       states: {
         collapsed: {
+          entry: ['markMoved'],
           on: {
             TOGGLE: [
               { guard: 'isOpenControlled', actions: ['invokeOnUserOpen'] },
@@ -109,6 +116,7 @@ export const toolCallMachine = createMachine({
           },
         },
         expanded: {
+          entry: ['markMoved'],
           on: {
             TOGGLE: [
               { guard: 'isOpenControlled', actions: ['invokeOnUserClose'] },
@@ -130,6 +138,12 @@ export const toolCallMachine = createMachine({
     actions: {
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
+      // 启动时进入初态那一次不算；之后每进一次叶态，内容与箭头就按动效走
+      markMoved: ({ context, refs }) => {
+        if (refs.get('entered'))
+          context.set('moved', true)
+        else refs.set('entered', true)
+      },
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled'))
           context.set('pressed', false)
@@ -148,7 +162,9 @@ export const toolCallMachine = createMachine({
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       // 电平同步：每次 running 变化都按当前值发一条，不看方向
-      syncRunning: ({ prop, send }) => {
+      // watch 只在挂载后 running 真的翻了才触发
+      syncRunning: ({ context, prop, send }) => {
+        context.set('phaseMoved', true)
         send(prop('running') ? { type: 'PHASE.ACTIVE' } : { type: 'PHASE.SETTLE' })
       },
     },

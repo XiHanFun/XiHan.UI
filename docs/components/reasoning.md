@@ -221,9 +221,13 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
 | `icon` | `data-streaming` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
+| `label` | `data-instant` | ''（条件成立时才出现） |
 | `label` | `data-streaming` | ''（条件成立时才出现） |
+| `duration` | `data-instant` | ''（条件成立时才出现） |
 | `duration` | `data-streaming` | ''（条件成立时才出现） |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
