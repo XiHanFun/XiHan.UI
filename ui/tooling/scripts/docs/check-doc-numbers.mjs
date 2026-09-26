@@ -1159,7 +1159,6 @@ for (const name of ['enter', 'exit', 'press', 'drag', 'stack', 'squash', 'breath
 const DWELL = {
   'Tooltip 打开延迟': ['packages/engine/headless/src/tooltip/tooltip.machine.ts', 'OPEN_DELAY'],
   'Tooltip 关闭延迟': ['packages/engine/headless/src/tooltip/tooltip.machine.ts', 'CLOSE_DELAY'],
-  'Tooltip 长按抬起后的保留': ['packages/engine/headless/src/tooltip/tooltip.machine.ts', 'TOUCH_CLOSE_DELAY'],
   'HoverCard 打开延迟': ['packages/engine/headless/src/hover-card/hover-card.machine.ts', 'OPEN_DELAY'],
   'HoverCard 关闭延迟': ['packages/engine/headless/src/hover-card/hover-card.machine.ts', 'CLOSE_DELAY'],
   'NavigationMenu 展开延迟': ['packages/engine/headless/src/navigation-menu/navigation-menu.machine.ts', 'NAVIGATION_MENU_DELAY'],
@@ -1465,7 +1464,6 @@ const TABLE = [
   // 停留时长页：缺省值与源码常量逐条对账
   ['docs/design/dwell.md', /\| Tooltip \| `openDelay` \/ `closeDelay` \| (\d+) \/ \d+ms/, '停留:Tooltip 打开延迟'],
   ['docs/design/dwell.md', /\| Tooltip \| `openDelay` \/ `closeDelay` \| \d+ \/ (\d+)ms/, '停留:Tooltip 关闭延迟'],
-  ['docs/design/dwell.md', /长按打开后抬起手指再保留 (\d+)ms/, '停留:Tooltip 长按抬起后的保留'],
   ['docs/design/dwell.md', /\| HoverCard \| `openDelay` \/ `closeDelay` \| (\d+) \/ \d+ms/, '停留:HoverCard 打开延迟'],
   ['docs/design/dwell.md', /\| HoverCard \| `openDelay` \/ `closeDelay` \| \d+ \/ (\d+)ms/, '停留:HoverCard 关闭延迟'],
   ['docs/design/dwell.md', /\| Menu 子菜单 \| `hoverOpenDelay` \/ `hoverCloseDelay` \| (\d+) \/ \d+ms/, '停留:Menu 子菜单打开延迟'],
