@@ -62,7 +62,7 @@ function carouselTree(slides = 4, indicators = 4, editableSlide?: number): Fixtu
 }
 
 /** 轨道位移只写在内联 style 上，不进归一化快照，只能直接看节点。 */
-function expectTrack(transform: string): StepWithExpect {
+function expectTrack(translate: string): StepWithExpect {
   return {
     kind: 'raw',
     why: '内联 style 不进归一化快照；轨道位移是轮播的核心产出，必须直接读节点才验得到',
@@ -70,8 +70,8 @@ function expectTrack(transform: string): StepWithExpect {
       const track = q(doc, 'list')
       if (!track)
         throw new Error('找不到 carousel 的 list 部件')
-      if (track.style.transform !== transform)
-        throw new Error(`list 的位移应为 ${transform}，实际是 ${track.style.transform || '(空)'}`)
+      if (track.style.translate !== translate)
+        throw new Error(`list 的位移应为 ${translate}，实际是 ${track.style.translate || '(空)'}`)
     },
   }
 }
@@ -242,7 +242,7 @@ export const carouselSuite: ConformanceSuite = {
           'indicator[1]': { 'aria-current': 'false', 'data-current': null },
         },
       },
-      steps: [expectTrack('translateX(0%)')],
+      steps: [expectTrack('0%')],
     },
     {
       name: '点下一张：inview 与 aria-current 一起搬家，轨道位移跟上，上一张解除禁用',
@@ -262,7 +262,7 @@ export const carouselSuite: ConformanceSuite = {
             },
           },
         },
-        expectTrack('translateX(-100%)'),
+        expectTrack('-100%'),
       ],
     },
     {
@@ -282,7 +282,7 @@ export const carouselSuite: ConformanceSuite = {
             },
           },
         },
-        expectTrack('translateX(-200%)'),
+        expectTrack('-200%'),
       ],
     },
     {
@@ -421,7 +421,7 @@ export const carouselSuite: ConformanceSuite = {
           expect: { parts: { 'item[1]': { 'data-inview': '' }, 'indicator[1]': { 'aria-current': 'true' } } },
         },
         // 纵轨走 translateY，与文字方向无关
-        expectTrack('translateY(-100%)'),
+        expectTrack('0px -100%'),
       ],
     },
     {
@@ -431,7 +431,7 @@ export const carouselSuite: ConformanceSuite = {
       props: { slideCount: 4, dir: 'rtl', defaultPage: 2 },
       initial: { parts: { root: { dir: 'rtl' } } },
       steps: [
-        expectTrack('translateX(200%)'),
+        expectTrack('200%'),
         { kind: 'focus', part: 'next-trigger' },
         {
           kind: 'key',
@@ -534,7 +534,7 @@ export const carouselSuite: ConformanceSuite = {
           },
         },
         // 第 1 页从第 2 张起，一张占半屏 → 位移一个视口
-        expectTrack('translateX(-100%)'),
+        expectTrack('-100%'),
       ],
     },
     {
@@ -558,7 +558,7 @@ export const carouselSuite: ConformanceSuite = {
             },
           },
         },
-        expectTrack('translateX(-100%)'),
+        expectTrack('-100%'),
       ],
     },
     {

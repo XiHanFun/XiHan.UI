@@ -632,24 +632,24 @@ describe('connectCarousel 属性', () => {
 
   it('轨道位移写进 list 的内联 style；一屏多张时按份数摊', () => {
     const one = makeCarousel({ ...SIX, defaultPage: 2 }).api().getListProps() as Dict
-    expect(one.style).toEqual({ transform: 'translateX(-200%)' })
+    expect(one.style).toEqual({ translate: '-200%' })
 
     const two = makeCarousel({ slideCount: 6, slidesPerPage: 2, defaultPage: 2 }).api()
-    expect((two.getListProps() as Dict).style).toEqual({ transform: 'translateX(-200%)' })
+    expect((two.getListProps() as Dict).style).toEqual({ translate: '-200%' })
     // 第 2 页从第 4 张起，一张占半屏 → 位移两个视口
     expect(two.slideRange).toEqual({ start: 4, end: 5 })
   })
 
   it('纵轨走 translateY；rtl 只翻水平轴的符号', () => {
     const vertical = makeCarousel({ ...SIX, orientation: 'vertical', defaultPage: 1 }).api()
-    expect((vertical.getListProps() as Dict).style).toEqual({ transform: 'translateY(-100%)' })
+    expect((vertical.getListProps() as Dict).style).toEqual({ translate: '0px -100%' })
 
     const rtl = makeCarousel({ ...SIX, dir: 'rtl', defaultPage: 1 }).api()
-    expect((rtl.getListProps() as Dict).style).toEqual({ transform: 'translateX(100%)' })
+    expect((rtl.getListProps() as Dict).style).toEqual({ translate: '100%' })
 
     // 纵轨与文字方向无关：rtl 不该把上下翻过来
     const verticalRtl = makeCarousel({ ...SIX, orientation: 'vertical', dir: 'rtl', defaultPage: 1 }).api()
-    expect((verticalRtl.getListProps() as Dict).style).toEqual({ transform: 'translateY(-100%)' })
+    expect((verticalRtl.getListProps() as Dict).style).toEqual({ translate: '0px -100%' })
   })
 
   it('条目宽度与间距由连接层给：间距落成条目内边距，不动轨道的 gap', () => {
@@ -921,13 +921,13 @@ describe('connectCarousel 指针', () => {
     movePointer(240)
     expect(c.api().dragging).toBe(true)
     expect((c.api().getListProps() as Dict).style)
-      .toEqual({ transform: 'translateX(calc(0% - 60px))' })
+      .toEqual({ translate: 'calc(0% - 60px)' })
 
     releasePointer()
     expect(c.api().dragging).toBe(false)
     expect(c.api().page).toBe(1)
     // 松手后轨道回到整页位移，不再挂着那段像素
-    expect((c.api().getListProps() as Dict).style).toEqual({ transform: 'translateX(-100%)' })
+    expect((c.api().getListProps() as Dict).style).toEqual({ translate: '-100%' })
   })
 
   function timed(type: string, timeStamp: number, clientX: number, clientY = 0): PointerEvent {
@@ -985,7 +985,7 @@ describe('connectCarousel 指针', () => {
     )
     document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX: 50, clientY: 240, bubbles: true }))
     expect(c.service.context.get('dragOffset')).toBe(-60)
-    expect((c.api().getListProps() as Dict).style).toEqual({ transform: 'translateY(calc(0% - 60px))' })
+    expect((c.api().getListProps() as Dict).style).toEqual({ translate: '0px calc(0% - 60px)' })
     releasePointer()
     expect(c.api().page).toBe(1)
   })
@@ -996,7 +996,7 @@ describe('connectCarousel 指针', () => {
     movePointer(300 + (CAROUSEL_DRAG_THRESHOLD - 1))
     // calc 里写 `+ -39px` 各家解析并不一致，正负号得自己归一
     expect((c.api().getListProps() as Dict).style)
-      .toEqual({ transform: `translateX(calc(-200% + ${CAROUSEL_DRAG_THRESHOLD - 1}px))` })
+      .toEqual({ translate: `calc(-200% + ${CAROUSEL_DRAG_THRESHOLD - 1}px)` })
 
     releasePointer()
     expect(c.api().page).toBe(2)

@@ -56,14 +56,14 @@
   }
 
   /* 被位移的那条轨道。
-     transform 归连接层：整页位移与拖拽中的像素偏移都写在它的内联 style 上，
+     translate 归连接层：整页位移与拖拽中的像素偏移都写在它的内联 style 上，
      样式层再碰这条轴就会把两个位移互相覆盖，画面当场错位。
      这里只负责排布与过渡 */
   [data-scope='carousel'][data-part='list'] {
     display: flex;
     flex-direction: row;
     block-size: 100%;
-    transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-slide))
+    transition: translate var(--xh-carousel-duration, var(--xh-motion-duration-slide))
       var(--xh-carousel-ease, var(--xh-motion-ease-slide));
   }
 
@@ -79,13 +79,13 @@
      整条轨道的位移这一档每帧都在改，合成层只在这一档备好，松手随 data-dragging 一起撤掉 */
   [data-scope='carousel'][data-part='list'][data-dragging] {
     transition: none;
-    will-change: transform;
+    will-change: translate;
   }
 
   /* 松手后由弹簧带着松手速度逐帧把轨道收到落定位置，同样不能再叠一层过渡；落定即撤 */
   [data-scope='carousel'][data-part='list'][data-animating] {
     transition: none;
-    will-change: transform;
+    will-change: translate;
   }
 
   /* 一张幻灯片。

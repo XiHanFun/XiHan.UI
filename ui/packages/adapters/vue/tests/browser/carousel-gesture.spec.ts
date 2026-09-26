@@ -73,9 +73,9 @@ async function drag(el: HTMLElement, dx: number, steps = 6): Promise<void> {
   await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(x + dx) })
 }
 
-/** 轨道 transform 里叠加的像素位移；没有时为 0。 */
+/** 轨道 translate 里叠加的像素位移；没有时为 0。 */
 function pixelOffset(list: HTMLElement): number {
-  const match = /([+-]) ([\d.]+)px/.exec(list.style.transform)
+  const match = /([+-]) ([\d.]+)px/.exec(list.style.translate)
   return match ? Number(match[2]) * (match[1] === '-' ? -1 : 1) : 0
 }
 
@@ -85,14 +85,14 @@ describe('轮播手势松手', () => {
     await drag(list, -120)
     await frames(1)
     expect(list.hasAttribute('data-animating')).toBe(true)
-    expect(list.style.transform).toContain('-100%')
+    expect(list.style.translate).toContain('-100%')
     // 松手时轨道在 -120px 处，换算到下一页（-400px）还差 +280px 左右，弹簧从这里起收
     const first = pixelOffset(list)
     expect(first).toBeGreaterThan(150)
     await frames(3)
     expect(pixelOffset(list)).toBeLessThan(first)
     await expect.poll(() => list.hasAttribute('data-animating'), { timeout: 2000 }).toBe(false)
-    expect(list.style.transform).toBe('translateX(-100%)')
+    expect(list.style.translate).toBe('-100%')
   })
 
   it('首页往上一页拖：越拉越沉，松手硬弹簧弹回原页', async () => {
@@ -103,8 +103,8 @@ describe('轮播手势松手', () => {
     expect(pulled).toBeGreaterThan(0)
     // 橡皮筋上限 60px：拖了 200px，轨道只出来不到 60px
     expect(pulled).toBeLessThan(60)
-    expect(list.style.transform).toMatch(/^translateX\(calc\(0% \+/)
-    await expect.poll(() => list.style.transform, { timeout: 2000 }).toBe('translateX(0%)')
+    expect(list.style.translate).toMatch(/^calc\(0% \+/)
+    await expect.poll(() => list.style.translate, { timeout: 2000 }).toBe('0%')
     expect(list.hasAttribute('data-animating')).toBe(false)
   })
 
@@ -114,7 +114,7 @@ describe('轮播手势松手', () => {
     await drag(list, -120)
     await frames(1)
     expect(list.hasAttribute('data-animating')).toBe(false)
-    expect(list.style.transform).toBe('translateX(-100%)')
+    expect(list.style.translate).toBe('-100%')
   })
 
   it('落定途中再按下：从弹簧此刻的位置接着拖，轨道不跳', async () => {
@@ -132,6 +132,6 @@ describe('轮播手势松手', () => {
     // 按下的那一帧里弹簧只走了一小步：轨道位置与按下前差不到一帧的位移
     expect(Math.abs(list.getBoundingClientRect().left - before)).toBeLessThan(40)
     await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at })
-    await expect.poll(() => list.style.transform, { timeout: 2000 }).toBe('translateX(-100%)')
+    await expect.poll(() => list.style.translate, { timeout: 2000 }).toBe('-100%')
   })
 })
