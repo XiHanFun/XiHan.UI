@@ -657,6 +657,11 @@
       "$type": "number",
       "$value": 0.98
     },
+    "scale-stack": {
+      "$description": "叠放的一摞里每往后一层保留的比例，后层按层深逐层收拢（Toast 的收起态）。减弱动效下为 1：层与层只靠位移分开，不缩放。",
+      "$type": "number",
+      "$value": 0.95
+    },
     "scale-press": {
       "$type": "number",
       "$value": 0.97

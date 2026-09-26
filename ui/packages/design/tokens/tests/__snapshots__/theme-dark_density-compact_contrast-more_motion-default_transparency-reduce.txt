@@ -200,12 +200,16 @@
 --xh-motion-scale-exit: 0.98
 --xh-motion-scale-halo: 2.6
 --xh-motion-scale-press: 0.97
+--xh-motion-scale-squash: 0.86
+--xh-motion-scale-stack: 0.95
 --xh-motion-spring-bouncy-damping: 18
 --xh-motion-spring-bouncy-stiffness: 400
 --xh-motion-spring-gentle-damping: 26
 --xh-motion-spring-gentle-stiffness: 170
 --xh-motion-spring-lead-damping: 34
 --xh-motion-spring-lead-stiffness: 520
+--xh-motion-spring-merge-damping: 24
+--xh-motion-spring-merge-stiffness: 320
 --xh-motion-spring-smooth-damping: 30
 --xh-motion-spring-smooth-stiffness: 300
 --xh-motion-spring-snappy-damping: 30

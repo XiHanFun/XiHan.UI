@@ -12609,6 +12609,7 @@
     "--xh-motion-scale-halo",
     "--xh-motion-scale-press",
     "--xh-motion-scale-squash",
+    "--xh-motion-scale-stack",
     "--xh-motion-spring-bouncy-damping",
     "--xh-motion-spring-bouncy-stiffness",
     "--xh-motion-spring-gentle-damping",

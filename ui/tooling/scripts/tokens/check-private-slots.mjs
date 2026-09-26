@@ -15,6 +15,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_toast-progress-steps', 'packages/engine/headless/src/toast/toast.connect.ts'],
   // 同一批新到条目的错开序号：条目到达的追踪写进条目的内联样式，皮肤只读
   ['--xh-_stagger-index', 'packages/engine/core/src/behavior/arrival/track-arrivals.ts'],
+  // 叠放的一摞里各条的层深：堆叠控制器写进条目的内联样式，皮肤按它逐层算收拢比例
+  ['--xh-_toast-depth', 'packages/engine/headless/src/toast/toast.stack.ts'],
 ])
 
 const files = (await Promise.all(STYLE_DIRS.map(async dir =>

@@ -298,7 +298,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `--xh-toast-py` | `root` | `padding-block` | `default` | `--xh-space-3` | toast 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toast-radius` | `root` | `border-radius` | `default` | `--xh-shape-overlay` | toast 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-toast-scale` | `*` | `transform` | `@keyframes xh-toast-out` | `1` | toast 的 * 部件 transform 覆盖槽。 |
-| `--xh-toast-scale-collapsed` | `*`<br>`root` | `--xh-toast-scale`<br>`transform` | `@keyframes xh-toast-in`<br>`default` | `1` | toast 的 *、root 部件 --xh-toast-scale、transform 覆盖槽。 |
+| `--xh-toast-scale-collapsed` | `*`<br>`root` | `--xh-toast-scale`<br>`transform` | `@keyframes xh-toast-in`<br>`default` | `--xh-_toast-stack-scale` | toast 的 *、root 部件 --xh-toast-scale、transform 覆盖槽。 |
 | `--xh-toast-shadow` | `root` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | toast 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-toast-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | toast 的 title 部件 color 覆盖槽。 |
 | `--xh-toast-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | toast 的 title 部件 font-size 覆盖槽。 |

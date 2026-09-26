@@ -11,7 +11,6 @@ export interface ToastStackControllerOptions {
   group: HTMLElement
   gap: number
   placement: ToastPlacement
-  scaleFactor?: number
   onInteractionChange?: (active: boolean) => void
 }
 
@@ -20,10 +19,13 @@ export interface ToastStackController {
   dispose: () => void
 }
 
-/** HeroUI/Sonner 式堆叠：最新一条在最前，后层按固定偏移与比例收拢。 */
+/**
+ * HeroUI/Sonner 式堆叠：最新一条在最前，后层按固定偏移与比例收拢。
+ * 这里只写层深（私有槽 --xh-_toast-depth），缩放比例由皮肤按 --xh-motion-scale-stack 逐层算：
+ * 减弱动效下那支令牌为 1，后层不缩放。
+ */
 export function createToastStackController(options: ToastStackControllerOptions): ToastStackController {
   const { group, gap, placement, onInteractionChange } = options
-  const scaleFactor = options.scaleFactor ?? 0.05
   const heights = new WeakMap<HTMLElement, number>()
   let expanded = false
   let pointerWithin = false
@@ -60,7 +62,7 @@ export function createToastStackController(options: ToastStackControllerOptions)
       item.dataset.placement = placement
       item.style.setProperty('--xh-toast-offset-collapsed', `${depth * gap}px`)
       item.style.setProperty('--xh-toast-offset-expanded', `${expandedOffset}px`)
-      item.style.setProperty('--xh-toast-scale-collapsed', String(Math.max(0, 1 - depth * scaleFactor)))
+      item.style.setProperty('--xh-_toast-depth', String(depth))
       item.style.setProperty('--xh-toast-front-height', `${frontHeight}px`)
       item.style.setProperty('--xh-toast-height', `${heights.get(item) ?? frontHeight}px`)
       expandedOffset += (heights.get(item) ?? frontHeight) + gap
