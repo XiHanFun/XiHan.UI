@@ -16,6 +16,7 @@ import { calendarPickerSuite } from './calendar-picker.suite'
 import { calendarRangePickerSuite } from './calendar-range-picker.suite'
 import { cardSuite } from './card.suite'
 import { carouselSuite } from './carousel.suite'
+import { cartesianChartSuite } from './cartesian-chart.suite'
 import { cascaderSuite } from './cascader.suite'
 import { checkboxGroupSuite } from './checkbox-group.suite'
 import { checkboxSuite } from './checkbox.suite'
@@ -270,4 +271,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   colorFieldSuite,
   colorSwatchPickerSuite,
   barCodeSuite,
+  cartesianChartSuite,
 ]

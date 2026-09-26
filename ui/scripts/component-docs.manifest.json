@@ -470,6 +470,17 @@
       ]
     },
     {
+      "id": "chart",
+      "label": "图表",
+      "description": "把数据画成图：比较、趋势、占比、分布、层级与流向。",
+      "components": [
+        {
+          "id": "cartesian-chart",
+          "name": "直角坐标图"
+        }
+      ]
+    },
+    {
       "id": "feedback",
       "label": "反馈",
       "description": "报告系统状态：正在进行、已经完成、出了错。",

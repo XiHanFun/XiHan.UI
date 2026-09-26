@@ -35,6 +35,10 @@ const PUBLIC_EVENTS = {
   'submit': 'onSubmit',
   'tab-move': 'onTabMove',
   'value-change': 'onValueChange',
+  'hidden-series-change': 'onHiddenSeriesChange',
+  'active-key-change': 'onActiveKeyChange',
+  'datum-active': 'onDatumActive',
+  'datum-press': 'onDatumPress',
 } as const
 
 function declaredEvents(component: Component): Set<string> {

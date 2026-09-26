@@ -308,6 +308,29 @@ export { useCarouselContext } from './components/carousel/context'
 export { useCarousel } from './components/carousel/use-carousel'
 export type { CarouselContext } from './components/carousel/use-carousel'
 export {
+  XhCartesianChartCaption,
+  XhCartesianChartEmpty,
+  XhCartesianChartLegend,
+  XhCartesianChartPlot,
+  XhCartesianChartRoot,
+  XhCartesianChartTooltip,
+  XhCartesianChartViewport,
+} from './components/cartesian-chart/cartesian-chart'
+export type {
+  CartesianChartRootSlotProps,
+  CartesianChartTooltipSlotProps,
+  XhCartesianChartCaptionProps,
+  XhCartesianChartEmptyProps,
+  XhCartesianChartLegendProps,
+  XhCartesianChartPlotProps,
+  XhCartesianChartRootProps,
+  XhCartesianChartTooltipProps,
+  XhCartesianChartViewportProps,
+} from './components/cartesian-chart/cartesian-chart'
+export { useCartesianChartContext } from './components/cartesian-chart/context'
+export { useCartesianChart } from './components/cartesian-chart/use-cartesian-chart'
+export type { CartesianChartContext } from './components/cartesian-chart/use-cartesian-chart'
+export {
   XhCascaderClearTrigger,
   XhCascaderColumn,
   XhCascaderContent,

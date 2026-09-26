@@ -145,6 +145,14 @@
 
 </div>
 
+## 图表
+
+<div class="xh-component-grid">
+
+<XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" />
+
+</div>
+
 ## 反馈
 
 <div class="xh-component-grid">

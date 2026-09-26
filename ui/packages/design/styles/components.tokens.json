@@ -7617,6 +7617,338 @@
       "description": "carousel 的 viewport 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-cartesian-chart-bar-max",
+      "component": "cartesian-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-bar-max"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-bar-max"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-gap",
+      "component": "cartesian-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-height",
+      "component": "cartesian-chart",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-height"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 viewport 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-legend-gap",
+      "component": "cartesian-chart",
+      "part": [
+        "legend"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 legend 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-legend-swatch-line-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "legend-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "mark=line"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-legend-swatch-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "legend-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-line-width",
+      "component": "cartesian-chart",
+      "part": [
+        "line",
+        "root"
+      ],
+      "property": [
+        "stroke-width"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-line-width"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 line、root 部件 stroke-width 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-point-size",
+      "component": "cartesian-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-point-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-point-size"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 root 部件 --xh-_chart-metric-point-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-series-color",
+      "component": "cartesian-chart",
+      "part": [
+        "area-fill",
+        "bar",
+        "dot",
+        "legend-swatch",
+        "line",
+        "point",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background",
+        "border",
+        "fill",
+        "stroke"
+      ],
+      "state": [
+        "tone",
+        "xh-chart-slot=1",
+        "xh-chart-slot=2",
+        "xh-chart-slot=3",
+        "xh-chart-slot=4",
+        "xh-chart-slot=5",
+        "xh-chart-slot=6",
+        "xh-chart-slot=7",
+        "xh-chart-slot=8"
+      ],
+      "defaultToken": [
+        "--xh-_tone",
+        "--xh-chart-categorical-1",
+        "--xh-chart-categorical-2",
+        "--xh-chart-categorical-3",
+        "--xh-chart-categorical-4",
+        "--xh-chart-categorical-5",
+        "--xh-chart-categorical-6",
+        "--xh-chart-categorical-7",
+        "--xh-chart-categorical-8"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 area-fill、bar、dot、legend-swatch、line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-gap",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-px",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-py",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-row-gap",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip-row"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip-row 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-shadow",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-swatch-line-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "mark=line"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-tooltip-swatch-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "tooltip-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-action-bg",
       "component": "cascader",
       "part": [

@@ -130,6 +130,10 @@ export {
 export type { CarouselRootSlotProps } from './components/carousel/carousel'
 export { useCarousel } from './components/carousel/use-carousel'
 export type { CarouselContext } from './components/carousel/use-carousel'
+export { XhCartesianChartCaption, XhCartesianChartEmpty, XhCartesianChartLegend, XhCartesianChartPlot, XhCartesianChartRoot, XhCartesianChartTooltip, XhCartesianChartViewport } from './components/cartesian-chart/cartesian-chart'
+export type { CartesianChartRootSlotProps, CartesianChartTooltipSlotProps } from './components/cartesian-chart/cartesian-chart'
+export { useCartesianChart } from './components/cartesian-chart/use-cartesian-chart'
+export type { CartesianChartContext, CartesianChartNotifiers } from './components/cartesian-chart/use-cartesian-chart'
 export {
   XhCascaderClearTrigger,
   XhCascaderColumn,

@@ -98,6 +98,9 @@ const IDENTITY = {
   'carousel:indicator::after[data-current]': 'pill',
   'carousel:indicator::before[data-current]': 'pill',
   'slider:tick': 'circle',
+  // 图表色标：折线的色标是一段短线，一维对象取 pill；柱与面积的方块走 inset 与覆盖槽
+  'cartesian-chart:legend-swatch[data-mark=\'line\']': 'pill',
+  'cartesian-chart:tooltip-swatch[data-mark=\'line\']': 'pill',
   'image-cropper:crop-area': 'circle',
   // circle + floating：悬浮于内容之上的单图标动作，走 Action Control floating profile
   'float-button:trigger': { shape: 'circle', floating: true },

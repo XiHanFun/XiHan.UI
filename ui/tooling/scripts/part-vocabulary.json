@@ -23,6 +23,9 @@
     "approve-trigger": [
       "approval"
     ],
+    "area-fill": [
+      "cartesian-chart"
+    ],
     "area-thumb": [
       "color-picker"
     ],
@@ -40,6 +43,15 @@
       "carousel",
       "marquee"
     ],
+    "axis": [
+      "cartesian-chart"
+    ],
+    "axis-line": [
+      "cartesian-chart"
+    ],
+    "axis-title": [
+      "cartesian-chart"
+    ],
     "back-trigger": [
       "page-header"
     ],
@@ -49,6 +61,9 @@
       "drawer",
       "image-viewer",
       "tour"
+    ],
+    "bar": [
+      "cartesian-chart"
     ],
     "block": [
       "markdown-stream"
@@ -125,6 +140,7 @@
       "password-input"
     ],
     "caption": [
+      "cartesian-chart",
       "table"
     ],
     "cell": [
@@ -307,6 +323,9 @@
     "crop-handle": [
       "image-cropper"
     ],
+    "crosshair": [
+      "cartesian-chart"
+    ],
     "decrement-trigger": [
       "number-field"
     ],
@@ -334,6 +353,9 @@
     "display": [
       "timer"
     ],
+    "dot": [
+      "cartesian-chart"
+    ],
     "drag-trigger": [
       "floating-panel"
     ],
@@ -357,6 +379,7 @@
       "pagination"
     ],
     "empty": [
+      "cartesian-chart",
       "cascader",
       "combobox",
       "command",
@@ -412,6 +435,9 @@
     "flip-vertical-trigger": [
       "image-viewer"
     ],
+    "focus-ring": [
+      "cartesian-chart"
+    ],
     "fold-trigger": [
       "code-view"
     ],
@@ -444,6 +470,7 @@
     "grid": [
       "calendar-picker",
       "calendar-range-picker",
+      "cartesian-chart",
       "heatmap",
       "image-cropper"
     ],
@@ -454,6 +481,9 @@
     "grid-head": [
       "calendar-picker",
       "calendar-range-picker"
+    ],
+    "grid-line": [
+      "cartesian-chart"
     ],
     "group": [
       "approval",
@@ -853,16 +883,23 @@
       "code-view"
     ],
     "legend": [
+      "cartesian-chart",
       "fieldset",
       "heatmap"
     ],
     "legend-item": [
+      "cartesian-chart",
       "heatmap"
     ],
     "legend-label": [
+      "cartesian-chart",
       "heatmap"
     ],
+    "legend-swatch": [
+      "cartesian-chart"
+    ],
     "line": [
+      "cartesian-chart",
       "code-view",
       "log",
       "separator"
@@ -1013,6 +1050,12 @@
     "placeholder": [
       "image"
     ],
+    "plot": [
+      "cartesian-chart"
+    ],
+    "point": [
+      "cartesian-chart"
+    ],
     "positioner": [
       "cascader",
       "color-picker",
@@ -1139,6 +1182,7 @@
       "calendar-range-picker",
       "card",
       "carousel",
+      "cartesian-chart",
       "cascader",
       "checkbox",
       "checkbox-group",
@@ -1326,6 +1370,9 @@
       "timer",
       "toolbar"
     ],
+    "series": [
+      "cartesian-chart"
+    ],
     "sider": [
       "layout"
     ],
@@ -1372,6 +1419,7 @@
       "text-field"
     ],
     "summary": [
+      "cartesian-chart",
       "diff-view",
       "pagination",
       "tool-call"
@@ -1386,6 +1434,9 @@
     ],
     "tab-drag-trigger": [
       "tabs"
+    ],
+    "table": [
+      "cartesian-chart"
     ],
     "tag-list": [
       "select"
@@ -1406,12 +1457,14 @@
       "switch"
     ],
     "tick": [
+      "cartesian-chart",
       "slider"
     ],
     "tick-group": [
       "slider"
     ],
     "tick-label": [
+      "cartesian-chart",
       "slider"
     ],
     "time": [
@@ -1458,7 +1511,23 @@
       "table"
     ],
     "tooltip": [
+      "cartesian-chart",
       "heatmap"
+    ],
+    "tooltip-header": [
+      "cartesian-chart"
+    ],
+    "tooltip-name": [
+      "cartesian-chart"
+    ],
+    "tooltip-row": [
+      "cartesian-chart"
+    ],
+    "tooltip-swatch": [
+      "cartesian-chart"
+    ],
+    "tooltip-value": [
+      "cartesian-chart"
     ],
     "track": [
       "color-slider",
@@ -1530,6 +1599,7 @@
     ],
     "viewport": [
       "carousel",
+      "cartesian-chart",
       "diff-view",
       "image-cropper",
       "image-viewer",
@@ -1575,7 +1645,9 @@
     "approval": true,
     "area": true,
     "arrow": true,
+    "axis": true,
     "backdrop": true,
+    "bar": true,
     "block": true,
     "body": true,
     "branch": true,
@@ -1599,6 +1671,7 @@
     "corner": true,
     "count": true,
     "counter": true,
+    "crosshair": true,
     "day": true,
     "description": true,
     "display": true,
@@ -1611,6 +1684,7 @@
     "extra": true,
     "fallback": true,
     "filename": true,
+    "fill": true,
     "footer": true,
     "gap": true,
     "glyph": true,
@@ -1648,6 +1722,8 @@
     "peg": true,
     "picker": true,
     "placeholder": true,
+    "plot": true,
+    "point": true,
     "positioner": true,
     "pre": true,
     "prefix": true,
@@ -1660,6 +1736,7 @@
     "range": true,
     "region": true,
     "result": true,
+    "ring": true,
     "root": true,
     "row": true,
     "scrollbar": true,
@@ -1668,6 +1745,7 @@
     "select": true,
     "sentinel": true,
     "separator": true,
+    "series": true,
     "shortcut": true,
     "sider": true,
     "slider": true,
@@ -1677,6 +1755,7 @@
     "suffix": true,
     "summary": true,
     "swatch": true,
+    "table": true,
     "text": true,
     "thumb": true,
     "tick": true,
