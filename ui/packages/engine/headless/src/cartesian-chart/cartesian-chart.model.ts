@@ -758,7 +758,8 @@ function labelPadding(
     if (s.spec.endLabel) {
       const label = endLabelText(s, formats)
       if (label) {
-        const width = measurer.measure(label.text, font).width + gap * 2 + metrics.pointSize / 2
+        // 被推开时整列再往右挪出引导线的长度：按挪开的情形留足
+        const width = measurer.measure(label.text, font).width + gap * 6 + metrics.pointSize / 2
         if (vertical)
           end = Math.max(end, width)
         else
@@ -1201,8 +1202,9 @@ function cartesianLabels(
     }
   }
 
-  // 线尾标签写在最后一个点的右边；竖向时几条线挤在一起，上下推开，挤不下去掉末值最小的
-  const ends: { s: CartesianSeriesValues, text: string, x: number, y: number, value: number }[] = []
+  // 线尾标签写在最后一个点的右边；竖向时几条线挤在一起，上下推开，挤不下去掉末值最小的。
+  // 有标签被推离了线尾的高度，整列往右挪出一段，被推开的用引导线连回线尾
+  const ends: { s: CartesianSeriesValues, text: string, x: number, y: number, px: number, py: number, value: number }[] = []
   for (const s of visible) {
     if (!s.spec.endLabel)
       continue
@@ -1210,17 +1212,36 @@ function cartesianLabels(
     const p = label ? anchors.get(s.spec.id)?.[label.index] : null
     if (!label || !p)
       continue
-    ends.push({ s, text: label.text, x: p.x + half + gap * 2, y: p.y, value: Math.abs(s.values[label.index] ?? 0) })
+    ends.push({ s, text: label.text, x: p.x + half + gap * 2, y: p.y, px: p.x, py: p.y, value: Math.abs(s.values[label.index] ?? 0) })
   }
   const settled = vertical ? settleColumn(ends, plot.y + lineHeight / 2, plot.y + plot.height - lineHeight / 2, lineHeight) : ends
+  const moved = (end: { y: number, py: number }): boolean => Math.abs(end.y - end.py) > lineHeight / 4
+  const run = settled.some(moved) ? gap * 4 : 0
+  const leaders = new Map<string, LineMark>()
   for (const end of settled) {
+    const id = end.s.spec.id
     const paint = { ...(end.s.spec.slot != null ? { slot: end.s.spec.slot } : {}), ...(end.s.spec.tone != null ? { tone: end.s.spec.tone } : {}) }
-    add(`end:${end.s.spec.id}`, 'end-label', end.text, [end.x, end.y, 'start', 'middle'], 'end', 2, { datum: { seriesId: end.s.spec.id, index: 0 }, paint })
+    const datum = { seriesId: id, index: 0 }
+    const x = end.x + run
+    add(`end:${id}`, 'end-label', end.text, [x, end.y, 'start', 'middle'], 'end', 2, { datum, paint })
+    if (moved(end)) {
+      leaders.set(`end:${id}`, {
+        kind: 'line',
+        key: `end-leader:${id}`,
+        part: 'leader-line',
+        curve: 'linear',
+        points: [{ key: 'from', x: end.px + half + 1, y: end.py }, { key: 'to', x: x - gap / 2, y: end.y }],
+        datum,
+        paint,
+      })
+    }
   }
 
   const kept = placeWithoutOverlap(candidates, { x: 0, y: 0, width: size.width, height: size.height })
+  // 标签没落位，它的引导线也不画
+  const lines = kept.map(c => leaders.get(c.mark.key)).filter((line): line is LineMark => line != null)
   return {
-    marks: kept.map(c => c.mark),
+    marks: [...lines, ...kept.map(c => c.mark)],
     placements: new Map(kept.map(c => [c.mark.key, c.placement])),
   }
 }
@@ -1292,7 +1313,7 @@ export function cartesianRevealAt(target: Scene): ReadonlyMap<string, number> {
     if (mark.part === 'total-label') {
       at.set(mark.key, TOTAL_LABEL_AT)
     }
-    else if (mark.part === 'end-label') {
+    else if (mark.part === 'end-label' || mark.part === 'leader-line') {
       at.set(mark.key, END_LABEL_AT)
     }
     else if (mark.part === 'data-label') {

@@ -901,6 +901,7 @@
       "code-view"
     ],
     "leader-line": [
+      "cartesian-chart",
       "pie-chart"
     ],
     "legend": [

@@ -485,6 +485,36 @@ describe('数据标签', () => {
     const last = api.model.scene!.anchors.get('p')![1]!
     expect(ends.find(e => e.key === 'end:p')!.x).toBeGreaterThan(last.x)
     expect(boxOf(api, ends[0]!).right).toBeLessThanOrEqual(400)
+    // 被推开的标签有引导线连回自己的线尾，线尾一端在点上，另一端在标签左侧
+    const leaders = api.scene.layers.front.filter(m => m.part === 'leader-line') as LineMark[]
+    expect(leaders.length).toBeGreaterThan(0)
+    for (const leader of leaders) {
+      const id = leader.datum!.seriesId
+      const anchor = api.model.scene!.anchors.get(id)![1]!
+      const label = ends.find(e => e.key === `end:${id}`)!
+      const [from, to] = leader.points
+      expect(from!.y).toBeCloseTo(anchor.y, 5)
+      expect(from!.x).toBeGreaterThan(anchor.x)
+      expect(to!.y).toBeCloseTo(label.y, 5)
+      expect(to!.x).toBeLessThan(label.x)
+      expect((api.getMarkProps(leader) as Dict)['aria-hidden']).toBe(true)
+    }
+  })
+
+  it('线尾标签：末端相隔足够远时标签落在线尾的高度，不画引导线', async () => {
+    const rig = await labelRig({
+      data: [{ m: 'a', p: 10, q: 90 }, { m: 'b', p: 10, q: 90 }],
+      series: [
+        { mark: 'line', x: 'm', y: 'p', name: '甲', endLabel: true },
+        { mark: 'line', x: 'm', y: 'q', name: '乙', endLabel: true },
+      ],
+    })
+    const api = rig.api()
+    for (const end of labelsOf(api, 'end-label')) {
+      const id = end.key.slice('end:'.length)
+      expect(end.y).toBeCloseTo(api.model.scene!.anchors.get(id)![1]!.y, 5)
+    }
+    expect(api.scene.layers.front.some(m => m.part === 'leader-line')).toBe(false)
   })
 
   it('标签彼此重叠时只留一个，留下的互不相交', async () => {

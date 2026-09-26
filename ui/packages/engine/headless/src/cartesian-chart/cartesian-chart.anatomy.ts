@@ -11,7 +11,8 @@ import { createAnatomy } from '@xihan-ui/core'
 // 准线与焦点环按数据生成。图例项、提示框的行由组件按系列生成。摘要与数据表由根自动生成，
 // 视觉隐藏，保证无障碍等价物始终存在。
 // dot 是折线上逐点画出的小圆（只给眼睛看）；point 是激活数据上那一个点，键盘聚焦时它就是焦点代理。
-// data-label、total-label 与 end-label 是数据标签、堆叠合计与线尾标签，写在前景层，只给眼睛看。
+// data-label、total-label 与 end-label 是数据标签、堆叠合计与线尾标签，写在前景层，只给眼睛看；
+// 线尾标签被推开时，leader-line 把它连回线尾。
 export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'root',
   'caption',
@@ -37,6 +38,7 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'data-label',
   'total-label',
   'end-label',
+  'leader-line',
   'crosshair',
   'focus-ring',
   'tooltip',
