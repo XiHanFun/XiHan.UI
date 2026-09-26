@@ -8,6 +8,8 @@
 //
 // 形变只由一根「拉扯向量」决定：从面的中心指向手指，长度经衰减后不超过面的内切半径。
 
+import { rubberBand } from '@xihan-ui/motion'
+
 /** 拉长到头时沿指向的伸长比例：拉扯长度等于半径时伸长 35%。 */
 const STRETCH = 0.35
 /** 面朝手指挪过去的比例：挪动量是拉扯长度的一半。 */
@@ -15,14 +17,14 @@ const SHIFT = 0.5
 
 /**
  * 手指相对面中心的偏移 → 拉扯向量。
- * 长度按越界跟手的同一条衰减曲线 `(1 − 1 / (d × 0.55 / R + 1)) × R` 收：按在面里时只鼓出一点，
+ * 长度按越界跟手的橡皮筋衰减（motion 的 rubberBand，尺寸取半径 R）收：按在面里时只鼓出一点，
  * 拖得越远增长越慢，趋近半径 R。
  */
 export function pullOf(dx: number, dy: number, radius: number): { x: number, y: number } {
   const distance = Math.hypot(dx, dy)
   if (distance === 0 || radius <= 0)
     return { x: 0, y: 0 }
-  const reach = (1 - 1 / ((distance * 0.55) / radius + 1)) * radius
+  const reach = rubberBand(distance, radius)
   return { x: (dx / distance) * reach, y: (dy / distance) * reach }
 }
 
