@@ -41717,6 +41717,30 @@
             {
               "description": "环心区域，内容由使用者决定（线形不使用）",
               "name": "label"
+            },
+            {
+              "description": "分段色带，由元素按 thresholds 生成：线形在 track 里、环形在 canvas 里，都排在 range 之前",
+              "name": "threshold"
+            },
+            {
+              "description": "目标刻度，由元素生成：线形在 root 里、环形在 canvas 里",
+              "name": "target"
+            },
+            {
+              "description": "刻度值的容器，由元素生成在 root 末尾",
+              "name": "scale"
+            },
+            {
+              "description": "刻度线，由元素生成：线形在 scale 里、环形在 canvas 里",
+              "name": "scale-tick"
+            },
+            {
+              "description": "刻度值，由元素生成在 scale 里",
+              "name": "scale-label"
+            },
+            {
+              "description": "仪表盘的指针，由元素生成在 canvas 末尾 分段、目标、刻度与指示方式是量（semantics=meter）才有的刻画。分段与刻度的配置是数组或对象，只走 JS property： `el.thresholds = [{ value: 60, tone: 'success', label: '正常' }]`。",
+              "name": "needle"
             }
           ],
           "members": [
@@ -41829,6 +41853,77 @@
               "attribute": "semantics"
             },
             {
+              "kind": "field",
+              "name": "thresholds",
+              "privacy": "public",
+              "type": {
+                "text": "readonly ProgressThreshold[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "target"
+            },
+            {
+              "kind": "field",
+              "name": "scale",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | ProgressScaleOptions | undefined"
+              },
+              "attribute": "scale"
+            },
+            {
+              "kind": "field",
+              "name": "indicator",
+              "privacy": "public",
+              "type": {
+                "text": "ProgressIndicator | undefined"
+              },
+              "attribute": "indicator"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ProgressTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "刻度值容器里的生成节点按它复用。"
+            },
+            {
+              "kind": "field",
+              "name": "#groups",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<Element, Map<string, Map<string, Element>>>()",
+              "description": "其余生成节点按「宿主节点 + 组名」复用。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -41837,6 +41932,74 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "#group",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "host",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "items",
+                  "type": {
+                    "text": "readonly T[]"
+                  }
+                },
+                {
+                  "name": "keyOf",
+                  "type": {
+                    "text": "(item: T) => string"
+                  }
+                },
+                {
+                  "name": "make",
+                  "type": {
+                    "text": "() => Element"
+                  }
+                },
+                {
+                  "name": "paint",
+                  "type": {
+                    "text": "(node: Element, item: T) => void"
+                  }
+                }
+              ],
+              "description": "按 key 复用一组生成节点，返回按次序排好的节点；没用上的摘掉。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMeter",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "ProgressApi"
+                  }
+                }
+              ],
+              "description": "量的刻画：分段色带、目标刻度、刻度与指针都按数据生成，作者只写外壳。"
             }
           ],
           "attributes": [
@@ -41927,6 +42090,38 @@
               "description": "报告的是进度还是量，默认 progress；meter 发出 role=meter 且不接受 indeterminate",
               "name": "semantics",
               "fieldName": "semantics"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "目标值：画一道目标刻度；只在 semantics=meter 下生效",
+              "name": "target",
+              "fieldName": "target"
+            },
+            {
+              "type": {
+                "text": "ProgressIndicator | undefined"
+              },
+              "description": "仪表盘的指示方式，默认 fill；只在 semantics=meter 下的 dashboard 生效",
+              "name": "indicator",
+              "fieldName": "indicator"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "刻度值与读屏文字的语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "boolean | ProgressScaleOptions | undefined"
+              },
+              "description": "画出量程刻度与刻度值；要指定刻度数量与数字格式时走 property：`el.scale = { ticks: 4, format }`",
+              "name": "scale",
+              "fieldName": "scale"
             }
           ],
           "superclass": {
@@ -41949,6 +42144,9 @@
               "name": "--xh-progress-linecap"
             },
             {
+              "name": "--xh-progress-needle-color"
+            },
+            {
               "name": "--xh-progress-range"
             },
             {
@@ -41958,7 +42156,16 @@
               "name": "--xh-progress-size"
             },
             {
+              "name": "--xh-progress-target-color"
+            },
+            {
+              "name": "--xh-progress-target-radius"
+            },
+            {
               "name": "--xh-progress-thickness"
+            },
+            {
+              "name": "--xh-progress-threshold-color"
             },
             {
               "name": "--xh-progress-track"

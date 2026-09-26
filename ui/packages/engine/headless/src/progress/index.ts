@@ -11,4 +11,17 @@ export { PROGRESS_VIEW, progressRing } from './progress.geometry'
 export type { ProgressRing } from './progress.geometry'
 export { progressKeyboard } from './progress.keyboard'
 export { progressMeta } from './progress.meta'
-export type { ProgressApi, ProgressGapPosition, ProgressProps, ProgressSemantics, ProgressTranslations, ProgressVariant } from './progress.types'
+export { defaultSegmentValueText } from './progress.meter'
+export type {
+  ProgressApi,
+  ProgressBand,
+  ProgressGapPosition,
+  ProgressIndicator,
+  ProgressProps,
+  ProgressScaleOptions,
+  ProgressSemantics,
+  ProgressThreshold,
+  ProgressTick,
+  ProgressTranslations,
+  ProgressVariant,
+} from './progress.types'

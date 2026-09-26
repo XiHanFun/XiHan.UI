@@ -12,6 +12,15 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_loading-bar-value', 'packages/engine/headless/src/loading-bar/loading-bar.connect.ts'],
   ['--xh-_notification-progress-steps', 'packages/engine/headless/src/notification/notification.connect.ts'],
   ['--xh-_progress-value', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  // 量的刻画：色带的起止、目标与刻度的位置（占满值的比例 0–1）、刻度值的对齐比例与环形坐标、指针的角度，
+  // 都由连接层按几何写进部件的内联样式，皮肤只读
+  ['--xh-_progress-from', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  ['--xh-_progress-to', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  ['--xh-_progress-at', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  ['--xh-_progress-label-align', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  ['--xh-_progress-x', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  ['--xh-_progress-y', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  ['--xh-_progress-needle-angle', 'packages/engine/headless/src/progress/progress.connect.ts'],
   ['--xh-_toast-progress-steps', 'packages/engine/headless/src/toast/toast.connect.ts'],
   // 同一批新到条目的错开序号：条目到达的追踪写进条目的内联样式，皮肤只读
   ['--xh-_stagger-index', 'packages/engine/core/src/behavior/arrival/track-arrivals.ts'],

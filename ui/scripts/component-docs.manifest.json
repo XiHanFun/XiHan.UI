@@ -486,6 +486,14 @@
           "id": "sparkline",
           "name": "迷你图"
         }
+      ],
+      "references": [
+        {
+          "id": "progress",
+          "name": "仪表盘与子弹图",
+          "preview": "progress-meter",
+          "anchor": "仪表盘"
+        }
       ]
     },
     {

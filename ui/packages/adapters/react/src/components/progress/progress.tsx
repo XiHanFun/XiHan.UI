@@ -6,7 +6,17 @@
 // 提供 progress 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { ProgressGapPosition, ProgressProps, ProgressSemantics, ProgressVariant } from '@xihan-ui/headless'
+import type {
+  ProgressApi,
+  ProgressGapPosition,
+  ProgressIndicator,
+  ProgressProps,
+  ProgressScaleOptions,
+  ProgressSemantics,
+  ProgressThreshold,
+  ProgressTranslations,
+  ProgressVariant,
+} from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectProgress } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
@@ -37,6 +47,31 @@ export interface XhProgressProps extends ComponentPropsWithRef<'div'> {
   size?: Size
   /** 报告的是进度还是量，默认 progress。 */
   semantics?: ProgressSemantics
+  /** 分段：升序的上界，每段带语气与名字，画成轨道上的色带；只在 meter 语义下生效。 */
+  thresholds?: readonly ProgressThreshold[]
+  /** 目标值：画一道目标刻度；只在 meter 语义下生效。 */
+  target?: number
+  /** 量程刻度与刻度值；只在 meter 语义下生效。 */
+  scale?: boolean | ProgressScaleOptions
+  /** 仪表盘的指示方式，默认 fill；只在 meter 语义下的 dashboard 生效。 */
+  indicator?: ProgressIndicator
+  /** 刻度值与读屏文字的语言。 */
+  locale?: string
+  translations?: Partial<ProgressTranslations>
+}
+
+type Attrs = Record<string, unknown>
+
+/** 刻度值的容器：没开刻度时不渲染。线形里连刻度线一起放，环形的刻度线画在 canvas 里。 */
+function Scale({ api, withTicks }: { api: ProgressApi, withTicks: boolean }): ReactNode {
+  if (api.ticks.length === 0)
+    return null
+  return (
+    <div {...api.getScaleProps() as Attrs}>
+      {withTicks ? api.ticks.map(tick => <span key={`t${tick.key}`} {...api.getScaleTickProps(tick) as Attrs} />) : null}
+      {api.ticks.map(tick => <span key={`l${tick.key}`} {...api.getScaleLabelProps(tick) as Attrs}>{tick.label}</span>)}
+    </div>
+  )
 }
 
 /**
@@ -56,6 +91,12 @@ export function XhProgress({
   tone,
   size,
   semantics,
+  thresholds,
+  target,
+  scale,
+  indicator,
+  locale,
+  translations,
   children,
   ...rest
 }: XhProgressProps): ReactNode {
@@ -72,6 +113,12 @@ export function XhProgress({
       tone,
       size,
       semantics,
+      thresholds,
+      target,
+      scale,
+      indicator,
+      locale,
+      translations,
     }) as ProgressProps,
     reactNormalize,
   )
@@ -83,9 +130,12 @@ export function XhProgress({
   if (api.variant === 'line') {
     return (
       <div {...rootProps}>
-        <div {...api.getTrackProps() as Record<string, unknown>}>
-          <div {...api.getRangeProps() as Record<string, unknown>} />
+        <div {...api.getTrackProps() as Attrs}>
+          {api.bands.map(band => <div key={band.key} {...api.getThresholdProps(band) as Attrs} />)}
+          <div {...api.getRangeProps() as Attrs} />
         </div>
+        {api.target == null ? null : <div {...api.getTargetProps() as Attrs} />}
+        <Scale api={api} withTicks />
       </div>
     )
   }
@@ -93,10 +143,15 @@ export function XhProgress({
   // 环心的内容归作者：没写就不渲染那一层，免得一个空盒子压在环上挡住指针
   return (
     <div {...rootProps}>
-      <svg {...api.getCanvasProps() as Record<string, unknown>}>
-        <circle {...api.getTrackProps() as Record<string, unknown>} />
-        <circle {...api.getRangeProps() as Record<string, unknown>} />
+      <svg {...api.getCanvasProps() as Attrs}>
+        <circle {...api.getTrackProps() as Attrs} />
+        {api.bands.map(band => <circle key={band.key} {...api.getThresholdProps(band) as Attrs} />)}
+        <circle {...api.getRangeProps() as Attrs} />
+        {api.ticks.map(tick => <line key={tick.key} {...api.getScaleTickProps(tick) as Attrs} />)}
+        {api.target == null ? null : <line {...api.getTargetProps() as Attrs} />}
+        {api.indicator === 'needle' ? <path {...api.getNeedleProps() as Attrs} /> : null}
       </svg>
+      <Scale api={api} withTicks={false} />
       {slotPaints(children)
         ? <div {...api.getLabelProps() as Record<string, unknown>}>{children}</div>
         : null}

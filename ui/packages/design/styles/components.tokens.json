@@ -49295,6 +49295,24 @@
       "description": "progress 的 range 部件 stroke-linecap 覆盖槽。"
     },
     {
+      "name": "--xh-progress-needle-color",
+      "component": "progress",
+      "part": [
+        "needle"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "progress 的 needle 部件 fill 覆盖槽。"
+    },
+    {
       "name": "--xh-progress-range",
       "component": "progress",
       "part": [
@@ -49358,27 +49376,92 @@
       "description": "progress 的 root 部件 block-size、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-progress-target-color",
+      "component": "progress",
+      "part": [
+        "target"
+      ],
+      "property": [
+        "background",
+        "stroke"
+      ],
+      "state": [
+        "variant=circle",
+        "variant=dashboard",
+        "variant=line"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "progress 的 target 部件 background、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-progress-target-radius",
+      "component": "progress",
+      "part": [
+        "target"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "variant=line"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "progress 的 target 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-progress-thickness",
       "component": "progress",
       "part": [
         "root",
+        "target",
         "track"
       ],
       "property": [
         "block-size"
       ],
       "state": [
+        "banded",
         "default",
         "size=lg",
-        "size=sm"
+        "size=sm",
+        "variant=line"
       ],
       "defaultToken": [
         "--xh-space-1",
         "--xh-space-2",
+        "--xh-space-3",
+        "--xh-space-4",
         "--xh-track-thickness"
       ],
       "visibility": "public",
-      "description": "progress 的 root、track 部件 block-size 覆盖槽。"
+      "description": "progress 的 root、target、track 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-progress-threshold-color",
+      "component": "progress",
+      "part": [
+        "threshold"
+      ],
+      "property": [
+        "background",
+        "stroke"
+      ],
+      "state": [
+        "variant=circle",
+        "variant=dashboard",
+        "variant=line"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "progress 的 threshold 部件 background、stroke 覆盖槽。"
     },
     {
       "name": "--xh-progress-track",

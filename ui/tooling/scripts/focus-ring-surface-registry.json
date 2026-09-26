@@ -136,6 +136,7 @@
     "loading-bar [range]": "顶部进度细带的已完成段，纯展示不接焦点",
     "matrix-code [root]": "二维码的底色块，纯展示不接焦点",
     "progress [range]": "进度条的已完成段，纯展示不接焦点",
+    "progress [target]": "目标刻度是横穿轨道的一道细线，纯标注不接焦点",
     "separator [line]": "分隔线，不接焦点",
     "separator [root]": "分隔线，不接焦点",
     "slider [range]": "滑杆的已选区间，焦点落在拇指上",
