@@ -464,6 +464,7 @@
     --xh-_tabs-indicator-y: 0;
     --xh-_tabs-indicator-w: 0;
     --xh-_tabs-indicator-h: 0;
+    --xh-_tabs-indicator-stretch: 0;
 
     /* 摆在行首，落点交给 transform（只走合成），长度跟着标签宽走。标签带挪动时整条孩子
        共用的 translate 叠在它之上，两者互不覆盖，过渡也只挂在 transform 上 */
@@ -567,6 +568,19 @@
     transition:
       transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡（选择器带上排布与形态，压得过上面按它们单写的过渡）；
+     被拉长时在另一个方向上压扁，表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+  :where([data-material='liquid']) [data-scope='tabs'][data-part='indicator'][data-orientation][data-variant] {
+    --xh-_tabs-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_tabs-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+    scale: 1 var(--xh-_tabs-indicator-squash);
+    transition: none;
+  }
+
+  :where([data-material='liquid']) [data-scope='tabs'][data-part='indicator'][data-orientation='vertical'][data-variant] {
+    scale: var(--xh-_tabs-indicator-squash) 1;
   }
 
   /* 标签之间的细线：横排时是一条竖线，竖排时躺平 */

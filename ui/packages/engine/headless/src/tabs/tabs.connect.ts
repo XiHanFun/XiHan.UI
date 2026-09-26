@@ -38,6 +38,7 @@ export function connectTabs<T extends PropTypes>(
   const horizontal = orientation === 'horizontal'
   const closable = !!prop('closable')
   const indicator = context.get('indicator')
+  const indicatorStretch = context.get('indicatorStretch')
   // 标签带放不放得下由位移与上限推出：上限为 0 就是放得下
   const scroll = context.get('scroll')
   const scrollMax = context.get('scrollMax')
@@ -401,6 +402,8 @@ export function connectTabs<T extends PropTypes>(
             '--xh-_tabs-indicator-y': `${indicator.blockStart}px`,
             '--xh-_tabs-indicator-w': `${indicator.inlineSize}px`,
             '--xh-_tabs-indicator-h': `${indicator.blockSize}px`,
+            // 液态档下两沿走弹簧时被拉长的比例，皮肤据它压扁；标准档恒为 0
+            '--xh-_tabs-indicator-stretch': String(indicatorStretch),
           }
         : undefined,
     }),

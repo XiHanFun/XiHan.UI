@@ -10842,6 +10842,7 @@
   --xh-_segmented-indicator-y: 0;
   --xh-_segmented-indicator-w: 0;
   --xh-_segmented-indicator-h: 0;
+  --xh-_segmented-indicator-stretch: 0;
 
   /* 摆在行首块首，位置交给 transform（只走合成），尺寸跟着段宽走 */
   position: absolute;
@@ -10872,6 +10873,20 @@
 /* translate 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
 [data-scope='segmented'][data-part='indicator']:dir(rtl) {
   transform: translate(calc(-1 * var(--xh-_segmented-indicator-x)), var(--xh-_segmented-indicator-y));
+}
+
+/* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
+   被拉长时在另一个方向上压扁，表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+:where([data-material='liquid']) [data-scope='segmented'][data-part='indicator'] {
+  --xh-_segmented-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_segmented-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+  scale: 1 var(--xh-_segmented-indicator-squash);
+  transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+:where([data-material='liquid']) [data-scope='segmented'][data-part='root'][data-orientation='vertical']
+  [data-scope='segmented'][data-part='indicator'] {
+  scale: var(--xh-_segmented-indicator-squash) 1;
 }
 
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -13826,6 +13841,7 @@
   --xh-_anchor-indicator-y: 0;
   --xh-_anchor-indicator-w: 0;
   --xh-_anchor-indicator-h: 0;
+  --xh-_anchor-indicator-stretch: 0;
 
   position: absolute;
   display: block;
@@ -13864,6 +13880,20 @@
 /* transform 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
 [data-scope='anchor'][data-part='indicator'][data-orientation='horizontal']:dir(rtl) {
   transform: translate(calc(-1 * var(--xh-_anchor-indicator-x)), 0);
+}
+
+/* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
+   被拉长时在另一个方向上压扁（竖排缺省压行向，横排压块向），表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+:where([data-material='liquid']) [data-scope='anchor'][data-part='indicator'] {
+  --xh-_anchor-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_anchor-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+  scale: var(--xh-_anchor-indicator-squash) 1;
+  transition: none;
+}
+
+:where([data-material='liquid']) [data-scope='anchor'][data-part='indicator'][data-orientation='horizontal'] {
+  scale: 1 var(--xh-_anchor-indicator-squash);
+  transition: none;
 }
 
 /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（导航当前页）：
@@ -27557,6 +27587,7 @@
   --xh-_navigation-menu-indicator-y: 0;
   --xh-_navigation-menu-indicator-w: 0;
   --xh-_navigation-menu-indicator-h: 0;
+  --xh-_navigation-menu-indicator-stretch: 0;
 
   position: absolute;
   display: block;
@@ -27594,6 +27625,20 @@
   transition:
     transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
     block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+}
+
+/* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
+   被拉长时在另一个方向上压扁（横排缺省压块向，竖排压行向），表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+:where([data-material='liquid']) [data-scope='navigation-menu'][data-part='indicator'] {
+  --xh-_navigation-menu-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_navigation-menu-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+  scale: 1 var(--xh-_navigation-menu-indicator-squash);
+  transition: none;
+}
+
+:where([data-material='liquid']) [data-scope='navigation-menu'][data-part='indicator'][data-orientation='vertical'] {
+  scale: var(--xh-_navigation-menu-indicator-squash) 1;
+  transition: none;
 }
 
 /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content。
@@ -34462,6 +34507,7 @@
   --xh-_tabs-indicator-y: 0;
   --xh-_tabs-indicator-w: 0;
   --xh-_tabs-indicator-h: 0;
+  --xh-_tabs-indicator-stretch: 0;
 
   /* 摆在行首，落点交给 transform（只走合成），长度跟着标签宽走。标签带挪动时整条孩子
      共用的 translate 叠在它之上，两者互不覆盖，过渡也只挂在 transform 上 */
@@ -34565,6 +34611,19 @@
   transition:
     transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
     block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+}
+
+/* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡（选择器带上排布与形态，压得过上面按它们单写的过渡）；
+   被拉长时在另一个方向上压扁，表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+:where([data-material='liquid']) [data-scope='tabs'][data-part='indicator'][data-orientation][data-variant] {
+  --xh-_tabs-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_tabs-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+  scale: 1 var(--xh-_tabs-indicator-squash);
+  transition: none;
+}
+
+:where([data-material='liquid']) [data-scope='tabs'][data-part='indicator'][data-orientation='vertical'][data-variant] {
+  scale: var(--xh-_tabs-indicator-squash) 1;
 }
 
 /* 标签之间的细线：横排时是一条竖线，竖排时躺平 */

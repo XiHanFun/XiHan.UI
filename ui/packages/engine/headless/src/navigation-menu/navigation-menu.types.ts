@@ -6,6 +6,7 @@
 // 定义 navigation menu 类型契约。
 
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { LiquidIndicator } from '../shared/indicator'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /** 读屏文案，默认英文。 */
@@ -83,6 +84,8 @@ export interface NavigationMenuIndicatorRect {
 export interface NavigationMenuRefs {
   /** trigger 集合的查询容器，同时是指示条定位的参照系。 */
   getListEl: () => HTMLElement | null
+  /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
+  liquidIndicator?: LiquidIndicator | null
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在有面板展开期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
@@ -137,6 +140,8 @@ export interface NavigationMenuSchema extends MachineSchema {
     autoValue: string | null
     /** 指示条的测量结果；全部收起或无法测量时为 null。 */
     indicator: NavigationMenuIndicatorRect | null
+    /** 液态档下指示器沿主轴比目标长出的比例，皮肤据它在另一个方向上压扁；标准档与停稳时为 0。 */
+    indicatorStretch: number
     /** 逻辑已经关闭，但最后一个面板仍在视觉退场。 */
     exitPending: boolean
     /** 按压通道：Space / Enter 或触屏按住的是入口还是面板链接。 */
@@ -190,7 +195,7 @@ export interface NavigationMenuSchema extends MachineSchema {
     | 'endPress'
     | 'releaseLinkPress'
     | 'releaseWhenInert'
-  effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize' | 'trackIndicatorLayout'
+  effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize' | 'trackIndicatorLayout' | 'trackLiquidIndicator'
 }
 
 export interface NavigationMenuApi<T extends PropTypes = PropTypes> {

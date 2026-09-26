@@ -468,6 +468,8 @@ describe('connectSegmented 指示器', () => {
     expect(slot(h.indicator, '--xh-_segmented-indicator-y')).toBe('0px')
     expect(slot(h.indicator, '--xh-_segmented-indicator-w')).toBe('100px')
     expect(slot(h.indicator, '--xh-_segmented-indicator-h')).toBe('40px')
+    // 拉伸比：只有液态档下两沿走弹簧时才大于 0，标准档恒为 0
+    expect(slot(h.indicator, '--xh-_segmented-indicator-stretch')).toBe('0')
     expect(h.indicator.getAttribute('data-value')).toBe('week')
   })
 

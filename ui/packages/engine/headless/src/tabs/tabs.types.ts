@@ -6,6 +6,7 @@
 // 定义 tabs 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { LiquidIndicator } from '../shared/indicator'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
@@ -128,6 +129,8 @@ export interface TabsSchema extends MachineSchema {
     announcement: string
     /** 指示条的测量结果；没有选中项或无法测量时为 null。 */
     indicator: TabsIndicatorRect | null
+    /** 液态档下指示器沿主轴比目标长出的比例，皮肤据它在另一个方向上压扁；标准档与停稳时为 0。 */
+    indicatorStretch: number
     /** 标签带沿主轴往起始端挪了多少（px，≥ 0）；放得下时恒为 0。 */
     scroll: number
     /** 位移上限：内容长度超出可见长度的那一截；放得下时为 0。 */
@@ -139,6 +142,8 @@ export interface TabsSchema extends MachineSchema {
   refs: {
     /** 标签集合的查询容器（list），同时是指示条定位的参照系。 */
     getListEl: () => HTMLElement | null
+    /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
+    liquidIndicator?: LiquidIndicator | null
     /** 跟手的会话，整个生命周期存在。调用方在按下时把该指针传入。 */
     gesture: MultiPointerSession | null
     /**
@@ -243,7 +248,7 @@ export interface TabsSchema extends MachineSchema {
     | 'revealFocused'
     | 'startPress'
     | 'endPress'
-  effect: 'trackPointer' | 'trackResize' | 'trackStrip'
+  effect: 'trackPointer' | 'trackResize' | 'trackStrip' | 'trackLiquidIndicator'
 }
 
 export interface TabsApi<T extends PropTypes = PropTypes> {

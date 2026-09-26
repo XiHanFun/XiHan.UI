@@ -1122,7 +1122,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
 | §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（FloatButton 列表项、Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
-| §9.8 双沿指示器、§9.11 弹簧 | `@xihan-ui/motion` 有状态弹簧与弹簧令牌、`--xh-motion-ease-spring`；指针会话速度；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer）；双沿指示器随共享指示器几何迁移 |
+| §9.11 弹簧 | `--xh-motion-ease-spring`；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer） |
 | §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光；FloatButton 融合分离 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |
 | §9.9 带元素参数的减弱判断、JS 无固定毫秒；§14.4 JS 与 CSS 同作用域 | headless 各状态机（Tabs 标签带补间、NumberAnimation、Carousel 起播）与 core 的 `reducedMotion()`（Presence、贴底滚动、平滑滚动）改为按元素判断并用 `readMotion` 取时长；门禁要求判断减弱动效时传参 |

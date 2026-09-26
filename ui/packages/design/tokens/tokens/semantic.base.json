@@ -666,6 +666,11 @@
       "$type": "number",
       "$value": 1.12
     },
+    "scale-squash": {
+      "$description": "液态形变里被拉长的块在另一个方向上最多压到的比例，表达体积守恒（液态档的双沿指示器、按下的液态面）。",
+      "$type": "number",
+      "$value": 0.86
+    },
     "spring-snappy": {
       "$description": "干脆的弹簧：阻尼比 0.77，超调约 2.2%，落定约 370ms。质量恒为 1，只登记刚度与阻尼。减弱动效下由 JS 直接落到终态，不走 reduce 档。",
       "stiffness": { "$type": "number", "$value": 380 },

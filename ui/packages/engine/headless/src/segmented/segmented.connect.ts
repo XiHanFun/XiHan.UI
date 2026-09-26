@@ -23,6 +23,7 @@ export function connectSegmented<T extends PropTypes>(
   const value = context.get('value') ?? null
   const focusedValue = context.get('focusedValue') ?? null
   const indicator = context.get('indicator')
+  const indicatorStretch = context.get('indicatorStretch')
 
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: SegmentedNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -195,6 +196,8 @@ export function connectSegmented<T extends PropTypes>(
             '--xh-_segmented-indicator-y': `${indicator.blockStart}px`,
             '--xh-_segmented-indicator-w': `${indicator.inlineSize}px`,
             '--xh-_segmented-indicator-h': `${indicator.blockSize}px`,
+            // 液态档下两沿走弹簧时被拉长的比例，皮肤据它压扁；标准档恒为 0
+            '--xh-_segmented-indicator-stretch': String(indicatorStretch),
           }
         : undefined,
     }),

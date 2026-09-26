@@ -8,7 +8,7 @@
 import type { Cleanup, Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
-import { measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
+import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 
@@ -52,6 +52,7 @@ export const navigationMenuMachine = createMachine({
     autoValue: cell<string | null>(() => ({ defaultValue: null })),
     // 量测结果只服务指示条的内联样式
     indicator: cell<NavigationMenuIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
+    indicatorStretch: cell<number>(() => ({ defaultValue: 0 })),
     // 逻辑关闭后，最后一个面板完成视觉退场之前仍须保留 viewport 与行为资源
     exitPending: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：正被按住的那一个（入口与链接各按 value 记、分开认），与开合无关
@@ -60,6 +61,7 @@ export const navigationMenuMachine = createMachine({
   }),
   refs: () => ({
     getListEl: () => null,
+    liquidIndicator: null,
     config: null,
     registerLayer: null,
     layerDispose: null,
@@ -74,7 +76,7 @@ export const navigationMenuMachine = createMachine({
   // 停机时把还在场的层撤掉
   exit: ['dropLayer'],
   // 窗口尺寸变化时重量指示条
-  effects: ['trackResize', 'trackIndicatorLayout'],
+  effects: ['trackResize', 'trackIndicatorLayout', 'trackLiquidIndicator'],
   watch: ({ track, context, prop, action }) => {
     // 展开项一变就重量一次，层的进出栈也跟着这一条走；按住 Enter 激活链接后面板随之收起（或换到另一张），
     // 链接藏进 inert 的面板里不会再来 keyup，按压面由机器收；入口仍在场，它的按压不动
@@ -332,24 +334,48 @@ export const navigationMenuMachine = createMachine({
         const run = (): void => {
           const list = refs.get('getListEl')()
           const value = context.get('value') ?? null
+          // 量到的落点交给液态指示器：液态档下选中项一变，两沿走弹簧过去；其余直接落定
+          const place = (box: NavigationMenuIndicatorRect | null): void => {
+            const liquid = refs.get('liquidIndicator')
+            if (liquid)
+              liquid.place(box, value)
+            else context.set('indicator', box)
+          }
           if (!list || value == null) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           const trigger = queryItems(list, navigationMenuTriggerQuery).find(el => itemValue(el) === value)
           if (!trigger) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           // 量排布位而不是 rect：导航栏放在正在缩放进场的浮层里时 rect 量到的是缩小后的值。
           // 方向缺省从列表现读，与皮肤按 :dir(rtl) 翻转位移同一个来源
-          context.set('indicator', measureIndicatorBox(list, trigger, prop('dir')))
+          place(measureIndicatorBox(list, trigger, prop('dir')))
         }
         run()
         flush(run)
       },
     },
     effects: {
+      /** 液态档的双沿指示器：建好放进 refs，先把眼下的落点交给它，之后的落位都经它走。 */
+      trackLiquidIndicator: ({ refs, prop, context }) => {
+        const liquid = createLiquidIndicator({
+          axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
+          host: () => refs.get('getListEl')(),
+          onFrame: (box, stretch) => {
+            context.set('indicator', box)
+            context.set('indicatorStretch', stretch)
+          },
+        })
+        liquid.place(context.get('indicator'), context.get('value'))
+        refs.set('liquidIndicator', liquid)
+        return () => {
+          liquid.dispose()
+          refs.set('liquidIndicator', null)
+        }
+      },
       /** 列表或入口变尺寸、入口增减、字体加载完成都会让指示条错位：合并到一帧重量。 */
       trackIndicatorLayout: ({ refs, scope, action, flush }) => {
         let disposed = false
