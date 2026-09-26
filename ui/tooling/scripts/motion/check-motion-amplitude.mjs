@@ -12,13 +12,15 @@
 //
 //   百分比            相对的是元素自身尺寸，压成 0 就是错位  → 几何，放行
 //   无单位 0 / 1      不动 / 原尺寸，本来就是减弱档的目标值  → 退化值，放行
+//   任何单位的 0      同样是不动（calc 里与长度相加的兜底只能写 0px）→ 退化值，放行
 //   同一条值里带 var  无单位数是对令牌做取反 / 求补 / 求逆    → 系数，放行
 //   带长度单位的数    减弱档碰不到它，是幅度就穿不过去        → 判红
 //   其余无单位数      同上，且 0.96 这类本身就是幅度         → 判红
 //
 // 受管位置：translate / scale 两个独立属性、transform 里的 translate*() / scale*() 函数参数、
 // var() 的兜底值、calc() 的内部，以及被上述值消费的自定义属性的赋值——原语先灌进槽再消费
-// 同样是绕过。旋转不在受管之列：语义层没有旋转档，库里的旋转全是四分之一 / 一半 / 整圈这类
+// 同样是绕过。只以系数身份被消费的槽（每一处消费它的值里都还有别的 var，它只是乘上去的方向或倍数）
+// 按系数看：无单位数放行，带长度单位的照样判红。旋转不在受管之列：语义层没有旋转档，库里的旋转全是四分之一 / 一半 / 整圈这类
 // 结构性角度，不是可调幅度。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -31,7 +33,26 @@ const STYLES_DIRS = ['packages/design/styles/css', 'packages/design/styles/famil
 const MANAGED_PROPS = new Set(['translate', 'scale'])
 
 /** transform 简写里只有这两族函数带幅度，rotate / skew / perspective 不看。 */
-const TRANSFORM_FN = /(?:translate|scale)(?:[XYZ]|3d)?\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g
+const TRANSFORM_FN = /(?<![\w-])(?:translate|scale)(?:[XYZ]|3d)?\(/g
+
+/** transform 里位移与缩放函数的参数：按括号配平取，参数里套几层 calc / var 都取得全。 */
+function transformArgs(value) {
+  const out = []
+  for (const m of value.matchAll(TRANSFORM_FN)) {
+    const start = m.index + m[0].length
+    let depth = 1
+    let i = start
+    while (i < value.length && depth > 0) {
+      if (value[i] === '(')
+        depth++
+      else if (value[i] === ')')
+        depth--
+      i++
+    }
+    out.push(value.slice(start, i - 1))
+  }
+  return out
+}
 
 /** 无单位的退化值：不动、原尺寸。减弱档本来就把幅度压到这两个数。 */
 const DEGENERATE = new Set(['0', '1', '-0', '+1'])
@@ -145,16 +166,19 @@ function amplitudeText(prop, value) {
     return value
   if (prop !== 'transform')
     return null
-  const args = [...value.matchAll(TRANSFORM_FN)].map(m => m[1])
+  const args = transformArgs(value)
   return args.length > 0 ? args.join(' ') : null
 }
 
-/** 判定一条幅度值，返回违规的字面量。 */
-function offendingLiterals(text) {
-  const derived = text.includes('var(')
+/** 判定一条幅度值，返回违规的字面量。coefficient 为真时按系数看：无单位数一律放行。 */
+function offendingLiterals(text, coefficient = false) {
+  const derived = coefficient || text.includes('var(')
   const bad = []
   for (const lit of literals(text)) {
     if (lit.unit === '%')
+      continue
+    // 任何单位的 0 都是不动
+    if (Number.parseFloat(lit.text) === 0)
       continue
     if (lit.unit !== '') {
       bad.push(lit.text)
@@ -185,8 +209,10 @@ for (const { dir, file } of files) {
   const decls = [...declarations(css)]
   const lineOf = index => css.slice(0, index).split('\n').length
 
-  // 受管值消费到的自定义属性：槽里灌的也要跟着看一层
+  // 受管值消费到的自定义属性：槽里灌的也要跟着看一层。
+  // 每一处消费都还带着别的 var 的槽只是乘上去的系数（方向、倍数），记下它有没有被单独消费过
   const consumed = new Set()
+  const standalone = new Set()
 
   for (const d of decls) {
     const text = amplitudeText(d.prop, d.value)
@@ -195,8 +221,12 @@ for (const { dir, file } of files) {
     amplitudes++
     if (ranges.some(([a, b]) => d.index >= a && d.index < b))
       inKeyframes++
-    for (const name of text.matchAll(/var\(\s*(--[\w-]+)/g))
-      consumed.add(name[1])
+    const names = [...text.matchAll(/var\(\s*(--[\w-]+)/g)].map(m => m[1])
+    for (const name of names) {
+      consumed.add(name)
+      if (names.every(other => other === name))
+        standalone.add(name)
+    }
 
     for (const lit of offendingLiterals(text)) {
       const key = `${file} · ${d.prop} · ${lit}`
@@ -221,7 +251,7 @@ for (const { dir, file } of files) {
     if (!d.prop.startsWith('--') || !consumed.has(d.prop) || d.value.includes('var('))
       continue
     slotAssignments++
-    for (const lit of offendingLiterals(d.value)) {
+    for (const lit of offendingLiterals(d.value, !standalone.has(d.prop))) {
       problems.push(
         `${file}:${lineOf(d.index)}  ${d.prop}: ${d.value.replace(/\s+/g, ' ')}  —— 这个槽喂给了位移 / 缩放，幅度写死了 ${lit}，先灌进槽再消费一样是绕过`,
       )
