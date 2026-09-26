@@ -248,6 +248,7 @@
       "popconfirm"
     ],
     "connector": [
+      "cartesian-chart",
       "timeline"
     ],
     "content": [

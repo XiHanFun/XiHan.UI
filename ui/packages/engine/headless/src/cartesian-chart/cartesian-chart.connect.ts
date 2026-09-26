@@ -547,6 +547,9 @@ export function connectCartesianChart<T extends PropTypes>(
           props.style = { ...(props.style as Record<string, string> | undefined), '--xh-_chart-p': stop.p }
         }
       }
+      // 瀑布的一步按涨跌取色：涨跌写在柱上，小计不写、保持系列色
+      if (mark.part === 'bar')
+        props['data-trend'] = mark.paint?.trend
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
       // 注释：参考线与参考带是结构色，跟着系列的（标出的点、平均线、趋势线）取系列色、随系列淡出

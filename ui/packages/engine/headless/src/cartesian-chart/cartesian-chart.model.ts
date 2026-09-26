@@ -28,6 +28,7 @@ import type {
   TextMark,
   TextMeasurer,
   TimeScale,
+  WaterfallStep,
 } from '@xihan-ui/viz'
 import type { ChartKey, ChartLabelBox, ChartMetrics, ChartNumbers, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
 import type {
@@ -63,6 +64,7 @@ import {
   solvePlotRect,
   stack,
   SYMBOL_NAMES,
+  waterfall,
 } from '@xihan-ui/viz'
 import { assignChartSeries, buildChartSummary, labelBox, memoizeLast, placeWithoutOverlap, settleColumn } from '../shared/chart'
 
@@ -100,6 +102,8 @@ export interface CartesianSeriesSpec {
   readonly connectNulls: boolean
   /** 数据标签：柱可写 inside / end，折线只写 end。 */
   readonly labels: 'none' | 'inside' | 'end'
+  /** 瀑布：小计字段（没有小计为 null）；不是瀑布为 null。 */
+  readonly waterfall: { readonly total: string | null } | null
   /** 折线的线尾标签。 */
   readonly endLabel: boolean
 }
@@ -194,7 +198,7 @@ export function normalizeCartesianSpec(
   // 字段在数据里一次都没出现，多半是拼错了：空数据不判，那时什么字段都「不存在」
   if (rows.length > 0) {
     for (const s of seriesInput) {
-      const fields = s.mark === 'scatter' ? [s.x, s.y, s.size, s.datumId, s.color] : [s.x, s.y]
+      const fields = s.mark === 'scatter' ? [s.x, s.y, s.size, s.datumId, s.color] : s.mark === 'bar' ? [s.x, s.y, s.waterfall?.total] : [s.x, s.y]
       for (const field of fields) {
         if (field == null)
           continue
@@ -250,7 +254,9 @@ export function normalizeCartesianSpec(
       datumId: scatter?.datumId ?? null,
       color: scatter?.color ?? null,
       order,
-      stack: s.mark === 'scatter' ? null : s.stack ?? null,
+      // 瀑布的每一步接在自己的累计值上，不参与堆叠
+      stack: s.mark === 'scatter' || (s.mark === 'bar' && s.waterfall) ? null : s.stack ?? null,
+      waterfall: s.mark === 'bar' && s.waterfall ? { total: s.waterfall.total ?? null } : null,
       stackOffset: groupOffset(s),
       curve: s.mark === 'line' ? CURVES[s.curve ?? 'linear'] : 'linear',
       area: s.mark === 'line' && s.area === true,
@@ -325,6 +331,8 @@ export interface CartesianSeriesValues {
   readonly sizes: readonly number[] | null
   /** 按值着色的值，缺失为 null；不按值着色为 null。 */
   readonly colors: readonly (number | null)[] | null
+  /** 瀑布的每一步（与位置对齐）；不是瀑布为 null。 */
+  readonly steps: readonly (WaterfallStep | null)[] | null
   /** 贴近基线的一端。 */
   readonly low: readonly (number | null)[]
   /** 值所在的一端。 */
@@ -379,6 +387,7 @@ function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<Cartes
     pointIds: points.map(p => p.id),
     sizes: s.size == null ? null : points.map(p => p.size),
     colors: s.color == null ? null : points.map(p => p.color),
+    steps: null,
   }
 }
 
@@ -400,7 +409,12 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
       rows[at] = index
       values[at] = numberOf(row[s.y])
     })
-    return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null }
+    if (!s.waterfall)
+      return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null }
+    // 瀑布：小计行的 y 被忽略，数值取算出来的累计值；缺失的一步不画、不改累计
+    const total = s.waterfall.total
+    const steps = waterfall(values, rows.map(r => total != null && r >= 0 && Boolean(spec.rows[r]![total])))
+    return { spec: s, values: steps.map(step => step?.value ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps }
   })
 
   const stacked = new Map<string, { low: (number | null)[], high: (number | null)[], outermost: boolean[] }>()
@@ -442,6 +456,9 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
       return { ...entry, ...s }
     if (entry.keyAt)
       return { ...entry, low: entry.values, high: entry.values, outermost: entry.values.map(() => true) }
+    // 瀑布的柱从这一步的起点画到终点：两端都浮在空中，离起点远的一端做圆角
+    if (entry.steps)
+      return { ...entry, low: entry.steps.map(step => step?.base ?? null), high: entry.steps.map(step => step?.end ?? null), outermost: entry.values.map(() => true) }
     return {
       ...entry,
       low: entry.values.map(v => (v == null ? null : 0)),
@@ -1189,12 +1206,15 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           // 基线在哪一端：纵向正值在下端（end）、负值在上端；横向正值在左端（start）
           baseline: vertical ? (positive ? 'end' : 'start') : (positive ? 'start' : 'end'),
           datum: { seriesId: id, index: rowIndex },
-          paint,
+          // 瀑布的一步按涨跌取色，小计保持系列色
+          paint: s.steps?.[j] && !s.steps[j]!.total ? { ...paint, trend: s.steps[j]!.trend } : paint,
           a11y: { label: '', focusable: true },
         })
         seriesAnchors[j] = point(start + thickness / 2, b)
         bars.set(key, { ...rect, positive, stacked: s.spec.stack != null, row: rowIndex })
       }
+      if (s.steps)
+        children.push(...waterfallConnectors(s, spec.keys, bars, toValue, vertical))
     }
     else {
       const points: KeyedPoint[] = []
@@ -1323,6 +1343,40 @@ export function colorPosition(domain: readonly [number, number] | null, value: n
   const [lo, hi] = domain
   const t = hi === lo ? 0.5 : Math.min(1, Math.max(0, (value - lo) / (hi - lo)))
   return POINT_COLOR_FLOOR + (1 - POINT_COLOR_FLOOR) * t
+}
+
+/**
+ * 瀑布的连接线：上一步的终点与下一步的起点同高，一道细线把两根柱连起来，读者顺着它看出累计是怎么走的。
+ * 缺失的一步跳过，连到下一根画出来的柱。
+ */
+function waterfallConnectors(
+  s: CartesianSeriesValues,
+  keys: readonly ChartKey[],
+  bars: ReadonlyMap<string, BarBox>,
+  toValue: (v: number) => number,
+  vertical: boolean,
+): PathMark[] {
+  const id = s.spec.id
+  const marks: PathMark[] = []
+  let previous: { box: BarBox, level: number, datum: string } | null = null
+  s.steps!.forEach((step, j) => {
+    const datum = cartesianDatumId(keys[j]!)
+    const box = step ? bars.get(`${id}:${datum}`) : undefined
+    if (!step || !box)
+      return
+    if (previous) {
+      const at = crisp(previous.level)
+      const from = previous.box
+      marks.push({
+        kind: 'path',
+        key: `${id}:link:${previous.datum}`,
+        part: 'connector',
+        d: vertical ? `M${from.x + from.width},${at}L${box.x},${at}` : `M${at},${from.y + from.height}L${at},${box.y}`,
+      })
+    }
+    previous = { box, level: toValue(step.end), datum }
+  })
+  return marks
 }
 
 /* ---------- 注释 ---------- */
