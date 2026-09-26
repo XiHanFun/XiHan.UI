@@ -81,6 +81,8 @@ describe('accordion 首帧不播开合', () => {
     await nextTick()
     expect(running(contents[1]!)).toEqual(['xh-disclosure-expand'])
     expect(running(contents[0]!)).toEqual([])
+    // 行高不可合成，展开期间也不挂 will-change
+    expect(getComputedStyle(contents[1]!).willChange).toBe('auto')
   })
 
   it('收起首帧就展开的那一项：播收起动画', async () => {

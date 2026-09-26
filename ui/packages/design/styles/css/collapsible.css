@@ -146,10 +146,8 @@
     line-height: var(--xh-leading-normal);
   }
 
-  /* 展开与收起只在开合时播：首帧就在的展开 / 收起直接呈现（data-instant）。
-     展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
+  /* 展开与收起只在开合时播：首帧就在的展开 / 收起直接呈现（data-instant） */
   [data-scope='collapsible'][data-part='content'][data-state='open']:not([data-instant]) {
-    will-change: grid-template-rows;
     animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
