@@ -118,7 +118,7 @@ let easings = 0
 
 /** 交给组件或原语的缓动写法：easing="…"、:easing="'…'"、easing: "…"，以及名字里带 easing 的字符串数组。 */
 const EASING_ATTR = /(?<![\w-])(:?)easing\s*[=:]\s*(?:"'([^'"]+)'"|"([^"]+)"|'([^']+)')/g
-const EASING_LIST = /\b\w*easings?\w*\s*=\s*\[([^\]]*)\]/gi
+const EASING_LIST = /\b\w*easing\w*\s*=\s*\[([^\]]*)\]/gi
 
 /** resolveEasing 认不认得这个写法：认不得返回错误信息。 */
 function easingProblem(value) {
