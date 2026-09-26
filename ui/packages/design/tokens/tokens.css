@@ -511,6 +511,19 @@
     --xh-surface-pad-md: var(--xh-space-3);
     --xh-surface-pad-lg: var(--xh-space-4);
     --xh-surface-action-inset: var(--xh-space-3);
+    --xh-chart-height: 20rem;
+    --xh-chart-bar-max: var(--xh-space-6);
+    --xh-chart-gap: var(--xh-stroke-thick);
+    --xh-chart-line-width: var(--xh-stroke-thick);
+    --xh-chart-point-size: var(--xh-space-2);
+    --xh-chart-node-width: var(--xh-space-3);
+    --xh-chart-hit-min: var(--xh-space-6);
+    --xh-chart-tick-length: var(--xh-space-1);
+    --xh-chart-label-gap: var(--xh-space-1);
+    --xh-chart-area-alpha: 0.1;
+    --xh-chart-link-alpha: 0.35;
+    --xh-chart-dim-alpha: 0.3;
+    --xh-chart-pending-alpha: 0.6;
   }
 
   /* 材质里跨主题同源的通道：值是指向主题语义的 var() 引用，自定义属性在声明处求值，
@@ -602,6 +615,7 @@
     --xh-layout-gap-md: var(--xh-space-2_5);
     --xh-layout-gap-lg: var(--xh-space-3);
     --xh-layout-gap-xl: var(--xh-space-5);
+    --xh-chart-label-gap: var(--xh-space-0_5);
   }
 
   /* mode 轴 · 浅色基线与显式取值完全同源；合并选择器避免把整套候选重复输出两次。 */
@@ -657,6 +671,42 @@
     --xh-syntax-string: oklch(0.52 0.13 165);
     --xh-syntax-number: oklch(0.5 0.13 70);
     --xh-syntax-keyword: oklch(0.5 0.2 300);
+    --xh-chart-categorical-other: var(--xh-color-neutral-500);
+    --xh-chart-deemphasis: var(--xh-color-neutral-300);
+    --xh-chart-sequential-start: var(--xh-color-indigo-100);
+    --xh-chart-sequential-mid: var(--xh-color-indigo-400);
+    --xh-chart-sequential-end: var(--xh-color-indigo-800);
+    --xh-chart-ordinal-1: var(--xh-color-indigo-900);
+    --xh-chart-ordinal-2: var(--xh-color-indigo-800);
+    --xh-chart-ordinal-3: var(--xh-color-indigo-700);
+    --xh-chart-ordinal-4: var(--xh-color-indigo-600);
+    --xh-chart-ordinal-5: var(--xh-color-indigo-500);
+    --xh-chart-ordinal-6: var(--xh-color-indigo-400);
+    --xh-chart-diverging-negative: var(--xh-color-amber-600);
+    --xh-chart-diverging-center: var(--xh-color-neutral-100);
+    --xh-chart-diverging-positive: var(--xh-color-blue-600);
+    --xh-chart-rise: var(--xh-color-success-600);
+    --xh-chart-fall: var(--xh-color-danger-700);
+    --xh-chart-surface: var(--xh-bg-surface);
+    --xh-chart-label: var(--xh-fg-muted);
+    --xh-chart-crosshair: var(--xh-fg-subtle);
+    --xh-chart-band-highlight: var(--xh-bg-subtle);
+    --xh-chart-categorical-1: var(--xh-color-indigo-500);
+    --xh-chart-categorical-2: var(--xh-color-lime-500);
+    --xh-chart-categorical-3: var(--xh-color-pink-600);
+    --xh-chart-categorical-4: var(--xh-color-amber-500);
+    --xh-chart-categorical-5: var(--xh-color-blue-700);
+    --xh-chart-categorical-6: var(--xh-color-green-700);
+    --xh-chart-categorical-7: var(--xh-color-purple-500);
+    --xh-chart-categorical-8: var(--xh-color-teal-500);
+    --xh-chart-on-categorical-1: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-2: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-3: var(--xh-color-neutral-0);
+    --xh-chart-on-categorical-4: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-5: var(--xh-color-neutral-0);
+    --xh-chart-on-categorical-6: var(--xh-color-neutral-0);
+    --xh-chart-on-categorical-7: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-8: var(--xh-color-neutral-950);
     --xh-material-soft-bg: oklch(0.995 0.001 258);
     --xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.04), 0 4px 10px -6px oklch(0.145 0.005 258 / 0.05);
     --xh-material-frosted-shadow: 0 2px 4px -2px oklch(0.145 0.005 258 / 0.1), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16);
@@ -700,6 +750,8 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
+    --xh-chart-axis: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-border-strong));
+    --xh-chart-grid: var(--xh-_contrast-use-default, var(--xh-border-subtle)) var(--xh-_contrast-use-more, var(--xh-border-default));
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
@@ -781,6 +833,42 @@
     --xh-elevation-lifted: 0 1px 2px -0.5px oklch(0 0 0 / 0.45), 0 3px 6px -2px oklch(0 0 0 / 0.42), 0 6px 12px -5px oklch(0 0 0 / 0.36), inset 0 1px 0 0 oklch(1 0 0 / 0.06);
     --xh-elevation-floating: 0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06);
     --xh-elevation-sheet: 0 1px 3px -0.5px oklch(0 0 0 / 0.6), 0 8px 16px -4px oklch(0 0 0 / 0.5), 0 20px 40px -12px oklch(0 0 0 / 0.45), 0 0 0 1px oklch(1 0 0 / 0.08);
+    --xh-chart-categorical-other: var(--xh-color-neutral-500);
+    --xh-chart-deemphasis: var(--xh-color-neutral-700);
+    --xh-chart-sequential-start: var(--xh-color-indigo-900);
+    --xh-chart-sequential-mid: var(--xh-color-indigo-500);
+    --xh-chart-sequential-end: var(--xh-color-indigo-200);
+    --xh-chart-ordinal-1: var(--xh-color-indigo-200);
+    --xh-chart-ordinal-2: var(--xh-color-indigo-300);
+    --xh-chart-ordinal-3: var(--xh-color-indigo-400);
+    --xh-chart-ordinal-4: var(--xh-color-indigo-500);
+    --xh-chart-ordinal-5: var(--xh-color-indigo-600);
+    --xh-chart-ordinal-6: var(--xh-color-indigo-700);
+    --xh-chart-diverging-negative: var(--xh-color-amber-400);
+    --xh-chart-diverging-center: var(--xh-color-neutral-800);
+    --xh-chart-diverging-positive: var(--xh-color-blue-400);
+    --xh-chart-rise: var(--xh-color-success-500);
+    --xh-chart-fall: var(--xh-color-danger-600);
+    --xh-chart-surface: var(--xh-bg-surface);
+    --xh-chart-label: var(--xh-fg-muted);
+    --xh-chart-crosshair: var(--xh-fg-subtle);
+    --xh-chart-band-highlight: var(--xh-bg-subtle);
+    --xh-chart-categorical-1: var(--xh-color-indigo-500);
+    --xh-chart-categorical-2: var(--xh-color-lime-500);
+    --xh-chart-categorical-3: var(--xh-color-pink-600);
+    --xh-chart-categorical-4: var(--xh-color-amber-500);
+    --xh-chart-categorical-5: var(--xh-color-blue-700);
+    --xh-chart-categorical-6: var(--xh-color-green-700);
+    --xh-chart-categorical-7: var(--xh-color-purple-500);
+    --xh-chart-categorical-8: var(--xh-color-teal-500);
+    --xh-chart-on-categorical-1: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-2: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-3: var(--xh-color-neutral-0);
+    --xh-chart-on-categorical-4: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-5: var(--xh-color-neutral-0);
+    --xh-chart-on-categorical-6: var(--xh-color-neutral-0);
+    --xh-chart-on-categorical-7: var(--xh-color-neutral-950);
+    --xh-chart-on-categorical-8: var(--xh-color-neutral-950);
     --xh-material-soft-bg: oklch(0.22 0.006 258);
     --xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0 0 0 / 0.28), 0 4px 10px -6px oklch(0 0 0 / 0.24);
     --xh-material-frosted-shadow: 0 2px 4px -2px oklch(0 0 0 / 0.42), 0 12px 28px -12px oklch(0 0 0 / 0.52);
@@ -824,6 +912,8 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
+    --xh-chart-axis: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-border-strong));
+    --xh-chart-grid: var(--xh-_contrast-use-default, var(--xh-border-subtle)) var(--xh-_contrast-use-more, var(--xh-border-default));
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
@@ -860,6 +950,8 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
+    --xh-chart-axis: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-border-strong));
+    --xh-chart-grid: var(--xh-_contrast-use-default, var(--xh-border-subtle)) var(--xh-_contrast-use-more, var(--xh-border-default));
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
@@ -894,6 +986,8 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
+    --xh-chart-axis: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-border-strong));
+    --xh-chart-grid: var(--xh-_contrast-use-default, var(--xh-border-subtle)) var(--xh-_contrast-use-more, var(--xh-border-default));
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
@@ -976,6 +1070,8 @@
       --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
       --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
       --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
+      --xh-chart-axis: var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-border-strong));
+      --xh-chart-grid: var(--xh-_contrast-use-default, var(--xh-border-subtle)) var(--xh-_contrast-use-more, var(--xh-border-default));
       --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
       --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
       --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
@@ -1002,6 +1098,9 @@
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
       --xh-border-control-focus: var(--xh-ring-focus);
+      --xh-chart-label: var(--xh-fg-muted);
+      --xh-chart-crosshair: var(--xh-fg-subtle);
+      --xh-chart-band-highlight: var(--xh-bg-subtle);
       --xh-ink: color(from var(--xh-ink-surface, var(--xh-bg-surface)) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * infinity, 1) / 1);
       --xh-fg-default: var(--xh-ink);
       --xh-fg-brand: var(--xh-ink);

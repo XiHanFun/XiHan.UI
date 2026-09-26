@@ -80,5 +80,8 @@
     "gap-md": { "$type": "dimension", "$value": "{space.2_5}" },
     "gap-lg": { "$type": "dimension", "$value": "{space.3}" },
     "gap-xl": { "$type": "dimension", "$value": "{space.5}" }
+  },
+  "chart": {
+    "label-gap": { "$type": "dimension", "$value": "{space.0_5}" }
   }
 }

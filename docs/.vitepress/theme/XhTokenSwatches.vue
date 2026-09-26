@@ -14,8 +14,10 @@ const props = withDefaults(
     label?: string;
     /** 块内不写源值，只留档位（语义角色那种值是 var() 引用的场合） */
     compact?: boolean;
+    /** 块内文字取这组令牌里同一档位的一支，如 `--xh-chart-on-categorical-`；不传按档位粗分深浅 */
+    onPrefix?: string;
   }>(),
-  { steps: undefined, label: undefined, compact: false },
+  { steps: undefined, label: undefined, compact: false, onPrefix: undefined },
 );
 
 interface Swatch {
@@ -35,6 +37,12 @@ const swatches = computed<Swatch[]>(() => {
     .filter(swatch => order.has(swatch.step))
     .sort((a, b) => order.get(a.step)! - order.get(b.step)!);
 });
+
+/** 配对的文字令牌：给了 onPrefix 且这一档有对应令牌时，块内文字取它 */
+function onColor(swatch: Swatch): string | undefined {
+  const name = props.onPrefix && `${props.onPrefix}${swatch.step}`;
+  return name && name in (tokens as Record<string, string>) ? `var(${name})` : undefined;
+}
 
 /** 深档的标注字用浅色：按档位数字粗分，语义角色那种没有数字的按 dark / on 字样判 */
 function inkOn(swatch: Swatch): "light" | "dark" {
@@ -57,7 +65,7 @@ function inkOn(swatch: Swatch): "light" | "dark" {
         class="xh-swatches__cell"
         :class="`xh-swatches__cell--${inkOn(swatch)}`"
         role="listitem"
-        :style="{ background: `var(${swatch.name})` }"
+        :style="{ background: `var(${swatch.name})`, color: onColor(swatch) }"
         :title="`${swatch.name}: ${swatch.value}`"
       >
         <span class="xh-swatches__step">{{ swatch.step }}</span>

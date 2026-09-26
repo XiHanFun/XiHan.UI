@@ -1095,5 +1095,72 @@
       "$type": "dimension",
       "$value": "{space.3}"
     }
+  },
+  "chart": {
+    "height": {
+      "$description": "图表视口的缺省块尺寸，含坐标轴带；不随密度变化。",
+      "$type": "dimension",
+      "$value": "20rem"
+    },
+    "bar-max": {
+      "$description": "柱的最大厚度：类目带里多出的空间留白，不把柱撑宽。",
+      "$type": "dimension",
+      "$value": "{space.6}"
+    },
+    "gap": {
+      "$description": "相邻填充（堆叠段、相邻柱、扇区、树图格）之间的表面间隙，也是点外描边环的宽度；颜色取 chart.surface，相邻标记之间不画描边。",
+      "$type": "dimension",
+      "$value": "{stroke.thick}"
+    },
+    "line-width": {
+      "$description": "折线与面积上沿的线宽，圆角连接与端点。",
+      "$type": "dimension",
+      "$value": "{stroke.thick}"
+    },
+    "point-size": {
+      "$description": "点与端点的直径。",
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "node-width": {
+      "$description": "桑基节点的宽度。",
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "hit-min": {
+      "$description": "数据标记的最小命中尺寸：比它小的标记按它扩大拾取范围。",
+      "$type": "dimension",
+      "$value": "{space.6}"
+    },
+    "tick-length": {
+      "$description": "刻度线长。",
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "label-gap": {
+      "$description": "刻度线与刻度标签之间的间距。",
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "area-alpha": {
+      "$description": "面积淡洗的不透明度：系列色按它铺在面积下，上沿仍是实色折线。",
+      "$type": "number",
+      "$value": 0.1
+    },
+    "link-alpha": {
+      "$description": "桑基流带的不透明度。",
+      "$type": "number",
+      "$value": 0.35
+    },
+    "dim-alpha": {
+      "$description": "悬停图例项或强调一个系列时，其余系列降到的不透明度。",
+      "$type": "number",
+      "$value": 0.3
+    },
+    "pending-alpha": {
+      "$description": "重新取数期间旧数据保留显示的不透明度。",
+      "$type": "number",
+      "$value": 0.6
+    }
   }
 }
