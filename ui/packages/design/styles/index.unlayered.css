@@ -37273,28 +37273,28 @@
 @keyframes xh-toast-in {
   from {
     opacity: 0;
-    transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - var(--xh-motion-travel))))
-      scale(var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale)));
+    translate: 0 calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - var(--xh-motion-travel)));
+    scale: var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale));
   }
 
   to {
     opacity: 1;
-    transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-offset-collapsed, 0px)))
-      scale(var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale)));
+    translate: 0 calc(var(--xh-toast-dir, 1) * var(--xh-toast-offset-collapsed, 0px));
+    scale: var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale));
   }
 }
 
 @keyframes xh-toast-out {
   from {
     opacity: 1;
-    transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-y, 0px)))
-      scale(var(--xh-toast-scale, 1));
+    translate: 0 calc(var(--xh-toast-dir, 1) * var(--xh-toast-y, 0px));
+    scale: var(--xh-toast-scale, 1);
   }
 
   to {
     opacity: 0;
-    transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - var(--xh-motion-travel))))
-      scale(var(--xh-toast-scale, 1));
+    translate: 0 calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - var(--xh-motion-travel)));
+    scale: var(--xh-toast-scale, 1);
   }
 }
 
@@ -37377,10 +37377,12 @@
   /* 摞的定位面整面铺开且不吃指针，条子必须自己吃回来：
      悬停按住计时、按钮可点、焦点进出，全指着这一条 */
   pointer-events: auto;
-  transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-y))) scale(var(--xh-toast-scale));
+  translate: 0 calc(var(--xh-toast-dir, 1) * var(--xh-toast-y));
+  scale: var(--xh-toast-scale);
   transform-origin: bottom center;
   transition:
-    transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+    translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+    scale var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
     block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
     opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }

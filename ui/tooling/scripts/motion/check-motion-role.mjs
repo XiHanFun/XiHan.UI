@@ -117,6 +117,7 @@ const slideBacklog = await openBacklog('motion')
 const ROLE_OVERRIDE = {
   'radio-group:scale': '圆点直径为指示器一半的小件落位，走 --xh-motion-ease-settle 的过冲收束，过冲量落在圈内不碰描边',
   'color-swatch-picker:scale': '压在色块正中的选中徽标落位，走 --xh-motion-ease-settle 的过冲收束，过冲量落在格内不碰描边',
+  'toast:scale': '叠放重排：往后一层的收拢比例与位移是同一次换位，随位移走 move + continuous，不是形变',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */
