@@ -9,6 +9,7 @@ import type { Service } from '@xihan-ui/core'
 import type { LoadingBarApi, LoadingBarSchema } from '@xihan-ui/headless'
 import { connectLoadingBar, loadingBarMachine } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface LoadingBarContext {
@@ -17,6 +18,7 @@ export interface LoadingBarContext {
 }
 
 export function useLoadingBar(props: LoadingBarSchema['props']): LoadingBarContext {
-  const service = useMachine(loadingBarMachine, () => props)
+  // 根部件带 id（机器按它等淡出过渡）：用 useId 派生的 scope，服务端与水合两侧同号
+  const service = useMachine(loadingBarMachine, () => props, { scope: useReactScope() })
   return { api: connectLoadingBar(service, reactNormalize), service }
 }
