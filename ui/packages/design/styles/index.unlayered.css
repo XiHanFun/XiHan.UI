@@ -2360,6 +2360,39 @@
   backdrop-filter: var(--xh-material-frosted-backdrop);
 }
 
+/* liquid 档：data-material="liquid" 下缺省 outline 换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
+   悬停 / 按下往前景色兑，键盘聚焦铺配方的实体 focus surface。面内不加顶光，亮边已画在朝光源的一侧 */
+:where([data-material='liquid']) [data-scope='back-top'][data-part='root'][data-variant='outline']
+  [data-scope='back-top'][data-part='trigger'][data-xh-liquid] {
+  --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_liquid-bg));
+  --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_liquid-bg-hover));
+  --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_liquid-bg-pressed));
+  --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-material-liquid-focus-surface));
+  --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_liquid-bg));
+  --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+  --xh-action-fg-hover: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+  --xh-action-fg-pressed: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+  --xh-action-fg-focus-visible: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+  --xh-action-border-rest: var(--xh-back-top-border, var(--xh-material-liquid-border));
+  --xh-action-border-hover: var(--xh-back-top-border-hover, var(--xh-material-liquid-border));
+  --xh-action-border-pressed: var(--xh-back-top-border-hover, var(--xh-material-liquid-border));
+  --xh-action-border-focus-visible: var(--xh-back-top-border, var(--xh-material-liquid-border));
+  --xh-action-border-disabled: var(--xh-back-top-border, var(--xh-material-liquid-border));
+  --xh-action-shadow-rest: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-hover: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-pressed: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-focus-visible: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-disabled: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+  --xh-action-highlight-rest: transparent;
+  --xh-action-highlight-hover: transparent;
+  --xh-action-highlight-pressed: transparent;
+  --xh-action-highlight-focus-visible: transparent;
+  --xh-action-highlight-disabled: transparent;
+
+  -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+  backdrop-filter: var(--xh-material-liquid-backdrop);
+}
+
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='back-top'][data-part='trigger'][data-xh-action-variant='solid']:focus-visible {
@@ -4061,6 +4094,39 @@
 
   -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
   backdrop-filter: var(--xh-material-frosted-backdrop);
+}
+
+/* liquid 档：data-material="liquid" 下缺省 outline 换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
+   悬停 / 按下往前景色兑，键盘聚焦铺配方的实体 focus surface。面内不加顶光，亮边已画在朝光源的一侧 */
+:where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline']
+  [data-scope='float-button'][data-part='trigger'][data-xh-liquid] {
+  --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_liquid-bg));
+  --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_liquid-bg-hover));
+  --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_liquid-bg-pressed));
+  --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-material-liquid-focus-surface));
+  --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_liquid-bg));
+  --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+  --xh-action-fg-hover: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+  --xh-action-fg-pressed: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+  --xh-action-fg-focus-visible: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+  --xh-action-border-rest: var(--xh-float-button-border, var(--xh-material-liquid-border));
+  --xh-action-border-hover: var(--xh-float-button-border-hover, var(--xh-material-liquid-border));
+  --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-material-liquid-border));
+  --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-material-liquid-border));
+  --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-material-liquid-border));
+  --xh-action-shadow-rest: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-hover: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-pressed: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+  --xh-action-shadow-disabled: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+  --xh-action-highlight-rest: transparent;
+  --xh-action-highlight-hover: transparent;
+  --xh-action-highlight-pressed: transparent;
+  --xh-action-highlight-focus-visible: transparent;
+  --xh-action-highlight-disabled: transparent;
+
+  -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+  backdrop-filter: var(--xh-material-liquid-backdrop);
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -12574,6 +12640,49 @@
     color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
   --xh-_highlight-brand: inset 0 var(--xh-stroke-thin) 0 0
     color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+}
+
+/* styles/liquid.css */
+/*
+ * 液态材质层：与组件无关，全库共用一份。
+ *
+ * data-material="liquid" 下，连接层投影了 data-xh-liquid 的导航层部件（浮动钮、回到顶部等浮在内容之上的控制面）
+ * 换成液态面。这里只声明私有槽，各组件皮肤在自己的部件上把 Action Control 的桥接槽指过来；standard 档下
+ * 这些槽没人读，部件保持原材质。
+ *
+ * 静态形态（服务端、挂载前，或液态面还没判定下层）：色调随主题极性，不透明度取可读下限，这一档对任何
+ * 下层都保证标签 4.5:1。组件的状态机把部件挂进 core 的液态面，由它按下层在部件上写：
+ *   data-xh-ink              dark / light：部件成为黑墨或白墨域。墨色域本身是浅色 / 深色主题边界，
+ *                            按主题取值的液态通道随之落到那一种色调
+ *   data-xh-liquid-clarity   clear：下层均匀且色调已知，换通透档
+ *   --xh-_liquid-light-x / -y 光源方向的单位向量，决定 1px 亮边落在哪一侧
+ */
+
+:where([data-material='liquid']) [data-xh-liquid] {
+  /* 光源缺省在左上方 */
+  --xh-_liquid-light-x: -0.71;
+  --xh-_liquid-light-y: -0.71;
+  --xh-_liquid-bg: var(--xh-material-liquid-bg);
+  /* 1px 亮边是两层零模糊内阴影：阴影形状朝背光方向偏移，露出的一弯落在朝光源的一侧，
+     另一层反过来偏移，在背光一侧留一道弱亮边。面内不加高光 */
+  --xh-_liquid-rim:
+    inset calc(var(--xh-_liquid-light-x) * var(--xh-stroke-thin) * -1) calc(var(--xh-_liquid-light-y) * var(--xh-stroke-thin) * -1) 0 0 var(--xh-material-liquid-highlight),
+    inset calc(var(--xh-_liquid-light-x) * var(--xh-stroke-thin)) calc(var(--xh-_liquid-light-y) * var(--xh-stroke-thin)) 0 0 var(--xh-material-liquid-rim-far);
+  --xh-_liquid-shadow: var(--xh-_liquid-rim), var(--xh-material-liquid-shadow);
+  /* 交互阶梯往部件自己的前景色兑：浅色调变深、深色调变浅 */
+  --xh-_liquid-bg-hover: color-mix(in oklab, var(--xh-_liquid-bg), var(--xh-material-liquid-fg) 8%);
+  --xh-_liquid-bg-pressed: color-mix(in oklab, var(--xh-_liquid-bg), var(--xh-material-liquid-fg) 14%);
+}
+
+/* 通透档：下层均匀且色调已知时由液态面写上，着色按主题取值，已随墨色域落到对应色调 */
+:where([data-material='liquid']) [data-xh-liquid][data-xh-liquid-clarity='clear'] {
+  --xh-_liquid-bg: color-mix(in oklab, var(--xh-material-liquid-tint) calc(var(--xh-material-liquid-alpha-clear) * 100%), transparent);
+}
+
+/* 从右往左排版时光源缺省在右上方 */
+:where([dir='rtl']) :where([data-material='liquid']) [data-xh-liquid],
+:where([data-material='liquid']) :where([dir='rtl']) [data-xh-liquid] {
+  --xh-_liquid-light-x: 0.71;
 }
 
 /* styles/alert.css */

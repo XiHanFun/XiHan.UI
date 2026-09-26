@@ -192,6 +192,39 @@
     backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
+  /* liquid 档：data-material="liquid" 下缺省 outline 换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
+     悬停 / 按下往前景色兑，键盘聚焦铺配方的实体 focus surface。面内不加顶光，亮边已画在朝光源的一侧 */
+  :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline']
+    [data-scope='float-button'][data-part='trigger'][data-xh-liquid] {
+    --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_liquid-bg));
+    --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_liquid-bg-hover));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-material-liquid-focus-surface));
+    --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_liquid-bg));
+    --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-hover: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-pressed: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-focus-visible: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+    --xh-action-border-rest: var(--xh-float-button-border, var(--xh-material-liquid-border));
+    --xh-action-border-hover: var(--xh-float-button-border-hover, var(--xh-material-liquid-border));
+    --xh-action-border-pressed: var(--xh-float-button-border-hover, var(--xh-material-liquid-border));
+    --xh-action-border-focus-visible: var(--xh-float-button-border, var(--xh-material-liquid-border));
+    --xh-action-border-disabled: var(--xh-float-button-border, var(--xh-material-liquid-border));
+    --xh-action-shadow-rest: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-hover: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-pressed: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-disabled: var(--xh-float-button-shadow, var(--xh-_liquid-shadow));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-highlight-hover: transparent;
+    --xh-action-highlight-pressed: transparent;
+    --xh-action-highlight-focus-visible: transparent;
+    --xh-action-highlight-disabled: transparent;
+
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
+  }
+
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
      置灰后矩阵把面换成中性淡底，公共环压上去足够对比，不再另灌 */

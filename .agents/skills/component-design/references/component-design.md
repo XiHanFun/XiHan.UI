@@ -606,11 +606,11 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 可读下限：浅色调不透明度 ≥ 0.48、深色调 ≥ 0.61，标签文字在任何下层上 ≥ 4.5:1。下层均匀且色调已知时可降到通透档（浅 0.24 / 深 0.34）；下层杂乱、有文字、未知，以及首次判定完成前，一律取可读下限。
 - 色调按下层决定，不按主题：作者在图片、视频、画布区域声明 `data-xh-backdrop="light | dark"`（杂乱时加 `data-xh-backdrop-busy`），其余读 DOM 计算色；相对亮度 0.179 ± 0.04 滞回。不读像素、不申请设备方向权限。
 - 光源：细指针下 1px 边缘光沿周长的亮度随指针方向转动；粗指针与无指针固定左上（RTL 右上）。
-- 折射只在 Chromium 内核启用，由增强包按引擎门控；其余引擎与未装增强包时为模糊 + 饱和。尺寸超过 640 × 120 或同一视口超过 3 个时只取样不折射。
+- 折射只在 Chromium 内核启用，按内核品牌门控（其余引擎能解析 SVG 背景滤镜却不渲染，不能用 `CSS.supports` 判断）；其余引擎为模糊 + 饱和。尺寸超过 640 × 120 或同一视口超过 3 个时只取样不折射。
 - 选中不用品牌色字：品牌字压在彩色下层上会失去对比。选中只用指示块 + 字重。
 - 形状：不贴边的一维栏取 pill，浮动钮与媒体控制钮取 circle，贴边铺满的栏不取圆角。
 - 环境：reduced transparency 下不透明度 1、无背景滤镜与折射，细线与边缘光保留；contrast more 下不透明度 1、细线 3:1、无光环；forced colors 下 `Canvas` / `CanvasText` + 系统边框；print 随导航层隐藏；reduced motion 下色调切换保留 120ms 淡变、光源固定。
-- 增强（下层判定、折射、光源）由 features 包 `@xihan-ui/material` 提供，核心与适配器不含这部分代码；增强不改变结构、语义与状态表达，服务端输出静态形态。
+- 下层判定、折射与光源由 core 的液态面（`@xihan-ui/core/visual-environment` 的 `trackLiquidSurface`）承担，同一文档的部件共用一套监听；组件的状态机在启动时把投影了 `data-xh-liquid` 的部件挂进去，作者只需写 `data-material`，不再额外安装或调用。这些行为不改变结构、语义与状态表达；服务端与挂载前输出静态形态（色调随主题、不透明度取可读下限）。
 
 ## 9. 动效
 
@@ -1109,7 +1109,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
 | §7.7 库自有彩色面与缺省面墨色 | 库自有彩色面（`data-tone` 实心面、Tooltip 反白面、ImageViewer 控制层）接入墨色域；缺省面改墨色表达前先审计叠边与淡底叠淡底 |
-| §8.5 liquid 与 `data-material` 轴 | liquid 令牌与六个环境取值；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；轴投影；`@xihan-ui/material` 增强包；消费者接入 |
+| §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（FloatButton 列表项、Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
 | §9.8 双沿指示器、§9.11 弹簧 | `@xihan-ui/motion` 有状态弹簧与弹簧令牌、`--xh-motion-ease-spring`；指针会话速度；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer）；双沿指示器随共享指示器几何迁移 |
 | §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光；FloatButton 融合分离 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |

@@ -25,6 +25,9 @@ const MATERIAL_FROSTED = /--xh-material-frosted-(?:compact-)?shadow\b/
 // M4 是 sheet 级遮罩式高层面（sheet = material-elevated 三件套：-bg / -border / -shadow）；
 // 只允许逐件登记过的部件消费，未迁移的 sheet 面仍走 --xh-elevation-sheet，随各组件迁移逐件补登。
 const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
+// M5 是 data-material="liquid" 下导航层的材质配方，海拔等价于 floating；只在液态层的私有槽里赋值，
+// 组件皮肤经私有槽消费，所以不按部件登记
+const MATERIAL_LIQUID = /--xh-material-liquid-shadow\b/
 /** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。sheet 面：Dialog / Drawer / Command / Tour / Toast / Notification。 */
 const ELEVATED_CONSUMERS = new Set(['dialog/content', 'drawer/content', 'tour/content', 'toast/root', 'notification/item', 'layout/sider', 'command/content'])
 /**
@@ -165,7 +168,9 @@ for (const file of files) {
           ? 'frosted'
           : isElevated
             ? 'sheet'
-            : value.match(ROLE)?.[1]
+            : MATERIAL_LIQUID.test(value)
+              ? 'liquid'
+              : value.match(ROLE)?.[1]
       if (!role) {
         problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没走 --xh-elevation-raised / floating / sheet 或已登记材质投影`)
         continue

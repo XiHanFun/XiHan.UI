@@ -2890,14 +2890,19 @@
         "default",
         "disabled",
         "focus-visible",
-        "variant=outline"
+        "material=liquid",
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled",
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest",
         "--xh-_back-top-bg",
-        "--xh-material-frosted-focus-surface"
+        "--xh-_liquid-bg",
+        "--xh-material-frosted-focus-surface",
+        "--xh-material-liquid-focus-surface"
       ],
       "visibility": "public",
       "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
@@ -2906,6 +2911,7 @@
       "name": "--xh-back-top-bg-active",
       "component": "back-top",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
@@ -2915,20 +2921,26 @@
         "disabled",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
+        "--xh-_action-variant-bg-pressed",
+        "--xh-_liquid-bg-pressed"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 background-color 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-back-top-bg-hover",
       "component": "back-top",
       "part": [
+        "root",
         "trigger"
       ],
       "property": [
@@ -2938,14 +2950,19 @@
         "disabled",
         "hover",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-_action-variant-bg-hover"
+        "--xh-_action-variant-bg-hover",
+        "--xh-_liquid-bg-hover"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 background-color 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-back-top-border",
@@ -2962,13 +2979,17 @@
         "default",
         "disabled",
         "focus-visible",
-        "variant=outline"
+        "material=liquid",
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-border-disabled",
         "--xh-_action-variant-border-focus-visible",
         "--xh-_action-variant-border-rest",
-        "--xh-_back-top-border"
+        "--xh-_back-top-border",
+        "--xh-material-liquid-border"
       ],
       "visibility": "public",
       "description": "back-top 的 root、trigger 部件 border、border-color 覆盖槽。"
@@ -2988,15 +3009,19 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-border-hover",
         "--xh-_action-variant-border-pressed",
-        "--xh-_back-top-border"
+        "--xh-_back-top-border",
+        "--xh-material-liquid-border"
       ],
       "visibility": "public",
       "description": "back-top 的 root、trigger 部件 border-color 覆盖槽。"
@@ -3018,17 +3043,21 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
         "--xh-_action-variant-fg-hover",
         "--xh-_action-variant-fg-pressed",
         "--xh-_action-variant-fg-rest",
-        "--xh-_back-top-fg"
+        "--xh-_back-top-fg",
+        "--xh-material-liquid-fg"
       ],
       "visibility": "public",
       "description": "back-top 的 root、trigger 部件 color 覆盖槽。"
@@ -3140,13 +3169,17 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_back-top-shadow",
+        "--xh-_liquid-shadow",
         "none"
       ],
       "visibility": "public",
@@ -29796,15 +29829,20 @@
         "default",
         "disabled",
         "focus-visible",
+        "material=liquid",
         "not([data-scope])",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled",
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest",
         "--xh-_float-button-bg",
-        "--xh-material-frosted-focus-surface"
+        "--xh-_liquid-bg",
+        "--xh-material-frosted-focus-surface",
+        "--xh-material-liquid-focus-surface"
       ],
       "visibility": "public",
       "description": "float-button 的 list、root、trigger 部件 background-color 覆盖槽。"
@@ -29814,6 +29852,7 @@
       "component": "float-button",
       "part": [
         "list",
+        "root",
         "trigger"
       ],
       "property": [
@@ -29824,24 +29863,30 @@
         "disabled",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not(:disabled)",
         "not([data-disabled])",
         "not([data-loading])",
         "not([data-scope])",
-        "pressed"
+        "pressed",
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-pressed",
-        "--xh-_float-button-bg-active"
+        "--xh-_float-button-bg-active",
+        "--xh-_liquid-bg-pressed"
       ],
       "visibility": "public",
-      "description": "float-button 的 list、trigger 部件 background-color 覆盖槽。"
+      "description": "float-button 的 list、root、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-bg-hover",
       "component": "float-button",
       "part": [
         "list",
+        "root",
         "trigger"
       ],
       "property": [
@@ -29852,17 +29897,22 @@
         "disabled",
         "hover",
         "loading",
+        "material=liquid",
         "not(:disabled)",
         "not([data-disabled])",
         "not([data-loading])",
-        "not([data-scope])"
+        "not([data-scope])",
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover",
-        "--xh-_float-button-bg-hover"
+        "--xh-_float-button-bg-hover",
+        "--xh-_liquid-bg-hover"
       ],
       "visibility": "public",
-      "description": "float-button 的 list、trigger 部件 background-color 覆盖槽。"
+      "description": "float-button 的 list、root、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-border",
@@ -29880,14 +29930,18 @@
         "default",
         "disabled",
         "focus-visible",
+        "material=liquid",
         "not([data-scope])",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-border-disabled",
         "--xh-_action-variant-border-focus-visible",
         "--xh-_action-variant-border-rest",
-        "--xh-_float-button-border"
+        "--xh-_float-button-border",
+        "--xh-material-liquid-border"
       ],
       "visibility": "public",
       "description": "float-button 的 list、root、trigger 部件 border、border-color 覆盖槽。"
@@ -29909,17 +29963,21 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not(:disabled)",
         "not([data-disabled])",
         "not([data-loading])",
         "not([data-scope])",
         "pressed",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-border-hover",
         "--xh-_action-variant-border-pressed",
-        "--xh-_float-button-border-hover"
+        "--xh-_float-button-border-hover",
+        "--xh-material-liquid-border"
       ],
       "visibility": "public",
       "description": "float-button 的 list、root、trigger 部件 border-color 覆盖槽。"
@@ -29942,18 +30000,22 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
         "not([data-scope])",
         "pressed",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
         "--xh-_action-variant-fg-hover",
         "--xh-_action-variant-fg-pressed",
         "--xh-_action-variant-fg-rest",
-        "--xh-_float-button-fg"
+        "--xh-_float-button-fg",
+        "--xh-material-liquid-fg"
       ],
       "visibility": "public",
       "description": "float-button 的 list、root、trigger 部件 color 覆盖槽。"
@@ -30053,14 +30115,18 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "material=liquid",
         "not([data-disabled])",
         "not([data-loading])",
         "not([data-scope])",
         "pressed",
-        "variant=outline"
+        "variant=outline",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-_float-button-shadow",
+        "--xh-_liquid-shadow",
         "none"
       ],
       "visibility": "public",
