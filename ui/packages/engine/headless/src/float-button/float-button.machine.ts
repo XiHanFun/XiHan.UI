@@ -7,6 +7,7 @@
 
 import type { FloatButtonSchema } from './float-button.types'
 import { setup } from '@xihan-ui/core'
+import { trackLiquidGoo } from '@xihan-ui/core/visual-environment'
 import { trackLiquidPart } from '../shared/liquid'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 
@@ -23,17 +24,19 @@ export const floatButtonMachine = createMachine({
   // 按压通道（context.pressed）与开合无关：两个状态都认 PRESS.*，禁用时按住的一律松开
   context: ({ cell }) => ({
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    merging: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
     registerLayer: null,
     getRootEl: () => null,
+    liquidGroup: null,
   }),
   // 受控值始终由父级决定；非受控 defaultOpen 在禁用时不建立展开态。
   initialState: ({ prop }) => prop('open') !== undefined
     ? (prop('open') ? 'open' : 'closed')
     : (prop('defaultOpen') && !prop('disabled') ? 'open' : 'closed'),
-  effects: ['trackLayer', 'trackLiquid'],
+  effects: ['trackLayer', 'trackLiquid', 'trackLiquidGroup'],
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('disabled')], () => action(['syncDisabled', 'releaseWhenInert']))
@@ -48,14 +51,14 @@ export const floatButtonMachine = createMachine({
         'OPEN': [
           { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['endMerge', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
           { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['endMerge', 'invokeOnOpen'] },
         ],
-        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.OPEN': { target: 'open', actions: ['endMerge'] },
         'CONTROLLED.CLOSE': {},
         'DISABLE': {},
       },
@@ -64,18 +67,18 @@ export const floatButtonMachine = createMachine({
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['startMerge', 'invokeOnClose'] },
         ],
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['startMerge', 'invokeOnClose'] },
         ],
         'DISABLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['startMerge', 'invokeOnClose'] },
         ],
         'CONTROLLED.OPEN': {},
-        'CONTROLLED.CLOSE': { target: 'closed' },
+        'CONTROLLED.CLOSE': { target: 'closed', actions: ['startMerge'] },
       },
     },
   },
@@ -93,6 +96,12 @@ export const floatButtonMachine = createMachine({
         if (prop('disabled'))
           context.set('pressed', false)
       },
+      // 液态组在场且会播放时，收起先把展开组留着，等动作融回触发器再藏
+      startMerge: ({ refs, context }) => {
+        if (refs.get('liquidGroup')?.goo.animated)
+          context.set('merging', true)
+      },
+      endMerge: ({ context }) => context.set('merging', false),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       syncOpen: ({ prop, send }) => {
@@ -114,6 +123,47 @@ export const floatButtonMachine = createMachine({
     effects: {
       /** 触发器是浮在内容之上的导航层部件：材质轴为 liquid 时按下层换色调、亮边随指针 */
       trackLiquid: ({ scope, flush }) => trackLiquidPart(scope, flush, 'float-button', 'trigger'),
+      /**
+       * 液态档下触发器与展开组里的动作结成液态组：共用一层色块，靠近时边缘连起来；
+       * 展开时动作从触发器里分离出来，收起时融回触发器，融回落定才撤掉 merging、藏起展开组
+       */
+      trackLiquidGroup: ({ refs, scope, flush, track, state, context }) => {
+        let disposed = false
+        flush(() => {
+          if (disposed)
+            return
+          const root = refs.get('getRootEl')()
+          const trigger = scope.getById<HTMLElement>(scope.partId('float-button', 'trigger'))
+          const list = scope.getById<HTMLElement>(scope.partId('float-button', 'list'))
+          if (!root || !trigger || !list)
+            return
+          // 展开组的直接子元素就是一条条动作；文本节点与注释不算
+          const items = (): HTMLElement[] => [...list.children] as HTMLElement[]
+          refs.set('liquidGroup', {
+            goo: trackLiquidGoo(root, { source: trigger, members: () => [trigger, ...items()], domains: () => [list] }),
+            items,
+          })
+        })
+        track([() => state.get()], () => {
+          const open = state.get() === 'open'
+          flush(() => {
+            const group = refs.get('liquidGroup')
+            if (disposed || !group)
+              return
+            void group.goo.split(group.items(), open).then(() => {
+              // 融回落定，或被撤出打断：展开组这才藏起来。分离的结局与展开组显隐无关，
+              // 融回途中又展开的由 endMerge 收掉
+              if (!open && !disposed && state.get() !== 'open')
+                context.set('merging', false)
+            })
+          })
+        })
+        return () => {
+          disposed = true
+          refs.get('liquidGroup')?.goo.dispose()
+          refs.set('liquidGroup', null)
+        }
+      },
       trackLayer: ({ refs, state, prop, send, track, flush }) => trackPresenceResources({
         // FloatButton 的 list 收起即 hidden，没有独立退场容器；逻辑关闭当场结清资源。
         presence: null,

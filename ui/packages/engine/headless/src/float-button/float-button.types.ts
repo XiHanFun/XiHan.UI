@@ -6,6 +6,7 @@
 // 定义 float button 类型契约。
 
 import type { ActionVariant, Cleanup, Direction, Layer, MachineSchema, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { LiquidGoo } from '@xihan-ui/core/visual-environment'
 import type { CollapsibleOpenChangeDetails } from '../collapsible'
 
 /**
@@ -57,11 +58,18 @@ export interface FloatButtonAppearance {
 
 export type FloatButtonProps = FloatButtonDisclosureProps & FloatButtonNotifiers & FloatButtonAppearance
 
-/** 适配器只桥接所属 Document 的运行时、逻辑层登记与根节点。 */
+/** 液态档的色块组，以及展开时从触发器里分离、收起时融回的那几块（展开组里的动作）。 */
+export interface FloatButtonLiquidGroup {
+  goo: LiquidGoo
+  items: () => readonly HTMLElement[]
+}
+
+/** 适配器只桥接所属 Document 的运行时、逻辑层登记与根节点；液态组由状态机自己挂上。 */
 export interface FloatButtonRefs {
   config: RuntimeConfig | null
   registerLayer: ((input: Omit<Layer, 'id'>) => { layer: Layer, dispose: Cleanup }) | null
   getRootEl: () => HTMLElement | null
+  liquidGroup: FloatButtonLiquidGroup | null
 }
 
 /** FloatButton 专用状态机：开合、禁用和消解层资源都由 Headless 持有。 */
@@ -70,6 +78,8 @@ export interface FloatButtonSchema extends MachineSchema {
   context: {
     /** 触发器正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
     pressed: boolean
+    /** 液态档收起后动作正融回触发器：展开组留在原处、不可交互，融回落定才藏起来。 */
+    merging: boolean
   }
   computed: Record<string, never>
   refs: FloatButtonRefs
@@ -97,7 +107,9 @@ export interface FloatButtonSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackLayer' | 'trackLiquid'
+    | 'startMerge'
+    | 'endMerge'
+  effect: 'trackLayer' | 'trackLiquid' | 'trackLiquidGroup'
 }
 
 export interface FloatButtonApi<T extends PropTypes = PropTypes> {

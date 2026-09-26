@@ -4155,6 +4155,81 @@
   transform: var(--xh-_liquid-deform);
 }
 
+/* 液态组：液态档下触发器与展开的动作结成一组（状态机挂进 core），共用宿主最前面那层色块，
+   靠近时边缘像液体一样连起来。底色、墨色细线、亮边与投影都由色块层沿整组的外形画，块自己的面与细线
+   换成透明、亮边与投影撤掉，只留磨砂；悬停 / 按下改成往前景色兑的一层薄色叠在色块上。
+   只有缺省 outline 的液态面才结组，其余形态的面是实心的，色块层藏起来。强制色下色块层撤掉，块保留原样 */
+@media (forced-colors: none) {
+  :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
+    [data-scope='float-button'][data-part='trigger'][data-xh-liquid] {
+    --xh-action-bg-rest: var(--xh-float-button-bg, transparent);
+    --xh-action-bg-hover: var(--xh-float-button-bg-hover, color-mix(in oklab, var(--xh-material-liquid-fg) 8%, transparent));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-active, color-mix(in oklab, var(--xh-material-liquid-fg) 14%, transparent));
+    --xh-action-bg-disabled: var(--xh-float-button-bg, transparent);
+    --xh-action-border-rest: var(--xh-float-button-border, transparent);
+    --xh-action-border-hover: var(--xh-float-button-border-hover, transparent);
+    --xh-action-border-pressed: var(--xh-float-button-border-hover, transparent);
+    --xh-action-border-focus-visible: var(--xh-float-button-border, transparent);
+    --xh-action-border-disabled: var(--xh-float-button-border, transparent);
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
+    --xh-action-shadow-focus-visible: none;
+    --xh-action-shadow-disabled: none;
+  }
+}
+
+[data-scope='float-button'][data-part='root']:not([data-variant='outline']) > [data-xh-liquid-goo-layer] {
+  display: none;
+}
+
+/* 整组的投影由色块层沿外形画，使用者的投影槽接到那里。色块层不是部件，只按 scope 选 */
+[data-scope='float-button'] > [data-xh-liquid-goo-layer] {
+  --xh-_liquid-goo-shadow: var(--xh-float-button-shadow, var(--xh-material-liquid-shadow));
+}
+
+/* 色块层不设层号、靠排在最前压在各块之下：展开组也得是定位元素才盖得住它（触发器本就是） */
+[data-scope='float-button'][data-part='root'][data-xh-liquid-goo] [data-scope='float-button'][data-part='list'] {
+  position: relative;
+}
+
+/* 展开组里的原生动作项在组里同样是液态面：底色、细线、亮边与投影交给色块层，块上留前景与磨砂 */
+@media (forced-colors: none) {
+  :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
+    [data-scope='float-button'][data-part='list']
+    > button:not([data-scope]) {
+    border-color: var(--xh-float-button-border, transparent);
+    background-color: var(--xh-float-button-bg, transparent);
+    background-image: none;
+    color: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
+    box-shadow: none;
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
+  }
+}
+
+@media (forced-colors: none) and (hover: hover) {
+  :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
+    [data-scope='float-button'][data-part='list']
+    > button:not([data-scope]):not(:disabled):hover {
+    border-color: var(--xh-float-button-border-hover, transparent);
+    background-color: var(--xh-float-button-bg-hover, color-mix(in oklab, var(--xh-material-liquid-fg) 8%, transparent));
+  }
+}
+
+@media (forced-colors: none) {
+  :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
+    [data-scope='float-button'][data-part='list']
+    > button:not([data-scope]):not(:disabled):active {
+    background-color: var(--xh-float-button-bg-active, color-mix(in oklab, var(--xh-material-liquid-fg) 14%, transparent));
+  }
+}
+
+/* 从触发器里分离、融回的那几块由液态组的弹簧逐帧写姿态，CSS 的逐条冒出不再叠上去 */
+[data-scope='float-button'][data-part='list'] > [data-xh-liquid-goo-split] {
+  animation: none;
+}
+
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
    置灰后矩阵把面换成中性淡底，公共环压上去足够对比，不再另灌 */
@@ -14050,7 +14125,7 @@
 }
 
 /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-[data-scope='approval'][data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='approval'][data-part='root']:not([data-part='item'][data-instant] *) {
   animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -14276,7 +14351,7 @@
 }
 
 /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-[data-scope='approval'][data-part='result']:not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='approval'][data-part='result']:not([data-part='item'][data-instant] *) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -29379,7 +29454,7 @@
 }
 
 /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-[data-scope='question-flow'][data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='root']:not([data-part='item'][data-instant] *) {
   animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -29539,27 +29614,27 @@
    位次就是到达顺序。落在首帧就在的列表条目里（历史消息）时直接呈现。
    backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
    第 6 条起并到同一拍上 */
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:not([data-part='item'][data-instant] *) {
   animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(2):not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(2):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 1);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(3):not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(3):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 2);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(4):not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(4):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 3);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(5):not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(5):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 4);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(n + 6):not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(n + 6):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 5);
 }
 
@@ -29810,7 +29885,7 @@
 }
 
 /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-[data-scope='question-flow'][data-part='result']:not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='question-flow'][data-part='result']:not([data-part='item'][data-instant] *) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -38184,7 +38259,7 @@
 }
 
 /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-[data-scope='tool-call'][data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
+[data-scope='tool-call'][data-part='root']:not([data-part='item'][data-instant] *) {
   animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
 }
 
