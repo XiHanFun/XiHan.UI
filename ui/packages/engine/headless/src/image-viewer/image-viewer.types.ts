@@ -7,6 +7,7 @@
 
 import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { SpringValue } from '@xihan-ui/motion'
 import type { MultiPointerSession, PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 
 /** 一张待查看的图片。 */
@@ -79,6 +80,8 @@ export interface ImageViewerRefs {
    * 每一帧都相对它计算，不相对上一帧：相对上一帧会累积浮点误差。
    */
   pinchSession: { start: PinchSnapshot, scale: number, x: number, y: number } | null
+  /** 松手后的平移弹簧（两轴各一支）：惯性滑行，或越出范围时硬弹簧回弹；落定、再按下或改变换时撤下。 */
+  inertia: { x: SpringValue | null, y: SpringValue | null } | null
 }
 
 export interface ImageViewerOpenChangeDetails {
@@ -132,6 +135,8 @@ export interface ImageViewerSchema extends MachineSchema {
     transform: ImageViewerTransform
     /** 正在拖拽平移。 */
     panning: boolean
+    /** 松手后弹簧正在带着平移惯性滑行或回弹，投影 data-animating（样式层据此关掉过渡）。 */
+    settling: boolean
     /** 当前大图的加载相位。切换图片与重新打开都回到 loading。 */
     imageStatus: ImageViewerImageStatus
     /**
@@ -165,7 +170,11 @@ export interface ImageViewerSchema extends MachineSchema {
     | { type: 'POINTERS.DOWN', pointerId: number, clientX: number, clientY: number }
     /** 触点移动或减少。一根是平移，两根是缩放，点数变化即重新记录基准。 */
     | { type: 'POINTERS.CHANGE', points: readonly TrackedPoint[] }
-    | { type: 'POINTERS.END' }
+    /**
+     * 最后一根手指离开。velocity 是它的松手速度（像素每秒），单指平移松手时按它惯性滑行；
+     * canceled 表示被系统收走，这时不滑行，只把越出范围的平移收回来。
+     */
+    | { type: 'POINTERS.END', velocity?: { x: number, y: number }, canceled?: boolean }
     | { type: 'PAN.END' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }

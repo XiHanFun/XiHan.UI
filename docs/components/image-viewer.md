@@ -59,6 +59,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 - `collection` 提供整组图片，`index` 决定当前一张，`loop` 决定是否循环。
 - 缩放步长与上下限可调。
 - 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
+- 平移限定在图片放大后超出视口的范围内：拖出去越拉越沉，松手弹回；快甩松手后图片顺着速度继续滑行、逐渐停下。图片比视口小时只能居中。
 - 关闭后焦点归还触发器。
 - 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
 - 底部控件带是一组有名称的控件，每个按钮各占一个 Tab 位；左右方向键与 Home/End 用于翻页，控件带内外一致。
@@ -277,6 +278,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |
 | `viewport` | `data-loading` | ''（条件成立时才出现） |
 | `viewport` | `data-state` | 'open' \| 'closed' |
+| `image` | `data-animating` | ''（条件成立时才出现） |
 | `image` | `data-dragging` | ''（条件成立时才出现） |
 | `image` | `data-loading` | ''（条件成立时才出现） |
 | `image` | `data-state` | 'open' \| 'closed' |

@@ -5,10 +5,12 @@
 
 // 提供 image viewer 相关实现。
 
-import type { PropFn } from '@xihan-ui/core'
+import type { ContextFacade, PropFn, RefsFacade } from '@xihan-ui/core'
+import type { SpringValue } from '@xihan-ui/motion'
 import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerPressedPart, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
+import { createSpringValue, glideSpring, projectRelease, rubberClamp } from '@xihan-ui/motion'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
 import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
@@ -50,6 +52,112 @@ export function stepImageViewerIndex(index: number, delta: number, count: number
   if (loop)
     return ((next % count) + count) % count
   return Math.min(Math.max(next, 0), count - 1)
+}
+
+/** 松手惯性的投影时间（秒）：滑行按 e^(−t / 这么久) 减速，停在「位置 + 速度 × 这么久」。 */
+const INERTIA_SECONDS = 0.3
+
+/** 平移越出范围时的橡皮筋尺寸（像素）：越拉越沉，趋近这么远。 */
+const PAN_STRETCH = 80
+
+/** 图片与视口节点：平移范围按两者的尺寸算。量不到时（纯逻辑驱动）返回 null，平移不设限。 */
+function partEl(refs: RefsFacade<ImageViewerSchema>, part: 'image' | 'viewport'): HTMLElement | null {
+  return refs.get('getContentEl')()?.querySelector<HTMLElement>(`[data-scope="image-viewer"][data-part="${part}"]`) ?? null
+}
+
+/**
+ * 平移范围（两轴各自的半宽）：放大、旋转后的外接框超出视口的那一半；图比视口小时为 0，只能居中。
+ * 量不到节点或尺寸为 0 时返回 null。
+ */
+function panLimits(refs: RefsFacade<ImageViewerSchema>, t: ImageViewerTransform): { x: number, y: number } | null {
+  const image = partEl(refs, 'image')
+  const viewport = partEl(refs, 'viewport')
+  if (!image || !viewport)
+    return null
+  const w = image.offsetWidth * Math.abs(t.scale)
+  const h = image.offsetHeight * Math.abs(t.scale)
+  if (!w || !h || !viewport.clientWidth || !viewport.clientHeight)
+    return null
+  const rad = (t.rotate * Math.PI) / 180
+  const cos = Math.abs(Math.cos(rad))
+  const sin = Math.abs(Math.sin(rad))
+  const round = (value: number): number => Math.round(value * 100) / 100
+  return {
+    x: round(Math.max(0, (w * cos + h * sin - viewport.clientWidth) / 2)),
+    y: round(Math.max(0, (w * sin + h * cos - viewport.clientHeight) / 2)),
+  }
+}
+
+/** 把平移收进范围；量不到范围时原样返回。 */
+function clampPan(refs: RefsFacade<ImageViewerSchema>, t: ImageViewerTransform): ImageViewerTransform {
+  const limits = panLimits(refs, t)
+  if (!limits)
+    return t
+  const x = Math.min(Math.max(t.x, -limits.x), limits.x)
+  const y = Math.min(Math.max(t.y, -limits.y), limits.y)
+  return x === t.x && y === t.y ? t : { ...t, x, y }
+}
+
+/** 跟手时越出范围的那段按橡皮筋衰减。 */
+function resistPan(refs: RefsFacade<ImageViewerSchema>, t: ImageViewerTransform): ImageViewerTransform {
+  const limits = panLimits(refs, t)
+  if (!limits)
+    return t
+  return { ...t, x: rubberClamp(t.x, -limits.x, limits.x, PAN_STRETCH), y: rubberClamp(t.y, -limits.y, limits.y, PAN_STRETCH) }
+}
+
+/** 撤下松手后的平移弹簧，平移停在它此刻的位置。 */
+function stopInertia(refs: RefsFacade<ImageViewerSchema>, context: ContextFacade<ImageViewerSchema>): void {
+  const inertia = refs.get('inertia')
+  inertia?.x?.stop()
+  inertia?.y?.stop()
+  refs.set('inertia', null)
+  context.set('settling', false)
+}
+
+/**
+ * 松手落定：两轴各自判断。已越出范围的一轴用硬弹簧收回边界；在范围内的一轴顺着松手速度惯性滑行，
+ * 落点夹在范围内（滑到边界会轻碰一下再停）。量不到范围时不动。
+ */
+function settlePan(refs: RefsFacade<ImageViewerSchema>, context: ContextFacade<ImageViewerSchema>, velocity: { x: number, y: number }): void {
+  stopInertia(refs, context)
+  const image = partEl(refs, 'image')
+  const t = context.get('transform')
+  const limits = panLimits(refs, t)
+  if (!image || !limits)
+    return
+  const axis = (key: 'x' | 'y'): { spring: SpringValue, done: Promise<unknown> } | null => {
+    const at = t[key]
+    const limit = limits[key]
+    const outside = Math.abs(at) > limit + 0.5
+    const target = Math.min(Math.max(outside ? at : projectRelease(at, velocity[key], INERTIA_SECONDS), -limit), limit)
+    if (Math.abs(target - at) < 0.5 && Math.abs(velocity[key]) < 5) {
+      if (target !== at)
+        context.set('transform', { ...context.get('transform'), [key]: target })
+      return null
+    }
+    const spring = createSpringValue({
+      spring: outside ? 'stiff' : glideSpring(INERTIA_SECONDS),
+      value: at,
+      target: image,
+      onUpdate: value => context.set('transform', { ...context.get('transform'), [key]: value }),
+    })
+    return { spring, done: spring.to(target, { velocity: outside ? 0 : velocity[key] }) }
+  }
+  const x = axis('x')
+  const y = axis('y')
+  if (!x && !y)
+    return
+  const inertia = { x: x?.spring ?? null, y: y?.spring ?? null }
+  refs.set('inertia', inertia)
+  context.set('settling', true)
+  // 两轴都落定（或被新的按下、缩放打断）才撤下；打断时 stopInertia 已经收过尾
+  void Promise.all([x?.done, y?.done]).then(() => {
+    if (refs.get('inertia') === inertia) {
+      refs.set('inertia', null)
+      context.set('settling', false)
+    }
+  })
 }
 
 function clampScale(scale: number, min: number, max: number): number {
@@ -99,6 +207,7 @@ export const imageViewerMachine = createMachine({
     })),
     transform: cell<ImageViewerTransform>(() => ({ defaultValue: IMAGE_VIEWER_IDENTITY, isEqual: sameTransform })),
     panning: cell<boolean>(() => ({ defaultValue: false })),
+    settling: cell<boolean>(() => ({ defaultValue: false })),
     imageStatus: cell<ImageViewerImageStatus>(() => ({ defaultValue: 'loading' })),
     // 按压通道：正被按住的那颗按钮，与开合无关
     pressed: cell<ImageViewerPressedPart | null>(() => ({ defaultValue: null })),
@@ -111,6 +220,7 @@ export const imageViewerMachine = createMachine({
     panSession: null,
     pinchSession: null,
     gesture: null,
+    inertia: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 退出期间模态资源不能跟着逻辑状态立即拆：Presence 的所有视觉租约清空后才释放。
@@ -225,10 +335,11 @@ export const imageViewerMachine = createMachine({
         const current = clampImageViewerIndex(context.get('index'), count)
         context.set('index', stepImageViewerIndex(current, -1, count, prop('loop') ?? true))
       },
-      zoomBy: ({ context, prop, event }) => {
+      zoomBy: ({ context, prop, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ZOOM.BY')
           return
+        stopInertia(refs, context)
         const step = prop('zoomStep') ?? IMAGE_VIEWER_ZOOM_STEP
         const t = context.get('transform')
         const scale = clampScale(
@@ -236,27 +347,30 @@ export const imageViewerMachine = createMachine({
           prop('minScale') ?? IMAGE_VIEWER_MIN_SCALE,
           prop('maxScale') ?? IMAGE_VIEWER_MAX_SCALE,
         )
-        // 缩回 1 以内平移就没意义了，一并归位，免得图飘在视口外找不回来
-        context.set('transform', { ...t, scale, x: scale <= 1 ? 0 : t.x, y: scale <= 1 ? 0 : t.y })
+        // 缩回 1 以内平移就没意义了，一并归位，免得图飘在视口外找不回来；放大缩小后平移收进新的范围
+        context.set('transform', clampPan(refs, { ...t, scale, x: scale <= 1 ? 0 : t.x, y: scale <= 1 ? 0 : t.y }))
       },
-      zoomTo: ({ context, prop, event }) => {
+      zoomTo: ({ context, prop, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ZOOM.SET')
           return
+        stopInertia(refs, context)
         const t = context.get('transform')
         const scale = clampScale(
           e.scale,
           prop('minScale') ?? IMAGE_VIEWER_MIN_SCALE,
           prop('maxScale') ?? IMAGE_VIEWER_MAX_SCALE,
         )
-        context.set('transform', { ...t, scale, x: scale <= 1 ? 0 : t.x, y: scale <= 1 ? 0 : t.y })
+        context.set('transform', clampPan(refs, { ...t, scale, x: scale <= 1 ? 0 : t.x, y: scale <= 1 ? 0 : t.y }))
       },
-      rotateBy: ({ context, event }) => {
+      // 转过 90° 后外接框的宽高对调，平移收进新的范围
+      rotateBy: ({ context, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ROTATE.BY')
           return
+        stopInertia(refs, context)
         const t = context.get('transform')
-        context.set('transform', { ...t, rotate: t.rotate + e.delta })
+        context.set('transform', clampPan(refs, { ...t, rotate: t.rotate + e.delta }))
       },
       flip: ({ context, event }) => {
         const e = event.current()
@@ -265,7 +379,10 @@ export const imageViewerMachine = createMachine({
         const t = context.get('transform')
         context.set('transform', e.axis === 'x' ? { ...t, flipX: !t.flipX } : { ...t, flipY: !t.flipY })
       },
-      resetTransform: ({ context }) => context.set('transform', IMAGE_VIEWER_IDENTITY),
+      resetTransform: ({ context, refs }) => {
+        stopInertia(refs, context)
+        context.set('transform', IMAGE_VIEWER_IDENTITY)
+      },
       resetImageStatus: ({ context }) => context.set('imageStatus', 'loading'),
       setImageLoaded: ({ context }) => context.set('imageStatus', 'loaded'),
       setImageError: ({ context }) => context.set('imageStatus', 'error'),
@@ -277,6 +394,8 @@ export const imageViewerMachine = createMachine({
         const session = refs.get('gesture')
         if (!session)
           return
+        // 滑行或回弹途中按下：停在此刻的位置，从这里接着拖
+        stopInertia(refs, context)
         session.add({ pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY })
         rebase(context, refs, session.points())
         context.set('panning', true)
@@ -300,6 +419,7 @@ export const imageViewerMachine = createMachine({
             return
           }
           applyPinch(context, prop, pinch, pinchSnapshot(points[0]!, points[1]!))
+          context.set('transform', resistPan(refs, context.get('transform')))
           return
         }
 
@@ -310,18 +430,27 @@ export const imageViewerMachine = createMachine({
             return
           }
           const t = context.get('transform')
-          context.set('transform', {
+          // 越出范围的那段按橡皮筋衰减：图比视口小时只能拖出一小截，松手弹回居中
+          context.set('transform', resistPan(refs, {
             ...t,
             x: pan.originX + (points[0]!.clientX - pan.startX),
             y: pan.originY + (points[0]!.clientY - pan.startY),
-          })
+          }))
         }
       },
 
-      pointersEnd: ({ context, refs }) => {
+      /**
+       * 最后一根手指离开。最后一段是单指平移时顺着松手速度惯性滑行；双指缩放后抬手、被系统收走时不滑行。
+       * 越出范围的平移都收回来。
+       */
+      pointersEnd: ({ context, refs, event }) => {
+        const e = event.current()
+        const panned = refs.get('panSession') != null
         refs.set('panSession', null)
         refs.set('pinchSession', null)
         context.set('panning', false)
+        const glide = e.type === 'POINTERS.END' && panned && !e.canceled && e.velocity ? e.velocity : { x: 0, y: 0 }
+        settlePan(refs, context, glide)
       },
       panMove: ({ context, event }) => {
         const e = event.current()
@@ -345,12 +474,16 @@ export const imageViewerMachine = createMachine({
         const session = createMultiPointerSession({
           doc: resolveSessionDoc(refs.get('getContentEl')() ?? scope.getDoc().documentElement),
           onChange: points => send({ type: 'POINTERS.CHANGE', points }),
-          onEnd: () => send({ type: 'POINTERS.END' }),
+          onEnd: ({ reason, velocity }) => send({ type: 'POINTERS.END', velocity, canceled: reason === 'pointercancel' }),
         })
         refs.set('gesture', session)
         return () => {
           session.dispose()
           refs.set('gesture', null)
+          const inertia = refs.get('inertia')
+          inertia?.x?.stop()
+          inertia?.y?.stop()
+          refs.set('inertia', null)
         }
       },
 
