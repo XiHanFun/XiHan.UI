@@ -1,10 +1,10 @@
 // 饼图在真实布局里的几何：扇区铺满一整圈、环形中心落在圆心上且不超出内圈，
-// 悬停时其余扇区淡出、被指着的扇区不位移，焦点环画在扇区外，半环的中心在弦的上方。
+// 悬停时其余扇区淡出、被指着的扇区不位移，焦点环画在扇区外，半环的中心在弦的上方；入场时整圈从 12 点顺着扫开。
 // jsdom 量不出这些，只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
-import { createApp, h, nextTick } from 'vue'
+import { createApp, h, nextTick, reactive } from 'vue'
 import { XhPieChartRoot } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -19,14 +19,17 @@ const CHANNELS = [
   { channel: '邮件', visits: 10 },
 ]
 
-function mount(props: Record<string, unknown>, width = 480): void {
+function mount(props: Record<string, unknown>, width = 480): Record<string, unknown> {
   host = document.createElement('div')
   host.style.inlineSize = `${width}px`
   document.body.append(host)
+  // 几何用例看终态；过渡用例显式打开 animated
+  const state = reactive({ data: CHANNELS, nameField: 'channel', valueField: 'visits', animated: false, ...props })
   app = createApp({
-    render: () => h(XhPieChartRoot, { data: CHANNELS, nameField: 'channel', valueField: 'visits', ...props }, { caption: () => '访问来源' }),
+    render: () => h(XhPieChartRoot, state, { caption: () => '访问来源' }),
   })
   app.mount(host)
+  return state
 }
 
 async function settle(): Promise<void> {
@@ -133,5 +136,22 @@ describe('强调与焦点', () => {
     expect(ring.left).toBeLessThanOrEqual(box.left)
     expect(ring.right).toBeGreaterThanOrEqual(box.right)
     expect(ring.bottom).toBeGreaterThanOrEqual(box.bottom)
+  })
+})
+
+describe('过渡', () => {
+  it('入场：整圈从 12 点顺着扫开，外接框还没合成整圆；关掉 animated 直接落到整圈', async () => {
+    const state = mount({ labels: 'none', animated: true })
+    // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响
+    host!.style.cssText += '--xh-motion-duration-move: 4s'
+    await settle()
+    const early = union(all('slice').map(el => el.getBoundingClientRect()))
+    state.animated = false
+    await settle()
+    const final = union(all('slice').map(el => el.getBoundingClientRect()))
+    // 扫开的前一小段落在 12 点右侧：宽度远不到整圆，顶边已经贴着整圆的顶
+    expect(early.right - early.left).toBeLessThan((final.right - final.left) * 0.6)
+    expect(early.left).toBeGreaterThanOrEqual((final.left + final.right) / 2 - 1)
+    expect(Math.abs(early.top - final.top)).toBeLessThanOrEqual(1)
   })
 })

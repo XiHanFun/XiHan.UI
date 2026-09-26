@@ -40,7 +40,8 @@ interface Rig {
 
 async function makeRig(initial: Props, size = { width: 480, height: 320 }): Promise<Rig> {
   const runtime = createVanillaRuntime()
-  const props = runtime.signal<Props>(initial)
+  // 几何用例看终态；过渡另有用例，显式打开 animated
+  const props = runtime.signal<Props>({ animated: false, ...initial })
   const service = createService(pieChartMachine, { props: () => props.get(), runtime })
   const root = document.createElement('figure')
   const viewport = document.createElement('div')
@@ -255,5 +256,50 @@ describe('无障碍', () => {
     expect(api.summary).toBe('5 slices, total 100. Largest: 华东 40.0%. Smallest: 东北 5.0%.')
     expect(api.table.columns.map(c => c.label)).toEqual(['Name', 'Value', 'Share'])
     expect(api.table.rows[0]!.cells.map(c => c.text)).toEqual(['华东', '40', '40.0%'])
+  })
+})
+
+describe('过渡', () => {
+  // 帧与时钟都由假计时器推进：requestAnimationFrame 每 16ms 一帧，performance.now 随之走
+  const FRAMES: Parameters<typeof vi.useFakeTimers>[0] = { toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] }
+
+  afterEach(() => vi.useRealTimers())
+
+  it('入场：扇区都收在 12 点，整圈顺着扫开，标签淡入；走完落到目标场景', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    const target = rig.api().model.scene!.scene
+    const start = slices(rig.api())
+    expect(start.every(a => a.startAngle === 0 && a.endAngle === 0)).toBe(true)
+    expect(rig.api().scene.layers.front.every(m => m.opacity === 0)).toBe(true)
+
+    vi.advanceTimersByTime(80)
+    const mid = slices(rig.api())
+    const last = mid[mid.length - 1]!
+    expect(last.endAngle).toBeGreaterThan(0)
+    expect(last.endAngle).toBeLessThan(Math.PI * 2)
+    // 整圈按同一个比例放开：前一块的终点就是后一块的起点
+    mid.slice(1).forEach((arc, i) => expect(arc.startAngle).toBeCloseTo(mid[i]!.endAngle, 9))
+
+    vi.advanceTimersByTime(1000)
+    expect(rig.api().scene).toBe(target)
+  })
+
+  it('图例隐藏一个扇区：它收拢并淡出，颜色留着，收场期间不可聚焦', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    vi.advanceTimersByTime(1000)
+    rig.api().toggleSeries('华东')
+    vi.advanceTimersByTime(80)
+    const api = rig.api()
+    const leaving = slices(api).find(a => a.datum!.seriesId === '华东')!
+    expect(leaving.exiting).toBe(true)
+    expect(leaving.opacity).toBeLessThan(1)
+    const props = api.getMarkProps(leaving) as Dict
+    expect(props).toMatchObject({ 'aria-hidden': true, 'data-xh-chart-slot': '1' })
+    expect(props.tabindex).toBeUndefined()
+    expect(props.role).toBeUndefined()
+    vi.advanceTimersByTime(1000)
+    expect(ids(rig.api())).not.toContain('华东')
   })
 })

@@ -114,6 +114,8 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   activeKey?: ChartKey | null
   /** 数据重取中：保留上一帧、整体降低不透明度。 */
   pending?: boolean
+  /** 播放过渡动画，缺省 true；false 时直接画终态。 */
+  animated?: boolean
   locale?: string
   translations?: Partial<CartesianChartTranslations>
   onHiddenSeriesChange?: CartesianChartProps['onHiddenSeriesChange']
@@ -141,6 +143,7 @@ export function XhCartesianChartRoot({
   defaultHiddenSeries,
   activeKey,
   pending,
+  animated,
   locale,
   translations,
   onHiddenSeriesChange,
@@ -164,6 +167,7 @@ export function XhCartesianChartRoot({
     defaultHiddenSeries,
     activeKey,
     pending,
+    animated,
     locale,
     translations,
     onHiddenSeriesChange,

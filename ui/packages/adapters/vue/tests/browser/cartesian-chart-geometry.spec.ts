@@ -1,6 +1,7 @@
 // 直角坐标图在真实布局里的几何：柱高与比例尺一致、立在基线上，视口换宽度就重排，
 // 焦点环画在标记外且不越过基线，折线的焦点代理换点后焦点跟过去，绘图区不随 RTL 镜像而图例镜像，
-// 提示框是 frosted 气泡、落在根里。jsdom 量不出这些，只在 Chromium 验证。
+// 提示框是 frosted 气泡、落在根里；入场时柱从基线长出、折线由描线关键帧描出，减弱动效下几何直接到位。
+// jsdom 量不出这些，只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -24,7 +25,8 @@ function mount(props: Record<string, unknown>, width = 480, dir?: 'rtl'): Record
   if (dir)
     host.dir = dir
   document.body.append(host)
-  const state = reactive({ ...props })
+  // 几何用例看终态；过渡用例显式打开 animated
+  const state = reactive({ animated: false, ...props })
   app = createApp({
     render: () => h(XhCartesianChartRoot, state, { caption: () => '月度销售额' }),
   })
@@ -200,5 +202,48 @@ describe('状态', () => {
     expect(Math.abs(empty.top - viewport.top)).toBeLessThanOrEqual(1)
     expect(Math.abs(empty.height - viewport.height)).toBeLessThanOrEqual(1)
     expect(one('caption').getBoundingClientRect().bottom).toBeLessThanOrEqual(viewport.top)
+  })
+})
+
+describe('过渡', () => {
+  // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响
+  const SLOW = '--xh-motion-duration-move: 4s; --xh-motion-duration-enter: 4s'
+  const MIXED = [{ mark: 'bar', x: 'month', y: 'amount' }, { mark: 'line', x: 'month', y: 'amount', id: 'trend' }]
+
+  it('入场：柱从基线长出、底边不动，折线由描线关键帧描出；关掉 animated 直接落到终态', async () => {
+    const state = mount({ data: SALES, series: MIXED, animated: true })
+    host!.style.cssText += SLOW
+    await settle()
+    const early = all('bar').map(el => el.getBoundingClientRect())
+    const line = one('line')
+    expect(line.hasAttribute('data-drawing')).toBe(true)
+    const offset = Number.parseFloat(getComputedStyle(line).strokeDashoffset)
+    expect(offset).toBeGreaterThan(0)
+    expect(offset).toBeLessThan(1)
+
+    state.animated = false
+    await settle()
+    const final = all('bar').map(el => el.getBoundingClientRect())
+    final.forEach((bar, i) => {
+      expect(early[i]!.height).toBeLessThan(bar.height * 0.9)
+      expect(Math.abs(early[i]!.bottom - bar.bottom)).toBeLessThanOrEqual(0.5)
+    })
+    expect(line.hasAttribute('data-drawing')).toBe(false)
+    expect(getComputedStyle(line).strokeDasharray).toBe('none')
+  })
+
+  it('减弱动效：柱第一帧就是终值高度，只淡入；作者放慢了时长折线也不描', async () => {
+    mount({ data: SALES, series: MIXED, animated: true })
+    host!.dataset.motion = 'reduce'
+    host!.style.cssText += SLOW
+    await settle()
+    const early = all('bar').map(el => ({ height: el.getBoundingClientRect().height, opacity: Number(el.getAttribute('opacity')) }))
+    expect(early.every(bar => bar.opacity < 1)).toBe(true)
+    expect(getComputedStyle(one('line')).animationName).toBe('none')
+    app!.unmount()
+    host!.remove()
+    mount({ data: SALES, series: [{ mark: 'bar', x: 'month', y: 'amount' }] })
+    await settle()
+    all('bar').forEach((el, i) => expect(Math.abs(el.getBoundingClientRect().height - early[i]!.height)).toBeLessThanOrEqual(0.5))
   })
 })

@@ -15,6 +15,7 @@ import type {
   CurveName,
   FontSpec,
   KeyedPoint,
+  LineMark,
   Mark,
   NumberFormatSpec,
   PathMark,
@@ -681,6 +682,16 @@ function line(key: string, part: string, x1: number, y1: number, x2: number, y2:
   return { kind: 'path', key, part, d: `M${x1},${y1}L${x2},${y2}` }
 }
 
+/** 网格线画成两点的折线：过渡里按端点插值，刻度换位时跟着滑过去。 */
+function gridLine(key: string, x1: number, y1: number, x2: number, y2: number): LineMark {
+  return { kind: 'line', key, part: 'grid-line', curve: 'linear', points: [{ key: 'a', x: x1, y: y1 }, { key: 'b', x: x2, y: y2 }] }
+}
+
+/** 刻度的身份：按刻度值而不是下标，定义域变了之后同一个值的刻度滑到新位置，新值淡入、旧值淡出。 */
+function tickId(tick: AxisLayout['ticks'][number]): string {
+  return tick.value instanceof Date ? String(tick.value.valueOf()) : String(tick.value)
+}
+
 function axisMarks(
   prefix: string,
   axis: AxisLayout,
@@ -709,11 +720,11 @@ function axisMarks(
       marks.push({ kind: 'path', key: `${prefix}:ticks`, part: 'tick', d })
   }
   const shift = (options.ticks ? tickLength : 0) + labelGap
-  for (const [i, tick] of axis.ticks.entries()) {
+  for (const tick of axis.ticks) {
     if (!tick.visible || !Number.isFinite(tick.offset))
       continue
     tick.lines.forEach((text, n) => {
-      const key = `${prefix}:label:${i}:${n}`
+      const key = `${prefix}:label:${tickId(tick)}:${n}`
       if (position === 'bottom') {
         const y = bottom + shift + n * lineHeight
         marks.push(tick.rotate === 0
@@ -747,23 +758,23 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
   const back: Mark[] = []
   const gridLines: Mark[] = []
   if (spec.yAxis.grid !== false) {
-    for (const [i, tick] of layout.valueAxis.ticks.entries()) {
+    for (const tick of layout.valueAxis.ticks) {
       if (!Number.isFinite(tick.offset))
         continue
       const at = crisp(tick.offset)
       gridLines.push(vertical
-        ? line(`grid:v:${i}`, 'grid-line', plot.x, at, plot.x + plot.width, at)
-        : line(`grid:v:${i}`, 'grid-line', at, plot.y, at, plot.y + plot.height))
+        ? gridLine(`grid:v:${tickId(tick)}`, plot.x, at, plot.x + plot.width, at)
+        : gridLine(`grid:v:${tickId(tick)}`, at, plot.y, at, plot.y + plot.height))
     }
   }
   if (spec.xAxis.grid === true) {
-    for (const [i, tick] of layout.keyAxis.ticks.entries()) {
+    for (const tick of layout.keyAxis.ticks) {
       if (!Number.isFinite(tick.offset))
         continue
       const at = crisp(tick.offset)
       gridLines.push(vertical
-        ? line(`grid:k:${i}`, 'grid-line', at, plot.y, at, plot.y + plot.height)
-        : line(`grid:k:${i}`, 'grid-line', plot.x, at, plot.x + plot.width, at))
+        ? gridLine(`grid:k:${tickId(tick)}`, at, plot.y, at, plot.y + plot.height)
+        : gridLine(`grid:k:${tickId(tick)}`, plot.x, at, plot.x + plot.width, at))
     }
   }
   back.push({ kind: 'group', key: 'grid', part: 'grid', children: gridLines })
@@ -909,6 +920,23 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
 
   const scene = createScene({ version, layers: { back, data }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
   return { layout, scene, info, anchors }
+}
+
+/**
+ * 首次出现从哪一帧起跑：折线原样在场，由描线关键帧从头描到尾；面积在场但全透明，随描线一起淡入；
+ * 柱不在场，从基线长出；坐标轴、点与标签不在场，淡入。
+ */
+export function cartesianEntryScene(target: Scene): Scene {
+  const seed = (marks: readonly Mark[]): Mark[] => marks.flatMap((mark): Mark[] => {
+    if (mark.kind === 'group')
+      return [{ ...mark, children: seed(mark.children) }]
+    if (mark.kind === 'line')
+      return [mark]
+    if (mark.kind === 'area')
+      return [{ ...mark, opacity: 0 }]
+    return []
+  })
+  return createScene({ version: 0, layers: { data: seed(target.layers.data) }, bounds: target.bounds })
 }
 
 /* ---------- 无障碍 ---------- */

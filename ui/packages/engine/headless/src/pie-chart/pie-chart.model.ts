@@ -6,7 +6,7 @@
 // 饼图的管线：规格归一（「其他」合并、色槽）→ 派生（隐藏、角度次序、合计）→ 布局（半径、角度、标签避让）→ 场景 → 无障碍。
 // 每段只记住上一次的输入，悬停、聚焦与提示框开合不换任何一段的输入，整条管线走缓存。
 
-import type { ArcMark, FontSpec, Mark, NumberFormatSpec, PathMark, Scene, TableModel, TextMark, TextMeasurer } from '@xihan-ui/viz'
+import type { ArcMark, FontSpec, LineMark, Mark, NumberFormatSpec, Scene, TableModel, TextMark, TextMeasurer } from '@xihan-ui/viz'
 import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
 import type { PieChartTranslations, PieLabels, PieSort, PieSummary, PieSweep, PieVariant } from './pie-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
@@ -165,14 +165,20 @@ export interface PieSliceGeometry {
   readonly anchor: { readonly x: number, readonly y: number }
 }
 
+/** 绘图区里的一个点（px）。 */
+export interface PiePoint {
+  readonly x: number
+  readonly y: number
+}
+
 export interface PieLabelLayout {
   readonly id: string
   readonly text: string
   readonly x: number
   readonly y: number
   readonly anchor: 'start' | 'middle' | 'end'
-  /** 外侧标签的引导线；内侧标签没有。 */
-  readonly leader: string | null
+  /** 外侧标签的两段式引导线：扇区外沿、拐点、标签列三个点；内侧标签没有。 */
+  readonly leader: readonly [PiePoint, PiePoint, PiePoint] | null
   /** 内侧标签压在扇区色上，字色要跟着色槽取。 */
   readonly inside: boolean
 }
@@ -197,7 +203,7 @@ export interface PieLayout {
   readonly font: FontSpec
 }
 
-function point(cx: number, cy: number, angle: number, radius: number): { x: number, y: number } {
+function point(cx: number, cy: number, angle: number, radius: number): PiePoint {
   const [x, y] = pointRadial(angle, radius)
   return { x: cx + x, y: cy + y }
 }
@@ -310,7 +316,7 @@ export function layoutPie(
           x: right ? x + metrics.labelGap : x - metrics.labelGap,
           y: item.y,
           anchor: right ? 'start' : 'end',
-          leader: `M${from.x},${from.y}L${item.elbow.x},${item.elbow.y}L${x},${item.y}`,
+          leader: [from, item.elbow, { x, y: item.y }],
           inside: false,
         })
       }
@@ -384,7 +390,15 @@ export function pieScene(layout: PieLayout, version: number): PieScene {
   }
   for (const label of layout.labels) {
     if (label.leader) {
-      const leader: PathMark = { kind: 'path', key: `leader:${label.id}`, part: 'leader-line', d: label.leader }
+      // 画成三点的折线而不是路径字符串：过渡里按端点插值，跟着标签一起滑
+      const [from, elbow, end] = label.leader
+      const leader: LineMark = {
+        kind: 'line',
+        key: `leader:${label.id}`,
+        part: 'leader-line',
+        curve: 'linear',
+        points: [{ key: 'from', ...from }, { key: 'elbow', ...elbow }, { key: 'end', ...end }],
+      }
       front.push(leader)
     }
     const text: TextMark = {
@@ -401,6 +415,22 @@ export function pieScene(layout: PieLayout, version: number): PieScene {
   }
   const scene = createScene({ version, layers: { data, front }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
   return { layout, scene, geometry }
+}
+
+/**
+ * 首次出现从哪一帧起跑：扇区都收在整圈的起始角上，起止角一起按比例放开，整圈顺着扫开；
+ * 标签与引导线不在场，淡入。
+ */
+export function pieEntryScene(target: Scene): Scene {
+  const arcs = target.layers.data.filter((mark): mark is ArcMark => mark.kind === 'arc')
+  if (arcs.length === 0)
+    return createScene({ version: 0, layers: {}, bounds: target.bounds })
+  const origin = Math.min(...arcs.map(arc => arc.startAngle))
+  return createScene({
+    version: 0,
+    layers: { data: arcs.map(arc => ({ ...arc, startAngle: origin, endAngle: origin })) },
+    bounds: target.bounds,
+  })
 }
 
 /* ---------- 无障碍 ---------- */

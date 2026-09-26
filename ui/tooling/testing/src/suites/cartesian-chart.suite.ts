@@ -18,7 +18,8 @@ const SERIES = [
   { mark: 'bar', x: 'month', y: 'store', name: '门店' },
 ] as const
 
-const PROPS = { data: DATA, series: SERIES, locale: 'en-US' } as const
+// 用例看静止时的 DOM 契约：过渡关掉，另有一条用例单看收场
+const PROPS = { data: DATA, series: SERIES, locale: 'en-US', animated: false } as const
 
 /** 柱的 part 下标：系列分组按图例次序，组内按类目次序。 */
 function bar(series: 'online' | 'store', month: 0 | 1 | 2): string {
@@ -208,6 +209,23 @@ const cases: readonly ConformanceCase[] = [
       counts: { bar: 6 },
       parts: { root: { 'aria-busy': 'true', 'data-loading': '' } },
     },
+  },
+  {
+    name: '过渡：图例隐藏的系列先收场，收场期间不进可访问树，走完才从绘图区移除',
+    spec: { adr: 'chart-transition' },
+    props: { animated: true },
+    skipParity: '过渡按真实时钟逐帧推进，中间帧的几何随各适配器的提交时机而不同',
+    steps: [
+      {
+        kind: 'click',
+        part: 'legend-item[1]',
+        expect: {
+          counts: { series: 2 },
+          parts: { series: [{ 'aria-hidden': null, 'role': 'graphics-object' }, { 'aria-hidden': 'true', 'role': null }] },
+        },
+      },
+      { kind: 'settle', until: { absent: 'series[1]' }, expect: { counts: { series: 1, bar: 3 } } },
+    ],
   },
   {
     name: '没有数据：空态显示，绘图区没有数据标记',

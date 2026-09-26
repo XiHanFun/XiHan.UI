@@ -10366,6 +10366,7 @@
     ],
     "cartesian-chart": [
       "activeKey",
+      "animated",
       "data",
       "defaultHiddenSeries",
       "hiddenSeries",
@@ -11355,6 +11356,7 @@
     ],
     "pie-chart": [
       "activeKey",
+      "animated",
       "data",
       "defaultHiddenSeries",
       "format",
@@ -17229,6 +17231,7 @@
     "xh-disclosure-collapse",
     "xh-disclosure-expand",
     "xh-download-trigger-content-hide",
+    "xh-draw",
     "xh-drop-in",
     "xh-fade-in",
     "xh-fade-out",
@@ -17512,6 +17515,7 @@
     "xh-cartesian-chart": {
       "attributes": [
         "active-key",
+        "animated",
         "locale",
         "orientation",
         "pending",
@@ -18676,6 +18680,7 @@
     "xh-pie-chart": {
       "attributes": [
         "active-key",
+        "animated",
         "labels",
         "locale",
         "max-slices",

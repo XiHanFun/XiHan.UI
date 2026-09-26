@@ -253,6 +253,8 @@ export interface XhPieChartRootProps extends Omit<ComponentPropsWithRef<'figure'
   activeKey?: ChartKey | null
   /** 数据重取中：保留上一帧、整体降低不透明度。 */
   pending?: boolean
+  /** 播放过渡动画，缺省 true；false 时直接画终态。 */
+  animated?: boolean
   locale?: string
   translations?: Partial<PieChartTranslations>
   onHiddenSeriesChange?: PieChartProps['onHiddenSeriesChange']
@@ -286,6 +288,7 @@ export function XhPieChartRoot({
   defaultHiddenSeries,
   activeKey,
   pending,
+  animated,
   locale,
   translations,
   onHiddenSeriesChange,
@@ -314,6 +317,7 @@ export function XhPieChartRoot({
     defaultHiddenSeries,
     activeKey,
     pending,
+    animated,
     locale,
     translations,
     onHiddenSeriesChange,

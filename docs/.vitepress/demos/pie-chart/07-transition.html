@@ -1,0 +1,56 @@
+<!-- 数据更新 | 换一组数据时扇区从当前角度走到新角度；关掉动画后直接画终态 -->
+<div style="display: grid; gap: var(--xh-space-4); width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-4)">
+    <xh-button id="pie-chart-transition-next">
+      <button data-xh-part="root">换一组数据</button>
+    </xh-button>
+    <label style="display: flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch id="pie-chart-transition-animated" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      动画
+    </label>
+  </div>
+  <!-- 按数据次序排列：扇区不随数值换位，只在原处伸缩 -->
+  <xh-pie-chart id="pie-chart-transition" name-field="channel" value-field="visits" sort="none">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption" id="pie-chart-transition-caption"></figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="center"></div>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-pie-chart>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("pie-chart-transition");
+  const caption = document.getElementById("pie-chart-transition-caption");
+  const channels = ["搜索", "直接访问", "社交", "邮件"];
+  const weeks = [
+    { week: 1, visits: [4200, 2800, 1800, 1200] },
+    { week: 2, visits: [3000, 3400, 2400, 1200] },
+    { week: 3, visits: [3600, 2200, 3000, 1600] },
+  ];
+  let index = 0;
+
+  function show() {
+    const current = weeks[index];
+    caption.textContent = `第 ${current.week} 周访问来源`;
+    chart.data = channels.map((channel, i) => ({ channel, visits: current.visits[i] }));
+  }
+
+  show();
+  document.getElementById("pie-chart-transition-next").addEventListener("click", () => {
+    index = (index + 1) % weeks.length;
+    show();
+  });
+  document.getElementById("pie-chart-transition-animated").addEventListener("checked-change", (event) => {
+    chart.animated = event.detail.checked;
+  });
+</script>

@@ -16,7 +16,7 @@ import {
   trackChartViewport,
 } from '../shared/chart'
 import { pieActive, pieDetails, pieMarkKey, pieModelOf, pieTranslations } from './pie-chart.logic'
-import { createPiePipeline } from './pie-chart.model'
+import { createPiePipeline, pieEntryScene } from './pie-chart.model'
 
 const { createMachine } = setup<PieChartSchema>()
 
@@ -26,11 +26,14 @@ export const pieChartMachine = createMachine({
   name: 'pie-chart',
   context: params => chartBaseContext(params),
   refs: () => ({ ...chartBaseRefs(), pipeline: createPiePipeline() }),
+  computed: {
+    scene: params => pieModelOf(params).scene?.scene ?? null,
+  },
   initialState: () => 'idle',
   // 建机器就核一遍规格：watch 只在依赖变化时跑，挂载那一刻的不合法组合得在这里报
   entry: ['reportIssues'],
   effects: ['trackViewport'],
-  watch: ({ track, context, action, prop }) => {
+  watch: ({ track, context, action, prop, computed }) => {
     // 激活的扇区由这几处合成，任一变都要重算；合成结果没变时 notifyActive 自己会闭嘴
     track([
       context.dep('hover'),
@@ -50,6 +53,8 @@ export const pieChartMachine = createMachine({
       () => prop('valueField'),
       () => prop('maxSlices'),
     ], () => action(['reportIssues']))
+    // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
+    track([() => computed('scene'), () => prop('animated')], () => action(['syncTransition']))
   },
   on: chartBaseTransitions<PieChartSchema>(),
   states: {
@@ -59,6 +64,8 @@ export const pieChartMachine = createMachine({
     actions: {
       ...chartBaseActions<PieChartSchema>({
         markKeyOf: (params, ref) => pieMarkKey(pieModelOf(params), ref),
+        // 扇区是同一整圈里的几块，错开就断成了几段，整圈一起扫开
+        transition: { entry: pieEntryScene, stagger: false },
       }),
       notifyActive: (params) => {
         const model = pieModelOf(params)

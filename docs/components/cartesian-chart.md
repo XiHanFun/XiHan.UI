@@ -66,6 +66,12 @@ stackOffset: 'expand' 把每个键归一到 100%，看的是构成随时间的�
 
 <XhDemo src="cartesian-chart/08-linked" />
 
+### 数据更新
+
+换一组数据时柱从当前高度走到新高度；关掉动画后直接画终态
+
+<XhDemo src="cartesian-chart/09-transition" />
+
 ## 设计指引
 
 ### 何时使用
@@ -105,6 +111,9 @@ stackOffset: 'expand' 把每个键归一到 100%，看的是构成随时间的�
 - 坐标轴标签字体、柱的最大厚度、线宽、点的直径等几何量的真源是 CSS 组件槽：组件从根的计算样式读取它们再计算几何，改写组件槽就能改变几何，不需要布局属性。密度档切换时重新读取。
 - 尺寸由视口决定：宽度随容器，高度取 `--xh-cartesian-chart-height`（缺省 `--xh-chart-height`）。视口尺寸变化时重新布局，服务端与首帧只输出空的绘图区、不占位跳动。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`，不闪骨架，也不跳布局。
+- 首次出现时播放入场：柱沿数值轴从基线长出，折线从头描到尾，面积、点、坐标轴与标签淡入，多个系列按图例次序错开（至多 5 步）。之后的数据变化与图例切换从当前位置插值到新位置：留下的柱原地伸缩，新增的柱从基线长出，隐藏的系列收回基线并淡出后才移除；坐标轴刻度随之移动。`pending` 结束后到来的新数据按更新处理，不再重播入场。
+- `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化与字体加载完成后的重排不播过渡。
+- 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：在图或它的容器上改写 `--xh-motion-duration-move`（缺省 200ms），例如 `style="--xh-motion-duration-move: 600ms"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。折线的描出用同一个时长。
 - 没有数据或全部系列被隐藏时显示空态，文字取 `translations.emptyText`；坐标轴在全部隐藏时保留，图例仍可把系列点回来。
 - 多张图接到同一个受控的 `activeKey` 上时，十字准线与提示框在同一个键上一起指示。从外部写入的键不触发 `onDatumActive`，只有本图上的指针与键盘才触发，联动不会来回回调。
 - `onDatumPress` 只报告被点击或按下 Enter / Space 的数据，图表不内建选中态。
@@ -181,6 +190,7 @@ stackOffset: 'expand' 把每个键归一到 100%，看的是构成随时间的�
 | `XhCartesianChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
 | `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
 | `XhCartesianChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
+| `XhCartesianChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
 | `XhCartesianChartRoot` | `locale` | `string` |  |  |
 | `XhCartesianChartRoot` | `translations` | `Partial<CartesianChartTranslations>` |  |  |
 | `XhCartesianChartRoot` | `onHiddenSeriesChange` | `CartesianChartProps['onHiddenSeriesChange']` |  |  |
@@ -285,10 +295,10 @@ stackOffset: 'expand' 把每个键归一到 100%，看的是构成随时间的�
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'graphics-document' |
 | `tooltip` | `aria-hidden` | 'true' |
-| `mark` | `aria-hidden` | 'true' |
-| `mark` | `aria-label` | spec?.name |
-| `mark` | `aria-roledescription` | translations.seriesRoleDescription |
-| `mark` | `role` | 'graphics-object' |
+| `mark` | `aria-hidden` | mark.exiting \|\| undefined |
+| `mark` | `aria-label` | undefined \| spec?.name |
+| `mark` | `aria-roledescription` | undefined \| translations.seriesRoleDescription |
+| `mark` | `role` | undefined \| 'graphics-object' |
 
 - 根是 `<figure>`，可访问名称来自 `caption`（`<figcaption>`）；不放标题时在根上写 `aria-label`。只有两者都没有时开发期报 `chart.missing-name`。
 - 绘图区是 `role="graphics-document"`，`aria-roledescription` 取 `translations.chartRoleDescription`（缺省 chart），`aria-describedby` 指向组件生成的摘要。
@@ -300,6 +310,7 @@ stackOffset: 'expand' 把每个键归一到 100%，看的是构成随时间的�
 - 图例是 `role="toolbar"`，名称取 `translations.legendLabel`；每一项是 `<button aria-pressed>`，按下表示系列可见。图例整体只占一个 Tab 位，进入后左右键在项之间移动。
 - 提示框 `aria-hidden`：它显示的内容与数据的可访问名称是同一份，读两遍反而干扰。
 - Escape 收起提示框但不拦截按键，外层浮层的关闭仍由其自身处理。
+- 过渡只改画面：数据的名称、摘要、数据表与焦点次序在数据变化的那一刻就按新数据更新；收场中的标记 `aria-hidden`、不可聚焦，也不响应指针。
 - 颜色不是区分系列的唯一线索：图例文字、提示框中的系列名与数据名称都写出系列；折线与柱的色标形状也不同。
 
 ## 样式参考
@@ -337,6 +348,7 @@ stackOffset: 'expand' 把每个键归一到 100%，看的是构成随时间的�
 | `tooltip-swatch` | `data-mark` | 'line' \| 'bar' |
 | `mark` | `data-axis` | mark.key.slice('axis:'.length) \| undefined |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
+| `mark` | `data-drawing` | ''（条件成立时才出现） |
 | `mark` | `data-mark` | spec?.mark |
 | `mark` | `data-series-id` | mark.key.slice('series:'.length) |
 | `mark` | `data-tone` | spec?.tone |
@@ -371,11 +383,11 @@ stackOffset: 'expand' 把每个键归一到 100%，看的是构成随时间的�
 
 ### 动效
 
-动效角色：状态（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
 
-`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-draw` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 
