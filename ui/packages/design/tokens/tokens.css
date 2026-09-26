@@ -408,6 +408,7 @@
     --xh-motion-travel-opacity: 1;
     --xh-motion-scale-enter: 0.96;
     --xh-motion-scale-exit: 0.98;
+    --xh-motion-scale-stack: 0.95;
     --xh-motion-scale-press: 0.97;
     --xh-motion-scale-drag: 1.12;
     --xh-motion-scale-squash: 0.86;
@@ -1153,6 +1154,7 @@
       --xh-motion-travel-opacity: 0;
       --xh-motion-scale-enter: 1;
       --xh-motion-scale-exit: 1;
+      --xh-motion-scale-stack: 1;
       --xh-motion-scale-press: 1;
       --xh-motion-scale-breathe: 1;
       --xh-motion-scale-halo: 1;
@@ -1178,6 +1180,7 @@
     --xh-motion-travel-opacity: 0;
     --xh-motion-scale-enter: 1;
     --xh-motion-scale-exit: 1;
+    --xh-motion-scale-stack: 1;
     --xh-motion-scale-press: 1;
     --xh-motion-scale-breathe: 1;
     --xh-motion-scale-halo: 1;
@@ -1205,6 +1208,7 @@
     --xh-motion-travel-opacity: 1;
     --xh-motion-scale-enter: 0.96;
     --xh-motion-scale-exit: 0.98;
+    --xh-motion-scale-stack: 0.95;
     --xh-motion-scale-press: 0.97;
     --xh-motion-scale-drag: 1.12;
     --xh-motion-scale-squash: 0.86;

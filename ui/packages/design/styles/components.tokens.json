@@ -70970,7 +70970,7 @@
         "default"
       ],
       "defaultToken": [
-        "1"
+        "--xh-_toast-stack-scale"
       ],
       "visibility": "public",
       "description": "toast 的 *、root 部件 --xh-toast-scale、transform 覆盖槽。"

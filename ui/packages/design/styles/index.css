@@ -37494,13 +37494,13 @@
     from {
       opacity: 0;
       transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - var(--xh-motion-travel))))
-        scale(var(--xh-toast-scale-collapsed, 1));
+        scale(var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale)));
     }
 
     to {
       opacity: 1;
       transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-offset-collapsed, 0px)))
-        scale(var(--xh-toast-scale-collapsed, 1));
+        scale(var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale)));
     }
   }
 
@@ -37575,8 +37575,11 @@
     /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档 */
     --xh-icon-size: var(--xh-toast-icon-size, var(--xh-glyph-size-md));
 
+    /* 叠在后面的逐层收拢：层深由堆叠控制器写进来，每往后一层乘一次 --xh-motion-scale-stack。
+       减弱动效下那支令牌为 1，层与层只靠位移分开 */
+    --xh-_toast-stack-scale: max(0, 1 - var(--xh-_toast-depth, 0) * (1 - var(--xh-motion-scale-stack)));
     --xh-toast-y: var(--xh-toast-offset-collapsed, 0px);
-    --xh-toast-scale: var(--xh-toast-scale-collapsed, 1);
+    --xh-toast-scale: var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale));
 
     position: relative;
     display: flex;
