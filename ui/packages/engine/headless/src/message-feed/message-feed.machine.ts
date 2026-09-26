@@ -7,9 +7,11 @@
 
 import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { MessageFeedSchema } from './message-feed.types'
-import { createStickToBottom, setup } from '@xihan-ui/core'
+import { createStickToBottom, setup, trackArrivals } from '@xihan-ui/core'
 
 const { createMachine } = setup<MessageFeedSchema>()
+
+const ITEM_SELECTOR = '[data-scope="message-feed"][data-part="item"]'
 
 // 一个状态，逻辑全在 context 与 actions 里：粘底两个布尔由句柄写，锚点由条目的 onFocus 写。
 // 四个 cell 都是内部瞬态，没有受控入口，也就没有 CONTROLLED.* 那一套。
@@ -24,6 +26,7 @@ export const messageFeedMachine = createMachine({
     sticking: cell<boolean>(() => ({ defaultValue: true })),
     focusedId: cell<string | null>(() => ({ defaultValue: null })),
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    arrivalsTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -33,8 +36,8 @@ export const messageFeedMachine = createMachine({
     stick: null,
   }),
   initialState: () => 'idle',
-  // 粘底副作用全程挂载
-  effects: ['trackStickToBottom'],
+  // 粘底与条目到达两路副作用全程挂载
+  effects: ['trackStickToBottom', 'trackArrivals'],
   states: {
     idle: {
       on: {
@@ -44,6 +47,7 @@ export const messageFeedMachine = createMachine({
         'FEED.BLUR': { actions: ['clearFocusedId'] },
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
+        'ARRIVALS.TRACKED': { actions: ['markArrivalsTracked'] },
       },
     },
   },
@@ -65,6 +69,7 @@ export const messageFeedMachine = createMachine({
         // 句柄只在值变化时回报，此处直接转发
         prop('onStickChange')?.({ atBottom: e.atBottom, sticking: e.sticking })
       },
+      markArrivalsTracked: ({ context }) => context.set('arrivalsTracked', true),
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
 
@@ -114,6 +119,31 @@ export const messageFeedMachine = createMachine({
           handle?.dispose()
           // 句柄已释放，同时清掉 ref
           refs.set('stick', null)
+        }
+      },
+
+      /**
+       * 条目到达：接上时已在的条目是历史消息，打上 data-instant 直接呈现；之后同一批新到的消息
+       * 按到达顺序错开进场。React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，
+       * 仍在首帧绘制之前。
+       */
+      trackArrivals: ({ refs, scope, send, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            if (disposed)
+              return
+            const list = refs.get('getContentEl')()
+            if (!list)
+              return
+            stop = trackArrivals(list, { item: ITEM_SELECTOR })
+            send({ type: 'ARRIVALS.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
         }
       },
     },

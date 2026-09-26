@@ -17,6 +17,7 @@ const CONTENT = 400
 interface Rig {
   service: Service<MessageFeedSchema>
   viewport: HTMLElement
+  list: HTMLElement
   api: () => MessageFeedApi
   stop: () => void
 }
@@ -43,7 +44,7 @@ function stubBox(el: HTMLElement): void {
 
 const rigs: Rig[] = []
 
-function mount(initial: Props = {}): Rig {
+function mount(initial: Props = {}, history = 0): Rig {
   const runtime = createVanillaRuntime()
   const props = runtime.signal<Props>({ ...initial })
   const idGen = createCounterIdGenerator()
@@ -53,6 +54,8 @@ function mount(initial: Props = {}): Rig {
   const root = document.createElement('div')
   const viewport = document.createElement('div')
   const list = document.createElement('div')
+  for (let i = 0; i < history; i++)
+    list.appendChild(message(`h${i}`))
   viewport.appendChild(list)
   root.appendChild(viewport)
   document.body.appendChild(root)
@@ -67,6 +70,7 @@ function mount(initial: Props = {}): Rig {
   const rig: Rig = {
     service,
     viewport,
+    list,
     api: () => connectMessageFeed(service, normalizeProps),
     stop: () => {
       runtime.stop()
@@ -82,11 +86,43 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
+/** 一条作者渲染的消息节点。 */
+function message(id: string): HTMLElement {
+  const el = document.createElement('article')
+  el.dataset.scope = 'message-feed'
+  el.dataset.part = 'item'
+  el.id = id
+  return el
+}
+
 /** 等粘底句柄创建完成，它推迟一拍才建。 */
 async function settle(): Promise<void> {
   await new Promise<void>(resolve => queueMicrotask(resolve))
   await new Promise<void>(resolve => queueMicrotask(resolve))
 }
+
+describe('条目到达', () => {
+  it('接上之前 list 带 data-instant；接上后标记转到已在的历史消息上，list 撤掉', async () => {
+    const rig = mount({}, 2)
+    expect((rig.api().getListProps() as Dict)['data-instant']).toBe('')
+    await settle()
+    expect((rig.api().getListProps() as Dict)['data-instant']).toBeUndefined()
+    for (const el of rig.list.children)
+      expect(el.hasAttribute('data-instant')).toBe(true)
+  })
+
+  it('之后新到的一批按到达顺序错开：不看它排在第几条', async () => {
+    const rig = mount({}, 6)
+    await settle()
+    const reply = message('reply')
+    const next = message('next')
+    rig.list.append(reply, next)
+    await settle()
+    expect(reply.hasAttribute('data-instant')).toBe(false)
+    expect(reply.style.getPropertyValue('--xh-_stagger-index')).toBe('0')
+    expect(next.style.getPropertyValue('--xh-_stagger-index')).toBe('1')
+  })
+})
 
 describe('粘底', () => {
   it('初值当作在底且粘附：真实几何由句柄的第一次回报补上，不在挂载那一刻读', () => {
