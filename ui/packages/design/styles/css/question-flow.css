@@ -249,7 +249,7 @@
     inline-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));
     block-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

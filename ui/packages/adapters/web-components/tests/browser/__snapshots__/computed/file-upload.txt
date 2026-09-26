@@ -25,7 +25,7 @@ line-height: 12px
 font-weight: 400
 color: oklch(0.52 0.006 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: background, scale
+transition-property: background-color, scale
 transition-duration: 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
@@ -235,7 +235,7 @@ line-height: 14px
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: oklch(1 0 0)
-transition-property: background, box-shadow, scale
+transition-property: background-color, box-shadow, scale
 transition-duration: 0.12s, 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none

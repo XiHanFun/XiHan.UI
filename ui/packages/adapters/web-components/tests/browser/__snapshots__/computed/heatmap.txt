@@ -25,7 +25,7 @@ line-height: 12px
 font-weight: 400
 color: oklch(0.439 0.006 258)
 background-color: oklab(0.967258 5.96046e-8 0)
-transition-property: background
+transition-property: background-color
 transition-duration: 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1)
 animation-name: none

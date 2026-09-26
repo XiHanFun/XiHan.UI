@@ -61,7 +61,7 @@
     background: var(--xh-_resizable-indicator-color);
     pointer-events: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

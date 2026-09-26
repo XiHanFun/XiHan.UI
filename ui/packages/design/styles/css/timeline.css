@@ -107,7 +107,7 @@
     /* 语气色由每条自己的数据给，同一条的语气改了（事情办成了、出错了）走一遍过渡，
        整列圆点不在数据回来的那一帧集体跳色 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

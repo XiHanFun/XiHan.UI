@@ -168,7 +168,7 @@
     inline-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

@@ -207,7 +207,7 @@
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-none);
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -325,7 +325,7 @@
     block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-steps-separator-radius, var(--xh-shape-pill));
     background: var(--xh-steps-separator-bg, var(--xh-border-default));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='steps'][data-part='separator'][hidden] {

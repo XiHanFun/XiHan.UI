@@ -18,6 +18,10 @@
 //
 // 逐项判，不逐条判：一条 transition 可以列多项，`inset-block-start` 与 `scale` 同列时两项各判各的。
 //
+// 书写另核一条：transition 列表（简写与 transition-property 长写，皮肤与家族配方）只写长名。
+// 简写会把同组的属性一起挂上过渡，计算样式里的 transition-property 也对不上真正在动的那一个；
+// background 与 background-color 这类混写，同一种换面在不同皮肤里读出两种名字。
+//
 // animation 另核三条：
 //   时长 —— 关键帧里的几何量写的是字面量（fr / % / deg / px…）而不是幅度令牌时，不许取 micro / enter / exit；
 //           只由 --xh-motion-distance-* / --xh-motion-scale-* / --xh-motion-travel 驱动的出现类关键帧，
@@ -213,6 +217,34 @@ function hasLiteralGeometry(value) {
 }
 
 const TRANSITION_DECL = /(?<![\w-])transition\s*:([^;{}]+)[;}]/g
+const TRANSITION_PROPERTY_DECL = /(?<![\w-])transition-property\s*:([^;{}]+)[;}]/g
+
+/** transition 列表里不许出现的简写 → 该写的长名。 */
+const LONGHAND = {
+  background: 'background-color',
+  border: 'border-color',
+  outline: 'outline-color',
+}
+
+/** 书写核对：transition 列表逐项只写长名。 */
+function checkLonghand(label, css) {
+  const out = []
+  let count = 0
+  for (const decl of [TRANSITION_DECL, TRANSITION_PROPERTY_DECL]) {
+    for (const m of css.matchAll(decl)) {
+      const line = css.slice(0, m.index).split('\n').length
+      for (const item of splitTopLevel(m[1])) {
+        const prop = animatedProp(item)
+        if (!prop || prop === 'none')
+          continue
+        count++
+        if (prop in LONGHAND)
+          out.push(`${label}:${line}  ${item}\n    —— transition 列表写长名：${prop} 是简写，写 ${LONGHAND[prop]}`)
+      }
+    }
+  }
+  return { problems: out, count }
+}
 const ANIMATION_DECL = /(?<![\w-])animation\s*:([^;{}]+)[;}]/g
 
 /** 从 `{` 出发找到配对的 `}`。 */
@@ -330,11 +362,15 @@ const relationSeen = new Set()
 let checked = 0
 let animations = 0
 let durationChecked = 0
+let longhandChecked = 0
 
 for (const [file, css] of familySources) {
   const result = checkDurations(`family/${file}`, css, familyKeyframes.get(file))
   problems.push(...result.problems)
   durationChecked += result.count
+  const longhand = checkLonghand(`family/${file}`, css)
+  problems.push(...longhand.problems)
+  longhandChecked += longhand.count
 }
 
 for (const file of files) {
@@ -351,6 +387,9 @@ for (const file of files) {
   const durations = checkDurations(file, css, keyframes)
   problems.push(...durations.problems)
   durationChecked += durations.count
+  const longhand = checkLonghand(file, css)
+  problems.push(...longhand.problems)
+  longhandChecked += longhand.count
 
   const relation = OVERLAY_RELATION[comp]
   /** 一段动画：自己的关键帧、时长与曲线。一条 animation 并列几段时逐段核。 */
@@ -448,7 +487,7 @@ for (const comp of Object.keys(OVERLAY_RELATION)) {
 }
 
 if (problems.length) {
-  console.error('[check-motion-role] ✗ 几何类过渡的曲线或时长档位选错：')
+  console.error('[check-motion-role] ✗ 过渡的曲线、时长档位或书写不对：')
   for (const p of problems)
     console.error(`  ${p}`)
   process.exit(1)
@@ -457,5 +496,6 @@ if (problems.length) {
 console.log(
   `[check-motion-role] 通过：${files.length} 份皮肤 · ${checked} 项几何类过渡各按角色走 -continuous / -enter-strong / -release（例外登记 ${seen.size} 处）`
   + ` · ${durationChecked} 处几何类时长（含家族配方、长写与字面几何量的关键帧）都不取 micro / enter / exit`
+  + ` · ${longhandChecked} 项过渡都写长名`
   + ` · ${animations} 条 animation 里 ${relationSeen.size} 个浮层组件的进出场关键帧与锚定关系相符，大尺度待办 ${slideBacklog.pending} 处`,
 )

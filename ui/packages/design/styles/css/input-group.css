@@ -40,7 +40,7 @@
     /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
     max-inline-size: 100%;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

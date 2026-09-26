@@ -44,7 +44,7 @@
     color: var(--xh-toolbar-fg, var(--xh-fg-default));
     /* 整条置灰与恢复是一次状态切换，底色与字色淡着换，不硬切 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

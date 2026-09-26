@@ -98,7 +98,7 @@
     align-items: center;
     justify-content: center;
     background: var(--xh-splitter-trigger-bg, var(--xh-border-default));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='splitter'][data-part='resize-trigger'][data-orientation='horizontal'] {

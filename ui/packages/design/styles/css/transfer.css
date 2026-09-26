@@ -360,7 +360,7 @@
     font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-_transfer-box) * 0.75));
     line-height: var(--xh-leading-none);
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

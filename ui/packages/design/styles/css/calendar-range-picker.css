@@ -252,7 +252,7 @@
     inset-block: var(--xh-calendar-range-picker-cell-gap, var(--xh-space-0_5));
     inset-inline: 0;
     background: var(--xh-calendar-range-picker-range-bg, var(--xh-bg-brand-subtle));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 行首与行尾收圆：区间跨周时每一行各是一条两头圆的横杠。

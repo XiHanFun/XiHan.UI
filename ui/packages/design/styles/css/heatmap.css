@@ -210,7 +210,7 @@
     /* 空格与浅档在浅色底上几乎没有边界，描一圈极淡的线把方格勾出来。
        这一档不能取 border-subtle：它与空格底色 bg-subtle 是同一个原色，描了等于没描 */
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 错列打在本行第一个格子上：打在行上会连行首的星期名一起往后推，
