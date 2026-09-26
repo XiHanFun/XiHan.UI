@@ -32,7 +32,7 @@ export {
 } from './components/anchor/anchor'
 export { useAnchor } from './components/anchor/use-anchor'
 export type { AnchorContext } from './components/anchor/use-anchor'
-export { XhApprovalApproveTrigger, XhApprovalDenyTrigger, XhApprovalDescription, XhApprovalFooter, XhApprovalGroup, XhApprovalItem, XhApprovalItemIndicator, XhApprovalItemText, XhApprovalLiveRegion, XhApprovalNote, XhApprovalResult, XhApprovalRoot, XhApprovalTimer, XhApprovalTitle } from './components/approval/approval'
+export { XhApprovalApproveTrigger, XhApprovalDenyTrigger, XhApprovalDescription, XhApprovalFooter, XhApprovalGroup, XhApprovalItem, XhApprovalItemIndicator, XhApprovalItemText, XhApprovalLiveRegion, XhApprovalNote, XhApprovalResult, XhApprovalRoot, XhApprovalStatusIndicator, XhApprovalTimer, XhApprovalTitle } from './components/approval/approval'
 export type { ApprovalRootSlotProps, ApprovalScopeSlotProps } from './components/approval/approval'
 export { provideApproval, useApprovalContext } from './components/approval/context'
 export { useApproval } from './components/approval/use-approval'

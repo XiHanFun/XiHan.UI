@@ -88,7 +88,7 @@ export {
   XhApprovalNote,
   XhApprovalResult,
   XhApprovalRoot,
- 
+  XhApprovalStatusIndicator,
   XhApprovalTimer,
   XhApprovalTitle,
 } from './components/approval/approval'
@@ -107,6 +107,7 @@ export type {
   XhApprovalNoteProps,
   XhApprovalResultProps,
   XhApprovalRootProps,
+  XhApprovalStatusIndicatorProps,
   XhApprovalTimerProps,
   XhApprovalTitleProps,
 } from './components/approval/approval'

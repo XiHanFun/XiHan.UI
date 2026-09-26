@@ -60,6 +60,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart item-indicator - 勾选记号，对读屏隐藏
  * @csspart item-text - 授权项文字，位于勾选项内因而构成它的可及名
  * @csspart note - 附在判定上的一段自由文本
+ * @csspart status-indicator - 待决时的呼吸点，放在标题旁；判过即收，对读屏隐藏
  * @csspart timer - 剩余时间，对读屏隐藏
  * @csspart result - 判定落定后才显示的结果条，对读屏隐藏
  * @csspart actions - 排布两个按钮的动作行
@@ -164,6 +165,13 @@ export class XhApprovalElement extends XhElement {
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('group', api.getGroupProps() as Record<string, unknown>)
     put('note', api.getNoteProps() as Record<string, unknown>)
+    const indicator = this.getPart('status-indicator')
+    if (indicator) {
+      const props = api.getStatusIndicatorProps() as Record<string, unknown>
+      this.spreader.spread(indicator, props)
+      // Light DOM 常驻，WC 自管可见性：作者层声明了 display 时光靠 hidden 属性收不起来
+      this.setPartHidden(indicator, props.hidden === true)
+    }
     put('timer', api.getTimerProps() as Record<string, unknown>)
     put('result', api.getResultProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)

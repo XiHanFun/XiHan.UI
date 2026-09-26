@@ -13,6 +13,7 @@ import {
   XhApprovalLiveRegion,
   XhApprovalResult,
   XhApprovalRoot,
+  XhApprovalStatusIndicator,
   XhApprovalTitle,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -34,6 +35,8 @@ const decided = ref("");
       tone="warning"
       @decision="decided = `${$event.decision}（来源 ${$event.source}，范围 ${$event.scopes.join('、') || '无'}）`"
     >
+      <!-- 待决时右上角的呼吸点，判过即收 -->
+      <XhApprovalStatusIndicator />
       <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
       <XhApprovalDescription>它想读一遍 src/ 并写回改动。</XhApprovalDescription>
       <XhApprovalGroup>

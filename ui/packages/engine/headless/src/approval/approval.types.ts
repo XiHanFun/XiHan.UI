@@ -165,6 +165,8 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   setNote: (next: string) => void
   isScopeGranted: (value: string) => boolean
   getRootProps: () => T['element']
+  /** 待决时的呼吸点：判过即收，对读屏隐藏。 */
+  getStatusIndicatorProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
   getLiveRegionProps: () => T['element']
