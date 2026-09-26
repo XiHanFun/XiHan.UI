@@ -14,15 +14,15 @@ import { cubicBezier, easing, resolveEasing } from "@xihan-ui/motion";
 easing.easeOut; // 'cubic-bezier(0, 0, 0.2, 1)'
 
 // 名字、CSS 缓动函数、函数三种写法统一成函数
-resolveEasing("easeOut")(0.5); // 0.79…
+resolveEasing("easeOut")(0.5); // 0.84…
 resolveEasing("cubic-bezier(0.4, 0, 0.2, 1)")(0.5);
 resolveEasing("steps(4)")(0.5); // 0.5
 resolveEasing(t => t * t)(0.5); // 0.25
 ```
 
-十条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack` `sineInOut`，CSS 关键字 `linear`，以及没有令牌对应的 `emphasized`（表现性进场，`@xihan-ui/animations` 的预设使用）。
+十条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack` `sineInOut` `emphasized`（表现性进场，语义令牌 `--xh-motion-ease-emphasis`，`@xihan-ui/animations` 的预设使用），以及 CSS 关键字 `linear`。
 
-三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `durations.slow`。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
+三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
 
 字符串先查命名缓动，查不到再按 CSS 缓动函数的语法解释：`linear`、`ease` / `ease-in` / `ease-out` / `ease-in-out`、`step-start` / `step-end`、`cubic-bezier()`、`steps()`、`linear()`，取值与浏览器一致，所以 `readMotion` 读到样式里改写成任何合法缓动都能换成函数。CSS 关键字 `ease-out` 与命名缓动 `easeOut` 是两条曲线。认不出的写法抛 `TypeError`，消息里列出可用写法：写法可能来自 DOM 特性或后端配置，拼错的名字若悄悄按匀速播放，比报错更难察觉。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
 
@@ -42,7 +42,9 @@ const spec = {
 };
 ```
 
-计算样式里已经算进作者对组件槽的覆盖、容器上的 `data-motion` 与系统的减弱动效偏好，减弱动效下几何类时长读到的就是 1ms。读不到时（服务端、未加载样式的测试环境）取与令牌同值的常量 `motionDurations` / `motionEasings`，并按元素判断是否减弱。每次调用读一次计算样式，在动画开始前调用即可。
+计算样式里已经算进作者对组件槽的覆盖、容器上的 `data-motion` 与系统的减弱动效偏好，减弱动效下几何类时长读到的就是 1ms。读不到时（服务端、未加载样式的测试环境）取与令牌同值的常量 `motionDurations` / `motionEasings`，按元素判断为减弱时取减弱档的时长。每次调用读一次计算样式，在动画开始前调用即可。
+
+`readMotion` 只读时长与缓动。语义位移与错开步长另有同值常量：`motionDistances`（`sm` / `md` / `lg`，4 / 8 / 16px，减弱动效下令牌归零）与 `motionStaggerStep`（40ms）。
 
 `toLinearEasing` 把任意缓动函数采样为 CSS `linear()` 串，用于把只有 JS 能计算的曲线交回 CSS：
 
@@ -89,6 +91,7 @@ createSpring({ duration: 0.4, bounce: -0.5 }); // 过阻尼，缓慢趋近
 | `bouncy` | 400 / 18 | 20.4% | 约 581ms | 明显回弹，只供作者使用，核心组件不用 |
 | `toggle` | 420 / 26 | 7.5% | — | liquid 档的切换滑块 |
 | `lead` / `trail` | 520 / 34、210 / 24 | 2.9%、0.9% | 约 313ms、485ms | liquid 档双沿指示器的前沿与后沿 |
+| `merge` | 320 / 24 | 5.8% | — | liquid 档的融合与分离 |
 
 核心组件在 standard 档只用超调不超过 3% 的预设。
 

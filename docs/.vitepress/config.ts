@@ -171,6 +171,7 @@ const designSidebar: DefaultTheme.SidebarItem[] = [
       { text: "阴影与材质", link: "/design/shadow" },
       { text: "暗黑模式", link: "/design/dark" },
       { text: "动效", link: "/design/motion" },
+      { text: "停留时长", link: "/design/dwell" },
     ],
   },
 ];
