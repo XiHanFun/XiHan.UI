@@ -12871,6 +12871,10 @@
  *   data-xh-liquid-clarity   clear：下层均匀且色调已知，换通透档
  *   --xh-_liquid-light-x / -y 光源方向的单位向量，决定 1px 亮边落在哪一侧
  *   --xh-_liquid-deform      按住时的形变（transform 串），松手弹回后撤掉
+ *
+ * 同一宿主里的几块可以结成液态组（core 的 trackLiquidGoo）：宿主带 data-xh-liquid-goo，最前面多一层
+ * [data-xh-liquid-goo-layer] 色块层，沿整组的外形画底色、墨色细线、亮边与投影；组件皮肤在这一档把块自己的
+ * 面、细线、亮边与投影撤掉，只留磨砂。
  */
 @layer xihan.components {
   :where([data-material='liquid']) [data-xh-liquid] {
@@ -12895,6 +12899,57 @@
   /* 通透档：下层均匀且色调已知时由液态面写上，着色按主题取值，已随墨色域落到对应色调 */
   :where([data-material='liquid']) [data-xh-liquid][data-xh-liquid-clarity='clear'] {
     --xh-_liquid-bg: color-mix(in oklab, var(--xh-material-liquid-tint) calc(var(--xh-material-liquid-alpha-clear) * 100%), transparent);
+  }
+
+  /* 液态组的色块层：core 在宿主最前面生成（aria-hidden、不接指针），压在各块之下，每块一个色块，
+     跟着块的盒子、圆角与变换走。色块层套 core 放在它旁边的粘连滤镜（行内 filter），滤镜只取色块的轮廓，
+     把靠得够近的连成一片，再沿整体外形画液态面：投影、底色、墨色细线、朝光亮边与背光弱亮边，颜色都在下面
+     按段取液态令牌，投影由色块自己带着、滤镜只留外形之外的那部分。色调（墨色域）与通透档由 core 按源块的
+     读数同步到色块层与装滤镜的 <svg> 上。
+     色块层不设层号，靠排在宿主最前压在各块之下：宿主须是定位元素，组里的块须是定位元素（或装在定位容器里）。
+     层往外多铺一圈，给模糊与投影留出余地。组件可以在自己的宿主上改写投影槽，把使用者的投影槽接进来 */
+  [data-xh-liquid-goo-layer] {
+    --xh-_liquid-goo-shadow: var(--xh-material-liquid-shadow);
+
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-8));
+    pointer-events: none;
+  }
+
+  /* 色块提供轮廓与投影，底色由滤镜铺 */
+  [data-xh-liquid-goo-layer] > span {
+    position: absolute;
+    box-sizing: border-box;
+    background-color: var(--xh-material-liquid-tint);
+    box-shadow: var(--xh-_liquid-goo-shadow);
+  }
+
+  [data-xh-liquid-goo-filter] [data-xh-goo-paint='fill'] {
+    flood-color: var(--xh-material-liquid-tint);
+    flood-opacity: var(--xh-material-liquid-alpha-floor);
+  }
+
+  [data-xh-liquid-goo-filter][data-xh-liquid-clarity='clear'] [data-xh-goo-paint='fill'] {
+    flood-opacity: var(--xh-material-liquid-alpha-clear);
+  }
+
+  [data-xh-liquid-goo-filter] [data-xh-goo-paint='edge'] {
+    flood-color: var(--xh-material-liquid-border);
+  }
+
+  [data-xh-liquid-goo-filter] [data-xh-goo-paint='near'] {
+    flood-color: var(--xh-material-liquid-highlight);
+  }
+
+  [data-xh-liquid-goo-filter] [data-xh-goo-paint='far'] {
+    flood-color: var(--xh-material-liquid-rim-far);
+  }
+
+  /* 强制色：系统配色下只留块自己的边，装饰色块撤掉 */
+  @media (forced-colors: active) {
+    [data-xh-liquid-goo-layer] {
+      display: none;
+    }
   }
 
   /* 从右往左排版时光源缺省在右上方 */
