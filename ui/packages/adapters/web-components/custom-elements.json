@@ -6188,6 +6188,37 @@
             },
             {
               "kind": "method",
+              "name": "#paintPlot",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "plot",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "绘图区：纹理定义排在最前，其后是场景标记；两者同一次排序，重画时一起复用。"
+            },
+            {
+              "kind": "method",
               "name": "#paintMarks",
               "privacy": "private",
               "return": {
@@ -6216,6 +6247,73 @@
                 }
               ],
               "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "ChartMark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintDefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "纹理定义：每种纹理一个 pattern、里面一条线。"
             },
             {
               "kind": "method",
@@ -39606,6 +39704,37 @@
             },
             {
               "kind": "method",
+              "name": "#paintPlot",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "plot",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ],
+              "description": "绘图区：纹理定义排在最前，其后是场景标记；两者同一次排序，重画时一起复用。"
+            },
+            {
+              "kind": "method",
               "name": "#paintMarks",
               "privacy": "private",
               "return": {
@@ -39634,6 +39763,73 @@
                 }
               ],
               "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "ChartMark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintDefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ],
+              "description": "纹理定义：每种纹理一个 pattern、里面一条线。"
             },
             {
               "kind": "method",

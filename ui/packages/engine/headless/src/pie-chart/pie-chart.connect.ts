@@ -12,7 +12,7 @@ import type { PieActive } from './pie-chart.logic'
 import type { PieChartApi, PieChartSchema, PieLegendItem, PieMarkTag, PieTooltipRow } from './pie-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, placeChartTooltip } from '../shared/chart'
+import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { pieChartAnatomy } from './pie-chart.anatomy'
 import {
@@ -57,6 +57,11 @@ function pathOf(mark: Mark): string {
 /** 色槽写成字面量：分类扇区取 1–8，「其他」取 other。 */
 function slotAttr(slot: number | null, other: boolean): string | undefined {
   return other ? 'other' : slot == null ? undefined : String(slot)
+}
+
+/** 纹理序号与色槽相同；「其他」不带纹理，纹理模式下仍是它自己的中性色。 */
+function patternAttr(slot: number | null, other: boolean): string | undefined {
+  return other || slot == null ? undefined : String(slot)
 }
 
 export function connectPieChart<T extends PropTypes>(
@@ -107,6 +112,14 @@ export function connectPieChart<T extends PropTypes>(
     ? context.get('legendFocus')
     : legendItems[0]?.id ?? null
   const sliceById = new Map(model.spec.slices.map(s => [s.id, s]))
+  const patterns = chartPatterns(
+    ids.plot,
+    model.spec.slices.map(s => ({ pattern: s.other ? null : s.slot, slot: s.slot, tone: null })),
+    context.get('metrics').pointSize,
+  )
+  // 纹理模式下扇区拿这一格纹理当填充
+  const patternStyle = (slot: number | null, other: boolean): Record<string, unknown> =>
+    other || slot == null ? {} : { 'data-xh-chart-pattern': String(slot), 'style': { '--xh-_chart-pattern': chartPatternFill(ids.plot, slot) } }
 
   /** 提示框的落点：指针触发时取指针位置，键盘与联动取扇区的锚点。 */
   const tip = ((): ReturnType<typeof placeChartTooltip> | null => {
@@ -174,6 +187,7 @@ export function connectPieChart<T extends PropTypes>(
     measured,
     empty,
     legendItems,
+    patterns,
     active: details,
     tooltip,
     center,
@@ -231,6 +245,7 @@ export function connectPieChart<T extends PropTypes>(
       'tabindex': item.id === legendAnchor ? 0 : -1,
       'data-value': item.id,
       'data-xh-chart-slot': slotAttr(item.slot, item.other),
+      'data-xh-chart-pattern': patternAttr(item.slot, item.other),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-variant': 'ghost',
@@ -332,6 +347,28 @@ export function connectPieChart<T extends PropTypes>(
       },
     }),
 
+    getDefsProps: () => normalize.element({
+      ...parts.defs.attrs,
+      'data-xh-chart-part': 'defs',
+    }),
+
+    getPatternProps: pattern => normalize.element({
+      ...parts.pattern.attrs,
+      'data-xh-chart-part': 'pattern',
+      'id': pattern.id,
+      'patternUnits': 'userSpaceOnUse',
+      'width': pattern.size,
+      'height': pattern.size,
+      'patternTransform': pattern.angle === 0 ? undefined : `rotate(${pattern.angle})`,
+      'data-xh-chart-slot': pattern.slot == null ? undefined : String(pattern.slot),
+    }),
+
+    getPatternLineProps: pattern => normalize.element({
+      ...parts['pattern-line'].attrs,
+      'data-xh-chart-part': 'pattern-line',
+      'd': pattern.path,
+    }),
+
     getMarkProps: (mark) => {
       const part = parts[mark.part as keyof typeof parts]
       // 焦点环与引导线由 Chart 家族配方画：投影家族部件名
@@ -371,6 +408,7 @@ export function connectPieChart<T extends PropTypes>(
         const slice = id == null ? undefined : sliceById.get(id)
         props['aria-hidden'] = true
         props['data-xh-chart-slot'] = slice ? slotAttr(slice.slot, slice.other) : slotAttr(mark.paint?.slot ?? null, id === PIE_OTHER_ID)
+        Object.assign(props, slice ? patternStyle(slice.slot, slice.other) : patternStyle(mark.paint?.slot ?? null, id === PIE_OTHER_ID))
       }
       else if (mark.part === 'slice') {
         const ref = mark.datum ?? null
@@ -381,6 +419,8 @@ export function connectPieChart<T extends PropTypes>(
         props['data-key'] = mark.key
         props['data-series-id'] = ref?.seriesId
         props['data-xh-chart-slot'] = slice ? slotAttr(slice.slot, slice.other) : undefined
+        if (slice)
+          Object.assign(props, patternStyle(slice.slot, slice.other))
         props['data-dimmed'] = dataAttr(emphasis != null && ref != null && emphasis !== ref.seriesId)
         props.tabindex = mark.key === anchorKey ? 0 : -1
       }
@@ -447,6 +487,7 @@ export function connectPieChart<T extends PropTypes>(
       'data-xh-chart-part': 'tooltip-row',
       'data-series-id': row.key,
       'data-xh-chart-slot': slotAttr(row.slot, row.other),
+      'data-xh-chart-pattern': patternAttr(row.slot, row.other),
     }),
 
     getTooltipSwatchProps: () => normalize.element({

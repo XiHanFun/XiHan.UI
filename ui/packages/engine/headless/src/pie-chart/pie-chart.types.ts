@@ -16,6 +16,7 @@ import type {
   ChartCommonProps,
   ChartDatumDetails,
   ChartKey,
+  ChartPattern,
   ChartRow,
   ChartTranslations,
 } from '../shared/chart'
@@ -132,6 +133,8 @@ export interface PieChartApi<T extends PropTypes = PropTypes> {
   /** 没有可画的数据（全部为 0、没有数据或全部隐藏）。 */
   empty: boolean
   legendItems: readonly PieLegendItem[]
+  /** 各扇区的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时扇区用它填充；「其他」没有纹理。 */
+  patterns: readonly ChartPattern[]
   /** 激活的扇区；没有时为 null。 */
   active: ChartDatumDetails | null
   /** 提示框内容；收起时为 null。 */
@@ -158,6 +161,10 @@ export interface PieChartApi<T extends PropTypes = PropTypes> {
   getLegendLabelProps: (item: PieLegendItem) => T['element']
   getViewportProps: () => T['element']
   getPlotProps: () => T['element']
+  /** 绘图区的第一个子节点：各扇区的纹理定义在这里。 */
+  getDefsProps: () => T['element']
+  getPatternProps: (pattern: ChartPattern) => T['element']
+  getPatternLineProps: (pattern: ChartPattern) => T['element']
   getMarkProps: (mark: Mark) => T['element']
   getCenterProps: () => T['element']
   getCenterValueProps: () => T['element']

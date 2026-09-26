@@ -157,3 +157,20 @@ describe('过渡', () => {
     expect(Number(getComputedStyle(one('center')).opacity)).toBe(1)
   })
 })
+
+describe('纹理', () => {
+  afterEach(() => {
+    document.documentElement.removeAttribute('data-xh-chart-patterns')
+  })
+
+  it('祖先写了 data-xh-chart-patterns：扇区改用本色槽的纹理，「其他」仍是自己的中性色', async () => {
+    document.documentElement.setAttribute('data-xh-chart-patterns', '')
+    mount({ maxSlices: 3 })
+    await settle()
+    const slice = all('slice').find(el => el.getAttribute('data-xh-chart-slot') === '1')!
+    const pattern = all('pattern').find(el => el.getAttribute('data-xh-chart-slot') === '1')!
+    expect(getComputedStyle(slice).fill).toBe(`url("#${pattern.id}")`)
+    const other = all('slice').find(el => el.getAttribute('data-xh-chart-slot') === 'other')!
+    expect(getComputedStyle(other).fill).not.toContain('url(')
+  })
+})

@@ -894,7 +894,7 @@ const truth = {
     },
   },
   库自用dataXh属性数: {
-    how: 'packages / tooling 源码里出现过的 data-xh-* 名字去重，减掉作者书写的 data-xh-part、data-xh-scroll、墨色域与液态下层的四个声明',
+    how: 'packages / tooling 源码里出现过的 data-xh-* 名字去重，减掉作者书写的 data-xh-part、data-xh-scroll、墨色域与液态下层的四个声明，以及图表纹理的开关',
     async value() {
       const EXT = ['.ts', '.js', '.mjs', '.css', '.vue', '.html']
       const names = new Set()
@@ -918,6 +918,8 @@ const truth = {
       // 液态下层的两个声明写在作者自己的图片、视频、画布区域上，同样是作者输入
       names.delete('data-xh-backdrop')
       names.delete('data-xh-backdrop-busy')
+      // 图表纹理的开关写在作者自己的祖先上，同样是作者输入
+      names.delete('data-xh-chart-patterns')
       return names.size
     },
   },

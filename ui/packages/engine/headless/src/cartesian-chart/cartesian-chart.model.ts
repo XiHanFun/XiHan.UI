@@ -63,6 +63,8 @@ export interface CartesianSeriesSpec {
   readonly name: string
   readonly slot: number | null
   readonly tone: Tone | null
+  /** 纹理序号：分类系列等于色槽，语义系列按声明次序。 */
+  readonly pattern: number | null
   readonly mark: 'bar' | 'line'
   readonly x: string
   readonly y: string
@@ -212,6 +214,7 @@ export function normalizeCartesianSpec(
       name: identity.name,
       slot: identity.slot,
       tone: identity.tone,
+      pattern: identity.pattern,
       mark: s.mark,
       x: s.x,
       y: s.y,
@@ -977,7 +980,11 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
   const bars = new Map<string, BarBox>()
   for (const s of domains.derived.visible) {
     const id = s.spec.id
-    const paint = { ...(s.spec.slot != null ? { slot: s.spec.slot } : {}), ...(s.spec.tone != null ? { tone: s.spec.tone } : {}) }
+    const paint = {
+      ...(s.spec.slot != null ? { slot: s.spec.slot } : {}),
+      ...(s.spec.tone != null ? { tone: s.spec.tone } : {}),
+      ...(s.spec.pattern != null ? { pattern: s.spec.pattern } : {}),
+    }
     const children: Mark[] = []
     const seriesAnchors = filled<{ x: number, y: number } | null>(spec.keys.length, null)
     anchors.set(id, seriesAnchors)

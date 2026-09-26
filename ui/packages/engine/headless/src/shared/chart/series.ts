@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 系列的身份与色槽：id 缺省取数值字段名，色槽按声明顺序分配、与显隐无关，校验不合法的组合。
+// 系列的身份、色槽与纹理：id 缺省取数值字段名，色槽按声明顺序分配、与显隐无关，校验不合法的组合。
 
 import type { Tone } from '@xihan-ui/core'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
@@ -28,6 +28,8 @@ export interface ChartSeriesIdentity {
   /** 分类色槽；语义系列为 null。 */
   readonly slot: number | null
   readonly tone: Tone | null
+  /** 纹理序号 1–8：分类系列等于色槽，语义系列按声明次序；没有色槽的分类系列为 null。 */
+  readonly pattern: number | null
 }
 
 /** 规格不合法的原因：code 是诊断码，detail 给出涉及的值。 */
@@ -86,19 +88,20 @@ export function assignChartSeries(inputs: readonly ChartSeriesIdentityInput[]): 
     taken.add(input.slot)
   }
   let next = 1
+  let toneOrder = 0
   const series = inputs.map((input): ChartSeriesIdentity => {
     const id = input.id ?? input.field
     const name = input.name ?? id
     if (input.tone !== undefined)
-      return { id, name, slot: null, tone: input.tone }
+      return { id, name, slot: null, tone: input.tone, pattern: (toneOrder++ % CHART_SLOT_COUNT) + 1 }
     if (input.slot !== undefined && taken.has(input.slot))
-      return { id, name, slot: input.slot, tone: null }
+      return { id, name, slot: input.slot, tone: null, pattern: input.slot }
     while (taken.has(next))
       next += 1
     const slot = next <= CHART_SLOT_COUNT ? next : null
     if (slot !== null)
       taken.add(slot)
-    return { id, name, slot, tone: null }
+    return { id, name, slot, tone: null, pattern: slot }
   })
   return { series, issues }
 }

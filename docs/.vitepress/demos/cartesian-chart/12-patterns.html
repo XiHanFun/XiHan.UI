@@ -1,0 +1,44 @@
+<!-- 纹理 | 祖先写上 data-xh-chart-patterns，柱改用纹理、折线换线型，图例画成同一副；强制色与打印下总是这样 -->
+<div style="display: grid; gap: var(--xh-space-4); width: 100%">
+  <label style="display: flex; align-items: center; gap: var(--xh-space-2)">
+    <xh-switch id="cartesian-chart-patterns-toggle" default-checked>
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+      </button>
+    </xh-switch>
+    纹理
+  </label>
+  <div id="cartesian-chart-patterns-host" data-xh-chart-patterns>
+    <xh-cartesian-chart id="cartesian-chart-patterns">
+      <figure data-xh-part="root">
+        <figcaption data-xh-part="caption">各渠道季度销售额与目标（万元）</figcaption>
+        <div data-xh-part="legend"></div>
+        <div data-xh-part="viewport">
+          <svg data-xh-part="plot"></svg>
+          <div data-xh-part="empty"></div>
+        </div>
+        <div data-xh-part="tooltip"></div>
+      </figure>
+    </xh-cartesian-chart>
+  </div>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("cartesian-chart-patterns");
+  const host = document.getElementById("cartesian-chart-patterns-host");
+  chart.data = [
+    { quarter: "一季度", online: 42, store: 28, target: 75 },
+    { quarter: "二季度", online: 51, store: 26, target: 80 },
+    { quarter: "三季度", online: 48, store: 31, target: 85 },
+    { quarter: "四季度", online: 63, store: 34, target: 90 },
+  ];
+  chart.series = [
+    { mark: "bar", x: "quarter", y: "online", name: "线上", stack: "sales" },
+    { mark: "bar", x: "quarter", y: "store", name: "门店", stack: "sales" },
+    { mark: "line", x: "quarter", y: "target", name: "目标" },
+  ];
+  // 纹理是环境属性：写在任意祖先上，其中的图表一起改用纹理
+  document.getElementById("cartesian-chart-patterns-toggle").addEventListener("checked-change", (event) => {
+    host.toggleAttribute("data-xh-chart-patterns", event.detail.checked);
+  });
+</script>

@@ -363,7 +363,7 @@ export function pieScene(layout: PieLayout, version: number): PieScene {
       // 四角与柱的远端同一档圆角；弧会按环厚与弧长把它收小
       cornerRadius: layout.metrics.radius,
       datum: pieRefOf(slice),
-      paint: slice.slot == null ? {} : { slot: slice.slot },
+      paint: slice.slot == null ? {} : { slot: slice.slot, pattern: slice.slot },
       a11y: { label: '', focusable: true },
     }
     data.push(mark)

@@ -19,7 +19,7 @@ import type {
 } from './cartesian-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, placeChartTooltip } from '../shared/chart'
+import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 import {
@@ -146,6 +146,11 @@ export function connectCartesianChart<T extends PropTypes>(
     : legendItems[0]?.id ?? null
   // 含隐藏的系列：图例刚隐藏的系列还在收场，颜色与标记形态照样要取
   const seriesById = new Map(model.spec.series.map(s => [s.id, s]))
+  const patterns = chartPatterns(ids.plot, model.spec.series, context.get('metrics').pointSize)
+  const patternOf = (id: string): string | undefined => {
+    const index = seriesById.get(id)?.pattern
+    return index == null ? undefined : String(index)
+  }
 
   /** 提示框的落点：指针触发时取指针位置，键盘与联动取数据的锚点。 */
   const tip = ((): ReturnType<typeof placeChartTooltip> | null => {
@@ -200,6 +205,7 @@ export function connectCartesianChart<T extends PropTypes>(
     measured,
     empty,
     legendItems,
+    patterns,
     active: details,
     tooltip,
     summary: model.summary,
@@ -258,6 +264,7 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-value': item.id,
       'data-xh-chart-slot': item.slot == null ? undefined : String(item.slot),
       'data-tone': item.tone ?? undefined,
+      'data-xh-chart-pattern': patternOf(item.id),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-variant': 'ghost',
@@ -371,6 +378,29 @@ export function connectCartesianChart<T extends PropTypes>(
       },
     }),
 
+    getDefsProps: () => normalize.element({
+      ...parts.defs.attrs,
+      'data-xh-chart-part': 'defs',
+    }),
+
+    getPatternProps: pattern => normalize.element({
+      ...parts.pattern.attrs,
+      'data-xh-chart-part': 'pattern',
+      'id': pattern.id,
+      'patternUnits': 'userSpaceOnUse',
+      'width': pattern.size,
+      'height': pattern.size,
+      'patternTransform': pattern.angle === 0 ? undefined : `rotate(${pattern.angle})`,
+      'data-xh-chart-slot': pattern.slot == null ? undefined : String(pattern.slot),
+      'data-tone': pattern.tone ?? undefined,
+    }),
+
+    getPatternLineProps: pattern => normalize.element({
+      ...parts['pattern-line'].attrs,
+      'data-xh-chart-part': 'pattern-line',
+      'd': pattern.path,
+    }),
+
     getMarkProps: (mark) => {
       const part = parts[mark.part as keyof typeof parts]
       // 焦点环与引导线由 Chart 家族配方画：投影家族部件名
@@ -389,6 +419,9 @@ export function connectCartesianChart<T extends PropTypes>(
             'data-series-id': id,
             'data-xh-chart-slot': spec?.slot == null ? undefined : String(spec.slot),
             'data-tone': spec?.tone ?? undefined,
+            // 纹理模式下柱与面积拿这一格纹理当填充，折线按序号换线型
+            'data-xh-chart-pattern': patternOf(id),
+            ...(spec?.pattern == null ? {} : { style: { '--xh-_chart-pattern': chartPatternFill(ids.plot, spec.pattern) } }),
             'data-mark': spec?.mark,
             'data-dimmed': dataAttr(emphasis != null && emphasis !== id),
           })
@@ -491,6 +524,7 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-series-id': row.seriesId,
       'data-xh-chart-slot': row.slot == null ? undefined : String(row.slot),
       'data-tone': row.tone ?? undefined,
+      'data-xh-chart-pattern': patternOf(row.seriesId),
       'data-current': dataAttr(active != null && trigger === 'axis' && row.seriesId === active.ref.seriesId),
     }),
 

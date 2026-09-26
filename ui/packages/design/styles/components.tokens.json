@@ -7764,38 +7764,72 @@
       "name": "--xh-cartesian-chart-line-width",
       "component": "cartesian-chart",
       "part": [
+        "legend-swatch",
         "line",
-        "root"
+        "root",
+        "tooltip-swatch"
       ],
       "property": [
+        "background",
+        "block-size",
+        "stroke-dasharray",
         "stroke-width"
       ],
       "state": [
-        "default"
+        "@media (forced-colors: active)",
+        "@media print",
+        "default",
+        "drawing",
+        "mark=line",
+        "not([data-drawing])",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns"
       ],
       "defaultToken": [
         "--xh-chart-line-width"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 line、root 部件 stroke-width 覆盖槽。"
+      "description": "cartesian-chart 的 legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-point-size",
       "component": "cartesian-chart",
       "part": [
-        "root"
+        "legend-swatch",
+        "root",
+        "tooltip-swatch"
       ],
       "property": [
-        "--xh-_chart-metric-point-size"
+        "background"
       ],
       "state": [
-        "default"
+        "@media (forced-colors: active)",
+        "@media print",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns"
       ],
       "defaultToken": [
         "--xh-chart-point-size"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 root 部件 --xh-_chart-metric-point-size 覆盖槽。"
+      "description": "cartesian-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-series-color",
@@ -7806,6 +7840,7 @@
         "dot",
         "legend-swatch",
         "line",
+        "pattern-line",
         "point",
         "tooltip-swatch"
       ],
@@ -7816,7 +7851,21 @@
         "stroke"
       ],
       "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "mark=line",
         "tone",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns",
         "xh-chart-slot=1",
         "xh-chart-slot=2",
         "xh-chart-slot=3",
@@ -7838,7 +7887,7 @@
         "--xh-chart-categorical-8"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 area-fill、bar、dot、legend-swatch、line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
+      "description": "cartesian-chart 的 area-fill、bar、dot、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-tooltip-gap",
@@ -47217,15 +47266,31 @@
       "component": "pie-chart",
       "part": [
         "legend-swatch",
+        "pattern-line",
         "slice",
         "tooltip-swatch"
       ],
       "property": [
         "background",
         "border",
-        "fill"
+        "fill",
+        "stroke"
       ],
       "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "mark=line",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns",
         "xh-chart-slot=1",
         "xh-chart-slot=2",
         "xh-chart-slot=3",
@@ -47246,7 +47311,7 @@
         "--xh-chart-categorical-8"
       ],
       "visibility": "public",
-      "description": "pie-chart 的 legend-swatch、slice、tooltip-swatch 部件 background、border、fill 覆盖槽。"
+      "description": "pie-chart 的 legend-swatch、pattern-line、slice、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
     },
     {
       "name": "--xh-pie-chart-slice-gap",

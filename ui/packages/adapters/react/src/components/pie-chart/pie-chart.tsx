@@ -48,6 +48,12 @@ export interface PieChartCenterSlotProps {
   active: ChartDatumDetails | null
 }
 
+/** 纹理定义：绘图区的第一个子节点，每种纹理一个 pattern、里面一条线。 */
+function renderDefs(api: PieChartApi): ReactNode {
+  return createElement('defs', api.getDefsProps() as Record<string, unknown>, api.patterns.map(pattern =>
+    createElement('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, createElement('path', api.getPatternLineProps(pattern) as Record<string, unknown>))))
+}
+
 /** 一个场景标记画成 SVG 元素；文字标记带文字。 */
 function renderMark(api: PieChartApi, mark: ChartMark): ReactNode {
   const props = { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key }
@@ -168,6 +174,7 @@ export function XhPieChartPlot(props: XhPieChartPlotProps): ReactNode {
   const marks = [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over]
   return (
     <svg {...mergeReactProps(bind.attrs, props as Record<string, unknown>, { ref: bind.ref })}>
+      {renderDefs(api)}
       {marks.map(mark => renderMark(api, mark))}
     </svg>
   )

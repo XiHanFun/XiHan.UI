@@ -16,6 +16,7 @@ import type {
   ChartCommonProps,
   ChartDatumDetails,
   ChartKey,
+  ChartPattern,
   ChartRow,
   ChartSummary,
   ChartTranslations,
@@ -210,6 +211,8 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   /** 没有可画的数据：空态部件据此显示。 */
   empty: boolean
   legendItems: readonly CartesianLegendItem[]
+  /** 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时柱与面积用它填充。 */
+  patterns: readonly ChartPattern[]
   /** 激活的数据；没有时为 null。 */
   active: ChartDatumDetails | null
   /** 提示框内容；收起时为 null。 */
@@ -242,6 +245,10 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   getLegendLabelProps: (item: CartesianLegendItem) => T['element']
   getViewportProps: () => T['element']
   getPlotProps: () => T['element']
+  /** 绘图区的第一个子节点：各系列的纹理定义在这里。 */
+  getDefsProps: () => T['element']
+  getPatternProps: (pattern: ChartPattern) => T['element']
+  getPatternLineProps: (pattern: ChartPattern) => T['element']
   /** 场景里一个标记的属性（含 path 的 d、文字的坐标）。 */
   getMarkProps: (mark: Mark) => T['element']
   getTooltipProps: () => T['element']

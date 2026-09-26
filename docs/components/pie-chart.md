@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 
@@ -83,6 +83,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 - 扇区缺省按数值从大到小排列，自 12 点方向顺时针；`sort="none"` 按数据次序。读者从 12 点开始顺时针读，最大的一块在最前面最容易比较。
 - 超过 `maxSlices`（缺省 6，含「其他」）时，最小的几块并成「其他」，排在最后、取中性色；提示框里列出被合并的各项。只并入一项时不合并，保留它本身。
 - 颜色按数据次序依次取分类色 1–8；次序变化（改 `sort`、隐藏扇区）不改变颜色，同一个类目在不同图里保持同色。
+- 颜色不可用或不可靠时改用纹理区分扇区：强制色与打印下总是开启，作者在任意祖先上写 `data-xh-chart-patterns` 也会开启。扇区改用本色槽的斜线纹理填充并描出轮廓，图例与提示框的色标画成同一副纹理；「其他」不带纹理，仍是它自己的中性色。
 - `sweep="half"` 画成上半环（自 9 点扫到 3 点），适合放在指标卡上方；`rose` 画成南丁格尔玫瑰图：角度均分，半径按数值的平方根，面积与数值成正比。两者可以同时使用。
 - 扇区标签由 `labels` 控制：`outside`（缺省）画在外侧、带两段式引导线，两侧各排一列，自上而下推开避免重叠，放不下时去掉最小扇区的标签；`inside` 把占比写在扇区里，扇区装不下时不写；`none` 不画。视口太窄、外侧标签会把饼挤得太小时，外侧标签整体不画，只靠图例与提示框。
 - 相邻扇区之间留 `--xh-chart-gap`（2px）的表面缝，靠缝区分扇区而不是靠描边；缝宽沿半径保持不变。
@@ -211,6 +212,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）。 |
 | `empty` | `boolean` | 没有可画的数据（全部为 0、没有数据或全部隐藏）。 |
 | `legendItems` | `readonly PieLegendItem[]` |  |
+| `patterns` | `readonly ChartPattern[]` | 各扇区的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时扇区用它填充；「其他」没有纹理。 |
 | `active` | `ChartDatumDetails \| null` | 激活的扇区；没有时为 null。 |
 | `tooltip` | `PieTooltipModel \| null` | 提示框内容；收起时为 null。 |
 | `center` | `{ readonly value: string, readonly label: string }` | 环形中心的缺省内容：可见扇区的合计与说明文字。 |
@@ -231,6 +233,9 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `getLegendLabelProps` | `(item: PieLegendItem) => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getPlotProps` | `() => T['element']` |  |
+| `getDefsProps` | `() => T['element']` | 绘图区的第一个子节点：各扇区的纹理定义在这里。 |
+| `getPatternProps` | `(pattern: ChartPattern) => T['element']` |  |
+| `getPatternLineProps` | `(pattern: ChartPattern) => T['element']` |  |
 | `getMarkProps` | `(mark: Mark) => T['element']` |  |
 | `getCenterProps` | `() => T['element']` |  |
 | `getCenterValueProps` | `() => T['element']` |  |
@@ -287,7 +292,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 - 引导线、扇区标签与环形中心都 `aria-hidden` 或不在可访问树中：它们的内容已在扇区的名称里；提示框同样 `aria-hidden`。
 - 组件在根内生成一段摘要与一张数据表，视觉隐藏、对读屏可见：摘要写扇区数、合计以及最大与最小的扇区（模板是 `translations.summary`），数据表三列是扇区名、数值与占比。
 - 图例是 `role="toolbar"`，每一项是 `<button aria-pressed>`，按下表示扇区可见；图例整体只占一个 Tab 位。
-- 颜色不是区分扇区的唯一线索：外侧标签写出扇区名，图例与提示框也写出名字。
+- 颜色不是区分扇区的唯一线索：外侧标签写出扇区名，图例与提示框也写出名字；强制色与打印下扇区还有各自的纹理。
 - 过渡只改画面：扇区的名称、合计、摘要与数据表在数据变化的那一刻就按新数据更新；收场中的扇区 `aria-hidden`、不可聚焦。
 
 ## 样式参考
@@ -316,10 +321,15 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-part` | 'legend-item' |
+| `legend-item` | `data-xh-chart-pattern` | patternAttr(item.slot, item.other) |
 | `legend-item` | `data-xh-chart-slot` | slotAttr(item.slot, item.other) |
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-xh-chart-part` | 'plot' |
+| `defs` | `data-xh-chart-part` | 'defs' |
+| `pattern` | `data-xh-chart-part` | 'pattern' |
+| `pattern` | `data-xh-chart-slot` | undefined \| String(pattern.slot) |
+| `pattern-line` | `data-xh-chart-part` | 'pattern-line' |
 | `center` | `data-drawing` | ''（条件成立时才出现） |
 | `center` | `data-placement` | 'top' \| undefined |
 | `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
@@ -328,6 +338,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-series-id` | row.key |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
+| `tooltip-row` | `data-xh-chart-pattern` | patternAttr(row.slot, row.other) |
 | `tooltip-row` | `data-xh-chart-slot` | slotAttr(row.slot, row.other) |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
@@ -353,7 +364,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `--xh-pie-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | pie-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-pie-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-1` | pie-chart 的 legend 部件 gap 覆盖槽。 |
 | `--xh-pie-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | pie-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
-| `--xh-pie-chart-series-color` | `legend-swatch`<br>`slice`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill` | `xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | pie-chart 的 legend-swatch、slice、tooltip-swatch 部件 background、border、fill 覆盖槽。 |
+| `--xh-pie-chart-series-color` | `legend-swatch`<br>`pattern-line`<br>`slice`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`mark=line`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | pie-chart 的 legend-swatch、pattern-line、slice、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
 | `--xh-pie-chart-slice-gap` | `root` | `--xh-_chart-metric-gap` | `default` | `--xh-chart-gap` | pie-chart 的 root 部件 --xh-_chart-metric-gap 覆盖槽。 |
 | `--xh-pie-chart-slice-radius` | `root` | `--xh-_chart-metric-radius` | `default` | `--xh-shape-inset` | pie-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。 |
 | `--xh-pie-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | pie-chart 的 tooltip 部件 gap 覆盖槽。 |
