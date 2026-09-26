@@ -225,6 +225,7 @@
 --xh-motion-duration-enter: 200ms  ← var(--xh-duration-normal)
 --xh-motion-duration-exit: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-expand: 200ms  ← var(--xh-duration-normal)
+--xh-motion-duration-glint: calc(320ms * 2)  ← calc(var(--xh-duration-slow) * 2)
 --xh-motion-duration-micro: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-move: 200ms  ← var(--xh-duration-normal)
 --xh-motion-duration-nudge: 120ms  ← var(--xh-duration-fast)
