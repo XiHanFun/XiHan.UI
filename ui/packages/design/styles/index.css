@@ -29008,13 +29008,15 @@
 @layer xihan.motion {
   /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
      动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  /* 固定宽度的一段从轨道行首外扫到行尾外：只动 translate，不动布局。
+     百分比参照这一段自身的宽度（轨道的 40%），RTL 下两端由私有槽换号 */
   @keyframes xh-progress-indeterminate {
     from {
-      inset-inline-start: -40%;
+      translate: var(--xh-_progress-sweep-from, -100%) 0;
     }
 
     to {
-      inset-inline-start: 100%;
+      translate: var(--xh-_progress-sweep-to, 250%) 0;
     }
   }
 }
@@ -29045,10 +29047,22 @@
   /* 语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
      轨道不跟着换族：只有已完成的那段换色，底槽保持中性才读得出"完成了多少"。 */
   [data-scope='progress'][data-part='range'] {
+    /* 填充铺满轨道，按未完成的比例往行首平移、由轨道裁掉：进度变化只走合成，不重排也不重绘。
+       露出来的前端保留自己的圆角，行首那一侧由轨道的圆角裁出 */
+    inline-size: 100%;
     block-size: 100%;
     border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
     background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
-    transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    translate: calc((var(--xh-_progress-value, 0) - 1) * 100%) 0;
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* translate 只认物理方向：RTL 下行首在右边，平移与不定进度的扫向一起翻转 */
+  [data-scope='progress'][data-part='range']:dir(rtl) {
+    --xh-_progress-sweep-from: 100%;
+    --xh-_progress-sweep-to: -250%;
+
+    translate: calc((1 - var(--xh-_progress-value, 0)) * 100%) 0;
   }
 
   /* —— 尺寸 —— */
@@ -29116,8 +29130,7 @@
     transition: stroke-dashoffset var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  /* 进度未知：线形条改为一小段来回扫。宽度交给动画，连接层算出的 inline-size 与
-     那条过渡都得让开，否则每帧都在跟动画抢同一个属性 */
+  /* 进度未知：线形条改为固定宽度的一小段来回扫，位移交给动画，按比例的平移与它的过渡让开 */
   [data-scope='progress'][data-part='track'][data-state='indeterminate'] {
     position: relative;
     overflow: hidden;
@@ -29125,6 +29138,7 @@
 
   [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
     position: absolute;
+    inset-inline-start: 0;
     inline-size: 40%;
     transition: none;
     animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
@@ -29137,6 +29151,7 @@
       position: static;
       inline-size: 100%;
       opacity: 0.5;
+      translate: none;
       animation: none;
     }
   }
@@ -29145,10 +29160,11 @@
     position: static;
     inline-size: 100%;
     opacity: 0.5;
+    translate: none;
     animation: none;
   }
 
-  /* 零进度：圆角端点会在长度为 0 处画出一个圆点，收掉它 */
+  /* 零进度：整段不画，从零起步的那一帧也不留一粒圆点 */
   [data-scope='progress'][data-part='range'][data-empty] {
     visibility: hidden;
   }
@@ -29196,6 +29212,7 @@
       position: static;
       inline-size: 100%;
       opacity: 0.5;
+      translate: none;
       animation: none;
     }
   }
