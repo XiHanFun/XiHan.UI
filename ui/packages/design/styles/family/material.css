@@ -22,6 +22,10 @@
 @layer xihan.components {
   [data-xh-material='frosted'] {
     --xh-_material-bg: var(--xh-material-frosted-bg);
+    /* 圆钮的交互阶梯：磨砂面半透明，悬停 / 按下换成不透明的淡底一档、二档，不叠在透景上发灰 */
+    --xh-_material-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque));
+    --xh-_material-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover-opaque));
+    --xh-_material-bg-focus: var(--xh-material-frosted-focus-surface);
     --xh-_material-fg: var(--xh-material-frosted-fg);
     --xh-_material-border: var(--xh-material-frosted-border);
     --xh-_material-shadow: var(--xh-material-frosted-shadow);
@@ -51,6 +55,9 @@
      亮边已由液态层画在朝光源的一侧 */
   :where([data-material='liquid']) [data-xh-material][data-xh-liquid] {
     --xh-_material-bg: var(--xh-_liquid-bg);
+    --xh-_material-bg-hover: var(--xh-_liquid-bg-hover);
+    --xh-_material-bg-pressed: var(--xh-_liquid-bg-pressed);
+    --xh-_material-bg-focus: var(--xh-material-liquid-focus-surface);
     --xh-_material-fg: var(--xh-material-liquid-fg);
     --xh-_material-border: var(--xh-material-liquid-border);
     --xh-_material-shadow: var(--xh-_liquid-shadow);

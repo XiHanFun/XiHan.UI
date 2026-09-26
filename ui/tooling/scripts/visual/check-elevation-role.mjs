@@ -55,11 +55,12 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
  * edge 段（键 组件:部件:raised），随各组件迁移逐条删除。
  */
 const EXPECTED = {
-  'back-top': { root: ['frosted'] },
+  // 缺省 outline 的触发器投影 data-xh-material，面走材质家族配方
+  'back-top': { trigger: ['frosted'] },
   'button': { root: ['soft', 'raised'] },
   'card': { root: ['raised'] },
-  // 浮在媒体之上的三颗翻页 / 播放钮：与 back-top / float-button 同属角落浮钮族，走 frosted 四件套（私有槽写在根上）
-  'carousel': { root: ['frosted'] },
+  // 浮在媒体之上的三颗翻页 / 播放钮：与 back-top / float-button 同属角落浮钮族，面走材质家族配方
+  'carousel': { 'prev-trigger': ['frosted'], 'next-trigger': ['frosted'], 'autoplay-trigger': ['frosted'] },
   'color-picker': { 'content': ['floating'], 'area-thumb': ['raised'] },
   'segmented': { indicator: ['raised'] },
   // 被指针拎起、跟着手走的条目：lifted（拖起的面是作者内容，不强加描边，raised 条款不适用）
@@ -75,7 +76,8 @@ const EXPECTED = {
   'date-range-picker': { content: ['floating'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },
-  'float-button': { root: ['frosted'] },
+  // 触发器走材质家族配方；展开组里作者放的原生按钮读根上的私有槽，那一组仍写在根上
+  'float-button': { root: ['frosted'], trigger: ['frosted'] },
   'floating-panel': { content: ['frosted'] },
   // 网格里跟着格子走的反白详情条：与 Tooltip 同一副气泡，描边 + frosted 紧凑影
   'heatmap': { tooltip: ['frosted'] },

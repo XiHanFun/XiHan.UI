@@ -165,6 +165,8 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 
 具体颜色不在组件内写死，由亮色、暗色和 contrast-more 主题派生。
 
+实现：材质家族配方 `family/material.css`（子路径 `@xihan-ui/styles/material.css`）。连接层投影 `data-xh-material="frosted"`，面由配方画四件套与顶光，皮肤只把使用者槽接到 `--xh-frosted-*`；浮动钮经 Action Control 桥接指向配方的私有槽 `--xh-_material-*`。新的 frosted 面接入这份配方，不在皮肤里再内联一遍。
+
 ### 3.2 允许使用
 
 - 内容为短列表、菜单、tooltip、气泡的锚定瞬态浮层（Popover、Dropdown、Context Menu、Select、Combobox、HoverCard、Tooltip）。

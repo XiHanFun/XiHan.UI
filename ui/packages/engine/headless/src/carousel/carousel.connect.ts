@@ -272,6 +272,8 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-size': 'md',
       // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
+      // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
+      'data-xh-material': 'frosted',
       ...press('prev', !canScrollPrev),
       // 边界由机器守住，这里不再判一次 canScrollPrev
       'onClick': () => send({ type: 'PAGE.PREV' }),
@@ -294,6 +296,8 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-size': 'md',
       // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
+      // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
+      'data-xh-material': 'frosted',
       ...press('next', !canScrollNext),
       'onClick': () => send({ type: 'PAGE.NEXT' }),
     }),
@@ -323,6 +327,8 @@ export function connectCarousel<T extends PropTypes>(
       'data-xh-action-size': 'md',
       // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
+      // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
+      'data-xh-material': 'frosted',
       // 按住开关时计时会停 / 起（状态在 idle / playing 之间切），按压面与之无关
       ...press('autoplay', autoplayInterval <= 0),
       // 三条出口各对一种停法：从没起播过要 START，被自己按住的要 RESUME，

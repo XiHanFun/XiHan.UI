@@ -59,6 +59,8 @@ export function connectBackTop<T extends PropTypes>(
       'data-xh-ink-surface': dataAttr(variant === 'solid'),
       // 浮在内容之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
+      // 缺省 outline 这一档是 frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
+      'data-xh-material': variant === 'outline' ? 'frosted' : undefined,
       'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'TRIGGER.CLICK' }),
       'onKeyDown': press.onKeyDown,

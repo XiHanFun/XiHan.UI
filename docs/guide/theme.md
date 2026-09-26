@@ -210,6 +210,8 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | `fg` / `fg-muted` | 正文与次要文字，始终不透明 |
 | `focus-surface` | 键盘聚焦时铺在焦点环内侧的实体隔离底 |
 
+M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、1px 顶光、前景、投影与背景滤镜；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
+
 Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
 环境轴在同一令牌名上原位降级：高对比档提高不透明度并加强边界；减少透明度与打印改为实体底并关闭背景滤镜；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。

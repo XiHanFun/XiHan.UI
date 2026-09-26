@@ -6,6 +6,7 @@
 /* 定义 carousel 样式。 */
 
 @import '../family/action-control.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -16,11 +17,6 @@
   /* 根节点建立自己的覆盖层：视口占满容器，导航与分页压在内容之上，
      isolation 把内部层号关在本组件内，不参与页面级层序。 */
   [data-scope='carousel'][data-part='root'] {
-    /* 三颗控制钮浮在媒体之上，缺省 M2 磨砂面：背景、边缘、顶光、投影与磨砂从同一份配方取，
-       高对比、减少透明度、打印和强制色便能一起降级。三支写在根上：check-elevation-role 按赋值点认海拔角色 */
-    --xh-_carousel-trigger-bg: var(--xh-material-frosted-bg);
-    --xh-_carousel-trigger-border: var(--xh-material-frosted-border);
-    --xh-_carousel-trigger-shadow: var(--xh-material-frosted-shadow);
     /* 自动播放开启时由 Headless 写入真实间隔；0ms 只用于未接入运行时的静态标记。 */
     --xh-_carousel-autoplay-duration: 0ms;
     --xh-_carousel-progress-from: 0 1;
@@ -112,31 +108,35 @@
   [data-scope='carousel'][data-part='prev-trigger'],
   [data-scope='carousel'][data-part='next-trigger'],
   [data-scope='carousel'][data-part='autoplay-trigger'] {
-    --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
+    /* 面走材质家族配方（family/material.css）：frosted 档的底、交互阶梯、描边、投影、1px 顶光与背景滤镜，
+       liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
+    --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_material-bg));
+    --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-_material-bg-hover));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-_material-bg-focus));
+    --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_material-bg));
+    --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-_material-fg));
+    --xh-action-fg-hover: var(--xh-carousel-trigger-fg, var(--xh-_material-fg));
+    --xh-action-fg-pressed: var(--xh-carousel-trigger-fg, var(--xh-_material-fg));
+    --xh-action-fg-focus-visible: var(--xh-carousel-trigger-fg, var(--xh-_material-fg));
+    --xh-action-border-rest: var(--xh-carousel-trigger-border, var(--xh-_material-border));
+    --xh-action-border-hover: var(--xh-carousel-trigger-border, var(--xh-_material-border));
+    --xh-action-border-pressed: var(--xh-carousel-trigger-border, var(--xh-_material-border));
+    --xh-action-border-focus-visible: var(--xh-carousel-trigger-border, var(--xh-_material-border));
+    --xh-action-border-disabled: var(--xh-carousel-trigger-border, var(--xh-_material-border));
+    --xh-action-shadow-rest: var(--xh-carousel-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-hover: var(--xh-carousel-trigger-shadow-hover, var(--xh-_material-shadow));
+    --xh-action-shadow-pressed: var(--xh-carousel-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-carousel-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-shadow-disabled: var(--xh-carousel-trigger-shadow, var(--xh-_material-shadow));
+    --xh-action-highlight-rest: var(--xh-_material-highlight);
+    --xh-action-highlight-hover: var(--xh-_material-highlight);
+    --xh-action-highlight-pressed: var(--xh-_material-highlight);
+    --xh-action-highlight-focus-visible: var(--xh-_material-highlight);
+    --xh-action-highlight-disabled: var(--xh-_material-highlight);
     --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-opaque));
     --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
-    --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-material-frosted-focus-surface));
-    --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
-    --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
-    --xh-action-fg-hover: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
-    --xh-action-fg-pressed: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
-    --xh-action-fg-focus-visible: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
-    --xh-action-border-rest: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
-    --xh-action-border-hover: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
-    --xh-action-border-pressed: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
-    --xh-action-border-focus-visible: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
-    --xh-action-border-disabled: var(--xh-carousel-trigger-border, var(--xh-_carousel-trigger-border));
-    --xh-action-shadow-rest: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
-    --xh-action-shadow-hover: var(--xh-carousel-trigger-shadow-hover, var(--xh-_carousel-trigger-shadow));
-    --xh-action-shadow-pressed: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
-    --xh-action-shadow-focus-visible: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
-    --xh-action-shadow-disabled: var(--xh-carousel-trigger-shadow, var(--xh-_carousel-trigger-shadow));
     /* M2 顶光走配方的高光通道 */
-    --xh-action-highlight-rest: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-hover: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-pressed: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-focus-visible: var(--xh-material-frosted-highlight);
-    --xh-action-highlight-disabled: var(--xh-material-frosted-highlight);
     --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
     --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-_action-profile-visual-size));
     /* 作者塞进来的图标跟着 floating 档走（md 24px），与皮肤画的兜底字形同一把尺 */
@@ -144,43 +144,6 @@
 
     position: absolute;
     z-index: 1;
-    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
-    backdrop-filter: var(--xh-material-frosted-backdrop);
-  }
-
-  /* liquid 档：data-material="liquid" 下三颗控制钮换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
-     悬停 / 按下往前景色兑，键盘聚焦铺实体 focus surface，面内不加顶光。按住时的黏滞形变由液态面逐帧写进来 */
-  :where([data-material='liquid']) [data-scope='carousel'][data-part='prev-trigger'][data-xh-liquid],
-  :where([data-material='liquid']) [data-scope='carousel'][data-part='next-trigger'][data-xh-liquid],
-  :where([data-material='liquid']) [data-scope='carousel'][data-part='autoplay-trigger'][data-xh-liquid] {
-    --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_liquid-bg));
-    --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-_liquid-bg-pressed));
-    --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-material-liquid-focus-surface));
-    --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_liquid-bg));
-    --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-hover: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-pressed: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
-    --xh-action-fg-focus-visible: var(--xh-carousel-trigger-fg, var(--xh-material-liquid-fg));
-    --xh-action-border-rest: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-border-hover: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-border-pressed: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-border-focus-visible: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-border-disabled: var(--xh-carousel-trigger-border, var(--xh-material-liquid-border));
-    --xh-action-shadow-rest: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-hover: var(--xh-carousel-trigger-shadow-hover, var(--xh-_liquid-shadow));
-    --xh-action-shadow-pressed: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-focus-visible: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
-    --xh-action-shadow-disabled: var(--xh-carousel-trigger-shadow, var(--xh-_liquid-shadow));
-    --xh-action-highlight-rest: transparent;
-    --xh-action-highlight-hover: transparent;
-    --xh-action-highlight-pressed: transparent;
-    --xh-action-highlight-focus-visible: transparent;
-    --xh-action-highlight-disabled: transparent;
-
-    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
-    backdrop-filter: var(--xh-material-liquid-backdrop);
-    transform: var(--xh-_liquid-deform);
   }
 
   [data-scope='carousel'][data-part='prev-trigger'],

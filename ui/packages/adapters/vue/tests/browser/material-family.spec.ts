@@ -1,13 +1,20 @@
 // 材质家族配方（family/material.css）：投影了 data-xh-material="frosted" 的部件从同一份配方取面。
 // 钉住：面由配方画四件套与 1px 顶光（顶光在背景最上一层，不随内容滚动），使用者槽照常优先；
-// 圆钮的面归 Action Control，配方只补背景滤镜；liquid 档由配方把同一组私有槽换成液态面。
+// 圆钮的面归 Action Control，配方只补背景滤镜；liquid 档由配方把同一组私有槽换成液态面；
+// 各浮动钮的交互阶梯一致（回到底部与回到顶部、浮动钮、轮播控制同一套）。
+import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { createApp, h, nextTick } from 'vue'
+import { XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedScrollToEndTrigger, XhMessageFeedViewport } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
+let app: App | null = null
 
 afterEach(() => {
+  app?.unmount()
+  app = null
   host?.remove()
   host = null
   document.documentElement.removeAttribute('data-material')
@@ -83,3 +90,32 @@ describe('材质家族配方', () => {
   })
 })
 
+describe('浮动钮的交互阶梯一致', () => {
+  it('回到底部：悬停 / 按下换不透明淡底，键盘聚焦铺 focus surface，带 1px 顶光', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    const lines = Array.from({ length: 40 }, (_, i) => `第 ${i + 1} 行`)
+    app = createApp({
+      render: () => h(XhMessageFeedRoot, { count: lines.length, style: 'block-size: 200px' }, () => [
+        h(XhMessageFeedViewport, () => h(XhMessageFeedList, () => lines.map((text, index) => h(XhMessageFeedItem, { itemId: `m${index}`, itemIndex: index }, () => text)))),
+        h(XhMessageFeedScrollToEndTrigger),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    const trigger = host.querySelector<HTMLElement>('[data-part="scroll-to-end-trigger"]')!
+    expect(trigger.getAttribute('data-xh-material')).toBe('frosted')
+    const read = (name: string): string => {
+      const swatch = document.createElement('span')
+      swatch.style.color = `var(${name})`
+      trigger.append(swatch)
+      const color = getComputedStyle(swatch).color
+      swatch.remove()
+      return color
+    }
+    expect(read('--xh-action-bg-hover')).toBe(read('--xh-bg-subtle-opaque'))
+    expect(read('--xh-action-bg-pressed')).toBe(read('--xh-bg-subtle-hover-opaque'))
+    expect(read('--xh-action-bg-focus-visible')).toBe(read('--xh-material-frosted-focus-surface'))
+    expect(read('--xh-action-highlight-rest')).toBe(read('--xh-material-frosted-highlight'))
+  })
+})

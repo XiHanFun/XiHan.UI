@@ -207,6 +207,8 @@ export function connectMessageFeed<T extends PropTypes>(
       'data-xh-action-size': 'xs',
       // 浮在内容之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
+      // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
+      'data-xh-material': 'frosted',
       'id': scope.partId('message-feed', 'scroll-to-end-trigger'),
       'aria-label': translations?.scrollToBottom ?? 'Scroll to bottom',
       'data-state': atBottom ? 'hidden' : 'visible',

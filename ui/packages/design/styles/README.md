@@ -24,6 +24,11 @@ import '@xihan-ui/styles/button.css'
 `@xihan-ui/styles/field-chrome.css`，并由 Headless 投影 `data-xh-field-chrome/input/affix/layout/size`
 角色。家族配方不读取组件名、标签名或未命名空间的业务属性。
 
+`menu.css`、`popover.css` 等浮层皮肤已传递引入材质家族配方；自定义浮层面可单独引入
+`@xihan-ui/styles/material.css`，在节点上写 `data-xh-material="frosted"` 即得到 frosted 四件套与 1px 顶光，
+用 `--xh-frosted-bg/-border/-fg/-shadow/-backdrop/-highlight` 覆盖；接了 Action Control 的圆钮由配方只补背景滤镜，
+面经 `--xh-action-*` 指向 `--xh-_material-*`。`data-material="liquid"` 下同时带 `data-xh-liquid` 的部件由配方换成液态面。
+
 `select.css` 已传递引入 Collection Item；自定义集合可单独引入
 `@xihan-ui/styles/collection-item.css`，并用 `data-xh-collection-item/size/context/slot` 投影稳定角色；
 选择、禁用与加载直接读取 `aria-selected/aria-disabled/aria-busy`，路径、高亮、当前与对号继续使用状态词汇表里的
