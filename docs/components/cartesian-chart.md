@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 
@@ -114,6 +114,18 @@ color 把第三个量映射到顺序色阶，图例末尾多一条色阶；palet
 
 <XhDemo src="cartesian-chart/16-color" />
 
+### 参考线、参考带与极值点
+
+annotations 在数据之外画出目标、正常区间与最高的那一天，读者不用自己去比
+
+<XhDemo src="cartesian-chart/17-annotations" />
+
+### 趋势线
+
+trend 画移动平均或最小二乘直线：看的是走向，不是某一天的起伏
+
+<XhDemo src="cartesian-chart/18-trend" />
+
 ## 设计指引
 
 ### 何时使用
@@ -152,7 +164,8 @@ color 把第三个量映射到顺序色阶，图例末尾多一条色阶；palet
 - 数据标签由系列的 `labels` 打开：柱写 `inside`（柱内居中）或 `end`（柱的远端外侧，负值翻到另一侧；堆叠中的段写在段内的远端），折线写 `end`（每个点的上方）。柱内的字取与色槽配对的前景色；放不下、与更要紧的标签重叠时不写。柱端外侧的标签写在绘图区里：数值轴两端各收进一截，最高的那根柱上面也有地方写。
 - `totals` 让每个堆叠组在整叠外侧写出合计，含负值时正负两端各写一个；百分比堆叠不写合计。
 - 折线的 `endLabel` 在线尾写系列名与末值，几条线的末端挤在一起时上下推开，推开的标签用引导线连回线尾，挤不下去掉末值最小的；右边留出它要的地方。
-- 标签按重要性落位：合计最先，其次线尾标签，最后逐个数据的标签；它们都只给眼睛看，数值由每个数据的可及名、摘要与数据表承担。
+- `annotations` 画帮读者读数的参照：`line` 参考线（目标、阈值）、`band` 参考带（正常区间、促销期），`axis` 取 `x`（自变量轴）或 `y`（数值轴），与屏幕方向无关；`point` 标出某个系列的最大、最小、最后一个或指定 x 上的数据；`average` 是系列均值处的平均线；`trend` 是最小二乘直线或尾随窗口的移动平均（`window` 缺省 3）。参考线与参考带的值计入所在轴的定义域，数据之外的目标值也看得到；参考带垫在数据之下，其余压在数据之上。参考线是结构色的虚线（虚线表达阈值与推算，不是数据），标出的点、平均线与趋势线取所属系列的颜色、随系列淡出与隐藏。标签缺省写值，平均线写 `translations.averageLabel` 加均值；标签贴着绘图区边缘时翻到线或点的另一侧。指向不存在的系列、不在轴上的类目时报 `chart.annotation-target` 提醒，只少画这一条。
+- 标签按重要性落位：注释的标签最先，其次合计、线尾标签，最后逐个数据的标签；它们都只给眼睛看，数值由每个数据的可及名、摘要与数据表承担。
 - 散点每行一个点，同一个 `x` 上可以有任意多个点。只有散点时自变量按数据推断为连续轴，两端缺省取整到刻度上，两个方向都画网格。点的形状缺省随色槽依次取圆、方、菱形、三角……颜色分不清时形状还分得开；`symbol` 可指定形状，图例与提示框的色标画成同一个形状。
 - 散点的 `size` 把一个字段映射到点的面积（半径取平方根），全部散点系列共用一把尺，最大的点半径等于柱厚上限；大小缺失、为 0 或负数的行不画。大的点先画、小的压在上面。连续轴两端各收进最大半径，贴着定义域端点的气泡也整个落在绘图区里。
 - 散点的 `color` 按值着色：点的颜色取这个字段在顺序色阶上的位置，全部按值着色的系列共用一把尺，图例末尾多一条色阶（名字取 `translations.colorLabel`，两端写值域）。这样的系列不再取分类色，图例与提示框的色标取色阶中点或数据自己的颜色；字段缺失的点取色阶中点。点小，色阶最浅的一段压在承载面上看不清，点只用色阶上从 30% 起的一段，图例的渐变按同一段画。色阶的三个锚点缺省取 `--xh-chart-sequential-*`，`palette` 把它换到基础色板里同名的色相上（与热力图的色板同名），起点贴近承载面、终点贴近正文色，亮暗主题下都是值越大越显眼。
@@ -243,6 +256,7 @@ color 把第三个量映射到顺序色阶，图例末尾多一条色阶；palet
 | `XhCartesianChartRoot` | `totals` | `boolean` |  | 堆叠柱的合计：每个堆叠组在最外端写出合计。 |
 | `XhCartesianChartRoot` | `tooltipOrder` | `CartesianTooltipOrder` |  | 提示框里各系列的行序，缺省 series（按图例次序）。 |
 | `XhCartesianChartRoot` | `palette` | `ChartPalette` |  | 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上。 |
+| `XhCartesianChartRoot` | `annotations` | `readonly CartesianAnnotation[]` |  | 注释：参考线、参考带、标出的数据、平均线与趋势线。 |
 | `XhCartesianChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）。 |
 | `XhCartesianChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
 | `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
@@ -371,7 +385,7 @@ color 把第三个量映射到顺序色阶，图例末尾多一条色阶；palet
 - 根是 `<figure>`，可访问名称来自 `caption`（`<figcaption>`）；不放标题时在根上写 `aria-label`。只有两者都没有时开发期报 `chart.missing-name`。
 - 绘图区是 `role="graphics-document"`，`aria-roledescription` 取 `translations.chartRoleDescription`（缺省 chart），`aria-describedby` 指向组件生成的摘要。
 - 每个系列是一个 `role="graphics-object"` 的分组，名称是系列名；每根柱、每个散点、每个焦点代理点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省“键, 系列名 值”），务必按本地语言改写。
-- 坐标轴、网格、十字准线与焦点环一律 `aria-hidden`：它们的信息由每个数据的名称、摘要与数据表承担。
+- 坐标轴、网格、十字准线、注释与焦点环一律 `aria-hidden`：它们的信息由每个数据的名称、摘要与数据表承担。摘要末尾按 `translations.annotationSummary` 写出参考线、参考带与平均线的名字与值（没写标签的取 `referenceLabel`）；标出的点与趋势线不写，前者的值在数据表里，后者由数据推出。
 - 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名缺省取 x 轴标题，其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
 - 绘图区只占一个 Tab 位，进入后焦点落在一个真实的元素上：柱与散点直接获得焦点，散点按 x 的次序走，上下键换到另一个系列里 x 最近的点；折线没有逐点的元素，由绘图区为聚焦的数据生成一个点作为焦点代理，移动时替换并聚焦新点，读屏据此播报新的名称。
 - 焦点环是独立的 `focus-ring` 部件，画在标记之外，不依赖 SVG 元素的 outline；只在键盘聚焦时出现。
@@ -446,6 +460,7 @@ color 把第三个量映射到顺序色阶，图例末尾多一条色阶；palet
 | `mark` | `data-axis` | mark.key.slice('axis:'.length) \| undefined |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | ''（条件成立时才出现） |
+| `mark` | `data-kind` | note?.kind |
 | `mark` | `data-mark` | spec?.mark |
 | `mark` | `data-placement` | model.scene?.placements.get(mark.key) \| undefined \| undefined |
 | `mark` | `data-series-id` | mark.key.slice('series:'.length) |
@@ -473,9 +488,9 @@ color 把第三个量映射到顺序色阶，图例末尾多一条色阶；palet
 | `--xh-cartesian-chart-legend-scale-width` | `legend-scale-bar` | `inline-size` | `default` | `--xh-space-8` | cartesian-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-line-radius` | `legend-swatch` | `border-radius` | `mark=line` | `--xh-shape-pill` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
-| `--xh-cartesian-chart-line-width` | `legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `background`<br>`block-size`<br>`stroke-dasharray`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`drawing`<br>`mark=line`<br>`not([data-drawing])`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | cartesian-chart 的 legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。 |
+| `--xh-cartesian-chart-line-width` | `annotation`<br>`legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `background`<br>`block-size`<br>`stroke-dasharray`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`drawing`<br>`kind=trend`<br>`mark=line`<br>`method=moving-average`<br>`not([data-drawing])`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | cartesian-chart 的 annotation、legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。 |
 | `--xh-cartesian-chart-point-size` | `legend-swatch`<br>`root`<br>`tooltip-swatch` | `background` | `@media (forced-colors: active)`<br>`@media print`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-point-size` | cartesian-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。 |
-| `--xh-cartesian-chart-series-color` | `area-fill`<br>`bar`<br>`dot`<br>`legend-item`<br>`legend-swatch`<br>`line`<br>`pattern-line`<br>`point`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`mark=line`<br>`mark=point`<br>`not([data-symbol='circle'], [data-symbol='square'])`<br>`symbol=circle`<br>`symbol=square`<br>`tone`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-_tone`<br>`--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | cartesian-chart 的 area-fill、bar、dot、legend-item、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
+| `--xh-cartesian-chart-series-color` | `annotation`<br>`area-fill`<br>`bar`<br>`dot`<br>`legend-item`<br>`legend-swatch`<br>`line`<br>`pattern-line`<br>`point`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`kind=average`<br>`kind=point`<br>`kind=trend`<br>`mark=line`<br>`mark=point`<br>`not([data-symbol='circle'], [data-symbol='square'])`<br>`symbol=circle`<br>`symbol=square`<br>`tone`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-_tone`<br>`--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | cartesian-chart 的 annotation、area-fill、bar、dot、legend-item、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | cartesian-chart 的 tooltip 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-surface-pad-sm` | cartesian-chart 的 tooltip 部件 padding-inline 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-surface-pad-sm` | cartesian-chart 的 tooltip 部件 padding-block 覆盖槽。 |

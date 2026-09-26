@@ -6,6 +6,7 @@
 // 提供 cartesian chart 相关实现。
 
 import type {
+  CartesianAnnotation,
   CartesianAxis,
   CartesianChartApi,
   CartesianChartSchema,
@@ -120,6 +121,8 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   tooltipOrder?: CartesianTooltipOrder
   /** 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上。 */
   palette?: ChartPalette
+  /** 注释：参考线、参考带、标出的数据、平均线与趋势线。 */
+  annotations?: readonly CartesianAnnotation[]
   /** 隐藏的系列（受控）。 */
   hiddenSeries?: string[]
   /** 初始隐藏的系列（非受控）。 */
@@ -156,6 +159,7 @@ export function XhCartesianChartRoot({
   totals,
   tooltipOrder,
   palette,
+  annotations,
   hiddenSeries,
   defaultHiddenSeries,
   activeKey,
@@ -183,6 +187,7 @@ export function XhCartesianChartRoot({
     totals,
     tooltipOrder,
     palette,
+    annotations,
     hiddenSeries,
     defaultHiddenSeries,
     activeKey,

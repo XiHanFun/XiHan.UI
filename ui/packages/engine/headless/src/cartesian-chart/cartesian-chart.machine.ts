@@ -56,6 +56,7 @@ export const cartesianChartMachine = createMachine({
       () => prop('xAxis'),
       () => prop('yAxis'),
       () => prop('orientation'),
+      () => prop('annotations'),
       context.dep('hiddenSeries'),
     ], () => action(['reportIssues']))
     // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
@@ -94,8 +95,12 @@ export const cartesianChartMachine = createMachine({
         notifyChartActive(params, details)
       },
       reportIssues: (params) => {
-        for (const issue of cartesianModelOf(params).issues)
+        const model = cartesianModelOf(params)
+        for (const issue of model.issues)
           reportDiagnostic({ code: issue.code, level: 'error', scope: 'cartesian-chart', message: issue.message, detail: issue.detail })
+        // 注释指错了目标只少画那一条，图照常画：按提醒报
+        for (const issue of model.warnings)
+          reportDiagnostic({ code: issue.code, level: 'warn', scope: 'cartesian-chart', message: issue.message, detail: issue.detail })
       },
     },
     effects: {

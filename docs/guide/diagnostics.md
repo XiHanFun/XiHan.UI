@@ -55,6 +55,7 @@ export const DIAGNOSTIC_CODES = {
   chartNegativeShare: "chart.negative-share", // 占比类图表出现负值
   chartInvalidRange: "chart.invalid-range", // 区间不合法：两端不是有限数，或下界大于上界
   chartMeterOnly: "chart.meter-only", // Progress 在非 meter 语义下用了分段、目标、量程刻度或指示方式
+  chartAnnotationTarget: "chart.annotation-target", // 图表注释指向的系列不存在，或指向的类目不在轴上：这条注释不画
 };
 ```
 

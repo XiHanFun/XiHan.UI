@@ -10,11 +10,16 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
-import type { CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger } from './cartesian-chart.types'
+import type { CartesianAnnotationSummary, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
 import { cartesianDatumId, cartesianKeyId, colorPosition } from './cartesian-chart.model'
+
+/** 缺省的注释摘要：每条一句「名字（系列）：值。」。 */
+export function defaultCartesianAnnotationSummary(items: readonly CartesianAnnotationSummary[]): string {
+  return items.map(item => `${item.label}${item.series ? ` (${item.series})` : ''}: ${item.value}.`).join(' ')
+}
 
 export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze({
   ...CHART_TRANSLATIONS,
@@ -23,6 +28,9 @@ export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze(
   valueLabel: 'Value',
   sizeLabel: 'Size',
   colorLabel: 'Color',
+  referenceLabel: 'Reference',
+  averageLabel: 'Average',
+  annotationSummary: defaultCartesianAnnotationSummary,
   summary: defaultChartSummary,
 })
 
@@ -66,6 +74,7 @@ export function cartesianModelOf(source: CartesianModelSource): CartesianModel {
     yAxis: prop('yAxis'),
     orientation: prop('orientation'),
     totals: prop('totals'),
+    annotations: prop('annotations'),
     hiddenSeries: context.get('hiddenSeries'),
     size: context.get('size'),
     metrics: context.get('metrics'),
