@@ -159,7 +159,7 @@ export interface CarouselSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackAutoplay' | 'trackPointer'
+  effect: 'trackAutoplay' | 'trackPointer' | 'respectScopedMotion'
 }
 
 export interface CarouselApi<T extends PropTypes = PropTypes> {
