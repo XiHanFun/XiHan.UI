@@ -10,6 +10,10 @@ import {
   XhAccordionItem,
   XhAccordionRoot,
   XhAccordionTrigger,
+  XhCollapsibleContent,
+  XhCollapsibleIndicator,
+  XhCollapsibleRoot,
+  XhCollapsibleTrigger,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -76,5 +80,41 @@ describe('accordion 首帧不播开合', () => {
     triggers[0]!.click()
     await nextTick()
     expect(running(contents[0]!)).toEqual(['xh-disclosure-collapse'])
+  })
+})
+
+function mountCollapsible(defaultOpen: boolean): { content: HTMLElement, trigger: HTMLElement } {
+  const host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhCollapsibleRoot, { defaultOpen }, () => [
+      h(XhCollapsibleTrigger, () => ['详情', h(XhCollapsibleIndicator)]),
+      h(XhCollapsibleContent, () => '正文'),
+    ]),
+  })
+  app.mount(host)
+  return {
+    content: host.querySelector<HTMLElement>('[data-scope="collapsible"][data-part="content"]')!,
+    trigger: host.querySelector<HTMLElement>('[data-scope="collapsible"][data-part="trigger"]')!,
+  }
+}
+
+describe('collapsible 首帧不播开合', () => {
+  it.each([true, false])('挂载时 defaultOpen=%s：内容没有在播的动画', async (defaultOpen) => {
+    const { content } = mountCollapsible(defaultOpen)
+    await settle()
+    expect(running(content)).toEqual([])
+  })
+
+  it('第一次开合起按动效走：点开播展开，再点收起播收起', async () => {
+    const { content, trigger } = mountCollapsible(false)
+    await settle()
+    trigger.click()
+    await nextTick()
+    expect(running(content)).toEqual(['xh-disclosure-expand'])
+    await settle()
+    trigger.click()
+    await nextTick()
+    expect(running(content)).toEqual(['xh-disclosure-collapse'])
   })
 })

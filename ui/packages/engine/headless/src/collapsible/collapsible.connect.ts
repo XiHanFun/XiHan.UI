@@ -25,6 +25,8 @@ export function connectCollapsible<T extends PropTypes>(
   const press = pressHandlers(service)
   const ids = scope.ids('collapsible', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
+  // 挂载后没开合过：首帧就在的展开 / 收起直接呈现
+  const instant = dataAttr(!context.get('moved'))
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -83,6 +85,7 @@ export function connectCollapsible<T extends PropTypes>(
       ...parts.content.attrs,
       'id': ids.content,
       'data-state': stateAttr,
+      'data-instant': instant,
       'hidden': !open || undefined,
       // 收起动画播完之前 content 还在渲染，此时 hidden 已被皮肤的 display 盖掉，
       // 靠 inert 把这一段窗口里的内容挡在读屏与 Tab 序之外
@@ -93,6 +96,7 @@ export function connectCollapsible<T extends PropTypes>(
       // 开合状态由 trigger 的 aria-expanded 念出来，这枚标记只是同一件事的图形版
       'aria-hidden': true,
       'data-state': stateAttr,
+      'data-instant': instant,
       'data-disabled': dataAttr(disabled),
     }),
   }

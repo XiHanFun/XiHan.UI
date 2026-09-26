@@ -106,6 +106,36 @@ describe('collapsibleMachine 开合', () => {
   })
 })
 
+describe('collapsibleMachine 首帧不播开合', () => {
+  const instant = (c: ReturnType<typeof makeCollapsible>): unknown[] => [
+    c.content()['data-instant'],
+    (c.api().getIndicatorProps() as Record<string, unknown>)['data-instant'],
+  ]
+
+  it('首帧就在的展开与收起带 data-instant；第一次开合起撤掉，来回再切也不带回', () => {
+    const open = makeCollapsible({ defaultOpen: true })
+    expect(instant(open)).toEqual(['', ''])
+    open.click()
+    expect(instant(open)).toEqual([undefined, undefined])
+    open.click()
+    expect(instant(open)).toEqual([undefined, undefined])
+    open.stop()
+
+    const closed = makeCollapsible()
+    expect(instant(closed)).toEqual(['', ''])
+    closed.stop()
+  })
+
+  it('受控：只发意图时不撤，宿主写回、真正开合了才撤', () => {
+    const c = makeCollapsible({ open: false })
+    c.click()
+    expect(instant(c)).toEqual(['', ''])
+    c.setProps({ open: true })
+    expect(instant(c)).toEqual([undefined, undefined])
+    c.stop()
+  })
+})
+
 // ══ 按压通道 ══
 
 type Dict = Record<string, unknown>
