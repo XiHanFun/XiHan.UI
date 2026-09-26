@@ -9,6 +9,7 @@ import type { Service } from '@xihan-ui/core'
 import type { CarouselApi, CarouselSchema } from '@xihan-ui/headless'
 import { carouselMachine, connectCarousel } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface CarouselContext {
@@ -17,6 +18,7 @@ export interface CarouselContext {
 }
 
 export function useCarousel(props: CarouselSchema['props']): CarouselContext {
-  const service = useMachine(carouselMachine, () => props)
+  // 根与视口带 id：用 useId 派生的 scope，服务端与水合两侧同号
+  const service = useMachine(carouselMachine, () => props, { scope: useReactScope() })
   return { service, api: connectCarousel(service, reactNormalize) }
 }

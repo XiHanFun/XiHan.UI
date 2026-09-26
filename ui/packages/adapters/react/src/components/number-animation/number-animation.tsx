@@ -12,6 +12,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { connectNumberAnimation, numberAnimationMachine } from '@xihan-ui/headless'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useMachine } from '../../runtime/use-machine'
 
@@ -72,7 +73,7 @@ export function XhNumberAnimation({
     tone,
     live,
     onComplete,
-  }))
+  }), { scope: useReactScope() })
   const api = connectNumberAnimation(service, reactNormalize)
   const content = children == null ? null : renderSlot(children, { value: api.value, text: api.text })
   return (
