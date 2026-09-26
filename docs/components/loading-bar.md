@@ -227,6 +227,10 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 
 ### 动效
 
+动效角色：指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-loading-bar-fade` · `--xh-loading-bar-speed`。
+
 `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。

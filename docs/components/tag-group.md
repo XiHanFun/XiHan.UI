@@ -297,6 +297,8 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 
 ### 动效
 
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+
 `background-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

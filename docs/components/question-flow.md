@@ -448,6 +448,8 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 ### 动效
 
+动效角色：按压 · 状态 · 指示与换位 · 出现（无锚定弹出） · 列表（见[动效规范](../design/motion#角色)）。
+
 共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

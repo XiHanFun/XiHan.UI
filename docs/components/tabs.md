@@ -354,6 +354,8 @@
 
 ### 动效
 
+动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+
 `background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。

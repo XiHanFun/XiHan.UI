@@ -309,6 +309,10 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 ### 动效
 
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 导航 · 数值 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-toast-progress-duration`。
+
 关键帧 `xh-toast-in` · `xh-toast-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。

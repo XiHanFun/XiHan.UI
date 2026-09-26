@@ -273,6 +273,10 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 
 ### 动效
 
+动效角色：按压 · 状态 · 披露 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-reasoning-shimmer-duration`。
+
 共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` · `xh-fade-in` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。

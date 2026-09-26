@@ -228,6 +228,10 @@ size 改变正文字号与块间距，三档共用同一份块列表
 
 ### 动效
 
+动效角色：出现 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-markdown-stream-caret-duration` · `--xh-markdown-stream-caret-enter-duration`。
+
 关键帧 `xh-markdown-stream-caret` · `xh-markdown-stream-caret-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
