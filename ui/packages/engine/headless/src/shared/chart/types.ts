@@ -111,6 +111,8 @@ export interface ChartMetrics {
   readonly tickLength: number
   /** 刻度线与刻度标签之间的间距。 */
   readonly labelGap: number
+  /** 标记的圆角：柱的远端、扇区的四角，取 inset 档，按标记的厚度收小。 */
+  readonly radius: number
   /** 轴标签与数据标签的字体。 */
   readonly font: FontSpec
 }

@@ -141,6 +141,7 @@
     ],
     "caption": [
       "cartesian-chart",
+      "pie-chart",
       "table"
     ],
     "cell": [
@@ -153,6 +154,15 @@
     "cell-trigger": [
       "calendar-picker",
       "calendar-range-picker"
+    ],
+    "center": [
+      "pie-chart"
+    ],
+    "center-label": [
+      "pie-chart"
+    ],
+    "center-value": [
+      "pie-chart"
     ],
     "change-label": [
       "diff-view"
@@ -387,6 +397,7 @@
       "json-viewer",
       "listbox",
       "mention",
+      "pie-chart",
       "select",
       "table",
       "transfer",
@@ -436,7 +447,8 @@
       "image-viewer"
     ],
     "focus-ring": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "fold-trigger": [
       "code-view"
@@ -882,21 +894,28 @@
     "lang-label": [
       "code-view"
     ],
+    "leader-line": [
+      "pie-chart"
+    ],
     "legend": [
       "cartesian-chart",
       "fieldset",
-      "heatmap"
+      "heatmap",
+      "pie-chart"
     ],
     "legend-item": [
       "cartesian-chart",
-      "heatmap"
+      "heatmap",
+      "pie-chart"
     ],
     "legend-label": [
       "cartesian-chart",
-      "heatmap"
+      "heatmap",
+      "pie-chart"
     ],
     "legend-swatch": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "line": [
       "cartesian-chart",
@@ -1051,7 +1070,8 @@
       "image"
     ],
     "plot": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "point": [
       "cartesian-chart"
@@ -1245,6 +1265,7 @@
       "page-header",
       "pagination",
       "password-input",
+      "pie-chart",
       "pin-input",
       "popconfirm",
       "progress",
@@ -1386,6 +1407,12 @@
       "question-flow",
       "tour"
     ],
+    "slice": [
+      "pie-chart"
+    ],
+    "slice-label": [
+      "pie-chart"
+    ],
     "sort-trigger": [
       "table"
     ],
@@ -1422,6 +1449,7 @@
       "cartesian-chart",
       "diff-view",
       "pagination",
+      "pie-chart",
       "tool-call"
     ],
     "swatch": [
@@ -1436,7 +1464,8 @@
       "tabs"
     ],
     "table": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "tag-list": [
       "select"
@@ -1512,22 +1541,28 @@
     ],
     "tooltip": [
       "cartesian-chart",
-      "heatmap"
+      "heatmap",
+      "pie-chart"
     ],
     "tooltip-header": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "tooltip-name": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "tooltip-row": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "tooltip-swatch": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "tooltip-value": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "pie-chart"
     ],
     "track": [
       "color-slider",
@@ -1606,6 +1641,7 @@
       "log",
       "message-feed",
       "navigation-menu",
+      "pie-chart",
       "question-flow",
       "scroll-area",
       "virtualizer"
@@ -1661,6 +1697,7 @@
     "canvas": true,
     "caption": true,
     "cell": true,
+    "center": true,
     "change": true,
     "checkbox": true,
     "code": true,
@@ -1748,6 +1785,7 @@
     "series": true,
     "shortcut": true,
     "sider": true,
+    "slice": true,
     "slider": true,
     "split": true,
     "spotlight": true,

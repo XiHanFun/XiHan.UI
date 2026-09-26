@@ -91,6 +91,7 @@ import type { NumberFieldTranslations } from '../number-field/number-field.types
 import type { PageHeaderTranslations } from '../page-header/page-header.types'
 import type { PaginationTranslations } from '../pagination/pagination.types'
 import type { PasswordInputTranslations } from '../password-input/password-input.types'
+import type { PieChartTranslations } from '../pie-chart/pie-chart.types'
 import type { PinInputTranslations } from '../pin-input/pin-input.types'
 import type { PopconfirmTranslations } from '../popconfirm/popconfirm.types'
 import type { PopoverTranslations } from '../popover/popover.types'
@@ -228,6 +229,7 @@ export interface XhTranslationOverrides {
   'page-header'?: Partial<PageHeaderTranslations>
   'pagination'?: Partial<PaginationTranslations>
   'password-input'?: Partial<PasswordInputTranslations>
+  'pie-chart'?: Partial<PieChartTranslations>
   'pin-input'?: Partial<PinInputTranslations>
   'popconfirm'?: Partial<PopconfirmTranslations>
   'popover'?: Partial<PopoverTranslations>

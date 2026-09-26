@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 //
 // 逐实例令牌是这个库有文档的主题通道：作者把 `--xh-*` 写在 root 元素的 style 上。
-// 这一份核这一组 15 个 root 三件事：作者写的 style 与 className 落到了 root 元素上、
+// 这一份核这一组 16 个 root 三件事：作者写的 style 与 className 落到了 root 元素上、
 // connect 自己产出的属性一个没被顶掉、交给机器的那几个取值没有漏成 DOM 属性。
 import type { ReactElement } from 'react'
 import { act } from 'react'
@@ -22,6 +22,7 @@ import {
   XhNumberFieldRoot,
   XhPaginationRoot,
   XhPasswordInputRoot,
+  XhPieChartRoot,
   XhPinInputRoot,
 } from '../src'
 
@@ -182,6 +183,15 @@ const CASES: Case[] = [
     machine: { strength: 2 },
     leaks: ['strength'],
     render: props => <XhPasswordInputRoot {...props} />,
+  },
+  {
+    name: 'pie-chart',
+    scope: 'pie-chart',
+    tag: 'figure',
+    token: '--xh-pie-chart-probe',
+    machine: { data: [{ channel: 'a', visits: 1 }], nameField: 'channel', valueField: 'visits', variant: 'pie', labels: 'none' },
+    leaks: ['variant', 'labels'],
+    render: props => <XhPieChartRoot {...props} />,
   },
   {
     name: 'pin-input',

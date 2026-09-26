@@ -23,7 +23,9 @@ import type {
   ChartMark,
   ChartRow,
 } from '@xihan-ui/headless'
+import type { KeyedChildren } from '../dom/generated-nodes'
 import { cartesianChartAnatomy, cartesianChartMachine, cartesianChartMeta, connectCartesianChart } from '@xihan-ui/headless'
+import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -32,58 +34,6 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
-
-const SVG_NS = 'http://www.w3.org/2000/svg'
-
-/** 本元素生成的节点的标记：作者写的节点不带它，重画时只动自己生成的那些。 */
-const GEN_ATTR = 'data-xh-gen'
-
-/** 生成节点按 key 复用：父节点 → (key → 节点)。 */
-type KeyedChildren = WeakMap<Element, Map<string, Element>>
-
-function generated(parent: Element): Element[] {
-  return Array.from(parent.children).filter(node => node.hasAttribute(GEN_ATTR))
-}
-
-/**
- * 按 key 把一组节点排进父节点：已有的复用、缺的新建、多的移除，次序与输入一致。
- * 作者写在父节点里的节点不动，生成的节点排在它们之后。
- * 先摘掉多出的再排次序：挪动一个已在文档里的节点会让它里面的焦点丢掉，
- * 十字准线收起时若先排后摘，其后的系列分组都得挪一遍，聚焦的柱随之失焦。
- */
-function reconcile<T>(
-  parent: Element,
-  items: readonly T[],
-  keys: KeyedChildren,
-  keyOf: (item: T) => string,
-  make: (item: T, reuse: Element | undefined) => Element,
-): void {
-  const known = keys.get(parent) ?? new Map<string, Element>()
-  const next = new Map<string, Element>()
-  for (const item of items) {
-    const key = keyOf(item)
-    next.set(key, make(item, known.get(key)))
-  }
-  const kept = new Set(next.values())
-  for (const node of generated(parent)) {
-    if (!kept.has(node))
-      node.remove()
-  }
-  let cursor: Element | null = generated(parent)[0] ?? null
-  for (const node of next.values()) {
-    if (node === cursor)
-      cursor = cursor.nextElementSibling
-    else
-      parent.insertBefore(node, cursor)
-  }
-  keys.set(parent, next)
-}
-
-function makeGen<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K): HTMLElementTagNameMap[K] {
-  const node = doc.createElement(tag)
-  node.setAttribute(GEN_ATTR, '')
-  return node
-}
 
 /**
  * `<xh-cartesian-chart>`：直角坐标图宿主，柱与折线共用一根自变量轴与一根数值轴。
@@ -328,7 +278,7 @@ export class XhCartesianChartElement extends XhElement {
   /** 提示框留空时写缺省内容：头部是自变量，每个系列一行（色标、数值、系列名）。 */
   #paintTooltip(tooltip: HTMLElement, api: CartesianChartApi): void {
     // 作者自己填了内容就归作者
-    if (Array.from(tooltip.childNodes).some(node => !(node instanceof Element && node.hasAttribute(GEN_ATTR)) && node.textContent?.trim()))
+    if (hasAuthorContent(tooltip))
       return
     const model = api.tooltip
     // 行上带着激活系列的标记，激活的系列换了也要重建
@@ -362,7 +312,7 @@ export class XhCartesianChartElement extends XhElement {
 
   /** 作者没写内容的部件里放一段缺省文字。 */
   #paintOwnText(host: HTMLElement, text: string): void {
-    if (Array.from(host.childNodes).some(node => !(node instanceof Element && node.hasAttribute(GEN_ATTR)) && node.textContent?.trim()))
+    if (hasAuthorContent(host))
       return
     const [own] = generated(host)
     const span = own ?? host.appendChild(makeGen(host.ownerDocument, 'span'))

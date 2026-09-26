@@ -1,0 +1,27 @@
+<!-- 实心饼 | variant="pie" 去掉中心的空洞；扇区装得下时把占比写在扇区里 -->
+<div style="width: 100%">
+  <xh-pie-chart id="pie-chart-pie" name-field="channel" value-field="visits" variant="pie" labels="inside">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">访问来源</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="center"></div>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-pie-chart>
+</div>
+
+<script type="module">
+  // labels="inside" 把占比写在扇区里，装不下的扇区不写
+  // 数据是数组，只走 property
+  document.getElementById("pie-chart-pie").data = [
+    { channel: "搜索", visits: 4200 },
+    { channel: "直接访问", visits: 2600 },
+    { channel: "社交", visits: 1800 },
+    { channel: "邮件", visits: 900 },
+    { channel: "广告", visits: 500 },
+  ];
+</script>

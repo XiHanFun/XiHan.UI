@@ -799,7 +799,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
     ? Math.max(1, Math.min(metrics.barMax, (band - (slotCount - 1) * gap) / slotCount))
     : Math.max(1, Math.min(metrics.barMax, 8))
   const groupWidth = slotCount * thickness + (slotCount - 1) * gap
-  const radius = Math.min(4, thickness / 2)
+  const radius = Math.min(metrics.radius, thickness / 2)
   const baseline = toValue(spec.valueScale === 'log' ? layout.valueScale.domain[0]! : 0)
 
   const data: Mark[] = []

@@ -7635,6 +7635,24 @@
       "description": "cartesian-chart 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。"
     },
     {
+      "name": "--xh-cartesian-chart-bar-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-cartesian-chart-gap",
       "component": "cartesian-chart",
       "part": [
@@ -47049,6 +47067,312 @@
       ],
       "visibility": "public",
       "description": "password-input 的 control、input、visibility-trigger 部件 background-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-center-gap",
+      "component": "pie-chart",
+      "part": [
+        "center"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 center 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-center-value-font-size",
+      "component": "pie-chart",
+      "part": [
+        "center-value"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-heading-3-size"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 center-value 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-gap",
+      "component": "pie-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-height",
+      "component": "pie-chart",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-height"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 viewport 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-legend-gap",
+      "component": "pie-chart",
+      "part": [
+        "legend"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 legend 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-legend-swatch-radius",
+      "component": "pie-chart",
+      "part": [
+        "legend-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-series-color",
+      "component": "pie-chart",
+      "part": [
+        "legend-swatch",
+        "slice",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background",
+        "border",
+        "fill"
+      ],
+      "state": [
+        "xh-chart-slot=1",
+        "xh-chart-slot=2",
+        "xh-chart-slot=3",
+        "xh-chart-slot=4",
+        "xh-chart-slot=5",
+        "xh-chart-slot=6",
+        "xh-chart-slot=7",
+        "xh-chart-slot=8"
+      ],
+      "defaultToken": [
+        "--xh-chart-categorical-1",
+        "--xh-chart-categorical-2",
+        "--xh-chart-categorical-3",
+        "--xh-chart-categorical-4",
+        "--xh-chart-categorical-5",
+        "--xh-chart-categorical-6",
+        "--xh-chart-categorical-7",
+        "--xh-chart-categorical-8"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 legend-swatch、slice、tooltip-swatch 部件 background、border、fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-slice-gap",
+      "component": "pie-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-gap"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 root 部件 --xh-_chart-metric-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-slice-radius",
+      "component": "pie-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-tooltip-gap",
+      "component": "pie-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 tooltip 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-tooltip-px",
+      "component": "pie-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 tooltip 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-tooltip-py",
+      "component": "pie-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 tooltip 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-tooltip-radius",
+      "component": "pie-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 tooltip 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-tooltip-row-gap",
+      "component": "pie-chart",
+      "part": [
+        "tooltip-row"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 tooltip-row 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-tooltip-shadow",
+      "component": "pie-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 tooltip 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-pie-chart-tooltip-swatch-radius",
+      "component": "pie-chart",
+      "part": [
+        "tooltip-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "pie-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-box-autofill-bg",

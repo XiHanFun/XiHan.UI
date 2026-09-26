@@ -37,6 +37,7 @@ const IN_COMPONENT_STACKING = {
   'image-viewer.css': { reason: '工具条与关闭钮压在图上，浮层内部的两层', isolatedBy: 'content' },
   'input-group.css': { reason: '相邻段的边框重叠，靠悬停或聚焦的那一段抬一层盖住邻段边框', isolatedBy: 'root' },
   'marquee.css': { reason: '暂停开关压在滚动的轨道之上，层号只在窗口内部排序', isolatedBy: 'root' },
+  'pie-chart.css': { reason: '提示框画在根里，抬一层压住绘图区的扇区与标签', isolatedBy: 'root' },
   'resizable.css': { reason: '把手压在容器边上，四个角再抬一层盖住相邻两条边', isolatedBy: 'root' },
   'table.css': { reason: '粘性列抬到普通单元格之上，表内的列间层序', isolatedBy: 'root' },
   'tabs.css': { reason: 'segment 档的标签抬一层压在滑动的抬起面（indicator 部件）之上，两端翻页钮再抬一层压在位移的标签之上，层号只在标签带内排序', isolatedBy: 'list' },

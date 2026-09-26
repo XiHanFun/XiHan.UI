@@ -150,6 +150,7 @@
 <div class="xh-component-grid">
 
 <XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" />
+<XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" />
 
 </div>
 

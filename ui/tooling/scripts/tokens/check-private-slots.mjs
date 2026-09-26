@@ -20,12 +20,16 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   // 图表提示框的锚点坐标：连接层按数据或指针的位置写进提示框的内联样式，皮肤只读
   ['--xh-_chart-tip-x', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
   ['--xh-_chart-tip-y', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
+  // 环形中心的圆心与内径：连接层按饼的几何写进中心的内联样式，皮肤只读
+  ['--xh-_chart-center-x', 'packages/engine/headless/src/pie-chart/pie-chart.connect.ts'],
+  ['--xh-_chart-center-y', 'packages/engine/headless/src/pie-chart/pie-chart.connect.ts'],
+  ['--xh-_chart-center-size', 'packages/engine/headless/src/pie-chart/pie-chart.connect.ts'],
 ])
 
 // 皮肤声明、由运行时从计算样式读出的私有槽：取值链在皮肤里，消费方是 JS，皮肤里不必有 var() 消费点
 const RUNTIME_READ_SLOTS = new Map([
   // 图表的几何度量：机器挂载后从根的计算样式读取，作者覆盖组件槽即改变几何
-  ...['bar-max', 'gap', 'line-width', 'point-size', 'hit-min', 'tick-length', 'label-gap', 'font-size', 'leading']
+  ...['bar-max', 'gap', 'line-width', 'point-size', 'hit-min', 'tick-length', 'label-gap', 'radius', 'font-size', 'leading']
     .map(name => [`--xh-_chart-metric-${name}`, 'packages/engine/headless/src/shared/chart/metrics.ts']),
 ])
 

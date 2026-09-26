@@ -21,6 +21,7 @@
     --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
     --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
     --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+    --xh-_chart-metric-radius: var(--xh-cartesian-chart-bar-radius, var(--xh-shape-inset));
     --xh-_chart-metric-font-size: var(--xh-text-caption-size);
     --xh-_chart-metric-leading: var(--xh-leading-tight);
 

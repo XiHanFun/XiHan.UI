@@ -93,6 +93,7 @@ import { XhNumberFieldElement } from './elements/number-field'
 import { XhPageHeaderElement } from './elements/page-header'
 import { XhPaginationElement } from './elements/pagination'
 import { XhPasswordInputElement } from './elements/password-input'
+import { XhPieChartElement } from './elements/pie-chart'
 import { XhPinInputElement } from './elements/pin-input'
 import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
@@ -191,6 +192,7 @@ export function defineXhElements(): void {
   defineElement('xh-number-animation', XhNumberAnimationElement, VERSION)
   defineElement('xh-page-header', XhPageHeaderElement, VERSION)
   defineElement('xh-password-input', XhPasswordInputElement, VERSION)
+  defineElement('xh-pie-chart', XhPieChartElement, VERSION)
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
   defineElement('xh-question-flow', XhQuestionFlowElement, VERSION)
   defineElement('xh-reasoning', XhReasoningElement, VERSION)
@@ -360,6 +362,7 @@ export {
   XhNumberFieldElement,
   XhPaginationElement,
   XhPasswordInputElement,
+  XhPieChartElement,
   XhPinInputElement,
   XhPopoverElement,
   XhProgressElement,

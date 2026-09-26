@@ -104,6 +104,7 @@ const PRESSABLE = {
   'tag-group': ['tag/root'],
   // 图例项是 Action Control 的 text 档，按压由配方投影
   'cartesian-chart': ['legend-item'],
+  'pie-chart': ['legend-item'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'search-item', feedback: 'surface' }],
   'tree-select': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],

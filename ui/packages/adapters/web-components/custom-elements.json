@@ -6374,6 +6374,9 @@
               "name": "--xh-cartesian-chart-bar-max"
             },
             {
+              "name": "--xh-cartesian-chart-bar-radius"
+            },
+            {
               "name": "--xh-cartesian-chart-gap"
             },
             {
@@ -39125,6 +39128,736 @@
           "declaration": {
             "name": "XhPasswordInputElement",
             "module": "src/elements/password-input.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/pie-chart.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-pie-chart>`：饼图宿主，一行数据一个扇区，缺省画成环形。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，\n可选 center、empty 与 tooltip。扇区、引导线与标签由本元素按场景生成进 plot，按标记的 key 复用节点；\n图例项生成进 legend；center 与 tooltip 留空时写入缺省内容（合计、扇区名与数值），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据与数值格式是对象，只走 JS property。",
+          "name": "XhPieChartElement",
+          "cssParts": [
+            {
+              "description": "`<figure>`，承载 pending 与错误状态",
+              "name": "root"
+            },
+            {
+              "description": "`<figcaption>`，图表的可及名来源",
+              "name": "caption"
+            },
+            {
+              "description": "图例工具条，项由元素生成",
+              "name": "legend"
+            },
+            {
+              "description": "尺寸观测的宿主",
+              "name": "viewport"
+            },
+            {
+              "description": "绘图区 `<svg>`，扇区与标签由元素生成",
+              "name": "plot"
+            },
+            {
+              "description": "环形中心，留空时由元素写入合计",
+              "name": "center"
+            },
+            {
+              "description": "提示框，留空时由元素写入缺省内容",
+              "name": "tooltip"
+            },
+            {
+              "description": "没有可画的扇区时显示",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: pieChartAnatomy, meta: pieChartMeta, // plot 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { plot: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "readonly ChartRow[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultHiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<PieChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "nameField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name-field"
+            },
+            {
+              "kind": "field",
+              "name": "valueField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value-field"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "PieVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "rose",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "rose"
+            },
+            {
+              "kind": "field",
+              "name": "sweep",
+              "privacy": "public",
+              "type": {
+                "text": "PieSweep | undefined"
+              },
+              "attribute": "sweep"
+            },
+            {
+              "kind": "field",
+              "name": "sort",
+              "privacy": "public",
+              "type": {
+                "text": "PieSort | undefined"
+              },
+              "attribute": "sort"
+            },
+            {
+              "kind": "field",
+              "name": "maxSlices",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-slices"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "privacy": "public",
+              "type": {
+                "text": "PieLabels | undefined"
+              },
+              "attribute": "labels"
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "attribute": "active-key"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "notifyHidden",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<PieChartSchema>( this, pieChartMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<PieChartSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<PieChartSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "PieChartApi | null"
+                }
+              },
+              "description": "连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "legendItems",
+              "type": {
+                "text": "readonly PieLegendItem[]"
+              },
+              "description": "图例项：一个扇区一项，带色槽与显隐；自行铺图例时照它生成节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "ChartDatumDetails | null"
+              },
+              "description": "激活的扇区（悬停或聚焦）；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "PieTooltipModel | null"
+              },
+              "description": "提示框的缺省内容模型；收起时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "center",
+              "type": {
+                "text": "PieChartApi['center']"
+              },
+              "description": "环形中心的缺省内容：可见扇区的合计与说明文字。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "没有可画的扇区。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentHiddenSeries",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻隐藏的扇区。hiddenSeries 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "ChartKey | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "toggleSeries",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "切换某个扇区的显隐，与点图例项同一条路。"
+            },
+            {
+              "kind": "method",
+              "name": "setFocusedDatum",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "ref",
+                  "type": {
+                    "text": "{ seriesId: string, index: number } | null"
+                  }
+                }
+              ],
+              "description": "移动键盘锚点：只改锚点，不移动 DOM 焦点，也不派发事件。"
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "field",
+              "name": "#tooltipKey",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "上一次写进提示框、中心与数据表的内容：没变就不重建。"
+            },
+            {
+              "kind": "field",
+              "name": "#table",
+              "privacy": "private",
+              "type": {
+                "text": "PieChartApi['table'] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableHost",
+              "privacy": "private",
+              "type": {
+                "text": "Element | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintMarks",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintLegend",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "legend",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ],
+              "description": "图例项：一个扇区一个按钮，色标与名字各一个 span。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintCenter",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "center",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ],
+              "description": "环形中心留空时写合计：数值一行，说明文字一行。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintTooltip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tooltip",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ],
+              "description": "提示框留空时写缺省内容：头部是扇区名，下面是数值与占比。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintA11y",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "PieChartApi"
+                  }
+                }
+              ],
+              "description": "摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。"
+            }
+          ],
+          "events": [
+            {
+              "description": "图例切换显隐；detail 为 `{ hiddenSeries: string[] }`",
+              "name": "hidden-series-change",
+              "type": {
+                "text": "ChartHiddenSeriesChangeDetails"
+              }
+            },
+            {
+              "description": "指针或键盘换了激活的扇区；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
+              "type": {
+                "text": "ChartActiveKeyChangeDetails"
+              }
+            },
+            {
+              "description": "悬停或聚焦到某个扇区；detail 为扇区详情，收起时为 null",
+              "name": "datum-active",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            },
+            {
+              "description": "指针点击、Enter 或 Space 按在某个扇区上；detail 为扇区详情",
+              "name": "datum-press",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "扇区名所在的字段",
+              "name": "name-field",
+              "fieldName": "nameField"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数值所在的字段",
+              "name": "value-field",
+              "fieldName": "valueField"
+            },
+            {
+              "type": {
+                "text": "PieVariant | undefined"
+              },
+              "description": "形态，默认 donut",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "南丁格尔玫瑰图：角度均分，半径按数值",
+              "name": "rose",
+              "fieldName": "rose"
+            },
+            {
+              "type": {
+                "text": "PieSweep | undefined"
+              },
+              "description": "扫过的角度，默认 full",
+              "name": "sweep",
+              "fieldName": "sweep"
+            },
+            {
+              "type": {
+                "text": "PieSort | undefined"
+              },
+              "description": "扇区次序，默认 descending（自 12 点顺时针由大到小）",
+              "name": "sort",
+              "fieldName": "sort"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "最多保留几个扇区（含「其他」），默认 6",
+              "name": "max-slices",
+              "fieldName": "maxSlices"
+            },
+            {
+              "type": {
+                "text": "PieLabels | undefined"
+              },
+              "description": "扇区标签，默认 outside（带引导线）",
+              "name": "labels",
+              "fieldName": "labels"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数字与内建文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "description": "激活的类目（受控）：与别的图联动时是扇区名",
+              "name": "active-key",
+              "fieldName": "activeKey"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-pie-chart",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-pie-chart-center-gap"
+            },
+            {
+              "name": "--xh-pie-chart-center-value-font-size"
+            },
+            {
+              "name": "--xh-pie-chart-gap"
+            },
+            {
+              "name": "--xh-pie-chart-height"
+            },
+            {
+              "name": "--xh-pie-chart-legend-gap"
+            },
+            {
+              "name": "--xh-pie-chart-legend-swatch-radius"
+            },
+            {
+              "name": "--xh-pie-chart-series-color"
+            },
+            {
+              "name": "--xh-pie-chart-slice-gap"
+            },
+            {
+              "name": "--xh-pie-chart-slice-radius"
+            },
+            {
+              "name": "--xh-pie-chart-tooltip-gap"
+            },
+            {
+              "name": "--xh-pie-chart-tooltip-px"
+            },
+            {
+              "name": "--xh-pie-chart-tooltip-py"
+            },
+            {
+              "name": "--xh-pie-chart-tooltip-radius"
+            },
+            {
+              "name": "--xh-pie-chart-tooltip-row-gap"
+            },
+            {
+              "name": "--xh-pie-chart-tooltip-shadow"
+            },
+            {
+              "name": "--xh-pie-chart-tooltip-swatch-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhPieChartElement",
+          "declaration": {
+            "name": "XhPieChartElement",
+            "module": "src/elements/pie-chart.ts"
           }
         }
       ]
