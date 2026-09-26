@@ -770,15 +770,16 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | --- | --- | --- |
 | 手势松手：Carousel 翻页 / 归位、Drawer 与底部面板滑动关闭 / 弹回、Sortable 放下归位、ImageViewer 平移惯性、Switch 拖动拇指 | 缺省 | `smooth`（刚度 300 / 阻尼 30，超调 0.4%，落定约 283ms） |
 | 越界回弹 | 缺省 | `stiff`（600 / 42，超调 0.5%，约 195ms） |
+| 惯性滑行：ImageViewer 平移快甩 | 缺省 | 临界阻尼、固有频率 1 / τ（motion 的 `glideSpring`，τ 为投影时间）：以投影落点为目标时恰是指数减速，停在落点 |
 | 切换滑块 | liquid | `spring-toggle`（420 / 26，超调 7.5%） |
 | 指示器前沿 / 后沿 | liquid | `spring-lead`（520 / 34）/ `spring-trail`（210 / 24） |
 | 融合分离 | liquid | `spring-merge`（320 / 24，超调 5.8%） |
 | 按下形变回弹 | liquid | `spring-toggle` |
 
 - standard 档超调不超过 3%，liquid 档不超过 8%；`bouncy` 不进入核心组件。
-- 速度交接：指针会话保留最近 80ms 的采样，松手时的速度（px/s）作为弹簧初速度；落点取「当前位置 + 速度 × 投影时间」最近的吸附点。
+- 速度交接：指针会话（单指与多指）保留最近 80ms 的采样，松手时的速度（px/s）作为弹簧初速度；落点取「当前位置 + 速度 × 投影时间」最近的吸附点。投影时间：Switch 拇指 0.06s、Carousel 翻页 0.2s、ImageViewer 惯性 0.3s。Carousel 往回甩到起点另一侧算收回，不翻到反方向；落定途中再按下时从弹簧此刻的位置接着拖。被系统收走（pointercancel）时不按速度投影，回到原位。
 - 快甩阈值（底部面板、抽屉：速度 > 900px/s 或位移 > 35% 即关闭）是停留类参数，作为组件属性缺省值，不是令牌。
-- 越界跟手按 `(1 − 1 / (x × 0.55 / d + 1)) × d` 衰减，d 为越界方向的尺寸。
+- 越界跟手按 `(1 − 1 / (x × 0.55 / d + 1)) × d` 衰减（motion 的 `rubberBand`）：拇指 24px、卡片（Carousel 首末页）60px、面板（ImageViewer 平移范围）80px。
 - 中途改向：以当前值与当前速度为初始条件重新求解，位置与速度都不跳变。
 - 实现：`@xihan-ui/motion` 的有状态弹簧经 `frameLoop` 驱动；减弱动效下直接落到终态。CSS 侧的弹簧曲线只有令牌 `--xh-motion-ease-spring`（`linear()`，`@supports` 守卫，兜底 `cubic-bezier`），只用于 liquid 档的点击切换；手势一律走 JS。
 - Slider 拇指、FloatingPanel、Splitter、Resizable 不用弹簧：值必须精确跟手，或松手即停在原位。
@@ -1126,7 +1127,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
 | §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档；悬浮栏里相邻的分段按液态组结组）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
-| §9.11 弹簧 | `--xh-motion-ease-spring`；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer） |
+| §9.11 弹簧 | `--xh-motion-ease-spring`；Drawer 与底部面板的滑动关闭（随 §14.6 底部面板原语） |
 | §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |
 | §9.9 带元素参数的减弱判断、JS 无固定毫秒；§14.4 JS 与 CSS 同作用域 | headless 各状态机（Tabs 标签带补间、NumberAnimation、Carousel 起播）与 core 的 `reducedMotion()`（Presence、贴底滚动、平滑滚动）改为按元素判断并用 `readMotion` 取时长；门禁要求判断减弱动效时传参 |

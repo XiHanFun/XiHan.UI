@@ -6,9 +6,35 @@
 // 定义 switch 类型契约。
 
 import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { SpringValue } from '@xihan-ui/motion'
+import type { PointerSession } from '@xihan-ui/pointer'
 
 export interface SwitchCheckedChangeDetails {
   checked: boolean
+}
+
+/** 拖动滑块的一场：按下的位置、起始端、行程与节点；横向移动过激活距离之前 active 为 false。 */
+export interface SwitchDrag {
+  pointerId: number
+  startX: number
+  startY: number
+  /** 按下那一刻滑块离起始端的位移。 */
+  base: number
+  /** 轨道内宽。行程 = 内宽 − 滑块此刻的宽：按住时滑块被拉长，拉长后的滑块走到头也不越出轨道。 */
+  inner: number
+  /** 松手后开着那一端的位移：滑块收回原宽时的行程。 */
+  rest: number
+  rtl: boolean
+  active: boolean
+  root: HTMLElement
+  thumb: HTMLElement
+  session: PointerSession
+}
+
+export interface SwitchRefs {
+  drag: SwitchDrag | null
+  /** 松手后把滑块收到一端的弹簧；落定、再次按下或卸载时撤下。 */
+  settle: SpringValue | null
 }
 
 export interface SwitchSchema extends MachineSchema {
@@ -38,9 +64,20 @@ export interface SwitchSchema extends MachineSchema {
   context: {
     /** 按压通道：Space / Enter 或触屏按住期间为 true，root 投影 data-pressed；抬起、失焦或指针取消即复位。与开关态无关。 */
     pressed: boolean
+    /**
+     * 拖动与松手落定期间滑块离起始端的横向位移（物理像素，从右往左书写时为负），连接层写成滑块的内联 translate；
+     * 为 null 时滑块按开关态停在两端，由样式层摆放。
+     */
+    thumbPosition: number | null
+    /** 正在拖动滑块（横向移动过了激活距离），投影 data-dragging。 */
+    dragging: boolean
+    /** 松手后弹簧正把滑块收到一端，投影 data-animating。 */
+    settling: boolean
+    /** 刚拖完：浏览器紧跟着派的那次 click 要吞掉，否则一拖一点会切两次。下一次按下或按键时复位。 */
+    swallowClick: boolean
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: SwitchRefs
   state: 'off' | 'on'
   event:
     | { type: 'TOGGLE' }
@@ -48,6 +85,13 @@ export interface SwitchSchema extends MachineSchema {
     | { type: 'CONTROLLED.ON' }
     | { type: 'CONTROLLED.OFF' }
     | { type: 'FORM.RESET' }
+    /** 指针按在轨道上：root 是轨道节点，量行程与找滑块用。 */
+    | { type: 'DRAG.START', pointerId: number, clientX: number, clientY: number, root: HTMLElement }
+    | { type: 'DRAG.MOVE', clientX: number, clientY: number }
+    /** 指针抬起或被系统收走。velocity 是横向松手速度（像素每秒）。 */
+    | { type: 'DRAG.END', velocity: number, canceled: boolean }
+    /** 拖完之后浏览器补派的那次 click 被吞掉。 */
+    | { type: 'CLICK.SWALLOW' }
     // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
     | { type: 'PRESS.START' }
     | { type: 'PRESS.END' }
@@ -61,7 +105,11 @@ export interface SwitchSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: never
+    | 'armDrag'
+    | 'moveDrag'
+    | 'endDrag'
+    | 'swallowClick'
+  effect: 'trackDrag'
 }
 
 export interface SwitchApi<T extends PropTypes = PropTypes> {

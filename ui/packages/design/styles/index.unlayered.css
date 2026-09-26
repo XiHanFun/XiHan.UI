@@ -32972,6 +32972,13 @@
   translate: var(--xh-_switch-thumb-size) 0;
 }
 
+/* 拖动与松手落定期间位移由连接层逐帧写进内联 translate，位移不能再叠一层过渡；按住拉长与投影照常过渡 */
+[data-scope='switch'][data-part='thumb']:is([data-dragging], [data-animating]) {
+  transition:
+    inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
 /* flex 的 inline-start 会随 dir 翻转，物理 translate 也要反向，checked 才始终走到 inline-end。 */
 [dir='rtl'] [data-scope='switch'][data-part='thumb'][data-state='checked'] {
   translate: calc(-1 * var(--xh-_switch-thumb-size)) 0;
