@@ -5,12 +5,21 @@
 
 // 提供 carousel 相关实现。
 
-import type { PropFn, Scope } from '@xihan-ui/core'
+import type { ContextFacade, PropFn, RefsFacade, Scope } from '@xihan-ui/core'
 import type { CarouselPauseSource, CarouselPressedKey, CarouselSchema } from './carousel.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
-import { resolveMotionPreference } from '@xihan-ui/motion'
+import { createSpringValue, projectRelease, resolveMotionPreference, rubberBand } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
-import { carouselDragDelta, carouselPageCount, clampCarouselPage } from './carousel.pages'
+import {
+  carouselDragDelta,
+  carouselPageCount,
+  carouselSlideRange,
+  carouselTranslatePercent,
+  clampCarouselPage,
+  normalizeSlideCount,
+  normalizeSlidesPerMove,
+  normalizeSlidesPerPage,
+} from './carousel.pages'
 
 const { createMachine } = setup<CarouselSchema>()
 
@@ -19,6 +28,12 @@ export const CAROUSEL_AUTOPLAY_INTERVAL = 4000
 
 /** 拖拽翻页的位移阈值（像素）。 */
 export const CAROUSEL_DRAG_THRESHOLD = 40
+
+/** 松手落点的投影时间（秒）：落点 = 拖拽位移 + 松手速度 × 这么久，轻甩一下也能翻页，往回甩则收回。 */
+const PROJECTION_SECONDS = 0.2
+
+/** 不回绕的首末页往外拖时的橡皮筋尺寸（像素）：越拉越沉，趋近这么远。 */
+const EDGE_STRETCH = 60
 
 /**
  * 自动播放间隔归一。返回 0 表示"不起计时器"：
@@ -61,6 +76,38 @@ function isFlipped(prop: PropFn<CarouselSchema>): boolean {
   return (prop('orientation') ?? 'horizontal') === 'horizontal' && prop('dir') === 'rtl'
 }
 
+function isHorizontal(prop: PropFn<CarouselSchema>): boolean {
+  return (prop('orientation') ?? 'horizontal') === 'horizontal'
+}
+
+/** 某一页落定时轨道的位移百分比（相对轨道自身沿轴的尺寸），与连接层的算法同一套。 */
+function trackPercent(prop: PropFn<CarouselSchema>, page: number): number {
+  const slideCount = normalizeSlideCount(prop('slideCount'))
+  const perPage = normalizeSlidesPerPage(prop('slidesPerPage'))
+  const perMove = normalizeSlidesPerMove(prop('slidesPerMove'), perPage)
+  const range = carouselSlideRange(clampCarouselPage(page, carouselPageCount(slideCount, perPage, perMove)), slideCount, perPage, perMove)
+  return carouselTranslatePercent(range.start, perPage, isFlipped(prop))
+}
+
+/** 轨道节点：位移百分比按它沿轴的尺寸算；落定弹簧也按它判断减弱动效。 */
+function trackEl(scope: Scope): HTMLElement | null {
+  return scope.getById<HTMLElement>(scope.partId('carousel', 'viewport'))
+    ?.querySelector<HTMLElement>(':scope > [data-scope="carousel"][data-part="list"]') ?? null
+}
+
+/**
+ * 这一拖朝哪边、那边还走不走得动：+1 往下一页、-1 往上一页。不回绕的首页往上一页、末页往下一页拖时走不动，
+ * 拖出去的那段按橡皮筋衰减。
+ */
+function blockedToward(prop: PropFn<CarouselSchema>, page: number, offset: number): boolean {
+  const direction = carouselDragDelta(offset, 0, isFlipped(prop))
+  if (direction === 0 || (prop('loop') ?? false))
+    return false
+  const total = pageCount(prop)
+  const current = clampCarouselPage(page, total)
+  return direction === 1 ? current >= total - 1 : current <= 0
+}
+
 /**
  * 按住的那个按钮此刻是不是已经转成原生 disabled：到边界的翻页钮（不回绕）与没配自动播放的开关。
  * 按住途中翻到末页、宿主关掉 loop 或改写 autoplay，按钮转禁用后不会再来 keyup，按压面得由机器收。
@@ -87,6 +134,63 @@ function step(current: number, direction: 1 | -1, totalPages: number, loop: bool
   return clampCarouselPage(clampCarouselPage(current, totalPages) + direction, totalPages, loop)
 }
 
+type CarouselRefs = RefsFacade<CarouselSchema>
+type CarouselContext = ContextFacade<CarouselSchema>
+
+/** 撤下落定弹簧并把轨道交还给连接层的页位移。 */
+function stopSettle(refs: CarouselRefs, context: CarouselContext): void {
+  refs.get('settle')?.spring.stop()
+  refs.set('settle', null)
+  context.set('settleOffset', 0)
+  context.set('settling', false)
+}
+
+/**
+ * 别的途径翻页时，落定弹簧若不是奔着这一页去的就让开：轨道从弹簧此刻的位置起按样式层的过渡曲线走向新页。
+ * 松手那一下自己发的翻页与弹簧同一页，弹簧留着。
+ */
+function yieldSettle(refs: CarouselRefs, context: CarouselContext, next: number): void {
+  const settle = refs.get('settle')
+  if (settle && settle.page !== next)
+    stopSettle(refs, context)
+}
+
+interface SettleFrom {
+  from: number
+  fromPage: number
+  toPage: number
+  velocity: number
+  spring: 'smooth' | 'stiff'
+}
+
+/**
+ * 松手落定：轨道从松手那一刻的位置带着松手速度落到目标页。位移拆成「目标页的页位移 + 还差的像素」，
+ * 弹簧只收后一段。量不到轨道（纯逻辑驱动、尺寸为 0）时直接落定，交给样式层的过渡。
+ */
+function settleFrom(refs: CarouselRefs, context: CarouselContext, scope: Scope, prop: PropFn<CarouselSchema>, o: SettleFrom): void {
+  stopSettle(refs, context)
+  const track = trackEl(scope)
+  const size = track ? (isHorizontal(prop) ? track.offsetWidth : track.offsetHeight) : 0
+  if (!track || size <= 0)
+    return
+  const gap = o.from + ((trackPercent(prop, o.fromPage) - trackPercent(prop, o.toPage)) / 100) * size
+  if (Math.abs(gap) < 0.5 && Math.abs(o.velocity) < 5)
+    return
+  const spring = createSpringValue({
+    spring: o.spring,
+    value: gap,
+    target: track,
+    onUpdate: value => context.set('settleOffset', value),
+  })
+  refs.set('settle', { spring, page: o.toPage })
+  context.set('settleOffset', gap)
+  context.set('settling', true)
+  void spring.to(0, { velocity: o.velocity }).then((result) => {
+    if (result === 'rest' && refs.get('settle')?.spring === spring)
+      stopSettle(refs, context)
+  })
+}
+
 // 页码住在 context 的 cell 里（page prop 给定即受控），不编码进状态。
 // 编进状态的只有自动播放："跑 / 被按住 / 没开"三段，计时器跟着状态挂拆。
 export const carouselMachine = createMachine({
@@ -101,6 +205,9 @@ export const carouselMachine = createMachine({
     pausedBy: cell<CarouselPauseSource[]>(() => ({ defaultValue: [] })),
     dragStart: cell<number | null>(() => ({ defaultValue: null })),
     dragOffset: cell<number>(() => ({ defaultValue: 0 })),
+    dragBase: cell<number>(() => ({ defaultValue: 0 })),
+    settleOffset: cell<number>(() => ({ defaultValue: 0 })),
+    settling: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：正被按住的那个按钮，与自动播放的开合互相独立（按住播放开关时计时会停 / 起，按压面不随之丢）
     pressed: cell<CarouselPressedKey | null>(() => ({ defaultValue: null })),
   }),
@@ -112,6 +219,7 @@ export const carouselMachine = createMachine({
   effects: ['trackPointer', 'respectScopedMotion'],
   refs: () => ({
     gesture: null,
+    settle: null,
   }),
   watch: ({ track, prop, context, action }) => {
     // autoplay 被改写（关掉、打开、换间隔）都要重挂计时器
@@ -227,15 +335,24 @@ export const carouselMachine = createMachine({
           context.set('pressed', null)
       },
       // 越界页码在写入口就收口：受控宿主拿到的回调值永远是可用的页
-      setPage: ({ context, prop, event }) => {
+      setPage: ({ context, prop, event, refs }) => {
         const e = event.current()
-        if (e.type === 'PAGE.SET')
-          context.set('page', clampCarouselPage(e.page, pageCount(prop), prop('loop') ?? false))
+        if (e.type !== 'PAGE.SET')
+          return
+        const next = clampCarouselPage(e.page, pageCount(prop), prop('loop') ?? false)
+        yieldSettle(refs, context, next)
+        context.set('page', next)
       },
-      goPrev: ({ context, prop }) =>
-        context.set('page', step(context.get('page'), -1, pageCount(prop), prop('loop') ?? false)),
-      goNext: ({ context, prop }) =>
-        context.set('page', step(context.get('page'), 1, pageCount(prop), prop('loop') ?? false)),
+      goPrev: ({ context, prop, refs }) => {
+        const next = step(context.get('page'), -1, pageCount(prop), prop('loop') ?? false)
+        yieldSettle(refs, context, next)
+        context.set('page', next)
+      },
+      goNext: ({ context, prop, refs }) => {
+        const next = step(context.get('page'), 1, pageCount(prop), prop('loop') ?? false)
+        yieldSettle(refs, context, next)
+        context.set('page', next)
+      },
 
       addPauseSource: ({ context, event }) => {
         const e = event.current()
@@ -263,35 +380,59 @@ export const carouselMachine = createMachine({
           : { type: 'AUTOPLAY.STOP' })
       },
 
-      startDrag: ({ context, event }) => {
+      // 落定途中又按下：接住弹簧此刻的位置，从这里接着拖，轨道不跳
+      startDrag: ({ context, event, refs }) => {
         const e = event.current()
         if (e.type !== 'DRAG.START')
           return
+        const caught = context.get('settleOffset')
+        stopSettle(refs, context)
         context.set('dragStart', e.position)
-        context.set('dragOffset', 0)
+        context.set('dragBase', caught)
+        context.set('dragOffset', caught)
       },
-      moveDrag: ({ context, event }) => {
+      moveDrag: ({ context, event, prop }) => {
         const e = event.current()
         const start = context.get('dragStart')
         // 没按下就收到 move（指针只是划过视口）：不记位移，否则松手时会凭空翻一页
         if (e.type !== 'DRAG.MOVE' || start == null)
           return
-        context.set('dragOffset', e.position - start)
+        const raw = context.get('dragBase') + e.position - start
+        context.set('dragOffset', blockedToward(prop, context.get('page'), raw) ? rubberBand(raw, EDGE_STRETCH) : raw)
       },
-      endDrag: ({ context, prop, send }) => {
+      endDrag: ({ context, prop, send, event, refs, scope }) => {
+        const e = event.current()
         const start = context.get('dragStart')
         const offset = context.get('dragOffset')
+        const base = context.get('dragBase')
         // 先把拖拽态清干净再决定翻不翻页：翻页会重入 running 拆装计时器，
         // 那一刻若 dragStart 还在，连接层算出的位移里就还挂着已经松手的那一段
         context.set('dragStart', null)
         context.set('dragOffset', 0)
+        context.set('dragBase', 0)
         if (start == null)
           return
-        const delta = carouselDragDelta(offset, CAROUSEL_DRAG_THRESHOLD, isFlipped(prop))
-        if (delta === 1)
-          send({ type: 'PAGE.NEXT' })
-        else if (delta === -1)
-          send({ type: 'PAGE.PREV' })
+        const canceled = e.type === 'DRAG.END' && e.canceled === true
+        const velocity = e.type === 'DRAG.END' && !canceled ? (e.velocity ?? 0) : 0
+        // 只看这次按下之后拖出去的那一段，顺着松手速度往前投影：轻甩也能翻页。
+        // 往回甩到起点另一侧是「算了」，收回原页，不翻到反方向去
+        const intent = offset - base
+        const projected = projectRelease(intent, velocity, PROJECTION_SECONDS)
+        const reversed = intent !== 0 && Math.sign(projected) !== Math.sign(intent)
+        const delta = canceled || reversed ? 0 : carouselDragDelta(projected, CAROUSEL_DRAG_THRESHOLD, isFlipped(prop))
+        const from = context.get('page')
+        const to = delta === 0 ? from : step(from, delta, pageCount(prop), prop('loop') ?? false)
+        settleFrom(refs, context, scope, prop, {
+          // 轨道此刻的位置换算到落定那一页：差的就是两页的位移差加上松手时的拖拽位移
+          from: offset,
+          fromPage: from,
+          toPage: to,
+          velocity,
+          // 在走不动的边界上被拉出去：硬弹簧回弹
+          spring: to === from && blockedToward(prop, from, offset) ? 'stiff' : 'smooth',
+        })
+        if (to !== from)
+          send({ type: delta === 1 ? 'PAGE.NEXT' : 'PAGE.PREV' })
       },
     },
     effects: {
@@ -316,20 +457,27 @@ export const carouselMachine = createMachine({
         }
       },
 
-      trackPointer: ({ refs, scope, send }) => {
+      trackPointer: ({ refs, scope, send, prop }) => {
         const session = createMultiPointerSession({
           doc: resolveSessionDoc(scope.getDoc().documentElement),
-          onChange: (points: readonly { clientX: number }[]) => {
+          // 沿轨道那一轴取坐标：纵向轮播取 clientY
+          onChange: (points) => {
             const first = points[0]
             if (first)
-              send({ type: 'DRAG.MOVE', position: first.clientX })
+              send({ type: 'DRAG.MOVE', position: isHorizontal(prop) ? first.clientX : first.clientY })
           },
-          onEnd: () => send({ type: 'DRAG.END' }),
+          onEnd: ({ reason, velocity }) => send({
+            type: 'DRAG.END',
+            velocity: isHorizontal(prop) ? velocity.x : velocity.y,
+            canceled: reason === 'pointercancel',
+          }),
         })
         refs.set('gesture', session)
         return () => {
           session.dispose()
           refs.set('gesture', null)
+          refs.get('settle')?.spring.stop()
+          refs.set('settle', null)
         }
       },
 

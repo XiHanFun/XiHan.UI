@@ -87,6 +87,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次移动一张。
 - 支持纵向轨道、指针拖拽、循环与自动播放。
+- 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
 - 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度，临时暂停时同步冻结。
 - 指示点可以配置为悬停即切页。
 
@@ -282,6 +283,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `root` | `data-paused` | ''（条件成立时才出现） |
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |
 | `viewport` | `data-orientation` | props.orientation |
+| `list` | `data-animating` | ''（条件成立时才出现） |
 | `list` | `data-dragging` | ''（条件成立时才出现） |
 | `list` | `data-orientation` | props.orientation |
 | `item` | `data-index` | String(index) |
