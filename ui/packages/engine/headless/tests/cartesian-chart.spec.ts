@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // 直角坐标图：规格归一与诊断、柱与折线的几何、悬停命中与提示框、键盘导航、图例显隐、联动的激活键、通知去重与管线记忆。
 import type { DiagnosticRecord, Service } from '@xihan-ui/core'
-import type { Mark, RectMark } from '@xihan-ui/viz'
+import type { LineMark, Mark, RectMark } from '@xihan-ui/viz'
 import type { CartesianChartApi, CartesianChartSchema } from '../src/cartesian-chart'
 import type { ChartDatumDetails } from '../src/shared/chart'
 import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@xihan-ui/core'
@@ -112,11 +112,11 @@ describe('柱', () => {
       expect(bar.width).toBeLessThanOrEqual(24)
       expect(bar.baseline).toBe('end')
     }
-    const [a, b] = bars.filter(bar => bar.key.endsWith(':0'))
+    const [a, b] = bars.filter(bar => bar.key.endsWith(':s一月'))
     expect(b!.x - (a!.x + a!.width)).toBeCloseTo(2)
     // 柱高与数值成比例（同一根基线）
-    const jan = bars.find(bar => bar.key === 'online:0')!
-    const feb = bars.find(bar => bar.key === 'online:1')!
+    const jan = bars.find(bar => bar.key === 'online:s一月')!
+    const feb = bars.find(bar => bar.key === 'online:s二月')!
     expect(feb.height / jan.height).toBeCloseTo(200 / 120, 1)
   })
 
@@ -126,8 +126,8 @@ describe('柱', () => {
       series: [{ mark: 'bar', x: 'month', y: 'online', stack: 's' }, { mark: 'bar', x: 'month', y: 'offline', stack: 's' }],
     })
     const bars = marksOf(rig.api(), 'bar') as RectMark[]
-    const low = bars.find(bar => bar.key === 'online:0')!
-    const high = bars.find(bar => bar.key === 'offline:0')!
+    const low = bars.find(bar => bar.key === 'online:s一月')!
+    const high = bars.find(bar => bar.key === 'offline:s一月')!
     expect(high.x).toBe(low.x)
     expect(low.cornerRadius).toBe(0)
     expect(high.cornerRadius).toBeGreaterThan(0)
@@ -146,8 +146,8 @@ describe('柱', () => {
   it('横向：自变量竖排，柱沿 x 长，基线在左端', async () => {
     const rig = await makeRig({ ...BARS, orientation: 'horizontal' })
     const bars = marksOf(rig.api(), 'bar') as RectMark[]
-    const first = bars.find(bar => bar.key === 'online:0')!
-    const second = bars.find(bar => bar.key === 'online:1')!
+    const first = bars.find(bar => bar.key === 'online:s一月')!
+    const second = bars.find(bar => bar.key === 'online:s二月')!
     expect(first.baseline).toBe('start')
     expect(second.y).toBeGreaterThan(first.y)
     expect(second.width).toBeGreaterThan(first.width)
@@ -202,7 +202,7 @@ describe('折线', () => {
 describe('悬停、提示框与记忆', () => {
   it('悬停命中一个键：axis 模式提示框列出该键的全部系列，柱图的准线是整条类目带', async () => {
     const rig = await makeRig(BARS)
-    const bar = marksOf(rig.api(), 'bar').find(m => m.key === 'online:1') as RectMark
+    const bar = marksOf(rig.api(), 'bar').find(m => m.key === 'online:s二月') as RectMark
     rig.service.send({ type: 'HOVER', hover: { ref: { seriesId: 'online', index: 1 }, x: bar.x + 1, y: bar.y + 1 }, key: '二月' })
     await settle()
     const api = rig.api()
@@ -257,7 +257,7 @@ describe('键盘', () => {
   it('按 Tab 进入时落在锚点：首次为第一个可见系列的第一个柱', async () => {
     const rig = await makeRig(BARS)
     const api = rig.api()
-    const first = marksOf(api, 'bar').find(m => m.key === 'online:0')!
+    const first = marksOf(api, 'bar').find(m => m.key === 'online:s一月')!
     expect((api.getMarkProps(first) as Dict).tabindex).toBe(0)
     expect((api.getPlotProps() as Dict).tabindex).toBe(-1)
   })
@@ -352,7 +352,7 @@ describe('无障碍', () => {
   it('柱的可及名是「键, 系列 值」；绘图区描述指向摘要', async () => {
     const rig = await makeRig(BARS)
     const api = rig.api()
-    const bar = marksOf(api, 'bar').find(m => m.key === 'online:1')!
+    const bar = marksOf(api, 'bar').find(m => m.key === 'online:s二月')!
     expect((api.getMarkProps(bar) as Dict)['aria-label']).toBe('二月, 线上 200')
     expect((api.getPlotProps() as Dict)['aria-describedby']).toBe((api.getSummaryProps() as Dict).id)
   })
@@ -421,14 +421,14 @@ describe('过渡', () => {
     vi.useFakeTimers(FRAMES)
     const rig = await makeRig({ ...BARS, animated: true })
     vi.advanceTimersByTime(1000)
-    const before = (marksOf(rig.api(), 'bar') as RectMark[]).find(b => b.key === 'offline:0')!
+    const before = (marksOf(rig.api(), 'bar') as RectMark[]).find(b => b.key === 'offline:s一月')!
     rig.api().toggleSeries('offline')
     vi.advanceTimersByTime(100)
     const api = rig.api()
     const group = walk(api.scene.layers.data).find(m => m.key === 'series:offline')!
     expect(api.getMarkProps(group) as Dict).toMatchObject({ 'aria-hidden': true, 'data-xh-chart-slot': '2' })
     expect((api.getMarkProps(group) as Dict).role).toBeUndefined()
-    const leaving = (marksOf(api, 'bar') as RectMark[]).find(b => b.key === 'offline:0')!
+    const leaving = (marksOf(api, 'bar') as RectMark[]).find(b => b.key === 'offline:s一月')!
     expect(leaving.height).toBeLessThan(before.height)
     expect(leaving.opacity).toBeLessThan(1)
     const props = api.getMarkProps(leaving) as Dict
@@ -458,6 +458,42 @@ describe('过渡', () => {
     const fresh = [...target.keys()].filter(key => !before.has(key))
     expect(fresh.length).toBeGreaterThan(0)
     expect(fresh.every(key => (mid.get(key)!.opacity ?? 1) < 1)).toBe(true)
+  })
+
+  it('类目换了次序：同一个类目的柱滑到新位置，高度不变', async () => {
+    vi.useFakeTimers(FRAMES)
+    const series: Props['series'] = [{ mark: 'bar', x: 'month', y: 'online' }]
+    const rig = await makeRig({ data: DATA, series, animated: true })
+    vi.advanceTimersByTime(1000)
+    const feb = (): RectMark => (marksOf(rig.api(), 'bar') as RectMark[]).find(b => b.key === 'online:s二月')!
+    const before = feb()
+    rig.setProps({ data: [DATA[1]!, DATA[0]!, DATA[2]!] })
+    const target = walk(rig.api().model.scene!.scene.layers.data).find(m => m.key === 'online:s二月') as RectMark
+    vi.advanceTimersByTime(150)
+    const mid = feb()
+    expect(target.x).toBeLessThan(before.x)
+    expect(mid.x).toBeLessThan(before.x)
+    expect(mid.x).toBeGreaterThan(target.x)
+    expect(mid.height).toBeCloseTo(before.height, 6)
+  })
+
+  it('时间序列往后推一格：同一天的点平移过去，不与相邻的点串值', async () => {
+    vi.useFakeTimers(FRAMES)
+    const day = (d: number): Date => new Date(Date.UTC(2026, 0, d))
+    const rows = (from: number): Record<string, unknown>[] => [0, 1, 2, 3].map(i => ({ day: day(from + i), v: (from + i) * 10 }))
+    const series: Props['series'] = [{ mark: 'line', x: 'day', y: 'v' }]
+    const rig = await makeRig({ data: rows(1), series, animated: true })
+    vi.advanceTimersByTime(1000)
+    const lineOf = (marks: readonly Mark[]): LineMark => walk(marks).find(m => m.part === 'line') as LineMark
+    const pointOf = (line: LineMark, d: number): { x: number, y: number } => line.points.find(p => p.key === `d${day(d).valueOf()}`)!
+    const before = pointOf(lineOf(rig.api().scene.layers.data), 3)
+    rig.setProps({ data: rows(2) })
+    const target = pointOf(lineOf(rig.api().model.scene!.scene.layers.data), 3)
+    vi.advanceTimersByTime(150)
+    const mid = pointOf(lineOf(rig.api().scene.layers.data), 3)
+    expect(target.x).toBeLessThan(before.x)
+    expect(mid.x).toBeLessThan(before.x)
+    expect(mid.x).toBeGreaterThan(target.x)
   })
 
   it('减弱动效：几何直接落到终态，只淡入', async () => {

@@ -206,13 +206,12 @@ describe('状态', () => {
 })
 
 describe('过渡', () => {
-  // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响
+  // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响。写在根上随挂载生效，不与起跑抢先后
   const SLOW = '--xh-motion-duration-reveal: 4s; --xh-motion-duration-morph: 4s; --xh-motion-duration-enter: 4s'
   const MIXED = [{ mark: 'bar', x: 'month', y: 'amount' }, { mark: 'line', x: 'month', y: 'amount', id: 'trend' }]
 
   it('入场：柱从基线长出、底边不动，折线由描线关键帧描出；关掉 animated 直接落到终态', async () => {
-    const state = mount({ data: SALES, series: MIXED, animated: true })
-    host!.style.cssText += SLOW
+    const state = mount({ data: SALES, series: MIXED, animated: true, style: SLOW })
     await settle()
     const early = all('bar').map(el => el.getBoundingClientRect())
     const line = one('line')
@@ -233,9 +232,7 @@ describe('过渡', () => {
   })
 
   it('减弱动效：柱第一帧就是终值高度，只淡入；作者放慢了时长折线也不描', async () => {
-    mount({ data: SALES, series: MIXED, animated: true })
-    host!.dataset.motion = 'reduce'
-    host!.style.cssText += SLOW
+    mount({ 'data': SALES, 'series': MIXED, 'animated': true, 'style': SLOW, 'data-motion': 'reduce' })
     await settle()
     const early = all('bar').map(el => ({ height: el.getBoundingClientRect().height, opacity: Number(el.getAttribute('opacity')) }))
     expect(early.every(bar => bar.opacity < 1)).toBe(true)

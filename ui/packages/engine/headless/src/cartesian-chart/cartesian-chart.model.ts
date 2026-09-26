@@ -682,6 +682,15 @@ function line(key: string, part: string, x1: number, y1: number, x2: number, y2:
   return { kind: 'path', key, part, d: `M${x1},${y1}L${x2},${y2}` }
 }
 
+/**
+ * 数据标记的身份：取自变量的值而不是它在键序里的位置。类目换了次序、时间序列往后推了一格，
+ * 同一个数据仍是同一个标记，过渡里从旧位置滑到新位置，而不是按位置错配成别的数据的高度。
+ * 键序里的键都是合法的，身份串一定存在。
+ */
+export function cartesianDatumId(key: ChartKey): string {
+  return cartesianKeyId(key)!
+}
+
 /** 网格线画成两点的折线：过渡里按端点插值，刻度换位时跟着滑过去。 */
 function gridLine(key: string, x1: number, y1: number, x2: number, y2: number): LineMark {
   return { kind: 'line', key, part: 'grid-line', curve: 'linear', points: [{ key: 'a', x: x1, y: y1 }, { key: 'b', x: x2, y: y2 }] }
@@ -844,7 +853,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           far = positive ? (vertical ? b + gap : b - gap) : (vertical ? b - gap : b + gap)
         if (!outer && Math.abs(b - a) <= gap)
           continue
-        const key = `${id}:${j}`
+        const key = `${id}:${cartesianDatumId(spec.keys[j]!)}`
         const rowIndex = s.rows[j]!
         info.set(key, { seriesId: id, keyIndex: j })
         const rect = vertical
@@ -882,11 +891,11 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
         const b = point(center, base)
         // 面积的基线：纵向是 y0，横向是 x0
         points.push(vertical
-          ? { key: String(j), x: p.x, y: p.y, y0: b.y, defined }
-          : { key: String(j), x: p.x, y: p.y, x0: b.x, defined })
+          ? { key: cartesianDatumId(spec.keys[j]!), x: p.x, y: p.y, y0: b.y, defined }
+          : { key: cartesianDatumId(spec.keys[j]!), x: p.x, y: p.y, x0: b.x, defined })
         if (defined) {
           seriesAnchors[j] = p
-          info.set(`${id}:${j}`, { seriesId: id, keyIndex: j })
+          info.set(`${id}:${cartesianDatumId(spec.keys[j]!)}`, { seriesId: id, keyIndex: j })
         }
       }
       // 单调平滑沿自变量方向求：横向时自变量是 y
@@ -910,7 +919,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
         const size = Math.PI * (metrics.pointSize / 2) ** 2
         for (const [j, anchor] of seriesAnchors.entries()) {
           if (anchor)
-            markers.push({ kind: 'symbol', key: `${id}:m:${j}`, part: 'dot', x: anchor.x, y: anchor.y, size, symbol: 'circle', paint, a11y: { label: '', focusable: false } })
+            markers.push({ kind: 'symbol', key: `${id}:m:${cartesianDatumId(spec.keys[j]!)}`, part: 'dot', x: anchor.x, y: anchor.y, size, symbol: 'circle', paint, a11y: { label: '', focusable: false } })
         }
       }
       children.push(...markers)
