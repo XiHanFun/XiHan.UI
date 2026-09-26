@@ -40,16 +40,17 @@ afterEach(teardown)
 
 describe('徽标的计数盒与附着位置', () => {
   it.each([
-    { size: 'sm', edge: 14 },
-    { size: undefined, edge: 28 },
-    { size: 'lg', edge: 32 },
-  ] as const)('$size 档的最小计数盒为 $edge px', async ({ size, edge }) => {
+    { size: 'sm', edge: 14, font: 12 },
+    { size: undefined, edge: 20, font: 13 },
+    { size: 'lg', edge: 24, font: 14 },
+  ] as const)('$size 档的最小计数盒为 $edge px、字号 $font px', async ({ size, edge, font }) => {
     await mount(size)
     const indicator = part('indicator')
     const rect = indicator.getBoundingClientRect()
 
     expect(rect.width).toBeGreaterThanOrEqual(edge)
     expect(rect.height).toBe(edge)
+    expect(getComputedStyle(indicator).fontSize).toBe(`${font}px`)
     expect(indicator.dataset.tone).toBe('neutral')
     expect(getComputedStyle(indicator).boxShadow).toBe('none')
   })
