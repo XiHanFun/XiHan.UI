@@ -16,8 +16,10 @@ const props = withDefaults(
     compact?: boolean;
     /** 块内文字取这组令牌里同一档位的一支，如 `--xh-chart-on-categorical-`；不传按档位粗分深浅 */
     onPrefix?: string;
+    /** 块内文字按底色明度取黑或白（相对颜色语法）：给随主题换档、档位名又不是数字的色阶用 */
+    autoInk?: boolean;
   }>(),
-  { steps: undefined, label: undefined, compact: false, onPrefix: undefined },
+  { steps: undefined, label: undefined, compact: false, onPrefix: undefined, autoInk: false },
 );
 
 interface Swatch {
@@ -38,10 +40,12 @@ const swatches = computed<Swatch[]>(() => {
     .sort((a, b) => order.get(a.step)! - order.get(b.step)!);
 });
 
-/** 配对的文字令牌：给了 onPrefix 且这一档有对应令牌时，块内文字取它 */
+/** 配对的文字令牌：给了 onPrefix 且这一档有对应令牌时，块内文字取它；autoInk 时按底色明度在黑白之间取 */
 function onColor(swatch: Swatch): string | undefined {
   const name = props.onPrefix && `${props.onPrefix}${swatch.step}`;
-  return name && name in (tokens as Record<string, string>) ? `var(${name})` : undefined;
+  if (name && name in (tokens as Record<string, string>))
+    return `var(${name})`;
+  return props.autoInk ? `oklch(from var(${swatch.name}) clamp(0, (0.6 - l) * 1000, 1) 0 0)` : undefined;
 }
 
 /** 深档的标注字用浅色：按档位数字粗分，语义角色那种没有数字的按 dark / on 字样判 */

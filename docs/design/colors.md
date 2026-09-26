@@ -216,9 +216,9 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 ### 有序、顺序与发散
 
-<XhTokenSwatches prefix="--xh-chart-ordinal-" label="有序：漏斗阶段、档位" compact />
-<XhTokenSwatches prefix="--xh-chart-sequential-" :steps="['start', 'mid', 'end']" label="顺序：大小" compact />
-<XhTokenSwatches prefix="--xh-chart-diverging-" :steps="['negative', 'center', 'positive']" label="发散：高于 / 低于基线" compact />
+<XhTokenSwatches prefix="--xh-chart-ordinal-" label="有序：漏斗阶段、档位" compact auto-ink />
+<XhTokenSwatches prefix="--xh-chart-sequential-" :steps="['start', 'mid', 'end']" label="顺序：大小" compact auto-ink />
+<XhTokenSwatches prefix="--xh-chart-diverging-" :steps="['negative', 'center', 'positive']" label="发散：高于 / 低于基线" compact auto-ink />
 
 - 有序：单色相，1 对承载面最强、逐档减弱，最弱一档仍 ≥ 2:1。
 - 顺序：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带自己在色阶上的位置，皮肤用 `color-mix(in oklch, …)` 在锚点之间插值，切换主题时颜色跟着令牌走，不由脚本算色。
