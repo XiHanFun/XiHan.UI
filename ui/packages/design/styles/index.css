@@ -13871,20 +13871,30 @@
     overflow: hidden;
   }
 
-  /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
-     这里只管交叉轴的贴边与粗细，以及长什么样。它是可选部件——不渲染它时，
+  /* 当前链接的四个几何量由机器量好、连接层写成私有槽 --xh-_anchor-indicator-x / -y / -w / -h
+     （它量得到，样式表量不到）；这里按排布取主轴那两支，落点交给 transform（只走合成），
+     另管交叉轴的贴边与粗细，以及长什么样。它是可选部件——不渲染它时，
      当前那一节的链接自画一条同规格的静态线（见下） */
   [data-scope='anchor'][data-part='indicator'] {
+    /* 还没量到时的落点，量到即被机器写的私有槽盖过 */
+    --xh-_anchor-indicator-x: 0;
+    --xh-_anchor-indicator-y: 0;
+    --xh-_anchor-indicator-w: 0;
+    --xh-_anchor-indicator-h: 0;
+
     position: absolute;
     display: block;
     /* 指示条也是列表项，宿主给 li 的外边距会把绝对定位的它推离条目 */
     margin: 0;
+    inset-block-start: 0;
     inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
     inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
+    block-size: var(--xh-_anchor-indicator-h);
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+    transform: translate(0, var(--xh-_anchor-indicator-y));
     transition:
-      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
@@ -13895,13 +13905,20 @@
 
   /* 横排：指示条改躺在底边的轨道上，交叉轴换成块轴 */
   [data-scope='anchor'][data-part='indicator'][data-orientation='horizontal'] {
-    inset-inline-start: auto;
+    inset-block-start: auto;
+    inset-inline-start: 0;
     inset-block-end: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
-    inline-size: auto;
+    inline-size: var(--xh-_anchor-indicator-w);
     block-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
+    transform: translate(var(--xh-_anchor-indicator-x), 0);
     transition:
-      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* transform 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
+  [data-scope='anchor'][data-part='indicator'][data-orientation='horizontal']:dir(rtl) {
+    transform: translate(calc(-1 * var(--xh-_anchor-indicator-x)), 0);
   }
 
   /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（导航当前页）：

@@ -3,7 +3,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
+import { XhAnchorIndicator, XhAnchorItem, XhAnchorLink, XhAnchorList, XhAnchorRoot, XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -151,5 +151,52 @@ describe('tabs 的指示条几何', () => {
     expect(indicator.height).toBeCloseTo(trigger.height, 0)
     // 贴在行向末端那条轨道上：RTL 下行尾在左边
     expect(indicator.left).toBeCloseTo(list.left + Number.parseFloat(getComputedStyle(document.querySelector('[data-part="list"]')!).borderLeftWidth), 0)
+  })
+})
+
+describe('anchor 的指示条几何', () => {
+  async function mountAnchor(options: { scale?: number, orientation?: 'horizontal' | 'vertical' } = {}): Promise<void> {
+    const host = document.createElement('div')
+    if (options.scale)
+      host.style.transform = `scale(${options.scale})`
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhAnchorRoot, { defaultValue: 'b', orientation: options.orientation, smooth: false, style: { inlineSize: '360px' } }, () => [
+        h(XhAnchorList, null, () => [
+          h(XhAnchorItem, null, () => h(XhAnchorLink, { value: 'a' }, () => '概览')),
+          h(XhAnchorItem, null, () => h(XhAnchorLink, { value: 'b' }, () => '安装与配置')),
+          h(XhAnchorItem, null, () => h(XhAnchorLink, { value: 'c' }, () => '用法')),
+          h(XhAnchorIndicator),
+        ]),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    for (const animation of document.querySelector<HTMLElement>('[data-scope="anchor"][data-part="indicator"]')!.getAnimations())
+      animation.finish()
+  }
+
+  function anchorPart(name: string, value?: string): DOMRect {
+    const selector = value ? `[data-scope='anchor'][data-part='${name}'][data-value='${value}']` : `[data-scope='anchor'][data-part='${name}']`
+    return document.querySelector<HTMLElement>(selector)!.getBoundingClientRect()
+  }
+
+  it('竖排：祖先带 scale(0.5) 时指示条沿块轴与当前链接对齐', async () => {
+    await mountAnchor({ scale: 0.5 })
+    const indicator = anchorPart('indicator')
+    const link = anchorPart('link', 'b')
+    expect(indicator.top).toBeCloseTo(link.top, 0)
+    expect(indicator.height).toBeCloseTo(link.height, 0)
+  })
+
+  it('横排：整页 RTL 而没传 dir，指示条沿行轴与当前链接对齐', async () => {
+    document.documentElement.dir = 'rtl'
+    await mountAnchor({ orientation: 'horizontal' })
+    const indicator = anchorPart('indicator')
+    const link = anchorPart('link', 'b')
+    expect(indicator.left).toBeCloseTo(link.left, 0)
+    expect(indicator.width).toBeCloseTo(link.width, 0)
   })
 })
