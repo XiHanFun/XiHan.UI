@@ -4,6 +4,10 @@
 // motion 包维护 JS override/Presence 通道，core/visual-environment 维护
 // VisualEnvironmentController 的七轴 DOM/父作用域解析。两处各自持有一个系统信号源，应用根再经
 // 显式 motionSink 汇合；适配器与组件不得出现第三份探测。
+//
+// 第二条：resolveMotionPreference 必须传参。传元素时最近祖先上的 data-motion 与 CSS 的作用域一致地生效，
+// 不传就只剩应用级 override 与全局窗口的系统设置——容器写了 data-motion="reduce"，CSS 动效停了，
+// JS 驱动的那一路照样动。
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -13,6 +17,8 @@ const ALLOWED = new Set([
   'packages/engine/motion/src/reduced-motion.ts',
 ])
 const PATTERN = /\(prefers-reduced-motion:/g
+/** 不传参地调用最终偏好。 */
+const BARE_CALL = /(?<![\w.])resolveMotionPreference\(\s*\)/g
 const EXT = /\.(?:ts|tsx|js|mjs|vue)$/
 
 /** 递归收集 packages/<组>/<包>/src 下的源码文件。 */
@@ -45,9 +51,12 @@ for (const group of await readdir(PACKAGES)) {
 }
 
 const offenders = []
+const bareCalls = []
 const allowedHits = new Map([...ALLOWED].map(file => [file, 0]))
 for (const file of files) {
   const text = await readFile(file, 'utf8')
+  for (const hit of text.matchAll(BARE_CALL))
+    bareCalls.push(`${file.replaceAll('\\', '/')}:${text.slice(0, hit.index).split('\n').length}`)
   const hits = [...text.matchAll(PATTERN)]
   if (hits.length === 0)
     continue
@@ -75,4 +84,11 @@ if (offenders.length) {
   process.exit(1)
 }
 
-console.log(`[check-reduced-motion-channel] 通过：扫描 ${files.length} 个源码文件，系统信号只在 ${[...ALLOWED].join('、')}`)
+if (bareCalls.length) {
+  console.error('[check-reduced-motion-channel] 以下位置不传参地调用 resolveMotionPreference：')
+  for (const o of bareCalls) console.error(`  ${o}`)
+  console.error('  传入动效作用的元素：容器上的 data-motion 才对 JS 动效同样生效；没有渲染宿主时传所在窗口')
+  process.exit(1)
+}
+
+console.log(`[check-reduced-motion-channel] 通过：扫描 ${files.length} 个源码文件，系统信号只在 ${[...ALLOWED].join('、')}；resolveMotionPreference 处处传参`)
