@@ -50,7 +50,7 @@ describe('family/motion.css 共享关键帧', () => {
     const expected = Object.keys(SHARED_RELATION).sort()
 
     expect([...found.keys()].sort()).toEqual(expected)
-    expect(expected).toHaveLength(19)
+    expect(expected).toHaveLength(23)
     for (const name of expected) {
       expect(found.get(name).count, name).toBe(1)
       expect(found.get(name).layered, `${name} 不在 @layer xihan.motion 里`).toBe(true)
@@ -59,10 +59,18 @@ describe('family/motion.css 共享关键帧', () => {
     expect(css.match(/\[data-scope/g)).toBeNull()
   })
 
-  it('幅度只引 --xh-motion-distance-sm / -md 与 --xh-motion-scale-enter / -exit，与 check-motion-amplitude 同口径', async () => {
+  it('幅度只引距离档、缩放档与整幅位移端点的不透明度令牌，与 check-motion-amplitude 同口径', async () => {
     const css = stripComments(await readFile(MOTION, 'utf8'))
     const found = keyframes(css)
-    const allowed = new Set(['--xh-motion-distance-sm', '--xh-motion-distance-md', '--xh-motion-scale-enter', '--xh-motion-scale-exit'])
+    const allowed = new Set([
+      '--xh-motion-distance-sm',
+      '--xh-motion-distance-md',
+      '--xh-motion-scale-enter',
+      '--xh-motion-scale-exit',
+      '--xh-motion-scale-breathe',
+      '--xh-motion-scale-halo',
+      '--xh-motion-travel-opacity',
+    ])
 
     for (const [name, { body }] of found) {
       for (const m of body.matchAll(/--xh-motion-[\w-]+/g))
@@ -92,8 +100,8 @@ describe('family/motion.css 共享关键帧', () => {
     expect(byRelation.disclosure.sort()).toEqual(['xh-disclosure-collapse', 'xh-disclosure-expand'])
     expect(byRelation.list).toEqual(['xh-item-in'])
     expect(byRelation.sheet.sort()).toEqual(['xh-sheet-in', 'xh-sheet-out'])
-    expect(byRelation.slide.sort()).toEqual(['xh-slide-in', 'xh-slide-out'])
-    expect(byRelation.loop.sort()).toEqual(['xh-shimmer', 'xh-spin'])
+    expect(byRelation.slide.sort()).toEqual(['xh-slide-fade-in', 'xh-slide-fade-out', 'xh-slide-in', 'xh-slide-out'])
+    expect(byRelation.loop.sort()).toEqual(['xh-breathe', 'xh-breathe-halo', 'xh-shimmer', 'xh-spin'])
     expect(byRelation.value).toEqual(['xh-countdown'])
   })
 

@@ -49,6 +49,10 @@
       "$type": "dimension",
       "$value": "0px"
     },
+    "travel-opacity": {
+      "$type": "number",
+      "$value": 0
+    },
     "scale-enter": {
       "$type": "number",
       "$value": 1

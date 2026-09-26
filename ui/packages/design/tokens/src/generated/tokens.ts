@@ -395,6 +395,7 @@ export const tokens = {
   "--xh-motion-distance-sm": "var(--xh-space-1)",
   "--xh-motion-distance-md": "var(--xh-space-2)",
   "--xh-motion-travel": "100%",
+  "--xh-motion-travel-opacity": "1",
   "--xh-motion-scale-enter": "0.96",
   "--xh-motion-scale-exit": "0.98",
   "--xh-motion-scale-press": "0.97",

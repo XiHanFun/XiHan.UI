@@ -27,6 +27,8 @@ export const SHARED_RELATION = Object.freeze({
   'xh-sheet-out': 'sheet',
   'xh-slide-in': 'slide',
   'xh-slide-out': 'slide',
+  'xh-slide-fade-in': 'slide',
+  'xh-slide-fade-out': 'slide',
   'xh-spin': 'loop',
   'xh-shimmer': 'loop',
   'xh-breathe': 'loop',

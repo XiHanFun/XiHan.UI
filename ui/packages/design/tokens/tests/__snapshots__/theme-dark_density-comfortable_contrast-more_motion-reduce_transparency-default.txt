@@ -214,6 +214,7 @@
 --xh-motion-spring-trail-stiffness: 210
 --xh-motion-stagger-step: 0ms
 --xh-motion-travel: 0px
+--xh-motion-travel-opacity: 0
 --xh-nav-link-max-w: 12rem
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px

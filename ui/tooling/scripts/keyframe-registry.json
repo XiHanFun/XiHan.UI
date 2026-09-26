@@ -335,6 +335,22 @@
         "skeleton"
       ]
     },
+    "xh-slide-fade-in": {
+      "content": "from{opacity:var(--xh-motion-travel-opacity)}to{opacity:1}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "slide"
+    },
+    "xh-slide-fade-out": {
+      "content": "from{opacity:1}to{opacity:var(--xh-motion-travel-opacity)}",
+      "definedIn": [
+        "family/motion.css"
+      ],
+      "consumers": [],
+      "relation": "slide"
+    },
     "xh-slide-in": {
       "content": "from{translate:var(--xh-_slide-from-x,0) var(--xh-_slide-from-y,0)}to{translate:0 0}",
       "definedIn": [
