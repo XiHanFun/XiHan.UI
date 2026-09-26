@@ -43,6 +43,7 @@ import {
   createScene,
   inferDomain,
   isVizError,
+  layoutAxis,
   scaleBand,
   scaleLinear,
   scaleLog,
@@ -552,10 +553,20 @@ export function layoutCartesian(
     return spec.xAxis.nice ? scale.nice() : scale
   }
 
-  // 数值轴的刻度数按像素密度推：纵轴 2.5 倍行高一个，横轴 80px 一个；取整与标签精度用同一个数
+  const valueSpec: NumberFormatSpec = typeof spec.yAxis.format === 'object' && !isDateFormat(spec.yAxis.format)
+    ? spec.yAxis.format
+    : domains.percent ? { style: 'percent' } : {}
+  // 数值轴的刻度数按像素密度推：纵轴 2.5 倍行高一个；横轴按两端标签的实测宽度加两行字高的间隙一个。
+  // 取整、坐标轴的刻度与标签精度用同一个数，末端才落在刻度上
+  const endLabelWidth = (): number => {
+    const format = typeof spec.yAxis.format === 'function'
+      ? spec.yAxis.format
+      : createNumberFormat(locale, valueSpec) as (value: number) => string
+    return Math.max(...domains.value.map(v => measurer.measure(format(v), font).width))
+  }
   const valueTickCount = (range: readonly number[]): number => typeof spec.yAxis.ticks === 'number'
     ? spec.yAxis.ticks
-    : Math.max(2, Math.floor(Math.abs(range[1]! - range[0]!) / (vertical ? font.lineHeight * 2.5 : 80)))
+    : Math.max(2, Math.floor(Math.abs(range[1]! - range[0]!) / (vertical ? font.lineHeight * 2.5 : endLabelWidth() + font.lineHeight * 2)))
   // 柱端外侧的标签与合计写在绘图区里：值域两端各收进一截，最高（最低）的那根柱外面也有地方写
   const pad = labelPadding(domains.derived, totals, formats, measurer, font, metrics)
   const valueScaleOf = (plot: Rect): ContinuousScale => {
@@ -569,9 +580,6 @@ export function layoutCartesian(
     return base.nice(valueTickCount(range))
   }
 
-  const valueSpec: NumberFormatSpec = typeof spec.yAxis.format === 'object' && !isDateFormat(spec.yAxis.format)
-    ? spec.yAxis.format
-    : domains.percent ? { style: 'percent' } : {}
   const valueTickFormat = (scale: AxisScale) => (value: unknown): string => {
     if (typeof spec.yAxis.format === 'function')
       return spec.yAxis.format(value)
@@ -619,6 +627,15 @@ export function layoutCartesian(
 
   let keyFormatScale: AxisScale | null = null
   let valueFormatScale: AxisScale | null = null
+  const valueAxisConfig = {
+    ...common,
+    format: (v: unknown) => valueTickFormat(valueFormatScale as AxisScale)(v),
+    ticks: spec.yAxis.ticks,
+    labelOverflow: spec.yAxis.labelOverflow ?? 'auto',
+    maxLabelSize: maxLabel,
+    tickLength: 0,
+    title: spec.yAxis.title,
+  } as const
   const solved = solvePlotRect({
     outer,
     axes: {
@@ -631,15 +648,7 @@ export function layoutCartesian(
         tickLength: keyTicks,
         title: spec.xAxis.title,
       },
-      [valuePosition]: {
-        ...common,
-        format: (v: unknown) => valueTickFormat(valueFormatScale as AxisScale)(v),
-        ticks: spec.yAxis.ticks,
-        labelOverflow: spec.yAxis.labelOverflow ?? 'auto',
-        maxLabelSize: maxLabel,
-        tickLength: 0,
-        title: spec.yAxis.title,
-      },
+      [valuePosition]: valueAxisConfig,
     },
     scales: {
       [keyPosition]: (plot: Rect) => (keyFormatScale = keyScaleOf(plot)),
@@ -649,6 +658,11 @@ export function layoutCartesian(
 
   const keyScale = solved.scales[keyPosition] as AxisScale
   const valueScale = solved.scales[valuePosition] as ContinuousScale
+  // 横向的数值轴按取整用的同一个刻度数重排：坐标轴自己按标签宽度排出的刻度更密，步长与取整对不上，
+  // 定义域的末端会落在两个刻度之间。横向数值轴在底边，厚度只随字高，重排不改绘图区
+  const valueAxis = vertical || Array.isArray(spec.yAxis.ticks)
+    ? solved.axes[valuePosition] as AxisLayout
+    : layoutAxis({ ...valueAxisConfig, scale: valueScale, position: valuePosition, ticks: valueTickCount(valueScale.range) })
   const bandwidth = isCategoryScale(keyScale) ? keyScale.bandwidth : 0
   const keyCenters = spec.keys.map((key) => {
     if (isCategoryScale(keyScale)) {
@@ -665,7 +679,7 @@ export function layoutCartesian(
     keyScale,
     valueScale,
     keyAxis: solved.axes[keyPosition] as AxisLayout,
-    valueAxis: solved.axes[valuePosition] as AxisLayout,
+    valueAxis,
     keyCenters,
     bandwidth,
     font,
