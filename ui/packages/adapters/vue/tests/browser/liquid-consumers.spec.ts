@@ -176,7 +176,7 @@ function channel(value: number): number {
 }
 
 function luminance(data: Uint8ClampedArray, i: number): number {
-  return 0.2126 * channel(data[i]) + 0.7152 * channel(data[i + 1]) + 0.0722 * channel(data[i + 2])
+  return 0.2126 * channel(data[i]!) + 0.7152 * channel(data[i + 1]!) + 0.0722 * channel(data[i + 2]!)
 }
 
 /**
@@ -195,7 +195,7 @@ function contrast(shot: Shot, inset: number, fg: HTMLElement): number {
     for (let x = x0; x < x1; x++) {
       const i = (y * shot.width + x) * 4
       // 三个通道拼成一个键
-      const key = (shot.data[i] << 16) | (shot.data[i + 1] << 8) | shot.data[i + 2]
+      const key = (shot.data[i]! << 16) | (shot.data[i + 1]! << 8) | shot.data[i + 2]!
       counts.set(key, (counts.get(key) ?? 0) + 1)
     }
   }
@@ -292,7 +292,7 @@ describe('接入液态面', () => {
     }
     // 浅下层上是黑墨：前景不再钉在浅字上
     const { color } = getComputedStyle(part('image-viewer', 'counter'))
-    const [r, g, b] = color.match(/[\d.]+/g)!.map(Number)
+    const [r = 0, g = 0, b = 0] = color.match(/[\d.]+/g)!.map(Number)
     expect(r + g + b).toBeLessThan(200)
     expect(Number.parseFloat(getComputedStyle(toolbar).borderTopLeftRadius)).toBeGreaterThanOrEqual(toolbar.offsetHeight / 2)
     const close = part('image-viewer', 'close-trigger')
