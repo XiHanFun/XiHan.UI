@@ -8447,8 +8447,9 @@
     --xh-_marquee-from: 100%;
     --xh-_marquee-to: -100%;
 
-    /* 暂停开关压在窗口一端，定位基准是窗口 */
+    /* 暂停开关压在窗口一端，定位基准是窗口；isolation 把开关的层号关在本组件内，不参与页面级层序 */
     position: relative;
+    isolation: isolate;
     display: flex;
     overflow: hidden;
     max-inline-size: 100%;
