@@ -17,6 +17,9 @@ import {
   XhNotificationItem,
   XhNotificationItemTitle,
   XhNotificationRoot,
+  XhToolCallLabel,
+  XhToolCallRoot,
+  XhToolCallTrigger,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -75,6 +78,27 @@ describe('message-feed 条目到达', () => {
     expect(staggerSteps(reply!)).toBe(1)
     // 已在的消息不因新消息到来而重播
     expect(running(items()[0]!)).toEqual([])
+  })
+})
+
+describe('历史消息里的卡片', () => {
+  it('首帧就在的消息里的工具卡片直接呈现；新到的消息里的照常滑入', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const ids = ref(['h0', 'h1'])
+    app = createApp({
+      render: () => h(XhMessageFeedRoot, { style: 'block-size: 400px' }, () => h(XhMessageFeedViewport, () => h(XhMessageFeedList, () =>
+        ids.value.map((id, index) => h(XhMessageFeedItem, { key: id, itemId: id, itemIndex: index }, () =>
+          h(XhToolCallRoot, { phase: 'output-available' }, () => h(XhToolCallTrigger, () => h(XhToolCallLabel, () => id)))))))),
+    })
+    app.mount(host)
+    await settle()
+    const cards = (): HTMLElement[] => [...host.querySelectorAll<HTMLElement>('[data-scope="tool-call"][data-part="root"]')]
+    expect(cards().map(running)).toEqual([[], []])
+
+    ids.value = [...ids.value, 'fresh']
+    await nextTick()
+    expect(running(cards().at(-1)!)).toEqual(['xh-item-in'])
   })
 })
 

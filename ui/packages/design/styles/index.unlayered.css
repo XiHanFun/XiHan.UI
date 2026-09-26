@@ -13952,6 +13952,10 @@
   background: var(--xh-approval-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-approval-shadow, none);
   transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+/* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
+[data-scope='approval'][data-part='root']:not([data-part='item'][data-instant] *) {
   animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -14174,6 +14178,10 @@
   color: var(--xh-approval-result-fg, var(--xh-fg-success));
   font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-approval-result-font-weight, var(--xh-text-label-weight));
+}
+
+/* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
+[data-scope='approval'][data-part='result']:not([data-part='item'][data-instant] *) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -29254,6 +29262,10 @@
   border-radius: var(--xh-question-flow-radius, var(--xh-shape-surface));
   background: var(--xh-question-flow-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-question-flow-shadow, none);
+}
+
+/* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
+[data-scope='question-flow'][data-part='root']:not([data-part='item'][data-instant] *) {
   animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -29409,30 +29421,31 @@
   display: none;
 }
 
-/* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
+/* 当前题的选项按位次错开开幕，换题时随 data-current 重跑：一道题的选项总是同一批一起露面，
+   位次就是到达顺序。落在首帧就在的列表条目里（历史消息）时直接呈现。
    backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
    第 6 条起并到同一拍上 */
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item'] {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:not([data-part='item'][data-instant] *) {
   animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(2) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(2):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 1);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(3) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(3):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 2);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(4) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(4):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 3);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(5) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(5):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 4);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(n + 6) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(n + 6):not([data-part='item'][data-instant] *) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 5);
 }
 
@@ -29680,6 +29693,10 @@
   color: var(--xh-question-flow-result-fg, var(--xh-fg-success));
   font-size: var(--xh-question-flow-result-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-question-flow-result-font-weight, var(--xh-text-label-weight));
+}
+
+/* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
+[data-scope='question-flow'][data-part='result']:not([data-part='item'][data-instant] *) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -38036,6 +38053,10 @@
   border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
   background: var(--xh-tool-call-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-tool-call-shadow, none);
+}
+
+/* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
+[data-scope='tool-call'][data-part='root']:not([data-part='item'][data-instant] *) {
   animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
 }
 
