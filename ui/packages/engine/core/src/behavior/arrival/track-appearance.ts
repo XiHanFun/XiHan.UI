@@ -38,7 +38,7 @@ export function trackAppearance(el: HTMLElement, release: () => void, options: T
     return () => {}
   }
   // 首屏就可见：收起时盒的尺寸归零，观察器在那一刻回调。生成盒就说明在某个窗口的文档里
-  const win = el.ownerDocument.defaultView as Window
+  const win = el.ownerDocument.defaultView!
   const observer = new win.ResizeObserver(() => {
     if (rendered(el))
       return
