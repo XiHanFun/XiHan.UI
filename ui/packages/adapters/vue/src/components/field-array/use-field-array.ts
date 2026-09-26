@@ -7,10 +7,10 @@
 
 import type { Service } from '@xihan-ui/core'
 import type { FieldArrayApi, FieldArraySchema, FormSchema } from '@xihan-ui/headless'
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { connectFieldArray, fieldArrayMachine } from '@xihan-ui/headless'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -18,6 +18,8 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface FieldArrayContext {
   api: ComputedRef<FieldArrayApi>
   service: Service<FieldArraySchema>
+  /** 行所在的根节点：列表动效接在它上面。 */
+  rootRef: Ref<HTMLElement | null>
 }
 
 export function useFieldArray(
@@ -30,6 +32,9 @@ export function useFieldArray(
   const scope = createScope(null, idGen)
   const service = useMachine(fieldArrayMachine, () => ({ ...props, ...handlers }), scope)
   service.refs.set('form', form ?? null)
+  const rootRef = ref<HTMLElement | null>(null)
+  // 传 getter 而非节点本身，ref 在挂载后才有值
+  service.refs.set('getRootEl', () => rootRef.value)
   const api = computed(() => connectFieldArray(service, vueNormalize))
-  return { api, service }
+  return { api, service, rootRef }
 }

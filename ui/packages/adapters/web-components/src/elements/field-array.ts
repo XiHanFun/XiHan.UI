@@ -98,7 +98,10 @@ export class XhFieldArrayElement extends XhElement {
 
   // 机器只有一个还焦点的收尾动作（自己经 scope 取节点），不需要 config/layer/定位引擎，
   // 故 controller 只带 props。
-  private readonly ctrl = new MachineController<FieldArraySchema>(this, fieldArrayMachine, () => this.machineProps())
+  private readonly ctrl = new MachineController<FieldArraySchema>(this, fieldArrayMachine, () => this.machineProps(), {
+    // 列表动效经它取行所在的根节点
+    onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')),
+  })
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field 或 Form 只交状态；FieldArray 仅消费公开的禁用、只读、无效三轴。 */

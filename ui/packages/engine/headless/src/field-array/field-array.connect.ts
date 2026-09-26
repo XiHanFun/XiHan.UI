@@ -174,6 +174,8 @@ export function connectFieldArray<T extends PropTypes>(
       'data-at-min': dataAttr(atMin),
       'data-at-max': dataAttr(atMax),
       'data-movable': dataAttr(movable),
+      // 列表动效接上之前的这一帧（含服务端渲染）里的行都属于首帧，不播进场
+      'data-instant': dataAttr(!context.get('listTracked')),
     }),
 
     getItemProps: item => normalize.element({

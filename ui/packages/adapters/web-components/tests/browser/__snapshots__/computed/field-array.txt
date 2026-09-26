@@ -60,9 +60,9 @@ line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
 background-color: rgba(0, 0, 0, 0)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
+transition-property: translate
+transition-duration: 0.2s
+transition-timing-function: cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

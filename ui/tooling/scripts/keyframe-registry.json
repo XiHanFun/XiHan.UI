@@ -117,6 +117,7 @@
         "command",
         "dialog",
         "drawer",
+        "field-array",
         "image-viewer",
         "tags-input",
         "tour"
@@ -130,6 +131,7 @@
       ],
       "consumers": [
         "approval",
+        "field-array",
         "message-feed",
         "question-flow",
         "tags-input",

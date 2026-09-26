@@ -7,7 +7,7 @@
 
 import type { Params, RefsFacade } from '@xihan-ui/core'
 import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
-import { focusSafely, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { focusSafely, resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { getFormPathValue } from '../form'
 import { fieldArrayTriggerId } from './field-array.anatomy'
 
@@ -96,6 +96,12 @@ function restoreFocus(params: Params<FieldArraySchema>, target: FieldArrayFocusT
 }
 
 /**
+ * 行条目：库写的部件属性；Web Components 里作者刚插进来的行只带 data-xh-part，
+ * 下一轮接线才写上部件属性，到达得在插入的那一刻认出来。后者只认根节点的直接子节点，行里嵌的别的组件不算。
+ */
+const FIELD_ARRAY_ITEM_SELECTOR = '[data-scope="field-array"][data-part="item"], [data-scope="field-array"][data-part="root"] > [data-xh-part="item"]'
+
+/**
  * 值是宿主的数据数组，机器只管增删换序这三个动作，不碰行里放了什么。
  * 值住在 context 的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫；
  * 行号住在另一个 cell 里，恒非受控，由 syncKeys 跟着值走。
@@ -103,6 +109,7 @@ function restoreFocus(params: Params<FieldArraySchema>, target: FieldArrayFocusT
 export const fieldArrayMachine = createMachine({
   name: 'field-array',
   refs: ({ prop }) => ({
+    getRootEl: () => null,
     keySeq: (prop('value') ?? prop('defaultValue') ?? []).length,
     pending: null,
     form: null,
@@ -121,9 +128,11 @@ export const fieldArrayMachine = createMachine({
       keys: cell<string[]>(() => ({ defaultValue: seedKeys, isEqual: sameRows })),
       // 按压通道：被 Space / Enter 或触屏按住的那一个把手（新增 / 逐行删除 / 上移 / 下移），按 key 记
       pressed: cell<FieldArrayPressedKey | null>(() => ({ defaultValue: null })),
+      listTracked: cell<boolean>(() => ({ defaultValue: false })),
     }
   },
   initialState: () => 'idle',
+  effects: ['trackListMotion'],
   // 适配器会在挂载前把最近 Form 接进 refs；首个 entry 统一把行号对到 Form 真源。
   entry: ['syncKeys'],
   watch: ({ track, prop, context, action }) => {
@@ -139,6 +148,7 @@ export const fieldArrayMachine = createMachine({
     // 按压通道：四类把手都是 aria-disabled 而非原生 disabled，按不动的那一下由 connect 随事件带来、守卫拦下
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'LIST.TRACKED': { actions: ['markListTracked'] },
   },
   states: {
     idle: {
@@ -163,7 +173,32 @@ export const fieldArrayMachine = createMachine({
         return e.type === 'PRESS.START' && !e.disabled && !prop('disabled') && !prop('readOnly')
       },
     },
+    effects: {
+      /**
+       * 行的到达、离场与换位：首帧就在的行直接呈现，新增的行播进场，删掉的行在原处播完退场，
+       * 上移下移与增删带来的换位滑过去。React 的祖先 ref 在子组件 layout effect 之后才附着，
+       * 延到提交后的微任务再取，仍在首帧绘制之前。没有 DOM 的宿主里取不到容器，不接。
+       */
+      trackListMotion: ({ refs, send, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          queueMicrotask(() => {
+            const root = refs.get('getRootEl')()
+            if (disposed || !root)
+              return
+            stop = trackListMotion(root, { item: FIELD_ARRAY_ITEM_SELECTOR })
+            send({ type: 'LIST.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+    },
     actions: {
+      markListTracked: ({ context }) => context.set('listTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')
