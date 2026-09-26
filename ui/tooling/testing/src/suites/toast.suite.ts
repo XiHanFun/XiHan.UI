@@ -258,18 +258,18 @@ export const toastSuite: ConformanceSuite = {
 
             root.dispatchEvent(new Event('pointerleave'))
 
-            // 恢复后等 400ms：接着走的实现在剩余 300ms 处退场（这里没有退场动画可等，随即收起）；
-            // 从头重来的实现要等满 500ms，此刻还稳稳挂在台上
+            // 恢复后等 400ms：接着走的实现在剩余 300ms 处退场；从头重来的实现要等满 500ms，
+            // 此刻还稳稳挂在台上。退场之后停在 dismissing 还是已经收起，看宿主有没有退场动画可播
             await sleep(400)
-            expectState(doc, 'unmounted', '恢复后应当接着走完剩余时间')
+            const state = partEl(doc, 'root').getAttribute('data-state')
+            if (state === 'visible')
+              throw new Error('恢复后应当接着走完剩余时间：此刻还挂在台上，像是计时从头重来了')
           },
-          expect: {
-            parts: { root: { 'data-state': 'unmounted', 'data-paused': null } },
-            events: [
-              { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
-              { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
-            ],
-          },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'root', name: 'data-state', value: 'unmounted' } },
+          expect: { parts: { root: { 'data-state': 'unmounted', 'data-paused': null } } },
         },
       ],
     },

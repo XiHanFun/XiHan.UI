@@ -234,7 +234,8 @@ async function click(el: HTMLElement): Promise<void> {
  * 而 animationName 照常算得出。两条一起查才分得清「皮肤上写着」和「真的在播」。
  */
 function expectPlaying(el: HTMLElement, name: string, hint = '这一刻该在播这支动画'): void {
-  expect(getComputedStyle(el).animationName, `${hint}：皮肤该给出这支动画`).toBe(name)
+  // 一条 animation 可以并列几段（整幅滑入叠一段淡变），这支在其中即可
+  expect(getComputedStyle(el).animationName.split(', '), `${hint}：皮肤该给出这支动画`).toContain(name)
   const playing = el.getAnimations().map(a => (a as CSSAnimation).animationName)
   expect(playing, `${hint}：动画得真的启动了，不只是皮肤上写着`).toContain(name)
 }

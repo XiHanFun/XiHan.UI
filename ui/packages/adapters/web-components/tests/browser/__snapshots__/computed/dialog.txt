@@ -98,7 +98,7 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-dialog-out
+animation-name: xh-sheet-out
 animation-duration: 0.12s
 animation-timing-function: cubic-bezier(0.4, 0, 1, 1)
 outline-width: 3px
