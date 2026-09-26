@@ -192,7 +192,7 @@ else {
   checked++
   const token = base['stagger-step']?.$value
   const want = expectedRef(token, 'durations')
-  const got = /^export const motionStaggerStep(?::\s*\w+)?\s*=\s*(.+)$/m.exec(semanticTs)?.[1]?.trim()
+  const got = /^export const motionStaggerStep(?::\s*\w+)?\s*=(.+)$/m.exec(semanticTs)?.[1]?.trim()
   if (got == null)
     problems.push(`${SEMANTIC_TS} 缺 motionStaggerStep（对应 --xh-motion-stagger-step）`)
   else if (want == null)
