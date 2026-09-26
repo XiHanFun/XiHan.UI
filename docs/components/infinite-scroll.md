@@ -203,7 +203,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-infinite-scroll-load-more-bg` | `load-more-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-bg` | `load-more-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | infinite-scroll 的 load-more-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-infinite-scroll-load-more-bg-active` | `load-more-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。 |
 | `--xh-infinite-scroll-load-more-bg-hover` | `load-more-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。 |
 | `--xh-infinite-scroll-load-more-border` | `load-more-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | infinite-scroll 的 load-more-trigger 部件 border 覆盖槽。 |

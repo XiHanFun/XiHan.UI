@@ -393,6 +393,14 @@
     --xh-_action-variant-fg-loading: var(--xh-action-on-brand-solid);
   }
 
+  [data-xh-action-control][data-xh-ink-surface] {
+    --xh-ink-surface: var(--xh-action-bg-rest, var(--xh-_action-variant-bg-rest));
+  }
+
+  [data-xh-action-control][data-xh-ink-surface][data-disabled] {
+    --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-_action-variant-bg-disabled));
+  }
+
   [data-xh-action-control][data-xh-action-size='xs'] {
     --xh-_action-profile-visual-size: 24px;
     --xh-_action-profile-padding-inline: var(--xh-space-1);
@@ -11424,6 +11432,20 @@
 
     background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  }
+
+  /* 实心档是一块彩色面（连接层打 data-xh-ink-surface）：面内的图标与作者内容按这块底取墨色。
+     底色随语气与禁用换，这里跟着换 */
+  [data-scope='tag'][data-part='root'][data-xh-ink-surface] {
+    --xh-ink-surface: var(--xh-tag-bg, var(--xh-bg-brand));
+  }
+
+  [data-scope='tag'][data-part='root'][data-xh-ink-surface][data-tone] {
+    --xh-ink-surface: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
+  }
+
+  [data-scope='tag'][data-part='root'][data-xh-ink-surface][data-disabled] {
+    --xh-ink-surface: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
   }
 
   [data-scope='tag'][data-part='root'][data-variant='subtle'] {
@@ -39036,6 +39058,12 @@
       var(--xh-_tooltip-elevation-shadow);
     -webkit-backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
     backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
+  }
+
+  /* 反白面是一块彩色面（连接层打 data-xh-ink-surface）：面内的作者内容按这块底取墨色。
+     底色取自被墨色域改写的令牌，所以域只落在面内的子元素上，这里的取值仍按外层主题解析 */
+  [data-scope='tooltip'][data-part='content'][data-xh-ink-surface] {
+    --xh-ink-surface: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
   }
 
   /* 光学层单独承载 tint 与透明度；backdrop-filter 只采样元素背后，不处理正文。 */

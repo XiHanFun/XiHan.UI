@@ -344,7 +344,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | `--xh-password-input-strength-radius` | `strength-meter` | `border-radius` | `default` | `--xh-shape-pill` | password-input 的 strength-meter 部件 border-radius 覆盖槽。 |
 | `--xh-password-input-strength-thickness` | `strength-meter` | `block-size` | `default` | `--xh-track-thickness` | password-input 的 strength-meter 部件 block-size 覆盖槽。 |
 | `--xh-password-input-strength-track` | `strength-meter` | `background` | `default` | `--xh-bg-subtle-active` | password-input 的 strength-meter 部件 background 覆盖槽。 |
-| `--xh-password-input-trigger-bg` | `visibility-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | password-input 的 visibility-trigger 部件 background-color 覆盖槽。 |
+| `--xh-password-input-trigger-bg` | `visibility-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | password-input 的 visibility-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-password-input-trigger-bg-active` | `visibility-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | password-input 的 visibility-trigger 部件 background-color 覆盖槽。 |
 | `--xh-password-input-trigger-bg-hover` | `visibility-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | password-input 的 visibility-trigger 部件 background-color 覆盖槽。 |
 | `--xh-password-input-trigger-fg` | `visibility-trigger` | `color` | `default` | `--xh-fg-muted` | password-input 的 visibility-trigger 部件 color 覆盖槽。 |

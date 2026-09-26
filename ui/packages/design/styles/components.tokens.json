@@ -224,16 +224,18 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "accordion 的 trigger 部件 background-color 覆盖槽。"
+      "description": "accordion 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-accordion-trigger-bg-hover",
@@ -1449,18 +1451,20 @@
         "approve-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "loading"
+        "loading",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-loading",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "approval 的 approve-trigger 部件 background-color 覆盖槽。"
+      "description": "approval 的 approve-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-approve-bg-hover",
@@ -1491,16 +1495,18 @@
         "approve-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "approval 的 approve-trigger 部件 background-color 覆盖槽。"
+      "description": "approval 的 approve-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-approve-fg",
@@ -1622,16 +1628,18 @@
         "deny-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "approval 的 deny-trigger 部件 background-color 覆盖槽。"
+      "description": "approval 的 deny-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-deny-bg-hover",
@@ -1662,16 +1670,18 @@
         "deny-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "approval 的 deny-trigger 部件 background-color 覆盖槽。"
+      "description": "approval 的 deny-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-deny-border",
@@ -2884,6 +2894,7 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -2893,6 +2904,7 @@
         "material=liquid",
         "variant=outline",
         "where([data-material='liquid'])",
+        "xh-ink-surface",
         "xh-liquid"
       ],
       "defaultToken": [
@@ -2905,7 +2917,7 @@
         "--xh-material-liquid-focus-surface"
       ],
       "visibility": "public",
-      "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
+      "description": "back-top 的 root、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-back-top-bg-active",
@@ -3871,12 +3883,14 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
         "focus-visible",
-        "loading"
+        "loading",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
@@ -3884,7 +3898,7 @@
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "button 的 root 部件 background-color 覆盖槽。"
+      "description": "button 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-button-bg-active",
@@ -4380,6 +4394,7 @@
         "cell-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -4389,13 +4404,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "selected"
+        "selected",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-cell-bg-selected-active",
@@ -4428,17 +4444,19 @@
         "cell-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "disabled",
-        "selected"
+        "selected",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-cell-fg",
@@ -4848,18 +4866,20 @@
         "prev-year-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-nav-bg-hover",
@@ -5099,18 +5119,20 @@
         "cell-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "disabled",
         "focus-visible",
-        "today"
+        "today",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-today-border",
@@ -5399,6 +5421,7 @@
         "cell-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -5415,13 +5438,14 @@
         "outside-month",
         "range-end",
         "range-start",
-        "selected"
+        "selected",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-bg-selected-active",
@@ -5461,17 +5485,19 @@
         "cell-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "disabled",
-        "selected"
+        "selected",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-fg",
@@ -5907,18 +5933,20 @@
         "prev-year-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-nav-bg-hover",
@@ -6281,18 +6309,20 @@
         "cell-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "disabled",
         "focus-visible",
-        "today"
+        "today",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-today-border",
@@ -7254,19 +7284,21 @@
         "prev-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
         "disabled",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_carousel-trigger-bg",
         "--xh-material-frosted-focus-surface"
       ],
       "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-bg-active",
@@ -7492,16 +7524,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "cascader 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "cascader 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-cascader-action-bg-active",
@@ -9426,6 +9460,7 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -9438,13 +9473,14 @@
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "readonly"
+        "readonly",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "checkbox 的 root 部件 background-color 覆盖槽。"
+      "description": "checkbox 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-bg-checked",
@@ -9453,6 +9489,7 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -9466,13 +9503,14 @@
         "pressed",
         "readonly",
         "state=checked",
-        "state=indeterminate"
+        "state=indeterminate",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_checkbox-accent"
       ],
       "visibility": "public",
-      "description": "checkbox 的 root 部件 background-color 覆盖槽。"
+      "description": "checkbox 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-bg-checked-pressed",
@@ -9506,16 +9544,18 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "checkbox 的 root 部件 background-color 覆盖槽。"
+      "description": "checkbox 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-bg-pressed",
@@ -10792,12 +10832,14 @@
         "copy-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
         "focus-visible",
-        "loading"
+        "loading",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
@@ -10805,7 +10847,7 @@
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 background-color 覆盖槽。"
+      "description": "clipboard 的 copy-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-bg-active",
@@ -10837,16 +10879,18 @@
         "copy-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 background-color 覆盖槽。"
+      "description": "clipboard 的 copy-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-bg-hover",
@@ -12257,16 +12301,18 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "collapsible 的 trigger 部件 background-color 覆盖槽。"
+      "description": "collapsible 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-collapsible-trigger-bg-hover",
@@ -12495,16 +12541,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "color-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-color-field-action-bg-active",
@@ -15503,16 +15551,18 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "combobox 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-action-bg-active",
@@ -18937,16 +18987,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "date-field 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "date-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-field-action-bg-active",
@@ -19741,16 +19793,18 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "date-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "date-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-action-bg-active",
@@ -19784,6 +19838,7 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -19792,13 +19847,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "state=open"
+        "state=open",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "date-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "date-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-action-fg",
@@ -19955,16 +20011,18 @@
         "confirm-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "date-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
+      "description": "date-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-confirm-trigger-bg-active",
@@ -21447,16 +21505,18 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-action-bg-active",
@@ -21490,6 +21550,7 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -21498,13 +21559,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "state=open"
+        "state=open",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-action-fg",
@@ -24502,12 +24564,14 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
         "focus-visible",
-        "loading"
+        "loading",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
@@ -24515,7 +24579,7 @@
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
+      "description": "download-trigger 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-bg-active",
@@ -24547,16 +24611,18 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
+      "description": "download-trigger 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-bg-hover",
@@ -25476,18 +25542,20 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
+      "description": "drawer 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-bg-active",
@@ -25541,17 +25609,19 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "focus-visible",
-        "state=open"
+        "state=open",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
+      "description": "drawer 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-border",
@@ -26410,16 +26480,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。"
+      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-editable-trigger-bg-active",
@@ -26455,16 +26527,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。"
+      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-editable-trigger-bg-hover",
@@ -27557,16 +27631,18 @@
         "add-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "field-array 的 add-trigger 部件 background-color 覆盖槽。"
+      "description": "field-array 的 add-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-add-bg-active",
@@ -27950,16 +28026,18 @@
         "move-up-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-bg-active",
@@ -29823,6 +29901,7 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -29833,6 +29912,7 @@
         "not([data-scope])",
         "variant=outline",
         "where([data-material='liquid'])",
+        "xh-ink-surface",
         "xh-liquid"
       ],
       "defaultToken": [
@@ -29845,7 +29925,7 @@
         "--xh-material-liquid-focus-surface"
       ],
       "visibility": "public",
-      "description": "float-button 的 list、root、trigger 部件 background-color 覆盖槽。"
+      "description": "float-button 的 list、root、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-bg-active",
@@ -30208,17 +30288,19 @@
         "window-state-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "focus-visible",
-        "state=on"
+        "state=on",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-brand-subtle"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。"
+      "description": "floating-panel 的 window-state-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-bg-on-active",
@@ -30801,18 +30883,20 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 trigger 部件 background-color 覆盖槽。"
+      "description": "floating-panel 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-trigger-border",
@@ -31035,16 +31119,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 background-color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-bg-active",
@@ -31522,16 +31608,18 @@
         "reset-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger 部件 background-color 覆盖槽。"
+      "description": "form 的 reset-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-bg-active",
@@ -31564,16 +31652,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 background-color 覆盖槽。"
+      "description": "form 的 reset-trigger、submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-bg-hover",
@@ -33984,19 +34074,21 @@
         "toolbar"
       ],
       "property": [
+        "--xh-ink-surface",
         "background",
         "background-color"
       ],
       "state": [
         "default",
         "disabled",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-color-neutral-950"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 background、background-color 覆盖槽。"
+      "description": "image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 --xh-ink-surface、background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-close-bg-active",
@@ -34360,16 +34452,18 @@
         "load-more-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。"
+      "description": "infinite-scroll 的 load-more-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-infinite-scroll-load-more-bg-active",
@@ -36123,16 +36217,18 @@
         "sider-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "layout 的 sider-trigger 部件 background-color 覆盖槽。"
+      "description": "layout 的 sider-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-layout-sider-trigger-bg-active",
@@ -37966,16 +38062,18 @@
         "scroll-to-end-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
-      "description": "log 的 scroll-to-end-trigger 部件 background-color 覆盖槽。"
+      "description": "log 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-log-scroll-to-end-trigger-bg-hover",
@@ -41706,16 +41804,18 @@
         "scroll-to-end-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
-      "description": "message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。"
+      "description": "message-feed 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-message-feed-scroll-to-end-trigger-bg-hover",
@@ -42568,16 +42668,18 @@
         "item-action-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "notification 的 item-action-trigger 部件 background-color 覆盖槽。"
+      "description": "notification 的 item-action-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-notification-action-bg-active",
@@ -44824,16 +44926,18 @@
         "prev-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-active",
@@ -44893,17 +44997,19 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "current",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg"
       ],
       "visibility": "public",
-      "description": "pagination 的 item 部件 background-color 覆盖槽。"
+      "description": "pagination 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-selected-active",
@@ -46007,16 +46113,18 @@
         "visibility-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "password-input 的 visibility-trigger 部件 background-color 覆盖槽。"
+      "description": "password-input 的 visibility-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-trigger-bg-active",
@@ -46884,17 +46992,19 @@
         "cancel-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
+      "description": "popconfirm 的 cancel-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-cancel-bg-active",
@@ -47054,12 +47164,14 @@
         "confirm-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
         "focus-visible",
-        "loading"
+        "loading",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
@@ -47067,7 +47179,7 @@
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 confirm-trigger 部件 background-color 覆盖槽。"
+      "description": "popconfirm 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-confirm-fg",
@@ -48494,16 +48606,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-send-bg-active",
@@ -48557,16 +48671,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-muted"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-send-fg",
@@ -48620,16 +48736,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "mode=stop"
+        "mode=stop",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-stop-bg-active",
@@ -49322,16 +49440,18 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 item 部件 background-color 覆盖槽。"
+      "description": "question-flow 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-item-bg-hover",
@@ -49916,16 +50036,18 @@
         "skip-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 skip-trigger 部件 background-color 覆盖槽。"
+      "description": "question-flow 的 skip-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-skip-bg-hover",
@@ -49999,16 +50121,18 @@
         "prev-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+      "description": "question-flow 的 next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-step-bg-hover",
@@ -50145,16 +50269,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
+      "description": "question-flow 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-bg-active",
@@ -50208,16 +50334,18 @@
         "submit-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
+      "description": "question-flow 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-fg",
@@ -52575,16 +52703,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "select 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "select 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-select-action-bg-active",
@@ -55215,18 +55345,20 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "signature-pad 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-bg-active",
@@ -55258,16 +55390,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "signature-pad 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-signature-pad-clear-bg-hover",
@@ -58598,6 +58732,7 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -58610,13 +58745,14 @@
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "readonly"
+        "readonly",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background-color 覆盖槽。"
+      "description": "switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-checked",
@@ -58625,6 +58761,7 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -58637,13 +58774,14 @@
         "not([data-loading])",
         "pressed",
         "readonly",
-        "state=checked"
+        "state=checked",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_switch-accent"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background-color 覆盖槽。"
+      "description": "switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-checked-pressed",
@@ -58676,6 +58814,7 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -58688,13 +58827,14 @@
         "not([data-loading])",
         "pressed",
         "readonly",
-        "state=checked"
+        "state=checked",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background-color 覆盖槽。"
+      "description": "switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-disabled",
@@ -58703,6 +58843,7 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -58714,13 +58855,14 @@
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "readonly"
+        "readonly",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "switch 的 root 部件 background-color 覆盖槽。"
+      "description": "switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-bg-pressed",
@@ -60990,6 +61132,7 @@
         "sort-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color",
         "border",
         "border-color"
@@ -61006,13 +61149,14 @@
         "pressed",
         "selected",
         "state=checked",
-        "state=indeterminate"
+        "state=indeterminate",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color、border、border-color 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-bg-checked-pressed",
@@ -61680,18 +61824,20 @@
         "prev-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
         "disabled",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_tabs-scroll-trigger-bg"
       ],
       "visibility": "public",
-      "description": "tabs 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+      "description": "tabs 的 next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tabs-scroll-trigger-fg",
@@ -62259,13 +62405,15 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background"
       ],
       "state": [
         "default",
         "tone",
         "variant=solid",
-        "variant=subtle"
+        "variant=subtle",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_tone",
@@ -62274,7 +62422,7 @@
         "--xh-material-soft-bg"
       ],
       "visibility": "public",
-      "description": "tag 的 root 部件 background 覆盖槽。"
+      "description": "tag 的 root 部件 --xh-ink-surface、background 覆盖槽。"
     },
     {
       "name": "--xh-tag-bg-disabled",
@@ -62283,17 +62431,19 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background"
       ],
       "state": [
         "disabled",
-        "tone"
+        "tone",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-muted"
       ],
       "visibility": "public",
-      "description": "tag 的 root 部件 background 覆盖槽。"
+      "description": "tag 的 root 部件 --xh-ink-surface、background 覆盖槽。"
     },
     {
       "name": "--xh-tag-border",
@@ -62821,16 +62971,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "tags-input 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "tags-input 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tags-input-action-bg-active",
@@ -63828,16 +63980,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "text-field 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "text-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-action-bg-active",
@@ -64710,16 +64864,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "time-field 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "time-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-action-bg-active",
@@ -65539,16 +65695,18 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "time-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "time-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-action-bg-active",
@@ -65582,6 +65740,7 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -65590,13 +65749,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "state=open"
+        "state=open",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "time-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "time-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-action-fg",
@@ -67155,16 +67315,18 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "time-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-action-bg-active",
@@ -67198,6 +67360,7 @@
         "trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -67206,13 +67369,14 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "state=open"
+        "state=open",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+      "description": "time-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-action-fg",
@@ -69422,16 +69586,18 @@
         "control"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "timer 的 control 部件 background-color 覆盖槽。"
+      "description": "timer 的 control 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-timer-control-bg-active",
@@ -69463,16 +69629,18 @@
         "control"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "timer 的 control 部件 background-color 覆盖槽。"
+      "description": "timer 的 control 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-timer-control-bg-hover",
@@ -69907,16 +70075,18 @@
         "action-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "transparent"
       ],
       "visibility": "public",
-      "description": "toast 的 action-trigger 部件 background-color 覆盖槽。"
+      "description": "toast 的 action-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-action-bg-active",
@@ -70132,16 +70302,18 @@
         "close-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "toast 的 close-trigger 部件 background-color 覆盖槽。"
+      "description": "toast 的 close-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-close-bg-active",
@@ -70894,18 +71066,20 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+      "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg-active",
@@ -70937,16 +71111,18 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+      "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg-hover",
@@ -70977,6 +71153,7 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
@@ -70984,13 +71161,14 @@
         "focus-visible",
         "not([data-variant='solid'])",
         "state=on",
-        "variant=solid"
+        "variant=solid",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_tone-subtle"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+      "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg-on-active",
@@ -71025,20 +71203,22 @@
         "root"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "disabled",
         "not([data-variant='solid'])",
         "state=on",
-        "variant=solid"
+        "variant=solid",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest",
         "--xh-_toggle-bg-on"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+      "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg-on-hover",
@@ -71405,17 +71585,19 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
+      "description": "toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-active",
@@ -71447,16 +71629,18 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-muted"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
+      "description": "toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-hover",
@@ -71487,17 +71671,19 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "focus-visible",
-        "state=on"
+        "state=on",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-on"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
+      "description": "toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-on-active",
@@ -71530,17 +71716,19 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "disabled",
-        "state=on"
+        "state=on",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-on"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
+      "description": "toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-item-bg-on-hover",
@@ -72943,18 +73131,20 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "not([aria-pressed='true'])"
+        "not([aria-pressed='true'])",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest",
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "toolbar 的 group、item 部件 background-color 覆盖槽。"
+      "description": "toolbar 的 group、item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-item-bg-active",
@@ -72987,17 +73177,19 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-disabled",
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "toolbar 的 group、item 部件 background-color 覆盖槽。"
+      "description": "toolbar 的 group、item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-item-bg-hover",
@@ -73028,16 +73220,18 @@
         "item"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-bg-brand-subtle"
       ],
       "visibility": "public",
-      "description": "toolbar 的 item 部件 background-color 覆盖槽。"
+      "description": "toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-item-bg-pressed-active",
@@ -73492,16 +73686,18 @@
         "content"
       ],
       "property": [
+        "--xh-ink-surface",
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_tooltip-solid"
       ],
       "visibility": "public",
-      "description": "tooltip 的 arrow、content 部件 background 覆盖槽。"
+      "description": "tooltip 的 arrow、content 部件 --xh-ink-surface、background 覆盖槽。"
     },
     {
       "name": "--xh-tooltip-border",
@@ -74070,18 +74266,20 @@
         "next-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
         "default",
-        "focus-visible"
+        "focus-visible",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-focus-visible",
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "tour 的 next-trigger 部件 background-color 覆盖槽。"
+      "description": "tour 的 next-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tour-next-bg-hover",
@@ -75835,16 +76033,18 @@
         "to-target-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。"
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-trigger-bg-active",
@@ -77126,16 +77326,18 @@
         "clear-trigger"
       ],
       "property": [
+        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "tree-select 的 clear-trigger 部件 background-color 覆盖槽。"
+      "description": "tree-select 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-action-bg-active",

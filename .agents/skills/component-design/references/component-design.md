@@ -502,7 +502,17 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | `data-xh-ink="auto"` + `--xh-ink-surface` | 由底色以相对颜色语法按相对亮度 0.179 选墨色（与 `tone.css` 的黑白字分界同一个数）；写在 `@supports` 内，不支持时等于未声明。auto 只决定墨色与中性装饰，语气色与表面沿用外层主题；需要它们随极性切换时声明 dark / light |
 | `data-xh-ink-margin="ample"` | 底色离分界足够远，允许弱化文字；缺省 `tight` |
 
-库自己渲染的彩色面自动成为域：`data-tone` 实心面、Tooltip 反白面、ImageViewer 控制层、liquid 材质（§8.5）。
+库自己渲染的彩色面自动成为域：
+
+| 面 | 做法 |
+| --- | --- |
+| 实心语气面（Action Control 实心档、Tag solid）、Tooltip 反白面 | 连接层打 `data-xh-ink-surface`，皮肤把自己当前的底色写进 `--xh-ink-surface`；域落在面的直接子元素上，按 auto 同一套规则选墨，更深的后代沿继承取值。面自身的底、字与焦点环仍按外层取值 |
+| ImageViewer 看片层 | 两种主题下都压在深色遮罩上，content 声明 `data-xh-ink="light"`；这一层自己的面取原语 |
+| liquid 材质 | 液态面按下层写 `data-xh-ink`（§8.5） |
+
+- 域不落在彩色面自己身上：这些面的底色取自 `--xh-bg-brand`、`--xh-fg-default` 等被域改写的令牌，落在自身时底色随域翻转，auto 下还会与墨色互相引用成环。作者自己的区块同理：声明了域的区块，底色取原语或在域外取值。
+- 禁用等换底的状态同步换 `--xh-ink-surface`；悬停、按下、在途不翻极性，按静息面取。
+- 面内按 auto 求值，需要相对颜色语法；更早的引擎里面内内容保持外层取值。
 
 域内重映射：
 
@@ -1108,7 +1118,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | 补 FloatButton 列表、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
-| §7.7 库自有彩色面与缺省面墨色 | 库自有彩色面（`data-tone` 实心面、Tooltip 反白面、ImageViewer 控制层）接入墨色域；缺省面改墨色表达前先审计叠边与淡底叠淡底 |
+| §7.7 缺省面墨色 | 缺省面改墨色表达前先审计叠边与淡底叠淡底 |
 | §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（FloatButton 列表项、Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
 | §9.8 双沿指示器、§9.11 弹簧 | `@xihan-ui/motion` 有状态弹簧与弹簧令牌、`--xh-motion-ease-spring`；指针会话速度；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer）；双沿指示器随共享指示器几何迁移 |
 | §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光；FloatButton 融合分离 |

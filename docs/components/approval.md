@@ -311,6 +311,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `approve-trigger` | `data-xh-action-profile` | 'text' |
 | `approve-trigger` | `data-xh-action-size` | props.size |
 | `approve-trigger` | `data-xh-action-variant` | 'solid' |
+| `approve-trigger` | `data-xh-ink-surface` | '' |
 | `deny-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `deny-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `deny-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -333,17 +334,17 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `--xh-approval-action-h` | `approve-trigger`<br>`deny-trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=row` | `--xh-_approval-action-h` | approval 的 approve-trigger、deny-trigger 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-approval-action-px` | `approve-trigger`<br>`deny-trigger` | `padding-inline` | `default` | `--xh-_approval-action-px` | approval 的 approve-trigger、deny-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-action-radius` | `approve-trigger`<br>`deny-trigger` | `border-radius` | `default` | `--xh-shape-control` | approval 的 approve-trigger、deny-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-approval-approve-bg` | `approve-trigger` | `background-color` | `default`<br>`loading` | `--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | approval 的 approve-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-approve-bg` | `approve-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`loading`<br>`xh-ink-surface` | `--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | approval 的 approve-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-approve-bg-hover` | `approve-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | approval 的 approve-trigger 部件 background-color 覆盖槽。 |
-| `--xh-approval-approve-bg-off` | `approve-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | approval 的 approve-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-approve-bg-off` | `approve-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | approval 的 approve-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-approve-fg` | `approve-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | approval 的 approve-trigger 部件 color 覆盖槽。 |
 | `--xh-approval-approve-shadow` | `approve-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_highlight-tone` | approval 的 approve-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-approval-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | approval 的 root 部件 background 覆盖槽。 |
 | `--xh-approval-border` | `root` | `border`<br>`border-color` | `default`<br>`tone` | `--xh-_tone`<br>`--xh-border-default` | approval 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-approval-border-settled` | `root` | `border-color` | `not([data-state='pending'])`<br>`state=pending` | `--xh-border-default` | approval 的 root 部件 border-color 覆盖槽。 |
-| `--xh-approval-deny-bg` | `deny-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | approval 的 deny-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-deny-bg` | `deny-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | approval 的 deny-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-deny-bg-hover` | `deny-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | approval 的 deny-trigger 部件 background-color 覆盖槽。 |
-| `--xh-approval-deny-bg-off` | `deny-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | approval 的 deny-trigger 部件 background-color 覆盖槽。 |
+| `--xh-approval-deny-bg-off` | `deny-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | approval 的 deny-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-approval-deny-border` | `deny-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | approval 的 deny-trigger 部件 border 覆盖槽。 |
 | `--xh-approval-deny-border-off` | `deny-trigger` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | approval 的 deny-trigger 部件 border-color 覆盖槽。 |
 | `--xh-approval-deny-fg` | `deny-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | approval 的 deny-trigger 部件 color 覆盖槽。 |

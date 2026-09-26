@@ -193,6 +193,7 @@
 | `trigger` | `data-xh-action-profile` | 'floating' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | props.variant |
+| `trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-liquid` | '' |
 
 <!-- xh-component-tokens:start -->
@@ -202,7 +203,7 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-back-top-bg` | `root`<br>`trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_back-top-bg`<br>`--xh-_liquid-bg`<br>`--xh-material-frosted-focus-surface`<br>`--xh-material-liquid-focus-surface` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
+| `--xh-back-top-bg` | `root`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-ink-surface`<br>`xh-liquid` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_back-top-bg`<br>`--xh-_liquid-bg`<br>`--xh-material-frosted-focus-surface`<br>`--xh-material-liquid-focus-surface` | back-top 的 root、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-back-top-bg-active` | `root`<br>`trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-bg-pressed`<br>`--xh-_liquid-bg-pressed` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
 | `--xh-back-top-bg-hover` | `root`<br>`trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-bg-hover`<br>`--xh-_liquid-bg-hover` | back-top 的 root、trigger 部件 background-color 覆盖槽。 |
 | `--xh-back-top-border` | `root`<br>`trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-border-disabled`<br>`--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-_back-top-border`<br>`--xh-material-liquid-border` | back-top 的 root、trigger 部件 border、border-color 覆盖槽。 |

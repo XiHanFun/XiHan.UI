@@ -214,6 +214,7 @@
 | `trigger` | `data-xh-action-profile` | 'floating' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | props.variant |
+| `trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-liquid` | '' |
 | `list` | `data-placement` | props.placement |
 | `list` | `data-state` | 'open' \| 'closed' |
@@ -225,7 +226,7 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-float-button-bg` | `list`<br>`root`<br>`trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`not([data-scope])`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_float-button-bg`<br>`--xh-_liquid-bg`<br>`--xh-material-frosted-focus-surface`<br>`--xh-material-liquid-focus-surface` | float-button 的 list、root、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg` | `list`<br>`root`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`not([data-scope])`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-ink-surface`<br>`xh-liquid` | `--xh-_action-variant-bg-disabled`<br>`--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest`<br>`--xh-_float-button-bg`<br>`--xh-_liquid-bg`<br>`--xh-material-frosted-focus-surface`<br>`--xh-material-liquid-focus-surface` | float-button 的 list、root、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-float-button-bg-active` | `list`<br>`root`<br>`trigger` | `background-color` | `active`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`pressed`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-bg-pressed`<br>`--xh-_float-button-bg-active`<br>`--xh-_liquid-bg-pressed` | float-button 的 list、root、trigger 部件 background-color 覆盖槽。 |
 | `--xh-float-button-bg-hover` | `list`<br>`root`<br>`trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-bg-hover`<br>`--xh-_float-button-bg-hover`<br>`--xh-_liquid-bg-hover` | float-button 的 list、root、trigger 部件 background-color 覆盖槽。 |
 | `--xh-float-button-border` | `list`<br>`root`<br>`trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`not([data-scope])`<br>`variant=outline`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-variant-border-disabled`<br>`--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-_float-button-border`<br>`--xh-material-liquid-border` | float-button 的 list、root、trigger 部件 border、border-color 覆盖槽。 |
