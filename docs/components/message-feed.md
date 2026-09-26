@@ -169,7 +169,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 **状态**：`idle`
 
-**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `ITEM.FOCUS` · `FEED.BLUR` · `PRESS.START` · `PRESS.END` · `ARRIVALS.TRACKED`
+**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `ITEM.FOCUS` · `FEED.BLUR` · `PRESS.START` · `PRESS.END` · `ARRIVALS.TRACKED` · `TRIGGER.RENDERED`
 
 **判据**：`canPress`
 
@@ -285,7 +285,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 ### 动效
 
-共享关键帧 `xh-item-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
