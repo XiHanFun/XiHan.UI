@@ -11,7 +11,7 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
-import { connectSegmented, resolveSegmentedIndicator, segmentedMachine } from '../src/segmented'
+import { connectSegmented, segmentedMachine } from '../src/segmented'
 
 type Props = SegmentedSchema['props']
 
@@ -68,32 +68,16 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
   }
 }
 
-interface Box {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-/** 给节点钉一个假盒子：jsdom 不排版，所有 rect 恒为 0，指示器就永远量在原点上。 */
-function stubRect(el: HTMLElement, box: Box): void {
-  el.getBoundingClientRect = (): DOMRect => ({
-    left: box.left,
-    top: box.top,
-    width: box.width,
-    height: box.height,
-    right: box.left + box.width,
-    bottom: box.top + box.height,
-    x: box.left,
-    y: box.top,
-    toJSON: () => ({}),
-  }) as DOMRect
-}
-
-/** 钉住根的内边距盒：绝对定位的偏移从这里起算，描边宽度要能被刨掉。 */
-function stubPadBox(el: HTMLElement, border: number, width: number, height: number): void {
-  for (const [key, value] of [['clientLeft', border], ['clientTop', border], ['clientWidth', width], ['clientHeight', height]] as const)
+/** 给段钉一个排布位：jsdom 不排版，offset* 恒为 0，指示器就永远量在原点上。offset* 从根的内衬边量起。 */
+function stubOffset(el: HTMLElement, parent: HTMLElement, box: { left: number, top: number, width: number, height: number }): void {
+  const values = { offsetLeft: box.left, offsetTop: box.top, offsetWidth: box.width, offsetHeight: box.height, offsetParent: parent }
+  for (const [key, value] of Object.entries(values))
     Object.defineProperty(el, key, { value, configurable: true })
+}
+
+/** 钉住根的内衬盒宽：RTL 下起始缘从它的右缘往左量。 */
+function stubPadWidth(el: HTMLElement, width: number): void {
+  Object.defineProperty(el, 'clientWidth', { value: width, configurable: true })
 }
 
 interface Harness {
@@ -213,38 +197,6 @@ function slot(el: HTMLElement, name: string): string {
 
 afterEach(() => {
   document.body.innerHTML = ''
-})
-
-describe('resolveSegmentedIndicator 几何', () => {
-  const root = { left: 100, top: 50, width: 300, height: 40 }
-
-  it('ltr：起始缘从根的左缘量起', () => {
-    expect(resolveSegmentedIndicator(root, { left: 200, top: 50, width: 100, height: 40 }, false)).toEqual({
-      inlineStart: 100,
-      inlineSize: 100,
-      blockStart: 0,
-      blockSize: 40,
-    })
-  })
-
-  it('rtl：起始缘改从根的右缘往左量，最靠左那一段离起始缘最远', () => {
-    const first = { left: 100, top: 50, width: 100, height: 40 }
-    expect(resolveSegmentedIndicator(root, first, false).inlineStart).toBe(0)
-    expect(resolveSegmentedIndicator(root, first, true)).toEqual({
-      inlineStart: 200,
-      inlineSize: 100,
-      blockStart: 0,
-      blockSize: 40,
-    })
-  })
-
-  it('竖排：块轴偏移按条目顶边与根顶边的差算', () => {
-    expect(resolveSegmentedIndicator(
-      { left: 0, top: 0, width: 120, height: 120 },
-      { left: 0, top: 80, width: 120, height: 40 },
-      false,
-    )).toEqual({ inlineStart: 0, inlineSize: 120, blockStart: 80, blockSize: 40 })
-  })
 })
 
 describe('segmentedMachine 选中值', () => {
@@ -490,13 +442,12 @@ describe('connectSegmented 表单出口', () => {
 })
 
 describe('connectSegmented 指示器', () => {
-  /** 把根与三段摆成一排 300×40 的盒子，每段 100 宽；根带 1px 描边。 */
+  /** 把三段在根的内衬盒里摆成一排 300×40，每段 100 宽。 */
   function layout(h: Harness): void {
-    stubRect(h.root, { left: 100, top: 50, width: 302, height: 42 })
-    stubPadBox(h.root, 1, 300, 40)
-    stubRect(h.item('day'), { left: 101, top: 51, width: 100, height: 40 })
-    stubRect(h.item('week'), { left: 201, top: 51, width: 100, height: 40 })
-    stubRect(h.item('month'), { left: 301, top: 51, width: 100, height: 40 })
+    stubPadWidth(h.root, 300)
+    stubOffset(h.item('day'), h.root, { left: 0, top: 0, width: 100, height: 40 })
+    stubOffset(h.item('week'), h.root, { left: 100, top: 0, width: 100, height: 40 })
+    stubOffset(h.item('month'), h.root, { left: 200, top: 0, width: 100, height: 40 })
   }
 
   it('没有选中项时收起来，不占位', () => {
@@ -505,7 +456,7 @@ describe('connectSegmented 指示器', () => {
     expect(h.indicator.getAttribute('aria-hidden')).toBe('true')
   })
 
-  it('量测结果铺成四个私有槽，描边宽度已从起点刨掉', async () => {
+  it('量测结果铺成四个私有槽，起点是根的内衬边', async () => {
     const h = mount({ defaultValue: 'week' })
     layout(h)
     h.service.send({ type: 'INDICATOR.MEASURE' })
@@ -543,7 +494,7 @@ describe('connectSegmented 指示器', () => {
     expect(slot(h.indicator, '--xh-_segmented-indicator-x')).toBe('200px')
   })
 
-  // 皮肤写的是 inset-inline-start，它按包含块的计算方向解析；量测只认 prop 的话，
+  // 皮肤按 :dir(rtl) 翻转位移方向，那是包含块的计算方向；量测只认 prop 的话，
   // 整页 rtl 而作者没传 dir 时两边各说各话，指示器会落到错的那一段上
   it('祖先声明 rtl 而没给 dir：起始缘照样从右缘量起', async () => {
     const h = mount({ defaultValue: 'day' })
@@ -577,9 +528,9 @@ describe('connectSegmented 指示器', () => {
     expect(slot(h.indicator, '--xh-_segmented-indicator-x')).toBe('200px')
 
     // 首段文本变长把后两段整体推右；block 模式下根的宽度钉在父级上，根本身一动不动
-    stubRect(h.item('day'), { left: 101, top: 51, width: 160, height: 40 })
-    stubRect(h.item('week'), { left: 261, top: 51, width: 100, height: 40 })
-    stubRect(h.item('month'), { left: 361, top: 51, width: 100, height: 40 })
+    stubOffset(h.item('day'), h.root, { left: 0, top: 0, width: 160, height: 40 })
+    stubOffset(h.item('week'), h.root, { left: 160, top: 0, width: 100, height: 40 })
+    stubOffset(h.item('month'), h.root, { left: 260, top: 0, width: 100, height: 40 })
     h.setProps({
       collection: [{ value: 'day', label: '按日统计' }, { value: 'week', label: '周' }, { value: 'month', label: '月' }],
     })

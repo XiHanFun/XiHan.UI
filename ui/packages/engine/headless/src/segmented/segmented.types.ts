@@ -47,14 +47,6 @@ export interface SegmentedIndicatorRect {
   inlineSize: number
 }
 
-/** 一个已测量的盒子：相对视口的起始坐标与尺寸（px）。 */
-export interface SegmentedBox {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
 /** 适配器在挂载前填入的 DOM 取值器。 */
 export interface SegmentedRefs {
   /** 条目集合的查询容器，同时是指示器定位的参照系。 */
@@ -136,7 +128,7 @@ export interface SegmentedSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackIndicatorSize'
+  effect: 'trackIndicatorLayout'
 }
 
 export interface SegmentedApi<T extends PropTypes = PropTypes> {

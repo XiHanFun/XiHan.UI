@@ -209,19 +209,21 @@
   }
 
   [data-scope='segmented'][data-part='indicator'] {
-    /* 位置与尺寸由连接层量好写成内联样式（它量得到，样式表量不到）；
-       这四个是还没量到时的落点，量到即被内联样式盖过 */
+    /* 位置与尺寸由机器量好、连接层写成私有槽（它量得到，样式表量不到）；
+       这四个是还没量到时的落点，量到即被内联的私有槽盖过 */
     --xh-_segmented-indicator-x: 0;
     --xh-_segmented-indicator-y: 0;
     --xh-_segmented-indicator-w: 0;
     --xh-_segmented-indicator-h: 0;
 
+    /* 摆在行首块首，位置交给 transform（只走合成），尺寸跟着段宽走 */
     position: absolute;
     display: block;
-    inset-inline-start: var(--xh-_segmented-indicator-x);
-    inset-block-start: var(--xh-_segmented-indicator-y);
+    inset-inline-start: 0;
+    inset-block-start: 0;
     inline-size: var(--xh-_segmented-indicator-w);
     block-size: var(--xh-_segmented-indicator-h);
+    transform: translate(var(--xh-_segmented-indicator-x), var(--xh-_segmented-indicator-y));
     /* 白色抬起面三件（有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
        尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
     border: var(--xh-stroke-thin) solid var(--xh-segmented-indicator-border, var(--xh-border-default));
@@ -234,11 +236,15 @@
        纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位。
        投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
     transition:
-      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* translate 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
+  [data-scope='segmented'][data-part='indicator']:dir(rtl) {
+    transform: translate(calc(-1 * var(--xh-_segmented-indicator-x)), var(--xh-_segmented-indicator-y));
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
