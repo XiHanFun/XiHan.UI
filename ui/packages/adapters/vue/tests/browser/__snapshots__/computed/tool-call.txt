@@ -63,9 +63,9 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-disclosure-collapse
-animation-duration: 0.12s
-animation-timing-function: cubic-bezier(0.4, 0, 1, 1)
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
 outline-color: rgb(0, 0, 0)
@@ -130,9 +130,9 @@ line-height: 14px
 font-weight: 400
 color: oklch(0.52 0.006 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: rotate
-transition-duration: 0.12s
-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

@@ -39,12 +39,12 @@ describe('message-feed 回到底部按钮', () => {
     await nextTick()
     const viewport = host.querySelector<HTMLElement>('[data-scope="message-feed"][data-part="viewport"]')!
     const trigger = host.querySelector<HTMLElement>('[data-scope="message-feed"][data-part="scroll-to-end-trigger"]')!
-    await until(() => trigger.hidden)
+    await until(() => trigger.hidden === true)
 
     // 用户上滚：先有一下向上的滚轮解除粘附，视口才不会被粘底拉回去
     viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: -100 }))
     viewport.scrollTop = 0
-    await until(() => !trigger.hidden)
+    await until(() => trigger.hidden === false)
     expect(trigger.dataset.state).toBe('visible')
     expect(running(trigger)).toEqual(['xh-pop-in'])
 
@@ -53,6 +53,6 @@ describe('message-feed 回到底部按钮', () => {
     expect(trigger.hidden).toBe(false)
     expect(running(trigger)).toEqual(['xh-pop-out'])
     expect(getComputedStyle(trigger).pointerEvents).toBe('none')
-    await until(() => trigger.hidden)
+    await until(() => trigger.hidden === true)
   })
 })
