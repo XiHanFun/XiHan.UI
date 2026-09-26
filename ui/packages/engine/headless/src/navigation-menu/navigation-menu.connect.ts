@@ -250,11 +250,14 @@ export function connectNavigationMenu<T extends PropTypes>(
       'data-orientation': orientation,
       'data-value': value ?? undefined,
       'hidden': indicator == null || undefined,
-      // 只写主轴那一条，交叉轴交给样式层
+      // 量测结果铺成四个私有槽，皮肤按排布取主轴那两支，交叉轴交给样式层
       'style': indicator
-        ? (orientation === 'vertical'
-            ? { insetBlockStart: `${indicator.blockStart}px`, blockSize: `${indicator.blockSize}px` }
-            : { insetInlineStart: `${indicator.inlineStart}px`, inlineSize: `${indicator.inlineSize}px` })
+        ? {
+            '--xh-_navigation-menu-indicator-x': `${indicator.inlineStart}px`,
+            '--xh-_navigation-menu-indicator-y': `${indicator.blockStart}px`,
+            '--xh-_navigation-menu-indicator-w': `${indicator.inlineSize}px`,
+            '--xh-_navigation-menu-indicator-h': `${indicator.blockSize}px`,
+          }
         : undefined,
     }),
 

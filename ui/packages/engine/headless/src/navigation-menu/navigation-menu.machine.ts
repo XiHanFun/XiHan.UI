@@ -8,6 +8,7 @@
 import type { Cleanup, Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 
@@ -18,14 +19,6 @@ export const NAVIGATION_MENU_DELAY = 200
 
 /** 收起之后的默认静默毫秒：窗口内再碰任意 trigger 直接展开。 */
 export const NAVIGATION_MENU_SKIP_DELAY = 300
-
-/** 两次量测是否一样。作 cell 的 isEqual 用：不给的话每次量测都是新对象，版本号会一直空转自增。 */
-function sameRect(a: NavigationMenuIndicatorRect | null, b: NavigationMenuIndicatorRect | null | undefined): boolean {
-  if (a == null || b == null)
-    return a === b
-  return a.blockStart === b.blockStart && a.blockSize === b.blockSize
-    && a.inlineStart === b.inlineStart && a.inlineSize === b.inlineSize
-}
 
 /** 悬停或聚焦某个 trigger：已有面板展开则当场换项，否则进等待态走延时。 */
 const ENTER_FROM_IDLE: Array<Transition<NavigationMenuSchema>> = [
@@ -58,7 +51,7 @@ export const navigationMenuMachine = createMachine({
     // 记录刚自动展开的那一项；受控下 value 在宿主写回前是旧值，认不出来
     autoValue: cell<string | null>(() => ({ defaultValue: null })),
     // 量测结果只服务指示条的内联样式
-    indicator: cell<NavigationMenuIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
+    indicator: cell<NavigationMenuIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
     // 逻辑关闭后，最后一个面板完成视觉退场之前仍须保留 viewport 与行为资源
     exitPending: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：正被按住的那一个（入口与链接各按 value 记、分开认），与开合无关
@@ -81,7 +74,7 @@ export const navigationMenuMachine = createMachine({
   // 停机时把还在场的层撤掉
   exit: ['dropLayer'],
   // 窗口尺寸变化时重量指示条
-  effects: ['trackResize'],
+  effects: ['trackResize', 'trackIndicatorLayout'],
   watch: ({ track, context, prop, action }) => {
     // 展开项一变就重量一次，层的进出栈也跟着这一条走；按住 Enter 激活链接后面板随之收起（或换到另一张），
     // 链接藏进 inert 的面板里不会再来 keyup，按压面由机器收；入口仍在场，它的按压不动
@@ -348,23 +341,40 @@ export const navigationMenuMachine = createMachine({
             context.set('indicator', null)
             return
           }
-          const listRect = list.getBoundingClientRect()
-          const rect = trigger.getBoundingClientRect()
-          context.set('indicator', {
-            blockStart: rect.top - listRect.top,
-            blockSize: rect.height,
-            // 起始缘按逻辑方向算，RTL 从右边缘量起
-            inlineStart: (prop('dir') ?? 'ltr') === 'rtl'
-              ? listRect.right - rect.right
-              : rect.left - listRect.left,
-            inlineSize: rect.width,
-          })
+          // 量排布位而不是 rect：导航栏放在正在缩放进场的浮层里时 rect 量到的是缩小后的值。
+          // 方向缺省从列表现读，与皮肤按 :dir(rtl) 翻转位移同一个来源
+          context.set('indicator', measureIndicatorBox(list, trigger, prop('dir')))
         }
         run()
         flush(run)
       },
     },
     effects: {
+      /** 列表或入口变尺寸、入口增减、字体加载完成都会让指示条错位：合并到一帧重量。 */
+      trackIndicatorLayout: ({ refs, scope, action, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        const win = scope.getWin()
+        // React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取
+        flush(() => {
+          win.queueMicrotask(() => {
+            if (disposed)
+              return
+            const list = refs.get('getListEl')()
+            if (!list)
+              return
+            stop = trackIndicatorLayout(win, {
+              container: list,
+              items: () => queryItems(list, navigationMenuTriggerQuery),
+              onChange: () => action(['measureIndicator']),
+            })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
       // 挂 resize 监听器重量指示条；disposed 标记挡掉 cleanup 后仍被触发的那一次
       trackResize: ({ scope, action }) => {
         let disposed = false
