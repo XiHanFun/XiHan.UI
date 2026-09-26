@@ -90,16 +90,18 @@ export function connectCarousel<T extends PropTypes>(
 
   const pointerPosition = (event: PointerEvent): number => (horizontal ? event.clientX : event.clientY)
 
-  /** 轨道位移：百分比为页位移，像素为拖拽偏移。样式层不得再写这条 transform 轴。 */
+  /**
+   * 轨道位移：百分比为页位移，像素为拖拽偏移，写在独立的 translate 属性上。样式层不得再写这条轴。
+   * 写成浏览器序列化后的样子：横排只给横向一支（纵向为 0 时省略），竖排纵向前补 0px。
+   */
   const trackStyle = (): Dict => {
     const percent = carouselTranslatePercent(range.start, slidesPerPage, flipped)
-    const fn = horizontal ? 'translateX' : 'translateY'
     const offset = dragging ? dragOffset : settling ? context.get('settleOffset') : 0
-    if (offset === 0)
-      return { transform: `${fn}(${percent}%)` }
     // calc 里 `+ -60px` 各家解析不一致，符号拆成 `- 60px`
-    const sign = offset < 0 ? '-' : '+'
-    return { transform: `${fn}(calc(${percent}% ${sign} ${Math.abs(offset)}px))` }
+    const shift = offset === 0
+      ? `${percent}%`
+      : `calc(${percent}% ${offset < 0 ? '-' : '+'} ${Math.abs(offset)}px)`
+    return { translate: horizontal ? shift : `0px ${shift}` }
   }
 
   const setPage = (next: number): void => {

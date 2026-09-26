@@ -99,7 +99,7 @@ const REQUIRED = { move: ['--xh-motion-ease-continuous'], shape: ['--xh-motion-e
  * 登记了却没被扫到的键会判红，名单不会悄悄过期。
  */
 const SLIDE_REQUIRED = {
-  'carousel:transform': '整页换位，位移量以百分比计',
+  'carousel:translate': '整页换位，位移量以百分比计',
   'layout:translate': '覆盖档的侧栏整条推出画外，位移量以自身宽度的百分比计',
   'drawer:translate': '面板从视口外整条推入，位移量以自身尺寸的百分比计（关键帧 xh-slide-in）',
 }
