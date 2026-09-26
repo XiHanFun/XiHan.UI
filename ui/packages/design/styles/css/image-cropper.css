@@ -133,7 +133,7 @@
     background: var(--xh-_image-cropper-handle-color);
     pointer-events: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

@@ -147,7 +147,7 @@
      长按会先选中区域内的文字，长按菜单弹出时手指底下是一片高亮，很难看 */
   [data-scope='context-menu'][data-part='trigger'] {
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 触屏没有右键，菜单靠长按计时打开。这段等待里若一点变化都没有，用户会当成没按上而提前

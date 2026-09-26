@@ -189,7 +189,7 @@
     /* 段是 role=spinbutton 的展示节点，双击选中一段文字只会碍事 */
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

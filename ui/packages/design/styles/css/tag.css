@@ -81,7 +81,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 

@@ -139,7 +139,7 @@
     /* 触屏上连点两下不该被当成缩放手势 */
     touch-action: manipulation;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

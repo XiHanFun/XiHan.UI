@@ -133,7 +133,7 @@
     padding-inline: var(--xh-json-viewer-row-px, var(--xh-space-1));
     border-radius: var(--xh-json-viewer-row-radius, var(--xh-shape-inset));
     white-space: nowrap;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='json-viewer'][data-part='item'][hidden],

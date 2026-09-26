@@ -57,7 +57,7 @@
     /* 落笔、校验不过与禁用三档各换一次描边或底色，换的过程要看得出来 */
     transition:
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='signature-pad'][data-part='control'][data-invalid] {

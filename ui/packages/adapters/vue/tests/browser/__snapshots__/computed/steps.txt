@@ -95,7 +95,7 @@ line-height: 12px
 font-weight: 500
 color: oklch(1 0 0)
 background-color: oklch(0.546 0.216 258)
-transition-property: background, border-color, box-shadow, color
+transition-property: background-color, border-color, box-shadow, color
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
 animation-name: none
@@ -235,7 +235,7 @@ line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklab(0 0 0 / 0.102)
-transition-property: background
+transition-property: background-color
 transition-duration: 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1)
 animation-name: none

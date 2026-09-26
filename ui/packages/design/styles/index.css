@@ -6066,7 +6066,7 @@
     /* 空格与浅档在浅色底上几乎没有边界，描一圈极淡的线把方格勾出来。
        这一档不能取 border-subtle：它与空格底色 bg-subtle 是同一个原色，描了等于没描 */
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 错列打在本行第一个格子上：打在行上会连行首的星期名一起往后推，
@@ -6641,7 +6641,7 @@
     background: var(--xh-_image-cropper-handle-color);
     pointer-events: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -6966,7 +6966,7 @@
     /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
     max-inline-size: 100%;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -7321,7 +7321,7 @@
     padding-inline: var(--xh-json-viewer-row-px, var(--xh-space-1));
     border-radius: var(--xh-json-viewer-row-radius, var(--xh-shape-inset));
     white-space: nowrap;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='json-viewer'][data-part='item'][hidden],
@@ -7945,7 +7945,7 @@
   }
 
   [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item'] {
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 悬停换底色：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
@@ -8664,7 +8664,7 @@
 
     /* 占位与码面之间来回时，底色与那圈描边淡变 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -10661,7 +10661,7 @@
     background: var(--xh-_resizable-indicator-color);
     pointer-events: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -11187,7 +11187,7 @@
     /* 落笔、校验不过与禁用三档各换一次描边或底色，换的过程要看得出来 */
     transition:
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='signature-pad'][data-part='control'][data-invalid] {
@@ -11496,7 +11496,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
@@ -11803,7 +11803,7 @@
     /* 语气色由每条自己的数据给，同一条的语气改了（事情办成了、出错了）走一遍过渡，
        整列圆点不在数据回来的那一帧集体跳色 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -14418,7 +14418,7 @@
     inline-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -14989,7 +14989,7 @@
 
     /* 占位与码面之间来回时，底色与那圈描边淡变 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -15464,7 +15464,7 @@
     color: var(--xh-fg-default);
     cursor: default;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -16227,7 +16227,7 @@
     inset-block: var(--xh-calendar-range-picker-cell-gap, var(--xh-space-0_5));
     inset-inline: 0;
     background: var(--xh-calendar-range-picker-range-bg, var(--xh-bg-brand-subtle));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 行首与行尾收圆：区间跨周时每一行各是一条两头圆的横杠。
@@ -19119,7 +19119,7 @@
     padding-inline-end: var(--xh-code-view-px, var(--xh-space-3));
     /* 标出来的那几行换的是底色与那条内阴影色条，两样一起过渡才是同一个动作 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -19675,7 +19675,7 @@
     color: var(--xh-color-picker-control-fg, var(--xh-fg-default));
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -19994,7 +19994,7 @@
     cursor: pointer;
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
@@ -21669,7 +21669,7 @@
      长按会先选中区域内的文字，长按菜单弹出时手指底下是一片高亮，很难看 */
   [data-scope='context-menu'][data-part='trigger'] {
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 触屏没有右键，菜单靠长按计时打开。这段等待里若一点变化都没有，用户会当成没按上而提前
@@ -24793,7 +24793,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
@@ -25024,7 +25024,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
@@ -25068,7 +25068,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
@@ -28905,7 +28905,7 @@
     line-height: var(--xh-leading-none);
     appearance: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -29961,7 +29961,7 @@
     inline-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));
     block-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -32612,7 +32612,7 @@
     align-items: center;
     justify-content: center;
     background: var(--xh-splitter-trigger-bg, var(--xh-border-default));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='splitter'][data-part='resize-trigger'][data-orientation='horizontal'] {
@@ -32869,7 +32869,7 @@
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-none);
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -32987,7 +32987,7 @@
     block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-steps-separator-radius, var(--xh-shape-pill));
     background: var(--xh-steps-separator-bg, var(--xh-border-default));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='steps'][data-part='separator'][hidden] {
@@ -35344,7 +35344,7 @@
   [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'] {
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
@@ -36092,7 +36092,7 @@
     /* 触屏上连点两下不该被当成缩放手势 */
     touch-action: manipulation;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -36391,7 +36391,7 @@
     /* 段是 role=spinbutton 的展示节点，双击选中一段文字只会碍事 */
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -37036,7 +37036,7 @@
     /* 段是 role=spinbutton 的展示节点，双击选中一段文字只会碍事 */
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -39031,7 +39031,7 @@
     color: var(--xh-toolbar-fg, var(--xh-fg-default));
     /* 整条置灰与恢复是一次状态切换，底色与字色淡着换，不硬切 */
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -40273,7 +40273,7 @@
     font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-_transfer-box) * 0.75));
     line-height: var(--xh-leading-none);
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

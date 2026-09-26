@@ -57,7 +57,7 @@ function allowedListMessage(property, value) {
 function disallowedListMessage(property, value) {
   if (property.startsWith('transition')) {
     return `${property} 的取值 "${value}" 里写了 all：逐个列出要动的属性`
-      + '（transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)）'
+      + '，写长名（transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)）'
   }
   if (LENGTH_PROP.test(property)) {
     return `${property} 的取值 "${value}" 里有裸长度：换成 var(--xh-shape-…) / var(--xh-space-…)，`

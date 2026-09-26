@@ -200,7 +200,7 @@ line-height: 21px
 font-weight: 400
 color: oklch(0.52 0.006 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: background, color
+transition-property: background-color, color
 transition-duration: 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
 animation-name: none

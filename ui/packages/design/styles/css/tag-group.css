@@ -62,7 +62,7 @@
   [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'] {
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }

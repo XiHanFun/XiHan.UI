@@ -60,7 +60,7 @@ line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklab(0 0 0 / 0.102)
-transition-property: background
+transition-property: background-color
 transition-duration: 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1)
 animation-name: none
