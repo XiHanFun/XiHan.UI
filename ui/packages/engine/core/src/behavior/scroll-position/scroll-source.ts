@@ -78,12 +78,13 @@ export function scrollEventTarget(container: HTMLElement | null, scope: Scope): 
  * 整页平滑滚动是 CSS 之外的动效，媒体查询压不到它：减弱动效偏好只关掉动画与过渡，
  * scrollTo({ behavior: 'smooth' }) 照播不误，而长距离的自动滚动正是前庭失调最难受的一类。
  *
- * 应用级 override 优先于系统设置；两者都问不出结果时不降级。
+ * 给了滚动目标就按它判断：最近祖先上的 data-motion 优先，与 CSS 的作用域一致；其次应用级 override，
+ * 最后是系统设置。没给目标按 scope 所在窗口判断。三者都问不出结果时不降级。
  */
-export function resolveScrollBehavior(behavior: ScrollBehavior, scope: Scope): ScrollBehavior {
+export function resolveScrollBehavior(behavior: ScrollBehavior, scope: Scope, target?: Element | null): ScrollBehavior {
   if (behavior !== 'smooth')
     return behavior
-  return resolveMotionPreference(scope.getWin()) === 'reduce' ? 'auto' : behavior
+  return resolveMotionPreference(target ?? scope.getWin()) === 'reduce' ? 'auto' : behavior
 }
 
 /** 把可视区沿块轴滚到某个位置；container 为 null 即滚整页。 */
@@ -93,7 +94,7 @@ export function scrollBlockTo(
   top: number,
   behavior: ScrollBehavior,
 ): void {
-  const resolved = resolveScrollBehavior(behavior, scope)
+  const resolved = resolveScrollBehavior(behavior, scope, container ?? scope.getDoc().scrollingElement)
   if (container) {
     // 优先用原生 scrollTo，无该方法时直接写 scrollTop
     if (typeof container.scrollTo === 'function')

@@ -4,23 +4,25 @@ import type { DialogSchema } from '../src'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectDialog, dialogMachine } from '../src'
 
 const cleanup: Array<() => void> = []
 afterEach(() => {
+  setMotionOverride(null)
   for (const dispose of cleanup.splice(0).reverse()) dispose()
   vi.restoreAllMocks()
   document.body.innerHTML = ''
 })
 
-function fixture(options: { animated?: boolean, reducedMotion?: boolean } = {}) {
+function fixture(options: { animated?: boolean } = {}) {
   const content = document.createElement('div')
   content.tabIndex = -1
   content.append(document.createElement('button'))
   const outside = document.createElement('button')
   document.body.append(outside, content)
-  const config = createRuntimeConfig({ reducedMotion: () => options.reducedMotion ?? false })
+  const config = createRuntimeConfig()
   const presence = createPresence({ open: false, onRenderedChange: () => {} })
   const leases: ExitLease[] = []
   if (options.animated ?? true)
@@ -118,7 +120,8 @@ describe('对话框行为与 Presence 共用退出生命周期', () => {
   })
 
   it('减弱动效下退场仍是一段淡出：等退出租约归还才释放模态资源', async () => {
-    const f = fixture({ reducedMotion: true })
+    setMotionOverride('reduce')
+    const f = fixture()
     f.service.send({ type: 'OPEN' })
     await flush()
     f.service.send({ type: 'CLOSE' })

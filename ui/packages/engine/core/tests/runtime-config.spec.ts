@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-import { setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PORTAL_ROOT_ID } from '../src/kernel/constants'
 import { createCounterIdGenerator } from '../src/kernel/id-generator'
@@ -7,55 +6,13 @@ import { createRuntimeConfig } from '../src/kernel/runtime-config'
 import { createScope } from '../src/kernel/scope'
 import { createLayerRegistry, getLayerRegistry } from '../src/kernel/structure/layer-registry'
 
-const originalMatchMedia = window.matchMedia
-
-function mockMatchMedia(win: Window, matches: boolean): void {
-  Object.defineProperty(win, 'matchMedia', {
-    configurable: true,
-    value: (media: string): MediaQueryList => ({
-      matches,
-      media,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => true,
-    }),
-  })
-}
-
 function mockLanguage(win: Window, language: string): void {
   Object.defineProperty(win.navigator, 'language', { configurable: true, value: language })
 }
 
 afterEach(() => {
-  setMotionOverride(null)
   vi.unstubAllGlobals()
   document.body.innerHTML = ''
-  if (originalMatchMedia)
-    Object.defineProperty(window, 'matchMedia', { configurable: true, value: originalMatchMedia })
-  else Reflect.deleteProperty(window, 'matchMedia')
-})
-
-describe('createRuntimeConfig · reducedMotion', () => {
-  it('无 matchMedia 的宿主不抛、按不降级返回 false', () => {
-    expect(typeof window.matchMedia).not.toBe('function')
-    expect(createRuntimeConfig().reducedMotion()).toBe(false)
-  })
-
-  it('应用级 override 压过系统偏好', () => {
-    const config = createRuntimeConfig()
-    setMotionOverride('reduce')
-    expect(config.reducedMotion()).toBe(true)
-    setMotionOverride('no-preference')
-    expect(config.reducedMotion()).toBe(false)
-  })
-
-  it('显式传入的 reducedMotion 原样保留', () => {
-    const config = createRuntimeConfig({ reducedMotion: () => true })
-    expect(config.reducedMotion()).toBe(true)
-  })
 })
 
 describe('createRuntimeConfig · scrollRoot', () => {
@@ -113,15 +70,7 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
     expect(document.getElementById(PORTAL_ROOT_ID)).toBeNull()
   })
 
-  it('默认 reducedMotion 读取 scope 的 window', () => {
-    const { win, scope } = iframeScope()
-    mockMatchMedia(window, false)
-    mockMatchMedia(win, true)
-
-    expect(createRuntimeConfig({ scope }).reducedMotion()).toBe(true)
-  })
-
-  it('显式结构与动效配置压过 scope 派生默认', () => {
+  it('显式结构配置压过 scope 派生默认', () => {
     const { doc, scope } = iframeScope()
     const overrideRegistry = createLayerRegistry(doc)
     const overridePortal = document.createElement('div')
@@ -129,12 +78,10 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
       scope,
       layerRegistry: overrideRegistry,
       portalContainer: () => overridePortal,
-      reducedMotion: () => false,
     })
 
     expect(config.layerRegistry).toBe(overrideRegistry)
     expect(config.portalContainer()).toBe(overridePortal)
-    expect(config.reducedMotion()).toBe(false)
   })
 
   it('拒绝不属于 scope Document 的显式 layerRegistry', () => {
@@ -145,14 +92,6 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
       scope,
       layerRegistry: foreignRegistry,
     })).toThrow(/layerRegistry 必须属于 scope Document/)
-  })
-
-  it('全局 motion override 仍压过 scope 窗口的媒体查询', () => {
-    const { win, scope } = iframeScope()
-    mockMatchMedia(win, false)
-    const config = createRuntimeConfig({ scope })
-    setMotionOverride('reduce')
-    expect(config.reducedMotion()).toBe(true)
   })
 
   it('无全局 DOM 时必须提供完整 scope，单独 registry 不再制造空 scope', () => {
@@ -175,8 +114,6 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
       expect(scoped.layerRegistry).toBe(getLayerRegistry(doc))
       expect(scoped.portalContainer()?.ownerDocument).toBe(doc)
       expect(scoped.locale).toBe('zh-CN')
-      mockMatchMedia(win, true)
-      expect(scoped.reducedMotion()).toBe(true)
     }
     finally {
       vi.unstubAllGlobals()

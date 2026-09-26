@@ -36,9 +36,9 @@ function nextFrame(): Promise<void> {
   })
 }
 
-function fakeConfig(reducedMotion = false): RuntimeConfig {
+function fakeConfig(): RuntimeConfig {
   const scope = createScope(document.body, createCounterIdGenerator())
-  return { scope, reducedMotion: () => reducedMotion } as RuntimeConfig
+  return { scope } as RuntimeConfig
 }
 
 interface Box {
@@ -86,6 +86,9 @@ function harness(o: {
   reducedMotion?: boolean
 } = {}): Harness {
   const scrollEl = document.createElement('div')
+  // 减弱动效档按滚动元素所在的作用域判断
+  if (o.reducedMotion)
+    scrollEl.dataset.motion = 'reduce'
   const contentEl = document.createElement('div')
   scrollEl.appendChild(contentEl)
   document.body.appendChild(scrollEl)
@@ -113,7 +116,7 @@ function harness(o: {
 
   const changes: StickToBottomState[] = []
   const handle = createStickToBottom({
-    config: fakeConfig(o.reducedMotion),
+    config: fakeConfig(),
     scrollEl: () => scrollEl,
     contentEl: () => contentEl,
     threshold: o.threshold,
@@ -340,7 +343,7 @@ describe('归位与重新粘附', () => {
     expect(h.handle.state()).toEqual({ atBottom: true, sticking: true })
   })
 
-  it('reducedMotion 为真时强制 instant', () => {
+  it('滚动元素所在处是减弱动效档（容器 data-motion=reduce）时强制 instant', () => {
     const h = harness({ reducedMotion: true })
     const spy = vi.fn()
     Object.defineProperty(h.scrollEl, 'scrollTo', { configurable: true, value: spy })

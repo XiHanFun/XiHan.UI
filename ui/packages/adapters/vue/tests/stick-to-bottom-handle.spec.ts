@@ -83,7 +83,6 @@ function setup(initial: Scroller) {
       result = useStickToBottom({
         config: {
           scope: { getWin: () => window },
-          reducedMotion: () => false,
         } as never,
         scrollEl: () => scrollRef.value,
         contentEl: () => contentRef.value,
