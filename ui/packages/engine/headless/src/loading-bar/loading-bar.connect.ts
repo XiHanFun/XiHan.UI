@@ -67,8 +67,8 @@ export function connectLoadingBar<T extends PropTypes>(
     getRangeProps: () => normalize.element({
       ...parts.range.attrs,
       'data-state': phase,
-      // 两个样式键每帧都写全，用不上的写空串清掉
-      'style': { inlineSize: `${value}%` },
+      // 交出 0–1 的比例，皮肤据此把铺满的进度段平移到位
+      'style': { '--xh-_loading-bar-value': String(value / 100) },
     }),
 
     // 亮边贴在进度段末端，是纯装饰：进度值由 root 的 aria-valuenow 报出

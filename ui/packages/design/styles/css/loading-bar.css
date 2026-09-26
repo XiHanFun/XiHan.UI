@@ -57,17 +57,24 @@
   }
 
   /*
-   * 进度段。宽度那条轴（inline-size）由连接层写进内联样式，这里绝不重复写。
-   * 背景色不走内联：要别的颜色改 --xh-loading-bar-range 这个槽，或者换语气。
+   * 进度段。铺满轨道，按连接层交出的比例往行首平移、由轨道裁掉：推进只走合成，
+   * 不重排也不重绘；末端的亮边跟着它一起走。背景色不走内联：要别的颜色改 --xh-loading-bar-range 这个槽，或者换语气。
    *
    * 语气取装饰档 --xh-_tone-soft：那一档压在画布上够 3:1，细带才看得出来。
    * 槽位由 root 上的 data-tone 声明，继承下来。
    * 没写 data-tone 时该槽没被声明，退回原来的品牌色。
    */
   [data-scope='loading-bar'][data-part='range'] {
+    inline-size: 100%;
     block-size: 100%;
     background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
-    transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-move)) var(--xh-motion-ease-continuous);
+    translate: calc((var(--xh-_loading-bar-value, 0) - 1) * 100%) 0;
+    transition: translate var(--xh-loading-bar-speed, var(--xh-motion-duration-move)) var(--xh-motion-ease-continuous);
+  }
+
+  /* translate 只认物理方向：RTL 下行首在右边，平移方向翻转 */
+  [data-scope='loading-bar'][data-part='range']:dir(rtl) {
+    translate: calc((1 - var(--xh-_loading-bar-value, 0)) * 100%) 0;
   }
 
   /* 渲染了亮边才把进度段变成定位面：亮边贴在它的末端 */
@@ -94,7 +101,7 @@
     );
   }
 
-  /* 条子还没起步时亮边一起收着：0% 宽的进度段末端不该先亮出一道边 */
+  /* 条子还没起步时亮边一起收着：进度为 0 的末端不该先亮出一道边 */
   [data-scope='loading-bar'][data-part='peg'][data-state='idle'] {
     opacity: 0;
   }
@@ -103,19 +110,25 @@
     display: none;
   }
 
-  /* 减少动效：宽度与淡出都立刻到位。进度本身照常推进，只是不再有过渡的过程——
-     一条按 200ms 一拍持续变宽的带子正是最容易引发不适的那种动效。
+  /* 减少动效：作者写进两个时长槽的值不作数，退回令牌——进度段的平移随几何时长立刻到位，
+     收尾的淡出保留减弱档的那一小段。一条按 200ms 一拍持续推进的带子正是最容易引发不适的那种动效。
      两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='loading-bar'][data-part='root'],
+    [data-scope='loading-bar'][data-part='root'] {
+      transition-duration: var(--xh-motion-duration-exit);
+    }
+
     [data-scope='loading-bar'][data-part='range'] {
-      transition: none;
+      transition-duration: var(--xh-motion-duration-move);
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='loading-bar'][data-part='root'],
+  :where([data-motion='reduce']) [data-scope='loading-bar'][data-part='root'] {
+    transition-duration: var(--xh-motion-duration-exit);
+  }
+
   :where([data-motion='reduce']) [data-scope='loading-bar'][data-part='range'] {
-    transition: none;
+    transition-duration: var(--xh-motion-duration-move);
   }
 
   @media print {
