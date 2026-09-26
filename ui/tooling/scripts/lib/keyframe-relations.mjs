@@ -63,6 +63,7 @@ export const OVERLAY_RELATION = Object.freeze({
   'time-picker': 'anchored-list',
   'time-range-picker': 'anchored-list',
   'tooltip': 'anchored-list',
+  'color-picker': 'anchored-list',
   'popover': 'anchored-panel',
   'hover-card': 'anchored-panel',
   'popconfirm': 'anchored-panel',
