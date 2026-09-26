@@ -8,6 +8,7 @@
 import type { Scope } from '@xihan-ui/core'
 import type { AnchorIndicatorRect, AnchorSchema, AnchorTargetOffset } from './anchor.types'
 import { itemValue, queryItems, resolveScrollBehavior, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { anchorItemQuery } from './anchor.anatomy'
 
 const { createMachine } = setup<AnchorSchema>()
@@ -52,14 +53,6 @@ export function resolveActiveAnchor(
   return active
 }
 
-/** 两次量测是否一样。作 cell 的 isEqual 用：不给的话每次量测都是新对象，版本号会一直空转自增。 */
-function sameRect(a: AnchorIndicatorRect | null, b: AnchorIndicatorRect | null | undefined): boolean {
-  if (a == null || b == null)
-    return a === b
-  return a.blockStart === b.blockStart && a.blockSize === b.blockSize
-    && a.inlineStart === b.inlineStart && a.inlineSize === b.inlineSize
-}
-
 /** 按 id 取目标区块。 */
 function findTargetEl(scope: Scope, id: string): HTMLElement | null {
   return scope.getRootNode().getElementById(id)
@@ -99,7 +92,7 @@ export const anchorMachine = createMachine({
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     // 量测结果不受控、不对外通知
-    indicator: cell<AnchorIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
+    indicator: cell<AnchorIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
     // 按压通道：正被按住的链接（按 value 记），与激活项、平滑滚动锁无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
@@ -110,7 +103,7 @@ export const anchorMachine = createMachine({
   initialState: () => 'idle',
   // 挂载即量一次指示条
   entry: ['measureIndicator'],
-  effects: ['trackScroll'],
+  effects: ['trackScroll', 'trackIndicatorLayout'],
   watch: ({ track, context, action }) => {
     // 激活值一变就重量指示条
     track([context.dep('value')], () => action(['measureIndicator']))
@@ -217,23 +210,41 @@ export const anchorMachine = createMachine({
             context.set('indicator', null)
             return
           }
-          const listRect = list.getBoundingClientRect()
-          const rect = link.getBoundingClientRect()
-          context.set('indicator', {
-            blockStart: rect.top - listRect.top,
-            blockSize: rect.height,
-            // 起始缘按逻辑方向算，RTL 下从右边缘量起
-            inlineStart: (prop('dir') ?? 'ltr') === 'rtl'
-              ? listRect.right - rect.right
-              : rect.left - listRect.left,
-            inlineSize: rect.width,
-          })
+          // 量排布位而不是 rect：目录放在正在缩放进场的浮层里时 rect 量到的是缩小后的值。
+          // 方向缺省从目录现读，与皮肤按 :dir(rtl) 翻转位移同一个来源
+          context.set('indicator', measureIndicatorBox(list, link, prop('dir')))
         }
         run()
         flush(run)
       },
     },
     effects: {
+      /** 目录或链接变尺寸、链接增减、字体加载完成都会让指示条错位：合并到一帧重量。 */
+      trackIndicatorLayout: ({ refs, scope, action, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        const win = scope.getWin()
+        // 与滚动观察器同一时机：React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取
+        flush(() => {
+          win.queueMicrotask(() => {
+            if (disposed)
+              return
+            const list = refs.get('getListEl')()
+            if (!list)
+              return
+            stop = trackIndicatorLayout(win, {
+              container: list,
+              items: () => queryItems(list, anchorItemQuery),
+              onChange: () => action(['measureIndicator']),
+            })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+
       waitForScrollLock: ({ send }) => setTimeoutEffect(() => send({ type: 'after.scrollLock' }), SCROLL_LOCK_MS),
 
       /** 滚动观察器：每次滚动重量各区块顶边，结算出当前是哪一节。 */

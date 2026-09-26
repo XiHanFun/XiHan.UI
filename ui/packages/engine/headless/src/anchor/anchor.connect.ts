@@ -100,18 +100,20 @@ export function connectAnchor<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 指示条位置铺成内联样式
+    // 指示条的量测结果铺成四个私有槽，皮肤按排布取主轴那两支
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': true,
       'data-orientation': orientation,
       'data-value': value ?? undefined,
       'hidden': indicator == null || undefined,
-      // 只写主轴那一条
       'style': indicator
-        ? (orientation === 'horizontal'
-            ? { insetInlineStart: `${indicator.inlineStart}px`, inlineSize: `${indicator.inlineSize}px` }
-            : { insetBlockStart: `${indicator.blockStart}px`, blockSize: `${indicator.blockSize}px` })
+        ? {
+            '--xh-_anchor-indicator-x': `${indicator.inlineStart}px`,
+            '--xh-_anchor-indicator-y': `${indicator.blockStart}px`,
+            '--xh-_anchor-indicator-w': `${indicator.inlineSize}px`,
+            '--xh-_anchor-indicator-h': `${indicator.blockSize}px`,
+          }
         : undefined,
     }),
   }

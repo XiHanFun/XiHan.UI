@@ -59,6 +59,18 @@ function stubRect(el: HTMLElement, box: { top: number, left?: number, width?: nu
  * 直接 delete 还不回去：jsdom 把 scrollY 这些定义成 window 自己的取值器，删掉就再也读不出数。
  */
 const stubbedMetrics: Array<() => void> = []
+/** 给链接钉一个排布位：jsdom 不排版，offset* 恒为 0。offset* 从 list 的内衬边量起。 */
+function stubOffset(el: HTMLElement, list: HTMLElement, box: { top: number, left?: number, width?: number, height?: number }): void {
+  const values = { offsetTop: box.top, offsetLeft: box.left ?? 0, offsetWidth: box.width ?? 0, offsetHeight: box.height ?? 0, offsetParent: list }
+  for (const [key, value] of Object.entries(values))
+    Object.defineProperty(el, key, { configurable: true, value })
+}
+
+/** 四个私有槽里的量测结果。 */
+function slots(c: { api: () => { getIndicatorProps: () => unknown } }): Record<string, string> {
+  return (c.api().getIndicatorProps() as Record<string, unknown>).style as Record<string, string>
+}
+
 function stubMetric(target: object, key: string, value: number): void {
   const original = Object.getOwnPropertyDescriptor(target, key)
   Object.defineProperty(target, key, { value, configurable: true })
@@ -309,18 +321,22 @@ describe('connectAnchor 静态输出', () => {
 })
 
 describe('anchor 指示条量测', () => {
-  it('竖排：只写块轴那一条，位置是当前链接相对 list 的偏移', () => {
+  it('竖排：量测铺成四个私有槽，位置是当前链接相对 list 的排布位', () => {
     const c = makeAnchor({ defaultValue: 'install' })
-    stubRect(c.list, { top: 100, left: 20, width: 200, height: 300 })
-    stubRect(c.links[1]!, { top: 140, left: 28, width: 160, height: 24 })
+    stubMetric(c.list, 'clientWidth', 200)
+    stubOffset(c.links[1]!, c.list, { top: 40, left: 8, width: 160, height: 24 })
     // 值没变时不会自己重量；用 setValue 走一趟同一条路把量测顶起来
     c.api().setValue('intro')
     c.api().setValue('install')
 
-    const indicator = c.api().getIndicatorProps() as Record<string, unknown>
-    expect(indicator.hidden).toBeUndefined()
-    // 交叉轴（贴边与粗细）归样式层，内联样式一个字都不该写
-    expect(indicator.style).toEqual({ blockSize: '24px', insetBlockStart: '40px' })
+    expect((c.api().getIndicatorProps() as Record<string, unknown>).hidden).toBeUndefined()
+    // 交叉轴的贴边与粗细归样式层，皮肤按排布只取主轴那两支
+    expect(slots(c)).toEqual({
+      '--xh-_anchor-indicator-x': '8px',
+      '--xh-_anchor-indicator-y': '40px',
+      '--xh-_anchor-indicator-w': '160px',
+      '--xh-_anchor-indicator-h': '24px',
+    })
   })
 
   // 激活项没变就没人去重量，指示条会一直停在旧位置上——而目录换行、字体加载完
@@ -331,28 +347,28 @@ describe('anchor 指示条量测', () => {
     // 先滚到第二节，让激活项落在它身上
     c.scrollTo([-100, -10, 900])
     expect(c.value()).toBe('install')
-    stubRect(c.list, { top: 0, left: 0, width: 200, height: 300 })
-    stubRect(c.links[1]!, { top: 40, left: 0, width: 200, height: 24 })
+    stubMetric(c.list, 'clientWidth', 200)
+    stubOffset(c.links[1]!, c.list, { top: 40, left: 0, width: 200, height: 24 })
     window.dispatchEvent(new Event('resize'))
-    expect((c.api().getIndicatorProps() as Record<string, unknown>).style)
-      .toEqual({ blockSize: '24px', insetBlockStart: '40px' })
+    expect(slots(c)['--xh-_anchor-indicator-y']).toBe('40px')
+    expect(slots(c)['--xh-_anchor-indicator-h']).toBe('24px')
 
-    stubRect(c.links[1]!, { top: 96, left: 0, width: 200, height: 48 })
+    stubOffset(c.links[1]!, c.list, { top: 96, left: 0, width: 200, height: 48 })
     window.dispatchEvent(new Event('resize'))
-    expect((c.api().getIndicatorProps() as Record<string, unknown>).style)
-      .toEqual({ blockSize: '48px', insetBlockStart: '96px' })
+    expect(slots(c)['--xh-_anchor-indicator-y']).toBe('96px')
+    expect(slots(c)['--xh-_anchor-indicator-h']).toBe('48px')
   })
 
   it('横排 + RTL：起始缘从右边量起，指示条不会跑到另一头', () => {
     const c = makeAnchor({ defaultValue: 'install', dir: 'rtl', orientation: 'horizontal' })
-    stubRect(c.list, { top: 0, left: 0, width: 200, height: 300 })
-    stubRect(c.links[1]!, { top: 0, left: 30, width: 160, height: 24 })
+    stubMetric(c.list, 'clientWidth', 200)
+    stubOffset(c.links[1]!, c.list, { top: 0, left: 30, width: 160, height: 24 })
     c.api().setValue('intro')
     c.api().setValue('install')
 
-    const style = (c.api().getIndicatorProps() as Record<string, unknown>).style as Record<string, string>
-    // list 右边缘 200、链接右边缘 190 → 起始缘距离 10（按左边量的话会是 30）
-    expect(style).toEqual({ inlineSize: '160px', insetInlineStart: '10px' })
+    // list 内衬盒宽 200、链接右缘 190 → 起始缘距离 10（按左边量的话会是 30）
+    expect(slots(c)['--xh-_anchor-indicator-x']).toBe('10px')
+    expect(slots(c)['--xh-_anchor-indicator-w']).toBe('160px')
   })
 })
 

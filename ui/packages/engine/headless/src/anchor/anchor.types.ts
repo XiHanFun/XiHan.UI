@@ -104,7 +104,7 @@ export interface AnchorSchema extends MachineSchema {
   tag: never
   guard: 'isSmooth' | 'isTargetReached' | 'canPress'
   action: 'setValue' | 'scrollToTarget' | 'measureIndicator' | 'startPress' | 'endPress'
-  effect: 'trackScroll' | 'waitForScrollLock'
+  effect: 'trackScroll' | 'trackIndicatorLayout' | 'waitForScrollLock'
 }
 
 export interface AnchorApi<T extends PropTypes = PropTypes> {
