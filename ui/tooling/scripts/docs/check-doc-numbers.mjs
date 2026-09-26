@@ -1144,7 +1144,7 @@ async function constantIn(path, name) {
   return Number(hit[1].replaceAll('_', ''))
 }
 
-const MOTION_DURATIONS = ['micro', 'enter', 'exit', 'move', 'expand', 'collapse', 'slide', 'nudge', 'press', 'release', 'attention']
+const MOTION_DURATIONS = ['micro', 'enter', 'exit', 'move', 'expand', 'collapse', 'slide', 'nudge', 'press', 'release', 'attention', 'reveal', 'morph']
 for (const name of MOTION_DURATIONS) {
   truth[`动效时长:${name}`] = { how: `semantic.base.json 的 motion.duration-${name}（毫秒）`, value: () => motionToken(`duration-${name}`, false) }
   truth[`动效时长减弱档:${name}`] = { how: `semantic.reduce.json 的 motion.duration-${name}，没覆盖取基线（毫秒）`, value: () => motionToken(`duration-${name}`, true) }
@@ -1441,7 +1441,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /条 `\.css`：(\d+) 份组件皮肤加/, '组件皮肤份数'],
 
   // 动效规范页：时长、减弱档、错开步长、位移与缩放
-  ...['micro', 'enter', 'exit', 'move', 'expand', 'collapse', 'slide', 'nudge', 'attention'].flatMap(name => [
+  ...['micro', 'enter', 'exit', 'move', 'expand', 'collapse', 'slide', 'nudge', 'attention', 'reveal', 'morph'].flatMap(name => [
     ['docs/design/motion.md', new RegExp(`\\| \`--xh-motion-duration-${name}\` \\| (\\d+)ms \\|`), `动效时长:${name}`],
     ['docs/design/motion.md', new RegExp(`\\| \`--xh-motion-duration-${name}\` \\| \\d+ms \\| (\\d+)ms`), `动效时长减弱档:${name}`],
   ]),
