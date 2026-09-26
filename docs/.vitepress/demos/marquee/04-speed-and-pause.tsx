@@ -1,4 +1,4 @@
-// 速度与暂停 | speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时暂停
+// 速度与悬停暂停 | speed 是每秒像素；指针停下或焦点落进窗口时暂停，缺省即开
 import type { ReactNode } from "react";
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/react";
 
@@ -18,7 +18,6 @@ export default function Demo(): ReactNode {
           <XhMarqueeRoot
             speed={s}
             autoFill
-            pauseOnHover
             style={{ maxInlineSize: "420px", border: "1px solid var(--xh-border-default)", borderRadius: "6px" }}
           >
             <XhMarqueeContent>

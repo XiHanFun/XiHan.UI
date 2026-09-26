@@ -37,7 +37,8 @@
       "tour"
     ],
     "autoplay-trigger": [
-      "carousel"
+      "carousel",
+      "marquee"
     ],
     "back-trigger": [
       "page-header"

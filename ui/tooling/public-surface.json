@@ -1477,6 +1477,8 @@
       "XhMarkdownStreamLiveRegionProps",
       "XhMarkdownStreamRoot",
       "XhMarkdownStreamRootProps",
+      "XhMarqueeAutoplayTrigger",
+      "XhMarqueeAutoplayTriggerProps",
       "XhMarqueeContent",
       "XhMarqueeContentProps",
       "XhMarqueeRoot",
@@ -3586,6 +3588,7 @@
       "XhMarkdownStreamContent",
       "XhMarkdownStreamLiveRegion",
       "XhMarkdownStreamRoot",
+      "XhMarqueeAutoplayTrigger",
       "XhMarqueeContent",
       "XhMarqueeRoot",
       "XhMasonry",
@@ -6000,7 +6003,9 @@
       "MarkdownStreamTranslations",
       "MarqueeApi",
       "MarqueeDirection",
+      "MarqueePausedChangeDetails",
       "MarqueeProps",
+      "MarqueeSchema",
       "MarqueeTranslations",
       "MasonryApi",
       "MasonryBreakpoint",
@@ -7424,6 +7429,7 @@
       "markdownStreamMeta",
       "marqueeAnatomy",
       "marqueeKeyboard",
+      "marqueeMachine",
       "marqueeMeta",
       "masonryAnatomy",
       "masonryItemQuery",
@@ -9294,6 +9300,7 @@
       "root"
     ],
     "marquee": [
+      "autoplay-trigger",
       "content",
       "root"
     ],
@@ -10918,10 +10925,13 @@
     ],
     "marquee": [
       "autoFill",
+      "defaultPaused",
       "direction",
+      "onPausedChange",
       "pauseOnHover",
       "paused",
-      "speed"
+      "speed",
+      "translations"
     ],
     "masonry": [
       "columns",
@@ -14820,8 +14830,13 @@
     "--xh-markdown-stream-mono",
     "--xh-marquee-block-size",
     "--xh-marquee-gap",
+    "--xh-marquee-icon-size",
     "--xh-marquee-span",
     "--xh-marquee-speed",
+    "--xh-marquee-trigger-bg",
+    "--xh-marquee-trigger-bg-active",
+    "--xh-marquee-trigger-bg-hover",
+    "--xh-marquee-trigger-inset",
     "--xh-masonry-gap",
     "--xh-matrix-code-bg",
     "--xh-matrix-code-eye-fg",
@@ -18100,12 +18115,15 @@
     "xh-marquee": {
       "attributes": [
         "auto-fill",
+        "default-paused",
         "direction",
         "pause-on-hover",
         "paused",
         "speed"
       ],
-      "events": []
+      "events": [
+        "paused-change"
+      ]
     },
     "xh-masonry": {
       "attributes": [

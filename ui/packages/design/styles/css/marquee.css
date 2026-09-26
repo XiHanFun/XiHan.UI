@@ -5,6 +5,9 @@
 
 /* 定义 marquee 样式。 */
 
+/* 暂停开关走动作控件配方；独立皮肤同时传递引入，full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.motion {
   /*
    * 横轴一条、纵轴一条。四个方向乘两种铺法共八组起止点，若不外提就要写八份几乎一样的关键帧。
@@ -71,6 +74,8 @@
     --xh-_marquee-from: 100%;
     --xh-_marquee-to: -100%;
 
+    /* 暂停开关压在窗口一端，定位基准是窗口 */
+    position: relative;
     display: flex;
     overflow: hidden;
     max-inline-size: 100%;
@@ -134,21 +139,73 @@
     --xh-_marquee-to: 0%;
   }
 
-  /* 悬停暂停：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+  /*
+   * 悬停暂停：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态。
+   * 指针停在暂停开关上不算：那里显示的是开关自己的状态，按下「继续」时指针还在开关上，
+   * 若照样算悬停，轨道要等指针挪开才动，这一下按了像没按。
+   */
   @media (hover: hover) {
-    [data-scope='marquee'][data-part='root'][data-pause-on-hover]:hover {
+    [data-scope='marquee'][data-part='root'][data-pause-on-hover]:hover:not(:has(> [data-scope='marquee'][data-part='autoplay-trigger']:hover)) {
       --xh-_marquee-play: paused;
     }
   }
 
-  /* 键盘用户没有悬停：焦点落进窗口时同样停住，否则轨道里的链接刚聚焦就被带走了 */
-  [data-scope='marquee'][data-part='root'][data-pause-on-hover]:focus-within {
+  /* 键盘用户没有悬停：焦点落进窗口时同样停住，否则轨道里的链接刚聚焦就被带走了；焦点在暂停开关上同理不算 */
+  [data-scope='marquee'][data-part='root'][data-pause-on-hover]:focus-within:not(:has(> [data-scope='marquee'][data-part='autoplay-trigger']:focus)) {
     --xh-_marquee-play: paused;
   }
 
   /* 受控暂停：作者说了停就停，排在悬停两条之后，指针离开也不会把它带回去走 */
   [data-scope='marquee'][data-part='root'][data-paused] {
     --xh-_marquee-play: paused;
+  }
+
+  /*
+   * 暂停开关：压在窗口行尾一端、上下居中；竖排时落在块末那一角。
+   * 窗口是裁切内容的单行，开关放进去会被轨道挤出视野，只能浮在上面。
+   * 盒型、描边、字色与 0.97 按压由动作控件配方按 icon 档的描边档给出；描边档静息不填底，
+   * 这里把底换成不透明的面，悬停 / 按下走同一承载面的不透明阶梯，后面走过的内容才透不上来。
+   */
+  [data-scope='marquee'][data-part='autoplay-trigger'] {
+    --xh-action-bg-rest: var(--xh-marquee-trigger-bg, var(--xh-bg-surface));
+    --xh-action-bg-hover: var(--xh-marquee-trigger-bg-hover, var(--xh-bg-subtle-opaque));
+    --xh-action-bg-pressed: var(--xh-marquee-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
+    --xh-action-bg-focus-visible: var(--xh-marquee-trigger-bg, var(--xh-bg-surface));
+    /* 作者塞进来的图标跟着 icon 档走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-marquee-icon-size, var(--xh-_action-profile-glyph-size));
+
+    position: absolute;
+    z-index: 1;
+    inset-block: 0;
+    inset-inline-end: var(--xh-marquee-trigger-inset, var(--xh-space-1));
+    margin-block: auto;
+  }
+
+  [data-scope='marquee'][data-part='root'][data-orientation='vertical'] > [data-scope='marquee'][data-part='autoplay-trigger'] {
+    inset-block-start: auto;
+    inset-block-end: var(--xh-marquee-trigger-inset, var(--xh-space-1));
+    margin-block: 0;
+  }
+
+  [data-scope='marquee'][data-part='autoplay-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 不给内容时画图标：在走画暂停，停住画播放；图标随动作，与可及名同一口径 */
+  [data-scope='marquee'][data-part='autoplay-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-pause) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-pause) center / contain no-repeat;
+  }
+
+  [data-scope='marquee'][data-part='autoplay-trigger'][data-state='paused']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-play);
+    mask-image: var(--xh-glyph-mark-play);
   }
 
   /* 轨道：走的是这一层，一圈走完立刻回到起点接着走 */
@@ -196,6 +253,11 @@
     [data-scope='marquee'][data-part='root'] {
       overflow: auto;
     }
+
+    /* 轨道已经停在起点：没有可停的东西，开关只会挡住可滚的内容 */
+    [data-scope='marquee'][data-part='autoplay-trigger'] {
+      display: none;
+    }
   }
 
   :where([data-motion='reduce']) [data-scope='marquee'][data-part='content'] {
@@ -204,6 +266,10 @@
 
   :where([data-motion='reduce']) [data-scope='marquee'][data-part='root'] {
     overflow: auto;
+  }
+
+  :where([data-motion='reduce']) [data-scope='marquee'][data-part='autoplay-trigger'] {
+    display: none;
   }
 
   @media print {
@@ -217,6 +283,10 @@
 
     [data-scope='marquee'][data-part='root'] {
       overflow: auto;
+    }
+
+    [data-scope='marquee'][data-part='autoplay-trigger'] {
+      display: none;
     }
   }
 }

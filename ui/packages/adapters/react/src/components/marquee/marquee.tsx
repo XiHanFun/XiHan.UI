@@ -5,25 +5,35 @@
 
 // 提供 marquee 相关实现。
 
-import type { MarqueeDirection, MarqueeProps } from '@xihan-ui/headless'
+import type { MarqueeDirection, MarqueeSchema, MarqueeTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { connectMarquee } from '@xihan-ui/headless'
+import { connectMarquee, marqueeMachine } from '@xihan-ui/headless'
+import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { slotPaints } from '../../runtime/slot-content'
+import { useMachine } from '../../runtime/use-machine'
 import { MarqueeProvider, useMarqueeContext } from './context'
+
+type MarqueeProps = MarqueeSchema['props']
 
 export interface XhMarqueeRootProps extends ComponentPropsWithRef<'div'> {
   /** 滚动方向，默认 left；轴由方向推出，另写为 data-orientation。 */
   direction?: MarqueeDirection
   /** 名义上的每秒像素数，写为根上的内联变量；只接受有限正数。 */
   speed?: number
-  /** 指针停在窗口上时暂停。 */
+  /** 指针停在窗口上、或键盘焦点落进窗口时暂停，默认开启；写 false 关掉。 */
   pauseOnHover?: boolean
-  /** 受控暂停，比 pauseOnHover 优先。 */
+  /** 受控暂停：给了它，暂停开关只报 onPausedChange，由作者写回。 */
   paused?: boolean
+  /** 非受控暂停的初值，默认 false。 */
+  defaultPaused?: boolean
   /** 内容不足时重复铺满：轨道中铺设两份内容。 */
   autoFill?: boolean
+  /** 暂停开关在两种状态下的可及名，默认英文。 */
+  translations?: Partial<MarqueeTranslations>
+  onPausedChange?: MarqueeProps['onPausedChange']
 }
 
 /** 跑马灯的窗口：内容在这一层中被裁剪，如何滚动归皮肤。 */
@@ -32,14 +42,26 @@ export function XhMarqueeRoot({
   speed,
   pauseOnHover,
   paused,
+  defaultPaused,
   autoFill,
+  translations,
+  onPausedChange,
   children,
   ...rest
 }: XhMarqueeRootProps): ReactNode {
-  const api = connectMarquee(
-    { direction, speed, pauseOnHover, paused, autoFill } satisfies MarqueeProps,
-    reactNormalize,
-  )
+  const props = withXhConfig('marquee', {
+    direction,
+    speed,
+    pauseOnHover,
+    paused,
+    defaultPaused,
+    autoFill,
+    translations,
+    onPausedChange,
+  }) as MarqueeProps
+  // 暂停开关带 aria-controls 指向轨道的 id：用 useId 派生的 scope，服务端与水合两侧同号
+  const service = useMachine(marqueeMachine, () => props, { scope: useReactScope() })
+  const api = connectMarquee(service, reactNormalize)
   return (
     <MarqueeProvider value={{ api }}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
@@ -48,6 +70,8 @@ export function XhMarqueeRoot({
     </MarqueeProvider>
   )
 }
+
+XhMarqueeRoot.xhEvents = ['paused-change'] as const
 
 export interface XhMarqueeContentProps extends ComponentPropsWithRef<'div'> {}
 
@@ -81,5 +105,17 @@ export function XhMarqueeContent({ children, ...rest }: XhMarqueeContentProps): 
     <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {copies}
     </div>
+  )
+}
+
+export interface XhMarqueeAutoplayTriggerProps extends ComponentPropsWithRef<'button'> {}
+
+/** 暂停开关：原生 button，Enter / Space 的激活与 Tab 停靠由平台提供；不给内容时皮肤画暂停 / 播放图标。 */
+export function XhMarqueeAutoplayTrigger({ children, ...rest }: XhMarqueeAutoplayTriggerProps): ReactNode {
+  const ctx = useMarqueeContext()
+  return (
+    <button {...mergeReactProps(ctx.api.getAutoplayTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </button>
   )
 }

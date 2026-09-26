@@ -38648,6 +38648,24 @@
       "description": "marquee 的 content、root 部件 padding-block-end、padding-inline-end 覆盖槽。"
     },
     {
+      "name": "--xh-marquee-icon-size",
+      "component": "marquee",
+      "part": [
+        "autoplay-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 autoplay-trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-marquee-span",
       "component": "marquee",
       "part": [
@@ -38686,6 +38704,93 @@
       ],
       "visibility": "public",
       "description": "marquee 的 content、root 部件 animation-duration 覆盖槽。"
+    },
+    {
+      "name": "--xh-marquee-trigger-bg",
+      "component": "marquee",
+      "part": [
+        "autoplay-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "default",
+        "focus-visible",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 autoplay-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-marquee-trigger-bg-active",
+      "component": "marquee",
+      "part": [
+        "autoplay-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover-opaque"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 autoplay-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-marquee-trigger-bg-hover",
+      "component": "marquee",
+      "part": [
+        "autoplay-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-opaque"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 autoplay-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-marquee-trigger-inset",
+      "component": "marquee",
+      "part": [
+        "autoplay-trigger",
+        "root"
+      ],
+      "property": [
+        "inset-block-end",
+        "inset-inline-end"
+      ],
+      "state": [
+        "default",
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 autoplay-trigger、root 部件 inset-block-end、inset-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-masonry-gap",
