@@ -2,7 +2,7 @@
 // 露出多少、从哪一侧收只有真实布局量得出来：jsdom 不算 translate 与 clip-path。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h, nextTick } from 'vue'
+import { createApp, h, nextTick, ref } from 'vue'
 import { XhLoadingBarPeg, XhLoadingBarRange, XhLoadingBarRoot, XhLoadingBarTrack, XhProgress, XhToastProgress, XhToastRoot, XhToastTitle } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -116,6 +116,28 @@ describe('加载条的填充', () => {
     const peg = part('loading-bar', 'peg').getBoundingClientRect()
     const front = dir === 'ltr' ? t.left + t.width * 0.4 : t.right - t.width * 0.4
     expect(dir === 'ltr' ? peg.right : peg.left).toBeCloseTo(front, 0)
+  })
+
+  it('收尾时留在满格等淡出过渡真正播完才归零：淡出时长给多长就等多长', async () => {
+    const loading = ref(true)
+    await mount(() => h(XhLoadingBarRoot, { loading: loading.value, trickle: false, fadeDuration: 400 }, () => [
+      h(XhLoadingBarTrack, null, () => [h(XhLoadingBarRange, null, () => [h(XhLoadingBarPeg)])]),
+    ]))
+    const root = part('loading-bar', 'root')
+    loading.value = false
+    await nextTick()
+    const started = performance.now()
+    expect(root.dataset.state).toBe('finishing')
+    // 淡出时长写进了皮肤的时长槽，过渡按它播
+    expect(getComputedStyle(root).transitionDuration.split(', ')[0]).toBe('0.4s')
+
+    await new Promise(resolve => setTimeout(resolve, 200))
+    expect(root.dataset.state).toBe('finishing')
+    expect(root.getAttribute('aria-valuenow')).toBeNull()
+
+    await expect.poll(() => root.dataset.state, { timeout: 2000 }).toBe('idle')
+    expect(performance.now() - started).toBeGreaterThanOrEqual(380)
+    expect(root.hidden).toBe(true)
   })
 })
 

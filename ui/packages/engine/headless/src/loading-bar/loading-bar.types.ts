@@ -38,7 +38,7 @@ export interface LoadingBarSchema extends MachineSchema {
     trickleSpeed?: number
     /** 起步值，默认 8：开始加载时先跳到该值。 */
     minimum?: number
-    /** 到达 100 之后留给淡出的窗口毫秒，默认 200。窗口结束才归零并收起。 */
+    /** 到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 */
     fadeDuration?: number
     translations?: Partial<LoadingBarTranslations>
     /** 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 */
@@ -60,8 +60,8 @@ export interface LoadingBarSchema extends MachineSchema {
     | { type: 'TRICKLE.SYNC' }
     /** 爬升节拍到期。 */
     | { type: 'after.trickleSpeed' }
-    /** 淡出窗口结束，归零收起。 */
-    | { type: 'after.fadeDuration' }
+    /** 根节点上的淡出过渡播完，归零收起。 */
+    | { type: 'FADE.DONE' }
   tag: never
   guard: never
   action: 'syncLoading' | 'syncTrickle' | 'primeValue' | 'advanceValue' | 'completeValue' | 'resetValue'

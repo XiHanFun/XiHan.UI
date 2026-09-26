@@ -9,7 +9,6 @@ import {
   connectLoadingBar,
   isLoadingBarDeterminate,
   LOADING_BAR_CEILING,
-  LOADING_BAR_FADE_DURATION,
   LOADING_BAR_HEIGHT,
   LOADING_BAR_MINIMUM,
   LOADING_BAR_STEP_MAX_RATIO,
@@ -144,16 +143,16 @@ describe('resolveLoadingBarTrickleSpeed', () => {
 })
 
 describe('resolveLoadingBarFadeDuration', () => {
-  it('缺省 200ms；0 是合法的"不淡出"', () => {
-    expect(resolveLoadingBarFadeDuration(undefined)).toBe(LOADING_BAR_FADE_DURATION)
+  it('没给就是 undefined（皮肤按退场令牌淡出）；0 是合法的"不淡出"', () => {
+    expect(resolveLoadingBarFadeDuration(undefined)).toBeUndefined()
     expect(resolveLoadingBarFadeDuration(0)).toBe(0)
     expect(resolveLoadingBarFadeDuration(1000)).toBe(1000)
   })
 
-  it('负数夹成 0，非有限数退回缺省：Infinity 送进计时器会抛，条子也就再回不到 idle', () => {
+  it('负数夹成 0，非有限数按没给：永远停在淡出态的条子再也回不到 idle', () => {
     expect(resolveLoadingBarFadeDuration(-100)).toBe(0)
-    expect(resolveLoadingBarFadeDuration(Number.POSITIVE_INFINITY)).toBe(LOADING_BAR_FADE_DURATION)
-    expect(resolveLoadingBarFadeDuration(Number.NaN)).toBe(LOADING_BAR_FADE_DURATION)
+    expect(resolveLoadingBarFadeDuration(Number.POSITIVE_INFINITY)).toBeUndefined()
+    expect(resolveLoadingBarFadeDuration(Number.NaN)).toBeUndefined()
   })
 })
 
@@ -174,6 +173,32 @@ function makeLoadingBar(initial: Props = {}) {
     stop: () => runtime.stop(),
   }
 }
+
+/** 等宿主提交（vanilla 运行时是一个微任务）与过渡的 finished 链落定。 */
+async function settle(): Promise<void> {
+  for (let i = 0; i < 5; i++)
+    await Promise.resolve()
+}
+
+/**
+ * 给根节点桩一段正在播的 opacity 淡出过渡：jsdom 不跑 CSS 过渡，finish() 模拟它播完。
+ * 节点按 connect 给根的 id 挂进文档，机器按同一个 id 找它。
+ */
+function stubFade(bar: ReturnType<typeof makeLoadingBar>): { finish: () => void } {
+  let finish!: () => void
+  const finished = new Promise<void>((resolve) => {
+    finish = resolve
+  })
+  const root = document.createElement('div')
+  root.id = String(bar.root().id)
+  ;(root as unknown as { getAnimations: () => unknown[] }).getAnimations = () => [{ transitionProperty: 'opacity', finished }]
+  document.body.append(root)
+  return { finish }
+}
+
+afterEach(() => {
+  document.body.innerHTML = ''
+})
 
 describe('loadingBarMachine 起停', () => {
   beforeEach(() => {
@@ -334,8 +359,9 @@ describe('loadingBarMachine 收尾', () => {
     vi.useRealTimers()
   })
 
-  it('loading 翻 false：先冲到 100，走完淡出窗口才归零收起', () => {
-    const bar = makeLoadingBar({ loading: true, trickleSpeed: 100, fadeDuration: 300 })
+  it('loading 翻 false：先冲到 100，等根节点上的淡出过渡真正播完才归零收起', async () => {
+    const bar = makeLoadingBar({ loading: true, trickleSpeed: 100 })
+    const fade = stubFade(bar)
     vi.advanceTimersByTime(100)
 
     bar.setProps({ loading: false })
@@ -344,37 +370,43 @@ describe('loadingBarMachine 收尾', () => {
     // 淡出期间仍露面：早一步收起，那段淡出动画根本没机会跑
     expect(bar.api().visible).toBe(true)
 
-    vi.advanceTimersByTime(299)
+    // 不按毫秒猜：过渡没播完，拨再久的时钟也还在淡出
+    await settle()
+    vi.advanceTimersByTime(60_000)
     expect(bar.state()).toBe('finishing')
     expect(bar.api().value).toBe(100)
 
-    vi.advanceTimersByTime(1)
+    fade.finish()
+    await settle()
     expect(bar.state()).toBe('idle')
     expect(bar.api().value).toBe(0)
     expect(bar.api().visible).toBe(false)
   })
 
-  it('收尾途中的值变化按顺序报出去：先 100 后 0', () => {
+  it('没有在播的淡出过渡（没装皮肤）：提交之后即刻收尾，值的变化按顺序报出去：先 100 后 0', async () => {
     const onValueChange = vi.fn<(d: LoadingBarValueChangeDetails) => void>()
-    const bar = makeLoadingBar({ loading: true, trickle: false, fadeDuration: 200, onValueChange })
+    const bar = makeLoadingBar({ loading: true, trickle: false, onValueChange })
     onValueChange.mockClear()
 
     bar.setProps({ loading: false })
-    vi.advanceTimersByTime(200)
+    await settle()
+    expect(bar.state()).toBe('idle')
     expect(onValueChange.mock.calls.map(([d]) => d.value)).toEqual([100, 0])
   })
 
-  it('淡出途中又开始加载：从起步值重来，不从满格接着走', () => {
-    const bar = makeLoadingBar({ loading: true, trickle: false, fadeDuration: 500 })
+  it('淡出途中又开始加载：从起步值重来，不从满格接着走；上一轮的淡出播完也收不走跑着的条子', async () => {
+    const bar = makeLoadingBar({ loading: true, trickle: false })
+    const fade = stubFade(bar)
     bar.setProps({ loading: false })
     expect(bar.api().value).toBe(100)
+    await settle()
 
     bar.setProps({ loading: true })
     expect(bar.state()).toBe('loading')
     expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
 
-    // 上一轮的淡出计时器已随状态退出被拆掉，不会隔一会儿把跑着的条子收走
-    vi.advanceTimersByTime(60_000)
+    fade.finish()
+    await settle()
     expect(bar.state()).toBe('loading')
   })
 
@@ -389,11 +421,11 @@ describe('loadingBarMachine 收尾', () => {
     expect(bar.api().value).toBe(climbed)
   })
 
-  it('idle 下 loading 再翻一次 false 是空操作：不会凭空冒出一条冲刺', () => {
+  it('idle 下 loading 再翻一次 false 是空操作：不会凭空冒出一条冲刺', async () => {
     const onValueChange = vi.fn<(d: LoadingBarValueChangeDetails) => void>()
     const bar = makeLoadingBar({ loading: true, trickle: false, onValueChange })
     bar.setProps({ loading: false })
-    vi.advanceTimersByTime(1000)
+    await settle()
     expect(bar.state()).toBe('idle')
     onValueChange.mockClear()
 
@@ -420,16 +452,16 @@ describe('loadingBarMachine 确定进度', () => {
     expect(bar.api().value).toBe(42)
   })
 
-  it('确定进度下机器一个字都不写：起步、冲刺、归零全部让位给宿主', () => {
+  it('确定进度下机器一个字都不写：起步、冲刺、归零全部让位给宿主', async () => {
     const onValueChange = vi.fn<(d: LoadingBarValueChangeDetails) => void>()
-    const bar = makeLoadingBar({ value: 42, fadeDuration: 100, onValueChange })
+    const bar = makeLoadingBar({ value: 42, onValueChange })
 
     bar.setProps({ loading: true })
     expect(bar.state()).toBe('loading')
     bar.setProps({ loading: false })
     // 状态该走的还是要走（淡出照跑），只是值不归它管
     expect(bar.state()).toBe('finishing')
-    vi.advanceTimersByTime(100)
+    await settle()
     expect(bar.state()).toBe('idle')
 
     expect(onValueChange).not.toHaveBeenCalled()
@@ -486,8 +518,8 @@ describe('connectLoadingBar', () => {
     expect(guessed['data-indeterminate']).toBe('')
   })
 
-  it('idle 时 root 带 hidden，露面时摘掉', () => {
-    const bar = makeLoadingBar({ trickle: false, fadeDuration: 100 })
+  it('idle 时 root 带 hidden，露面时摘掉；淡出过渡播完才重新带上', async () => {
+    const bar = makeLoadingBar({ trickle: false })
     expect(bar.root().hidden).toBe(true)
 
     bar.setProps({ loading: true })
@@ -498,8 +530,15 @@ describe('connectLoadingBar', () => {
     expect(bar.root()['data-state']).toBe('finishing')
     expect(bar.root().hidden).toBeUndefined()
 
-    vi.advanceTimersByTime(100)
+    await settle()
     expect(bar.root().hidden).toBe(true)
+  })
+
+  it('给了淡出时长就写进皮肤的淡出时长槽，没给留空、皮肤按退场令牌', () => {
+    const style = (props: Props): Record<string, unknown> =>
+      makeLoadingBar(props).root().style as Record<string, unknown>
+    expect(style({ fadeDuration: 300 })['--xh-loading-bar-fade']).toBe('300ms')
+    expect(style({})['--xh-loading-bar-fade']).toBe('')
   })
 
   it('厚度写进 root 的内联样式：数字按像素，字符串原样，缺省有兜底', () => {

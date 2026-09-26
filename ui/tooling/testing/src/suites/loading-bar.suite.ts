@@ -70,6 +70,21 @@ function waitForClimb(timeoutMs: number): (ctx: RawStepContext) => Promise<void>
  * 帧里的事件条数随时钟漂，逐帧断言与跨适配器比对都没法成立。
  * 爬升本身另开两条 raw 用例验，并标 skipParity。
  */
+/**
+ * 把节点上的动画与过渡都桩成「没有」：收尾不必等淡出，三端、jsdom 与浏览器下走同一条确定的路径。
+ * 返回复原函数。
+ */
+function withoutTransitions(win: Window & typeof globalThis): () => void {
+  const proto = win.Element.prototype
+  const original = Object.getOwnPropertyDescriptor(proto, 'getAnimations')
+  Object.defineProperty(proto, 'getAnimations', { configurable: true, writable: true, value: () => [] })
+  return () => {
+    if (original)
+      Object.defineProperty(proto, 'getAnimations', original)
+    else delete (proto as { getAnimations?: unknown }).getAnimations
+  }
+}
+
 export const loadingBarSuite: ConformanceSuite = {
   component: 'loading-bar',
   anatomy: loadingBarAnatomy,
@@ -152,10 +167,11 @@ export const loadingBarSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '不确定进度走完一轮：起步跳到 minimum，收尾先冲 100 再淡出归零',
+      name: '不确定进度走完一轮：起步跳到 minimum，收尾先冲 100，没有可等的淡出过渡时随即归零',
       spec: { apg: SPEC },
       // trickle 关掉，这一轮里除了起步/冲刺/归零之外没有第二个人改值
-      props: { loading: false, trickle: false, minimum: 25, fadeDuration: 200 },
+      props: { loading: false, trickle: false, minimum: 25 },
+      environment: withoutTransitions,
       steps: [
         {
           kind: 'setProps',
@@ -176,37 +192,30 @@ export const loadingBarSuite: ConformanceSuite = {
           },
         },
         { kind: 'raw', why: '起步高度只落内联 style', run: assertRangeWidth('25%') },
+        // 冲到 100 之后留在台上等根节点的淡出过渡播完；这里桩掉了过渡，没有可等的，提交之后随即收尾。
+        // 留台期间的样子由 headless 单测（桩一段在播的过渡）与浏览器用例钉住
         {
           kind: 'setProps',
           props: { loading: false },
           expect: {
-            parts: {
-              // 冲到 100 之后还得留在台上，淡出那一段动画才跑得完
-              root: { 'data-state': 'finishing', 'hidden': null, 'aria-valuenow': null },
-              range: { 'data-state': 'finishing' },
-            },
-            events: [{ type: 'value-change', detail: { value: 100 } }],
-          },
-        },
-        { kind: 'raw', why: '冲刺后的宽度只落内联 style', run: assertRangeWidth('100%') },
-        {
-          kind: 'settle',
-          until: { attr: { part: 'root', name: 'data-state', value: 'idle' } },
-          expect: {
             parts: { root: { 'data-state': 'idle', 'hidden': '' } },
-            // 归零发生在淡出走完那一刻，不在进入淡出那一刻
-            events: [{ type: 'value-change', detail: { value: 0 } }],
+            // 先冲到 100，归零发生在淡出走完那一刻
+            events: [
+              { type: 'value-change', detail: { value: 100 } },
+              { type: 'value-change', detail: { value: 0 } },
+            ],
           },
         },
         { kind: 'raw', why: '归零后的宽度只落内联 style', run: assertRangeWidth('0%') },
       ],
     },
     {
-      name: '淡出途中又开始加载：从起步值重来，不从满格接着走',
+      name: '收尾之后又开始加载：从起步值重来，不从满格接着走',
       spec: { apg: SPEC },
-      props: { loading: true, trickle: false, minimum: 12, fadeDuration: 5000 },
+      props: { loading: true, trickle: false, minimum: 12 },
+      environment: withoutTransitions,
       steps: [
-        { kind: 'setProps', props: { loading: false }, expect: { parts: { root: { 'data-state': 'finishing' } } } },
+        { kind: 'setProps', props: { loading: false } },
         {
           kind: 'setProps',
           props: { loading: true },

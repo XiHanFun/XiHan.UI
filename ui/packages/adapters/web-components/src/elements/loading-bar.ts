@@ -48,7 +48,7 @@ const HEIGHT_CONVERTER = {
  * @attr {boolean} trickle - 不确定进度时自行向前爬升，默认开启；`trickle="false"` 关闭
  * @attr {number} trickle-speed - 爬升节拍毫秒，默认 200；<=0 等同于关闭爬升
  * @attr {number} minimum - 起步值，默认 8
- * @attr {number} fade-duration - 到达 100 之后的淡出窗口毫秒，默认 200
+ * @attr {number} fade-duration - 到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽；不给按退场令牌。淡出过渡真正播完才归零收起
  * @fires value-change - 进度值变化；detail 为 `{ value: number }`
  * @csspart root - progressbar 本身（承载名字、值域、data-state 与收起态）
  * @csspart track - 背景槽

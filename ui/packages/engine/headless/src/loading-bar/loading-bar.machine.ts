@@ -7,6 +7,7 @@
 
 import type { LoadingBarSchema } from './loading-bar.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { waitForTransition } from '../shared/part-presence'
 import {
   clampLoadingBarValue,
   isLoadingBarDeterminate,
@@ -19,8 +20,6 @@ const { createMachine } = setup<LoadingBarSchema>()
 
 /** 爬升节拍缺省毫秒。 */
 export const LOADING_BAR_TRICKLE_SPEED = 200
-/** 冲到 100 之后留给淡出的窗口缺省毫秒。 */
-export const LOADING_BAR_FADE_DURATION = 200
 /** 条子厚度缺省，由连接层写进内联样式。 */
 export const LOADING_BAR_HEIGHT = '2px'
 
@@ -31,12 +30,11 @@ export function resolveLoadingBarTrickleSpeed(speed: number | undefined): number
 }
 
 /**
- * 淡出窗口归一：夹到非负，非有限数退回缺省。不放行 Infinity——它送进 setTimeoutEffect 会抛，
- * 而且"永远停在淡出态"意味着条子再也回不到 idle，下一次加载连起点都没有。
+ * 淡出时长归一：夹到非负；没给或给了非有限数时为 undefined，皮肤按退场令牌淡出。
+ * 不放行 Infinity：「永远停在淡出态」意味着条子再也回不到 idle，下一次加载连起点都没有。
  */
-export function resolveLoadingBarFadeDuration(ms: number | undefined): number {
-  const value = ms ?? LOADING_BAR_FADE_DURATION
-  return Number.isFinite(value) ? Math.max(0, value) : LOADING_BAR_FADE_DURATION
+export function resolveLoadingBarFadeDuration(ms: number | undefined): number | undefined {
+  return ms !== undefined && Number.isFinite(ms) ? Math.max(0, ms) : undefined
 }
 
 /**
@@ -89,7 +87,7 @@ export const loadingBarMachine = createMachine({
       effects: ['waitForFade'],
       on: {
         // 淡出走完才归零：早一步归零，用户会看见条子在淡出途中先缩回左边再消失
-        'after.fadeDuration': { target: 'idle', actions: ['resetValue'] },
+        'FADE.DONE': { target: 'idle', actions: ['resetValue'] },
         // 淡出途中又开始加载：整条重来，primeValue 把冲到头的值拉回起步值
         'LOADING.START': { target: 'loading' },
       },
@@ -144,11 +142,23 @@ export const loadingBarMachine = createMachine({
           return undefined
         return setTimeoutEffect(() => send({ type: 'after.trickleSpeed' }), speed)
       },
-      waitForFade: ({ prop, send }) =>
-        setTimeoutEffect(
-          () => send({ type: 'after.fadeDuration' }),
-          resolveLoadingBarFadeDuration(prop('fadeDuration')),
-        ),
+      /**
+       * 等根节点上的淡出过渡播完：按浏览器实际起播的那一段等，不按毫秒猜——作者改了皮肤的淡出时长槽
+       * 照样对得上。没装皮肤、没有在播的过渡时即刻收尾。
+       */
+      waitForFade: ({ scope, send, flush }) => {
+        let stop: (() => void) | undefined
+        let disposed = false
+        flush(() => {
+          if (disposed)
+            return
+          stop = waitForTransition(scope.getById(scope.partId('loading-bar', 'root')), 'opacity', () => send({ type: 'FADE.DONE' }))
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
     },
   },
 })

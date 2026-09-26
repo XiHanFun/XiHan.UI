@@ -109,7 +109,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
 | `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
 | `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到该值。 |
-| `fadeDuration` | `number` |  | 到达 100 之后留给淡出的窗口毫秒，默认 200。窗口结束才归零并收起。 |
+| `fadeDuration` | `number` |  | 到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 |
 | `translations` | `Partial<LoadingBarTranslations>` |  |  |
 | `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 |
 
@@ -152,7 +152,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 
 **状态**：`idle` · `loading` · `finishing`
 
-**事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `after.fadeDuration`
+**事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `FADE.DONE`
 
 ### connect API
 
