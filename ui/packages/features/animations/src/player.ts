@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 播放器：动画层的对外门面。预设解析、打断、错开起播、开关与速度收在这里。
+// 播放器：动画层的对外门面。预设解析、入口校验、打断、错开起播、开关与速度收在这里。
 // 减弱动效的降级不在这一层——它由 @xihan-ui/motion 的 animate 统一兜住。
 
 import type { AnimationHandle } from '@xihan-ui/motion'
@@ -17,19 +17,27 @@ import type {
   StaggerOptions,
 } from './types'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { animate } from '@xihan-ui/motion'
+import { animate, motionStaggerStep } from '@xihan-ui/motion'
 import { motionPresets } from './presets'
-import { clampSpec, DEFAULT_DURATION, toKeyframes } from './spec'
+import { DEFAULT_DURATION, MAX_DURATION, toKeyframes, validateMotionSpec } from './spec'
 
-/** 相邻两个目标的起播间隔缺省毫秒。 */
-const DEFAULT_STAGGER = 60
 /** 时长系数的上限。 */
 const MAX_SPEED = 100
 
-function clampSpeed(value: number | undefined): number {
-  if (value === undefined || !Number.isFinite(value) || value <= 0)
+function checkSpeed(value: number | undefined): number {
+  if (value === undefined)
     return 1
-  return Math.min(MAX_SPEED, value)
+  if (!Number.isFinite(value) || value <= 0 || value > MAX_SPEED)
+    throw new RangeError(`[animations] speed 必须是 (0, ${MAX_SPEED}] 之间的有限数，收到 ${String(value)}`)
+  return value
+}
+
+function checkStagger(value: number | undefined): number {
+  if (value === undefined)
+    return motionStaggerStep
+  if (!Number.isFinite(value) || value < 0 || value > MAX_DURATION)
+    throw new RangeError(`[animations] stagger 必须是 0 到 ${MAX_DURATION} 之间的有限数，收到 ${String(value)}`)
+  return value
 }
 
 /** 目标在起播顺序里排第几。 */
@@ -44,13 +52,13 @@ function orderIndex(index: number, total: number, from: StaggerFrom): number {
 export function createMotionPlayer(options: MotionPlayerOptions = {}): MotionPlayer {
   let presets: Record<string, MotionSpec> = options.presets ?? motionPresets
   let enabled = options.enabled ?? true
-  const speed = clampSpeed(options.speed)
+  const speed = checkSpeed(options.speed)
 
   const running = new Map<HTMLElement, AnimationHandle>()
 
   const resolve = (effect: string | MotionSpec): MotionSpec | null => {
     if (typeof effect !== 'string')
-      return clampSpec(effect)
+      return effect
     const found = presets[effect]
     if (found === undefined) {
       reportDiagnostic({
@@ -60,7 +68,7 @@ export function createMotionPlayer(options: MotionPlayerOptions = {}): MotionPla
       })
       return null
     }
-    return clampSpec(found)
+    return found
   }
 
   const cancel = (target?: HTMLElement): void => {
@@ -73,55 +81,70 @@ export function createMotionPlayer(options: MotionPlayerOptions = {}): MotionPla
     running.clear()
   }
 
-  const play = async (
+  /**
+   * 配方与本次选项、全局时长系数合成实际要播的那一段，并在入口校验：
+   * 不合法（含闪烁超限）时同步抛错，不交给宿主。开关关着也照样校验，配方的错不随开关藏起来。
+   */
+  const play = (
     target: HTMLElement,
     effect: string | MotionSpec,
     playOptions: PlayOptions = {},
   ): Promise<MotionStatus> => {
-    if (!enabled)
-      return 'finished'
     const spec = resolve(effect)
     if (spec === null)
-      return 'finished'
-
-    // 同一元素上的上一段先撤掉：两段一起写同一批属性，后一段会从被改过的中间态起步
-    cancel(target)
-
-    const handle = animate(target, toKeyframes(spec, target), {
+      return Promise.resolve('finished')
+    const timed: MotionSpec = {
+      ...spec,
       duration: (playOptions.duration ?? spec.duration ?? DEFAULT_DURATION) * speed,
       easing: playOptions.easing ?? spec.easing,
       delay: playOptions.delay ?? spec.delay,
       fill: playOptions.fill ?? spec.fill,
       iterations: playOptions.iterations ?? spec.iterations,
       direction: playOptions.direction ?? spec.direction,
+    }
+    validateMotionSpec(timed)
+    if (!enabled)
+      return Promise.resolve('finished')
+
+    // 同一元素上的上一段先撤掉：两段一起写同一批属性，后一段会从被改过的中间态起步
+    cancel(target)
+
+    const handle = animate(target, toKeyframes(timed, target), {
+      duration: timed.duration,
+      easing: timed.easing,
+      delay: timed.delay,
+      fill: timed.fill,
+      iterations: timed.iterations,
+      direction: timed.direction,
     })
     running.set(target, handle)
 
-    const status = await handle.finished
-    // 播完期间可能已被新的一段顶替，只清掉还是自己那一条
-    if (running.get(target) === handle)
-      running.delete(target)
-    return status
+    return handle.finished.then((status) => {
+      // 播完期间可能已被新的一段顶替，只清掉还是自己那一条
+      if (running.get(target) === handle)
+        running.delete(target)
+      return status
+    })
   }
 
-  const playAll = async (
+  const playAll = (
     targets: Iterable<HTMLElement>,
     effect: string | MotionSpec,
     staggerOptions: StaggerOptions = {},
   ): Promise<MotionStatus> => {
+    const gap = checkStagger(staggerOptions.stagger)
     const list = [...targets]
     if (list.length === 0)
-      return 'finished'
+      return Promise.resolve('finished')
 
-    const gap = Number.isFinite(staggerOptions.stagger) ? Math.max(0, staggerOptions.stagger!) : DEFAULT_STAGGER
     const from = staggerOptions.from ?? 'first'
     const base = staggerOptions.delay ?? 0
 
-    const results = await Promise.all(list.map((target, index) => play(target, effect, {
+    const runs = list.map((target, index) => play(target, effect, {
       ...staggerOptions,
       delay: base + orderIndex(index, list.length, from) * gap,
-    })))
-    return results.includes('cancelled') ? 'cancelled' : 'finished'
+    }))
+    return Promise.all(runs).then(results => (results.includes('cancelled') ? 'cancelled' : 'finished'))
   }
 
   return {

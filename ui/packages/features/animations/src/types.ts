@@ -29,7 +29,7 @@ export interface MotionFrame {
 /** 一段动画的完整配方。纯数据，可 JSON 序列化。 */
 export interface MotionSpec {
   frames: MotionFrame[]
-  /** 时长毫秒，省略为 320。 */
+  /** 时长毫秒，省略为 320（--xh-motion-duration-slide）。 */
   duration?: number
   /** 整段缓动，缓动名或任意 CSS 缓动串，省略为 standard。 */
   easing?: string
@@ -87,7 +87,7 @@ export interface PlayOptions {
 export type StaggerFrom = 'first' | 'last' | 'center'
 
 export interface StaggerOptions extends PlayOptions {
-  /** 相邻两个目标的起播间隔毫秒，省略为 60。 */
+  /** 相邻两个目标的起播间隔毫秒，省略为 40（--xh-motion-stagger-step）。 */
   stagger?: number
   /** 从哪一端开始铺开，省略为 first。 */
   from?: StaggerFrom
@@ -98,7 +98,7 @@ export interface MotionPlayerOptions {
   presets?: Record<string, MotionSpec>
   /** 是否播放，默认 true。把它接到用户偏好上，别替最终用户决定。 */
   enabled?: boolean
-  /** 全局时长系数，默认 1；越大越慢。 */
+  /** 全局时长系数，默认 1；越大越慢。取值在 (0, 100] 之外时 createMotionPlayer 抛 RangeError。 */
   speed?: number
 }
 
@@ -106,9 +106,12 @@ export interface MotionPlayerOptions {
 export type MotionStatus = 'finished' | 'cancelled'
 
 export interface MotionPlayer {
-  /** 在一个元素上播预设名或配方；同一元素上的上一段会被打断。 */
+  /**
+   * 在一个元素上播预设名或配方；同一元素上的上一段会被打断。
+   * 配方合上本次选项与全局时长系数之后不合法（含任意一秒闪烁超过三次）时同步抛错，不起播。
+   */
   play: (target: HTMLElement, effect: string | MotionSpec, options?: PlayOptions) => Promise<MotionStatus>
-  /** 依次错开地播一组元素。 */
+  /** 依次错开地播一组元素；配方或间隔不合法时同步抛错。 */
   playAll: (targets: Iterable<HTMLElement>, effect: string | MotionSpec, options?: StaggerOptions) => Promise<MotionStatus>
   /** 打断某个元素上的动画；不传则打断全部。 */
   cancel: (target?: HTMLElement) => void
