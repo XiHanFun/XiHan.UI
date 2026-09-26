@@ -88,6 +88,7 @@ export {
   XhApprovalNote,
   XhApprovalResult,
   XhApprovalRoot,
+ 
   XhApprovalTimer,
   XhApprovalTitle,
 } from './components/approval/approval'
@@ -1527,6 +1528,7 @@ export {
   XhMessageFeedItemLabel,
   XhMessageFeedList,
   XhMessageFeedLiveRegion,
+  XhMessageFeedPendingIndicator,
   XhMessageFeedRoot,
   XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
@@ -1537,6 +1539,7 @@ export type {
   XhMessageFeedItemProps,
   XhMessageFeedListProps,
   XhMessageFeedLiveRegionProps,
+  XhMessageFeedPendingIndicatorProps,
   XhMessageFeedRootProps,
   XhMessageFeedScrollToEndTriggerProps,
   XhMessageFeedViewportProps,

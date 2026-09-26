@@ -49,6 +49,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart item - 一条消息，role=article + aria-posinset / aria-setsize
  * @csspart item-label - 作者名所在的格，渲染后即成为该条消息的可访问名
  * @csspart scroll-to-end-trigger - 回到底部
+ * @csspart pending-indicator - 已发送、等首个片段时的呼吸点，放在列表之后；只在 status 为 submitted 时出现，对读屏隐藏
  * @csspart live-region - 视觉隐藏的原子播报区，一份会话只应有一个
  */
 export class XhMessageFeedElement extends XhElement {
@@ -152,6 +153,13 @@ export class XhMessageFeedElement extends XhElement {
     put('list', api.getListProps() as Record<string, unknown>)
     put('scroll-to-end-trigger', api.getScrollToEndTriggerProps() as Record<string, unknown>)
     put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
+    const pending = this.getPart('pending-indicator')
+    if (pending) {
+      const props = api.getPendingIndicatorProps() as Record<string, unknown>
+      this.spreader.spread(pending, props)
+      // Light DOM 常驻，WC 自管可见性：作者层声明了 display 时光靠 hidden 属性收不起来
+      this.setPartHidden(pending, props.hidden === true)
+    }
 
     // 多实例 part 逐个打，消息有几条打几条
     this.getParts('item').forEach((el, index) => {

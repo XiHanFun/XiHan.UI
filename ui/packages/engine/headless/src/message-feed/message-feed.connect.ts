@@ -221,6 +221,18 @@ export function connectMessageFeed<T extends PropTypes>(
       'onPointerCancel': press.onPointerCancel,
     }),
 
+    /**
+     * 已发送、等首个片段：列表之后一颗呼吸的圆点，表达「正在进行、给不出进度」。
+     * 只在 status 为 submitted 时出现；首个片段一到（streaming）就撤，由正在长出来的那条消息接着表达。
+     * 对读屏隐藏：进度由宿主写进播报区，圆点只是给眼睛看的
+     */
+    getPendingIndicatorProps: () => normalize.element({
+      ...parts['pending-indicator'].attrs,
+      'aria-hidden': 'true',
+      'data-state': status,
+      'hidden': status !== 'submitted' || undefined,
+    }),
+
     // 一份会话只该有这一个活区：N 条消息各开一个会互相打断
     // 不写 role=status：它与下面两条 aria-* 等价，而 role=feed 只认 article 子节点，
     // 播报区带着角色待在流里会让集合语义判为不合法

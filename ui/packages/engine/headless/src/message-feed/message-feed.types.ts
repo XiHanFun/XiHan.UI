@@ -146,5 +146,7 @@ export interface MessageFeedApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: MessageFeedItemProps) => T['element']
   getItemLabelProps: (props: Pick<MessageFeedItemProps, 'id'>) => T['element']
   getScrollToEndTriggerProps: () => T['button']
+  /** 已发送、等首个片段时的呼吸点：status 为 submitted 时出现，对读屏隐藏。 */
+  getPendingIndicatorProps: () => T['element']
   getLiveRegionProps: () => T['element']
 }

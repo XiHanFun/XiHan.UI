@@ -34207,6 +34207,10 @@
               "name": "scroll-to-end-trigger"
             },
             {
+              "description": "已发送、等首个片段时的呼吸点，放在列表之后；只在 status 为 submitted 时出现，对读屏隐藏",
+              "name": "pending-indicator"
+            },
+            {
               "description": "视觉隐藏的原子播报区，一份会话只应有一个",
               "name": "live-region"
             }
@@ -34478,6 +34482,15 @@
             },
             {
               "name": "--xh-message-feed-p"
+            },
+            {
+              "name": "--xh-message-feed-pending-indicator-color"
+            },
+            {
+              "name": "--xh-message-feed-pending-indicator-radius"
+            },
+            {
+              "name": "--xh-message-feed-pending-indicator-size"
             },
             {
               "name": "--xh-message-feed-scroll-to-end-trigger-bg"

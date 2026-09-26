@@ -178,6 +178,15 @@ export const XhMessageFeedScrollToEndTrigger = defineComponent({
   },
 })
 
+/** 已发送、等首个片段时的呼吸点：放在列表之后，只在 status 为 submitted 时出现。 */
+export const XhMessageFeedPendingIndicator = defineComponent({
+  name: 'XhMessageFeedPendingIndicator',
+  setup() {
+    const ctx = useMessageFeedContext()
+    return () => h('span', ctx.api.value.getPendingIndicatorProps() as Record<string, unknown>)
+  },
+})
+
 export const XhMessageFeedLiveRegion = defineComponent({
   name: 'XhMessageFeedLiveRegion',
   setup(_, { slots }) {
