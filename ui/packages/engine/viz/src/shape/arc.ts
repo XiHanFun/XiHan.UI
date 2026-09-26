@@ -22,7 +22,11 @@ export interface ArcParams {
   readonly padAngle?: number
   /** 量间隙的半径，缺省 √(内半径² + 外半径²)。要固定间隙像素宽度 w，传 padAngle = w / padRadius。 */
   readonly padRadius?: number
-  /** 四角圆角半径；夹到环厚的一半，并缩到弧长容得下两侧圆角。内半径为 0 时尖端不做圆角。 */
+  /**
+   * 四角圆角半径；夹到环厚的一半，并缩到弧长容得下两侧圆角。
+   * 内沿收成尖端（内半径为 0，或间隙吃掉了内沿）时，尖端同样按这个半径倒圆，缩到边线容得下；
+   * 扇区不小于半圈时尖端是凹角，保持尖。
+   */
   readonly cornerRadius?: number
 }
 
@@ -136,8 +140,22 @@ function drawArc(params: ArcParams, sink: PathSink): void {
   sweepArc(sink, outerEndCenter[0], outerEndCenter[1], c, phi1 - dir * alpha, dir * (Math.PI / 2 + alpha))
 
   if (innerCollapsed) {
-    const [x, y] = pointRadial(mid, tipDistance)
-    sink.lineTo(x, y)
+    // 尖端倒圆：与两条边线都相切的一段小圆弧，切点离尖端 r / tan(θ/2)，圆心在角平分线上离尖端 r / sin(θ/2)；
+    // 切点不能越过外角圆角的起点，半径按边线剩下的长度收小
+    const slope = Math.tan(da / 2)
+    const tip = da < Math.PI - EPSILON
+      ? Math.max(0, Math.min(params.cornerRadius ?? 0, (s1 - tipAlong) * slope))
+      : 0
+    if (tip > EPSILON) {
+      const [ex, ey] = onEdge(phi1, inward1, tipAlong + tip / slope, h)
+      const [fx, fy] = pointRadial(mid, tipDistance + tip / Math.sin(da / 2))
+      sink.lineTo(ex, ey)
+      sweepArc(sink, fx, fy, tip, inward1 + Math.PI, dir * (Math.PI - da))
+    }
+    else {
+      const [x, y] = pointRadial(mid, tipDistance)
+      sink.lineTo(x, y)
+    }
   }
   else {
     const s0 = innerAlong(c)
