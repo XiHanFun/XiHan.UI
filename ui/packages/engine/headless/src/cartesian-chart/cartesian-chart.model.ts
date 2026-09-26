@@ -79,7 +79,10 @@ export interface CartesianSeriesSpec {
   /** 纹理序号：分类系列等于色槽，语义系列按声明次序。 */
   readonly pattern: number | null
   readonly mark: 'bar' | 'line' | 'scatter'
+  /** 自变量字段；分箱的柱是区间的起点。 */
   readonly x: string
+  /** 分箱的柱：区间止点的字段；不分箱为 null。 */
+  readonly binEnd: string | null
   readonly y: string
   /** 散点：气泡大小的字段；不是气泡为 null。 */
   readonly size: string | null
@@ -152,22 +155,40 @@ function filled<T>(length: number, value: T): T[] {
   return out
 }
 
+/** 数或日期写成数：日期取时间值；其余为 null。 */
+function timeValue(value: unknown): number | null {
+  if (value instanceof Date)
+    return Number.isNaN(value.valueOf()) ? null : value.valueOf()
+  return numberOf(value)
+}
+
 /** 缺失值：null、undefined、NaN 与非数都算缺失，不按 0 处理。 */
 function numberOf(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
 
+/** 自变量字段：分箱的柱取区间的起点。 */
+function xFieldOf(s: CartesianSeries): string {
+  return typeof s.x === 'string' ? s.x : s.x[0]
+}
+
+/** 分箱的柱：区间的止点字段；不分箱为 null。 */
+function binEndOf(s: CartesianSeries): string | null {
+  return s.mark === 'bar' && typeof s.x !== 'string' ? s.x[1] : null
+}
+
 function inferKeyScale(rows: readonly ChartRow[], series: readonly CartesianSeries[], axis: CartesianAxis): CartesianScaleKind {
   if (axis.scale)
     return axis.scale
-  if (series.some(s => s.mark === 'bar'))
+  // 分箱的柱落在数值轴上，按区间的真实宽度画；其余的柱是类目
+  if (series.some(s => s.mark === 'bar' && binEndOf(s) == null))
     return 'band'
   let dates = 0
   let numbers = 0
   let others = 0
   for (const row of rows) {
     for (const s of series) {
-      const value = row[s.x]
+      const value = row[xFieldOf(s)]
       if (value instanceof Date)
         dates += 1
       else if (typeof value === 'number')
@@ -198,7 +219,7 @@ export function normalizeCartesianSpec(
   // 字段在数据里一次都没出现，多半是拼错了：空数据不判，那时什么字段都「不存在」
   if (rows.length > 0) {
     for (const s of seriesInput) {
-      const fields = s.mark === 'scatter' ? [s.x, s.y, s.size, s.datumId, s.color] : s.mark === 'bar' ? [s.x, s.y, s.waterfall?.total] : [s.x, s.y]
+      const fields = s.mark === 'scatter' ? [s.x, s.y, s.size, s.datumId, s.color] : s.mark === 'bar' ? [xFieldOf(s), binEndOf(s), s.y, s.waterfall?.total] : [s.x, s.y]
       for (const field of fields) {
         if (field == null)
           continue
@@ -245,7 +266,8 @@ export function normalizeCartesianSpec(
       tone: identity.tone,
       pattern: identity.pattern,
       mark: s.mark,
-      x: s.x,
+      x: xFieldOf(s),
+      binEnd: binEndOf(s),
       y: s.y,
       size: scatter?.size ?? null,
       // 缺省形状随色槽（语义系列随纹理序号）轮换：颜色分不清时形状还分得开
@@ -285,7 +307,7 @@ export function normalizeCartesianSpec(
     const seen: ChartKey[] = []
     for (const row of rows) {
       for (const s of seriesInput) {
-        const value = row[s.x]
+        const value = row[xFieldOf(s)]
         if (value instanceof Date || typeof value === 'number' || typeof value === 'string')
           seen.push(value)
       }
@@ -333,6 +355,8 @@ export interface CartesianSeriesValues {
   readonly colors: readonly (number | null)[] | null
   /** 瀑布的每一步（与位置对齐）；不是瀑布为 null。 */
   readonly steps: readonly (WaterfallStep | null)[] | null
+  /** 分箱的柱：每一箱区间的止点（日期取时间值）；不分箱为 null。 */
+  readonly ends: readonly (number | null)[] | null
   /** 贴近基线的一端。 */
   readonly low: readonly (number | null)[]
   /** 值所在的一端。 */
@@ -388,6 +412,7 @@ function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<Cartes
     sizes: s.size == null ? null : points.map(p => p.size),
     colors: s.color == null ? null : points.map(p => p.color),
     steps: null,
+    ends: null,
   }
 }
 
@@ -400,6 +425,7 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
       return scatterPoints(spec, s)
     const values = filled<number | null>(n, null)
     const rows = filled(n, -1)
+    const ends = s.binEnd == null ? null : filled<number | null>(n, null)
     spec.rows.forEach((row, index) => {
       const id = cartesianKeyId(row[s.x])
       const at = id == null ? undefined : spec.keyIndex.get(id)
@@ -408,13 +434,22 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
         return
       rows[at] = index
       values[at] = numberOf(row[s.y])
+      if (ends) {
+        // 分箱的止点必须在起点之后：区间倒过来或缺了止点，这一箱画不出宽度
+        const start = timeValue(row[s.x])
+        const end = timeValue(row[s.binEnd!])
+        if (end == null || start == null || end <= start)
+          issues.push({ code: DIAGNOSTIC_CODES.chartInvalidRange, message: '分箱区间的止点必须是数，且在起点之后', detail: { series: s.id, row: index, start: row[s.x], end: row[s.binEnd!] } })
+        else
+          ends[at] = end
+      }
     })
     if (!s.waterfall)
-      return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null }
+      return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends }
     // 瀑布：小计行的 y 被忽略，数值取算出来的累计值；缺失的一步不画、不改累计
     const total = s.waterfall.total
     const steps = waterfall(values, rows.map(r => total != null && r >= 0 && Boolean(spec.rows[r]![total])))
-    return { spec: s, values: steps.map(step => step?.value ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps }
+    return { spec: s, values: steps.map(step => step?.value ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps, ends: null }
   })
 
   const stacked = new Map<string, { low: (number | null)[], high: (number | null)[], outermost: boolean[] }>()
@@ -564,7 +599,9 @@ export function cartesianDomains(derived: CartesianDerived, annotations: readonl
 
   let key: [number, number] | null = null
   if (spec.keyScale !== 'band' && spec.keyScale !== 'point') {
-    const numbers = [...spec.keys.map(k => (k instanceof Date ? k.valueOf() : Number(k))), ...annotationExtent(annotations, 'x')].filter(Number.isFinite)
+    // 分箱的柱：最后一箱的止点也要在轴上
+    const ends = derived.visible.flatMap(s => (s.ends ?? []).filter((v): v is number => v != null))
+    const numbers = [...spec.keys.map(k => (k instanceof Date ? k.valueOf() : Number(k))), ...ends, ...annotationExtent(annotations, 'x')].filter(Number.isFinite)
     const low = toNumber(spec.xAxis.min) ?? Math.min(...numbers)
     const high = toNumber(spec.xAxis.max) ?? Math.max(...numbers)
     key = numbers.length === 0 && spec.xAxis.min == null ? [0, 1] : low === high ? [low - 1, high + 1] : [low, high]
@@ -605,6 +642,11 @@ function isDateFormat(format: CartesianAxisFormat | undefined): format is Intl.D
 
 const DATE_DEFAULT: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }
 
+/** 分箱的键写成「起 – 止」：止点与起点同类（日期轴上是日期）。 */
+export function formatBin(formats: CartesianFormats, key: ChartKey, end: number): string {
+  return `${formats.key(key)} – ${formats.key(key instanceof Date ? new Date(end) : end)}`
+}
+
 export function cartesianFormats(spec: CartesianSpec, locale: string): CartesianFormats {
   const keyFormat = spec.xAxis.format
   const valueFormat = spec.yAxis.format
@@ -637,8 +679,10 @@ export interface CartesianLayout {
   readonly valueScale: ContinuousScale
   readonly keyAxis: AxisLayout
   readonly valueAxis: AxisLayout
-  /** 每个键在自变量方向上的像素中心。 */
+  /** 每个键在自变量方向上的像素中心；分箱的柱是箱的正中。 */
   readonly keyCenters: readonly number[]
+  /** 分箱的柱：键的位置 → 这一箱两端的像素（起点、止点）。 */
+  readonly binSpans: ReadonlyMap<number, readonly [number, number]>
   /** 类目轴的带宽；连续轴为 0。 */
   readonly bandwidth: number
   readonly font: FontSpec
@@ -828,15 +872,34 @@ export function layoutCartesian(
     ? solved.axes[valuePosition] as AxisLayout
     : layoutAxis({ ...valueAxisConfig, scale: valueScale, position: valuePosition, ticks: valueTickCount(valueScale.range) })
   const bandwidth = isCategoryScale(keyScale) ? keyScale.bandwidth : 0
-  const keyCenters = spec.keys.map((key) => {
+  // 分箱的柱：每一箱在自变量方向上的两端像素，键的中心落在箱的正中
+  const binSpans = new Map<number, readonly [number, number]>()
+  if (!isCategoryScale(keyScale)) {
+    const mapKey = (v: number): number => (keyScale.map as (v: unknown) => number | undefined)(spec.keyScale === 'time' || spec.keyScale === 'utc' ? new Date(v) : v) ?? Number.NaN
+    for (const s of domains.derived.visible) {
+      s.ends?.forEach((end, j) => {
+        const key = spec.keys[j]!
+        if (end == null || binSpans.has(j))
+          return
+        const span = [mapKey(key instanceof Date ? key.valueOf() : Number(key)), mapKey(end)] as const
+        if (span.every(Number.isFinite))
+          binSpans.set(j, span)
+      })
+    }
+  }
+  const keyCenters = spec.keys.map((key, j) => {
     if (isCategoryScale(keyScale)) {
       const at = (keyScale.map as (k: string | number) => number | undefined)(categoryKey(key))
       return at == null ? Number.NaN : at + bandwidth / 2
     }
+    const span = binSpans.get(j)
+    if (span)
+      return (span[0] + span[1]) / 2
     const at = (keyScale.map as (v: unknown) => number | undefined)(key)
     return at ?? Number.NaN
   })
   return {
+    binSpans,
     domains,
     size,
     plot: solved.plot,
@@ -1176,7 +1239,12 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
         const center = layout.keyCenters[j]!
         if (lo == null || hi == null || !Number.isFinite(center))
           continue
-        const start = center - groupWidth / 2 + slotIndex * (thickness + gap)
+        // 分箱的柱按箱的真实宽度画，相邻两箱之间留一道表面间隙
+        const span = s.ends ? layout.binSpans.get(j) : undefined
+        if (s.ends && !span)
+          continue
+        const width = span ? Math.max(1, Math.abs(span[1] - span[0]) - gap) : thickness
+        const start = span ? Math.min(span[0], span[1]) + gap / 2 : center - groupWidth / 2 + slotIndex * (thickness + gap)
         // 对数轴上没有 0：不堆叠的柱从定义域下界长起
         const a = s.spec.stack == null && spec.valueScale === 'log' ? baseline : toValue(lo)
         const b = toValue(hi)
@@ -1194,14 +1262,14 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
         const rowIndex = s.rows[j]!
         info.set(key, { seriesId: id, position: j })
         const rect = vertical
-          ? { x: start, y: Math.min(a, far), width: thickness, height: Math.abs(far - a) }
-          : { x: Math.min(a, far), y: start, width: Math.abs(far - a), height: thickness }
+          ? { x: start, y: Math.min(a, far), width, height: Math.abs(far - a) }
+          : { x: Math.min(a, far), y: start, width: Math.abs(far - a), height: width }
         children.push({
           kind: 'rect',
           key,
           part: 'bar',
           ...rect,
-          cornerRadius: outer ? radius : 0,
+          cornerRadius: outer ? Math.min(radius, width / 2) : 0,
           orientation: vertical ? 'vertical' : 'horizontal',
           // 基线在哪一端：纵向正值在下端（end）、负值在上端；横向正值在左端（start）
           baseline: vertical ? (positive ? 'end' : 'start') : (positive ? 'start' : 'end'),
@@ -1210,7 +1278,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           paint: s.steps?.[j] && !s.steps[j]!.total ? { ...paint, trend: s.steps[j]!.trend } : paint,
           a11y: { label: '', focusable: true },
         })
-        seriesAnchors[j] = point(start + thickness / 2, b)
+        seriesAnchors[j] = point(start + width / 2, b)
         bars.set(key, { ...rect, positive, stacked: s.spec.stack != null, row: rowIndex })
       }
       if (s.steps)
@@ -1963,7 +2031,22 @@ export function cartesianA11y(
   annotations: readonly CartesianAnnotation[],
 ): { summary: string, table: TableModel, formats: CartesianFormats } {
   const { spec } = derived
-  const formats = cartesianFormats(spec, locale)
+  const base = cartesianFormats(spec, locale)
+  // 分箱的键在摘要与数据表里写成「起 – 止」
+  const bins = new Map<string, number>()
+  for (const s of derived.visible) {
+    s.ends?.forEach((end, j) => {
+      const id = cartesianKeyId(spec.keys[j])
+      if (end != null && id != null && !bins.has(id))
+        bins.set(id, end)
+    })
+  }
+  const formats: CartesianFormats = bins.size === 0
+    ? base
+    : { ...base, key: (key) => {
+        const end = bins.get(cartesianKeyId(key) ?? '')
+        return end == null ? base.key(key) : formatBin(base, key, end)
+      } }
   // 规格不合法（id 重复）时也要给出摘要与数据表：同一个 id 只取第一个系列
   const ids = new Set<string>()
   const unique = derived.visible.filter(s => !ids.has(s.spec.id) && ids.add(s.spec.id))

@@ -63,8 +63,11 @@ export interface CartesianSeriesBase {
 /** 柱系列。 */
 export interface CartesianBarSeries extends CartesianSeriesBase {
   mark: 'bar'
-  /** 自变量字段。 */
-  x: string
+  /**
+   * 自变量字段。写成二元组 [起, 止] 是分箱区间（直方图）：柱按区间的真实宽度画，自变量轴是数值轴，
+   * 相邻两箱之间留一道表面间隙；提示框、可及名与数据表把键写成「起 – 止」。
+   */
+  x: string | readonly [string, string]
   /** 数值字段。 */
   y: string
   /** 同名的柱系列堆叠在一起。 */
