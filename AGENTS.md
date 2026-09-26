@@ -148,7 +148,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - 定尺离散 Action Control 使用统一按压反馈：120ms 缩放到 0.97 并换底，释放 200ms 回到 1；行级与 disclosure trigger 只换面，不允许零反馈。
 - 动效按设计真源 §9 的角色取令牌：几何动画不用 `micro` / `enter` / `exit` 时长，有进场即有退场，初始内容不播进场；减弱动效去位移、留淡变；JS 动效只经 `@xihan-ui/motion`，不写固定毫秒。
 - 禁止 glass 材质及兼容别名；透明浮层只允许使用 frosted 柔和模糊材质；导航层在 `data-material="liquid"` 下可用 liquid（设计真源 §8.5），内容层、浮层与模态不用。
-- 彩色面声明墨色域，中性描边与淡底取墨色比例；弹簧只用于手势松手与 liquid 档的切换、指示；`:hover` 写在 `(hover: hover)` 内；小屏按视口三档与粗指针换形态，不用容器查询。
+- 彩色面声明墨色域，中性描边与淡底取墨色比例；弹簧只用于手势松手与 liquid 档的切换、指示；断点按视口，低于断点用补集写法，不用容器查询。
 - 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 canvas 底 + `--xh-border-control` + 无影。
 - 只有 Button 缺省品牌实心；交互阶梯按承载面（白底 hover 100 → pressed 200，淡底 hover 200 → pressed 300）；`--xh-bg-brand-subtle` 专属选中 / 当前。
 - 图表按数据任务与坐标系划分组件，同一标记的不同外观是样式轴，不另建组件；数据色只经 `--xh-chart-*` 语义层，图表文字不用系列色；不提供双 y 轴。
