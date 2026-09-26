@@ -389,6 +389,8 @@ export function connectMenubar<T extends PropTypes>(
       const holding = !isOpen && switching && item.value === handoffValue
       return normalize.element({
         ...parts.content.attrs,
+        // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+        'data-xh-material': 'frosted',
         [ITEM_VALUE_ATTR]: item.value,
         'id': contentId(item.value),
         // 换张进行中两侧都带上：新开的不播进场、收起的不播退场，瞬时换张。

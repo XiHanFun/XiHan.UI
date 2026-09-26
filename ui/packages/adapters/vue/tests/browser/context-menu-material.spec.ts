@@ -87,6 +87,9 @@ function menuProbe(partName: 'content' | 'separator'): HTMLElement {
   const probe = document.createElement('div')
   probe.dataset.scope = 'menu'
   probe.dataset.part = partName
+  // 内容面的材质由家族配方按连接层投影的标记画
+  if (partName === 'content')
+    probe.dataset.xhMaterial = 'frosted'
   probe.style.position = 'absolute'
   document.body.append(probe)
   return probe
@@ -111,6 +114,13 @@ afterEach(async () => {
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
+
+/** 1px 顶光：材质配方把它画在背景最上一层渐变里（钉在面本身上，不随内容滚动），取那层的第一个色标。 */
+function highlightOf(el: Element): string {
+  const image = getComputedStyle(el).backgroundImage
+  return /linear-gradient\((?:to [a-z ]+,\s*)?([a-z]+\([^)]*\)|[a-z]+)/.exec(image)?.[1] ?? 'rgba(0, 0, 0, 0)'
+}
+
 describe('右键菜单 M2 表面', () => {
   it('content、arrow 与 separator 和 Menu 采用同一材质值', async () => {
     await mountContextMenu()
@@ -129,9 +139,7 @@ describe('右键菜单 M2 表面', () => {
     expect(backdrop(contextContent)).toBe(backdrop(menuContent))
     expect(backdrop(contextContent)).toContain('blur(16px)')
 
-    const contextHighlight = getComputedStyle(part('content'), '::before').backgroundColor
-    const menuHighlight = getComputedStyle(menuContentNode, '::before').backgroundColor
-    expect(contextHighlight).toBe(menuHighlight)
+    expect(highlightOf(part('content'))).toBe(highlightOf(menuContentNode))
 
     const arrow = getComputedStyle(part('arrow'))
     expect(arrow.backgroundColor).toBe(contextContent.backgroundColor)

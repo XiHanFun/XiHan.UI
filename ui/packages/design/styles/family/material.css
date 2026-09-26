@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 材质家族配方：frosted 面，以及它在 liquid 档的替身。
+ *
+ * 连接层在部件上投影 data-xh-material="frosted"：锚定瞬态浮层的内容面（菜单、选择、气泡、浮动面板……）
+ * 与浮在内容之上的圆钮（回到顶部、浮动钮、轮播控制、回到底部）。配方在部件上声明一组私有槽
+ * --xh-_material-*，一种材质一套取值：底、交互阶梯（悬停 / 按下 / 键盘聚焦面）、前景、描边、投影、
+ * 背景滤镜与 1px 内侧顶光。
+ *
+ *   面      配方直接画描边、背景（1px 顶光叠在底色之上，随面本身不随内容滚动）、前景、投影与背景滤镜，
+ *           读桥接槽 --xh-frosted-*；皮肤只把使用者槽接进来：--xh-frosted-bg: var(使用者槽, var(--xh-_material-bg))
+ *   圆钮    面由 Action Control 家族画，皮肤把 --xh-action-* 桥接槽指向这组私有槽；配方只补背景滤镜
+ *
+ * data-material="liquid" 下，同时投影了 data-xh-liquid 的部件把这组私有槽换成液态面的取值（液态层
+ * liquid.css 在同一部件上声明 --xh-_liquid-*），皮肤不必为液态档再写一遍；可按的圆钮挂上按住形变。
+ * 减少透明、高对比、强制色与打印由材质令牌在令牌层降级，这里不另写。
+ */
+@layer xihan.components {
+  [data-xh-material='frosted'] {
+    --xh-_material-bg: var(--xh-material-frosted-bg);
+    --xh-_material-fg: var(--xh-material-frosted-fg);
+    --xh-_material-border: var(--xh-material-frosted-border);
+    --xh-_material-shadow: var(--xh-material-frosted-shadow);
+    --xh-_material-backdrop: var(--xh-material-frosted-backdrop);
+    --xh-_material-highlight: var(--xh-material-frosted-highlight);
+
+    -webkit-backdrop-filter: var(--xh-frosted-backdrop, var(--xh-_material-backdrop));
+    backdrop-filter: var(--xh-frosted-backdrop, var(--xh-_material-backdrop));
+  }
+
+  /* 面：四件套加 1px 顶光。顶光是背景的最上一层，只占内侧一像素、画在面本身上，滚动的内容面也钉在顶上；
+     高对比与强制色下令牌把它归零，四边描边照常完整 */
+  [data-xh-material='frosted']:not([data-xh-action-control]) {
+    border: var(--xh-stroke-thin) solid var(--xh-frosted-border, var(--xh-_material-border));
+    background:
+      linear-gradient(
+        to bottom,
+        var(--xh-frosted-highlight, var(--xh-_material-highlight)) 0 var(--xh-stroke-thin),
+        transparent var(--xh-stroke-thin)
+      ),
+      var(--xh-frosted-bg, var(--xh-_material-bg));
+    color: var(--xh-frosted-fg, var(--xh-_material-fg));
+    box-shadow: var(--xh-frosted-shadow, var(--xh-_material-shadow));
+  }
+
+  /* liquid 档：浮在内容之上的导航层部件换成液态面。同一组私有槽换值，皮肤的桥接照旧；面内不加顶光，
+     亮边已由液态层画在朝光源的一侧 */
+  :where([data-material='liquid']) [data-xh-material][data-xh-liquid] {
+    --xh-_material-bg: var(--xh-_liquid-bg);
+    --xh-_material-fg: var(--xh-material-liquid-fg);
+    --xh-_material-border: var(--xh-material-liquid-border);
+    --xh-_material-shadow: var(--xh-_liquid-shadow);
+    --xh-_material-backdrop: var(--xh-material-liquid-backdrop);
+    --xh-_material-highlight: transparent;
+  }
+
+  /* 按住液态圆钮时的黏滞形变由液态面逐帧写进来，松手弹回。只挂在可按的面上 */
+  :where([data-material='liquid']) [data-xh-action-control][data-xh-material][data-xh-liquid] {
+    transform: var(--xh-_liquid-deform);
+  }
+}

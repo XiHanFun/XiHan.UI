@@ -7991,10 +7991,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -8009,10 +8009,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-_material-bg"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 background 覆盖槽。"
@@ -8027,10 +8028,11 @@
         "border"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-_material-border"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 border 覆盖槽。"
@@ -8045,10 +8047,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 color 覆盖槽。"
@@ -8063,10 +8066,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 background 覆盖槽。"
@@ -8117,10 +8121,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 box-shadow 覆盖槽。"
@@ -15877,10 +15882,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -15895,10 +15900,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-_material-bg"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 background 覆盖槽。"
@@ -15913,10 +15919,11 @@
         "border"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-_material-border"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 border 覆盖槽。"
@@ -15931,10 +15938,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 color 覆盖槽。"
@@ -15967,10 +15975,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 background 覆盖槽。"
@@ -16111,10 +16120,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 box-shadow 覆盖槽。"
@@ -18359,10 +18369,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "context-menu 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -18378,9 +18388,12 @@
         "border"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-border",
         "--xh-material-frosted-border"
       ],
       "visibility": "public",
@@ -18397,9 +18410,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-bg",
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
@@ -18415,10 +18431,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "context-menu 的 content 部件 color 覆盖槽。"
@@ -18505,10 +18522,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "context-menu 的 content 部件 box-shadow 覆盖槽。"
@@ -18631,10 +18649,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "context-menu 的 content 部件 background 覆盖槽。"
@@ -30667,10 +30686,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-_material-bg"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 background 覆盖槽。"
@@ -30721,10 +30741,11 @@
         "border"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-_material-border"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 border 覆盖槽。"
@@ -30800,10 +30821,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 color 覆盖槽。"
@@ -30990,10 +31012,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 box-shadow 覆盖槽。"
@@ -32981,10 +33004,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -33000,9 +33023,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-bg",
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
@@ -33019,9 +33045,12 @@
         "border"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-border",
         "--xh-material-frosted-border"
       ],
       "visibility": "public",
@@ -33073,10 +33102,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 color 覆盖槽。"
@@ -33217,10 +33247,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 box-shadow 覆盖槽。"
@@ -39095,10 +39126,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -39113,10 +39144,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-_material-bg"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 background 覆盖槽。"
@@ -39131,10 +39163,11 @@
         "border"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-_material-border"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 border 覆盖槽。"
@@ -39149,10 +39182,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 color 覆盖槽。"
@@ -39185,10 +39219,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 background 覆盖槽。"
@@ -39329,10 +39364,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 box-shadow 覆盖槽。"
@@ -40189,10 +40225,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "menu 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -40208,9 +40244,12 @@
         "border"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-border",
         "--xh-material-frosted-border"
       ],
       "visibility": "public",
@@ -40227,9 +40266,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-bg",
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
@@ -40245,10 +40287,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "menu 的 content 部件 color 覆盖槽。"
@@ -40335,10 +40378,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "menu 的 content 部件 box-shadow 覆盖槽。"
@@ -40461,10 +40505,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "menu 的 content 部件 background 覆盖槽。"
@@ -40993,10 +41038,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "menubar 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -41030,9 +41075,12 @@
         "border"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-border",
         "--xh-material-frosted-border"
       ],
       "visibility": "public",
@@ -41049,9 +41097,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-bg",
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
@@ -41067,10 +41118,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "menubar 的 content 部件 color 覆盖槽。"
@@ -41157,10 +41209,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "menubar 的 content 部件 box-shadow 覆盖槽。"
@@ -41319,10 +41372,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "menubar 的 content 部件 background 覆盖槽。"
@@ -47391,10 +47445,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -47410,9 +47464,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-bg",
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
@@ -47429,9 +47486,12 @@
         "border"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-border",
         "--xh-material-frosted-border"
       ],
       "visibility": "public",
@@ -47727,10 +47787,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 color 覆盖槽。"
@@ -47911,10 +47972,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 box-shadow 覆盖槽。"
@@ -48002,10 +48064,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -48021,9 +48083,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-bg",
         "--xh-material-frosted-bg"
       ],
       "visibility": "public",
@@ -48040,9 +48105,12 @@
         "border"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
+        "--xh-_material-border",
         "--xh-material-frosted-border"
       ],
       "visibility": "public",
@@ -48263,10 +48331,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 color 覆盖槽。"
@@ -48428,10 +48497,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 box-shadow 覆盖槽。"
@@ -53323,10 +53393,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -53341,10 +53411,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-_material-bg"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 background 覆盖槽。"
@@ -53359,10 +53430,11 @@
         "border"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-_material-border"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 border 覆盖槽。"
@@ -53377,10 +53449,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 color 覆盖槽。"
@@ -53395,10 +53468,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 background 覆盖槽。"
@@ -53521,10 +53595,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 box-shadow 覆盖槽。"
@@ -78021,10 +78096,10 @@
         "backdrop-filter"
       ],
       "state": [
-        "default"
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "--xh-_material-backdrop"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -78039,10 +78114,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-_material-bg"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 background 覆盖槽。"
@@ -78057,10 +78133,11 @@
         "border"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "--xh-_material-border"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 border 覆盖槽。"
@@ -78075,10 +78152,11 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-_material-fg"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 color 覆盖槽。"
@@ -78093,10 +78171,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "--xh-_material-highlight"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 background 覆盖槽。"
@@ -78219,10 +78298,11 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
       ],
       "defaultToken": [
-        "--xh-material-frosted-shadow"
+        "--xh-_material-shadow"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 box-shadow 覆盖槽。"

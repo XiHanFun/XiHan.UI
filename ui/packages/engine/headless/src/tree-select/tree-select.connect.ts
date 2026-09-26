@@ -446,6 +446,8 @@ export function connectTreeSelect<T extends PropTypes>(
     // Escape 归消解层管，不在这里收
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       'id': ids.content,
       // 浮层壳只是焦点域与消解层的根节点，写 -1 避免可滚动区域被自动纳入 Tab 序列
       'tabindex': -1,

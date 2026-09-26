@@ -7,6 +7,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -95,6 +96,14 @@
   /* 与 tooltip 不同：卡片本体承载交互，必须吃指针——
      指针停在卡片上就不该收起，里面的链接与按钮也要点得到 */
   [data-scope='hover-card'][data-part='content'] {
+    /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+       这里只把使用者槽接进来 */
+    --xh-frosted-bg: var(--xh-hover-card-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-hover-card-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-hover-card-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-hover-card-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-hover-card-backdrop, var(--xh-_material-backdrop));
+
     /* 尺寸档只换这两个私有槽。size 落在 content 上而非 root：root 是可选部件，
        面板几何也长在 content 上。语气不接：卡片是内容容器，语气该由里面的内容表达 */
     --xh-_hover-card-pad: var(--xh-surface-pad-md);
@@ -114,20 +123,7 @@
     overscroll-behavior: contain;
     padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-pad));
     padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-pad));
-    border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-hover-card-radius, var(--xh-shape-overlay));
-    /* 与气泡族共用 M2：顶光只占一像素，正文保持实体，只在内容层采样一次背景。 */
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      var(--xh-hover-card-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-hover-card-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-hover-card-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-hover-card-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-hover-card-backdrop, var(--xh-material-frosted-backdrop));
     pointer-events: auto;
     /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
     transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);

@@ -10,6 +10,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -266,6 +267,15 @@
   }
 
   [data-scope='combobox'][data-part='content'] {
+    /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+       这里只把使用者槽接进来 */
+    --xh-frosted-bg: var(--xh-combobox-content-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-combobox-content-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-combobox-content-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-combobox-content-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-combobox-content-backdrop, var(--xh-_material-backdrop));
+    --xh-frosted-highlight: var(--xh-combobox-content-highlight, var(--xh-_material-highlight));
+
     position: relative;
     display: flex;
     flex-direction: column;
@@ -284,29 +294,11 @@
     max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
-    border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-combobox-content-radius, var(--xh-shape-overlay));
-    background: var(--xh-combobox-content-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-combobox-content-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-combobox-content-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
     pointer-events: auto;
-  }
-
-  /* 顶光只沿表面上边缘绘制，不参与列表布局、不拦截候选交互。 */
-  [data-scope='combobox'][data-part='content']::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    block-size: var(--xh-stroke-thin);
-    border-radius: inherit;
-    background: var(--xh-combobox-content-highlight, var(--xh-material-frosted-highlight));
-    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：

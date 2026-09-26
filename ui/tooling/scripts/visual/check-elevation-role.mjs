@@ -28,6 +28,8 @@ const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
 // M5 是 data-material="liquid" 下导航层的材质配方，海拔等价于 floating；只在液态层的私有槽里赋值，
 // 组件皮肤经私有槽消费，所以不按部件登记
 const MATERIAL_LIQUID = /--xh-material-liquid-shadow\b/
+// 材质家族配方（family/material.css）在部件上声明的投影私有槽：frosted 档取 M2 投影，liquid 档由配方换成液态投影
+const MATERIAL_RECIPE = /--xh-_material-shadow\b/
 /** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。sheet 面：Dialog / Drawer / Command / Tour / Toast / Notification。 */
 const ELEVATED_CONSUMERS = new Set(['dialog/content', 'drawer/content', 'tour/content', 'toast/root', 'notification/item', 'layout/sider', 'command/content'])
 /**
@@ -145,15 +147,22 @@ for (const file of files) {
   }
   for (const rule of src.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const selector = rule[1].replace(/\s+/g, ' ').trim()
-    for (const decl of rule[2].matchAll(/(?:^|;|\{)\s*(box-shadow|--xh-_[\w-]*shadow[\w-]*)\s*:\s*([^;}]+)/g)) {
+    for (const decl of rule[2].matchAll(/(?:^|;|\{)\s*(box-shadow|--xh-_[\w-]*shadow[\w-]*|--xh-frosted-shadow|--xh-action-shadow-rest)\s*:\s*([^;}]+)/g)) {
       const value = decl[2].trim()
-      // 不是海拔的阴影：inset、零偏移的描边式扩散（头像组的描边、聚光灯的环、裁切框外的遮罩）、只引私有槽、
-      // 兜底 none，以及使用者槽兜底「0 0 0 transparent」的零影占位（无影面要与语气色条叠成一条 box-shadow 时的写法）
-      if (value === 'none' || value === '0' || /^inset\b/.test(value) || value.startsWith('0 0 0 ') || /,\s*(?:none|0 0 0 transparent)\)$/.test(value))
+      // 材质家族：皮肤把使用者槽接到配方的投影私有槽 --xh-_material-shadow（面经 --xh-frosted-shadow，
+      // 圆钮经 --xh-action-shadow-rest）。角色由配方按部件的材质档给：frosted，liquid 档由配方换成液态投影
+      const materialBridge = decl[1] === '--xh-frosted-shadow' || decl[1] === '--xh-action-shadow-rest'
+      if (materialBridge && !MATERIAL_RECIPE.test(value))
         continue
-      // 只引私有槽（或组件槽包着私有槽）的消费点：角色在私有槽的赋值点那里查
-      if (/^var\((?:--xh-[a-z0-9-]+,\s*var\()*--xh-_[\w-]+\)+$/.test(value))
-        continue
+      if (!materialBridge) {
+        // 不是海拔的阴影：inset、零偏移的描边式扩散（头像组的描边、聚光灯的环、裁切框外的遮罩）、只引私有槽、
+        // 兜底 none，以及使用者槽兜底「0 0 0 transparent」的零影占位（无影面要与语气色条叠成一条 box-shadow 时的写法）
+        if (value === 'none' || value === '0' || /^inset\b/.test(value) || value.startsWith('0 0 0 ') || /,\s*(?:none|0 0 0 transparent)\)$/.test(value))
+          continue
+        // 只引私有槽（或组件槽包着私有槽）的消费点：角色在私有槽的赋值点那里查
+        if (/^var\((?:--xh-[a-z0-9-]+,\s*var\()*--xh-_[\w-]+\)+$/.test(value))
+          continue
+      }
       checked++
       // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
       const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)
@@ -162,25 +171,34 @@ for (const file of files) {
         problems.push(`${file}  ${selector.slice(0, 60)}  M4 Elevated sheet 尚未登记给 ${comp} 的 ${part ?? '未知部件'}——迁到三件套后补进 ELEVATED_CONSUMERS`)
         continue
       }
-      const role = MATERIAL_SOFT.test(value)
-        ? 'soft'
-        : MATERIAL_FROSTED.test(value)
-          ? 'frosted'
-          : isElevated
-            ? 'sheet'
-            : MATERIAL_LIQUID.test(value)
-              ? 'liquid'
-              : value.match(ROLE)?.[1]
+      const role = materialBridge
+        ? 'frosted'
+        : MATERIAL_SOFT.test(value)
+          ? 'soft'
+          : MATERIAL_FROSTED.test(value)
+            ? 'frosted'
+            : isElevated
+              ? 'sheet'
+              : MATERIAL_LIQUID.test(value)
+                ? 'liquid'
+                : value.match(ROLE)?.[1]
       if (!role) {
         problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没走 --xh-elevation-raised / floating / sheet 或已登记材质投影`)
         continue
       }
+      if (materialBridge && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-_material-shadow\)\)$/.test(value))
+        problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
       if (decl[1] === 'box-shadow' && !SLOTTED.test(value)
         && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted(?:-compact)?|elevated)-shadow\)\)$/.test(value)) {
         problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
       }
       if (!part)
         continue
+      // 材质桥接常写在几个同类部件共用的选择器列表上（轮播的三颗控制钮）：每个分支的部件各记一档
+      if (materialBridge) {
+        for (const branch of selector.split(','))
+          seenRoles.add(`${comp}/${[...branch.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)}/${role}`)
+      }
       seenRoles.add(`${comp}/${part}/${role}`)
       const want = EXPECTED[comp]?.[part]
       if (want) {

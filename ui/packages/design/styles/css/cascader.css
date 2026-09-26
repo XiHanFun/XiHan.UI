@@ -10,6 +10,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -281,6 +282,15 @@
   /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
      横向随列数增减，因此不设固定宽度，只给每列自己的宽度 */
   [data-scope='cascader'][data-part='content'] {
+    /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+       这里只把使用者槽接进来 */
+    --xh-frosted-bg: var(--xh-cascader-content-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-cascader-content-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-cascader-content-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-cascader-content-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-cascader-content-backdrop, var(--xh-_material-backdrop));
+    --xh-frosted-highlight: var(--xh-cascader-content-highlight, var(--xh-_material-highlight));
+
     position: relative;
     display: flex;
     flex-direction: row;
@@ -288,13 +298,7 @@
     /* 静态档与落位后的可用宽度取小：列多起来时外框自己就宽过了可用区，
        盒内不产生溢出，下面那条 overflow-x 便一直没事可做，最右那一列落在屏外点不到 */
     max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl)), var(--xh-_cascader-available-w));
-    border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-cascader-content-radius, var(--xh-shape-overlay));
-    background: var(--xh-cascader-content-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-cascader-content-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-cascader-content-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
     /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
     overflow-x: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -303,18 +307,6 @@
     /* 各列与搜索列表的竖条贴在自己的盒子上、挂在这一层里（它已是定位盒）：轨道不画底，
        条子随列一起横滚，列与列之间才不会各多出一道灰带 */
     --xh-scrollbar-track-bg: transparent;
-  }
-
-  /* 唯一外壳的内侧顶光；列和状态部件不另画材质面。 */
-  [data-scope='cascader'][data-part='content']::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    block-size: var(--xh-stroke-thin);
-    border-radius: inherit;
-    background: var(--xh-cascader-content-highlight, var(--xh-material-frosted-highlight));
-    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：

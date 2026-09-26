@@ -8,6 +8,7 @@
 @import '../family/action-control.css';
 @import '../family/collection-item.css';
 @import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -311,6 +312,15 @@
   /* 浮层外壳：描边、底色、阴影与整体尺寸归它。它自己不滚——滚的是里面的 list，
      底部操作区因此留在视口里，不随条目滚走 */
   [data-scope='select'][data-part='content'] {
+    /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+       这里只把使用者槽接进来 */
+    --xh-frosted-bg: var(--xh-select-content-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-select-content-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-select-content-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-select-content-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-select-content-backdrop, var(--xh-_material-backdrop));
+    --xh-frosted-highlight: var(--xh-select-content-highlight, var(--xh-_material-highlight));
+
     position: relative;
     display: flex;
     flex-direction: column;
@@ -325,28 +335,10 @@
     max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
     padding-block: var(--xh-select-content-py, var(--xh-space-1));
     padding-inline: var(--xh-select-content-px, var(--xh-space-1));
-    border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-select-content-radius, var(--xh-shape-overlay));
-    background: var(--xh-select-content-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-select-content-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-select-content-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-select-content-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-select-content-backdrop, var(--xh-material-frosted-backdrop));
     /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
     overflow: hidden;
     pointer-events: auto;
-  }
-
-  /* 顶光单独叠在真实四边 border 内侧；强制色归零后轮廓仍在。 */
-  [data-scope='select'][data-part='content']::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    block-size: var(--xh-stroke-thin);
-    border-radius: inherit;
-    background: var(--xh-select-content-highlight, var(--xh-material-frosted-highlight));
-    pointer-events: none;
   }
 
   /* 列表框本体：只管滚动，留白归外壳。

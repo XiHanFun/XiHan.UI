@@ -99,6 +99,13 @@ afterEach(() => {
   host = null
 })
 
+
+/** 1px 顶光：材质配方把它画在背景最上一层渐变里（钉在面本身上，不随内容滚动），取那层的第一个色标。 */
+function highlightOf(el: Element): string {
+  const image = getComputedStyle(el).backgroundImage
+  return /linear-gradient\((?:to [a-z ]+,\s*)?([a-z]+\([^)]*\)|[a-z]+)/.exec(image)?.[1] ?? 'rgba(0, 0, 0, 0)'
+}
+
 describe('级联选择首次加载表面', () => {
   it.each(['light', 'dark'] as const)('%s：触发框实体、唯一状态面磨砂，增强对比度关闭透明光效', async (theme) => {
     await mountCascader({ theme })
@@ -112,12 +119,11 @@ describe('级联选择首次加载表面', () => {
     expect(colorAlpha(style.backgroundColor)).toBeLessThan(255)
     expect(colorAlpha(style.backgroundColor)).toBeGreaterThan(220)
     expect(style.boxShadow).not.toBe('none')
-    expect(colorAlpha(getComputedStyle(content, '::before').backgroundColor)).toBeGreaterThan(0)
-    expect(getComputedStyle(content, '::before').pointerEvents).toBe('none')
+    expect(colorAlpha(highlightOf(content))).toBeGreaterThan(0)
     part('positioner').dataset.contrast = 'more'
     expect(getComputedStyle(content).backdropFilter).toBe('none')
     expect(colorAlpha(getComputedStyle(content).backgroundColor)).toBe(255)
-    expect(colorAlpha(getComputedStyle(content, '::before').backgroundColor)).toBe(0)
+    expect(colorAlpha(highlightOf(content))).toBe(0)
   })
 
   it('加载与空态共用材质次要文字，视图切换不额外产生表面', async () => {

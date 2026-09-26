@@ -108,6 +108,8 @@ export function connectHoverCard<T extends PropTypes>(
     /** 可交互面板：非模态 dialog，收起时留在 DOM 只隐藏。 */
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
+      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
+      'data-xh-material': 'frosted',
       'id': ids.content,
       'role': 'dialog',
       'tabindex': -1,

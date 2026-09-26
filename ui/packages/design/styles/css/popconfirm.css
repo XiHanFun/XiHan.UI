@@ -8,6 +8,7 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 @import '../family/action-control.css';
+@import '../family/material.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -83,6 +84,14 @@
   /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
      标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
   [data-scope='popconfirm'][data-part='content'] {
+    /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
+       这里只把使用者槽接进来 */
+    --xh-frosted-bg: var(--xh-popconfirm-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-popconfirm-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-popconfirm-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-popconfirm-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-popconfirm-backdrop, var(--xh-_material-backdrop));
+
     /* 作者塞进面板里的图标按控件档取；两颗动作钮另由家族配方按 sm 档下发字形尺 */
     --xh-icon-size: var(--xh-popconfirm-icon-size, var(--xh-glyph-size-md));
     /* 尺寸档只换这两个私有槽 */
@@ -104,20 +113,7 @@
     overscroll-behavior: contain;
     padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
     padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
-    border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-popconfirm-radius, var(--xh-shape-overlay));
-    /* 与 Popover 共用 M2 配方：透明 tint 在底层，内侧一像素顶光只表达材质厚度。 */
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      var(--xh-popconfirm-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-popconfirm-fg, var(--xh-material-frosted-fg));
-    box-shadow: var(--xh-popconfirm-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-popconfirm-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-popconfirm-backdrop, var(--xh-material-frosted-backdrop));
     pointer-events: auto;
     /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
     transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);

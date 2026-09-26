@@ -137,9 +137,24 @@ describe('选择器实体触发与 M2 浮层', () => {
     expect(backdrop(content)).toContain('blur(16px)')
     expect(colorAlpha(content.backgroundColor)).toBeLessThan(255)
     expect(content.boxShadow).not.toBe('none')
-    expect(getComputedStyle(part('content'), '::before').backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(colorAlpha(highlightOf(part('content')))).toBeGreaterThan(0)
+  })
+
+  it('顶光画在面本身的背景上：列表滚动时钉在顶上，不是一条会跟着内容滚走的伪元素', async () => {
+    await mountSelect()
+    const content = part('content')
+    expect(getComputedStyle(content, '::before').content).toBe('none')
+    expect(getComputedStyle(content).backgroundAttachment.split(',')[0]!.trim()).toBe('scroll')
+    expect(colorAlpha(highlightOf(content))).toBeGreaterThan(0)
   })
 })
+
+
+/** 1px 顶光：材质配方把它画在背景最上一层渐变里（钉在面本身上，不随内容滚动），取那层的第一个色标。 */
+function highlightOf(el: Element): string {
+  const image = getComputedStyle(el).backgroundImage
+  return /linear-gradient\((?:to [a-z ]+,\s*)?([a-z]+\([^)]*\)|[a-z]+)/.exec(image)?.[1] ?? 'rgba(0, 0, 0, 0)'
+}
 
 describe('选择器分组与选项反馈', () => {
   it('正文弹性收缩、勾选固定末端，长文字截断且后继分组有实体分隔', async () => {
