@@ -71,7 +71,9 @@ export function connectCartesianChart<T extends PropTypes>(
   const size = context.get('size')
   const hidden = context.get('hiddenSeries')
   const measured = size != null && model.scene != null
-  const scene = model.scene?.scene ?? EMPTY_SCENE
+  // 过渡中画正在显示的那一帧；拾取、焦点与提示框仍按目标场景算
+  const frame = context.get('frame')
+  const scene = frame?.scene ?? model.scene?.scene ?? EMPTY_SCENE
   const invalid = model.issues.length > 0
   const empty = !invalid && model.derived.visible.every(s => s.values.every(v => v == null))
 
@@ -113,7 +115,8 @@ export function connectCartesianChart<T extends PropTypes>(
   const legendAnchor = legendItems.some(item => item.id === context.get('legendFocus'))
     ? context.get('legendFocus')
     : legendItems[0]?.id ?? null
-  const seriesById = new Map(model.derived.visible.map(s => [s.spec.id, s.spec]))
+  // 含隐藏的系列：图例刚隐藏的系列还在收场，颜色与标记形态照样要取
+  const seriesById = new Map(model.spec.series.map(s => [s.id, s]))
 
   /** 提示框的落点：指针触发时取指针位置，键盘与联动取数据的锚点。 */
   const tip = ((): ReturnType<typeof placeChartTooltip> | null => {
@@ -338,12 +341,14 @@ export function connectCartesianChart<T extends PropTypes>(
       if (mark.kind === 'group') {
         if (mark.part === 'series') {
           const id = mark.key.slice('series:'.length)
+          // 退出中的系列（图例刚隐藏它）不进可访问树
           const spec = seriesById.get(id)
           return normalize.element({
             ...base,
-            'role': 'graphics-object',
-            'aria-roledescription': translations.seriesRoleDescription,
-            'aria-label': spec?.name ?? id,
+            'role': mark.exiting ? undefined : 'graphics-object',
+            'aria-roledescription': mark.exiting ? undefined : translations.seriesRoleDescription,
+            'aria-label': mark.exiting ? undefined : spec?.name ?? id,
+            'aria-hidden': mark.exiting || undefined,
             'data-series-id': id,
             'data-xh-chart-slot': spec?.slot == null ? undefined : String(spec.slot),
             'data-tone': spec?.tone ?? undefined,
@@ -370,12 +375,20 @@ export function connectCartesianChart<T extends PropTypes>(
           'opacity': mark.opacity,
         })
       }
+      // 新出现的折线由描线关键帧从头描到尾：路径长度归一，虚线偏移从 1 走到 0
+      const drawing = mark.part === 'line' && frame?.entering.has(mark.key) === true
       const props: Record<string, unknown> = {
         ...base,
-        d: pathOf(mark),
-        opacity: mark.opacity,
+        'd': pathOf(mark),
+        'opacity': mark.opacity,
+        'pathLength': drawing ? 1 : undefined,
+        'data-drawing': dataAttr(drawing),
       }
-      if (mark.part === 'bar' || (mark.part === 'point' && mark.a11y?.focusable)) {
+      // 退出中的标记只剩收场的样子：不可聚焦、不进可访问树
+      if (mark.exiting) {
+        props['aria-hidden'] = true
+      }
+      else if (mark.part === 'bar' || (mark.part === 'point' && mark.a11y?.focusable)) {
         const ref = mark.datum ?? null
         const own = ref ? cartesianDetails(model, ref, 'item') : null
         props.role = 'graphics-symbol'
@@ -393,8 +406,6 @@ export function connectCartesianChart<T extends PropTypes>(
       }
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
-      if (mark.exiting)
-        props['data-exiting'] = ''
       return normalize.element(props)
     },
 

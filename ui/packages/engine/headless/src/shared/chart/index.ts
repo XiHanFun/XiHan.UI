@@ -16,7 +16,7 @@ export {
   sameChartKey,
   trackChartViewport,
 } from './machine-base'
-export type { ChartBaseAction, ChartBaseContext, ChartBaseEvent, ChartBaseProps, ChartBaseRefs, ChartBaseSchema, ChartOffset } from './machine-base'
+export type { ChartBaseAction, ChartBaseComputed, ChartBaseContext, ChartBaseEvent, ChartBaseProps, ChartBaseRefs, ChartBaseSchema, ChartOffset } from './machine-base'
 export { CHART_ESTIMATING_MEASURER, createCanvasMeasurer } from './measure'
 export { memoizeLast } from './memo'
 export { CHART_METRIC_SLOTS, CHART_METRICS, readChartMetrics, sameChartMetrics } from './metrics'
@@ -28,6 +28,7 @@ export { buildChartSummary } from './summary'
 export type { ChartSummaryFormat } from './summary'
 export { placeChartTooltip } from './tooltip'
 export type { ChartTipPlacement } from './tooltip'
+export type { ChartFrame, ChartTransitionOptions } from './transition'
 export { CHART_TRANSLATIONS, defaultChartDatumLabel, defaultChartSummary, resolveChartTranslations } from './translations'
 export type {
   ChartA11yModel,

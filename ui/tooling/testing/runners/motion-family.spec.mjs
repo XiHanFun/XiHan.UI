@@ -50,7 +50,7 @@ describe('family/motion.css 共享关键帧', () => {
     const expected = Object.keys(SHARED_RELATION).sort()
 
     expect([...found.keys()].sort()).toEqual(expected)
-    expect(expected).toHaveLength(24)
+    expect(expected).toHaveLength(25)
     for (const name of expected) {
       expect(found.get(name).count, name).toBe(1)
       expect(found.get(name).layered, `${name} 不在 @layer xihan.motion 里`).toBe(true)

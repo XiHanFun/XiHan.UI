@@ -160,6 +160,11 @@ export interface ChartCommonProps {
   onActiveKeyChange?: (details: ChartActiveKeyChangeDetails) => void
   /** 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 */
   pending?: boolean
+  /**
+   * 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。
+   * false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。
+   */
+  animated?: boolean
   /** 数字、日期格式与内建文案的语言；未提供时按宿主语言。 */
   locale?: string
   /** 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 */

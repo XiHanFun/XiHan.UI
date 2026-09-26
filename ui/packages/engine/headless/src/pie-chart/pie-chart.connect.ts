@@ -30,6 +30,7 @@ import {
   pieTooltip,
   pieTranslations,
 } from './pie-chart.logic'
+import { PIE_OTHER_ID } from './pie-chart.model'
 
 const parts = pieChartAnatomy.build()
 
@@ -69,7 +70,8 @@ export function connectPieChart<T extends PropTypes>(
   const size = context.get('size')
   const hidden = context.get('hiddenSeries')
   const measured = size != null && model.scene != null
-  const scene = model.scene?.scene ?? EMPTY_SCENE
+  // 过渡中画正在显示的那一帧；拾取、焦点与提示框仍按目标场景算
+  const scene = context.get('frame')?.scene ?? model.scene?.scene ?? EMPTY_SCENE
   const invalid = model.issues.length > 0
   const empty = !invalid && model.derived.visible.length === 0
   const donut = (prop('variant') ?? 'donut') === 'donut'
@@ -330,6 +332,7 @@ export function connectPieChart<T extends PropTypes>(
           'y': text.y,
           'text-anchor': text.anchor,
           'dominant-baseline': BASELINE[text.baseline],
+          'opacity': mark.opacity,
           'aria-hidden': true,
           // 内侧标签压在扇区色上，带色槽取配对的前景色；外侧标签不带，是普通标注色
           'data-xh-chart-slot': inside && slice ? slotAttr(slice.slot, slice.other) : undefined,
@@ -341,7 +344,14 @@ export function connectPieChart<T extends PropTypes>(
         d: pathOf(mark),
         opacity: mark.opacity,
       }
-      if (mark.part === 'slice') {
+      if (mark.part === 'slice' && mark.exiting) {
+        // 退出中的扇区只剩收场的样子：颜色留着（数据里已删掉的行按场景里记的色槽），不可聚焦、不进可访问树
+        const id = mark.datum?.seriesId
+        const slice = id == null ? undefined : sliceById.get(id)
+        props['aria-hidden'] = true
+        props['data-xh-chart-slot'] = slice ? slotAttr(slice.slot, slice.other) : slotAttr(mark.paint?.slot ?? null, id === PIE_OTHER_ID)
+      }
+      else if (mark.part === 'slice') {
         const ref = mark.datum ?? null
         const own = ref ? pieDetails(model, ref, translations) : null
         const slice = ref ? sliceById.get(ref.seriesId) : undefined

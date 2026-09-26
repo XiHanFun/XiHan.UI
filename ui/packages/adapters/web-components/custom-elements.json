@@ -5943,6 +5943,15 @@
             },
             {
               "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -6345,6 +6354,14 @@
               "description": "数据重取中：保留上一帧、整体降低不透明度",
               "name": "pending",
               "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
             },
             {
               "type": {
@@ -39316,6 +39333,15 @@
             },
             {
               "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -39775,6 +39801,14 @@
               "description": "数据重取中：保留上一帧、整体降低不透明度",
               "name": "pending",
               "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
             },
             {
               "type": {

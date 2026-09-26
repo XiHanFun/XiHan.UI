@@ -198,6 +198,7 @@ export const XhPieChartRoot = defineComponent({
     defaultHiddenSeries: { type: Array as PropType<string[]> },
     activeKey: { type: [String, Number, Date, null] as PropType<ChartKey | null> },
     pending: { type: Boolean, default: undefined },
+    animated: { type: Boolean, default: undefined },
     locale: { type: String },
     translations: { type: Object as PropType<Partial<PieChartTranslations>> },
   },

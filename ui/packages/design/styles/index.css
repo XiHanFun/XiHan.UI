@@ -2241,6 +2241,20 @@
       clip-path: inset(0 var(--xh-_countdown-cut-right, 100%) 0 var(--xh-_countdown-cut-left, 0) round var(--xh-_countdown-radius, 0));
     }
   }
+
+  /* ── 数据：新出现的折线从头描到尾 ──
+     连接层给路径写 pathLength="1" 把长度归一，消费方把虚线设成一整段（stroke-dasharray: 1），
+     虚线偏移从 1 走到 0。只动 stroke-dashoffset，不动几何。时长取 move、曲线取 continuous，
+     与柱从基线长出同一档；减弱动效下时长降到 1ms，折线直接在场。CartesianChart */
+  @keyframes xh-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
 }
 
 /* 其余按层归属排列。 */
@@ -17366,6 +17380,8 @@
 /* styles/cartesian-chart.css */
 /* 定义 cartesian chart 样式。 */
 
+/* 描线关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='cartesian-chart'] {
@@ -17524,6 +17540,25 @@
     stroke-width: var(--xh-_chart-metric-line-width);
     stroke-linejoin: round;
     stroke-linecap: round;
+  }
+
+  /* 新出现的折线从头描到尾：连接层在它入场的这一轮写 data-drawing 与 pathLength="1"，
+     过渡结束即撤掉；与柱从基线长出同一档时长与曲线 */
+  [data-scope='cartesian-chart'][data-part='line'][data-drawing] {
+    stroke-dasharray: 1;
+    animation: xh-draw var(--xh-motion-duration-move) var(--xh-motion-ease-continuous) both;
+  }
+
+  /* 减弱动效下折线直接在场，只随过渡淡入：作者在图上放慢了时长也不描线，与柱的几何直接到位同一条规则。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='cartesian-chart'][data-part='line'][data-drawing] {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='cartesian-chart'][data-part='line'][data-drawing] {
+    animation: none;
   }
 
   /* 面积：系列色淡洗，上沿是同一条实色折线 */

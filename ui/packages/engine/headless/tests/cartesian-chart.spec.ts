@@ -37,7 +37,8 @@ interface Rig {
 
 async function makeRig(initial: Props, size = { width: 400, height: 240 }): Promise<Rig> {
   const runtime = createVanillaRuntime()
-  const props = runtime.signal<Props>(initial)
+  // 几何用例看终态；过渡另有用例，显式打开 animated
+  const props = runtime.signal<Props>({ animated: false, ...initial })
   const service = createService(cartesianChartMachine, { props: () => props.get(), runtime })
   const root = document.createElement('figure')
   const viewport = document.createElement('div')
@@ -359,5 +360,115 @@ describe('无障碍', () => {
   it('pending：根上 aria-busy', async () => {
     const rig = await makeRig({ ...BARS, pending: true })
     expect((rig.api().getRootProps() as Dict)['aria-busy']).toBe('true')
+  })
+})
+
+describe('过渡', () => {
+  // 帧与时钟都由假计时器推进：requestAnimationFrame 每 16ms 一帧，performance.now 随之走
+  const FRAMES: Parameters<typeof vi.useFakeTimers>[0] = { toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] }
+  const MIXED: Props = {
+    data: DATA,
+    series: [{ mark: 'bar', x: 'month', y: 'online', name: '线上' }, { mark: 'line', x: 'month', y: 'offline', name: '线下' }],
+    animated: true,
+  }
+
+  afterEach(() => {
+    vi.useRealTimers()
+    document.body.removeAttribute('data-motion')
+  })
+
+  function barHeights(api: CartesianChartApi): number[] {
+    return (marksOf(api, 'bar') as RectMark[]).map(b => b.height)
+  }
+
+  it('入场：柱从基线长出，折线原样在场、带描线标记，走完落到目标场景', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig(MIXED)
+    const target = rig.api().model.scene!.scene
+    const finals = (walk(target.layers.data).filter(m => m.part === 'bar') as RectMark[]).map(b => b.height)
+    expect(barHeights(rig.api())).toEqual(finals.map(() => 0))
+    const line = marksOf(rig.api(), 'line')[0]!
+    expect(rig.api().getMarkProps(line) as Dict).toMatchObject({ 'pathLength': 1, 'data-drawing': '' })
+
+    vi.advanceTimersByTime(100)
+    barHeights(rig.api()).forEach((h, i) => {
+      expect(h).toBeGreaterThan(0)
+      expect(h).toBeLessThan(finals[i]!)
+    })
+
+    vi.advanceTimersByTime(1000)
+    expect(rig.api().scene).toBe(target)
+    expect((rig.api().getMarkProps(line) as Dict)['data-drawing']).toBeUndefined()
+  })
+
+  it('animated 为 false：直接画目标场景', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...MIXED, animated: false })
+    expect(rig.api().scene).toBe(rig.api().model.scene!.scene)
+  })
+
+  it('尺寸变化不重播：走完之后换尺寸，直接落到新场景', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig(MIXED)
+    vi.advanceTimersByTime(1000)
+    rig.service.send({ type: 'RESIZE', size: { width: 320, height: 200 }, offset: { x: 0, y: 0 } })
+    const api = rig.api()
+    expect(api.model.scene!.layout.size.width).toBe(320)
+    expect(api.scene).toBe(api.model.scene!.scene)
+  })
+
+  it('图例隐藏一个系列：它的柱收回基线并淡出，收场期间不进可访问树', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BARS, animated: true })
+    vi.advanceTimersByTime(1000)
+    const before = (marksOf(rig.api(), 'bar') as RectMark[]).find(b => b.key === 'offline:0')!
+    rig.api().toggleSeries('offline')
+    vi.advanceTimersByTime(100)
+    const api = rig.api()
+    const group = walk(api.scene.layers.data).find(m => m.key === 'series:offline')!
+    expect(api.getMarkProps(group) as Dict).toMatchObject({ 'aria-hidden': true, 'data-xh-chart-slot': '2' })
+    expect((api.getMarkProps(group) as Dict).role).toBeUndefined()
+    const leaving = (marksOf(api, 'bar') as RectMark[]).find(b => b.key === 'offline:0')!
+    expect(leaving.height).toBeLessThan(before.height)
+    expect(leaving.opacity).toBeLessThan(1)
+    const props = api.getMarkProps(leaving) as Dict
+    expect(props.tabindex).toBeUndefined()
+    expect(props['aria-hidden']).toBe(true)
+    vi.advanceTimersByTime(1000)
+    expect(walk(rig.api().scene.layers.data).some(m => m.key === 'series:offline')).toBe(false)
+  })
+
+  it('图例切换改了数值轴：两边都有的刻度滑到新位置，只在一边的刻度淡入淡出', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BARS, animated: true })
+    vi.advanceTimersByTime(1000)
+    const labels = (api: CartesianChartApi): Map<string, Mark> => new Map(marksOf(api, 'tick-label').map(m => [m.key, m]))
+    const before = labels(rig.api())
+    rig.api().toggleSeries('online')
+    const target = new Map(walk(rig.api().model.scene!.scene.layers.back).filter(m => m.part === 'tick-label').map(m => [m.key, m]))
+    vi.advanceTimersByTime(100)
+    const mid = labels(rig.api())
+    const shared = [...target.keys()].filter(key => before.has(key) && (before.get(key) as Dict).y !== (target.get(key) as Dict).y)
+    expect(shared.length).toBeGreaterThan(0)
+    for (const key of shared) {
+      const [from, to, now] = [before, target, mid].map(m => (m.get(key) as Dict).y as number)
+      expect(now).toBeGreaterThan(Math.min(from!, to!))
+      expect(now).toBeLessThan(Math.max(from!, to!))
+    }
+    const fresh = [...target.keys()].filter(key => !before.has(key))
+    expect(fresh.length).toBeGreaterThan(0)
+    expect(fresh.every(key => (mid.get(key)!.opacity ?? 1) < 1)).toBe(true)
+  })
+
+  it('减弱动效：几何直接落到终态，只淡入', async () => {
+    vi.useFakeTimers(FRAMES)
+    document.body.setAttribute('data-motion', 'reduce')
+    const rig = await makeRig(MIXED)
+    const target = rig.api().model.scene!.scene
+    const finals = (walk(target.layers.data).filter(m => m.part === 'bar') as RectMark[]).map(b => b.height)
+    expect(barHeights(rig.api())).toEqual(finals)
+    expect((marksOf(rig.api(), 'bar') as RectMark[]).every(b => b.opacity === 0)).toBe(true)
+    vi.advanceTimersByTime(1000)
+    expect(rig.api().scene).toBe(target)
   })
 })

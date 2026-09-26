@@ -3,11 +3,12 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 图表状态机的共同部分：视口量测、度量与文字度量器、悬停与聚焦、图例显隐与悬停、受控的 hiddenSeries 与 activeKey。
+// 图表状态机的共同部分：视口量测、度量与文字度量器、悬停与聚焦、图例显隐与悬停、受控的 hiddenSeries 与 activeKey、场景过渡。
 // 几何不在机器里算：连接层与机器都从各组件的管线取结果，管线按输入引用记忆，悬停与聚焦不会让它重算。
 
 import type { ActionFn, Bindable, ContextParams, EffectFn, MachineSchema, Params, TransitionMap } from '@xihan-ui/core'
-import type { TextMeasurer } from '@xihan-ui/viz'
+import type { Scene, TextMeasurer } from '@xihan-ui/viz'
+import type { ChartFrame, ChartShown, ChartTransitionOptions, ChartTransitionRun, ChartTransitionState } from './transition'
 import type {
   ChartCommonProps,
   ChartDatumDetails,
@@ -21,6 +22,7 @@ import type {
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { CHART_ESTIMATING_MEASURER, createCanvasMeasurer } from './measure'
 import { CHART_METRICS, readChartMetrics, sameChartMetrics } from './metrics'
+import { advanceChartTransition, syncChartTransition } from './transition'
 
 /** 视口相对根的偏移（px）：提示框画在根里，锚点要加上它。 */
 export interface ChartOffset {
@@ -60,6 +62,8 @@ export interface ChartBaseContext {
   activeKey: ChartKey | null
   /** 上一次通知过的激活数据；只用于去重。 */
   notified: string | null
+  /** 过渡中正在显示的那一帧；null 表示显示目标场景本身。 */
+  frame: ChartFrame | null
 }
 
 export interface ChartBaseRefs {
@@ -71,6 +75,16 @@ export interface ChartBaseRefs {
   measurer: TextMeasurer
   /** 机器是否还活着：搬焦点的延迟回调撤不回，卸载后仍会跑，据此认账。 */
   alive: boolean
+  /** 在跑的过渡。 */
+  transition: ChartTransitionRun | null
+  /** 最近一次交给过渡的目标场景。 */
+  shown: ChartShown | null
+}
+
+/** 各图表共有的派生值。 */
+export interface ChartBaseComputed {
+  /** 目标场景：管线按输入引用记忆，输入不变就是同一个对象；null 表示此刻不画标记（未测量、规格不合法）。 */
+  scene: Scene | null
 }
 
 /** 各图表都认的事件。 */
@@ -92,6 +106,8 @@ export type ChartBaseEvent
     | { type: 'LEGEND.HOVER', id: string | null }
     | { type: 'LEGEND.FOCUS', id: string, focus?: boolean }
     | { type: 'LEGEND.PRESS', id: string | null }
+    /** 过渡的逐帧推进。 */
+    | { type: 'SCENE.FRAME' }
 
 export type ChartBaseAction
   = | 'setSize'
@@ -110,6 +126,8 @@ export type ChartBaseAction
     | 'setLegendPressed'
     | 'focusDatum'
     | 'focusLegendItem'
+    | 'syncTransition'
+    | 'advanceTransition'
 
 /**
  * 各图表机器的公共 schema 下界：只钉住 props / context / refs 三片的最小形状，
@@ -118,6 +136,7 @@ export type ChartBaseAction
 export interface ChartBaseSchema extends MachineSchema {
   props: ChartBaseProps
   context: ChartBaseContext
+  computed: ChartBaseComputed
   refs: ChartBaseRefs
 }
 
@@ -206,6 +225,7 @@ export function chartBaseContext<S extends ChartBaseSchema>(
       onChange: activeKey => prop('onActiveKeyChange')?.({ activeKey }),
     })),
     notified: cell<string | null>(() => ({ defaultValue: null })),
+    frame: cell<ChartFrame | null>(() => ({ defaultValue: null })),
   }
 }
 
@@ -216,6 +236,8 @@ export function chartBaseRefs(): ChartBaseRefs {
     getViewportEl: () => null,
     measurer: CHART_ESTIMATING_MEASURER,
     alive: false,
+    transition: null,
+    shown: null,
   }
 }
 
@@ -225,12 +247,35 @@ function markElement(root: HTMLElement, key: string): HTMLElement | null {
   return root.querySelector<HTMLElement>(`[data-key="${escaped}"][tabindex]`)
 }
 
+/** 把机器的几片状态交给过渡。 */
+function transitionState<S extends ChartBaseSchema>({ context, refs, prop, scope, computed, send }: Params<S>): ChartTransitionState {
+  const root = refs.get('getRootEl')()
+  return {
+    animated: prop('animated') !== false,
+    target: computed('scene'),
+    size: context.get('size'),
+    metrics: context.get('metrics'),
+    measurerVersion: context.get('measurerVersion'),
+    // 绘图区缺席（作者没写）时退到根：时长与减弱动效按同一条祖先链读
+    plot: refs.get('getViewportEl')()?.querySelector('[data-part="plot"]') ?? root,
+    win: scope.getWin(),
+    shown: refs.get('shown'),
+    run: refs.get('transition'),
+    frame: context.get('frame'),
+    setShown: shown => refs.set('shown', shown),
+    setRun: run => refs.set('transition', run),
+    setFrame: frame => context.set('frame', frame),
+    requestFrame: () => send({ type: 'SCENE.FRAME' } as S['event']),
+  }
+}
+
 /**
  * 各图表共用的 action。
- * markKeyOf 把数据引用换成标记的 data-key，由各图表按自己的场景给出；legendItemOf 同理找图例项。
+ * markKeyOf 把数据引用换成标记的 data-key，由各图表按自己的场景给出；transition 是各图表的过渡设定。
  */
 export function chartBaseActions<S extends ChartBaseSchema>(options: {
   markKeyOf: (params: Params<S>, ref: ChartDatumRef) => string | null
+  transition: ChartTransitionOptions
 }): Record<ChartBaseAction, ActionFn<S>> {
   return {
     setSize: ({ context, event }) => {
@@ -375,6 +420,10 @@ export function chartBaseActions<S extends ChartBaseSchema>(options: {
         root.querySelector<HTMLElement>(`[data-value="${escaped}"][aria-pressed]`)?.focus()
       })
     },
+
+    syncTransition: params => syncChartTransition(transitionState(params), options.transition),
+
+    advanceTransition: params => advanceChartTransition(transitionState(params)),
   }
 }
 
@@ -484,6 +533,9 @@ export function trackChartViewport<S extends ChartBaseSchema>(): EffectFn<S> {
       disposed = true
       refs.set('alive', false)
       stop?.()
+      // 卸载时停掉在跑的过渡：帧循环撤不回就会一直往死机器里送帧
+      refs.get('transition')?.stop()
+      refs.set('transition', null)
     }
   }
 }
@@ -505,5 +557,6 @@ export function chartBaseTransitions<S extends ChartBaseSchema>(): TransitionMap
     'LEGEND.HOVER': { actions: ['setLegendHover'] },
     'LEGEND.FOCUS': { actions: ['setLegendFocus', 'focusLegendItem'] },
     'LEGEND.PRESS': { actions: ['setLegendPressed'] },
+    'SCENE.FRAME': { actions: ['advanceTransition'] },
   } as TransitionMap<S, undefined>
 }

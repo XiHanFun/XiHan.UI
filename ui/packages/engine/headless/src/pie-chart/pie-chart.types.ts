@@ -9,6 +9,7 @@ import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { Mark, NumberFormatSpec, Scene, TableModel } from '@xihan-ui/viz'
 import type {
   ChartBaseAction,
+  ChartBaseComputed,
   ChartBaseContext,
   ChartBaseEvent,
   ChartBaseRefs,
@@ -103,7 +104,7 @@ export interface PieChartSchema extends MachineSchema {
     translations?: Partial<PieChartTranslations>
   }
   context: ChartBaseContext
-  computed: Record<string, never>
+  computed: ChartBaseComputed
   refs: ChartBaseRefs & {
     /** 管线：按输入引用分段记忆，悬停与聚焦不会让它重算。 */
     pipeline: PiePipeline

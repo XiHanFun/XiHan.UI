@@ -16,7 +16,7 @@ import {
   trackChartViewport,
 } from '../shared/chart'
 import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianTrigger } from './cartesian-chart.logic'
-import { createCartesianPipeline } from './cartesian-chart.model'
+import { cartesianEntryScene, createCartesianPipeline } from './cartesian-chart.model'
 
 const { createMachine } = setup<CartesianChartSchema>()
 
@@ -27,11 +27,14 @@ export const cartesianChartMachine = createMachine({
   name: 'cartesian-chart',
   context: params => chartBaseContext(params),
   refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline() }),
+  computed: {
+    scene: params => cartesianModelOf(params).scene?.scene ?? null,
+  },
   initialState: () => 'idle',
   // 建机器就核一遍规格：watch 只在依赖变化时跑，挂载那一刻的不合法组合得在这里报
   entry: ['reportIssues'],
   effects: ['trackViewport'],
-  watch: ({ track, context, action, prop }) => {
+  watch: ({ track, context, action, prop, computed }) => {
     // 激活的数据由这几处合成，任一变都要重算；数据换了而激活的键没换，报出去的数也得跟着变。
     // 合成结果没变时 notifyActive 自己会闭嘴，回调不会重复派
     track([
@@ -55,6 +58,8 @@ export const cartesianChartMachine = createMachine({
       () => prop('orientation'),
       context.dep('hiddenSeries'),
     ], () => action(['reportIssues']))
+    // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
+    track([() => computed('scene'), () => prop('animated')], () => action(['syncTransition']))
   },
   on: chartBaseTransitions<CartesianChartSchema>(),
   states: {
@@ -64,6 +69,7 @@ export const cartesianChartMachine = createMachine({
     actions: {
       ...chartBaseActions<CartesianChartSchema>({
         markKeyOf: (params, ref) => cartesianMarkKey(cartesianModelOf(params), ref),
+        transition: { entry: cartesianEntryScene, stagger: true },
       }),
       notifyActive: (params) => {
         const model = cartesianModelOf(params)

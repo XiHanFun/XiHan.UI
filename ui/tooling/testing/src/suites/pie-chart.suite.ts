@@ -14,7 +14,8 @@ const DATA = [
   { channel: '邮件', visits: 10 },
 ] as const
 
-const PROPS = { data: DATA, nameField: 'channel', valueField: 'visits', locale: 'en-US' } as const
+// 用例看静止时的 DOM 契约：过渡关掉，另有一条用例单看收场
+const PROPS = { data: DATA, nameField: 'channel', valueField: 'visits', locale: 'en-US', animated: false } as const
 
 const cases: readonly ConformanceCase[] = [
   {
@@ -179,6 +180,24 @@ const cases: readonly ConformanceCase[] = [
     spec: { adr: 'chart-variant' },
     props: { variant: 'pie' },
     initial: { parts: { center: { hidden: '' } } },
+  },
+  {
+    name: '过渡：图例隐藏的扇区先收拢，收场期间不可聚焦、不进可访问树，走完才从绘图区移除',
+    spec: { adr: 'chart-transition' },
+    props: { animated: true },
+    skipParity: '过渡按真实时钟逐帧推进，中间帧的几何随各适配器的提交时机而不同',
+    steps: [
+      {
+        kind: 'click',
+        part: 'legend-item[0]',
+        expect: {
+          counts: { slice: 4 },
+          // 留下的扇区在前，收场的扇区排在最后
+          parts: { slice: [{ 'aria-hidden': null }, { 'aria-hidden': null }, { 'aria-hidden': null }, { 'aria-hidden': 'true', 'tabindex': null, 'role': null }] },
+        },
+      },
+      { kind: 'settle', until: { absent: 'slice[3]' }, expect: { counts: { slice: 3 } } },
+    ],
   },
   {
     name: '全部为 0：空态显示，绘图区没有扇区',
