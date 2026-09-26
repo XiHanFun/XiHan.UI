@@ -117,6 +117,7 @@ export const MODULES = [
       'node tooling/scripts/motion/check-motion-source.mjs',
       'node tooling/scripts/motion/check-reduced-motion-channel.mjs',
       'node tooling/scripts/motion/check-motion-js-timing.mjs',
+      'node tooling/scripts/motion/check-presence-pair.mjs',
       'node tooling/scripts/motion/check-motion-coverage.mjs',
     ],
   },
