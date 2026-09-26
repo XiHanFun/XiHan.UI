@@ -17,6 +17,9 @@ import { useNotificationContextOptional } from './context'
 export function useNotification(props: NotificationSchema['props']): NotificationContext {
   const service = useMachine(notificationMachine, () => props)
   const api = connectNotification(service, reactNormalize)
+  const rootRef = useRef<HTMLElement | null>(null)
+  // 传 getter 而非节点本身，ref 在提交后才附着
+  service.refs.set('getRootEl', () => rootRef.current)
 
   // 四个命令在顶层摊平，函数身份稳定，可解构后随时调用且不读取队列；
   // 调用那一刻才从 ref 里取当下这一份 api
@@ -29,7 +32,7 @@ export function useNotification(props: NotificationSchema['props']): Notificatio
     dismissAll: () => apiRef.current.dismissAll(),
   }), [])
 
-  return { api, service, ...commands }
+  return { api, service, rootRef, ...commands }
 }
 
 /**

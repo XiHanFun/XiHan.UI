@@ -35219,7 +35219,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<NotificationSchema>(this, notificationMachine, () => this.machineProps())"
+              "default": "new MachineController<NotificationSchema>(this, notificationMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')), })"
             },
             {
               "kind": "method",

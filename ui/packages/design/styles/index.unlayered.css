@@ -27750,7 +27750,7 @@
   grid-column: 2;
 }
 
-/* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
+/* 退场动画播完连接层给的是 hidden 属性，而上面声明了 display——
    漏掉这条，已经"卸载"的通知会一直杵在屏幕上，且再也没人来收 */
 [data-scope='notification'][data-part='item'][hidden] {
   display: none;
@@ -27758,34 +27758,16 @@
 
 /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段。
    九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
-   data-placement 反向选到卡片上，落位一改名整条动效静默失效。竖向一小段位移在九个位上都说得通 */
+   data-placement 反向选到卡片上，落位一改名整条动效静默失效。竖向一小段位移在九个位上都说得通。
+   同一批新到的几条按到达顺序错开开幕，不按它在那一摞里排第几（序号由条目到达的追踪写进
+   --xh-_stagger-index，封顶）。backwards 不能省：等待期间起帧不生效的话，
+   卡片会先以全不透明度露一下再跳回起帧 */
 [data-scope='notification'][data-part='item'][data-state='visible'] {
   animation: xh-sheet-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
 }
 
-/* 一摞里的多条按位次错开开幕。backwards 不能省：等待期间起帧不生效的话，
-   卡片会先以全不透明度露一下再跳回起帧。第 6 条起并到同一拍上 */
-[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(2) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
-}
-
-[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(3) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
-}
-
-[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(4) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
-}
-
-[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(5) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 4);
-}
-
-[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(n + 6) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 5);
-}
-
-/* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
+/* forwards 不能省：动画播完到卡片真正收起之间还隔着一次提交，
    不定住末帧的话动画跑完会弹回全不透明，卡片在被收起前先闪一下 */
 [data-scope='notification'][data-part='item'][data-state='dismissing'] {
   animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;

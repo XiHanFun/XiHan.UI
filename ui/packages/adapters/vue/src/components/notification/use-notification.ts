@@ -22,9 +22,13 @@ export function useNotification(
 ): NotificationContext {
   const service = useMachine(notificationMachine, () => ({ ...toValue(props), onItemsChange }))
   const api = computed(() => connectNotification(service, vueNormalize))
+  const rootRef = ref<HTMLElement | null>(null)
+  // 传 getter 而非节点本身，ref 在挂载后才有值
+  service.refs.set('getRootEl', () => rootRef.value)
   // 四个命令在顶层摊平，函数身份稳定，可解构后随时调用且不读取队列
   return {
     api,
+    rootRef,
     create: options => api.value.create(options),
     update: (id, options) => api.value.update(id, options),
     dismiss: id => api.value.dismiss(id),

@@ -104,8 +104,10 @@ export class XhNotificationElement extends XhElement {
     this.dispatchEvent(new CustomEvent('items-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // 队列机器只有条目这一份状态，无副作用：不需要 config/layer/refs，controller 只带 props。
-  private readonly ctrl = new MachineController<NotificationSchema>(this, notificationMachine, () => this.machineProps())
+  // 队列机器只有条目这一份状态，另有一路条目到达的追踪挂在 root 部件上：refs 只装这一个节点 getter。
+  private readonly ctrl = new MachineController<NotificationSchema>(this, notificationMachine, () => this.machineProps(), {
+    onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')),
+  })
 
   private machineProps(): Partial<NotificationSchema['props']> {
     return {
