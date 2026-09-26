@@ -8,6 +8,11 @@ import { join } from 'node:path'
 const STYLE_DIRS = ['packages/design/styles/css', 'packages/design/styles/family']
 const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_layer', 'packages/engine/core/src/kernel/structure/layer-registry.ts'],
+  // 值类填充的比例（0–1）与倒计时条的分段数：连接层写进部件的内联样式，皮肤只读
+  ['--xh-_loading-bar-value', 'packages/engine/headless/src/loading-bar/loading-bar.connect.ts'],
+  ['--xh-_notification-progress-steps', 'packages/engine/headless/src/notification/notification.connect.ts'],
+  ['--xh-_progress-value', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  ['--xh-_toast-progress-steps', 'packages/engine/headless/src/toast/toast.connect.ts'],
 ])
 
 const files = (await Promise.all(STYLE_DIRS.map(async dir =>
