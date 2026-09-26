@@ -194,7 +194,8 @@ describe('通知服务', () => {
     expect(close.hasAttribute('data-pressed')).toBe(true)
     await act(async () => close.click())
     await settle()
-    expect(cards()[0]!.getAttribute('data-state')).toBe('dismissing')
+    // 这里没有退场动画可等：进入退场后随即收起；按压面在进入退场时已由机器收掉
+    expect(cards()[0]?.getAttribute('data-state') ?? 'removed').not.toBe('visible')
     expect(close.hasAttribute('data-pressed')).toBe(false)
   })
 })

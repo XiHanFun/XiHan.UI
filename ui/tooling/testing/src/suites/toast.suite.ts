@@ -143,30 +143,24 @@ export const toastSuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'close-trigger',
+          // 这里没有退场动画可等，进入退场后随即收起
           expect: {
-            parts: { root: { 'data-state': 'dismissing' } },
-            events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
+            parts: { root: { 'data-state': 'unmounted' } },
+            events: [
+              { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
+              { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
+            ],
           },
         },
         heldPressIgnored('toast', 'action-trigger', '进入退场后机器不再接按压'),
       ],
     },
     {
-      name: '到点自动退场：先转 dismissing，走完退场窗口转 unmounted，内容一个也不卸载',
+      name: '到点自动退场：先报 dismissing，退场动画播完（这里没有可等的）转 unmounted，内容一个也不卸载',
       spec: { apg: APG },
-      // duration 与 removeDelay 都给足：太紧时事件断言会落到错的帧，
-      // 退场窗口太窄则轮询式等待会一步跨过 dismissing。
-      props: { id: 't1', duration: 100, removeDelay: 300 },
+      // duration 给足：太紧时事件断言会落到错的帧
+      props: { id: 't1', duration: 100 },
       steps: [
-        {
-          kind: 'settle',
-          until: { attr: { part: 'root', name: 'data-state', value: 'dismissing' } },
-          expect: {
-            // 退场动画还要播，此刻不能收起
-            parts: { root: { 'data-state': 'dismissing', 'hidden': null } },
-            events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
-          },
-        },
         {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-state', value: 'unmounted' } },
@@ -174,42 +168,46 @@ export const toastSuite: ConformanceSuite = {
             // 收起而不是卸载：作者写在里面的节点归作者
             counts: { 'root': 1, 'title': 1, 'action-trigger': 1, 'close-trigger': 1 },
             parts: { root: { 'data-state': 'unmounted', 'hidden': '' } },
-            events: [{ type: 'status-change', detail: { id: 't1', status: 'unmounted' } }],
+            events: [
+              { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
+              { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
+            ],
           },
         },
       ],
     },
     {
-      name: '点关闭：立即进入退场并报出去，随后照常走到 unmounted',
+      name: '点关闭：立即进入退场并报出去，退场动画播完（这里没有可等的）走到 unmounted',
       spec: { apg: APG },
-      props: { id: 't1', duration: 0, removeDelay: 300 },
+      props: { id: 't1', duration: 0 },
       steps: [
         {
           kind: 'click',
           part: 'close-trigger',
           expect: {
-            parts: { root: { 'data-state': 'dismissing' } },
-            events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
+            parts: { root: { 'data-state': 'unmounted', 'hidden': '' } },
+            events: [
+              { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
+              { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
+            ],
           },
-        },
-        {
-          kind: 'settle',
-          until: { attr: { part: 'root', name: 'data-state', value: 'unmounted' } },
-          expect: { parts: { root: { hidden: '' } } },
         },
       ],
     },
     {
       name: '点操作按钮：同样进入退场（先发 action 再走）',
       spec: { apg: APG },
-      props: { id: 't1', duration: 0, removeDelay: 300 },
+      props: { id: 't1', duration: 0 },
       steps: [
         {
           kind: 'click',
           part: 'action-trigger',
           expect: {
-            parts: { root: { 'data-state': 'dismissing' } },
-            events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
+            parts: { root: { 'data-state': 'unmounted' } },
+            events: [
+              { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
+              { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
+            ],
           },
         },
       ],
@@ -238,8 +236,7 @@ export const toastSuite: ConformanceSuite = {
     {
       name: '指针停在条子上：计时按住，移开后接着走剩下那一段而不是从头重来',
       spec: { apg: APG },
-      // removeDelay 给得很大：退场后稳稳停在 dismissing，末帧不会随抖动在两个状态之间摇摆
-      props: { id: 't1', duration: 500, removeDelay: 5000 },
+      props: { id: 't1', duration: 500 },
       steps: [
         {
           kind: 'raw',
@@ -261,14 +258,17 @@ export const toastSuite: ConformanceSuite = {
 
             root.dispatchEvent(new Event('pointerleave'))
 
-            // 恢复后等 400ms：接着走的实现在剩余 300ms 处退场；
+            // 恢复后等 400ms：接着走的实现在剩余 300ms 处退场（这里没有退场动画可等，随即收起）；
             // 从头重来的实现要等满 500ms，此刻还稳稳挂在台上
             await sleep(400)
-            expectState(doc, 'dismissing', '恢复后应当接着走完剩余时间')
+            expectState(doc, 'unmounted', '恢复后应当接着走完剩余时间')
           },
           expect: {
-            parts: { root: { 'data-state': 'dismissing', 'data-paused': null } },
-            events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
+            parts: { root: { 'data-state': 'unmounted', 'data-paused': null } },
+            events: [
+              { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
+              { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
+            ],
           },
         },
       ],
@@ -314,7 +314,7 @@ export const toastSuite: ConformanceSuite = {
     {
       name: 'loading 收尾成 success：预算重算并开始计时，不再挂着不走',
       spec: { apg: APG },
-      props: { id: 't1', loading: true, duration: 150, removeDelay: 3000 },
+      props: { id: 't1', loading: true, duration: 150 },
       steps: [
         {
           kind: 'raw',
@@ -328,10 +328,13 @@ export const toastSuite: ConformanceSuite = {
         { kind: 'setProps', props: { loading: false, tone: 'success' } },
         {
           kind: 'settle',
-          until: { attr: { part: 'root', name: 'data-state', value: 'dismissing' } },
+          until: { attr: { part: 'root', name: 'data-state', value: 'unmounted' } },
           expect: {
             parts: { root: { 'data-tone': 'success', 'data-loading': null } },
-            events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
+            events: [
+              { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
+              { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
+            ],
           },
         },
       ],
