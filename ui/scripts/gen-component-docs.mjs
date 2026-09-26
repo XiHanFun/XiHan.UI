@@ -492,6 +492,7 @@ function scriptedMotion(id) {
   return {
     drivers: MOTION_DRIVERS.filter(name => imported.has(name)),
     prefers: imported.has('resolveMotionPreference'),
+    reads: imported.has('readMotion'),
     // 退场闸门直接建，或者走两个适配器各自的公共封装
     presence: /createPresence|useOverlayExit|createOverlayExit/.test(adapters),
   }
@@ -1293,7 +1294,7 @@ function renderComponent(entry, category) {
   if (sm.presence)
     outsideSkin.push('退场由适配器的退场闸门把关，动画播完才真收起')
   if (sm.prefers)
-    outsideSkin.push('内核读系统的减弱动效偏好，据此决定要不要动')
+    outsideSkin.push(`内核按组件所在的作用域判断减弱动效（最近的 ${code('data-motion')}、应用级覆盖、系统偏好），据此决定要不要动`)
 
   if (sk || outsideSkin.length) {
     push('### 动效', '')
@@ -1305,7 +1306,7 @@ function renderComponent(entry, category) {
     else if (outsideSkin.length) {
       push(
         `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。`
-        + '时长与缓动仍读[动效令牌](../guide/motion)。',
+        + (sm.reads ? '时长与缓动从元素读[动效令牌](../guide/motion)。' : '时长与缓动由组件属性给出。'),
         '',
       )
     }
@@ -1313,10 +1314,16 @@ function renderComponent(entry, category) {
       push('本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。', '')
     }
     if (inSkin.length || outsideSkin.length) {
+      // 减弱动效归谁管：皮肤那段归令牌层（或皮肤自己的降级规则），内核驱动的那段归内核
+      const skinReduce = sk?.reduceMotion
+        ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则`
+        : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断'
       push(
-        sk?.reduceMotion
-          ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则。`
-          : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。',
+        !sm.prefers
+          ? `${skinReduce}。`
+          : inSkin.length
+            ? `${skinReduce}；内核驱动的那段不经令牌层，由内核按元素判断后自行降级。`
+            : '系统开启减弱动效时由内核按元素判断后自行降级，不经令牌层。',
         '',
       )
     }

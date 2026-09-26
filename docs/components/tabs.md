@@ -356,9 +356,9 @@
 
 `background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-皮肤之外还有一段：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核读系统的减弱动效偏好，据此决定要不要动。
+皮肤之外还有一段：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断；内核驱动的那段不经令牌层，由内核按元素判断后自行降级。
 
 ### 响应式
 
