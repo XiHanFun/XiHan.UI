@@ -36085,7 +36085,7 @@
               "type": {
                 "text": "NumberAnimationEasing | undefined"
               },
-              "description": "缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，默认线性",
+              "description": "缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错",
               "name": "easing",
               "fieldName": "easing"
             },

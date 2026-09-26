@@ -34,7 +34,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} from - 起点，默认 0
  * @attr {number} to - 终点，默认 0
  * @attr {number} duration - 时长毫秒，默认 1000；<=0 即一步到位
- * @attr {string} easing - 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，默认线性
+ * @attr {string} easing - 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错
  * @attr {number} precision - 小数位，默认 0
  * @attr {string} separator - 千位分隔符，默认不分隔
  * @attr {boolean} active - 是否运行，默认真；`active="false"` 停在当前值

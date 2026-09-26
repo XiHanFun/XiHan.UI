@@ -8,7 +8,7 @@
 import type { Scope } from '@xihan-ui/core'
 import type { NumberAnimationSchema } from './number-animation.types'
 import { setup } from '@xihan-ui/core'
-import { frameLoop, frameNow, isTweenDone, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
+import { frameLoop, frameNow, isTweenDone, resolveEasing, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
 
 const { createMachine } = setup<NumberAnimationSchema>()
 
@@ -53,7 +53,7 @@ export const numberAnimationMachine = createMachine({
   context: ({ prop, cell }) => ({
     value: cell<number>(() => ({ defaultValue: resolveNumberAnimationBound(prop('from')) })),
   }),
-  refs: () => ({ origin: 0, startedAt: 0 }),
+  refs: () => ({ origin: 0, startedAt: 0, ease: resolveEasing(undefined) }),
   initialState: ({ prop }) => ((prop('active') ?? true) ? 'running' : 'idle'),
   watch: ({ track, prop, action }) => {
     track([() => prop('active')], () => action(['syncActive']))
@@ -110,7 +110,7 @@ export const numberAnimationMachine = createMachine({
           from: refs.get('origin'),
           to: resolveNumberAnimationBound(prop('to')),
           duration: effectiveDuration(prop('duration'), scope),
-          easing: prop('easing'),
+          easing: refs.get('ease'),
         }, elapsed))
       },
       invokeComplete: ({ context, prop }) => {
@@ -119,11 +119,13 @@ export const numberAnimationMachine = createMachine({
     },
     effects: {
       /**
-       * 逐帧循环。这一轮的基准（起点与起跑时刻）在这里取：
+       * 逐帧循环。这一轮的基准（起点、起跑时刻与缓动）在这里取：
        * 效应的挂载与卸载正好对齐"一轮的开始与结束"，重入即自动换基准。
+       * 缓动在起跑时解析一次，认不出的写法当场报错，不拖到逐帧推进里一帧一抛。
        */
-      trackFrames: ({ context, refs, scope, send }) => {
+      trackFrames: ({ context, prop, refs, scope, send }) => {
         const win = scope.getWin()
+        refs.set('ease', resolveEasing(prop('easing')))
         refs.set('origin', context.get('value'))
         refs.set('startedAt', frameNow(win))
         return frameLoop(win, () => send({ type: 'FRAME' }))

@@ -224,6 +224,24 @@ describe('numberAnimationMachine', () => {
     vi.advanceTimersByTime(5000)
     expect(n.api().value).toBe(before)
   })
+
+  it('缓动认 CSS 关键字：ease-in 起步慢，走近一半时间时远不到一半', () => {
+    const n = makeNumberAnimation({ from: 0, to: 1000, duration: 100, easing: 'ease-in' })
+    vi.advanceTimersByTime(3 * FRAME)
+    expect(n.api().value).toBeGreaterThan(0)
+    expect(n.api().value).toBeLessThan(400)
+    n.stop()
+  })
+
+  it('认不出的缓动在起跑时就报错，不拖到逐帧推进里', () => {
+    expect(() => makeNumberAnimation({ from: 0, to: 100, easing: 'wobble' })).toThrow(/认不出缓动写法「wobble」/)
+  })
+
+  it('跑着时换成认不出的缓动，重新起跑那一刻报错', () => {
+    const n = makeNumberAnimation({ from: 0, to: 100, duration: 1000 })
+    expect(() => n.setProps({ easing: 'wobble' })).toThrow(/认不出缓动写法「wobble」/)
+    n.stop()
+  })
 })
 
 describe('connectNumberAnimation', () => {
