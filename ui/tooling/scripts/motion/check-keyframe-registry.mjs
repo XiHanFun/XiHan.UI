@@ -107,7 +107,15 @@ const consumers = new Map()
 
 for (const { dir, file, label } of files) {
   const comp = file.replace(/\.css$/, '')
-  const css = stripComments(await readFile(join(dir, file), 'utf8'))
+  const own = stripComments(await readFile(join(dir, file), 'utf8'))
+  // 皮肤 @import 的家族配方替它画自己的部件（Chart 配方画图表的空态、提示框…），配方里播的关键帧算这份皮肤在播；
+  // motion.css 只装关键帧本身，不是引用面
+  const recipes = dir === FAMILY
+    ? []
+    : [...own.matchAll(/^\s*@import\s+['"]\.\.\/family\/([\w-]+\.css)['"]\s*;/gm)]
+        .map(m => m[1])
+        .filter(name => name !== 'motion.css')
+  const css = [own, ...await Promise.all(recipes.map(async name => stripComments(await readFile(join(FAMILY, name), 'utf8'))))].join('\n')
 
   for (const m of css.matchAll(/@keyframes\s+([\w-]+)\s*\{/g)) {
     const name = m[1]

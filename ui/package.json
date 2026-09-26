@@ -15,7 +15,7 @@
     "clean:lock": "node scripts/clean-lock.mjs",
     "clean:modules": "node scripts/clean-modules.mjs",
     "component-tokens": "node tooling/scripts/gen-component-tokens.mjs",
-    "gate:component-tokens": "node tooling/scripts/gen-component-tokens.mjs && git diff --exit-code packages/design/styles/components.tokens.json packages/design/styles/component-tokens.d.ts && node tooling/scripts/visual/check-action-control-recipe.mjs && node tooling/scripts/visual/check-field-chrome-recipe.mjs && node tooling/scripts/visual/check-collection-item-recipe.mjs && node tooling/scripts/visual/check-swatch-recipe.mjs && pnpm --filter @xihan-ui/testing exec vitest run runners/component-token-manifest.spec.mjs && node tooling/scripts/tokens/check-component-tokens.mjs",
+    "gate:component-tokens": "node tooling/scripts/gen-component-tokens.mjs && git diff --exit-code packages/design/styles/components.tokens.json packages/design/styles/component-tokens.d.ts && node tooling/scripts/visual/check-action-control-recipe.mjs && node tooling/scripts/visual/check-field-chrome-recipe.mjs && node tooling/scripts/visual/check-collection-item-recipe.mjs && node tooling/scripts/visual/check-swatch-recipe.mjs && node tooling/scripts/visual/check-chart-recipe.mjs && pnpm --filter @xihan-ui/testing exec vitest run runners/component-token-manifest.spec.mjs && node tooling/scripts/tokens/check-component-tokens.mjs",
     "gate:family": "pnpm --filter @xihan-ui/testing exec vitest run runners/family-backlog.spec.mjs runners/family-gates.spec.mjs",
     "gate": "node tooling/scripts/gate.mjs",
     "gate:cem": "pnpm --fail-if-no-match --filter @xihan-ui/web-components cem && git diff --exit-code packages/adapters/web-components/custom-elements.json",

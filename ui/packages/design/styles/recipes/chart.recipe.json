@@ -1,0 +1,49 @@
+{
+  "$description": "Chart 图表家族配方：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支只有这一份生成真源。各图表在这些部件上投影 data-xh-chart-part，并在对应部件上把自己的组件覆盖槽接进 contract 里的私有槽；色槽、数据标记与标注写在各自的皮肤里。",
+  "version": 1,
+  "contract": {
+    "gap": "--xh-_chart-gap",
+    "height": "--xh-_chart-height",
+    "legendGap": "--xh-_chart-legend-gap",
+    "legendSwatchRadius": "--xh-_chart-legend-swatch-radius",
+    "legendSwatchLineRadius": "--xh-_chart-legend-swatch-line-radius",
+    "tooltipGap": "--xh-_chart-tooltip-gap",
+    "tooltipPadBlock": "--xh-_chart-tooltip-py",
+    "tooltipPadInline": "--xh-_chart-tooltip-px",
+    "tooltipRadius": "--xh-_chart-tooltip-radius",
+    "tooltipShadow": "--xh-_chart-tooltip-shadow",
+    "tooltipRowGap": "--xh-_chart-tooltip-row-gap",
+    "tooltipSwatchRadius": "--xh-_chart-tooltip-swatch-radius",
+    "tooltipSwatchLineRadius": "--xh-_chart-tooltip-swatch-line-radius",
+    "emptyGap": "--xh-_chart-empty-gap"
+  },
+  "layout": {
+    "fontSize": "var(--xh-text-body-size)"
+  },
+  "legend": {
+    "swatchSize": "var(--xh-space-3)",
+    "swatchBorder": "var(--xh-stroke-thick)",
+    "lineThickness": "var(--xh-stroke-thin)",
+    "hiddenFg": "var(--xh-fg-subtle)"
+  },
+  "tooltip": {
+    "minInlineSize": "8rem",
+    "offsetInline": "var(--xh-space-3)",
+    "offsetBlock": "var(--xh-space-2)",
+    "swatchSize": "var(--xh-space-3)",
+    "lineThickness": "var(--xh-stroke-thick)"
+  },
+  "loading": {
+    "ringSize": "var(--xh-glyph-size-md)",
+    "ringWidth": "var(--xh-stroke-thick)",
+    "track": "var(--xh-border-default)"
+  },
+  "print": {
+    "strategy": "exact-color"
+  },
+  "forcedColors": {
+    "mark": "CanvasText",
+    "focusRing": "Highlight",
+    "hidden": "Canvas"
+  }
+}

@@ -351,6 +351,9 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | model.spec.orientation |
 | `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-xh-chart-part` | 'root' |
+| `caption` | `data-xh-chart-part` | 'caption' |
+| `legend` | `data-xh-chart-part` | 'legend' |
 | `legend-item` | `data-pressed` | ''（条件成立时才出现） |
 | `legend-item` | `data-tone` | item.tone |
 | `legend-item` | `data-value` | item.id |
@@ -358,16 +361,27 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `legend-item` | `data-xh-action-profile` | 'text' |
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
+| `legend-item` | `data-xh-chart-part` | 'legend-item' |
 | `legend-item` | `data-xh-chart-slot` | undefined \| String(item.slot) |
 | `legend-swatch` | `data-mark` | 'line' \| 'bar' |
+| `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
+| `viewport` | `data-xh-chart-part` | 'viewport' |
+| `plot` | `data-xh-chart-part` | 'plot' |
 | `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
+| `tooltip` | `data-xh-chart-part` | 'tooltip' |
+| `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-current` | ''（条件成立时才出现） |
 | `tooltip-row` | `data-series-id` | row.seriesId |
 | `tooltip-row` | `data-tone` | row.tone |
+| `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
 | `tooltip-row` | `data-xh-chart-slot` | undefined \| String(row.slot) |
 | `tooltip-swatch` | `data-mark` | 'line' \| 'bar' |
+| `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
+| `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
+| `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-xh-chart-part` | 'empty' |
 | `mark` | `data-axis` | mark.key.slice('axis:'.length) \| undefined |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | ''（条件成立时才出现） |
@@ -375,6 +389,7 @@ endLabel 把系列名与末值写在线尾，末端挨着时上下推开、用�
 | `mark` | `data-placement` | model.scene?.placements.get(mark.key) \| undefined \| undefined |
 | `mark` | `data-series-id` | mark.key.slice('series:'.length) |
 | `mark` | `data-tone` | spec?.tone |
+| `mark` | `data-xh-chart-part` | mark.part \| undefined |
 | `mark` | `data-xh-chart-slot` | undefined \| String(spec.slot) |
 
 <!-- xh-component-tokens:start -->

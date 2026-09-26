@@ -34,6 +34,7 @@
       "import": "./component-tokens.js"
     },
     "./action-control.css": "./family/action-control.css",
+    "./chart.css": "./family/chart.css",
     "./collection-item.css": "./family/collection-item.css",
     "./field-chrome.css": "./family/field-chrome.css",
     "./material.css": "./family/material.css",
@@ -209,8 +210,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "gen": "node build/action-control-recipe.mjs && node build/field-chrome-recipe.mjs && node build/collection-item-recipe.mjs && node build/swatch-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-entries.mjs",
-    "build": "node build/action-control-recipe.mjs && node build/field-chrome-recipe.mjs && node build/collection-item-recipe.mjs && node build/swatch-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-entries.mjs"
+    "gen": "node build/action-control-recipe.mjs && node build/field-chrome-recipe.mjs && node build/collection-item-recipe.mjs && node build/swatch-recipe.mjs && node build/chart-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-entries.mjs",
+    "build": "node build/action-control-recipe.mjs && node build/field-chrome-recipe.mjs && node build/collection-item-recipe.mjs && node build/swatch-recipe.mjs && node build/chart-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-entries.mjs"
   },
   "dependencies": {
     "@xihan-ui/tokens": "workspace:^"
