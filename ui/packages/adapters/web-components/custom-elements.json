@@ -49979,6 +49979,372 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/sparkline.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-sparkline>`：迷你图宿主，随文画出一组数的趋势形状。\n\n作者写一个空的 `<svg data-xh-part=\"root\">`，在它上面写 aria-label 作为可及名；摘要（`<desc>`）与\n参考带、面积、折线、柱、标记点由本元素按数据生成进去，按标记的 key 复用节点。\n宿主元素缺省是行内元素，迷你图随文排版，不需要另给宽度。\n\n数据、参考带与数值格式是数组或对象，只走 JS property。",
+          "name": "XhSparklineElement",
+          "cssParts": [
+            {
+              "description": "`<svg role=\"img\">`，承载形态、语气与状态；图形由元素生成",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: sparklineAnatomy, meta: sparklineMeta, // root 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { root: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "SparklineSchema['props']['data'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "band",
+              "privacy": "public",
+              "type": {
+                "text": "readonly [number, number] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<SparklineTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "x",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "x"
+            },
+            {
+              "kind": "field",
+              "name": "y",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "y"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "SparklineVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "curve",
+              "privacy": "public",
+              "type": {
+                "text": "SparklineCurve | undefined"
+              },
+              "attribute": "curve"
+            },
+            {
+              "kind": "field",
+              "name": "markers",
+              "privacy": "public",
+              "type": {
+                "text": "SparklineMarkers | undefined"
+              },
+              "attribute": "markers"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SparklineSchema>( this, sparklineMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<SparklineSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SparklineSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintSummary",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SparklineApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "Mark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SparklineApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 `<path>`：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "对象数组的横坐标字段；是数值或日期时按它的间距排开",
+              "name": "x",
+              "fieldName": "x"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "对象数组的数值字段",
+              "name": "y",
+              "fieldName": "y"
+            },
+            {
+              "type": {
+                "text": "SparklineVariant | undefined"
+              },
+              "description": "形态，默认 line",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "SparklineCurve | undefined"
+              },
+              "description": "折线与面积的插值，默认 linear",
+              "name": "curve",
+              "fieldName": "curve"
+            },
+            {
+              "type": {
+                "text": "SparklineMarkers | undefined"
+              },
+              "description": "标记点，默认 last",
+              "name": "markers",
+              "fieldName": "markers"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气，默认 neutral",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "摘要里数字与文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-sparkline",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-sparkline-accent-color"
+            },
+            {
+              "name": "--xh-sparkline-band-bg"
+            },
+            {
+              "name": "--xh-sparkline-bar-max"
+            },
+            {
+              "name": "--xh-sparkline-bar-radius"
+            },
+            {
+              "name": "--xh-sparkline-color"
+            },
+            {
+              "name": "--xh-sparkline-height"
+            },
+            {
+              "name": "--xh-sparkline-line-width"
+            },
+            {
+              "name": "--xh-sparkline-marker-size"
+            },
+            {
+              "name": "--xh-sparkline-width"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSparklineElement",
+          "declaration": {
+            "name": "XhSparklineElement",
+            "module": "src/elements/sparkline.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/spinner.ts",
       "declarations": [
         {

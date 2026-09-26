@@ -112,6 +112,7 @@ import type { SignaturePadTranslations } from '../signature-pad/signature-pad.ty
 import type { SkeletonTranslations } from '../skeleton/skeleton.types'
 import type { SliderTranslations } from '../slider/slider.types'
 import type { SortableTranslations } from '../sortable/sortable.types'
+import type { SparklineTranslations } from '../sparkline/sparkline.types'
 import type { SpinnerTranslations } from '../spinner/spinner.types'
 import type { SplitterTranslations } from '../splitter/splitter.types'
 import type { StatisticTranslations } from '../statistic/statistic.types'
@@ -249,6 +250,7 @@ export interface XhTranslationOverrides {
   'signature-pad'?: Partial<SignaturePadTranslations>
   'skeleton'?: Partial<SkeletonTranslations>
   'slider'?: Partial<SliderTranslations>
+  'sparkline'?: Partial<SparklineTranslations>
   'spinner'?: Partial<SpinnerTranslations>
   'sortable'?: Partial<SortableTranslations>
   'splitter'?: Partial<SplitterTranslations>

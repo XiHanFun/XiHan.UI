@@ -24,7 +24,8 @@
       "approval"
     ],
     "area-fill": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "sparkline"
     ],
     "area-thumb": [
       "color-picker"
@@ -62,8 +63,12 @@
       "image-viewer",
       "tour"
     ],
+    "band": [
+      "sparkline"
+    ],
     "bar": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "sparkline"
     ],
     "block": [
       "markdown-stream"
@@ -371,7 +376,8 @@
       "timer"
     ],
     "dot": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "sparkline"
     ],
     "drag-trigger": [
       "floating-panel"
@@ -932,7 +938,8 @@
       "cartesian-chart",
       "code-view",
       "log",
-      "separator"
+      "separator",
+      "sparkline"
     ],
     "line-content": [
       "code-view",
@@ -1304,6 +1311,7 @@
       "skeleton",
       "slider",
       "sortable",
+      "sparkline",
       "spinner",
       "splitter",
       "statistic",
@@ -1469,6 +1477,7 @@
       "diff-view",
       "pagination",
       "pie-chart",
+      "sparkline",
       "tool-call"
     ],
     "swatch": [
@@ -1705,6 +1714,7 @@
     "arrow": true,
     "axis": true,
     "backdrop": true,
+    "band": true,
     "bar": true,
     "block": true,
     "body": true,

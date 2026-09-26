@@ -86,7 +86,8 @@
         "family/motion.css"
       ],
       "consumers": [
-        "cartesian-chart"
+        "cartesian-chart",
+        "sparkline"
       ],
       "relation": "data"
     },
@@ -119,6 +120,7 @@
         "image-viewer",
         "pie-chart",
         "reasoning",
+        "sparkline",
         "tour"
       ],
       "relation": "fade"

@@ -61,6 +61,8 @@ export const DIAGNOSTIC_CODES = {
   chartBarBaseline: 'chart.bar-baseline',
   /** 占比类图表出现负值。 */
   chartNegativeShare: 'chart.negative-share',
+  /** 区间不合法：两端不是有限数，或下界大于上界。 */
+  chartInvalidRange: 'chart.invalid-range',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

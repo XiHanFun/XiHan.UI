@@ -88,6 +88,7 @@ import {
   skeletonSuite,
   sliderSuite,
   sortableSuite,
+  sparklineSuite,
   spinnerSuite,
   splitterSuite,
   statisticSuite,
@@ -247,6 +248,7 @@ const SUITES: readonly ConformanceSuite[] = [
   barCodeSuite,
   cartesianChartSuite,
   pieChartSuite,
+  sparklineSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */

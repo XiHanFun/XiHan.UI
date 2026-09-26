@@ -53,6 +53,7 @@ export const DIAGNOSTIC_CODES = {
   chartLogDomain: "chart.log-domain", // 对数轴的定义域含 0 或跨越正负
   chartBarBaseline: "chart.bar-baseline", // 柱系列所在的值轴不含 0
   chartNegativeShare: "chart.negative-share", // 占比类图表出现负值
+  chartInvalidRange: "chart.invalid-range", // 区间不合法：两端不是有限数，或下界大于上界
 };
 ```
 

@@ -237,6 +237,8 @@ export { closestThumb, connectSlider, normalizeMarkValues, percentToValue, point
 export type { AxisOptions, SliderApi, SliderMark, SliderMarkMeta, SliderPoint, SliderSchema, SliderThumbState, SliderTickProps, SliderTranslations, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails, TrackRect } from './slider'
 export { connectSortable, sortableAnatomy, sortableAnnouncement, sortableKeyboard, sortableMachine, sortableMeta } from './sortable'
 export type { SortableAnnounceInput, SortableAnnounceKind, SortableApi, SortableDragEndDetails, SortableDragStartDetails, SortableItemState, SortableMode, SortableRefs, SortableSchema, SortableSortDetails, SortableTranslations } from './sortable'
+export { connectSparkline, defaultSparklineSummary, SPARKLINE_TRANSLATIONS, sparklineAnatomy, sparklineKeyboard, sparklineMachine, sparklineMeta } from './sparkline'
+export type { SparklineApi, SparklineCurve, SparklineMarkerKind, SparklineMarkers, SparklineModel, SparklineSchema, SparklineSummary, SparklineTranslations, SparklineVariant } from './sparkline'
 export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'
 export { connectSpinner, SPINNER_DEFAULT_LABEL, spinnerAnatomy, spinnerKeyboard, spinnerMeta } from './spinner'
 export type { SpinnerApi, SpinnerProps, SpinnerTranslations, SpinnerVariant } from './spinner'
