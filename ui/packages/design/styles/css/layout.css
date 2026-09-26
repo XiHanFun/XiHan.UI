@@ -225,10 +225,10 @@
      参照的是视口，与上面 sticky 那条同一个注意事项：整副骨架装进带 transform / filter 的祖先里时，
      固定定位的包含块会换成那个祖先，面板跟着一起滚。 */
   [data-scope='layout'][data-part='sider'][data-presentation='sheet'] {
-    /* 位移方向的私有槽位：默认按行首 + LTR，行尾与 RTL 在下面翻符号。
-       写成槽位而不是写死 ±100%：贴边用的是逻辑 inset，RTL 下行首落在物理右边，
+    /* 位移方向的私有槽位：默认按行首 + LTR，行尾与 RTL 在下面翻符号。幅度取整幅位移令牌，
+       减弱动效下归零。写成槽位而不是写死物理方向：贴边用的是逻辑 inset，RTL 下行首落在物理右边，
        位移若写死物理方向就会出现「贴在右边、却从左边滑进来」 */
-    --xh-_layout-sheet-shift: -100%;
+    --xh-_layout-sheet-shift: calc(-1 * var(--xh-motion-travel));
     /* 这一档的底是 elevated 白底：交互阶梯按承载面走，把上面占位档下发的 200 → 300 写回
        白底的 hover 100 → pressed 200 */
     --xh-action-host-bg-hover: var(--xh-bg-subtle);
@@ -266,16 +266,19 @@
        overscroll 不在这里写 contain：这一面与占位档共用同一个部件，scroll-surface-registry 把侧栏整体登记为
        页内结构容器（overscroll=false），门禁按整个部件核，不按档分 */
     overflow-y: auto;
-    /* 推出来与收进去是同一段行程，视口尺度的位移走 slide 档。
-       visibility 与它同拍：收起那一路等位移播完才真正藏起来，展开那一路立刻露出来 */
+    /* 推出来与收进去是同一段行程，视口尺度的位移走 slide 档。并列的不透明度取淡变档：
+       缺省两端都是不透明、看不出来，减弱动效下整幅位移归零、由它表达进出。
+       visibility 展开那一路立刻露出来 */
+    opacity: 1;
     transition:
       translate var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
+      opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
       visibility var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
   }
 
   /* 挂在行尾：贴另一条边，位移随之反向，描边也换到贴着内容的那一侧 */
   [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-placement='end'] {
-    --xh-_layout-sheet-shift: 100%;
+    --xh-_layout-sheet-shift: var(--xh-motion-travel);
 
     inset-inline-start: auto;
     inset-inline-end: 0;
@@ -284,18 +287,24 @@
   }
 
   [data-scope='layout'][data-part='sider'][data-presentation='sheet']:dir(rtl) {
-    --xh-_layout-sheet-shift: 100%;
+    --xh-_layout-sheet-shift: var(--xh-motion-travel);
   }
 
   [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-placement='end']:dir(rtl) {
-    --xh-_layout-sheet-shift: -100%;
+    --xh-_layout-sheet-shift: calc(-1 * var(--xh-motion-travel));
   }
 
   /* 收起：推出画外并让出无障碍树与 Tab 序列。位移量按面板自身宽度的百分比算，
-     宽度换成任何一档都正好推到画外 */
+     宽度换成任何一档都正好推到画外。淡出走退场档；visibility 等位移与淡出里较长的那段播完
+     才真正藏起来——减弱动效下位移瞬时、淡出还要 120ms，不能被提前藏掉 */
   [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-collapsed] {
     translate: var(--xh-_layout-sheet-shift) 0;
+    opacity: var(--xh-motion-travel-opacity);
     visibility: hidden;
+    transition:
+      translate var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
+      opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
+      visibility max(var(--xh-motion-duration-slide), var(--xh-motion-duration-exit)) var(--xh-motion-ease-exit);
   }
 
   /* 覆盖档的遮罩：与面板同一个层号，谁盖谁看文档序——遮罩写在侧栏之前。
@@ -309,10 +318,11 @@
     transition: opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
-  /* 收起态：淡出并让开指针，底下的内容照常点得到 */
+  /* 收起态：淡出并让开指针，底下的内容照常点得到；淡出走退场档 */
   [data-scope='layout'][data-part='sider-backdrop'][data-collapsed] {
     opacity: 0;
     pointer-events: none;
+    transition: opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
   }
 
   /* 纸上没有覆盖这回事：遮罩印出来就是盖住正文的一片灰 */
