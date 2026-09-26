@@ -100,8 +100,8 @@ export interface AnchorSchema extends MachineSchema {
     | { type: 'LINK.CLICK', value: string }
     /** 程序化改写。 */
     | { type: 'VALUE.SET', value: string | null }
-    /** 平滑滚动的兜底解锁。 */
-    | { type: 'after.scrollLock' }
+    /** 平滑滚动停稳：逐帧读到的滚动位置不再变。 */
+    | { type: 'SCROLL.SETTLE' }
     /** 链接被 Space / Enter 或触屏按住。 */
     | { type: 'PRESS.START', value: string }
     /** 按住的链接抬起、失焦或指针取消；只松开 value 对应的那一条。 */
@@ -109,7 +109,7 @@ export interface AnchorSchema extends MachineSchema {
   tag: never
   guard: 'isSmooth' | 'isTargetReached' | 'canPress'
   action: 'setValue' | 'scrollToTarget' | 'measureIndicator' | 'startPress' | 'endPress'
-  effect: 'trackScroll' | 'trackIndicatorLayout' | 'waitForScrollLock' | 'trackLiquidIndicator'
+  effect: 'trackScroll' | 'trackIndicatorLayout' | 'waitForScrollSettle' | 'trackLiquidIndicator'
 }
 
 export interface AnchorApi<T extends PropTypes = PropTypes> {

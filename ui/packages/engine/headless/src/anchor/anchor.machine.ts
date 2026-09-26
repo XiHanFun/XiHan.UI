@@ -7,7 +7,8 @@
 
 import type { Scope } from '@xihan-ui/core'
 import type { AnchorIndicatorRect, AnchorSchema, AnchorTargetOffset } from './anchor.types'
-import { itemValue, queryItems, resolveScrollBehavior, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { itemValue, queryItems, resolveScrollBehavior, setup } from '@xihan-ui/core'
+import { frameLoop } from '@xihan-ui/motion'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { anchorItemQuery } from './anchor.anatomy'
 
@@ -22,8 +23,14 @@ const EDGE_TOLERANCE = 1
 /** bounds 缺省时的容差，与 EDGE_TOLERANCE 同值。 */
 export const ANCHOR_DEFAULT_BOUNDS = EDGE_TOLERANCE
 
-/** 平滑滚动期间不采信观察器结果的兜底时长（ms）。 */
-const SCROLL_LOCK_MS = 1000
+/** 滚动动过之后，连续这么多帧位置不再变就算停稳。 */
+const SETTLE_FRAMES = 3
+
+/**
+ * 一直没动过时等的帧数。平滑滚动在头一两帧就会起步，等满这些帧仍没动，就是没有可滚的
+ * （目标本就在视野里，或减弱动效下已经瞬移到位）。
+ */
+const IDLE_FRAMES = 12
 
 /**
  * 判定哪一节算"当前"。
@@ -129,16 +136,17 @@ export const anchorMachine = createMachine({
       },
     },
     scrolling: {
-      effects: ['waitForScrollLock'],
+      effects: ['waitForScrollSettle'],
       on: {
         // 滚到目标才解锁，途中扫过的区块不采信
         'SPY.RESOLVE': { guard: 'isTargetReached', target: 'idle' },
-        // 锁定期间再点别处：换目标重新滚，reenter 重挂计时器
+        // 锁定期间再点别处：换目标重新滚，reenter 重新从头判定停稳
         'LINK.CLICK': [
           { guard: 'isSmooth', target: 'scrolling', reenter: true, actions: ['setValue', 'scrollToTarget'] },
           { target: 'idle', actions: ['setValue'] },
         ],
-        'after.scrollLock': { target: 'idle' },
+        // 永远滚不到目标（最后一节贴着页底、顶不到判定线）：滚动停稳即解锁
+        'SCROLL.SETTLE': { target: 'idle' },
         // 程序化改写优先于滚动锁
         'VALUE.SET': { target: 'idle', actions: ['setValue'] },
       },
@@ -184,8 +192,8 @@ export const anchorMachine = createMachine({
         const offset = prop('offset') ?? ANCHOR_DEFAULT_OFFSET
         const top = target.getBoundingClientRect().top
         const container = refs.get('getScrollEl')()
-        // 减弱动效档下降成瞬移，与 back-top 走同一条归一化
-        const behavior = resolveScrollBehavior('smooth', scope)
+        // 减弱动效档下降成瞬移，与 back-top 走同一条归一化；按滚动目标所在的作用域判断
+        const behavior = resolveScrollBehavior('smooth', scope, container ?? scope.getDoc().scrollingElement)
         if (container) {
           const delta = top - container.getBoundingClientRect().top - offset
           container.scrollTo?.({ top: container.scrollTop + delta, behavior })
@@ -271,7 +279,29 @@ export const anchorMachine = createMachine({
         }
       },
 
-      waitForScrollLock: ({ send }) => setTimeoutEffect(() => send({ type: 'after.scrollLock' }), SCROLL_LOCK_MS),
+      /**
+       * 滚动停稳判定：逐帧读滚动位置，不按毫秒猜平滑滚动要走多久——浏览器的时长随距离变，
+       * 减弱动效下还是瞬移。动过之后连续几帧不变即停稳；一直没动过则多等一些帧。
+       */
+      waitForScrollSettle: ({ refs, scope, send }) => {
+        const win = scope.getWin()
+        const read = (): number => refs.get('getScrollEl')()?.scrollTop ?? win.scrollY
+        let last = read()
+        let moved = false
+        let still = 0
+        return frameLoop(win, () => {
+          const now = read()
+          if (now !== last) {
+            moved = true
+            still = 0
+            last = now
+            return
+          }
+          still++
+          if (still >= (moved ? SETTLE_FRAMES : IDLE_FRAMES))
+            send({ type: 'SCROLL.SETTLE' })
+        })
+      },
 
       /** 滚动观察器：每次滚动重量各区块顶边，结算出当前是哪一节。 */
       trackScroll: ({ refs, prop, scope, send, action, flush }) => {
