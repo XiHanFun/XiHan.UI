@@ -381,6 +381,7 @@ export function connectPopconfirm<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
       'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
       ...press('confirm-trigger'),
       'onClick': confirm,
     }),

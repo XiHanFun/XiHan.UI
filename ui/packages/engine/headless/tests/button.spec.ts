@@ -30,6 +30,14 @@ function connect(props: Props = {}) {
 }
 
 describe('connectButton', () => {
+  it('实心档（缺省）是一块彩色面，投影 data-xh-ink-surface；其余形态不投影', () => {
+    const root = (props: Props) => connect(props).getRootProps() as Record<string, unknown>
+    expect(root({})['data-xh-ink-surface']).toBe('')
+    expect(root({ variant: 'solid', tone: 'warning' })['data-xh-ink-surface']).toBe('')
+    for (const variant of ['subtle', 'outline', 'ghost'] as const)
+      expect(root({ variant })['data-xh-ink-surface'], variant).toBeUndefined()
+  })
+
   it('getRootProps 带 anatomy 属性与类型', () => {
     const root = connect({ type: 'submit', variant: 'solid', size: 'md' }).getRootProps() as Record<string, unknown>
     expect(root['data-scope']).toBe('button')

@@ -228,6 +228,7 @@ export function connectForm<T extends PropTypes>(
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
       // 单体控件用原生 disabled（集合条目才用 aria-disabled）；家族按 data-disabled 给禁用面

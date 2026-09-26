@@ -249,6 +249,7 @@ export function connectTour<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
       'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
       ...press('next-trigger'),
       'onClick': () => send({ type: 'STEP.NEXT' }),
     }),

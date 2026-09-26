@@ -158,6 +158,9 @@ export function connectImageViewer<T extends PropTypes>(
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,
       'data-state': stateAttr,
+      // 看片层压在深色遮罩上，两种主题下都是深底：整层是白墨域，控件、焦点环与作者放进来的动作
+      // 都按深色档取值。这一层自己的面取原语，不受域改写
+      'data-xh-ink': 'light',
       'hidden': !open || undefined,
       'tabindex': -1,
       // 翻页是看片模式的高频动作，方向键直达；输入焦点在按钮上时也生效

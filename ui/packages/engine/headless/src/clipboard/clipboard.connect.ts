@@ -103,6 +103,7 @@ export function connectClipboard<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-variant': variant,
+      'data-xh-ink-surface': dataAttr(variant === 'solid'),
       'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => send({ type: 'COPY.TRIGGER' }),
       'onKeyDown': press.onKeyDown,

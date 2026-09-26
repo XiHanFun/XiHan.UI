@@ -66,6 +66,8 @@ function buildTagApi<T extends PropTypes>(
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      // 实心档是一块彩色面：面内的图标与作者内容成为墨色域
+      'data-xh-ink-surface': dataAttr(prop('variant') === 'solid'),
       'data-state': open ? 'open' : 'closed',
       'data-disabled': dataAttr(disabled),
       'hidden': !open || undefined,
