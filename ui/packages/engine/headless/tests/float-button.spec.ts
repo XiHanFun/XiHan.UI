@@ -164,6 +164,68 @@ describe('float-button 按压通道：Space / Enter 与触屏按住投影 data-p
   })
 })
 
+describe('float-button 液态组的融回', () => {
+  /** 替身液态组：split 的结局由用例决定。 */
+  function stubGroup(rig: Rig, animated: boolean): { calls: boolean[], settle: () => void } {
+    const calls: boolean[] = []
+    let settle = (): void => {}
+    rig.service.refs.set('liquidGroup', {
+      items: () => [],
+      goo: {
+        active: animated,
+        animated,
+        split: (_items, open) => {
+          calls.push(open)
+          return new Promise((resolve) => {
+            settle = () => resolve('rest')
+          })
+        },
+        dispose: () => {},
+      },
+    })
+    return { calls, settle: () => settle() }
+  }
+
+  it('液态组会播放时，收起先把展开组留着、挡在 Tab 序之外，融回落定才藏起来', async () => {
+    const rig = makeRig({ defaultOpen: true })
+    const group = stubGroup(rig, true)
+    ;(rig.trigger().onClick as () => void)()
+    expect(rig.api().open).toBe(false)
+    expect(rig.list().hidden).toBeUndefined()
+    expect(rig.list().inert).toBe(true)
+    await Promise.resolve()
+    expect(group.calls).toEqual([false])
+
+    group.settle()
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(rig.list().hidden).toBe(true)
+    expect(rig.list().inert).toBeUndefined()
+  })
+
+  it('融回途中又展开：展开组照常可交互，先前那次融回落定也不再把它藏起来', async () => {
+    const rig = makeRig({ defaultOpen: true })
+    const group = stubGroup(rig, true)
+    ;(rig.trigger().onClick as () => void)()
+    await Promise.resolve()
+    ;(rig.trigger().onClick as () => void)()
+    expect(rig.list().hidden).toBeUndefined()
+    expect(rig.list().inert).toBeUndefined()
+    group.settle()
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(rig.list().hidden).toBeUndefined()
+  })
+
+  it('不播放（standard 档、减弱动效）时收起当场藏起来', () => {
+    const rig = makeRig({ defaultOpen: true })
+    stubGroup(rig, false)
+    ;(rig.trigger().onClick as () => void)()
+    expect(rig.list().hidden).toBe(true)
+    expect(rig.list().inert).toBeUndefined()
+  })
+})
+
 describe('float-button 开合', () => {
   it('点触发器开合，两次都通知', () => {
     const seen: boolean[] = []

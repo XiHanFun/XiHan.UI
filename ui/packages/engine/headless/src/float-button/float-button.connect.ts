@@ -39,6 +39,8 @@ export function connectFloatButton<T extends PropTypes>(
   const { state, context, prop, send, scope } = service
 
   const open = state.get() === 'open'
+  // 液态档收起后动作正融回触发器：展开组还在原处，但已不可交互
+  const merging = !open && context.get('merging')
   const disabled = !!prop('disabled')
   const ids = scope.ids('float-button', 'trigger', 'list')
   const stateAttr = open ? 'open' : 'closed'
@@ -128,7 +130,11 @@ export function connectFloatButton<T extends PropTypes>(
       'data-state': stateAttr,
       'data-placement': placement,
       // 收起时留着节点只隐藏：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到
-      'hidden': !open || undefined,
+      'hidden': (!open && !merging) || undefined,
+      // 融回途中展开组还看得见，用 inert 挡在读屏与 Tab 序之外
+      'inert': merging || undefined,
+      // 液态档下展开组给里面的动作供液态面的私有槽；standard 档下这个标记没人读
+      'data-xh-liquid': '',
     }),
   }
 }

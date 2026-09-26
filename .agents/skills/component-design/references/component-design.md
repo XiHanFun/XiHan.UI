@@ -799,7 +799,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 边缘光 | frosted 1px 顶部边界光；liquid 1px 光环 | 材质的一部分（§8.1、§8.5） |
 
 - 光只走描边，不进面：浅色档 Button solid（品牌 600 底、白字）面内叠 8% 白光，文字对比就从 5.08:1 降到 4.46:1。凡是字压在面上的部件，面内都不加光。
-- 融合分离（FloatButton 菜单展开）只作用在不含文字与图标的装饰色块层，图标在上层保持清晰；只在 liquid 档。
+- 融合分离（FloatButton 菜单展开）：列表项从触发器里分离出来，收起时融回，融回落定后才藏起列表，其间列表 `inert`。离触发器近的先走、相邻两项错开交错步长，起点缩放 0.6、淡入晚于位移；位移用 `spring-merge`。粘连只作用在不含文字与图标的装饰色块层（§8.5 液态组），图标在上层保持清晰；只在 liquid 档，减弱动效下不分离、收起当场藏起。
 
 ## 10. Anatomy
 
@@ -1122,11 +1122,11 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §4「图表家具 / 数据标记」、§6.7、§7.6、§12.5、§13 与 §14 中的图表条款 | `--xh-chart-*` 数据色与度量令牌、分类色板门禁、图表组件；chart 家族配方随第二个图表组件建立 |
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
-| §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | 补 FloatButton 列表、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
+| §9.5 进场必有退场、退场经 Presence；§9.6 首帧规则与错开按到达顺序 | 补 FloatButton 列表（standard 档；liquid 档已由融回承担）、回底按钮、BackTop 的退场；`data-instant` 推广；错开序号投影 |
 | §9.7 `clip-path` 填充 | Progress、LoadingBar、FileUpload、倒计时迁移 |
 | §9.8 共享测量、布局例外登记、`will-change` 规则 | 指示器与 Tour 迁移；布局例外登记门禁；`data-animating` 投影 |
-| §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（FloatButton 列表项、Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
+| §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档；悬浮栏里相邻的分段按液态组结组）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
 | §9.11 弹簧 | `--xh-motion-ease-spring`；手势松手消费者（Switch 拖动、Carousel、Sortable、ImageViewer、Drawer） |
-| §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光；FloatButton 融合分离 |
+| §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |
 | §9.9 带元素参数的减弱判断、JS 无固定毫秒；§14.4 JS 与 CSS 同作用域 | headless 各状态机（Tabs 标签带补间、NumberAnimation、Carousel 起播）与 core 的 `reducedMotion()`（Presence、贴底滚动、平滑滚动）改为按元素判断并用 `readMotion` 取时长；门禁要求判断减弱动效时传参 |
