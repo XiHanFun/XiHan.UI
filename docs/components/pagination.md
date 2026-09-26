@@ -116,8 +116,8 @@
 | `translations` | `Partial<PaginationTranslations>` |  |  |
 | `placement` | `Placement` |  | 省略位展开后的落点，默认 bottom-start（列表类浮层）。 |
 | `offset` | `number` |  | 浮层与省略位之间的间距（px），默认 8。 |
-| `openDelay` | `number` |  | 指针停在省略位多久后才展开（ms），默认 200。 |
-| `closeDelay` | `number` |  | 指针离开后多久收起（ms），默认 300：留出斜向划入浮层的时间。 |
+| `openDelay` | `number` |  | 指针停在省略位多久后才展开（ms），默认 200；只收有限非负数。 |
+| `closeDelay` | `number` |  | 指针离开后多久收起（ms），默认 300：留出斜向划入浮层的时间；只收有限非负数。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onPageChange` | `(details: PaginationPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
