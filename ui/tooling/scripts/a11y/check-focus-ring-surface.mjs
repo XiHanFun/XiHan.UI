@@ -25,6 +25,8 @@
 // 过了线的面与透空的面（transparent / none，环内侧透出祖先那一层）一起收进非实心档。
 // 半透明的面（oklch 带 alpha、color-mix 兑 transparent）内侧的真色是它与底下那层叠出来的，
 // 底下那层是谁静态不知道，逐条登在 opaque；报错信息附一句叠在画布上的估值。
+// 墨色面除外：中性装饰取墨色按比例透明，比例本就是按「叠在缺省面上与原中性色对比度相等」求的，
+// 按本主题承载组件的几种容器面逐一叠出来判，取最低的那个。
 //
 // 条件块：@supports 按块内条件成立处理；@media 只有写成 CONDITIONAL_MEDIA 里那几种真实媒体条件
 // （纸面、高对比、减动效、粗指针、断点）的才是条件块，块里的档不收；写成别的样子的
@@ -327,8 +329,9 @@ function evaluate(expr, scope, trail = []) {
   }
   if (expr.startsWith('color-mix(')) {
     const [space, p1, p2] = splitArgs(inner(expr, 9))
-    if (space.trim() !== 'in oklab')
-      throw new Error(`只支持 color-mix(in oklab, …)：${expr}`)
+    const inSrgb = space.trim() === 'in srgb'
+    if (space.trim() !== 'in oklab' && !inSrgb)
+      throw new Error(`只支持 color-mix(in oklab | in srgb, …)：${expr}`)
     const parse = (part) => {
       const bits = part.trim().split(' ')
       const last = bits[bits.length - 1]
@@ -352,6 +355,13 @@ function evaluate(expr, scope, trail = []) {
     if (alpha === 0)
       return { L: 0, a: 0, b: 0, alpha: 0 }
     const premul = A.color.alpha * wa + B.color.alpha * wb
+    if (inSrgb) {
+      // 不透明档（墨色叠在缺省面上）按伽马 sRGB 插值，与浏览器合成同一算法
+      const ga = srgbOf(A.color)
+      const gb = srgbOf(B.color)
+      const channel = i => (ga[i] * A.color.alpha * wa + gb[i] * B.color.alpha * wb) / premul
+      return { ...oklabOfSrgb([0, 1, 2].map(channel)), alpha }
+    }
     const mix = k => (A.color[k] * A.color.alpha * wa + B.color[k] * B.color.alpha * wb) / premul
     return { L: mix('L'), a: mix('a'), b: mix('b'), alpha }
   }
@@ -374,6 +384,19 @@ function toLinear({ L, a, b }) {
 /** 线性 sRGB 分量 ↔ 伽马编码分量。 */
 const encode = c => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)
 const decode = s => (s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4)
+
+/** 伽马 sRGB 三分量 → oklab。 */
+function oklabOfSrgb(rgb) {
+  const [r, g, b] = rgb.map(decode)
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  return {
+    L: 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+    a: 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+    b: 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s,
+  }
+}
 
 /** 不透明的 oklab → 伽马 sRGB 三分量。 */
 function srgbOf(oklab) {
@@ -431,14 +454,39 @@ function scopeFor(theme, tone) {
   return [merged, themes[theme]]
 }
 
-/** 全部 (主题, 语气) 组合，连同各自的默认环色、库环（oklab）与画布色。 */
+/**
+ * 墨色面叠上去判的几种容器面：页面底、画布、缺省面，以及对话框、抽屉那层 elevated 面。
+ * 抬起面（--xh-bg-surface-raised）只给分段滑块、开关拇指这类小部件，上面不再放别的组件，不在其列；
+ * 磨砂面本身半透明，同样不在其列。
+ */
+// elevated 面按缺省对比度分支取：主题表里公开名最后一次声明落在强制色块上（Canvas）
+const GROUNDS = ['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-_contrast-default-material-elevated-bg']
+
+/** 表达式顺着令牌链有没有取到墨色（--xh-ink）。 */
+function viaInk(expr, scope, seen = new Set()) {
+  for (const match of expr.matchAll(/var\(\s*(--[\w-]+)/g)) {
+    const name = match[1]
+    if (name === '--xh-ink')
+      return true
+    if (seen.has(name))
+      continue
+    seen.add(name)
+    const map = scope.find(entries => entries.has(name))
+    if (map && viaInk(map.get(name), scope, seen))
+      return true
+  }
+  return false
+}
+
+/** 全部 (主题, 语气) 组合，连同各自的默认环色、库环（oklab）、画布色与墨色面叠上去判的库面。 */
 const CONTEXTS = []
 for (const theme of THEMES) {
   const ring = srgbOf(evaluate('var(--xh-ring-focus)', scopeFor(theme, null)))
   const rings = LIBRARY_RINGS.map(name => evaluate(`var(${name})`, scopeFor(theme, null)))
   const canvas = evaluate('var(--xh-bg-canvas)', scopeFor(theme, null))
+  const grounds = GROUNDS.map(name => evaluate(`var(${name})`, scopeFor(theme, null)))
   for (const tone of TONES)
-    CONTEXTS.push({ theme, tone, ring, rings, canvas, scope: scopeFor(theme, tone) })
+    CONTEXTS.push({ theme, tone, ring, rings, canvas, grounds, scope: scopeFor(theme, tone) })
 }
 
 /** 两个 oklab 色是不是同一个色：四个分量都对得上。 */
@@ -494,6 +542,14 @@ function worstAgainstRing(expr) {
     evaluated++
     if (color.alpha === 0)
       continue
+    if (color.alpha < 1 && viaInk(expr, ctx.scope)) {
+      for (const ground of ctx.grounds) {
+        const ratio = contrast(over(color, ground), ctx.ring)
+        if (worst === null || ratio < worst.ratio)
+          worst = { ratio, theme: ctx.theme, tone: ctx.tone, alpha: 1 }
+      }
+      continue
+    }
     if (color.alpha < 1)
       translucent = true
     const face = color.alpha < 1 ? over(color, ctx.canvas) : srgbOf(color)
