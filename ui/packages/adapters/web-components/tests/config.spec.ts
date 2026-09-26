@@ -25,7 +25,7 @@ afterEach(() => {
 })
 
 describe('motion', () => {
-  it('setXhConfig 只通过显式根绑定七轴，不隐式改全局 motion', () => {
+  it('setXhConfig 只通过显式根绑定八轴，不隐式改全局 motion', () => {
     const scope = document.createElement('section')
     setMotionOverride('no-preference')
     setXhConfig({ visualEnvironment: { root: scope, initial: { mode: 'dark', motion: 'reduce' } } })
@@ -34,7 +34,7 @@ describe('motion', () => {
     expect(getMotionOverride()).toBe('no-preference')
   })
 
-  it('<xh-config> 七轴落在自身 scope，运行期一次更新且不污染全局 motion', async () => {
+  it('<xh-config> 八轴落在自身 scope，运行期一次更新且不污染全局 motion', async () => {
     setMotionOverride('no-preference')
     const scope = await mount('<xh-config mode="dark" brand="acme" density="compact" direction="rtl" contrast="more" motion="reduce" transparency="reduce"></xh-config>') as Updatable & { mode?: string, motion?: string }
     expect(scope.getAttribute('data-theme')).toBe('dark')

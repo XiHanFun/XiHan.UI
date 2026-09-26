@@ -25,7 +25,7 @@ import {
 
 ## 配置与视觉环境
 
-`provideXhConfig` 接收响应式配置。七轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
+`provideXhConfig` 接收响应式配置。八轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
 
 ```ts
 provideXhConfig({
@@ -37,7 +37,7 @@ provideXhConfig({
 });
 ```
 
-物理 Portal 会由 Core 从该根桥接已解析七轴到实例壳，Vue 适配器不复制视觉状态。
+物理 Portal 会由 Core 从该根桥接已解析八轴到实例壳，Vue 适配器不复制视觉状态。
 
 ## 事件与 v-model
 

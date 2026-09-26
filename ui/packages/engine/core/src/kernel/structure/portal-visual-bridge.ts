@@ -31,21 +31,22 @@ const VISUAL_AXES = [
   'data-contrast',
   'data-motion',
   'data-transparency',
+  'data-material',
   'dir',
 ] as const
 
 /**
- * 逐项复制到壳上的属性：七个视觉轴，外加语气 data-tone 与材质 data-material。语气不是视觉轴，只是它在来源
+ * 逐项复制到壳上的属性：八个视觉轴，外加语气 data-tone。语气不是视觉轴，只是它在来源
  * 那里靠属性表达、整族 --xh-tone-* 都挂在 [data-tone] 上，所以带属性而不是带派生槽。
- * 材质轴由作者写在根或容器上（standard / liquid），浮层里的导航层部件按它换材质，同样带属性。
+ * 材质轴（standard / liquid）写在根或容器上，浮层里的导航层部件按它换材质，同样带属性。
  */
-const VISUAL_ATTRIBUTES = [...VISUAL_AXES, 'data-tone', 'data-material'] as const
+const VISUAL_ATTRIBUTES = [...VISUAL_AXES, 'data-tone'] as const
 
 /** 库自己的命名空间：令牌、组件槽、家族槽、私有槽与语气族都以它开头。 */
 const LIBRARY_NAMESPACE = '--xh-'
 
 /**
- * 祖先链上值得重算环境的属性：七个视觉轴与语气、inline 样式、匹配样式表声明的 class，
+ * 祖先链上值得重算环境的属性：八个视觉轴与语气、inline 样式、匹配样式表声明的 class，
  * 以及决定 composed 链走向的 slot。来源自身的 data-state / aria-* 状态翻转不在其列：
  * 触发器每开合一次都会改它们，而它们不改变来源所处的视觉环境。
  */

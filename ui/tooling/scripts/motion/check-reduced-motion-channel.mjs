@@ -2,7 +2,7 @@
 // 门禁：减弱动效只有两处基础层系统信号源。
 //
 // motion 包维护 JS override/Presence 通道，core/visual-environment 维护
-// VisualEnvironmentController 的七轴 DOM/父作用域解析。两处各自持有一个系统信号源，应用根再经
+// VisualEnvironmentController 的八轴 DOM/父作用域解析。两处各自持有一个系统信号源，应用根再经
 // 显式 motionSink 汇合；适配器与组件不得出现第三份探测。
 //
 // 第二条：resolveMotionPreference 必须传参。传元素时最近祖先上的 data-motion 与 CSS 的作用域一致地生效，

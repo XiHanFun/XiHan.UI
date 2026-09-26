@@ -96,9 +96,9 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 
 必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不各画一套；禁用标签色统一 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
 
-## 七轴视觉环境运行时
+## 八轴视觉环境运行时
 
-`VisualEnvironmentController` 是 mode、brand、density、dir、contrast、motion、transparency 的唯一状态与 DOM 投影入口。一次 `setPreference` 同步提交同一 scope 的完整七轴：
+`VisualEnvironmentController` 是 mode、brand、density、dir、contrast、motion、transparency、material 的唯一状态与 DOM 投影入口。一次 `setPreference` 同步提交同一 scope 的完整八轴：
 
 ```ts
 import { setMotionOverride } from "@xihan-ui/motion";
@@ -121,6 +121,7 @@ const visual = createVisualEnvironmentController({
     contrast: "system",
     motion: "system",
     transparency: "system",
+    material: "standard",
   },
 });
 
@@ -134,10 +135,10 @@ visual.dispose();
 
 根控制器的 `motionSink` 是显式依赖注入：它把解析后的 motion 同步到 Presence、平滑滚动和 JS 动画。只有 `documentElement` 根作用域允许传；局部控制器只改当前 DOM scope，不能隐式污染全局 JS override。
 
-七轴状态会投影成 Portal 可桥接的完整属性面：
+八轴状态会投影成 Portal 可桥接的完整属性面：
 
 ```html
-<html data-theme="dark" data-brand="xihan" data-density="compact" data-contrast="more" data-motion="reduce" data-transparency="reduce" dir="rtl">
+<html data-theme="dark" data-brand="xihan" data-density="compact" data-contrast="more" data-motion="reduce" data-transparency="reduce" data-material="liquid" dir="rtl">
 ```
 
 ## 偏好、状态与系统轴
@@ -145,12 +146,12 @@ visual.dispose();
 | | `VisualEnvironmentPreference` | `VisualEnvironmentState` |
 | --- | --- | --- |
 | 含义 | 用户或服务端提交的意图 | 已完全定型的事实 |
-| `undefined` | 清除本层覆盖，继承父控制器 | 不存在，七轴全部非空 |
+| `undefined` | 清除本层覆盖，继承父控制器 | 不存在，八轴全部非空 |
 | `'system'` | 仅 mode / contrast / motion / transparency 合法 | 不存在，已解析成具体值 |
 
-brand、density、dir 没有平台媒体查询，因此不接受伪造的 `system`。其余四轴分别读取 `prefers-color-scheme`、`prefers-contrast`、`prefers-reduced-motion`、`prefers-reduced-transparency`。没有 `window` / `matchMedia` 的 SSR 环境使用浅色、默认对比度、默认动效和默认透明度，不猜测客户端偏好。
+brand、density、dir、material 没有平台媒体查询，因此不接受伪造的 `system`。其余四轴分别读取 `prefers-color-scheme`、`prefers-contrast`、`prefers-reduced-motion`、`prefers-reduced-transparency`。没有 `window` / `matchMedia` 的 SSR 环境使用浅色、默认对比度、默认动效和默认透明度，不猜测客户端偏好。
 
-基线七轴为 light、xihan、comfortable、ltr、default、default、default。`contrast='default'` 是显式恢复常规对比度的正式值；旧的 `base` 不再接受。
+基线八轴为 light、xihan、comfortable、ltr、default、default、default、standard。`contrast='default'` 是显式恢复常规对比度的正式值；旧的 `base` 不再接受。
 
 | DOM 轴 | 说明 |
 | --- | --- |
@@ -161,10 +162,11 @@ brand、density、dir 没有平台媒体查询，因此不接受伪造的 `syste
 | `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把磨砂材质切成实体配方 |
+| `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
 
 ## 父作用域、Portal 与回收
 
-局部控制器通过 `parent` 明确继承。父状态变化时，子控制器只重算没有本地偏好的轴；`setPreference({ motion: undefined })` 会删除本层覆盖，立即恢复继承。dispose 会退订父作用域和系统媒体，并把根元素七个属性精确还原到接管前。
+局部控制器通过 `parent` 明确继承。父状态变化时，子控制器只重算没有本地偏好的轴；`setPreference({ motion: undefined })` 会删除本层覆盖，立即恢复继承。dispose 会退订父作用域和系统媒体，并把根元素八个属性精确还原到接管前。
 
 ```ts
 const page = createVisualEnvironmentController({
@@ -178,13 +180,13 @@ const editor = createVisualEnvironmentController({
 });
 ```
 
-React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析七轴，适配器不另存一份视觉状态。
+React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`、`material`。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析八轴，适配器不另存一份视觉状态。
 
 ## 五轴旧视图
 
-`createThemeController`、`resolveTheme` 与 `applyThemeAttrs` 继续存在，但只是新控制器的明确五轴视图：没有独立 resolver、媒体查询或持久化实现。新代码应使用七轴控制器；独立的 `applyThemeAttrs` 只写五轴，控制器则始终维护完整七轴 DOM 合同。
+`createThemeController`、`resolveTheme` 与 `applyThemeAttrs` 继续存在，但只是新控制器的明确五轴视图：没有独立 resolver、媒体查询或持久化实现。新代码应使用八轴控制器；独立的 `applyThemeAttrs` 只写五轴，控制器则始终维护完整八轴 DOM 合同。
 
-`color-scheme` 声明写在深色取值块里，所以嵌套深色区域的原生控件也会跟随。SSR 首屏应直接输出七个已解析属性，避免客户端接管前闪烁。
+`color-scheme` 声明写在深色取值块里，所以嵌套深色区域的原生控件也会跟随。SSR 首屏应直接输出八个已解析属性，避免客户端接管前闪烁。
 
 ## 材质配方
 
@@ -234,7 +236,7 @@ Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、�
 
 ### 液态材质
 
-`data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。
+`data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。用了视觉环境控制器时，经它的 `material` 偏好设置（控制器始终维护根上的这个属性）。
 
 ```html
 <html data-material="liquid">

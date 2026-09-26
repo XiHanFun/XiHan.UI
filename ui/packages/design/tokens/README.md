@@ -1,6 +1,6 @@
 # @xihan-ui/tokens
 
-设计令牌与七轴视觉环境运行时。DTCG 源产出三份等价产物：`tokens.css`（自带 `@layer`）、`tokens.json`、以及带类型的 TS 常量。控制器一次投影 mode / brand / density / dir / contrast / motion / transparency，并支持 SSR、父作用域继承与系统偏好。
+设计令牌与八轴视觉环境运行时。DTCG 源产出三份等价产物：`tokens.css`（自带 `@layer`）、`tokens.json`、以及带类型的 TS 常量。控制器一次投影 mode / brand / density / dir / contrast / motion / transparency，并支持 SSR、父作用域继承与系统偏好。
 
 **谁会装它**：要自定义主题、或只要令牌不要组件的人直接装它。
 

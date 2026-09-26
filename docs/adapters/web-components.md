@@ -24,7 +24,7 @@ defineXhBackground();
 
 ## 配置与视觉环境
 
-`<xh-config>` 本身就是 Light DOM 局部 scope，七轴一次声明后会投影为 Core Portal 能桥接的标准属性：
+`<xh-config>` 本身就是 Light DOM 局部 scope，八轴一次声明后会投影为 Core Portal 能桥接的标准属性：
 
 ```html
 <xh-config

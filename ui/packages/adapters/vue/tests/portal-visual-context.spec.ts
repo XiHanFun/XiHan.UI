@@ -69,7 +69,7 @@ afterEach(() => {
 })
 
 describe('vue Portal 的局部视觉环境', () => {
-  it('provideXhConfig 的单一七轴设置经来源 scope 桥接到实例壳', async () => {
+  it('provideXhConfig 的单一八轴设置经来源 scope 桥接到实例壳', async () => {
     const scope = document.createElement('section')
     scope.style.setProperty('--business-color', 'rebeccapurple')
     document.body.append(scope)

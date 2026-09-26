@@ -51,7 +51,7 @@ export function createEnvSignals(win: Window | undefined = globalThis.window): E
   }
 }
 
-/** SSR 回退：没有平台信号时使用七轴基线，不伪造系统能力。 */
+/** SSR 回退：没有平台信号时使用八轴基线，不伪造系统能力。 */
 export const SSR_ENV: EnvSignals = {
   systemMode: () => 'light',
   systemContrast: () => 'default',

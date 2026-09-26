@@ -11,13 +11,15 @@ export type Direction = 'ltr' | 'rtl'
 export type Contrast = 'default' | 'more'
 export type VisualMotion = 'default' | 'reduce'
 export type Transparency = 'default' | 'reduce'
+// 材质档：standard 是缺省；liquid 下浮在内容之上的导航层部件换成液态面。
+export type Material = 'standard' | 'liquid'
 export type BrandId = string & { readonly __brand: 'BrandId' }
 
 export function brandId(s: string): BrandId {
   return s as BrandId
 }
 
-/** 已完全定型的七维视觉环境；与 VisualEnvironmentAttrs 一一对应。 */
+/** 已完全定型的八维视觉环境；与 VisualEnvironmentAttrs 一一对应。 */
 export interface VisualEnvironmentState {
   readonly mode: ColorMode
   readonly brand: BrandId
@@ -26,11 +28,12 @@ export interface VisualEnvironmentState {
   readonly contrast: Contrast
   readonly motion: VisualMotion
   readonly transparency: Transparency
+  readonly material: Material
 }
 
 /**
  * 用户/服务端可提交的意图。undefined = 继承父作用域；system = 跟随系统媒体查询。
- * brand、density 与 dir 没有对应的平台 media feature，因此不接受 system。
+ * brand、density、dir 与 material 没有对应的平台 media feature，因此不接受 system。
  */
 export interface VisualEnvironmentPreference {
   mode?: ColorMode | 'system'
@@ -40,9 +43,10 @@ export interface VisualEnvironmentPreference {
   contrast?: Contrast | 'system'
   motion?: VisualMotion | 'system'
   transparency?: Transparency | 'system'
+  material?: Material
 }
 
-/** PortalVisualBridge 识别的七个显式 DOM 轴。 */
+/** PortalVisualBridge 识别的八个显式 DOM 轴。 */
 export interface VisualEnvironmentAttrs {
   readonly 'data-theme': ColorMode
   readonly 'data-brand': string
@@ -50,6 +54,7 @@ export interface VisualEnvironmentAttrs {
   readonly 'data-contrast': Contrast
   readonly 'data-motion': VisualMotion
   readonly 'data-transparency': Transparency
+  readonly 'data-material': Material
   readonly 'dir': Direction
 }
 
@@ -66,6 +71,7 @@ export const BASELINE_VISUAL_ENVIRONMENT: VisualEnvironmentState = {
   contrast: 'default',
   motion: 'default',
   transparency: 'default',
+  material: 'standard',
 }
 
 export const BASELINE_THEME: ThemeState = {

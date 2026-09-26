@@ -28,7 +28,7 @@ afterEach(() => {
 })
 
 describe('provideXhConfig · motion', () => {
-  it('七轴绑定投影到显式 root，局部 motion 不改全局 override', () => {
+  it('八轴绑定投影到显式 root，局部 motion 不改全局 override', () => {
     const scope = document.createElement('section')
     document.body.append(scope)
     setMotionOverride('no-preference')
@@ -64,7 +64,7 @@ describe('provideXhConfig · motion', () => {
     expect(getMotionOverride()).toBe('reduce')
   })
 
-  it('配置是 ref 时七轴一起重投影', async () => {
+  it('配置是 ref 时八轴一起重投影', async () => {
     const scope = document.createElement('section')
     document.body.append(scope)
     const config = ref<XhConfig>({

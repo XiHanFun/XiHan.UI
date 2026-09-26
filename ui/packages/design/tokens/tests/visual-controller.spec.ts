@@ -48,7 +48,7 @@ afterEach(() => {
 })
 
 describe('visualEnvironmentController', () => {
-  it('一次 set 在同一 scope 提交完整七轴且只通知一次', () => {
+  it('一次 set 在同一 scope 提交完整八轴且只通知一次', () => {
     const root = document.createElement('section')
     document.body.append(root)
     const controller = createVisualEnvironmentController({ root })
@@ -64,6 +64,7 @@ describe('visualEnvironmentController', () => {
       contrast: 'more',
       motion: 'reduce',
       transparency: 'reduce',
+      material: 'liquid',
     })
 
     expect(states).toHaveBeenCalledTimes(1)
@@ -74,8 +75,25 @@ describe('visualEnvironmentController', () => {
       ['data-contrast', 'more'],
       ['data-motion', 'reduce'],
       ['data-transparency', 'reduce'],
+      ['data-material', 'liquid'],
       ['dir', 'rtl'],
     ])
+  })
+
+  it('材质轴没有系统档：子作用域继承，只收 standard / liquid', () => {
+    const outer = document.createElement('section')
+    const inner = document.createElement('div')
+    outer.append(inner)
+    document.body.append(outer)
+    const parent = createVisualEnvironmentController({ root: outer, initial: { material: 'liquid' } })
+    const child = createVisualEnvironmentController({ root: inner, parent })
+    controllers.push(child, parent)
+    expect(outer.getAttribute('data-material')).toBe('liquid')
+    expect(child.getState().material).toBe('liquid')
+    // 局部改回 standard：最近的祖先生效，导航层部件在这棵子树里保持原材质
+    child.setPreference({ material: 'standard' })
+    expect(inner.getAttribute('data-material')).toBe('standard')
+    expect(() => parent.setPreference({ material: 'system' as never })).toThrow(TypeError)
   })
 
   it('嵌套作用域继承父状态，显式 undefined 清除覆盖并恢复继承', () => {
@@ -143,7 +161,7 @@ describe('visualEnvironmentController', () => {
     expect(override.mock.calls).toEqual([['no-preference'], ['reduce'], [null]])
   })
 
-  it('dispose 恢复控制器接管前的七轴 DOM', () => {
+  it('dispose 恢复控制器接管前的八轴 DOM', () => {
     const root = document.createElement('section')
     root.setAttribute('data-theme', 'dark')
     root.setAttribute('data-motion', 'reduce')
@@ -202,7 +220,7 @@ describe('visualEnvironmentController', () => {
     write.mockRestore()
   })
 
-  it('createThemeController 复用七轴控制器并保持五轴视图', () => {
+  it('createThemeController 复用八轴控制器并保持五轴视图', () => {
     const root = document.createElement('section')
     const parent = createThemeController({ root, initial: { mode: 'dark' } })
     const child = createThemeController({ root: document.createElement('div'), parent })

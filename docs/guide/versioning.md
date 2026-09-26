@@ -213,8 +213,8 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 137（`defineXhElements()` 注册 136 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1336 条声明 / 379 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 379 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| observed attribute | 1337 条声明 / 380 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 380 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 92 个名字 / 202 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（187 处中 185 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 185 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
@@ -419,10 +419,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，16074 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，16076 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 194 条子入口、8368 个导出名、134 个 `data-scope` 与 1043 条部件配对、
+覆盖：包名与 194 条子入口、8370 个导出名、134 个 `data-scope` 与 1043 条部件配对、
 134 个组件的 1723 个 prop 名、232 种 `data-*`、33 个 `data-state` 取值、658 个令牌、
 5 个 `@layer` 名、4050 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 

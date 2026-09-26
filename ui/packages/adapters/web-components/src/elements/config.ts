@@ -12,6 +12,7 @@ import type {
   Contrast,
   Density,
   Direction,
+  Material,
   Transparency,
   VisualEnvironmentController,
   VisualEnvironmentPreference,
@@ -37,8 +38,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * 与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：Vue 侧沿组件树查找，这里沿 DOM 祖先链查找。
  * 逐键合并，本层只覆盖自身写了的项：只修改文案的子树不会把外层的 locale 一并抹除。
  *
- * `translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能通过 property 设置；七个视觉轴均可通过属性或 property 设置。
- * 七轴只投影到当前元素；局部 motion 不会修改全局 JS override。
+ * `translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能通过 property 设置；八个视觉轴均可通过属性或 property 设置。
+ * 八轴只投影到当前元素；局部 motion 不会修改全局 JS override。
  *
  * @customElement xh-config
  * @attr {string} locale - BCP 47 语言标记，供日期时间类组件使用
@@ -50,6 +51,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'default'|'more'|'system'} contrast - 对比度偏好
  * @attr {'default'|'reduce'|'system'} motion - 动效偏好；只作用当前 DOM scope
  * @attr {'default'|'reduce'|'system'} transparency - 透明材质偏好
+ * @attr {'standard'|'liquid'} material - 材质档；liquid 下浮在内容之上的导航层部件换成液态面
  * @prop {XhTranslationOverrides} translations - 各组件内建文案的覆盖（对象只能通过 property 设置）
  * @prop {() => HTMLElement | null} scrollRoot - 实际滚动的元素，交给滚动锁（函数只能通过 property 设置）
  * @prop {() => Element | null} portalContainer - 子树内物理 Portal 的默认目标（函数只能通过 property 设置）
@@ -66,6 +68,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
     contrast: { converter: STRING_CONVERTER },
     motion: { converter: STRING_CONVERTER },
     transparency: { converter: STRING_CONVERTER },
+    material: { converter: STRING_CONVERTER },
     // 对象与函数只走 property
     translations: { attribute: false },
     scrollRoot: { attribute: false },
@@ -81,6 +84,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
   declare contrast?: Contrast | 'system'
   declare motion?: VisualMotion | 'system'
   declare transparency?: Transparency | 'system'
+  declare material?: Material
   declare translations?: XhTranslationOverrides
   declare scrollRoot?: () => HTMLElement | null
   declare portalContainer?: () => Element | null
@@ -128,7 +132,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
 
   /** 改了任一项都要让子树里已挂载的元素重算一遍。 */
   protected override updated(changed: PropertyValues): void {
-    if (['mode', 'brand', 'density', 'direction', 'contrast', 'motion', 'transparency'].some(key => changed.has(key)))
+    if (['mode', 'brand', 'density', 'direction', 'contrast', 'motion', 'transparency', 'material'].some(key => changed.has(key)))
       this._visualEnvironmentController?.setPreference(this.visualPreference())
     notifyXhConfigChange()
   }
@@ -142,6 +146,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
       contrast: this.contrast,
       motion: this.motion,
       transparency: this.transparency,
+      material: this.material,
     }
   }
 

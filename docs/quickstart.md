@@ -134,7 +134,7 @@ defineXhElements();
 
 ## 接入主题
 
-三种用法共用同一套七轴视觉环境运行时，皮肤与 Portal 都消费同一组已解析属性：
+三种用法共用同一套八轴视觉环境运行时，皮肤与 Portal 都消费同一组已解析属性：
 
 ```ts
 import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";

@@ -82,7 +82,7 @@ describe('全局配置到达机器', () => {
 })
 
 describe('xhConfigProvider · visualEnvironment', () => {
-  it('七轴绑定投影到显式 root，局部 motion 不污染全局 override', () => {
+  it('八轴绑定投影到显式 root，局部 motion 不污染全局 override', () => {
     const scope = document.createElement('section')
     document.body.append(scope)
     setMotionOverride('no-preference')

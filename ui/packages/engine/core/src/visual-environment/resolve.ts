@@ -36,10 +36,11 @@ export function resolveVisualEnvironment(
     transparency: preference.transparency === undefined
       ? parent.transparency
       : preference.transparency === 'system' ? env.systemTransparency() : preference.transparency,
+    material: preference.material ?? parent.material,
   }
 }
 
-/** 五轴兼容视图委托七轴解析，不保留第二套 resolver。 */
+/** 五轴兼容视图委托八轴解析，不保留第二套 resolver。 */
 export function resolveTheme(
   preference: ThemePreference,
   env: EnvSignals,

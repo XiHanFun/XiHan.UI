@@ -27,7 +27,7 @@ export interface XhConfig extends XhConfigBase {
    * 应用级默认，实例上写了容器时以实例为准。
    */
   portalContainer?: () => Element | null
-  /** 本次 provide 的七轴视觉环境；root 必须显式给出，不推测组件 DOM。 */
+  /** 本次 provide 的八轴视觉环境；root 必须显式给出，不推测组件 DOM。 */
   visualEnvironment?: XhVisualEnvironmentConfig
 }
 
@@ -72,10 +72,11 @@ export function provideXhConfig(config: MaybeRefOrGetter<XhConfig>): void {
         binding?.initial?.contrast,
         binding?.initial?.motion,
         binding?.initial?.transparency,
+        binding?.initial?.material,
         parentVisual?.value,
       ] as const
     },
-    ([_root, _storageKey, _onStorageError, _motionSink, _mode, _brand, _density, _dir, _contrast, _motion, _transparency, inherited]) => {
+    ([_root, _storageKey, _onStorageError, _motionSink, _mode, _brand, _density, _dir, _contrast, _motion, _transparency, _material, inherited]) => {
       const binding = toValue(config).visualEnvironment
       localVisual.value?.dispose()
       localVisual.value = binding

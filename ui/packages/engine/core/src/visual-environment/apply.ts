@@ -19,10 +19,11 @@ export const VISUAL_ENVIRONMENT_ATTRIBUTES = [
   'data-contrast',
   'data-motion',
   'data-transparency',
+  'data-material',
   'dir',
 ] as const satisfies ReadonlyArray<keyof VisualEnvironmentAttrs>
 
-/** 七轴状态 → Portal 可桥接的 DOM 属性。 */
+/** 八轴状态 → Portal 可桥接的 DOM 属性。 */
 export function toVisualEnvironmentAttrs(state: VisualEnvironmentState): VisualEnvironmentAttrs {
   return {
     'data-theme': state.mode,
@@ -31,11 +32,12 @@ export function toVisualEnvironmentAttrs(state: VisualEnvironmentState): VisualE
     'data-contrast': state.contrast,
     'data-motion': state.motion,
     'data-transparency': state.transparency,
+    'data-material': state.material,
     'dir': state.dir,
   }
 }
 
-/** 幂等投影七轴；一次 set 的所有轴在一次同步提交里落到同一个 scope。 */
+/** 幂等投影八轴；一次 set 的所有轴在一次同步提交里落到同一个 scope。 */
 export function applyVisualEnvironmentAttrs(el: Element, state: VisualEnvironmentState): void {
   const attrs = toVisualEnvironmentAttrs(state)
   for (const name of VISUAL_ENVIRONMENT_ATTRIBUTES) {
@@ -51,6 +53,7 @@ export function toThemeAttrs(state: ThemeState): ThemeAttrs {
     ...state,
     motion: 'default',
     transparency: 'default',
+    material: 'standard',
   })
   return {
     'data-theme': attrs['data-theme'],
@@ -61,7 +64,7 @@ export function toThemeAttrs(state: ThemeState): ThemeAttrs {
   }
 }
 
-/** 旧的五轴 DOM helper 保持五轴边界，不覆盖局部 motion/transparency。 */
+/** 旧的五轴 DOM helper 保持五轴边界，不覆盖局部 motion / transparency / material。 */
 export function applyThemeAttrs(el: Element, state: ThemeState): void {
   const attrs = toThemeAttrs(state)
   for (const [name, value] of Object.entries(attrs)) {

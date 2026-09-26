@@ -23,6 +23,7 @@ export type {
   Contrast,
   Density,
   Direction,
+  Material,
   ThemeAttrs,
   ThemePreference,
   ThemeState,
