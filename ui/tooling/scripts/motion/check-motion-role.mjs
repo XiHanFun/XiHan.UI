@@ -86,7 +86,7 @@ const REQUIRED = { move: ['--xh-motion-ease-continuous'], shape: ['--xh-motion-e
 const SLIDE_REQUIRED = {
   'carousel:transform': '整页换位，位移量以百分比计',
   'layout:translate': '覆盖档的侧栏整条推出画外，位移量以自身宽度的百分比计',
-  'drawer:translate': '面板从视口外整条推入，位移量以自身尺寸的百分比计（关键帧 xh-drawer-in-*）',
+  'drawer:translate': '面板从视口外整条推入，位移量以自身尺寸的百分比计（关键帧 xh-slide-in）',
 }
 
 /**
@@ -293,12 +293,12 @@ for (const file of files) {
   durationChecked += durations.count
 
   const relation = OVERLAY_RELATION[comp]
-  for (const m of css.matchAll(ANIMATION_DECL)) {
-    const line = css.slice(0, m.index).split('\n').length
-    const value = m[1].replace(/\s+/g, ' ').trim()
+  /** 一段动画：自己的关键帧、时长与曲线。一条 animation 并列几段时逐段核。 */
+  const checkAnimation = (line, part) => {
+    const value = part.replace(/\s+/g, ' ').trim()
     const name = animationName(value)
     if (!name)
-      continue
+      return
     animations++
     const at = `${file}:${line}  animation: ${value}`
 
@@ -313,7 +313,7 @@ for (const file of files) {
     // 大尺度判据：关键帧动到 SLIDE_REQUIRED 登记的属性，入场曲线要走 -slide；退场走 -exit 不核
     const ease = easeToken(value)
     if (ease === '--xh-motion-ease-exit')
-      continue
+      return
     for (const prop of keyframes.get(name)?.props ?? []) {
       const key = `${comp}:${prop}`
       if (!(key in SLIDE_REQUIRED))
@@ -325,6 +325,11 @@ for (const file of files) {
         continue
       problems.push(`${at}\n    —— 关键帧 ${name} 动到 ${prop}（${SLIDE_REQUIRED[key]}），入场曲线该走 --xh-motion-ease-slide，写的是 ${ease ?? '(无)'}`)
     }
+  }
+  for (const m of css.matchAll(ANIMATION_DECL)) {
+    const line = css.slice(0, m.index).split('\n').length
+    for (const part of splitTopLevel(m[1]))
+      checkAnimation(line, part)
   }
 
   for (const m of css.matchAll(TRANSITION_DECL)) {
