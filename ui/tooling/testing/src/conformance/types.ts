@@ -131,7 +131,12 @@ export type Step
       readonly composing?: boolean
     }
     | { readonly kind: 'type', readonly text: string }
-    | { readonly kind: 'focus', readonly part: PartRef }
+  /**
+   * 程序化聚焦。via 为 keyboard 时模拟 Tab 进来：先在 body 上派发一下 Tab，再聚焦。
+   * jsdom 按上一次交互的历史推断程序化聚焦是否 :focus-visible，不声明时结果随前面跑过的用例而变；
+   * 焦点环一类只在 :focus-visible 时才出现的部件，用例要写明焦点是键盘带来的。
+   */
+    | { readonly kind: 'focus', readonly part: PartRef, readonly via?: 'keyboard' }
     | { readonly kind: 'blur' }
   /** 点击/按键作用于组件之外（外部关闭、失焦场景）。 */
     | { readonly kind: 'outside', readonly action: 'click' | 'focus' | 'key', readonly key?: KeyName }

@@ -179,7 +179,10 @@ export async function applyStep(ctx: ApplyContext, step: Step): Promise<void> {
       break
     }
     case 'focus': {
-      requirePart(ctx, step.part).focus?.()
+      const el = requirePart(ctx, step.part)
+      if (step.via === 'keyboard')
+        ctx.doc.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }))
+      el.focus?.()
       break
     }
     case 'blur': {

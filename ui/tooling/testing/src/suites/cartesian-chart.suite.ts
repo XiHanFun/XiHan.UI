@@ -60,6 +60,7 @@ const cases: readonly ConformanceCase[] = [
       {
         kind: 'focus',
         part: bar('online', 0),
+        via: 'keyboard',
         expect: {
           activeElement: { part: bar('online', 0), exact: true },
           parts: { tooltip: { 'data-state': 'visible' } },
@@ -72,7 +73,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.next', 'cartesian-chart.kbd.prev'],
     steps: [
-      { kind: 'focus', part: bar('online', 0) },
+      { kind: 'focus', part: bar('online', 0), via: 'keyboard' },
       {
         kind: 'key',
         key: 'ArrowRight',
@@ -89,7 +90,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.series-next', 'cartesian-chart.kbd.series-prev'],
     steps: [
-      { kind: 'focus', part: bar('online', 1) },
+      { kind: 'focus', part: bar('online', 1), via: 'keyboard' },
       { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: bar('store', 1), exact: true } } },
       { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: bar('online', 1), exact: true } } },
     ],
@@ -99,7 +100,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.first', 'cartesian-chart.kbd.last'],
     steps: [
-      { kind: 'focus', part: bar('store', 1) },
+      { kind: 'focus', part: bar('store', 1), via: 'keyboard' },
       { kind: 'key', key: 'End', expect: { activeElement: { part: bar('store', 2), exact: true } } },
       { kind: 'key', key: 'Home', expect: { activeElement: { part: bar('store', 0), exact: true } } },
     ],
@@ -109,7 +110,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.page'],
     steps: [
-      { kind: 'focus', part: bar('online', 0) },
+      { kind: 'focus', part: bar('online', 0), via: 'keyboard' },
       { kind: 'key', key: 'PageDown', expect: { activeElement: { part: bar('online', 1), exact: true } } },
       { kind: 'key', key: 'PageUp', expect: { activeElement: { part: bar('online', 0), exact: true } } },
     ],
@@ -119,7 +120,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.press'],
     steps: [
-      { kind: 'focus', part: bar('online', 2) },
+      { kind: 'focus', part: bar('online', 2), via: 'keyboard' },
       { kind: 'key', key: 'Enter', expect: { events: [{ type: 'datum-press' }] } },
       { kind: 'key', key: 'Space', expect: { events: [{ type: 'datum-press' }] } },
     ],
@@ -129,7 +130,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.dismiss'],
     steps: [
-      { kind: 'focus', part: bar('online', 1), expect: { parts: { tooltip: { 'data-state': 'visible' } } } },
+      { kind: 'focus', part: bar('online', 1), via: 'keyboard', expect: { parts: { tooltip: { 'data-state': 'visible' } } } },
       {
         kind: 'key',
         key: 'Escape',
@@ -145,7 +146,7 @@ const cases: readonly ConformanceCase[] = [
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.legend-move', 'cartesian-chart.kbd.legend-toggle'],
     steps: [
-      { kind: 'focus', part: 'legend-item[0]' },
+      { kind: 'focus', part: 'legend-item[0]', via: 'keyboard' },
       {
         kind: 'key',
         key: 'ArrowRight',
