@@ -35,6 +35,8 @@ export function connectToolCall<T extends PropTypes>(
   const errored = isToolCallErrored(phase)
   const ids = scope.ids('tool-call', 'trigger', 'content', 'error')
   const stateAttr = open ? 'open' : 'closed'
+  // 挂载后没开合过：首帧就在的展开 / 收起直接呈现
+  const instant = dataAttr(!context.get('moved'))
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -109,6 +111,7 @@ export function connectToolCall<T extends PropTypes>(
       ...parts.indicator.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
+      'data-instant': instant,
     }),
 
     // name 与 status 排在 trigger 之内，自然计入它的可访问名（「搜索，已完成」），
@@ -149,6 +152,7 @@ export function connectToolCall<T extends PropTypes>(
       'role': 'region',
       'aria-labelledby': ids.trigger,
       'data-state': stateAttr,
+      'data-instant': instant,
       'hidden': !open || undefined,
       // 收起动画播完之前 content 还在渲染，此时 hidden 已被皮肤的 display 盖掉，
       // 靠 inert 把这一段窗口里的内容挡在读屏与 Tab 序之外

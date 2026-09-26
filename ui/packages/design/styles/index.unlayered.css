@@ -10200,6 +10200,10 @@
   align-items: center;
   justify-content: center;
   color: var(--xh-reasoning-indicator-fg, var(--xh-fg-subtle));
+}
+
+/* 首帧就在的朝向直接呈现（data-instant），第一次开合起才转 */
+[data-scope='reasoning'][data-part='indicator']:not([data-instant]) {
   transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
 }
 
@@ -10217,6 +10221,9 @@
 
 [data-scope='reasoning'][data-part='indicator'][data-state='open'] {
   rotate: 180deg;
+}
+
+[data-scope='reasoning'][data-part='indicator'][data-state='open']:not([data-instant]) {
   transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
 }
 
@@ -10289,9 +10296,9 @@
   display: none;
 }
 
-/* 想完那一下两句文案整句换掉，淡入接住这次替换 */
-[data-scope='reasoning'][data-part='label']:not([data-streaming]),
-[data-scope='reasoning'][data-part='duration']:not([data-streaming]) {
+/* 想完那一下两句文案整句换掉，淡入接住这次替换；首帧就已想完的直接呈现（data-instant） */
+[data-scope='reasoning'][data-part='label']:not([data-streaming], [data-instant]),
+[data-scope='reasoning'][data-part='duration']:not([data-streaming], [data-instant]) {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
 }
 
@@ -10319,13 +10326,14 @@
   line-height: var(--xh-reasoning-content-leading, var(--xh-text-prose-leading));
 }
 
-/* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
-[data-scope='reasoning'][data-part='content'][data-state='open'] {
+/* 展开与收起只在开合时播：首帧就在的展开 / 收起直接呈现（data-instant）。
+   展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
+[data-scope='reasoning'][data-part='content'][data-state='open']:not([data-instant]) {
   will-change: grid-template-rows;
   animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='reasoning'][data-part='content'][data-state='closed'] {
+[data-scope='reasoning'][data-part='content'][data-state='closed']:not([data-instant]) {
   animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
 }
 
@@ -38134,7 +38142,11 @@
   align-items: center;
   justify-content: center;
   color: var(--xh-tool-call-indicator-fg, var(--xh-fg-subtle));
-  /* 与详情开合同时长：箭头先转完、内容后到位会像是两件事。收起取 collapse 档，展开（下面的打开态）取 expand 档 */
+}
+
+/* 与详情开合同时长：箭头先转完、内容后到位会像是两件事。收起取 collapse 档，展开（下面的打开态）取 expand 档。
+   首帧就在的朝向直接呈现（data-instant），第一次开合起才转 */
+[data-scope='tool-call'][data-part='indicator']:not([data-instant]) {
   transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
 }
 
@@ -38158,6 +38170,9 @@
    rtl 下 inline-start 在右侧，箭头因此要反着转 */
 [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
   rotate: 90deg;
+}
+
+[data-scope='tool-call'][data-part='indicator'][data-state='open']:not([data-instant]) {
   transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
 }
 
@@ -38327,14 +38342,15 @@
   border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-divider, var(--xh-border-subtle));
 }
 
-/* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
-[data-scope='tool-call'][data-part='content'][data-state='open'] {
+/* 展开与收起只在开合时播：首帧就在的展开 / 收起直接呈现（data-instant）。
+   展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
+[data-scope='tool-call'][data-part='content'][data-state='open']:not([data-instant]) {
   will-change: grid-template-rows;
   animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场走 exit 档曲线 */
-[data-scope='tool-call'][data-part='content'][data-state='closed'] {
+[data-scope='tool-call'][data-part='content'][data-state='closed']:not([data-instant]) {
   animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
 }
 

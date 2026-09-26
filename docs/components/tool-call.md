@@ -257,6 +257,7 @@
 | `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `label` | `data-state` | props.phase |
 | `summary` | `data-state` | props.phase |
@@ -264,6 +265,7 @@
 | `duration` | `data-loading` | ''（条件成立时才出现） |
 | `duration` | `data-state` | props.phase |
 | `approval` | `data-state` | props.phase |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-state` | props.phase |
 | `output` | `data-state` | props.phase |

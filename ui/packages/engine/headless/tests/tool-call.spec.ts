@@ -185,6 +185,45 @@ describe('toolCallMachine 自动开合', () => {
   })
 })
 
+describe('toolCallMachine 首帧不播开合', () => {
+  const instant = (t: ReturnType<typeof makeToolCall>): unknown[] => [
+    (t.api().getContentProps() as Record<string, unknown>)['data-instant'],
+    (t.api().getIndicatorProps() as Record<string, unknown>)['data-instant'],
+  ]
+
+  it('首帧就在的展开（在跑时自动展开也算）带 data-instant：内容与箭头直接呈现', () => {
+    const t = makeToolCall({ running: true })
+    expect(t.api().open).toBe(true)
+    expect(instant(t)).toEqual(['', ''])
+    t.stop()
+  })
+
+  it('挂载后自动收起、用户开合、受控改写都算开合变过，撤掉标记', () => {
+    const auto = makeToolCall({ running: true })
+    auto.setProps({ running: false })
+    expect(instant(auto)).toEqual([undefined, undefined])
+    auto.stop()
+
+    const user = makeToolCall()
+    user.click()
+    expect(instant(user)).toEqual([undefined, undefined])
+    user.stop()
+
+    const controlled = makeToolCall({ open: false })
+    controlled.setProps({ open: true })
+    expect(instant(controlled)).toEqual([undefined, undefined])
+    controlled.stop()
+  })
+
+  it('开合没变的转移不撤：已经展开时再来一次受控展开，标记照旧', () => {
+    const t = makeToolCall({ open: true })
+    t.setProps({ open: true })
+    t.api().setOpen(true)
+    expect(instant(t)).toEqual(['', ''])
+    t.stop()
+  })
+})
+
 // ══ 按压通道 ══
 
 type Dict = Record<string, unknown>
