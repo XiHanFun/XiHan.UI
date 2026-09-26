@@ -12,6 +12,9 @@
 // 时长另核一条：几何类不许取 micro / enter / exit 三支。这三支在减弱动效下保留为淡变，
 // 几何变化挂在它们上面，减弱档下照样会动；几何类取 move / nudge / expand / collapse / slide / press / release，
 // 这几支在减弱档下是 1ms。时长核对连同家族配方与 transition-property 长写一起扫。
+// 例外是进出场：过渡所在规则块里该属性的取值只由 --xh-motion-distance-* / -scale-* / -travel 驱动
+// （可经本皮肤的私有槽转一道）时，减弱档下幅度归零、只剩淡变，照常取 enter / exit，
+// 曲线随之取进出场那一对（退场 -exit，入场 -enter / -enter-strong）。
 //
 // 逐项判，不逐条判：一条 transition 可以列多项，`inset-block-start` 与 `scale` 同列时两项各判各的。
 //
@@ -74,6 +77,14 @@ const SHAPE = new Set(['scale', 'rotate'])
 /** 几何类不许取的时长：减弱动效下保留为淡变的三支。 */
 const FADE_DURATIONS = new Set(['--xh-motion-duration-micro', '--xh-motion-duration-enter', '--xh-motion-duration-exit'])
 const GEOMETRY_DURATIONS = 'move / nudge / expand / collapse / slide / press / release'
+const ENTER_DURATION = '--xh-motion-duration-enter'
+const EXIT_DURATION = '--xh-motion-duration-exit'
+
+/** 进出场那一对几何过渡的曲线：退场走 -exit，入场走出现类的两档。 */
+const APPEAR_EASE = {
+  [ENTER_DURATION]: ['--xh-motion-ease-enter', '--xh-motion-ease-enter-strong'],
+  [EXIT_DURATION]: ['--xh-motion-ease-exit'],
+}
 
 /** 各角色要求的语义档。move 有两档，按位移的尺度分；shape 另允许统一点击时间线的 release 档（按压缩放的释放段）。 */
 const REQUIRED = { move: ['--xh-motion-ease-continuous'], shape: ['--xh-motion-ease-enter-strong', '--xh-motion-ease-release'] }
@@ -149,6 +160,52 @@ function durationToken(item) {
   return all.length ? all[all.length - 1] : null
 }
 
+const VAR_REF = /var\(\s*(--[\w-]+)/g
+const AMPLITUDE_TOKEN = /^--xh-motion-(?:distance|scale|travel)(?:-[\w-]+)?$/
+
+/**
+ * 取值是否只由幅度令牌驱动：引用的自定义属性要么是 --xh-motion-distance-* / -scale-* / -travel，
+ * 要么是本皮肤里每一处定义都只由它们驱动的私有槽；去掉引用后不剩字面几何量，且至少引用到一支幅度令牌。
+ * 这样的几何量在减弱动效下归零，过渡剩下的只有淡变。
+ */
+function amplitudeOnly(value, css, seen = new Set()) {
+  if (hasLiteralGeometry(value))
+    return false
+  let driven = false
+  for (const [, name] of value.matchAll(VAR_REF)) {
+    if (AMPLITUDE_TOKEN.test(name)) {
+      driven = true
+      continue
+    }
+    if (!name.startsWith('--xh-_') || seen.has(name))
+      return false
+    seen.add(name)
+    const definitions = [...css.matchAll(new RegExp(`(?<![\\w-])${name}\\s*:([^;{}]+)[;}]`, 'g'))].map(d => d[1])
+    if (!definitions.length || !definitions.every(d => amplitudeOnly(d, css, seen)))
+      return false
+    driven = true
+  }
+  return driven
+}
+
+/** 过渡声明所在规则块里，被过渡的那个属性的取值；块里没写返回 null。 */
+function declaredValue(css, index, prop) {
+  const open = css.lastIndexOf('{', index)
+  const block = css.slice(open + 1, blockEnd(css, open))
+  return block.match(new RegExp(`(?<![\\w-])${prop}\\s*:([^;{}]+)[;}]`))?.[1] ?? null
+}
+
+/**
+ * 一项几何过渡是否属于进出场：时长取 enter / exit，且所在规则块里该属性的取值只由幅度令牌驱动。
+ * 这样的过渡在减弱动效下只剩淡变，照常取进出场那一对时长与曲线。
+ */
+function appearing(css, index, prop, dur) {
+  if (dur !== ENTER_DURATION && dur !== EXIT_DURATION)
+    return false
+  const value = declaredValue(css, index, prop)
+  return value !== null && amplitudeOnly(value, css)
+}
+
 /** 去掉全部 `var(…)` 之后，取值里还剩带单位的数（fr / % / deg / px…），即字面几何量。 */
 function hasLiteralGeometry(value) {
   const bare = value.replace(/var\([^()]*(?:\([^()]*(?:\([^()]*\)[^()]*)*\)[^()]*)*\)/g, ' ')
@@ -209,8 +266,11 @@ function checkDurations(label, css, keyframes) {
         continue
       count++
       const dur = durationToken(item)
-      if (FADE_DURATIONS.has(dur))
-        flag(lineOf(m.index), item, `${prop} 是几何类`, dur)
+      if (!FADE_DURATIONS.has(dur))
+        continue
+      if (appearing(css, m.index, prop, dur))
+        continue
+      flag(lineOf(m.index), item, `${prop} 是几何类`, dur)
     }
   }
 
@@ -353,7 +413,10 @@ for (const file of files) {
       const slide = role === 'move' && key in SLIDE_REQUIRED
       if (slide)
         seen.add(key)
-      const want = slide ? ['--xh-motion-ease-slide'] : REQUIRED[role]
+      const dur = durationToken(item)
+      const want = appearing(css, m.index, prop, dur)
+        ? APPEAR_EASE[dur]
+        : slide ? ['--xh-motion-ease-slide'] : REQUIRED[role]
       if (want.includes(ease))
         continue
 
