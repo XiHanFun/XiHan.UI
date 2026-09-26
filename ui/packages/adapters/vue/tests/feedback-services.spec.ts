@@ -332,7 +332,9 @@ describe('createNotificationService 的默认模板', () => {
     expect(close.hasAttribute('data-pressed')).toBe(true)
     close.click()
     await tick()
-    expect(card().getAttribute('data-state')).toBe('dismissing')
+    // 这里没有退场动画可等：进入退场后随即收起；按压面在进入退场时已由机器收掉
+    const left = document.querySelector<HTMLElement>('[data-scope="notification"][data-part="item"]')
+    expect(left?.getAttribute('data-state') ?? 'removed').not.toBe('visible')
     expect(close.hasAttribute('data-pressed')).toBe(false)
     notify.dispose()
   })

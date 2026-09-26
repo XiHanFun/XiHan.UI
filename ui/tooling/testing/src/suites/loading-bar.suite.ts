@@ -18,9 +18,13 @@ function partEl(doc: Document, part: string): HTMLElement {
   return el
 }
 
-/** range 的宽度只落内联样式（快照不收 style），要验只能直接读节点。 */
+/**
+ * range 的进度比例只落内联私有槽 --xh-_loading-bar-value（快照不收 style），要验只能直接读节点。
+ * 换算成百分比写法，与各用例里的期望对齐；没写过时为空串。
+ */
 function rangeWidth(doc: Document): string {
-  return partEl(doc, 'range').style.inlineSize
+  const raw = partEl(doc, 'range').style.getPropertyValue('--xh-_loading-bar-value').trim()
+  return raw ? `${Number((Number.parseFloat(raw) * 100).toFixed(6))}%` : ''
 }
 
 /** 宽度百分比转回数字；空串（还没写过）按 -1 处理，好与"写了 0%"区分开。 */
