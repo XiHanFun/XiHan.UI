@@ -142,7 +142,8 @@ describe('combobox 统一选中反馈', () => {
     await userEvent.hover(plain)
     await nextTick()
     const neutral = getComputedStyle(plain).backgroundColor
-    expect(alpha(neutral)).toBe(255)
+    // 中性底是墨色按比例透明：铺了就不是 0，不再是实色
+    expect(alpha(neutral)).toBeGreaterThan(0)
 
     await userEvent.hover(selected)
     await nextTick()

@@ -392,7 +392,7 @@
 }
 
 [data-scope][data-xh-action-control][data-xh-ink-surface][data-disabled] {
-  --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-_action-variant-bg-disabled));
+  --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-bg-subtle-opaque));
 }
 
 [data-scope][data-xh-action-control][data-xh-action-size='xs'] {
@@ -2276,7 +2276,7 @@
   inline-size: var(--xh-_avatar-group-size);
   block-size: var(--xh-_avatar-group-size);
   border-radius: var(--xh-avatar-group-radius, var(--xh-shape-circle));
-  background: var(--xh-avatar-group-overflow-item-bg, var(--xh-bg-muted));
+  background: var(--xh-avatar-group-overflow-item-bg, var(--xh-bg-muted-opaque));
   color: var(--xh-avatar-group-overflow-item-fg, var(--xh-fg-muted));
   font-size: var(--xh-_avatar-group-font-size);
   font-weight: var(--xh-avatar-group-font-weight, var(--xh-font-weight-medium));
@@ -2657,17 +2657,17 @@
   position: relative;
 }
 
-/* 后一段往回挪一个描边宽度，相邻的两条边重合成一条。
+/* 共边只画一次：后一段不画起始边，由前一段的末端边承担。墨色描边半透明，两条重合会加深。
    方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴。
-   分隔线两侧不合边：那两段本来就是被这条线分开的，再压一次会把线盖掉一半 */
+   分隔线两侧不合边：那两段本来就是被这条线分开的 */
 [data-scope='button-group'][data-part='root'][data-orientation='horizontal']
   > *:not([data-xh-button-group-separator]) + *:not([data-xh-button-group-separator]) {
-  margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+  border-inline-start-width: 0;
 }
 
 [data-scope='button-group'][data-part='root'][data-orientation='vertical']
   > *:not([data-xh-button-group-separator]) + *:not([data-xh-button-group-separator]) {
-  margin-block-start: calc(-1 * var(--xh-stroke-thin));
+  border-block-start-width: 0;
 }
 
 /* 悬停或拿到焦点的那一段抬到最上层：焦点环画在元素外侧，
@@ -4022,10 +4022,11 @@
   --xh-_float-button-shadow: none;
 }
 
+/* 浮动钮钉在内容之上，面要盖得住底下的内容：没写语气时淡底取不透明档（ghost 静息就透景，不在此列） */
 [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
-  --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_float-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+  --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque));
+  --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover-opaque));
+  --xh-_float-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active-opaque));
   --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-_float-button-border: transparent;
   --xh-_float-button-border-hover: transparent;
@@ -4034,8 +4035,8 @@
 
 [data-scope='float-button'][data-part='root'][data-variant='outline'] {
   --xh-_float-button-bg: var(--xh-material-frosted-bg);
-  --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque));
+  --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover-opaque));
   --xh-_float-button-fg: var(--xh-material-frosted-fg);
   --xh-_float-button-border: var(--xh-material-frosted-border);
   --xh-_float-button-border-hover: var(--xh-material-frosted-border);
@@ -5735,8 +5736,9 @@
      改写这个槽为一个看得见的颜色（`var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`）即七行全画。
      周首日是星期一时留下的是二 / 四 / 六，是星期日时留下的是一 / 三 / 五 */
   --xh-_heatmap-week-day-skip: var(--xh-heatmap-week-day-skip, transparent);
-  /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 也没写 data-palette 时就是这里的取值 */
-  --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle));
+  /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 也没写 data-palette 时就是这里的取值。
+     空格底取淡底的不透明档：中间各档由两端按比例兑出，一端半透明，整条色阶都会跟着半透明、偏色 */
+  --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle-opaque));
   --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-bg-brand));
   /* 钉住的行首那一列自带的底色：格子从它下面滚过去时不能透出来。
      整块摆在别的底色上（卡片、分区）时改写 --xh-heatmap-bg，否则那一列会是一块补丁 */
@@ -6434,17 +6436,17 @@
     linear-gradient(
       to right,
       transparent 0 33.3333%,
-      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+      var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
       transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
-      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+      var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
       transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
     ),
     linear-gradient(
       to bottom,
       transparent 0 33.3333%,
-      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+      var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
       transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
-      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+      var(--xh-image-cropper-grid-line, var(--xh-bg-subtle-opaque)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
       transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
     );
   pointer-events: none;
@@ -6489,9 +6491,10 @@
   content: '';
 }
 
-/* 把手静息是白面（bg-surface），悬停从同一语义面派生一档，不切到品牌淡底；拖动中才是品牌实心 */
+/* 把手静息是白面（bg-surface），悬停从同一语义面派生一档，不切到品牌淡底；拖动中才是品牌实心。
+   把手与网格线都压在照片上，取淡底的不透明档，照片深浅不一时才看得见 */
 [data-scope='image-cropper'][data-part='crop-handle']:hover:not([data-disabled], [data-readonly]) {
-  --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-subtle));
+  --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-subtle-opaque));
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
@@ -11344,7 +11347,8 @@
 }
 
 [data-scope='tag'][data-part='root'][data-xh-ink-surface][data-disabled] {
-  --xh-ink-surface: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
+  /* 置灰面是墨色淡底：选墨只看分量、不看透明度，取它的不透明档 */
+  --xh-ink-surface: var(--xh-tag-bg-disabled, var(--xh-bg-muted-opaque));
 }
 
 [data-scope='tag'][data-part='root'][data-variant='subtle'] {
@@ -14336,7 +14340,8 @@
   inline-size: var(--xh-avatar-size, var(--xh-control-h-md));
   block-size: var(--xh-avatar-size, var(--xh-control-h-md));
   border-radius: var(--xh-avatar-radius, var(--xh-shape-circle));
-  background: var(--xh-avatar-bg, var(--xh-bg-subtle));
+  /* 头像在头像组里层叠：底取淡底的不透明档，半透明会透出压在下面的那一枚 */
+  background: var(--xh-avatar-bg, var(--xh-bg-subtle-opaque));
   color: var(--xh-avatar-fg, var(--xh-fg-muted));
   font-size: var(--xh-avatar-font-size, var(--xh-text-secondary-size));
   font-weight: var(--xh-avatar-font-weight, var(--xh-font-weight-medium));
@@ -14365,7 +14370,7 @@
    两条声明都把 --xh-avatar-bg / --xh-avatar-fg 排在语气值前面：使用者槽仍是最外那一层，
    写了 tone 的那一枚照样受外层统一控制。整块带 [data-tone] 限定，没写语气的头像逐值不变 */
 [data-scope='avatar'][data-part='root'][data-tone] {
-  background: var(--xh-avatar-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
+  background: var(--xh-avatar-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque)));
   color: var(--xh-avatar-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
 }
 
@@ -16302,13 +16307,13 @@
 /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
    盒型（md = box-lg 48px，圆形）、四态面、0.97 按压与 44px 命中区由家族配方给出，组件没有 size 轴、固定 md。
    连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
-   （100 → 200），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
+   （100 → 200，取不透明档：钮压在图上，半透明的墨色盖不住画面），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
 [data-scope='carousel'][data-part='prev-trigger'],
 [data-scope='carousel'][data-part='next-trigger'],
 [data-scope='carousel'][data-part='autoplay-trigger'] {
   --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
-  --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle));
-  --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover));
+  --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-opaque));
+  --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
   --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-material-frosted-focus-surface));
   --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
   --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
@@ -16426,7 +16431,7 @@
   padding: 0;
   border: 0;
   border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
-  background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
+  background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
   font-size: 0;
   /* 自动播放的进度条画在点里，超出胶囊的那截裁掉 */
   overflow: hidden;
@@ -16698,7 +16703,7 @@
     inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
     block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
     border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
+    background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
     translate: -50% -50%;
     transition:
       inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
@@ -18392,14 +18397,15 @@
    字改用 -webkit-text-fill-color 接回来，那是这个态下唯一还听样式表的前景通道。
    不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
    两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
-   铺的底跟着这个框自己那档压低的底走，不然填过之后它会比没填时亮一块。 */
+   铺的底跟着这个框自己那档压低的底走，不然填过之后它会比没填时亮一块。
+   压低的底是墨色按比例透明，盖不住平台底：铺它叠在缺省面上的不透明档。 */
 [data-scope='clipboard'][data-part='input']:autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-clipboard-input-autofill-bg, var(--xh-bg-subtle));
+  box-shadow: inset 0 0 0 100vmax var(--xh-clipboard-input-autofill-bg, var(--xh-bg-subtle-opaque));
   -webkit-text-fill-color: var(--xh-clipboard-input-autofill-fg, var(--xh-fg-default));
 }
 
 [data-scope='clipboard'][data-part='input']:-webkit-autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-clipboard-input-autofill-bg, var(--xh-bg-subtle));
+  box-shadow: inset 0 0 0 100vmax var(--xh-clipboard-input-autofill-bg, var(--xh-bg-subtle-opaque));
   -webkit-text-fill-color: var(--xh-clipboard-input-autofill-fg, var(--xh-fg-default));
 }
 
@@ -18447,9 +18453,10 @@
   --xh-action-border-focus-visible: var(--xh-clipboard-copy-trigger-border, var(--xh-border-control));
 }
 
+/* 与输入框共用的那条边只画一次：墨色描边半透明，两条叠在一起会加深。输入框的末端边就是这条共边 */
 [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:not(:first-child) {
   position: relative;
-  margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+  border-inline-start-width: 0;
   border-start-start-radius: 0;
   border-end-start-radius: 0;
   border-start-end-radius: var(
@@ -19809,7 +19816,8 @@
   box-sizing: border-box;
   inline-size: var(--xh-_thumb-size);
   block-size: var(--xh-_thumb-size);
-  border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-border-default));
+  /* 描边取装饰边的不透明档：墨色描边半透明，压在当前色上框不住圆点 */
+  border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-border-default-opaque));
   border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-circle));
   background: var(--xh-color-slider-thumb-bg, var(--xh-_color-slider-thumb-color));
   box-shadow: var(--xh-color-slider-thumb-shadow, var(--xh-elevation-raised));
@@ -25400,14 +25408,15 @@
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
-/* 铺满图位的占位层：加载期间占住画面，作者往里放骨架屏或模糊小图 */
+/* 铺满图位的占位层：加载期间占住画面，作者往里放骨架屏或模糊小图。它叠在图位自己的淡底上，
+   取不透明档，不与底下那层叠深 */
 [data-scope='image'][data-part='placeholder'] {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--xh-image-placeholder-bg, var(--xh-bg-subtle-hover));
+  background: var(--xh-image-placeholder-bg, var(--xh-bg-subtle-hover-opaque));
   color: var(--xh-image-placeholder-fg, var(--xh-fg-subtle));
 }
 
@@ -31587,13 +31596,15 @@
 /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
    box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
    下面按半个直径回拉的负外边距就对不上圆心。
-   拇指是可拖起的 raised 面：描边取 --xh-border-default，raised 影只是加成、不作边界 */
+   拇指是可拖起的 raised 面：描边取装饰边（不透明档），raised 影只是加成、不作边界 */
 [data-scope='slider'][data-part='thumb'] {
   position: absolute;
   box-sizing: border-box;
   inline-size: var(--xh-_thumb-size);
   block-size: var(--xh-_thumb-size);
-  border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-border-default));
+  /* 描边取装饰边的不透明档：墨色描边半透明，压在圆点自己的底上只会是底色的深一档，框不住圆点，
+     拇指就与同色的已选区间糊成一片 */
+  border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-border-default-opaque));
   border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
   background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
   /* 圆点上没有字，这一支是给环用的：环灌 currentColor 时取到的是与这块底配对的前景色，
@@ -33074,11 +33085,11 @@
   --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
   border-block-end: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
-  background: var(--xh-table-header-bg, var(--xh-bg-subtle));
+  background: var(--xh-table-header-bg, var(--xh-bg-subtle-opaque));
 }
 
 /* 吸顶：滚动容器是 root，表头钉在它的上沿。背景必须是实色——
-   透明的表头会让底下滚过的行透出来 */
+   透明的表头会让底下滚过的行透出来，所以表头底取淡底的不透明档 */
 [data-scope='table'][data-part='header'][data-fixed] {
   position: sticky;
   z-index: var(--xh-table-sticky-header-layer, var(--xh-layer-sticky));
@@ -33097,11 +33108,12 @@
    行是 flex 容器（列宽由单元格的内联尺寸决定，不进家族网格）、不内衬、不圆角、字号与光标随表格本身
    （行不是按钮，selectable 与否都不改光标）。表头 / 脚注行不投影家族，只共用这一副 flex 盒 */
 [data-scope='table'][data-part='row'] {
-  /* rest 底要实色：横向吸附的单元格靠 inherit 取它，透明会让滚过的内容透出来 */
+  /* 各态的底都要实色：横向吸附的单元格靠 inherit 取它，透明会让滚过的内容透出来。
+     悬停、按下取淡底的不透明档 */
   --xh-collection-bg-rest: var(--xh-table-row-bg, var(--xh-bg-surface));
-  --xh-collection-bg-hover: var(--xh-table-row-bg-hover, var(--xh-bg-subtle));
-  --xh-collection-bg-keyboard-highlight: var(--xh-table-row-bg-hover, var(--xh-bg-subtle));
-  --xh-collection-bg-pressed: var(--xh-table-row-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-hover: var(--xh-table-row-bg-hover, var(--xh-bg-subtle-opaque));
+  --xh-collection-bg-keyboard-highlight: var(--xh-table-row-bg-hover, var(--xh-bg-subtle-opaque));
+  --xh-collection-bg-pressed: var(--xh-table-row-bg-pressed, var(--xh-bg-subtle-hover-opaque));
   --xh-collection-bg-selected: var(--xh-table-row-bg-selected, var(--xh-bg-brand-subtle));
   --xh-collection-fg-rest: currentColor;
   --xh-collection-fg-hover: currentColor;
@@ -33221,7 +33233,7 @@
 /* 表头行本身透明（露出表头底），吸附的列头继承到的就是透明——得自己带表头底，
    否则横向滚动时其它列头从它下面穿过去 */
 [data-scope='table'][data-part='column-header'][data-frozen] {
-  background: var(--xh-table-header-bg, var(--xh-bg-subtle));
+  background: var(--xh-table-header-bg, var(--xh-bg-subtle-opaque));
 }
 
 /* —— 三个可叠加的外观开关 —— */
@@ -33232,7 +33244,7 @@
 :where([data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body']) > [data-scope='table'][data-part='row']:where(:nth-of-type(even)) {
   /* 改的是家族的 rest 槽而不是 background 本身：悬停、选中、按下各态由家族在同一支私有槽上解算，
      直接写 background 会把它们全压掉 */
-  --xh-collection-bg-rest: var(--xh-table-row-bg-striped, var(--xh-bg-subtle));
+  --xh-collection-bg-rest: var(--xh-table-row-bg-striped, var(--xh-bg-subtle-opaque));
 }
 
 /* 形态：outline 画一圈描边加圆角；ghost 即基础规则，只留行间横线，圆角也随之无意义 */
@@ -33734,7 +33746,7 @@
    禁用的行不接换父落点，:not([data-disabled]) 不会漏画任何一处高亮 */
 [data-scope='table'][data-part='root'] [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row'][data-drop='inside']:not([data-disabled]) {
   /* 落点不是选中：品牌淡底专属选中，落点面取悬停之上一档的中性面 */
-  background: var(--xh-table-drop-inside-bg, var(--xh-bg-subtle-hover));
+  background: var(--xh-table-drop-inside-bg, var(--xh-bg-subtle-hover-opaque));
 }
 
 /* 换父那一档的描边：与底色分两层画，因为它得压在横向吸附的格子之上——
@@ -34012,8 +34024,11 @@
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
   /* 翻页钮的盖底：标签带放不下时它浮在两端，挪到它底下的那截标签要被盖住。line / card 档的标签带是透明的，
-     盖底取 surface；坐在别的面上（画布、淡底面板）时由使用者槽换成所在的面。segment 档取轨道的淡底 */
+     盖底取 surface；坐在别的面上（画布、淡底面板）时由使用者槽换成所在的面。segment 档取轨道的淡底。
+     悬停与按下同样要盖得住：淡底阶梯取不透明档，line / card 在白底上 100 → 200，segment 在轨道上 200 → 300 */
   --xh-_tabs-scroll-trigger-bg: var(--xh-bg-surface);
+  --xh-_tabs-scroll-trigger-bg-hover: var(--xh-bg-subtle-opaque);
+  --xh-_tabs-scroll-trigger-bg-pressed: var(--xh-bg-subtle-hover-opaque);
 
   display: flex;
   flex-direction: column;
@@ -34093,7 +34108,9 @@
   --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle, var(--xh-bg-surface-raised));
   --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_tabs-scroll-trigger-bg: var(--xh-bg-subtle);
+  --xh-_tabs-scroll-trigger-bg: var(--xh-bg-subtle-opaque);
+  --xh-_tabs-scroll-trigger-bg-hover: var(--xh-bg-subtle-hover-opaque);
+  --xh-_tabs-scroll-trigger-bg-pressed: var(--xh-bg-subtle-active-opaque);
 }
 
 /* 一行排不下不折行：标签整条沿主轴位移露出被裁掉的那截，两端的翻页钮与滚轮驱动，位移量由机器写在
@@ -34553,11 +34570,13 @@
 /* 标签带放不下时浮在两端的单图标钮，接 Action Control icon 档 ghost 面（连接层投影 profile / variant / size）：
    盒取标签同高的正方形，四态面、0.97 按压与粗指针 44px 命中区由家族配方给。绝对定位贴在标签带两端、
    不随标签位移；挪到它底下的那截标签由静息底盖住（透明 ghost 面盖不住字，静息 / 焦点 / 禁用三列换成盖底槽，
-   悬停与按下仍走 ghost 的阶梯——line / card 在白底上 100 → 200，segment 由轨道下发 200 → 300） */
+   悬停与按下换成盖底档的不透明阶梯——line / card 在白底上 100 → 200，segment 在轨道上 200 → 300） */
 [data-scope='tabs'][data-part='prev-trigger'],
 [data-scope='tabs'][data-part='next-trigger'] {
   --xh-action-visual-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
   --xh-action-bg-rest: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
+  --xh-action-bg-hover: var(--xh-_tabs-scroll-trigger-bg-hover);
+  --xh-action-bg-pressed: var(--xh-_tabs-scroll-trigger-bg-pressed);
   --xh-action-bg-focus-visible: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
   --xh-action-bg-disabled: var(--xh-tabs-scroll-trigger-bg, var(--xh-_tabs-scroll-trigger-bg));
   --xh-action-fg-rest: var(--xh-tabs-scroll-trigger-fg, var(--xh-fg-muted));
@@ -37463,10 +37482,11 @@
   );
   --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle)));
   --xh-_toggle-border-on: var(--xh-toggle-border-on, transparent);
-  /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。 */
+  /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。
+     掺的是淡底的不透明档：墨色淡底半透明，掺进去整块面会跟着变半透明 */
   --xh-_toggle-bg-on-disabled: var(
     --xh-toggle-bg-on-disabled,
-    color-mix(in oklab, var(--xh-_toggle-bg-on) 50%, var(--xh-bg-subtle))
+    color-mix(in oklab, var(--xh-_toggle-bg-on) 50%, var(--xh-bg-subtle-opaque))
   );
   --xh-_toggle-fg-on-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_toggle-fg-on));
   --xh-action-bg-rest: var(--xh-toggle-bg, var(--xh-_action-variant-bg-rest));
@@ -37542,7 +37562,7 @@
 [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on'] {
   --xh-action-bg-disabled: var(
     --xh-toggle-bg-on-disabled,
-    color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-subtle))
+    color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-subtle-opaque))
   );
   --xh-action-fg-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_action-variant-fg-rest));
   --xh-action-highlight-rest: var(--xh-_highlight-tone);
@@ -37782,18 +37802,18 @@
   font-weight: var(--xh-toggle-group-item-font-weight, var(--xh-text-label-weight));
 }
 
-/* 共边：后一段往回挪一个描边宽度，两条相邻的边重合成一条。
+/* 共边只画一次：后一段不画起始边，由前一段的末端边承担。墨色描边半透明，两条重合会加深。
    方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴 */
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']
   + [data-scope='toggle-group'][data-part='item'] {
-  margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+  border-inline-start-width: 0;
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']
   + [data-scope='toggle-group'][data-part='item'] {
-  margin-block-start: calc(-1 * var(--xh-stroke-thin));
+  border-block-start-width: 0;
 }
 
 /* 两端圆角用逻辑角属性写，rtl 与竖排都跟着换边，不必另写一套。
@@ -37837,7 +37857,7 @@
   --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
   --xh-action-bg-disabled: var(
     --xh-toggle-group-item-bg-on-disabled,
-    color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))
+    color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted-opaque))
   );
   --xh-action-fg-rest: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
   --xh-action-fg-hover: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));

@@ -341,7 +341,7 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 | `--xh-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_tone` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-bg-disabled` | `thumb` | `background` | `disabled` | `--xh-bg-surface` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-bg-invalid` | `thumb` | `background` | `invalid` | `--xh-border-invalid` | slider 的 thumb 部件 background 覆盖槽。 |
-| `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | slider 的 thumb 部件 border 覆盖槽。 |
+| `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | slider 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb 部件 scale 覆盖槽。 |
 | `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | slider 的 thumb 部件 box-shadow 覆盖槽。 |

@@ -262,7 +262,8 @@ describe('时间范围选择器的家族观感', () => {
     expect(control.getAttribute('data-xh-field-chrome')).toBe('')
     expect(alpha(rest.backgroundColor)).toBe(0)
     expect(rest.borderTopStyle).toBe('solid')
-    expect(alpha(rest.borderTopColor)).toBe(255)
+    // 描边是墨色按比例透明：画了就不是 0，不再是实色
+    expect(alpha(rest.borderTopColor)).toBeGreaterThan(0)
     expect(rest.boxShadow).toBe('none')
     expect(rest.borderRadius).toBe('4px')
     expect(rest.height).toBe('36px')
@@ -297,7 +298,8 @@ describe('时间范围选择器的家族观感', () => {
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.borderTopStyle).toBe('solid')
-    expect(alpha(content.borderTopColor)).toBe(255)
+    // 描边是墨色按比例透明：画了就不是 0，不再是实色
+    expect(alpha(content.borderTopColor)).toBeGreaterThan(0)
     expect(content.boxShadow).not.toBe('none')
     expect(content.borderRadius).toBe('12px')
     expect(content.overscrollBehaviorX).toBe('contain')
@@ -321,7 +323,8 @@ describe('时间范围选择器的家族观感', () => {
     expect(getComputedStyle(plain, '::after').opacity).toBe('0')
     await userEvent.hover(plain)
     const hover = getComputedStyle(plain).backgroundColor
-    expect(alpha(hover)).toBe(255)
+    // 中性底是墨色按比例透明：铺了就不是 0，不再是实色
+    expect(alpha(hover)).toBeGreaterThan(0)
     await userEvent.hover(selected)
     expect(getComputedStyle(selected).backgroundColor).toBe(hover)
     selected.dataset.pressed = ''

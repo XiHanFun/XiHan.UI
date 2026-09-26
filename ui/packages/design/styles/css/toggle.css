@@ -34,10 +34,11 @@
     );
     --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle)));
     --xh-_toggle-border-on: var(--xh-toggle-border-on, transparent);
-    /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。 */
+    /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。
+       掺的是淡底的不透明档：墨色淡底半透明，掺进去整块面会跟着变半透明 */
     --xh-_toggle-bg-on-disabled: var(
       --xh-toggle-bg-on-disabled,
-      color-mix(in oklab, var(--xh-_toggle-bg-on) 50%, var(--xh-bg-subtle))
+      color-mix(in oklab, var(--xh-_toggle-bg-on) 50%, var(--xh-bg-subtle-opaque))
     );
     --xh-_toggle-fg-on-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_toggle-fg-on));
     --xh-action-bg-rest: var(--xh-toggle-bg, var(--xh-_action-variant-bg-rest));
@@ -113,7 +114,7 @@
   [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on'] {
     --xh-action-bg-disabled: var(
       --xh-toggle-bg-on-disabled,
-      color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-subtle))
+      color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-subtle-opaque))
     );
     --xh-action-fg-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_action-variant-fg-rest));
     --xh-action-highlight-rest: var(--xh-_highlight-tone);

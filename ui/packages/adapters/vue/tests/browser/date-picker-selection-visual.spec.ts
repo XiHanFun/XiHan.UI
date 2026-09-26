@@ -157,7 +157,8 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     plainTime.style.transition = 'none'
     await userEvent.hover(plainTime)
     const neutral = getComputedStyle(plainTime).backgroundColor
-    expect(alpha(neutral)).toBe(255)
+    // 中性底是墨色按比例透明：铺了就不是 0，不再是实色
+    expect(alpha(neutral)).toBeGreaterThan(0)
 
     const selectedTime = timeItem('hour', '09')
     selectedTime.style.transition = 'none'

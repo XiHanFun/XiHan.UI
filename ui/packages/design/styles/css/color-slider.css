@@ -132,7 +132,8 @@
     box-sizing: border-box;
     inline-size: var(--xh-_thumb-size);
     block-size: var(--xh-_thumb-size);
-    border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-border-default));
+    /* 描边取装饰边的不透明档：墨色描边半透明，压在当前色上框不住圆点 */
+    border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-border-default-opaque));
     border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-color-slider-thumb-bg, var(--xh-_color-slider-thumb-color));
     box-shadow: var(--xh-color-slider-thumb-shadow, var(--xh-elevation-raised));

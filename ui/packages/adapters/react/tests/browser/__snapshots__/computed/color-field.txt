@@ -50,10 +50,10 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklch(0.922 0.002 258)
-border-right-color: oklch(0.922 0.002 258)
-border-bottom-color: oklch(0.922 0.002 258)
-border-left-color: oklch(0.922 0.002 258)
+border-top-color: oklab(0 0 0 / 0.102)
+border-right-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.102)
+border-left-color: oklab(0 0 0 / 0.102)
 min-height: 36px
 font-size: 16px
 line-height: normal
@@ -225,10 +225,10 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklch(0.922 0.002 258)
-border-right-color: oklch(0.922 0.002 258)
-border-bottom-color: oklch(0.922 0.002 258)
-border-left-color: oklch(0.922 0.002 258)
+border-top-color: oklab(0 0 0 / 0.102)
+border-right-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.102)
+border-left-color: oklab(0 0 0 / 0.102)
 min-height: auto
 font-size: 16px
 line-height: normal

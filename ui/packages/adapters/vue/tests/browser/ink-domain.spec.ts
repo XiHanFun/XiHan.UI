@@ -116,13 +116,15 @@ describe('墨色比例与缺省面对比度等价', () => {
 describe('同一条描边在任何底色上显著度一致', () => {
   const colored = ['oklch(0.9 0.18 100)', 'oklch(0.72 0.19 150)', 'oklch(0.7 0.19 50)', 'oklch(1 0 0)']
 
-  it('黑墨描边在黄、绿、橙、白底上的对比度彼此相差不到 0.1，而不透明灰在黄底上几乎消失', () => {
+  it('黑墨描边在黄、绿、橙、白底上的对比度彼此相差不到 0.1；没声明域的缺省面同样是墨色，彩色底上也不消失', () => {
     const inked = colored.map(bg => contrastOn(domain(bg, { 'data-xh-ink': 'dark' }).border, bg))
     expect(Math.max(...inked) - Math.min(...inked)).toBeLessThan(0.1)
     for (const value of inked)
       expect(value).toBeGreaterThan(1.15)
-    const opaque = domain(colored[0]!, {}).border
-    expect(contrastOn(opaque, colored[0]!)).toBeLessThan(1.1)
+    // 缺省面上的描边也是墨色按比例透明：不透明的中性灰在黄底上只有 1.06:1，墨色与声明了域时一致
+    const plain = colored.map(bg => contrastOn(domain(bg, {}).border, bg))
+    for (const [index, value] of plain.entries())
+      expect(value).toBeCloseTo(inked[index]!, 1)
   })
 })
 

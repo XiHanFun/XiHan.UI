@@ -12,9 +12,10 @@ let host: HTMLElement | null = null
 const canvas = document.createElement('canvas')
 const context = canvas.getContext('2d', { willReadFrequently: true })!
 
-function rgb(color: string): [number, number, number] {
+/** 颜色叠在 base 上的 sRGB 三分量：半透明的面要叠在所在的底上算。 */
+function rgb(color: string, base = '#fff'): [number, number, number] {
   context.clearRect(0, 0, 1, 1)
-  context.fillStyle = '#fff'
+  context.fillStyle = base
   context.fillRect(0, 0, 1, 1)
   context.fillStyle = color
   context.fillRect(0, 0, 1, 1)
@@ -30,8 +31,8 @@ function luminance([r, g, b]: readonly [number, number, number]): number {
   return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
 }
 
-function contrast(first: string, second: string): number {
-  const values = [luminance(rgb(first)), luminance(rgb(second))].sort((a, b) => b - a) as [number, number]
+function contrast(first: string, second: string, base = '#fff'): number {
+  const values = [luminance(rgb(first, base)), luminance(rgb(second, base))].sort((a, b) => b - a) as [number, number]
   return (values[0] + 0.05) / (values[1] + 0.05)
 }
 
@@ -304,7 +305,9 @@ describe('switch 实体轨道与 raised 滑块', () => {
         element.focus()
         expect(element.matches(':focus-visible')).toBe(true)
         const style = getComputedStyle(element)
-        expect(contrast(style.outlineColor, style.backgroundColor), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
+        // 轨道底是墨色按比例透明：叠在页面画布上算
+        const page = getComputedStyle(document.body).backgroundColor
+        expect(contrast(style.outlineColor, style.backgroundColor, page), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
       }
 
       app?.unmount()

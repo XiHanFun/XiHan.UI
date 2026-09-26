@@ -215,18 +215,18 @@
     font-weight: var(--xh-toggle-group-item-font-weight, var(--xh-text-label-weight));
   }
 
-  /* 共边：后一段往回挪一个描边宽度，两条相邻的边重合成一条。
+  /* 共边只画一次：后一段不画起始边，由前一段的末端边承担。墨色描边半透明，两条重合会加深。
      方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴 */
   [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
     > [data-scope='toggle-group'][data-part='item']
     + [data-scope='toggle-group'][data-part='item'] {
-    margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+    border-inline-start-width: 0;
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
     > [data-scope='toggle-group'][data-part='item']
     + [data-scope='toggle-group'][data-part='item'] {
-    margin-block-start: calc(-1 * var(--xh-stroke-thin));
+    border-block-start-width: 0;
   }
 
   /* 两端圆角用逻辑角属性写，rtl 与竖排都跟着换边，不必另写一套。
@@ -270,7 +270,7 @@
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-disabled: var(
       --xh-toggle-group-item-bg-on-disabled,
-      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))
+      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted-opaque))
     );
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
     --xh-action-fg-hover: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));

@@ -168,8 +168,15 @@ describe('mention 的只读手势', () => {
 })
 
 describe('prompt-input 的禁用发送钮', () => {
-  const token = (name: string): string =>
-    getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  /** 令牌求成计算值：getPropertyValue 拿回的是未求值的写法（color-mix(…)），与计算值写法不同。 */
+  const token = (name: string): string => {
+    const probe = document.createElement('span')
+    probe.style.backgroundColor = `var(${name})`
+    document.body.append(probe)
+    const value = getComputedStyle(probe).backgroundColor
+    probe.remove()
+    return value
+  }
 
   function submit(text: string): HTMLElement {
     mount(() => h(XhPromptInputRoot, { defaultValue: text }, {

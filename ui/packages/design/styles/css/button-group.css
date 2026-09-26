@@ -204,17 +204,17 @@
     position: relative;
   }
 
-  /* 后一段往回挪一个描边宽度，相邻的两条边重合成一条。
+  /* 共边只画一次：后一段不画起始边，由前一段的末端边承担。墨色描边半透明，两条重合会加深。
      方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴。
-     分隔线两侧不合边：那两段本来就是被这条线分开的，再压一次会把线盖掉一半 */
+     分隔线两侧不合边：那两段本来就是被这条线分开的 */
   [data-scope='button-group'][data-part='root'][data-orientation='horizontal']
     > *:not([data-xh-button-group-separator]) + *:not([data-xh-button-group-separator]) {
-    margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+    border-inline-start-width: 0;
   }
 
   [data-scope='button-group'][data-part='root'][data-orientation='vertical']
     > *:not([data-xh-button-group-separator]) + *:not([data-xh-button-group-separator]) {
-    margin-block-start: calc(-1 * var(--xh-stroke-thin));
+    border-block-start-width: 0;
   }
 
   /* 悬停或拿到焦点的那一段抬到最上层：焦点环画在元素外侧，

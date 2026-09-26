@@ -122,7 +122,7 @@ describe('颜色滑块的轨道与拇指', () => {
     expect(label.color).toBe(resolvedToken('--xh-fg-default'))
     expect(getComputedStyle(part('root')).rowGap).toBe('4px')
     const thumb = getComputedStyle(part('thumb'))
-    expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default'))
+    expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default-opaque'))
     expect(thumb.borderTopWidth).toBe('2px')
     expect(thumb.boxShadow).not.toBe('none')
   })
@@ -136,7 +136,7 @@ describe('颜色滑块的轨道与拇指', () => {
     const thumb = getComputedStyle(part('thumb'))
     expect(thumb.boxShadow).toBe('none')
     expect(thumb.backgroundColor).toBe('rgb(59, 130, 246)')
-    expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default'))
+    expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default-opaque'))
   })
 
   it('高对比档：轨道与拇指退出强制着色保住原色，描边换成系统色', async () => {

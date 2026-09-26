@@ -265,7 +265,7 @@
 | `--xh-clipboard-gap` | `root` | `gap` | `default` | `--xh-space-1` | clipboard 的 root 部件 gap 覆盖槽。 |
 | `--xh-clipboard-indicator-fg-copied` | `indicator` | `color` | `copied` | `--xh-fg-success` | clipboard 的 indicator 部件 color 覆盖槽。 |
 | `--xh-clipboard-indicator-gap` | `indicator` | `gap` | `default` | `--xh-clipboard-copy-trigger-gap` | clipboard 的 indicator 部件 gap 覆盖槽。 |
-| `--xh-clipboard-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-subtle` | clipboard 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-clipboard-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-subtle-opaque` | clipboard 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-clipboard-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | clipboard 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-clipboard-input-bg` | `input` | `background` | `default` | `--xh-bg-subtle` | clipboard 的 input 部件 background 覆盖槽。 |
 | `--xh-clipboard-input-border` | `input` | `border` | `default` | `--xh-border-control` | clipboard 的 input 部件 border 覆盖槽。 |

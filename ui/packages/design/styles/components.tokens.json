@@ -2619,7 +2619,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle",
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 background 覆盖槽。"
@@ -2780,7 +2780,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-muted-opaque"
       ],
       "visibility": "public",
       "description": "avatar-group 的 overflow-item 部件 background 覆盖槽。"
@@ -6984,7 +6984,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator 部件 background 覆盖槽。"
@@ -7320,7 +7320,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
@@ -7344,7 +7344,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
@@ -11241,7 +11241,7 @@
         "autofill"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "clipboard 的 input 部件 box-shadow 覆盖槽。"
@@ -14775,7 +14775,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-default-opaque"
       ],
       "visibility": "public",
       "description": "color-slider 的 thumb 部件 border 覆盖槽。"
@@ -32191,7 +32191,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "heatmap 的 cell、legend-item、root 部件 background 覆盖槽。"
@@ -33516,7 +33516,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "image 的 placeholder 部件 background 覆盖槽。"
@@ -33660,7 +33660,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "image-cropper 的 grid 部件 background-image 覆盖槽。"
@@ -33711,7 +33711,7 @@
         "readonly"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "image-cropper 的 crop-handle 部件 background、border 覆盖槽。"
@@ -56332,7 +56332,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-default-opaque"
       ],
       "visibility": "public",
       "description": "slider 的 thumb 部件 border 覆盖槽。"
@@ -60011,7 +60011,7 @@
         "not([data-disabled])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "table 的 body、root、row 部件 background 覆盖槽。"
@@ -60158,7 +60158,7 @@
         "frozen"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "table 的 column-header、header 部件 background 覆盖槽。"
@@ -60522,7 +60522,7 @@
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "table 的 row 部件 background-color 覆盖槽。"
@@ -60544,7 +60544,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "table 的 row 部件 background-color 覆盖槽。"
@@ -60589,7 +60589,7 @@
         "where([data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body'])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "table 的 body、root、row 部件 background-color 覆盖槽。"
@@ -62440,7 +62440,8 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-muted",
+        "--xh-bg-muted-opaque"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 --xh-ink-surface、background 覆盖槽。"

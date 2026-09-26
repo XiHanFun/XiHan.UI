@@ -18,7 +18,7 @@ border-left-width: 1px
 border-top-color: oklch(0.439 0.006 258)
 border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
-border-left-color: oklch(0.967 0.001 258)
+border-left-color: oklab(0 0 0 / 0.043)
 min-height: 0px
 font-size: 13px
 line-height: 21.125px
@@ -164,7 +164,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklch(0.967 0.001 258)
+background-color: oklab(0 0 0 / 0.043)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease

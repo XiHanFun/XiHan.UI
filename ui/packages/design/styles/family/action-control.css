@@ -161,7 +161,7 @@
   }
 
   [data-xh-action-control][data-xh-ink-surface][data-disabled] {
-    --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-_action-variant-bg-disabled));
+    --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-bg-subtle-opaque));
   }
 
   [data-xh-action-control][data-xh-action-size='xs'] {

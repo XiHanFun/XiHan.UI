@@ -277,7 +277,7 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 | `--xh-color-slider-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-slider 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-slider-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-slider 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_color-slider-thumb-color` | color-slider 的 thumb 部件 background 覆盖槽。 |
-| `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | color-slider 的 thumb 部件 border 覆盖槽。 |
+| `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | color-slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-color-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` | color-slider 的 thumb 部件 border-color 覆盖槽。 |
 | `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-slider 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb 部件 scale 覆盖槽。 |

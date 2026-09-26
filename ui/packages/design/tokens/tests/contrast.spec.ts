@@ -118,9 +118,77 @@ function luminance(css: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
+/**
+ * 缺省面上的中性装饰写成墨色按比例透明（构建求值，见 build/ink.mjs），令牌源里的中性色原值只是等价目标。
+ * 这里从 tokens.css 读实际比例：墨色叠在底上再算，判据落在真正渲染出来的颜色上。
+ * 高对比档里被覆盖的那几支取实色，不在此列。
+ */
+const TOKENS_CSS = readFileSync(join(import.meta.dirname, '../tokens.css'), 'utf8')
+
+function inkAlphas(selector: string): Map<string, number> {
+  const start = TOKENS_CSS.indexOf(selector)
+  const block = TOKENS_CSS.slice(start, TOKENS_CSS.indexOf('\n  }', start))
+  const out = new Map<string, number>()
+  for (const m of block.matchAll(/--xh-(?:_contrast-default-)?([a-z]+)-([\w-]+): color-mix\(in oklab, var\(--xh-ink\) ([\d.]+)%, transparent\);/g))
+    out.set(`${m[1]}.${m[2]}`, Number(m[3]) / 100)
+  return out
+}
+
+const INK = {
+  light: { ink: 'oklch(0 0 0)', alphas: inkAlphas(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`) },
+  dark: { ink: 'oklch(1 0 0)', alphas: inkAlphas(`:where([data-theme='dark']), :where([data-xh-ink='light']) {`) },
+}
+
+/** 高对比档覆盖掉的令牌：这几支在那一档取实色。 */
+const MORE_OVERRIDES = {
+  light: new Set(Object.entries(loadJson('semantic.light.more.json')).flatMap(([group, tokens]) =>
+    group.startsWith('$') ? [] : Object.keys(tokens as object).map(token => `${group}.${token}`))),
+  dark: new Set(Object.entries(loadJson('semantic.dark.more.json')).flatMap(([group, tokens]) =>
+    group.startsWith('$') ? [] : Object.keys(tokens as object).map(token => `${group}.${token}`))),
+}
+
+/** 一支语义令牌在某档是不是墨色：顺着同档别名追，追到墨色令牌返回比例，追到原语返回 null。 */
+function inkOf(theme: keyof typeof themes, path: string): number | null {
+  const base = theme.startsWith('light') ? 'light' : 'dark'
+  const more = theme.endsWith('-more') ? MORE_OVERRIDES[base] : null
+  let current = path
+  for (let hops = 0; hops < 8; hops++) {
+    if (!more?.has(current) && INK[base].alphas.has(current))
+      return INK[base].alphas.get(current)!
+    const ref = /^\{(.+)\}$/.exec(at(themes[theme], current)?.$value ?? '')
+    if (!ref || at(primitive, ref[1]!))
+      return null
+    current = ref[1]!
+  }
+  return null
+}
+
+type Rgb = [number, number, number]
+
+/** oklch → 伽马 sRGB。 */
+function gammaRgb(css: string): Rgb {
+  return oklchToLinearRgb(css).map(gammaEncode) as Rgb
+}
+
+function luminanceOf(rgb: Rgb): number {
+  const [r, g, b] = rgb.map(v => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+}
+
+/** 令牌落在 below 上实际渲染出来的颜色：墨色按比例叠上去（伽马 sRGB 里 source-over），其余取实色。 */
+function paint(theme: keyof typeof themes, path: string, below: Rgb): Rgb {
+  const alpha = inkOf(theme, path)
+  if (alpha === null)
+    return gammaRgb(resolve(theme, path))
+  const ink = gammaRgb(INK[theme.startsWith('light') ? 'light' : 'dark'].ink)
+  return ink.map((v, i) => v * alpha + below[i]! * (1 - alpha)) as Rgb
+}
+
+/** 前景叠在底上、底（若是墨色）叠在画布上，再算 WCAG 对比度。 */
 function contrast(theme: keyof typeof themes, fg: string, bg: string): number {
-  const a = luminance(resolve(theme, fg))
-  const b = luminance(resolve(theme, bg))
+  const back = paint(theme, bg, gammaRgb(resolve(theme, 'bg.canvas')))
+  const a = luminanceOf(paint(theme, fg, back))
+  const b = luminanceOf(back)
   const [hi, lo] = a > b ? [a, b] : [b, a]
   return (hi + 0.05) / (lo + 0.05)
 }
@@ -256,6 +324,31 @@ const MORE_BORDERS = [...new Set(
     .flatMap(name => Object.keys((loadJson(name).border ?? {}) as object))
     .map(token => `border.${token}`),
 )].sort()
+
+describe('缺省面的墨色取值读自 tokens.css', () => {
+  // 读不到时下面每条判据都会退回按中性色原值算，悄悄失去意义
+  it('浅色 / 深色主题块各有八支墨色令牌（描边与淡底；置灰字属于文字，只在域里改写），比例都在 0–1 之间', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      expect([...INK[theme].alphas.keys()].sort()).toEqual([
+        'bg.muted',
+        'bg.subtle',
+        'bg.subtle-active',
+        'bg.subtle-hover',
+        'border.control-hover',
+        'border.default',
+        'border.strong',
+        'border.subtle',
+      ])
+      for (const alpha of INK[theme].alphas.values())
+        expect(alpha > 0 && alpha < 1).toBe(true)
+    }
+  })
+
+  it('控件边界缺省档是装饰边的别名，同样按墨色算；高对比档覆盖后取实色', () => {
+    expect(inkOf('light', 'border.control')).toBe(INK.light.alphas.get('border.default'))
+    expect(inkOf('light-more', 'border.control')).toBeNull()
+  })
+})
 
 describe('文字对比度（WCAG 1.4.3 AA，4.5:1）', () => {
   for (const [theme, fg, bg] of TEXT_PAIRS) {

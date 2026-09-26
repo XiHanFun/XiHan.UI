@@ -59,7 +59,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklch(0.922 0.002 258)
+background-color: oklab(0 0 0 / 0.102)
 transition-property: background
 transition-duration: 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1)

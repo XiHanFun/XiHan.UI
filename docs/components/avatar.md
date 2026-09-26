@@ -191,7 +191,7 @@ tone 改变淡底与回退文字的配色组；不写 tone 即中性默认，直
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-avatar-bg` | `root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-subtle` | avatar 的 root 部件 background 覆盖槽。 |
+| `--xh-avatar-bg` | `root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-subtle-opaque` | avatar 的 root 部件 background 覆盖槽。 |
 | `--xh-avatar-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-muted` | avatar 的 root 部件 color 覆盖槽。 |
 | `--xh-avatar-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-caption-lg`<br>`--xh-control-caption-sm`<br>`--xh-text-secondary-size` | avatar 的 root 部件 font-size 覆盖槽。 |
 | `--xh-avatar-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | avatar 的 root 部件 font-weight 覆盖槽。 |

@@ -319,6 +319,8 @@ describe('action Control 状态与命中区', () => {
   it('未映射品牌、描边或海拔时保持平面中性底', async () => {
     mount(() => h('div'))
     const ready = rawAction('icon', 'sm')
+    // 关掉过渡：悬停一换面就读，读到的是过渡第 0 帧，与静息逐字相同
+    ready.style.transition = 'none'
     const rest = getComputedStyle(ready)
     const restBg = rest.backgroundColor
 
@@ -340,6 +342,7 @@ describe('action Control 状态与命中区', () => {
       h(XhButton, { loading: true }, () => [h(XhButtonIndicator), h(XhButtonLabel, null, () => 'Loading')]),
     ]))
     const [ready, disabled, loading] = [...host!.querySelectorAll<HTMLButtonElement>('[data-xh-action-control]')]
+    ready!.style.transition = 'none'
     const restBg = getComputedStyle(ready!).backgroundColor
     await userEvent.hover(ready!)
     expect(getComputedStyle(ready!).backgroundColor).not.toBe(restBg)

@@ -102,13 +102,13 @@
   /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
      盒型（md = box-lg 48px，圆形）、四态面、0.97 按压与 44px 命中区由家族配方给出，组件没有 size 轴、固定 md。
      连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
-     （100 → 200），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
+     （100 → 200，取不透明档：钮压在图上，半透明的墨色盖不住画面），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
   [data-scope='carousel'][data-part='prev-trigger'],
   [data-scope='carousel'][data-part='next-trigger'],
   [data-scope='carousel'][data-part='autoplay-trigger'] {
     --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
-    --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle));
-    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-opaque));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
     --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-material-frosted-focus-surface));
     --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_carousel-trigger-bg));
     --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-material-frosted-fg));
@@ -226,7 +226,7 @@
     padding: 0;
     border: 0;
     border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
+    background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
     font-size: 0;
     /* 自动播放的进度条画在点里，超出胶囊的那截裁掉 */
     overflow: hidden;
@@ -498,7 +498,7 @@
       inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
       block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
       border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
-      background: var(--xh-carousel-indicator-bg, var(--xh-border-default));
+      background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
       translate: -50% -50%;
       transition:
         inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),

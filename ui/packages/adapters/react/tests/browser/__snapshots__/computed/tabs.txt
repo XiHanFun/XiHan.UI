@@ -52,7 +52,7 @@ border-bottom-width: 0px
 border-left-width: 0px
 border-top-color: rgb(0, 0, 0)
 border-right-color: rgb(0, 0, 0)
-border-bottom-color: oklch(0.922 0.002 258)
+border-bottom-color: oklab(0 0 0 / 0.102)
 border-left-color: rgb(0, 0, 0)
 min-height: auto
 font-size: 16px

@@ -155,7 +155,8 @@ describe('time-picker 统一选中反馈', () => {
 
     await userEvent.hover(plain)
     const neutral = getComputedStyle(plain).backgroundColor
-    expect(alpha(neutral)).toBe(255)
+    // 中性底是墨色按比例透明：铺了就不是 0，不再是实色
+    expect(alpha(neutral)).toBeGreaterThan(0)
 
     await userEvent.hover(selected)
     // selected + hover = 家族 hover 档 + 对号：与未选中项的悬停面同一档中性面
@@ -164,7 +165,8 @@ describe('time-picker 统一选中反馈', () => {
     // 集合行按下只换面：比悬停再深一档，不缩放整格
     selected.dataset.pressed = ''
     expect(getComputedStyle(selected).backgroundColor).not.toBe(neutral)
-    expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(255)
+    // 中性底是墨色按比例透明：铺了就不是 0，不再是实色
+    expect(alpha(getComputedStyle(selected).backgroundColor)).toBeGreaterThan(0)
     expect(getComputedStyle(selected).scale).toBe('none')
     delete selected.dataset.pressed
 
