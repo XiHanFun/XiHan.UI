@@ -19,6 +19,8 @@ export { cubicBezier, easing, resolveEasing, toLinearEasing } from './easing'
 export type { EasingFunction, EasingName } from './easing'
 // 帧循环
 export { frameLoop, frameNow } from './frame'
+// 手势松手：越界橡皮筋、落点投影与吸附
+export { glideSpring, nearestSnap, projectRelease, rubberBand, rubberClamp } from './gesture'
 // 从元素读取语义动效令牌
 export { readMotion } from './read'
 export type { MotionReading } from './read'
