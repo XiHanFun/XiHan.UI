@@ -71,6 +71,7 @@ export const MODULES = [
       'node tooling/scripts/visual/check-stroke-scale.mjs',
       'node tooling/scripts/visual/check-text-scale.mjs',
       'node tooling/scripts/visual/check-elevation-role.mjs',
+      'node tooling/scripts/visual/check-material-scope.mjs',
       'node tooling/scripts/visual/check-surface-edge.mjs',
       'node tooling/scripts/visual/check-selection-marker.mjs',
       'node tooling/scripts/visual/check-state-ladder.mjs',

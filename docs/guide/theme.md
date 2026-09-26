@@ -198,7 +198,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
 | M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Toast、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
-| M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层，现为 FloatButton、BackTop 的触发器 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
+| M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
 | raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Segmented、Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
 | floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
 
@@ -238,6 +238,8 @@ Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、�
 
 `data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。用了视觉环境控制器时，经它的 `material` 偏好设置（控制器始终维护根上的这个属性）。
 
+现有的液态部件：FloatButton 触发器与展开的动作、BackTop、MessageFeed / Log 的回到底部、Carousel 的翻页与播放钮和分页条（托在一条液态胶囊上）、ImageViewer 的工具条、计数、翻页与关闭钮，以及 Layout 固定时的顶栏。瞬态浮层、模态、Toast / Notification、Card、Table、表单与正文容器不用液态，由门禁 `check-material-scope` 守住。
+
 ```html
 <html data-material="liquid">
   <!-- 图片、视频、画布这类读不到颜色的区域，由作者声明下层的明暗 -->
@@ -248,7 +250,8 @@ Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、�
 作者只写这一个属性。组件挂载后由 `@xihan-ui/core/visual-environment` 的液态面接管，同一文档的部件共用一套监听，不需要额外安装或调用：
 
 - 按部件下层的计算底色与作者声明选色调：下层亮取浅色调、下层暗取深色调，部件随之成为黑墨或白墨域（相对亮度 0.179 ± 0.04 滞回，内容滚过分界附近不来回闪）。
-- 下层均匀且色调已知时换通透档（浅 0.24 / 深 0.34）；下层有文字、渐变、图片或读不到时留在可读下限，标签在任何下层上至少 4.5:1。
+- 下层均匀且色调已知时换通透档（浅 0.24 / 深 0.34）；下层有文字、渐变、图片、视频、画布或读不到时留在可读下限，标签在任何下层上至少 4.5:1。模态打开、背景被设为 inert 而命中不到时同样按读不到处理。
+- 滚动、窗口缩放、图片加载完、过渡或动画播完、状态机驱动的平移落定（轮播翻页、看图惯性）时重读下层。
 - 细指针移动时 1px 边缘光转向指针；粗指针、无指针与减弱动效下固定左上（RTL 右上）。
 - Chromium 内核下距边缘 18px 以内折射下层；其余引擎、尺寸超过 640 × 120 或同一视口超过 3 个时只模糊不折射。
 
