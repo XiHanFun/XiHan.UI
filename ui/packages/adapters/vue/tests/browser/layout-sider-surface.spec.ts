@@ -64,6 +64,28 @@ describe('layout 侧栏面与折叠把手', () => {
     expect(endStyle.borderInlineStartColor).toBe(tokenColor('--xh-material-elevated-border'))
   })
 
+  it('覆盖档侧栏推出走 slide 档；收进去是退场，位移、淡出与藏起同走 exit 档', () => {
+    const { sider } = mount({ presentation: 'sheet' })
+    const seconds = (name: string): number =>
+      Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) / 1000
+    const durations = (): Record<string, number> => {
+      const style = getComputedStyle(sider)
+      const times = style.transitionDuration.split(', ').map(Number.parseFloat)
+      return Object.fromEntries(style.transitionProperty.split(', ').map((prop, i) => [prop, times[i]!]))
+    }
+
+    expect(durations().translate).toBeCloseTo(seconds('--xh-motion-duration-slide'), 5)
+
+    sider.setAttribute('data-collapsed', '')
+    const exit = seconds('--xh-motion-duration-exit')
+    const closed = durations()
+    expect(closed.translate).toBeCloseTo(exit, 5)
+    expect(closed.opacity).toBeCloseTo(exit, 5)
+    expect(closed.visibility).toBeCloseTo(exit, 5)
+    const exitEase = getComputedStyle(document.documentElement).getPropertyValue('--xh-motion-ease-exit').trim()
+    expect(getComputedStyle(sider).transitionTimingFunction.startsWith(exitEase)).toBe(true)
+  })
+
   it('占位档的侧栏是淡底区块：无描边、无影', () => {
     const layout = mount()
     const style = getComputedStyle(layout.sider)

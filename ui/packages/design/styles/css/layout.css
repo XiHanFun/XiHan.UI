@@ -266,7 +266,7 @@
        overscroll 不在这里写 contain：这一面与占位档共用同一个部件，scroll-surface-registry 把侧栏整体登记为
        页内结构容器（overscroll=false），门禁按整个部件核，不按档分 */
     overflow-y: auto;
-    /* 推出来与收进去是同一段行程，视口尺度的位移走 slide 档。并列的不透明度取淡变档：
+    /* 推出来走 slide 档：视口尺度的位移。并列的不透明度取淡变档：
        缺省两端都是不透明、看不出来，减弱动效下整幅位移归零、由它表达进出。
        visibility 展开那一路立刻露出来 */
     opacity: 1;
@@ -295,16 +295,16 @@
   }
 
   /* 收起：推出画外并让出无障碍树与 Tab 序列。位移量按面板自身宽度的百分比算，
-     宽度换成任何一档都正好推到画外。淡出走退场档；visibility 等位移与淡出里较长的那段播完
-     才真正藏起来——减弱动效下位移瞬时、淡出还要 120ms，不能被提前藏掉 */
+     宽度换成任何一档都正好推到画外。收进去是退场，位移与淡出同走退场档，
+     visibility 等这一段播完才真正藏起来；减弱动效下位移归零，只剩淡出 */
   [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-collapsed] {
     translate: var(--xh-_layout-sheet-shift) 0;
     opacity: var(--xh-motion-travel-opacity);
     visibility: hidden;
     transition:
-      translate var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
+      translate var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
       opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
-      visibility max(var(--xh-motion-duration-slide), var(--xh-motion-duration-exit)) var(--xh-motion-ease-exit);
+      visibility var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
   }
 
   /* 覆盖档的遮罩：与面板同一个层号，谁盖谁看文档序——遮罩写在侧栏之前。
