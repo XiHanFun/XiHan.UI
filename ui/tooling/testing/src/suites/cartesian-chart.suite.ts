@@ -275,6 +275,29 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: '按值着色：点写段号，图例末尾生成色阶（名字、两端的值、渐变条），只给眼睛看',
+    spec: { adr: 'chart-sequential' },
+    props: {
+      data: [
+        { x: 1, y: 3, t: 10 },
+        { x: 2, y: 4, t: 30 },
+      ],
+      series: [{ mark: 'scatter', x: 'x', y: 'y', color: 't', name: '甲' }],
+      palette: 'teal',
+    },
+    initial: {
+      counts: { 'point': 2, 'legend-scale': 1, 'legend-scale-value': 2 },
+      parts: {
+        'root': { 'data-palette': 'teal' },
+        'legend': { hidden: null },
+        'legend-scale': { 'aria-hidden': 'true', 'hidden': null },
+        'legend-scale-value': [{ 'data-edge': 'min' }, { 'data-edge': 'max' }],
+        'point[0]': { 'data-seg': 'low' },
+        'point[1]': { 'data-seg': 'high' },
+      },
+    },
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },

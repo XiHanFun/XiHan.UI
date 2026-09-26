@@ -52,6 +52,7 @@ const LEGEND_FIELDS = ['swatchSize', 'swatchBorder', 'lineThickness', 'hiddenFg'
 const TOOLTIP_FIELDS = ['minInlineSize', 'offsetInline', 'offsetBlock', 'swatchSize', 'lineThickness']
 const LOADING_FIELDS = ['ringSize', 'ringWidth', 'track']
 const FORCED_FIELDS = ['mark', 'focusRing', 'hidden']
+const SEQUENTIAL_FIELDS = ['start', 'mid', 'end', 'paletteStart', 'paletteEnd']
 
 function fail(message) {
   throw new Error(`[chart-recipe] ${message}`)
@@ -112,7 +113,16 @@ function assertPatterns(patterns) {
 }
 
 export function assertChartRecipe(source) {
-  assertExactKeys(source, ['$description', 'version', 'contract', 'layout', 'legend', 'tooltip', 'loading', 'patterns', 'patternMode', 'print', 'forcedColors'], 'root')
+  assertExactKeys(source, ['$description', 'version', 'contract', 'layout', 'legend', 'tooltip', 'loading', 'sequential', 'patterns', 'patternMode', 'print', 'forcedColors'], 'root')
+  assertExactKeys(source.sequential, [...SEQUENTIAL_FIELDS, 'palettes'], 'root.sequential')
+  for (const field of SEQUENTIAL_FIELDS)
+    assertString(source.sequential[field], `root.sequential.${field}`)
+  assertRecord(source.sequential.palettes, 'root.sequential.palettes')
+  for (const [name, value] of Object.entries(source.sequential.palettes)) {
+    if (!/^[a-z]+$/.test(name))
+      fail(`sequential.palettes 的色板名 ${name} 必须是小写色名`)
+    assertString(value, `root.sequential.palettes.${name}`)
+  }
   assertPatterns(source.patterns)
   assertFields(source.patternMode, ['environment', 'lineSwatchInlineSize'], 'root.patternMode')
   if (!/^data-xh-chart-[a-z-]+$/.test(source.patternMode.environment))
@@ -167,7 +177,7 @@ export function compileChartRecipe(source) {
     target.push(`${target === chunks ? lead(indent) : ''}${indent}${branches.join(`,\n${indent}`)} {\n${lines.join('\n')}\n${indent}}`)
   }
   const slot = field => `var(${source.contract[field]})`
-  const { layout, legend, tooltip, loading, forcedColors } = source
+  const { layout, legend, tooltip, loading, sequential, forcedColors } = source
 
   comment('根不画外边、不填底，透出宿主面；需要框时由作者放进 Card。提示框按根的内边距盒绝对定位，参照系就是它；\n     它抬的那一层只在根里排序。图随容器铺满：在 flex / grid 里也不按内容收缩成默认的 300px')
   rule(part('root'), [
@@ -181,7 +191,19 @@ export function compileChartRecipe(source) {
     'min-inline-size: 0;',
     'color: var(--xh-fg-default);',
     `font-size: ${layout.fontSize};`,
+    `--xh-_chart-seq-start: ${sequential.start};`,
+    `--xh-_chart-seq-mid: ${sequential.mid};`,
+    `--xh-_chart-seq-end: ${sequential.end};`,
   ])
+
+  comment('顺序色阶的色板：换到基础色板里同名的色相上。起点按承载面、终点按正文色兑出，亮暗主题下都是由浅入深地\n     远离承载面；按值着色的标记与色阶图例都从这三个锚点取色')
+  rule(`${part('root')}[data-palette]`, [
+    `--xh-_chart-seq-start: ${sequential.paletteStart};`,
+    '--xh-_chart-seq-mid: var(--xh-_chart-palette);',
+    `--xh-_chart-seq-end: ${sequential.paletteEnd};`,
+  ])
+  for (const [name, value] of Object.entries(sequential.palettes))
+    rule(`${part('root')}[data-palette='${name}']`, `--xh-_chart-palette: ${value};`)
 
   rule(part('caption'), [
     'font-size: var(--xh-text-label-size);',
@@ -264,6 +286,11 @@ export function compileChartRecipe(source) {
     'text-decoration: line-through;',
   ])
   rule(`${part('legend-item')}[aria-pressed='false'] > ${part('legend-swatch')}`, 'background: transparent;')
+
+  comment('按值着色的数据：连接层在标记与色标上写段号与段内百分比，这里用一层 color-mix 在相邻两个锚点之间兑出颜色，\n     放进私有槽；各图表的标记从槽里取色，提示框的色标画成数据自己的颜色')
+  rule(`${part('root')} [data-seg='low']`, '--xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-mid) var(--xh-_chart-p), var(--xh-_chart-seq-start));')
+  rule(`${part('root')} [data-seg='high']`, '--xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-end) var(--xh-_chart-p), var(--xh-_chart-seq-mid));')
+  rule(`${part('tooltip-swatch')}[data-seg]`, 'background: var(--xh-_chart-seq-fill);')
 
   comment('提示框：frosted 材质，画在根里；绘图区不随 RTL 镜像，这里的左右也是物理方向。正文排版，与根同一档：\n     不反白、不缩字，色标按承载面校准。提示框不接指针：跟着指针走时压住下面的标记，命中就断了')
   const up = `calc(-100% - ${tooltip.offsetBlock})`

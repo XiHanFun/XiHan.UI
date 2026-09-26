@@ -930,6 +930,18 @@
       "heatmap",
       "pie-chart"
     ],
+    "legend-scale": [
+      "cartesian-chart"
+    ],
+    "legend-scale-bar": [
+      "cartesian-chart"
+    ],
+    "legend-scale-name": [
+      "cartesian-chart"
+    ],
+    "legend-scale-value": [
+      "cartesian-chart"
+    ],
     "legend-swatch": [
       "cartesian-chart",
       "pie-chart"

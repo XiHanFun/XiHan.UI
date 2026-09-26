@@ -16,6 +16,7 @@ import type {
   ChartCommonProps,
   ChartDatumDetails,
   ChartKey,
+  ChartPalette,
   ChartPattern,
   ChartRow,
   ChartSummary,
@@ -113,6 +114,11 @@ export interface CartesianScatterSeries extends CartesianSeriesBase {
   jitter?: number
   /** 数据身份字段：过渡里同一个点从旧位置滑到新位置、抖动的种子都取它；缺省按 x 与同一 x 上的出现次序。 */
   datumId?: string
+  /**
+   * 按值着色：点的颜色取这个字段在顺序色阶上的位置，全部按值着色的系列共用一把尺，图例里多一条色阶。
+   * 写了它，这个系列不再取分类色（形状照旧随色槽）；这个字段缺失的点取色阶中点。
+   */
+  color?: string
 }
 
 export type CartesianSeries = CartesianBarSeries | CartesianLineSeries | CartesianScatterSeries
@@ -152,7 +158,16 @@ export interface CartesianLegendItem {
   readonly area: boolean
   /** 散点的形状：色标画成同一个形状；其余系列为 null。 */
   readonly symbol: SymbolName | null
+  /** 按值着色的系列：色标取色阶中点。 */
+  readonly sequential: boolean
   readonly hidden: boolean
+}
+
+/** 按值着色时图例里的色阶：名字与两端的值（已按格式写成文字）。 */
+export interface CartesianLegendScale {
+  readonly name: string
+  readonly min: string
+  readonly max: string
 }
 
 /** 提示框里的一行：色标、数值、系列名。 */
@@ -165,6 +180,8 @@ export interface CartesianTooltipRow {
   readonly mark: 'bar' | 'line' | 'scatter'
   readonly area: boolean
   readonly symbol: SymbolName | null
+  /** 按值着色的数据在色阶上的位置 0–1：色标画成它自己的颜色；其余为 null。 */
+  readonly t: number | null
 }
 
 /** 提示框的内容：头部是自变量的格式化值，每个系列一行。 */
@@ -182,6 +199,8 @@ export interface CartesianChartTranslations extends ChartTranslations {
   valueLabel: string
   /** 气泡大小在数据表、提示框与可及名里的名字。 */
   sizeLabel: string
+  /** 按值着色的那个量在色阶图例、数据表、提示框与可及名里的名字。 */
+  colorLabel: string
   /** 摘要模板。 */
   summary: (model: ChartSummary) => string
 }
@@ -201,6 +220,8 @@ export interface CartesianChartSchema extends MachineSchema {
     totals?: boolean
     /** 提示框里各系列的行序，缺省 series（按图例次序）；系列多、要一眼找到最大的时按数值排。 */
     tooltipOrder?: CartesianTooltipOrder
+    /** 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上；不写时取顺序色阶令牌。 */
+    palette?: ChartPalette
     translations?: Partial<CartesianChartTranslations>
   }
   context: ChartBaseContext
@@ -235,6 +256,8 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   /** 没有可画的数据：空态部件据此显示。 */
   empty: boolean
   legendItems: readonly CartesianLegendItem[]
+  /** 按值着色时图例里的色阶；没有按值着色的系列时为 null。 */
+  legendScale: CartesianLegendScale | null
   /** 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时柱与面积用它填充。 */
   patterns: readonly ChartPattern[]
   /** 激活的数据；没有时为 null。 */
@@ -267,6 +290,11 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   getLegendItemProps: (item: CartesianLegendItem) => T['button']
   getLegendSwatchProps: (item: CartesianLegendItem) => T['element']
   getLegendLabelProps: (item: CartesianLegendItem) => T['element']
+  /** 色阶图例：名字、低端的值、渐变条、高端的值依次排开，只给眼睛看。 */
+  getLegendScaleProps: () => T['element']
+  getLegendScaleNameProps: () => T['element']
+  getLegendScaleBarProps: () => T['element']
+  getLegendScaleValueProps: (edge: 'min' | 'max') => T['element']
   getViewportProps: () => T['element']
   getPlotProps: () => T['element']
   /** 绘图区的第一个子节点：各系列的纹理定义在这里。 */

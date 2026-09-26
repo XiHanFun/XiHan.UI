@@ -5807,7 +5807,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-cartesian-chart>`：直角坐标图宿主，柱与折线共用一根自变量轴与一根数值轴。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`、tooltip，\n可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，\n按标记的 key 复用节点，只写变化的属性；图例项生成进 legend；tooltip 留空时写入缺省内容，\n作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据、系列与坐标轴是对象，只走 JS property。",
+          "description": "`<xh-cartesian-chart>`：直角坐标图宿主，柱、折线与散点共用一根自变量轴与一根数值轴。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`、tooltip，\n可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，\n按标记的 key 复用节点，只写变化的属性；图例项与按值着色时的色阶生成进 legend；tooltip 留空时写入缺省内容，\n作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据、系列与坐标轴是对象，只走 JS property。",
           "name": "XhCartesianChartElement",
           "cssParts": [
             {
@@ -5819,7 +5819,7 @@
               "name": "caption"
             },
             {
-              "description": "图例工具条，项由元素生成",
+              "description": "图例工具条，项与色阶由元素生成",
               "name": "legend"
             },
             {
@@ -5949,6 +5949,15 @@
                 "text": "CartesianTooltipOrder | undefined"
               },
               "attribute": "tooltip-order"
+            },
+            {
+              "kind": "field",
+              "name": "palette",
+              "privacy": "public",
+              "type": {
+                "text": "ChartPalette | undefined"
+              },
+              "attribute": "palette"
             },
             {
               "kind": "field",
@@ -6338,7 +6347,32 @@
                   }
                 }
               ],
-              "description": "图例项：一个系列一个按钮，色标与名字各一个 span。"
+              "description": "图例项：一个系列一个按钮，色标与名字各一个 span；末尾是色阶，没有按值着色时收起，节点常在。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintLegendScale",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "node",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "色阶：名字、低端的值、渐变条、高端的值。"
             },
             {
               "kind": "method",
@@ -6459,9 +6493,17 @@
               "type": {
                 "text": "CartesianTrigger | undefined"
               },
-              "description": "提示框汇报什么，默认 axis：同一个键上的全部系列",
+              "description": "提示框汇报什么；默认含柱或折线时 axis（同一个键上的全部系列），只有散点时 item",
               "name": "trigger",
               "fieldName": "trigger"
+            },
+            {
+              "type": {
+                "text": "ChartPalette | undefined"
+              },
+              "description": "顺序色阶的色板：按值着色的点与色阶图例换到这个色相上",
+              "name": "palette",
+              "fieldName": "palette"
             },
             {
               "type": {
@@ -6536,6 +6578,15 @@
             },
             {
               "name": "--xh-cartesian-chart-legend-gap"
+            },
+            {
+              "name": "--xh-cartesian-chart-legend-scale-bar-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-legend-scale-gap"
+            },
+            {
+              "name": "--xh-cartesian-chart-legend-scale-width"
             },
             {
               "name": "--xh-cartesian-chart-legend-swatch-line-radius"

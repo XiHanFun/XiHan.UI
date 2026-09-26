@@ -18,6 +18,7 @@ import type {
   ChartDatumDetails,
   ChartKey,
   ChartMark,
+  ChartPalette,
   ChartRow,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -94,6 +95,19 @@ export const XhCartesianChartCaption = defineComponent({
   },
 })
 
+/** 色阶图例：按值着色时跟在图例项后面；没有按值着色时整块收起，节点常在。 */
+function renderLegendScale(api: CartesianChartApi): VNode {
+  const scale = api.legendScale
+  return h('div', { ...api.getLegendScaleProps() as Record<string, unknown>, key: 'legend-scale' }, scale
+    ? [
+        h('span', api.getLegendScaleNameProps() as Record<string, unknown>, scale.name),
+        h('span', api.getLegendScaleValueProps('min') as Record<string, unknown>, scale.min),
+        h('span', api.getLegendScaleBarProps() as Record<string, unknown>),
+        h('span', api.getLegendScaleValueProps('max') as Record<string, unknown>, scale.max),
+      ]
+    : [])
+}
+
 /** 图例：项由组件按系列生成；只有一个系列时整条收起。 */
 export const XhCartesianChartLegend = defineComponent({
   name: 'XhCartesianChartLegend',
@@ -101,11 +115,14 @@ export const XhCartesianChartLegend = defineComponent({
     const ctx = useCartesianChartContext()
     return () => {
       const api = ctx.api.value
-      return h('div', api.getLegendProps() as Record<string, unknown>, api.legendItems.map(item =>
-        h('button', { ...api.getLegendItemProps(item) as Record<string, unknown>, key: item.id }, [
-          h('span', api.getLegendSwatchProps(item) as Record<string, unknown>),
-          h('span', api.getLegendLabelProps(item) as Record<string, unknown>, item.name),
-        ])))
+      return h('div', api.getLegendProps() as Record<string, unknown>, [
+        ...api.legendItems.map(item =>
+          h('button', { ...api.getLegendItemProps(item) as Record<string, unknown>, key: item.id }, [
+            h('span', api.getLegendSwatchProps(item) as Record<string, unknown>),
+            h('span', api.getLegendLabelProps(item) as Record<string, unknown>, item.name),
+          ])),
+        renderLegendScale(api),
+      ])
     }
   },
 })
@@ -183,6 +200,7 @@ export const XhCartesianChartRoot = defineComponent({
     trigger: { type: String as PropType<CartesianTrigger> },
     totals: { type: Boolean, default: undefined },
     tooltipOrder: { type: String as PropType<CartesianTooltipOrder> },
+    palette: { type: String as PropType<ChartPalette> },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },
     activeKey: { type: [String, Number, Date, null] as PropType<ChartKey | null> },

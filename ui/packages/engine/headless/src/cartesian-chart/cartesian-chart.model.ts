@@ -83,6 +83,8 @@ export interface CartesianSeriesSpec {
   readonly jitter: number
   /** 散点的数据身份字段；缺省为 null，按 x 与出现次序。 */
   readonly datumId: string | null
+  /** 散点按值着色的字段；不按值着色为 null。 */
+  readonly color: string | null
   /** 声明次序。 */
   readonly order: number
   /** 堆叠组；不堆叠为 null。 */
@@ -188,7 +190,7 @@ export function normalizeCartesianSpec(
   // 字段在数据里一次都没出现，多半是拼错了：空数据不判，那时什么字段都「不存在」
   if (rows.length > 0) {
     for (const s of seriesInput) {
-      const fields = s.mark === 'scatter' ? [s.x, s.y, s.size, s.datumId] : [s.x, s.y]
+      const fields = s.mark === 'scatter' ? [s.x, s.y, s.size, s.datumId, s.color] : [s.x, s.y]
       for (const field of fields) {
         if (field == null)
           continue
@@ -242,6 +244,7 @@ export function normalizeCartesianSpec(
       symbol: scatter ? scatter.symbol ?? SYMBOL_NAMES[((identity.slot ?? identity.pattern ?? 1) - 1) % SYMBOL_NAMES.length]! : null,
       jitter: scatter ? Math.min(1, Math.max(0, Number.isFinite(scatter.jitter) ? scatter.jitter! : 0)) : 0,
       datumId: scatter?.datumId ?? null,
+      color: scatter?.color ?? null,
       order,
       stack: s.mark === 'scatter' ? null : s.stack ?? null,
       stackOffset: groupOffset(s),
@@ -316,6 +319,8 @@ export interface CartesianSeriesValues {
   readonly pointIds: readonly string[] | null
   /** 气泡的大小；不是气泡为 null。 */
   readonly sizes: readonly number[] | null
+  /** 按值着色的值，缺失为 null；不按值着色为 null。 */
+  readonly colors: readonly (number | null)[] | null
   /** 贴近基线的一端。 */
   readonly low: readonly (number | null)[]
   /** 值所在的一端。 */
@@ -338,7 +343,7 @@ export interface CartesianDerived {
  * 身份缺省是「x 的身份串#同一 x 上的出现次序」：往后追加数据、改某个点的 y，已有的点都保持身份。
  */
 function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<CartesianSeriesValues, 'low' | 'high' | 'outermost'> {
-  const points: { row: number, at: number, value: number, size: number, id: string }[] = []
+  const points: { row: number, at: number, value: number, size: number, color: number | null, id: string }[] = []
   const seen = new Map<number, number>()
   const ids = new Set<string>()
   spec.rows.forEach((row, index) => {
@@ -359,7 +364,7 @@ function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<Cartes
     if (ids.has(id))
       id = `${id}#${index}`
     ids.add(id)
-    points.push({ row: index, at, value, size, id })
+    points.push({ row: index, at, value, size, color: s.color == null ? null : numberOf(row[s.color]), id })
   })
   points.sort((a, b) => a.at - b.at || a.row - b.row)
   return {
@@ -369,6 +374,7 @@ function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<Cartes
     keyAt: points.map(p => p.at),
     pointIds: points.map(p => p.id),
     sizes: s.size == null ? null : points.map(p => p.size),
+    colors: s.color == null ? null : points.map(p => p.color),
   }
 }
 
@@ -390,7 +396,7 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
       rows[at] = index
       values[at] = numberOf(row[s.y])
     })
-    return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null }
+    return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null }
   })
 
   const stacked = new Map<string, { low: (number | null)[], high: (number | null)[], outermost: boolean[] }>()
@@ -463,6 +469,8 @@ export interface CartesianDomains {
   readonly percent: boolean
   /** 气泡大小的上界：全部可见气泡共用一把尺；没有气泡为 null。 */
   readonly size: number | null
+  /** 按值着色的值域：全部可见的按值着色系列共用一把尺；没有按值着色为 null。 */
+  readonly color: readonly [number, number] | null
   readonly issues: readonly ChartSpecIssue[]
 }
 
@@ -527,7 +535,14 @@ export function cartesianDomains(derived: CartesianDerived): CartesianDomains {
     for (const v of s.sizes ?? [])
       size = Math.max(size ?? 0, v)
   }
-  return { derived, value, key, percent, size, issues }
+  let color: [number, number] | null = null
+  for (const s of derived.visible) {
+    for (const v of s.colors ?? []) {
+      if (v != null)
+        color = color ? [Math.min(color[0], v), Math.max(color[1], v)] : [v, v]
+    }
+  }
+  return { derived, value, key, percent, size, color, issues }
 }
 
 /* ---------- 格式 ---------- */
@@ -537,8 +552,8 @@ export interface CartesianFormats {
   readonly key: (key: ChartKey) => string
   /** 数值写成文字。 */
   readonly value: (value: number) => string
-  /** 气泡大小写成文字：与坐标轴无关，按语言的缺省数字格式。 */
-  readonly size: (value: number) => string
+  /** 与坐标轴无关的量（气泡大小、按值着色的值）写成文字：按语言的缺省数字格式。 */
+  readonly measure: (value: number) => string
 }
 
 function isDateFormat(format: CartesianAxisFormat | undefined): format is Intl.DateTimeFormatOptions {
@@ -564,7 +579,7 @@ export function cartesianFormats(spec: CartesianSpec, locale: string): Cartesian
       return typeof key === 'number' ? keyNumbers(key) : key
     },
     value: values,
-    size: createNumberFormat(locale, {}),
+    measure: createNumberFormat(locale, {}),
   }
 }
 
@@ -1224,6 +1239,7 @@ function scatterMarks(
       : metrics.pointSize / 2
     const at = vertical ? { x: along, y: across } : { x: across, y: along }
     const key = `${id}:${pointId}`
+    const t = colorPosition(domains.color, s.colors?.[p])
     anchors[p] = at
     info.set(key, { seriesId: id, position: p })
     marks.push({
@@ -1237,7 +1253,7 @@ function scatterMarks(
         size: Math.PI * radius * radius,
         symbol: s.spec.symbol ?? 'circle',
         datum: { seriesId: id, index: s.rows[p]! },
-        paint,
+        paint: t == null ? paint : { ...paint, t },
         a11y: { label: '', focusable: true },
       },
     })
@@ -1245,6 +1261,21 @@ function scatterMarks(
   if (s.sizes)
     marks.sort((a, b) => b.radius - a.radius)
   return marks.map(m => m.mark)
+}
+
+/**
+ * 点在色阶上的起点：点小，色阶最浅的那一段压在承载面上几乎看不见，点只用色阶上从这里到终点的一段。
+ * 色阶图例的渐变按同一段画（皮肤里的渐变起点与它对应），图例读到的颜色就是点上的颜色。
+ */
+export const POINT_COLOR_FLOOR = 0.3
+
+/** 按值着色的值在点的色阶上的位置 POINT_COLOR_FLOOR–1；值域只有一个值时取这一段的中点，值缺失时为 null。 */
+export function colorPosition(domain: readonly [number, number] | null, value: number | null | undefined): number | null {
+  if (!domain || value == null)
+    return null
+  const [lo, hi] = domain
+  const t = hi === lo ? 0.5 : Math.min(1, Math.max(0, (value - lo) / (hi - lo)))
+  return POINT_COLOR_FLOOR + (1 - POINT_COLOR_FLOOR) * t
 }
 
 /** 一根柱在绘图区里的矩形，以及写标签要知道的事：远端朝上（右）还是朝下（左）、是不是堆叠中的一段。 */
@@ -1557,7 +1588,7 @@ export function cartesianA11y(
   return { summary, table, formats }
 }
 
-/** 长表：系列、x、y 各一列，有气泡时再加大小一列；每个有值的数据一行，系列按声明次序、系列内按位置。 */
+/** 长表：系列、x、y 各一列，有气泡时再加大小一列、按值着色时再加一列；每个有值的数据一行，系列按声明次序、系列内按位置。 */
 function pointTable(
   series: readonly CartesianSeriesValues[],
   spec: CartesianSpec,
@@ -1565,20 +1596,23 @@ function pointTable(
   translations: CartesianChartTranslations,
 ): TableModel {
   const sized = series.some(s => s.sizes)
+  const colored = series.some(s => s.colors)
+  const cell = (v: number | null | undefined): TableModel['rows'][number]['cells'][number] =>
+    v == null ? { value: null, text: translations.missingValue } : { value: v, text: formats.measure(v) }
   const rows: TableModel['rows'][number][] = []
   for (const s of series) {
     s.values.forEach((value, p) => {
       if (value == null)
         return
       const key = spec.keys[s.keyAt ? s.keyAt[p]! : p]!
-      const size = s.sizes?.[p]
       rows.push({
         key: `${s.spec.id}:${s.pointIds?.[p] ?? cartesianDatumId(key)}`,
         cells: [
           { value: s.spec.name, text: s.spec.name },
           { value: key, text: formats.key(key) },
           { value, text: formats.value(value) },
-          ...(sized ? [size == null ? { value: null, text: translations.missingValue } : { value: size, text: formats.size(size) }] : []),
+          ...(sized ? [cell(s.sizes?.[p])] : []),
+          ...(colored ? [cell(s.colors?.[p])] : []),
         ],
       })
     })
@@ -1589,6 +1623,7 @@ function pointTable(
       { id: 'key', label: translations.keyLabel },
       { id: 'value', label: translations.valueLabel },
       ...(sized ? [{ id: 'size', label: translations.sizeLabel }] : []),
+      ...(colored ? [{ id: 'color', label: translations.colorLabel }] : []),
     ],
     rows,
   }

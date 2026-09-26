@@ -35,6 +35,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_chart-center-size', 'packages/engine/headless/src/pie-chart/pie-chart.connect.ts'],
   // 图表首次出现时逐个出现的标记占入场时长的比例：连接层写进标记的内联样式，皮肤乘上入场时长作延迟
   ['--xh-_chart-reveal-at', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
+  // 按值着色的数据在色阶一段里的百分比：连接层写进散点与提示框色标的内联样式，配方用一层 color-mix 兑出颜色
+  ['--xh-_chart-p', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
   // 系列或扇区引用的那一格纹理（url(#…)）：连接层写进系列分组与扇区的内联样式，纹理模式下皮肤拿它当填充
   ['--xh-_chart-pattern', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
 ])

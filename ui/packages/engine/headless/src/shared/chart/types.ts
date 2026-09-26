@@ -119,6 +119,12 @@ export interface ChartMetrics {
   readonly font: FontSpec
 }
 
+/**
+ * 顺序色阶的色板：按颜色命名，把色阶换到基础色板里同名色相上，只影响按值着色的标记与色阶图例。
+ * 与热力图的色板同名同义；不写时取 `--xh-chart-sequential-*` 三个锚点。
+ */
+export type ChartPalette = 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'teal' | 'cyan' | 'blue' | 'indigo' | 'purple' | 'pink' | 'gray'
+
 /** 视口尺寸（px）。 */
 export interface ChartSize {
   readonly width: number

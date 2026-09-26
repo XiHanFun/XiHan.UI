@@ -22,17 +22,18 @@ import type {
   ChartHiddenSeriesChangeDetails,
   ChartKey,
   ChartMark,
+  ChartPalette,
   ChartRow,
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { cartesianChartAnatomy, cartesianChartMachine, cartesianChartMeta, connectCartesianChart } from '@xihan-ui/headless'
 import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'
-
-/** 纹理定义在绘图区生成节点里的 key：标记的 key 都带前缀或是部件名，不会与它相同。 */
-const DEFS_KEY = 'defs'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+
+/** 纹理定义在绘图区生成节点里的 key：标记的 key 都带前缀或是部件名，不会与它相同。 */
+const DEFS_KEY = 'defs'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -40,11 +41,11 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-cartesian-chart>`：直角坐标图宿主，柱与折线共用一根自变量轴与一根数值轴。
+ * `<xh-cartesian-chart>`：直角坐标图宿主，柱、折线与散点共用一根自变量轴与一根数值轴。
  *
  * 作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part="plot">`、tooltip，
  * 可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，
- * 按标记的 key 复用节点，只写变化的属性；图例项生成进 legend；tooltip 留空时写入缺省内容，
+ * 按标记的 key 复用节点，只写变化的属性；图例项与按值着色时的色阶生成进 legend；tooltip 留空时写入缺省内容，
  * 作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。
  * 摘要与数据表由元素追加在 root 末尾，视觉隐藏。
  *
@@ -52,7 +53,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * @customElement xh-cartesian-chart
  * @attr {'vertical'|'horizontal'} orientation - 朝向，默认 vertical；horizontal 即条形图
- * @attr {'axis'|'item'} trigger - 提示框汇报什么，默认 axis：同一个键上的全部系列
+ * @attr {'axis'|'item'} trigger - 提示框汇报什么；默认含柱或折线时 axis（同一个键上的全部系列），只有散点时 item
+ * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上
  * @attr {boolean} totals - 堆叠柱的合计：每个堆叠组在最外端写出合计
  * @attr {'series'|'descending'|'ascending'} tooltip-order - 提示框里各系列的行序，默认 series（按图例次序）
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
@@ -65,7 +67,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情
  * @csspart root - `<figure>`，承载 orientation、pending 与错误状态
  * @csspart caption - `<figcaption>`，图表的可及名来源
- * @csspart legend - 图例工具条，项由元素生成
+ * @csspart legend - 图例工具条，项与色阶由元素生成
  * @csspart viewport - 尺寸观测的宿主
  * @csspart plot - 绘图区 `<svg>`，标记由元素生成
  * @csspart tooltip - 提示框，留空时由元素写入缺省内容
@@ -93,6 +95,7 @@ export class XhCartesianChartElement extends XhElement {
     trigger: { converter: STRING_CONVERTER },
     totals: { converter: BOOLEAN_CONVERTER },
     tooltipOrder: { converter: STRING_CONVERTER, attribute: 'tooltip-order' },
+    palette: { converter: STRING_CONVERTER },
     pending: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
@@ -110,6 +113,7 @@ export class XhCartesianChartElement extends XhElement {
   declare trigger?: CartesianTrigger
   declare totals?: boolean
   declare tooltipOrder?: CartesianTooltipOrder
+  declare palette?: ChartPalette
   declare pending?: boolean
   declare animated?: boolean
   declare locale?: string
@@ -147,6 +151,7 @@ export class XhCartesianChartElement extends XhElement {
       trigger: this.trigger,
       totals: this.totals,
       tooltipOrder: this.tooltipOrder,
+      palette: this.palette,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
@@ -302,10 +307,13 @@ export class XhCartesianChartElement extends XhElement {
     return defs
   }
 
-  /** 图例项：一个系列一个按钮，色标与名字各一个 span。 */
+  /** 图例项：一个系列一个按钮，色标与名字各一个 span；末尾是色阶，没有按值着色时收起，节点常在。 */
   #paintLegend(legend: Element, api: CartesianChartApi): void {
     const doc = legend.ownerDocument
-    reconcile(legend, api.legendItems, this.#keys, item => item.id, (item, reuse) => {
+    const entries: (CartesianLegendItem | null)[] = [...api.legendItems, null]
+    reconcile(legend, entries, this.#keys, item => (item ? `item:${item.id}` : 'scale'), (item, reuse) => {
+      if (!item)
+        return this.#paintLegendScale(reuse ?? makeGen(doc, 'div'), api)
       const button = reuse instanceof HTMLButtonElement ? reuse : makeGen(doc, 'button')
       if (!reuse) {
         button.append(doc.createElement('span'), doc.createElement('span'))
@@ -318,6 +326,29 @@ export class XhCartesianChartElement extends XhElement {
         label!.textContent = item.name
       return button
     })
+  }
+
+  /** 色阶：名字、低端的值、渐变条、高端的值。 */
+  #paintLegendScale(node: Element, api: CartesianChartApi): Element {
+    const doc = node.ownerDocument
+    this.spreader.spread(node as HTMLElement, api.getLegendScaleProps() as Record<string, unknown>)
+    const scale = api.legendScale
+    if (!scale) {
+      node.replaceChildren()
+      return node
+    }
+    if (node.children.length !== 4)
+      node.replaceChildren(...Array.from({ length: 4 }, () => doc.createElement('span')))
+    const [name, min, bar, max] = Array.from(node.children) as HTMLElement[]
+    this.spreader.spread(name!, api.getLegendScaleNameProps() as Record<string, unknown>)
+    this.spreader.spread(min!, api.getLegendScaleValueProps('min') as Record<string, unknown>)
+    this.spreader.spread(bar!, api.getLegendScaleBarProps() as Record<string, unknown>)
+    this.spreader.spread(max!, api.getLegendScaleValueProps('max') as Record<string, unknown>)
+    for (const [el, text] of [[name!, scale.name], [min!, scale.min], [max!, scale.max]] as const) {
+      if (el.textContent !== text)
+        el.textContent = text
+    }
+    return node
   }
 
   /** 提示框留空时写缺省内容：头部是自变量，每个系列一行（色标、数值、系列名）。 */

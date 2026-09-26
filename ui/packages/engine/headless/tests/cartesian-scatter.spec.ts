@@ -297,3 +297,62 @@ describe('折线的 item 汇报', () => {
     expect(rig.service.context.get('hover')?.ref).toEqual({ seriesId: 'v', index: 1 })
   })
 })
+
+describe('按值着色', () => {
+  const HEAT: Props = {
+    data: [
+      { x: 1, y: 1, temp: 10 },
+      { x: 2, y: 2, temp: 20 },
+      { x: 3, y: 3, temp: 30 },
+      { x: 4, y: 4, temp: 40 },
+      { x: 5, y: 5 },
+    ],
+    series: [{ mark: 'scatter', x: 'x', y: 'y', color: 'temp', name: '站点' }],
+    translations: { colorLabel: '气温' },
+  }
+
+  it('点按值落在顺序色阶上：写段号与段内百分比，缺失值的点不写（取系列色，即色阶中点）', async () => {
+    const rig = await makeRig(HEAT)
+    const api = rig.api()
+    const props = points(api).map(m => api.getMarkProps(m) as Dict)
+    // 点只用色阶上 0.3–1 这一段：最小值落在 0.3（低段的 60%），最大值落在终点
+    expect(props.map(p => p['data-seg'])).toEqual(['low', 'high', 'high', 'high', undefined])
+    expect(props.map(p => p.style?.['--xh-_chart-p'])).toEqual(['60.0%', '6.7%', '53.3%', '100.0%', undefined])
+  })
+
+  it('系列不取分类色：分组、图例项与提示框的行标上顺序色阶；色标画成数据自己的颜色', async () => {
+    const rig = await makeRig(HEAT)
+    const api = rig.api()
+    const group = walk(api.scene.layers.data).find(m => m.part === 'series')!
+    expect((api.getMarkProps(group) as Dict)['data-xh-chart-scale']).toBe('sequential')
+    expect((api.getLegendItemProps(api.legendItems[0]!) as Dict)['data-xh-chart-scale']).toBe('sequential')
+    const hot = points(api)[3]!
+    rig.service.send({ type: 'HOVER', hover: { ref: hot.datum!, x: hot.x, y: hot.y }, key: 4 })
+    await settle()
+    const next = rig.api()
+    const row = next.tooltip!.rows[0]!
+    expect(row.value).toBe('4 · 气温 40')
+    expect((next.getTooltipSwatchProps(row) as Dict)['data-seg']).toBe('high')
+    expect((next.getMarkProps(hot) as Dict)['aria-label']).toBe('4, 站点 4, 气温 40')
+  })
+
+  it('色阶图例：只有一个系列也显示，两端写值域；色板写在根上', async () => {
+    const rig = await makeRig({ ...HEAT, palette: 'teal' })
+    const api = rig.api()
+    expect(api.legendScale).toEqual({ name: '气温', min: '10', max: '40' })
+    expect((api.getLegendProps() as Dict).hidden).toBeUndefined()
+    expect((api.getLegendScaleProps() as Dict).hidden).toBeUndefined()
+    expect((api.getLegendScaleValueProps('max') as Dict)['data-edge']).toBe('max')
+    expect((api.getRootProps() as Dict)['data-palette']).toBe('teal')
+  })
+
+  it('没有按值着色时色阶收起；数据表多一列颜色对应的值', async () => {
+    const plain = await makeRig(SCATTER)
+    expect(plain.api().legendScale).toBeNull()
+    expect((plain.api().getLegendScaleProps() as Dict).hidden).toBe(true)
+    const rig = await makeRig(HEAT)
+    const { table } = rig.api()
+    expect(table.columns.map(c => c.id)).toEqual(['series', 'key', 'value', 'color'])
+    expect(table.rows.map(r => r.cells[3]!.text)).toEqual(['10', '20', '30', '40', 'No value'])
+  })
+})

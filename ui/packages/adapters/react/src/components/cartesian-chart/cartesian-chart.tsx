@@ -19,6 +19,7 @@ import type {
   ChartDatumDetails,
   ChartKey,
   ChartMark,
+  ChartPalette,
   ChartRow,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
@@ -111,12 +112,14 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   yAxis?: CartesianAxis
   /** 朝向，缺省 vertical。 */
   orientation?: CartesianOrientation
-  /** 提示框汇报什么，缺省 axis。 */
+  /** 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 */
   trigger?: CartesianTrigger
   /** 堆叠柱的合计：每个堆叠组在最外端写出合计。 */
   totals?: boolean
   /** 提示框里各系列的行序，缺省 series（按图例次序）。 */
   tooltipOrder?: CartesianTooltipOrder
+  /** 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上。 */
+  palette?: ChartPalette
   /** 隐藏的系列（受控）。 */
   hiddenSeries?: string[]
   /** 初始隐藏的系列（非受控）。 */
@@ -152,6 +155,7 @@ export function XhCartesianChartRoot({
   trigger,
   totals,
   tooltipOrder,
+  palette,
   hiddenSeries,
   defaultHiddenSeries,
   activeKey,
@@ -178,6 +182,7 @@ export function XhCartesianChartRoot({
     trigger,
     totals,
     tooltipOrder,
+    palette,
     hiddenSeries,
     defaultHiddenSeries,
     activeKey,
@@ -252,6 +257,26 @@ export function XhCartesianChartLegend(props: XhCartesianChartLegendProps): Reac
   return (
     <div {...mergeReactProps(api.getLegendProps() as Record<string, unknown>, props as Record<string, unknown>)}>
       {api.legendItems.map(item => <LegendItem key={item.id} api={api} item={item} />)}
+      <LegendScale api={api} />
+    </div>
+  )
+}
+
+/** 色阶图例：按值着色时跟在图例项后面；没有按值着色时整块收起，节点常在。 */
+function LegendScale({ api }: { api: CartesianChartApi }): ReactNode {
+  const scale = api.legendScale
+  return (
+    <div {...api.getLegendScaleProps() as Record<string, unknown>}>
+      {scale
+        ? (
+            <>
+              <span {...api.getLegendScaleNameProps() as Record<string, unknown>}>{scale.name}</span>
+              <span {...api.getLegendScaleValueProps('min') as Record<string, unknown>}>{scale.min}</span>
+              <span {...api.getLegendScaleBarProps() as Record<string, unknown>} />
+              <span {...api.getLegendScaleValueProps('max') as Record<string, unknown>}>{scale.max}</span>
+            </>
+          )
+        : null}
     </div>
   )
 }
