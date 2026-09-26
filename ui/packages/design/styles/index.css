@@ -26012,6 +26012,12 @@
     will-change: transform;
   }
 
+  /* 松手后弹簧带着平移惯性滑行、越出范围时回弹，同样逐帧写变换，不能再叠一层过渡；落定即撤 */
+  [data-scope='image-viewer'][data-part='image'][data-animating] {
+    transition: none;
+    will-change: transform;
+  }
+
   /* —— 悬浮件共用：半透明深底加浅字 ——
      四件都钉在铺满视口的那一层的边上，贴边一律与安全区取大的一头：刘海、圆角与
      底部横条压住的那一段由系统给出，贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0。

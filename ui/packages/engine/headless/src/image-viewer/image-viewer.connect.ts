@@ -237,6 +237,8 @@ export function connectImageViewer<T extends PropTypes>(
       'draggable': false,
       'data-state': stateAttr,
       'data-dragging': dataAttr(panning),
+      // 松手后平移由弹簧逐帧写（惯性滑行或越界回弹），样式层据此让开过渡
+      'data-animating': dataAttr(context.get('settling') && !panning),
       'data-loading': dataAttr(imageStatus === 'loading'),
       // 原图动辄几 MB，取图相位由这张图自己回送
       'onLoad': () => send({ type: 'IMAGE.LOAD' }),
