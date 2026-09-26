@@ -59,6 +59,8 @@ export function connectButton<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': size ?? 'md',
       'data-xh-action-variant': variant,
+      // 实心档是一块彩色面：面内的内容成为墨色域，作者塞进来的描边、淡底与焦点环取这块面的墨色
+      'data-xh-ink-surface': dataAttr(variant === 'solid'),
       'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': size,

@@ -56,7 +56,8 @@ describe('connectTooltip 投影', () => {
 
   it('没有 root 部件：两轴落在 content 上；positioner 与 arrow 自报朝向，没算出坐标前不露面', () => {
     const t = makeTooltip({ tone: 'brand', size: 'sm', placement: 'right' })
-    expect(t.content()).toMatchObject({ 'data-tone': 'brand', 'data-size': 'sm' })
+    // 反白面是一块彩色面：content 恒投影 data-xh-ink-surface，面内的内容成为墨色域
+    expect(t.content()).toMatchObject({ 'data-tone': 'brand', 'data-size': 'sm', 'data-xh-ink-surface': '' })
     const positioner = t.api().getPositionerProps() as Record<string, unknown>
     expect(positioner).toMatchObject({ 'data-placement': 'right', 'data-state': 'closed' })
     expect(positioner['data-positioned']).toBeUndefined()

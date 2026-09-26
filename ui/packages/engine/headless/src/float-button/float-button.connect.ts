@@ -102,6 +102,7 @@ export function connectFloatButton<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': props.size ?? 'md',
       'data-xh-action-variant': variant,
+      'data-xh-ink-surface': dataAttr(variant === 'solid'),
       // 浮在内容之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
       'data-pressed': dataAttr(context.get('pressed')),

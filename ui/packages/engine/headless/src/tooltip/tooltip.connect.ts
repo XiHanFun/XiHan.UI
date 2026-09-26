@@ -90,6 +90,8 @@ export function connectTooltip<T extends PropTypes>(
       // tooltip 没有 root 部件，视觉轴落在浮层树最外层的 content 上，箭头继承它声明的私有槽
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      // 反白面是一块彩色面：面内的作者内容（快捷键、链接、分隔）成为墨色域，取这块面的墨色
+      'data-xh-ink-surface': '',
       // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,

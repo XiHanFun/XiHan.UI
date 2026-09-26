@@ -12092,6 +12092,8 @@
     "data-xh-field-input",
     "data-xh-field-layout",
     "data-xh-field-size",
+    "data-xh-ink",
+    "data-xh-ink-surface",
     "data-xh-liquid",
     "data-xh-swatch",
     "data-xh-swatch-size"

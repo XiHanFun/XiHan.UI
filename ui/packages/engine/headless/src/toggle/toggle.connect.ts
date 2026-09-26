@@ -48,6 +48,7 @@ export function connectToggle<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-variant': actionVariant,
+      'data-xh-ink-surface': dataAttr(actionVariant === 'solid'),
       'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),

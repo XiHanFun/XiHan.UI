@@ -95,6 +95,12 @@ describe('connectTag 三轴', () => {
     expect(makeTag({ variant: 'ghost' }).api().getRootProps()['data-variant']).toBe('ghost')
   })
 
+  it('实心档是一块彩色面，root 投影 data-xh-ink-surface；缺省与其余形态不投影', () => {
+    expect(makeTag({ variant: 'solid' }).api().getRootProps()['data-xh-ink-surface']).toBe('')
+    expect(makeTag().api().getRootProps()['data-xh-ink-surface']).toBeUndefined()
+    expect(makeTag({ variant: 'subtle' }).api().getRootProps()['data-xh-ink-surface']).toBeUndefined()
+  })
+
   it('root 不带 role：标签是展示节点，交互只在关闭钮上', () => {
     expect(makeTag().api().getRootProps().role).toBeUndefined()
   })

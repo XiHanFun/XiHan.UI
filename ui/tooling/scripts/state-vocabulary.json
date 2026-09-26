@@ -225,7 +225,8 @@
     "data-xh-action-has-value": "Action Control 的 has-value 显示策略当前有真实值可操作。",
     "data-xh-collection-item": "这个部件归 Collection Item 家族，皮肤按它接家族配方（面、字色、字重、光标与按压时间线由配方按 data-xh-collection-context 给）。常驻归族的部件写常量空串；只在某一形态归族的部件（tabs 的 line 页签，card / segment 档不归族）按形态经 dataAttr 发。",
     "data-xh-collection-terminal": "Collection Item nav 语境里当前页是不可点的终点（面包屑当前页）：家族给透明面 + --xh-fg-default + medium + cursor default，不响应 hover / pressed，并压过 aria-disabled 的禁用面。显式投影而不从 aria-current / href 推断，正是因为它同时带 aria-disabled='true'。",
-    "data-xh-field-auto-size": "Field Chrome 的 textarea 高度由内容量高接管。"
+    "data-xh-field-auto-size": "Field Chrome 的 textarea 高度由内容量高接管。",
+    "data-xh-ink-surface": "这个部件画的是一块库自有的彩色面（Action Control 与 Tag 的实心档、Tooltip 反白面）：皮肤把当前底色写进 --xh-ink-surface，面的直接子元素按它成为 auto 墨色域；面自身仍按外层取值。实心档随形态经 dataAttr 发，Tooltip content 恒发空串。"
   },
   "retired": {
     "$description": "已经从库里删掉的属性名：connect 发了、或者皮肤选了，都判失败。它不让任何旧写法继续工作，只拦「照着别处复制粘贴、把删掉的名字重新带回来」这一类回归——同一件事一旦有两个名字，使用者那条规则就只能命中一半。",

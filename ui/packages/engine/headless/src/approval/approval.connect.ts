@@ -224,6 +224,7 @@ export function connectApproval<T extends PropTypes>(
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
       'data-xh-action-display': 'always',
       'data-xh-action-size': size,
       'data-tone': prop('tone'),
