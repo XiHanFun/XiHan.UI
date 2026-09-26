@@ -43295,16 +43295,18 @@
         "item-progress"
       ],
       "property": [
-        "border-radius"
+        "border-radius",
+        "clip-path"
       ],
       "state": [
+        "@keyframes xh-countdown",
         "default"
       ],
       "defaultToken": [
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "notification 的 item-progress 部件 border-radius 覆盖槽。"
+      "description": "notification 的 item-progress 部件 border-radius、clip-path 覆盖槽。"
     },
     {
       "name": "--xh-notification-progress-thickness",
