@@ -9,6 +9,12 @@ import type { HoverPoint } from './safe-polygon'
 import { isElement, isHTMLElement, isWindow } from '../../kernel/guards'
 import { pointInPolygon, safeTriangle } from './safe-polygon'
 
+/** 进触发器到报开意图的缺省等待（ms）：指针扫过去不开，停下来才开。 */
+export const HOVER_INTENT_OPEN_DELAY = 100
+
+/** 离开到报关意图的缺省等待（ms），也是安全三角里的停滞上限：留出斜向划进浮层的时间。 */
+export const HOVER_INTENT_CLOSE_DELAY = 300
+
 export interface HoverIntentOptions {
   /** 创建跟踪器时已经在场的悬停宿主；订阅期间不得跨 Document 移动。 */
   trigger: HTMLElement
@@ -48,8 +54,8 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
       throw new Error(`[xh] trackHoverIntent 的 ${name} 必须是非负有限数`)
     return resolved
   }
-  const openDelay = numberOption('openDelay', options.openDelay, 100)
-  const closeDelay = numberOption('closeDelay', options.closeDelay, 300)
+  const openDelay = numberOption('openDelay', options.openDelay, HOVER_INTENT_OPEN_DELAY)
+  const closeDelay = numberOption('closeDelay', options.closeDelay, HOVER_INTENT_CLOSE_DELAY)
   const buffer = numberOption('buffer', options.buffer, 6)
 
   let openTimer: number | null = null

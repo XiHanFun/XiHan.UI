@@ -1144,15 +1144,6 @@ async function constantIn(path, name) {
   return Number(hit[1].replaceAll('_', ''))
 }
 
-/** 选项缺省值写在 numberOption('名字', …, 缺省) 里的那一种。 */
-async function optionDefault(path, name) {
-  const src = await read(path)
-  const hit = new RegExp(`numberOption\\('${name}',[^,]+,\\s*(\\d+)\\)`).exec(src)
-  if (!hit)
-    throw new Error(`${path} 里找不到选项 ${name} 的缺省值`)
-  return Number(hit[1])
-}
-
 const MOTION_DURATIONS = ['micro', 'enter', 'exit', 'move', 'expand', 'collapse', 'slide', 'nudge', 'press', 'release', 'attention']
 for (const name of MOTION_DURATIONS) {
   truth[`动效时长:${name}`] = { how: `semantic.base.json 的 motion.duration-${name}（毫秒）`, value: () => motionToken(`duration-${name}`, false) }
@@ -1188,11 +1179,11 @@ const DWELL = {
   'NumberField 连发间隔': ['packages/engine/headless/src/number-field/number-field.machine.ts', 'NUMBER_FIELD_CHANGE_INTERVAL'],
   'Scrollbar 隐藏延迟': ['packages/engine/headless/src/scrollbar/scrollbar.machine.ts', 'SCROLLBAR_HIDE_DELAY'],
   '首字母检索清空': ['packages/engine/core/src/behavior/collection/typeahead.ts', 'RESET_AFTER'],
+  'Menu 子菜单打开延迟': ['packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'HOVER_INTENT_OPEN_DELAY'],
+  'Menu 子菜单关闭延迟': ['packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'HOVER_INTENT_CLOSE_DELAY'],
 }
 for (const [key, [path, name]] of Object.entries(DWELL))
   truth[`停留:${key}`] = { how: `${path} 的 ${name}（毫秒）`, value: () => constantIn(path, name) }
-truth['停留:Menu 子菜单打开延迟'] = { how: 'core 的 trackHoverIntent 里 openDelay 的缺省（毫秒）', value: () => optionDefault('packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'openDelay') }
-truth['停留:Menu 子菜单关闭延迟'] = { how: 'core 的 trackHoverIntent 里 closeDelay 的缺省（毫秒）', value: () => optionDefault('packages/engine/core/src/behavior/hover-intent/track-hover-intent.ts', 'closeDelay') }
 
 const TABLE = [
   // 发版当天最容易漏的一批：正文里「当前版本是 X」的陈述

@@ -32,7 +32,7 @@ export type { FocusOptions } from './focus-scope/tabbable'
 export { createFormResetBridge } from './form-reset'
 export type { FormResetBridgeOptions } from './form-reset'
 
-export { pointInPolygon, safeTriangle, trackHoverIntent } from './hover-intent'
+export { HOVER_INTENT_CLOSE_DELAY, HOVER_INTENT_OPEN_DELAY, pointInPolygon, safeTriangle, trackHoverIntent } from './hover-intent'
 export type { HoverIntentOptions, HoverPoint, HoverRect } from './hover-intent'
 export { createPressTracker } from './press'
 export type { PressHandlers, PressTrackerOptions } from './press'
