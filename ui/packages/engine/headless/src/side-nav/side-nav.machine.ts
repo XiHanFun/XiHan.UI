@@ -7,7 +7,7 @@
 
 import type { Cleanup, Layer, PositionResult } from '@xihan-ui/core'
 import type { SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.types'
-import { focusItem, navigateItems, setup, trackHoverIntent } from '@xihan-ui/core'
+import { focusItem, HOVER_INTENT_OPEN_DELAY, navigateItems, setTimeoutEffect, setup, trackHoverIntent } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { OVERLAY_OFFSET } from '../shared/overlay'
 import { trackOverlayLayer } from '../shared/overlay-shell'
@@ -92,10 +92,11 @@ export const sideNavMachine = createMachine({
     openPopoutLayer: () => {},
     closePopoutLayer: () => {},
     syncPopoutPresence: () => {},
+    popoutHoverCancel: null,
   }),
   initialState: () => 'idle',
   // 多分支弹出层的资源会跨逻辑关闭保留，由根级会话管理器按 Presence 身份结清。
-  effects: ['trackPopoutSessions'],
+  effects: ['trackPopoutSessions', 'releasePopoutHover'],
   // 折叠开关在弹出期间翻回平铺时收掉面板，机器自己保证「弹出只存在于折叠态」
   watch: ({ track, prop, action }) => {
     track(
@@ -110,6 +111,9 @@ export const sideNavMachine = createMachine({
     // 按压通道：两个状态都认；侧栏禁用不进，入口自身禁用随事件带入
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    // 悬停弹出的等待两个状态都认：平铺时等着弹出第一枝，弹出期间等着换到另一枝
+    'POPOUT.HOVER': { guard: 'canPopout', actions: ['schedulePopoutHover'] },
+    'POPOUT.HOVER_END': { actions: ['cancelPopoutHover'] },
   },
   states: {
     idle: {
@@ -177,6 +181,33 @@ export const sideNavMachine = createMachine({
           return
         context.set('pressedPart', null)
         context.set('pressedValue', null)
+      },
+      // 悬停弹出：指针停在一枝上够悬停意图的开延时才弹出，扫过图标栏不连开一串。
+      // 每台机器一个等待，停到另一枝就重新起算；到点时已是这一枝在弹出就不动
+      schedulePopoutHover: ({ event, refs, state, context, send }) => {
+        const e = event.current()
+        if (e.type !== 'POPOUT.HOVER')
+          return
+        refs.get('popoutHoverCancel')?.()
+        refs.set('popoutHoverCancel', null)
+        const live = (): string | null => (state.get() === 'popout' ? context.get('popoutValue') : null)
+        if (live() === e.value)
+          return
+        const value = e.value
+        refs.set('popoutHoverCancel', setTimeoutEffect(() => {
+          refs.set('popoutHoverCancel', null)
+          const current = live()
+          if (current === value)
+            return
+          // 换分支先收再开：弹出期的效应随状态重挂、换到新锚点，与点按换枝同一条路
+          if (current != null)
+            send({ type: 'POPOUT.CLOSE' })
+          send({ type: 'POPOUT.OPEN', value, focus: 'none' })
+        }, HOVER_INTENT_OPEN_DELAY))
+      },
+      cancelPopoutHover: ({ refs }) => {
+        refs.get('popoutHoverCancel')?.()
+        refs.set('popoutHoverCancel', null)
       },
       setValue: ({ context, event }) => {
         const e = event.current()
@@ -273,6 +304,11 @@ export const sideNavMachine = createMachine({
       },
     },
     effects: {
+      // 卸载时撤掉还没到点的悬停等待，到点就不会往停掉的机器里送事件
+      releasePopoutHover: ({ refs }) => () => {
+        refs.get('popoutHoverCancel')?.()
+        refs.set('popoutHoverCancel', null)
+      },
       trackPopoutSessions: ({ refs, context, state, send, flush }) => {
         interface Session {
           value: string

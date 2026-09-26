@@ -11,6 +11,7 @@
 | Tooltip | `openDelay` / `closeDelay` | 700 / 300ms | 悬停与聚焦打开前的等待、离开后的保留；触屏长按到展开同样等 `openDelay`，长按打开后抬起手指再保留 1500ms |
 | HoverCard | `openDelay` / `closeDelay` | 700 / 300ms | 同 Tooltip |
 | Menu 子菜单 | `hoverOpenDelay` / `hoverCloseDelay` | 100 / 300ms | 悬停展开子菜单前的等待；指针在安全三角里停滞超过关闭延迟即放弃 |
+| SideNav 折叠态弹出 | 无 | 100 / 300ms | 图标栏上悬停顶层分支、弹出子级面板前的等待与离开后的保留；与 Menu 子菜单的缺省同源，内部取值，不作为属性开放 |
 | NavigationMenu | `delayDuration` / `skipDelayDuration` | 200 / 300ms | 悬停展开前的等待；收起后这段时间内碰到另一个入口直接展开 |
 | Pagination 省略位浮层 | `openDelay` / `closeDelay` | 200 / 300ms | 悬停省略位打开页码浮层 |
 | ContextMenu | `longPressDelay` | 700ms | 触屏长按打开菜单 |

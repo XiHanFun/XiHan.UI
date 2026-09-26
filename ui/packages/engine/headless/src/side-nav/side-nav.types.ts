@@ -29,6 +29,8 @@ export interface SideNavRefs {
   closePopoutLayer: (value: string) => void
   /** Presence 注册 / 注销变化通知资源管理器重新绑定或立即结清。 */
   syncPopoutPresence: (value: string, presence: PresenceHandle, connected: boolean) => void
+  /** 悬停弹出还没到点的等待；撤销它的句柄，没有等待时为 null。 */
+  popoutHoverCancel: (() => void) | null
 }
 
 /** 读屏文案，默认英文。 */
@@ -143,6 +145,10 @@ export interface SideNavSchema extends MachineSchema {
     /** 弹出某顶层分支的子级面板；已打开其他分支时先关闭再打开。 */
     | { type: 'POPOUT.OPEN', value: string, focus?: 'first' | 'none' }
     | { type: 'POPOUT.CLOSE', src?: 'esc' | 'interact-outside' | 'hover' | 'select' | 'keyboard' }
+    /** 指针停到一个可弹出的顶层分支上：等够悬停意图的开延时再弹出它。 */
+    | { type: 'POPOUT.HOVER', value: string }
+    /** 指针离开触发按钮：撤销还没到点的等待。 */
+    | { type: 'POPOUT.HOVER_END' }
     /** 适配器按顶层分支 value 注册或精确注销视觉 Presence。 */
     | { type: 'PRESENCE.SET', value: string, presence: PresenceHandle, connected: boolean }
     /** 链接行或分支行被 Space / Enter 或触屏按住；disabled 是入口自身的禁用事实，由 connect 判定后随事件带入。 */
@@ -169,7 +175,9 @@ export interface SideNavSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackPopoutSessions' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
+    | 'schedulePopoutHover'
+    | 'cancelPopoutHover'
+  effect: 'trackPopoutSessions' | 'releasePopoutHover' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
 }
 
 /** 分支与叶子共用的身份声明。 */
