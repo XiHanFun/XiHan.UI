@@ -320,7 +320,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 ### 动效
 
-`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -330,7 +330,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 - 方向从 DOM 读取：整页或某个祖先声明了 `dir='rtl'`（或 CSS `direction`），左右方向键的语义与指示器的起始缘一起翻转，不需要再向组件传递。上下键不受影响。
 - `dir` 属性是显式覆盖：提供后以它为准，用于整页 ltr、局部 rtl 的场合。

@@ -140,8 +140,8 @@ afterEach(() => {
 
 /**
  * 一条分段控件，指示器按选中段的矩形摆好。
- * 位置与尺寸在真实组件里由连接层量出来写成内联样式（resolveSegmentedIndicator 取的就是
- * 选中段的 rect），皮肤只给了没量到时的落点；这里照同一条做一遍。
+ * 位置与尺寸在真实组件里由机器量出选中段的排布位、连接层写成私有槽，
+ * 皮肤只给了没量到时的落点；这里照同一条做一遍。
  */
 function 分段(tone: string | null, 带指示器 = true): { root: HTMLElement, item: HTMLElement, indicator: HTMLElement | null } {
   const root = mount(`
