@@ -175,7 +175,7 @@ export interface SortableItemState {
   index: number
   /** 该项正被拖动。 */
   dragging: boolean
-  /** 让位位移，直接写入 transform。 */
+  /** 让位位移，直接写入 translate。 */
   offset: DndDelta
 }
 

@@ -255,10 +255,10 @@ describe('排序 · 产出的属性', () => {
     expect(item['data-dragging']).toBe('')
   })
 
-  it('让位为零时不写 transform，避免每帧都生成一条无用样式', () => {
+  it('让位为零时不写 translate，避免每帧都生成一条无用样式', () => {
     const s = makeSortable()
     const style = (s.api().getItemProps({ id: 'a' }) as { style: Record<string, unknown> }).style
-    expect(style.transform).toBeUndefined()
+    expect(style.translate).toBeUndefined()
   })
 
   it('手柄是按钮、可聚焦，且声明自己是可排序的', () => {

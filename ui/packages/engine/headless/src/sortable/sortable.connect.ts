@@ -33,6 +33,11 @@ function stepFromKey(key: string, axis: string, rtl: boolean): number | null {
   return null
 }
 
+/** 位移写成浏览器序列化后的样子：纵向为 0 时只给横向一支，jsdom 与浏览器读回同一个串。 */
+function translateOf(x: number, y: number): string {
+  return y === 0 ? `${x}px` : `${x}px ${y}px`
+}
+
 export function connectSortable<T extends PropTypes>(
   service: Service<SortableSchema>,
   normalize: NormalizeProps<T>,
@@ -141,7 +146,7 @@ export function connectSortable<T extends PropTypes>(
         'data-animating': dataAttr(settling),
         'data-disabled': dataAttr(off),
         'style': {
-          transform: offset.x === 0 && offset.y === 0 ? undefined : `translate3d(${offset.x}px, ${offset.y}px, 0)`,
+          translate: offset.x === 0 && offset.y === 0 ? undefined : translateOf(offset.x, offset.y),
           // 被拖那一项要压在让位的项之上，否则跟手时会钻到别人底下；归位途中同样压在上面
           zIndex: isDragging || settling ? 1 : undefined,
         },
@@ -252,7 +257,7 @@ export function connectSortable<T extends PropTypes>(
 
     /**
      * 落点线画在松手后这一项会插进去的那条缝上：往后挪落在目标项的后缘，往前挪落在它的前缘。
-     * 起点钉在容器左上角、位移写 transform：矩形是屏幕坐标，换成逻辑属性会在 rtl 下落到另一头。
+     * 起点钉在容器左上角、位移写 translate：矩形是屏幕坐标，换成逻辑属性会在 rtl 下落到另一头。
      * 四个键每帧都写全（用不上的写空串清掉）：WC 侧 Object.assign 到 style 上不会撤掉上一帧的旧键。
      */
     getDropIndicatorProps: () => {
@@ -264,14 +269,12 @@ export function connectSortable<T extends PropTypes>(
       if (active && rect && origin) {
         const after = to > from
         if (axis === 'vertical') {
-          offset = `translate3d(0, ${(after ? rect.y + rect.height : rect.y) - origin.y}px, 0)`
+          offset = translateOf(0, (after ? rect.y + rect.height : rect.y) - origin.y)
         }
         else {
           const x = (after ? rect.x + rect.width : rect.x) - origin.x
           // 换行网格里线只有目标那一格那么高，单轴横排则整条铺满容器（高度归皮肤）
-          offset = axis === 'both'
-            ? `translate3d(${x}px, ${rect.y - origin.y}px, 0)`
-            : `translate3d(${x}px, 0, 0)`
+          offset = translateOf(x, axis === 'both' ? rect.y - origin.y : 0)
           blockSize = axis === 'both' ? `${rect.height}px` : ''
         }
       }
@@ -281,7 +284,7 @@ export function connectSortable<T extends PropTypes>(
         'aria-hidden': true,
         'data-orientation': axis,
         'hidden': !active || undefined,
-        'style': { left: '0px', top: '0px', transform: offset, blockSize },
+        'style': { left: '0px', top: '0px', translate: offset, blockSize },
       })
     },
 
