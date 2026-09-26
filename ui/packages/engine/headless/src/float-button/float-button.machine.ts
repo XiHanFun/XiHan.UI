@@ -10,6 +10,7 @@ import { setup } from '@xihan-ui/core'
 import { trackLiquidGoo } from '@xihan-ui/core/visual-environment'
 import { trackLiquidPart } from '../shared/liquid'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { waitForSubtreeAnimations } from '../shared/part-presence'
 
 const { createMachine } = setup<FloatButtonSchema>()
 
@@ -36,7 +37,7 @@ export const floatButtonMachine = createMachine({
   initialState: ({ prop }) => prop('open') !== undefined
     ? (prop('open') ? 'open' : 'closed')
     : (prop('defaultOpen') && !prop('disabled') ? 'open' : 'closed'),
-  effects: ['trackLayer', 'trackLiquid', 'trackLiquidGroup'],
+  effects: ['trackLayer', 'trackLiquid', 'trackLiquidGroup', 'trackListExit'],
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('disabled')], () => action(['syncDisabled', 'releaseWhenInert']))
@@ -96,11 +97,8 @@ export const floatButtonMachine = createMachine({
         if (prop('disabled'))
           context.set('pressed', false)
       },
-      // 液态组在场且会播放时，收起先把展开组留着，等动作融回触发器再藏
-      startMerge: ({ refs, context }) => {
-        if (refs.get('liquidGroup')?.goo.animated)
-          context.set('merging', true)
-      },
+      // 收起先把展开组留着：液态组在场且会播放时等动作融回触发器，否则等条目各自的退场动画播完，才藏
+      startMerge: ({ context }) => context.set('merging', true),
       endMerge: ({ context }) => context.set('merging', false),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
@@ -150,10 +148,12 @@ export const floatButtonMachine = createMachine({
             const group = refs.get('liquidGroup')
             if (disposed || !group)
               return
+            const animated = group.goo.animated
             void group.goo.split(group.items(), open).then(() => {
               // 融回落定，或被撤出打断：展开组这才藏起来。分离的结局与展开组显隐无关，
-              // 融回途中又展开的由 endMerge 收掉
-              if (!open && !disposed && state.get() !== 'open')
+              // 融回途中又展开的由 endMerge 收掉。不播放时（standard 档、减弱动效）收尾归 trackListExit：
+              // 条目各自的退场动画播完才藏
+              if (animated && !open && !disposed && state.get() !== 'open')
                 context.set('merging', false)
             })
           })
@@ -163,6 +163,28 @@ export const floatButtonMachine = createMachine({
           refs.get('liquidGroup')?.goo.dispose()
           refs.set('liquidGroup', null)
         }
+      },
+      /**
+       * 标准档的收起：条目逆着冒出的次序逐条缩回，等它们播完才撤掉 merging、藏起展开组。
+       * 液态组会播放时归 trackLiquidGroup 管——拆出来的那几块不挂 CSS 动画，这里一等就会提前收掉。
+       */
+      trackListExit: ({ refs, scope, state, context, track, flush }) => {
+        let stop: (() => void) | undefined
+        track([() => state.get()], () => {
+          stop?.()
+          stop = undefined
+          if (state.get() === 'open')
+            return
+          flush(() => {
+            if (state.get() === 'open' || !context.get('merging') || refs.get('liquidGroup')?.goo.animated)
+              return
+            stop = waitForSubtreeAnimations(scope.getById(scope.partId('float-button', 'list')), () => {
+              if (state.get() !== 'open')
+                context.set('merging', false)
+            })
+          })
+        })
+        return () => stop?.()
       },
       trackLayer: ({ refs, state, prop, send, track, flush }) => trackPresenceResources({
         // FloatButton 的 list 收起即 hidden，没有独立退场容器；逻辑关闭当场结清资源。
