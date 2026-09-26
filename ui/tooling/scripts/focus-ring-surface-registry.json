@@ -136,6 +136,7 @@
     "icon-wrapper [root]": "图标底座是装饰容器，不接焦点",
     "loading-bar [range]": "顶部进度细带的已完成段，纯展示不接焦点",
     "matrix-code [root]": "二维码的底色块，纯展示不接焦点",
+    "pie-chart [tooltip-swatch]": "提示框里的扇区色标，提示框整块对读屏隐藏、不接焦点",
     "progress [range]": "进度条的已完成段，纯展示不接焦点",
     "separator [line]": "分隔线，不接焦点",
     "separator [root]": "分隔线，不接焦点",

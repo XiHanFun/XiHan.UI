@@ -1729,6 +1729,32 @@ export type {
 } from './components/password-input/password-input'
 export { usePasswordInput } from './components/password-input/use-password-input'
 export type { PasswordInputContext } from './components/password-input/use-password-input'
+export { usePieChartContext } from './components/pie-chart/context'
+export {
+  XhPieChartCaption,
+  XhPieChartCenter,
+  XhPieChartEmpty,
+  XhPieChartLegend,
+  XhPieChartPlot,
+  XhPieChartRoot,
+  XhPieChartTooltip,
+  XhPieChartViewport,
+} from './components/pie-chart/pie-chart'
+export type {
+  PieChartCenterSlotProps,
+  PieChartRootSlotProps,
+  PieChartTooltipSlotProps,
+  XhPieChartCaptionProps,
+  XhPieChartCenterProps,
+  XhPieChartEmptyProps,
+  XhPieChartLegendProps,
+  XhPieChartPlotProps,
+  XhPieChartRootProps,
+  XhPieChartTooltipProps,
+  XhPieChartViewportProps,
+} from './components/pie-chart/pie-chart'
+export { usePieChart } from './components/pie-chart/use-pie-chart'
+export type { PieChartContext } from './components/pie-chart/use-pie-chart'
 export { usePinInputContext } from './components/pin-input/context'
 export {
   XhPinInputGroup,

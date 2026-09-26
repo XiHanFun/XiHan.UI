@@ -83,6 +83,7 @@ import { numberFieldSuite } from './number-field.suite'
 import { pageHeaderSuite } from './page-header.suite'
 import { paginationSuite } from './pagination.suite'
 import { passwordInputSuite } from './password-input.suite'
+import { pieChartSuite } from './pie-chart.suite'
 import { pinInputSuite } from './pin-input.suite'
 import { popconfirmSuite } from './popconfirm.suite'
 import { popoverSuite } from './popover.suite'
@@ -272,4 +273,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   colorSwatchPickerSuite,
   barCodeSuite,
   cartesianChartSuite,
+  pieChartSuite,
 ]

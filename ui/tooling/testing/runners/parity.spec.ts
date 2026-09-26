@@ -71,6 +71,7 @@ import {
   pageHeaderSuite,
   paginationSuite,
   passwordInputSuite,
+  pieChartSuite,
   pinInputSuite,
   popconfirmSuite,
   popoverSuite,
@@ -245,6 +246,7 @@ const SUITES: readonly ConformanceSuite[] = [
   colorFieldSuite,
   barCodeSuite,
   cartesianChartSuite,
+  pieChartSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */

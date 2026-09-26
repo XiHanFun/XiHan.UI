@@ -44,6 +44,7 @@ describe('度量', () => {
     expect(CHART_METRICS.hitMin).toBe(tokenPx('--xh-chart-hit-min'))
     expect(CHART_METRICS.tickLength).toBe(tokenPx('--xh-chart-tick-length'))
     expect(CHART_METRICS.labelGap).toBe(tokenPx('--xh-chart-label-gap'))
+    expect(CHART_METRICS.radius).toBe(tokenPx('--xh-shape-inset'))
     expect(CHART_METRICS.font.size).toBe(tokenPx('--xh-text-caption-size'))
     expect(CHART_METRICS.font.lineHeight).toBe(CHART_METRICS.font.size * Number(TOKENS['--xh-leading-tight']))
   })

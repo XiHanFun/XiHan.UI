@@ -477,6 +477,10 @@
         {
           "id": "cartesian-chart",
           "name": "直角坐标图"
+        },
+        {
+          "id": "pie-chart",
+          "name": "饼图"
         }
       ]
     },

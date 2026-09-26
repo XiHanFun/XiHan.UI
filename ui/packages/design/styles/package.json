@@ -132,6 +132,7 @@
     "./page-header.css": "./css/page-header.css",
     "./pagination.css": "./css/pagination.css",
     "./password-input.css": "./css/password-input.css",
+    "./pie-chart.css": "./css/pie-chart.css",
     "./pin-input.css": "./css/pin-input.css",
     "./pointer.css": "./css/pointer.css",
     "./popconfirm.css": "./css/popconfirm.css",

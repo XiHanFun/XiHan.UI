@@ -1,5 +1,6 @@
 import type { ConformanceCase, ConformanceSuite } from '../conformance/types'
 import { cartesianChartAnatomy, cartesianChartKeyboard } from '@xihan-ui/headless'
+import { chartEnvironment } from './shared/chart-environment'
 import { singleTabStop } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/'
@@ -22,50 +23,6 @@ const PROPS = { data: DATA, series: SERIES, locale: 'en-US' } as const
 /** 柱的 part 下标：系列分组按图例次序，组内按类目次序。 */
 function bar(series: 'online' | 'store', month: 0 | 1 | 2): string {
   return `bar[${(series === 'online' ? 0 : 3) + month}]`
-}
-
-/**
- * 几何要从视口尺寸与文字宽度算出来，jsdom 两样都没有：视口定成 480 × 320，
- * 画布度量器摘掉、改用按字号估算的度量器。三端算出的是同一张场景，逐帧比对才有意义。
- */
-function chartEnvironment(win: Window & typeof globalThis): () => void {
-  const proto = win.HTMLElement.prototype
-  const canvas = win.HTMLCanvasElement.prototype
-  const own = {
-    width: Object.getOwnPropertyDescriptor(proto, 'clientWidth'),
-    height: Object.getOwnPropertyDescriptor(proto, 'clientHeight'),
-    context: Object.getOwnPropertyDescriptor(canvas, 'getContext'),
-  }
-  const inherited = {
-    width: Object.getOwnPropertyDescriptor(win.Element.prototype, 'clientWidth'),
-    height: Object.getOwnPropertyDescriptor(win.Element.prototype, 'clientHeight'),
-  }
-  const viewport = (el: Element): boolean =>
-    el.getAttribute('data-scope') === 'cartesian-chart' && el.getAttribute('data-part') === 'viewport'
-  Object.defineProperty(proto, 'clientWidth', {
-    configurable: true,
-    get(this: HTMLElement) {
-      return viewport(this) ? 480 : ((own.width ?? inherited.width)?.get?.call(this) ?? 0)
-    },
-  })
-  Object.defineProperty(proto, 'clientHeight', {
-    configurable: true,
-    get(this: HTMLElement) {
-      return viewport(this) ? 320 : ((own.height ?? inherited.height)?.get?.call(this) ?? 0)
-    },
-  })
-  Object.defineProperty(canvas, 'getContext', { configurable: true, writable: true, value: () => null })
-  const restore = (target: object, key: string, descriptor: PropertyDescriptor | undefined): void => {
-    if (descriptor)
-      Object.defineProperty(target, key, descriptor)
-    else
-      delete (target as Record<string, unknown>)[key]
-  }
-  return () => {
-    restore(proto, 'clientWidth', own.width)
-    restore(proto, 'clientHeight', own.height)
-    restore(canvas, 'getContext', own.context)
-  }
 }
 
 const cases: readonly ConformanceCase[] = [
@@ -284,5 +241,5 @@ export const cartesianChartSuite: ConformanceSuite = {
       { part: 'tooltip' },
     ],
   },
-  cases: cases.map(c => ({ environment: chartEnvironment, ...c, props: { ...PROPS, ...c.props } })),
+  cases: cases.map(c => ({ environment: chartEnvironment('cartesian-chart'), ...c, props: { ...PROPS, ...c.props } })),
 }
