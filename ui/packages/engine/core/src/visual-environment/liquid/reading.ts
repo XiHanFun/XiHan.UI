@@ -55,6 +55,9 @@ export function relativeLuminance(r: number, g: number, b: number): number {
   return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
 }
 
+/** 自己画内容的元素：底色透明，画的却是图片、视频、画布或矢量图，不能透过它往下看。 */
+const PAINTS_CONTENT = new Set(['img', 'video', 'canvas', 'svg', 'iframe', 'embed', 'object'])
+
 function hasOwnText(el: Element): boolean {
   for (const node of Array.from(el.childNodes)) {
     if (node.nodeType === 3 && node.textContent?.trim())
@@ -66,8 +69,11 @@ function hasOwnText(el: Element): boolean {
 /**
  * 取一个点的下层：按命中栈的绘制顺序从上往下看，跳过液态部件自己。
  * 命中栈里既有压在下面的兄弟节点，也有部件的祖先（例如透明的定位容器），透明的一律跳过，
- * 第一个画了东西的才是下层：声明优先；背景图、渐变按杂乱的未知算；不透明底色即下层的颜色。
+ * 第一个画了东西的才是下层：声明优先；图片、视频、画布这类自己画内容的元素，与背景图、渐变一样
+ * 按杂乱的未知算；不透明底色即下层的颜色。
  * 那块底色之上有文字时记为杂乱：透景下的文字会与标签抢对比度。
+ * 一路都是透明的就按根的配色方案取；obscured 表示页面里有被模态压住的 inert 内容——它们照样画在下面，
+ * 却不在命中栈里，这时根的配色方案只是猜测，记为杂乱。
  */
 export function sampleAt(
   doc: Document,
@@ -75,6 +81,7 @@ export function sampleAt(
   y: number,
   exclude: (el: Element) => boolean,
   luminanceOf: (color: string) => number | null,
+  obscured = false,
 ): BackdropSample {
   const view = doc.defaultView
   if (!view)
@@ -86,6 +93,8 @@ export function sampleAt(
     const declared = hit.getAttribute('data-xh-backdrop')
     if (declared === 'light' || declared === 'dark')
       return { luminance: declared === 'light' ? 1 : 0, busy: hit.hasAttribute('data-xh-backdrop-busy') }
+    if (PAINTS_CONTENT.has(hit.localName))
+      return { luminance: null, busy: true }
     const style = view.getComputedStyle(hit)
     if (style.backgroundImage !== 'none')
       return { luminance: null, busy: true }
@@ -97,7 +106,7 @@ export function sampleAt(
   }
   // 一路都是透明的：页面画在画布色上，按根的配色方案取
   const scheme = view.getComputedStyle(doc.documentElement).colorScheme
-  return { luminance: /\bdark\b/.test(scheme) ? 0 : 1, busy: content }
+  return { luminance: /\bdark\b/.test(scheme) ? 0 : 1, busy: content || obscured }
 }
 
 /** 部件上的 3 × 2 个采样点（视口坐标）。 */
