@@ -357,6 +357,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `submit-trigger` | `data-xh-action-profile` | 'text' |
 | `submit-trigger` | `data-xh-action-size` | props.size |
 | `submit-trigger` | `data-xh-action-variant` | 'solid' |
+| `submit-trigger` | `data-xh-ink-surface` | '' |
 | `result` | `data-state` | 'answering' \| 'submitted' |
 
 <!-- xh-component-tokens:start -->
@@ -391,7 +392,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-indicator-radius` | `item-indicator` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-indicator-radius-single` | `item-indicator` | `border-radius` | `select-mode=single` | `--xh-shape-circle` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default`<br>`empty`<br>`select-mode=single` | `--xh-_question-flow-indicator` | question-flow 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
-| `--xh-question-flow-item-bg` | `item` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 item 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-item-bg` | `item` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 item 部件 background-color 覆盖槽。 |
 | `--xh-question-flow-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-muted` | question-flow 的 item 部件 color 覆盖槽。 |
 | `--xh-question-flow-item-fg-checked` | `item` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-fg-default` | question-flow 的 item 部件 color 覆盖槽。 |
@@ -423,21 +424,21 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | question-flow 的 result 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | question-flow 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `none` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-question-flow-skip-bg` | `skip-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 skip-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-skip-bg` | `skip-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 skip-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-skip-bg-hover` | `skip-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 skip-trigger 部件 background-color 覆盖槽。 |
 | `--xh-question-flow-skip-fg` | `skip-trigger` | `color` | `default` | `--xh-fg-muted` | question-flow 的 skip-trigger 部件 color 覆盖槽。 |
 | `--xh-question-flow-skip-fg-hover` | `skip-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | question-flow 的 skip-trigger 部件 color 覆盖槽。 |
-| `--xh-question-flow-step-bg` | `next-trigger`<br>`prev-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-step-bg` | `next-trigger`<br>`prev-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-step-bg-hover` | `next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-question-flow-step-fg` | `next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-question-flow-step-fg-hover` | `next-trigger`<br>`prev-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-question-flow-step-padding` | `next-trigger`<br>`prev-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | question-flow 的 next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-step-radius` | `next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-step-size` | `next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-_action-profile-visual-size` | question-flow 的 next-trigger、prev-trigger 部件 block-size、inline-size、min-block-size 覆盖槽。 |
-| `--xh-question-flow-submit-bg` | `submit-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-submit-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-question-flow-submit-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
-| `--xh-question-flow-submit-bg-off` | `submit-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-submit-bg-off` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | question-flow 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-submit-fg` | `submit-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | question-flow 的 submit-trigger 部件 color 覆盖槽。 |
 | `--xh-question-flow-submit-shadow` | `submit-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_highlight-tone` | question-flow 的 submit-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-question-flow-track-gap` | `track` | `gap` | `default` | `--xh-_question-flow-gap` | question-flow 的 track 部件 gap 覆盖槽。 |

@@ -114,6 +114,12 @@
     backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
   }
 
+  /* 反白面是一块彩色面（连接层打 data-xh-ink-surface）：面内的作者内容按这块底取墨色。
+     底色取自被墨色域改写的令牌，所以域只落在面内的子元素上，这里的取值仍按外层主题解析 */
+  [data-scope='tooltip'][data-part='content'][data-xh-ink-surface] {
+    --xh-ink-surface: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
+  }
+
   /* 光学层单独承载 tint 与透明度；backdrop-filter 只采样元素背后，不处理正文。 */
   [data-scope='tooltip'][data-part='content']::before {
     content: '';

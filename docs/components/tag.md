@@ -207,6 +207,7 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 
@@ -217,8 +218,8 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-tag-bg` | `root` | `background` | `default`<br>`tone`<br>`variant=solid`<br>`variant=subtle` | `--xh-_tone`<br>`--xh-_tone-subtle`<br>`--xh-bg-brand`<br>`--xh-material-soft-bg` | tag 的 root 部件 background 覆盖槽。 |
-| `--xh-tag-bg-disabled` | `root` | `background` | `disabled`<br>`tone` | `--xh-bg-muted` | tag 的 root 部件 background 覆盖槽。 |
+| `--xh-tag-bg` | `root` | `--xh-ink-surface`<br>`background` | `default`<br>`tone`<br>`variant=solid`<br>`variant=subtle`<br>`xh-ink-surface` | `--xh-_tone`<br>`--xh-_tone-subtle`<br>`--xh-bg-brand`<br>`--xh-material-soft-bg` | tag 的 root 部件 --xh-ink-surface、background 覆盖槽。 |
+| `--xh-tag-bg-disabled` | `root` | `--xh-ink-surface`<br>`background` | `disabled`<br>`tone`<br>`xh-ink-surface` | `--xh-bg-muted` | tag 的 root 部件 --xh-ink-surface、background 覆盖槽。 |
 | `--xh-tag-border` | `root` | `border`<br>`border-color` | `default`<br>`tone`<br>`variant=outline`<br>`variant=subtle` | `--xh-_tone-border-control`<br>`--xh-border-default`<br>`--xh-material-soft-border` | tag 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-tag-border-disabled` | `root` | `border-color` | `disabled`<br>`tone` | `--xh-border-default` | tag 的 root 部件 border-color 覆盖槽。 |
 | `--xh-tag-close-bg-active` | `close-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed` | `color-mix(in oklab, currentColor 22%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |

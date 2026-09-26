@@ -273,6 +273,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-xh-ink` | 'light' |
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |
 | `viewport` | `data-loading` | ''（条件成立时才出现） |
 | `viewport` | `data-state` | 'open' \| 'closed' |
@@ -346,7 +347,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `--xh-image-viewer-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-color-neutral-950` | image-viewer 的 backdrop 部件 background 覆盖槽。 |
 | `--xh-image-viewer-backdrop-blur` | `backdrop` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | image-viewer 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-image-viewer-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | image-viewer 的 backdrop 部件 z-index 覆盖槽。 |
-| `--xh-image-viewer-chrome-bg` | `close-trigger`<br>`content`<br>`counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible` | `--xh-color-neutral-950` | image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 background、background-color 覆盖槽。 |
+| `--xh-image-viewer-chrome-bg` | `close-trigger`<br>`content`<br>`counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `--xh-ink-surface`<br>`background`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-color-neutral-950` | image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 --xh-ink-surface、background、background-color 覆盖槽。 |
 | `--xh-image-viewer-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_image-viewer-chrome-bg-active` | image-viewer 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-image-viewer-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_image-viewer-chrome-bg-hover` | image-viewer 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-image-viewer-close-fg` | `close-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `currentColor` | image-viewer 的 close-trigger 部件 color 覆盖槽。 |

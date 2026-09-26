@@ -325,7 +325,7 @@
 | `--xh-tabs-list-p` | `list`<br>`next-trigger`<br>`prev-trigger` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`inset-inline-end`<br>`inset-inline-start`<br>`padding` | `default`<br>`orientation=vertical` | `--xh-_tabs-list-p` | tabs 的 list、next-trigger、prev-trigger 部件 inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start、padding 覆盖槽。 |
 | `--xh-tabs-list-radius` | `list` | `border-radius` | `default` | `--xh-_tabs-list-radius` | tabs 的 list 部件 border-radius 覆盖槽。 |
 | `--xh-tabs-scroll-icon-size` | `next-trigger`<br>`prev-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | tabs 的 next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-tabs-scroll-trigger-bg` | `next-trigger`<br>`prev-trigger` | `background-color` | `default`<br>`disabled`<br>`focus-visible` | `--xh-_tabs-scroll-trigger-bg` | tabs 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tabs-scroll-trigger-bg` | `next-trigger`<br>`prev-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_tabs-scroll-trigger-bg` | tabs 的 next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-tabs-scroll-trigger-fg` | `next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-muted` | tabs 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | tabs 的 separator 部件 background 覆盖槽。 |
 | `--xh-tabs-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 separator 部件 border-radius 覆盖槽。 |

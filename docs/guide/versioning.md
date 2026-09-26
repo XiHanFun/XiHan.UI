@@ -107,7 +107,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 
 ::: warning `data-xh-part`、`data-xh-scroll`、墨色域与液态下层的声明是 `data-xh-` 前缀里仅有的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 40 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 41 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
 :::
 
 ### requiredParts 的方向是反的
@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 227 个不同的 `data-*` 属性名、1570 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 229 个不同的 `data-*` 属性名、1585 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 174 个属性名 / 739 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 175 个属性名 / 741 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -419,11 +419,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，15915 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，15917 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
 覆盖：包名与 193 条子入口、8296 个导出名、134 个 `data-scope` 与 1040 条部件配对、
-134 个组件的 1720 个 prop 名、229 种 `data-*`、33 个 `data-state` 取值、592 个令牌、
+134 个组件的 1720 个 prop 名、231 种 `data-*`、33 个 `data-state` 取值、592 个令牌、
 5 个 `@layer` 名、4038 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改

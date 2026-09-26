@@ -272,7 +272,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `--xh-message-feed-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | message-feed 的 item-label 部件 color 覆盖槽。 |
 | `--xh-message-feed-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-message-feed-p` | `list` | `padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list 部件 padding 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background-color` | `default` | `--xh-material-frosted-bg` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-material-frosted-bg` | message-feed 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-border` | message-feed 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-material-frosted-fg` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |

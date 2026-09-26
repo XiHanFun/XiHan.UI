@@ -80,6 +80,8 @@ interface Look {
   closeDisplay: string
   closeFg: string
   closeCursor: string
+  /** 叉所在位置上的置灰色：实心档是一块彩色面，面内按这块底取墨色，置灰色也随之取墨色 */
+  fgDisabledAtClose: string
 }
 
 async function look(variant: Variant, mode: Mode): Promise<Look> {
@@ -89,6 +91,11 @@ async function look(variant: Variant, mode: Mode): Promise<Look> {
   const rootStyle = getComputedStyle(root)
   const closeStyle = getComputedStyle(close)
   const rect = root.getBoundingClientRect()
+  const probe = document.createElement('span')
+  probe.style.color = 'var(--xh-fg-disabled)'
+  root.append(probe)
+  const fgDisabledAtClose = getComputedStyle(probe).color
+  probe.remove()
   return {
     rootWidth: rect.width,
     rootHeight: rect.height,
@@ -99,6 +106,7 @@ async function look(variant: Variant, mode: Mode): Promise<Look> {
     closeDisplay: closeStyle.display,
     closeFg: closeStyle.color,
     closeCursor: closeStyle.cursor,
+    fgDisabledAtClose,
   }
 }
 
@@ -131,7 +139,7 @@ describe('标签的只读与禁用', () => {
     expect(readOnly.rootBg).toBe(plain.rootBg)
     expect(readOnly.rootFg).toBe(plain.rootFg)
     // 叉是按不动的：字色退成置灰色，光标是「不可用」
-    expect(readOnly.closeFg).toBe(resolveColor('var(--xh-fg-disabled)'))
+    expect(readOnly.closeFg).toBe(readOnly.fgDisabledAtClose)
     expect(readOnly.closeFg).not.toBe(plain.closeFg)
     expect(readOnly.closeCursor).toBe('not-allowed')
     expect(plain.closeCursor).toBe('pointer')

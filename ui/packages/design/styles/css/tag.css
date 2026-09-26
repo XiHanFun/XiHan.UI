@@ -161,6 +161,20 @@
     color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   }
 
+  /* 实心档是一块彩色面（连接层打 data-xh-ink-surface）：面内的图标与作者内容按这块底取墨色。
+     底色随语气与禁用换，这里跟着换 */
+  [data-scope='tag'][data-part='root'][data-xh-ink-surface] {
+    --xh-ink-surface: var(--xh-tag-bg, var(--xh-bg-brand));
+  }
+
+  [data-scope='tag'][data-part='root'][data-xh-ink-surface][data-tone] {
+    --xh-ink-surface: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
+  }
+
+  [data-scope='tag'][data-part='root'][data-xh-ink-surface][data-disabled] {
+    --xh-ink-surface: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
+  }
+
   [data-scope='tag'][data-part='root'][data-variant='subtle'] {
     border-color: var(--xh-tag-border, var(--xh-material-soft-border));
     background: var(--xh-tag-bg, var(--xh-material-soft-bg));

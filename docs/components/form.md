@@ -277,6 +277,7 @@
 | `submit-trigger` | `data-xh-action-profile` | 'text' |
 | `submit-trigger` | `data-xh-action-size` | 'md' |
 | `submit-trigger` | `data-xh-action-variant` | 'solid' |
+| `submit-trigger` | `data-xh-ink-surface` | '' |
 | `reset-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `reset-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `reset-trigger` | `data-xh-action-control` | '' |
@@ -298,7 +299,7 @@
 | `--xh-form-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | form 的 root 部件 gap 覆盖槽。 |
 | `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-4` | form 的 root 部件 column-gap 覆盖槽。 |
 | `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `30%` | form 的 root 部件 grid-template-columns 覆盖槽。 |
-| `--xh-form-submit-bg` | `submit-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-submit-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | form 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-form-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-form-submit-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-form-submit-border` | `submit-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | form 的 submit-trigger 部件 border 覆盖槽。 |
@@ -323,9 +324,9 @@
 | `--xh-form-summary-py` | `error-summary` | `padding-block` | `default` | `--xh-space-3` | form 的 error-summary 部件 padding-block 覆盖槽。 |
 | `--xh-form-summary-radius` | `error-summary` | `border-radius` | `default` | `--xh-shape-surface` | form 的 error-summary 部件 border-radius 覆盖槽。 |
 | `--xh-form-summary-shadow` | `error-summary` | `box-shadow` | `default` | `none` | form 的 error-summary 部件 box-shadow 覆盖槽。 |
-| `--xh-form-trigger-bg` | `reset-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | form 的 reset-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-trigger-bg` | `reset-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | form 的 reset-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-form-trigger-bg-active` | `reset-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 reset-trigger 部件 background-color 覆盖槽。 |
-| `--xh-form-trigger-bg-disabled` | `reset-trigger`<br>`submit-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | form 的 reset-trigger、submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-trigger-bg-disabled` | `reset-trigger`<br>`submit-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | form 的 reset-trigger、submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-form-trigger-bg-hover` | `reset-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | form 的 reset-trigger 部件 background-color 覆盖槽。 |
 | `--xh-form-trigger-border` | `reset-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | form 的 reset-trigger 部件 border 覆盖槽。 |
 | `--xh-form-trigger-border-disabled` | `reset-trigger`<br>`submit-trigger` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。 |

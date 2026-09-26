@@ -274,13 +274,13 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toggle-group-item-bg` | `item` | `background-color` | `default`<br>`focus-visible` | `--xh-_toggle-group-item-bg` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg` | `item` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_toggle-group-item-bg-active` | toggle-group 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toggle-group-item-bg-disabled` | `item` | `background-color` | `disabled` | `--xh-bg-muted` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-disabled` | `item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-bg-muted` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_toggle-group-item-bg-hover` | toggle-group 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toggle-group-item-bg-on` | `item` | `background-color` | `focus-visible`<br>`state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on` | `item` | `--xh-ink-surface`<br>`background-color` | `focus-visible`<br>`state=on`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-on-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-bg-on-active` | toggle-group 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toggle-group-item-bg-on-disabled` | `item` | `background-color` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on-disabled` | `item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`state=on`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-on-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_toggle-group-item-bg-on-hover` | toggle-group 的 item 部件 background-color 覆盖槽。 |
 | `--xh-toggle-group-item-border` | `item` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_toggle-group-item-border` | toggle-group 的 item 部件 border、border-color 覆盖槽。 |
 | `--xh-toggle-group-item-border-disabled` | `item` | `border-color` | `disabled` | `--xh-border-subtle` | toggle-group 的 item 部件 border-color 覆盖槽。 |

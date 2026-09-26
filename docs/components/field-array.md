@@ -279,7 +279,7 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-field-array-action-gap` | `add-trigger`<br>`item-action` | `gap` | `default` | `--xh-space-1` | field-array 的 add-trigger、item-action 部件 gap 覆盖槽。 |
-| `--xh-field-array-add-bg` | `add-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-add-bg` | `add-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 add-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-field-array-add-bg-active` | `add-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-add-bg-hover` | `add-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 add-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-add-border` | `add-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | field-array 的 add-trigger 部件 border 覆盖槽。 |
@@ -299,7 +299,7 @@
 | `--xh-field-array-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-trigger-fg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |

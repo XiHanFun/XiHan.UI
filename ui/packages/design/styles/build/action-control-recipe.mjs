@@ -339,6 +339,11 @@ export function compileActionControlRecipe(source) {
     darkBrandSolidDeclarations(source),
   )
 
+  /* 实心面是一块彩色面（连接层打 data-xh-ink-surface）：底色交给面内内容的墨色域。
+     悬停、按下与在途不翻极性，按静息面取；禁用换成中性面，墨色跟着换 */
+  rule('[data-xh-action-control][data-xh-ink-surface]', `    --xh-ink-surface: ${stateValue(source, 'rest', 'backgroundColor')};`)
+  rule('[data-xh-action-control][data-xh-ink-surface][data-disabled]', `    --xh-ink-surface: ${stateValue(source, 'disabled', 'backgroundColor')};`)
+
   /* text 是尺寸基线；icon 共用其光学档，field/floating 只覆写真正不同的通道。 */
   for (const size of SIZES) {
     const value = source.profiles.text.sizes[size]

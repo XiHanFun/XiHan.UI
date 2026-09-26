@@ -254,7 +254,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toast-action-bg` | `action-trigger` | `background-color` | `default` | `transparent` | toast 的 action-trigger 部件 background-color 覆盖槽。 |
+| `--xh-toast-action-bg` | `action-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `transparent` | toast 的 action-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toast-action-bg-active` | `action-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | toast 的 action-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-action-bg-hover` | `action-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | toast 的 action-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-action-border` | `action-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control`<br>`--xh-border-control-hover` | toast 的 action-trigger 部件 border、border-color 覆盖槽。 |
@@ -265,7 +265,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `--xh-toast-action-radius` | `action-trigger` | `border-radius` | `default` | `--xh-shape-control` | toast 的 action-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-toast-bg` | `root` | `background` | `default` | `--xh-material-elevated-bg` | toast 的 root 部件 background 覆盖槽。 |
 | `--xh-toast-border` | `root` | `border` | `default` | `--xh-material-elevated-border` | toast 的 root 部件 border 覆盖槽。 |
-| `--xh-toast-close-bg` | `close-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | toast 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-toast-close-bg` | `close-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | toast 的 close-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toast-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | toast 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | toast 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-toast-close-border` | `close-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | toast 的 close-trigger 部件 border 覆盖槽。 |

@@ -221,6 +221,7 @@
 | `root` | `data-xh-action-profile` | 'text' |
 | `root` | `data-xh-action-size` | props.size |
 | `root` | `data-xh-action-variant` | props.variant |
+| `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -229,9 +230,9 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-download-trigger-bg` | `root` | `background-color` | `default`<br>`focus-visible`<br>`loading` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | download-trigger 的 root 部件 background-color 覆盖槽。 |
+| `--xh-download-trigger-bg` | `root` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`loading`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | download-trigger 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-download-trigger-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | download-trigger 的 root 部件 background-color 覆盖槽。 |
-| `--xh-download-trigger-bg-disabled` | `root` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | download-trigger 的 root 部件 background-color 覆盖槽。 |
+| `--xh-download-trigger-bg-disabled` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | download-trigger 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-download-trigger-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | download-trigger 的 root 部件 background-color 覆盖槽。 |
 | `--xh-download-trigger-border` | `root` | `border`<br>`border-color` | `default`<br>`focus-visible` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest` | download-trigger 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | download-trigger 的 root 部件 border-color 覆盖槽。 |
