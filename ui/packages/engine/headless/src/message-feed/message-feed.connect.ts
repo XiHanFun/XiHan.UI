@@ -228,7 +228,7 @@ export function connectMessageFeed<T extends PropTypes>(
      */
     getPendingIndicatorProps: () => normalize.element({
       ...parts['pending-indicator'].attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': status,
       'hidden': status !== 'submitted' || undefined,
     }),

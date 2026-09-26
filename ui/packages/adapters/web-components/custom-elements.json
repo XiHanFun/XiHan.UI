@@ -1222,7 +1222,7 @@
             },
             {
               "description": "待决时的呼吸点，放在标题旁；判过即收，对读屏隐藏",
-              "name": "status-indicator"
+              "name": "pending-indicator"
             },
             {
               "description": "剩余时间，对读屏隐藏",
@@ -1750,6 +1750,15 @@
               "name": "--xh-approval-p"
             },
             {
+              "name": "--xh-approval-pending-indicator-color"
+            },
+            {
+              "name": "--xh-approval-pending-indicator-radius"
+            },
+            {
+              "name": "--xh-approval-pending-indicator-size"
+            },
+            {
               "name": "--xh-approval-radius"
             },
             {
@@ -1784,15 +1793,6 @@
             },
             {
               "name": "--xh-approval-shadow"
-            },
-            {
-              "name": "--xh-approval-status-indicator-color"
-            },
-            {
-              "name": "--xh-approval-status-indicator-radius"
-            },
-            {
-              "name": "--xh-approval-status-indicator-size"
             },
             {
               "name": "--xh-approval-timer-fg"

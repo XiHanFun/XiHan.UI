@@ -90,11 +90,11 @@ export const XhApprovalRoot = defineComponent({
 })
 
 /** 待决时的呼吸点：放在标题旁，判过即收。 */
-export const XhApprovalStatusIndicator = defineComponent({
-  name: 'XhApprovalStatusIndicator',
+export const XhApprovalPendingIndicator = defineComponent({
+  name: 'XhApprovalPendingIndicator',
   setup() {
     const ctx = useApprovalContext()
-    return () => h('span', ctx.api.value.getStatusIndicatorProps() as Record<string, unknown>)
+    return () => h('span', ctx.api.value.getPendingIndicatorProps() as Record<string, unknown>)
   },
 })
 

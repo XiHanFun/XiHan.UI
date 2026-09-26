@@ -14337,18 +14337,18 @@
   /* 待决的呼吸点：钉在右上角（RTL 下左上），不占作者排的版面；颜色随语气，没写语气时取警示色。
      呼吸只表达「正在进行、需要被察觉」：明暗与缩放的起伏持续到判定落定，外扩光环同周期播 3 轮后停下；
      判过了连接层就收起它，由结果那一格接着表达 */
-  [data-scope='approval'][data-part='status-indicator'] {
+  [data-scope='approval'][data-part='pending-indicator'] {
     position: absolute;
     inset-block-start: var(--xh-approval-p, var(--xh-_approval-p));
     inset-inline-end: var(--xh-approval-p, var(--xh-_approval-p));
-    inline-size: var(--xh-approval-status-indicator-size, var(--xh-space-2));
-    block-size: var(--xh-approval-status-indicator-size, var(--xh-space-2));
-    border-radius: var(--xh-approval-status-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-approval-status-indicator-color, var(--xh-_tone, var(--xh-fg-warning)));
+    inline-size: var(--xh-approval-pending-indicator-size, var(--xh-space-2));
+    block-size: var(--xh-approval-pending-indicator-size, var(--xh-space-2));
+    border-radius: var(--xh-approval-pending-indicator-radius, var(--xh-shape-circle));
+    background: var(--xh-approval-pending-indicator-color, var(--xh-_tone, var(--xh-fg-warning)));
     animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
   }
 
-  [data-scope='approval'][data-part='status-indicator']::after {
+  [data-scope='approval'][data-part='pending-indicator']::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -14361,18 +14361,18 @@
 
   /* 减弱动效：两者都停，圆点停在满不透明度，光环不出现 */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='approval'][data-part='status-indicator'],
-    [data-scope='approval'][data-part='status-indicator']::after {
+    [data-scope='approval'][data-part='pending-indicator'],
+    [data-scope='approval'][data-part='pending-indicator']::after {
       animation: none;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='approval'][data-part='status-indicator'],
-  :where([data-motion='reduce']) [data-scope='approval'][data-part='status-indicator']::after {
+  :where([data-motion='reduce']) [data-scope='approval'][data-part='pending-indicator'],
+  :where([data-motion='reduce']) [data-scope='approval'][data-part='pending-indicator']::after {
     animation: none;
   }
 
-  [data-scope='approval'][data-part='status-indicator'][hidden] {
+  [data-scope='approval'][data-part='pending-indicator'][hidden] {
     display: none;
   }
 
@@ -14758,14 +14758,14 @@
 
   /* 强制色：底色会被系统背景吃掉，呼吸点改用系统前景色 */
   @media (forced-colors: active) {
-    [data-scope='approval'][data-part='status-indicator'] {
+    [data-scope='approval'][data-part='pending-indicator'] {
       background: CanvasText;
     }
   }
 
   @media print {
     /* 打印：待决的呼吸点是一瞬间的状态，纸上没有「等着人来判」 */
-    [data-scope='approval'][data-part='status-indicator'] {
+    [data-scope='approval'][data-part='pending-indicator'] {
       display: none;
     }
   }
@@ -15341,7 +15341,8 @@
     pointer-events: none;
   }
 
-  /* liquid 档的交互光：实心钮进入悬停时，一道光沿 1px 描边环扫过一次。光只走描边、不进面——
+  /* liquid 档的交互光：实心钮进入悬停时，一道光沿 1px 描边环扫过一次。环与焦点环同法，用透明描边画，
+     遮罩只留描边那一圈。光只走描边、不进面——
      面内叠一层白光，品牌实心面上白字的对比就从 5.08:1 往下掉。光用面上前景色（currentColor），
      各语气自动跟随；只在细指针可悬停的设备上播，粗指针下 ::after 另有用处（44px 热区）。
      减弱动效下时长归 1ms，一闪即过、看不见；强制色下系统配色，不画装饰光 */
@@ -15351,14 +15352,14 @@
       content: '';
       position: absolute;
       inset: calc(-1 * var(--xh-stroke-thin));
-      padding: var(--xh-stroke-thin);
+      border: var(--xh-stroke-thin) solid transparent;
       border-radius: inherit;
-      background: linear-gradient(100deg, transparent 42%, currentColor 50%, transparent 58%) no-repeat;
+      background: linear-gradient(100deg, transparent 42%, currentColor 50%, transparent 58%) border-box no-repeat;
       background-size: 300% 100%;
       background-position: 0% 0;
       pointer-events: none;
       mask:
-        linear-gradient(currentColor 0 0) content-box exclude,
+        linear-gradient(currentColor 0 0) padding-box exclude,
         linear-gradient(currentColor 0 0);
       animation: xh-glint var(--xh-button-glint-duration, var(--xh-motion-duration-glint)) var(--xh-motion-ease-enter) both;
     }

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="approval"`：**`root`** · `status-indicator` · `title` · `description` · `live-region` · `group` · `item` · `item-indicator` · `item-text` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
+`data-scope="approval"`：**`root`** · `pending-indicator` · `title` · `description` · `live-region` · `group` · `item` · `item-indicator` · `item-text` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
 
 ## 示例
 
@@ -64,7 +64,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 - `requestId` 变化即重新进入待决并按新时长重启计时；不为上一轮补发拒绝，旧结果由宿主自行作废。重入时勾选与备注回到各自默认值。
 - 判定落定后 `result` 部件才显示，语气随判定变化：批准取成功档，拒绝与超时取危险档。它对读屏隐藏，同一句话由播报区读出一次。
 - 两个按钮位于 `actions` 行内，间距与对齐由库统一处理，使用者不需要另写容器。
-- 待决时 `status-indicator` 在右上角显示一颗呼吸的圆点，颜色随语气、缺省取警示色，判定落定即收起；它不占作者排的版面。减弱动效下圆点静止。
+- 待决时 `pending-indicator` 在右上角显示一颗呼吸的圆点，颜色随语气、缺省取警示色，判定落定即收起；它不占作者排的版面。减弱动效下圆点静止。
 
 ### 组合
 
@@ -91,7 +91,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-approval>` |
-| Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalGroup` `XhApprovalItem` `XhApprovalItemIndicator` `XhApprovalItemText` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalStatusIndicator` `XhApprovalTimer` `XhApprovalTitle` |
+| Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalGroup` `XhApprovalItem` `XhApprovalItemIndicator` `XhApprovalItemText` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalPendingIndicator` `XhApprovalResult` `XhApprovalRoot` `XhApprovalTimer` `XhApprovalTitle` |
 | 组合式函数 | `useApproval` |
 | 状态机 | `approvalMachine` |
 | 皮肤 | `@xihan-ui/styles/approval.css` |
@@ -173,7 +173,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
-| `status-indicator` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `pending-indicator` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `item` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `note` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
@@ -209,7 +209,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `setNote` | `(next: string) => void` |  |
 | `isScopeGranted` | `(value: string) => boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
-| `getStatusIndicatorProps` | `() => T['element']` | 待决时的呼吸点：判过即收，对读屏隐藏。 |
+| `getPendingIndicatorProps` | `() => T['element']` | 待决时的呼吸点：判过即收，对读屏隐藏。 |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
@@ -248,7 +248,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `root` | `aria-describedby` | `description` 部件的 id |
 | `root` | `aria-labelledby` | `title` 部件的 id |
 | `root` | `role` | 'group' |
-| `status-indicator` | `aria-hidden` | 'true' |
+| `pending-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | props.live |
 | `group` | `aria-label` | translations?.scopes |
@@ -293,7 +293,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `root` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `status-indicator` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `pending-indicator` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
@@ -384,7 +384,10 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `--xh-approval-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | approval 的 note 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | approval 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-approval-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | approval 的 note 部件 border-radius 覆盖槽。 |
-| `--xh-approval-p` | `root`<br>`status-indicator` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 root、status-indicator 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
+| `--xh-approval-p` | `pending-indicator`<br>`root` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
+| `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone` | approval 的 pending-indicator 部件 background 覆盖槽。 |
+| `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-approval-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | approval 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-approval-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | approval 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-approval-result-bg` | `result` | `background` | `default` | `--xh-fg-success` | approval 的 result 部件 background 覆盖槽。 |
 | `--xh-approval-result-bg-denied` | `result` | `background` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-fg-danger` | approval 的 result 部件 background 覆盖槽。 |
@@ -397,9 +400,6 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `--xh-approval-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | approval 的 result 部件 padding-block 覆盖槽。 |
 | `--xh-approval-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | approval 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-approval-shadow` | `root` | `box-shadow` | `default` | `none` | approval 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-approval-status-indicator-color` | `status-indicator` | `background` | `default` | `--xh-_tone` | approval 的 status-indicator 部件 background 覆盖槽。 |
-| `--xh-approval-status-indicator-radius` | `status-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 status-indicator 部件 border-radius 覆盖槽。 |
-| `--xh-approval-status-indicator-size` | `status-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | approval 的 status-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-approval-timer-fg` | `timer` | `color` | `default` | `--xh-fg-muted` | approval 的 timer 部件 color 覆盖槽。 |
 | `--xh-approval-timer-font-size` | `timer` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 timer 部件 font-size 覆盖槽。 |
 | `--xh-approval-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | approval 的 title 部件 color 覆盖槽。 |

@@ -1005,6 +1005,10 @@
     "peg": [
       "loading-bar"
     ],
+    "pending-indicator": [
+      "approval",
+      "message-feed"
+    ],
     "placeholder": [
       "image"
     ],
