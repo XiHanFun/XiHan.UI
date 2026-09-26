@@ -26998,7 +26998,7 @@
               "name": "viewport"
             },
             {
-              "description": "当前图片（src / alt / transform 由元素填入）",
+              "description": "当前图片（src、alt 与位移、旋转、缩放由元素填入）",
               "name": "image"
             },
             {

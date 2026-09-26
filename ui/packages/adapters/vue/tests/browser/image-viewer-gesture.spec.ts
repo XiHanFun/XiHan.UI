@@ -62,10 +62,10 @@ async function mount(): Promise<HTMLImageElement> {
   return image
 }
 
-/** 图的平移量（transform 里的 translate）。 */
+/** 图的平移量（内联的 translate，纵向为 0 时只写横向一支）。 */
 function offset(image: HTMLImageElement): { x: number, y: number } {
-  const match = /translate\((-?[\d.]+)px, (-?[\d.]+)px\)/.exec(image.style.transform)
-  return match ? { x: Number(match[1]), y: Number(match[2]) } : { x: Number.NaN, y: Number.NaN }
+  const match = /^(-?[\d.]+)px(?: (-?[\d.]+)px)?$/.exec(image.style.translate)
+  return match ? { x: Number(match[1]), y: Number(match[2] ?? 0) } : { x: Number.NaN, y: Number.NaN }
 }
 
 async function mouseScale(): Promise<number> {
@@ -92,7 +92,7 @@ async function drag(image: HTMLImageElement, dx: number, steps = 6): Promise<voi
 
 async function zoomTo3(): Promise<void> {
   const zoomIn = document.querySelector<HTMLButtonElement>('[data-scope="image-viewer"][data-part="zoom-in-trigger"]')!
-  for (let i = 0; i < 20 && !/scaleX\(3\)/.test(document.querySelector<HTMLElement>('[data-part="image"]')!.style.transform); i++) {
+  for (let i = 0; i < 20 && document.querySelector<HTMLElement>('[data-part="image"]')!.style.scale !== '3'; i++) {
     zoomIn.click()
     await nextTick()
   }
