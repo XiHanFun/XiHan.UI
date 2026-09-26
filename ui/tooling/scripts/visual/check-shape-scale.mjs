@@ -111,18 +111,23 @@ const IDENTITY = {
   'image-viewer:next-trigger': { shape: 'circle', floating: true },
   // 角标圆点档是宽高同槽的正方盒：计数档是胶囊，圆点档必须取 circle
   'badge:indicator[data-dot]': 'circle',
+  // liquid 档的媒体控制钮：看图的叉是 40px 正方盒，液态档取 circle（standard 档仍是控件档）
+  'image-viewer:close-trigger[data-xh-liquid]': 'circle',
   // 等待中的呼吸点：宽高同槽的正方盒
   'message-feed:pending-indicator': 'circle',
   'approval:pending-indicator': 'circle',
   // pill：(a) 状态 chip
   'badge:indicator': 'pill',
   'tag:root': 'pill',
+  // liquid 档下看图的计数是一行字的 chip（standard 档仍是控件档）
+  'image-viewer:counter[data-xh-liquid]': 'pill',
   'tool-call:status': 'pill',
   'approval:result': 'pill',
   'question-flow:result': 'pill',
   // pill：(b) 一维对象
-  // liquid 档下不贴边的一维栏：轮播分页条（standard 档没有面）
+  // liquid 档下不贴边的一维栏：轮播分页条、看图工具条（standard 档分页条没有面、工具条是 surface）
   'carousel:indicator-group[data-xh-liquid]': 'pill',
+  'image-viewer:toolbar[data-xh-liquid]': 'pill',
   'switch:root': 'pill',
   'slider:track': 'pill',
   'slider:range': 'pill',

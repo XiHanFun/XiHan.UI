@@ -212,7 +212,7 @@ export interface ImageViewerSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackOverlay' | 'trackPointers'
+  effect: 'trackOverlay' | 'trackPointers' | 'trackLiquid'
 }
 
 export interface ImageViewerApi<T extends PropTypes = PropTypes> {
