@@ -140,6 +140,20 @@ export interface ChartBaseSchema extends MachineSchema {
   refs: ChartBaseRefs
 }
 
+/**
+ * 视口量测只用到的那几个取值口。根与视口可以是同一个节点：迷你图的根就是 `<svg>`，它自己就是尺寸观测的宿主。
+ * 不画文字的图表没有文字度量器。
+ */
+export interface ChartViewportSchema extends MachineSchema {
+  refs: {
+    getRootEl: () => Element | null
+    getViewportEl: () => Element | null
+    measurer?: TextMeasurer
+    alive: boolean
+    transition: ChartTransitionRun | null
+  }
+}
+
 /** 两个数据引用是否指同一个数据。 */
 export function sameChartDatum(a: ChartDatumRef | null, b: ChartDatumRef | null | undefined): boolean {
   return a === b || (a != null && b != null && a.seriesId === b.seriesId && a.index === b.index)
@@ -439,9 +453,11 @@ export function chartBaseActions<S extends ChartBaseSchema>(options: {
  *
  * 推迟一拍再挂：挂载这一刻角色节点未必就位。根与视口都观察：图例折行会推着视口往下走而视口本身不变尺寸，
  * 提示框的锚点要跟着偏移。按帧合并，小于 0.5px 的变化不算。祖先链上的 data-density 换档会改度量，也盯着；
- * 字体加载完成会改文字宽度，度量器刷新后重排。
+ * 字体加载完成会改文字宽度，度量器刷新后重排。不画文字的图表（text: false）不建文字度量器、不盯字体：
+ * 表格里一列几十张迷你图，每张一块画布就是白费。
  */
-export function trackChartViewport<S extends ChartBaseSchema>(): EffectFn<S> {
+export function trackChartViewport<S extends ChartViewportSchema>(options: { readonly text?: boolean } = {}): EffectFn<S> {
+  const text = options.text !== false
   return ({ refs, scope, send, flush }) => {
     let disposed = false
     let stop: VoidFunction | undefined
@@ -475,9 +491,11 @@ export function trackChartViewport<S extends ChartBaseSchema>(): EffectFn<S> {
           return
         const width = viewport.clientWidth
         const height = viewport.clientHeight
-        // 视口是根的包含块内的普通流节点，offset* 不受祖先的缩放进场影响
-        const x = viewport.offsetParent === root ? viewport.offsetLeft : 0
-        const y = viewport.offsetParent === root ? viewport.offsetTop : 0
+        // 视口是根的包含块内的普通流节点，offset* 不受祖先的缩放进场影响；
+        // SVG 节点没有 offset*，这时它就是根本身，偏移为 0
+        const box = viewport as Partial<HTMLElement>
+        const x = box.offsetParent === root ? box.offsetLeft ?? 0 : 0
+        const y = box.offsetParent === root ? box.offsetTop ?? 0 : 0
         const changed = !last
           || Math.abs(last.width - width) >= 0.5
           || Math.abs(last.height - height) >= 0.5
@@ -510,12 +528,12 @@ export function trackChartViewport<S extends ChartBaseSchema>(): EffectFn<S> {
       for (let el: Element | null = root; el; el = el.parentElement)
         density?.observe(el, { attributes: true, attributeFilter: ['data-density'] })
 
-      const measurer = createCanvasMeasurer(root.ownerDocument)
+      const measurer = text ? createCanvasMeasurer(root.ownerDocument) : null
       if (measurer) {
         refs.set('measurer', measurer)
         send({ type: 'MEASURER.READY' })
       }
-      const fonts = root.ownerDocument.fonts
+      const fonts = text ? root.ownerDocument.fonts : undefined
       const onFonts = (): void => {
         if (disposed || !measurer)
           return

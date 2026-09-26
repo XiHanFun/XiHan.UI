@@ -58386,6 +58386,217 @@
       "description": "sortable 的 item 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-sparkline-accent-color",
+      "component": "sparkline",
+      "part": [
+        "bar",
+        "dot",
+        "root"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "default",
+        "marker",
+        "not([data-tone='neutral'])",
+        "tone",
+        "tone=neutral"
+      ],
+      "defaultToken": [
+        "--xh-_tone",
+        "--xh-chart-categorical-1"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 bar、dot、root 部件 fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-band-bg",
+      "component": "sparkline",
+      "part": [
+        "band"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 band 部件 fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-bar-max",
+      "component": "sparkline",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-bar-max"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-bar-max"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-bar-radius",
+      "component": "sparkline",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-color",
+      "component": "sparkline",
+      "part": [
+        "area-fill",
+        "bar",
+        "line",
+        "root"
+      ],
+      "property": [
+        "fill",
+        "stroke"
+      ],
+      "state": [
+        "default",
+        "not([data-tone='neutral'])",
+        "tone",
+        "tone=neutral"
+      ],
+      "defaultToken": [
+        "--xh-_tone",
+        "--xh-chart-deemphasis"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 area-fill、bar、line、root 部件 fill、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-height",
+      "component": "sparkline",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-body-size",
+        "1lh"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 root 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-line-width",
+      "component": "sparkline",
+      "part": [
+        "legend-swatch",
+        "line",
+        "root",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "--xh-_chart-dash",
+        "background",
+        "block-size",
+        "stroke-width"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "default",
+        "mark=line",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns"
+      ],
+      "defaultToken": [
+        "--xh-chart-line-width"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 legend-swatch、line、root、tooltip-swatch 部件 --xh-_chart-dash、background、block-size、stroke-width 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-marker-size",
+      "component": "sparkline",
+      "part": [
+        "legend-swatch",
+        "root",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns"
+      ],
+      "defaultToken": [
+        "--xh-chart-point-size"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-sparkline-width",
+      "component": "sparkline",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "6rem"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 root 部件 inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-spinner-duration",
       "component": "spinner",
       "part": [

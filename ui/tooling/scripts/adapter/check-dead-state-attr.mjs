@@ -119,6 +119,8 @@ const HOOKS = {
   'rating:data-state': '星的填充走 data-highlighted 与 data-half',
   'number-animation:data-state': '数字滚动的外观不随相位变，相位只留给作者接线',
   'cartesian-chart:data-orientation': '朝向的版式由几何承载：柱沿哪个方向长、刻度落在哪条边都在场景里算好；根上这一位留给作者按朝向写样式',
+  'sparkline:data-variant': '形态的观感由几何承载：画线、铺面积还是画柱都在场景里算好；根上这一位留给作者按形态写样式',
+  'sparkline:data-state': '规格不合法与没有数据时都不画图形，观感就是一块空白；这一位供作者与测试分辨是出错还是没有数据',
   // 禁用不在这张表里：pointer.css 那条与组件无关的规则消费全库的 data-disabled
   // 集合件取条目在途：那一格由只在取数期在场的 loading 部件顶上来
 

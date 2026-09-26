@@ -481,6 +481,10 @@
         {
           "id": "pie-chart",
           "name": "饼图"
+        },
+        {
+          "id": "sparkline",
+          "name": "迷你图"
         }
       ]
     },

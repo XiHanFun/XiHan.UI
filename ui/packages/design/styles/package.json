@@ -155,6 +155,7 @@
     "./signature-pad.css": "./css/signature-pad.css",
     "./skeleton.css": "./css/skeleton.css",
     "./slider.css": "./css/slider.css",
+    "./sparkline.css": "./css/sparkline.css",
     "./spinner.css": "./css/spinner.css",
     "./sortable.css": "./css/sortable.css",
     "./splitter.css": "./css/splitter.css",

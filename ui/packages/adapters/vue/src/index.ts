@@ -977,6 +977,9 @@ export { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhS
 export type { SortableItemSlotProps, SortableRootSlotProps } from './components/sortable/sortable'
 export { useSortable } from './components/sortable/use-sortable'
 export type { SortableContext } from './components/sortable/use-sortable'
+export { XhSparkline } from './components/sparkline/sparkline'
+export { useSparkline } from './components/sparkline/use-sparkline'
+export type { SparklineContext } from './components/sparkline/use-sparkline'
 export { XhSpinner, XhSpinnerLabel } from './components/spinner/spinner'
 export {
   XhSplitterPanel,

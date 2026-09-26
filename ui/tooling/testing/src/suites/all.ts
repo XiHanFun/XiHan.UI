@@ -104,6 +104,7 @@ import { signaturePadSuite } from './signature-pad.suite'
 import { skeletonSuite } from './skeleton.suite'
 import { sliderSuite } from './slider.suite'
 import { sortableSuite } from './sortable.suite'
+import { sparklineSuite } from './sparkline.suite'
 import { spinnerSuite } from './spinner.suite'
 import { splitterSuite } from './splitter.suite'
 import { statisticSuite } from './statistic.suite'
@@ -274,4 +275,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   barCodeSuite,
   cartesianChartSuite,
   pieChartSuite,
+  sparklineSuite,
 ]

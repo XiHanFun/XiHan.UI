@@ -114,6 +114,7 @@ import { XhSignaturePadElement } from './elements/signature-pad'
 import { XhSkeletonElement } from './elements/skeleton'
 import { XhSliderElement } from './elements/slider'
 import { XhSortableElement } from './elements/sortable'
+import { XhSparklineElement } from './elements/sparkline'
 import { XhSpinnerElement } from './elements/spinner'
 import { XhSplitterElement } from './elements/splitter'
 import { XhStatisticElement } from './elements/statistic'
@@ -200,6 +201,7 @@ export function defineXhElements(): void {
   defineElement('xh-segmented', XhSegmentedElement, VERSION)
   defineElement('xh-signature-pad', XhSignaturePadElement, VERSION)
   defineElement('xh-skeleton', XhSkeletonElement, VERSION)
+  defineElement('xh-sparkline', XhSparklineElement, VERSION)
   defineElement('xh-spinner', XhSpinnerElement, VERSION)
   defineElement('xh-accordion', XhAccordionElement, VERSION)
   defineElement('xh-anchor', XhAnchorElement, VERSION)
@@ -382,6 +384,7 @@ export {
   XhSkeletonElement,
   XhSliderElement,
   XhSortableElement,
+  XhSparklineElement,
   XhSpinnerElement,
   XhSplitterElement,
   XhStepsElement,

@@ -1,0 +1,152 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 sparkline 样式。 */
+
+/* 描线与淡入关键帧由 family/motion.css 提供；本皮肤 @import 它，单独引入仍成立。
+   迷你图只消费色槽与线宽，不接 Chart 家族配方的标题、图例与提示框。 */
+@import '../family/motion.css';
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='sparkline'] {
+    --xh-sparkline-skin: 1;
+  }
+
+  /* 根就是 <svg>：随文排版，宽度缺省 6rem，高度缺省一行字高，放进表格单元格与指标卡都不撑高一行。
+     几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
+  [data-scope='sparkline'][data-part='root'] {
+    --xh-_chart-metric-line-width: var(--xh-sparkline-line-width, var(--xh-chart-line-width));
+    --xh-_chart-metric-point-size: var(--xh-sparkline-marker-size, var(--xh-chart-point-size));
+    --xh-_chart-metric-gap: var(--xh-chart-gap);
+    --xh-_chart-metric-bar-max: var(--xh-sparkline-bar-max, var(--xh-chart-bar-max));
+    --xh-_chart-metric-radius: var(--xh-sparkline-bar-radius, var(--xh-shape-inset));
+
+    /* 缺省中性：线与柱退到弱化色，只让标记点取品牌色相的色槽 1，读者先看到「现在在哪」 */
+    --xh-_sparkline-color: var(--xh-sparkline-color, var(--xh-chart-deemphasis));
+    --xh-_sparkline-accent: var(--xh-sparkline-accent-color, var(--xh-chart-categorical-1));
+
+    display: inline-block;
+    inline-size: var(--xh-sparkline-width, 6rem);
+    /* 级联兜底：先写一行的高度算式（正文字号 × 正文行距），再写 1lh。
+       1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。 */
+    block-size: var(--xh-sparkline-height, calc(var(--xh-text-body-size) * var(--xh-text-body-leading)));
+    block-size: var(--xh-sparkline-height, 1lh);
+    /* 高度正好是一个行盒：顶边贴行盒顶边，行高不被撑开；居中对齐会按字的 x 高度再挪半格，行盒就多出一截 */
+    vertical-align: top;
+  }
+
+  /* 写了语气就整条取语气色：颜色本身带好坏含义，线、柱与标记点同色 */
+  [data-scope='sparkline'][data-part='root'][data-tone]:not([data-tone='neutral']) {
+    --xh-_sparkline-color: var(--xh-sparkline-color, var(--xh-_tone));
+    --xh-_sparkline-accent: var(--xh-sparkline-accent-color, var(--xh-_tone));
+  }
+
+  /* 参考带是注释：淡底画在数据之下 */
+  [data-scope='sparkline'][data-part='band'] {
+    fill: var(--xh-sparkline-band-bg, var(--xh-bg-subtle));
+    stroke: none;
+  }
+
+  [data-scope='sparkline'][data-part='line'] {
+    fill: none;
+    stroke: var(--xh-_sparkline-color);
+    stroke-width: var(--xh-_chart-metric-line-width);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  /* 面积：线色淡洗，上沿是同一条折线 */
+  [data-scope='sparkline'][data-part='area-fill'] {
+    fill: var(--xh-_sparkline-color);
+    fill-opacity: var(--xh-chart-area-alpha);
+    stroke: none;
+  }
+
+  /* 柱：相邻柱之间的间隙由几何留出，不画描边；标出的那几根换成强调色 */
+  [data-scope='sparkline'][data-part='bar'] {
+    fill: var(--xh-_sparkline-color);
+    stroke: none;
+  }
+
+  [data-scope='sparkline'][data-part='bar'][data-marker] {
+    fill: var(--xh-_sparkline-accent);
+  }
+
+  /* 盈亏：正负各取涨跌色，缺省绿涨红跌，主题覆盖令牌即可对调 */
+  [data-scope='sparkline'][data-part='bar'][data-trend='rise'] {
+    fill: var(--xh-chart-rise);
+  }
+
+  [data-scope='sparkline'][data-part='bar'][data-trend='fall'] {
+    fill: var(--xh-chart-fall);
+  }
+
+  /* 标记点带一圈承载面色的描边环，压在线上也分得开 */
+  [data-scope='sparkline'][data-part='dot'] {
+    fill: var(--xh-_sparkline-accent);
+    stroke: var(--xh-chart-surface);
+    stroke-width: var(--xh-chart-gap);
+  }
+
+  /* 首次出现：折线从头描到尾，连接层在它入场的这一轮写 data-drawing 与 pathLength="1"，过渡结束即撤掉 */
+  [data-scope='sparkline'][data-part='line'][data-drawing] {
+    stroke-dasharray: 1;
+    animation: xh-draw var(--xh-motion-duration-reveal) var(--xh-motion-ease-continuous) both;
+  }
+
+  /* 标记点等描线的笔尖扫到才淡入：连接层写入它占入场时长的比例，乘上入场时长就是延迟 */
+  [data-scope='sparkline'][data-part='dot'][data-drawing] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
+    animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
+  }
+
+  /* 减弱动效下折线直接在场，只随过渡淡入。两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='sparkline'][data-part='line'][data-drawing] {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='sparkline'][data-part='line'][data-drawing] {
+    animation: none;
+  }
+
+  /* 强制色：线与柱取系统文字色，标出的点与柱取强调色；面积不铺，参考带只留轮廓；
+     盈亏的正负靠在中线上方还是下方表达，不靠颜色 */
+  @media (forced-colors: active) {
+    [data-scope='sparkline'][data-part='band'] {
+      fill: none;
+      stroke: GrayText;
+      stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='sparkline'][data-part='line'] {
+      stroke: CanvasText;
+    }
+
+    [data-scope='sparkline'][data-part='area-fill'] {
+      fill: none;
+    }
+
+    [data-scope='sparkline'][data-part='bar'],
+    [data-scope='sparkline'][data-part='bar'][data-trend] {
+      fill: CanvasText;
+    }
+
+    [data-scope='sparkline'][data-part='bar'][data-marker],
+    [data-scope='sparkline'][data-part='dot'] {
+      fill: Highlight;
+    }
+
+    [data-scope='sparkline'][data-part='dot'] {
+      stroke: Canvas;
+    }
+  }
+
+  [data-scope='sparkline'][data-part='root'][hidden] {
+    display: none;
+  }
+}
