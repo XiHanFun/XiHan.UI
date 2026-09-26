@@ -6,6 +6,7 @@
 // 定义 anchor 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { LiquidIndicator } from '../shared/indicator'
 
 /** 读屏文案，默认英文。 */
 export interface AnchorTranslations {
@@ -49,6 +50,8 @@ export interface AnchorRefs {
   getScrollEl: () => HTMLElement | null
   /** 链接集合的查询容器（list），同时是指示条定位的参照系。 */
   getListEl: () => HTMLElement | null
+  /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
+  liquidIndicator?: LiquidIndicator | null
 }
 
 export interface AnchorSchema extends MachineSchema {
@@ -81,6 +84,8 @@ export interface AnchorSchema extends MachineSchema {
     value: string | null
     /** 指示条的测量结果；没有激活项或无法测量时为 null。 */
     indicator: AnchorIndicatorRect | null
+    /** 液态档下指示器沿主轴比目标长出的比例，皮肤据它在另一个方向上压扁；标准档与停稳时为 0。 */
+    indicatorStretch: number
     /** 按压通道：Space / Enter 或触屏按住的链接 value。抬起、失焦或指针取消即清空，与激活项互相独立。 */
     pressedValue: string | null
   }
@@ -104,7 +109,7 @@ export interface AnchorSchema extends MachineSchema {
   tag: never
   guard: 'isSmooth' | 'isTargetReached' | 'canPress'
   action: 'setValue' | 'scrollToTarget' | 'measureIndicator' | 'startPress' | 'endPress'
-  effect: 'trackScroll' | 'trackIndicatorLayout' | 'waitForScrollLock'
+  effect: 'trackScroll' | 'trackIndicatorLayout' | 'waitForScrollLock' | 'trackLiquidIndicator'
 }
 
 export interface AnchorApi<T extends PropTypes = PropTypes> {

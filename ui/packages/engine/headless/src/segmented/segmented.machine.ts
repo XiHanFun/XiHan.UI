@@ -7,7 +7,7 @@
 
 import type { SegmentedIndicatorRect, SegmentedNode, SegmentedSchema } from './segmented.types'
 import { itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
-import { measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
+import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { segmentedItemQuery } from './segmented.anatomy'
 
 const { createMachine } = setup<SegmentedSchema>()
@@ -35,16 +35,18 @@ export const segmentedMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     // 量测结果不受控、不对外通知
     indicator: cell<SegmentedIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
+    indicatorStretch: cell<number>(() => ({ defaultValue: 0 })),
     // 按压通道：正被按住的段（按 value 记），与选中、焦点锚点无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getRootEl: () => null,
+    liquidIndicator: null,
   }),
   initialState: () => 'idle',
   // 挂载即量一次指示器
   entry: ['measureIndicator'],
-  effects: ['trackIndicatorLayout'],
+  effects: ['trackIndicatorLayout', 'trackLiquidIndicator'],
   watch: ({ track, context, prop, action }) => {
     // 选中值一变就把指示器挪过去
     track([context.dep('value')], () => action(['measureIndicator']))
@@ -123,24 +125,48 @@ export const segmentedMachine = createMachine({
         const run = (): void => {
           const root = refs.get('getRootEl')()
           const value = context.get('value')
+          // 量到的落点交给液态指示器：液态档下选中项一变，两沿走弹簧过去；其余直接落定
+          const place = (box: SegmentedIndicatorRect | null): void => {
+            const liquid = refs.get('liquidIndicator')
+            if (liquid)
+              liquid.place(box, value)
+            else context.set('indicator', box)
+          }
           if (!root || value == null) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           const item = queryItems(root, segmentedItemQuery).find(el => itemValue(el) === value)
           if (!item) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           // 量排布位而不是屏幕矩形：整组放在正在缩放进场的对话框里时，矩形量到的是缩小后的值。
           // 方向缺省从根节点现读，与皮肤按 :dir(rtl) 翻转位移同一个来源；作者显式给的 dir 说了算
-          context.set('indicator', measureIndicatorBox(root, item, prop('dir')))
+          place(measureIndicatorBox(root, item, prop('dir')))
         }
         run()
         flush(run)
       },
     },
     effects: {
+      /** 液态档的双沿指示器：建好放进 refs，先把眼下的落点交给它，之后的落位都经它走。 */
+      trackLiquidIndicator: ({ refs, prop, context }) => {
+        const liquid = createLiquidIndicator({
+          axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
+          host: () => refs.get('getRootEl')(),
+          onFrame: (box, stretch) => {
+            context.set('indicator', box)
+            context.set('indicatorStretch', stretch)
+          },
+        })
+        liquid.place(context.get('indicator'), context.get('value'))
+        refs.set('liquidIndicator', liquid)
+        return () => {
+          liquid.dispose()
+          refs.set('liquidIndicator', null)
+        }
+      },
       /** 根或段的尺寸一变（换行、容器变窄、段文案变长）、段增减、字体加载完成，就重量指示器。 */
       trackIndicatorLayout: ({ refs, scope, send, flush }) => {
         let disposed = false

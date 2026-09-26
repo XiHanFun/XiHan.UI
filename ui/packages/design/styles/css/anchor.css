@@ -137,6 +137,7 @@
     --xh-_anchor-indicator-y: 0;
     --xh-_anchor-indicator-w: 0;
     --xh-_anchor-indicator-h: 0;
+    --xh-_anchor-indicator-stretch: 0;
 
     position: absolute;
     display: block;
@@ -175,6 +176,20 @@
   /* transform 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
   [data-scope='anchor'][data-part='indicator'][data-orientation='horizontal']:dir(rtl) {
     transform: translate(calc(-1 * var(--xh-_anchor-indicator-x)), 0);
+  }
+
+  /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
+     被拉长时在另一个方向上压扁（竖排缺省压行向，横排压块向），表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+  :where([data-material='liquid']) [data-scope='anchor'][data-part='indicator'] {
+    --xh-_anchor-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_anchor-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+    scale: var(--xh-_anchor-indicator-squash) 1;
+    transition: none;
+  }
+
+  :where([data-material='liquid']) [data-scope='anchor'][data-part='indicator'][data-orientation='horizontal'] {
+    scale: 1 var(--xh-_anchor-indicator-squash);
+    transition: none;
   }
 
   /* 目录里没放 indicator 部件时，当前那一节的链接自画一条静态指示线（导航当前页）：

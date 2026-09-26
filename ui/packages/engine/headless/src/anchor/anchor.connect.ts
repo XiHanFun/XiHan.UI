@@ -19,6 +19,7 @@ export function connectAnchor<T extends PropTypes>(
   const { context, prop, send } = service
   const value = context.get('value') ?? null
   const indicator = context.get('indicator')
+  const indicatorStretch = context.get('indicatorStretch')
   const orientation = prop('orientation') ?? 'vertical'
   const label = prop('translations')?.root ?? 'Anchor navigation'
   const smooth = !!prop('smooth')
@@ -113,6 +114,8 @@ export function connectAnchor<T extends PropTypes>(
             '--xh-_anchor-indicator-y': `${indicator.blockStart}px`,
             '--xh-_anchor-indicator-w': `${indicator.inlineSize}px`,
             '--xh-_anchor-indicator-h': `${indicator.blockSize}px`,
+            // 液态档下两沿走弹簧时被拉长的比例，皮肤据它压扁；标准档恒为 0
+            '--xh-_anchor-indicator-stretch': String(indicatorStretch),
           }
         : undefined,
     }),

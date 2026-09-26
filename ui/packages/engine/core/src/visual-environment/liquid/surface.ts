@@ -35,8 +35,8 @@ interface Coordinator {
 
 const coordinators = new WeakMap<Document, Coordinator>()
 
-/** 部件所在的材质轴：最近一层 data-material 声明为 liquid 才生效。 */
-function isLiquid(el: Element): boolean {
+/** 元素所在的材质轴：最近一层 data-material 声明为 liquid 才算液态档。 */
+export function isLiquidMaterial(el: Element): boolean {
   return el.closest('[data-material]')?.getAttribute('data-material') === 'liquid'
 }
 
@@ -86,12 +86,15 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
   const visible = (rect: DOMRect): boolean =>
     rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.right > 0 && rect.top < win.innerHeight && rect.left < win.innerWidth
 
+  // 部件变尺寸时重新取样、重算折射；回调里的 schedule 是函数声明，这时已可调用
+  const resizer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => schedule({ refract: true, probe: true })) : null
+
   /** 按材质轴重新分组：轴改成 liquid 的部件开始跟踪，改走的撤回。 */
   function sync(): void {
     for (const el of members) {
       if (!el.isConnected)
         continue
-      const liquid = isLiquid(el)
+      const liquid = isLiquidMaterial(el)
       if (liquid && !active.has(el)) {
         active.set(el, { tone: null })
         resizer?.observe(el)
@@ -195,7 +198,6 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     })
   }
 
-  const resizer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => schedule({ refract: true, probe: true })) : null
   // 材质轴可以写在任意祖先上，也可以随时改：盯住文档里所有 data-material 的变化
   const axis = typeof MutationObserver === 'function'
     ? new MutationObserver(() => schedule({ sync: true }))

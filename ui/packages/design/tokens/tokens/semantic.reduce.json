@@ -76,6 +76,10 @@
     "scale-drag": {
       "$type": "number",
       "$value": 1
+    },
+    "scale-squash": {
+      "$type": "number",
+      "$value": 1
     }
   }
 }

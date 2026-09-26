@@ -20,6 +20,7 @@ export function connectNavigationMenu<T extends PropTypes>(
   // cell 初值可能是 undefined，这里归一成 null
   const value = context.get('value') ?? null
   const indicator = context.get('indicator')
+  const indicatorStretch = context.get('indicatorStretch')
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir')
   const loop = prop('loop') ?? true
@@ -257,6 +258,8 @@ export function connectNavigationMenu<T extends PropTypes>(
             '--xh-_navigation-menu-indicator-y': `${indicator.blockStart}px`,
             '--xh-_navigation-menu-indicator-w': `${indicator.inlineSize}px`,
             '--xh-_navigation-menu-indicator-h': `${indicator.blockSize}px`,
+            // 液态档下两沿走弹簧时被拉长的比例，皮肤据它压扁；标准档恒为 0
+            '--xh-_navigation-menu-indicator-stretch': String(indicatorStretch),
           }
         : undefined,
     }),

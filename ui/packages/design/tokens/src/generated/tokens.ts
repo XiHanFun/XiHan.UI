@@ -403,6 +403,7 @@ export const tokens = {
   "--xh-motion-scale-exit": "0.98",
   "--xh-motion-scale-press": "0.97",
   "--xh-motion-scale-drag": "1.12",
+  "--xh-motion-scale-squash": "0.86",
   "--xh-motion-spring-snappy-stiffness": "380",
   "--xh-motion-spring-snappy-damping": "30",
   "--xh-motion-spring-smooth-stiffness": "300",

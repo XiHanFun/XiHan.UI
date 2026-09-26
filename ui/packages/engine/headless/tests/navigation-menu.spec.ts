@@ -743,6 +743,8 @@ describe('connectNavigationMenu 输出', () => {
       '--xh-_navigation-menu-indicator-y': '0px',
       '--xh-_navigation-menu-indicator-w': '80px',
       '--xh-_navigation-menu-indicator-h': '40px',
+      // 拉伸比：只有液态档下两沿走弹簧时才大于 0，标准档恒为 0
+      '--xh-_navigation-menu-indicator-stretch': '0',
     })
   })
 

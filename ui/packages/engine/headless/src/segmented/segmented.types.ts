@@ -6,6 +6,7 @@
 // 定义 segmented 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { LiquidIndicator } from '../shared/indicator'
 
 export interface SegmentedValueChangeDetails {
   /** 当前选中值；没有选中任何项时为 null。 */
@@ -51,6 +52,8 @@ export interface SegmentedIndicatorRect {
 export interface SegmentedRefs {
   /** 条目集合的查询容器，同时是指示器定位的参照系。 */
   getRootEl: () => HTMLElement | null
+  /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
+  liquidIndicator?: LiquidIndicator | null
 }
 
 export interface SegmentedSchema extends MachineSchema {
@@ -96,8 +99,10 @@ export interface SegmentedSchema extends MachineSchema {
     value: string | null
     /** 焦点位于组内时的瞬态锚点，焦点离开组即清空。 */
     focusedValue: string | null
-    /** 指示器的测量结果；没有选中项或无法测量时为 null。 */
+    /** 指示器要画的盒子：量到的落点；液态档下两沿走弹簧时是这一帧的位置。没有选中项或无法测量时为 null。 */
     indicator: SegmentedIndicatorRect | null
+    /** 液态档下指示器沿主轴比目标长出的比例，皮肤据它在另一个方向上压扁；标准档与停稳时为 0。 */
+    indicatorStretch: number
     /** 按压通道：Space / Enter 或触屏按住的段 value。抬起、失焦或指针取消即清空，与选中互相独立。 */
     pressedValue: string | null
   }
@@ -128,7 +133,7 @@ export interface SegmentedSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackIndicatorLayout'
+  effect: 'trackIndicatorLayout' | 'trackLiquidIndicator'
 }
 
 export interface SegmentedApi<T extends PropTypes = PropTypes> {

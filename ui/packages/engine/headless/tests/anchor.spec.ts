@@ -336,6 +336,8 @@ describe('anchor 指示条量测', () => {
       '--xh-_anchor-indicator-y': '40px',
       '--xh-_anchor-indicator-w': '160px',
       '--xh-_anchor-indicator-h': '24px',
+      // 拉伸比：只有液态档下两沿走弹簧时才大于 0，标准档恒为 0
+      '--xh-_anchor-indicator-stretch': '0',
     })
   })
 

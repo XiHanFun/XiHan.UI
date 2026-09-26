@@ -8,7 +8,7 @@
 import type { Scope } from '@xihan-ui/core'
 import type { AnchorIndicatorRect, AnchorSchema, AnchorTargetOffset } from './anchor.types'
 import { itemValue, queryItems, resolveScrollBehavior, setTimeoutEffect, setup } from '@xihan-ui/core'
-import { measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
+import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { anchorItemQuery } from './anchor.anatomy'
 
 const { createMachine } = setup<AnchorSchema>()
@@ -93,17 +93,19 @@ export const anchorMachine = createMachine({
     })),
     // 量测结果不受控、不对外通知
     indicator: cell<AnchorIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
+    indicatorStretch: cell<number>(() => ({ defaultValue: 0 })),
     // 按压通道：正被按住的链接（按 value 记），与激活项、平滑滚动锁无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getScrollEl: () => null,
     getListEl: () => null,
+    liquidIndicator: null,
   }),
   initialState: () => 'idle',
   // 挂载即量一次指示条
   entry: ['measureIndicator'],
-  effects: ['trackScroll', 'trackIndicatorLayout'],
+  effects: ['trackScroll', 'trackIndicatorLayout', 'trackLiquidIndicator'],
   watch: ({ track, context, action }) => {
     // 激活值一变就重量指示条
     track([context.dep('value')], () => action(['measureIndicator']))
@@ -201,24 +203,48 @@ export const anchorMachine = createMachine({
         const run = (): void => {
           const list = refs.get('getListEl')()
           const value = context.get('value')
+          // 量到的落点交给液态指示器：液态档下选中项一变，两沿走弹簧过去；其余直接落定
+          const place = (box: AnchorIndicatorRect | null): void => {
+            const liquid = refs.get('liquidIndicator')
+            if (liquid)
+              liquid.place(box, value)
+            else context.set('indicator', box)
+          }
           if (!list || value == null) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           const link = queryItems(list, anchorItemQuery).find(el => itemValue(el) === value)
           if (!link) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           // 量排布位而不是 rect：目录放在正在缩放进场的浮层里时 rect 量到的是缩小后的值。
           // 方向缺省从目录现读，与皮肤按 :dir(rtl) 翻转位移同一个来源
-          context.set('indicator', measureIndicatorBox(list, link, prop('dir')))
+          place(measureIndicatorBox(list, link, prop('dir')))
         }
         run()
         flush(run)
       },
     },
     effects: {
+      /** 液态档的双沿指示器：建好放进 refs，先把眼下的落点交给它，之后的落位都经它走。 */
+      trackLiquidIndicator: ({ refs, prop, context }) => {
+        const liquid = createLiquidIndicator({
+          axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
+          host: () => refs.get('getListEl')(),
+          onFrame: (box, stretch) => {
+            context.set('indicator', box)
+            context.set('indicatorStretch', stretch)
+          },
+        })
+        liquid.place(context.get('indicator'), context.get('value'))
+        refs.set('liquidIndicator', liquid)
+        return () => {
+          liquid.dispose()
+          refs.set('liquidIndicator', null)
+        }
+      },
       /** 目录或链接变尺寸、链接增减、字体加载完成都会让指示条错位：合并到一帧重量。 */
       trackIndicatorLayout: ({ refs, scope, action, flush }) => {
         let disposed = false

@@ -410,6 +410,7 @@
     --xh-motion-scale-exit: 0.98;
     --xh-motion-scale-press: 0.97;
     --xh-motion-scale-drag: 1.12;
+    --xh-motion-scale-squash: 0.86;
     --xh-motion-spring-snappy-stiffness: 380;
     --xh-motion-spring-snappy-damping: 30;
     --xh-motion-spring-smooth-stiffness: 300;
@@ -1154,6 +1155,7 @@
       --xh-motion-scale-breathe: 1;
       --xh-motion-scale-halo: 1;
       --xh-motion-scale-drag: 1;
+      --xh-motion-scale-squash: 1;
     }
   }
 
@@ -1178,6 +1180,7 @@
     --xh-motion-scale-breathe: 1;
     --xh-motion-scale-halo: 1;
     --xh-motion-scale-drag: 1;
+    --xh-motion-scale-squash: 1;
   }
 
   /* 完整动效的 DOM 钩子：系统要求减弱、而应用或局部容器选择完整动效时，恢复减弱档覆盖掉的基线取值。
@@ -1202,6 +1205,7 @@
     --xh-motion-scale-exit: 0.98;
     --xh-motion-scale-press: 0.97;
     --xh-motion-scale-drag: 1.12;
+    --xh-motion-scale-squash: 0.86;
   }
 
   /* 打印：海拔投影与材质光效取消。皮肤消费的是语义角色，

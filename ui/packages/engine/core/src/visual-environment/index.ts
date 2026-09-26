@@ -14,7 +14,7 @@ export {
 } from './apply'
 export type { EnvSignals } from './env'
 export { createEnvSignals, SSR_ENV } from './env'
-export { trackLiquidSurface } from './liquid/surface'
+export { isLiquidMaterial, trackLiquidSurface } from './liquid/surface'
 export { pickThemeState, resolveTheme, resolveVisualEnvironment } from './resolve'
 export type {
   BrandId,

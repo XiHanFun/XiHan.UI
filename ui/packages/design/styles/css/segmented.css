@@ -215,6 +215,7 @@
     --xh-_segmented-indicator-y: 0;
     --xh-_segmented-indicator-w: 0;
     --xh-_segmented-indicator-h: 0;
+    --xh-_segmented-indicator-stretch: 0;
 
     /* 摆在行首块首，位置交给 transform（只走合成），尺寸跟着段宽走 */
     position: absolute;
@@ -245,6 +246,20 @@
   /* translate 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
   [data-scope='segmented'][data-part='indicator']:dir(rtl) {
     transform: translate(calc(-1 * var(--xh-_segmented-indicator-x)), var(--xh-_segmented-indicator-y));
+  }
+
+  /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
+     被拉长时在另一个方向上压扁，表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+  :where([data-material='liquid']) [data-scope='segmented'][data-part='indicator'] {
+    --xh-_segmented-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_segmented-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+    scale: 1 var(--xh-_segmented-indicator-squash);
+    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  :where([data-material='liquid']) [data-scope='segmented'][data-part='root'][data-orientation='vertical']
+    [data-scope='segmented'][data-part='indicator'] {
+    scale: var(--xh-_segmented-indicator-squash) 1;
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，

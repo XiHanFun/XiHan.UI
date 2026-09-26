@@ -293,6 +293,7 @@
     --xh-_navigation-menu-indicator-y: 0;
     --xh-_navigation-menu-indicator-w: 0;
     --xh-_navigation-menu-indicator-h: 0;
+    --xh-_navigation-menu-indicator-stretch: 0;
 
     position: absolute;
     display: block;
@@ -330,6 +331,20 @@
     transition:
       transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
+     被拉长时在另一个方向上压扁（横排缺省压块向，竖排压行向），表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+  :where([data-material='liquid']) [data-scope='navigation-menu'][data-part='indicator'] {
+    --xh-_navigation-menu-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_navigation-menu-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+    scale: 1 var(--xh-_navigation-menu-indicator-squash);
+    transition: none;
+  }
+
+  :where([data-material='liquid']) [data-scope='navigation-menu'][data-part='indicator'][data-orientation='vertical'] {
+    scale: var(--xh-_navigation-menu-indicator-squash) 1;
+    transition: none;
   }
 
   /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content。

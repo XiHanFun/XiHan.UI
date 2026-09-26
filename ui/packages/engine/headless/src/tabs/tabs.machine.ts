@@ -13,7 +13,7 @@ import { durations, frameLoop, frameNow, isTweenDone, resolveMotionPreference, t
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
-import { measureIndicatorBox, sameIndicatorBox } from '../shared/indicator'
+import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox } from '../shared/indicator'
 import { tabsAnatomy, tabsTriggerQuery } from './tabs.anatomy'
 
 const { createMachine } = setup<TabsSchema>()
@@ -101,6 +101,7 @@ export const tabsMachine = createMachine({
     announcement: cell<string>(() => ({ defaultValue: '' })),
     // 量测结果不受控、不对外通知
     indicator: cell<TabsIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
+    indicatorStretch: cell<number>(() => ({ defaultValue: 0 })),
     // 标签带的位移：放不下时整条标签带沿主轴往起始端挪了多少（px，≥ 0），上限是内容长度超出可见长度的那一截；
     // 放得下时上限为 0。两者都不受控、不对外通知，翻页钮的显隐与禁用由它们推出
     scroll: cell<number>(() => ({ defaultValue: 0 })),
@@ -119,9 +120,10 @@ export const tabsMachine = createMachine({
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是状态树一行都不用改
-  effects: ['trackPointer', 'trackResize', 'trackStrip'],
+  effects: ['trackPointer', 'trackResize', 'trackStrip', 'trackLiquidIndicator'],
   refs: () => ({
     getListEl: () => null,
+    liquidIndicator: null,
     gesture: null,
     tabDrag: null,
     scrollTween: null,
@@ -168,6 +170,23 @@ export const tabsMachine = createMachine({
   },
   implementations: {
     effects: {
+      /** 液态档的双沿指示器：建好放进 refs，先把眼下的落点交给它，之后的落位都经它走。 */
+      trackLiquidIndicator: ({ refs, prop, context }) => {
+        const liquid = createLiquidIndicator({
+          axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
+          host: () => refs.get('getListEl')(),
+          onFrame: (box, stretch) => {
+            context.set('indicator', box)
+            context.set('indicatorStretch', stretch)
+          },
+        })
+        liquid.place(context.get('indicator'), context.get('value'))
+        refs.set('liquidIndicator', liquid)
+        return () => {
+          liquid.dispose()
+          refs.set('liquidIndicator', null)
+        }
+      },
       // 挂 resize 监听器重量标签带与指示条；disposed 标记挡掉 cleanup 后仍被触发的那一次
       trackResize: ({ scope, action }) => {
         let disposed = false
@@ -488,19 +507,26 @@ export const tabsMachine = createMachine({
         const run = (): void => {
           const list = refs.get('getListEl')()
           const value = context.get('value') ?? null
+          // 量到的落点交给液态指示器：液态档下选中项一变，两沿走弹簧过去；其余直接落定
+          const place = (box: TabsIndicatorRect | null): void => {
+            const liquid = refs.get('liquidIndicator')
+            if (liquid)
+              liquid.place(box, value)
+            else context.set('indicator', box)
+          }
           if (!list || value == null) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           const trigger = queryItems(list, tabsTriggerQuery).find(el => itemValue(el) === value)
           if (!trigger) {
-            context.set('indicator', null)
+            place(null)
             return
           }
           // 指示条是 list 的绝对定位后代，落点以 list 的内衬盒为原点，量排布位而不是 rect：
           // 标签带放不下时整条标签带用 translate 挪，指示条跟着同一个位移走，位移中途 rect 是半路上的值；
           // 祖先带缩放时 rect 也跟着缩。方向缺省从 list 现读，与皮肤按 :dir(rtl) 翻转位移同一个来源
-          context.set('indicator', measureIndicatorBox(list, trigger, prop('dir')))
+          place(measureIndicatorBox(list, trigger, prop('dir')))
         }
         run()
         flush(run)
