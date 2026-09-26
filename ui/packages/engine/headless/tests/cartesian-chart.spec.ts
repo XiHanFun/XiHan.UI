@@ -354,6 +354,21 @@ describe('图例与联动', () => {
   })
 })
 
+describe('横向数值轴', () => {
+  it('取整后的两端都落在刻度上：各种宽度与量级下，第一个与最后一个刻度就是定义域的两端', async () => {
+    for (const [width, max] of [[400, 230], [600, 1830], [320, 97], [900, 48000], [500, 7.3]] as const) {
+      const rig = await makeRig({ data: [{ m: 'a', v: max * 0.4 }, { m: 'b', v: max }], series: [{ mark: 'bar', x: 'm', y: 'v' }], orientation: 'horizontal' }, { width, height: 240 })
+      const layout = rig.api().model.scene!.layout
+      const ticks = layout.valueAxis.ticks.map(t => t.value as number)
+      expect(ticks[0]).toBe(layout.valueScale.domain[0])
+      expect(ticks.at(-1)).toBe(layout.valueScale.domain[1])
+      // 相邻标签之间留得下两行字高
+      const gaps = layout.valueAxis.ticks.slice(1).map((t, i) => t.offset - layout.valueAxis.ticks[i]!.offset)
+      expect(Math.min(...gaps)).toBeGreaterThanOrEqual(layout.font.lineHeight * 2)
+    }
+  })
+})
+
 describe('数据标签', () => {
   let rigMeasure: (text: string) => number = () => 0
   const labelsOf = (api: CartesianChartApi, part = 'data-label'): TextMark[] => api.scene.layers.front.filter(m => m.part === part) as TextMark[]
