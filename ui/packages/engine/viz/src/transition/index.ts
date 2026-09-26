@@ -7,7 +7,7 @@
 // 计时、缓动与减弱动效判断由调用方提供（取自动效包），这里只按经过的毫秒数给出那一帧的场景。
 
 import type { KeyedPoint } from '../interpolate/points'
-import type { ArcMark, AreaMark, GroupMark, LineMark, Mark, RectMark, Scene, SceneLayer, SymbolMark, TextMark } from '../scene/types'
+import type { ArcMark, AreaMark, LineMark, Mark, RectMark, Scene, SceneLayer, SymbolMark, TextMark } from '../scene/types'
 import { invalidArgument } from '../errors'
 import { interpolatePoints } from '../interpolate/points'
 import { LAYERS } from '../scene/scene'
@@ -69,10 +69,29 @@ function collapsed(mark: Mark, style: EnterStyle): Mark {
   }
 }
 
-/** 同类标记之间按参数插值；类型不同时直接取终态。 */
-function between(from: Mark, to: Mark, geometry: boolean): (t: number) => Mark {
+interface PlanOptions {
+  readonly geometry: boolean
+  readonly enterFrom: EnterStyle
+}
+
+/**
+ * 同类标记之间按参数插值；类型不同时直接取终态。
+ * 分组逐个子标记对齐：系列分组里新增的柱照样从基线长出、删掉的柱照样收回基线，减弱动效下子标记照样淡入淡出。
+ */
+function between(from: Mark, to: Mark, options: PlanOptions): (t: number) => Mark {
   const opacity = (t: number): number => lerp(from.opacity ?? 1, to.opacity ?? 1, t)
-  if (!geometry || from.kind !== to.kind)
+  if (from.kind === 'group' && to.kind === 'group') {
+    const children = planMarks(from.children, to.children, options)
+    const move = options.geometry
+    return t => ({
+      ...to,
+      x: move ? lerp(from.x ?? 0, to.x ?? 0, t) : to.x,
+      y: move ? lerp(from.y ?? 0, to.y ?? 0, t) : to.y,
+      children: children.map(track => track(t)).filter((m): m is Mark => m !== null),
+      opacity: opacity(t),
+    })
+  }
+  if (!options.geometry || from.kind !== to.kind)
     return t => ({ ...to, opacity: opacity(t) })
   switch (to.kind) {
     case 'rect': {
@@ -113,17 +132,6 @@ function between(from: Mark, to: Mark, geometry: boolean): (t: number) => Mark {
       // 终点精确等于新点序，删除的点在这一刻移除
       return t => ({ ...to, points: t >= 1 ? to.points : points(t) as KeyedPoint[], opacity: opacity(t) })
     }
-    case 'group': {
-      const a = from as GroupMark
-      const children = planMarks(a.children, to.children, { geometry, enterFrom: 'fade' })
-      return t => ({
-        ...to,
-        x: lerp(a.x ?? 0, to.x ?? 0, t),
-        y: lerp(a.y ?? 0, to.y ?? 0, t),
-        children: children.map(track => track(t)).filter((m): m is Mark => m !== null),
-        opacity: opacity(t),
-      })
-    }
     default:
       return t => ({ ...to, opacity: opacity(t) })
   }
@@ -132,30 +140,50 @@ function between(from: Mark, to: Mark, geometry: boolean): (t: number) => Mark {
 /** 一条轨迹：给局部进度 0–1 返回那一刻的标记；null 表示已经移除。 */
 type Track = (t: number) => Mark | null
 
-function planMarks(before: readonly Mark[], after: readonly Mark[], options: { geometry: boolean, enterFrom: EnterStyle }): Track[] {
+function planMarks(before: readonly Mark[], after: readonly Mark[], options: PlanOptions): Track[] {
   const previous = new Map(before.map(mark => [mark.key, mark]))
   const next = new Set(after.map(mark => mark.key))
   const tracks: Track[] = after.map((mark) => {
     const old = previous.get(mark.key)
-    if (old) {
-      const step = between(old, mark, options.geometry)
+    // 新分组当作从空分组更新过来：分组本身不淡入，子标记各按自己的方式进场
+    const origin = old ?? (mark.kind === 'group' ? { ...mark, children: [] } : null)
+    if (origin) {
+      const step = between(origin, mark, options)
       return t => (t >= 1 ? mark : step(t))
     }
-    const style: EnterStyle = !options.geometry || mark.kind === 'line' || mark.kind === 'symbol' || mark.kind === 'text' || mark.kind === 'path' || mark.kind === 'group'
+    const style: EnterStyle = !options.geometry || mark.kind === 'line' || mark.kind === 'symbol' || mark.kind === 'text' || mark.kind === 'path'
       ? 'fade'
       : options.enterFrom
-    const step = between(collapsed(mark, style), mark, true)
+    const step = between(collapsed(mark, style), mark, { ...options, geometry: true })
     return t => (t >= 1 ? mark : step(t))
   })
   for (const mark of before) {
     if (next.has(mark.key))
       continue
-    // 退场：收回基线（或原地）并淡出，期间不可命中；到终点时移除
-    const target = options.geometry ? { ...collapsed(mark, options.enterFrom === 'center' ? 'center' : 'baseline'), opacity: 0 } : { ...mark, opacity: 0 }
-    const step = between(mark, target, options.geometry)
+    // 退场：收回基线（或原地）并淡出，期间不可命中；到终点时移除。分组让子标记各自退场
+    const target = mark.kind === 'group'
+      ? { ...mark, children: [] }
+      : options.geometry ? { ...collapsed(mark, options.enterFrom === 'center' ? 'center' : 'baseline'), opacity: 0 } : { ...mark, opacity: 0 }
+    const step = between(mark, target, options)
     tracks.push(t => (t >= 1 ? null : { ...step(t), exiting: true }))
   }
   return tracks
+}
+
+/** 标记所属的系列：分组取第一个带数据的子标记。 */
+function seriesOf(mark: Mark | null): string | undefined {
+  if (!mark)
+    return undefined
+  if (mark.datum?.seriesId !== undefined)
+    return mark.datum.seriesId
+  if (mark.kind === 'group') {
+    for (const child of mark.children) {
+      const id = seriesOf(child)
+      if (id !== undefined)
+        return id
+    }
+  }
+  return undefined
 }
 
 const evaluators = new WeakMap<TransitionPlan, (elapsed: number) => Scene>()
@@ -168,17 +196,17 @@ export function planTransition(previous: Scene, next: Scene, options: Transition
   if (!(stagger >= 0) || !Number.isFinite(stagger))
     throw invalidArgument('错开步长必须是非负有限数', { stagger })
 
-  // 系列按在新场景里首次出现的次序错开
+  // 系列按在新场景里首次出现的次序错开；分组按它里面的系列算
   const seriesOrder = new Map<string, number>()
   for (const layer of LAYERS) {
     for (const mark of [...next.layers[layer], ...previous.layers[layer]]) {
-      const id = mark.datum?.seriesId
+      const id = seriesOf(mark)
       if (id !== undefined && !seriesOrder.has(id))
         seriesOrder.set(id, seriesOrder.size)
     }
   }
   const delayOf = (mark: Mark | null): number => {
-    const id = mark?.datum?.seriesId
+    const id = seriesOf(mark)
     return reducedMotion || id === undefined ? 0 : Math.min(seriesOrder.get(id) ?? 0, MAX_STAGGER_STEPS - 1) * stagger
   }
   const maxDelay = reducedMotion ? 0 : Math.min(Math.max(0, seriesOrder.size - 1), MAX_STAGGER_STEPS - 1) * stagger

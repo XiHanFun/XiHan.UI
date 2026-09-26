@@ -1,4 +1,4 @@
-import type { ArcMark, LineMark, Mark, RectMark, Scene } from '../src'
+import type { ArcMark, GroupMark, LineMark, Mark, RectMark, Scene } from '../src'
 import { describe, expect, it } from 'vitest'
 import { createScene, planTransition, sceneAt } from '../src'
 import { between, forAll, integer } from './helpers/property'
@@ -97,6 +97,40 @@ describe('过渡计划', () => {
     expect(find<RectMark>(at, 'b4')!.height).toBe(0)
     expect(find<RectMark>(at, 'b6')!.height).toBe(0)
     expect(find<RectMark>(sceneAt(plan, 139), 'b6')!.height).toBeCloseTo(49.5, 9)
+  })
+
+  it('分组：新分组不整体淡入，里面的柱各自从基线长出', () => {
+    const group = (key: string, children: Mark[]): GroupMark => ({ kind: 'group', key, part: 'series', children })
+    const plan = planTransition(scene([]), scene([group('g', [bar('a', 60, 's')])]), { duration: 100, easing: linear })
+    const start = find<GroupMark>(sceneAt(plan, 0), 'g')!
+    expect(start.opacity).toBe(1)
+    expect(start.children[0]).toMatchObject({ key: 'a', y: 100, height: 0, opacity: 1 })
+    expect(find<GroupMark>(sceneAt(plan, 50), 'g')!.children[0]).toMatchObject({ height: 30 })
+  })
+
+  it('分组：留下的分组里新增的柱从基线长出，删掉的柱收回基线', () => {
+    const group = (children: Mark[]): GroupMark => ({ kind: 'group', key: 'g', part: 'series', children })
+    const plan = planTransition(scene([group([bar('a', 60, 's')])]), scene([group([bar('b', 40, 's')])], 2), { duration: 100, easing: linear })
+    const mid = find<GroupMark>(sceneAt(plan, 50), 'g')!
+    expect(mid.children.find(m => m.key === 'b')).toMatchObject({ height: 20, opacity: 1 })
+    expect(mid.children.find(m => m.key === 'a')).toMatchObject({ height: 30, opacity: 0.5, exiting: true })
+  })
+
+  it('分组：整组退出时子标记各自收回基线，分组带退出标记，结束时移除', () => {
+    const plan = planTransition(scene([{ kind: 'group', key: 'g', part: 'series', children: [bar('a', 60, 's')] }]), scene([], 2), { duration: 100, easing: linear })
+    const mid = find<GroupMark>(sceneAt(plan, 50), 'g')!
+    expect(mid.exiting).toBe(true)
+    expect(mid.children[0]).toMatchObject({ height: 30, opacity: 0.5 })
+    expect(find(sceneAt(plan, 100), 'g')).toBeUndefined()
+  })
+
+  it('分组：按里面的系列错开；减弱动效下子标记照样淡入', () => {
+    const groups = ['s0', 's1'].map((s): GroupMark => ({ kind: 'group', key: s, part: 'series', children: [bar(`${s}:a`, 50, s)] }))
+    const staggered = planTransition(scene([]), scene(groups), { duration: 100, easing: linear, stagger: 20 })
+    expect(staggered.total).toBe(120)
+    expect(find<GroupMark>(sceneAt(staggered, 20), 's1')!.children[0]).toMatchObject({ height: 0 })
+    const reduced = planTransition(scene([]), scene(groups), { duration: 100, easing: linear, reducedMotion: true })
+    expect(find<GroupMark>(sceneAt(reduced, 50), 's0')!.children[0]).toMatchObject({ height: 50, opacity: 0.5 })
   })
 
   it('减弱动效：几何直接落到终态，只保留淡入淡出，不错开', () => {
