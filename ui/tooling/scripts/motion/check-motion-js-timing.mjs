@@ -5,9 +5,13 @@
 // 作者改令牌、容器写 data-motion，两边一起变。写死的毫秒数与 motion 包的 durations 常量表绕开了这条路。
 // 停留时长（提示停多久、自动播放间隔、长按判定）不是动效，作为组件属性的缺省值保留，但要登记在册、写清属于哪一类。
 //
-// 四条：
+// 六条：
 //   时长常量    —— 名字以 _DURATION / _MS / _DELAY / _INTERVAL / _TIMEOUT / _SPEED / _AFTER 结尾的数字常量
 //                 逐条登记类别与理由：停留类写明它是哪个属性的缺省值，做成内部取值的写明为什么不开放；
+//   字面量延时  —— 计时器（setTimeout、setTimeoutEffect、setIntervalEffect）的延时不写非零的数字字面量，
+//                 写成上一条里登记在册的具名常量，否则它绕开了登记；
+//   属性延时    —— 延时取自组件属性时经机器的 setTimeoutEffect：负数、NaN 与无穷由它统一报 INVALID_DELAY，
+//                 裸 setTimeout 会把它们悄悄当成 0；
 //   时长表      —— 不直接读 motion 的 durations 常量表，时长从元素读令牌；
 //   setInterval —— 只许出现在登记的文件里；
 //   帧循环      —— 自己把自己再交给 requestAnimationFrame 的函数要登记理由，动画循环改用 motion 的 frameLoop。
@@ -89,6 +93,46 @@ function blockEnd(text, open) {
 const CONSTANT = /(?:export\s+)?const\s+([A-Z][A-Z0-9_]*_(?:DURATION|MS|DELAY|INTERVAL|TIMEOUT|SPEED|AFTER))\s*(?::[^=]+)?=\s*[\d_.]+/g
 const DURATIONS_IMPORT = /import\s*\{[^}]*(?<![\w-])durations(?![\w-])[^}]*\}\s*from\s*'@xihan-ui\/motion'/
 const INTERVAL = /(?<![\w.])setInterval\(|\.setInterval\(/g
+/** 计时器调用的开括号：裸 setTimeout（含 win.setTimeout）与机器的定时原语分开认。 */
+const TIMER_CALL = /\b(setTimeout|setTimeoutEffect|setIntervalEffect)\(/g
+const NUMERIC_LITERAL = /^[\d_.]+$/
+
+/** 从开括号出发，按括号与引号配平取出顶层实参（逗号分隔）。 */
+function callArgs(text, open) {
+  const args = []
+  let depth = 0
+  let quote = null
+  let start = open + 1
+  for (let i = open; i < text.length; i++) {
+    const c = text[i]
+    if (quote) {
+      if (c === '\\')
+        i++
+      else if (c === quote)
+        quote = null
+      continue
+    }
+    if (c === '\'' || c === '"' || c === '`') {
+      quote = c
+    }
+    else if (c === '(' || c === '[' || c === '{') {
+      depth++
+    }
+    else if (c === ')' || c === ']' || c === '}') {
+      depth--
+      if (depth === 0) {
+        args.push(text.slice(start, i).trim())
+        return args
+      }
+    }
+    else if (c === ',' && depth === 1) {
+      args.push(text.slice(start, i).trim())
+      start = i + 1
+    }
+  }
+  return args
+}
+
 /** 具名函数、或以常量 / 变量接住的函数：名字与函数体起点。 */
 const FUNCTION_HEAD = /function\s+(\w+)\([^)]*\)[^{]*\{|(?:const|let)\s+(\w+)\s*=\s*(?:function[\w\s]*)?\([^)]*\)[^{]*\{/g
 
@@ -98,6 +142,7 @@ const backlogSeen = new Set()
 let constants = 0
 let intervals = 0
 let loops = 0
+let timers = 0
 
 function report(key, message) {
   if (key in BACKLOG) {
@@ -125,6 +170,20 @@ for (const root of ROOTS) {
 
     if (DURATIONS_IMPORT.test(text))
       report(`${rel}:durations`, `${rel}  直接读 motion 的 durations 常量表\n    —— 时长从元素读令牌（readMotion(el).duration(...)），作者改令牌、容器写 data-motion 才一起生效`)
+
+    for (const m of text.matchAll(TIMER_CALL)) {
+      // 原语自己的定义与转交不算调用方
+      if (rel === 'core/src/machine/delay.ts')
+        continue
+      const delay = callArgs(text, m.index + m[0].length - 1)[1]
+      if (delay === undefined)
+        continue
+      timers++
+      if (NUMERIC_LITERAL.test(delay) && Number(delay.replaceAll('_', '')) !== 0)
+        report(`${rel}:${lineOf(m.index)}:literal`, `${rel}:${lineOf(m.index)}  ${m[1]} 的延时写成了字面量 ${delay}\n    —— 写成具名常量（名字以 _DELAY / _TIMEOUT 等结尾）并登记进 TIMING_CONSTANTS，写清它是哪个属性的缺省值或为什么是内部取值`)
+      if (m[1] === 'setTimeout' && /\bprop\(/.test(delay))
+        report(`${rel}:${lineOf(m.index)}:prop`, `${rel}:${lineOf(m.index)}  属性给的延时交给了裸 setTimeout：${delay}\n    —— 改用机器的 setTimeoutEffect，负数、NaN 与无穷由它统一报 INVALID_DELAY，不会被当成 0 立即触发`)
+    }
 
     for (const m of text.matchAll(INTERVAL)) {
       intervals++
@@ -172,6 +231,6 @@ if (problems.length) {
 }
 
 console.log(
-  `[check-motion-js-timing] 通过：${constants} 个时长常量、${intervals} 处 setInterval、${loops} 个自调度帧回调都已登记在册；`
+  `[check-motion-js-timing] 通过：${constants} 个时长常量、${intervals} 处 setInterval、${loops} 个自调度帧回调都已登记在册，${timers} 处计时器的延时都不是字面量、属性延时都经 setTimeoutEffect；`
   + `待办 ${Object.keys(BACKLOG).length} 条`,
 )
