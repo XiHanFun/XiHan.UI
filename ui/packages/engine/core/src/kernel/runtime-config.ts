@@ -10,7 +10,6 @@ import type { Scope } from './scope'
 import type { LayerRegistry } from './structure/layer-registry'
 // RuntimeConfig：环境包，由适配器解析后以纯对象传入。
 import type { Direction } from './types'
-import { resolveMotionPreference } from '@xihan-ui/motion'
 import { isDocument, isShadowRoot, isSSR, isWindow } from './guards'
 import { createCounterIdGenerator } from './id-generator'
 import { resolveLocale } from './locale'
@@ -25,8 +24,6 @@ export interface RuntimeConfig {
   readonly idGenerator: IdGenerator
   /** Portal 容器解析器；默认返回 body 末尾的 portal 落点，返回 null 表示用 top layer、不搬运。 */
   readonly portalContainer: () => Element | null
-  /** 是否减弱动效：应用级 override 优先，其次系统 prefers-reduced-motion；供 Presence 短路。 */
-  readonly reducedMotion: () => boolean
   readonly layerRegistry: LayerRegistry
   /** 滚动根解析器；返回 null 明确表示锁定页面滚动。 */
   readonly scrollRoot: () => HTMLElement | null
@@ -70,7 +67,7 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
   if (!partial.scope && !ambientDocument)
     throw new Error('[xh] createRuntimeConfig 在无 DOM 环境必须显式提供 scope')
   const scope = partial.scope ?? createScope(ambientDocument!.body, idGenerator)
-  const { doc: scopedDocument, win: scopedWindow } = resolveScopeRealm(scope)
+  const { doc: scopedDocument } = resolveScopeRealm(scope)
   const layerRegistry = partial.layerRegistry
     ?? getLayerRegistry(scopedDocument)
   if (layerRegistry.ownerDocument !== scopedDocument)
@@ -89,8 +86,5 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     portalContainer: partial.portalContainer
       ?? (() => defaultPortalContainer(scopedDocument)),
     scrollRoot,
-    reducedMotion:
-      partial.reducedMotion
-      ?? (() => resolveMotionPreference(scopedWindow) === 'reduce'),
   }
 }

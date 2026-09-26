@@ -6,6 +6,7 @@
 // 提供 stick tracker 相关实现。
 
 import type { Disposable, RuntimeConfig } from '../../kernel'
+import { resolveMotionPreference } from '@xihan-ui/motion'
 
 /** 距底多少 px 起算「在底」的默认阈值。 */
 export const STICK_TO_BOTTOM_THRESHOLD = 64
@@ -31,7 +32,7 @@ export interface StickToBottomOptions {
 
 export interface StickToBottomHandle extends Disposable {
   readonly state: () => StickToBottomState
-  /** 滚到底部并恢复粘附，默认 'smooth'，reducedMotion 为真时强制 'instant'。 */
+  /** 滚到底部并恢复粘附，默认 'smooth'；滚动元素所在处是减弱动效档时强制 'instant'。 */
   scrollToBottom: (behavior?: 'smooth' | 'instant') => void
   /** 重新读取 scrollEl / contentEl，节点变了就解绑重绑。 */
   retarget: () => void
@@ -177,8 +178,9 @@ export function createStickToBottom(o: StickToBottomOptions): StickToBottomHandl
   function scrollToBottom(behavior: 'smooth' | 'instant' = 'smooth'): void {
     if (disposed)
       return
-    const mode = o.config.reducedMotion() ? 'instant' : behavior
     if (el) {
+      // 按滚动元素判断：容器上的 data-motion 与应用级 override 都算，与 CSS 的作用域一致
+      const mode = resolveMotionPreference(el) === 'reduce' ? 'instant' : behavior
       // 优先用原生 scrollTo，无该方法时直接写 scrollTop
       if (typeof el.scrollTo === 'function')
         el.scrollTo({ top: el.scrollHeight, behavior: mode })
