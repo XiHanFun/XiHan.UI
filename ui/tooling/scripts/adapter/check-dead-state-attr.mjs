@@ -98,9 +98,7 @@ const HOOKS = {
   // 显隐一律由 hidden 承载：收起时留着节点只加 hidden，data-state 是同一件事的同名镜像
   'alert:data-state': '开合的显隐由 root 上的 hidden 承载',
   'avatar:data-state': '图与兜底各自的显隐由自己的 hidden 承载',
-  'back-top:data-state': '收起时置 hidden，显隐由它承载',
   'editable:data-state': '预览与输入的切换由两边各自的 hidden 承载',
-  'float-button:data-state': '展开的视觉是列表的 hidden',
   'image:data-state': '图与兜底各自的显隐由自己的 hidden 承载',
   'skeleton:data-state': '加载完置 hidden，整块骨架收起',
   'tag:data-state': '关掉后置 hidden',

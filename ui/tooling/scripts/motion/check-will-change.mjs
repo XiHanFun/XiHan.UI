@@ -9,7 +9,8 @@
 // 动的属性从同块的 transition 逐项取，或按 animation 的关键帧名去 keyframe-registry.json
 // 里查帧体。will-change 单独成块（动画写在别的规则上）的量不准，跳过并计数。
 //
-// 判据二：will-change 只写在「正在动」的状态下——拖拽中（[data-dragging]），或经 Presence 管理的部件的
+// 判据二：will-change 只写在「正在动」的状态下——拖拽中（[data-dragging]）、机器投影的补间进行中
+// （[data-animating]：松手后的归位、翻页这类由脚本驱动的一段，播完即撤），或经 Presence 管理的部件的
 // 收起态（[data-state='closed']：它只在退场动画那一段留在屏上，播完即藏起或卸载）。常驻的 will-change
 // 一直占着合成层：打开态上 Chromium 沿用第一次栅格化时的位移与缩放，入场动画中途那一帧的小数位移被保留，
 // 静止画面的文字与 1px 分隔线发虚（menu 像素基线在容器里实测：撤掉后分隔线回到单行）；
@@ -75,7 +76,7 @@ catch {
 }
 
 /** will-change 只许出现在这些「正在动」的状态选择器下（判据二）。 */
-const MOVING_STATES = ['[data-dragging]', '[data-state=\'closed\']']
+const MOVING_STATES = ['[data-dragging]', '[data-animating]', '[data-state=\'closed\']']
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = []
@@ -98,7 +99,7 @@ for (const file of files) {
     const before = css.slice(0, rule.index)
     const selector = before.slice(Math.max(before.lastIndexOf('}'), before.lastIndexOf('{')) + 1).trim()
 
-    // 判据二：只在拖拽中或退场那一段声明，不常驻
+    // 判据二：只在拖拽中、补间进行中或退场那一段声明，不常驻
     if (!MOVING_STATES.some(state => selector.includes(state))) {
       problems.push(
         `${file}:${line}  ${selector.replace(/\s+/g, ' ')} 挂着 will-change: ${[...declared].join(', ')}\n`
@@ -166,6 +167,6 @@ if (problems.length) {
 }
 
 console.log(
-  `[check-will-change] 通过：${checked} 处 will-change 与同块真会动的属性逐一对上，全部只在拖拽中或退场那一段声明`
+  `[check-will-change] 通过：${checked} 处 will-change 与同块真会动的属性逐一对上，全部只在拖拽中、补间进行中或退场那一段声明`
   + `（动画写在别的规则上、量不准的 ${unverifiable} 处跳过）`,
 )
