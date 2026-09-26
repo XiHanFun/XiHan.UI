@@ -27160,14 +27160,19 @@
   display: none;
 }
 
-/* 一条消息。默认整行铺开，左右分侧由使用者按 data-role 自己写。
-   进场只动 opacity 与 translate：改高度会扰动粘底补偿量到的 scrollHeight */
+/* 一条消息。默认整行铺开，左右分侧由使用者按 data-role 自己写 */
 [data-scope='message-feed'][data-part='item'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-message-feed-item-gap, var(--xh-space-1));
   border-radius: var(--xh-message-feed-item-radius, var(--xh-shape-surface));
-  animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+/* 新到的消息进场，同一批按到达顺序错开；首帧就在的历史消息直接呈现（自己或 list 带 data-instant）。
+   进场只动 opacity 与 translate：改高度会扰动粘底补偿量到的 scrollHeight */
+[data-scope='message-feed'][data-part='item']:not([data-instant], [data-instant] > *) {
+  animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
 }
 
 [data-scope='message-feed'][data-part='item'][hidden] {

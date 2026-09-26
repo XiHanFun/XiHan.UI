@@ -90,6 +90,11 @@ export interface MessageFeedSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按住途中视口回到底部（按钮随之收起）时撤下。
      */
     pressed: boolean
+    /**
+     * 条目到达的追踪是否已经接上。接上之前 list 投影 data-instant，首帧（含服务端渲染）的历史消息不播进场；
+     * 接上时已在的条目各自带上 data-instant，之后新到的一批按到达顺序错开进场。
+     */
+    arrivalsTracked: boolean
   }
   computed: Record<string, never>
   refs: MessageFeedRefs
@@ -107,10 +112,12 @@ export interface MessageFeedSchema extends MachineSchema {
     | { type: 'PRESS.START' }
     /** 回到底部按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
+    /** 条目到达的追踪已接上：首帧已在的条目都带上了 data-instant。 */
+    | { type: 'ARRIVALS.TRACKED' }
   tag: never
   guard: 'canPress'
-  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress'
-  effect: 'trackStickToBottom'
+  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress' | 'markArrivalsTracked'
+  effect: 'trackStickToBottom' | 'trackArrivals'
 }
 
 export interface MessageFeedApi<T extends PropTypes = PropTypes> {

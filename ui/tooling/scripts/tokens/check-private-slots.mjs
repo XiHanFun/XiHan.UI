@@ -13,6 +13,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_notification-progress-steps', 'packages/engine/headless/src/notification/notification.connect.ts'],
   ['--xh-_progress-value', 'packages/engine/headless/src/progress/progress.connect.ts'],
   ['--xh-_toast-progress-steps', 'packages/engine/headless/src/toast/toast.connect.ts'],
+  // 同一批新到条目的错开序号：条目到达的追踪写进条目的内联样式，皮肤只读
+  ['--xh-_stagger-index', 'packages/engine/core/src/behavior/arrival/track-arrivals.ts'],
 ])
 
 const files = (await Promise.all(STYLE_DIRS.map(async dir =>

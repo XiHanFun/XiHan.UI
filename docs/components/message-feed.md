@@ -169,7 +169,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 **状态**：`idle`
 
-**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `ITEM.FOCUS` · `FEED.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `ITEM.FOCUS` · `FEED.BLUR` · `PRESS.START` · `PRESS.END` · `ARRIVALS.TRACKED`
 
 **判据**：`canPress`
 
@@ -248,6 +248,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | props.status |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-role` | item.role |
 | `item` | `data-streaming` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |

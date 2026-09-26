@@ -1,0 +1,64 @@
+// 列表条目的到达：首帧就在的条目直接呈现，之后新到的一批播进场，同一批按到达顺序错开。
+// 动画是否在播、延迟取了几个步长只有真实浏览器量得出来：jsdom 不跑 CSS 动画。
+import type { App } from 'vue'
+import { afterEach, describe, expect, it } from 'vitest'
+import { createApp, h, nextTick, ref } from 'vue'
+import { XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedViewport } from '../../src'
+import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
+
+let app: App | null = null
+
+afterEach(() => {
+  app?.unmount()
+  app = null
+  document.body.innerHTML = ''
+})
+
+async function settle(): Promise<void> {
+  await nextTick()
+  await new Promise(resolve => requestAnimationFrame(resolve))
+  await nextTick()
+}
+
+function running(el: Element): string[] {
+  return el.getAnimations().map(a => (a as CSSAnimation).animationName)
+}
+
+/** 进场延迟换算成错开步长的个数。步长是 calc()，借一个探针的 transition-duration 读出算好的毫秒数。 */
+function staggerSteps(el: Element): number {
+  const probe = document.createElement('div')
+  probe.style.transitionDuration = 'var(--xh-motion-stagger-step)'
+  document.body.append(probe)
+  const step = Number.parseFloat(getComputedStyle(probe).transitionDuration) * 1000
+  probe.remove()
+  const [animation] = el.getAnimations()
+  return Math.round(Number(animation!.effect!.getTiming().delay) / step)
+}
+
+describe('message-feed 条目到达', () => {
+  it('历史消息挂载时不播进场；之后新到的一批播进场，按到达顺序错开，不看排在第几条', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const ids = ref(Array.from({ length: 6 }, (_, i) => `h${i}`))
+    app = createApp({
+      render: () => h(XhMessageFeedRoot, { style: 'block-size: 400px' }, () => h(XhMessageFeedViewport, () => h(XhMessageFeedList, () =>
+        ids.value.map((id, index) => h(XhMessageFeedItem, { key: id, itemId: id, itemIndex: index }, () => id))))),
+    })
+    app.mount(host)
+    await settle()
+    const items = (): HTMLElement[] => [...host.querySelectorAll<HTMLElement>('[data-scope="message-feed"][data-part="item"]')]
+    for (const item of items())
+      expect(running(item)).toEqual([])
+
+    ids.value = [...ids.value, 'ask', 'reply']
+    await nextTick()
+    const [ask, reply] = items().slice(-2)
+    expect(running(ask!)).toEqual(['xh-item-in'])
+    expect(running(reply!)).toEqual(['xh-item-in'])
+    expect(staggerSteps(ask!)).toBe(0)
+    expect(staggerSteps(reply!)).toBe(1)
+    // 已在的消息不因新消息到来而重播
+    expect(running(items()[0]!)).toEqual([])
+  })
+})

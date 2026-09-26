@@ -167,6 +167,8 @@ export function connectMessageFeed<T extends PropTypes>(
     // 播报另设一个原子区，不必像 role=log 那样先把隐含的 polite 关掉
     getListProps: () => normalize.element({
       ...parts.list.attrs,
+      // 到达追踪接上之前：首帧（含服务端渲染）的历史消息不播进场
+      'data-instant': dataAttr(!context.get('arrivalsTracked')),
       'role': 'feed',
       'aria-label': translations?.feed ?? 'Conversation',
     }),
