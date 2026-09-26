@@ -14,6 +14,7 @@ import type {
   CartesianOrientation,
   CartesianSeries,
   CartesianTooltipModel,
+  CartesianTooltipOrder,
   CartesianTrigger,
   ChartDatumDetails,
   ChartKey,
@@ -108,6 +109,8 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   trigger?: CartesianTrigger
   /** 堆叠柱的合计：每个堆叠组在最外端写出合计。 */
   totals?: boolean
+  /** 提示框里各系列的行序，缺省 series（按图例次序）。 */
+  tooltipOrder?: CartesianTooltipOrder
   /** 隐藏的系列（受控）。 */
   hiddenSeries?: string[]
   /** 初始隐藏的系列（非受控）。 */
@@ -142,6 +145,7 @@ export function XhCartesianChartRoot({
   orientation,
   trigger,
   totals,
+  tooltipOrder,
   hiddenSeries,
   defaultHiddenSeries,
   activeKey,
@@ -167,6 +171,7 @@ export function XhCartesianChartRoot({
     orientation,
     trigger,
     totals,
+    tooltipOrder,
     hiddenSeries,
     defaultHiddenSeries,
     activeKey,

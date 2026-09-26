@@ -158,8 +158,13 @@ export function connectPieChart<T extends PropTypes>(
     }
   }
 
+  // 悬停、聚焦或联动到一个扇区时，中心换成它的占比与名字，离开后回到合计；
   // 合计随过渡滚动：首次出现从 0 数上去，数据变了从旧值滚到新值
-  const center = { value: model.formats.value(frame?.numbers.total ?? model.derived.total), label: translations.centerLabel }
+  const center = details
+    ? { value: details.formatted.share ?? '', label: details.seriesName }
+    : { value: model.formats.value(frame?.numbers.total ?? model.derived.total), label: translations.centerLabel }
+  // 取数中、还没有可画的扇区：空态写「加载中」并转圈，不先报「没有数据」
+  const loading = prop('pending') === true && empty
   const layout = model.scene?.layout
 
   return {
@@ -174,7 +179,7 @@ export function connectPieChart<T extends PropTypes>(
     center,
     summary: model.summary,
     table: model.table,
-    emptyText: translations.emptyText,
+    emptyText: loading ? translations.loadingText : translations.emptyText,
     tableCaption: translations.tableCaption,
     activeKey: context.get('activeKey'),
     hiddenSeries: hidden,
@@ -448,7 +453,8 @@ export function connectPieChart<T extends PropTypes>(
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
       // 空态随数据显隐：全部为 0、没有数据或全部隐藏
-      hidden: !empty || undefined,
+      'hidden': !empty || undefined,
+      'data-state': loading ? 'loading' : undefined,
     }),
 
     getSummaryProps: () => normalize.element({

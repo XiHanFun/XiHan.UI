@@ -5,7 +5,7 @@
 
 /* 定义 cartesian chart 样式。 */
 
-/* 描线与淡入关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 描线、淡入与转圈关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -412,6 +412,36 @@
     justify-content: center;
     color: var(--xh-fg-muted);
     font-size: var(--xh-text-secondary-size);
+  }
+
+  /* 取数中、还没有可画的数据：文字前转一个圈，与 Spinner 同一副画法——整圈是轨道色，起始边是前景色 */
+  [data-scope='cartesian-chart'][data-part='empty'][data-state='loading'] {
+    gap: var(--xh-cartesian-chart-empty-gap, var(--xh-space-2));
+  }
+
+  [data-scope='cartesian-chart'][data-part='empty'][data-state='loading']::before {
+    content: '';
+    box-sizing: border-box;
+    flex: none;
+    inline-size: var(--xh-glyph-size-md);
+    block-size: var(--xh-glyph-size-md);
+    border: var(--xh-stroke-thick) solid var(--xh-border-default);
+    border-block-start-color: currentColor;
+    border-radius: var(--xh-shape-circle);
+    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减弱动效与打印：圈停下、换成点线，文字照写。两组规则是同一件事的几个触发条件 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='cartesian-chart'][data-part='empty'][data-state='loading']::before {
+      border-style: dotted;
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='cartesian-chart'][data-part='empty'][data-state='loading']::before {
+    border-style: dotted;
+    animation: none;
   }
 
   [data-scope='cartesian-chart'][data-part='empty'][hidden] {

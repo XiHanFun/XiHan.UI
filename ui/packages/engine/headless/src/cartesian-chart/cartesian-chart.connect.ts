@@ -76,6 +76,8 @@ export function connectCartesianChart<T extends PropTypes>(
   const scene = frame?.scene ?? model.scene?.scene ?? EMPTY_SCENE
   const invalid = model.issues.length > 0
   const empty = !invalid && model.derived.visible.every(s => s.values.every(v => v == null))
+  // 取数中、还没有可画的数据：空态写「加载中」并转圈，不先报「没有数据」
+  const loading = prop('pending') === true && empty
 
   const focused = context.get('focused')
   const focusWithin = context.get('focusWithin')
@@ -92,7 +94,7 @@ export function connectCartesianChart<T extends PropTypes>(
     activeKey: context.get('activeKey'),
   })
   const details = active ? cartesianDetails(model, active.ref, trigger) : null
-  const tooltip = details ? cartesianTooltip(model, details, translations) : null
+  const tooltip = details ? cartesianTooltip(model, details, translations, prop('tooltipOrder')) : null
   const overlay = cartesianOverlay(
     model,
     active,
@@ -175,7 +177,7 @@ export function connectCartesianChart<T extends PropTypes>(
     tooltip,
     summary: model.summary,
     table: model.table,
-    emptyText: translations.emptyText,
+    emptyText: loading ? translations.loadingText : translations.emptyText,
     tableCaption: translations.tableCaption,
     activeKey: context.get('activeKey'),
     hiddenSeries: hidden,
@@ -467,7 +469,8 @@ export function connectCartesianChart<T extends PropTypes>(
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
       // 空态随数据显隐；全部系列被隐藏时坐标轴保留，空态叠在视口上
-      hidden: !empty || undefined,
+      'hidden': !empty || undefined,
+      'data-state': loading ? 'loading' : undefined,
     }),
 
     getSummaryProps: () => normalize.element({

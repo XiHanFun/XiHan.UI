@@ -183,6 +183,27 @@ describe('几何', () => {
 })
 
 describe('悬停、键盘与图例', () => {
+  it('环形中心跟随激活的扇区：指着一个扇区时写它的占比与名字，离开后回到合计', async () => {
+    const rig = await makeRig(BASE)
+    expect(rig.api().center).toEqual({ value: '100', label: 'Total' })
+    const arc = slices(rig.api())[1]!
+    rig.service.send({ type: 'HOVER', hover: { ref: arc.datum!, x: 0, y: 0 }, key: '华南' })
+    await settle()
+    expect(rig.api().center).toEqual({ value: '25.0%', label: '华南' })
+    rig.service.send({ type: 'HOVER.CLEAR' })
+    await settle()
+    expect(rig.api().center).toEqual({ value: '100', label: 'Total' })
+    // 另一张图联动过来的键同样让中心跟着换
+    rig.setProps({ activeKey: '华东' })
+    expect(rig.api().center).toEqual({ value: '40.0%', label: '华东' })
+  })
+
+  it('取数中还没有扇区：空态写「加载中」并带加载状态', async () => {
+    const rig = await makeRig({ ...BASE, data: [], pending: true })
+    expect(rig.api().emptyText).toBe('Loading…')
+    expect(rig.api().getEmptyProps() as Record<string, unknown>).toMatchObject({ 'data-state': 'loading' })
+  })
+
   it('指针落在扇区上：提示框头部是扇区名，一行数值与占比；其余扇区淡出', async () => {
     const onDatumActive = vi.fn()
     const rig = await makeRig({ ...BASE, onDatumActive })

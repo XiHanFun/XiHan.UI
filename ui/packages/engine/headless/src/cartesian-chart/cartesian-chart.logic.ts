@@ -10,7 +10,7 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
-import type { CartesianChartSchema, CartesianChartTranslations, CartesianTooltipModel, CartesianTrigger } from './cartesian-chart.types'
+import type { CartesianChartSchema, CartesianChartTranslations, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
@@ -406,8 +406,22 @@ function findMark(marks: readonly Mark[], key: string): Mark | null {
 }
 
 /** 提示框内容：头部是自变量，每个系列一行；缺失值写 missingValue。 */
-export function cartesianTooltip(model: CartesianModel, details: ChartDatumDetails, translations: CartesianChartTranslations): CartesianTooltipModel {
-  const rows = details.items ?? [details]
+export function cartesianTooltip(
+  model: CartesianModel,
+  details: ChartDatumDetails,
+  translations: CartesianChartTranslations,
+  order: CartesianTooltipOrder = 'series',
+): CartesianTooltipModel {
+  // 按数值排序只改提示框里的行序；缺失值排在最后。回调里的 items 仍按图例次序
+  const value = (item: ChartDatumDetails): number | null => (typeof item.values.value === 'number' ? item.values.value : null)
+  const rows = order === 'series'
+    ? details.items ?? [details]
+    : [...(details.items ?? [details])].sort((a, b) => {
+        const [x, y] = [value(a), value(b)]
+        if (x == null || y == null)
+          return x == null ? (y == null ? 0 : 1) : -1
+        return order === 'descending' ? y - x : x - y
+      })
   return {
     header: details.formatted.key ?? '',
     rows: rows.map((item) => {
