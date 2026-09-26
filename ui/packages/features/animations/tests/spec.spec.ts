@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { clampSpec, DEFAULT_DURATION, MAX_DURATION, MAX_FRAMES, reverseSpec, toKeyframes } from '../src/spec'
+import { MAX_DURATION, MAX_FRAMES, MAX_ITERATIONS, peakFlashesPerSecond, reverseSpec, toKeyframes, validateMotionSpec } from '../src/spec'
 
 function element(direction = 'ltr'): HTMLElement {
   const el = document.createElement('div')
@@ -9,53 +9,91 @@ function element(direction = 'ltr'): HTMLElement {
   return el
 }
 
-describe('clampSpec', () => {
-  it('缺省时长补上', () => {
-    expect(clampSpec({ frames: [{}] }).duration).toBe(DEFAULT_DURATION)
+describe('validateMotionSpec', () => {
+  it('合法的配方不抛错', () => {
+    expect(() => validateMotionSpec({ frames: [{ opacity: 0, y: '100%' }, { opacity: 1, y: 0 }], duration: 200, easing: 'easeOut' })).not.toThrow()
+    expect(() => validateMotionSpec({ frames: [{}], iterations: Number.POSITIVE_INFINITY })).not.toThrow()
   })
 
-  it('非有限或负的时长退回缺省', () => {
-    expect(clampSpec({ frames: [{}], duration: Number.NaN }).duration).toBe(DEFAULT_DURATION)
-    expect(clampSpec({ frames: [{}], duration: -100 }).duration).toBe(0)
-    expect(clampSpec({ frames: [{}], duration: 1e9 }).duration).toBe(MAX_DURATION)
+  it('帧数为零或超上限时抛错，不补帧也不截断', () => {
+    expect(() => validateMotionSpec({ frames: [] })).toThrow(RangeError)
+    const frames = Array.from({ length: MAX_FRAMES + 1 }, () => ({ opacity: 1 }))
+    expect(() => validateMotionSpec({ frames })).toThrow(RangeError)
   })
 
-  it('空帧补一帧空帧，不把空数组交给宿主', () => {
-    expect(clampSpec({ frames: [] }).frames).toEqual([{}])
+  it('时长、延迟与次数越界或非有限时抛错', () => {
+    expect(() => validateMotionSpec({ frames: [{}], duration: Number.NaN })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{}], duration: -100 })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{}], duration: MAX_DURATION + 1 })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{}], delay: -1 })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{}], iterations: -5 })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{}], iterations: MAX_ITERATIONS + 1 })).toThrow(RangeError)
   })
 
-  it('帧数超上限时截断', () => {
-    const frames = Array.from({ length: 200 }, () => ({ opacity: 1 }))
-    expect(clampSpec({ frames }).frames).toHaveLength(MAX_FRAMES)
+  it('帧取值越界时抛错，不钳制', () => {
+    expect(() => validateMotionSpec({ frames: [{ opacity: -3 }] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ opacity: 9 }] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ scale: -2 }] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ blur: -5 }] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ rotate: Number.POSITIVE_INFINITY }] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ x: Number.NaN }] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ y: ' ' }] })).toThrow(RangeError)
   })
 
-  it('不透明度钳到 [0,1]', () => {
-    expect(clampSpec({ frames: [{ opacity: -3 }, { opacity: 9 }] }).frames).toEqual([{ opacity: 0 }, { opacity: 1 }])
+  it('偏移量越界或倒序时抛错', () => {
+    expect(() => validateMotionSpec({ frames: [{ offset: -1 }, {}] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ offset: 2 }] })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{ offset: 0.6 }, { offset: 0.4 }] })).toThrow(RangeError)
   })
 
-  it('缩放与模糊不为负', () => {
-    expect(clampSpec({ frames: [{ scale: -2, blur: -5 }] }).frames[0]).toEqual({ scale: 0, blur: 0 })
+  it('认不出的缓动与枚举值抛错', () => {
+    expect(() => validateMotionSpec({ frames: [{}], easing: 'wobble' })).toThrow(TypeError)
+    expect(() => validateMotionSpec({ frames: [{ easing: 'bounceOut' }, {}] })).toThrow(TypeError)
+    expect(() => validateMotionSpec({ frames: [{}], fill: 'sideways' as FillMode })).toThrow(RangeError)
+    expect(() => validateMotionSpec({ frames: [{}], direction: 'backward' as PlaybackDirection })).toThrow(RangeError)
   })
 
-  it('越界或非有限的偏移量丢弃，交给等分', () => {
-    expect(clampSpec({ frames: [{ offset: -1 }, { offset: 2 }, { offset: Number.NaN }] }).frames)
-      .toEqual([{}, {}, {}])
+  it('任意一秒闪烁超过三次时抛错', () => {
+    const blink = { frames: [{ opacity: 1 }, { opacity: 0 }, { opacity: 1 }] }
+    expect(() => validateMotionSpec({ ...blink, duration: 300, iterations: 3 })).not.toThrow()
+    expect(() => validateMotionSpec({ ...blink, duration: 250, iterations: 4 })).toThrow('WCAG 2.3.1')
+  })
+})
+
+describe('peakFlashesPerSecond', () => {
+  const blink = { frames: [{ opacity: 1 }, { opacity: 0 }, { opacity: 1 }] }
+
+  it('不动不透明度的配方不闪', () => {
+    expect(peakFlashesPerSecond({ frames: [{ scale: 1 }, { scale: 2 }, { scale: 1 }], duration: 10, iterations: 100 })).toBe(0)
   })
 
-  it('非有限的位移丢弃，字符串原样保留', () => {
-    expect(clampSpec({ frames: [{ x: Number.NaN, y: '100%' }] }).frames[0]).toEqual({ y: '100%' })
+  it('一明一暗算一次，按一秒窗口数', () => {
+    expect(peakFlashesPerSecond({ ...blink, duration: 300 })).toBe(1)
+    // 每 250ms 一次，连播 4 遍：一秒窗口里装得下 4 次
+    expect(peakFlashesPerSecond({ ...blink, duration: 250, iterations: 4 })).toBe(4)
+    // 同样的节奏只播一遍，一秒里只有 1 次
+    expect(peakFlashesPerSecond({ ...blink, duration: 250 })).toBe(1)
   })
 
-  it('无限次播放保留，其余次数钳到 [0,1000]', () => {
-    expect(clampSpec({ frames: [{}], iterations: Number.POSITIVE_INFINITY }).iterations).toBe(Number.POSITIVE_INFINITY)
-    expect(clampSpec({ frames: [{}], iterations: -5 }).iterations).toBe(0)
-    expect(clampSpec({ frames: [{}], iterations: 1e6 }).iterations).toBe(1000)
+  it('无限次播放按周期取样', () => {
+    expect(peakFlashesPerSecond({ ...blink, duration: 200, iterations: Number.POSITIVE_INFINITY })).toBe(5)
   })
 
-  it('不改原配方', () => {
-    const spec = { frames: [{ opacity: 5 }], duration: -1 }
-    clampSpec(spec)
-    expect(spec).toEqual({ frames: [{ opacity: 5 }], duration: -1 })
+  it('低于门槛的起伏不算闪烁', () => {
+    expect(peakFlashesPerSecond({ frames: [{ opacity: 1 }, { opacity: 0.95 }, { opacity: 1 }], duration: 50, iterations: 40 })).toBe(0)
+  })
+
+  it('播完跳回首帧也算一次起落', () => {
+    // 只淡出一次，但连播时每遍开头跳回不透明：一出一回就是一次闪烁
+    expect(peakFlashesPerSecond({ frames: [{ opacity: 1 }, { opacity: 0 }], duration: 200, iterations: 5 })).toBe(4)
+  })
+
+  it('往返播放没有跳变', () => {
+    expect(peakFlashesPerSecond({ frames: [{ opacity: 1 }, { opacity: 0 }], duration: 200, iterations: 5, direction: 'alternate' })).toBe(2)
+  })
+
+  it('时长为 0 画不出中间帧，不算闪烁', () => {
+    expect(peakFlashesPerSecond({ ...blink, duration: 0, iterations: 10 })).toBe(0)
   })
 })
 
@@ -91,11 +129,15 @@ describe('toKeyframes', () => {
       .toEqual({ rotate: '-12deg', filter: 'blur(8px)' })
   })
 
-  it('偏移量与逐帧缓动原样带过去', () => {
-    expect(toKeyframes({ frames: [{ opacity: 0, offset: 0, easing: 'linear' }, { opacity: 1, offset: 1 }] })).toEqual([
-      { offset: 0, easing: 'linear', opacity: '0' },
+  it('偏移量原样带过去，逐帧缓动名换成 CSS 写法', () => {
+    expect(toKeyframes({ frames: [{ opacity: 0, offset: 0, easing: 'easeOut' }, { opacity: 1, offset: 1 }] })).toEqual([
+      { offset: 0, easing: 'cubic-bezier(0, 0, 0.2, 1)', opacity: '0' },
       { offset: 1, opacity: '1' },
     ])
+  })
+
+  it('缓动串按 CSS 写法原样带过去', () => {
+    expect(toKeyframes({ frames: [{ opacity: 0, easing: 'steps(4)' }, { opacity: 1 }] })[0]!.easing).toBe('steps(4)')
   })
 })
 

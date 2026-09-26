@@ -2,7 +2,7 @@
 
 `@xihan-ui/animations` 提供现成的动效：11 个进场预设、6 个注意预设，外加错开起播与文字拆分。零第三方依赖，框架无关，任何框架（或无框架）都可直接安装使用。
 
-它建立在 [动效原语](/guide/motion) 之上：减弱动效的降级由该层统一处理，本层不另开通道。
+它建立在 [动效原语](/guide/motion) 之上：减弱动效的降级由该层统一处理，本层不另开通道。减弱动效下两族预设都不播，元素直接呈现终态：它们是表现性的动效，不承载信息。
 
 <XhDemo src="animations/01-presets" />
 
@@ -25,7 +25,12 @@ const riseUp: MotionSpec = {
 
 一帧可以修改六个属性：`opacity` `x` `y` `scale` `rotate` `blur`。位移写数字按 px，写字符串原样透传（`'100%'`）。省略的字段表示该帧不参与该属性的插值。
 
-配方是纯数据，因此可以存入数据库、由界面下拉切换、由用户修改后存回。播放前一律经过一道钳制（`clampSpec`）：越界钳住、非有限值丢弃、帧数与时长有上限，异常数据不会导致播放失败。
+配方是纯数据，因此可以存入数据库、由界面下拉切换、由用户修改后存回。播放器在入口按 `validateMotionSpec` 校验合上本次选项与时长系数之后的配方，不合法时同步抛错、不起播，不做钳制或补值：
+
+- 帧数 1–60（`MAX_FRAMES`），时长与起播延迟 0–60000ms（`MAX_DURATION`），有限播放次数不超过 1000（`MAX_ITERATIONS`）。
+- `opacity` 在 0–1，`scale` 与 `blur` 不为负，位移与旋转是有限数，偏移量在 0–1 且按帧序不减。
+- 整段与逐帧缓动必须是命名缓动或合法的 CSS 缓动函数，由 [`resolveEasing`](/guide/motion#缓动) 判定。
+- 闪烁：任意一秒内明暗交替不得超过三次（`MAX_FLASHES_PER_SECOND`，WCAG 2.3.1）。按不透明度计算，同一方向连续变化满 0.1 算一次起落，一明一暗算一次闪烁；连播时上一遍末帧跳回下一遍首帧也算一次变化。`peakFlashesPerSecond(spec)` 返回一份配方任意一秒内最多闪几次。
 
 展开为宿主可识别的关键帧时有一条规则：某个属性只要有一帧声明过，其余帧就补上它的中性值。只在中间帧出现的属性，宿主会以元素当前的计算值作为端点，而该值随皮肤变化：同一份配方在不同皮肤下会成为不同的动画。
 
@@ -43,6 +48,17 @@ const riseUp: MotionSpec = {
 
 `fade-start` / `fade-end` 标了 `logical`，横向位移在 RTL 下自动取反；`fade-up` 这类纵向的不受影响。
 
+预设的时长、位移与曲线取自 [动效令牌](/design/motion)，由 `@xihan-ui/motion` 的语义常量传过来，与令牌逐条对账：
+
+| 预设 | 时长 | 位移 | 缓动 |
+| --- | --- | --- | --- |
+| `fade` | `--xh-motion-duration-enter` | — | `--xh-motion-ease-enter` |
+| `fade-up` `fade-down` `fade-start` `fade-end` `zoom-in` `zoom-out` `blur-in` | `--xh-motion-duration-slide` | `--xh-motion-distance-lg` | `--xh-motion-ease-enter` |
+| `rise` `drop-in` `spin-in` | `slide` 加 `enter` | `--xh-motion-distance-lg` 的 1.5 倍 | `--xh-motion-ease-emphasis` |
+| `shake` `pulse` `bounce` `wobble` `flash` `heartbeat` | `--xh-motion-duration-attention` | `--xh-motion-distance-md` 为准 | 各预设自带 |
+
+缩放、旋转与模糊的幅度是各预设自身的形状，不对应令牌。核心组件不使用注意一族：校验失败用颜色、图标与文字表达，是否抖动由应用决定。
+
 ## 播
 
 ```ts
@@ -57,7 +73,7 @@ motion.play(el, { frames: [{ opacity: 0 }, { opacity: 1 }], duration: 500 }); //
 
 同一元素上再次播放会先撤销上一段：两段同时写同一批属性时，后一段会从被修改的中间态起步。被撤销的 `play` 以 `'cancelled'` 结算，不抛异常。
 
-播放器上有开关、时长系数与预设表：
+播放器上有开关、时长系数与预设表。时长系数取 (0, 100]，越界时 `createMotionPlayer` 抛错：
 
 ```ts
 const motion = createMotionPlayer({
@@ -81,7 +97,7 @@ motion.cancel(); // 全部撤销
 await motion.playAll(list.children, "rise", { stagger: 40, from: "center" });
 ```
 
-`from` 决定从哪一端铺开：`first` 从头、`last` 从尾、`center` 从中间向两侧。间隔叠加在给定的基础延迟上。任意一个被打断，整体即视为被打断。
+`from` 决定从哪一端铺开：`first` 从头、`last` 从尾、`center` 从中间向两侧。间隔缺省取 `--xh-motion-stagger-step`（40ms），叠加在给定的基础延迟上。任意一个被打断，整体即视为被打断。
 
 ## 文字拆分
 

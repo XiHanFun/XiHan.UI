@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput } from '@xihan-ui/core'
-import { setMotionOverride } from '@xihan-ui/motion'
+import { motionDurations, motionStaggerStep, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMotionPlayer } from '../src/player'
 
@@ -56,7 +56,7 @@ describe('播一段', () => {
     void player.play(element(), 'fade')
 
     expect(calls).toHaveLength(1)
-    expect(calls[0]!.options.duration).toBe(240)
+    expect(calls[0]!.options.duration).toBe(motionDurations.enter)
     expect(calls[0]!.frames).toEqual([{ opacity: '0' }, { opacity: '1' }])
   })
 
@@ -176,11 +176,18 @@ describe('错开起播', () => {
     expect(calls.map(call => call.options.delay)).toEqual([200, 250])
   })
 
-  it('缺省间隔 60', () => {
+  it('缺省间隔取错开步长令牌', () => {
     const player = createMotionPlayer()
     void player.playAll([element(), element()], 'fade')
 
-    expect(calls.map(call => call.options.delay)).toEqual([0, 60])
+    expect(calls.map(call => call.options.delay)).toEqual([0, motionStaggerStep])
+  })
+
+  it('间隔不合法时同步抛错，一个都不起播', () => {
+    const player = createMotionPlayer()
+    expect(() => player.playAll([element(), element()], 'fade', { stagger: -1 })).toThrow(RangeError)
+    expect(() => player.playAll([element()], 'fade', { stagger: Number.NaN })).toThrow(RangeError)
+    expect(calls).toHaveLength(0)
   })
 
   it('空集合直接结算', async () => {
@@ -230,14 +237,18 @@ describe('开关', () => {
 describe('时长系数', () => {
   it('按系数缩放时长', () => {
     createMotionPlayer({ speed: 2 }).play(element(), 'fade').catch(() => {})
-    expect(calls[0]!.options.duration).toBe(480)
+    expect(calls[0]!.options.duration).toBe(motionDurations.enter * 2)
   })
 
-  it('非正或非有限的系数退回 1', () => {
-    createMotionPlayer({ speed: 0 }).play(element(), 'fade').catch(() => {})
-    createMotionPlayer({ speed: Number.NaN }).play(element(), 'fade').catch(() => {})
-    expect(calls[0]!.options.duration).toBe(240)
-    expect(calls[1]!.options.duration).toBe(240)
+  it('非正、非有限或超上限的系数在创建时抛错', () => {
+    expect(() => createMotionPlayer({ speed: 0 })).toThrow(RangeError)
+    expect(() => createMotionPlayer({ speed: Number.NaN })).toThrow(RangeError)
+    expect(() => createMotionPlayer({ speed: 101 })).toThrow(RangeError)
+  })
+
+  it('系数压快之后闪烁超限的，同样拒播', () => {
+    expect(() => createMotionPlayer({ speed: 0.5 }).play(element(), 'flash', { iterations: 2 })).toThrow('WCAG 2.3.1')
+    expect(calls).toHaveLength(0)
   })
 
   it('也作用在被选项覆盖的时长上', () => {
@@ -276,5 +287,41 @@ describe('减弱动效', () => {
 
     await expect(player.playAll([element(), element()], 'fade')).resolves.toBe('finished')
     expect(calls).toHaveLength(0)
+  })
+})
+
+describe('入口校验', () => {
+  it('不合法的配方同步抛错，不交给宿主', () => {
+    const player = createMotionPlayer()
+    expect(() => player.play(element(), { frames: [{ opacity: 2 }] })).toThrow(RangeError)
+    expect(() => player.play(element(), { frames: [] })).toThrow(RangeError)
+    expect(() => player.play(element(), { frames: [{ opacity: 0 }, { opacity: 1 }], easing: 'wobble' })).toThrow(TypeError)
+    expect(calls).toHaveLength(0)
+  })
+
+  it('选项合进配方之后一并校验', () => {
+    const player = createMotionPlayer()
+    expect(() => player.play(element(), 'fade', { duration: -1 })).toThrow(RangeError)
+    expect(() => player.play(element(), 'fade', { iterations: 1.5e6 })).toThrow(RangeError)
+    expect(calls).toHaveLength(0)
+  })
+
+  it('闪烁在任意一秒超过三次的拒播：flash 连播三遍会越线', () => {
+    const player = createMotionPlayer()
+    expect(() => player.play(element(), 'flash', { duration: 400, iterations: 3 })).toThrow('WCAG 2.3.1')
+    void player.play(element(), 'flash')
+    expect(calls).toHaveLength(1)
+  })
+
+  it('播放器关着也照样校验', () => {
+    const player = createMotionPlayer({ enabled: false })
+    expect(() => player.play(element(), { frames: [{ scale: -1 }] })).toThrow(RangeError)
+  })
+
+  it('逐帧缓动名换成 CSS 写法交给宿主', () => {
+    const player = createMotionPlayer()
+    void player.play(element(), 'bounce')
+    for (const frame of calls[0]!.frames.slice(0, -1))
+      expect(String(frame.easing).startsWith('cubic-bezier('), JSON.stringify(frame)).toBe(true)
   })
 })
