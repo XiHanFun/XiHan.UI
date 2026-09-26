@@ -224,6 +224,8 @@
 
     -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
     backdrop-filter: var(--xh-material-liquid-backdrop);
+    /* 按住时的黏滞形变由液态面逐帧写进来，松手弹回；定位壳上不能挂 transform（会抢走 fixed 的包含块），挂在触发器上 */
+    transform: var(--xh-_liquid-deform);
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
