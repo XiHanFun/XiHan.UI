@@ -27,6 +27,7 @@
   "[data-scope=\"avatar\"][data-part=\"root\"][data-tone]": "部件不接焦点：avatar/root",
   "[data-scope=\"back-top\"][data-part=\"trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"badge\"][data-part=\"indicator\"]": "部件不接焦点：badge/indicator",
+  "[data-scope=\"badge\"][data-part=\"indicator\"][data-pulse]::after": "写法挂不出来：::",
   "[data-scope=\"bar-code\"][data-part=\"root\"]": "部件不接焦点：bar-code/root",
   "[data-scope=\"bar-code\"][data-part=\"root\"][data-state=\"empty\"]": "部件不接焦点：bar-code/root",
   "[data-scope=\"bar-code\"][data-part=\"root\"][data-state=\"error\"]": "部件不接焦点：bar-code/root",
