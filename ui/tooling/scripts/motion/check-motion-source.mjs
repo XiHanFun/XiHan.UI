@@ -29,8 +29,6 @@ const jsEaseName = token => EASE_NAME[token] ?? token.replace(/-(\w)/g, (_, c) =
 const JS_ONLY = {
   linear: 'CSS 关键字本身，语义层 ease-loop 直接取 linear，原语层不设这一条',
   emphasized: '表现性进场曲线，供 @xihan-ui/animations 的预设使用；组件皮肤不用',
-  decelerate: '公开导出的曲线，组件库与令牌都不使用',
-  accelerate: '公开导出的曲线，组件库与令牌都不使用',
 }
 
 /** 读 `key: 'value'` 形式的字符串常量。 */
