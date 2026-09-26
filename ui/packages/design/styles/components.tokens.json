@@ -36091,14 +36091,19 @@
         "border-inline-start"
       ],
       "state": [
+        "fixed",
+        "material=liquid",
         "placement=end",
         "placement=start",
         "presentation=sheet",
-        "split"
+        "split",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
         "--xh-border-default",
-        "--xh-material-elevated-border"
+        "--xh-material-elevated-border",
+        "--xh-material-liquid-border"
       ],
       "visibility": "public",
       "description": "layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。"
@@ -36185,9 +36190,14 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "fixed",
+        "material=liquid",
+        "where([data-material='liquid'])",
+        "xh-liquid"
       ],
       "defaultToken": [
+        "--xh-_liquid-bg",
         "--xh-bg-surface"
       ],
       "visibility": "public",

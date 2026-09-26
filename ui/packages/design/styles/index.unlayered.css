@@ -7685,6 +7685,17 @@
   inset-block-start: 0;
 }
 
+/* liquid 档：吸顶的顶栏是内容从下面滚过的导航层，换成液态面。贴边铺满的栏不取圆角，
+   边界由下沿那条墨色细线承担。液态面是墨色域，前景在这里按域重取，子孙跟着继承 */
+:where([data-material='liquid']) [data-scope='layout'][data-part='header'][data-fixed][data-xh-liquid] {
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-material-liquid-border));
+  background: var(--xh-layout-header-bg, var(--xh-_liquid-bg));
+  color: var(--xh-material-liquid-fg);
+  box-shadow: var(--xh-_liquid-shadow);
+  -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+  backdrop-filter: var(--xh-material-liquid-backdrop);
+}
+
 /* 头也吸顶时侧栏钉在头的下沿，两段不叠在一起 */
 [data-scope='layout'][data-part='root'][data-header-fixed][data-sider-fixed] {
   --xh-_layout-sider-offset: var(--xh-_layout-header-h);

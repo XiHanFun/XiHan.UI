@@ -61,6 +61,7 @@
 - 侧栏折叠时保留节点和内部状态。
 - 支持自定义侧栏宽度、位置和断点。
 - 页头和侧栏可独立固定。
+- 应用设为 `data-material="liquid"` 时，固定的页头换成液态面：内容从它下面滚过时按下层换色调；不固定的页头保持原样。
 
 ### 组合
 
@@ -184,6 +185,7 @@
 | `root` | `data-sider-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
 | `root` | `data-split` | ''（条件成立时才出现） |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
+| `header` | `data-xh-liquid` | ''（条件成立时才出现） |
 | `sider-backdrop` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider` | `data-fixed` | ''（条件成立时才出现） |
@@ -205,12 +207,12 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-layout-bg` | `root` | `background` | `default` | `--xh-bg-page` | layout 的 root 部件 background 覆盖槽。 |
-| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `placement=end`<br>`placement=start`<br>`presentation=sheet`<br>`split` | `--xh-border-default`<br>`--xh-material-elevated-border` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `fixed`<br>`material=liquid`<br>`placement=end`<br>`placement=start`<br>`presentation=sheet`<br>`split`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-border-default`<br>`--xh-material-elevated-border`<br>`--xh-material-liquid-border` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-layout-content-padding` | `content` | `padding` | `default` | `--xh-space-4` | layout 的 content 部件 padding 覆盖槽。 |
 | `--xh-layout-fg` | `root` | `color` | `default` | `--xh-fg-default` | layout 的 root 部件 color 覆盖槽。 |
 | `--xh-layout-footer-bg` | `footer` | `background` | `default` | `--xh-bg-surface` | layout 的 footer 部件 background 覆盖槽。 |
 | `--xh-layout-footer-padding` | `footer` | `padding` | `default` | `--xh-space-3` | layout 的 footer 部件 padding 覆盖槽。 |
-| `--xh-layout-header-bg` | `header` | `background` | `default` | `--xh-bg-surface` | layout 的 header 部件 background 覆盖槽。 |
+| `--xh-layout-header-bg` | `header` | `background` | `default`<br>`fixed`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_liquid-bg`<br>`--xh-bg-surface` | layout 的 header 部件 background 覆盖槽。 |
 | `--xh-layout-header-gap` | `header` | `gap` | `default` | `--xh-space-3` | layout 的 header 部件 gap 覆盖槽。 |
 | `--xh-layout-header-h` | `header`<br>`root`<br>`sider` | `block-size`<br>`grid-template-rows`<br>`inset-block-start`<br>`max-block-size` | `default`<br>`fixed`<br>`header-fixed`<br>`sider-fixed` | `3.5rem` | layout 的 header、root、sider 部件 block-size、grid-template-rows、inset-block-start、max-block-size 覆盖槽。 |
 | `--xh-layout-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | layout 的 header 部件 z-index 覆盖槽。 |
