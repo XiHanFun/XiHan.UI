@@ -42,20 +42,16 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
   }
 }
 
-/** 给节点钉一个假的盒子：jsdom 不排版，所有 rect 恒为 0。 */
-function stubRect(el: HTMLElement, box: { top: number, left?: number, width?: number, height?: number }): void {
-  const { top, left = 0, width = 0, height = 0 } = box
-  el.getBoundingClientRect = () => ({
-    top,
-    left,
-    width,
-    height,
-    right: left + width,
-    bottom: top + height,
-    x: left,
-    y: top,
-    toJSON: () => ({}),
-  }) as DOMRect
+/** 给入口钉一个排布位：jsdom 不排版，offset* 恒为 0。offset* 从列表的内衬边量起。 */
+function stubOffset(el: HTMLElement, list: HTMLElement, box: { left: number, width: number, top?: number, height?: number }): void {
+  const values = { offsetLeft: box.left, offsetTop: box.top ?? 0, offsetWidth: box.width, offsetHeight: box.height ?? 40, offsetParent: list }
+  for (const [key, value] of Object.entries(values))
+    Object.defineProperty(el, key, { configurable: true, value })
+}
+
+/** 指示条四个私有槽里的量测结果。 */
+function slots(c: { api: () => { getIndicatorProps: () => unknown } }): Record<string, string> {
+  return (c.api().getIndicatorProps() as Record<string, unknown>).style as Record<string, string>
 }
 
 /**
@@ -730,10 +726,9 @@ describe('connectNavigationMenu 输出', () => {
     expect((makeMenu().api().getLinkProps({ value: 'l' }) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
   })
 
-  it('指示条：装饰、随展开项显隐，横排只写内联轴那一条', () => {
+  it('指示条：装饰、随展开项显隐，量测铺成四个私有槽', () => {
     const c = makeMenu({ defaultValue: 'docs' })
-    stubRect(c.list, { top: 0, left: 100, width: 600, height: 40 })
-    stubRect(c.triggers[1]!, { top: 0, left: 220, width: 80, height: 40 })
+    stubOffset(c.triggers[1]!, c.list, { left: 120, width: 80 })
     // 值没变时不会自己重量；走一趟同一条路把量测顶起来
     c.api().setValue('products')
     c.api().setValue('docs')
@@ -742,24 +737,28 @@ describe('connectNavigationMenu 输出', () => {
     expect(indicator['aria-hidden']).toBe(true)
     expect(indicator['data-value']).toBe('docs')
     expect(indicator.hidden).toBeUndefined()
-    // 交叉轴（贴边与粗细）归样式层，内联样式一个字都不该写
-    expect(indicator.style).toEqual({ inlineSize: '80px', insetInlineStart: '120px' })
+    // 交叉轴的贴边与粗细归样式层，皮肤按排布只取主轴那两支
+    expect(indicator.style).toEqual({
+      '--xh-_navigation-menu-indicator-x': '120px',
+      '--xh-_navigation-menu-indicator-y': '0px',
+      '--xh-_navigation-menu-indicator-w': '80px',
+      '--xh-_navigation-menu-indicator-h': '40px',
+    })
   })
 
   // 展开项没变就没人去重量，指示条会一直停在旧坐标上——而导航栏换行、
   // 字体加载完都会让它脚下的那个 trigger 挪窝。
   it('窗口尺寸变了重量一次：展开项没动，位置照样跟着走', () => {
     const c = makeMenu({ defaultValue: 'docs' })
-    stubRect(c.list, { top: 0, left: 0, width: 600, height: 40 })
-    stubRect(c.triggers[1]!, { top: 0, left: 120, width: 80, height: 40 })
+    stubOffset(c.triggers[1]!, c.list, { left: 120, width: 80 })
     window.dispatchEvent(new Event('resize'))
-    expect((c.api().getIndicatorProps() as Record<string, unknown>).style)
-      .toEqual({ inlineSize: '80px', insetInlineStart: '120px' })
+    expect(slots(c)['--xh-_navigation-menu-indicator-x']).toBe('120px')
+    expect(slots(c)['--xh-_navigation-menu-indicator-w']).toBe('80px')
 
-    stubRect(c.triggers[1]!, { top: 0, left: 60, width: 40, height: 40 })
+    stubOffset(c.triggers[1]!, c.list, { left: 60, width: 40 })
     window.dispatchEvent(new Event('resize'))
-    expect((c.api().getIndicatorProps() as Record<string, unknown>).style)
-      .toEqual({ inlineSize: '40px', insetInlineStart: '60px' })
+    expect(slots(c)['--xh-_navigation-menu-indicator-x']).toBe('60px')
+    expect(slots(c)['--xh-_navigation-menu-indicator-w']).toBe('40px')
   })
 
   it('停机即断开尺寸监听：监听器不该留在窗口上', () => {

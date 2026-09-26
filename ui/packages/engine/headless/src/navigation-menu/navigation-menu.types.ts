@@ -190,7 +190,7 @@ export interface NavigationMenuSchema extends MachineSchema {
     | 'endPress'
     | 'releaseLinkPress'
     | 'releaseWhenInert'
-  effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize'
+  effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize' | 'trackIndicatorLayout'
 }
 
 export interface NavigationMenuApi<T extends PropTypes = PropTypes> {

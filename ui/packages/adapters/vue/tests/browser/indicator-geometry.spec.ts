@@ -3,7 +3,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhAnchorIndicator, XhAnchorItem, XhAnchorLink, XhAnchorList, XhAnchorRoot, XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
+import { XhAnchorIndicator, XhAnchorItem, XhAnchorLink, XhAnchorList, XhAnchorRoot, XhNavigationMenuContent, XhNavigationMenuIndicator, XhNavigationMenuItem, XhNavigationMenuLink, XhNavigationMenuList, XhNavigationMenuRoot, XhNavigationMenuTrigger, XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -198,5 +198,59 @@ describe('anchor 的指示条几何', () => {
     const link = anchorPart('link', 'b')
     expect(indicator.left).toBeCloseTo(link.left, 0)
     expect(indicator.width).toBeCloseTo(link.width, 0)
+  })
+})
+
+describe('navigation-menu 的指示条几何', () => {
+  const ENTRIES = [
+    { value: 'products', label: '产品' },
+    { value: 'solutions', label: '解决方案与案例' },
+    { value: 'docs', label: '文档' },
+  ]
+
+  async function mountMenu(options: { scale?: number } = {}): Promise<void> {
+    const host = document.createElement('div')
+    if (options.scale)
+      host.style.transform = `scale(${options.scale})`
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhNavigationMenuRoot, { value: 'solutions' }, () => [
+        h(XhNavigationMenuList, null, () => [
+          ...ENTRIES.map(entry => h(XhNavigationMenuItem, null, () => [
+            h(XhNavigationMenuTrigger, { value: entry.value }, () => entry.label),
+            h(XhNavigationMenuContent, { value: entry.value }, () => h(XhNavigationMenuLink, { href: `#${entry.value}` }, () => entry.label)),
+          ])),
+          h(XhNavigationMenuIndicator),
+        ]),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    for (const animation of document.querySelector<HTMLElement>('[data-scope="navigation-menu"][data-part="indicator"]')!.getAnimations())
+      animation.finish()
+  }
+
+  function menuPart(name: string, value?: string): DOMRect {
+    const selector = value ? `[data-scope='navigation-menu'][data-part='${name}'][data-value='${value}']` : `[data-scope='navigation-menu'][data-part='${name}']`
+    return document.querySelector<HTMLElement>(selector)!.getBoundingClientRect()
+  }
+
+  it('祖先带 scale(0.5) 时指示条与展开的入口对齐', async () => {
+    await mountMenu({ scale: 0.5 })
+    const indicator = menuPart('indicator')
+    const trigger = menuPart('trigger', 'solutions')
+    expect(indicator.left).toBeCloseTo(trigger.left, 0)
+    expect(indicator.width).toBeCloseTo(trigger.width, 0)
+  })
+
+  it('整页 RTL 而没传 dir：指示条照样落在展开的入口下', async () => {
+    document.documentElement.dir = 'rtl'
+    await mountMenu()
+    const indicator = menuPart('indicator')
+    const trigger = menuPart('trigger', 'solutions')
+    expect(indicator.left).toBeCloseTo(trigger.left, 0)
+    expect(indicator.width).toBeCloseTo(trigger.width, 0)
   })
 })

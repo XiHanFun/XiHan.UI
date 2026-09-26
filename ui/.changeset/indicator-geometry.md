@@ -8,3 +8,5 @@
 Tabs 的指示条同样改量排布位、位置交给 transform，与标签带平移的 translate 叠加而不互相覆盖；方向缺省从标签带现读，整页 RTL 而没传 `dir` 时不再落错。
 
 Anchor 的指示条同样改量排布位、位置交给 transform；连接层不再写内联的 `inset-*` 与尺寸，改写私有槽 `--xh-_anchor-indicator-x / -y / -w / -h`，皮肤按排布取主轴那两支；目录或链接变尺寸、链接增减、字体加载完成都会重量。
+
+NavigationMenu 的指示条同样改量排布位、位置交给 transform；连接层改写私有槽 `--xh-_navigation-menu-indicator-x / -y / -w / -h`，列表或入口变尺寸、入口增减、字体加载完成都会重量。

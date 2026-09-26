@@ -27451,21 +27451,36 @@
   block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
 }
 
-/* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
-   这里只管交叉轴的贴边与粗细，以及长什么样。它指的是开着的面板：无面板开着时隐藏，
+/* 展开入口的四个几何量由机器量好、连接层写成私有槽 --xh-_navigation-menu-indicator-x / -y / -w / -h
+   （它量得到，样式表量不到）；这里按排布取主轴那两支，落点交给 transform（只走合成），
+   另管交叉轴的贴边与粗细，以及长什么样。它指的是开着的面板：无面板开着时隐藏，
    当前页由上面链接自画的静态线表达 */
 [data-scope='navigation-menu'][data-part='indicator'] {
+  /* 还没量到时的落点，量到即被机器写的私有槽盖过 */
+  --xh-_navigation-menu-indicator-x: 0;
+  --xh-_navigation-menu-indicator-y: 0;
+  --xh-_navigation-menu-indicator-w: 0;
+  --xh-_navigation-menu-indicator-h: 0;
+
   position: absolute;
   display: block;
   /* 指示条也是列表项，宿主给 li 的外边距会把绝对定位的它推离入口 */
   margin: 0;
+  inset-inline-start: 0;
   inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
+  inline-size: var(--xh-_navigation-menu-indicator-w);
   block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
   border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
+  transform: translate(var(--xh-_navigation-menu-indicator-x), 0);
   transition:
-    inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+    transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
     inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+}
+
+/* transform 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
+[data-scope='navigation-menu'][data-part='indicator']:dir(rtl) {
+  transform: translate(calc(-1 * var(--xh-_navigation-menu-indicator-x)), 0);
 }
 
 [data-scope='navigation-menu'][data-part='indicator'][hidden] {
@@ -27474,12 +27489,14 @@
 
 /* 竖排：指示条改贴在起始缘，交叉轴换成内联轴 */
 [data-scope='navigation-menu'][data-part='indicator'][data-orientation='vertical'] {
+  inset-block-start: 0;
   inset-block-end: auto;
   inset-inline-start: 0;
   inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
-  block-size: auto;
+  block-size: var(--xh-_navigation-menu-indicator-h);
+  transform: translate(0, var(--xh-_navigation-menu-indicator-y));
   transition:
-    inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+    transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
     block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
