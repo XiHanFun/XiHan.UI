@@ -225,10 +225,12 @@
 --xh-motion-duration-expand: 1ms
 --xh-motion-duration-glint: 1ms
 --xh-motion-duration-micro: 120ms  ← var(--xh-duration-fast)
+--xh-motion-duration-morph: 1ms
 --xh-motion-duration-move: 1ms
 --xh-motion-duration-nudge: 1ms
 --xh-motion-duration-press: 1ms
 --xh-motion-duration-release: 1ms
+--xh-motion-duration-reveal: 1ms
 --xh-motion-duration-slide: 1ms
 --xh-motion-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1)  ← var(--xh-ease-sine-in-out)
 --xh-motion-ease-continuous: cubic-bezier(0.2, 0, 0, 1)  ← var(--xh-ease-standard)

@@ -552,6 +552,16 @@
       "$type": "duration",
       "$value": "calc({duration.slow} * 2)"
     },
+    "duration-reveal": {
+      "$description": "数据标记首次出现：柱从基线长出、折线从头描到尾、扇区整圈扫开。一张图第一次出现要让人看出它是长出来的，比界面换位长一档；减弱动效下几何直接到位，归 1ms。",
+      "$type": "duration",
+      "$value": "calc({duration.slow} * 2)"
+    },
+    "duration-morph": {
+      "$description": "数据更新：数据变化与图例切换时，标记从旧位置走到新位置、坐标轴刻度随之滑动。要看清是哪里变了，比界面换位长、比首次出现短；减弱动效下归 1ms。",
+      "$type": "duration",
+      "$value": "calc({duration.normal} * 2)"
+    },
     "stagger-step": {
       "$description": "交错进场的相邻两项间隔。派生自 duration-enter 的五分之一，改进场时长它跟着走。减弱档显式归 0ms，不靠 calc 传递。",
       "$type": "duration",
