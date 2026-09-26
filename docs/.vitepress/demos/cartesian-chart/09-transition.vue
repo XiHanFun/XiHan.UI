@@ -1,4 +1,4 @@
-<!-- 数据更新 | 换一组数据时柱从当前高度走到新高度；关掉动画后直接画终态 -->
+<!-- 数据更新 | 换一组数据时柱从当前高度走到新高度，柱端的数随之滚动；关掉动画后直接画终态 -->
 <script setup lang="ts">
 import { XhButton, XhCartesianChartRoot, XhSwitch } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -35,8 +35,8 @@ const data = computed(() => months.map((month, i) => ({
     <XhCartesianChartRoot
       :data="data"
       :series="[
-        { mark: 'bar', x: 'month', y: 'online', name: '线上' },
-        { mark: 'bar', x: 'month', y: 'store', name: '门店' },
+        { mark: 'bar', x: 'month', y: 'online', name: '线上', labels: 'end' },
+        { mark: 'bar', x: 'month', y: 'store', name: '门店', labels: 'end' },
       ]"
       :animated="animated"
     >

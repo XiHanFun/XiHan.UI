@@ -16,7 +16,7 @@ import {
   trackChartViewport,
 } from '../shared/chart'
 import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianTrigger } from './cartesian-chart.logic'
-import { cartesianEntryScene, cartesianRevealAt, createCartesianPipeline } from './cartesian-chart.model'
+import { cartesianEntryScene, cartesianLabelNumbers, cartesianRevealAt, createCartesianPipeline } from './cartesian-chart.model'
 
 const { createMachine } = setup<CartesianChartSchema>()
 
@@ -70,7 +70,13 @@ export const cartesianChartMachine = createMachine({
       ...chartBaseActions<CartesianChartSchema>({
         markKeyOf: (params, ref) => cartesianMarkKey(cartesianModelOf(params), ref),
         // 数据点随描线出现：描线走 continuous 曲线
-        transition: { entry: cartesianEntryScene, stagger: true, revealAt: cartesianRevealAt, revealEasing: 'continuous' },
+        transition: {
+          entry: cartesianEntryScene,
+          stagger: true,
+          revealAt: cartesianRevealAt,
+          revealEasing: 'continuous',
+          numbers: params => cartesianLabelNumbers(cartesianModelOf(params).scene),
+        },
       }),
       notifyActive: (params) => {
         const model = cartesianModelOf(params)

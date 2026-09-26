@@ -26,7 +26,7 @@ import type {
   TextMeasurer,
   TimeScale,
 } from '@xihan-ui/viz'
-import type { ChartKey, ChartLabelBox, ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
+import type { ChartKey, ChartLabelBox, ChartMetrics, ChartNumbers, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
 import type {
   CartesianAxis,
   CartesianAxisFormat,
@@ -800,6 +800,28 @@ export interface CartesianScene {
   readonly anchors: ReadonlyMap<string, readonly ({ x: number, y: number } | null)[]>
   /** 数据标签写在哪儿：inside 压在色块上（字取配对的前景色），end 写在标记外。 */
   readonly placements: ReadonlyMap<string, 'inside' | 'end'>
+  /** 标签键 → 它写的数与写法：更新过渡里标签上的数从旧值滚到新值，逐帧按同一写法重写。 */
+  readonly labelValues: ReadonlyMap<string, CartesianLabelValue>
+}
+
+/** 标签写的数，以及把数写成标签文字的写法。 */
+export interface CartesianLabelValue {
+  readonly value: number
+  readonly format: (value: number) => string
+}
+
+const LABEL_NUMBERS = new WeakMap<CartesianScene, ChartNumbers>()
+
+/** 交给过渡内核滚动的数：每个标签一个，按标签键取。 */
+export function cartesianLabelNumbers(scene: CartesianScene | null): ChartNumbers {
+  if (!scene)
+    return {}
+  let numbers = LABEL_NUMBERS.get(scene)
+  if (!numbers) {
+    numbers = Object.fromEntries([...scene.labelValues].map(([key, label]) => [key, label.value]))
+    LABEL_NUMBERS.set(scene, numbers)
+  }
+  return numbers
 }
 
 /** 1px 线对齐到像素中心，避免被抗锯齿拉成两像素的灰线。 */
@@ -1060,7 +1082,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
 
   const labels = cartesianLabels(layout, bars, anchors)
   const scene = createScene({ version, layers: { back, data, front: labels.marks }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
-  return { layout, scene, info, anchors, placements: labels.placements }
+  return { layout, scene, info, anchors, placements: labels.placements, labelValues: labels.values }
 }
 
 /** 一根柱在绘图区里的矩形，以及写标签要知道的事：远端朝上（右）还是朝下（左）、是不是堆叠中的一段。 */
@@ -1080,6 +1102,7 @@ interface LabelCandidate {
   readonly box: ChartLabelBox
   readonly priority: number
   readonly placement: 'inside' | 'end'
+  readonly label: CartesianLabelValue
 }
 
 /**
@@ -1090,7 +1113,7 @@ function cartesianLabels(
   layout: CartesianLayout,
   bars: ReadonlyMap<string, BarBox>,
   anchors: ReadonlyMap<string, readonly ({ x: number, y: number } | null)[]>,
-): { marks: Mark[], placements: ReadonlyMap<string, 'inside' | 'end'> } {
+): { marks: Mark[], placements: ReadonlyMap<string, 'inside' | 'end'>, values: ReadonlyMap<string, CartesianLabelValue> } {
   const { domains, metrics, font, formats, measurer, size, plot } = layout
   const { spec, visible } = domains.derived
   const vertical = spec.orientation === 'vertical'
@@ -1102,20 +1125,23 @@ function cartesianLabels(
   const add = (
     key: string,
     part: string,
-    text: string,
+    label: CartesianLabelValue,
     at: LabelAt,
     placement: 'inside' | 'end',
     priority: number,
     extra: Partial<Pick<TextMark, 'datum' | 'paint'>> = {},
   ): void => {
     const [x, y, anchor, baseline] = at
+    const text = label.format(label.value)
     candidates.push({
       mark: { kind: 'text', key, part, x, y, text, anchor, baseline, ...extra },
       box: labelBox(x, y, widthOf(text), lineHeight, anchor, baseline),
       priority,
       placement,
+      label,
     })
   }
+  const valueOf = (value: number): CartesianLabelValue => ({ value, format: formats.value })
   // 柱内放得下：字不比柱厚宽，柱长容得下一行字与两端的间隙
   const fits = (text: string, box: BarBox): boolean => {
     const width = widthOf(text)
@@ -1154,10 +1180,10 @@ function cartesianLabels(
             : vertical
               ? (box.positive ? [cx, box.y + gap, 'middle', 'top'] : [cx, box.y + box.height - gap, 'middle', 'bottom'])
               : (box.positive ? [box.x + box.width - gap, cy, 'end', 'middle'] : [box.x + gap, cy, 'start', 'middle'])
-          add(`label:${key}`, 'data-label', text, at, 'inside', 1, { datum, paint })
+          add(`label:${key}`, 'data-label', valueOf(v), at, 'inside', 1, { datum, paint })
         }
         else {
-          add(`label:${key}`, 'data-label', text, outside(box), 'end', 1, { datum, paint })
+          add(`label:${key}`, 'data-label', valueOf(v), outside(box), 'end', 1, { datum, paint })
         }
       })
     }
@@ -1169,7 +1195,7 @@ function cartesianLabels(
         const at: LabelAt = vertical
           ? [p.x, p.y - half - gap, 'middle', 'bottom']
           : [p.x + half + gap, p.y, 'start', 'middle']
-        add(`label:${id}:${cartesianDatumId(spec.keys[j]!)}`, 'data-label', formats.value(v), at, 'end', 1, { datum: { seriesId: id, index: s.rows[j]! }, paint })
+        add(`label:${id}:${cartesianDatumId(spec.keys[j]!)}`, 'data-label', valueOf(v), at, 'end', 1, { datum: { seriesId: id, index: s.rows[j]! }, paint })
       })
     }
   }
@@ -1196,7 +1222,7 @@ function cartesianLabels(
             : (first.positive
                 ? { ...first, x: Math.max(...boxes.map(b => b.x + b.width)), width: 0 }
                 : { ...first, x: Math.min(...boxes.map(b => b.x)), width: 0 })
-          add(`total:${stack}:${cartesianDatumId(k)}:${sign === 'positive' ? '+' : '-'}`, 'total-label', formats.value(sum), outside(edge), 'end', 3)
+          add(`total:${stack}:${cartesianDatumId(k)}:${sign === 'positive' ? '+' : '-'}`, 'total-label', valueOf(sum), outside(edge), 'end', 3)
         }
       })
     }
@@ -1204,7 +1230,7 @@ function cartesianLabels(
 
   // 线尾标签写在最后一个点的右边；竖向时几条线挤在一起，上下推开，挤不下去掉末值最小的。
   // 有标签被推离了线尾的高度，整列往右挪出一段，被推开的用引导线连回线尾
-  const ends: { s: CartesianSeriesValues, text: string, x: number, y: number, px: number, py: number, value: number }[] = []
+  const ends: { s: CartesianSeriesValues, label: CartesianLabelValue, x: number, y: number, px: number, py: number, value: number }[] = []
   for (const s of visible) {
     if (!s.spec.endLabel)
       continue
@@ -1212,7 +1238,17 @@ function cartesianLabels(
     const p = label ? anchors.get(s.spec.id)?.[label.index] : null
     if (!label || !p)
       continue
-    ends.push({ s, text: label.text, x: p.x + half + gap * 2, y: p.y, px: p.x, py: p.y, value: Math.abs(s.values[label.index] ?? 0) })
+    const last = s.values[label.index]!
+    const name = s.spec.name
+    ends.push({
+      s,
+      label: { value: last, format: value => `${name} ${formats.value(value)}` },
+      x: p.x + half + gap * 2,
+      y: p.y,
+      px: p.x,
+      py: p.y,
+      value: Math.abs(last),
+    })
   }
   const settled = vertical ? settleColumn(ends, plot.y + lineHeight / 2, plot.y + plot.height - lineHeight / 2, lineHeight) : ends
   const moved = (end: { y: number, py: number }): boolean => Math.abs(end.y - end.py) > lineHeight / 4
@@ -1223,7 +1259,7 @@ function cartesianLabels(
     const paint = { ...(end.s.spec.slot != null ? { slot: end.s.spec.slot } : {}), ...(end.s.spec.tone != null ? { tone: end.s.spec.tone } : {}) }
     const datum = { seriesId: id, index: 0 }
     const x = end.x + run
-    add(`end:${id}`, 'end-label', end.text, [x, end.y, 'start', 'middle'], 'end', 2, { datum, paint })
+    add(`end:${id}`, 'end-label', end.label, [x, end.y, 'start', 'middle'], 'end', 2, { datum, paint })
     if (moved(end)) {
       leaders.set(`end:${id}`, {
         kind: 'line',
@@ -1243,6 +1279,7 @@ function cartesianLabels(
   return {
     marks: [...lines, ...kept.map(c => c.mark)],
     placements: new Map(kept.map(c => [c.mark.key, c.placement])),
+    values: new Map(kept.map(c => [c.mark.key, c.label])),
   }
 }
 

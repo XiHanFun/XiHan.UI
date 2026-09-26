@@ -187,10 +187,13 @@ function between(from: number, to: number, t: number): number {
   return Math.round((from + (to - from) * t) * factor) / factor
 }
 
+/** 起点里没有的数不滚、直接写终值：比如刚落得下的标签，它的标记并没有变。 */
 function interpolateNumbers(from: ChartNumbers, to: ChartNumbers, t: number): ChartNumbers {
   const out: Record<string, number> = {}
-  for (const [name, value] of Object.entries(to))
-    out[name] = between(from[name] ?? 0, value, t)
+  for (const [name, value] of Object.entries(to)) {
+    const start = from[name]
+    out[name] = start == null ? value : between(start, value, t)
+  }
   return out
 }
 

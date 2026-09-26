@@ -7,8 +7,9 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
-import type { ChartDatumRef } from '../shared/chart'
+import type { ChartDatumRef, ChartFrame } from '../shared/chart'
 import type { CartesianActive } from './cartesian-chart.logic'
+import type { CartesianScene } from './cartesian-chart.model'
 import type {
   CartesianChartApi,
   CartesianChartSchema,
@@ -58,6 +59,32 @@ function pathOf(mark: Mark): string {
   return markPath(mark as ShapeMark)
 }
 
+const ROLLED = new WeakMap<ChartFrame, Scene>()
+
+/**
+ * 更新过渡里标签上的数随标记从旧值滚到新值：按内核给的这一帧的数、用标签自己的写法重写文字。
+ * 首次出现的标签等标记长完才淡入，直接写终值；删掉的标签没有目标值，保持原文字收场。
+ */
+function rolledScene(frame: ChartFrame, target: CartesianScene | null): Scene {
+  if (frame.entry || !target)
+    return frame.scene
+  let scene = ROLLED.get(frame)
+  if (!scene) {
+    let changed = false
+    const front = frame.scene.layers.front.map((mark) => {
+      const label = mark.kind === 'text' ? target.labelValues.get(mark.key) : undefined
+      const value = frame.numbers[mark.key]
+      if (!label || value == null || value === label.value)
+        return mark
+      changed = true
+      return { ...mark, text: label.format(value) }
+    })
+    scene = changed ? { ...frame.scene, layers: { ...frame.scene.layers, front } } : frame.scene
+    ROLLED.set(frame, scene)
+  }
+  return scene
+}
+
 export function connectCartesianChart<T extends PropTypes>(
   service: Service<CartesianChartSchema>,
   normalize: NormalizeProps<T>,
@@ -73,7 +100,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const measured = size != null && model.scene != null
   // 过渡中画正在显示的那一帧；拾取、焦点与提示框仍按目标场景算
   const frame = context.get('frame')
-  const scene = frame?.scene ?? model.scene?.scene ?? EMPTY_SCENE
+  const scene = frame ? rolledScene(frame, model.scene) : model.scene?.scene ?? EMPTY_SCENE
   const invalid = model.issues.length > 0
   const empty = !invalid && model.derived.visible.every(s => s.values.every(v => v == null))
   // 取数中、还没有可画的数据：空态写「加载中」并转圈，不先报「没有数据」
