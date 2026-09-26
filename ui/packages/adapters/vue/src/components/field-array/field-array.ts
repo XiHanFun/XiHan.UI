@@ -69,7 +69,7 @@ export const XhFieldArrayRoot = defineComponent({
     const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps(props)) as FieldArrayProps, { onValueChange }, form?.service)
     provideFieldArray(ctx)
     // items 里每一项都带 key，作者铺行时直接 :key="row.key"
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', { ...(ctx.api.value.getRootProps() as Record<string, unknown>), ref: ctx.rootRef }, slots.default?.({
       items: ctx.api.value.items,
       value: ctx.api.value.value,
       count: ctx.api.value.count,

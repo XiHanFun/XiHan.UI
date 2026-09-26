@@ -60,6 +60,7 @@
 - `createItem` 设置新增行的初始值。
 - 每行可以包含一个或多个字段。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
+- 行的增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行淡入，删掉的行在原处淡出，上移、下移与增删带来的换位滑到新位置。行照常按 `items` 渲染，删掉即卸载。
 
 ### 组合
 
@@ -137,7 +138,7 @@
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
 **判据**：`canAdd` · `canRemove` · `canMove` · `canPress`
 
@@ -210,6 +211,7 @@
 | `root` | `data-at-min` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-movable` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
@@ -311,7 +313,9 @@
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

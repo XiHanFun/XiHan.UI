@@ -110,9 +110,13 @@ export interface FieldArraySchema extends MachineSchema {
      * 没有按住时为 null。抬起、失焦、指针取消，或按住的把手随行换位 / 离场时即撤下。
      */
     pressed: FieldArrayPressedKey | null
+    /** 列表动效已经接到根节点上；接上之前根节点带 data-instant，首帧的行一律不播进场。 */
+    listTracked: boolean
   }
   computed: Record<string, never>
   refs: {
+    /** 行所在的容器（root 部件），列表动效在它上面盯行的到达、离场与换位；由三端适配器接线。 */
+    getRootEl: () => HTMLElement | null
     /** 下一个行序号的流水号。 */
     keySeq: number
     /** 已计算完成、等待 value 落地的序号。 */
@@ -138,10 +142,12 @@ export interface FieldArraySchema extends MachineSchema {
     | { type: 'PRESS.START', key: FieldArrayPressedKey, disabled?: boolean }
     /** 按住的把手抬起、失焦或指针取消；只收自己那一下。 */
     | { type: 'PRESS.END', key: FieldArrayPressedKey }
+    /** 列表动效接上了根节点（机器自己发）。 */
+    | { type: 'LIST.TRACKED' }
   tag: never
   guard: 'canAdd' | 'canRemove' | 'canMove' | 'canPress'
-  action: 'setValue' | 'addItem' | 'removeItem' | 'moveItem' | 'syncKeys' | 'resetToDefault' | 'startPress' | 'endPress' | 'releasePress' | 'releaseWhenInert'
-  effect: never
+  action: 'setValue' | 'addItem' | 'removeItem' | 'moveItem' | 'syncKeys' | 'resetToDefault' | 'startPress' | 'endPress' | 'releasePress' | 'releaseWhenInert' | 'markListTracked'
+  effect: 'trackListMotion'
 }
 
 export interface FieldArrayApi<T extends PropTypes = PropTypes> {

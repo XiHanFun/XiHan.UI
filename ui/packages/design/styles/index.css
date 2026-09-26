@@ -3573,6 +3573,7 @@
 /* 定义 field array 样式。 */
 
 /* FieldArray 独立皮肤同时传递引入把手的动作控件配方；full bundle 递归去重。 */
+/* 行的进场与退场取共享关键帧。 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -3585,6 +3586,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-field-array-gap, var(--xh-space-2));
+    /* 删掉的行由替身绝对定位在原处播完退场，定位基准是根节点 */
+    position: relative;
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -3599,6 +3602,19 @@
     gap: var(--xh-field-array-item-gap, var(--xh-space-2));
     padding: var(--xh-field-array-item-padding, var(--xh-space-0));
     border-radius: var(--xh-field-array-item-radius, var(--xh-shape-surface));
+    /* 增删与上移下移带来的换位：由列表动效先反向补偿、再沿这条过渡滑到新位置 */
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新增的行进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或根节点带 data-instant） */
+  [data-scope='field-array'][data-part='item']:not([data-instant], [data-instant] > *) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 删掉的行：替身留在原处淡出，播完即移除 */
+  [data-scope='field-array'][data-part='item'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='field-array'][data-part='item'][hidden] {

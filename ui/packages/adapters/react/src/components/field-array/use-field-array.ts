@@ -18,7 +18,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface FieldArrayContext {
   api: FieldArrayApi
   service: Service<FieldArraySchema>
-  /** 表单重置的锚点：接在根节点上。 */
+  /** 表单重置的锚点，也是列表动效所在的行容器：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
 }
 
@@ -28,6 +28,7 @@ export function useFieldArray(props: FieldArraySchema['props'], form?: Service<F
   const rootRef = useRef<HTMLElement | null>(null)
   const service = useMachine(fieldArrayMachine, () => props, { scope })
   service.refs.set('form', form ?? null)
+  service.refs.set('getRootEl', () => rootRef.current)
 
   // 整份数组攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生
   useFormReset(service, rootRef)
