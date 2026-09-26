@@ -108,6 +108,39 @@
     backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
+  /* liquid 档：data-material="liquid" 下缺省 outline 换成液态面，面、墨色细线、1px 亮边与投影都从液态层取；
+     悬停 / 按下往前景色兑，键盘聚焦铺配方的实体 focus surface。面内不加顶光，亮边已画在朝光源的一侧 */
+  :where([data-material='liquid']) [data-scope='back-top'][data-part='root'][data-variant='outline']
+    [data-scope='back-top'][data-part='trigger'][data-xh-liquid] {
+    --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_liquid-bg));
+    --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_liquid-bg-hover));
+    --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-material-liquid-focus-surface));
+    --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_liquid-bg));
+    --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-hover: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-pressed: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+    --xh-action-fg-focus-visible: var(--xh-back-top-fg, var(--xh-material-liquid-fg));
+    --xh-action-border-rest: var(--xh-back-top-border, var(--xh-material-liquid-border));
+    --xh-action-border-hover: var(--xh-back-top-border-hover, var(--xh-material-liquid-border));
+    --xh-action-border-pressed: var(--xh-back-top-border-hover, var(--xh-material-liquid-border));
+    --xh-action-border-focus-visible: var(--xh-back-top-border, var(--xh-material-liquid-border));
+    --xh-action-border-disabled: var(--xh-back-top-border, var(--xh-material-liquid-border));
+    --xh-action-shadow-rest: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-hover: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-pressed: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-focus-visible: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+    --xh-action-shadow-disabled: var(--xh-back-top-shadow, var(--xh-_liquid-shadow));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-highlight-hover: transparent;
+    --xh-action-highlight-pressed: transparent;
+    --xh-action-highlight-focus-visible: transparent;
+    --xh-action-highlight-disabled: transparent;
+
+    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
+    backdrop-filter: var(--xh-material-liquid-backdrop);
+  }
+
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
   [data-scope='back-top'][data-part='trigger'][data-xh-action-variant='solid']:focus-visible {

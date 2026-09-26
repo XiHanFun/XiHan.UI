@@ -173,6 +173,7 @@
     "./toggle-group.css": "./css/toggle-group.css",
     "./toggle.css": "./css/toggle.css",
     "./tone.css": "./css/tone.css",
+    "./liquid.css": "./css/liquid.css",
     "./tool-call.css": "./css/tool-call.css",
     "./toolbar.css": "./css/toolbar.css",
     "./tooltip.css": "./css/tooltip.css",

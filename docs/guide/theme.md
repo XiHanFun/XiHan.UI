@@ -188,7 +188,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 ## 材质配方
 
-令牌配方四档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
+令牌配方五档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`；M5 liquid 另有五项专用令牌。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
@@ -196,6 +196,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
 | M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Toast、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
+| M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层，现为 FloatButton、BackTop 的触发器 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
 | raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Segmented、Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
 | floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
 
@@ -230,6 +231,33 @@ Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、�
 | `--xh-material-frosted-compact-shadow` | 明暗独立的两层小投影 |
 
 高对比、强制颜色和打印分别改为不透明、无模糊、无投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
+
+### 液态材质
+
+`data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。
+
+```html
+<html data-material="liquid">
+  <!-- 图片、视频、画布这类读不到颜色的区域，由作者声明下层的明暗 -->
+  <section data-xh-backdrop="dark" data-xh-backdrop-busy>…</section>
+</html>
+```
+
+作者只写这一个属性。组件挂载后由 `@xihan-ui/core/visual-environment` 的液态面接管，同一文档的部件共用一套监听，不需要额外安装或调用：
+
+- 按部件下层的计算底色与作者声明选色调：下层亮取浅色调、下层暗取深色调，部件随之成为黑墨或白墨域（相对亮度 0.179 ± 0.04 滞回，内容滚过分界附近不来回闪）。
+- 下层均匀且色调已知时换通透档（浅 0.24 / 深 0.34）；下层有文字、渐变、图片或读不到时留在可读下限，标签在任何下层上至少 4.5:1。
+- 细指针移动时 1px 边缘光转向指针；粗指针、无指针与减弱动效下固定左上（RTL 右上）。
+- Chromium 内核下距边缘 18px 以内折射下层；其余引擎、尺寸超过 640 × 120 或同一视口超过 3 个时只模糊不折射。
+
+| 专用令牌 | 用途 |
+| --- | --- |
+| `--xh-material-liquid-tint` | 通透档的着色 |
+| `--xh-material-liquid-alpha-clear` / `-alpha-floor` | 通透档与可读下限的不透明度 |
+| `--xh-material-liquid-rim-far` | 背光一侧的弱亮边 |
+| `--xh-material-liquid-bezel` | 折射带宽度 |
+
+服务端与挂载前输出静态形态：色调随主题，不透明度取可读下限。减少透明、打印时不透明度 1 且无背景滤镜与折射，高对比档不透明度 1，强制色改由系统色表达。
 
 ## 直接取用令牌
 

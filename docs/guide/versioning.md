@@ -106,8 +106,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 
-::: warning `data-xh-part`、`data-xh-scroll` 与墨色域的两个声明是 `data-xh-` 前缀里仅有的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 37 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
+::: warning `data-xh-part`、`data-xh-scroll`、墨色域与液态下层的声明是 `data-xh-` 前缀里仅有的例外
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 40 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
 :::
 
 ### requiredParts 的方向是反的
@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 226 个不同的 `data-*` 属性名、1568 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 227 个不同的 `data-*` 属性名、1570 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 171 个属性名 / 732 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 174 个属性名 / 739 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -189,7 +189,7 @@ brand  neutral  success  warning  danger  info
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 58 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 36 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 4 | `--xh-_truncate-lines`、`--xh-_float-button-offset`、`--xh-_tour-spotlight-radius`、`--xh-_carousel-autoplay-duration`。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，文本截断、浮动按钮贴边、引导目标圆角或轮播进度会失效，且不报任何错误 |
-| `@xihan-ui/styles` 的 CSS 子路径 | 155 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./motion.css`，与 145 条 `.css`：134 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
+| `@xihan-ui/styles` 的 CSS 子路径 | 156 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./motion.css`，与 146 条 `.css`：134 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
 ### 排除
@@ -202,7 +202,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 575 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 589 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -213,8 +213,8 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 137（`defineXhElements()` 注册 136 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1338 条声明 / 379 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 379 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| observed attribute | 1335 条声明 / 378 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 378 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 91 个名字 / 201 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（186 处中 184 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 184 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
@@ -385,7 +385,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/web-components` | 137 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 134 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 575 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 589 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
@@ -413,11 +413,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，15901 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，15914 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 192 条子入口、8298 个导出名、134 个 `data-scope` 与 1040 条部件配对、
-134 个组件的 1722 个 prop 名、228 种 `data-*`、33 个 `data-state` 取值、575 个令牌、
+覆盖：包名与 193 条子入口、8298 个导出名、134 个 `data-scope` 与 1040 条部件配对、
+134 个组件的 1720 个 prop 名、229 种 `data-*`、33 个 `data-state` 取值、589 个令牌、
 5 个 `@layer` 名、4038 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改

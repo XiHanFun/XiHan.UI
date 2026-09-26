@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 液态材质层：与组件无关，全库共用一份。
+ *
+ * data-material="liquid" 下，连接层投影了 data-xh-liquid 的导航层部件（浮动钮、回到顶部等浮在内容之上的控制面）
+ * 换成液态面。这里只声明私有槽，各组件皮肤在自己的部件上把 Action Control 的桥接槽指过来；standard 档下
+ * 这些槽没人读，部件保持原材质。
+ *
+ * 静态形态（服务端、挂载前，或液态面还没判定下层）：色调随主题极性，不透明度取可读下限，这一档对任何
+ * 下层都保证标签 4.5:1。组件的状态机把部件挂进 core 的液态面，由它按下层在部件上写：
+ *   data-xh-ink              dark / light：部件成为黑墨或白墨域。墨色域本身是浅色 / 深色主题边界，
+ *                            按主题取值的液态通道随之落到那一种色调
+ *   data-xh-liquid-clarity   clear：下层均匀且色调已知，换通透档
+ *   --xh-_liquid-light-x / -y 光源方向的单位向量，决定 1px 亮边落在哪一侧
+ */
+@layer xihan.components {
+  :where([data-material='liquid']) [data-xh-liquid] {
+    /* 光源缺省在左上方 */
+    --xh-_liquid-light-x: -0.71;
+    --xh-_liquid-light-y: -0.71;
+    --xh-_liquid-bg: var(--xh-material-liquid-bg);
+    /* 1px 亮边是两层零模糊内阴影：阴影形状朝背光方向偏移，露出的一弯落在朝光源的一侧，
+       另一层反过来偏移，在背光一侧留一道弱亮边。面内不加高光 */
+    --xh-_liquid-rim:
+      inset calc(var(--xh-_liquid-light-x) * var(--xh-stroke-thin) * -1) calc(var(--xh-_liquid-light-y) * var(--xh-stroke-thin) * -1) 0 0 var(--xh-material-liquid-highlight),
+      inset calc(var(--xh-_liquid-light-x) * var(--xh-stroke-thin)) calc(var(--xh-_liquid-light-y) * var(--xh-stroke-thin)) 0 0 var(--xh-material-liquid-rim-far);
+    --xh-_liquid-shadow: var(--xh-_liquid-rim), var(--xh-material-liquid-shadow);
+    /* 交互阶梯往部件自己的前景色兑：浅色调变深、深色调变浅 */
+    --xh-_liquid-bg-hover: color-mix(in oklab, var(--xh-_liquid-bg), var(--xh-material-liquid-fg) 8%);
+    --xh-_liquid-bg-pressed: color-mix(in oklab, var(--xh-_liquid-bg), var(--xh-material-liquid-fg) 14%);
+  }
+
+  /* 通透档：下层均匀且色调已知时由液态面写上，着色按主题取值，已随墨色域落到对应色调 */
+  :where([data-material='liquid']) [data-xh-liquid][data-xh-liquid-clarity='clear'] {
+    --xh-_liquid-bg: color-mix(in oklab, var(--xh-material-liquid-tint) calc(var(--xh-material-liquid-alpha-clear) * 100%), transparent);
+  }
+
+  /* 从右往左排版时光源缺省在右上方 */
+  :where([dir='rtl']) :where([data-material='liquid']) [data-xh-liquid],
+  :where([data-material='liquid']) :where([dir='rtl']) [data-xh-liquid] {
+    --xh-_liquid-light-x: 0.71;
+  }
+}

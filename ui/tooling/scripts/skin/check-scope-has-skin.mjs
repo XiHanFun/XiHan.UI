@@ -23,6 +23,7 @@ const SHARED = {
   'forced-colors': '高对比档的公共补救层，按状态词汇表匹配全部库节点，不挑具体哪一个',
   'label': '字段族标签的公共层，按 [data-part=\'label\'] 匹配逐个列出的 scope',
   'layers': '层序单一真源，整份只有一行 @layer 次序声明',
+  'liquid': '液态材质层，按 [data-xh-liquid] 匹配连接层投影了这一标记的导航层部件，与组件无关',
   'overlay-arrow': '浮层箭头的几何，按 [data-part=\'arrow\'] 匹配，六份浮层皮肤共用',
   'pointer': '指针反馈的公共层，按 [data-scope] 与禁用态的三种条件拼写匹配全部库节点，不挑具体哪一个',
   'reset': '库自己的基线，按 [data-scope] 匹配全部库节点，不挑具体哪一个',
