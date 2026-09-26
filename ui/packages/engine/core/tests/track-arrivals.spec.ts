@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest'
-import { hasUserActivated, INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY, trackArrivals } from '../src/behavior/arrival'
+import { INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY, trackArrivals } from '../src/behavior/arrival'
 
 let stops: Array<() => void> = []
 
@@ -156,18 +156,5 @@ describe('trackArrivals', () => {
     container.append(late)
     await flush()
     expect(index(late)).toBe('')
-  })
-})
-
-describe('hasUserActivated', () => {
-  it('读 navigator.userActivation.hasBeenActive', () => {
-    const win = { navigator: { userActivation: { hasBeenActive: false } } } as unknown as Window
-    expect(hasUserActivated(win)).toBe(false)
-    const active = { navigator: { userActivation: { hasBeenActive: true } } } as unknown as Window
-    expect(hasUserActivated(active)).toBe(true)
-  })
-
-  it('宿主没有这个接口时按已动过手算，进场照常播', () => {
-    expect(hasUserActivated({ navigator: {} } as unknown as Window)).toBe(true)
   })
 })
