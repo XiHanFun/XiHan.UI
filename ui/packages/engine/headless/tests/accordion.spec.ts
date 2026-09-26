@@ -190,6 +190,42 @@ describe('accordionMachine 开合', () => {
   })
 })
 
+describe('accordionMachine 首帧不播开合', () => {
+  const instant = (a: ReturnType<typeof makeAccordion>, value: string): unknown[] => [
+    (a.api().getContentProps({ value }) as Record<string, unknown>)['data-instant'],
+    (a.api().getIndicatorProps({ value }) as Record<string, unknown>)['data-instant'],
+  ]
+
+  it('首帧就在的展开与收起都带 data-instant：内容与箭头直接呈现', () => {
+    const a = makeAccordion({ defaultValue: ['install'] })
+    expect(instant(a, 'install')).toEqual(['', ''])
+    expect(instant(a, 'theme')).toEqual(['', ''])
+    a.stop()
+  })
+
+  it('开合过的条目撤掉标记，从此按动效走；没动过的照旧直接呈现', () => {
+    const a = makeAccordion({ defaultValue: ['install'] })
+    a.triggers[1]!.click()
+    // install 收起、theme 展开：两项都变过
+    expect(instant(a, 'install')).toEqual([undefined, undefined])
+    expect(instant(a, 'theme')).toEqual([undefined, undefined])
+    expect(instant(a, 'a11y')).toEqual(['', ''])
+    // 再点回去，变过的不会再带回标记
+    a.triggers[0]!.click()
+    expect(instant(a, 'install')).toEqual([undefined, undefined])
+    a.stop()
+  })
+
+  it('受控 value 由宿主改写，变动的条目同样撤掉标记', () => {
+    const a = makeAccordion({ value: ['install'] })
+    a.setProps({ value: ['a11y'] })
+    expect(instant(a, 'install')).toEqual([undefined, undefined])
+    expect(instant(a, 'a11y')).toEqual([undefined, undefined])
+    expect(instant(a, 'theme')).toEqual(['', ''])
+    a.stop()
+  })
+})
+
 describe('connectAccordion 键盘', () => {
   it('方向键只在 trigger 之间搬焦点、不改展开集合；缺省不回绕，loop 才回绕；横排换成左右键', () => {
     const a = makeAccordion({ defaultValue: ['install'] })

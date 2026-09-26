@@ -282,8 +282,10 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
+| `content` | `data-instant` | '' |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | '' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
