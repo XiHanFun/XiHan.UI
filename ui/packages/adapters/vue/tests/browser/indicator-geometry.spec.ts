@@ -1,5 +1,5 @@
 // 滑动指示器量的是排布位：祖先带缩放（对话框进场）、整页 RTL 而组件没传 dir 时，
-// 指示器仍要与选中项严丝合缝。位置走 transform，只有真实布局量得出它落在哪。
+// 指示器仍要与选中项严丝合缝。位置走 translate，只有真实布局量得出它落在哪。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
@@ -76,13 +76,13 @@ describe('segmented 的滑块几何', () => {
     expectCovers('week')
   })
 
-  it('换段只动 transform 与尺寸，不动 inset', async () => {
+  it('换段只动 translate 与尺寸，不动 inset', async () => {
     const { value } = await mountSegmented()
     value.value = 'month'
     await nextTick()
     await new Promise(resolve => requestAnimationFrame(resolve))
     const style = getComputedStyle(part('indicator'))
-    expect(style.transitionProperty.split(', ')).toEqual(['transform', 'inline-size', 'block-size', 'box-shadow'])
+    expect(style.transitionProperty.split(', ')).toEqual(['translate', 'inline-size', 'block-size', 'box-shadow'])
     await settle()
     expectCovers('month')
   })
