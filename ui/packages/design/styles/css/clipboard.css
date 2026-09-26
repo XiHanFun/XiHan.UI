@@ -241,21 +241,20 @@
       var(--xh-motion-duration-micro) forwards;
   }
 
+  /* 减弱动效：圆环不转，整圈换成虚线，静止的形状仍然读得出"还没好"；淡入与图标的淡出照常。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before {
-      animation: none;
-    }
-
-    [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
-      > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
-      animation: none;
+      border-style: dotted;
+      border-color: currentColor;
+      animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before,
-  :where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
-    > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
-    animation: none;
+  :where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 
   /* 复制成功只换前景与内容，轮廓和尺寸保持稳定；各态前景经桥接槽换，悬停与按下不退回平时的字色 */
