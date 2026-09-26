@@ -5191,6 +5191,7 @@
       "trackHoverIntent",
       "trackLiquidGoo",
       "trackLiquidSurface",
+      "trackListMotion",
       "warn",
       "weeksInMonth",
       "xihanUiBanner"
@@ -8605,6 +8606,7 @@
       "ToastSoundServiceOptions",
       "ToastSoundServicePort",
       "attachDocumentSoundUnlock",
+      "clampSpec",
       "createSharedSoundPlayerController",
       "createSoundPlayer",
       "createSoundServiceController",
