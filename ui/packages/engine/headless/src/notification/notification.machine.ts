@@ -125,13 +125,14 @@ export const notificationMachine = createMachine({
       /**
        * 条目到达：同一批新到的卡片按到达顺序错开进场，不按它在那一摞里排第几。每一条通知都是一件新事，
        * 接上时已在的卡片也算第一批，照常进场。React 的祖先 ref 在子组件 layout effect 之后才附着，
-       * 延到提交后的微任务再取，仍在首帧绘制之前。
+       * 延到提交后的微任务再取，仍在首帧绘制之前。通知队列也会在没有 DOM 的宿主里单独跑，
+       * 这里不经 Scope 取窗口：没有根节点就不接。
        */
-      trackArrivals: ({ refs, scope, flush }) => {
+      trackArrivals: ({ refs, flush }) => {
         let disposed = false
         let stop: (() => void) | undefined
         flush(() => {
-          scope.getWin().queueMicrotask(() => {
+          queueMicrotask(() => {
             const root = refs.get('getRootEl')()
             if (disposed || !root)
               return
