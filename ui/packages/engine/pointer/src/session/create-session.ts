@@ -7,7 +7,7 @@
 import type { PointerEndReason, PointerSession, PointerSessionDetails, PointerSessionOptions, PointerVelocity } from './types'
 
 /** 松手速度只看抬起前这么长的一段：更早的移动与松手时的手势无关。 */
-const VELOCITY_WINDOW_MS = 80
+export const VELOCITY_WINDOW_MS = 80
 
 /** 抬起时刻之前窗口内的采样求速度；不足两个采样或时间差不为正时为零。 */
 export function releaseVelocity(samples: ReadonlyArray<readonly [number, number, number]>, endTime: number): PointerVelocity {

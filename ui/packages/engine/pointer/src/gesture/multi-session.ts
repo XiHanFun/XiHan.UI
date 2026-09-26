@@ -4,8 +4,9 @@
  */
 
 // 多指会话：同时跟住落在同一块区域上的几根指针，任意一根动都回送当前全部触点。
-import type { PointerEndReason } from '../session/types'
+import type { PointerEndReason, PointerVelocity } from '../session/types'
 import type { PinchPoint } from './pinch'
+import { releaseVelocity, VELOCITY_WINDOW_MS } from '../session/create-session'
 
 export interface MultiPointerSessionOptions {
   /** 会话跟随的文档。给 null（无 DOM 的纯逻辑测试）时会话退化成空操作。 */
@@ -15,12 +16,13 @@ export interface MultiPointerSessionOptions {
    * 抬起一根手指也会回送一次——少了那根之后的样子。
    */
   onChange: (points: readonly TrackedPoint[]) => void
-  /** 最后一根手指离开。 */
   /**
    * 最后一根离开。reason 说的是怎么离开的：抬手是 pointerup，被系统收走是 pointercancel。
    * 两者对调用方常常不是一回事——收走时该退回原样，抬手才是落定。
+   * velocity 是最后抬起的那根手指的松手速度（像素每秒），与单指会话同一算法：抬起前 80ms 内
+   * 首尾位移除以时间差；停住再抬起、或被系统收走时为零。
    */
-  onEnd: (details: { reason: PointerEndReason }) => void
+  onEnd: (details: { reason: PointerEndReason, velocity: PointerVelocity }) => void
 }
 
 export interface TrackedPoint extends PinchPoint {
@@ -45,6 +47,18 @@ export interface MultiPointerSession {
 export function createMultiPointerSession(options: MultiPointerSessionOptions): MultiPointerSession {
   const { doc, onChange, onEnd } = options
   const points: TrackedPoint[] = []
+  // 每根指针各自的移动采样：[时间戳, x, y]，只留速度窗口内用得上的那一截
+  const samples = new Map<number, Array<[number, number, number]>>()
+  const record = (event: PointerEvent): void => {
+    let list = samples.get(event.pointerId)
+    if (!list) {
+      list = []
+      samples.set(event.pointerId, list)
+    }
+    list.push([event.timeStamp, event.clientX, event.clientY])
+    while (list.length > 2 && event.timeStamp - list[0]![0] > VELOCITY_WINDOW_MS)
+      list.shift()
+  }
 
   if (!doc) {
     return {
@@ -72,6 +86,7 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
     if (at < 0)
       return
     points[at] = { pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY }
+    record(event)
     onChange([...points])
   }
 
@@ -82,12 +97,18 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
     if (at < 0)
       return
     points.splice(at, 1)
+    let velocity: PointerVelocity = { x: 0, y: 0 }
+    if (reason === 'pointerup') {
+      record(event)
+      velocity = releaseVelocity(samples.get(event.pointerId) ?? [], event.timeStamp)
+    }
+    samples.delete(event.pointerId)
     // 少了一根之后先回送一次：从双指退回单指时，调用方要拿这一下重新拍起始快照，
     // 否则剩下那根手指会带着上一段的缩放基准继续走，图会跳一下
     onChange([...points])
     if (points.length === 0) {
       ended = true
-      onEnd({ reason })
+      onEnd({ reason, velocity })
     }
   }
 
@@ -109,12 +130,14 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
         points.push(point)
       else
         points[at] = point
+      samples.delete(point.pointerId)
     },
     points: () => [...points],
     dispose: () => {
       disposed = true
       ended = true
       points.splice(0)
+      samples.clear()
       doc.removeEventListener('pointermove', handleMove)
       doc.removeEventListener('pointerup', handleUp)
       doc.removeEventListener('pointercancel', handleCancel)

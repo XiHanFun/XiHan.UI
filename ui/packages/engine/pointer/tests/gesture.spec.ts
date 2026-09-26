@@ -153,7 +153,7 @@ describe('多指会话', () => {
     const s = createMultiPointerSession({ doc: document, onChange: vi.fn(), onEnd })
     s.add({ pointerId: 1, clientX: 0, clientY: 0 })
     document.dispatchEvent(pointer('pointercancel', 1))
-    expect(onEnd).toHaveBeenCalledWith({ reason: 'pointercancel' })
+    expect(onEnd).toHaveBeenCalledWith({ reason: 'pointercancel', velocity: { x: 0, y: 0 } })
     s.dispose()
   })
 
@@ -162,7 +162,58 @@ describe('多指会话', () => {
     const s = createMultiPointerSession({ doc: document, onChange: vi.fn(), onEnd })
     s.add({ pointerId: 1, clientX: 0, clientY: 0 })
     document.dispatchEvent(pointer('pointerup', 1))
-    expect(onEnd).toHaveBeenCalledWith({ reason: 'pointerup' })
+    expect(onEnd).toHaveBeenCalledWith({ reason: 'pointerup', velocity: { x: 0, y: 0 } })
+    s.dispose()
+  })
+
+  function timed(type: string, pointerId: number, timeStamp: number, clientX: number, clientY = 0): PointerEvent {
+    const event = pointer(type, pointerId, clientX, clientY)
+    Object.defineProperty(event, 'timeStamp', { value: timeStamp, configurable: true })
+    return event
+  }
+
+  it('最后抬起的那根带出松手速度：抬起前 80ms 内首尾位移除以时间差', () => {
+    const onEnd = vi.fn()
+    const s = createMultiPointerSession({ doc: document, onChange: vi.fn(), onEnd })
+    s.add({ pointerId: 1, clientX: 0, clientY: 0 })
+    document.dispatchEvent(timed('pointermove', 1, 0, 0))
+    document.dispatchEvent(timed('pointermove', 1, 100, 10))
+    document.dispatchEvent(timed('pointermove', 1, 140, 30, 4))
+    document.dispatchEvent(timed('pointerup', 1, 160, 40, 8))
+    expect(onEnd.mock.calls[0]![0].velocity).toEqual({ x: 500, y: (8 / 60) * 1000 })
+    s.dispose()
+  })
+
+  it('双指收尾时取最后抬起那根的速度，先抬的那根不算', () => {
+    const onEnd = vi.fn()
+    const s = createMultiPointerSession({ doc: document, onChange: vi.fn(), onEnd })
+    s.add({ pointerId: 1, clientX: 0, clientY: 0 })
+    s.add({ pointerId: 2, clientX: 100, clientY: 0 })
+    document.dispatchEvent(timed('pointermove', 1, 10, 50))
+    document.dispatchEvent(timed('pointermove', 1, 20, 90))
+    document.dispatchEvent(timed('pointerup', 1, 30, 120))
+    document.dispatchEvent(timed('pointermove', 2, 40, 100))
+    document.dispatchEvent(timed('pointermove', 2, 60, 100, 20))
+    document.dispatchEvent(timed('pointerup', 2, 80, 100, 40))
+    expect(onEnd).toHaveBeenCalledTimes(1)
+    expect(onEnd.mock.calls[0]![0].velocity).toEqual({ x: 0, y: 1000 })
+    s.dispose()
+  })
+
+  it('停住再抬起、被系统收走时速度为零', () => {
+    const onEnd = vi.fn()
+    const s = createMultiPointerSession({ doc: document, onChange: vi.fn(), onEnd })
+    s.add({ pointerId: 1, clientX: 0, clientY: 0 })
+    document.dispatchEvent(timed('pointermove', 1, 0, 0))
+    document.dispatchEvent(timed('pointermove', 1, 20, 40))
+    document.dispatchEvent(timed('pointerup', 1, 400, 40))
+    expect(onEnd.mock.calls[0]![0].velocity).toEqual({ x: 0, y: 0 })
+
+    s.add({ pointerId: 2, clientX: 0, clientY: 0 })
+    document.dispatchEvent(timed('pointermove', 2, 500, 0))
+    document.dispatchEvent(timed('pointermove', 2, 516, 40))
+    document.dispatchEvent(timed('pointercancel', 2, 532, 80))
+    expect(onEnd.mock.calls[1]![0]).toEqual({ reason: 'pointercancel', velocity: { x: 0, y: 0 } })
     s.dispose()
   })
 
