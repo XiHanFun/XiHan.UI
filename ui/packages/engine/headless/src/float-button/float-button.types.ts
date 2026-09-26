@@ -109,7 +109,7 @@ export interface FloatButtonSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'startMerge'
     | 'endMerge'
-  effect: 'trackLayer' | 'trackLiquid' | 'trackLiquidGroup'
+  effect: 'trackLayer' | 'trackLiquid' | 'trackLiquidGroup' | 'trackListExit'
 }
 
 export interface FloatButtonApi<T extends PropTypes = PropTypes> {

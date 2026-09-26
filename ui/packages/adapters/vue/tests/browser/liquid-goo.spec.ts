@@ -190,7 +190,7 @@ describe('分离与融回', () => {
     expect(getComputedStyle(rig.blobOf(rig.items[0]!)).display).toBe('none')
   })
 
-  it('减弱动效：展开与收起都不分离，收起当场藏起来', async () => {
+  it('减弱动效：展开与收起都不分离，收起只剩条目各自那段淡出，播完藏起来', async () => {
     const rig = await mount()
     host!.dataset.motion = 'reduce'
     rig.trigger.click()
@@ -199,6 +199,9 @@ describe('分离与融回', () => {
     expect(rig.items.every(item => item.style.translate === '')).toBe(true)
     rig.trigger.click()
     await nextTick()
-    expect(rig.list.hidden).toBe(true)
+    await frames(1)
+    // 减弱档的退场只剩淡变，不位移、不缩放；列表等这段淡出播完才藏
+    expect(rig.items.every(item => item.style.translate === '')).toBe(true)
+    await expect.poll(() => rig.list.hidden, { timeout: 2000 }).toBe(true)
   })
 })

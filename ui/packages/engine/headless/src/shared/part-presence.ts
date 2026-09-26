@@ -79,3 +79,32 @@ export function waitForTransition(node: Element | null, property: string, done: 
     cancelled = true
   }
 }
+
+/**
+ * 等节点及其子孙上正在播的有限 CSS 动画都播完（或被取消）再回调；没有在播的即刻回调。返回撤销函数。
+ *
+ * 给「一组条目各自播退场、整组播完才藏起」用：条目各有各的错开延迟，按浏览器实际创建的动画对象等。
+ * 调用方在收起那一帧的样式提交之后再调。
+ */
+export function waitForSubtreeAnimations(node: Element | null, done: () => void): () => void {
+  let cancelled = false
+  const animations = node && typeof node.getAnimations === 'function'
+    ? node.getAnimations({ subtree: true }).filter((animation) => {
+        if (!('animationName' in animation) || !animation.effect)
+          return false
+        const end = animation.effect.getComputedTiming().endTime
+        return Number.isFinite(end) && Number(end) > 0 && animation.playState !== 'finished'
+      })
+    : []
+  if (!animations.length) {
+    done()
+    return () => {}
+  }
+  void Promise.allSettled(animations.map(animation => animation.finished)).then(() => {
+    if (!cancelled)
+      done()
+  })
+  return () => {
+    cancelled = true
+  }
+}

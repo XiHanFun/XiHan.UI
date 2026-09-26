@@ -411,6 +411,29 @@
     animation-delay: calc(5 * var(--xh-motion-stagger-step));
   }
 
+  /* 收起：逆着冒出的次序逐条缩回，离触发器最远的先走、最近的最后收，连接层等它们播完才藏起展开组。
+     液态档里从触发器拆出来的那几块由液态组融回，不挂这段 */
+  [data-scope='float-button'][data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]) {
+    pointer-events: none;
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  [data-scope='float-button'][data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(2) {
+    animation-delay: var(--xh-motion-stagger-step);
+  }
+
+  [data-scope='float-button'][data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(3) {
+    animation-delay: calc(2 * var(--xh-motion-stagger-step));
+  }
+
+  [data-scope='float-button'][data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(4) {
+    animation-delay: calc(3 * var(--xh-motion-stagger-step));
+  }
+
+  [data-scope='float-button'][data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(n + 5) {
+    animation-delay: calc(4 * var(--xh-motion-stagger-step));
+  }
+
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
      粗指针的 44px 命中区由配方的 ::after 给，字形占的是 ::before */
   [data-scope='float-button'][data-part='trigger']:empty::before {

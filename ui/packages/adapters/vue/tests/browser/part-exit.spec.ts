@@ -3,7 +3,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
-import { XhBackTopRoot, XhBackTopTrigger, XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedScrollToEndTrigger, XhMessageFeedViewport } from '../../src'
+import { XhBackTopRoot, XhBackTopTrigger, XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedScrollToEndTrigger, XhMessageFeedViewport } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -84,5 +84,38 @@ describe('back-top 按钮', () => {
     expect(running(trigger)).toEqual(['xh-pop-out'])
     expect(getComputedStyle(trigger).pointerEvents).toBe('none')
     await until(() => root.hidden === true)
+  })
+})
+
+describe('float-button 展开列表', () => {
+  it('收起时列表先留着，条目逆着冒出的次序逐条缩回，播完才藏起', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhFloatButtonRoot, null, () => [
+        h(XhFloatButtonList, null, () => ['a', 'b', 'c'].map(label => h('button', { 'key': label, 'type': 'button', 'aria-label': label }, label))),
+        h(XhFloatButtonTrigger, { 'aria-label': '更多' }),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    const trigger = host.querySelector<HTMLElement>('[data-scope="float-button"][data-part="trigger"]')!
+    const list = host.querySelector<HTMLElement>('[data-scope="float-button"][data-part="list"]')!
+    const items = [...list.children] as HTMLElement[]
+
+    trigger.click()
+    await until(() => list.hidden === false)
+    await new Promise(resolve => setTimeout(resolve, 400))
+
+    trigger.click()
+    await until(() => list.dataset.state === 'closed')
+    expect(list.hidden).toBe(false)
+    expect(items.map(el => running(el)[0])).toEqual(['xh-pop-out', 'xh-pop-out', 'xh-pop-out'])
+    // 离触发器最远的（DOM 里最后一条）先走，最近的最后收
+    const delays = items.map(el => Number(el.getAnimations()[0]!.effect!.getTiming().delay))
+    expect(delays[2]).toBe(0)
+    expect(delays[0]).toBeGreaterThan(delays[1]!)
+    expect(delays[1]).toBeGreaterThan(delays[2]!)
+    await until(() => list.hidden === true)
   })
 })

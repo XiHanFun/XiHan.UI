@@ -217,10 +217,12 @@ describe('float-button 液态组的融回', () => {
     expect(rig.list().hidden).toBeUndefined()
   })
 
-  it('不播放（standard 档、减弱动效）时收起当场藏起来', () => {
+  it('液态组不播放（standard 档、减弱动效）时收起等条目的退场动画；没有可等的，宿主提交之后随即藏起来', async () => {
     const rig = makeRig({ defaultOpen: true })
     stubGroup(rig, false)
     ;(rig.trigger().onClick as () => void)()
+    await Promise.resolve()
+    await Promise.resolve()
     expect(rig.list().hidden).toBe(true)
     expect(rig.list().inert).toBeUndefined()
   })
@@ -382,6 +384,9 @@ describe('float-button 开合', () => {
 
     rig.setProps({ open: false })
     expect(rig.api().open).toBe(false)
+    // 条目的退场动画（这里没有可等的）播完才藏起
+    await Promise.resolve()
+    await Promise.resolve()
     expect(rig.list().hidden).toBe(true)
     expect(rig.registry.list()).toHaveLength(0)
   })

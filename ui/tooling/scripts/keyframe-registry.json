@@ -254,6 +254,7 @@
       "consumers": [
         "back-top",
         "command",
+        "float-button",
         "floating-panel",
         "hover-card",
         "log",
