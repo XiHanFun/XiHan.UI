@@ -140,3 +140,22 @@ it('暂时移除 List 时清掉旧隐藏镜像，未挂载候选恢复纯数据�
   f.press('Home')
   expect(f.api().highlightedValue).toBe('first')
 })
+
+it('条目到达：打开时已有的结果带 data-instant、list 撤掉标记；筛掉又露面的一批按到达顺序排号；收起再开重新等接上', async () => {
+  const f = await fixture()
+  expect(f.api().getListProps()['data-instant']).toBeUndefined()
+  const items = [...f.list.querySelectorAll<HTMLElement>('[data-part="item"]')]
+  for (const item of items)
+    expect(item.hasAttribute('data-instant')).toBe(true)
+
+  for (const item of items) item.hidden = true
+  await new Promise(resolve => setTimeout(resolve, 0))
+  for (const item of items) item.hidden = false
+  await new Promise(resolve => setTimeout(resolve, 0))
+  expect(items.map(item => item.hasAttribute('data-instant'))).toEqual([false, false])
+  expect(items.map(item => item.style.getPropertyValue('--xh-_stagger-index'))).toEqual(['0', '1'])
+
+  f.api().setOpen(false)
+  f.api().setOpen(true)
+  expect(f.api().getListProps()['data-instant']).toBe('')
+})

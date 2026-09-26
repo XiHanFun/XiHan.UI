@@ -3,7 +3,17 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedViewport } from '../../src'
+import {
+  XhCommandContent,
+  XhCommandInput,
+  XhCommandItem,
+  XhCommandList,
+  XhCommandRoot,
+  XhMessageFeedItem,
+  XhMessageFeedList,
+  XhMessageFeedRoot,
+  XhMessageFeedViewport,
+} from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -21,8 +31,9 @@ async function settle(): Promise<void> {
   await nextTick()
 }
 
+/** 部件上正在播的 CSS 动画名（不含过渡）。 */
 function running(el: Element): string[] {
-  return el.getAnimations().map(a => (a as CSSAnimation).animationName)
+  return el.getAnimations().filter(a => a instanceof CSSAnimation).map(a => a.animationName)
 }
 
 /** 进场延迟换算成错开步长的个数。步长是 calc()，借一个探针的 transition-duration 读出算好的毫秒数。 */
@@ -60,5 +71,34 @@ describe('message-feed 条目到达', () => {
     expect(staggerSteps(reply!)).toBe(1)
     // 已在的消息不因新消息到来而重播
     expect(running(items()[0]!)).toEqual([])
+  })
+})
+
+describe('command 条目到达', () => {
+  it('打开时已有的结果不逐条入场；筛掉又露面的一批按到达顺序错开，一直露着的不重播', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const values = ['a', 'b', 'c', 'd', 'e', 'f']
+    const hidden = ref<string[]>([])
+    app = createApp({
+      render: () => h(XhCommandRoot, { defaultOpen: true, modal: false, collection: values.map(value => ({ value, label: value })) }, () =>
+        h(XhCommandContent, null, () => [
+          h(XhCommandInput),
+          h(XhCommandList, null, () => values.map(value => h(XhCommandItem, { key: value, value, hidden: hidden.value.includes(value) }, () => value))),
+        ])),
+    })
+    app.mount(host)
+    await settle()
+    const item = (value: string): HTMLElement => document.querySelector<HTMLElement>(`[data-scope="command"][data-part="item"][data-value="${value}"]`)!
+    for (const value of values)
+      expect(running(item(value))).toEqual([])
+
+    hidden.value = ['e', 'f']
+    await settle()
+    hidden.value = []
+    await nextTick()
+    expect(running(item('e'))).toEqual(['xh-rise-in'])
+    expect([staggerSteps(item('e')), staggerSteps(item('f'))]).toEqual([0, 1])
+    expect(running(item('a'))).toEqual([])
   })
 })

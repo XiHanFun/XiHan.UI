@@ -267,6 +267,8 @@ export function connectCommand<T extends PropTypes>(
     getListProps: () => normalize.element({
       ...parts.list.attrs,
       'id': ids.list,
+      // 到达追踪接上之前：打开时已有的结果直接呈现
+      'data-instant': dataAttr(!context.get('arrivalsTracked')),
       'role': 'listbox',
       // 列表落焦要有名字：面板里没有可引的标题节点，只能从文案表给
       'aria-label': translations?.list ?? 'Commands',

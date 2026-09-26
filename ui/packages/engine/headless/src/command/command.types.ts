@@ -168,6 +168,11 @@ export interface CommandSchema extends MachineSchema {
      * 焦点恒在检索框，键盘那一路由检索框替锚点命令代发。
      */
     pressedValue: string | null
+    /**
+     * 这一次打开的列表是否已经接上条目到达的追踪。接上之前 list 投影 data-instant：打开时已有的结果直接呈现；
+     * 接上时已在的条目各自带上 data-instant，之后因检索串换掉而新露面的一批按到达顺序错开进场。
+     */
+    arrivalsTracked: boolean
   }
   computed: Record<string, never>
   refs: CommandRefs
@@ -188,6 +193,8 @@ export interface CommandSchema extends MachineSchema {
     | { type: 'PRESS.START', value: string, disabled?: boolean }
     /** 按住的命令抬起、失焦或指针取消；只松开 value 对应的那一条。 */
     | { type: 'PRESS.END', value: string }
+    /** 列表接上了条目到达的追踪：打开时已在的条目都带上了 data-instant。 */
+    | { type: 'ARRIVALS.TRACKED' }
   tag: never
   guard: 'isOpenControlled' | 'keepsOpenOnSelect' | 'canPress'
   action:
@@ -207,6 +214,8 @@ export interface CommandSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
+    | 'markArrivalsTracked'
+    | 'resetArrivals'
   effect: 'trackOverlay' | 'trackItemVisibility'
 }
 

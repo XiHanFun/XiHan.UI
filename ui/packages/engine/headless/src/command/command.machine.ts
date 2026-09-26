@@ -6,13 +6,15 @@
 // 提供 command 相关实现。
 
 import type { CommandNodeMeta, CommandSchema } from './command.types'
-import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
+import { createDismissLayer, createFocusScope, setup, trackArrivals } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { createModalLayerResources, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
 import { hiddenCommandValues } from './command.visibility'
 
 const { createMachine } = setup<CommandSchema>()
+
+const COMMAND_ITEM_SELECTOR = '[data-scope="command"][data-part="item"]'
 
 /** 机器读 prop 的形状；这里只用到过滤要的那四项。 */
 type CommandProps = CommandSchema['props']
@@ -46,6 +48,7 @@ export const commandMachine = createMachine({
     hiddenValues: cell<string[]>(() => ({ defaultValue: [] })),
     // 按压通道：正被按住的那条命令，与开合无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    arrivalsTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -98,8 +101,8 @@ export const commandMachine = createMachine({
       },
     },
     open: {
-      // 每次开都从空检索串起步，锚点落在首条上
-      entry: ['resetInputValue', 'highlightFirst'],
+      // 每次开都从空检索串起步，锚点落在首条上；打开时已有的结果直接呈现，等列表接上到达追踪
+      entry: ['resetInputValue', 'highlightFirst', 'resetArrivals'],
       // 收起即松开：按住 Enter 选中后命令随面板藏起，不会再来 keyup
       exit: ['clearHighlightedValue', 'releasePress'],
       // 条目可见性只服务逻辑展开；行为与模态资源由顶层 effect 延后到真实退场释放。
@@ -123,6 +126,7 @@ export const commandMachine = createMachine({
           { target: 'closed', actions: ['invokeOnSelect', 'invokeOnClose'] },
         ],
         'CONTROLLED.CLOSE': { target: 'closed' },
+        'ARRIVALS.TRACKED': { actions: ['markArrivalsTracked'] },
       },
     },
   },
@@ -150,6 +154,8 @@ export const commandMachine = createMachine({
           context.set('pressedValue', null)
       },
       releasePress: ({ context }) => context.set('pressedValue', null),
+      markArrivalsTracked: ({ context }) => context.set('arrivalsTracked', true),
+      resetArrivals: ({ context }) => context.set('arrivalsTracked', false),
       releaseWhenInert: ({ context, prop }) => {
         if (context.get('pressedValue') != null && prop('loading'))
           context.set('pressedValue', null)
@@ -222,9 +228,10 @@ export const commandMachine = createMachine({
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },
     effects: {
-      trackItemVisibility: ({ refs, context, flush }) => {
+      trackItemVisibility: ({ refs, context, send, flush }) => {
         let alive = true
         let observer: MutationObserver | undefined
+        let stopArrivals: (() => void) | undefined
         let observedList: HTMLElement | null = null
         const sync = (): void => {
           if (!alive)
@@ -245,12 +252,17 @@ export const commandMachine = createMachine({
           }
           observer?.disconnect()
           observer = undefined
+          stopArrivals?.()
+          stopArrivals = undefined
           observedList = list
           // 纯逻辑运行不要求挂载 DOM；已有列表必须使用它所属的 Window。
           if (!list) {
             sync()
             return
           }
+          // 接上这张列表时已在的结果属于打开那一帧，之后新露面的一批才进场
+          stopArrivals = trackArrivals(list, { item: COMMAND_ITEM_SELECTOR })
+          send({ type: 'ARRIVALS.TRACKED' })
           const win = list.ownerDocument.defaultView
           if (!win)
             throw new Error('[xh] Command 列表缺少所属 Window')
@@ -261,6 +273,7 @@ export const commandMachine = createMachine({
         const dispose = (): void => {
           alive = false
           observer?.disconnect()
+          stopArrivals?.()
           if (refs.get('syncListVisibility') === rebind)
             refs.set('syncListVisibility', null)
         }

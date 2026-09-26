@@ -217,7 +217,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `INPUT.CHANGE` · `INPUT.SET` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `INPUT.CHANGE` · `INPUT.SET` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `PRESS.START` · `PRESS.END` · `ARRIVALS.TRACKED`
 
 **判据**：`isOpenControlled` · `keepsOpenOnSelect` · `canPress`
 
@@ -327,6 +327,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |

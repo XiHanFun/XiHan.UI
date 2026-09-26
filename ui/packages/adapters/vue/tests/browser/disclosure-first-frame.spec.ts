@@ -41,9 +41,9 @@ async function settle(): Promise<void> {
   await nextTick()
 }
 
-/** 部件上正在播的 CSS 动画名。 */
+/** 部件上正在播的 CSS 动画名（不含过渡）。 */
 function running(el: Element): string[] {
-  return el.getAnimations().map(a => (a as CSSAnimation).animationName)
+  return el.getAnimations().filter(a => a instanceof CSSAnimation).map(a => a.animationName)
 }
 
 function mountAccordion(defaultValue: string[]): { contents: HTMLElement[], triggers: HTMLElement[] } {
