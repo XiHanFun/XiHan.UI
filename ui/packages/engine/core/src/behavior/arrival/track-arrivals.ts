@@ -21,13 +21,18 @@ export const STAGGER_CAP = 4
 export interface TrackArrivalsOptions {
   /** 条目选择器：容器里匹配它的元素算一个条目，可以不是直接子节点。 */
   item: string
+  /**
+   * 开始时已在的条目怎么算：`'instant'`（缺省）属于首帧、打上 data-instant 不播进场；
+   * `'arrive'` 算作第一批到达，照常进场并按顺序错开——通知这类「每一条都是一件新事」的条目用它。
+   */
+  initial?: 'instant' | 'arrive'
 }
 
 /**
  * 盯住容器里的条目到达。
  *
- * 开始时已在的条目打上 `data-instant`：它们属于首帧，进场不播。之后每一批到达——插入 DOM，
- * 或撤掉 `hidden` 重新露出来（露出来时 CSS 动画会从头播）——按文档顺序排号，写进私有槽
+ * 开始时已在的条目打上 `data-instant`：它们属于首帧，进场不播（`initial: 'arrive'` 时改算第一批到达）。
+ * 之后每一批到达——插入 DOM，或撤掉 `hidden` 重新露出来（露出来时 CSS 动画会从头播）——按文档顺序排号，写进私有槽
  * `--xh-_stagger-index`（封顶 {@link STAGGER_CAP}），并撤掉它身上可能带着的 `data-instant`。
  * 同一次 DOM 变更回调收到的算同一批：框架一次提交插入的条目落在同一个微任务里。
  *
@@ -36,8 +41,10 @@ export interface TrackArrivalsOptions {
  */
 export function trackArrivals(container: Element, options: TrackArrivalsOptions): () => void {
   const { item } = options
-  for (const el of container.querySelectorAll(item))
-    el.setAttribute(INSTANT_ATTR, '')
+  const present = [...container.querySelectorAll(item)]
+  if (options.initial === 'arrive')
+    arrive(present)
+  else present.forEach(el => el.setAttribute(INSTANT_ATTR, ''))
 
   const win = container.ownerDocument.defaultView
   const Observer = win?.MutationObserver
@@ -61,16 +68,20 @@ export function trackArrivals(container: Element, options: TrackArrivalsOptions)
       else if (record.oldValue !== null && !(record.target as Element).hasAttribute('hidden'))
         collect(record.target)
     }
-    const batch = [...arrived]
+    arrive([...arrived]
       .filter(el => el.isConnected && container.contains(el) && !el.closest('[hidden]'))
-      .sort((a, b) => (a.compareDocumentPosition(b) & 4 /* DOCUMENT_POSITION_FOLLOWING */ ? -1 : 1))
-    batch.forEach((el, index) => {
-      el.removeAttribute(INSTANT_ATTR)
-      ;(el as HTMLElement).style.setProperty(STAGGER_INDEX_PROPERTY, String(Math.min(index, STAGGER_CAP)))
-    })
+      .sort((a, b) => (a.compareDocumentPosition(b) & 4 /* DOCUMENT_POSITION_FOLLOWING */ ? -1 : 1)))
   })
   observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'], attributeOldValue: true })
   return () => observer.disconnect()
+}
+
+/** 一批到达：按给定顺序排号，撤掉首帧标记。 */
+function arrive(batch: readonly Element[]): void {
+  batch.forEach((el, index) => {
+    el.removeAttribute(INSTANT_ATTR)
+    ;(el as HTMLElement).style.setProperty(STAGGER_INDEX_PROPERTY, String(Math.min(index, STAGGER_CAP)))
+  })
 }
 
 /**

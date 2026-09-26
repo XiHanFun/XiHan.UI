@@ -141,6 +141,13 @@ describe('trackArrivals', () => {
     expect(index(only!)).toBe('')
   })
 
+  it('initial 取 arrive：开始时已在的条目算第一批到达，照常排号、不打首帧标记', () => {
+    const container = list(3)
+    stops.push(trackArrivals(container, { item: '[data-part="item"]', initial: 'arrive' }))
+    expect([...container.children].map(index)).toEqual(['0', '1', '2'])
+    expect([...container.children].some(el => el.hasAttribute(INSTANT_ATTR))).toBe(false)
+  })
+
   it('停止后不再标记', async () => {
     const container = list(0)
     const stop = trackArrivals(container, { item: '[data-part="item"]' })
