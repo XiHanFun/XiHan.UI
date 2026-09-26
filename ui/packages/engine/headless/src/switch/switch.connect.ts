@@ -25,6 +25,11 @@ export function connectSwitch<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const required = !!prop('required')
   const stateAttr = checked ? 'checked' : 'unchecked'
+  const interactive = !disabled && !loading && !readOnly
+  // 拖动与松手落定期间滑块的位移由机器逐帧写，停在两端时交还样式层
+  const thumbPosition = context.get('thumbPosition')
+  const dragging = context.get('dragging')
+  const settling = context.get('settling')
 
   const setChecked = (next: boolean): void => {
     if (next !== checked)
@@ -68,14 +73,27 @@ export function connectSwitch<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
       'data-required': dataAttr(required),
       'data-pressed': dataAttr(context.get('pressed')),
+      'data-dragging': dataAttr(dragging),
+      // 横向拖动归滑块，纵向留给页面滚动：不这样的话触屏一横划就被浏览器当成平移收走
+      'style': { touchAction: interactive ? 'pan-y' : '' },
       'onClick': () => {
-        if (!disabled && !loading && !readOnly)
+        // 刚拖完：开关态已由松手的落点决定，浏览器补派的这一下不再切换
+        if (context.get('swallowClick')) {
+          send({ type: 'CLICK.SWALLOW' })
+          return
+        }
+        if (interactive)
           send({ type: 'TOGGLE' })
       },
       'onKeyDown': press.onKeyDown,
       'onKeyUp': press.onKeyUp,
       'onBlur': press.onBlur,
-      'onPointerDown': press.onPointerDown,
+      'onPointerDown': (event: PointerEvent) => {
+        press.onPointerDown(event)
+        // 只认主键；按下先不算拖动，横向移动过激活距离才接管，点按照常经 click 切换
+        if (interactive && event.button === 0)
+          send({ type: 'DRAG.START', pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY, root: event.currentTarget as HTMLElement })
+      },
       'onPointerUp': press.onPointerUp,
       'onPointerCancel': press.onPointerCancel,
     }),
@@ -84,6 +102,9 @@ export function connectSwitch<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
+      'data-dragging': dataAttr(dragging),
+      'data-animating': dataAttr(settling && !dragging),
+      'style': { translate: thumbPosition == null ? '' : `${thumbPosition}px 0` },
     }),
 
     getHiddenInputProps: () => normalize.input({

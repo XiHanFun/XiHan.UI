@@ -101,7 +101,8 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 - `readOnly` 与 `disabled` 分开：只读仍可聚焦。
 - 轨道保持实体表单控件：未选中使用中性底和明确内边界，选中使用实心语气色，只读选中回到中性底；不使用 backdrop 或透明材质。
 - 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影，无顶光；静息即抬起，悬停不再升档，按住时沿行进方向拉长并在释放时回圆。loading、只读与禁用不产生按压反馈。
-- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
+- 滑块可以拖：横向拖过中点松手即切换，拖出两端越拉越沉，松手后滑块带着松手速度落到那一端；纵向划动留给页面滚动，不拖的点按照常切换。
+- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程与拖动方向，三尺寸与密度轴保持同一比例。
 - 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
 
 ### 组合
@@ -184,7 +185,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 
 **状态**：`off` · `on`
 
-**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `FORM.RESET` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `CLICK.SWALLOW` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isCheckedControlled` · `defaultsToChecked` · `canPress`
 
@@ -242,6 +243,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-pressed` | ''（条件成立时才出现） |
@@ -255,7 +257,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | `root` | `data-xh-action-profile` | 'text' |
 | `root` | `data-xh-action-size` | props.size |
 | `root` | `data-xh-action-variant` | 'outline' |
+| `thumb` | `data-animating` | ''（条件成立时才出现） |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
+| `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-loading` | ''（条件成立时才出现） |
 | `thumb` | `data-state` | 'checked' \| 'unchecked' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
