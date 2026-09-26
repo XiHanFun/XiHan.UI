@@ -799,13 +799,14 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 周期 `--xh-motion-loop-breathe`（3600ms），缓动 `--xh-motion-ease-breathe`（正弦式缓入缓出）；圆点不透明度 0.5 ↔ 1、缩放 0.82 ↔ 1；外扩光环缩放 1 → 2.6、不透明度 0.32 → 0，只播 3 个周期后停止，圆点持续到状态结束。
 - 共享关键帧 `xh-breathe` / `xh-breathe-halo`；两道减弱开关，静态替代为满不透明度的圆点；状态必须同时有文字或可及名。
+- 状态点是装饰部件、对读屏隐藏，出现与收起跟着状态走：MessageFeed 的 `pending-indicator` 放在列表之后，只在 `status` 为 `submitted` 时出现，首个片段到来即收；Approval 的 `status-indicator` 钉在右上角（不占版面），颜色随语气、缺省取警示色，判定落定即收。强制色下取 `CanvasText`，打印时隐藏。
 
 光分三类：
 
 | 类别 | 例子 | 规则 |
 | --- | --- | --- |
 | 状态光 | 思考中文字、骨架屏、工具调用进行中的扫光 | 循环角色，共享 `xh-shimmer` |
-| 交互光 | Button solid 悬停时光沿描边扫过一次；可悬停 Card 的描边随指针亮起 | 只在 liquid 档、`(hover: hover) and (pointer: fine)`；不循环；`--xh-motion-duration-glint` |
+| 交互光 | Button solid 悬停时光沿描边扫过一次（`::after` 只留 1px 描边环，光取面上前景色）；可悬停 Card 的描边随指针亮起 | 只在 liquid 档、`(hover: hover) and (pointer: fine)`、非强制色；不循环；`--xh-motion-duration-glint`（640ms，减弱档 1ms），共享关键帧 `xh-glint` |
 | 边缘光 | frosted 1px 顶部边界光；liquid 1px 光环 | 材质的一部分（§8.1、§8.5） |
 
 - 光只走描边，不进面：浅色档 Button solid（品牌 600 底、白字）面内叠 8% 白光，文字对比就从 5.08:1 降到 4.46:1。凡是字压在面上的部件，面内都不加光。
@@ -1134,5 +1135,5 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | §8.4 图表提示框材质 | Heatmap 详情条由反白改为 frosted |
 | §8.5 liquid 与 `data-material` 轴 | 其余消费者接入（Carousel 翻页与指示器、ImageViewer 控制层、MessageFeed / Log 回底按钮、Layout 悬浮栏、Toolbar 悬浮档；悬浮栏里相邻的分段按液态组结组）；共享材质配方（frosted 一并收敛，现状 17 个皮肤各自内联四件套）；`data-material` 进入视觉环境控制器 |
 | §9.11 弹簧 | `--xh-motion-ease-spring`；Drawer 与底部面板的滑动关闭（随 §14.6 底部面板原语） |
-| §9.12 呼吸与光 | `xh-breathe` / `xh-breathe-halo`、`--xh-motion-loop-breathe`、`--xh-motion-ease-breathe`、`--xh-motion-duration-glint`；Badge `pulse`、MessageFeed / Approval 状态点；交互光 |
+| §9.12 呼吸与光 | 可悬停 Card 的描边光：Card 还没有可交互形态，静态卡片随指针发光会被误认为能点，等可交互 Card 落地再接 |
 | §14.6 小屏与触屏 | 小屏巡检套件；悬停守卫与门禁；粗指针字段字号；Tooltip 长按；`dvh` 与安全区补齐；底部面板共享原语与 `presentation`；软键盘让位；逐组件自动换档 |

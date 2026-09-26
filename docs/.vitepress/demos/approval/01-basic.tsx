@@ -13,6 +13,7 @@ import {
   XhApprovalLiveRegion,
   XhApprovalResult,
   XhApprovalRoot,
+  XhApprovalStatusIndicator,
   XhApprovalTitle,
 } from "@xihan-ui/react";
 import { useState } from "react";
@@ -37,6 +38,8 @@ export default function Demo(): ReactNode {
       >
         {({ status }) => (
           <>
+            {/* 待决时右上角的呼吸点，判过即收 */}
+            <XhApprovalStatusIndicator />
             <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
             <XhApprovalDescription>它想读一遍 src/ 并写回改动。</XhApprovalDescription>
             <XhApprovalGroup>

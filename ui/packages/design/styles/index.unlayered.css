@@ -14175,6 +14175,8 @@
   --xh-_approval-item-font-size: var(--xh-control-font-md);
   --xh-_approval-note-font-size: var(--xh-control-font-md);
 
+  /* 定位基准：待决的呼吸点钉在右上角 */
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--xh-approval-gap, var(--xh-_approval-gap));
@@ -14193,6 +14195,48 @@
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
 [data-scope='approval'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 待决的呼吸点：钉在右上角（RTL 下左上），不占作者排的版面；颜色随语气，没写语气时取警示色。
+   呼吸只表达「正在进行、需要被察觉」：明暗与缩放的起伏持续到判定落定，外扩光环同周期播 3 轮后停下；
+   判过了连接层就收起它，由结果那一格接着表达 */
+[data-scope='approval'][data-part='status-indicator'] {
+  position: absolute;
+  inset-block-start: var(--xh-approval-p, var(--xh-_approval-p));
+  inset-inline-end: var(--xh-approval-p, var(--xh-_approval-p));
+  inline-size: var(--xh-approval-status-indicator-size, var(--xh-space-2));
+  block-size: var(--xh-approval-status-indicator-size, var(--xh-space-2));
+  border-radius: var(--xh-approval-status-indicator-radius, var(--xh-shape-circle));
+  background: var(--xh-approval-status-indicator-color, var(--xh-_tone, var(--xh-fg-warning)));
+  animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
+}
+
+[data-scope='approval'][data-part='status-indicator']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: xh-breathe-halo var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) 3;
+}
+
+/* 减弱动效：两者都停，圆点停在满不透明度，光环不出现 */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='approval'][data-part='status-indicator'],
+  [data-scope='approval'][data-part='status-indicator']::after {
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='approval'][data-part='status-indicator'],
+:where([data-motion='reduce']) [data-scope='approval'][data-part='status-indicator']::after {
+  animation: none;
+}
+
+[data-scope='approval'][data-part='status-indicator'][hidden] {
   display: none;
 }
 
@@ -14574,6 +14618,20 @@
   --xh-_approval-action-px: var(--xh-control-px-lg);
   --xh-_approval-item-font-size: var(--xh-control-font-lg);
   --xh-_approval-note-font-size: var(--xh-control-font-lg);
+}
+
+/* 强制色：底色会被系统背景吃掉，呼吸点改用系统前景色 */
+@media (forced-colors: active) {
+  [data-scope='approval'][data-part='status-indicator'] {
+    background: CanvasText;
+  }
+}
+
+@media print {
+  /* 打印：待决的呼吸点是一瞬间的状态，纸上没有「等着人来判」 */
+  [data-scope='approval'][data-part='status-indicator'] {
+    display: none;
+  }
 }
 
 /* styles/avatar.css */

@@ -2280,9 +2280,12 @@
       "name": "--xh-approval-p",
       "component": "approval",
       "part": [
-        "root"
+        "root",
+        "status-indicator"
       ],
       "property": [
+        "inset-block-start",
+        "inset-inline-end",
         "padding"
       ],
       "state": [
@@ -2292,7 +2295,7 @@
         "--xh-_approval-p"
       ],
       "visibility": "public",
-      "description": "approval 的 root 部件 padding 覆盖槽。"
+      "description": "approval 的 root、status-indicator 部件 inset-block-start、inset-inline-end、padding 覆盖槽。"
     },
     {
       "name": "--xh-approval-radius",
@@ -2513,6 +2516,61 @@
       ],
       "visibility": "public",
       "description": "approval 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-status-indicator-color",
+      "component": "approval",
+      "part": [
+        "status-indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tone"
+      ],
+      "visibility": "public",
+      "description": "approval 的 status-indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-status-indicator-radius",
+      "component": "approval",
+      "part": [
+        "status-indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "approval 的 status-indicator 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-status-indicator-size",
+      "component": "approval",
+      "part": [
+        "status-indicator"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "approval 的 status-indicator 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-approval-timer-fg",

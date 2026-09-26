@@ -243,6 +243,13 @@ export function XhApprovalNote({ ...rest }: XhApprovalNoteProps): ReactNode {
   )
 }
 
+export interface XhApprovalStatusIndicatorProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {}
+/** 待决时的呼吸点：放在标题旁，判过即收。 */
+export function XhApprovalStatusIndicator(props: XhApprovalStatusIndicatorProps): ReactNode {
+  const ctx = useApprovalContext()
+  return <span {...mergeReactProps(ctx.api.getStatusIndicatorProps() as Record<string, unknown>, props as Record<string, unknown>)} />
+}
+
 export interface XhApprovalTimerProps extends ComponentPropsWithRef<'div'> {}
 /** 对读屏隐藏：逐秒变化的数字进入活区会不断打断朗读。 */
 export function XhApprovalTimer({ children, ...rest }: XhApprovalTimerProps): ReactNode {
