@@ -6,7 +6,7 @@
 // 提供 date field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -49,6 +49,8 @@ export const XhDateFieldRoot = defineComponent({
     locale: { type: String },
     timeZone: { type: String },
     granularity: { type: String as PropType<DateGranularity> },
+    /** 时刻段的小时制，默认 24；12 时小时段收 1-12 并多出上下午段。 */
+    hourCycle: { type: Number as PropType<DateHourCycle> },
     // 段集：给了就以它为准，granularity 让路。段位节点仍按下标认段，段集是有序的
     segments: { type: Array as PropType<DateSegmentSet> },
     disabled: { type: Boolean, default: undefined },

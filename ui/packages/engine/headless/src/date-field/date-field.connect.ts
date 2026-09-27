@@ -58,7 +58,7 @@ export function connectDateField<T extends PropTypes>(
   const bounds = { min: parseBoundary(prop('min')), max: parseBoundary(prop('max')) }
 
   // 段集给了就以它为准，没给退回 granularity 那条老路
-  const order = resolveSegmentSet(prop('segments'), locale, granularity)
+  const order = resolveSegmentSet(prop('segments'), locale, granularity, prop('hourCycle'))
   const segments = context.get('segments')
   const typing = context.get('typing')
   const focusedSegment = context.get('focusedSegment')

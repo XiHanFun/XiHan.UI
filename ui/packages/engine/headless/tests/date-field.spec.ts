@@ -204,6 +204,24 @@ describe('段序：locale 决定年月日的先后，granularity 决定一共几
     expect(dateSegmentOrder('en-US', 'second')).toEqual(['month', 'day', 'year', 'hour', 'minute', 'second'])
   })
 
+  it('12 小时制在时刻段后面追加上下午段；只到日的精度没有小时可换算，不追加', () => {
+    expect(dateSegmentOrder('en-US', 'minute', 12)).toEqual(['month', 'day', 'year', 'hour', 'minute', 'dayPeriod'])
+    expect(dateSegmentOrder('zh-CN', 'second', 12)).toEqual(['year', 'month', 'day', 'hour', 'minute', 'second', 'dayPeriod'])
+    expect(dateSegmentOrder('zh-CN', 'day', 12)).toEqual(['year', 'month', 'day'])
+    expect(resolveSegmentSet(undefined, 'en-US', 'minute', 12)).toEqual(['month', 'day', 'year', 'hour', 'minute', 'dayPeriod'])
+    // 给了段集时小时制不插手：有没有上下午由段集说了算
+    expect(resolveSegmentSet(['year', 'month', 'day', 'hour'], 'en-US', 'minute', 12)).toEqual(['year', 'month', 'day', 'hour'])
+  })
+
+  it('12 小时制的值往返：小时拆成 1-12 与上下午，拼回去仍是 24 小时制', () => {
+    const options = { locale: 'zh-CN', granularity: 'minute' as const, hourCycle: 12 as const }
+    const segments = isoToSegments('2026-07-28T21:05', options)
+    expect(segments).toEqual({ year: 2026, month: 7, day: 28, hour: 9, minute: 5, dayPeriod: 1 })
+    expect(segmentsToValue(segments, options)).toBe('2026-07-28T21:05')
+    expect(segmentsToValue({ ...segments, dayPeriod: 0 }, options)).toBe('2026-07-28T09:05')
+    expect(isoToSegments('2026-07-28T00:30', options)).toMatchObject({ hour: 12, dayPeriod: 0 })
+  })
+
   it('granularitySegments 给出必须填齐的段（与顺序无关）', () => {
     expect(granularitySegments('day')).toEqual(['year', 'month', 'day'])
     expect(granularitySegments('minute')).toEqual(['year', 'month', 'day', 'hour', 'minute'])
@@ -503,6 +521,19 @@ describe('dateFieldMachine', () => {
     expect(s.context.get('segments').year).toBe(2020)
   })
 
+  it('12 小时制：按 a / p 换上下午，改的是背后的 24 小时制的时', () => {
+    const onValueChange = vi.fn()
+    const s = service({ granularity: 'minute', hourCycle: 12, defaultValue: '2026-07-28T21:05', onValueChange })
+    expect(s.context.get('segments')).toMatchObject({ hour: 9, dayPeriod: 1 })
+    s.send({ type: 'SEGMENT.PERIOD', period: 'am' })
+    expect(s.context.get('value')).toBe('2026-07-28T09:05')
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: '2026-07-28T09:05' })
+    // 小时段收的是 1-12：从 12 点（中午）加一格到 1 点，仍在下午
+    s.send({ type: 'VALUE.SET', value: '2026-07-28T12:00' })
+    s.send({ type: 'SEGMENT.STEP', segment: 'hour', delta: 1 })
+    expect(s.context.get('value')).toBe('2026-07-28T13:00')
+  })
+
   it('vALUE.SET 整份替换，VALUE.CLEAR 清空所有段', () => {
     const s = service({ granularity: 'minute' })
     s.send({ type: 'VALUE.SET', value: '2026-07-28T13:45' })
@@ -625,6 +656,14 @@ describe('connectDateField 结构与 ARIA', () => {
     expect(m.seg[5]!.isConnected).toBe(true)
     expect(m.seg[5]!.hasAttribute('hidden')).toBe(true)
     expect(m.seg[5]!.getAttribute('role')).toBeNull()
+  })
+
+  it('12 小时制：时刻段后面多出上下午段，小时段报 1-12', () => {
+    const m = open({ locale: 'en-US', granularity: 'minute', hourCycle: 12, defaultValue: '2026-07-28T21:05' })
+    expect(kinds(m)).toEqual(['month', 'day', 'year', 'hour', 'minute', 'dayPeriod'])
+    expect(m.seg[3]!.getAttribute('aria-valuemin')).toBe('1')
+    expect(m.seg[3]!.getAttribute('aria-valuemax')).toBe('12')
+    expect(texts(m)).toEqual(['07', '28', '2026', '09', '05', 'PM'])
   })
 
   it('未填时显示占位串，三个 aria-value* 显式给出', () => {

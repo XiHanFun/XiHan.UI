@@ -16605,6 +16605,15 @@
             },
             {
               "kind": "field",
+              "name": "hourCycle",
+              "privacy": "public",
+              "type": {
+                "text": "DateHourCycle | undefined"
+              },
+              "attribute": "hour-cycle"
+            },
+            {
+              "kind": "field",
               "name": "segments",
               "privacy": "public",
               "type": {
@@ -16825,6 +16834,14 @@
               "description": "精度，决定共有几段，默认 day",
               "name": "granularity",
               "fieldName": "granularity"
+            },
+            {
+              "type": {
+                "text": "DateHourCycle | undefined"
+              },
+              "description": "时刻段的小时制，默认 24；12 时小时段收 1-12 并多出上下午段",
+              "name": "hour-cycle",
+              "fieldName": "hourCycle"
             },
             {
               "type": {

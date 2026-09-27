@@ -171,6 +171,32 @@ export const dateFieldSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'hourCycle=12：年月日仍按 locale 排，时刻段之后多出上下午段，小时段收 1-12',
+      spec: { apg: APG },
+      props: { locale: 'en-US', granularity: 'minute', hourCycle: 12, defaultValue: '2026-08-17T21:05', name: 'at' },
+      initial: {
+        parts: {
+          'segment[0]': { 'data-segment': 'month' },
+          'segment[3]': { 'data-segment': 'hour', 'aria-valuemin': '1', 'aria-valuemax': '12', 'aria-valuenow': '9' },
+          'segment[4]': { 'data-segment': 'minute', 'aria-valuenow': '5' },
+          'segment[5]': { 'data-segment': 'dayPeriod', 'aria-valuenow': '1', 'aria-valuetext': 'PM', 'hidden': null },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'segment[5]' },
+        {
+          kind: 'key',
+          key: 'a',
+          expect: { events: [{ type: 'value-change', detail: { value: '2026-08-17T09:05' } }] },
+        },
+        {
+          kind: 'raw',
+          why: '隐藏输入的 value 是 property',
+          run: ({ doc }) => expectHidden(doc, '2026-08-17T09:05', '值仍是 24 小时制的 ISO 串'),
+        },
+      ],
+    },
+    {
       name: '已有值：逐段补零显示，valuenow 与隐藏输入同步',
       spec: { apg: APG },
       props: { locale: 'zh-CN', defaultValue: '2026-07-08', name: 'due' },

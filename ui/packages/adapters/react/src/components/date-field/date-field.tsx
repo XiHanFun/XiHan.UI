@@ -6,7 +6,7 @@
 // 提供 date field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
@@ -50,6 +50,8 @@ export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   locale?: string
   timeZone?: string
   granularity?: DateGranularity
+  /** 时刻段的小时制，默认 24；12 时小时段收 1-12 并多出上下午段。 */
+  hourCycle?: DateHourCycle
   /** 段集：提供后以它为准，granularity 让位。段位节点仍按下标识别段，段集是有序的。 */
   segments?: DateSegmentSet
   disabled?: boolean
@@ -74,6 +76,7 @@ export function XhDateFieldRoot({
   locale,
   timeZone,
   granularity,
+  hourCycle,
   segments,
   disabled,
   readOnly,
@@ -97,6 +100,7 @@ export function XhDateFieldRoot({
     locale,
     timeZone,
     granularity,
+    hourCycle,
     segments,
     disabled,
     readOnly,
