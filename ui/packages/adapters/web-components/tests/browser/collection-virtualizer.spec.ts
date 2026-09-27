@@ -115,6 +115,53 @@ describe('collectionVirtualizer 正式接线', () => {
     expect(getComputedStyle(viewport).scrollbarWidth).toBe('none')
   })
 
+  it('transfer 虚拟化视口与竖向滚动条铺满列表内容区', async () => {
+    const stage = document.createElement('div')
+    stage.dataset.test = 'collection-virtualizer'
+    stage.innerHTML = `
+      <xh-transfer>
+        <div data-xh-part="root" style="inline-size:640px">
+          <div data-xh-part="source-panel">
+            <div data-xh-part="panel-header"><span data-xh-part="panel-title">待选权限</span></div>
+            <input data-xh-part="search">
+            <div data-xh-part="list">
+              <xh-virtualizer count="1000" estimate-size="36" viewport-tab-index="-1" style="display:contents">
+                <div data-xh-part="root">
+                  <div data-xh-part="viewport"><div data-xh-part="content"></div></div>
+                </div>
+              </xh-virtualizer>
+            </div>
+          </div>
+          <button data-xh-part="to-target-trigger"></button>
+          <button data-xh-part="to-source-trigger"></button>
+          <div data-xh-part="target-panel"><div data-xh-part="list"></div></div>
+        </div>
+      </xh-transfer>
+    `
+    document.body.append(stage)
+
+    const transfer = stage.querySelector<XhTransferElement>('xh-transfer')!
+    const virtualizer = stage.querySelector<XhVirtualizerElement>('xh-virtualizer')!
+    await expect.poll(() => virtualizer.collectionVirtualizer != null).toBe(true)
+    transfer.collection = collection
+    transfer.virtualizers = { source: virtualizer.collectionVirtualizer! }
+    transfer.requestUpdate()
+
+    const list = stage.querySelector<HTMLElement>('[data-scope="transfer"][data-part="list"][data-side="source"]')!
+    const viewport = stage.querySelector<HTMLElement>('[data-scope="virtualizer"][data-part="viewport"]')!
+    await expect.poll(() => list.hasAttribute('data-xh-virtualized')).toBe(true)
+    await expect.poll(() => viewport.hasAttribute('data-xh-scrollbar')).toBe(true)
+
+    const verticalBar = [...stage.querySelectorAll<HTMLElement>('[data-scope="scrollbar"][data-part="root"][data-orientation="vertical"]')]
+      .find(bar => !bar.hasAttribute('data-native'))!
+    const listRect = list.getBoundingClientRect()
+    const viewportRect = viewport.getBoundingClientRect()
+    const barRect = verticalBar.getBoundingClientRect()
+    expect(viewportRect.height).toBeCloseTo(listRect.height, 1)
+    expect(barRect.top).toBeCloseTo(listRect.top, 1)
+    expect(barRect.bottom).toBeCloseTo(listRect.bottom, 1)
+  })
+
   it('combobox 滚动后仍铺满 viewport，不留下半面空白', async () => {
     const stage = document.createElement('div')
     stage.dataset.test = 'collection-virtualizer'

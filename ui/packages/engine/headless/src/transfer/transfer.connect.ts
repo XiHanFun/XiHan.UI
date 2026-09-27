@@ -337,6 +337,8 @@ export function connectTransfer<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      // 虚拟化时 list 只保留 Transfer 的定高职责，滚动与内边距交给内层 viewport。
+      'data-xh-virtualized': dataAttr(virtualizers[panel.side] != null),
       'onKeyDown': (event: KeyboardEvent) => {
         if (disabled)
           return

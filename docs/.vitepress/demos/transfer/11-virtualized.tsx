@@ -25,8 +25,6 @@ import {
 import { useCallback, useRef, useState } from "react";
 
 const items: TransferItem[] = Array.from({ length: 500 }, (_, index) => ({ value: `permission-${index + 1}`, label: `权限 ${index + 1}` }));
-const listStyle: CSSProperties = { overflow: "visible", maxBlockSize: "none" };
-const viewportStyle: CSSProperties = { blockSize: 220 };
 const itemStyle: CSSProperties = { blockSize: 36 };
 const rootStyle: CSSProperties = { inlineSize: "100%", maxInlineSize: 640 };
 
@@ -52,8 +50,8 @@ export default function Demo(): ReactNode {
       <XhVirtualizerRoot count={panelItems.length} estimateSize={36} viewportTabIndex={-1}>
         {slot => (
           <Capture side={side} bridge={slot.collectionVirtualizer} onReady={onReady}>
-            <XhTransferList style={listStyle}>
-              <XhVirtualizerViewport style={viewportStyle}>
+            <XhTransferList>
+              <XhVirtualizerViewport>
                 <XhVirtualizerContent>
                   {slot.virtualItems.map(virtualItem => (
                     <XhVirtualizerItem key={virtualItem.key} value={virtualItem.index} style={itemStyle}>

@@ -43360,6 +43360,32 @@
     overflow: auto;
   }
 
+  /* Virtualizer viewport 才是真正的滚动层。此时 list 只负责 Transfer 的定高，
+     不再用内边距和自身滚动制造第二个窗口；viewport 铺满整块内容区，
+     贴着它量出的自绘滚动条也就从列表顶一直落到列表底。 */
+  [data-scope='transfer'][data-part='list'][data-xh-virtualized] {
+    gap: 0;
+    min-block-size: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* Vue / React 的 virtualizer root 在 list 外，下面第一条只命中 viewport；
+     Web Components 的 Light DOM root 在 list 内，两条一起命中。
+     Web 作者把 xh-virtualizer 宿主设为 display: contents 后，root 会直接参与 list 的 flex 排布。 */
+  [data-scope='transfer'][data-part='list'][data-xh-virtualized]
+  [data-scope='virtualizer'][data-part='root'] {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    block-size: 100%;
+  }
+
+  [data-scope='transfer'][data-part='list'][data-xh-virtualized]
+  [data-scope='virtualizer'][data-part='viewport'] {
+    min-block-size: 0;
+    block-size: 100%;
+  }
+
   /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
   [data-scope='transfer'][data-part='list']:focus-visible {
     outline: none;
