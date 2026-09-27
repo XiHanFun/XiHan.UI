@@ -60,6 +60,12 @@
     "limit": "2.5 kB"
   },
   {
+    "name": "viz/graph",
+    "path": "packages/engine/viz/dist/graph.js",
+    "gzip": true,
+    "limit": "3.5 kB"
+  },
+  {
     "name": "code-highlight",
     "path": "packages/features/code-highlight/dist/index.js",
     "gzip": true,

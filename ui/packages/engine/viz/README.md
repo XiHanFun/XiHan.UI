@@ -47,6 +47,7 @@ const axis = layoutAxis({
 - 缺失值（`null`、`undefined`、`NaN`）是缺失，统计时跳过，不按 0 处理。
 - 层级布局（层级节点、按父 id 组树、矩形树图、分区、圆堆积、整齐的树与树状图）走 `@xihan-ui/viz/hierarchy` 子路径，不从包入口导出：只画直角坐标图的应用不为它付字节。布局把几何写回节点（矩形的四边 `x0` / `y0` / `x1` / `y1`，圆的 `x` / `y` / `r`，树与树状图的 `x` / `y`）；矩形树图、分区与圆堆积调用前先 `sum()` 或 `count()` 算出聚合值，树与树状图只看结构。
 - 桑基布局走 `@xihan-ui/viz/sankey` 子路径：`sankey(nodes, links, { size, nodeWidth, nodePadding, nodeAlign, nodeSort })` 给出节点的四边与流带两端的中线，`sankeyLinkPath` 写出流带的路径；成环报 `XH_VIZ_SANKEY_CYCLE` 并在 `detail.cycle` 里列出环路。
+- 关系布局走 `@xihan-ui/viz/graph` 子路径：`forceSimulation(count, links, options)` 是力导模拟（连线弹簧、Barnes–Hut 电荷、向心、碰撞与 x / y 定位，初始位置按叶序排开，同样的输入得到同样的布局），`run()` 同步跑到收敛，`fix` / `release` / `reheat` 供拖拽时局部重算；`circular(count, { radius, group })` 把节点按分组等角排在圆上。树与径向树用 hierarchy 子路径的 `tree` / `cluster`。
 
 ## 装
 
