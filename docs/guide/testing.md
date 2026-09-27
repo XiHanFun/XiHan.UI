@@ -19,6 +19,8 @@ pnpm test         # 第一套
 pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
 ```
 
+`pnpm test` 由 `ui/tooling/scripts/test-unit.mjs` 执行：turbo 并发取 `min(10, 核数)`，每个包的 vitest worker 数上限取 `max(1, ⌊核数 / 并发⌋)`，经 `VITEST_MAX_WORKERS` 传给各包。vitest 缺省按核数开 worker，turbo 同时跑十个包就是十倍超卖，冷启动重的用例会被拖过超时。显式设置 `VITEST_MAX_WORKERS` 时按设置的值运行。
+
 在 Windows / macOS 宿主上，`pnpm test:browser` 固定有一条失败：像素基线文件受字体守卫拦截，整文件判失败、40 条用例全部 skipped。这是预期结果，不是环境故障；本地验证像素改动的方式见下文「像素基线」。
 
 ### 按分类运行浏览器态

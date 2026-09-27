@@ -37,7 +37,7 @@
     "release": "turbo run build && changeset publish --no-git-tag",
     "size": "turbo run build && size-limit",
     "surface:update": "node tooling/scripts/build-public-surface.mjs",
-    "test": "turbo run test",
+    "test": "node tooling/scripts/test-unit.mjs",
     "test:browser": "node tooling/scripts/test-browser.mjs",
     "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.node.json",
     "version": "changeset version",
