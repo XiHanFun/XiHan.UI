@@ -1,4 +1,4 @@
-# HierarchyChart 层级图
+# HierarchyChart 层级图 <Badge type="tip" text="new" />
 
 看层级数据中各部分的占比，并逐层下钻。同一个组件用四种方式铺满空间：矩形树图、旭日图、冰柱图与圆堆积图。
 

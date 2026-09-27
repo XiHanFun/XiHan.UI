@@ -1,4 +1,4 @@
-# FunnelChart 漏斗图
+# FunnelChart 漏斗图 <Badge type="tip" text="new" />
 
 看一个流程里各阶段的保留量与逐级转化率。每个阶段一行，宽度与数值成正比，相邻阶段之间写出转化率。
 
