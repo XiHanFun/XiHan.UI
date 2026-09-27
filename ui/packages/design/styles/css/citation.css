@@ -25,8 +25,9 @@
     font-size: var(--xh-citation-font-size, var(--xh-_citation-font-size));
   }
 
-  [data-scope='citation'][data-part='root'][data-disabled] {
-    opacity: var(--xh-state-disabled-opacity);
+  /* 禁用降前景：正文落到禁用色，不靠整体透明度（编号的面与字由家族的禁用档给） */
+  [data-scope='citation'][data-part='root'][data-disabled] [data-scope='citation'][data-part='text'] {
+    color: var(--xh-fg-disabled);
   }
 
   [data-scope='citation'][data-part='text'] {
@@ -51,9 +52,9 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* 打开中不是选中：与悬停同档的中性面，悬停不再加深，按下照常走下一档 */
   [data-scope='citation'][data-part='trigger'][data-state='open'] {
-    --xh-action-bg-rest: var(--xh-bg-brand-subtle);
-    --xh-action-bg-hover: var(--xh-bg-brand-subtle);
+    --xh-action-bg-rest: var(--xh-_action-variant-bg-hover);
   }
 
   /* 预览是正文流里的静态 surface，不漂浮、不盖住正文。 */

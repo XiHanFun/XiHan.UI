@@ -11031,7 +11031,12 @@
   }
 
   /* —— 形态 —— */
-  /* 缺省档即 outline，写在上面那条基础规则里 */
+  /* 缺省档即 outline；显式写 outline 时与缺省同形 */
+  [data-scope='reasoning'][data-part='root'][data-variant='outline'] {
+    border: var(--xh-stroke-thin) solid var(--xh-reasoning-border, var(--xh-border-default));
+    background: var(--xh-reasoning-bg, var(--xh-bg-surface));
+  }
+
   /* 底色分区：--xh-bg-subtle 底 + 透明边位 + 无影；淡底承载面向开关下发 hover 200 → pressed 300 */
   [data-scope='reasoning'][data-part='root'][data-variant='subtle'] {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
@@ -20302,8 +20307,9 @@
     font-size: var(--xh-citation-font-size, var(--xh-_citation-font-size));
   }
 
+  /* 禁用降前景：正文与编号一起落到禁用色，不靠整体透明度（编号的面由家族的禁用档给） */
   [data-scope='citation'][data-part='root'][data-disabled] {
-    opacity: var(--xh-state-disabled-opacity);
+    --xh-citation-text-fg: var(--xh-fg-disabled);
   }
 
   [data-scope='citation'][data-part='text'] {
@@ -20328,9 +20334,9 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* 打开中不是选中：与悬停同档的中性面，悬停不再加深，按下照常走下一档 */
   [data-scope='citation'][data-part='trigger'][data-state='open'] {
-    --xh-action-bg-rest: var(--xh-bg-brand-subtle);
-    --xh-action-bg-hover: var(--xh-bg-brand-subtle);
+    --xh-action-bg-rest: var(--xh-_action-variant-bg-hover);
   }
 
   /* 预览是正文流里的静态 surface，不漂浮、不盖住正文。 */
