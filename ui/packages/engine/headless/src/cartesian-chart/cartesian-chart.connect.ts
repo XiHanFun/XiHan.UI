@@ -11,6 +11,8 @@ import type { ChartDatumRef, ChartFrame } from '../shared/chart'
 import type { CartesianActive } from './cartesian-chart.logic'
 import type { CartesianScene } from './cartesian-chart.model'
 import type {
+  CartesianBrushing,
+  CartesianBrushSelection,
   CartesianChartApi,
   CartesianChartSchema,
   CartesianLegendItem,
@@ -27,6 +29,10 @@ import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 import {
   cartesianActive,
   cartesianAnchor,
+  cartesianBrushedData,
+  cartesianBrushedRefs,
+  cartesianBrushRect,
+  cartesianBrushSelectionOf,
   cartesianDatumLabel,
   cartesianDetails,
   cartesianHitTest,
@@ -74,6 +80,10 @@ const WHEEL_PAGE = 400
 
 /** 键盘 + / − 一次缩放的倍数。 */
 const KEY_ZOOM_STEP = 1.5
+/** 拖出刷选框的最短距离（px）：更短的算点击，清掉刷选。 */
+const BRUSH_MIN_DRAG = 3
+/** 刷选时按框里框外淡出的数据标记。 */
+const BRUSHED_PARTS = new Set(['bar', 'point', 'candle', 'wick', 'box', 'whisker', 'median', 'outlier', 'stem'])
 
 /** 缩放条手柄的键盘步长：方向键 1%，Shift 与翻页键 10%。 */
 const SLIDE_STEP = 0.01
@@ -154,11 +164,56 @@ export function connectCartesianChart<T extends PropTypes>(
   })
   const details = active ? cartesianDetails(model, active.ref, trigger) : null
   const tooltip = details ? cartesianTooltip(model, details, translations, prop('tooltipOrder')) : null
+  // —— 刷选 ——
+  const brushMode = prop('brush') ?? 'none'
+  const brushX = brushMode === 'x' || brushMode === 'xy'
+  const brushY = brushMode === 'y' || brushMode === 'xy'
+  const brushable = brushX || brushY
+  const brushing = context.get('brushing')
+  const selection = brushable ? context.get('brushSelection') : null
+  /** 拖出的框换成范围：拖得太短（点一下）算清掉。 */
+  const brushedFrom = (b: CartesianBrushing): CartesianBrushSelection | null =>
+    Math.hypot(b.to.x - b.from.x, b.to.y - b.from.y) < BRUSH_MIN_DRAG
+      ? null
+      : cartesianBrushSelectionOf(model, { x0: b.from.x, y0: b.from.y, x1: b.to.x, y1: b.to.y }, { x: brushX, y: brushY })
+  // 拖着时画拖出的框（类目取整到整条带），松手后画落定的范围
+  const shownSelection = brushing ? brushedFrom(brushing) : selection
+  const brushRect = cartesianBrushRect(model, shownSelection)
+  // 框外的数据标记淡出：系列 id → 框里的行号
+  const brushed = new Map<string, Set<number>>()
+  if (shownSelection) {
+    for (const ref of cartesianBrushedRefs(model, shownSelection)) {
+      const rows = brushed.get(ref.seriesId) ?? new Set<number>()
+      rows.add(ref.index)
+      brushed.set(ref.seriesId, rows)
+    }
+  }
+  const setBrushSelection = (next: CartesianBrushSelection | null): void =>
+    send({ type: 'BRUSH.SET', selection: next, data: next ? cartesianBrushedData(model, next) : [] })
+  /** Shift + 方向键从锚点起沿自变量刷到焦点所在的键；不按 Shift 移动焦点时放下锚点，范围留着。 */
+  const brushByKey = (extend: boolean, from: ChartDatumRef | null, to: ChartDatumRef): void => {
+    const anchorIndex = context.get('brushAnchor')
+    if (!extend) {
+      if (anchorIndex != null)
+        send({ type: 'BRUSH.ANCHOR', index: null })
+      return
+    }
+    const a = anchorIndex ?? cartesianKeyIndexOf(model, from)
+    const b = cartesianKeyIndexOf(model, to)
+    if (a < 0 || b < 0)
+      return
+    if (anchorIndex == null)
+      send({ type: 'BRUSH.ANCHOR', index: a })
+    const { keys } = model.spec
+    setBrushSelection({ x: [keys[Math.min(a, b)]!, keys[Math.max(a, b)]!], y: null })
+  }
+
   const overlay = cartesianOverlay(
     model,
     active,
     trigger,
     focusWithin && focused != null ? { ref: focused, ring: context.get('focusVisible') } : null,
+    brushRect,
   )
 
   // 淡出：悬停图例项时其余系列淡出；item 模式下激活一个数据时其余系列淡出
@@ -216,6 +271,10 @@ export function connectCartesianChart<T extends PropTypes>(
   const zoomY = zoom === 'y' || zoom === 'xy'
   const zoomable = zoomX || zoomY
   const screenZoom = orientation === 'vertical' ? { horizontal: zoomX, vertical: zoomY } : { horizontal: zoomY, vertical: zoomX }
+  const screenBrush = orientation === 'vertical' ? { horizontal: brushX, vertical: brushY } : { horizontal: brushY, vertical: brushX }
+  const touchH = screenZoom.horizontal || screenBrush.horizontal
+  const touchV = screenZoom.vertical || screenBrush.vertical
+  const touchAxis = touchH && touchV ? 'both' : touchH ? 'horizontal' : touchV ? 'vertical' : undefined
   const win = context.get('window')
   const drag = context.get('drag')
   const layout = model.scene?.layout ?? null
@@ -425,6 +484,8 @@ export function connectCartesianChart<T extends PropTypes>(
     setFocusedDatum: ref => send({ type: 'FOCUS.SET', ref }),
     markTag: cartesianMarkTag,
     zoom: { x: zoomX, y: zoomY, window: win, ratio: shown },
+    brush: { x: brushX, y: brushY, selection, rect: brushRect },
+    setBrushSelection,
     clip: clip ? { id: clipId, ...clip } : null,
     setWindow,
 
@@ -541,10 +602,11 @@ export function connectCartesianChart<T extends PropTypes>(
       'width': size?.width,
       'height': size?.height,
       'viewBox': size ? `0 0 ${size.width} ${size.height}` : undefined,
-      // 能缩放的屏幕方向：触屏在这个方向上的拖动与捏合归绘图区，另一个方向照常滚动页面
-      'data-zoomable': zoomable ? (screenZoom.horizontal && screenZoom.vertical ? 'both' : screenZoom.horizontal ? 'horizontal' : 'vertical') : undefined,
+      // 能缩放或刷选的屏幕方向：触屏在这个方向上的拖动与捏合归绘图区，另一个方向照常滚动页面
+      'data-touch-axis': touchAxis,
       'data-zoomed': dataAttr(zoomed),
-      'data-dragging': dataAttr(drag?.target === 'plot'),
+      'data-selectable': dataAttr(brushable),
+      'data-dragging': dataAttr(drag?.target === 'plot' || brushing != null),
       'onWheel': (event: WheelEvent) => {
         // 滚轮只在按住 Ctrl（⌘）时缩放：不按时让页面照常滚动
         if (!zoomable || !(event.ctrlKey || event.metaKey))
@@ -558,27 +620,49 @@ export function connectCartesianChart<T extends PropTypes>(
         zoomAround(r, Math.exp(-delta * WHEEL_ZOOM_RATE))
       },
       'onPointerDown': (event: PointerEvent) => {
-        if (!zoomable || event.button !== 0 || !layout)
+        if (!(zoomable || brushable) || event.button !== 0 || !layout)
           return
         const at = pointerAt(event)
         if (!at)
           return
         if (event.pointerType === 'touch') {
           touches.set(event.pointerId, at)
-          // 第二根手指按下：改为捏合，停掉单指的平移
+          // 第二根手指按下：改为捏合，停掉单指的平移与刷选
           if (touches.size >= 2) {
             if (drag)
               send({ type: 'DRAG.END' })
+            if (brushing)
+              send({ type: 'BRUSH.END' })
             return
           }
         }
+        const target = event.currentTarget as Element
+        // 开了刷选时拖动即刷选，平移改用缩放条或键盘；从绘图区里起刷，坐标轴上按下不算
+        if (brushable) {
+          const { plot } = layout
+          if (at.x < plot.x || at.x > plot.x + plot.width || at.y < plot.y || at.y > plot.y + plot.height)
+            return
+          // 拦下按下：鼠标按下的缺省动作会把焦点给绘图区、转投到锚点上弹出提示框，拖动时还会选中页面文字
+          event.preventDefault()
+          target.setPointerCapture?.(event.pointerId)
+          // 收起提示框：松手后浏览器补派的 click 不该把悬停的数据当成按下
+          send({ type: 'HOVER.CLEAR' })
+          send({ type: 'BRUSH.START', brushing: { pointerId: event.pointerId, from: at, to: at } })
+          return
+        }
         if (!zoomed)
           return
-        const target = event.currentTarget as Element
         target.setPointerCapture?.(event.pointerId)
         send({ type: 'DRAG.START', drag: { target: 'plot', pointerId: event.pointerId, from: at, size: { x: layout.plot.width, y: layout.plot.height }, window: base } })
       },
-      'onPointerUp': endPointer,
+      'onPointerUp': (event: PointerEvent) => {
+        // 松手才落定：派发一次范围变化
+        if (brushing && brushing.pointerId === event.pointerId) {
+          setBrushSelection(brushedFrom({ ...brushing, to: pointerAt(event) ?? brushing.to }))
+          send({ type: 'BRUSH.END' })
+        }
+        endPointer(event)
+      },
       'onPointerMove': (event: PointerEvent) => {
         const at = pointerAt(event)
         // 两根手指：按两指间距的变化缩放，锚点在两指中间
@@ -595,6 +679,11 @@ export function connectCartesianChart<T extends PropTypes>(
         }
         if (at && event.pointerType === 'touch' && touches.has(event.pointerId))
           touches.set(event.pointerId, at)
+        if (brushing && brushing.pointerId === event.pointerId) {
+          if (at)
+            send({ type: 'BRUSH.MOVE', to: at })
+          return
+        }
         // 拖着平移时不命中数据：提示框跟着指针乱跳没有意义
         if (drag?.target === 'plot' && drag.pointerId === event.pointerId) {
           if (at)
@@ -613,6 +702,8 @@ export function connectCartesianChart<T extends PropTypes>(
       // 指针被系统收走（拖拽、右键菜单）时也要收起，否则提示框会一直挂着
       'onPointerCancel': (event: PointerEvent) => {
         endPointer(event)
+        if (brushing?.pointerId === event.pointerId)
+          send({ type: 'BRUSH.END' })
         send({ type: 'HOVER.CLEAR' })
       },
       'onClick': () => {
@@ -626,6 +717,8 @@ export function connectCartesianChart<T extends PropTypes>(
           // 不 preventDefault：外层浮层的关闭仍归它自己
           if (details)
             send({ type: 'DISMISS' })
+          if (selection)
+            setBrushSelection(null)
           return
         }
         if (event.key === 'Enter' || event.key === ' ') {
@@ -656,10 +749,13 @@ export function connectCartesianChart<T extends PropTypes>(
           return
         // 键归绘图区管就先拦下：走到头没处可去时也不该让页面跟着滚
         event.preventDefault()
-        const next = cartesianNavTarget(model, focused && focusWithin ? focused : anchor, intent)
+        const current = focused && focusWithin ? focused : anchor
+        const next = cartesianNavTarget(model, current, intent)
         if (next) {
           follow(next)
           focusTo(next, true, true)
+          if (brushX && intent !== 'series-next' && intent !== 'series-prev')
+            brushByKey(event.shiftKey, current, next)
         }
       },
       'onFocusIn': (event: FocusEvent) => {
@@ -829,6 +925,9 @@ export function connectCartesianChart<T extends PropTypes>(
         props['data-style'] = mark.kind === 'rect' ? 'box' : 'violin'
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
+      // 刷选时框外的数据标记淡出；折线与面积是整条路径，不分框里框外
+      if (shownSelection && mark.datum && BRUSHED_PARTS.has(mark.part))
+        props['data-dimmed'] = dataAttr(brushed.get(mark.datum.seriesId)?.has(mark.datum.index) !== true)
       // 注释：参考线与参考带是结构色，跟着系列的（标出的点、平均线、趋势线）取系列色、随系列淡出
       if (mark.part === 'annotation') {
         const note = model.scene?.annotations.get(mark.key)

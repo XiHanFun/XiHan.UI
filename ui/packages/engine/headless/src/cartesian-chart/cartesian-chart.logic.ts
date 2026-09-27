@@ -10,7 +10,7 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
-import type { CartesianAnnotationSummary, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
+import type { CartesianAnnotationSummary, CartesianBrushSelection, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker, FULL_WINDOW } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
@@ -45,6 +45,13 @@ function sameRange(a: readonly [ChartKey, ChartKey] | null | undefined, b: reado
 /** 两个窗口是否相同：受控时作者每次给新对象，内容没变不该当成变化；日期按时间值比。 */
 export function sameWindow(a: CartesianWindow, b: CartesianWindow | undefined): boolean {
   return b != null && sameRange(a.x, b.x) && sameRange(a.y, b.y)
+}
+
+/** 两个刷选范围是否相同：都没有刷选也算相同。 */
+export function sameSelection(a: CartesianBrushSelection | null | undefined, b: CartesianBrushSelection | null | undefined): boolean {
+  if (a == null || b == null)
+    return a == null && b == null
+  return sameWindow(a, b)
 }
 
 /** 缺省的五数写法：须线两端、四分位与中位数依次写出。 */
@@ -438,7 +445,7 @@ export interface CartesianOverlay {
 const EMPTY_OVERLAY: CartesianOverlay = Object.freeze({ under: [], over: [] })
 
 /**
- * 前景层：随激活与聚焦变化，不进场景、不参与记忆。
+ * 前景层：随激活、聚焦与刷选变化，不进场景、不参与记忆。
  * focus 为真时（键盘聚焦）焦点代理带 Tab 位并画焦点环；ring 为真时画焦点环（:focus-visible）。
  */
 export function cartesianOverlay(
@@ -446,9 +453,10 @@ export function cartesianOverlay(
   active: CartesianActive | null,
   trigger: CartesianTrigger,
   focused: { ref: ChartDatumRef, ring: boolean } | null,
+  brush: PlotBox | null = null,
 ): CartesianOverlay {
   const scene = model.scene
-  if (!scene || (!active && !focused))
+  if (!scene || (!active && !focused && !brush))
     return EMPTY_OVERLAY
   const { plot, metrics } = scene.layout
   const vertical = model.spec.orientation === 'vertical'
@@ -457,6 +465,10 @@ export function cartesianOverlay(
   const pointSize = Math.PI * (metrics.pointSize / 2) ** 2
   const lineSeries = new Set(model.derived.visible.filter(s => s.spec.mark === 'line').map(s => s.spec.id))
   const barOnly = model.derived.visible.every(s => s.spec.mark === 'bar')
+
+  // 刷选框垫在最底下：框里的数据照常可读，边框标出范围
+  if (brush)
+    under.push({ kind: 'rect', key: 'brush', part: 'brush', ...brush })
 
   const activeKey = active ? cartesianKeyIndexOf(model, active.ref) : -1
   if (activeKey >= 0 && trigger === 'axis') {
@@ -537,6 +549,177 @@ export function cartesianOverlay(
     }
   }
   return { under, over }
+}
+
+/** 绘图区里的一块矩形（px）。 */
+interface PlotBox { readonly x: number, readonly y: number, readonly width: number, readonly height: number }
+
+function isCategoryKeys(model: CartesianModel): boolean {
+  return model.spec.keyScale === 'band' || model.spec.keyScale === 'point'
+}
+
+/** 类目轴上一个键的下标；不在数据里为 −1。 */
+function keyIndexOfKey(model: CartesianModel, key: ChartKey): number {
+  return model.spec.keys.findIndex(k => sameEnd(k, key))
+}
+
+/** 刷选范围在自变量方向上盖到的像素段（沿自变量轴，未排序前的两端）；没刷这个方向为 null。 */
+function brushKeyPixels(model: CartesianModel, x: readonly [ChartKey, ChartKey]): [number, number] | null {
+  const layout = model.scene!.layout
+  if (isCategoryKeys(model)) {
+    // 类目取首尾类目的整条带；窗外的类目夹到露出的那一段
+    const a = keyIndexOfKey(model, x[0])
+    const b = keyIndexOfKey(model, x[1])
+    if (a < 0 || b < 0)
+      return null
+    const [first, last] = layout.keyRange
+    const lo = Math.max(Math.min(a, b), first)
+    const hi = Math.min(Math.max(a, b), last)
+    if (lo > hi)
+      return null
+    const step = (layout.keyScale as { step?: number }).step ?? layout.bandwidth
+    const c0 = layout.keyCenters[lo]!
+    const c1 = layout.keyCenters[hi]!
+    return [Math.min(c0, c1) - step / 2, Math.max(c0, c1) + step / 2]
+  }
+  const map = layout.keyScale.map as (v: unknown) => number | undefined
+  const p0 = map(model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? new Date(x[0].valueOf()) : x[0])
+  const p1 = map(model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? new Date(x[1].valueOf()) : x[1])
+  return p0 == null || p1 == null || !Number.isFinite(p0) || !Number.isFinite(p1) ? null : [Math.min(p0, p1), Math.max(p0, p1)]
+}
+
+/**
+ * 刷选范围画在绘图区里的矩形：没刷的方向铺满绘图区，类目取首尾类目的整条带，越出绘图区的部分夹掉；
+ * 没有刷选或范围整个在窗外时为 null。
+ */
+export function cartesianBrushRect(model: CartesianModel, selection: CartesianBrushSelection | null): PlotBox | null {
+  const scene = model.scene
+  if (!scene || !selection || (selection.x == null && selection.y == null))
+    return null
+  const { plot, valueScale } = scene.layout
+  const vertical = model.spec.orientation === 'vertical'
+  const keySpan = vertical ? [plot.x, plot.x + plot.width] : [plot.y, plot.y + plot.height]
+  const valueSpan = vertical ? [plot.y, plot.y + plot.height] : [plot.x, plot.x + plot.width]
+  let k: [number, number] = [keySpan[0]!, keySpan[1]!]
+  let v: [number, number] = [valueSpan[0]!, valueSpan[1]!]
+  if (selection.x) {
+    const pixels = brushKeyPixels(model, selection.x)
+    if (!pixels)
+      return null
+    k = [Math.max(k[0], pixels[0]), Math.min(k[1], pixels[1])]
+  }
+  if (selection.y) {
+    const a = valueScale.map(selection.y[0])
+    const b = valueScale.map(selection.y[1])
+    if (a == null || b == null || !Number.isFinite(a) || !Number.isFinite(b))
+      return null
+    v = [Math.max(v[0], Math.min(a, b)), Math.min(v[1], Math.max(a, b))]
+  }
+  if (k[1] <= k[0] || v[1] <= v[0])
+    return null
+  return vertical
+    ? { x: k[0], y: v[0], width: k[1] - k[0], height: v[1] - v[0] }
+    : { x: v[0], y: k[0], width: v[1] - v[0], height: k[1] - k[0] }
+}
+
+/**
+ * 绘图区里拖出的一块矩形换成刷选范围（定义域里的值）：类目取中心落在框里的首尾类目，连续轴与数值轴按比例尺反算；
+ * 只刷 dirs 里的方向，另一个方向为 null。自变量方向一个类目也没框到时为 null。
+ */
+export function cartesianBrushSelectionOf(
+  model: CartesianModel,
+  box: { readonly x0: number, readonly y0: number, readonly x1: number, readonly y1: number },
+  dirs: { readonly x: boolean, readonly y: boolean },
+): CartesianBrushSelection | null {
+  const scene = model.scene
+  if (!scene)
+    return null
+  const { plot, keyScale, valueScale, keyCenters } = scene.layout
+  const vertical = model.spec.orientation === 'vertical'
+  const clampX = (v: number): number => Math.min(plot.x + plot.width, Math.max(plot.x, v))
+  const clampY = (v: number): number => Math.min(plot.y + plot.height, Math.max(plot.y, v))
+  const xs = [clampX(box.x0), clampX(box.x1)].sort((a, b) => a - b) as [number, number]
+  const ys = [clampY(box.y0), clampY(box.y1)].sort((a, b) => a - b) as [number, number]
+  const [k0, k1] = vertical ? xs : ys
+  const [v0, v1] = vertical ? ys : xs
+  let x: CartesianBrushSelection['x'] = null
+  if (dirs.x) {
+    if (isCategoryKeys(model)) {
+      const inside = keyCenters.flatMap((c, j) => (Number.isFinite(c) && c >= k0 && c <= k1 ? [j] : []))
+      if (inside.length === 0)
+        return null
+      x = [model.spec.keys[Math.min(...inside)]!, model.spec.keys[Math.max(...inside)]!]
+    }
+    else {
+      const invert = (keyScale as { invert: (px: number) => number | Date }).invert
+      const ends = [invert(k0), invert(k1)].map(v => v.valueOf()).sort((a, b) => a - b)
+      x = model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? [new Date(ends[0]!), new Date(ends[1]!)] : [ends[0]!, ends[1]!]
+    }
+  }
+  let y: CartesianBrushSelection['y'] = null
+  if (dirs.y) {
+    const ends = [valueScale.invert(v0), valueScale.invert(v1)].sort((a, b) => a - b)
+    y = [ends[0]!, ends[1]!]
+  }
+  return { x, y }
+}
+
+/** 落在刷选范围里的可见数据的引用：锚点落在框里即算，按图例次序、再按位置排。 */
+export function cartesianBrushedRefs(model: CartesianModel, selection: CartesianBrushSelection | null): ChartDatumRef[] {
+  const scene = model.scene
+  if (!scene || !selection || (selection.x == null && selection.y == null))
+    return []
+  const vertical = model.spec.orientation === 'vertical'
+  const category = isCategoryKeys(model)
+  // 自变量按值判（窗外的数据也算），数值按锚点的像素判（堆叠、区间、K 线都以画出来的那一点为准）
+  let keyIn: (j: number) => boolean = () => true
+  if (selection.x) {
+    if (category) {
+      const a = keyIndexOfKey(model, selection.x[0])
+      const b = keyIndexOfKey(model, selection.x[1])
+      if (a < 0 || b < 0)
+        return []
+      keyIn = j => j >= Math.min(a, b) && j <= Math.max(a, b)
+    }
+    else {
+      const lo = Math.min(selection.x[0].valueOf() as number, selection.x[1].valueOf() as number)
+      const hi = Math.max(selection.x[0].valueOf() as number, selection.x[1].valueOf() as number)
+      keyIn = (j) => {
+        const v = model.spec.keys[j]!.valueOf() as number
+        return v >= lo && v <= hi
+      }
+    }
+  }
+  let valueIn: (at: { x: number, y: number }) => boolean = () => true
+  if (selection.y) {
+    const a = scene.layout.valueScale.map(selection.y[0])
+    const b = scene.layout.valueScale.map(selection.y[1])
+    if (a == null || b == null)
+      return []
+    const [lo, hi] = [Math.min(a, b), Math.max(a, b)]
+    valueIn = (at) => {
+      const px = vertical ? at.y : at.x
+      return px >= lo - 0.5 && px <= hi + 0.5
+    }
+  }
+  const out: ChartDatumRef[] = []
+  for (const s of model.derived.visible) {
+    const anchors = scene.anchors.get(s.spec.id)
+    s.values.forEach((value, p) => {
+      const at = anchors?.[p]
+      if (value != null && at && keyIn(keyIndexAt(s, p)) && valueIn(at))
+        out.push({ seriesId: s.spec.id, index: s.rows[p]! })
+    })
+  }
+  return out
+}
+
+/** 落在刷选范围里的可见数据：报给 onBrushSelectionChange。 */
+export function cartesianBrushedData(model: CartesianModel, selection: CartesianBrushSelection | null): ChartDatumDetails[] {
+  return cartesianBrushedRefs(model, selection).flatMap((ref) => {
+    const details = cartesianDetails(model, ref, 'item')
+    return details ? [details] : []
+  })
 }
 
 function findMark(marks: readonly Mark[], key: string): Mark | null {

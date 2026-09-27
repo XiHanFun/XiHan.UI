@@ -18043,17 +18043,17 @@
     background: linear-gradient(to left, var(--xh-_chart-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
   }
 
-  /* —— 缩放：能缩放的方向上触屏的拖动与捏合归绘图区，另一个方向照常滚动页面；
-     放大后指针是可拖动的手，拖着时是抓住的手 —— */
-  [data-scope='cartesian-chart'][data-part='plot'][data-zoomable='horizontal'] {
+  /* —— 缩放与刷选：能缩放或刷选的方向上触屏的拖动与捏合归绘图区，另一个方向照常滚动页面；
+     放大后指针是可拖动的手，拖着时是抓住的手；开了刷选时指针是十字，拖动即框选 —— */
+  [data-scope='cartesian-chart'][data-part='plot'][data-touch-axis='horizontal'] {
     touch-action: pan-y;
   }
 
-  [data-scope='cartesian-chart'][data-part='plot'][data-zoomable='vertical'] {
+  [data-scope='cartesian-chart'][data-part='plot'][data-touch-axis='vertical'] {
     touch-action: pan-x;
   }
 
-  [data-scope='cartesian-chart'][data-part='plot'][data-zoomable='both'] {
+  [data-scope='cartesian-chart'][data-part='plot'][data-touch-axis='both'] {
     touch-action: none;
   }
 
@@ -18063,6 +18063,10 @@
 
   [data-scope='cartesian-chart'][data-part='plot'][data-dragging] {
     cursor: grabbing;
+  }
+
+  [data-scope='cartesian-chart'][data-part='plot'][data-selectable] {
+    cursor: crosshair;
   }
 
   /* 缩放条：淡底的轨道上，窗口是选中区（品牌淡底），两端的手柄是品牌色的竖条。它对着自变量轴的整条轴；
@@ -18223,8 +18227,9 @@
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 悬停图例或强调一个系列时，其余系列淡出；被强调的保持原样 */
-  [data-scope='cartesian-chart'][data-part='series'][data-dimmed] {
+  /* 悬停图例或强调一个系列时，其余系列淡出；被强调的保持原样。刷选时框外的数据标记同样淡出 */
+  [data-scope='cartesian-chart'][data-part='series'][data-dimmed],
+  [data-scope='cartesian-chart'][data-part='series'] [data-dimmed] {
     opacity: var(--xh-chart-dim-alpha);
   }
 
@@ -18459,6 +18464,14 @@
     stroke: none;
   }
 
+  /* 刷选框：选中语义的淡底垫在数据之下，一圈聚焦色的细边标出范围 */
+  [data-scope='cartesian-chart'][data-part='brush'] {
+    fill: var(--xh-cartesian-chart-brush-bg, var(--xh-bg-brand-subtle));
+    stroke: var(--xh-cartesian-chart-brush-border, var(--xh-border-control-focus));
+    stroke-width: var(--xh-stroke-thin);
+    pointer-events: none;
+  }
+
   /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），柱与面积改用本系列在
      defs 里的纹理填充、描出轮廓，折线换线型；压在柱上的标签改用标签色、描一圈承载面色。色标的纹理在配方里 —— */
   :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar'],
@@ -18589,6 +18602,12 @@
     }
 
     [data-scope='cartesian-chart'][data-part='crosshair'][data-kind='band'] {
+      fill: none;
+      stroke: Highlight;
+    }
+
+    /* 系统色下淡底画不出来：刷选框只留一圈 Highlight 的边 */
+    [data-scope='cartesian-chart'][data-part='brush'] {
       fill: none;
       stroke: Highlight;
     }

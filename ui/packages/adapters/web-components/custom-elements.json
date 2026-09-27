@@ -5953,6 +5953,31 @@
             },
             {
               "kind": "field",
+              "name": "brush",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianBrush | undefined"
+              },
+              "attribute": "brush"
+            },
+            {
+              "kind": "field",
+              "name": "brushSelection",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianBrushSelection | null | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultBrushSelection",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianBrushSelection | null | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "orientation",
               "privacy": "public",
               "type": {
@@ -6038,6 +6063,12 @@
             {
               "kind": "field",
               "name": "notifyWindow",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBrush",
               "privacy": "private",
               "readonly": true
             },
@@ -6572,6 +6603,13 @@
               }
             },
             {
+              "description": "刷选范围变了（指针松手时一次，键盘每按一次）；detail 为 `{ selection, data }`",
+              "name": "brush-selection-change",
+              "type": {
+                "text": "CartesianBrushSelectionChangeDetails"
+              }
+            },
+            {
               "description": "悬停或聚焦到某个数据；detail 为数据详情，收起时为 null",
               "name": "datum-active",
               "type": {
@@ -6610,6 +6648,14 @@
               "description": "缩放的方向，默认 none；开启后 Ctrl（⌘）滚轮、捏合、键盘 + / − 缩放，放大后拖动平移",
               "name": "zoom",
               "fieldName": "zoom"
+            },
+            {
+              "type": {
+                "text": "CartesianBrush | undefined"
+              },
+              "description": "刷选的方向，默认 none；开启后在绘图区拖动即刷选，Shift + 方向键从锚点起扩展，Escape 清掉",
+              "name": "brush",
+              "fieldName": "brush"
             },
             {
               "type": {
@@ -6680,6 +6726,12 @@
             },
             {
               "name": "--xh-cartesian-chart-bar-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-brush-bg"
+            },
+            {
+              "name": "--xh-cartesian-chart-brush-border"
             },
             {
               "name": "--xh-cartesian-chart-empty-gap"

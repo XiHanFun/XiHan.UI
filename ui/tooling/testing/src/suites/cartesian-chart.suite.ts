@@ -388,11 +388,45 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: '键盘刷选：Shift + 方向键从锚点起沿自变量刷，框外的柱淡出；Escape 清掉；两次都派发 brush-selection-change',
+    spec: { apg: APG },
+    covers: ['cartesian-chart.kbd.brush'],
+    props: { brush: 'x' },
+    initial: { counts: { brush: 0 }, parts: { plot: { 'data-selectable': '', 'data-touch-axis': 'horizontal' } } },
+    steps: [
+      { kind: 'focus', part: bar('online', 0), via: 'keyboard' },
+      {
+        kind: 'key',
+        key: 'ArrowRight',
+        modifiers: ['Shift'],
+        expect: {
+          activeElement: { part: bar('online', 1), exact: true },
+          counts: { brush: 1 },
+          parts: { bar: [{ 'data-dimmed': null }, { 'data-dimmed': null }, { 'data-dimmed': '' }] },
+          events: [
+            { type: 'active-key-change', detail: { activeKey: '二月' } },
+            { type: 'brush-selection-change' },
+            { type: 'datum-active' },
+          ],
+        },
+      },
+      {
+        kind: 'key',
+        key: 'Escape',
+        expect: {
+          counts: { brush: 0 },
+          parts: { bar: [{ 'data-dimmed': null }, { 'data-dimmed': null }, { 'data-dimmed': null }] },
+          events: [{ type: 'brush-selection-change', detail: { selection: null, data: [] } }, { type: 'datum-active', detail: null }],
+        },
+      },
+    ],
+  },
+  {
     name: '键盘缩放：绘图区里按 + 以聚焦的数据为中心放大，按 − 缩回整条轴，两次都派发 window-change',
     spec: { apg: APG },
     covers: ['cartesian-chart.kbd.zoom-in', 'cartesian-chart.kbd.zoom-out'],
     props: { zoom: 'x' },
-    initial: { parts: { plot: { 'data-zoomable': 'horizontal', 'data-zoomed': null } } },
+    initial: { parts: { plot: { 'data-touch-axis': 'horizontal', 'data-zoomed': null } } },
     steps: [
       { kind: 'focus', part: bar('online', 0), via: 'keyboard' },
       { kind: 'key', key: '+', expect: { parts: { plot: { 'data-zoomed': '' } }, events: [{ type: 'window-change' }] } },

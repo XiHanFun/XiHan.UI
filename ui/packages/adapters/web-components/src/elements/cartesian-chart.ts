@@ -9,6 +9,9 @@ import type { Service } from '@xihan-ui/core'
 import type {
   CartesianAnnotation,
   CartesianAxis,
+  CartesianBrush,
+  CartesianBrushSelection,
+  CartesianBrushSelectionChangeDetails,
   CartesianChartApi,
   CartesianChartSchema,
   CartesianChartTranslations,
@@ -59,6 +62,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'vertical'|'horizontal'} orientation - 朝向，默认 vertical；horizontal 即条形图
  * @attr {'axis'|'item'} trigger - 提示框汇报什么；默认含柱或折线时 axis（同一个键上的全部系列），只有散点时 item
  * @attr {'none'|'x'|'y'|'xy'} zoom - 缩放的方向，默认 none；开启后 Ctrl（⌘）滚轮、捏合、键盘 + / − 缩放，放大后拖动平移
+ * @attr {'none'|'x'|'y'|'xy'} brush - 刷选的方向，默认 none；开启后在绘图区拖动即刷选，Shift + 方向键从锚点起扩展，Escape 清掉
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上
  * @attr {boolean} totals - 堆叠柱的合计：每个堆叠组在最外端写出合计
  * @attr {'series'|'descending'|'ascending'} tooltip-order - 提示框里各系列的行序，默认 series（按图例次序）
@@ -69,6 +73,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires hidden-series-change - 图例切换显隐；detail 为 `{ hiddenSeries: string[] }`
  * @fires active-key-change - 指针或键盘换了激活的键；detail 为 `{ activeKey }`，收起时为 null
  * @fires window-change - 滚轮、捏合、拖动、键盘或缩放条改了缩放窗口；detail 为 `{ window }`
+ * @fires brush-selection-change - 刷选范围变了（指针松手时一次，键盘每按一次）；detail 为 `{ selection, data }`
  * @fires datum-active - 悬停或聚焦到某个数据；detail 为数据详情，收起时为 null
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情
  * @csspart root - `<figure>`，承载 orientation、pending 与错误状态
@@ -102,6 +107,9 @@ export class XhCartesianChartElement extends XhElement {
     window: { attribute: false },
     defaultWindow: { attribute: false },
     zoom: { converter: STRING_CONVERTER },
+    brush: { converter: STRING_CONVERTER },
+    brushSelection: { attribute: false },
+    defaultBrushSelection: { attribute: false },
     orientation: { converter: STRING_CONVERTER },
     trigger: { converter: STRING_CONVERTER },
     totals: { converter: BOOLEAN_CONVERTER },
@@ -124,6 +132,9 @@ export class XhCartesianChartElement extends XhElement {
   declare window?: CartesianWindow
   declare defaultWindow?: CartesianWindow
   declare zoom?: CartesianZoom
+  declare brush?: CartesianBrush
+  declare brushSelection?: CartesianBrushSelection | null
+  declare defaultBrushSelection?: CartesianBrushSelection | null
   declare orientation?: CartesianOrientation
   declare trigger?: CartesianTrigger
   declare totals?: boolean
@@ -143,6 +154,10 @@ export class XhCartesianChartElement extends XhElement {
 
   private readonly notifyWindow = (details: CartesianWindowChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('window-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBrush = (details: CartesianBrushSelectionChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('brush-selection-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyActive = (details: ChartDatumDetails | null): void => {
@@ -175,6 +190,9 @@ export class XhCartesianChartElement extends XhElement {
       zoom: this.zoom,
       window: this.window,
       defaultWindow: this.defaultWindow,
+      brush: this.brush,
+      brushSelection: this.brushSelection,
+      defaultBrushSelection: this.defaultBrushSelection,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
@@ -185,6 +203,7 @@ export class XhCartesianChartElement extends XhElement {
       onHiddenSeriesChange: this.notifyHidden,
       onActiveKeyChange: this.notifyKey,
       onWindowChange: this.notifyWindow,
+      onBrushSelectionChange: this.notifyBrush,
       onDatumActive: this.notifyActive,
       onDatumPress: this.notifyPress,
     }

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `brush` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `summary` · `table`
 
 ## 示例
 
@@ -174,6 +174,12 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 
 <XhDemo src="cartesian-chart/26-zoom" />
 
+### 刷选
+
+brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，松手派发一次范围与框里的数据；点一下或按 Escape 清掉
+
+<XhDemo src="cartesian-chart/27-brush" />
+
 ## 设计指引
 
 ### 何时使用
@@ -231,6 +237,7 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 - 缩放的手势：按住 Ctrl（⌘）滚轮以指针为中心缩放，不按时滚轮照常滚动页面；放大后拖动绘图区平移，内容跟着指针走；触屏双指捏合缩放、单指拖动平移，只在能缩放的方向上拦截，另一个方向照常滚动页面。键盘在绘图区里按 + / − 以聚焦的数据为中心缩放，类目轴上按整个类目增减、每按一次至少多露或少露一个类目；方向键把焦点移出窗口时，窗口平移到以它为中心。窗口最窄到只露出一个类目，连续轴放大到 100 倍为止。
 - 自变量轴能缩放、图是竖向时，绘图区下方有一条缩放条（`zoom-slider`）：淡底的轨道对着整条轴，窗口是品牌淡底的选中区，两端各一个手柄。拖窗口平移，拖手柄改一端，按轨道空处把窗口移过去。横向条形图不出缩放条，用滚轮、拖动与键盘缩放。Web Components 侧作者在外壳里放一个空的 `zoom-slider`，轨道、窗口与手柄由元素生成。
 - 折线的点比绘图区的像素多一倍以上时降采样（Largest-Triangle-Three-Buckets，保留峰谷）：线上的点不超过绘图区的宽度，缩放后只采窗口里的那一段；锚点、焦点、提示框与数据表仍是全部数据。
+- `brush` 打开刷选：`x` 沿自变量轴框一段，`y` 沿数值轴框一段，`xy` 框一个矩形，缺省 `none`。开启后在绘图区里拖动即刷选，指针是十字，放大后的平移改用缩放条或键盘。拖着时框已经画出（类目轴取整到首尾类目的整条带），松手才派发一次 `onBrushSelectionChange`，载荷是范围 `selection` 与框里的数据 `data`：锚点（柱顶、点、线上的点、K 线的收盘、箱线的中位数）落在框里即算，按图例次序、再按自变量排。范围 `brushSelection` / `defaultBrushSelection` 的写法同缩放窗口，受控时由作者写回。框垫在数据之下，是选中语义的淡底加一圈聚焦色的细边；框外的柱、点、K 线与箱线淡出到 `--xh-chart-dim-alpha`，折线与面积是整条路径，不分框里框外。点一下（没拖开）或按 Escape 清掉刷选。
 - 提示框缺省按系列推断：只有散点时 `item`，否则 `axis`。`axis` 吸附到最近的键，列出该键上全部可见系列（散点在这个 x 上有点才列一行）；`item` 只报告指针命中的那一个数据，命中取离指针最近的标记，不要求指针正中。气泡的行在数值后面跟着大小，名字取 `translations.sizeLabel`。键盘聚焦与指针悬停显示同样的内容。`tooltipOrder` 改变提示框里各系列的行序：缺省 `series` 按图例次序，`descending` / `ascending` 按数值排，缺失值排在最后；回调里的 `items` 仍按图例次序。
 - 悬停图例项时，其余系列淡出到 `--xh-chart-dim-alpha`，该系列颜色不变；`trigger="item"` 时悬停或聚焦某个数据同样只保留它所在的系列。`axis` 模式不淡出：提示框列出的正是该键上的全部系列。
 - 提示框放在根内部，按指针所在的一侧翻转，不越出绘图区；它不进入浮层引擎，不参与浮层的层级与关闭协议。
@@ -288,6 +295,7 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 | `hidden-series-change` | `ChartHiddenSeriesChangeDetails` | 图例切换显隐；detail 为 `{ hiddenSeries: string[] }` |
 | `active-key-change` | `ChartActiveKeyChangeDetails` | 指针或键盘换了激活的键；detail 为 `{ activeKey }`，收起时为 null |
 | `window-change` | `CartesianWindowChangeDetails` | 滚轮、捏合、拖动、键盘或缩放条改了缩放窗口；detail 为 `{ window }` |
+| `brush-selection-change` | `CartesianBrushSelectionChangeDetails` | 刷选范围变了（指针松手时一次，键盘每按一次）；detail 为 `{ selection, data }` |
 | `datum-active` | `ChartDatumDetails` | 悬停或聚焦到某个数据；detail 为数据详情，收起时为 null |
 | `datum-press` | `ChartDatumDetails` | 指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情 |
 
@@ -323,6 +331,10 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 | `XhCartesianChartRoot` | `window` | `CartesianWindow` |  | 缩放窗口（受控）。 |
 | `XhCartesianChartRoot` | `defaultWindow` | `CartesianWindow` |  | 初始缩放窗口（非受控）。 |
 | `XhCartesianChartRoot` | `onWindowChange` | `CartesianChartProps['onWindowChange']` |  |  |
+| `XhCartesianChartRoot` | `brush` | `CartesianBrush` |  | 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。 |
+| `XhCartesianChartRoot` | `brushSelection` | `CartesianBrushSelection \| null` |  | 刷选范围（受控），null 为没有刷选。 |
+| `XhCartesianChartRoot` | `defaultBrushSelection` | `CartesianBrushSelection \| null` |  | 初始刷选范围（非受控）。 |
+| `XhCartesianChartRoot` | `onBrushSelectionChange` | `CartesianChartProps['onBrushSelectionChange']` |  |  |
 | `XhCartesianChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）。 |
 | `XhCartesianChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
 | `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
@@ -354,7 +366,7 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 
 **状态**：`idle`
 
-**事件**：`WINDOW.SET` · `DRAG.START` · `DRAG.END`
+**事件**：`WINDOW.SET` · `DRAG.START` · `DRAG.END` · `BRUSH.START` · `BRUSH.MOVE` · `BRUSH.END` · `BRUSH.SET` · `BRUSH.ANCHOR`
 
 ### connect API
 
@@ -384,6 +396,8 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 | `zoom` | `{ readonly x: boolean, readonly y: boolean, readonly window: CartesianWindow, readonly ratio: CartesianWindowRatio }` | 缩放：两个方向能不能缩放、当前的窗口，与它在两根轴上的比例（不能缩放的方向是整条轴）。 |
 | `clip` | `{ readonly id: string, readonly x: number, readonly y: number, readonly width: number, readonly height: number } \| null` | 缩放后要裁到的矩形（绘图区）与它在 defs 里的 clipPath id；没缩放连续轴与数值轴时为 null。 |
 | `setWindow` | `(window: CartesianWindow) => void` | 设置缩放窗口（定义域里的值）；不能缩放的方向保持整条轴。 |
+| `brush` | `{ readonly x: boolean readonly y: boolean readonly selection: CartesianBrushSelection \| null readonly rect: { readonly x: number, readonly y: number, readonly width: number, readonly height: number } \| null }` | 刷选：两个方向能不能刷、当前的范围，与它在绘图区里的矩形（没有刷选为 null）。 |
+| `setBrushSelection` | `(selection: CartesianBrushSelection \| null) => void` | 设置刷选范围（定义域里的值），null 清掉；派发 onBrushSelectionChange。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getCaptionProps` | `() => T['element']` |  |
 | `getLegendProps` | `() => T['element']` |  |
@@ -436,7 +450,8 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 | `+` / `=` | 焦点在绘图区且开了 zoom | 以聚焦的数据为中心放大 1.5 倍；类目轴按整个类目缩放，每按一次至少少露一个类目，最少露出一个 |
 | `-` / `_` | 焦点在绘图区且开了 zoom | 以聚焦的数据为中心缩小 1.5 倍，类目轴每按一次至少多露一个类目，到整条轴为止；焦点走出窗口时窗口平移过去 |
 | `ArrowLeft` / `ArrowRight` / `ArrowDown` / `ArrowUp` / `PageUp` / `PageDown` / `Home` / `End` | 焦点在缩放条的手柄 | 左右键（下上键同）把这一端移一步：类目轴一个类目，连续轴 1%；按住 Shift 或 PageUp / PageDown 移 10%（至少一个类目），Home / End 把这一端移到能到的最远处；两端之间至少留一个类目或 1% 的轴 |
-| `Escape` | 提示框显示着 | 收起提示框，焦点留在原处；按键不拦截，外层浮层的关闭仍归它自己 |
+| `Shift+ArrowRight` / `Shift+ArrowLeft` / `Shift+Home` / `Shift+End` / `Shift+PageUp` / `Shift+PageDown` | 焦点在绘图区且 brush 为 x 或 xy | 从锚点起沿自变量刷到焦点所在的键，每按一次派发 onBrushSelectionChange；锚点是开始按 Shift 时焦点所在的键，松开 Shift 移动焦点后放下，范围留着；horizontal 时由 Shift+ArrowDown / Shift+ArrowUp 承担 |
+| `Escape` | 提示框显示着或有刷选范围 | 收起提示框、清掉刷选（派发 onBrushSelectionChange，范围为 null），焦点留在原处；按键不拦截，外层浮层的关闭仍归它自己 |
 | `ArrowLeft` / `ArrowRight` / `Home` / `End` | 焦点在图例 | 在图例项之间移动，左右键跟随文字方向的视觉次序 |
 | `Enter` / `Space` | 焦点在图例项 | 切换该系列的显隐（原生按钮行为） |
 
@@ -482,6 +497,7 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 - 提示框 `aria-hidden`：它显示的内容与数据的可访问名称是同一份，读两遍反而干扰。
 - Escape 收起提示框但不拦截按键，外层浮层的关闭仍由其自身处理。
 - 缩放条是 `role="group"`，名称取 `translations.zoomLabel`；两端的手柄是 `role="slider"`，名称取 `zoomStartLabel` / `zoomEndLabel`，值是窗口那一端在整条轴上的百分比，`aria-valuetext` 读出那一端对着的类目或值。缩放后摘要与数据表仍写全部数据，窗口只改画面。
+- 开了刷选（`x` 或 `xy`）时，Shift + 方向键从锚点起沿自变量刷到焦点所在的键，每按一次派发一次；读屏照常念出新焦点的名字，框里有什么由作者按需播报。刷选框 `aria-hidden`。
 - 过渡只改画面：数据的名称、摘要、数据表与焦点次序在数据变化的那一刻就按新数据更新；收场中的标记 `aria-hidden`、不可聚焦，也不响应指针。
 - 颜色不是区分系列的唯一线索：图例文字、提示框中的系列名与数据名称都写出系列；折线与柱的色标形状也不同，散点的形状随色槽轮换；强制色与打印下柱与面积还有各自的纹理，折线还有各自的线型。
 
@@ -523,8 +539,9 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 | `legend-scale-value` | `data-edge` | edge |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-dragging` | ''（条件成立时才出现） |
+| `plot` | `data-selectable` | ''（条件成立时才出现） |
+| `plot` | `data-touch-axis` | 'both' \| 'horizontal' \| 'vertical' \| undefined |
 | `plot` | `data-xh-chart-part` | 'plot' |
-| `plot` | `data-zoomable` | 'both' \| 'horizontal' \| 'vertical' \| undefined |
 | `plot` | `data-zoomed` | ''（条件成立时才出现） |
 | `defs` | `data-xh-chart-part` | 'defs' |
 | `pattern` | `data-tone` | pattern.tone |
@@ -574,6 +591,8 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-cartesian-chart-bar-max` | `root` | `--xh-_chart-metric-bar-max` | `default` | `--xh-chart-bar-max` | cartesian-chart 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。 |
 | `--xh-cartesian-chart-bar-radius` | `root` | `--xh-_chart-metric-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。 |
+| `--xh-cartesian-chart-brush-bg` | `brush` | `fill` | `default` | `--xh-bg-brand-subtle` | cartesian-chart 的 brush 部件 fill 覆盖槽。 |
+| `--xh-cartesian-chart-brush-border` | `brush` | `stroke` | `default` | `--xh-border-control-focus` | cartesian-chart 的 brush 部件 stroke 覆盖槽。 |
 | `--xh-cartesian-chart-empty-gap` | `empty` | `gap` | `state=loading` | `--xh-space-2` | cartesian-chart 的 empty 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-gap` | `root` | `gap` | `default` | `--xh-space-3` | cartesian-chart 的 root 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | cartesian-chart 的 viewport 部件 block-size 覆盖槽。 |

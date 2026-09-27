@@ -8,6 +8,8 @@
 import type {
   CartesianAnnotation,
   CartesianAxis,
+  CartesianBrush,
+  CartesianBrushSelection,
   CartesianChartApi,
   CartesianChartSchema,
   CartesianChartTranslations,
@@ -136,6 +138,13 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   /** 初始缩放窗口（非受控）。 */
   defaultWindow?: CartesianWindow
   onWindowChange?: CartesianChartProps['onWindowChange']
+  /** 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。 */
+  brush?: CartesianBrush
+  /** 刷选范围（受控），null 为没有刷选。 */
+  brushSelection?: CartesianBrushSelection | null
+  /** 初始刷选范围（非受控）。 */
+  defaultBrushSelection?: CartesianBrushSelection | null
+  onBrushSelectionChange?: CartesianChartProps['onBrushSelectionChange']
   /** 隐藏的系列（受控）。 */
   hiddenSeries?: string[]
   /** 初始隐藏的系列（非受控）。 */
@@ -177,6 +186,10 @@ export function XhCartesianChartRoot({
   window,
   defaultWindow,
   onWindowChange,
+  brush,
+  brushSelection,
+  defaultBrushSelection,
+  onBrushSelectionChange,
   hiddenSeries,
   defaultHiddenSeries,
   activeKey,
@@ -209,6 +222,10 @@ export function XhCartesianChartRoot({
     window,
     defaultWindow,
     onWindowChange,
+    brush,
+    brushSelection,
+    defaultBrushSelection,
+    onBrushSelectionChange,
     hiddenSeries,
     defaultHiddenSeries,
     activeKey,
@@ -262,7 +279,7 @@ export function XhCartesianChartRoot({
   )
 }
 
-XhCartesianChartRoot.xhEvents = ['hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'window-change'] as const
+XhCartesianChartRoot.xhEvents = ['hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'window-change', 'brush-selection-change'] as const
 
 export interface XhCartesianChartCaptionProps extends ComponentPropsWithRef<'figcaption'> {}
 

@@ -254,6 +254,26 @@ export interface CartesianDrag {
   readonly window: CartesianWindowRatio
 }
 
+/** 刷选的方向：x 沿自变量轴框一段，y 沿数值轴框一段，xy 框一个矩形。 */
+export type CartesianBrush = 'none' | 'x' | 'y' | 'xy'
+
+/** 刷选的范围：写法与缩放窗口相同，没刷的方向为 null（整条轴）。 */
+export type CartesianBrushSelection = CartesianWindow
+
+/** 刷选的范围变化时报告的内容：新范围（清掉为 null）与落在范围里的可见数据。 */
+export interface CartesianBrushSelectionChangeDetails {
+  readonly selection: CartesianBrushSelection | null
+  /** 落在范围里的数据：按图例次序、再按自变量排；锚点（柱顶、点、线上的点、K 线的收盘）落在框里即算。 */
+  readonly data: readonly ChartDatumDetails[]
+}
+
+/** 正在拖出的刷选框：按下与当前的指针位置（绘图区里的像素）。 */
+export interface CartesianBrushing {
+  readonly pointerId: number
+  readonly from: { readonly x: number, readonly y: number }
+  readonly to: { readonly x: number, readonly y: number }
+}
+
 /** 摘要里的一条注释：名字、所属系列（参考线与参考带为 null）与已写成文字的值。 */
 export interface CartesianAnnotationSummary {
   readonly kind: 'line' | 'band' | 'average'
@@ -393,6 +413,17 @@ export interface CartesianChartSchema extends MachineSchema {
     defaultWindow?: CartesianWindow
     /** 滚轮、捏合、拖动、键盘或缩放条改了窗口时通知。 */
     onWindowChange?: (details: CartesianWindowChangeDetails) => void
+    /**
+     * 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。开启后在绘图区拖动即刷选（放大后改用缩放条或键盘平移），
+     * Shift + 方向键从锚点起沿自变量扩展或收缩，Escape 清掉。
+     */
+    brush?: CartesianBrush
+    /** 刷选的范围（受控）：定义域里的值，写法同缩放窗口；null 为没有刷选。 */
+    brushSelection?: CartesianBrushSelection | null
+    /** 初始刷选范围（非受控）。 */
+    defaultBrushSelection?: CartesianBrushSelection | null
+    /** 刷选的范围变了：指针松手时派发一次，键盘每按一次派发一次。 */
+    onBrushSelectionChange?: (details: CartesianBrushSelectionChangeDetails) => void
     translations?: Partial<CartesianChartTranslations>
   }
   context: ChartBaseContext & {
@@ -400,6 +431,12 @@ export interface CartesianChartSchema extends MachineSchema {
     window: CartesianWindow
     /** 正在拖的是什么：绘图区平移、缩放条的一端或整个窗口；没在拖为 null。 */
     drag: CartesianDrag | null
+    /** 刷选的范围；没有刷选为 null。 */
+    brushSelection: CartesianBrushSelection | null
+    /** 正在拖出的刷选框；没在刷为 null。 */
+    brushing: CartesianBrushing | null
+    /** 键盘刷选的锚点：按下 Shift + 方向键那一刻焦点所在的键（下标）；松开 Shift 移动焦点后清掉。 */
+    brushAnchor: number | null
   }
   computed: ChartBaseComputed
   refs: ChartBaseRefs & {
@@ -418,9 +455,14 @@ export interface CartesianChartSchema extends MachineSchema {
     | { type: 'WINDOW.SET', window: CartesianWindow }
     | { type: 'DRAG.START', drag: CartesianDrag }
     | { type: 'DRAG.END' }
+    | { type: 'BRUSH.START', brushing: CartesianBrushing }
+    | { type: 'BRUSH.MOVE', to: { x: number, y: number } }
+    | { type: 'BRUSH.END' }
+    | { type: 'BRUSH.SET', selection: CartesianBrushSelection | null, data: readonly ChartDatumDetails[] }
+    | { type: 'BRUSH.ANCHOR', index: number | null }
   tag: never
   guard: never
-  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'setWindow' | 'startDrag' | 'endDrag'
+  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'setWindow' | 'startDrag' | 'endDrag' | 'startBrush' | 'moveBrush' | 'endBrush' | 'setBrush' | 'setBrushAnchor'
   effect: 'trackViewport'
 }
 
@@ -476,6 +518,15 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   clip: { readonly id: string, readonly x: number, readonly y: number, readonly width: number, readonly height: number } | null
   /** 设置缩放窗口（定义域里的值）；不能缩放的方向保持整条轴。 */
   setWindow: (window: CartesianWindow) => void
+  /** 刷选：两个方向能不能刷、当前的范围，与它在绘图区里的矩形（没有刷选为 null）。 */
+  brush: {
+    readonly x: boolean
+    readonly y: boolean
+    readonly selection: CartesianBrushSelection | null
+    readonly rect: { readonly x: number, readonly y: number, readonly width: number, readonly height: number } | null
+  }
+  /** 设置刷选范围（定义域里的值），null 清掉；派发 onBrushSelectionChange。 */
+  setBrushSelection: (selection: CartesianBrushSelection | null) => void
   getRootProps: () => T['element']
   getCaptionProps: () => T['element']
   getLegendProps: () => T['element']

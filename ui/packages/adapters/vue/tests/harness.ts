@@ -40,6 +40,7 @@ const PUBLIC_EVENTS = {
   'datum-active': 'onDatumActive',
   'datum-press': 'onDatumPress',
   'window-change': 'onWindowChange',
+  'brush-selection-change': 'onBrushSelectionChange',
 } as const
 
 function declaredEvents(component: Component): Set<string> {

@@ -8,6 +8,8 @@
 import type {
   CartesianAnnotation,
   CartesianAxis,
+  CartesianBrush,
+  CartesianBrushSelection,
   CartesianChartApi,
   CartesianChartSchema,
   CartesianChartTranslations,
@@ -231,6 +233,9 @@ export const XhCartesianChartRoot = defineComponent({
     zoom: { type: String as PropType<CartesianZoom> },
     window: { type: Object as PropType<CartesianWindow> },
     defaultWindow: { type: Object as PropType<CartesianWindow> },
+    brush: { type: String as PropType<CartesianBrush> },
+    brushSelection: { type: Object as PropType<CartesianBrushSelection | null> },
+    defaultBrushSelection: { type: Object as PropType<CartesianBrushSelection | null> },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },
     activeKey: { type: [String, Number, Date, null] as PropType<ChartKey | null> },
@@ -247,6 +252,8 @@ export const XhCartesianChartRoot = defineComponent({
     'update:activeKey': (_key: PayloadOf<CartesianChartProps, 'onActiveKeyChange'>['activeKey']) => true,
     'window-change': (_details: PayloadOf<CartesianChartProps, 'onWindowChange'>) => true,
     'update:window': (_window: PayloadOf<CartesianChartProps, 'onWindowChange'>['window']) => true,
+    'brush-selection-change': (_details: PayloadOf<CartesianChartProps, 'onBrushSelectionChange'>) => true,
+    'update:brushSelection': (_selection: PayloadOf<CartesianChartProps, 'onBrushSelectionChange'>['selection']) => true,
     'datum-active': (_details: PayloadOf<CartesianChartProps, 'onDatumActive'>) => true,
     'datum-press': (_details: PayloadOf<CartesianChartProps, 'onDatumPress'>) => true,
   },
@@ -273,6 +280,10 @@ export const XhCartesianChartRoot = defineComponent({
       onWindowChange: (details) => {
         emit('window-change', details)
         emit('update:window', details.window)
+      },
+      onBrushSelectionChange: (details) => {
+        emit('brush-selection-change', details)
+        emit('update:brushSelection', details.selection)
       },
       onDatumActive: details => emit('datum-active', details),
       onDatumPress: details => emit('datum-press', details),

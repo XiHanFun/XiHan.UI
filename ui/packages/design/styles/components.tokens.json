@@ -7653,6 +7653,42 @@
       "description": "cartesian-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
     },
     {
+      "name": "--xh-cartesian-chart-brush-bg",
+      "component": "cartesian-chart",
+      "part": [
+        "brush"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 brush 部件 fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-brush-border",
+      "component": "cartesian-chart",
+      "part": [
+        "brush"
+      ],
+      "property": [
+        "stroke"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 brush 部件 stroke 覆盖槽。"
+    },
+    {
       "name": "--xh-cartesian-chart-empty-gap",
       "component": "cartesian-chart",
       "part": [

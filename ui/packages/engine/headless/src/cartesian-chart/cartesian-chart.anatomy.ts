@@ -64,6 +64,7 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'leader-line',
   'annotation',
   'annotation-label',
+  'brush',
   'crosshair',
   'focus-ring',
   'tooltip',

@@ -5,7 +5,7 @@
 
 // 提供 cartesian chart 相关实现。
 
-import type { CartesianChartSchema, CartesianDrag, CartesianWindow } from './cartesian-chart.types'
+import type { CartesianBrushing, CartesianBrushSelection, CartesianChartSchema, CartesianDrag, CartesianWindow } from './cartesian-chart.types'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   chartBaseActions,
@@ -15,7 +15,7 @@ import {
   notifyChartActive,
   trackChartViewport,
 } from '../shared/chart'
-import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianTrigger, FULL_CARTESIAN_WINDOW, sameWindow } from './cartesian-chart.logic'
+import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianTrigger, FULL_CARTESIAN_WINDOW, sameSelection, sameWindow } from './cartesian-chart.logic'
 import { cartesianEntryScene, cartesianLabelNumbers, cartesianRevealAt, createCartesianPipeline } from './cartesian-chart.model'
 
 const { createMachine } = setup<CartesianChartSchema>()
@@ -34,6 +34,14 @@ export const cartesianChartMachine = createMachine({
       onChange: window => params.prop('onWindowChange')?.({ window }),
     })),
     drag: params.cell<CartesianDrag | null>(() => ({ defaultValue: null })),
+    // 刷选的范围：回调要带上范围里的数据，由 setBrush 在写入时自己派发
+    brushSelection: params.cell<CartesianBrushSelection | null>(() => ({
+      value: params.prop('brushSelection'),
+      defaultValue: params.prop('defaultBrushSelection') ?? null,
+      isEqual: sameSelection,
+    })),
+    brushing: params.cell<CartesianBrushing | null>(() => ({ defaultValue: null })),
+    brushAnchor: params.cell<number | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline(), touches: new Map(), zoomRatio: null }),
   computed: {
@@ -76,6 +84,11 @@ export const cartesianChartMachine = createMachine({
     'WINDOW.SET': { actions: ['setWindow'] },
     'DRAG.START': { actions: ['startDrag'] },
     'DRAG.END': { actions: ['endDrag'] },
+    'BRUSH.START': { actions: ['startBrush'] },
+    'BRUSH.MOVE': { actions: ['moveBrush'] },
+    'BRUSH.END': { actions: ['endBrush'] },
+    'BRUSH.SET': { actions: ['setBrush'] },
+    'BRUSH.ANCHOR': { actions: ['setBrushAnchor'] },
   },
   states: {
     idle: {},
@@ -127,6 +140,31 @@ export const cartesianChartMachine = createMachine({
           context.set('drag', e.drag)
       },
       endDrag: ({ context }) => context.set('drag', null),
+      startBrush: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'BRUSH.START')
+          context.set('brushing', e.brushing)
+      },
+      moveBrush: ({ context, event }) => {
+        const e = event.current()
+        const brushing = context.get('brushing')
+        if (e.type === 'BRUSH.MOVE' && brushing)
+          context.set('brushing', { ...brushing, to: e.to })
+      },
+      endBrush: ({ context }) => context.set('brushing', null),
+      // 范围没变不派发：受控时由作者写回，写回的同一个范围不算变化
+      setBrush: ({ context, event, prop }) => {
+        const e = event.current()
+        if (e.type !== 'BRUSH.SET' || sameSelection(e.selection, context.get('brushSelection')))
+          return
+        context.set('brushSelection', e.selection)
+        prop('onBrushSelectionChange')?.({ selection: e.selection, data: e.data })
+      },
+      setBrushAnchor: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'BRUSH.ANCHOR')
+          context.set('brushAnchor', e.index)
+      },
       reportIssues: (params) => {
         const model = cartesianModelOf(params)
         for (const issue of model.issues)
