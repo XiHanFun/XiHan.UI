@@ -42,6 +42,7 @@ const NOT_SINGLE_CONTROL = {
   'fieldset': '同上，分组容器',
   'checkbox-group': '分组：根是 role=group，读屏进组即念说明',
   'listbox': '分组：content 是 role=listbox，焦点在各条目上',
+  'grid-list': '分组：root 是 role=grid，焦点在各行与行内按钮上',
   'transfer': '分组：两侧各一个 role=listbox，没有单一可聚焦控件',
   'radio-group': '分组：根是 role=radiogroup',
   'color-swatch-picker': '分组：根是 role=radiogroup',

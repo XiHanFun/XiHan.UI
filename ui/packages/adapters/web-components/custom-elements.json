@@ -27224,6 +27224,550 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/grid-list.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "xh-grid-list —— 可选择、可承载行内按钮的非表格集合。拖动通过 xh-sortable 组合，\n行本身使用 grid/row/gridcell 语义，不把行内按钮伪装成 option 的后代。",
+          "name": "XhGridListElement",
+          "cssParts": [
+            {
+              "description": "role=grid 的集合根",
+              "name": "root"
+            },
+            {
+              "description": "可见标题",
+              "name": "label"
+            },
+            {
+              "description": "role=row 的一行",
+              "name": "row"
+            },
+            {
+              "description": "选择标记",
+              "name": "row-selection-indicator"
+            },
+            {
+              "description": "行主要内容的 gridcell",
+              "name": "row-content"
+            },
+            {
+              "description": "行标题",
+              "name": "row-text"
+            },
+            {
+              "description": "行说明",
+              "name": "row-description"
+            },
+            {
+              "description": "行内按钮所在的 gridcell",
+              "name": "row-actions"
+            },
+            {
+              "description": "行内动作按钮",
+              "name": "row-action"
+            },
+            {
+              "description": "空态",
+              "name": "empty"
+            },
+            {
+              "description": "加载态",
+              "name": "loading"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: gridListAnatomy, meta: gridListMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "GridListNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "selectionMode",
+              "privacy": "public",
+              "type": {
+                "text": "GridListSelectionMode | undefined"
+              },
+              "attribute": "selection-mode"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "typeahead",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "typeahead"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<GridListTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "partRoots",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement[] | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "declaredRowDisabled",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyAction",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<GridListSchema>(this, gridListMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<GridListSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "rowProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "GridListRowProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "row",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选择变化；detail 为 { value: string[] }",
+              "name": "value-change",
+              "type": {
+                "text": "GridListValueChangeDetails"
+              }
+            },
+            {
+              "description": "行主操作；detail 为 { value: string }",
+              "name": "action",
+              "type": {
+                "text": "GridListActionDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "受控选中值；多选数组走 property",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "非受控初始值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "GridListSelectionMode | undefined"
+              },
+              "description": "选择模式，默认 single",
+              "name": "selection-mode",
+              "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整体禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：可浏览和使用行内按钮，不可改变选择",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "正在加载",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键到边界后是否回绕",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否启用连打检索",
+              "name": "typeahead",
+              "fieldName": "typeahead"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "容器形态",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "选中语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "name": "dir",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-grid-list",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-grid-list-bg"
+            },
+            {
+              "name": "--xh-grid-list-border"
+            },
+            {
+              "name": "--xh-grid-list-border-invalid"
+            },
+            {
+              "name": "--xh-grid-list-gap"
+            },
+            {
+              "name": "--xh-grid-list-icon-size"
+            },
+            {
+              "name": "--xh-grid-list-label-fg"
+            },
+            {
+              "name": "--xh-grid-list-label-font-size"
+            },
+            {
+              "name": "--xh-grid-list-label-font-weight"
+            },
+            {
+              "name": "--xh-grid-list-label-px"
+            },
+            {
+              "name": "--xh-grid-list-label-py"
+            },
+            {
+              "name": "--xh-grid-list-p"
+            },
+            {
+              "name": "--xh-grid-list-radius"
+            },
+            {
+              "name": "--xh-grid-list-row-action-font-size"
+            },
+            {
+              "name": "--xh-grid-list-row-actions-gap"
+            },
+            {
+              "name": "--xh-grid-list-row-actions-ms"
+            },
+            {
+              "name": "--xh-grid-list-row-content-gap"
+            },
+            {
+              "name": "--xh-grid-list-row-description-fg"
+            },
+            {
+              "name": "--xh-grid-list-row-description-font-size"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-bg"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-bg-selected"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-border"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-border-selected"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-fg-selected"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-glyph-size"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-me"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-radius"
+            },
+            {
+              "name": "--xh-grid-list-row-indicator-size"
+            },
+            {
+              "name": "--xh-grid-list-row-loading-opacity"
+            },
+            {
+              "name": "--xh-grid-list-row-radius"
+            },
+            {
+              "name": "--xh-grid-list-state-fg"
+            },
+            {
+              "name": "--xh-grid-list-state-font-size"
+            },
+            {
+              "name": "--xh-grid-list-state-px"
+            },
+            {
+              "name": "--xh-grid-list-state-py"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhGridListElement",
+          "declaration": {
+            "name": "XhGridListElement",
+            "module": "src/elements/grid-list.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/grid.ts",
       "declarations": [
         {
@@ -54379,6 +54923,24 @@
             },
             {
               "kind": "field",
+              "name": "partRoots",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement[] | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -67572,8 +68134,8 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollables: () => this.getParts('list'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
-              "description": "两侧定高小列表各走一路自绘条：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、\n贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；\n两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算"
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollables: () => this.getParts('list').map((list) => { const side = list.dataset.side as TransferSide | undefined return (side ? this.virtualizers?.[side]?.getViewportElement() : null) ?? list }), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
+              "description": "两侧定高小列表各走一路自绘条：虚拟化时每侧改读 Virtualizer viewport，普通形态仍读 list；\n多路形态按此刻在场的每个真实滚动层各建一套条子，挂在 root 这个定位盒上；\n两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算"
             },
             {
               "kind": "field",
@@ -68042,6 +68604,11 @@
               "name": "--xh-transfer-trigger-size"
             }
           ]
+        },
+        {
+          "kind": "variable",
+          "name": "side",
+          "default": "list.dataset.side"
         }
       ],
       "exports": [

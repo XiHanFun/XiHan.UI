@@ -7,6 +7,7 @@ import { declaredEvents, renderFixtureSlots, resolveRoot } from './fixture-eleme
 
 /** 对外语义事件 → React 侧的回调 prop 名。跨适配器一致的那一份。 */
 const PUBLIC_EVENTS = {
+  'action': 'onAction',
   'checked-change': 'onCheckedChange',
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',

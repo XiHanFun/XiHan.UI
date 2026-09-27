@@ -124,6 +124,7 @@
 <XhComponentCard src="color-swatch" name="ColorSwatch" label="颜色色块" href="/components/color-swatch" />
 <XhComponentCard src="descriptions" name="Descriptions" label="描述列表" href="/components/descriptions" />
 <XhComponentCard src="empty-state" name="EmptyState" label="空状态" href="/components/empty-state" />
+<XhComponentCard src="grid-list" name="GridList" label="网格列表" href="/components/grid-list" status="new" />
 <XhComponentCard src="highlight" name="Highlight" label="文本高亮" href="/components/highlight" />
 <XhComponentCard src="image" name="Image" label="图片" href="/components/image" />
 <XhComponentCard src="image-viewer" name="ImageViewer" label="图片预览" href="/components/image-viewer" />

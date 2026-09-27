@@ -1183,6 +1183,31 @@ export type {
 } from './components/graph-chart/graph-chart'
 export { useGraphChart } from './components/graph-chart/use-graph-chart'
 export type { GraphChartContext } from './components/graph-chart/use-graph-chart'
+export { useGridListContext, useGridListRow } from './components/grid-list/context'
+export {
+  XhGridListEmpty,
+  XhGridListLabel,
+  XhGridListLoading,
+  XhGridListRoot,
+  XhGridListRow,
+  XhGridListRowAction,
+  XhGridListRowActions,
+  XhGridListRowContent,
+  XhGridListRowDescription,
+  XhGridListRowSelectionIndicator,
+  XhGridListRowText,
+} from './components/grid-list/grid-list'
+export type {
+  XhGridListEmptyProps,
+  XhGridListLabelProps,
+  XhGridListLoadingProps,
+  XhGridListRootProps,
+  XhGridListRowActionProps,
+  XhGridListRowPartProps,
+  XhGridListRowProps,
+} from './components/grid-list/grid-list'
+export { useGridList } from './components/grid-list/use-grid-list'
+export type { GridListContext } from './components/grid-list/use-grid-list'
 export { useGridContext } from './components/grid/context'
 export type { GridContext } from './components/grid/context'
 export { XhGridItem, XhGridRoot } from './components/grid/grid'

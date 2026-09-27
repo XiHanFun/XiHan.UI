@@ -137,6 +137,10 @@
   ],
   "graph-chart": [],
   "grid": [],
+  "grid-list": [
+    "variant",
+    "size"
+  ],
   "heatmap": [
     "variant",
     "tone",

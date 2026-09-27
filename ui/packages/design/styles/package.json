@@ -98,6 +98,7 @@
     "./gradient-text.css": "./css/gradient-text.css",
     "./graph-chart.css": "./css/graph-chart.css",
     "./grid.css": "./css/grid.css",
+    "./grid-list.css": "./css/grid-list.css",
     "./heatmap.css": "./css/heatmap.css",
     "./hierarchy-chart.css": "./css/hierarchy-chart.css",
     "./highlight.css": "./css/highlight.css",

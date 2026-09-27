@@ -5,6 +5,7 @@ import { createApp, h, nextTick, reactive } from 'vue'
 import { renderFixtureSlots, resolveRoot } from './fixture-vnode'
 
 const PUBLIC_EVENTS = {
+  'action': 'onAction',
   'checked-change': 'onCheckedChange',
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',
