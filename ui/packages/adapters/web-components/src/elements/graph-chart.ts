@@ -21,8 +21,8 @@ import type {
   GraphNodeDatum,
   GraphTooltipModel,
   GraphView,
+  NumberFormatSpec,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectGraphChart, graphChartAnatomy, graphChartMachine, graphChartMeta } from '@xihan-ui/headless'
 import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'

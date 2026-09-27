@@ -5,7 +5,7 @@
 
 // 提供 sankey chart 相关实现。
 
-import type { SankeyChartSchema } from './sankey-chart.types'
+import type { SankeyChartSchema } from './sankey-chart.schema'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   chartBaseActions,

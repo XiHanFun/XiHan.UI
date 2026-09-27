@@ -9,13 +9,12 @@ export { sankeyChartAnatomy } from './sankey-chart.anatomy'
 export { connectSankeyChart, sankeyMarkTag } from './sankey-chart.connect'
 export { sankeyChartKeyboard } from './sankey-chart.keyboard'
 export { defaultSankeySummary, SANKEY_TRANSLATIONS } from './sankey-chart.logic'
-export type { SankeyActive, SankeyNavIntent, SankeyOverlay } from './sankey-chart.logic'
+export type { SankeyActive, SankeyNavIntent } from './sankey-chart.logic'
 export { sankeyChartMachine } from './sankey-chart.machine'
 export { sankeyChartMeta } from './sankey-chart.meta'
 export type { SankeyModel } from './sankey-chart.model'
+export type { SankeyChartApi, SankeyChartSchema, SankeyOverlay } from './sankey-chart.schema'
 export type {
-  SankeyChartApi,
-  SankeyChartSchema,
   SankeyChartTranslations,
   SankeyGradient,
   SankeyLegendItem,

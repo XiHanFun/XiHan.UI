@@ -7,10 +7,10 @@
 // 只算值，不写属性：属性字典都在连接层。数据引用的 seriesId 是节点的身份，index 是扁平数据里的行（嵌套数据为 −1）。
 
 import type { PropFn, Scope } from '@xihan-ui/core'
-import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartNavIntent } from '../shared/chart'
 import type { HierarchyModel, HierarchyNodeGeometry, HierarchyTreeNode } from './hierarchy-chart.model'
-import type { HierarchyChartSchema, HierarchyChartTranslations, HierarchyPathItem, HierarchySummary, HierarchyTooltipModel } from './hierarchy-chart.types'
+import type { HierarchyChartSchema, HierarchyOverlay } from './hierarchy-chart.schema'
+import type { HierarchyChartTranslations, HierarchyPathItem, HierarchySummary, HierarchyTooltipModel } from './hierarchy-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { hierarchyNodeKey } from './hierarchy-chart.model'
@@ -248,11 +248,6 @@ export function hierarchyHitTest(model: HierarchyModel, x: number, y: number): C
 export function hierarchyInHole(model: HierarchyModel, x: number, y: number): boolean {
   const hole = model.scene?.layout.hole
   return hole != null && Math.hypot(x - hole.cx, y - hole.cy) <= hole.r
-}
-
-export interface HierarchyOverlay {
-  /** 画在节点之上：焦点环。 */
-  readonly over: readonly Mark[]
 }
 
 const EMPTY_OVERLAY: HierarchyOverlay = Object.freeze({ over: [] })

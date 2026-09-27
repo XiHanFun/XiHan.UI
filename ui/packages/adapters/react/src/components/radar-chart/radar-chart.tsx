@@ -10,6 +10,7 @@ import type {
   ChartKey,
   ChartMark,
   ChartRow,
+  NumberFormatSpec,
   RadarChartApi,
   RadarChartSchema,
   RadarChartTranslations,
@@ -20,7 +21,6 @@ import type {
   RadarShape,
   RadarTooltipModel,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { createElement } from 'react'

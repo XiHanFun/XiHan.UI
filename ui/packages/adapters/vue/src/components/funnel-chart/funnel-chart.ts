@@ -20,8 +20,8 @@ import type {
   FunnelLabels,
   FunnelShape,
   FunnelTooltipModel,
+  NumberFormatSpec,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'

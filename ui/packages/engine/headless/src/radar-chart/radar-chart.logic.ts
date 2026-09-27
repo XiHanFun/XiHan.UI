@@ -10,7 +10,8 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartNavIntent } from '../shared/chart'
 import type { RadarModel, RadarSeriesSpec } from './radar-chart.model'
-import type { RadarChartSchema, RadarChartTranslations, RadarSummary, RadarTooltipModel } from './radar-chart.types'
+import type { RadarChartSchema, RadarOverlay } from './radar-chart.schema'
+import type { RadarChartTranslations, RadarSummary, RadarTooltipModel } from './radar-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { radarPointKey } from './radar-chart.model'
@@ -218,13 +219,6 @@ export function radarHitTest(model: RadarModel, x: number, y: number): ChartDatu
     }
   }
   return best
-}
-
-export interface RadarOverlay {
-  /** 画在网格之上、数据之下：激活的指标轴。 */
-  readonly under: readonly Mark[]
-  /** 画在数据之上：焦点环。 */
-  readonly over: readonly Mark[]
 }
 
 const EMPTY_OVERLAY: RadarOverlay = Object.freeze({ under: [], over: [] })

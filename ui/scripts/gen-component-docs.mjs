@@ -825,7 +825,7 @@ const typeFiles = fs
     const dir = path.join(uiRoot, 'packages/engine/headless/src', d.name)
     return fs
       .readdirSync(dir)
-      .filter(f => f.endsWith('.types.ts'))
+      .filter(f => f.endsWith('.types.ts') || f.endsWith('.schema.ts'))
       .map(f => path.join(dir, f))
   })
 

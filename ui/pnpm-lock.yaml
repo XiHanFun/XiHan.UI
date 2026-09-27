@@ -191,9 +191,6 @@ importers:
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
-      '@xihan-ui/viz':
-        specifier: workspace:^
-        version: link:../../engine/viz
     devDependencies:
       '@testing-library/react':
         specifier: 'catalog:'
@@ -264,9 +261,6 @@ importers:
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
-      '@xihan-ui/viz':
-        specifier: workspace:^
-        version: link:../../engine/viz
     devDependencies:
       '@vitest/browser':
         specifier: 'catalog:'
@@ -331,9 +325,6 @@ importers:
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
-      '@xihan-ui/viz':
-        specifier: workspace:^
-        version: link:../../engine/viz
     devDependencies:
       '@custom-elements-manifest/analyzer':
         specifier: 'catalog:'

@@ -20,8 +20,8 @@ import type {
   FunnelLabels,
   FunnelShape,
   FunnelTooltipModel,
+  NumberFormatSpec,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { createElement } from 'react'

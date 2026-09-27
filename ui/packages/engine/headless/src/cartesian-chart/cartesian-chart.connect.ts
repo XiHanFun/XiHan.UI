@@ -10,11 +10,10 @@ import type { AxisWindow, Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz
 import type { ChartDatumRef, ChartFrame } from '../shared/chart'
 import type { CartesianActive } from './cartesian-chart.logic'
 import type { CartesianScene } from './cartesian-chart.model'
+import type { CartesianChartApi, CartesianChartSchema } from './cartesian-chart.schema'
 import type {
   CartesianBrushing,
   CartesianBrushSelection,
-  CartesianChartApi,
-  CartesianChartSchema,
   CartesianLegendItem,
   CartesianMarkTag,
   CartesianTooltipRow,

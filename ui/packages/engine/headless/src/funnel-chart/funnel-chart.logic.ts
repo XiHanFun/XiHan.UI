@@ -7,10 +7,10 @@
 // 只算值，不写属性：属性字典都在连接层。数据引用的 seriesId 是阶段名，index 是它在数据里的行。
 
 import type { PropFn, Scope } from '@xihan-ui/core'
-import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartNavIntent } from '../shared/chart'
 import type { FunnelModel, FunnelStage } from './funnel-chart.model'
-import type { FunnelChartSchema, FunnelChartTranslations, FunnelSummary, FunnelTooltipModel } from './funnel-chart.types'
+import type { FunnelChartSchema, FunnelOverlay } from './funnel-chart.schema'
+import type { FunnelChartTranslations, FunnelSummary, FunnelTooltipModel } from './funnel-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, resolveChartTranslations } from '../shared/chart'
 import { funnelStageKey } from './funnel-chart.model'
@@ -198,11 +198,6 @@ export function funnelHitTest(model: FunnelModel, _x: number, y: number): ChartD
       return refOf(g.stage)
   }
   return null
-}
-
-export interface FunnelOverlay {
-  /** 画在阶段之上：焦点环。 */
-  readonly over: readonly Mark[]
 }
 
 const EMPTY_OVERLAY: FunnelOverlay = Object.freeze({ over: [] })

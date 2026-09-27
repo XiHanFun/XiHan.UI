@@ -5,7 +5,7 @@
 
 // 提供 hierarchy chart 相关实现。
 
-import type { HierarchyChartSchema } from './hierarchy-chart.types'
+import type { HierarchyChartSchema } from './hierarchy-chart.schema'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   chartBaseActions,

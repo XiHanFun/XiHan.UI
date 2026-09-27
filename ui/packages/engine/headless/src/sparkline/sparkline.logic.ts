@@ -7,7 +7,8 @@
 
 import type { PropFn, Scope } from '@xihan-ui/core'
 import type { SparklineModel } from './sparkline.model'
-import type { SparklineSchema, SparklineSummary, SparklineTranslations } from './sparkline.types'
+import type { SparklineSchema } from './sparkline.schema'
+import type { SparklineSummary, SparklineTranslations } from './sparkline.types'
 import { resolveLocale } from '@xihan-ui/core'
 
 function plural(count: number, one: string, many: string): string {

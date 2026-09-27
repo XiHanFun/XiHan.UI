@@ -7,7 +7,7 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { ChartFrame, ChartMetrics, ChartSize, ChartTransitionOptions, ChartTransitionState } from '../shared/chart'
-import type { SparklineSchema } from './sparkline.types'
+import type { SparklineSchema } from './sparkline.schema'
 import { DIAGNOSTIC_CODES, reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   advanceChartTransition,

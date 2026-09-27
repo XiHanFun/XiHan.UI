@@ -7,10 +7,10 @@
 // 只算值，不写属性：属性字典都在连接层。数据引用的 seriesId 是 node 或 link，index 是节点或流带在数据里的位置。
 
 import type { PropFn, Scope } from '@xihan-ui/core'
-import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey } from '../shared/chart'
 import type { SankeyLinkGeometry, SankeyModel, SankeyNodeGeometry } from './sankey-chart.model'
-import type { SankeyChartSchema, SankeyChartTranslations, SankeySummary, SankeyTooltipModel, SankeyTooltipRow } from './sankey-chart.types'
+import type { SankeyChartSchema, SankeyOverlay } from './sankey-chart.schema'
+import type { SankeyChartTranslations, SankeySummary, SankeyTooltipModel, SankeyTooltipRow } from './sankey-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { sankeyLinkKey, sankeyNodeKey } from './sankey-chart.model'
@@ -296,11 +296,6 @@ export function sankeyHitTest(model: SankeyModel, x: number, y: number): ChartDa
     }
   }
   return best ? { seriesId: 'link', index: best.link.index } : null
-}
-
-export interface SankeyOverlay {
-  /** 画在节点之上：焦点环。 */
-  readonly over: readonly Mark[]
 }
 
 const EMPTY_OVERLAY: SankeyOverlay = Object.freeze({ over: [] })

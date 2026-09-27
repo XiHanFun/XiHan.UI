@@ -5,7 +5,7 @@
 
 // 提供 radar chart 相关实现。
 
-import type { RadarChartSchema } from './radar-chart.types'
+import type { RadarChartSchema } from './radar-chart.schema'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   chartBaseActions,
