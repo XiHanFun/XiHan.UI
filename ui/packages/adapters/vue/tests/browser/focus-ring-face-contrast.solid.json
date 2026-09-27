@@ -14,6 +14,11 @@
     "theme": "light",
     "tone": null
   },
+  "cartesian-chart [data-part='zoom-handle'][data-scope='cartesian-chart']": {
+    "ratio": 1,
+    "theme": "light",
+    "tone": null
+  },
   "heatmap [data-palette='gray'][data-part='root'][data-scope='heatmap'][data-theme='dark'] [data-part='cell'][data-scope='heatmap']": {
     "ratio": 2.97,
     "theme": "light",
