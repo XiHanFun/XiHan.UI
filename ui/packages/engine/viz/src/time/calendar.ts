@@ -31,7 +31,7 @@ export interface TimeCalendar {
 }
 
 /** 运行环境所在时区的日历。年份 0–99 按字面年份处理，不映射到 1900 年代。 */
-export const localCalendar: TimeCalendar = Object.freeze({
+export const localCalendar: TimeCalendar = /* @__PURE__ */ Object.freeze({
   toWall(time: number): WallTime {
     const date = new Date(time)
     return {
@@ -54,7 +54,7 @@ export const localCalendar: TimeCalendar = Object.freeze({
 })
 
 /** UTC 日历。年份 0–99 按字面年份处理。 */
-export const utcCalendar: TimeCalendar = Object.freeze({
+export const utcCalendar: TimeCalendar = /* @__PURE__ */ Object.freeze({
   toWall(time: number): WallTime {
     const date = new Date(time)
     return {

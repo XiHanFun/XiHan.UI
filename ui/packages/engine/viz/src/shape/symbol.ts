@@ -11,7 +11,7 @@ import { invalidArgument } from '../errors'
 import { createSvgPath } from '../path'
 
 /** 第 N 个色槽对应第 N 个符号。 */
-export const SYMBOL_NAMES = Object.freeze(['circle', 'square', 'diamond', 'triangle', 'triangleDown', 'cross', 'star', 'wye'] as const)
+export const SYMBOL_NAMES = /* @__PURE__ */ Object.freeze(['circle', 'square', 'diamond', 'triangle', 'triangleDown', 'cross', 'star', 'wye'] as const)
 
 export type SymbolName = typeof SYMBOL_NAMES[number]
 

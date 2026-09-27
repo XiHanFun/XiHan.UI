@@ -30,7 +30,7 @@ import {
 import { area, line } from '../shape/line'
 import { symbol } from '../shape/symbol'
 
-export const LAYERS: readonly SceneLayer[] = Object.freeze(['back', 'data', 'front'])
+export const LAYERS: readonly SceneLayer[] = /* @__PURE__ */ Object.freeze(['back', 'data', 'front'])
 
 const CURVES: Readonly<Record<CurveName, Curve>> = {
   linear: curveLinear,

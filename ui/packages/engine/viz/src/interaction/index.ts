@@ -23,7 +23,7 @@ export interface WindowLimits {
 }
 
 /** 整条轴：未缩放时的窗口。 */
-export const FULL_WINDOW: AxisWindow = Object.freeze({ start: 0, end: 1 })
+export const FULL_WINDOW: AxisWindow = /* @__PURE__ */ Object.freeze({ start: 0, end: 1 })
 
 const DEFAULT_MIN_SPAN = 0.01
 

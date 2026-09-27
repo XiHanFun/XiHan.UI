@@ -48,6 +48,13 @@
     "limit": "32 kB"
   },
   {
+    "name": "viz：直角坐标图常用路径（linear / band / time 比例尺、线与面积、堆叠、坐标轴、文字、拾取、降采样）",
+    "path": "packages/engine/viz/dist/index.js",
+    "import": "{ scaleLinear, scaleBand, scaleTime, line, area, stack, layoutAxis, createEstimatingMeasurer, ellipsize, wrapText, createQuadtree, lttb, minMax }",
+    "gzip": true,
+    "limit": "12 kB"
+  },
+  {
     "name": "viz/hierarchy",
     "path": "packages/engine/viz/dist/hierarchy.js",
     "gzip": true,
