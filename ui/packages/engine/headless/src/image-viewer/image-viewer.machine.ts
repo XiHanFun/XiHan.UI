@@ -503,6 +503,9 @@ export const imageViewerMachine = createMachine({
           return undefined
 
         let reactivateFocus: (() => void) | undefined
+        let returnFocusNow: (() => void) | undefined
+        let revealBackgroundNow: (() => void) | undefined
+        let resyncModalNow: (() => void) | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           const getContentEl = refs.get('getContentEl')
           const dismiss = createDismissLayer({
@@ -534,9 +537,12 @@ export const imageViewerMachine = createMachine({
             restoreTarget: () => scope.getById<HTMLElement>(scope.partId('image-viewer', 'trigger')),
           })
           reactivateFocus = focus.reactivate
+          returnFocusNow = focus.returnFocus
           defer(() => {
             if (reactivateFocus === focus.reactivate)
               reactivateFocus = undefined
+            if (returnFocusNow === focus.returnFocus)
+              returnFocusNow = undefined
             focus.dispose()
           })
 
@@ -552,6 +558,14 @@ export const imageViewerMachine = createMachine({
             run,
           })
           defer(modalResources.dispose)
+          revealBackgroundNow = modalResources.reveal
+          resyncModalNow = modalResources.sync
+          defer(() => {
+            if (revealBackgroundNow === modalResources.reveal)
+              revealBackgroundNow = undefined
+            if (resyncModalNow === modalResources.sync)
+              resyncModalNow = undefined
+          })
           modalResources.sync()
         }, { registry: config.layerRegistry, flush })
 
@@ -573,11 +587,14 @@ export const imageViewerMachine = createMachine({
             return
           const open = state.get() === 'open'
           const reopening = open && !lastOpen && release !== undefined
+          const closing = !open && lastOpen
           lastOpen = open
           if (open) {
             // 重开沿用原 layer/focus scope；Presence 会撤销旧视觉租约。
             release ??= acquire()
             if (reopening) {
+              // 关闭时撤下的背景失活在重开时补回
+              resyncModalNow?.()
               const activate = reactivateFocus
               flush(() => scope.getWin().requestAnimationFrame(() => {
                 if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
@@ -585,8 +602,14 @@ export const imageViewerMachine = createMachine({
               }))
             }
           }
-          else if (!presence || !presence.rendered) {
-            finish()
+          else {
+            // 关闭那一刻归还焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等
+            if (closing) {
+              revealBackgroundNow?.()
+              returnFocusNow?.()
+            }
+            if (!presence || !presence.rendered)
+              finish()
           }
         }
         try {

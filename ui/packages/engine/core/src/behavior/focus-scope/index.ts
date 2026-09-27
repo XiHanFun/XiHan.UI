@@ -92,7 +92,18 @@ function dispatchAutoFocus(
   return !event.defaultPrevented
 }
 
-export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivate: () => void } {
+export interface FocusScopeHandle extends Disposable {
+  /** 失活后恢复同一个焦点域，不重复派发挂载事件或重建归还资格。 */
+  reactivate: () => void
+  /**
+   * 立即归还焦点，不等卸载。层在退场期间仍要保留资源（遮罩、模态、焦点域本身）时，
+   * 关闭那一刻就把焦点交回去：内容随即 inert，焦点若还留在里面会被浏览器收到 body 上。
+   * 归还过的域卸载时不再归还；重新激活后恢复归还资格。
+   */
+  returnFocus: () => void
+}
+
+export function createFocusScope(o: FocusScopeOptions): FocusScopeHandle {
   const { config, layer, container } = o
   const scope = config.scope
   const doc = scope.getDoc()
@@ -579,9 +590,45 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
     throw error
   }
 
+  // 已经归还过：卸载时不再抢一次焦点
+  let returned = false
+
+  const restore = (autoFocusEventTarget: HTMLElement | null | undefined): void => {
+    const proceed = autoFocusEventTarget
+      ? dispatchAutoFocus(win, autoFocusEventTarget, EV_UNMOUNT_AUTO_FOCUS, o.onUnmountAutoFocus)
+      : true
+    // 回调可能同步打开更新层；生命周期通知照发，旧层不从新层手里抢焦点。
+    if (!proceed || !(o.restoreFocus?.() ?? true) || hasNewerScope(documentScopes, mountSeq))
+      return
+    // 显式落点优先于创建前的快照：快照是「点按那一刻焦点在哪」，指针入口下它常是 body
+    const explicit = o.restoreTarget?.() ?? null
+    // restoreTarget 是用户代码，也可能同步建立并聚焦更新域；写焦点前必须重新表决。
+    if (hasNewerScope(documentScopes, mountSeq))
+      return
+    // 落点要在场且处于渲染树里：归还帧到来前祖先层可能已收起（子菜单按方向键收回、随即
+    // Escape 收掉父层），落点藏在 hidden 的 content 里。浏览器对藏起来的元素 focus() 是
+    // 空操作；jsdom 会照聚不误并派出一枚假 focusin，消解层据此把父层当成焦点落到层外
+    // 一并收掉。按渲染判据一并跳过，与 portal 租约归位时的 refocus 同一口径
+    const back = explicit && canReceiveFocus(explicit) ? explicit : previouslyFocused
+    if (back && canReceiveFocus(back)) {
+      focusSafely(back, { select: true })
+      // 归还落定即完工；没落定的（创建前持有者是 body——挂载即展开、程序化打开都如此，
+      // body 不在各引擎一致的可聚焦集合里，focus() 是空操作）继续往下松手
+      if (activeElementInRoot(back) === back)
+        return
+    }
+    // 原持有者已离场或接不住焦点。不能靠 body.focus()，那样焦点会留在这个已经关掉的层里
+    // （WC 侧节点常驻，尤其明显；Vue 侧要等浏览器渲染更新末尾的 focus fixup 才收走，
+    // jsdom 则永远不收）。显式松手。
+    const active = activeFocusWithinScope()
+    if (active && isInScope(active))
+      active.blur()
+  }
+
   return {
     // 失活后恢复同一个焦点域，不重复派发挂载事件或重建归还资格。
     reactivate() {
+      returned = false
       if (disposed || paused || hasNewerScope(documentScopes, mountSeq) || !mountFocusAllowed || activeFocusWithinScope())
         return
       const el = container()
@@ -601,44 +648,22 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
           return
       }
     },
+    returnFocus() {
+      if (disposed || returned)
+        return
+      returned = true
+      restore(boundContainer)
+    },
     dispose() {
       if (disposed)
         return
       disposed = true
       const autoFocusEventTarget = boundContainer
       releaseResources()
+      if (returned)
+        return
       // 焦点返还延后一帧
-      win.requestAnimationFrame(() => {
-        const proceed = autoFocusEventTarget
-          ? dispatchAutoFocus(win, autoFocusEventTarget, EV_UNMOUNT_AUTO_FOCUS, o.onUnmountAutoFocus)
-          : true
-        // 回调可能同步打开更新层；生命周期通知照发，旧层不从新层手里抢焦点。
-        if (!proceed || !(o.restoreFocus?.() ?? true) || hasNewerScope(documentScopes, mountSeq))
-          return
-        // 显式落点优先于创建前的快照：快照是「点按那一刻焦点在哪」，指针入口下它常是 body
-        const explicit = o.restoreTarget?.() ?? null
-        // restoreTarget 是用户代码，也可能同步建立并聚焦更新域；写焦点前必须重新表决。
-        if (hasNewerScope(documentScopes, mountSeq))
-          return
-        // 落点要在场且处于渲染树里：归还帧到来前祖先层可能已收起（子菜单按方向键收回、随即
-        // Escape 收掉父层），落点藏在 hidden 的 content 里。浏览器对藏起来的元素 focus() 是
-        // 空操作；jsdom 会照聚不误并派出一枚假 focusin，消解层据此把父层当成焦点落到层外
-        // 一并收掉。按渲染判据一并跳过，与 portal 租约归位时的 refocus 同一口径
-        const back = explicit && canReceiveFocus(explicit) ? explicit : previouslyFocused
-        if (back && canReceiveFocus(back)) {
-          focusSafely(back, { select: true })
-          // 归还落定即完工；没落定的（创建前持有者是 body——挂载即展开、程序化打开都如此，
-          // body 不在各引擎一致的可聚焦集合里，focus() 是空操作）继续往下松手
-          if (activeElementInRoot(back) === back)
-            return
-        }
-        // 原持有者已离场或接不住焦点。不能靠 body.focus()，那样焦点会留在这个已经关掉的层里
-        // （WC 侧节点常驻，尤其明显；Vue 侧要等浏览器渲染更新末尾的 focus fixup 才收走，
-        // jsdom 则永远不收）。显式松手。
-        const active = activeFocusWithinScope()
-        if (active && isInScope(active))
-          active.blur()
-      })
+      win.requestAnimationFrame(() => restore(autoFocusEventTarget))
     },
   }
 }
