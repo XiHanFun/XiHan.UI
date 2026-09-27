@@ -63,9 +63,9 @@ primitive  ──►  semantic  ──►  组件私有槽
 | 阶段 | 时长 | 缓动 | 结果 |
 | --- | ---: | --- | --- |
 | 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | scale 1 → `--xh-motion-scale-press`（0.97），背景进入 active |
-| 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1，背景回到 hover / rest |
+| 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover / rest |
 
-Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏，但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
+Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 120ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
 ## 组件内滚动
 
