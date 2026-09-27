@@ -1582,8 +1582,9 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           ...rect,
           cornerRadius: outer ? Math.min(radius, width / 2) : 0,
           orientation: vertical ? 'vertical' : 'horizontal',
-          // 基线在哪一端：纵向正值在下端（end）、负值在上端；横向正值在左端（start）
-          baseline: vertical ? (positive ? 'end' : 'start') : (positive ? 'start' : 'end'),
+          // 基线在哪一端：纵向正值在下端（end）、负值在上端；横向正值在左端（start）。
+          // 区间柱两头都是数据、都悬空：四角都圆
+          baseline: s.lows ? 'none' : vertical ? (positive ? 'end' : 'start') : (positive ? 'start' : 'end'),
           datum: { seriesId: id, index: rowIndex },
           // 瀑布的一步按涨跌取色，小计保持系列色
           paint: s.steps?.[j] && !s.steps[j]!.total ? { ...paint, trend: s.steps[j]!.trend } : paint,
@@ -1825,6 +1826,8 @@ function boxMarks(
       ...(vertical ? { x: c - width / 2, y: top, width, height: span } : { x: top, y: c - width / 2, width: span, height: width }),
       cornerRadius: Math.min(metrics.radius, width / 2, span / 2),
       orientation: vertical ? 'vertical' : 'horizontal',
+      // 箱体悬在上下四分位之间，不贴基线：四角都圆
+      baseline: 'none',
       datum: ref,
       paint,
       a11y: { label: '', focusable: true },

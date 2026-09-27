@@ -5,6 +5,7 @@ import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { AreaMark, PathMark, RectMark, SymbolMark } from '@xihan-ui/viz'
 import type { Dict, Props } from './cartesian-rig'
 import { DIAGNOSTIC_CODES, onDiagnostic } from '@xihan-ui/core'
+import { markPath } from '@xihan-ui/viz'
 import { describe, expect, it } from 'vitest'
 import { makeRig, marksOf, onCleanup, settle } from './cartesian-rig'
 
@@ -24,6 +25,9 @@ describe('浮动柱', () => {
     const [bar] = marksOf(api, 'bar') as RectMark[]
     expect(bar!.y).toBeCloseTo(valueScale.map(23)!)
     expect(bar!.y + bar!.height).toBeCloseTo(valueScale.map(15)!)
+    // 两头都是数据、都悬空：四角都圆
+    expect(bar!.baseline).toBe('none')
+    expect(markPath(bar!).match(/A/g)).toHaveLength(4)
   })
 
   it('可及名、提示框与数据表写成「下 – 上」', async () => {

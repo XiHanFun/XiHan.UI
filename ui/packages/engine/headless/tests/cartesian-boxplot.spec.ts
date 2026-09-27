@@ -5,6 +5,7 @@ import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { PathMark, RectMark, SymbolMark } from '@xihan-ui/viz'
 import type { Dict, Props } from './cartesian-rig'
 import { DIAGNOSTIC_CODES, onDiagnostic } from '@xihan-ui/core'
+import { markPath } from '@xihan-ui/viz'
 import { describe, expect, it } from 'vitest'
 import { makeRig, marksOf, onCleanup, settle } from './cartesian-rig'
 
@@ -36,6 +37,8 @@ describe('箱线', () => {
     const [box] = marksOf(api, 'box') as RectMark[]
     expect(box!.y).toBeCloseTo(y(7.75))
     expect(box!.y + box!.height).toBeCloseTo(y(3.25))
+    // 箱体悬空，四角都圆
+    expect(markPath(box!).match(/A/g)).toHaveLength(4)
     const median = marksOf(api, 'median')[0] as PathMark
     expect(median.d).toContain(`,${Math.round(y(5.5)) + 0.5}L`)
     expect((marksOf(api, 'whisker')[0] as PathMark).d.match(/M/g)).toHaveLength(4)
