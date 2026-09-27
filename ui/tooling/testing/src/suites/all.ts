@@ -90,6 +90,7 @@ import { popoverSuite } from './popover.suite'
 import { progressSuite } from './progress.suite'
 import { promptInputSuite } from './prompt-input.suite'
 import { questionFlowSuite } from './question-flow.suite'
+import { radarChartSuite } from './radar-chart.suite'
 import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
 import { reasoningSuite } from './reasoning.suite'
@@ -276,4 +277,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   cartesianChartSuite,
   pieChartSuite,
   sparklineSuite,
+  radarChartSuite,
 ]

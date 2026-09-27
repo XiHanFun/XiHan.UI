@@ -149,9 +149,10 @@
 <div class="xh-component-grid">
 
 <XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" />
-<XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" />
-<XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" />
 <XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" />
+<XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" />
+<XhComponentCard src="radar-chart" name="RadarChart" label="雷达图" href="/components/radar-chart" />
+<XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" />
 <XhComponentCard src="progress-meter" name="Progress" label="仪表盘与子弹图" href="/components/progress#仪表盘" />
 
 </div>

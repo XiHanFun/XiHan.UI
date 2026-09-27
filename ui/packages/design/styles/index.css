@@ -32245,6 +32245,226 @@
   }
 }
 
+/* styles/radar-chart.css */
+/* 定义 radar chart 样式。 */
+
+/* 标题、视口、图例、提示框、空态与焦点环走 Chart 家族配方。本皮肤 @import 它，单独引入仍成立。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='radar-chart'] {
+    --xh-radar-chart-skin: 1;
+  }
+
+  /* 几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
+  [data-scope='radar-chart'][data-part='root'] {
+    --xh-_chart-metric-bar-max: var(--xh-chart-bar-max);
+    --xh-_chart-metric-gap: var(--xh-chart-gap);
+    --xh-_chart-metric-line-width: var(--xh-radar-chart-line-width, var(--xh-chart-line-width));
+    --xh-_chart-metric-point-size: var(--xh-radar-chart-point-size, var(--xh-chart-point-size));
+    --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+    --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+    --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+    --xh-_chart-metric-radius: var(--xh-shape-inset);
+    --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+    --xh-_chart-metric-leading: var(--xh-leading-tight);
+    --xh-_chart-gap: var(--xh-radar-chart-gap, var(--xh-space-3));
+  }
+
+  /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
+     对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
+  [data-scope='radar-chart'][data-part='viewport'] {
+    --xh-_chart-height: var(--xh-radar-chart-height, var(--xh-chart-height));
+  }
+
+  [data-scope='radar-chart'][data-part='legend'] {
+    --xh-_chart-legend-gap: var(--xh-radar-chart-legend-gap, var(--xh-space-1));
+  }
+
+  [data-scope='radar-chart'][data-part='legend-swatch'] {
+    --xh-_chart-legend-swatch-radius: var(--xh-radar-chart-legend-swatch-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='radar-chart'][data-part='tooltip'] {
+    --xh-_chart-tooltip-gap: var(--xh-radar-chart-tooltip-gap, var(--xh-space-1));
+    --xh-_chart-tooltip-py: var(--xh-radar-chart-tooltip-py, var(--xh-surface-pad-sm));
+    --xh-_chart-tooltip-px: var(--xh-radar-chart-tooltip-px, var(--xh-surface-pad-sm));
+    --xh-_chart-tooltip-radius: var(--xh-radar-chart-tooltip-radius, var(--xh-shape-overlay));
+    --xh-_chart-tooltip-shadow: var(--xh-radar-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
+  }
+
+  [data-scope='radar-chart'][data-part='tooltip-row'] {
+    --xh-_chart-tooltip-row-gap: var(--xh-radar-chart-tooltip-row-gap, var(--xh-space-2));
+  }
+
+  /* 提示框里被指着的那个实体：数值加粗，其余行照常 */
+  [data-scope='radar-chart'][data-part='tooltip-row'][data-current] {
+    font-weight: var(--xh-font-weight-semibold);
+  }
+
+  [data-scope='radar-chart'][data-part='tooltip-swatch'] {
+    --xh-_chart-tooltip-swatch-radius: var(--xh-radar-chart-tooltip-swatch-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='radar-chart'][data-part='empty'][data-state='loading'] {
+    --xh-_chart-empty-gap: var(--xh-radar-chart-empty-gap, var(--xh-space-2));
+  }
+
+  /* —— 色槽：身份由色槽承担，作者可以在系列上覆盖 --xh-radar-chart-series-color ——
+     系列分组、图例项与提示框的行都带着色槽，各自从这里取系列色 */
+  [data-scope='radar-chart'][data-xh-chart-slot='1'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-1));
+  }
+
+  [data-scope='radar-chart'][data-xh-chart-slot='2'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-2));
+  }
+
+  [data-scope='radar-chart'][data-xh-chart-slot='3'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-3));
+  }
+
+  [data-scope='radar-chart'][data-xh-chart-slot='4'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-4));
+  }
+
+  [data-scope='radar-chart'][data-xh-chart-slot='5'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-5));
+  }
+
+  [data-scope='radar-chart'][data-xh-chart-slot='6'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-6));
+  }
+
+  [data-scope='radar-chart'][data-xh-chart-slot='7'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-7));
+  }
+
+  [data-scope='radar-chart'][data-xh-chart-slot='8'] {
+    --xh-_chart-series: var(--xh-radar-chart-series-color, var(--xh-chart-categorical-8));
+  }
+
+  /* —— 图表家具：网格圈与指标轴是不承载数据的结构线，指标名是次级标注 —— */
+  [data-scope='radar-chart'][data-part='grid-ring'] {
+    fill: none;
+    stroke: var(--xh-chart-grid);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='radar-chart'][data-part='spoke'] {
+    fill: none;
+    stroke: var(--xh-chart-axis);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='radar-chart'][data-part='indicator-label'] {
+    fill: var(--xh-chart-label);
+  }
+
+  /* 激活的指标那根轴：准线色，压在网格之上、数据之下 */
+  [data-scope='radar-chart'][data-part='crosshair'] {
+    fill: none;
+    stroke: var(--xh-chart-crosshair);
+    stroke-width: var(--xh-stroke-thick);
+  }
+
+  /* —— 数据标记：一个实体一个分组，悬停图例或指着一个顶点时其余实体淡出 —— */
+  [data-scope='radar-chart'][data-part='series'] {
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='radar-chart'][data-part='series'][data-dimmed] {
+    opacity: var(--xh-chart-dim-alpha);
+  }
+
+  /* 面积：系列色淡洗，边上是同一条实色轮廓 */
+  [data-scope='radar-chart'][data-part='area-fill'] {
+    fill: var(--xh-_chart-series);
+    fill-opacity: var(--xh-chart-area-alpha);
+    stroke: none;
+  }
+
+  [data-scope='radar-chart'][data-part='line'] {
+    fill: none;
+    stroke: var(--xh-_chart-series);
+    stroke-width: var(--xh-_chart-metric-line-width);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  /* 顶点带一圈承载面色的描边环，压在别的实体的轮廓上也分得开 */
+  [data-scope='radar-chart'][data-part='point'] {
+    fill: var(--xh-_chart-series);
+    stroke: var(--xh-chart-surface);
+    stroke-width: var(--xh-chart-gap);
+  }
+
+  /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），面积改用本系列在 defs 里的
+     纹理填充、描出轮廓，轮廓换线型。色标的纹理在配方里 —— */
+  :where([data-xh-chart-patterns]) [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+    fill: var(--xh-_chart-pattern);
+    fill-opacity: 1;
+  }
+
+  :where([data-xh-chart-patterns]) [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line'] {
+    stroke-dasharray: var(--xh-_chart-dash);
+  }
+
+  /* 强制色：数据标记改成系统色，网格取灰字色；纹理总是开启；焦点环与色标在配方里 */
+  @media (forced-colors: active) {
+    [data-scope='radar-chart'][data-part='grid-ring'] {
+      stroke: GrayText;
+    }
+
+    [data-scope='radar-chart'][data-part='spoke'] {
+      stroke: CanvasText;
+    }
+
+    [data-scope='radar-chart'][data-part='indicator-label'] {
+      fill: CanvasText;
+    }
+
+    [data-scope='radar-chart'][data-part='crosshair'] {
+      stroke: Highlight;
+    }
+
+    [data-scope='radar-chart'][data-part='line'] {
+      stroke: CanvasText;
+    }
+
+    [data-scope='radar-chart'][data-part='point'] {
+      fill: CanvasText;
+      stroke: Canvas;
+    }
+
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+      forced-color-adjust: none;
+      fill: var(--xh-_chart-pattern);
+      fill-opacity: 1;
+    }
+
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line'] {
+      stroke-dasharray: var(--xh-_chart-dash);
+    }
+  }
+
+  /* 打印：纸上没有指针，准线不印；纹理开启；提示框与焦点环在配方里 */
+  @media print {
+    [data-scope='radar-chart'][data-part='crosshair'] {
+      display: none;
+    }
+
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+      fill: var(--xh-_chart-pattern);
+      fill-opacity: 1;
+    }
+
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line'] {
+      stroke-dasharray: var(--xh-_chart-dash);
+    }
+  }
+}
+
 /* styles/radio-group.css */
 /* 定义 radio group 样式。 */
 

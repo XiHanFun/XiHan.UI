@@ -43602,6 +43602,767 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/radar-chart.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-radar-chart>`：雷达图宿主，一行数据一个实体，每个指标一根轴，比较少数几个实体的画像。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，\n可选 empty 与 tooltip。网格、指标名、各实体的面积、轮廓与顶点由本元素按场景生成进 plot，按标记的 key 复用节点；\n图例项生成进 legend；tooltip 留空时写入缺省内容（指标名与各实体的值），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据、指标与数值格式是对象或函数，只走 JS property。",
+          "name": "XhRadarChartElement",
+          "cssParts": [
+            {
+              "description": "`<figure>`，承载 pending 与错误状态",
+              "name": "root"
+            },
+            {
+              "description": "`<figcaption>`，图表的可及名来源",
+              "name": "caption"
+            },
+            {
+              "description": "图例工具条，项由元素生成",
+              "name": "legend"
+            },
+            {
+              "description": "尺寸观测的宿主",
+              "name": "viewport"
+            },
+            {
+              "description": "绘图区 `<svg>`，网格与各实体由元素生成",
+              "name": "plot"
+            },
+            {
+              "description": "提示框，留空时由元素写入缺省内容",
+              "name": "tooltip"
+            },
+            {
+              "description": "没有可画的数据时显示",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: radarChartAnatomy, meta: radarChartMeta, // plot 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { plot: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "readonly ChartRow[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultHiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<RadarChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "nameField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name-field"
+            },
+            {
+              "kind": "field",
+              "name": "indicators",
+              "privacy": "public",
+              "type": {
+                "text": "readonly RadarIndicator[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "shape",
+              "privacy": "public",
+              "type": {
+                "text": "RadarShape | undefined"
+              },
+              "attribute": "shape"
+            },
+            {
+              "kind": "field",
+              "name": "area",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "area"
+            },
+            {
+              "kind": "field",
+              "name": "scale",
+              "privacy": "public",
+              "type": {
+                "text": "RadarScale | undefined"
+              },
+              "attribute": "scale"
+            },
+            {
+              "kind": "field",
+              "name": "curve",
+              "privacy": "public",
+              "type": {
+                "text": "RadarCurve | undefined"
+              },
+              "attribute": "curve"
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "attribute": "active-key"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "notifyHidden",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<RadarChartSchema>( this, radarChartMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<RadarChartSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<RadarChartSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "RadarChartApi | null"
+                }
+              },
+              "description": "连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "legendItems",
+              "type": {
+                "text": "readonly RadarLegendItem[]"
+              },
+              "description": "图例项：一个实体一项，带色槽与显隐；自行铺图例时照它生成节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "ChartDatumDetails | null"
+              },
+              "description": "激活的顶点（悬停或聚焦）；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "RadarTooltipModel | null"
+              },
+              "description": "提示框的缺省内容模型；收起时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "没有可画的数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentHiddenSeries",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻隐藏的实体。hiddenSeries 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "ChartKey | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "toggleSeries",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "切换某个实体的显隐，与点图例项同一条路。"
+            },
+            {
+              "kind": "method",
+              "name": "setFocusedDatum",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "ref",
+                  "type": {
+                    "text": "{ seriesId: string, index: number } | null"
+                  }
+                }
+              ],
+              "description": "移动键盘锚点：只改锚点，不移动 DOM 焦点，也不派发事件。"
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "field",
+              "name": "#tooltipKey",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "上一次写进提示框与数据表的内容：没变就不重建。"
+            },
+            {
+              "kind": "field",
+              "name": "#table",
+              "privacy": "private",
+              "type": {
+                "text": "RadarChartApi['table'] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableHost",
+              "privacy": "private",
+              "type": {
+                "text": "Element | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintPlot",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "plot",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "RadarChartApi"
+                  }
+                }
+              ],
+              "description": "绘图区：纹理定义排在最前，其后是场景标记；两者同一次排序，重画时一起复用。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMarks",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "RadarChartApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "ChartMark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "RadarChartApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintDefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "RadarChartApi"
+                  }
+                }
+              ],
+              "description": "纹理定义：每种纹理一个 pattern、里面一条线。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintLegend",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "legend",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "RadarChartApi"
+                  }
+                }
+              ],
+              "description": "图例项：一个实体一个按钮，色标与名字各一个 span。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintTooltip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tooltip",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "RadarChartApi"
+                  }
+                }
+              ],
+              "description": "提示框留空时写缺省内容：头部是指标名，每个可见实体一行；激活的实体换了也要重写，那一行带着 data-current。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintA11y",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "RadarChartApi"
+                  }
+                }
+              ],
+              "description": "摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。"
+            }
+          ],
+          "events": [
+            {
+              "description": "图例切换显隐；detail 为 `{ hiddenSeries: string[] }`",
+              "name": "hidden-series-change",
+              "type": {
+                "text": "ChartHiddenSeriesChangeDetails"
+              }
+            },
+            {
+              "description": "指针或键盘换了激活的指标；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
+              "type": {
+                "text": "ChartActiveKeyChangeDetails"
+              }
+            },
+            {
+              "description": "悬停或聚焦到某个顶点；detail 为数据详情，收起时为 null",
+              "name": "datum-active",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            },
+            {
+              "description": "指针点击、Enter 或 Space 按在某个顶点上；detail 为数据详情",
+              "name": "datum-press",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "实体名所在的字段",
+              "name": "name-field",
+              "fieldName": "nameField"
+            },
+            {
+              "type": {
+                "text": "RadarShape | undefined"
+              },
+              "description": "网格形状，默认 polygon",
+              "name": "shape",
+              "fieldName": "shape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "轮廓里铺一层系列色的淡洗，默认开；`area=\"false\"` 时只画轮廓",
+              "name": "area",
+              "fieldName": "area"
+            },
+            {
+              "type": {
+                "text": "RadarScale | undefined"
+              },
+              "description": "量程，默认 independent（每个指标自己的量程）",
+              "name": "scale",
+              "fieldName": "scale"
+            },
+            {
+              "type": {
+                "text": "RadarCurve | undefined"
+              },
+              "description": "轮廓的画法，默认 linear",
+              "name": "curve",
+              "fieldName": "curve"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数字与内建文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "description": "激活的指标（受控）：与别的图联动时是指标的 key",
+              "name": "active-key",
+              "fieldName": "activeKey"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-radar-chart",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-radar-chart-empty-gap"
+            },
+            {
+              "name": "--xh-radar-chart-gap"
+            },
+            {
+              "name": "--xh-radar-chart-height"
+            },
+            {
+              "name": "--xh-radar-chart-legend-gap"
+            },
+            {
+              "name": "--xh-radar-chart-legend-swatch-radius"
+            },
+            {
+              "name": "--xh-radar-chart-line-width"
+            },
+            {
+              "name": "--xh-radar-chart-point-size"
+            },
+            {
+              "name": "--xh-radar-chart-series-color"
+            },
+            {
+              "name": "--xh-radar-chart-tooltip-gap"
+            },
+            {
+              "name": "--xh-radar-chart-tooltip-px"
+            },
+            {
+              "name": "--xh-radar-chart-tooltip-py"
+            },
+            {
+              "name": "--xh-radar-chart-tooltip-radius"
+            },
+            {
+              "name": "--xh-radar-chart-tooltip-row-gap"
+            },
+            {
+              "name": "--xh-radar-chart-tooltip-shadow"
+            },
+            {
+              "name": "--xh-radar-chart-tooltip-swatch-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhRadarChartElement",
+          "declaration": {
+            "name": "XhRadarChartElement",
+            "module": "src/elements/radar-chart.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/radio-group.ts",
       "declarations": [
         {

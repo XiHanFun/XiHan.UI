@@ -141,6 +141,7 @@
     "./progress.css": "./css/progress.css",
     "./prompt-input.css": "./css/prompt-input.css",
     "./question-flow.css": "./css/question-flow.css",
+    "./radar-chart.css": "./css/radar-chart.css",
     "./radio-group.css": "./css/radio-group.css",
     "./rating.css": "./css/rating.css",
     "./reset.css": "./css/reset.css",

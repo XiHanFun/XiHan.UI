@@ -31,6 +31,7 @@
     ],
     "area-fill": [
       "cartesian-chart",
+      "radar-chart",
       "sparkline"
     ],
     "area-thumb": [
@@ -162,6 +163,7 @@
     "caption": [
       "cartesian-chart",
       "pie-chart",
+      "radar-chart",
       "table"
     ],
     "cell": [
@@ -361,7 +363,8 @@
       "image-cropper"
     ],
     "crosshair": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "radar-chart"
     ],
     "data-label": [
       "cartesian-chart"
@@ -371,7 +374,8 @@
     ],
     "defs": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "deny-trigger": [
       "approval"
@@ -433,6 +437,7 @@
       "listbox",
       "mention",
       "pie-chart",
+      "radar-chart",
       "select",
       "table",
       "transfer",
@@ -486,7 +491,8 @@
     ],
     "focus-ring": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "fold-trigger": [
       "code-view"
@@ -534,6 +540,9 @@
     ],
     "grid-line": [
       "cartesian-chart"
+    ],
+    "grid-ring": [
+      "radar-chart"
     ],
     "group": [
       "approval",
@@ -672,6 +681,9 @@
     ],
     "indicator-group": [
       "carousel"
+    ],
+    "indicator-label": [
+      "radar-chart"
     ],
     "inline-change": [
       "diff-view"
@@ -940,17 +952,20 @@
       "cartesian-chart",
       "fieldset",
       "heatmap",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "legend-item": [
       "cartesian-chart",
       "heatmap",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "legend-label": [
       "cartesian-chart",
       "heatmap",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "legend-scale": [
       "cartesian-chart"
@@ -966,12 +981,14 @@
     ],
     "legend-swatch": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "line": [
       "cartesian-chart",
       "code-view",
       "log",
+      "radar-chart",
       "separator",
       "sparkline"
     ],
@@ -1122,11 +1139,13 @@
     ],
     "pattern": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "pattern-line": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "peg": [
       "loading-bar"
@@ -1140,10 +1159,12 @@
     ],
     "plot": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "point": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "radar-chart"
     ],
     "positioner": [
       "cascader",
@@ -1340,6 +1361,7 @@
       "progress",
       "prompt-input",
       "question-flow",
+      "radar-chart",
       "radio-group",
       "rating",
       "reasoning",
@@ -1471,7 +1493,8 @@
       "toolbar"
     ],
     "series": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "radar-chart"
     ],
     "sider": [
       "layout"
@@ -1500,6 +1523,9 @@
     ],
     "split": [
       "flex"
+    ],
+    "spoke": [
+      "radar-chart"
     ],
     "spotlight": [
       "tour"
@@ -1532,6 +1558,7 @@
       "diff-view",
       "pagination",
       "pie-chart",
+      "radar-chart",
       "sparkline",
       "tool-call"
     ],
@@ -1548,7 +1575,8 @@
     ],
     "table": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "tag-list": [
       "select"
@@ -1631,27 +1659,33 @@
     "tooltip": [
       "cartesian-chart",
       "heatmap",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "tooltip-header": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "tooltip-name": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "tooltip-row": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "tooltip-swatch": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "tooltip-value": [
       "cartesian-chart",
-      "pie-chart"
+      "pie-chart",
+      "radar-chart"
     ],
     "total-label": [
       "cartesian-chart"
@@ -1735,6 +1769,7 @@
       "navigation-menu",
       "pie-chart",
       "question-flow",
+      "radar-chart",
       "scroll-area",
       "virtualizer"
     ],
@@ -1914,6 +1949,7 @@
     "slice": true,
     "slider": true,
     "split": true,
+    "spoke": true,
     "spotlight": true,
     "status": true,
     "stem": true,

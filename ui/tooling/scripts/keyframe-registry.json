@@ -120,6 +120,7 @@
         "image",
         "image-viewer",
         "pie-chart",
+        "radar-chart",
         "reasoning",
         "sparkline",
         "tour"
@@ -432,6 +433,7 @@
         "notification",
         "pie-chart",
         "popconfirm",
+        "radar-chart",
         "spinner",
         "switch",
         "toast"
