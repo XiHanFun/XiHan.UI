@@ -421,7 +421,7 @@ describe('日期时间族的原生表单重置', () => {
 
   it('时间选择器：清空后重置回到 defaultValue', () => {
     const form = mount(
-      <XhTimePickerRoot name="start" defaultValue="09:30" min="08:00" max="11:00" step={30}>
+      <XhTimePickerRoot name="start" defaultValue="09:30" min="08:00" max="11:00" timeStep={{ minute: 30 }}>
         <XhTimePickerControl>
           <XhTimePickerSegmentGroup>
             <XhTimePickerSegment segment="hour" />

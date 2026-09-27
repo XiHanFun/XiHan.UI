@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
     <>
       <XhTimePickerRoot
         value={value}
-        step={30}
+        timeStep={{ minute: 30 }}
         min="09:00"
         max="18:00"
         onValueChange={details => setValue(snap(details.value))}

@@ -10,7 +10,7 @@ import type { TimeSegmentType } from '../time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerPressedKey, TimePickerSchema } from './time-picker.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { overlayFixedStyle, overlayPositioned } from '../shared/overlay'
-import { resolveTimeStep, timeColumnsFor, timeItemValue } from '../shared/time-constraint'
+import { isTimeItemUnavailable, resolveTimeStep, timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
@@ -66,7 +66,7 @@ export function connectTimePicker<T extends PropTypes>(
   const locale = prop('locale')
   const hourCycle = resolveHourCycle(prop('hourCycle'), locale)
   const granularity = prop('granularity') ?? TIME_FIELD_GRANULARITY
-  const step = resolveTimeStep({ minute: prop('step') }).minute
+  const timeStep = resolveTimeStep(prop('timeStep'))
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
@@ -127,7 +127,7 @@ export function connectTimePicker<T extends PropTypes>(
   const columns = timeColumnsFor(draft, {
     granularity,
     hourCycle,
-    timeStep: { minute: step },
+    timeStep,
     min: prop('min'),
     max: prop('max'),
   })
@@ -168,7 +168,7 @@ export function connectTimePicker<T extends PropTypes>(
     const text = formatTimeValue(draftFromTime(time), granularity)
     return text === '' ? null : text
   }
-  // step 只裁列表里排哪些格，不限制值本身（段位里照样能敲出 14:37），快捷选项因此不看它
+  // 步进只裁列表里排哪些格，不限制值本身（段位里照样能敲出 14:37），快捷选项因此不看它
   const presets: readonly TimePickerPresetState[] = (prop('presets') ?? []).map((preset) => {
     const time = normalizeTime(preset.value)
     // 解析不了、落在 min/max 之外的，按下不写值
@@ -200,9 +200,10 @@ export function connectTimePicker<T extends PropTypes>(
     selectedIn(unit) === option
 
   // 落在 min/max 之外的值不在生成列表里；整个控件禁用时全列都不可选；
-  // 离散的不可选值由作者的钩子判，与界外同等对待
+  // 离散的不可选值由作者的钩子判，与界外同等对待：时格换算成 24 小时制、连同已选的时分交给它
   const itemDisabled = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
-    disabled || !optionsOf(unit).includes(option) || (prop('isTimeUnavailable')?.(option, unit) ?? false)
+    disabled || !optionsOf(unit).includes(option)
+    || isTimeItemUnavailable(prop('isTimeUnavailable'), { unit, value: option, hourCycle, draft })
 
   const segmentTextOf = (segment: TimeSegmentType): string =>
     timeSegmentText(draft, segment, { hourCycle, locale })
@@ -285,7 +286,7 @@ export function connectTimePicker<T extends PropTypes>(
     invalid,
     hourCycle,
     granularity,
-    step,
+    timeStep,
     segments,
     focusedSegment,
     columns,

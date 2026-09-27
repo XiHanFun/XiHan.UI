@@ -62244,12 +62244,12 @@
             },
             {
               "kind": "field",
-              "name": "step",
+              "name": "timeStep",
               "privacy": "public",
               "type": {
-                "text": "number | undefined"
+                "text": "TimeStep | undefined"
               },
-              "attribute": "step"
+              "attribute": "time-step"
             },
             {
               "kind": "field",
@@ -62576,7 +62576,7 @@
               "type": {
                 "text": "TimePickerColumn[]"
               },
-              "description": "当前应排列的列及每列的可选值：落在 min/max 之外的、不符合 step 的、\n以及随已选的时（分）收窄后排除的值都已剔除。作者据此渲染列与格子。\n状态机尚未建立时返回空数组。",
+              "description": "当前应排列的列及每列的可选值：落在 min/max 之外的、不在步进上的、\n以及随已选的时（分）收窄后排除的值都已剔除。作者据此渲染列与格子。\n状态机尚未建立时返回空数组。",
               "readonly": true
             },
             {
@@ -62681,11 +62681,11 @@
             },
             {
               "type": {
-                "text": "number | undefined"
+                "text": "TimeStep | undefined"
               },
-              "description": "分列的步进（分钟），默认 1",
-              "name": "step",
-              "fieldName": "step"
+              "description": "按单位的步进，JSON 对象（`{\"minute\":15}`），各单位缺省 1；也可通过 property 传入对象",
+              "name": "time-step",
+              "fieldName": "timeStep"
             },
             {
               "type": {

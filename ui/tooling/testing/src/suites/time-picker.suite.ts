@@ -13,11 +13,11 @@ const SCOPE = '[data-scope="time-picker"]'
 /**
  * 全部用例共用的界与步进。
  *
- * 可选值是纯函数按 min/max/step 生成的，作者只该渲染那一份；
+ * 可选值是纯函数按 min/max/timeStep 生成的，作者只该渲染那一份；
  * fixture 是静态的，所以反过来把界设成正好长出这几格——
  * 让 fixture 与生成结果逐格对齐，锚点才不会指向一个 fixture 里没有的值。
  */
-const BASE = { min: '08:00', max: '11:00', step: 30 } as const
+const BASE = { min: '08:00', max: '11:00', timeStep: { minute: 30 } } as const
 
 /** fixture 里段的排布顺序，与下标寻址一一对应。 */
 const HOUR_SEG = 'segment[0]'
@@ -902,6 +902,56 @@ export const timePickerSuite: ConformanceSuite = {
     },
 
     {
+      name: 'isTimeUnavailable 收到已选的时：9 点只能选 30 分以后，换到 10 点即放开',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: {
+        ...BASE,
+        defaultValue: '09:30',
+        isTimeUnavailable: (value: string, unit: string, context: { hour: number | null }) =>
+          unit === 'minute' && context.hour === 9 && Number(value) < 30,
+      },
+      initial: {
+        parts: {
+          [MINUTE_00]: { 'aria-disabled': 'true', 'data-disabled': '' },
+          [MINUTE_30]: { 'aria-disabled': 'false', 'data-disabled': null },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'click',
+          part: HOUR_10,
+          expect: {
+            parts: {
+              [MINUTE_00]: { 'aria-disabled': 'false', 'data-disabled': null },
+            },
+            events: [{ type: 'value-change', detail: { value: '10:30' } }],
+          },
+        },
+      ],
+    },
+
+    {
+      name: '12 小时制：时格按 24 小时制交给 isTimeUnavailable',
+      spec: { apg: `${APG}#roles_states_properties` },
+      // 上界放宽到 23:00，下午那几格才在列里
+      props: {
+        ...BASE,
+        max: '23:00',
+        hourCycle: 12,
+        defaultValue: '21:00',
+        isTimeUnavailable: (value: string, unit: string) => unit === 'hour' && value === '21',
+      },
+      initial: {
+        parts: {
+          // 这份值在下午：09 这一格是 21 点
+          [HOUR_09]: { 'aria-disabled': 'true' },
+          [HOUR_10]: { 'aria-disabled': 'false' },
+        },
+      },
+    },
+
+    {
       name: '12 小时制：多出上下午段，时列写的是显示值',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { ...BASE, hourCycle: 12, defaultValue: '09:30' },
@@ -1040,7 +1090,7 @@ export const timePickerSuite: ConformanceSuite = {
     {
       name: 'min/max 之外的格留在列表里但不可选（aria-disabled，不是原生 disabled）',
       spec: { apg: `${APG}#roles_states_properties` },
-      props: { min: '09:00', max: '11:00', step: 30 },
+      props: { min: '09:00', max: '11:00', timeStep: { minute: 30 } },
       initial: {
         parts: {
           [HOUR_08]: { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null, 'tabindex': '-1' },

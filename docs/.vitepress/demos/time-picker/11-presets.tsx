@@ -32,7 +32,7 @@ export default function Demo(): ReactNode {
         value={value}
         onValueChange={details => setValue(details.value)}
         presets={presets}
-        step={15}
+        timeStep={{ minute: 15 }}
       >
         <XhTimePickerLabel>提交时刻</XhTimePickerLabel>
         <XhTimePickerControl>

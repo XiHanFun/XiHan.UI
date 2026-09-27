@@ -1,4 +1,4 @@
-// 分列步长 | step=15 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制
+// 按单位步长 | timeStep 给时、分、秒各设步长，{ minute: 15 } 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制
 import type { ReactNode } from "react";
 import {
   XhTimePickerClearTrigger,
@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
       <XhTimePickerRoot
         value={value}
         onValueChange={details => setValue(details.value)}
-        step={15}
+        timeStep={{ minute: 15 }}
       >
         <XhTimePickerLabel>预约时段</XhTimePickerLabel>
         <XhTimePickerControl>

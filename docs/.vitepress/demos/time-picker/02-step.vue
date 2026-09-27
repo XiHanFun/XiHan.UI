@@ -1,4 +1,4 @@
-<!-- 分列步长 | step=15 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制 -->
+<!-- 按单位步长 | timeStep 给时、分、秒各设步长，{ minute: 15 } 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制 -->
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
@@ -18,7 +18,7 @@ const value = ref("09:30");
 </script>
 
 <template>
-  <XhTimePickerRoot v-model:value="value" :step="15">
+  <XhTimePickerRoot v-model:value="value" :time-step="{ minute: 15 }">
     <XhTimePickerLabel>预约时段</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>

@@ -36,7 +36,7 @@ function snap(next: string) {
 <template>
   <XhTimePickerRoot
     :value="value"
-    :step="30"
+    :time-step="{ minute: 30 }"
     min="09:00"
     max="18:00"
     @update:value="value = snap($event)"
