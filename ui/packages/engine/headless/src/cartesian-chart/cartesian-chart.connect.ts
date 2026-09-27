@@ -124,7 +124,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const anchorKey = anchor ? cartesianMarkKey(model, anchor) : null
   // 锚点落在柱或散点上时标记自己占 Tab 位；落在折线上时绘图区占，聚焦时再转投给焦点代理
   const anchorMark = anchor == null ? undefined : model.derived.visible.find(s => s.spec.id === anchor.seriesId)?.spec.mark
-  const anchorIsBar = anchorMark === 'bar' || anchorMark === 'scatter'
+  const anchorIsBar = anchorMark === 'bar' || anchorMark === 'scatter' || anchorMark === 'candlestick'
 
   const active: CartesianActive | null = cartesianActive(model, {
     hover: context.get('hover'),
@@ -523,7 +523,7 @@ export function connectCartesianChart<T extends PropTypes>(
       if (mark.exiting) {
         props['aria-hidden'] = true
       }
-      else if (mark.part === 'bar' || (mark.part === 'point' && mark.a11y?.focusable)) {
+      else if (mark.part === 'bar' || mark.part === 'candle' || (mark.part === 'point' && mark.a11y?.focusable)) {
         // 散点的点与柱一样本身就是数据标记，roving 取 Tab 位；折线上的点是焦点代理，出现即占
         const proxy = mark.part === 'point' && (mark.datum == null || seriesById.get(mark.datum.seriesId)?.mark !== 'scatter')
         const ref = mark.datum ?? null
@@ -547,9 +547,11 @@ export function connectCartesianChart<T extends PropTypes>(
           props.style = { ...(props.style as Record<string, string> | undefined), '--xh-_chart-p': stop.p }
         }
       }
-      // 瀑布的一步按涨跌取色：涨跌写在柱上，小计不写、保持系列色
-      if (mark.part === 'bar')
+      // 瀑布的一步、K 线按涨跌取色：涨跌写在标记上，瀑布的小计不写、保持系列色；美国线是描边画的一条路径
+      if (mark.part === 'bar' || mark.part === 'candle' || mark.part === 'wick')
         props['data-trend'] = mark.paint?.trend
+      if (mark.part === 'candle')
+        props['data-style'] = mark.kind === 'rect' ? 'candle' : 'ohlc'
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
       // 注释：参考线与参考带是结构色，跟着系列的（标出的点、平均线、趋势线）取系列色、随系列淡出

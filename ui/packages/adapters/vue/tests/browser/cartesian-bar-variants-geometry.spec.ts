@@ -1,4 +1,5 @@
-// 直角坐标图柱的变体在真实布局里：瀑布的涨跌取涨跌色、小计保持系列色，连接线连着相邻两根柱。
+// 直角坐标图柱的变体在真实布局里：瀑布的涨跌取涨跌色、小计保持系列色，连接线连着相邻两根柱；
+// K 线的实体与影线按涨跌取色，影线从最低画到最高。
 // jsdom 量不出计算样式与外接框，只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -70,5 +71,28 @@ describe('瀑布', () => {
     expect(link.right).toBeCloseTo(b.left, 0)
     // 与上一步的终点同高：收入的顶端
     expect(Math.abs(link.top - a.top)).toBeLessThanOrEqual(1)
+  })
+})
+
+describe('k 线', () => {
+  it('实体与影线按涨跌取色；影线的上下端就是最高价与最低价', async () => {
+    mount({
+      data: [
+        { day: 'a', o: 10, h: 12, l: 9, c: 11 },
+        { day: 'b', o: 11, h: 11.5, l: 8, c: 9 },
+      ],
+      series: [{ mark: 'candlestick', x: 'day', open: 'o', high: 'h', low: 'l', close: 'c' }],
+    })
+    await settle()
+    const [rise, fall] = all('candle')
+    const [upWick] = all('wick')
+    expect(getComputedStyle(rise!).fill).toBe(tokenColor('--xh-chart-rise'))
+    expect(getComputedStyle(fall!).fill).toBe(tokenColor('--xh-chart-fall'))
+    expect(getComputedStyle(upWick!).stroke).toBe(tokenColor('--xh-chart-rise'))
+    const body = rise!.getBoundingClientRect()
+    const wick = upWick!.getBoundingClientRect()
+    expect(wick.top).toBeLessThan(body.top)
+    expect(wick.bottom).toBeGreaterThan(body.bottom)
+    expect(wick.left + wick.width / 2).toBeCloseTo(body.left + body.width / 2, 0)
   })
 })

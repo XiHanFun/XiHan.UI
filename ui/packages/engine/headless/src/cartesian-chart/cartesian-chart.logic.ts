@@ -21,6 +21,11 @@ export function defaultCartesianAnnotationSummary(items: readonly CartesianAnnot
   return items.map(item => `${item.label}${item.series ? ` (${item.series})` : ''}: ${item.value}.`).join(' ')
 }
 
+/** 缺省的开高低收写法：四个价依次写出。 */
+function defaultOhlcLabel({ open, high, low, close }: { open: string, high: string, low: string, close: string }): string {
+  return `Open ${open}, High ${high}, Low ${low}, Close ${close}`
+}
+
 export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze({
   ...CHART_TRANSLATIONS,
   keyLabel: 'Category',
@@ -28,6 +33,8 @@ export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze(
   valueLabel: 'Value',
   sizeLabel: 'Size',
   colorLabel: 'Color',
+  ohlcLabel: defaultOhlcLabel,
+  ohlcColumns: { open: 'Open', high: 'High', low: 'Low', close: 'Close' },
   referenceLabel: 'Reference',
   averageLabel: 'Average',
   annotationSummary: defaultCartesianAnnotationSummary,
@@ -165,6 +172,13 @@ function detailsOf(model: CartesianModel, s: CartesianSeriesValues, position: nu
   const anchor = model.scene?.anchors.get(s.spec.id)?.[position] ?? null
   const formatted: Record<string, string> = { key: model.formats.key(key), value: value == null ? '' : model.formats.value(value) }
   const values: Record<string, unknown> = { key, value }
+  // K 线：主值是收盘，写成文字时四个价一起写
+  const ohlc = s.ohlc?.[position]
+  if (ohlc) {
+    Object.assign(values, ohlc)
+    const text = { open: model.formats.value(ohlc.open), high: model.formats.value(ohlc.high), low: model.formats.value(ohlc.low), close: model.formats.value(ohlc.close) }
+    formatted.value = model.translations.ohlcLabel(text)
+  }
   if (size != null) {
     values.size = size
     formatted.size = model.formats.measure(size)

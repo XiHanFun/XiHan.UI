@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `connector` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `connector` · `candle` · `wick` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 
@@ -138,6 +138,12 @@ waterfall 让每一步接在上一步的累计值上，涨跌分色；total 为�
 
 <XhDemo src="cartesian-chart/20-histogram" />
 
+### K 线
+
+mark: 'candlestick' 把开高低收画在同一根上，涨跌分色；style="ohlc" 换成美国线
+
+<XhDemo src="cartesian-chart/21-candlestick" />
+
 ## 设计指引
 
 ### 何时使用
@@ -147,6 +153,7 @@ waterfall 让每一步接在上一步的累计值上，涨跌分色；total 为�
 - 查看整体由哪几部分构成、各部分占比如何随类目变化（堆叠、百分比堆叠）。
 - 类目名较长、或类目较多需要竖向滚读时，用横向的条形图。
 - 看两个量之间有没有关系、点在哪里扎堆、有没有离群的点（散点）；再叠一个量用面积表达（气泡）。
+- 看价格在每个周期里怎么走（K 线）：开盘、最高、最低、收盘四个价画在同一根上。
 - 看一个量的分布形状（直方图）：柱的 `x` 写成分箱区间，不要把每个取值当成一个类目画柱。
 
 ### 何时不用
@@ -169,6 +176,7 @@ waterfall 让每一步接在上一步的累计值上，涨跌分色；total 为�
 - 同一 `stack` 名的系列堆叠在一起：柱逐段累加，折线成为堆叠面积。`stackOffset: 'expand'` 把每个键归一成百分比，数值轴随之换成百分比格式；柱的堆叠含负值时缺省 `diverging`，正值向上、负值向下各自累加。同一堆叠组的 `stackOffset` 必须一致，不一致时报错。
 - 多个柱系列不堆叠时并排分组：组内按系列次序排列，柱的厚度不超过 `--xh-chart-bar-max`（缺省 24px），类目很宽时柱不会被拉成大色块，多出的空间留作类目之间的间距。
 - 堆叠的相邻两段之间留 `--xh-chart-gap`（2px）的表面缝，靠缝区分而不是靠描边。只有离基线最远的一端有圆角，基线一端始终是直角，读者据此判断柱是从哪里长出来的。
+- `mark: 'candlestick'` 画 K 线：`open` / `high` / `low` / `close` 四个字段，系列 `id` 缺省取收盘字段；每个键一根，自变量轴缺省是类目轴，数值轴盖住最低与最高价、不强制含 0。`style` 缺省 `candle`（影线从最低到最高，实体从开盘到收盘，开收相等的十字星也画一像素高的实体），`ohlc` 是美国线（一条竖线加左开右收两道短横）。收盘不低于开盘为涨、低于开盘为跌，取 `--xh-chart-rise` / `--xh-chart-fall`（缺省绿涨红跌，主题可以翻过来）；强制色下涨空心、跌实心。实体宽取键间距的七成、不超过柱厚上限，影线与实体以同一个像素中心对齐。实体是可聚焦的数据标记，可及名与提示框按 `translations.ohlcLabel` 写出四个价，数据表开高低收各一列（列名 `translations.ohlcColumns`），锚点与十字准线落在收盘价。最低价高于开盘或收盘、最高价低于开盘或收盘时报 `chart.ohlc-range`。
 - 柱的 `x` 写成二元组 `[起, 止]` 是分箱区间（直方图）：自变量轴是数值轴（或时间轴），定义域盖到最后一箱的止点；柱按区间的真实宽度画，相邻两箱之间留 `--xh-chart-gap` 的表面缝，宽度不等的箱也如实画出。提示框、可及名、数据表与摘要把键写成「起 – 止」。分箱本身不在组件里做：用 `@xihan-ui/viz` 的 `bin()`（箱数、显式边界或 Sturges / Scott / Freedman–Diaconis 规则）或后端算好再给。止点不在起点之后时报 `chart.invalid-range`。
 - 柱的 `waterfall` 画瀑布：每一步接在上一步的累计值上浮着，涨取 `--xh-chart-rise`、跌取 `--xh-chart-fall`（缺省绿涨红跌，主题可以翻过来）；`waterfall.total` 指定小计字段，为真的行从 0 画到当前累计值、保持系列色，它的 `y` 被忽略。相邻两步之间连一道结构色的细线（`connector` 部件），缺失的一步不画、不改累计，连接线跨过它。数据标签与可及名写这一步的增减，小计写累计值。瀑布不参与堆叠。
 - 折线的 `curve` 缺省 `linear`；`monotone` 平滑且不越过数据点，不会画出数据中没有的峰谷；`step` / `step-before` / `step-after` 画成阶梯，台阶分别落在两点正中、前一点与后一点处，适合价格、库存这类在某一刻跳变的量。`area` 在折线下铺一层系列色的淡洗。缺失值（`null`、`undefined`、`NaN`）处折线断开，`connectNulls` 可改为连上。
@@ -503,9 +511,9 @@ waterfall 让每一步接在上一步的累计值上，涨跌分色；total 为�
 | `--xh-cartesian-chart-legend-scale-width` | `legend-scale-bar` | `inline-size` | `default` | `--xh-space-8` | cartesian-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-line-radius` | `legend-swatch` | `border-radius` | `mark=line` | `--xh-shape-pill` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-cartesian-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
-| `--xh-cartesian-chart-line-width` | `annotation`<br>`legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `background`<br>`block-size`<br>`stroke-dasharray`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`drawing`<br>`kind=trend`<br>`mark=line`<br>`method=moving-average`<br>`not([data-drawing])`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | cartesian-chart 的 annotation、legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。 |
+| `--xh-cartesian-chart-line-width` | `annotation`<br>`candle`<br>`legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `background`<br>`block-size`<br>`stroke-dasharray`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`drawing`<br>`kind=trend`<br>`mark=line`<br>`method=moving-average`<br>`not([data-drawing])`<br>`style=ohlc`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | cartesian-chart 的 annotation、candle、legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。 |
 | `--xh-cartesian-chart-point-size` | `legend-swatch`<br>`root`<br>`tooltip-swatch` | `background` | `@media (forced-colors: active)`<br>`@media print`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-point-size` | cartesian-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。 |
-| `--xh-cartesian-chart-series-color` | `annotation`<br>`area-fill`<br>`bar`<br>`dot`<br>`legend-item`<br>`legend-swatch`<br>`line`<br>`pattern-line`<br>`point`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`kind=average`<br>`kind=point`<br>`kind=trend`<br>`mark=line`<br>`mark=point`<br>`not([data-symbol='circle'], [data-symbol='square'])`<br>`symbol=circle`<br>`symbol=square`<br>`tone`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-_tone`<br>`--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | cartesian-chart 的 annotation、area-fill、bar、dot、legend-item、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
+| `--xh-cartesian-chart-series-color` | `annotation`<br>`area-fill`<br>`bar`<br>`candle`<br>`dot`<br>`legend-item`<br>`legend-swatch`<br>`line`<br>`pattern-line`<br>`point`<br>`tooltip-swatch`<br>`wick` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`kind=average`<br>`kind=point`<br>`kind=trend`<br>`mark=line`<br>`mark=point`<br>`not([data-symbol='circle'], [data-symbol='square'])`<br>`style=ohlc`<br>`symbol=circle`<br>`symbol=square`<br>`tone`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-_tone`<br>`--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | cartesian-chart 的 annotation、area-fill、bar、candle、dot、legend-item、legend-swatch、line、pattern-line、point、tooltip-swatch、wick 部件 background、border、fill、stroke 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | cartesian-chart 的 tooltip 部件 gap 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-surface-pad-sm` | cartesian-chart 的 tooltip 部件 padding-inline 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-surface-pad-sm` | cartesian-chart 的 tooltip 部件 padding-block 覆盖槽。 |

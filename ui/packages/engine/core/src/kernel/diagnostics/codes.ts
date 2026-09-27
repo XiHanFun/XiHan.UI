@@ -67,6 +67,8 @@ export const DIAGNOSTIC_CODES = {
   chartMeterOnly: 'chart.meter-only',
   /** 图表注释指向的系列不存在，或指向的类目不在轴上：这条注释不画。 */
   chartAnnotationTarget: 'chart.annotation-target',
+  /** K 线的开高低收对不上：最低价高于开盘或收盘，或最高价低于开盘或收盘。 */
+  chartOhlcRange: 'chart.ohlc-range',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]
