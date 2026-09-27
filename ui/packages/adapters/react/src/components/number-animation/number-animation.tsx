@@ -6,7 +6,7 @@
 // 提供 number animation 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { NumberAnimationApi, NumberAnimationEasing, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
+import type { NumberAnimationApi, NumberAnimationEasing, NumberAnimationFormatOptions, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { connectNumberAnimation, numberAnimationMachine } from '@xihan-ui/headless'
@@ -18,7 +18,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 type NumberAnimationProps = NumberAnimationSchema['props']
 
-/** 函数式 children 的载荷：当前帧的数值，以及它按 precision 与 separator 格式化后的文本。 */
+/** 函数式 children 的载荷：当前帧的数值，以及它按 locale、precision、separator 与 formatOptions 格式化后的文本。 */
 export type NumberAnimationSlotProps = Pick<NumberAnimationApi, 'value' | 'text'>
 
 export interface XhNumberAnimationProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
@@ -28,8 +28,12 @@ export interface XhNumberAnimationProps extends Omit<ComponentPropsWithRef<'span
   easing?: NumberAnimationEasing
   /** 小数位数；未提供时按 from / to 推导。 */
   precision?: number
-  /** 千分位分隔符。 */
+  /** 分组符。给了就分组并把该语言的分组符换成它；默认不分组。 */
   separator?: string
+  /** BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法；未提供时按宿主语言。 */
+  locale?: string
+  /** 交给 Intl.NumberFormat 的选项：货币、百分比、单位、紧凑记数、符号、数字系统与 useGrouping。小数位归 precision。 */
+  formatOptions?: NumberAnimationFormatOptions
   /** 是否运行；关闭时停在当前值。 */
   active?: boolean
   size?: Size
@@ -53,6 +57,8 @@ export function XhNumberAnimation({
   easing,
   precision,
   separator,
+  locale,
+  formatOptions,
   active,
   size,
   tone,
@@ -68,6 +74,8 @@ export function XhNumberAnimation({
     easing,
     precision,
     separator,
+    locale,
+    formatOptions,
     active,
     size,
     tone,

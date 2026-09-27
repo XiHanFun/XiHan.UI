@@ -72,9 +72,17 @@ export const numberAnimationSuite: ConformanceSuite = {
     {
       name: 'from 是起点：停着时显示的就是它，按 precision 与 separator 铺字',
       spec: { apg: SPEC },
-      props: { active: false, from: 1234567.891, precision: 2, separator: ',' },
+      props: { active: false, from: 1234567.891, precision: 2, separator: ',', locale: 'en-US' },
       steps: [
         { kind: 'raw', why: '数字只落文本', run: assertText('1,234,567.89') },
+      ],
+    },
+    {
+      name: 'locale 与 formatOptions 交给 Intl：小数点、分组与货币按语言铺',
+      spec: { apg: SPEC },
+      props: { active: false, from: 1234.5, precision: 2, locale: 'de-DE', formatOptions: { style: 'currency', currency: 'EUR', useGrouping: true } },
+      steps: [
+        { kind: 'raw', why: '数字只落文本', run: assertText(`1.234,50${String.fromCharCode(0xA0)}€`) },
       ],
     },
     {

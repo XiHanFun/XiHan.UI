@@ -41236,6 +41236,24 @@
             },
             {
               "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "formatOptions",
+              "privacy": "public",
+              "type": {
+                "text": "NumberAnimationFormatOptions"
+              },
+              "description": "交给 Intl.NumberFormat 的选项（货币、百分比、单位、紧凑记数、符号、数字系统、useGrouping）；小数位归 precision，只能通过 property 设置"
+            },
+            {
+              "kind": "field",
               "name": "active",
               "privacy": "public",
               "type": {
@@ -41358,9 +41376,17 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "千位分隔符，默认不分隔",
+              "description": "分组符；给了就分组并把该语言的分组符换成它，默认不分组",
               "name": "separator",
               "fieldName": "separator"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法；未提供时按宿主语言，宿主也没有时按 en-US",
+              "name": "locale",
+              "fieldName": "locale"
             },
             {
               "type": {

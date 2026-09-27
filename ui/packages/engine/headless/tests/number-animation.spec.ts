@@ -88,6 +88,29 @@ describe('formatNumberAnimation', () => {
   it('非有限数按 0：NaN 一路写进文本就是一个"NaN"', () => {
     expect(formatNumberAnimation(Number.NaN, 0)).toBe('0')
   })
+
+  it('语言决定小数点：de-DE 用逗号作小数点，分组仍缺省关着', () => {
+    expect(formatNumberAnimation(1234.5, 1, undefined, { locale: 'de-DE' })).toBe('1234,5')
+  })
+
+  it('useGrouping 打开即按该语言的习惯分组', () => {
+    expect(formatNumberAnimation(1234567.5, 1, undefined, { locale: 'de-DE', options: { useGrouping: true } })).toBe('1.234.567,5')
+    expect(formatNumberAnimation(1234567.5, 1, undefined, { locale: 'en-US', options: { useGrouping: true } })).toBe('1,234,567.5')
+  })
+
+  it('separator 换掉该语言的分组符，小数点仍按语言', () => {
+    expect(formatNumberAnimation(1234567.5, 1, ' ', { locale: 'de-DE' })).toBe('1 234 567,5')
+  })
+
+  it('货币、百分比与紧凑记数交给 Intl，小数位仍归 precision', () => {
+    expect(formatNumberAnimation(1234.5, 2, undefined, { locale: 'en-US', options: { style: 'currency', currency: 'USD' } })).toBe('$1234.50')
+    expect(formatNumberAnimation(0.256, 1, undefined, { locale: 'en-US', options: { style: 'percent' } })).toBe('25.6%')
+    expect(formatNumberAnimation(1234567, 1, undefined, { locale: 'en-US', options: { notation: 'compact' } })).toBe('1.2M')
+  })
+
+  it('作者给的 signDisplay 优先：always 连正数也带符号', () => {
+    expect(formatNumberAnimation(12, 0, undefined, { locale: 'en-US', options: { signDisplay: 'always' } })).toBe('+12')
+  })
 })
 
 // ── 机器：逐帧推进 ──────────────────────────────────────────────────
@@ -293,8 +316,13 @@ describe('connectNumberAnimation', () => {
   })
 
   it('text 就是当前数字按 precision 与 separator 铺好的字', () => {
-    const n = makeNumberAnimation({ active: false, from: 1234567.891, precision: 2, separator: ',' })
+    const n = makeNumberAnimation({ active: false, from: 1234567.891, precision: 2, separator: ',', locale: 'en-US' })
     expect(n.api().text).toBe('1,234,567.89')
     expect(n.api().running).toBe(false)
+  })
+
+  it('locale 与 formatOptions 一起决定每一帧的文字', () => {
+    const n = makeNumberAnimation({ active: false, from: 1234.5, precision: 2, locale: 'de-DE', formatOptions: { style: 'currency', currency: 'EUR', useGrouping: true } })
+    expect(n.api().text).toBe(`1.234,50${String.fromCharCode(0xA0)}€`)
   })
 })
