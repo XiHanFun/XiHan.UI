@@ -37,6 +37,10 @@
     "./sankey": {
       "types": "./dist/sankey.d.ts",
       "import": "./dist/sankey.js"
+    },
+    "./graph": {
+      "types": "./dist/graph.d.ts",
+      "import": "./dist/graph.js"
     }
   },
   "main": "./dist/index.js",
