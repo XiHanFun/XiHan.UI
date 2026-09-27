@@ -50,6 +50,12 @@ export function resolveNumberAnimationPrecision(precision: number | undefined): 
   return Math.min(Math.max(Math.trunc(precision), 0), NUMBER_ANIMATION_PRECISION_MAX)
 }
 
+/**
+ * 只给真负数带符号：舍入后是零的负数不再写成 "-0"。
+ * 这个取值在 ES2023 进入 Intl，库的类型声明仍停在 ES2022，类型里还没有它。
+ */
+const SIGN_NEGATIVE = 'negative' as unknown as NonNullable<Intl.NumberFormatOptions['signDisplay']>
+
 /** 格式化器缓存：补间每帧都要铺一次字，每帧新建一个 Intl.NumberFormat 太贵。 */
 const formatters = new Map<string, Intl.NumberFormat>()
 
@@ -80,7 +86,7 @@ export function formatNumberAnimation(
   const safe = Number.isFinite(value) ? value : 0
   const options = intl?.options
   const formatter = formatterOf(intl?.locale ?? XH_FALLBACK_LOCALE, {
-    signDisplay: 'negative',
+    signDisplay: SIGN_NEGATIVE,
     ...options,
     useGrouping: separator ? true : (options?.useGrouping ?? false),
     minimumFractionDigits: precision,
