@@ -673,6 +673,24 @@ describe('过渡', () => {
     expect((rig.api().getMarkProps(line) as Dict)['data-drawing']).toBeUndefined()
   })
 
+  it('数据晚于尺寸到达：仍按首次出现长出与描线，空态里已画出的坐标轴不重新淡入', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...MIXED, data: [] })
+    vi.advanceTimersByTime(1000)
+    expect(marksOf(rig.api(), 'bar')).toHaveLength(0)
+    expect(walk(rig.api().scene.layers.back).some(m => m.key === 'axis:x:line')).toBe(true)
+
+    rig.setProps({ data: DATA })
+    await settle()
+    const target = rig.api().model.scene!.scene
+    const finals = (walk(target.layers.data).filter(m => m.part === 'bar') as RectMark[]).map(b => b.height)
+    expect(barHeights(rig.api())).toEqual(finals.map(() => 0))
+    const line = marksOf(rig.api(), 'line')[0]!
+    expect(rig.api().getMarkProps(line) as Dict).toMatchObject({ 'pathLength': 1, 'data-drawing': '' })
+    const axis = walk(rig.api().scene.layers.back).find(m => m.key === 'axis:x:line')!
+    expect(axis.opacity ?? 1).toBe(1)
+  })
+
   it('入场：数据点等笔尖扫到才出现，越靠后的点延迟越大', async () => {
     vi.useFakeTimers(FRAMES)
     const rig = await makeRig({

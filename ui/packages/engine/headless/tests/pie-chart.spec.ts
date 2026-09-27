@@ -342,6 +342,23 @@ describe('过渡', () => {
     expect((rig.api().getCenterProps() as Dict)['data-drawing']).toBeUndefined()
   })
 
+  it('数据晚于尺寸到达（Web Components 连上之后才赋 data、异步取数）：仍按首次出现扫开，标签与中心照样等扫开', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, data: undefined, animated: true })
+    vi.advanceTimersByTime(1000)
+    expect(slices(rig.api())).toHaveLength(0)
+
+    rig.setProps({ data: DATA })
+    await settle()
+    const start = slices(rig.api())
+    expect(start).toHaveLength(DATA.length)
+    expect(start.every(a => a.startAngle === 0 && a.endAngle === 0)).toBe(true)
+    const label = rig.api().scene.layers.front.find(m => m.key === 'label:华东')!
+    expect((rig.api().getMarkProps(label) as Dict)['data-drawing']).toBe('')
+    expect((rig.api().getCenterProps() as Dict)['data-drawing']).toBe('')
+    expect(rig.api().center.value).toBe('0')
+  })
+
   it('图例隐藏一个扇区后合计从旧值滚到新值', async () => {
     vi.useFakeTimers(FRAMES)
     const rig = await makeRig({ ...BASE, animated: true })

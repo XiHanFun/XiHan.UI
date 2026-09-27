@@ -74,7 +74,7 @@ area 关掉淡洗，只留轮廓线与顶点：实体多、面积叠在一起互
 - `format` 指定数值格式（数字格式或函数），提示框、可及名与数据表共用。
 - 多张图接到同一个受控的 `activeKey` 上时，雷达图按指标的 `key` 与其他图对齐。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
-- 首次出现时各实体的轮廓与顶点从圆心一起张开，网格与指标名淡入；之后的数据变化与图例切换从当前形状插值到新形状，隐藏的实体收回并淡出后才移除。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
+- 首次出现时各实体的轮廓与顶点从圆心一起张开，网格与指标名淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场（空态里已画出的网格留在原处）；之后的数据变化与图例切换从当前形状插值到新形状，隐藏的实体收回并淡出后才移除。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 过渡的快慢由动效令牌决定：入场取 `--xh-motion-duration-reveal`，数据更新与图例切换取 `--xh-motion-duration-morph`，在图或它的容器上改写它们只影响这张图。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），网格、系列、图例项与提示框的缺省内容由元素生成进去。
 - Web Components 侧的数据、指标与数值格式只走 JS property；实体字段、网格形状、量程、轮廓画法与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
