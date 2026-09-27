@@ -49340,7 +49340,7 @@
               "type": {
                 "text": "ControlVariant | undefined"
               },
-              "description": "形态：描边 / 底色分区（默认档）/ 无壳内联",
+              "description": "形态：描边（默认档）/ 底色分区 / 无壳内联",
               "name": "variant",
               "fieldName": "variant"
             },

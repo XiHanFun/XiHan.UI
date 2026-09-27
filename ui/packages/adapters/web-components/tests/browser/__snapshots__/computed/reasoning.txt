@@ -2,8 +2,8 @@
 
 [content]
 padding-top: 0px
-padding-right: 12px
-padding-bottom: 8px
+padding-right: 16px
+padding-bottom: 16px
 padding-left: 12px
 row-gap: normal
 column-gap: normal
@@ -90,8 +90,8 @@ border-right-color: oklch(0.52 0.006 258)
 border-bottom-color: oklch(0.52 0.006 258)
 border-left-color: oklch(0.52 0.006 258)
 min-height: auto
-font-size: 13px
-line-height: 13px
+font-size: 14px
+line-height: 14px
 font-weight: 400
 color: oklch(0.52 0.006 258)
 background-color: rgba(0, 0, 0, 0)
@@ -125,8 +125,8 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: auto
-font-size: 13px
-line-height: 13px
+font-size: 14px
+line-height: 14px
 font-weight: 500
 color: oklch(0.439 0.006 258)
 background-color: rgba(0, 0, 0, 0)
@@ -155,16 +155,16 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: rgba(0, 0, 0, 0)
-border-right-color: rgba(0, 0, 0, 0)
-border-bottom-color: rgba(0, 0, 0, 0)
-border-left-color: rgba(0, 0, 0, 0)
+border-top-color: oklab(0 0 0 / 0.102)
+border-right-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.102)
+border-left-color: oklab(0 0 0 / 0.102)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklab(0 0 0 / 0.043)
+background-color: oklch(1 0 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -176,10 +176,10 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [trigger]
-padding-top: 8px
-padding-right: 12px
-padding-bottom: 8px
-padding-left: 12px
+padding-top: 16px
+padding-right: 16px
+padding-bottom: 16px
+padding-left: 16px
 row-gap: 8px
 column-gap: 8px
 border-top-left-radius: 0px
@@ -194,9 +194,9 @@ border-top-color: rgba(0, 0, 0, 0)
 border-right-color: rgba(0, 0, 0, 0)
 border-bottom-color: rgba(0, 0, 0, 0)
 border-left-color: rgba(0, 0, 0, 0)
-min-height: 32px
-font-size: 13px
-line-height: 13px
+min-height: 36px
+font-size: 14px
+line-height: 14px
 font-weight: 400
 color: oklch(0.439 0.006 258)
 background-color: rgba(0, 0, 0, 0)

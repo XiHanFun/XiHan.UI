@@ -22,8 +22,8 @@
   [data-scope='tool-call'][data-part='root'] {
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
-    --xh-_tool-call-px: var(--xh-space-3);
-    --xh-_tool-call-py: var(--xh-space-2);
+    --xh-_tool-call-px: var(--xh-space-4);
+    --xh-_tool-call-py: var(--xh-space-4);
     --xh-_tool-call-font-size: var(--xh-control-font-md);
 
     /* 影另落一份进私有槽给语气档：它要把影与左侧色条叠成一条 box-shadow，缺省无影写成零影占位 */
@@ -349,20 +349,20 @@
 
   /* 尺寸档只改内衬与字号 */
   [data-scope='tool-call'][data-part='root'][data-size='sm'] {
-    --xh-_tool-call-px: var(--xh-space-2);
-    --xh-_tool-call-py: var(--xh-space-1);
+    --xh-_tool-call-px: var(--xh-space-3);
+    --xh-_tool-call-py: var(--xh-space-3);
     --xh-_tool-call-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='tool-call'][data-part='root'][data-size='md'] {
-    --xh-_tool-call-px: var(--xh-space-3);
-    --xh-_tool-call-py: var(--xh-space-2);
+    --xh-_tool-call-px: var(--xh-space-4);
+    --xh-_tool-call-py: var(--xh-space-4);
     --xh-_tool-call-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='tool-call'][data-part='root'][data-size='lg'] {
-    --xh-_tool-call-px: var(--xh-space-4);
-    --xh-_tool-call-py: var(--xh-space-3);
+    --xh-_tool-call-px: var(--xh-space-5);
+    --xh-_tool-call-py: var(--xh-space-5);
     --xh-_tool-call-font-size: var(--xh-control-font-lg);
   }
 

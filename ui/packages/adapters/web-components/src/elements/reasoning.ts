@@ -35,7 +35,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} default-open - 非受控初值
  * @attr {boolean} auto-disclosure - 随思考状态自动开合，默认开启；写 auto-disclosure="false" 关闭
  * @attr {boolean} disabled - 禁用折叠开关
- * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边 / 底色分区（默认档）/ 无壳内联
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（默认档）/ 底色分区 / 无壳内联
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires open-change - 开合变化；detail 为 `{ open: boolean, source: 'user' | 'auto' | 'api' }`
