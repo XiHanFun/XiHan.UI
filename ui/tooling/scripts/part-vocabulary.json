@@ -1474,6 +1474,7 @@
       "time-field",
       "time-picker",
       "time-range-picker",
+      "time-zone-select",
       "timeline",
       "timer",
       "timestamp",

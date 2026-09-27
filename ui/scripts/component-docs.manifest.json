@@ -340,6 +340,10 @@
           "status": "new"
         },
         {
+          "id": "time-zone-select",
+          "name": "时区选择器"
+        },
+        {
           "id": "transfer",
           "name": "穿梭框"
         },

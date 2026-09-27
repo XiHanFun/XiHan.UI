@@ -2676,6 +2676,10 @@ export type {
 } from './components/time-range-picker/time-range-picker'
 export { useTimeRangePicker } from './components/time-range-picker/use-time-range-picker'
 export type { TimeRangePickerContext } from './components/time-range-picker/use-time-range-picker'
+export { XhTimeZoneSelect } from './components/time-zone-select/time-zone-select'
+export type { XhTimeZoneSelectProps } from './components/time-zone-select/time-zone-select'
+export { useTimeZoneSelect } from './components/time-zone-select/use-time-zone-select'
+export type { TimeZoneSelectContext } from './components/time-zone-select/use-time-zone-select'
 export { useTimelineContext, useTimelineItemContext } from './components/timeline/context'
 export type { TimelineContext } from './components/timeline/context'
 export {
