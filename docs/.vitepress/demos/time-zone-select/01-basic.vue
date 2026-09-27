@@ -18,6 +18,8 @@ const zones = [
 </script>
 
 <template>
-  <XhTimeZoneSelect v-model:value="value" :time-zones="zones" />
-  <p>当前值：{{ value ?? "未选择" }}</p>
+  <div data-demo-stack>
+    <XhTimeZoneSelect v-model:value="value" :time-zones="zones" />
+    <p>当前值：{{ value ?? "未选择" }}</p>
+  </div>
 </template>
