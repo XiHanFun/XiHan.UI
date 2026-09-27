@@ -27,6 +27,12 @@ export function useHeatmap(props: HeatmapSchema['props']): HeatmapContext {
   // 过渡在机器的挂载效应里核对，根的取值口要赶在那之前交出去
   const onCreate = useCallback((service: Service<HeatmapSchema>) => {
     service.refs.set('getRootEl', () => rootRef.current)
+    // React 的 concurrent root 可能先把首次 DOM 提交给浏览器，再消费挂载效应里由外部 store
+    // 触发的入场状态。先只预置「可能入场」这一事实，让首帧格子直接落在填色起点；
+    // 挂载效应拿到真实 root 后仍由 Headless 按数据、动效偏好与令牌决定是否保留及何时结束。
+    // 没有可画数据时 level 全是 0，不会产生 data-drawing；animated=false 则完全不预置。
+    if (service.prop('animated') !== false)
+      service.context.set('transition', 'entry')
   }, [])
   const service = useMachine(heatmapMachine, () => props, { onCreate })
   return { api: connectHeatmap(service, reactNormalize), service, rootRef }
