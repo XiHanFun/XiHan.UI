@@ -45,7 +45,7 @@ const axis = layoutAxis({
 - 工厂返回冻结对象，「修改」返回新对象：`scale.nice()` 得到一把新的比例尺，原来那把不变。
 - 非法输入立即抛 `VizError`，`code` 以 `XH_VIZ_` 开头，`detail` 带着出问题的原始输入；不静默修正。
 - 缺失值（`null`、`undefined`、`NaN`）是缺失，统计时跳过，不按 0 处理。
-- 层级布局（层级节点、按父 id 组树、矩形树图、分区与圆堆积）走 `@xihan-ui/viz/hierarchy` 子路径，不从包入口导出：只画直角坐标图的应用不为它付字节。布局把几何写回节点（矩形的四边 `x0` / `y0` / `x1` / `y1`，圆的 `x` / `y` / `r`），调用前先 `sum()` 或 `count()` 算出聚合值。
+- 层级布局（层级节点、按父 id 组树、矩形树图、分区、圆堆积、整齐的树与树状图）走 `@xihan-ui/viz/hierarchy` 子路径，不从包入口导出：只画直角坐标图的应用不为它付字节。布局把几何写回节点（矩形的四边 `x0` / `y0` / `x1` / `y1`，圆的 `x` / `y` / `r`，树与树状图的 `x` / `y`）；矩形树图、分区与圆堆积调用前先 `sum()` 或 `count()` 算出聚合值，树与树状图只看结构。
 - 桑基布局走 `@xihan-ui/viz/sankey` 子路径：`sankey(nodes, links, { size, nodeWidth, nodePadding, nodeAlign, nodeSort })` 给出节点的四边与流带两端的中线，`sankeyLinkPath` 写出流带的路径；成环报 `XH_VIZ_SANKEY_CYCLE` 并在 `detail.cycle` 里列出环路。
 
 ## 装
