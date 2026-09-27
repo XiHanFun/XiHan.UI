@@ -34548,7 +34548,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "transparent"
       ],
       "visibility": "public",
       "description": "grid-list 的 row-selection-indicator 部件 background 覆盖槽。"
@@ -34566,7 +34566,7 @@
         "state=checked"
       ],
       "defaultToken": [
-        "--xh-bg-brand"
+        "--xh-_grid-list-indicator-accent"
       ],
       "visibility": "public",
       "description": "grid-list 的 row-selection-indicator 部件 background 覆盖槽。"
@@ -34602,7 +34602,7 @@
         "state=checked"
       ],
       "defaultToken": [
-        "--xh-border-control-focus"
+        "--xh-_grid-list-indicator-accent"
       ],
       "visibility": "public",
       "description": "grid-list 的 row-selection-indicator 部件 border-color 覆盖槽。"
@@ -34620,7 +34620,7 @@
         "state=checked"
       ],
       "defaultToken": [
-        "--xh-fg-on-brand"
+        "--xh-_grid-list-indicator-on-accent"
       ],
       "visibility": "public",
       "description": "grid-list 的 row-selection-indicator 部件 color 覆盖槽。"
@@ -34632,18 +34632,16 @@
         "row-selection-indicator"
       ],
       "property": [
-        "block-size",
-        "inline-size"
-      ],
-      "state": [
-        "empty",
-        "state=checked"
-      ],
-      "defaultToken": [
         "--xh-icon-size"
       ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_grid-list-indicator-glyph"
+      ],
       "visibility": "public",
-      "description": "grid-list 的 row-selection-indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "grid-list 的 row-selection-indicator 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-row-indicator-me",
@@ -36603,7 +36601,6 @@
       ],
       "defaultToken": [
         "--xh-_color-swatch-picker-mark",
-        "--xh-_grid-list-indicator-glyph",
         "--xh-glyph-size-2xl",
         "--xh-glyph-size-3xl",
         "--xh-glyph-size-4xl",

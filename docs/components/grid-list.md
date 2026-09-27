@@ -317,12 +317,12 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `--xh-grid-list-row-content-gap` | `row-content` | `gap` | `default` | `--xh-space-1` | grid-list 的 row-content 部件 gap 覆盖槽。 |
 | `--xh-grid-list-row-description-fg` | `row-description` | `color` | `default` | `--xh-fg-muted` | grid-list 的 row-description 部件 color 覆盖槽。 |
 | `--xh-grid-list-row-description-font-size` | `row-description` | `font-size` | `default` | `--xh-control-caption-md` | grid-list 的 row-description 部件 font-size 覆盖槽。 |
-| `--xh-grid-list-row-indicator-bg` | `row-selection-indicator` | `background` | `default` | `--xh-bg-surface` | grid-list 的 row-selection-indicator 部件 background 覆盖槽。 |
-| `--xh-grid-list-row-indicator-bg-selected` | `row-selection-indicator` | `background` | `state=checked` | `--xh-bg-brand` | grid-list 的 row-selection-indicator 部件 background 覆盖槽。 |
+| `--xh-grid-list-row-indicator-bg` | `row-selection-indicator` | `background` | `default` | `transparent` | grid-list 的 row-selection-indicator 部件 background 覆盖槽。 |
+| `--xh-grid-list-row-indicator-bg-selected` | `row-selection-indicator` | `background` | `state=checked` | `--xh-_grid-list-indicator-accent` | grid-list 的 row-selection-indicator 部件 background 覆盖槽。 |
 | `--xh-grid-list-row-indicator-border` | `row-selection-indicator` | `border` | `default` | `--xh-border-control` | grid-list 的 row-selection-indicator 部件 border 覆盖槽。 |
-| `--xh-grid-list-row-indicator-border-selected` | `row-selection-indicator` | `border-color` | `state=checked` | `--xh-border-control-focus` | grid-list 的 row-selection-indicator 部件 border-color 覆盖槽。 |
-| `--xh-grid-list-row-indicator-fg-selected` | `row-selection-indicator` | `color` | `state=checked` | `--xh-fg-on-brand` | grid-list 的 row-selection-indicator 部件 color 覆盖槽。 |
-| `--xh-grid-list-row-indicator-glyph-size` | `row-selection-indicator` | `block-size`<br>`inline-size` | `empty`<br>`state=checked` | `--xh-icon-size` | grid-list 的 row-selection-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-grid-list-row-indicator-border-selected` | `row-selection-indicator` | `border-color` | `state=checked` | `--xh-_grid-list-indicator-accent` | grid-list 的 row-selection-indicator 部件 border-color 覆盖槽。 |
+| `--xh-grid-list-row-indicator-fg-selected` | `row-selection-indicator` | `color` | `state=checked` | `--xh-_grid-list-indicator-on-accent` | grid-list 的 row-selection-indicator 部件 color 覆盖槽。 |
+| `--xh-grid-list-row-indicator-glyph-size` | `row-selection-indicator` | `--xh-icon-size` | `default` | `--xh-_grid-list-indicator-glyph` | grid-list 的 row-selection-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-grid-list-row-indicator-me` | `row-selection-indicator` | `margin-inline-end` | `default` | `--xh-control-gap-md` | grid-list 的 row-selection-indicator 部件 margin-inline-end 覆盖槽。 |
 | `--xh-grid-list-row-indicator-radius` | `row-selection-indicator` | `border-radius` | `default` | `--xh-shape-inset` | grid-list 的 row-selection-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-grid-list-row-indicator-size` | `row-selection-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_grid-list-indicator` | grid-list 的 row-selection-indicator 部件 block-size、inline-size 覆盖槽。 |

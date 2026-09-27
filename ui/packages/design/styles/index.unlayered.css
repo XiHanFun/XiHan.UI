@@ -27393,6 +27393,8 @@
 [data-scope='grid-list'][data-part='root'] {
   --xh-_grid-list-indicator: var(--xh-control-indicator-md);
   --xh-_grid-list-indicator-glyph: calc(var(--xh-_grid-list-indicator) * 0.75);
+  --xh-_grid-list-indicator-accent: var(--xh-_tone-border-control, var(--xh-bg-brand));
+  --xh-_grid-list-indicator-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-icon-size: var(--xh-grid-list-icon-size, var(--xh-glyph-size-md));
 
   display: flex;
@@ -27445,8 +27447,34 @@
 }
 
 [data-scope='grid-list'][data-part='row'] {
-  /* 长期承载面的可选集合使用 page 语境：选中铺品牌淡底，行级按压只换面、不缩放。 */
+  /* 多选框已经是唯一选中标记，静息行不再重复铺品牌淡底；只有真实悬停、键盘高亮与按下换中性面。 */
   --xh-collection-radius: var(--xh-grid-list-row-radius, var(--xh-shape-control));
+  --xh-collection-bg-selected: transparent;
+  --xh-collection-fg-selected: var(--xh-material-frosted-fg);
+  --xh-collection-indicator-fg-selected: var(--xh-fg-brand);
+  --xh-collection-bg-selected-hover: var(--xh-bg-subtle);
+  --xh-collection-fg-selected-hover: var(--xh-material-frosted-fg);
+  --xh-collection-indicator-fg-selected-hover: var(--xh-fg-brand);
+  --xh-collection-bg-selected-highlight: var(--xh-bg-subtle);
+  --xh-collection-fg-selected-highlight: var(--xh-material-frosted-fg);
+  --xh-collection-indicator-fg-selected-highlight: var(--xh-fg-brand);
+  --xh-collection-bg-selected-pressed: var(--xh-bg-subtle-hover);
+  --xh-collection-fg-selected-pressed: var(--xh-material-frosted-fg);
+  --xh-collection-indicator-fg-selected-pressed: var(--xh-fg-brand);
+}
+
+/* Headless 会预先保留下一次 roving focus 的 highlighted 行；容器尚未真正获得键盘焦点时，
+   这只是内部导航位置，不能提前画成焦点态。指针移入仍按普通 hover 阶梯回应。 */
+[data-scope='grid-list'][data-part='row'][data-highlighted]:not(:focus-visible) {
+  --xh-collection-bg-keyboard-highlight: transparent;
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-bg-selected-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
+}
+
+[data-scope='grid-list'][data-part='row'][data-highlighted]:not(:focus-visible):hover {
+  --xh-collection-bg-keyboard-highlight: var(--xh-bg-subtle);
+  --xh-collection-bg-selected-highlight: var(--xh-bg-subtle);
 }
 
 [data-scope='grid-list'][data-part='root'][data-readonly]
@@ -27505,6 +27533,8 @@
 }
 
 [data-scope='grid-list'][data-part='row-selection-indicator'] {
+  --xh-icon-size: var(--xh-grid-list-row-indicator-glyph-size, var(--xh-_grid-list-indicator-glyph));
+
   display: grid;
   grid-row: 1 / span 2;
   grid-column: prefix;
@@ -27514,20 +27544,20 @@
   margin-inline-end: var(--xh-grid-list-row-indicator-me, var(--xh-control-gap-md));
   border: var(--xh-stroke-thin) solid var(--xh-grid-list-row-indicator-border, var(--xh-border-control));
   border-radius: var(--xh-grid-list-row-indicator-radius, var(--xh-shape-inset));
-  background: var(--xh-grid-list-row-indicator-bg, var(--xh-bg-surface));
+  background: var(--xh-grid-list-row-indicator-bg, transparent);
   color: transparent;
 }
 
 [data-scope='grid-list'][data-part='row-selection-indicator'][data-state='checked'] {
-  border-color: var(--xh-grid-list-row-indicator-border-selected, var(--xh-border-control-focus));
-  background: var(--xh-grid-list-row-indicator-bg-selected, var(--xh-bg-brand));
-  color: var(--xh-grid-list-row-indicator-fg-selected, var(--xh-fg-on-brand));
+  border-color: var(--xh-grid-list-row-indicator-border-selected, var(--xh-_grid-list-indicator-accent));
+  background: var(--xh-grid-list-row-indicator-bg-selected, var(--xh-_grid-list-indicator-accent));
+  color: var(--xh-grid-list-row-indicator-fg-selected, var(--xh-_grid-list-indicator-on-accent));
 }
 
 [data-scope='grid-list'][data-part='row-selection-indicator'][data-state='checked']:empty::after {
   content: '';
-  inline-size: var(--xh-grid-list-row-indicator-glyph-size, var(--xh-icon-size, var(--xh-_grid-list-indicator-glyph)));
-  block-size: var(--xh-grid-list-row-indicator-glyph-size, var(--xh-icon-size, var(--xh-_grid-list-indicator-glyph)));
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
