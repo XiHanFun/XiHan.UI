@@ -16,6 +16,8 @@ import type {
   TimePickerPresetState,
   TimePickerSchema,
   TimeSegmentType,
+  TimeStep,
+  TimeUnavailablePredicate,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -74,12 +76,14 @@ export const XhTimePickerRoot = defineComponent({
     locale: { type: String },
     hourCycle: { type: Number as PropType<TimeHourCycle> },
     granularity: { type: String as PropType<TimeGranularity> },
-    step: { type: Number },
+    /** 按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。 */
+    timeStep: { type: Object as PropType<TimeStep> },
     /** 快捷选项；提供后浮层中多出一列，时刻要在自己的 computed 中计算后再传入。 */
     presets: { type: Array as PropType<TimePickerPreset[]> },
     disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<TimePickerProps['translations']> },
-    isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean> },
+    /** 逐格可选性：时列按 24 小时制给值，第三个参数带已选的时与分。 */
+    isTimeUnavailable: { type: Function as PropType<TimeUnavailablePredicate> },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },

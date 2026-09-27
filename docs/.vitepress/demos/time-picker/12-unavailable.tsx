@@ -1,6 +1,6 @@
-// 快捷选项 | presets 在列旁边多排一列，点击一条即整份写入值并收起；时刻在组件外计算后再传入
+// 按已选的时判定 | isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以后，别的整点不受限
+import type { TimeColumnUnit, TimeUnavailableContext } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
-import { timePickerPresetNow } from "@xihan-ui/headless";
 import {
   XhTimePickerColumn,
   XhTimePickerContent,
@@ -8,33 +8,31 @@ import {
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
-  XhTimePickerPresetGroup,
   XhTimePickerRoot,
   XhTimePickerSegment,
   XhTimePickerSegmentGroup,
 } from "@xihan-ui/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+
+// 判真的格子仍在列里、仍可聚焦，只是选不中；时列的值恒按 24 小时制给
+function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUnavailableContext): boolean {
+  return unit === "minute" && context.hour === 9 && Number(option) < 30;
+}
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("");
-
-  // 时刻算一次就固定下来：connect 每帧都会跑一遍，把「此刻」放进渲染期会每帧算出新值
-  const presets = useMemo(() => [
-    { label: "此刻", value: timePickerPresetNow() },
-    { label: "上午 9 点", value: "09:00" },
-    { label: "午休", value: "12:00" },
-    { label: "下班", value: "18:00" },
-  ], []);
+  const [value, setValue] = useState("09:30");
 
   return (
     <>
       <XhTimePickerRoot
         value={value}
         onValueChange={details => setValue(details.value)}
-        presets={presets}
+        min="09:00"
+        max="18:00"
         timeStep={{ minute: 15 }}
+        isTimeUnavailable={isTimeUnavailable}
       >
-        <XhTimePickerLabel>提交时刻</XhTimePickerLabel>
+        <XhTimePickerLabel>到店时刻</XhTimePickerLabel>
         <XhTimePickerControl>
           <XhTimePickerSegmentGroup>
             <XhTimePickerSegment segment="hour" />
@@ -44,8 +42,6 @@ export default function Demo(): ReactNode {
         </XhTimePickerControl>
         <XhTimePickerPositioner>
           <XhTimePickerContent>
-            {/* 不写默认插槽就按 presets 数据自动铺；这一列自己吃方向键，不与时分那两列抢 */}
-            <XhTimePickerPresetGroup />
             <XhTimePickerColumn unit="hour">
               {({ options }) => options.map(o => <XhTimePickerItem key={o} value={o} />)}
             </XhTimePickerColumn>

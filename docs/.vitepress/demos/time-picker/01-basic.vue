@@ -23,7 +23,7 @@ const value = ref("09:30");
   <XhTimePickerRoot
     v-model:value="value"
     name="meeting-time"
-    :step="15"
+    :time-step="{ minute: 15 }"
   >
     <XhTimePickerLabel>会议开始</XhTimePickerLabel>
     <XhTimePickerControl>

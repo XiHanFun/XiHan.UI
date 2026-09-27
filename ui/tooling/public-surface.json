@@ -12913,7 +12913,7 @@
       "readOnly",
       "required",
       "size",
-      "step",
+      "timeStep",
       "tone",
       "translations",
       "value",
@@ -20692,7 +20692,7 @@
         "read-only",
         "required",
         "size",
-        "step",
+        "time-step",
         "tone",
         "value",
         "variant"

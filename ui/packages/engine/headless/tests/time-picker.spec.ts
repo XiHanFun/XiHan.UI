@@ -132,7 +132,7 @@ function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): H
   const grid = timeColumns({
     granularity: 'second',
     hourCycle: initial.hourCycle,
-    timeStep: { minute: initial.step },
+    timeStep: initial.timeStep,
   })
   const columns = new Map<TimePickerColumnUnit, HTMLElement>()
   const options = new Map<string, HTMLElement>()
@@ -576,6 +576,42 @@ describe('浮层里的列与选项', () => {
     expect(h.column('hour').getAttribute('tabindex')).toBe('-1')
   })
 
+  it('timeStep 按单位取样：时、分各有各的步进', () => {
+    const h = open({ timeStep: { hour: 2, minute: 15 } })
+    expect(h.api().timeStep).toEqual({ hour: 2, minute: 15, second: 1 })
+    expect(h.api().columns[0]!.options).toEqual(['00', '02', '04', '06', '08', '10', '12', '14', '16', '18', '20', '22'])
+    expect(h.api().columns[1]!.options).toEqual(['00', '15', '30', '45'])
+  })
+
+  it('isTimeUnavailable 收到已选的时：9 点只能选 30 分以后', () => {
+    const calls: [string, TimePickerColumnUnit, unknown][] = []
+    const h = open({
+      defaultValue: '09:00',
+      isTimeUnavailable: (value, unit, context) => {
+        calls.push([value, unit, context])
+        return unit === 'minute' && context.hour === 9 && Number(value) < 30
+      },
+    })
+    expect(h.option('minute', '15').getAttribute('aria-disabled')).toBe('true')
+    expect(h.option('minute', '30').getAttribute('aria-disabled')).toBe('false')
+    expect(calls).toContainEqual(['15', 'minute', { hour: 9, minute: 0, date: null, index: null }])
+    // 换到 10 点，同一格回到可选
+    h.trigger.click()
+    h.option('hour', '10').click()
+    expect(h.option('minute', '15').getAttribute('aria-disabled')).toBe('false')
+  })
+
+  it('12 小时制下时格按 24 小时制交给判定', () => {
+    const h = open({
+      hourCycle: 12,
+      defaultValue: '21:00',
+      isTimeUnavailable: (value, unit) => unit === 'hour' && Number(value) >= 20,
+    })
+    // 这份值在下午：09 这一格是 21 点，07 是 19 点
+    expect(h.option('hour', '09').getAttribute('aria-disabled')).toBe('true')
+    expect(h.option('hour', '07').getAttribute('aria-disabled')).toBe('false')
+  })
+
   it('整列被界卡空时由列本身兜底进 Tab 序列，否则键盘永远进不去', () => {
     // 09:00-09:00 之间只有 9 点整；把时选成 9 之后分列只剩 00
     const h = open({ min: '10:00', max: '09:00' })
@@ -959,8 +995,8 @@ describe('快捷选项', () => {
     expect(h.value()).toBe('13:45')
   })
 
-  it('越界、解析不了的按不下去；step 只裁列表，不拦快捷选项', () => {
-    const h = mount({ min: '08:00', max: '18:00', step: 15, presets: [
+  it('越界、解析不了的按不下去；步进只裁列表，不拦快捷选项', () => {
+    const h = mount({ min: '08:00', max: '18:00', timeStep: { minute: 15 }, presets: [
       { value: '07:00', label: '界外' },
       { value: 'noon', label: '解析不了' },
       { value: '09:07', label: '不在步进上也能按' },

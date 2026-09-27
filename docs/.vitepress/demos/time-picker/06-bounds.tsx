@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
         onValueChange={details => setValue(details.value)}
         min="09:00"
         max="18:00"
-        step={30}
+        timeStep={{ minute: 30 }}
       >
         <XhTimePickerLabel>面谈时段</XhTimePickerLabel>
         <XhTimePickerControl>

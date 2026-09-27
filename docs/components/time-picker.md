@@ -24,9 +24,9 @@
 
 ## 示例
 
-### 分列步长
+### 按单位步长
 
-step=15 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制
+timeStep 给时、分、秒各设步长，{ minute: 15 } 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制
 
 <XhDemo src="time-picker/02-step" />
 
@@ -84,6 +84,12 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 
 <XhDemo src="time-picker/11-presets" />
 
+### 按已选的时判定
+
+isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以后，别的整点不受限
+
+<XhDemo src="time-picker/12-unavailable" />
+
 ## 设计指引
 
 ### 何时使用
@@ -97,9 +103,9 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 
 ### 特性
 
-- `step` 分列设定各列的步长。
+- `timeStep` 按单位设定时、分、秒各列的步长（`{ minute: 15 }`）。
 - `max` 直接把界外的格从列中裁掉；分钟列还会随已选的小时再裁一次。
-- `isTimeUnavailable` 逐格判断可选性。
+- `isTimeUnavailable` 逐格判断可选性：时列按 24 小时制给值，第三个参数带已选的时与分，写得出「9 点只能选 30 分以后」。
 - 浮层内可以放置“当前时刻”与确认按钮。
 - 触发器打开空值时焦点直接落到第一项；从输入段打开时继续保留键入焦点。
 - 快捷选项与时/分/秒列都从当前值恢复持久选中，并在逻辑末端显示对号。
@@ -149,7 +155,7 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `locale` | `string` |  | BCP 47 语言标记。决定上午 / 下午的文字，以及未显式提供 hourCycle 时的小时制。 |
 | `hourCycle` | `TimeHourCycle` |  | 小时制。未提供时按 locale 推断，locale 也没有时使用 24。 |
 | `granularity` | `TimeGranularity` |  | 值精确到哪一段，默认 minute。它同时决定分段输入显示几段、浮层中排几列。 |
-| `step` | `number` |  | 分列的步进（分钟），默认 1。只影响浮层中的可选值，不限制手动输入的分钟数。 |
+| `timeStep` | `TimeStep` |  | 按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。时的步进按 24 小时制的真实小时取。 只影响浮层中的可选值，不限制段位上手动输入的数。 |
 | `presets` | `TimePickerPreset[]` |  | 快捷选项（「当前时刻」「上午 9 点」等）。提供后浮层中多出一列，点击即整份写入值并收起。 时刻需计算后传入：连接层每帧求值，把当前时刻放进渲染期会每帧得出一个新结果。 无法解析或落在 min / max 之外的选项自动不可按下；带秒的时刻按 granularity 归一后再比较与写入。 |
 | `disabled` | `boolean` |  | 禁用：分段输入整组退出 Tab 序列、触发器使用原生 disabled，隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、列表照常浏览，但值不可修改也不可清空。 |
@@ -162,9 +168,9 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `placement` | `Placement` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `isTimeUnavailable` | `(value: string, unit: TimePickerColumnUnit) => boolean` |  | 逐值可选性。接收两位补零的值与所属的列：同一个 '30' 在分钟列与秒列含义不同。 与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。 连续区间用 min / max 表达即可，该项留给每隔 15 分钟才可预约这类离散规则。 |
+| `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这份值里已选的时（24 小时制）与分， 写得出「9 点只能选 30 分以后」。date 与 index 在本组件恒为 null。 与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。 连续区间用 min / max 表达即可，该项留给每隔 15 分钟才可预约这类离散规则。 |
 | `translations` | `Partial<TimePickerTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
-| `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  |  |
+| `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### TimePickerPreset
@@ -250,10 +256,10 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `invalid` | `boolean` |  |
 | `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 未提供时由 locale 推断的值）。 |
 | `granularity` | `TimeGranularity` |  |
-| `step` | `number` | 实际生效的分列步进。 |
+| `timeStep` | `ResolvedTimeStep` | 实际生效的按单位步进。 |
 | `segments` | `TimeSegmentType[]` | 当前参与显示的段，文档序。未列入的段由 connect 写上 hidden 收起。 |
 | `focusedSegment` | `TimeSegmentType \| null` | 焦点所在段；焦点在分段输入外时为 null。 |
-| `columns` | `TimePickerColumn[]` | 当前应排列的列及每列的可选值（已按 step 与 min / max 裁剪）。作者据此渲染浮层。 |
+| `columns` | `TimePickerColumn[]` | 当前应排列的列及每列的可选值（已按 timeStep 取样、按 min / max 裁剪）。作者据此渲染浮层。 |
 | `focusedColumn` | `TimePickerColumnUnit \| null` |  |
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |

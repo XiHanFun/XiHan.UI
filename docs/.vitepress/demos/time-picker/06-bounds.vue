@@ -17,7 +17,7 @@ const value = ref("");
 </script>
 
 <template>
-  <XhTimePickerRoot v-model:value="value" min="09:00" max="18:00" :step="30">
+  <XhTimePickerRoot v-model:value="value" min="09:00" max="18:00" :time-step="{ minute: 30 }">
     <XhTimePickerLabel>面谈时段</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>

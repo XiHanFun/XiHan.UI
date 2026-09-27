@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
       <XhTimePickerRoot
         value={value}
         onValueChange={details => setValue(details.value)}
-        step={15}
+        timeStep={{ minute: 15 }}
       >
         {({ canClear, setValue: write, clear, setOpen }) => (
           <>

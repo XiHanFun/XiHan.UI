@@ -60,7 +60,7 @@ function currentColumns(params: Params<TimePickerSchema>): TimeColumn[] {
   return timeColumnsFor(currentDraft(params), {
     granularity: currentGranularity(params),
     hourCycle: currentHourCycle(params),
-    timeStep: { minute: params.prop('step') },
+    timeStep: params.prop('timeStep'),
     min: params.prop('min'),
     max: params.prop('max'),
   })

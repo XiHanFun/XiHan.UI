@@ -189,7 +189,7 @@ const TIME_FIELD_TREE = (
 )
 
 const TIME_PICKER_TREE = (
-  <XhTimePickerRoot defaultOpen defaultValue="09:30" min="08:00" max="11:00" step={30}>
+  <XhTimePickerRoot defaultOpen defaultValue="09:30" min="08:00" max="11:00" timeStep={{ minute: 30 }}>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
         <XhTimePickerSegment segment="hour" />

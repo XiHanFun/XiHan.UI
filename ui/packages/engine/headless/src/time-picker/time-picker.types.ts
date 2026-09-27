@@ -7,7 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { TimeColumn, TimeColumnUnit } from '../shared/time-constraint'
+import type { ResolvedTimeStep, TimeColumn, TimeColumnUnit, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
 import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 
 /**
@@ -94,7 +94,7 @@ export interface TimePickerPreset {
 export interface TimePickerPresetState extends TimePickerPreset {
   /** 归一为组件值形状的时刻（'9:00' → '09:00'）；无法解析时为 null。 */
   time: string | null
-  /** 不可按下：作者标记了 disabled、无法解析、或落在 min / max 之外。step 只裁剪列表，不限制它。 */
+  /** 不可按下：作者标记了 disabled、无法解析、或落在 min / max 之外。timeStep 只裁剪列表，不限制它。 */
   disabled: boolean
   /** 当前值与它相同（按归一后的串比较）。 */
   selected: boolean
@@ -129,8 +129,11 @@ export interface TimePickerSchema extends MachineSchema {
     hourCycle?: TimeHourCycle
     /** 值精确到哪一段，默认 minute。它同时决定分段输入显示几段、浮层中排几列。 */
     granularity?: TimeGranularity
-    /** 分列的步进（分钟），默认 1。只影响浮层中的可选值，不限制手动输入的分钟数。 */
-    step?: number
+    /**
+     * 按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。时的步进按 24 小时制的真实小时取。
+     * 只影响浮层中的可选值，不限制段位上手动输入的数。
+     */
+    timeStep?: TimeStep
     /**
      * 快捷选项（「当前时刻」「上午 9 点」等）。提供后浮层中多出一列，点击即整份写入值并收起。
      * 时刻需计算后传入：连接层每帧求值，把当前时刻放进渲染期会每帧得出一个新结果。
@@ -157,15 +160,17 @@ export interface TimePickerSchema extends MachineSchema {
     /** 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
     dir?: Direction
     offset?: number
-    /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     /**
-     * 逐值可选性。接收两位补零的值与所属的列：同一个 '30' 在分钟列与秒列含义不同。
+     * 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）；
+     * unit 区分同一个 '30' 属于哪一列；context 带这份值里已选的时（24 小时制）与分，
+     * 写得出「9 点只能选 30 分以后」。date 与 index 在本组件恒为 null。
      * 与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。
      * 连续区间用 min / max 表达即可，该项留给每隔 15 分钟才可预约这类离散规则。
      */
-    isTimeUnavailable?: (value: string, unit: TimePickerColumnUnit) => boolean
+    isTimeUnavailable?: TimeUnavailablePredicate
     /** 段位读屏名的覆盖；未提供时使用内置英文语义名。 */
     translations?: Partial<TimePickerTranslations>
+    /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: TimePickerValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TimePickerOpenChangeDetails) => void
@@ -285,13 +290,13 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   /** 实际生效的小时制（prop 未提供时由 locale 推断的值）。 */
   hourCycle: TimeHourCycle
   granularity: TimeGranularity
-  /** 实际生效的分列步进。 */
-  step: number
+  /** 实际生效的按单位步进。 */
+  timeStep: ResolvedTimeStep
   /** 当前参与显示的段，文档序。未列入的段由 connect 写上 hidden 收起。 */
   segments: TimeSegmentType[]
   /** 焦点所在段；焦点在分段输入外时为 null。 */
   focusedSegment: TimeSegmentType | null
-  /** 当前应排列的列及每列的可选值（已按 step 与 min / max 裁剪）。作者据此渲染浮层。 */
+  /** 当前应排列的列及每列的可选值（已按 timeStep 取样、按 min / max 裁剪）。作者据此渲染浮层。 */
   columns: TimePickerColumn[]
   focusedColumn: TimePickerColumnUnit | null
   focusedItem: string | null

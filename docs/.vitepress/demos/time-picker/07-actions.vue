@@ -29,7 +29,7 @@ function now() {
   <XhTimePickerRoot
     v-slot="{ canClear, setValue, clear, setOpen }"
     v-model:value="value"
-    :step="15"
+    :time-step="{ minute: 15 }"
   >
     <XhTimePickerLabel>提交时刻</XhTimePickerLabel>
     <XhTimePickerControl>

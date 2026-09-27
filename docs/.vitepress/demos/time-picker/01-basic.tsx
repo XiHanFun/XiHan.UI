@@ -25,7 +25,7 @@ export default function Demo(): ReactNode {
         value={value}
         onValueChange={details => setValue(details.value)}
         name="meeting-time"
-        step={15}
+        timeStep={{ minute: 15 }}
       >
         <XhTimePickerLabel>会议开始</XhTimePickerLabel>
         <XhTimePickerControl>

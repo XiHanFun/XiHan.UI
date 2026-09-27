@@ -1,7 +1,7 @@
-<!-- 按单位步长 | timeStep 给时、分、秒各设步长，{ minute: 15 } 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制 -->
+<!-- 按已选的时判定 | isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以后，别的整点不受限 -->
 <script setup lang="ts">
+import type { TimeColumnUnit, TimeUnavailableContext } from "@xihan-ui/headless";
 import {
-  XhTimePickerClearTrigger,
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
@@ -15,22 +15,31 @@ import {
 import { ref } from "vue";
 
 const value = ref("09:30");
+
+// 判真的格子仍在列里、仍可聚焦，只是选不中；时列的值恒按 24 小时制给
+function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUnavailableContext): boolean {
+  return unit === "minute" && context.hour === 9 && Number(option) < 30;
+}
 </script>
 
 <template>
-  <XhTimePickerRoot v-model:value="value" :time-step="{ minute: 15 }">
-    <XhTimePickerLabel>预约时段</XhTimePickerLabel>
+  <XhTimePickerRoot
+    v-model:value="value"
+    min="09:00"
+    max="18:00"
+    :time-step="{ minute: 15 }"
+    :is-time-unavailable="isTimeUnavailable"
+  >
+    <XhTimePickerLabel>到店时刻</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
         <XhTimePickerSegment segment="hour" />
         <span>:</span>
         <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
-      <XhTimePickerClearTrigger />
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>
-        <!-- 时列 24 格装不下，方向键走到列尾它自己滚起来，滚的是那一列不是整个面板 -->
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>

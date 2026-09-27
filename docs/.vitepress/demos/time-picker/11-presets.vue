@@ -27,7 +27,7 @@ const presets = computed(() => [
 </script>
 
 <template>
-  <XhTimePickerRoot v-model:value="value" :presets="presets" :step="15">
+  <XhTimePickerRoot v-model:value="value" :presets="presets" :time-step="{ minute: 15 }">
     <XhTimePickerLabel>提交时刻</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
