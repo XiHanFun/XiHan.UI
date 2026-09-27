@@ -9,11 +9,11 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { BreadcrumbApi, BreadcrumbNodeMeta, BreadcrumbSchema } from './breadcrumb.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { breadcrumbAnatomy } from './breadcrumb.anatomy'
-import { buildBreadcrumbItems, normalizeBreadcrumbNodes } from './breadcrumb.range'
+import { breadcrumbCollapsedRange, buildBreadcrumbItems, normalizeBreadcrumbNodes } from './breadcrumb.range'
 
 const parts = breadcrumbAnatomy.build()
 
-// Breadcrumb 没有业务状态：属性来自 props 与部件自报的声明，机器只承载按压通道。
+// Breadcrumb 的业务状态只有折叠路径是否已展开：其余属性来自 props 与部件自报的声明，机器另外承载按压通道。
 // 结构语义靠作者写的标签给（root 是 nav、list 是 ol、item/separator/ellipsis 是 li），这里不补 role。
 export function connectBreadcrumb<T extends PropTypes>(
   service: Service<BreadcrumbSchema>,
@@ -21,9 +21,12 @@ export function connectBreadcrumb<T extends PropTypes>(
 ): BreadcrumbApi<T> {
   const { prop, context, send } = service
   const label = prop('translations')?.root ?? 'Breadcrumb'
-  // collection 推出的层级元信息，折叠序列由它派生，两处数学只有一份
+  const ellipsisLabel = prop('translations')?.ellipsis ?? 'Show full path'
+  // collection 推出的层级元信息，折叠序列由它派生，两处数学只有一份；展开后不再折
   const collection: BreadcrumbNodeMeta[] = normalizeBreadcrumbNodes(prop('collection') ?? [])
-  const items = buildBreadcrumbItems(collection, prop('maxItems'))
+  const expanded = context.get('expanded')
+  const maxItems = expanded ? undefined : prop('maxItems')
+  const items = buildBreadcrumbItems(collection, maxItems)
   // 按压通道：真源是机器 context 里「正被按住的那一条」（按 value 记），每条链接各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
   // 当前页那条不可点，它的当前页事实随 PRESS.START 带给机器的 canPress 守卫
@@ -36,6 +39,9 @@ export function connectBreadcrumb<T extends PropTypes>(
   return {
     collection,
     items,
+    expanded,
+    expand: () => send({ type: 'EXPAND' }),
+    collapsedRange: count => breadcrumbCollapsedRange(count, maxItems),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -100,10 +106,30 @@ export function connectBreadcrumb<T extends PropTypes>(
       'aria-hidden': true,
     }),
 
-    // 省略号纯视觉占位，不进读屏
+    // 折叠位是路径里的一个列表项，里面的触发器是被折叠层级的入口；展开后整项收起
     getEllipsisProps: () => normalize.element({
       ...parts.ellipsis.attrs,
-      'aria-hidden': true,
+      hidden: expanded || undefined,
+    }),
+
+    // 触发器与链接同属一行导航条目：面、字色与按压时间线由家族按 nav 语境给。
+    // 按下即展开完整路径，焦点落到第一条展开出来的链接上——触发器之前有几条链接，它就是第几条
+    getEllipsisTriggerProps: () => normalize.button({
+      ...parts['ellipsis-trigger'].attrs,
+      'type': 'button',
+      'aria-label': ellipsisLabel,
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'nav',
+      'onClick': (event: MouseEvent) => {
+        const trigger = event.currentTarget as HTMLElement | null
+        const list = trigger?.closest<HTMLElement>(parts.list.selector) ?? null
+        const links = list ? [...list.querySelectorAll<HTMLElement>(parts.link.selector)] : []
+        const focusIndex = trigger
+          ? links.filter(link => link.compareDocumentPosition(trigger) & trigger.DOCUMENT_POSITION_FOLLOWING).length
+          : undefined
+        send({ type: 'EXPAND', list, focusIndex })
+      },
     }),
   }
 }

@@ -3566,7 +3566,7 @@
         "ellipsis"
       ],
       "property": [
-        "inline-size"
+        "min-inline-size"
       ],
       "state": [
         "default"
@@ -3575,12 +3575,13 @@
         "--xh-space-5"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 ellipsis 部件 inline-size 覆盖槽。"
+      "description": "breadcrumb 的 ellipsis 部件 min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-fg",
       "component": "breadcrumb",
       "part": [
+        "ellipsis-trigger",
         "link",
         "root"
       ],
@@ -3595,12 +3596,13 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 link、root 部件 color 覆盖槽。"
+      "description": "breadcrumb 的 ellipsis-trigger、link、root 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-font-size",
       "component": "breadcrumb",
       "part": [
+        "ellipsis-trigger",
         "link",
         "root"
       ],
@@ -3614,7 +3616,7 @@
         "--xh-_breadcrumb-font-size"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 link、root 部件 font-size 覆盖槽。"
+      "description": "breadcrumb 的 ellipsis-trigger、link、root 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-gap",
@@ -3638,6 +3640,7 @@
       "name": "--xh-breadcrumb-icon-size",
       "component": "breadcrumb",
       "part": [
+        "ellipsis-trigger",
         "link",
         "root"
       ],
@@ -3651,12 +3654,13 @@
         "--xh-glyph-size-text"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 link、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "breadcrumb 的 ellipsis-trigger、link、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-leading",
       "component": "breadcrumb",
       "part": [
+        "ellipsis-trigger",
         "link",
         "root"
       ],
@@ -3670,7 +3674,7 @@
         "--xh-leading-tight"
       ],
       "visibility": "public",
-      "description": "breadcrumb 的 link、root 部件 line-height 覆盖槽。"
+      "description": "breadcrumb 的 ellipsis-trigger、link、root 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-link-bg-hover",

@@ -2950,7 +2950,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-breadcrumb>`：面包屑行为宿主，把 connectBreadcrumb 产出的 aria-* 接到角色节点上；机器只承载按压通道（data-pressed）。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` / `value` 属性不触发重新接线，需作者自行 requestUpdate。",
+          "description": "`<xh-breadcrumb>`：面包屑行为宿主，把 connectBreadcrumb 产出的 aria-* 接到角色节点上；机器只承载按压通道（data-pressed）。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` / `value` 属性不触发重新接线，需作者自行 requestUpdate。\n\n折叠路径：把完整路径逐层写成 item，在首层之后放一个 ellipsis（里面放 ellipsis-trigger），写上 max-items。\n元素按 max-items 收起中间层（写 hidden），紧跟在被收起层后面的分隔符由皮肤一并收起；按下触发器即放出全部层级，\n省略位收起，焦点落到第一条展开出来的链接上。",
           "name": "XhBreadcrumbElement",
           "cssParts": [
             {
@@ -2978,8 +2978,12 @@
               "name": "separator"
             },
             {
-              "description": "li 折叠占位，对读屏隐藏",
+              "description": "li 折叠位，装着 ellipsis-trigger；展开后 hidden",
               "name": "ellipsis"
+            },
+            {
+              "description": "折叠位里的按钮，可及名取 translations.ellipsis；按下展开完整路径",
+              "name": "ellipsis-trigger"
             }
           ],
           "members": [
@@ -3077,7 +3081,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "最多展开的层数，超出的中间层由 api.items 折叠为一个省略位",
+              "description": "最多展开的层数，超出的中间层收起、由省略位代替；未提供时全部列出",
               "name": "max-items",
               "fieldName": "maxItems"
             },

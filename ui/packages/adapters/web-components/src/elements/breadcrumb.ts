@@ -28,8 +28,12 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  * 标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。
  * 运行期改写 link 上的 `current` / `value` 属性不触发重新接线，需作者自行 requestUpdate。
  *
+ * 折叠路径：把完整路径逐层写成 item，在首层之后放一个 ellipsis（里面放 ellipsis-trigger），写上 max-items。
+ * 元素按 max-items 收起中间层（写 hidden），紧跟在被收起层后面的分隔符由皮肤一并收起；按下触发器即放出全部层级，
+ * 省略位收起，焦点落到第一条展开出来的链接上。
+ *
  * @customElement xh-breadcrumb
- * @attr {number} max-items - 最多展开的层数，超出的中间层由 api.items 折叠为一个省略位
+ * @attr {number} max-items - 最多展开的层数，超出的中间层收起、由省略位代替；未提供时全部列出
  * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；未提供时继承祖先
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -39,7 +43,8 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  * @csspart link - a 链接；写 current 属性的条目得到 aria-current="page" 并拦截点击；value 是链接身份，按压通道按它记住正被按住的那一条，未写时按文档序派生
  * @csspart link-icon - 链接中的图标位，对读屏隐藏
  * @csspart separator - li 分隔符，对读屏隐藏
- * @csspart ellipsis - li 折叠占位，对读屏隐藏
+ * @csspart ellipsis - li 折叠位，装着 ellipsis-trigger；展开后 hidden
+ * @csspart ellipsis-trigger - 折叠位里的按钮，可及名取 translations.ellipsis；按下展开完整路径
  */
 export class XhBreadcrumbElement extends XhElement {
   static override partContract = { anatomy: breadcrumbAnatomy, meta: breadcrumbMeta }
@@ -89,8 +94,14 @@ export class XhBreadcrumbElement extends XhElement {
 
     // 多实例 part 逐个打，link 的当前页事实取作者写的 current；
     // 身份取作者写的 value，没写就按文档序派生（只作按压通道的键，不写回 DOM）
-    for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps() as Record<string, unknown>)
+    // 作者逐层写全了路径：按 max-items 算出被折叠的那一段，把这几层收起；展开后区间为 null，全部放出
+    const range = api.collapsedRange(this.getParts('item').length)
+    let index = 0
+    for (const el of this.getParts('item')) {
+      const collapsed = range != null && index >= range.start && index < range.end
+      this.spreader.spread(el, { ...api.getItemProps() as Record<string, unknown>, hidden: collapsed || undefined })
+      index += 1
+    }
 
     this.getParts('link').forEach((el, index) => {
       const attrs = api.getLinkProps({ value: el.getAttribute('value') ?? `link:${index}`, current: authorFlag(el, 'current') })
@@ -105,5 +116,8 @@ export class XhBreadcrumbElement extends XhElement {
 
     for (const el of this.getParts('ellipsis'))
       this.spreader.spread(el, api.getEllipsisProps() as Record<string, unknown>)
+
+    for (const el of this.getParts('ellipsis-trigger'))
+      this.spreader.spread(el, api.getEllipsisTriggerProps() as Record<string, unknown>)
   }
 }

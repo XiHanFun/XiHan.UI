@@ -15953,7 +15953,7 @@
     display: none;
   }
 
-  /* 分隔符与省略号都是纯视觉占位，读屏那边已被 aria-hidden 摘掉 */
+  /* 分隔符是纯视觉占位，读屏那边已被 aria-hidden 摘掉；折叠位是一个列表项，只给里面的触发器排位 */
   [data-scope='breadcrumb'][data-part='separator'],
   [data-scope='breadcrumb'][data-part='ellipsis'] {
     display: inline-flex;
@@ -15977,8 +15977,46 @@
   }
 
   [data-scope='breadcrumb'][data-part='ellipsis'] {
-    inline-size: var(--xh-breadcrumb-ellipsis-size, var(--xh-space-5));
-    cursor: default;
+    min-inline-size: var(--xh-breadcrumb-ellipsis-size, var(--xh-space-5));
+  }
+
+  /* 被收起的层级与展开后的折叠位都带 hidden：紧跟在它后面的分隔符一并收起，路径里不留两个挨着的分隔符 */
+  [data-scope='breadcrumb'][data-part='item'][hidden] + [data-scope='breadcrumb'][data-part='separator'],
+  [data-scope='breadcrumb'][data-part='ellipsis'][hidden] + [data-scope='breadcrumb'][data-part='separator'] {
+    display: none;
+  }
+
+  /* 折叠位里的触发器与链接同属一行导航条目（nav 语境）：面、字色、按压时间线由家族给，几何与链接同一把尺——
+     行内衬一格、control 圆角、字号随档；不写内容时由下面画一枚省略号字形 */
+  [data-scope='breadcrumb'][data-part='ellipsis-trigger'] {
+    --xh-collection-block-padding: var(--xh-space-0);
+    --xh-collection-inline-padding: var(--xh-space-1);
+    --xh-collection-radius: var(--xh-shape-control);
+    --xh-collection-font-size: var(--xh-breadcrumb-font-size, var(--xh-_breadcrumb-font-size));
+    --xh-collection-glyph-size: var(--xh-breadcrumb-icon-size, var(--xh-glyph-size-text));
+    --xh-collection-fg-rest: var(--xh-breadcrumb-fg, var(--xh-fg-muted));
+    --xh-collection-bg-hover: var(--xh-bg-subtle);
+    --xh-collection-fg-hover: var(--xh-_breadcrumb-accent-text);
+    --xh-collection-bg-pressed: var(--xh-bg-subtle-hover);
+
+    display: inline-flex;
+    align-items: center;
+    line-height: var(--xh-breadcrumb-leading, var(--xh-leading-tight));
+  }
+
+  [data-scope='breadcrumb'][data-part='ellipsis-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+  }
+
+  [data-scope='breadcrumb'][data-part='ellipsis-trigger'][hidden] {
+    display: none;
   }
 
   /* 没写内容就由皮肤画兜底字形（向前的尖角）；作者写了斜杠或自己的图形，这条即不命中 */

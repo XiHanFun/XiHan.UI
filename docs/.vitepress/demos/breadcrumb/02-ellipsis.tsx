@@ -1,4 +1,4 @@
-// 折叠层级 | 收起过长路径的中间部分
+// 折叠层级 | 收起过长路径的中间部分，按下省略位展开完整路径
 import type { ReactNode } from "react";
 import { XhBreadcrumbRoot } from "@xihan-ui/react";
 

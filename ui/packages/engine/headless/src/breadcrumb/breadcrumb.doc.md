@@ -15,13 +15,15 @@
 ## 特性
 
 - `collection` 可直接生成完整路径，也支持手写部件。
-- `maxItems` 将过长路径的中间层折叠为省略号。
+- `maxItems` 将过长路径的中间层折叠为一个省略位。省略位里的 `ellipsis-trigger` 是被折叠层级的入口：它是一枚按钮，键盘可达、读屏念出 `translations.ellipsis`（缺省 Show full path），按下即就地展开完整路径，省略位收起，焦点落到第一条展开出来的链接上；展开后不再折回。
+- Vue / React 由 `collection` 铺开时自动折叠与展开；Web Components 把完整路径逐层写成部件，在首层之后放一个装着触发器的省略位，元素按 `max-items` 收起中间层，展开后放出来。
 - 默认分隔符为箭头，可通过插槽或渲染函数替换。
 - 当前页使用 `aria-current="page"`，不参与键盘导航。
 
 ## 组合
 
 - 通常放在页头或正文标题之前。
+- `ellipsis` 是路径里的一个列表项，里面放 `ellipsis-trigger`；触发器不写内容时由皮肤画一枚省略号字形，写了内容即换成作者的，可及名始终取 `translations.ellipsis`。被收起的层级与展开后的省略位带 `hidden`，紧跟在它后面的分隔符由皮肤一并收起。
 
 ## 接路由
 

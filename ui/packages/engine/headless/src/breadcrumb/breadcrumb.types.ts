@@ -11,6 +11,14 @@ import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/
 export interface BreadcrumbTranslations {
   /** 根节点的 aria-label，用于区分页面上的多个 nav 地标。 */
   root: string
+  /** 省略位触发器的可及名：按下即展开完整路径。 */
+  ellipsis: string
+}
+
+/** 被折叠的一段层级，按路径下标计的半开区间 [start, end)。 */
+export interface BreadcrumbCollapsedRange {
+  start: number
+  end: number
 }
 
 /** 一层路径的数据。提供 collection 时，文字、链接与当前页以它为准。 */
@@ -49,7 +57,10 @@ export interface BreadcrumbSchema extends MachineSchema {
      * 未提供时回到层级逐个写成部件的方式。
      */
     collection?: readonly BreadcrumbNode[]
-    /** 最多展开的层数，超出的中间层折叠为一个省略位；未提供时全部列出。 */
+    /**
+     * 最多展开的层数，超出的中间层折叠为一个省略位；未提供时全部列出。
+     * 省略位里的触发器按下即展开完整路径，焦点落到第一条展开出来的链接上。
+     */
     maxItems?: number
     /** 文字方向，只作用于排版；作者未提供时不写入。 */
     dir?: Direction
@@ -62,19 +73,26 @@ export interface BreadcrumbSchema extends MachineSchema {
   context: {
     /** 按压通道：Space / Enter 或触屏按住的链接 value。抬起、失焦或指针取消即清空，与当前页互相独立。 */
     pressedValue: string | null
+    /** 省略位已被展开：路径不再折叠。只增不减，展开后不再收回。 */
+    expanded: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 单态：面包屑没有随时间推移的过程，机器只承载按压通道。 */
+  /** 单态：面包屑没有随时间推移的过程，机器承载按压通道与省略位的展开。 */
   state: 'idle'
   event:
     /** 链接被 Space / Enter 或触屏按住；current 是链接自身的当前页事实，由 connect 判定后随事件带入。 */
     | { type: 'PRESS.START', value: string, current?: boolean }
     /** 按住的链接抬起、失焦或指针取消；只松开 value 对应的那一条。 */
     | { type: 'PRESS.END', value: string }
+    /**
+     * 展开折叠的路径。list 与 focusIndex 由省略位触发器带入：展开后焦点落到 list 里第 focusIndex 条链接上
+     * （省略位之前的链接数，即第一条展开出来的链接）；程序化展开不带，焦点不动。
+     */
+    | { type: 'EXPAND', list?: HTMLElement | null, focusIndex?: number }
   tag: never
   guard: 'canPress'
-  action: 'startPress' | 'endPress'
+  action: 'startPress' | 'endPress' | 'expand'
   effect: never
 }
 
@@ -97,13 +115,25 @@ export interface BreadcrumbLinkProps {
 export interface BreadcrumbApi<T extends PropTypes = PropTypes> {
   /** 由 collection 推导的层级元信息，按数据顺序排列；未提供 collection 时为空数组。 */
   collection: readonly BreadcrumbNodeMeta[]
-  /** 按 maxItems 折叠后的序列，省略位自带被折叠的层级；未提供 collection 时为空数组。 */
+  /** 按 maxItems 折叠后的序列，省略位自带被折叠的层级；展开后即完整路径；未提供 collection 时为空数组。 */
   items: readonly BreadcrumbItem[]
+  /** 省略位已被展开。 */
+  expanded: boolean
+  /** 展开折叠的路径；焦点不动。 */
+  expand: () => void
+  /**
+   * 一条 count 层的路径按 maxItems 折掉的那一段；不折或已展开时为 null。
+   * 层级由作者逐个写成部件时（Web Components）据它收起被折叠的层级。
+   */
+  collapsedRange: (count: number) => BreadcrumbCollapsedRange | null
   getRootProps: () => T['element']
   getListProps: () => T['element']
   getItemProps: () => T['element']
   getLinkProps: (props: BreadcrumbLinkProps) => T['element']
   getLinkIconProps: () => T['element']
   getSeparatorProps: () => T['element']
+  /** 省略位：列表项，展开后 hidden。 */
   getEllipsisProps: () => T['element']
+  /** 省略位里的触发器：按下展开完整路径，焦点落到第一条展开出来的链接上。 */
+  getEllipsisTriggerProps: () => T['button']
 }

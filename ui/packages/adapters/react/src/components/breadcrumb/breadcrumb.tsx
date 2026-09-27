@@ -99,16 +99,28 @@ export function XhBreadcrumbLinkIcon({ children, ...rest }: XhBreadcrumbLinkIcon
 }
 
 export interface XhBreadcrumbSeparatorProps extends ComponentPropsWithRef<'li'> {}
-/** 分隔符与省略号同为 ol 的直接子节点，渲染为 li 并对读屏隐藏。 */
+/** 分隔符是 ol 的直接子节点，渲染为 li 并对读屏隐藏。 */
 export function XhBreadcrumbSeparator({ children, ...rest }: XhBreadcrumbSeparatorProps): ReactNode {
   const ctx = useBreadcrumbContext()
   return <li {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
 }
 
 export interface XhBreadcrumbEllipsisProps extends ComponentPropsWithRef<'li'> {}
+/** 折叠位：路径里的一个列表项，装着展开完整路径的触发器；展开后收起。 */
 export function XhBreadcrumbEllipsis({ children, ...rest }: XhBreadcrumbEllipsisProps): ReactNode {
   const ctx = useBreadcrumbContext()
   return <li {...mergeReactProps(ctx.api.getEllipsisProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+}
+
+export interface XhBreadcrumbEllipsisTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 折叠位里的触发器：按下展开完整路径，焦点落到第一条展开出来的链接上；不写内容时由皮肤画一枚省略号字形。 */
+export function XhBreadcrumbEllipsisTrigger({ children, ...rest }: XhBreadcrumbEllipsisTriggerProps): ReactNode {
+  const ctx = useBreadcrumbContext()
+  return (
+    <button {...mergePartProps(ctx.api.getEllipsisTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </button>
+  )
 }
 
 /**
@@ -126,7 +138,11 @@ function DefaultTree(props: {
     if (index > 0)
       out.push(<XhBreadcrumbSeparator key={`sep-${index}`}>{props.renderSeparator?.()}</XhBreadcrumbSeparator>)
     if (item.type === 'ellipsis') {
-      out.push(<XhBreadcrumbEllipsis key="ellipsis">{props.renderEllipsis?.(item.nodes) ?? '…'}</XhBreadcrumbEllipsis>)
+      out.push(
+        <XhBreadcrumbEllipsis key="ellipsis">
+          <XhBreadcrumbEllipsisTrigger>{props.renderEllipsis?.(item.nodes)}</XhBreadcrumbEllipsisTrigger>
+        </XhBreadcrumbEllipsis>,
+      )
       return
     }
     const node = item.node

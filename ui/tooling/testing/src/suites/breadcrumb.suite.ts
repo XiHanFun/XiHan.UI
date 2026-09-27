@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { breadcrumbAnatomy, breadcrumbKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from './shared/native-activation'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/'
@@ -9,7 +10,7 @@ const LINK = '[data-scope="breadcrumb"][data-part="link"]'
 /**
  * 一条四层的路径，中间折叠掉一层：
  * 首页 / … / 文档 / 面包屑（末条是当前页）。
- * separator 与 ellipsis 都是 ol 的直接子 li。
+ * separator 与 ellipsis 都是 ol 的直接子 li；ellipsis 里放展开完整路径的触发器。
  */
 const breadcrumbTree: FixtureNode = {
   part: 'root',
@@ -21,7 +22,7 @@ const breadcrumbTree: FixtureNode = {
       children: [
         { part: 'item', tag: 'li', children: [{ part: 'link', tag: 'a', text: '首页', attrs: { href: '/' } }] },
         { part: 'separator', tag: 'li', text: '/' },
-        { part: 'ellipsis', tag: 'li', text: '…' },
+        { part: 'ellipsis', tag: 'li', children: [{ part: 'ellipsis-trigger', tag: 'button' }] },
         { part: 'separator', tag: 'li', text: '/' },
         { part: 'item', tag: 'li', children: [{ part: 'link', tag: 'a', text: '文档', attrs: { href: '/docs' } }] },
         { part: 'separator', tag: 'li', text: '/' },
@@ -74,6 +75,7 @@ export const breadcrumbSuite: ConformanceSuite = {
           'link[0]',
           'separator[0]',
           'ellipsis',
+          'ellipsis-trigger',
           'separator[1]',
           'item[1]',
           'link[1]',
@@ -81,16 +83,51 @@ export const breadcrumbSuite: ConformanceSuite = {
           'item[2]',
           'link[2]',
         ],
-        counts: { root: 1, list: 1, item: 3, link: 3, separator: 3, ellipsis: 1 },
+        counts: { 'root': 1, 'list': 1, 'item': 3, 'link': 3, 'separator': 3, 'ellipsis': 1, 'ellipsis-trigger': 1 },
         parts: {
           // 作者没给 dir 时不输出 dir
           'root': { 'aria-label': 'Breadcrumb', 'dir': null },
           'list': { role: null },
           'item[0]': { role: null },
           'separator[0]': { 'aria-hidden': 'true' },
-          'ellipsis': { 'aria-hidden': 'true' },
+          // 折叠位是路径里的一个列表项，不再对读屏隐藏；被折叠层级的入口是里面那枚带名字的按钮
+          'ellipsis': { 'aria-hidden': null, 'hidden': null },
+          'ellipsis-trigger': {
+            'type': 'button',
+            'aria-label': 'Show full path',
+            'data-xh-collection-item': '',
+            'data-xh-collection-context': 'nav',
+          },
         },
       },
+    },
+    {
+      name: '省略位触发器：按下展开完整路径，省略位收起，焦点落到它之后的第一条链接',
+      spec: { apg: APG },
+      covers: ['breadcrumb.kbd.expand'],
+      steps: [
+        // Enter / Space 由原生按钮翻成一次 click，jsdom 不做这层翻译：守它确实是原生按钮，再用 click 走激活
+        nativeActivation('breadcrumb', 'ellipsis-trigger'),
+        { kind: 'focus', part: 'ellipsis-trigger' },
+        {
+          kind: 'click',
+          part: 'ellipsis-trigger',
+          expect: {
+            parts: { ellipsis: { hidden: '' } },
+          },
+        },
+        {
+          kind: 'settle',
+          until: { activeElement: 'link[1]' },
+          expect: { activeElement: { part: 'link[1]', exact: true } },
+        },
+      ],
+    },
+    {
+      name: 'translations.ellipsis 覆盖省略位触发器的可及名',
+      spec: { apg: APG },
+      props: { translations: { ellipsis: '展开完整路径' } },
+      initial: { parts: { 'ellipsis-trigger': { 'aria-label': '展开完整路径' } } },
     },
     {
       name: '非当前页那条：不写 aria-current、不写 tabindex，aria-disabled 显式 false',

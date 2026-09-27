@@ -100,9 +100,16 @@ describe('connectBreadcrumb', () => {
     expect(fire(api().getLinkProps({ value: 'home', current: false }) as Props)).toBe(false)
   })
 
-  it('分隔符与省略号对读屏隐藏', () => {
+  it('分隔符对读屏隐藏；省略位是列表项、不再隐藏，里面的触发器是带名字的按钮', () => {
     expect((api().getSeparatorProps() as Props)['aria-hidden']).toBe(true)
-    expect((api().getEllipsisProps() as Props)['aria-hidden']).toBe(true)
+    const ellipsis = api().getEllipsisProps() as Props
+    expect(ellipsis['aria-hidden']).toBeUndefined()
+    expect(ellipsis.hidden).toBeUndefined()
+    const trigger = api().getEllipsisTriggerProps() as Props
+    expect(trigger.type).toBe('button')
+    expect(trigger['aria-label']).toBe('Show full path')
+    expect(trigger['data-xh-collection-context']).toBe('nav')
+    expect((api({ translations: { ellipsis: '展开完整路径' } }).getEllipsisTriggerProps() as Props)['aria-label']).toBe('展开完整路径')
   })
 
   it('按压通道：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
@@ -144,6 +151,75 @@ describe('connectBreadcrumb', () => {
     expect(link('docs', true)['data-pressed']).toBeUndefined()
     fire(link('docs', true), 'onPointerDown', { pointerType: 'touch' })
     expect(link('docs', true)['data-pressed']).toBeUndefined()
+  })
+
+  it('折叠：首层与末几层恒在，中间一段换成省略位；按下触发器展开完整路径，省略位收起', () => {
+    const collection = ['home', 'docs', 'guides', 'components', 'breadcrumb'].map(value => ({ value }))
+    const h = makeService({ collection, maxItems: 3 })
+    expect(h.api().items.map(item => item.type === 'node' ? item.node.value : `…${item.nodes.map(n => n.value).join(',')}`))
+      .toEqual(['home', '…docs,guides', 'components', 'breadcrumb'])
+    expect(h.api().collapsedRange(5)).toEqual({ start: 1, end: 3 })
+    expect(h.api().expanded).toBe(false)
+
+    const list = document.createElement('ol')
+    list.setAttribute('data-scope', 'breadcrumb')
+    list.setAttribute('data-part', 'list')
+    const trigger = document.createElement('button')
+    const home = document.createElement('a')
+    home.setAttribute('data-scope', 'breadcrumb')
+    home.setAttribute('data-part', 'link')
+    list.append(home, trigger)
+    document.body.append(list)
+    const onClick = (h.api().getEllipsisTriggerProps() as Props).onClick as (e: unknown) => void
+    onClick({ currentTarget: trigger })
+
+    expect(h.api().expanded).toBe(true)
+    expect(h.api().items.every(item => item.type === 'node')).toBe(true)
+    expect(h.api().collapsedRange(5)).toBeNull()
+    expect((h.api().getEllipsisProps() as Props).hidden).toBe(true)
+    list.remove()
+  })
+
+  it('展开后焦点落到第一条展开出来的链接：触发器之前有几条链接，就落第几条', async () => {
+    const h = makeService({ collection: ['a', 'b', 'c', 'd'].map(value => ({ value })), maxItems: 2 })
+    const list = document.createElement('ol')
+    list.setAttribute('data-scope', 'breadcrumb')
+    list.setAttribute('data-part', 'list')
+    const link = (): HTMLAnchorElement => {
+      const el = document.createElement('a')
+      el.href = '#'
+      el.setAttribute('data-scope', 'breadcrumb')
+      el.setAttribute('data-part', 'link')
+      return el
+    }
+    const first = link()
+    const trigger = document.createElement('button')
+    const last = link()
+    list.append(first, trigger, last)
+    document.body.append(list)
+    ;((h.api().getEllipsisTriggerProps() as Props).onClick as (e: unknown) => void)({ currentTarget: trigger })
+    // 宿主把展开后的路径渲出来：被折叠的 b、c 插回首层之后，触发器随省略位消失
+    const revealed = link()
+    trigger.replaceWith(revealed, link())
+    // 落焦推迟到宿主渲完这一轮
+    await Promise.resolve()
+    expect(document.activeElement).toBe(revealed)
+    list.remove()
+  })
+
+  it('collapsedRange：不给 maxItems、非正数或层数不超过上限都不折；上限为 1 时只留末层', () => {
+    expect(api().collapsedRange(5)).toBeNull()
+    expect(api({ maxItems: 0 }).collapsedRange(5)).toBeNull()
+    expect(api({ maxItems: 5 }).collapsedRange(5)).toBeNull()
+    expect(api({ maxItems: 1 }).collapsedRange(5)).toEqual({ start: 0, end: 4 })
+    expect(api({ maxItems: 4 }).collapsedRange(6)).toEqual({ start: 1, end: 3 })
+  })
+
+  it('程序化展开只改状态，焦点不动', () => {
+    const h = makeService({ collection: ['a', 'b', 'c'].map(value => ({ value })), maxItems: 2 })
+    h.api().expand()
+    expect(h.api().expanded).toBe(true)
+    expect(h.api().items).toHaveLength(3)
   })
 
   it('meta 的必备 part 都在 anatomy 里', () => {

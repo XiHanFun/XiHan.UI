@@ -98,7 +98,7 @@ export const XhBreadcrumbLinkIcon = defineComponent({
   },
 })
 
-// 分隔符与省略号同为 ol 的直接子节点，渲染为 li 并对读屏隐藏
+// 分隔符是 ol 的直接子节点，渲染为 li 并对读屏隐藏
 export const XhBreadcrumbSeparator = defineComponent({
   name: 'XhBreadcrumbSeparator',
   setup(_, { slots }) {
@@ -107,6 +107,7 @@ export const XhBreadcrumbSeparator = defineComponent({
   },
 })
 
+/** 折叠位：路径里的一个列表项，装着展开完整路径的触发器；展开后收起。 */
 export const XhBreadcrumbEllipsis = defineComponent({
   name: 'XhBreadcrumbEllipsis',
   setup(_, { slots }) {
@@ -115,10 +116,19 @@ export const XhBreadcrumbEllipsis = defineComponent({
   },
 })
 
+/** 折叠位里的触发器：按下展开完整路径，焦点落到第一条展开出来的链接上；不写内容时由皮肤画一枚省略号字形。 */
+export const XhBreadcrumbEllipsisTrigger = defineComponent({
+  name: 'XhBreadcrumbEllipsisTrigger',
+  setup(_, { slots }) {
+    const ctx = useBreadcrumbContext()
+    return () => h('button', ctx.api.value.getEllipsisTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /**
  * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 分隔符与省略位的内容默认是文字，写同名插槽即由作者接管。
+ * 分隔符与省略位触发器不写内容时由皮肤画字形，写同名插槽即由作者接管。
  */
 function renderDefaultTree(
   items: readonly BreadcrumbItem[],
@@ -139,7 +149,8 @@ function renderItems(
     if (index > 0)
       out.push(h(XhBreadcrumbSeparator, { key: `sep-${index}` }, () => separatorSlot?.()))
     if (item.type === 'ellipsis') {
-      out.push(h(XhBreadcrumbEllipsis, { key: 'ellipsis' }, () => ellipsisSlot?.(item.nodes) ?? '…'))
+      out.push(h(XhBreadcrumbEllipsis, { key: 'ellipsis' }, () =>
+        h(XhBreadcrumbEllipsisTrigger, null, () => ellipsisSlot?.(item.nodes))))
       return
     }
     const node = item.node

@@ -15,6 +15,7 @@ export const breadcrumbKeyboard: KeyboardTable = {
   rows: [
     { id: 'breadcrumb.kbd.link', keys: ['Enter'], when: 'focus in link, 非当前页', does: '跟随链接（原生 <a href> 的激活行为，面包屑自己不监听按键）' },
     { id: 'breadcrumb.kbd.press', keys: ['Enter', 'Space'], when: 'held in link, 非当前页', does: '按住期间该链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。跟随链接照旧由这一次按键（原生 <a href>）承担，当前页那条不进' },
-    { id: 'breadcrumb.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in root', does: '逐条走过可点的链接；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序' },
+    { id: 'breadcrumb.kbd.expand', keys: ['Enter', 'Space'], when: 'focus in ellipsis-trigger', does: '展开被折叠的层级（原生 <button> 的激活行为），省略位收起，焦点落到第一条展开出来的链接上' },
+    { id: 'breadcrumb.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in root', does: '逐条走过可点的链接与省略位触发器；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序' },
   ],
 }

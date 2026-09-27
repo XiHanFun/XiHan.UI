@@ -15,5 +15,7 @@ export const breadcrumbAnatomy = createAnatomy('breadcrumb', [
   // 链接里的图标位，与文字并排；纯装饰，不进读屏
   'link-icon',
   'separator',
+  // 折叠位：列表项，装着展开完整路径的触发器
   'ellipsis',
+  'ellipsis-trigger',
 ])
