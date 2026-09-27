@@ -363,6 +363,18 @@ describe('圆角柱', () => {
     expect(roundedBar({ x: 0, y: 0, width: 20, height: 2 }, { radius: 8, orientation: 'vertical', baseline: 'end' })).toMatch(/^M2,0/)
   })
 
+  it('不贴基线的独立矩形四角都圆，半径夹到宽高较小者的一半', () => {
+    const area = areaOf(sink => roundedBar(rect, { radius: 4, orientation: 'vertical', baseline: 'none' }, sink))
+    expect(area).toBeCloseTo(2000 - 4 * (1 - Math.PI / 4) * 16, 1)
+    const sink = flatten()
+    roundedBar(rect, { radius: 4, orientation: 'vertical', baseline: 'none' }, sink)
+    // 上下两条边都缩进了圆角：四个角上都没有顶点
+    const corners = sink.points().filter(([px, py]) => (px === 0 || px === 20) && (py === 0 || py === 100))
+    expect(corners).toEqual([])
+    const thin = areaOf(s => roundedBar({ x: 0, y: 0, width: 6, height: 100 }, { radius: 50, orientation: 'horizontal', baseline: 'none' }, s))
+    expect(thin).toBeCloseTo(600 - 4 * (1 - Math.PI / 4) * 9, 1)
+  })
+
   it('宽高为负时换成等价矩形；长度为 0 不画；半径为 0 画直角矩形', () => {
     expect(roundedBar({ x: 20, y: 100, width: -20, height: -100 }, { radius: 0, orientation: 'vertical', baseline: 'end' })).toBe('M0,0h20v100h-20Z')
     expect(roundedBar({ x: 0, y: 0, width: 20, height: 0 }, { radius: 4, orientation: 'vertical', baseline: 'end' })).toBe('')

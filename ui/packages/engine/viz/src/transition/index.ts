@@ -48,7 +48,8 @@ function collapsed(mark: Mark, style: EnterStyle): Mark {
     return { ...mark, opacity: 0 }
   switch (mark.kind) {
     case 'rect': {
-      if (style === 'center')
+      // 不贴基线的独立矩形没有「从哪头长出」：从中心展开
+      if (style === 'center' || mark.baseline === 'none')
         return { ...mark, x: mark.x + mark.width / 2, y: mark.y + mark.height / 2, width: 0, height: 0 }
       const vertical = (mark.orientation ?? 'vertical') === 'vertical'
       const atEnd = (mark.baseline ?? (vertical ? 'end' : 'start')) === 'end'
