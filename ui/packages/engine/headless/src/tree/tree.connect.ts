@@ -8,8 +8,9 @@
 import type { NavIntent, NormalizeProps, Orientation, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DragRect } from '../shared/drag'
 import type { TreeApi, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeVisibleNode } from './tree.types'
-import { cascadeState, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { cascadeState, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { isEditableTarget } from '../shared/editable-target'
+import { assertCollectionVirtualizer, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
 import { treeMoveCommand, treeMoveIntentFromKey } from './tree.drag'
@@ -83,6 +84,9 @@ export function connectTree<T extends PropTypes>(
 
   // 摊平与索引都是 (collection, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
   const rows = flattenTree(collection, expandedValue)
+  const virtualizer = prop('virtualizer')
+  assertCollectionVirtualizer('Tree', virtualizer, rows.length, prop('collection') != null)
+  const rowIndex = new Map(rows.map((row, index) => [row.value, index]))
   const metaIndex = indexTree(collection)
   const leafOnlyBranches = collectLeafOnlyBranches(collection)
   const childrenOrientations = collectChildrenOrientations(collection)
@@ -273,13 +277,34 @@ export function connectTree<T extends PropTypes>(
     return next
   }
 
+  const focusVirtualTarget = (target: { index: number, value: string } | null): string | null => {
+    if (!target || !virtualizer)
+      return null
+    send({ type: 'NODE.FOCUS', value: target.value })
+    virtualizer.focusIndex(target.index, { align: 'auto', selector: `${itemQuerySelector(treeBranchQuery)}, ${itemQuerySelector(treeItemQuery)}` })
+    return target.value
+  }
+
   /** 方向键落点：起点用锚点，终点在可见行上算，禁用节点自动跳过。 */
   const focusBy = (tree: HTMLElement, intent: NavIntent): void => {
+    if (virtualizer) {
+      focusVirtualTarget(virtualCollectionTarget(rows, anchor, intent, {
+        value: row => row.value,
+        disabled: row => row.disabled,
+        loop,
+      }))
+      return
+    }
     focusValue(navigateItems(visibleEls(tree), anchor, intent, { loop }))
   }
 
   /** 按值把焦点搬到某一行（进子节点、回父节点用）。 */
   const focusOn = (tree: HTMLElement, value: string): void => {
+    if (virtualizer) {
+      const index = rowIndex.get(value)
+      focusVirtualTarget(index == null ? null : { index, value })
+      return
+    }
     focusValue(visibleEls(tree).find(el => itemValue(el) === value) ?? null)
   }
 
@@ -296,6 +321,15 @@ export function connectTree<T extends PropTypes>(
 
   /** 连打检索落点：从当前锚点的下一个绕一圈找，禁用节点跳过；未命中保持原状。 */
   const focusMatch = (tree: HTMLElement, query: string): void => {
+    if (virtualizer) {
+      focusVirtualTarget(virtualCollectionMatch(rows, anchor, query, {
+        value: row => row.value,
+        text: row => metaOf(row.value)?.label ?? row.value,
+        disabled: row => row.disabled,
+        loop,
+      }))
+      return
+    }
     const list = visibleEls(tree)
     focusValue(matchTypeahead(list, indexOfValue(list, anchor), query, {
       text: nodeText,
@@ -555,6 +589,17 @@ export function connectTree<T extends PropTypes>(
         // 只接管从树外进来的焦点：树内 Shift+Tab 往外退时转投会把人困在树里
         if (contains(tree, event.relatedTarget as Node | null))
           return
+        if (virtualizer) {
+          const selected = rows.find(row => isSelected(row.value) && !row.disabled)
+          const target = selected
+            ? { index: rowIndex.get(selected.value)!, value: selected.value }
+            : virtualCollectionTarget(rows, null, 'first', {
+                value: row => row.value,
+                disabled: row => row.disabled,
+              })
+          focusVirtualTarget(target)
+          return
+        }
         const list = visibleEls(tree)
         // 焦点进入树落在选中节点上；不可停留时退回首个可停留行，两路都取不到则留在容器上
         const selected = list.find((el) => {

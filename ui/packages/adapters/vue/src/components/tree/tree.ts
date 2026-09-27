@@ -6,7 +6,7 @@
 // 提供 tree 相关实现。
 
 import type { Direction } from '@xihan-ui/core'
-import type { TreeApi, TreeNode, TreeNodeProps, TreeSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeApi, TreeNode, TreeNodeProps, TreeSchema } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeContext } from './use-tree'
@@ -48,6 +48,8 @@ function reportNodeFocus(ctx: TreeContext, el: Ref<HTMLElement | null>, value: (
     // 整组一起卸载时根部件先停机，此刻送事件会在 dev 下抛
     if (service.getStatus() !== 'Started')
       return
+    if (service.prop('virtualizer'))
+      return
     // 按「本节点当下正持有焦点」判定，不按 value 比对
     if (el.value && service.scope.getActiveElement() === el.value)
       service.send({ type: 'TREE.BLUR' })
@@ -59,6 +61,7 @@ export const XhTreeRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<TreeNode[]> },
+    virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
     variant: { type: String as PropType<TreeProps['variant']> },
     expandedValue: { type: Array as PropType<string[]> },

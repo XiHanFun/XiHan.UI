@@ -564,6 +564,23 @@ describe('键盘', () => {
     expect(h.api().highlightedValue).toBe('apple')
   })
 
+  it('虚拟化时高亮、滚动与确认都按完整候选数据计算', () => {
+    const scrollToIndex = vi.fn()
+    const collection = ITEMS.map(item => ({ value: item.value, label: item.text, disabled: 'disabled' in item ? item.disabled : false }))
+    const h = mount({
+      collection,
+      virtualizer: { count: collection.length, scrollToIndex, focusIndex: vi.fn(), getRenderedItemRoots: () => [] },
+    })
+    press(h.input, 'ArrowDown')
+    press(h.input, 'End')
+    expect(h.api().highlightedValue).toBe('durian')
+    expect(scrollToIndex).toHaveBeenLastCalledWith(3, { align: 'auto' })
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['durian'])
+    expect(h.item('durian').getAttribute('aria-posinset')).toBe('4')
+    expect(h.item('durian').getAttribute('aria-setsize')).toBe('4')
+  })
+
   it('enter 选中高亮候选：输入串换成它的文本、列表收起', () => {
     const onValueChange = vi.fn()
     const h = mount({ onValueChange })

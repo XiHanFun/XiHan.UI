@@ -15,7 +15,8 @@ import type {
   TransferSchema,
   TransferSide,
 } from './transfer.types'
-import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { transferAnatomy, transferItemQuery } from './transfer.anatomy'
 import { transferFocusKey, transferOppositeSide, transferQueryKey } from './transfer.machine'
 import {
@@ -73,6 +74,10 @@ export function connectTransfer<T extends PropTypes>(
 
   // connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM
   const visible = bySide(side => transferVisibleItems(collection, value, side, queries[side], filter))
+  const virtualizers = prop('virtualizers') ?? {}
+  assertCollectionVirtualizer('Transfer source', virtualizers.source, visible.source.length, prop('collection') != null)
+  assertCollectionVirtualizer('Transfer target', virtualizers.target, visible.target.length, prop('collection') != null)
+  const visibleIndex = bySide(side => new Map(visible[side].map((item, index) => [item.value, index])))
   const operable = bySide(side => transferOperableValues(visible[side]))
   const checked = bySide(side => transferCheckedValues(operable[side], selection))
   const checkStates = bySide<TransferCheckState>(side => transferCheckState(operable[side], selection))
@@ -182,9 +187,26 @@ export function connectTransfer<T extends PropTypes>(
     return next
   }
 
+  const focusVirtualTarget = (side: TransferSide, target: { index: number, value: string } | null): string | null => {
+    const virtualizer = virtualizers[side]
+    if (!target || !virtualizer)
+      return null
+    send({ type: 'ITEM.FOCUS', side, value: target.value })
+    virtualizer.focusIndex(target.index, { align: 'auto', selector: itemQuerySelector(transferItemQuery) })
+    return target.value
+  }
+
   /** 方向键落点。 */
-  const focusBy = (list: HTMLElement, side: TransferSide, intent: NavIntent): string | null =>
-    focusValue(side, navigateItems(visibleEls(list, side), anchor[side], intent, { loop }))
+  const focusBy = (list: HTMLElement, side: TransferSide, intent: NavIntent): string | null => {
+    if (virtualizers[side]) {
+      return focusVirtualTarget(side, virtualCollectionTarget(visible[side], anchor[side], intent, {
+        value: item => item.value,
+        disabled: item => isItemLocked(item.value),
+        loop,
+      }))
+    }
+    return focusValue(side, navigateItems(visibleEls(list, side), anchor[side], intent, { loop }))
+  }
 
   /** 确认键：切换焦点当下所在的条目。 */
   const commit = (side: TransferSide): void => {
@@ -379,6 +401,17 @@ export function connectTransfer<T extends PropTypes>(
         // 只接管从本列表之外进来的焦点：组内 Shift+Tab 往外退时转投会把人困在列表里
         if (contains(list, event.relatedTarget as Node | null))
           return
+        if (virtualizers[panel.side]) {
+          const selected = visible[panel.side].find(item => isChecked(item.value) && !isItemLocked(item.value))
+          const target = selected
+            ? { index: visibleIndex[panel.side].get(selected.value)!, value: selected.value }
+            : virtualCollectionTarget(visible[panel.side], null, 'first', {
+                value: item => item.value,
+                disabled: item => isItemLocked(item.value),
+              })
+          focusVirtualTarget(panel.side, target)
+          return
+        }
         const els = visibleEls(list, panel.side)
         // 焦点进入应当落在勾中项上；它不可停留（禁用）时退回首个可停留条目。
         // 整体禁用时两路都取不到，焦点就留在容器上
@@ -487,6 +520,7 @@ export function connectTransfer<T extends PropTypes>(
         'data-tone': itemTone(item.value),
         // 导航、焦点与勾选都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
+        ...virtualCollectionAria(visibleIndex[item.side].get(item.value), visible[item.side].length),
         'role': 'option',
         // listbox 的选中语义是 aria-selected；未选中必须显式输出 false，
         // 省略会让读屏无从区分「没勾」与「不是选项」

@@ -655,6 +655,19 @@ describe('上下方向键在可见行上走', () => {
     expect(focused()).toBe('src')
   })
 
+  it('虚拟化按完整可见行导航，跨过当前 DOM 窗口后由桥完成焦点交接', () => {
+    const focusIndex = vi.fn()
+    const visible = flattenTree(COLLECTION, ['src', 'utils'])
+    const h = mount({
+      defaultExpandedValue: ['src', 'utils'],
+      virtualizer: { count: visible.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
+    })
+    h.branch('src').branch.focus()
+    press(h.branch('src').branch, 'End')
+    expect(h.api().focusedValue).toBe('license')
+    expect(focusIndex).toHaveBeenCalledWith(visible.length - 1, expect.objectContaining({ align: 'auto' }))
+  })
+
   it('方向键只搬焦点，不改展开也不改选中', () => {
     const h = mount({ defaultExpandedValue: ['src'] })
     h.treeEl.focus()

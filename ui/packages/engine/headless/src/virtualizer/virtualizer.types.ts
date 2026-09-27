@@ -21,6 +21,24 @@ export interface VirtualizerScrollToOptions {
   align?: VirtualizerAlign
 }
 
+/** 集合组件请求虚拟窗口聚焦某条时的参数。selector 指向条目外壳内真正承载集合角色的节点。 */
+export interface CollectionVirtualizerFocusOptions extends VirtualizerScrollToOptions {
+  selector: string
+}
+
+/**
+ * Virtualizer 与 Tree / Listbox / Select / Combobox / Transfer 之间的正式接线协议。
+ * 集合组件始终按完整数据计算键盘与选择语义；本桥只负责把目标下标带进窗口，并在节点挂载后交接焦点。
+ */
+export interface CollectionVirtualizer {
+  /** 必须与当前语义集合的条目数一致；不一致由集合组件明确报错。 */
+  count: number
+  scrollToIndex: (index: number, options?: VirtualizerScrollToOptions) => void
+  focusIndex: (index: number, options: CollectionVirtualizerFocusOptions) => void
+  /** Web Components 跨 Light-DOM 宿主接线使用：每个虚拟外壳内恰好一个语义集合条目根。 */
+  getRenderedItemRoots: () => readonly HTMLElement[]
+}
+
 /** 应渲染的内容变化时对外报告的详情，与 api 上的同名字段同源。 */
 export interface VirtualizerRangeChangeDetails {
   virtualItems: readonly VirtualizerItemState[]
@@ -45,6 +63,12 @@ export interface VirtualizerRefs {
    * 它同时是内核是否存活的判据，停机后残留的回调用它比较即可判断。
    */
   getVirtualizer: () => VirtualizerCore | null
+  /** 已挂载的虚拟条目外壳；跨框架焦点交接只认这份登记，不猜提交时序。 */
+  itemElements: Map<number, HTMLElement>
+  /** 目标尚未挂载时暂存的焦点请求，条目 ref 到达即结算。 */
+  pendingFocus: { index: number, selector: string } | null
+  /** 对外桥保持同一对象身份，框架把它写入父状态时不会形成重渲循环。 */
+  collectionVirtualizer: CollectionVirtualizer | null
 }
 
 export interface VirtualizerSchema extends MachineSchema {
@@ -76,6 +100,8 @@ export interface VirtualizerSchema extends MachineSchema {
     paddingEnd?: number
     /** 多列网格的列数，默认 1（单列）。条目按下标轮流落到各列上。 */
     lanes?: number
+    /** viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。 */
+    viewportTabIndex?: number
   }
   context: {
     /** 应渲染内容的唯一事实源。连接层只读取它，不涉及任何 DOM。 */
@@ -114,12 +140,16 @@ export interface VirtualizerApi<T extends PropTypes = PropTypes> {
   lanes: number
   /** 正在滚动。 */
   scrolling: boolean
+  /** 交给集合组件的正式虚拟化桥。 */
+  collectionVirtualizer: CollectionVirtualizer
   /** 滚动到某一条。越界下标由内核夹取。 */
   scrollToIndex: (index: number, options?: VirtualizerScrollToOptions) => void
   /** 把条目节点的真实尺寸回填给内核（动态高度使用）。传 null 无副作用。 */
   measureElement: (element: HTMLElement | null) => void
   /** 丢弃全部实测尺寸重新按估算值排列。视口更换排版时使用。 */
   measure: () => void
+  /** 适配器在条目 ref 挂载 / 卸载时登记；业务作者通常不直接调用。 */
+  registerItemElement: (index: number, element: HTMLElement | null) => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getContentProps: () => T['element']

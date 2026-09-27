@@ -29,7 +29,7 @@
 
 ## 组合
 
-- 内层是[列表框](./listbox)；长列表配[虚拟滚动](./virtualizer)。
+- 内层是[列表框](./listbox)；长列表为 source / target 各接一台[虚拟滚动](./virtualizer)，两侧桥分别写入 `virtualizers`，不能共用滚动窗口。
 
 ## 最佳实践
 

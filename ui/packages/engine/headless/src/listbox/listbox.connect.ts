@@ -7,7 +7,8 @@
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
 import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } from './listbox.types'
-import { applySelection, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'
+import { applySelection, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'
+import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
 
 const parts = listboxAnatomy.build()
@@ -49,6 +50,9 @@ export function connectListbox<T extends PropTypes>(
     description: node.description ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+  const indexOf = new Map(collection.map((meta, index) => [meta.value, index]))
+  const virtualizer = prop('virtualizer')
+  assertCollectionVirtualizer('Listbox', virtualizer, collection.length, counted)
   const empty = counted && collection.length === 0
 
   const isSelected = (v: string): boolean => value.includes(v)
@@ -99,12 +103,37 @@ export function connectListbox<T extends PropTypes>(
     return next
   }
 
+  const focusVirtualTarget = (target: { index: number, value: string } | null): string | null => {
+    if (!target || !virtualizer)
+      return null
+    send({ type: 'ITEM.FOCUS', value: target.value })
+    virtualizer.focusIndex(target.index, { align: 'auto', selector: itemQuerySelector(listboxItemQuery) })
+    return target.value
+  }
+
   /** 方向键落点：以锚点为起点在活 DOM 上求解，禁用条目跳过。 */
-  const focusBy = (content: HTMLElement, intent: NavIntent): string | null =>
-    focusValue(navigateItems(items(content), anchor, intent, { loop }))
+  const focusBy = (content: HTMLElement, intent: NavIntent): string | null => {
+    if (virtualizer) {
+      return focusVirtualTarget(virtualCollectionTarget(collection, anchor, intent, {
+        value: item => item.value,
+        disabled: item => item.disabled,
+        loop,
+      }))
+    }
+    return focusValue(navigateItems(items(content), anchor, intent, { loop }))
+  }
 
   /** 连打检索落点：从当前锚点的下一个绕一圈查找，未命中保持原状。 */
   const focusMatch = (content: HTMLElement, query: string): void => {
+    if (virtualizer) {
+      focusVirtualTarget(virtualCollectionMatch(collection, anchor, query, {
+        value: item => item.value,
+        text: item => item.label,
+        disabled: item => item.disabled,
+        loop,
+      }))
+      return
+    }
     const list = items(content)
     focusValue(matchTypeahead(list, indexOfValue(list, anchor), query, {
       text: listboxItemText,
@@ -116,15 +145,28 @@ export function connectListbox<T extends PropTypes>(
   const commit = (content: HTMLElement, kind: 'replace' | 'toggle'): void => {
     if (focusedValue == null || !editable)
       return
-    const el = items(content).find(item => itemValue(item) === focusedValue)
-    if (!el || isItemDisabled(el))
-      return
+    if (virtualizer) {
+      if (metaOf.get(focusedValue)?.disabled)
+        return
+    }
+    else {
+      const el = items(content).find(item => itemValue(item) === focusedValue)
+      if (!el || isItemDisabled(el))
+        return
+    }
     send({ type: kind === 'toggle' ? 'ITEM.TOGGLE' : 'ITEM.SELECT', value: focusedValue })
   }
 
   /** 区间连选：整段替换原选中，段内禁用条目不入选。 */
   /** 从标记里取全序与禁用判定：集合怎么算归原语，谁在前谁在后归 DOM。 */
   const orderOf = (content: HTMLElement): SelectionOrder => {
+    if (virtualizer) {
+      const disabled = new Set(collection.filter(item => item.disabled).map(item => item.value))
+      return {
+        items: collection.map(item => item.value),
+        isDisabled: (itemValue: string) => disabled.has(itemValue),
+      }
+    }
     const list = items(content)
     const disabled = new Set(list.filter(el => isItemDisabled(el)).map(itemValue).filter((v): v is string => v != null))
     return {
@@ -208,6 +250,7 @@ export function connectListbox<T extends PropTypes>(
       'data-disabled': dataAttr(listDisabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-xh-virtualized': dataAttr(virtualizer != null),
       'onKeyDown': (event: KeyboardEvent) => {
         if (listDisabled)
           return
@@ -270,6 +313,17 @@ export function connectListbox<T extends PropTypes>(
         // 只接管从列表外进来的焦点
         if (contains(content, event.relatedTarget as Node | null))
           return
+        if (virtualizer) {
+          const selected = collection.find(item => isSelected(item.value) && !item.disabled)
+          const target = selected
+            ? { index: indexOf.get(selected.value)!, value: selected.value }
+            : virtualCollectionTarget(collection, null, 'first', {
+                value: item => item.value,
+                disabled: item => item.disabled,
+              })
+          focusVirtualTarget(target)
+          return
+        }
         const list = items(content)
         // 焦点落在首个可停留的选中项上，取不到则退回首个可停留条目
         const selected = list.find((el) => {
@@ -360,6 +414,7 @@ export function connectListbox<T extends PropTypes>(
         'data-tone': itemTone(item),
         // 导航、检索与选中的条目身份
         [ITEM_VALUE_ATTR]: item.value,
+        ...virtualCollectionAria(indexOf.get(item.value), collection.length),
         'role': 'option',
         // 未选中也显式输出 false
         'aria-selected': isSelected(item.value) ? 'true' : 'false',

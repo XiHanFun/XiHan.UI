@@ -78,6 +78,12 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 <XhDemo src="transfer/10-tone-size" />
 
+### 双侧虚拟化
+
+每个面板拥有独立窗口，搬运与搜索仍按该侧完整可见集合计算
+
+<XhDemo src="transfer/11-virtualized" />
+
 ## 设计指引
 
 ### 何时使用
@@ -107,7 +113,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 ### 组合
 
-- 内层是[列表框](./listbox)；长列表配[虚拟滚动](./virtualizer)。
+- 内层是[列表框](./listbox)；长列表为 source / target 各接一台[虚拟滚动](./virtualizer)，两侧桥分别写入 `virtualizers`，不能共用滚动窗口。
 
 ### 最佳实践
 
@@ -136,6 +142,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。默认为空。 |
+| `virtualizers` | `Partial<Record<TransferSide, CollectionVirtualizer>>` |  | 两侧各自的虚拟化桥；count 必须等于该侧搜索过滤后的 visibleItems.length。 |
 | `value` | `string[]` |  | 落在 target 侧的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `name` | `string` |  | 原生表单字段名；目标侧每个值提交一个同名字段。 |

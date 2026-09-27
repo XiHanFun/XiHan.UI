@@ -7,6 +7,7 @@
 
 import type { Direction, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  CollectionVirtualizer,
   TransferCheckState,
   TransferFilter,
   TransferItem,
@@ -65,6 +66,7 @@ export interface TransferPanelSlotProps {
 
 export interface XhTransferRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TransferItem[]
+  virtualizers?: Partial<Record<TransferSide, CollectionVirtualizer>>
   value?: string[]
   defaultValue?: string[]
   name?: string
@@ -90,6 +92,7 @@ export interface XhTransferRootProps extends Omit<ComponentPropsWithRef<'div'>, 
 
 export function XhTransferRoot({
   collection,
+  virtualizers,
   value,
   defaultValue,
   name,
@@ -115,6 +118,7 @@ export function XhTransferRoot({
 }: XhTransferRootProps): ReactNode {
   const ctx = useTransfer(withXhConfig('transfer', useFormControlProps({
     collection,
+    virtualizers,
     value,
     defaultValue,
     name,
@@ -328,6 +332,8 @@ function useItemFocusReport(
     if (prev === value)
       return
     if (service.getStatus() !== 'Started')
+      return
+    if (service.prop('virtualizers')?.[side])
       return
     if (el.current && service.scope.getActiveElement() === el.current)
       service.send({ type: 'ITEM.FOCUS', side, value })

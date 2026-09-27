@@ -6,8 +6,8 @@
 // 提供 virtualizer 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { VirtualizerApi, VirtualizerCore, VirtualizerSchema } from './virtualizer.types'
-import { dataAttr } from '@xihan-ui/core'
+import type { CollectionVirtualizer, CollectionVirtualizerFocusOptions, VirtualizerApi, VirtualizerCore, VirtualizerSchema } from './virtualizer.types'
+import { dataAttr, focusItem } from '@xihan-ui/core'
 import { virtualizerAnatomy } from './virtualizer.anatomy'
 import { resolveVirtualizerLanes } from './virtualizer.geometry'
 import {
@@ -22,7 +22,7 @@ export function connectVirtualizer<T extends PropTypes>(
   service: Service<VirtualizerSchema>,
   normalize: NormalizeProps<T>,
 ): VirtualizerApi<T> {
-  const { state, prop, context, refs, send } = service
+  const { state, prop, context, refs, send, scope } = service
 
   const snapshot = context.get('snapshot')
   const horizontal = prop('horizontal') ?? false
@@ -36,6 +36,44 @@ export function connectVirtualizer<T extends PropTypes>(
    */
   const kernel = (): VirtualizerCore | null => refs.get('getVirtualizer')()
 
+  const focusRegisteredItem = (index: number, options: CollectionVirtualizerFocusOptions): boolean => {
+    const wrapper = refs.get('itemElements').get(index)
+    if (!wrapper)
+      return false
+    const target = wrapper.matches(options.selector)
+      ? wrapper
+      : wrapper.querySelector<HTMLElement>(options.selector)
+        ?? wrapper.querySelector<HTMLElement>('[data-xh-part-owner]')
+    if (!target)
+      return false
+    refs.set('pendingFocus', null)
+    focusItem(target)
+    return true
+  }
+
+  const scrollToIndex: VirtualizerApi<T>['scrollToIndex'] = (index, options) => {
+    kernel()?.scrollToIndex(index, options?.align ?? 'start')
+  }
+
+  let collectionVirtualizer = refs.get('collectionVirtualizer')
+  if (!collectionVirtualizer) {
+    collectionVirtualizer = {
+      get count() {
+        return service.prop('count') ?? 0
+      },
+      scrollToIndex,
+      focusIndex: (index: number, options: CollectionVirtualizerFocusOptions): void => {
+        kernel()?.scrollToIndex(index, options.align ?? 'auto')
+        if (!focusRegisteredItem(index, options))
+          refs.set('pendingFocus', { index, selector: options.selector })
+      },
+      getRenderedItemRoots: (): readonly HTMLElement[] => [...(refs.get('getContentEl')()?.children ?? [])]
+        .map(element => element.firstElementChild)
+        .filter((element): element is HTMLElement => element instanceof scope.getWin().HTMLElement),
+    } satisfies CollectionVirtualizer
+    refs.set('collectionVirtualizer', collectionVirtualizer)
+  }
+
   return {
     virtualItems: snapshot.items,
     totalSize: snapshot.totalSize,
@@ -44,10 +82,9 @@ export function connectVirtualizer<T extends PropTypes>(
     horizontal,
     lanes,
     scrolling,
+    collectionVirtualizer,
 
-    scrollToIndex: (index, options) => {
-      kernel()?.scrollToIndex(index, options?.align ?? 'start')
-    },
+    scrollToIndex,
 
     /**
      * 节点没了就什么都不做：条目被卸载时适配器会拿 null 回调一次。
@@ -70,6 +107,18 @@ export function connectVirtualizer<T extends PropTypes>(
         send({ type: 'MEASURE' })
     },
 
+    registerItemElement: (index, element) => {
+      const elements = refs.get('itemElements')
+      if (!element) {
+        elements.delete(index)
+        return
+      }
+      elements.set(index, element)
+      const pending = refs.get('pendingFocus')
+      if (pending?.index === index)
+        focusRegisteredItem(index, { selector: pending.selector, align: 'auto' })
+    },
+
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
@@ -80,7 +129,7 @@ export function connectVirtualizer<T extends PropTypes>(
     // tabindex=0 让长列表在没有可聚焦元素时也能被键盘落入
     getViewportProps: () => normalize.element({
       ...parts.viewport.attrs,
-      'tabindex': 0,
+      'tabindex': prop('viewportTabIndex') ?? 0,
       'data-orientation': orientation,
     }),
 

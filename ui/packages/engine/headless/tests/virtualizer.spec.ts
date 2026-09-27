@@ -540,6 +540,37 @@ describe('命令式方法', () => {
     expect(r.api().endIndex).toBe(200)
   })
 
+  it('collectionVirtualizer 先滚动，目标条目真正挂载后再交接焦点', async () => {
+    const r = rig({ ...LIST, overscan: 0 })
+    await settle()
+    const bridge = r.api().collectionVirtualizer
+    expect(bridge.count).toBe(1000)
+
+    bridge.focusIndex(100, { align: 'auto', selector: '[role="option"]' })
+    expect(r.api().startIndex).toBe(97)
+    expect(document.activeElement).toBe(document.body)
+
+    const wrapper = document.createElement('div')
+    const option = document.createElement('div')
+    option.setAttribute('role', 'option')
+    option.tabIndex = -1
+    wrapper.appendChild(option)
+    r.content.appendChild(wrapper)
+    r.api().registerItemElement(100, wrapper)
+    expect(document.activeElement).toBe(option)
+
+    r.api().registerItemElement(100, null)
+  })
+
+  it('collectionVirtualizer 跨重渲保持对象身份，count 仍读取最新值', async () => {
+    const r = rig({ ...LIST, overscan: 0 })
+    await settle()
+    const bridge = r.api().collectionVirtualizer
+    r.setProps({ count: 1200 })
+    expect(r.api().collectionVirtualizer).toBe(bridge)
+    expect(bridge.count).toBe(1200)
+  })
+
   it('measureElement 把真实尺寸回喂给内核，位移与总长随之变', async () => {
     const r = rig({ ...LIST, overscan: 0 })
     await settle()

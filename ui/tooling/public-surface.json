@@ -5422,6 +5422,7 @@
       "isWeekend",
       "isWindow",
       "isoWeeksInYear",
+      "itemQuerySelector",
       "itemValue",
       "matchTypeahead",
       "mergeProps",
@@ -5758,6 +5759,8 @@
       "CollapsibleOpenChangeDetails",
       "CollapsibleSchema",
       "CollapsibleTranslations",
+      "CollectionVirtualizer",
+      "CollectionVirtualizerFocusOptions",
       "ColorAnchor",
       "ColorChannel",
       "ColorChannelRange",
@@ -11226,7 +11229,8 @@
       "tone",
       "translations",
       "value",
-      "variant"
+      "variant",
+      "virtualizer"
     ],
     "command": [
       "caseSensitive",
@@ -11837,7 +11841,8 @@
       "size",
       "tone",
       "typeahead",
-      "value"
+      "value",
+      "virtualizer"
     ],
     "loading-bar": [
       "defaultValue",
@@ -12386,7 +12391,8 @@
       "tone",
       "translations",
       "value",
-      "variant"
+      "variant",
+      "virtualizer"
     ],
     "separator": [
       "align",
@@ -12887,7 +12893,8 @@
       "size",
       "tone",
       "translations",
-      "value"
+      "value",
+      "virtualizers"
     ],
     "tree": [
       "allowDrop",
@@ -12911,7 +12918,8 @@
       "selection",
       "translations",
       "typeahead",
-      "variant"
+      "variant",
+      "virtualizer"
     ],
     "tree-select": [
       "cascade",
@@ -12972,7 +12980,8 @@
       "overscan",
       "paddingEnd",
       "paddingStart",
-      "scrollMargin"
+      "scrollMargin",
+      "viewportTabIndex"
     ],
     "watermark": [
       "fontFamily",
@@ -13234,6 +13243,7 @@
     "data-xh-menu-close-on-select",
     "data-xh-swatch",
     "data-xh-swatch-size",
+    "data-xh-virtualized",
     "data-zoomed"
   ],
   "dataStateValues": [
@@ -20661,7 +20671,8 @@
         "overscan",
         "padding-end",
         "padding-start",
-        "scroll-margin"
+        "scroll-margin",
+        "viewport-tab-index"
       ],
       "events": [
         "range-change"

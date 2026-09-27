@@ -7,6 +7,7 @@
 
 import type { IdGenerator, Service } from '@xihan-ui/core'
 import type {
+  CollectionVirtualizer,
   VirtualizerAlign,
   VirtualizerItemState,
   VirtualizerRangeChangeDetails,
@@ -79,6 +80,7 @@ export class XhVirtualizerElement extends XhElement {
     paddingStart: { converter: NUMBER_CONVERTER, attribute: 'padding-start' },
     paddingEnd: { converter: NUMBER_CONVERTER, attribute: 'padding-end' },
     lanes: { converter: NUMBER_CONVERTER },
+    viewportTabIndex: { converter: NUMBER_CONVERTER, attribute: 'viewport-tab-index' },
     // 函数走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐
     getItemKey: { attribute: false },
   }
@@ -92,10 +94,12 @@ export class XhVirtualizerElement extends XhElement {
   declare paddingStart?: number
   declare paddingEnd?: number
   declare lanes?: number
+  declare viewportTabIndex?: number
   declare getItemKey?: (index: number) => string | number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly virtualizerScope = createScope(null, this.idGen)
+  private readonly registeredItemIndices = new Set<number>()
 
   private readonly notify = (details: VirtualizerRangeChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('range-change', { detail: details, bubbles: true, composed: true }))
@@ -119,6 +123,7 @@ export class XhVirtualizerElement extends XhElement {
       paddingStart: this.paddingStart,
       paddingEnd: this.paddingEnd,
       lanes: this.lanes,
+      viewportTabIndex: this.viewportTabIndex,
       getItemKey: this.getItemKey,
       onRangeChange: this.notify,
     }
@@ -148,6 +153,11 @@ export class XhVirtualizerElement extends XhElement {
   /** 整份列表的主轴总长（px）。 */
   get totalSize(): number {
     return this.api()?.totalSize ?? 0
+  }
+
+  /** 交给 Tree / Listbox / Select / Combobox / Transfer 的正式集合虚拟化桥。 */
+  get collectionVirtualizer(): CollectionVirtualizer | null {
+    return this.api()?.collectionVirtualizer ?? null
   }
 
   /** 滚动到指定下标。越界下标由内核夹取。 */
@@ -182,9 +192,12 @@ export class XhVirtualizerElement extends XhElement {
     // 条目是多实例 part，逐个打：身份取作者写的 value。
     // 漏写时给 NaN 而不是 Number(null) 的 0：NaN 与任何下标都不相等，条目会被当成
     // "不在窗口里"收起来，但绝不会冒充第 0 条；Vue 侧漏写 value 拿到的同样是 NaN，两侧一致
+    const nextIndices = new Set<number>()
     for (const el of this.getParts('item')) {
       const index = itemIndex(el)
+      nextIndices.add(index)
       this.spreader.spread(el, api.getItemProps({ index }) as Record<string, unknown>)
+      api.registerItemElement(index, el)
       // Light DOM 常驻，WC 自管可见性：作者层若给这个 part 声明了 display，
       // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
       // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式
@@ -195,5 +208,11 @@ export class XhVirtualizerElement extends XhElement {
       if (wantsMeasure(el))
         api.measureElement(el)
     }
+    for (const index of this.registeredItemIndices) {
+      if (!nextIndices.has(index))
+        api.registerItemElement(index, null)
+    }
+    this.registeredItemIndices.clear()
+    for (const index of nextIndices) this.registeredItemIndices.add(index)
   }
 }

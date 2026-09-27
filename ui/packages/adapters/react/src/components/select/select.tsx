@@ -6,7 +6,7 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { SelectApi, SelectNode, SelectNodeMeta, SelectSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
@@ -44,6 +44,7 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'default
 
 export interface XhSelectRootProps extends RootElementProps {
   collection?: SelectNode[]
+  virtualizer?: CollectionVirtualizer
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   value?: string | string[] | null
@@ -83,6 +84,7 @@ export interface XhSelectRootProps extends RootElementProps {
 
 export function XhSelectRoot({
   collection,
+  virtualizer,
   label,
   value,
   defaultValue,
@@ -116,6 +118,7 @@ export function XhSelectRoot({
 }: XhSelectRootProps): ReactNode {
   const ctx = useSelect(withXhConfig('select', useFormControlProps({
     collection,
+    virtualizer,
     value,
     defaultValue,
     multiple,
@@ -439,6 +442,8 @@ export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectIte
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
+    if (svc.prop('virtualizer') && svc.prop('collection')?.some(node => node.value === value))
+      return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
       svc.send({ type: 'ITEM.HIGHLIGHT', value })
   }, [ctx.service, value])
@@ -450,7 +455,7 @@ export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectIte
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
       svc.send({ type: 'ITEM.LOST' })
-  }, [ctx.service])
+  }, [ctx.service, value])
 
   return (
     <SelectItemProvider value={item}>

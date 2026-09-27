@@ -7,6 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  CollectionVirtualizer,
   ComboboxInputBehavior,
   ComboboxInputEl,
   ComboboxInputHost,
@@ -104,6 +105,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它候选的文本与禁用即以数据为准
     collection: { attribute: false },
+    virtualizer: { attribute: false },
     // 文案对象只走 property
     translations: { attribute: false },
     name: { converter: STRING_CONVERTER },
@@ -135,6 +137,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   }
 
   declare collection?: ComboboxNode[]
+  declare virtualizer?: CollectionVirtualizer
   declare translations?: ComboboxSchema['props']['translations']
   declare value?: string | string[]
   declare defaultValue?: string | string[]
@@ -219,6 +222,7 @@ export class XhComboboxElement extends XhPortalHostElement {
     }, this.inheritedControl)
     return {
       collection: this.collection,
+      virtualizer: this.virtualizer,
       translations: this.translations,
       value: this.value,
       defaultValue: this.defaultValue,
@@ -257,7 +261,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return this.portal.roots
+    return [...this.portal.roots, ...(this.virtualizer?.getRenderedItemRoots() ?? [])]
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。

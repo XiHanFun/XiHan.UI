@@ -330,6 +330,29 @@ describe('roving tabindex', () => {
 })
 
 describe('方向键导航', () => {
+  it('虚拟化按完整 collection 导航并把下标交给桥，不受当前 DOM 窗口限制', () => {
+    const focusIndex = vi.fn()
+    const collection = ITEMS.map(item => ({ value: item.value, label: item.text, disabled: 'disabled' in item ? item.disabled : false }))
+    const h = mount({
+      collection,
+      virtualizer: { count: collection.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
+    })
+    h.item('apple').focus()
+    press(h.item('apple'), 'End')
+    expect(h.api().focusedValue).toBe('durian')
+    expect(focusIndex).toHaveBeenCalledWith(3, expect.objectContaining({ align: 'auto' }))
+    expect(h.item('durian').getAttribute('aria-posinset')).toBe('4')
+    expect(h.item('durian').getAttribute('aria-setsize')).toBe('4')
+  })
+
+  it('虚拟化 count 与完整集合不一致时明确拒绝接线', () => {
+    const collection = ITEMS.map(item => ({ value: item.value, label: item.text }))
+    expect(() => mount({
+      collection,
+      virtualizer: { count: 1, scrollToIndex: vi.fn(), focusIndex: vi.fn(), getRenderedItemRoots: () => [] },
+    })).toThrow(/CollectionVirtualizer\.count/)
+  })
+
   it('跳过禁用条目，跨分组照常走', () => {
     const h = mount()
     h.content.focus()

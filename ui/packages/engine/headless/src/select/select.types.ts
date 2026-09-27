@@ -7,6 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
  * 展开时高亮的落点：
@@ -127,6 +128,8 @@ export interface SelectSchema extends MachineSchema {
      * 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。
      */
     collection?: SelectNode[]
+    /** 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 */
+    virtualizer?: CollectionVirtualizer
     /**
      * 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。
      * 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。

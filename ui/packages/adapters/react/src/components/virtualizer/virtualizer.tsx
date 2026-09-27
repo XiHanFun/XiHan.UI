@@ -25,6 +25,7 @@ export type VirtualizerRootSlotProps = Pick<
   | 'endIndex'
   | 'scrolling'
   | 'lanes'
+  | 'collectionVirtualizer'
   | 'scrollToIndex'
   | 'measureElement'
   | 'measure'
@@ -50,6 +51,8 @@ export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'
   paddingEnd?: number
   /** 多列网格的列数；条目按下标轮流落到各道上。 */
   lanes?: number
+  /** viewport 的 Tab 位；组合进已有焦点模型的集合时设为 -1。 */
+  viewportTabIndex?: number
   /** 应渲染的内容发生变化。 */
   onRangeChange?: VirtualizerProps['onRangeChange']
   children?: SlotChildren<VirtualizerRootSlotProps>
@@ -66,6 +69,7 @@ export function XhVirtualizerRoot({
   paddingStart,
   paddingEnd,
   lanes,
+  viewportTabIndex,
   onRangeChange,
   children,
   ...rest
@@ -81,6 +85,7 @@ export function XhVirtualizerRoot({
     paddingStart,
     paddingEnd,
     lanes,
+    viewportTabIndex,
     onRangeChange,
   } as VirtualizerProps)
   const api = ctx.api
@@ -94,6 +99,7 @@ export function XhVirtualizerRoot({
           endIndex: api.endIndex,
           scrolling: api.scrolling,
           lanes: api.lanes,
+          collectionVirtualizer: api.collectionVirtualizer,
           scrollToIndex: api.scrollToIndex,
           measureElement: api.measureElement,
           measure: api.measure,
@@ -161,7 +167,12 @@ export function XhVirtualizerItem({ value, measure, children, ...rest }: XhVirtu
       {...mergeReactProps(
         ctx.api.getItemProps({ index: Number(value) }) as Record<string, unknown>,
         rest as Record<string, unknown>,
-        { ref: (node: HTMLDivElement | null) => { el.current = node } },
+        {
+          ref: (node: HTMLDivElement | null) => {
+            el.current = node
+            ctx.api.registerItemElement(Number(value), node)
+          },
+        },
       )}
     >
       {children}

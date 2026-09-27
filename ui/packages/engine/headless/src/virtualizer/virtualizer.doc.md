@@ -20,13 +20,16 @@
 
 ## 组合
 
-- 与[列表](./list)、[表格](./table)、[选择器](./select)的长选项列表、[穿梭框](./transfer)配合。
+- `collectionVirtualizer` 是正式集合接线口：[树](./tree)、[列表框](./listbox)、[选择器](./select)、[组合框](./combobox)与[穿梭框](./transfer)把完整 collection 交给各自状态机，只用 `virtualItems` 裁剪 DOM。
+- 集合接线时 `count` 必须等于当前语义序列长度；不一致会明确抛错，避免方向键与可见窗口指向两份数据。
+- 集合自身已有焦点模型，把 `viewportTabIndex` 设为 `-1`，不要让虚拟视口额外占一个 Tab 位。
 - 与[无限滚动](./infinite-scroll)组合为边滚边取的长列表：哨兵放在内容层之后，取数目标指向视口层。
 
 ## 最佳实践
 
 - 条目高度差异大时使用动态高度模式，不依赖估值。
 - 提供滚动到指定条目的入口，否则用户无法找回之前的位置。
+- Web Components 跨嵌套宿主组合时，语义条目根用 `data-xh-part-owner` 声明归属；Virtualizer 外壳仍归 `virtualizer`，两台宿主不会争写同一节点。
 
 ## 反模式
 

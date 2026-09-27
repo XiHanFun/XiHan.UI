@@ -376,7 +376,16 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
       const item = items[Math.max(0, Math.min(Math.trunc(index), items.length - 1))]
       if (!item)
         return
-      scrollTo(virtualizerOffsetForItem(item, align, scrollOffset, viewportSize(), maxScrollOffset()))
+      const next = virtualizerOffsetForItem(item, align, scrollOffset, viewportSize(), maxScrollOffset())
+      if (next === scrollOffset)
+        return
+      backward = next < scrollOffset
+      scrollOffset = next
+      scrolling = true
+      restartIdleTimer()
+      scrollTo(next)
+      // 程序化滚动不能等浏览器稍后派 scroll 才发布窗口：集合焦点要在同一轮提交里等到目标条目。
+      maybeNotify()
     },
 
     measureElement: (element) => {

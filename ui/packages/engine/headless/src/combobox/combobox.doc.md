@@ -29,6 +29,7 @@
 - 放进[表单字段](./field)获得标签、说明与错误信息，字段状态会接到输入框上。
 - 候选列表是常驻的[列表框](./listbox)收进浮层的形态；选项固定且不需要输入时换成[选择器](./select)。
 - 多选时的已选项可用[标签组](./tag-group)排在输入框前。
+- 长候选列表接入 [Virtualizer](./virtualizer) 时，过滤后的 collection 与 `count` 必须同批更新；高亮、`aria-activedescendant` 与确认仍按完整候选序列计算。
 
 ## 最佳实践
 

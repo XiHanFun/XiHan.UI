@@ -5,6 +5,8 @@
 
 /** 角色节点标记属性。 */
 export const PART_ATTR = 'data-xh-part'
+/** 跨嵌套 xh-* 宿主共享 Light DOM 时，显式声明这棵角色子树归哪一个组件管理。 */
+export const PART_OWNER_ATTR = 'data-xh-part-owner'
 
 /** 元素自身是角色节点，或其子树里有角色节点。 */
 export function containsPart(el: Element): boolean {
@@ -18,11 +20,15 @@ export function discoverParts(
 ): Map<string, HTMLElement[]> {
   const out = new Map<string, HTMLElement[]>()
   const visited = new Set<Element>()
+  const hostOwner = host.tagName.toLowerCase().replace(/^xh-/, '')
 
   const collect = (el: HTMLElement): void => {
     if (visited.has(el))
       return
     visited.add(el)
+    const declaredOwner = el.getAttribute(PART_OWNER_ATTR)
+    if (declaredOwner && declaredOwner !== hostOwner)
+      return
     const part = el.dataset.xhPart
     if (!part)
       return
@@ -38,6 +44,10 @@ export function discoverParts(
       if (child.tagName.toLowerCase().startsWith('xh-'))
         continue
       const el = child as HTMLElement
+      const declaredOwner = el.getAttribute(PART_OWNER_ATTR)
+      // 显式归给另一台宿主的整棵子树由它经 externalPartRoots 接管，本宿主不得写它。
+      if (declaredOwner && declaredOwner !== hostOwner)
+        continue
       collect(el)
       walk(el)
     }
