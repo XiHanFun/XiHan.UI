@@ -4,6 +4,7 @@
  */
 
 // 圆角柱：只在远离基线的一端做圆角，基线端保持直角；负值柱的圆角在下端（横向柱在左端）。
+// 不贴基线的独立矩形（桑基图的节点、矩形树图的块、焦点环）四角都圆。
 
 import type { Rect } from '../geometry'
 import type { PathSink } from '../path'
@@ -18,8 +19,9 @@ export interface RoundedBarOptions {
   /**
    * 基线在矩形的哪一端。start：y 小的一端（纵向，负值柱从基线向下）或 x 小的一端（横向，正值柱从左向右）；
    * end：y 大的一端（纵向正值柱）或 x 大的一端（横向负值柱）。圆角落在另一端。
+   * none：不贴基线，四角都圆，半径夹到宽高较小者的一半。
    */
-  readonly baseline: 'start' | 'end'
+  readonly baseline: 'start' | 'end' | 'none'
 }
 
 function drawBar(rect: Rect, options: RoundedBarOptions, sink: PathSink): void {
@@ -37,12 +39,26 @@ function drawBar(rect: Rect, options: RoundedBarOptions, sink: PathSink): void {
   const h = Math.abs(rect.height)
   if (w === 0 || h === 0)
     return
+  const right = x + w
+  const bottom = y + h
+  if (options.baseline === 'none') {
+    const r = Math.min(options.radius, w / 2, h / 2)
+    if (r === 0) {
+      sink.rect(x, y, w, h)
+      return
+    }
+    sink.moveTo(x + r, y)
+    sink.arcTo(right, y, right, y + r, r)
+    sink.arcTo(right, bottom, right - r, bottom, r)
+    sink.arcTo(x, bottom, x, bottom - r, r)
+    sink.arcTo(x, y, x + r, y, r)
+    sink.closePath()
+    return
+  }
   const vertical = options.orientation === 'vertical'
   const thickness = vertical ? w : h
   const length = vertical ? h : w
   const r = Math.min(options.radius, thickness / 2, length)
-  const right = x + w
-  const bottom = y + h
 
   if (r === 0) {
     sink.rect(x, y, w, h)

@@ -60,7 +60,8 @@ export interface RectMark extends MarkBase {
   readonly height: number
   readonly cornerRadius?: number
   readonly orientation?: 'vertical' | 'horizontal'
-  readonly baseline?: 'start' | 'end'
+  /** 柱贴着基线的一端（圆角落在另一端）；none 是不贴基线的独立矩形，四角都圆。 */
+  readonly baseline?: 'start' | 'end' | 'none'
 }
 
 /** 扇区或环段，角度 0 在 12 点方向、顺时针为正。 */

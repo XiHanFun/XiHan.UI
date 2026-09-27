@@ -35,6 +35,13 @@ describe('过渡计划', () => {
     expect(find<RectMark>(sceneAt(plan, 50), 'a')!.height).toBe(30)
   })
 
+  it('进入：不贴基线的独立矩形从中心展开', () => {
+    const free: RectMark = { ...bar('a', 60), baseline: 'none' }
+    const plan = planTransition(scene([]), scene([free], 2), { duration: 100, easing: linear })
+    const start = find<RectMark>(sceneAt(plan, 0), 'a')!
+    expect([start.x, start.y, start.width, start.height]).toEqual([5, 70, 0, 0])
+  })
+
   it('进入：扇区的结束角从起始角增长；center 从中心展开；fade 只淡入', () => {
     const slice: ArcMark = { kind: 'arc', key: 's', part: 'slice', cx: 0, cy: 0, innerRadius: 0, outerRadius: 10, startAngle: 1, endAngle: 2 }
     const grow = planTransition(scene([]), scene([slice]), { duration: 100, easing: linear })
