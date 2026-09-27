@@ -32918,6 +32918,329 @@
       "description": "gradient-text 的 root 部件 background-image 覆盖槽。"
     },
     {
+      "name": "--xh-graph-chart-empty-gap",
+      "component": "graph-chart",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 empty 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-gap",
+      "component": "graph-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-height",
+      "component": "graph-chart",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-height"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 viewport 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-legend-gap",
+      "component": "graph-chart",
+      "part": [
+        "legend"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 legend 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-legend-swatch-radius",
+      "component": "graph-chart",
+      "part": [
+        "legend-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-link-color",
+      "component": "graph-chart",
+      "part": [
+        "arrow",
+        "link"
+      ],
+      "property": [
+        "fill",
+        "stroke"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 arrow、link 部件 fill、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-link-width",
+      "component": "graph-chart",
+      "part": [
+        "link"
+      ],
+      "property": [
+        "stroke-width"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-stroke-thin"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 link 部件 stroke-width 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-node-size",
+      "component": "graph-chart",
+      "part": [
+        "legend-swatch",
+        "root",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns"
+      ],
+      "defaultToken": [
+        "--xh-chart-point-size"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-series-color",
+      "component": "graph-chart",
+      "part": [
+        "arrow",
+        "legend-swatch",
+        "link",
+        "node",
+        "pattern-line",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background",
+        "border",
+        "fill",
+        "stroke"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "highlighted",
+        "mark=line",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns",
+        "xh-chart-slot=1",
+        "xh-chart-slot=2",
+        "xh-chart-slot=3",
+        "xh-chart-slot=4",
+        "xh-chart-slot=5",
+        "xh-chart-slot=6",
+        "xh-chart-slot=7",
+        "xh-chart-slot=8"
+      ],
+      "defaultToken": [
+        "--xh-chart-categorical-1",
+        "--xh-chart-categorical-2",
+        "--xh-chart-categorical-3",
+        "--xh-chart-categorical-4",
+        "--xh-chart-categorical-5",
+        "--xh-chart-categorical-6",
+        "--xh-chart-categorical-7",
+        "--xh-chart-categorical-8"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 arrow、legend-swatch、link、node、pattern-line、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-tooltip-gap",
+      "component": "graph-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 tooltip 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-tooltip-px",
+      "component": "graph-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 tooltip 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-tooltip-py",
+      "component": "graph-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 tooltip 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-tooltip-radius",
+      "component": "graph-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 tooltip 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-tooltip-row-gap",
+      "component": "graph-chart",
+      "part": [
+        "tooltip-row"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 tooltip-row 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-graph-chart-tooltip-shadow",
+      "component": "graph-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "graph-chart 的 tooltip 部件 box-shadow 覆盖槽。"
+    },
+    {
       "name": "--xh-grid-column-gap",
       "component": "grid",
       "part": [

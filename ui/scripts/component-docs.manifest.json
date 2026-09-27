@@ -479,6 +479,10 @@
           "name": "漏斗图"
         },
         {
+          "id": "graph-chart",
+          "name": "关系图"
+        },
+        {
           "id": "heatmap",
           "name": "热力图"
         },

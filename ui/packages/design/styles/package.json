@@ -96,6 +96,7 @@
     "./form.css": "./css/form.css",
     "./funnel-chart.css": "./css/funnel-chart.css",
     "./gradient-text.css": "./css/gradient-text.css",
+    "./graph-chart.css": "./css/graph-chart.css",
     "./grid.css": "./css/grid.css",
     "./heatmap.css": "./css/heatmap.css",
     "./hierarchy-chart.css": "./css/hierarchy-chart.css",

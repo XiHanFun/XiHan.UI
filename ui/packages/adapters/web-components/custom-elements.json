@@ -26365,6 +26365,749 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/graph-chart.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-graph-chart>`：关系图宿主，用节点与连线看实体之间的连接关系、聚类与层级结构。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，\n可选 empty 与 tooltip。连线、箭头、节点与节点名由本元素按场景生成进 plot，按标记的 key 复用节点；\n图例项生成进 legend；tooltip 留空时写入缺省内容（节点名、数值与连线数），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n节点、连线与数值格式是对象或函数，只走 JS property。",
+          "name": "XhGraphChartElement",
+          "cssParts": [
+            {
+              "description": "`<figure>`，承载 pending 与错误状态",
+              "name": "root"
+            },
+            {
+              "description": "`<figcaption>`，图表的可及名来源",
+              "name": "caption"
+            },
+            {
+              "description": "图例工具条，项由元素生成",
+              "name": "legend"
+            },
+            {
+              "description": "尺寸观测的宿主",
+              "name": "viewport"
+            },
+            {
+              "description": "绘图区 `<svg>`，连线与节点由元素生成",
+              "name": "plot"
+            },
+            {
+              "description": "提示框，留空时由元素写入缺省内容",
+              "name": "tooltip"
+            },
+            {
+              "description": "没有可画的数据时显示",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: graphChartAnatomy, meta: graphChartMeta, // plot 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { plot: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "nodes",
+              "privacy": "public",
+              "type": {
+                "text": "readonly GraphNodeDatum[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "links",
+              "privacy": "public",
+              "type": {
+                "text": "readonly GraphLinkDatum[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultHiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<GraphChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "layout",
+              "privacy": "public",
+              "type": {
+                "text": "GraphLayout | undefined"
+              },
+              "attribute": "layout"
+            },
+            {
+              "kind": "field",
+              "name": "root",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "root"
+            },
+            {
+              "kind": "field",
+              "name": "directed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "directed"
+            },
+            {
+              "kind": "field",
+              "name": "draggableNodes",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "draggable-nodes"
+            },
+            {
+              "kind": "field",
+              "name": "zoom",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "zoom"
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "attribute": "active-key"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "notifyHidden",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<GraphChartSchema>( this, graphChartMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<GraphChartSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<GraphChartSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "GraphChartApi | null"
+                }
+              },
+              "description": "连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "legendItems",
+              "type": {
+                "text": "readonly GraphLegendItem[]"
+              },
+              "description": "图例项：一个分组一项，带色槽与显隐；自行铺图例时照它生成节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "ChartDatumDetails | null"
+              },
+              "description": "激活的节点（悬停或聚焦）；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "GraphTooltipModel | null"
+              },
+              "description": "提示框的缺省内容模型；收起时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "没有可画的数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentHiddenSeries",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻隐藏的分组。hiddenSeries 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "ChartKey | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "toggleSeries",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "切换某个分组的显隐，与点图例项同一条路。"
+            },
+            {
+              "kind": "field",
+              "name": "view",
+              "type": {
+                "text": "GraphView"
+              },
+              "description": "画布此刻的平移缩放。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "zoomBy",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "factor",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "at",
+                  "optional": true,
+                  "type": {
+                    "text": "{ x: number, y: number }"
+                  }
+                }
+              ],
+              "description": "按倍数缩放，锚点缺省是绘图区中心；zoom 关掉时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "resetView",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "回到不缩放、不平移。"
+            },
+            {
+              "kind": "method",
+              "name": "setFocusedDatum",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "ref",
+                  "type": {
+                    "text": "{ seriesId: string, index: number } | null"
+                  }
+                }
+              ],
+              "description": "移动键盘锚点：只改锚点，不移动 DOM 焦点，也不派发事件。"
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "field",
+              "name": "#tooltipKey",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "上一次写进提示框与数据表的内容：没变就不重建。"
+            },
+            {
+              "kind": "field",
+              "name": "#table",
+              "privacy": "private",
+              "type": {
+                "text": "GraphChartApi['table'] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableHost",
+              "privacy": "private",
+              "type": {
+                "text": "Element | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintMarks",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "GraphChartApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "ChartMark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "GraphChartApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintLegend",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "legend",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "GraphChartApi"
+                  }
+                }
+              ],
+              "description": "图例项：一个分组一个按钮，色标与名字各一个 span。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintTooltip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tooltip",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "GraphChartApi"
+                  }
+                }
+              ],
+              "description": "提示框留空时写缺省内容：头部是节点名，下面是数值与连线数；激活的节点换了就重写。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintA11y",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "GraphChartApi"
+                  }
+                }
+              ],
+              "description": "摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。"
+            }
+          ],
+          "events": [
+            {
+              "description": "图例切换显隐；detail 为 `{ hiddenSeries: string[] }`",
+              "name": "hidden-series-change",
+              "type": {
+                "text": "ChartHiddenSeriesChangeDetails"
+              }
+            },
+            {
+              "description": "指针或键盘换了激活的节点；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
+              "type": {
+                "text": "ChartActiveKeyChangeDetails"
+              }
+            },
+            {
+              "description": "悬停或聚焦到某个节点；detail 为节点详情，收起时为 null",
+              "name": "datum-active",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            },
+            {
+              "description": "指针点击、Enter 或 Space 按在某个节点上；detail 为节点详情",
+              "name": "datum-press",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "GraphLayout | undefined"
+              },
+              "description": "布局，默认 force",
+              "name": "layout",
+              "fieldName": "layout"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "树与径向树的根；不写时取没有入边的节点",
+              "name": "root",
+              "fieldName": "root"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "有向：连线的目标一端画箭头",
+              "name": "directed",
+              "fieldName": "directed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "力导布局下可以拖动节点，默认开；`draggable-nodes=\"false\"` 时关掉",
+              "name": "draggable-nodes",
+              "fieldName": "draggableNodes"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "画布可以平移缩放（Ctrl / ⌘ 加滚轮、拖动空白处、+ / − 键）",
+              "name": "zoom",
+              "fieldName": "zoom"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数字与内建文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "description": "激活的节点（受控）：节点的身份",
+              "name": "active-key",
+              "fieldName": "activeKey"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-graph-chart",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-graph-chart-empty-gap"
+            },
+            {
+              "name": "--xh-graph-chart-gap"
+            },
+            {
+              "name": "--xh-graph-chart-height"
+            },
+            {
+              "name": "--xh-graph-chart-legend-gap"
+            },
+            {
+              "name": "--xh-graph-chart-legend-swatch-radius"
+            },
+            {
+              "name": "--xh-graph-chart-link-color"
+            },
+            {
+              "name": "--xh-graph-chart-link-width"
+            },
+            {
+              "name": "--xh-graph-chart-node-size"
+            },
+            {
+              "name": "--xh-graph-chart-series-color"
+            },
+            {
+              "name": "--xh-graph-chart-tooltip-gap"
+            },
+            {
+              "name": "--xh-graph-chart-tooltip-px"
+            },
+            {
+              "name": "--xh-graph-chart-tooltip-py"
+            },
+            {
+              "name": "--xh-graph-chart-tooltip-radius"
+            },
+            {
+              "name": "--xh-graph-chart-tooltip-row-gap"
+            },
+            {
+              "name": "--xh-graph-chart-tooltip-shadow"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhGraphChartElement",
+          "declaration": {
+            "name": "XhGraphChartElement",
+            "module": "src/elements/graph-chart.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/grid.ts",
       "declarations": [
         {

@@ -46,6 +46,7 @@ import {
   formSuite,
   funnelChartSuite,
   gradientTextSuite,
+  graphChartSuite,
   gridSuite,
   heatmapSuite,
   hierarchyChartSuite,
@@ -257,6 +258,7 @@ const SUITES: readonly ConformanceSuite[] = [
   funnelChartSuite,
   hierarchyChartSuite,
   sankeyChartSuite,
+  graphChartSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */

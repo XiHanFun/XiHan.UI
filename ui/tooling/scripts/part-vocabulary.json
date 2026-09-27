@@ -39,6 +39,7 @@
     ],
     "arrow": [
       "context-menu",
+      "graph-chart",
       "hover-card",
       "menu",
       "menubar",
@@ -163,6 +164,7 @@
     "caption": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -441,6 +443,7 @@
       "command",
       "diff-view",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "json-viewer",
       "listbox",
@@ -502,6 +505,7 @@
     "focus-ring": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -973,6 +977,7 @@
     "legend": [
       "cartesian-chart",
       "fieldset",
+      "graph-chart",
       "heatmap",
       "pie-chart",
       "radar-chart",
@@ -980,6 +985,7 @@
     ],
     "legend-item": [
       "cartesian-chart",
+      "graph-chart",
       "heatmap",
       "pie-chart",
       "radar-chart",
@@ -987,6 +993,7 @@
     ],
     "legend-label": [
       "cartesian-chart",
+      "graph-chart",
       "heatmap",
       "pie-chart",
       "radar-chart",
@@ -1006,6 +1013,7 @@
     ],
     "legend-swatch": [
       "cartesian-chart",
+      "graph-chart",
       "pie-chart",
       "radar-chart",
       "sankey-chart"
@@ -1029,6 +1037,7 @@
     "link": [
       "anchor",
       "breadcrumb",
+      "graph-chart",
       "navigation-menu",
       "sankey-chart",
       "side-nav",
@@ -1128,6 +1137,7 @@
       "calendar-range-picker"
     ],
     "node": [
+      "graph-chart",
       "hierarchy-chart",
       "sankey-chart"
     ],
@@ -1135,6 +1145,7 @@
       "tree"
     ],
     "node-label": [
+      "graph-chart",
       "hierarchy-chart",
       "sankey-chart"
     ],
@@ -1199,6 +1210,7 @@
     "plot": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -1367,6 +1379,7 @@
       "form",
       "funnel-chart",
       "gradient-text",
+      "graph-chart",
       "grid",
       "heatmap",
       "hierarchy-chart",
@@ -1608,6 +1621,7 @@
       "cartesian-chart",
       "diff-view",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pagination",
       "pie-chart",
@@ -1630,6 +1644,7 @@
     "table": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -1716,6 +1731,7 @@
     "tooltip": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "heatmap",
       "hierarchy-chart",
       "pie-chart",
@@ -1725,6 +1741,7 @@
     "tooltip-header": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -1733,6 +1750,7 @@
     "tooltip-name": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -1741,6 +1759,7 @@
     "tooltip-row": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -1757,6 +1776,7 @@
     "tooltip-value": [
       "cartesian-chart",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
@@ -1838,6 +1858,7 @@
       "cartesian-chart",
       "diff-view",
       "funnel-chart",
+      "graph-chart",
       "hierarchy-chart",
       "image-cropper",
       "image-viewer",

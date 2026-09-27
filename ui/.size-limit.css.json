@@ -151,5 +151,6 @@
   "radar-chart.css": 6050,
   "funnel-chart.css": 3085,
   "hierarchy-chart.css": 8571,
-  "sankey-chart.css": 5291
+  "sankey-chart.css": 5291,
+  "graph-chart.css": 5591
 }

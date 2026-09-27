@@ -62,6 +62,8 @@ export const DIAGNOSTIC_CODES = {
   chartRadarOverlap: "chart.radar-overlap", // 雷达图的实体多于 3 个：多边形互相遮挡，按两两配对检查只有前 3 个色槽都合格；图照常画，按提醒报
   chartHierarchyShape: "chart.hierarchy-shape", // 层级图的数据组不成一棵树：扁平的行缺 idField / parentField，或 id 重复、父节点不存在、多个根、成环
   chartSankeyShape: "chart.sankey-shape", // 桑基图的流带不合法：成环、自环、端点不存在或节点重复；负值另报 chart.negative-share
+  chartGraphShape: "chart.graph-shape", // 关系图的数据不合法：节点重复、连线的端点不存在、自环，或树布局下数据不是一棵树
+  chartGraphSize: "chart.graph-size", // 关系图的节点太多：多于 500 个时交互变慢，按提醒报；多于 2000 个时不画，先聚合
 };
 ```
 

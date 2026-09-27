@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   XhFunnelChartRoot,
+  XhGraphChartRoot,
   XhHierarchyChartRoot,
   XhInfiniteScrollRoot,
   XhJsonViewerRoot,
@@ -232,6 +233,15 @@ const CASES: Case[] = [
     machine: { links: [{ source: 'a', target: 'b', value: 2 }, { source: 'a', target: 'c', value: 1 }], orientation: 'vertical', linkColor: 'source' },
     leaks: ['orientation', 'linkColor'],
     render: props => <XhSankeyChartRoot {...props} />,
+  },
+  {
+    name: 'graph-chart',
+    scope: 'graph-chart',
+    tag: 'figure',
+    token: '--xh-graph-chart-probe',
+    machine: { nodes: [{ id: 'a' }, { id: 'b' }], links: [{ source: 'a', target: 'b' }], layout: 'circular', directed: true },
+    leaks: ['layout', 'directed'],
+    render: props => <XhGraphChartRoot {...props} />,
   },
   {
     name: 'pin-input',

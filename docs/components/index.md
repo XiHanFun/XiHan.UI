@@ -150,6 +150,7 @@
 
 <XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" />
 <XhComponentCard src="funnel-chart" name="FunnelChart" label="漏斗图" href="/components/funnel-chart" />
+<XhComponentCard src="graph-chart" name="GraphChart" label="关系图" href="/components/graph-chart" />
 <XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" />
 <XhComponentCard src="hierarchy-chart" name="HierarchyChart" label="层级图" href="/components/hierarchy-chart" />
 <XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" />
