@@ -54,6 +54,44 @@ export function isValidTimeZone(timeZone: string): boolean {
   }
 }
 
+/** 把别名归一为当前 Intl 实现返回的 IANA 标识；无效名称抛 RangeError。 */
+export function canonicalizeTimeZone(timeZone: string): string {
+  return formatterFor(timeZone).resolvedOptions().timeZone
+}
+
+let availableTimeZones: readonly string[] | undefined
+
+/**
+ * 当前运行环境支持的 IANA 时区，按名称排序并显式包含 UTC。
+ * Intl.supportedValuesOf 不可用时抛错，调用方应提供自己的时区集合，不静默伪造不完整列表。
+ */
+export function getAvailableTimeZones(): readonly string[] {
+  if (availableTimeZones)
+    return availableTimeZones
+  if (typeof Intl.supportedValuesOf !== 'function')
+    throw new Error('[xh] 当前运行环境不支持 Intl.supportedValuesOf；请显式提供时区集合')
+  const zones = Intl.supportedValuesOf('timeZone').filter(zone => zone !== 'UTC' && zone !== 'Etc/UTC')
+  availableTimeZones = Object.freeze(['UTC', ...zones])
+  return availableTimeZones
+}
+
+/** UTC 偏移量 → ISO 字符串；东正西负，零偏移写成 +00:00。 */
+export function formatTimeZoneOffset(offsetMilliseconds: number): string {
+  if (!Number.isInteger(offsetMilliseconds))
+    throw new RangeError(`[xh] UTC 偏移量必须是整数毫秒，收到 ${offsetMilliseconds}`)
+  const sign = offsetMilliseconds < 0 ? '-' : '+'
+  let rest = Math.abs(offsetMilliseconds)
+  const hour = Math.floor(rest / MS_PER_HOUR)
+  rest -= hour * MS_PER_HOUR
+  const minute = Math.floor(rest / MS_PER_MINUTE)
+  rest -= minute * MS_PER_MINUTE
+  const second = Math.floor(rest / MS_PER_SECOND)
+  const millisecond = rest - second * MS_PER_SECOND
+  const pad = (value: number, length = 2): string => String(value).padStart(length, '0')
+  const seconds = second || millisecond ? `:${pad(second)}${millisecond ? `.${pad(millisecond, 3)}` : ''}` : ''
+  return `${sign}${pad(hour)}:${pad(minute)}${seconds}`
+}
+
 function isUtc(timeZone: string): boolean {
   return timeZone === 'UTC' || timeZone === 'Etc/UTC'
 }

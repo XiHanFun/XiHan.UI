@@ -37,7 +37,12 @@ export type {
   TimeRoundOptions,
   TimeToStringOptions,
   TimeUnit,
+  ZonedDateTimeFormatOptions,
+  ZonedDateTimeFromOptions,
+  ZonedDateTimeInstantLike,
+  ZonedDateTimeLike,
 } from './types'
 export { dayOfWeekIn, endOfWeek, getWeekInfo, isWeekend, startOfWeek, weeksInMonth } from './week'
 export type { WeekInfo, WeekStart } from './week'
-export { getLocalTimeZone, getTimeZoneOffset, isValidTimeZone } from './zone'
+export { canonicalizeTimeZone, formatTimeZoneOffset, getAvailableTimeZones, getLocalTimeZone, getTimeZoneOffset, isValidTimeZone } from './zone'
+export { ZonedDateTime } from './zoned'
