@@ -1,3 +1,4 @@
+import type { HighlighterPort } from '@xihan-ui/core'
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { codeViewAnatomy, codeViewKeyboard } from '@xihan-ui/headless'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -20,11 +21,19 @@ function expectKeysNotSwallowed({ doc }: RawStepContext): void {
   }
 }
 
+/**
+ * 套件一律接一个不着色的同步实现。缺省的可选着色是挂上之后异步到达的：可选模块在这一拍取没取到
+ * 取决于机器快慢，逐帧对拍会拍到赛跑的中间态（一边铺了 token、一边还没有）。
+ * 缺省着色的到达、缺席与显式 null 由各端的 code-view-optional-highlighter 专测。
+ */
+const PLAIN_HIGHLIGHTER: HighlighterPort = { highlight: () => null }
+
 /** 逐行结构由适配器铺，两侧都不由作者写；fixture 只声明作者那几件。 */
 export const codeViewSuite: ConformanceSuite = {
   component: 'code-view',
   anatomy: codeViewAnatomy,
   keyboard: codeViewKeyboard,
+  defaultProps: { highlighter: PLAIN_HIGHLIGHTER },
   fixture: {
     part: 'root',
     children: [
