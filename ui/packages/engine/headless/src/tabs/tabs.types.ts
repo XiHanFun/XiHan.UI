@@ -107,12 +107,22 @@ export interface TabsSchema extends MachineSchema {
     reorderable?: boolean
     onTabMove?: (details: TabsMoveDetails) => void
     /**
-     * 标签可关闭：trigger 上按 Delete / Backspace 即发 onTabClose。
+     * 标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，即发 onTabClose。
      * 库不持有标签序，只发意图，是否删除由数据源决定。
      */
     closable?: boolean
     /** 标签被关闭。 */
     onTabClose?: (details: TabsCloseDetails) => void
+    /**
+     * 面板内容等到对应标签第一次被选中才渲染，默认 false（全部面板首帧即渲染）。
+     * 面板节点本身常在，只推迟里面的内容。
+     */
+    lazyMount?: boolean
+    /**
+     * 标签被选走后卸掉面板内容，默认 false（选走只 hidden，内容与其状态留着）。
+     * 与 lazyMount 同开时只有选中面板有内容。
+     */
+    unmountOnExit?: boolean
     translations?: Partial<TabsTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: TabsValueChangeDetails) => void
@@ -138,6 +148,8 @@ export interface TabsSchema extends MachineSchema {
     scrollMax: number
     /** 按压通道：Space / Enter 或触屏按住的 trigger value。抬起、失焦或指针取消即清空，与选中互相独立。 */
     pressedValue: string | null
+    /** 被选中过的标签，按首次选中的先后排列；lazyMount / unmountOnExit 据它判面板内容在不在。 */
+    visited: string[]
   }
   computed: Record<string, never>
   refs: {
@@ -252,6 +264,7 @@ export interface TabsSchema extends MachineSchema {
     | 'revealFocused'
     | 'startPress'
     | 'endPress'
+    | 'recordVisited'
   effect: 'trackPointer' | 'trackResize' | 'trackStrip' | 'trackLiquidIndicator'
 }
 
@@ -272,6 +285,16 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getListProps: () => T['element']
   getTriggerProps: (props: TabsTriggerProps) => T['button']
+  /**
+   * 标签的关闭钮：紧跟在所属 trigger 之后、与它平级。点按发 onTabClose，与标签上按 Delete / Backspace 同一个意图。
+   * 鼠标与触屏专用：对读屏隐藏、不占 Tab 位，键盘那一路在标签自己身上。closable 关闭时 hidden，所属标签禁用时 disabled。
+   */
+  getCloseTriggerProps: (props: TabsTriggerProps) => T['button']
+  /**
+   * 该面板此刻是否渲染内容：选中的面板总是渲染；未选中的面板按 lazyMount / unmountOnExit 判——
+   * 从没被选中过且开了 lazyMount 的不渲染，被选中过又被选走且开了 unmountOnExit 的不渲染，其余照常渲染（只 hidden）。
+   */
+  isContentMounted: (value: string) => boolean
   /** 选中标签下的滑条；位置由状态机测量后写为内联样式，没有选中项时 hidden。 */
   getIndicatorProps: () => T['element']
   /** 标签之间的细分隔线，纯装饰。 */

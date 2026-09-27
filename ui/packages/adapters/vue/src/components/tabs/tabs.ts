@@ -33,9 +33,13 @@ export const XhTabsRoot = defineComponent({
     size: { type: String as PropType<Size> },
     /** 标签可以拖动换位。整个标签都是拖动源，不另设把手。 */
     reorderable: Boolean,
-    /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即触发 tab-close。 */
+    /** 标签可关闭：点 close-trigger，或焦点落在标签上按 Delete / Backspace，即触发 tab-close。 */
     closable: Boolean,
-    translations: { type: Object as PropType<TabsProps['translations']> },
+    /** 面板内容等到对应标签第一次被选中才渲染。 */
+    lazyMount: Boolean,
+    /** 标签被选走后卸掉面板内容。 */
+    unmountOnExit: Boolean,
+    translations:{ type: Object as PropType<TabsProps['translations']> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
@@ -65,7 +69,7 @@ export const XhTabsRoot = defineComponent({
       const authored = slots.default?.()
       const children = slotPaints(authored)
         ? authored
-        : (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
+        : (props.collection ? renderDefaultTree(ctx.api.value.collection, props.closable, slots.panel) : undefined)
       return h('div', ctx.api.value.getRootProps() as Record<string, unknown>, children)
     }
   },
@@ -175,6 +179,28 @@ export const XhTabsTrigger = defineComponent({
 })
 
 /**
+ * 标签的关闭钮：紧跟在所属 XhTabsTrigger 之后、与它平级，写同一个 value；没塞内容时由皮肤画一枚叉。
+ * 对读屏隐藏、不占 Tab 位——键盘用标签上的 Delete / Backspace。closable 关闭时收起。
+ */
+export const XhTabsCloseTrigger = defineComponent({
+  name: 'XhTabsCloseTrigger',
+  props: {
+    /** 所属标签的 value。 */
+    value: { type: String, required: true },
+    // 缺省交给 connect 回 collection 里查，与所属标签同一条来路
+    disabled: { type: Boolean, default: undefined },
+  },
+  setup(props, { slots }) {
+    const ctx = useTabsContext()
+    return () => h(
+      'button',
+      ctx.api.value.getCloseTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
+/**
  * 标签拖拽把手。放在标签中，自带 touch-action: none，按下即拖动，不等待激活距离。
  * 对读屏隐藏、也不占 Tab 位；键盘换位由标签上的 Alt + 方向键承担。
  * 整个标签拖动的路径照常可用，把手是叠加的第二个入口。
@@ -202,10 +228,11 @@ export const XhTabsContent = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useTabsContext()
+    // 面板节点常在；里面的内容按 lazyMount / unmountOnExit 由 connect 判定渲不渲染
     return () => h(
       'div',
       ctx.api.value.getContentProps({ value: props.value }) as Record<string, unknown>,
-      slots.default?.(),
+      ctx.api.value.isContentMounted(props.value) ? slots.default?.() : undefined,
     )
   },
 })
@@ -213,16 +240,18 @@ export const XhTabsContent = defineComponent({
 /**
  * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 面板内容经 panel 插槽，未写时为空面板。
+ * 面板内容经 panel 插槽，未写时为空面板。可关闭时每个标签后面跟一枚关闭钮。
  */
 function renderDefaultTree(
   collection: readonly TabsNodeMeta[],
+  closable: boolean,
   panelSlot?: (node: TabsNodeMeta) => VNode[],
 ): VNode[] {
   return [
-    h(XhTabsList, null, () => collection.map(node =>
+    h(XhTabsList, null, () => collection.flatMap(node => [
       h(XhTabsTrigger, { key: node.value, value: node.value }, () => node.label),
-    )),
+      ...(closable ? [h(XhTabsCloseTrigger, { key: `${node.value}:close`, value: node.value })] : []),
+    ])),
     ...collection.map(node =>
       h(XhTabsContent, { key: node.value, value: node.value }, () => panelSlot?.(node) ?? []),
     ),

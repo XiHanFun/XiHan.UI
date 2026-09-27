@@ -59182,6 +59182,10 @@
               "name": "trigger"
             },
             {
+              "description": "标签的关闭钮，紧跟在所属 trigger 之后、与它平级，须自带与它相同的 value 属性；对读屏隐藏、不占 Tab 位，closable 关闭时 hidden",
+              "name": "close-trigger"
+            },
+            {
               "description": "role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden",
               "name": "content"
             },
@@ -59309,6 +59313,24 @@
             },
             {
               "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -59394,6 +59416,39 @@
                 }
               ],
               "description": "把手所属的那个 trigger 节点；把手自己就写在 trigger 上时即它本身。"
+            },
+            {
+              "kind": "field",
+              "name": "stamped",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, Node[]>()",
+              "description": "从面板里 <template> 克隆出来、此刻挂在面板上的节点；没挂着就不在表里。"
+            },
+            {
+              "kind": "method",
+              "name": "syncTemplateContent",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "panel",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "mounted",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "面板内容写在面板里的 <template> 中时，该渲染就把模板克隆进面板（排在模板之后），该卸掉就把克隆出来的节点撤走。\n作者直接写在面板里的内容本就在 DOM 上，不经这里：Light DOM 的作者节点不归元素增删。"
             },
             {
               "kind": "method",
@@ -59511,11 +59566,28 @@
               "fieldName": "reorderable"
             },
             {
-              "name": "closable",
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，发 tab-close；默认关闭",
+              "name": "closable",
               "fieldName": "closable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "面板内容等到对应标签第一次被选中才渲染；面板内容须写在面板里的 `<template>` 中，默认关闭",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "标签被选走后卸掉面板内容；面板内容须写在面板里的 `<template>` 中，默认关闭",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             }
           ],
           "superclass": {

@@ -136,7 +136,7 @@ export function connectTabs<T extends PropTypes>(
     if (overflow == null || !event.isPrimary || (event.pointerType !== 'touch' && event.pointerType !== 'pen'))
       return
     const target = event.target as HTMLElement | null
-    if (target?.closest(`${parts['prev-trigger'].selector}, ${parts['next-trigger'].selector}, ${parts['tab-drag-trigger'].selector}`))
+    if (target?.closest(`${parts['prev-trigger'].selector}, ${parts['next-trigger'].selector}, ${parts['tab-drag-trigger'].selector}, ${parts['close-trigger'].selector}`))
       return
     const session = service.refs.get('gesture')
     if (!session || session.points().length > 0)
@@ -149,6 +149,25 @@ export function connectTabs<T extends PropTypes>(
 
   const setValue = (next: string | null): void => {
     send({ type: 'VALUE.SET', value: next })
+  }
+
+  /** 关掉一个标签：只发意图，剩余的标签序按 collection 算好一并交出，库不改标签序。 */
+  const closeTab = (target: string): void => {
+    send({
+      type: 'TAB.CLOSE',
+      value: target,
+      values: collection.map(node => node.value).filter(v => v !== target),
+    })
+  }
+
+  // 面板内容在不在：选中的总在；没被选中过的看 lazyMount，被选中过又被选走的看 unmountOnExit
+  const lazyMount = !!prop('lazyMount')
+  const unmountOnExit = !!prop('unmountOnExit')
+  const visited = context.get('visited')
+  const isContentMounted = (target: string): boolean => {
+    if (target === value)
+      return true
+    return visited.includes(target) ? !unmountOnExit : !lazyMount
   }
 
   /** 方向键落点：条目集合只在事件那一刻读活 DOM，顺序即文档序；起点用锚点。 */
@@ -304,11 +323,7 @@ export function connectTabs<T extends PropTypes>(
         if (closable && (event.key === 'Delete' || event.key === 'Backspace') && focusedValue != null
           && !metaOf.get(focusedValue)?.disabled) {
           event.preventDefault()
-          send({
-            type: 'TAB.CLOSE',
-            value: focusedValue,
-            values: collection.map(node => node.value).filter(v => v !== focusedValue),
-          })
+          closeTab(focusedValue)
           return
         }
         // manual 模式的确认键；automatic 下焦点已带着选中一起走，这里是幂等的
@@ -385,6 +400,36 @@ export function connectTabs<T extends PropTypes>(
         'onFocus': () => send({ type: 'TRIGGER.FOCUS', value: item.value }),
       })
     },
+
+    // 关闭钮与所属标签平级、紧跟其后：嵌进 role=tab 的按钮里是交互元素套交互元素。鼠标与触屏专用的辅助入口——
+    // 对读屏隐藏、不占 Tab 位，tablist 里不多出非 tab 的可达节点；键盘那一路是标签上的 Delete / Backspace。
+    // 接 Action Control icon 档 ghost 面、xs 档：它坐在标签的面里，比标签矮一截；字形由皮肤兜底
+    getCloseTriggerProps: (item) => {
+      const disabled = itemDisabled(item)
+      return normalize.button({
+        ...parts['close-trigger'].attrs,
+        'type': 'button',
+        'tabIndex': -1,
+        'aria-hidden': true,
+        // 不开放关闭时连钮一起收起；只是标签禁用时钮留在原地、按不动，标签宽度不因禁用跳变
+        'hidden': !closable || undefined,
+        'disabled': disabled || undefined,
+        'data-disabled': dataAttr(disabled),
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'xs',
+        'onClick': () => {
+          // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
+          if (!closable || disabled)
+            return
+          closeTab(item.value)
+        },
+      })
+    },
+
+    isContentMounted,
     // 选中标签的四个几何量由机器量好写成私有槽（它量得到，样式表量不到）：
     // line 档只取主轴那两支画一条线，segment 档四支都取、整块抬起面跟着滑；
     // 交叉轴的贴边、粗细与长什么样归皮肤
@@ -453,7 +498,8 @@ export function connectTabs<T extends PropTypes>(
       'onClick': () => send({ type: 'SCROLL.NEXT' }),
     }),
 
-    // 全部 panel 常挂，靠 hidden 显隐：不做懒挂载，panel 内的滚动位置与表单态才留得住
+    // panel 节点常挂，靠 hidden 显隐：tab 的 aria-controls 始终指得到它。里面的内容渲不渲染由 isContentMounted 定，
+    // 缺省全渲染，被选走的 panel 内的滚动位置与表单态留得住
     getContentProps: item => normalize.element({
       ...parts.content.attrs,
       'id': contentId(item.value),

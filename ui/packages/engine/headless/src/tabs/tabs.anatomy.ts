@@ -12,6 +12,8 @@ export const tabsAnatomy = createAnatomy('tabs', [
   'root',
   'list',
   'trigger',
+  // 可关闭标签的关闭钮：紧跟在所属 trigger 之后、与它平级（不嵌进 role=tab 的按钮里），鼠标与触屏专用
+  'close-trigger',
   // 选中标签下的那条滑条：主轴位置与长度由机器量好写成内联样式
   'indicator',
   // 标签之间的细分隔线，纯装饰

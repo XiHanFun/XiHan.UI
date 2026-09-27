@@ -21,6 +21,8 @@ const COLLECTION = VALUES.map(value => ({ value }))
  * 末尾的播报区与 list 部件平级：root 自己不带角色，role=tablist 在 list 上，
  * 活动区域落不进它的子节点集合。它常挂在这儿，各用例不必各挂一遍。
  *
+ * 每个标签后面紧跟一枚关闭钮，与标签平级、自报同一个 value；closable 缺省关，它们在场但收起。
+ *
  * 标签带两端各挂一只翻页钮：jsdom 不排版，标签带永远"放得下"，两只钮始终 hidden；
  * 这里钉的是三端把它们建成同一种节点（对读屏隐藏、不占 Tab 位、放得下时收起）。
  */
@@ -32,20 +34,23 @@ function tabsTree(disabled?: string): FixtureNode {
         part: 'list',
         children: [
           { part: 'prev-trigger', tag: 'button' },
-          ...VALUES.map((v): FixtureNode => {
+          ...VALUES.flatMap((v): FixtureNode[] => {
             const attrs: Record<string, string> = { value: v }
             if (v === disabled)
               attrs.disabled = ''
-            return {
-              part: 'trigger',
-              tag: 'button',
-              attrs,
-              children: [
-                // 标签带没有条目级上下文，把手与 trigger / content 一样自报 value
-                { part: 'tab-drag-trigger', tag: 'span', attrs: { value: v } },
-                { tag: 'span', text: `标签 ${v}` },
-              ],
-            }
+            return [
+              {
+                part: 'trigger',
+                tag: 'button',
+                attrs,
+                children: [
+                  // 标签带没有条目级上下文，把手与 trigger / content 一样自报 value
+                  { part: 'tab-drag-trigger', tag: 'span', attrs: { value: v } },
+                  { tag: 'span', text: `标签 ${v}` },
+                ],
+              },
+              { part: 'close-trigger', tag: 'button', attrs: { value: v } },
+            ]
           }),
           { part: 'next-trigger', tag: 'button' },
         ],
@@ -83,17 +88,20 @@ export const tabsSuite: ConformanceSuite = {
           'prev-trigger',
           'trigger[0]',
           'tab-drag-trigger[0]',
+          'close-trigger[0]',
           'trigger[1]',
           'tab-drag-trigger[1]',
+          'close-trigger[1]',
           'trigger[2]',
           'tab-drag-trigger[2]',
+          'close-trigger[2]',
           'next-trigger',
           'content[0]',
           'content[1]',
           'content[2]',
           'live-region',
         ],
-        counts: { 'root': 1, 'list': 1, 'prev-trigger': 1, 'next-trigger': 1, 'trigger': 3, 'tab-drag-trigger': 3, 'content': 3, 'live-region': 1 },
+        counts: { 'root': 1, 'list': 1, 'prev-trigger': 1, 'next-trigger': 1, 'trigger': 3, 'tab-drag-trigger': 3, 'close-trigger': 3, 'content': 3, 'live-region': 1 },
         parts: {
           'root': { 'data-orientation': 'horizontal', 'data-variant': 'line' },
           'list': { 'role': 'tablist', 'aria-orientation': 'horizontal', 'tabindex': '0' },
@@ -138,10 +146,83 @@ export const tabsSuite: ConformanceSuite = {
             'data-disabled': '',
             'data-dragging': null,
           },
+          // 关闭钮：鼠标与触屏专用，不进可及树、不占 Tab 位；closable 缺省关，整枚收起
+          'close-trigger[0]': {
+            'type': 'button',
+            'aria-hidden': 'true',
+            'tabindex': '-1',
+            'hidden': '',
+            'disabled': null,
+            'data-disabled': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-size': 'xs',
+          },
           'content[0]': { 'role': 'tabpanel', 'tabindex': '0', 'hidden': '', 'data-state': 'inactive' },
           'content[2]': { 'hidden': '', 'data-state': 'inactive' },
         },
       },
+    },
+    {
+      name: '可关闭：点关闭钮发 tab-close，带上被关的标签与剩余标签序；库不改 DOM 与选中',
+      spec: { apg: APG },
+      props: { collection: COLLECTION, closable: true, defaultValue: 'one' },
+      initial: {
+        parts: {
+          'close-trigger[0]': { 'hidden': null, 'aria-hidden': 'true', 'tabindex': '-1' },
+          'close-trigger[2]': { hidden: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'close-trigger[2]',
+          expect: {
+            parts: {
+              'trigger[0]': { 'aria-selected': 'true' },
+              'trigger[2]': { 'aria-selected': 'false' },
+            },
+            events: [{ type: 'tab-close', detail: { value: 'three', values: ['one', 'two'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '可关闭：焦点在标签上按 Delete / Backspace 发同一个 tab-close',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['tabs.kbd.close'],
+      props: { collection: COLLECTION, closable: true, defaultValue: 'one' },
+      steps: [
+        { kind: 'focus', part: 'trigger[1]' },
+        {
+          kind: 'key',
+          key: 'Delete',
+          expect: {
+            activeElement: { part: 'trigger[1]', exact: true },
+            events: [{ type: 'tab-close', detail: { value: 'two', values: ['one', 'three'] } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: { events: [{ type: 'tab-close', detail: { value: 'two', values: ['one', 'three'] } }] },
+        },
+      ],
+    },
+    {
+      name: '可关闭但标签禁用：关闭钮留在原地、禁用，点了不发事件',
+      spec: { apg: APG },
+      props: { collection: [{ value: 'one' }, { value: 'two', disabled: true }, { value: 'three' }], closable: true, defaultValue: 'one' },
+      initial: {
+        parts: {
+          'close-trigger[1]': { 'hidden': null, 'disabled': '', 'data-disabled': '' },
+          'close-trigger[0]': { 'disabled': null, 'data-disabled': null },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'close-trigger[1]', expect: { events: [] } },
+      ],
     },
     {
       name: 'aria-controls / aria-labelledby 按 value 逐对互指',

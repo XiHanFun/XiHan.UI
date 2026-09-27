@@ -8,7 +8,7 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -36,8 +36,12 @@ export interface XhTabsRootProps extends RootElementProps {
   size?: Size
   /** 标签可以拖动换位。整个标签都是拖动源，不另设把手。 */
   reorderable?: boolean
-  /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即触发 tab-close。 */
+  /** 标签可关闭：点 close-trigger，或焦点落在标签上按 Delete / Backspace，即触发 tab-close。 */
   closable?: boolean
+  /** 面板内容等到对应标签第一次被选中才渲染。 */
+  lazyMount?: boolean
+  /** 标签被选走后卸掉面板内容。 */
+  unmountOnExit?: boolean
   translations?: TabsProps['translations']
   onValueChange?: TabsProps['onValueChange']
   /** 换位是通知，标签序的真源在使用者的数据中。 */
@@ -62,6 +66,8 @@ export function XhTabsRoot({
   size,
   reorderable,
   closable,
+  lazyMount,
+  unmountOnExit,
   translations,
   onValueChange,
   onTabMove,
@@ -83,6 +89,8 @@ export function XhTabsRoot({
     size,
     reorderable,
     closable,
+    lazyMount,
+    unmountOnExit,
     translations,
     onValueChange,
     onTabMove,
@@ -92,7 +100,7 @@ export function XhTabsRoot({
   // 给了 collection 就按数据铺开整套结构
   const body = slotPaints(children)
     ? children
-    : (collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
+    : (collection ? <DefaultTree collection={ctx.api.collection} closable={!!closable} renderPanel={renderPanel} /> : null)
   return (
     <TabsProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
@@ -224,6 +232,30 @@ export function XhTabsTrigger({ value, disabled, children, ...rest }: XhTabsTrig
   )
 }
 
+export interface XhTabsCloseTriggerProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
+  /** 所属标签的 value。 */
+  value: string
+  /** 默认交给 connect 查询 collection，与所属标签同一条来路。 */
+  disabled?: boolean
+}
+/**
+ * 标签的关闭钮：紧跟在所属 XhTabsTrigger 之后、与它平级，写同一个 value；没塞内容时由皮肤画一枚叉。
+ * 对读屏隐藏、不占 Tab 位——键盘用标签上的 Delete / Backspace。closable 关闭时收起。
+ */
+export function XhTabsCloseTrigger({ value, disabled, children, ...rest }: XhTabsCloseTriggerProps): ReactNode {
+  const ctx = useTabsContext()
+  return (
+    <button
+      {...mergeReactProps(
+        ctx.api.getCloseTriggerProps({ value, disabled }) as Record<string, unknown>,
+        rest as Record<string, unknown>,
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
 export interface XhTabsTabDragTriggerProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
   /** 所属标签的 value。 */
   value: string
@@ -252,26 +284,31 @@ export interface XhTabsContentProps extends Omit<ComponentPropsWithRef<'div'>, '
 }
 export function XhTabsContent({ value, children, ...rest }: XhTabsContentProps): ReactNode {
   const ctx = useTabsContext()
+  // 面板节点常在；里面的内容按 lazyMount / unmountOnExit 由 connect 判定渲不渲染
   return (
     <div {...mergeReactProps(ctx.api.getContentProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children}
+      {ctx.api.isContentMounted(value) ? children : null}
     </div>
   )
 }
 
 /**
  * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。可关闭时每个标签后面跟一枚关闭钮。
  */
 function DefaultTree(props: {
   collection: readonly TabsNodeMeta[]
+  closable: boolean
   renderPanel?: (node: TabsNodeMeta) => ReactNode
 }): ReactNode {
   return (
     <>
       <XhTabsList>
         {props.collection.map(node => (
-          <XhTabsTrigger key={node.value} value={node.value}>{node.label}</XhTabsTrigger>
+          <Fragment key={node.value}>
+            <XhTabsTrigger value={node.value}>{node.label}</XhTabsTrigger>
+            {props.closable ? <XhTabsCloseTrigger value={node.value} /> : null}
+          </Fragment>
         ))}
       </XhTabsList>
       {props.collection.map(node => (
