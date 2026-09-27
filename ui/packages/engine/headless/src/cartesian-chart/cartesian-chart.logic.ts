@@ -10,9 +10,9 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
-import type { CartesianAnnotationSummary, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger } from './cartesian-chart.types'
+import type { CartesianAnnotationSummary, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { createPicker } from '@xihan-ui/viz'
+import { createPicker, FULL_WINDOW } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
 import { cartesianDatumId, cartesianKeyId, colorPosition } from './cartesian-chart.model'
 
@@ -24,6 +24,14 @@ export function defaultCartesianAnnotationSummary(items: readonly CartesianAnnot
 /** 缺省的开高低收写法：四个价依次写出。 */
 function defaultOhlcLabel({ open, high, low, close }: { open: string, high: string, low: string, close: string }): string {
   return `Open ${open}, High ${high}, Low ${low}, Close ${close}`
+}
+
+/** 整条轴：两个方向都没缩放。 */
+export const FULL_CARTESIAN_WINDOW: CartesianWindow = Object.freeze({ x: FULL_WINDOW, y: FULL_WINDOW })
+
+/** 两个窗口是否相同：受控时作者每次给新对象，内容没变不该当成变化。 */
+export function sameWindow(a: CartesianWindow, b: CartesianWindow | undefined): boolean {
+  return b != null && a.x.start === b.x.start && a.x.end === b.x.end && a.y.start === b.y.start && a.y.end === b.y.end
 }
 
 /** 缺省的五数写法：须线两端、四分位与中位数依次写出。 */
@@ -38,6 +46,9 @@ export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze(
   valueLabel: 'Value',
   sizeLabel: 'Size',
   colorLabel: 'Color',
+  zoomLabel: 'Zoom',
+  zoomStartLabel: 'Window start',
+  zoomEndLabel: 'Window end',
   ohlcLabel: defaultOhlcLabel,
   ohlcColumns: { open: 'Open', high: 'High', low: 'Low', close: 'Close' },
   boxLabel: defaultBoxLabel,
@@ -68,7 +79,7 @@ const axisLabelled = memoizeLast((translations: CartesianChartTranslations, keyL
 /** 取模型要读的那几处：机器的参数与连接层的服务都满足它。 */
 export interface CartesianModelSource {
   prop: PropFn<CartesianChartSchema>
-  context: { get: <K extends keyof ChartBaseContext>(key: K) => ChartBaseContext[K] }
+  context: { get: <K extends keyof CartesianChartSchema['context']>(key: K) => CartesianChartSchema['context'][K] }
   refs: { get: <K extends keyof CartesianChartSchema['refs']>(key: K) => CartesianChartSchema['refs'][K] }
   scope: Scope
 }
@@ -89,6 +100,9 @@ export function cartesianModelOf(source: CartesianModelSource): CartesianModel {
     orientation: prop('orientation'),
     totals: prop('totals'),
     annotations: prop('annotations'),
+    // 没开缩放时窗口不进管线：作者写了窗口也不裁轴
+    zoom: prop('zoom') ?? 'none',
+    window: context.get('window'),
     hiddenSeries: context.get('hiddenSeries'),
     size: context.get('size'),
     metrics: context.get('metrics'),

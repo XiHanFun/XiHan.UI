@@ -5831,6 +5831,10 @@
               "name": "plot"
             },
             {
+              "description": "缩放条外壳，轨道、窗口与两端的手柄由元素生成",
+              "name": "zoom-slider"
+            },
+            {
               "description": "提示框，留空时由元素写入缺省内容",
               "name": "tooltip"
             },
@@ -5924,6 +5928,31 @@
             },
             {
               "kind": "field",
+              "name": "window",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianWindow | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultWindow",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianWindow | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "zoom",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianZoom | undefined"
+              },
+              "attribute": "zoom"
+            },
+            {
+              "kind": "field",
               "name": "orientation",
               "privacy": "public",
               "type": {
@@ -6003,6 +6032,12 @@
             {
               "kind": "field",
               "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyWindow",
               "privacy": "private",
               "readonly": true
             },
@@ -6334,6 +6369,62 @@
             },
             {
               "kind": "method",
+              "name": "#paintClip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "裁剪区：一个 clipPath 里一个矩形。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintZoomSlider",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "slider",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "缩放条：轨道里一个窗口，窗口两端各一个手柄；作者只写外壳。"
+            },
+            {
+              "kind": "method",
               "name": "#paintLegend",
               "privacy": "private",
               "return": {
@@ -6474,6 +6565,13 @@
               }
             },
             {
+              "description": "滚轮、捏合、拖动、键盘或缩放条改了缩放窗口；detail 为 `{ window }`",
+              "name": "window-change",
+              "type": {
+                "text": "CartesianWindowChangeDetails"
+              }
+            },
+            {
               "description": "悬停或聚焦到某个数据；detail 为数据详情，收起时为 null",
               "name": "datum-active",
               "type": {
@@ -6504,6 +6602,14 @@
               "description": "提示框汇报什么；默认含柱或折线时 axis（同一个键上的全部系列），只有散点时 item",
               "name": "trigger",
               "fieldName": "trigger"
+            },
+            {
+              "type": {
+                "text": "CartesianZoom | undefined"
+              },
+              "description": "缩放的方向，默认 none；开启后 Ctrl（⌘）滚轮、捏合、键盘 + / − 缩放，放大后拖动平移",
+              "name": "zoom",
+              "fieldName": "zoom"
             },
             {
               "type": {
@@ -6634,6 +6740,30 @@
             },
             {
               "name": "--xh-cartesian-chart-tooltip-swatch-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-h"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-handle-bg"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-handle-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-handle-w"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-track-bg"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-track-radius"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-window-bg"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-window-radius"
             }
           ]
         }

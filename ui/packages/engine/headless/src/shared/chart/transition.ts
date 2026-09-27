@@ -82,12 +82,13 @@ export interface ChartTransitionRun {
   readonly stop: VoidFunction
 }
 
-/** 最近一次交给过渡的目标场景，以及它是在哪一份尺寸、度量与文字度量器下算出来的。 */
+/** 最近一次交给过渡的目标场景，以及它是在哪一份尺寸、度量、文字度量器与框架下算出来的。 */
 export interface ChartShown {
   readonly scene: Scene | null
   readonly size: ChartSize | null
   readonly metrics: ChartMetrics
   readonly measurerVersion: number
+  readonly extent: unknown
   readonly numbers: ChartNumbers
 }
 
@@ -98,6 +99,8 @@ export interface ChartTransitionState {
   readonly size: ChartSize | null
   readonly metrics: ChartMetrics
   readonly measurerVersion: number
+  /** 框架：还会改几何、但变化时不该播过渡的输入（缩放窗口）；没有时为 null。 */
+  readonly extent: unknown
   /** 各图表交给内核的数，按目标场景的数据算出。 */
   readonly numbers: ChartNumbers
   /** 绘图区元素：时长、曲线与减弱动效都从它读；没有渲染宿主时为 null。 */
@@ -213,7 +216,7 @@ function halt(state: ChartTransitionState): void {
  */
 export function syncChartTransition(state: ChartTransitionState, options: ChartTransitionOptions): void {
   const { target, shown, run } = state
-  const next: ChartShown = { scene: target, size: state.size, metrics: state.metrics, measurerVersion: state.measurerVersion, numbers: state.numbers }
+  const next: ChartShown = { scene: target, size: state.size, metrics: state.metrics, measurerVersion: state.measurerVersion, extent: state.extent, numbers: state.numbers }
   if (!state.animated || target == null) {
     state.setShown(next)
     halt(state)
@@ -229,7 +232,7 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
   }
 
   const base = shown?.scene ?? null
-  const reshaped = base != null && (shown!.size !== state.size || shown!.metrics !== state.metrics || shown!.measurerVersion !== state.measurerVersion)
+  const reshaped = base != null && (shown!.size !== state.size || shown!.metrics !== state.metrics || shown!.measurerVersion !== state.measurerVersion || shown!.extent !== state.extent)
   if (reshaped) {
     if (!run) {
       state.setFrame(null)

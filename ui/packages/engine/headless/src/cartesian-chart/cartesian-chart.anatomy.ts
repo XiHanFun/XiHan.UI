@@ -17,6 +17,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // legend-scale 是按值着色时图例末尾的色阶：名字、低端的值、渐变条、高端的值。
 // stem 是棒棒糖的细杆（杆顶的点是 point），只给眼睛看。connector 是瀑布相邻两步之间的连接线，只给眼睛看。candle 是 K 线的实体（美国线是整根线），wick 是影线。
 // box 是箱线的箱（小提琴是密度轮廓），whisker 是须线，median 是中位线，outlier 是离群点；只有 box 可聚焦。
+// clip-path 与 clip-rect 是缩放后的裁剪区（defs 里）；zoom-slider 是作者放置的缩放条，轨道、窗口与两端的手柄由组件生成。
 // annotation 是注释（参考线、参考带、标出的点、平均线、趋势线），annotation-label 是它的标签，都只给眼睛看。
 export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'root',
@@ -34,6 +35,8 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'defs',
   'pattern',
   'pattern-line',
+  'clip-path',
+  'clip-rect',
   'grid',
   'grid-line',
   'axis',
@@ -70,6 +73,10 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'tooltip-value',
   'tooltip-name',
   'empty',
+  'zoom-slider',
+  'zoom-track',
+  'zoom-window',
+  'zoom-handle',
   'summary',
   'table',
 ])

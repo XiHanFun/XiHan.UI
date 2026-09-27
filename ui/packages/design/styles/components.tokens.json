@@ -8112,6 +8112,150 @@
       "description": "cartesian-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-cartesian-chart-zoom-h",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-slider"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-6"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-slider 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-zoom-handle-bg",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-handle"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-handle 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-zoom-handle-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-handle"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-handle 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-zoom-handle-w",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-handle"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-handle 部件 inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-zoom-track-bg",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-track"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-track 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-zoom-track-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-track"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-track 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-zoom-window-bg",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-window"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-window 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-cartesian-chart-zoom-window-radius",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-window"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-window 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-action-bg",
       "component": "cascader",
       "part": [

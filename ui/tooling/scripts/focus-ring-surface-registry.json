@@ -151,6 +151,13 @@
       "ratio": 1,
       "ring": "poured"
     },
+    "cartesian-chart [data-part='zoom-handle'][data-scope='cartesian-chart']": {
+      "parts": [
+        "zoom-handle"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
     "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
       "parts": [
         "thumb"

@@ -16,9 +16,10 @@ import type {
   CartesianLegendItem,
   CartesianMarkTag,
   CartesianTooltipRow,
+  CartesianWindow,
 } from './cartesian-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
-import { createScene, markPath } from '@xihan-ui/viz'
+import { clampWindow, createScene, domainToWindow, isFullWindow, markPath, pan, windowToDomain, zoomAt } from '@xihan-ui/viz'
 import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
@@ -34,9 +35,12 @@ import {
   cartesianModelOf,
   cartesianNavTarget,
   cartesianOverlay,
+  cartesianPositionOf,
   cartesianTooltip,
   cartesianTranslations,
   cartesianTrigger,
+  FULL_CARTESIAN_WINDOW,
+  sameWindow,
 } from './cartesian-chart.logic'
 
 const parts = cartesianChartAnatomy.build()
@@ -59,6 +63,20 @@ function swatchMark(item: { mark: CartesianLegendItem['mark'], area: boolean, sy
 function sequentialStop(t: number): { seg: 'low' | 'high', p: string } {
   return t <= 0.5 ? { seg: 'low', p: `${(t * 200).toFixed(1)}%` } : { seg: 'high', p: `${((t - 0.5) * 200).toFixed(1)}%` }
 }
+
+/** Ctrl（⌘）滚轮的缩放速率：每个像素的滚动量缩放 e^0.002 倍。 */
+const WHEEL_ZOOM_RATE = 0.002
+
+/** 滚轮按行、按页报告滚动量时换算成像素。 */
+const WHEEL_LINE = 16
+const WHEEL_PAGE = 400
+
+/** 键盘 + / − 一次缩放的倍数。 */
+const KEY_ZOOM_STEP = 1.5
+
+/** 缩放条手柄的键盘步长：方向键 1%，Shift 与翻页键 10%。 */
+const SLIDE_STEP = 0.01
+const SLIDE_PAGE = 0.1
 
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function cartesianMarkTag(mark: Mark): CartesianMarkTag {
@@ -191,6 +209,127 @@ export function connectCartesianChart<T extends PropTypes>(
     }
   }
 
+  // —— 缩放 ——
+  const zoom = prop('zoom') ?? 'none'
+  const zoomX = zoom === 'x' || zoom === 'xy'
+  const zoomY = zoom === 'y' || zoom === 'xy'
+  const zoomable = zoomX || zoomY
+  const screenZoom = orientation === 'vertical' ? { horizontal: zoomX, vertical: zoomY } : { horizontal: zoomY, vertical: zoomX }
+  const win = context.get('window')
+  const drag = context.get('drag')
+  const layout = model.scene?.layout ?? null
+  const shown = layout?.window ?? FULL_CARTESIAN_WINDOW
+  const zoomed = !isFullWindow(shown.x) || !isFullWindow(shown.y)
+  const category = model.spec.keyScale === 'band' || model.spec.keyScale === 'point'
+  const keyCount = model.spec.keys.length
+  // 窗口最窄：类目轴至少露出一个类目，连续轴放大到 100 倍为止
+  const limits = { minSpan: category && keyCount > 0 ? Math.min(1, 1 / keyCount) : 0.01 }
+  const setWindow = (next: CartesianWindow): void => {
+    if (!sameWindow(next, win))
+      send({ type: 'WINDOW.SET', window: next })
+  }
+  /** 绘图区里的一点换成两根轴在窗口里的相对位置 0–1：key 沿自变量轴，value 沿数值轴（自下而上、自左而右）。 */
+  const ratioAt = (at: { x: number, y: number }): { key: number, value: number } | null => {
+    if (!layout)
+      return null
+    const { plot } = layout
+    const fx = (at.x - plot.x) / plot.width
+    const fy = (at.y - plot.y) / plot.height
+    const key = orientation === 'vertical' ? fx : fy
+    const value = orientation === 'vertical' ? 1 - fy : fx
+    return {
+      key: Math.min(1, Math.max(0, prop('xAxis')?.reverse ? 1 - key : key)),
+      value: Math.min(1, Math.max(0, prop('yAxis')?.reverse ? 1 - value : value)),
+    }
+  }
+  const zoomAround = (anchor: { key: number, value: number }, factor: number): void => setWindow({
+    x: zoomX ? zoomAt(win.x, anchor.key, factor, limits) : win.x,
+    y: zoomY ? zoomAt(win.y, anchor.value, factor) : win.y,
+  })
+  /** 拖着绘图区平移：内容跟着指针走，窗口朝反方向挪。 */
+  const panTo = (at: { x: number, y: number }): void => {
+    if (!drag || drag.target !== 'plot')
+      return
+    const dx = (at.x - drag.from.x) / drag.size.x
+    const dy = (at.y - drag.from.y) / drag.size.y
+    const keyDelta = (orientation === 'vertical' ? -dx : -dy) * (prop('xAxis')?.reverse ? -1 : 1)
+    const valueDelta = (orientation === 'vertical' ? dy : -dx) * (prop('yAxis')?.reverse ? -1 : 1)
+    setWindow({
+      x: zoomX ? pan(drag.window.x, keyDelta) : win.x,
+      y: zoomY ? pan(drag.window.y, valueDelta) : win.y,
+    })
+  }
+  /** 一个数据在整条自变量轴上的位置 0–1：类目取类目的中心，连续轴按取整后的整条轴换算。 */
+  const keyRatio = (ref: ChartDatumRef): number | null => {
+    const j = cartesianKeyIndexOf(model, ref)
+    if (j < 0)
+      return null
+    if (category)
+      return (j + 0.5) / keyCount
+    const extent = layout?.keyExtent
+    const key = model.spec.keys[j]!
+    const v = key instanceof Date ? key.valueOf() : Number(key)
+    return extent ? domainToWindow([v, v], extent, model.spec.keyScale === 'log' ? 'log' : 'linear').start : null
+  }
+  /** 键盘把焦点移出了窗口：窗口平移过去，让焦点落在窗口正中。 */
+  const follow = (ref: ChartDatumRef): void => {
+    if (!zoomX || isFullWindow(win.x))
+      return
+    const r = keyRatio(ref)
+    if (r == null || (r >= win.x.start && r <= win.x.end))
+      return
+    const span = win.x.end - win.x.start
+    setWindow({ ...win, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
+  }
+  /** 缩放条手柄报给读屏的值：窗口那一端对着的键。 */
+  const edgeText = (r: number, edge: 'start' | 'end'): string => {
+    if (keyCount === 0)
+      return ''
+    if (category) {
+      const j = edge === 'start' ? Math.floor(r * keyCount + 1e-9) : Math.ceil(r * keyCount - 1e-9) - 1
+      return model.formats.key(model.spec.keys[Math.min(keyCount - 1, Math.max(0, j))]!)
+    }
+    const extent = layout?.keyExtent
+    if (!extent)
+      return ''
+    const [v] = windowToDomain({ start: r, end: r }, extent, model.spec.keyScale === 'log' ? 'log' : 'linear')
+    return model.formats.key(model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? new Date(v) : v)
+  }
+  const touches = service.refs.get('touches')
+  const endPointer = (event: PointerEvent): void => {
+    touches.delete(event.pointerId)
+    if (drag?.pointerId === event.pointerId)
+      send({ type: 'DRAG.END' })
+  }
+  /** 缩放条上拖一端或整个窗口：按轨道宽度把指针的横向位移换成比例。 */
+  const slide = (event: PointerEvent): void => {
+    if (!drag || drag.pointerId !== event.pointerId || drag.target === 'plot')
+      return
+    const d = (event.clientX - drag.from.x) / drag.size.x
+    const { start, end } = drag.window.x
+    const x = drag.target === 'start'
+      ? { start: Math.min(end - limits.minSpan, Math.max(0, start + d)), end }
+      : drag.target === 'end'
+        ? { start, end: Math.max(start + limits.minSpan, Math.min(1, end + d)) }
+        : pan(drag.window.x, d / (end - start))
+    setWindow({ ...win, x })
+  }
+  const slideStart = (target: 'start' | 'end' | 'window') => (event: PointerEvent): void => {
+    if (event.button !== 0)
+      return
+    const el = event.currentTarget as Element
+    const track = el.closest(`[data-scope='cartesian-chart'][data-part='zoom-track']`) ?? el
+    const width = track.getBoundingClientRect().width
+    if (width <= 0)
+      return
+    event.preventDefault()
+    event.stopPropagation()
+    el.setPointerCapture?.(event.pointerId)
+    send({ type: 'DRAG.START', drag: { target, pointerId: event.pointerId, from: { x: event.clientX, y: 0 }, size: { x: width, y: 1 }, window: win } })
+  }
+  const clipId = `${ids.plot}-clip`
+  const clip = model.scene?.clip ?? null
+
   const focusTo = (ref: ChartDatumRef, visible: boolean, focus: boolean): void => {
     const j = cartesianKeyIndexOf(model, ref)
     if (j < 0)
@@ -234,6 +373,9 @@ export function connectCartesianChart<T extends PropTypes>(
     toggleSeries: id => send({ type: 'LEGEND.TOGGLE', id }),
     setFocusedDatum: ref => send({ type: 'FOCUS.SET', ref }),
     markTag: cartesianMarkTag,
+    zoom: { x: zoomX, y: zoomY, window: shown },
+    clip: clip ? { id: clipId, ...clip } : null,
+    setWindow,
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -348,8 +490,66 @@ export function connectCartesianChart<T extends PropTypes>(
       'width': size?.width,
       'height': size?.height,
       'viewBox': size ? `0 0 ${size.width} ${size.height}` : undefined,
+      // 能缩放的屏幕方向：触屏在这个方向上的拖动与捏合归绘图区，另一个方向照常滚动页面
+      'data-zoomable': zoomable ? (screenZoom.horizontal && screenZoom.vertical ? 'both' : screenZoom.horizontal ? 'horizontal' : 'vertical') : undefined,
+      'data-zoomed': dataAttr(zoomed),
+      'data-dragging': dataAttr(drag?.target === 'plot'),
+      'onWheel': (event: WheelEvent) => {
+        // 滚轮只在按住 Ctrl（⌘）时缩放：不按时让页面照常滚动
+        if (!zoomable || !(event.ctrlKey || event.metaKey))
+          return
+        const at = pointerAt(event)
+        const r = at ? ratioAt(at) : null
+        if (!r)
+          return
+        event.preventDefault()
+        const delta = event.deltaMode === 1 ? event.deltaY * WHEEL_LINE : event.deltaMode === 2 ? event.deltaY * WHEEL_PAGE : event.deltaY
+        zoomAround(r, Math.exp(-delta * WHEEL_ZOOM_RATE))
+      },
+      'onPointerDown': (event: PointerEvent) => {
+        if (!zoomable || event.button !== 0 || !layout)
+          return
+        const at = pointerAt(event)
+        if (!at)
+          return
+        if (event.pointerType === 'touch') {
+          touches.set(event.pointerId, at)
+          // 第二根手指按下：改为捏合，停掉单指的平移
+          if (touches.size >= 2) {
+            if (drag)
+              send({ type: 'DRAG.END' })
+            return
+          }
+        }
+        if (!zoomed)
+          return
+        const target = event.currentTarget as Element
+        target.setPointerCapture?.(event.pointerId)
+        send({ type: 'DRAG.START', drag: { target: 'plot', pointerId: event.pointerId, from: at, size: { x: layout.plot.width, y: layout.plot.height }, window: win } })
+      },
+      'onPointerUp': endPointer,
       'onPointerMove': (event: PointerEvent) => {
         const at = pointerAt(event)
+        // 两根手指：按两指间距的变化缩放，锚点在两指中间
+        if (at && event.pointerType === 'touch' && touches.has(event.pointerId) && touches.size === 2) {
+          const [a, b] = [...touches.values()]
+          const before = Math.hypot(a!.x - b!.x, a!.y - b!.y)
+          touches.set(event.pointerId, at)
+          const [c, d] = [...touches.values()]
+          const after = Math.hypot(c!.x - d!.x, c!.y - d!.y)
+          const mid = ratioAt({ x: (c!.x + d!.x) / 2, y: (c!.y + d!.y) / 2 })
+          if (before > 0 && after > 0 && mid)
+            zoomAround(mid, after / before)
+          return
+        }
+        if (at && event.pointerType === 'touch' && touches.has(event.pointerId))
+          touches.set(event.pointerId, at)
+        // 拖着平移时不命中数据：提示框跟着指针乱跳没有意义
+        if (drag?.target === 'plot' && drag.pointerId === event.pointerId) {
+          if (at)
+            panTo(at)
+          return
+        }
         const hit = at ? cartesianHitTest(model, at.x, at.y, trigger, event.pointerType) : null
         if (!hit || !at) {
           if (context.get('hover') != null)
@@ -360,7 +560,10 @@ export function connectCartesianChart<T extends PropTypes>(
       },
       'onPointerLeave': () => send({ type: 'HOVER.CLEAR' }),
       // 指针被系统收走（拖拽、右键菜单）时也要收起，否则提示框会一直挂着
-      'onPointerCancel': () => send({ type: 'HOVER.CLEAR' }),
+      'onPointerCancel': (event: PointerEvent) => {
+        endPointer(event)
+        send({ type: 'HOVER.CLEAR' })
+      },
       'onClick': () => {
         const hover = context.get('hover')
         const pressed = hover ? cartesianDetails(model, hover.ref, trigger) : null
@@ -382,6 +585,14 @@ export function connectCartesianChart<T extends PropTypes>(
           send({ type: 'PRESS', details: own })
           return
         }
+        // + / − 以焦点所在的数据为中心缩放
+        if (zoomable && (event.key === '+' || event.key === '=' || event.key === '-' || event.key === '_')) {
+          event.preventDefault()
+          const from = focused && focusWithin ? focused : anchor
+          const p = from ? model.scene?.anchors.get(from.seriesId)?.[cartesianPositionOf(model, from)] : null
+          zoomAround((p ? ratioAt(p) : null) ?? { key: 0.5, value: 0.5 }, event.key === '+' || event.key === '=' ? KEY_ZOOM_STEP : 1 / KEY_ZOOM_STEP)
+          return
+        }
         const intent = chartNavIntentFromKey(event, orientation)
         // 返回 null 表示该键不归绘图区管：绝不 preventDefault，页面滚动与读屏要用
         if (!intent || !anchor)
@@ -389,8 +600,10 @@ export function connectCartesianChart<T extends PropTypes>(
         // 键归绘图区管就先拦下：走到头没处可去时也不该让页面跟着滚
         event.preventDefault()
         const next = cartesianNavTarget(model, focused && focusWithin ? focused : anchor, intent)
-        if (next)
+        if (next) {
+          follow(next)
           focusTo(next, true, true)
+        }
       },
       'onFocusIn': (event: FocusEvent) => {
         const target = event.target as Element
@@ -467,6 +680,8 @@ export function connectCartesianChart<T extends PropTypes>(
             // 按值着色的系列不取分类色：系列色换成色阶中点，点各自按值取色
             'data-xh-chart-scale': spec?.color != null ? 'sequential' : undefined,
             'data-dimmed': dataAttr(emphasis != null && emphasis !== id),
+            // 缩放后窗外的标记裁掉：只露出绘图区里的那一段
+            'clip-path': clip ? `url(#${clipId})` : undefined,
           })
         }
         return normalize.element({
@@ -567,12 +782,106 @@ export function connectCartesianChart<T extends PropTypes>(
         props['data-tone'] = owner?.tone ?? undefined
         props['data-xh-chart-scale'] = owner?.color != null ? 'sequential' : undefined
         props['data-dimmed'] = dataAttr(emphasis != null && note?.seriesId != null && emphasis !== note.seriesId)
+        props['clip-path'] = clip ? `url(#${clipId})` : undefined
       }
       // 线尾标签的引导线随所属系列淡出
       if (mark.part === 'leader-line')
         props['data-dimmed'] = dataAttr(emphasis != null && mark.datum != null && emphasis !== mark.datum.seriesId)
       return normalize.element(props)
     },
+
+    // 裁剪区画在绘图区的 defs 里：缩放后窗外的系列与注释按它裁掉
+    getClipPathProps: () => normalize.element({
+      ...parts['clip-path'].attrs,
+      id: clipId,
+    }),
+
+    getClipRectProps: () => normalize.element({
+      ...parts['clip-rect'].attrs,
+      x: clip?.x,
+      y: clip?.y,
+      width: clip?.width,
+      height: clip?.height,
+    }),
+
+    // 缩放条：一条轨道上的窗口与两端的手柄，对着自变量轴的整条轴；绘图区不随 RTL 镜像，缩放条也不镜像
+    getZoomSliderProps: () => normalize.element({
+      ...parts['zoom-slider'].attrs,
+      'role': 'group',
+      'aria-label': translations.zoomLabel,
+      // 缩放条是横的，只对着横向的自变量轴
+      'hidden': !zoomX || orientation !== 'vertical' || undefined,
+      'data-dragging': dataAttr(drag != null && drag.target !== 'plot'),
+      // 缩放条与视口同宽：左右各内缩到绘图区的两边，轨道正对着自变量轴
+      'style': {
+        '--xh-_chart-zoom-start': `${(shown.x.start * 100).toFixed(3)}%`,
+        '--xh-_chart-zoom-end': `${(shown.x.end * 100).toFixed(3)}%`,
+        ...(layout && size && {
+          '--xh-_chart-zoom-left': `${layout.plot.x}px`,
+          '--xh-_chart-zoom-right': `${Math.max(0, size.width - layout.plot.x - layout.plot.width)}px`,
+        }),
+      },
+    }),
+
+    getZoomTrackProps: () => normalize.element({
+      ...parts['zoom-track'].attrs,
+      // 按在轨道空处：窗口移过去，以按下的位置为中心
+      onPointerDown: (event: PointerEvent) => {
+        if (event.button !== 0 || event.target !== event.currentTarget)
+          return
+        const rect = (event.currentTarget as Element).getBoundingClientRect()
+        if (rect.width <= 0)
+          return
+        const r = (event.clientX - rect.left) / rect.width
+        const span = win.x.end - win.x.start
+        setWindow({ ...win, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
+      },
+    }),
+
+    getZoomWindowProps: () => normalize.element({
+      ...parts['zoom-window'].attrs,
+      onPointerDown: slideStart('window'),
+      onPointerMove: slide,
+      onPointerUp: endPointer,
+      onPointerCancel: endPointer,
+    }),
+
+    getZoomHandleProps: edge => normalize.element({
+      ...parts['zoom-handle'].attrs,
+      'role': 'slider',
+      'tabindex': 0,
+      'data-placement': edge,
+      'aria-label': edge === 'start' ? translations.zoomStartLabel : translations.zoomEndLabel,
+      'aria-orientation': 'horizontal',
+      'aria-valuemin': 0,
+      'aria-valuemax': 100,
+      'aria-valuenow': Math.round(shown.x[edge] * 100),
+      'aria-valuetext': edgeText(shown.x[edge], edge),
+      'onPointerDown': slideStart(edge),
+      'onPointerMove': slide,
+      'onPointerUp': endPointer,
+      'onPointerCancel': endPointer,
+      'onKeyDown': (event: KeyboardEvent) => {
+        const { start, end } = win.x
+        const big = event.shiftKey ? SLIDE_PAGE : SLIDE_STEP
+        const delta = event.key === 'ArrowRight' || event.key === 'ArrowUp'
+          ? big
+          : event.key === 'ArrowLeft' || event.key === 'ArrowDown'
+            ? -big
+            : event.key === 'PageUp' ? SLIDE_PAGE : event.key === 'PageDown' ? -SLIDE_PAGE : null
+        let x: { start: number, end: number } | null = null
+        if (delta != null)
+          x = edge === 'start' ? { start: Math.min(end - limits.minSpan, Math.max(0, start + delta)), end } : { start, end: Math.max(start + limits.minSpan, Math.min(1, end + delta)) }
+        else if (event.key === 'Home')
+          x = edge === 'start' ? { start: 0, end } : { start, end: start + limits.minSpan }
+        else if (event.key === 'End')
+          x = edge === 'start' ? { start: end - limits.minSpan, end } : { start, end: 1 }
+        if (!x)
+          return
+        event.preventDefault()
+        setWindow({ ...win, x })
+      },
+    }),
 
     // 提示框不进读屏：每个标记的可及名已经念全了键与数值，再念一遍是重复
     getTooltipProps: () => normalize.element({

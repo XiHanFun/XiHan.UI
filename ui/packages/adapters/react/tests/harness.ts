@@ -41,6 +41,7 @@ const PUBLIC_EVENTS = {
   'active-key-change': 'onActiveKeyChange',
   'datum-active': 'onDatumActive',
   'datum-press': 'onDatumPress',
+  'window-change': 'onWindowChange',
 } as const
 
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }

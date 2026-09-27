@@ -39,6 +39,7 @@ const PUBLIC_EVENTS = {
   'active-key-change': 'onActiveKeyChange',
   'datum-active': 'onDatumActive',
   'datum-press': 'onDatumPress',
+  'window-change': 'onWindowChange',
 } as const
 
 function declaredEvents(component: Component): Set<string> {

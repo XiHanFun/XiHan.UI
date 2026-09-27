@@ -6,7 +6,7 @@
 // 定义 cartesian chart 类型契约。
 
 import type { MachineSchema, PropTypes, Tone } from '@xihan-ui/core'
-import type { Mark, NumberFormatSpec, Scene, SymbolName, TableModel } from '@xihan-ui/viz'
+import type { AxisWindow, Mark, NumberFormatSpec, Scene, SymbolName, TableModel } from '@xihan-ui/viz'
 import type {
   ChartBaseAction,
   ChartBaseComputed,
@@ -218,6 +218,32 @@ export type CartesianAnnotation
     label?: string
   }
 
+/** 缩放的方向：x 沿自变量轴，y 沿数值轴。 */
+export type CartesianZoom = 'none' | 'x' | 'y' | 'xy'
+
+/** 缩放窗口：两根轴各一段，取值是定义域的比例 0–1（start ≤ end）；整条轴是 { start: 0, end: 1 }。 */
+export interface CartesianWindow {
+  readonly x: AxisWindow
+  readonly y: AxisWindow
+}
+
+/** 缩放窗口变化时报告的内容。 */
+export interface CartesianWindowChangeDetails {
+  readonly window: CartesianWindow
+}
+
+/**
+ * 一次拖动的起点：plot 在绘图区里平移（放大之后），start / end 拖缩放条的一端，window 拖缩放条的整个窗口。
+ * from 是起点坐标（绘图区平移是绘图区里的像素，缩放条是轨道上的比例），size 是轨道或绘图区沿拖动方向的像素长度。
+ */
+export interface CartesianDrag {
+  readonly target: 'plot' | 'start' | 'end' | 'window'
+  readonly pointerId: number
+  readonly from: { readonly x: number, readonly y: number }
+  readonly size: { readonly x: number, readonly y: number }
+  readonly window: CartesianWindow
+}
+
 /** 摘要里的一条注释：名字、所属系列（参考线与参考带为 null）与已写成文字的值。 */
 export interface CartesianAnnotationSummary {
   readonly kind: 'line' | 'band' | 'average'
@@ -314,6 +340,11 @@ export interface CartesianChartTranslations extends ChartTranslations {
   ohlcColumns: { open: string, high: string, low: string, close: string }
   /** 箱线的五数在提示框与可及名里的写法（值已按数值轴的格式写好）。 */
   boxLabel: (values: { min: string, q1: string, median: string, q3: string, max: string }) => string
+  /** 缩放条的可及名。 */
+  zoomLabel: string
+  /** 缩放条两端手柄的可及名。 */
+  zoomStartLabel: string
+  zoomEndLabel: string
   /** 箱线数据表的列名：五数与离群点。 */
   boxColumns: { min: string, q1: string, median: string, q3: string, max: string, outliers: string }
   /** 摘要末尾写注释的模板：参考线、参考带与平均线逐条写出名字与值。 */
@@ -341,19 +372,40 @@ export interface CartesianChartSchema extends MachineSchema {
     palette?: ChartPalette
     /** 注释：参考线、参考带、标出的数据、平均线与趋势线；只给眼睛看，摘要写出参考线、参考带与平均线。 */
     annotations?: readonly CartesianAnnotation[]
+    /**
+     * 缩放：x 沿自变量轴、y 沿数值轴、xy 两个方向，缺省 none。开启后按住 Ctrl（⌘）滚轮、触屏捏合、键盘 + / − 缩放，
+     * 放大后拖动绘图区平移；自变量方向可缩放时缩放条（zoom-slider）可用。
+     */
+    zoom?: CartesianZoom
+    /** 缩放窗口（受控）：两根轴各一段，取值是定义域的比例 0–1。 */
+    window?: CartesianWindow
+    /** 初始缩放窗口（非受控）。 */
+    defaultWindow?: CartesianWindow
+    /** 滚轮、捏合、拖动、键盘或缩放条改了窗口时通知。 */
+    onWindowChange?: (details: CartesianWindowChangeDetails) => void
     translations?: Partial<CartesianChartTranslations>
   }
-  context: ChartBaseContext
+  context: ChartBaseContext & {
+    /** 缩放窗口。 */
+    window: CartesianWindow
+    /** 正在拖的是什么：绘图区平移、缩放条的一端或整个窗口；没在拖为 null。 */
+    drag: CartesianDrag | null
+  }
   computed: ChartBaseComputed
   refs: ChartBaseRefs & {
     /** 管线：按输入引用分段记忆，悬停与聚焦不会让它重算。 */
     pipeline: CartesianPipeline
+    /** 触屏捏合：按下着的触点（pointerId → 绘图区里的坐标）。 */
+    touches: Map<number, { x: number, y: number }>
   }
   state: 'idle'
   event: ChartBaseEvent
+    | { type: 'WINDOW.SET', window: CartesianWindow }
+    | { type: 'DRAG.START', drag: CartesianDrag }
+    | { type: 'DRAG.END' }
   tag: never
   guard: never
-  action: ChartBaseAction | 'notifyActive' | 'reportIssues'
+  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'setWindow' | 'startDrag' | 'endDrag'
   effect: 'trackViewport'
 }
 
@@ -403,6 +455,12 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   setFocusedDatum: (ref: { seriesId: string, index: number } | null) => void
   /** 标记画成什么元素。 */
   markTag: (mark: Mark) => CartesianMarkTag
+  /** 缩放：两个方向能不能缩放，与生效的窗口（不能缩放的方向是整条轴）。 */
+  zoom: { readonly x: boolean, readonly y: boolean, readonly window: CartesianWindow }
+  /** 缩放后要裁到的矩形（绘图区）与它在 defs 里的 clipPath id；没缩放连续轴与数值轴时为 null。 */
+  clip: { readonly id: string, readonly x: number, readonly y: number, readonly width: number, readonly height: number } | null
+  /** 设置缩放窗口；不能缩放的方向保持整条轴。 */
+  setWindow: (window: CartesianWindow) => void
   getRootProps: () => T['element']
   getCaptionProps: () => T['element']
   getLegendProps: () => T['element']
@@ -429,6 +487,14 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   getTooltipValueProps: (row: CartesianTooltipRow) => T['element']
   getTooltipNameProps: (row: CartesianTooltipRow) => T['element']
   getEmptyProps: () => T['element']
+  /** 裁剪区：画在绘图区的 defs 里，clip 为 null 时不画。 */
+  getClipPathProps: () => T['element']
+  getClipRectProps: () => T['element']
+  /** 缩放条：作者放置，轨道、窗口与两端的手柄由组件生成；自变量方向不能缩放时收起。 */
+  getZoomSliderProps: () => T['element']
+  getZoomTrackProps: () => T['element']
+  getZoomWindowProps: () => T['element']
+  getZoomHandleProps: (edge: 'start' | 'end') => T['element']
   getSummaryProps: () => T['element']
   getTableProps: () => T['element']
 }

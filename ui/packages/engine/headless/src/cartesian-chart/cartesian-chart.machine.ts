@@ -5,8 +5,9 @@
 
 // 提供 cartesian chart 相关实现。
 
-import type { CartesianChartSchema } from './cartesian-chart.types'
+import type { CartesianChartSchema, CartesianDrag, CartesianWindow } from './cartesian-chart.types'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
+import { clampWindow, FULL_WINDOW } from '@xihan-ui/viz'
 import {
   chartBaseActions,
   chartBaseContext,
@@ -15,7 +16,7 @@ import {
   notifyChartActive,
   trackChartViewport,
 } from '../shared/chart'
-import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianTrigger } from './cartesian-chart.logic'
+import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianTrigger, FULL_CARTESIAN_WINDOW, sameWindow } from './cartesian-chart.logic'
 import { cartesianEntryScene, cartesianLabelNumbers, cartesianRevealAt, createCartesianPipeline } from './cartesian-chart.model'
 
 const { createMachine } = setup<CartesianChartSchema>()
@@ -25,8 +26,17 @@ const { createMachine } = setup<CartesianChartSchema>()
 // 状态不编码进状态节点，机器只有一个状态，逻辑全在 context 与 actions。
 export const cartesianChartMachine = createMachine({
   name: 'cartesian-chart',
-  context: params => chartBaseContext(params),
-  refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline() }),
+  context: params => ({
+    ...chartBaseContext(params),
+    window: params.cell<CartesianWindow>(() => ({
+      value: params.prop('window'),
+      defaultValue: params.prop('defaultWindow') ?? FULL_CARTESIAN_WINDOW,
+      isEqual: sameWindow,
+      onChange: window => params.prop('onWindowChange')?.({ window }),
+    })),
+    drag: params.cell<CartesianDrag | null>(() => ({ defaultValue: null })),
+  }),
+  refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline(), touches: new Map() }),
   computed: {
     scene: params => cartesianModelOf(params).scene?.scene ?? null,
   },
@@ -62,7 +72,12 @@ export const cartesianChartMachine = createMachine({
     // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
     track([() => computed('scene'), () => prop('animated')], () => action(['syncTransition']))
   },
-  on: chartBaseTransitions<CartesianChartSchema>(),
+  on: {
+    ...chartBaseTransitions<CartesianChartSchema>(),
+    'WINDOW.SET': { actions: ['setWindow'] },
+    'DRAG.START': { actions: ['startDrag'] },
+    'DRAG.END': { actions: ['endDrag'] },
+  },
   states: {
     idle: {},
   },
@@ -77,6 +92,8 @@ export const cartesianChartMachine = createMachine({
           revealAt: cartesianRevealAt,
           revealEasing: 'continuous',
           numbers: params => cartesianLabelNumbers(cartesianModelOf(params).scene),
+          // 缩放与平移是连续的操作：窗口一变场景直接跟到终态，不在两帧之间插值
+          extent: params => params.context.get('window'),
         },
       }),
       notifyActive: (params) => {
@@ -94,6 +111,23 @@ export const cartesianChartMachine = createMachine({
           : cartesianDetails(model, active.ref, cartesianTrigger(params.prop('trigger'), model))
         notifyChartActive(params, details)
       },
+      // 窗口夹在 [0, 1] 里；不能缩放的方向保持整条轴
+      setWindow: ({ context, event, prop }) => {
+        const e = event.current()
+        if (e.type !== 'WINDOW.SET')
+          return
+        const zoom = prop('zoom') ?? 'none'
+        context.set('window', {
+          x: zoom === 'x' || zoom === 'xy' ? clampWindow(e.window.x) : FULL_WINDOW,
+          y: zoom === 'y' || zoom === 'xy' ? clampWindow(e.window.y) : FULL_WINDOW,
+        })
+      },
+      startDrag: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'DRAG.START')
+          context.set('drag', e.drag)
+      },
+      endDrag: ({ context }) => context.set('drag', null),
       reportIssues: (params) => {
         const model = cartesianModelOf(params)
         for (const issue of model.issues)

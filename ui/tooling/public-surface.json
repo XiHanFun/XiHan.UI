@@ -772,6 +772,8 @@
       "XhCartesianChartTooltipProps",
       "XhCartesianChartViewport",
       "XhCartesianChartViewportProps",
+      "XhCartesianChartZoomSlider",
+      "XhCartesianChartZoomSliderProps",
       "XhCascaderClearTrigger",
       "XhCascaderColumn",
       "XhCascaderContent",
@@ -3250,6 +3252,7 @@
       "XhCartesianChartRoot",
       "XhCartesianChartTooltip",
       "XhCartesianChartViewport",
+      "XhCartesianChartZoomSlider",
       "XhCascaderClearTrigger",
       "XhCascaderColumn",
       "XhCascaderContent",
@@ -5470,6 +5473,7 @@
       "CartesianChartSchema",
       "CartesianChartTranslations",
       "CartesianCurve",
+      "CartesianDrag",
       "CartesianLabelOverflow",
       "CartesianLegendItem",
       "CartesianLegendScale",
@@ -5486,6 +5490,9 @@
       "CartesianTooltipOrder",
       "CartesianTooltipRow",
       "CartesianTrigger",
+      "CartesianWindow",
+      "CartesianWindowChangeDetails",
+      "CartesianZoom",
       "CascaderApi",
       "CascaderColumn",
       "CascaderColumnProps",
@@ -9011,6 +9018,8 @@
       "box",
       "candle",
       "caption",
+      "clip-path",
+      "clip-rect",
       "connector",
       "crosshair",
       "data-label",
@@ -9053,7 +9062,11 @@
       "total-label",
       "viewport",
       "whisker",
-      "wick"
+      "wick",
+      "zoom-handle",
+      "zoom-slider",
+      "zoom-track",
+      "zoom-window"
     ],
     "cascader": [
       "clear-trigger",
@@ -10480,12 +10493,14 @@
       "annotations",
       "data",
       "defaultHiddenSeries",
+      "defaultWindow",
       "hiddenSeries",
       "locale",
       "onActiveKeyChange",
       "onDatumActive",
       "onDatumPress",
       "onHiddenSeriesChange",
+      "onWindowChange",
       "orientation",
       "palette",
       "pending",
@@ -10494,8 +10509,10 @@
       "totals",
       "translations",
       "trigger",
+      "window",
       "xAxis",
-      "yAxis"
+      "yAxis",
+      "zoom"
     ],
     "cascader": [
       "cascade",
@@ -12572,7 +12589,9 @@
     "data-xh-liquid",
     "data-xh-material",
     "data-xh-swatch",
-    "data-xh-swatch-size"
+    "data-xh-swatch-size",
+    "data-zoomable",
+    "data-zoomed"
   ],
   "dataStateValues": [
     "active",
@@ -13675,6 +13694,14 @@
     "--xh-cartesian-chart-tooltip-shadow",
     "--xh-cartesian-chart-tooltip-swatch-line-radius",
     "--xh-cartesian-chart-tooltip-swatch-radius",
+    "--xh-cartesian-chart-zoom-h",
+    "--xh-cartesian-chart-zoom-handle-bg",
+    "--xh-cartesian-chart-zoom-handle-radius",
+    "--xh-cartesian-chart-zoom-handle-w",
+    "--xh-cartesian-chart-zoom-track-bg",
+    "--xh-cartesian-chart-zoom-track-radius",
+    "--xh-cartesian-chart-zoom-window-bg",
+    "--xh-cartesian-chart-zoom-window-radius",
     "--xh-cascader-action-bg",
     "--xh-cascader-action-bg-active",
     "--xh-cascader-action-bg-hover",
@@ -17684,13 +17711,15 @@
         "pending",
         "tooltip-order",
         "totals",
-        "trigger"
+        "trigger",
+        "zoom"
       ],
       "events": [
         "active-key-change",
         "datum-active",
         "datum-press",
-        "hidden-series-change"
+        "hidden-series-change",
+        "window-change"
       ]
     },
     "xh-cascader": {

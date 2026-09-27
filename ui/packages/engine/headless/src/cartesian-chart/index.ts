@@ -26,6 +26,7 @@ export type {
   CartesianChartSchema,
   CartesianChartTranslations,
   CartesianCurve,
+  CartesianDrag,
   CartesianLabelOverflow,
   CartesianLegendItem,
   CartesianLegendScale,
@@ -40,4 +41,7 @@ export type {
   CartesianTooltipOrder,
   CartesianTooltipRow,
   CartesianTrigger,
+  CartesianWindow,
+  CartesianWindowChangeDetails,
+  CartesianZoom,
 } from './cartesian-chart.types'

@@ -18,6 +18,9 @@ import type {
   CartesianTooltipModel,
   CartesianTooltipOrder,
   CartesianTrigger,
+  CartesianWindow,
+  CartesianWindowChangeDetails,
+  CartesianZoom,
   ChartActiveKeyChangeDetails,
   ChartDatumDetails,
   ChartHiddenSeriesChangeDetails,
@@ -55,6 +58,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-cartesian-chart
  * @attr {'vertical'|'horizontal'} orientation - 朝向，默认 vertical；horizontal 即条形图
  * @attr {'axis'|'item'} trigger - 提示框汇报什么；默认含柱或折线时 axis（同一个键上的全部系列），只有散点时 item
+ * @attr {'none'|'x'|'y'|'xy'} zoom - 缩放的方向，默认 none；开启后 Ctrl（⌘）滚轮、捏合、键盘 + / − 缩放，放大后拖动平移
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上
  * @attr {boolean} totals - 堆叠柱的合计：每个堆叠组在最外端写出合计
  * @attr {'series'|'descending'|'ascending'} tooltip-order - 提示框里各系列的行序，默认 series（按图例次序）
@@ -64,6 +68,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} active-key - 激活的类目键（受控）；数值与日期键走 activeKey property
  * @fires hidden-series-change - 图例切换显隐；detail 为 `{ hiddenSeries: string[] }`
  * @fires active-key-change - 指针或键盘换了激活的键；detail 为 `{ activeKey }`，收起时为 null
+ * @fires window-change - 滚轮、捏合、拖动、键盘或缩放条改了缩放窗口；detail 为 `{ window }`
  * @fires datum-active - 悬停或聚焦到某个数据；detail 为数据详情，收起时为 null
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情
  * @csspart root - `<figure>`，承载 orientation、pending 与错误状态
@@ -71,6 +76,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart legend - 图例工具条，项与色阶由元素生成
  * @csspart viewport - 尺寸观测的宿主
  * @csspart plot - 绘图区 `<svg>`，标记由元素生成
+ * @csspart zoom-slider - 缩放条外壳，轨道、窗口与两端的手柄由元素生成
  * @csspart tooltip - 提示框，留空时由元素写入缺省内容
  * @csspart empty - 没有可画的数据时显示
  */
@@ -93,6 +99,9 @@ export class XhCartesianChartElement extends XhElement {
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
     translations: { attribute: false },
     annotations: { attribute: false },
+    window: { attribute: false },
+    defaultWindow: { attribute: false },
+    zoom: { converter: STRING_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     trigger: { converter: STRING_CONVERTER },
     totals: { converter: BOOLEAN_CONVERTER },
@@ -112,6 +121,9 @@ export class XhCartesianChartElement extends XhElement {
   declare activeKey?: ChartKey | null
   declare translations?: Partial<CartesianChartTranslations>
   declare annotations?: readonly CartesianAnnotation[]
+  declare window?: CartesianWindow
+  declare defaultWindow?: CartesianWindow
+  declare zoom?: CartesianZoom
   declare orientation?: CartesianOrientation
   declare trigger?: CartesianTrigger
   declare totals?: boolean
@@ -127,6 +139,10 @@ export class XhCartesianChartElement extends XhElement {
 
   private readonly notifyKey = (details: ChartActiveKeyChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('active-key-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyWindow = (details: CartesianWindowChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('window-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyActive = (details: ChartDatumDetails | null): void => {
@@ -156,6 +172,9 @@ export class XhCartesianChartElement extends XhElement {
       tooltipOrder: this.tooltipOrder,
       palette: this.palette,
       annotations: this.annotations,
+      zoom: this.zoom,
+      window: this.window,
+      defaultWindow: this.defaultWindow,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
@@ -165,6 +184,7 @@ export class XhCartesianChartElement extends XhElement {
       translations: this.translations,
       onHiddenSeriesChange: this.notifyHidden,
       onActiveKeyChange: this.notifyKey,
+      onWindowChange: this.notifyWindow,
       onDatumActive: this.notifyActive,
       onDatumPress: this.notifyPress,
     }
@@ -255,6 +275,10 @@ export class XhCartesianChartElement extends XhElement {
       ], api)
     }
 
+    const slider = put('zoom-slider', api.getZoomSliderProps() as Record<string, unknown>)
+    if (slider)
+      this.#paintZoomSlider(slider, api)
+
     const tooltip = put('tooltip', api.getTooltipProps() as Record<string, unknown>)
     if (tooltip)
       this.#paintTooltip(tooltip, api)
@@ -295,7 +319,11 @@ export class XhCartesianChartElement extends XhElement {
     const defs = reuse?.localName === 'defs' ? reuse : doc.createElementNS(SVG_NS, 'defs')
     defs.setAttribute(GEN_ATTR, '')
     this.spreader.spread(defs as HTMLElement, api.getDefsProps() as Record<string, unknown>)
-    reconcile(defs, api.patterns, this.#keys, pattern => pattern.id, (pattern, old) => {
+    // 纹理之后是缩放后的裁剪区：窗外的系列与注释按它裁掉
+    const entries: (CartesianChartApi['patterns'][number] | null)[] = [...api.patterns, ...(api.clip ? [null] : [])]
+    reconcile(defs, entries, this.#keys, pattern => pattern?.id ?? 'clip', (pattern, old) => {
+      if (!pattern)
+        return this.#paintClip(doc, old, api)
       const node = old ?? doc.createElementNS(SVG_NS, 'pattern')
       node.setAttribute(GEN_ATTR, '')
       this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern) as Record<string, unknown>)
@@ -309,6 +337,40 @@ export class XhCartesianChartElement extends XhElement {
       return node
     })
     return defs
+  }
+
+  /** 裁剪区：一个 clipPath 里一个矩形。 */
+  #paintClip(doc: Document, reuse: Element | undefined, api: CartesianChartApi): Element {
+    const node = reuse?.localName === 'clipPath' ? reuse : doc.createElementNS(SVG_NS, 'clipPath')
+    node.setAttribute(GEN_ATTR, '')
+    this.spreader.spread(node as HTMLElement, api.getClipPathProps() as Record<string, unknown>)
+    let rect = generated(node)[0]
+    if (!rect) {
+      rect = doc.createElementNS(SVG_NS, 'rect')
+      rect.setAttribute(GEN_ATTR, '')
+      node.append(rect)
+    }
+    this.spreader.spread(rect as HTMLElement, api.getClipRectProps() as Record<string, unknown>)
+    return node
+  }
+
+  /** 缩放条：轨道里一个窗口，窗口两端各一个手柄；作者只写外壳。 */
+  #paintZoomSlider(slider: Element, api: CartesianChartApi): void {
+    const doc = slider.ownerDocument
+    let track = generated(slider)[0] as HTMLElement | undefined
+    if (!track) {
+      track = makeGen(doc, 'div')
+      const win = makeGen(doc, 'div')
+      win.append(makeGen(doc, 'span'), makeGen(doc, 'span'))
+      track.append(win)
+      slider.append(track)
+    }
+    const win = generated(track)[0] as HTMLElement
+    const [start, end] = generated(win) as HTMLElement[]
+    this.spreader.spread(track, api.getZoomTrackProps() as Record<string, unknown>)
+    this.spreader.spread(win, api.getZoomWindowProps() as Record<string, unknown>)
+    this.spreader.spread(start!, api.getZoomHandleProps('start') as Record<string, unknown>)
+    this.spreader.spread(end!, api.getZoomHandleProps('end') as Record<string, unknown>)
   }
 
   /** 图例项：一个系列一个按钮，色标与名字各一个 span；末尾是色阶，没有按值着色时收起，节点常在。 */

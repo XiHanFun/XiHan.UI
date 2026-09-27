@@ -388,6 +388,53 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: '键盘缩放：绘图区里按 + 以聚焦的数据为中心放大，按 − 缩回整条轴，两次都派发 window-change',
+    spec: { apg: APG },
+    covers: ['cartesian-chart.kbd.zoom-in', 'cartesian-chart.kbd.zoom-out'],
+    props: { zoom: 'x' },
+    initial: { parts: { plot: { 'data-zoomable': 'horizontal', 'data-zoomed': null } } },
+    steps: [
+      { kind: 'focus', part: bar('online', 0), via: 'keyboard' },
+      { kind: 'key', key: '+', expect: { parts: { plot: { 'data-zoomed': '' } }, events: [{ type: 'window-change' }] } },
+      {
+        kind: 'key',
+        key: '-',
+        expect: {
+          parts: { plot: { 'data-zoomed': null } },
+          events: [{ type: 'window-change', detail: { window: { x: { start: 0, end: 1 }, y: { start: 0, end: 1 } } } }],
+        },
+      },
+    ],
+  },
+  {
+    name: '缩放条：两端的手柄是 slider，读出窗口两端对着的类目；方向键移动一端并派发 window-change',
+    spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb/' },
+    covers: ['cartesian-chart.kbd.zoom-edge'],
+    props: { zoom: 'x', defaultWindow: { x: { start: 0, end: 2 / 3 }, y: { start: 0, end: 1 } } },
+    initial: {
+      counts: { 'bar': 4, 'zoom-handle': 2 },
+      parts: {
+        'zoom-slider': { 'role': 'group', 'aria-label': 'Zoom', 'hidden': null },
+        'zoom-handle': [
+          { 'role': 'slider', 'data-placement': 'start', 'aria-valuenow': '0', 'aria-valuetext': '一月', 'aria-label': 'Window start' },
+          { 'role': 'slider', 'data-placement': 'end', 'aria-valuenow': '67', 'aria-valuetext': '二月', 'aria-label': 'Window end' },
+        ],
+      },
+    },
+    steps: [
+      { kind: 'focus', part: 'zoom-handle[1]', via: 'keyboard' },
+      {
+        kind: 'key',
+        key: 'End',
+        expect: {
+          parts: { 'zoom-handle': [{ 'aria-valuenow': '0' }, { 'aria-valuenow': '100', 'aria-valuetext': '三月' }] },
+          events: [{ type: 'window-change', detail: { window: { x: { start: 0, end: 1 }, y: { start: 0, end: 1 } } } }],
+        },
+      },
+      { kind: 'settle', until: { attr: { part: 'zoom-handle[1]', name: 'aria-valuenow', value: '100' } }, expect: { counts: { bar: 6 } } },
+    ],
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },
@@ -416,6 +463,7 @@ export const cartesianChartSuite: ConformanceSuite = {
           { part: 'empty' },
         ],
       },
+      { part: 'zoom-slider' },
       { part: 'tooltip' },
     ],
   },
