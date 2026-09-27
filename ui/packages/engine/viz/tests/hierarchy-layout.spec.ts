@@ -1,8 +1,10 @@
-// 层级布局的性质：节点 API 的遍历与聚合、按父 id 组树的各种报错、矩形树图的面积与包含、分区的比例、圆堆积的包含与不相交。
+// 层级布局的性质：节点 API 的遍历与聚合、按父 id 组树的各种报错、矩形树图的面积与包含、分区的比例、圆堆积的包含与不相交、
+// 整齐的树（同层不重叠、父节点居中、深度成层）与树状图（叶子同层等距）。
 import type { HierarchyNode } from '../src/layout/hierarchy'
 import { describe, expect, it } from 'vitest'
 import { isVizError } from '../src'
-import { hierarchy, pack, packEnclose, packSiblings, partition, stratify, treemap } from '../src/layout/hierarchy'
+import { cluster, hierarchy, pack, packEnclose, packSiblings, partition, stratify, tree, treemap } from '../src/layout/hierarchy'
+import { integer, seeded } from './helpers/property'
 
 interface Tree { name: string, value?: number, children?: Tree[] }
 
@@ -190,6 +192,76 @@ describe('圆堆积', () => {
     })
     const again = pack(build(), { size: [300, 200], padding: 2 })
     expect(again.leaves().map(n => [n.x, n.y, n.r])).toEqual(root.leaves().map(n => [n.x, n.y, n.r]))
+  })
+})
+
+describe('整齐的树', () => {
+  /** 随机的树：每个节点 0–4 个子节点，至多 5 层。 */
+  function randomTree(random: () => number, depth = 0): Tree {
+    const n = depth >= 4 ? 0 : integer(random, 0, depth === 0 ? 4 : 3)
+    return { name: 'n', children: n === 0 ? undefined : Array.from({ length: n }, () => randomTree(random, depth + 1)) }
+  }
+
+  it('同一层按深度排开；父节点落在第一个与最后一个子节点的正中；同层相邻节点至少隔开间隔', () => {
+    const random = seeded(7)
+    for (let k = 0; k < 40; k++) {
+      const root = tree(hierarchy(randomTree(random)), { nodeSize: [10, 20] })
+      const levels = new Map<number, HierarchyNode<Tree>[]>()
+      root.each((node) => {
+        expect(node.y).toBe(node.depth * 20)
+        if (node.children) {
+          const first = node.children[0]!
+          const last = node.children[node.children.length - 1]!
+          expect(node.x).toBeCloseTo((first.x + last.x) / 2, 6)
+        }
+        levels.set(node.depth, [...(levels.get(node.depth) ?? []), node])
+      })
+      for (const nodes of levels.values()) {
+        const xs = nodes.map(n => n.x)
+        // 逐层按广度优先的次序就是自左而右的次序
+        for (let i = 1; i < xs.length; i++)
+          expect(xs[i]! - xs[i - 1]!).toBeGreaterThanOrEqual(10 - 1e-6)
+      }
+    }
+  })
+
+  it('size 模式缩放到整体尺寸：最左与最右各留半个间隔，最深一层贴底，根落在 (x, 0)', () => {
+    const root = tree(build(), { size: [300, 200] })
+    const xs = root.descendants().map(n => n.x)
+    expect(Math.min(...xs)).toBeGreaterThan(0)
+    expect(Math.max(...xs)).toBeLessThan(300)
+    expect(root.y).toBe(0)
+    expect(Math.max(...root.descendants().map(n => n.y))).toBeCloseTo(200)
+  })
+
+  it('兄弟间隔可以自定：不同父节点的相邻叶子隔得更开', () => {
+    const root = tree(build(), { nodeSize: [1, 1] })
+    const [a3, b1] = [root.find(n => n.data.name === 'a3')!, root.find(n => n.data.name === 'b1')!]
+    const [a1, a2] = [root.find(n => n.data.name === 'a1')!, root.find(n => n.data.name === 'a2')!]
+    expect(a2.x - a1.x).toBeCloseTo(1)
+    expect(b1.x - a3.x).toBeCloseTo(2)
+  })
+})
+
+describe('树状图', () => {
+  it('叶子全在最底一层且等距；父节点在子节点的正中；根在顶上', () => {
+    const root = cluster(build(), { size: [300, 200] })
+    const leaves = root.leaves()
+    expect(leaves.every(n => n.y === 200)).toBe(true)
+    expect(root.y).toBe(0)
+    const gaps = leaves.slice(1).map((n, i) => n.x - leaves[i]!.x)
+    // 同一个父节点 1 份间隔，跨父节点 2 份
+    expect(gaps[0]! * 2).toBeCloseTo(gaps[2]!)
+    root.each((node) => {
+      if (node.children)
+        expect(node.x).toBeCloseTo(node.children.reduce((s, c) => s + c.x, 0) / node.children.length)
+    })
+  })
+
+  it('合并高度：父节点比最高的子节点高一层，c 这样的叶子直接挂在根上也在最底层', () => {
+    const root = cluster(build(), { nodeSize: [10, 10] })
+    expect(root.find(n => n.data.name === 'c')!.y).toBe(root.find(n => n.data.name === 'a1')!.y)
+    expect(root.find(n => n.data.name === 'a')!.y).toBe(10)
   })
 })
 
