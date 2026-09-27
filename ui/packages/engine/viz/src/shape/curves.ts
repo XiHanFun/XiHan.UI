@@ -46,10 +46,10 @@ function drawLinear(points: readonly Point[], sink: PathSink, mode: CurveMode): 
 }
 
 /** 折线。 */
-export const curveLinear: Curve = Object.freeze({ name: 'linear', draw: drawLinear })
+export const curveLinear: Curve = /* @__PURE__ */ Object.freeze({ name: 'linear', draw: drawLinear })
 
 /** 闭合折线（雷达的缺省）。 */
-export const curveLinearClosed: Curve = Object.freeze({
+export const curveLinearClosed: Curve = /* @__PURE__ */ Object.freeze({
   name: 'linearClosed',
   draw(points: readonly Point[], sink: PathSink, mode: CurveMode) {
     if (points.length === 0)
@@ -84,11 +84,11 @@ function stepCurve(name: string, t: number): Curve {
 }
 
 /** 阶梯，转折在两点正中。 */
-export const curveStep: Curve = stepCurve('step', 0.5)
+export const curveStep: Curve = /* @__PURE__ */ stepCurve('step', 0.5)
 /** 阶梯，先竖后横：值在自变量到达之前就已变化。 */
-export const curveStepBefore: Curve = stepCurve('stepBefore', 0)
+export const curveStepBefore: Curve = /* @__PURE__ */ stepCurve('stepBefore', 0)
 /** 阶梯，先横后竖：值保持到下一个自变量才变化（价格档位、状态）。 */
-export const curveStepAfter: Curve = stepCurve('stepAfter', 1)
+export const curveStepAfter: Curve = /* @__PURE__ */ stepCurve('stepAfter', 1)
 
 /**
  * Fritsch–Carlson 单调三次插值：先取相邻割线斜率的平均作切线，极值点切线置 0，
@@ -147,13 +147,13 @@ function drawMonotone(points: readonly Point[], sink: PathSink, mode: CurveMode,
 }
 
 /** 沿 x 单调的平滑曲线：数据曲线「平滑」的唯一实现。 */
-export const curveMonotoneX: Curve = Object.freeze({
+export const curveMonotoneX: Curve = /* @__PURE__ */ Object.freeze({
   name: 'monotoneX',
   draw: (points: readonly Point[], sink: PathSink, mode: CurveMode) => drawMonotone(points, sink, mode, false),
 })
 
 /** 沿 y 单调的平滑曲线（横向图）。 */
-export const curveMonotoneY: Curve = Object.freeze({
+export const curveMonotoneY: Curve = /* @__PURE__ */ Object.freeze({
   name: 'monotoneY',
   draw: (points: readonly Point[], sink: PathSink, mode: CurveMode) => drawMonotone(points, sink, mode, true),
 })
@@ -184,7 +184,7 @@ function catmullRomSegment(sink: PathSink, p0: Point, p1: Point, p2: Point, p3: 
 }
 
 /** 平滑且不打结的曲线（雷达平滑）。两端用端点自身作邻点。 */
-export const curveCatmullRom: Curve = Object.freeze({
+export const curveCatmullRom: Curve = /* @__PURE__ */ Object.freeze({
   name: 'catmullRom',
   draw(points: readonly Point[], sink: PathSink, mode: CurveMode) {
     const n = points.length
@@ -199,7 +199,7 @@ export const curveCatmullRom: Curve = Object.freeze({
 })
 
 /** 闭合的向心 Catmull–Rom，首尾互为邻点。 */
-export const curveCatmullRomClosed: Curve = Object.freeze({
+export const curveCatmullRomClosed: Curve = /* @__PURE__ */ Object.freeze({
   name: 'catmullRomClosed',
   draw(points: readonly Point[], sink: PathSink, mode: CurveMode) {
     const n = points.length
@@ -243,7 +243,7 @@ function drawBasis(points: readonly Point[], sink: PathSink, mode: CurveMode): v
 }
 
 /** B 样条（关系图的边捆绑、平滑的层级连线）。 */
-export const curveBasis: Curve = Object.freeze({ name: 'basis', draw: drawBasis })
+export const curveBasis: Curve = /* @__PURE__ */ Object.freeze({ name: 'basis', draw: drawBasis })
 
 /**
  * 捆绑曲线：先把控制点朝首尾连线拉直（beta = 1 不拉直，0 拉成直线），再画 B 样条。
@@ -297,9 +297,9 @@ function bumpCurve(name: string, vertical: boolean): Curve {
 }
 
 /** 横向连接（桑基流带、横向树）。 */
-export const curveBumpX: Curve = bumpCurve('bumpX', false)
+export const curveBumpX: Curve = /* @__PURE__ */ bumpCurve('bumpX', false)
 /** 纵向连接（纵向树）。 */
-export const curveBumpY: Curve = bumpCurve('bumpY', true)
+export const curveBumpY: Curve = /* @__PURE__ */ bumpCurve('bumpY', true)
 
 /** 极坐标 → 屏幕坐标：角度 0 在 12 点方向，顺时针为正。 */
 export function pointRadial(angle: number, radius: number): Point {
@@ -307,7 +307,7 @@ export function pointRadial(angle: number, radius: number): Point {
 }
 
 /** 径向连接：点按 [角度, 半径] 给出，控制点取两点半径的中值（径向树）。 */
-export const curveBumpRadial: Curve = Object.freeze({
+export const curveBumpRadial: Curve = /* @__PURE__ */ Object.freeze({
   name: 'bumpRadial',
   draw(points: readonly Point[], sink: PathSink, mode: CurveMode) {
     if (points.length === 0)
