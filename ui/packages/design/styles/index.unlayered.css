@@ -18012,6 +18012,32 @@
   stroke-width: var(--xh-_chart-metric-line-width);
 }
 
+/* 箱线：箱铺系列色的淡洗、描出轮廓，中位线加粗，须线细线；离群点是空心小圆。小提琴同箱的画法 */
+[data-scope='cartesian-chart'][data-part='box'] {
+  fill: var(--xh-_chart-series);
+  fill-opacity: var(--xh-chart-area-alpha);
+  stroke: var(--xh-_chart-series);
+  stroke-width: var(--xh-stroke-thin);
+}
+
+[data-scope='cartesian-chart'][data-part='median'] {
+  fill: none;
+  stroke: var(--xh-_chart-series);
+  stroke-width: var(--xh-_chart-metric-line-width);
+}
+
+[data-scope='cartesian-chart'][data-part='whisker'] {
+  fill: none;
+  stroke: var(--xh-_chart-series);
+  stroke-width: var(--xh-stroke-thin);
+}
+
+[data-scope='cartesian-chart'][data-part='outlier'] {
+  fill: var(--xh-chart-surface);
+  stroke: var(--xh-_chart-series);
+  stroke-width: var(--xh-stroke-thin);
+}
+
 /* 瀑布的连接线：上一步的终点连到下一步的起点，结构色的细线 */
 [data-scope='cartesian-chart'][data-part='connector'] {
   fill: none;
@@ -18201,8 +18227,16 @@
   }
 
   [data-scope='cartesian-chart'][data-part='connector'],
+  [data-scope='cartesian-chart'][data-part='whisker'],
+  [data-scope='cartesian-chart'][data-part='median'],
   [data-scope='cartesian-chart'][data-part='wick'],
   [data-scope='cartesian-chart'][data-part='candle'][data-style='ohlc'] {
+    stroke: CanvasText;
+  }
+
+  [data-scope='cartesian-chart'][data-part='box'],
+  [data-scope='cartesian-chart'][data-part='outlier'] {
+    fill: Canvas;
     stroke: CanvasText;
   }
 

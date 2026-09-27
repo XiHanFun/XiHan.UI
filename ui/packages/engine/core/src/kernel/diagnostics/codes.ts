@@ -69,6 +69,8 @@ export const DIAGNOSTIC_CODES = {
   chartAnnotationTarget: 'chart.annotation-target',
   /** K 线的开高低收对不上：最低价高于开盘或收盘，或最高价低于开盘或收盘。 */
   chartOhlcRange: 'chart.ohlc-range',
+  /** 小提琴图要原始值才画得出密度：箱线系列写了 style: 'violin'，y 却是算好的五数字段。 */
+  chartViolinRaw: 'chart.violin-raw',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

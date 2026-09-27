@@ -362,6 +362,32 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: '箱线：箱是可聚焦的 graphics-symbol，可及名写出五数；须线、中位线与离群点只给眼睛看',
+    spec: { apg: GRAPHICS },
+    props: {
+      data: [
+        ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 100].map(v => ({ g: 'a', v })),
+        ...[5, 6, 7, 8].map(v => ({ g: 'b', v })),
+      ],
+      series: [{ mark: 'boxplot', x: 'g', y: 'v', name: '值' }],
+    },
+    initial: {
+      counts: { box: 2, whisker: 2, median: 2, outlier: 1 },
+      parts: {
+        box: [
+          { 'role': 'graphics-symbol', 'data-style': 'box', 'tabindex': '0', 'aria-label': 'a, 值 Min 1, Q1 3.25, Median 5.5, Q3 7.75, Max 9' },
+          { tabindex: '-1' },
+        ],
+        outlier: { 'aria-hidden': 'true' },
+        median: [{ 'aria-hidden': 'true' }, { 'aria-hidden': 'true' }],
+      },
+    },
+    steps: [
+      { kind: 'focus', part: 'box[0]', via: 'keyboard' },
+      { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'box[1]', exact: true } } },
+    ],
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },

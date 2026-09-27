@@ -19,6 +19,8 @@ export type {
   CartesianAxis,
   CartesianAxisFormat,
   CartesianBarSeries,
+  CartesianBoxplotFields,
+  CartesianBoxplotSeries,
   CartesianCandlestickSeries,
   CartesianChartApi,
   CartesianChartSchema,

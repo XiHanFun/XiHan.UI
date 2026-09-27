@@ -26,6 +26,11 @@ function defaultOhlcLabel({ open, high, low, close }: { open: string, high: stri
   return `Open ${open}, High ${high}, Low ${low}, Close ${close}`
 }
 
+/** 缺省的五数写法：须线两端、四分位与中位数依次写出。 */
+function defaultBoxLabel({ min, q1, median, q3, max }: { min: string, q1: string, median: string, q3: string, max: string }): string {
+  return `Min ${min}, Q1 ${q1}, Median ${median}, Q3 ${q3}, Max ${max}`
+}
+
 export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze({
   ...CHART_TRANSLATIONS,
   keyLabel: 'Category',
@@ -35,6 +40,8 @@ export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze(
   colorLabel: 'Color',
   ohlcLabel: defaultOhlcLabel,
   ohlcColumns: { open: 'Open', high: 'High', low: 'Low', close: 'Close' },
+  boxLabel: defaultBoxLabel,
+  boxColumns: { min: 'Min', q1: 'Q1', median: 'Median', q3: 'Q3', max: 'Max', outliers: 'Outliers' },
   referenceLabel: 'Reference',
   averageLabel: 'Average',
   annotationSummary: defaultCartesianAnnotationSummary,
@@ -178,6 +185,13 @@ function detailsOf(model: CartesianModel, s: CartesianSeriesValues, position: nu
     Object.assign(values, ohlc)
     const text = { open: model.formats.value(ohlc.open), high: model.formats.value(ohlc.high), low: model.formats.value(ohlc.low), close: model.formats.value(ohlc.close) }
     formatted.value = model.translations.ohlcLabel(text)
+  }
+  // 箱线：主值是中位数，写成文字时五个数一起写
+  const box = s.boxes?.[position]
+  if (box) {
+    Object.assign(values, { min: box.min, q1: box.q1, median: box.median, q3: box.q3, max: box.max, outliers: box.outliers })
+    const f = model.formats.value
+    formatted.value = model.translations.boxLabel({ min: f(box.min), q1: f(box.q1), median: f(box.median), q3: f(box.q3), max: f(box.max) })
   }
   if (size != null) {
     values.size = size

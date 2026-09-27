@@ -141,7 +141,31 @@ export interface CartesianCandlestickSeries extends CartesianSeriesBase {
   style?: 'candle' | 'ohlc'
 }
 
-export type CartesianSeries = CartesianBarSeries | CartesianLineSeries | CartesianScatterSeries | CartesianCandlestickSeries
+/** 箱线图算好的五数字段：每个键一行。 */
+export interface CartesianBoxplotFields {
+  min: string
+  q1: string
+  median: string
+  q3: string
+  max: string
+}
+
+/**
+ * 箱线系列：y 写成字段名时，同一个 x 上的全部行是一组原始值，按 R-7 求四分位，须线到 1.5 倍四分距以内最远的点，
+ * 其外为离群点；写成五数字段时每个键一行、直接用算好的统计量（没有离群点）。style: 'violin' 用核密度画出分布的轮廓，
+ * 要原始值。
+ */
+export interface CartesianBoxplotSeries extends CartesianSeriesBase {
+  mark: 'boxplot'
+  x: string
+  y: string | CartesianBoxplotFields
+  /** box 箱线（缺省），violin 小提琴。 */
+  style?: 'box' | 'violin'
+  /** 画离群点，缺省 true；false 时须线直达最小与最大值。 */
+  outliers?: boolean
+}
+
+export type CartesianSeries = CartesianBarSeries | CartesianLineSeries | CartesianScatterSeries | CartesianCandlestickSeries | CartesianBoxplotSeries
 
 /**
  * 注释：画在数据之外、帮读者读数的参照。axis 是 x（自变量轴）或 y（数值轴），与屏幕方向无关；
@@ -223,7 +247,7 @@ export interface CartesianLegendItem {
   readonly name: string
   readonly slot: number | null
   readonly tone: Tone | null
-  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick'
+  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick' | 'boxplot'
   /** 有面积的折线：图例色标画成方块。 */
   readonly area: boolean
   /** 散点的形状：色标画成同一个形状；其余系列为 null。 */
@@ -247,7 +271,7 @@ export interface CartesianTooltipRow {
   readonly value: string
   readonly slot: number | null
   readonly tone: Tone | null
-  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick'
+  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick' | 'boxplot'
   readonly area: boolean
   readonly symbol: SymbolName | null
   /** 按值着色的数据在色阶上的位置 0–1：色标画成它自己的颜色；其余为 null。 */
@@ -279,6 +303,10 @@ export interface CartesianChartTranslations extends ChartTranslations {
   ohlcLabel: (values: { open: string, high: string, low: string, close: string }) => string
   /** K 线数据表四列的列名。 */
   ohlcColumns: { open: string, high: string, low: string, close: string }
+  /** 箱线的五数在提示框与可及名里的写法（值已按数值轴的格式写好）。 */
+  boxLabel: (values: { min: string, q1: string, median: string, q3: string, max: string }) => string
+  /** 箱线数据表的列名：五数与离群点。 */
+  boxColumns: { min: string, q1: string, median: string, q3: string, max: string, outliers: string }
   /** 摘要末尾写注释的模板：参考线、参考带与平均线逐条写出名字与值。 */
   annotationSummary: (items: readonly CartesianAnnotationSummary[]) => string
   /** 摘要模板。 */

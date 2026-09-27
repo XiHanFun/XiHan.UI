@@ -1,5 +1,5 @@
 // 直角坐标图柱的变体在真实布局里：瀑布的涨跌取涨跌色、小计保持系列色，连接线连着相邻两根柱；
-// K 线的实体与影线按涨跌取色，影线从最低画到最高。
+// K 线的实体与影线按涨跌取色，影线从最低画到最高；箱线的箱铺淡洗、须线盖住箱的两头。
 // jsdom 量不出计算样式与外接框，只在 Chromium 验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -94,5 +94,26 @@ describe('k 线', () => {
     expect(wick.top).toBeLessThan(body.top)
     expect(wick.bottom).toBeGreaterThan(body.bottom)
     expect(wick.left + wick.width / 2).toBeCloseTo(body.left + body.width / 2, 0)
+  })
+})
+
+describe('箱线', () => {
+  it('箱是系列色的淡洗加轮廓，须线从箱的两头伸到最小与最大值，中位线在箱里', async () => {
+    mount({
+      data: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(v => ({ g: 'a', v })),
+      series: [{ mark: 'boxplot', x: 'g', y: 'v' }],
+    })
+    await settle()
+    const [box] = all('box')
+    const style = getComputedStyle(box!)
+    expect(Number(style.fillOpacity)).toBeLessThan(1)
+    expect(style.stroke).toBe(tokenColor('--xh-chart-categorical-1'))
+    const b = box!.getBoundingClientRect()
+    const w = all('whisker')[0]!.getBoundingClientRect()
+    const m = all('median')[0]!.getBoundingClientRect()
+    expect(w.top).toBeLessThan(b.top)
+    expect(w.bottom).toBeGreaterThan(b.bottom)
+    expect(m.top).toBeGreaterThan(b.top)
+    expect(m.bottom).toBeLessThan(b.bottom)
   })
 })

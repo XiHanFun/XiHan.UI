@@ -57,6 +57,7 @@ export const DIAGNOSTIC_CODES = {
   chartMeterOnly: "chart.meter-only", // Progress 在非 meter 语义下用了分段、目标、量程刻度或指示方式
   chartAnnotationTarget: "chart.annotation-target", // 图表注释指向的系列不存在，或指向的类目不在轴上：这条注释不画
   chartOhlcRange: "chart.ohlc-range", // K 线的开高低收对不上：最低价高于开盘或收盘，或最高价低于开盘或收盘
+  chartViolinRaw: "chart.violin-raw", // 小提琴图要原始值才画得出密度：箱线系列写了 style: 'violin'，y 却是算好的五数字段
 };
 ```
 
