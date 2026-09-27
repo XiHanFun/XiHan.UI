@@ -50,10 +50,12 @@ function rgba(color: string): [number, number, number, number] {
 }
 
 /** 面内的探针：一块用中性描边与淡底画的小方块，代表作者塞进彩色面里的快捷键、分隔这类装饰。 */
-const probe = (): VNode => h('span', {
-  'data-probe': '',
-  'style': 'display: inline-block; inline-size: 8px; block-size: 8px; border: 1px solid var(--xh-border-default); background: var(--xh-bg-subtle)',
-})
+function probe(): VNode {
+  return h('span', {
+    'data-probe': '',
+    'style': 'display: inline-block; inline-size: 8px; block-size: 8px; border: 1px solid var(--xh-border-default); background: var(--xh-bg-subtle)',
+  })
+}
 
 async function mount(render: () => VNode, attrs: Record<string, string> = {}): Promise<void> {
   host = document.createElement('div')

@@ -67,7 +67,7 @@ describe('标签的列表动效', () => {
     expect(b.style.getPropertyValue('--xh-_stagger-index')).toBe('1')
   })
 
-  it('Web Components 里作者刚插进来、还没接线的标签同样认得出', async () => {
+  it('在 Web Components 里，作者刚插进来、还没接线的标签同样认得出', async () => {
     const { control } = mount([])
     await settle()
     const authored = document.createElement('div')

@@ -82,8 +82,9 @@ async function mount(render: () => VNode, background: string, material: 'liquid'
   await frames()
 }
 
-const part = (scope: string, name: string): HTMLElement =>
-  document.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
+function part(scope: string, name: string): HTMLElement {
+  return document.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
+}
 
 // ── 各组件的最小装配 ──
 
@@ -103,29 +104,36 @@ async function scrollAwayFromBottom(scope: string): Promise<HTMLElement> {
   return trigger
 }
 
-const messageFeed = (): VNode => h(XhMessageFeedRoot, { count: lines.length, style: 'block-size: 240px; inline-size: 360px' }, () => [
-  h(XhMessageFeedViewport, { style: 'background: transparent' }, () => h(XhMessageFeedList, () =>
-    lines.map((text, index) => h(XhMessageFeedItem, { itemId: `m${index}`, itemIndex: index }, () => text)))),
-  h(XhMessageFeedScrollToEndTrigger),
-])
+function messageFeed(): VNode {
+  return h(XhMessageFeedRoot, { count: lines.length, style: 'block-size: 240px; inline-size: 360px' }, () => [
+    h(XhMessageFeedViewport, { style: 'background: transparent' }, () => h(XhMessageFeedList, () =>
+      lines.map((text, index) => h(XhMessageFeedItem, { itemId: `m${index}`, itemIndex: index }, () => text)))),
+    h(XhMessageFeedScrollToEndTrigger),
+  ])
+}
 
-const log = (): VNode => h(XhLogRoot, { style: 'block-size: 240px; inline-size: 360px' }, () => [
-  h(XhLogViewport, () => h(XhLogContent, () => lines.map(text => h(XhLogLine, () => text)))),
-  h(XhLogScrollToEndTrigger),
-])
+function log(): VNode {
+  return h(XhLogRoot, { style: 'block-size: 240px; inline-size: 360px' }, () => [
+    h(XhLogViewport, () => h(XhLogContent, () => lines.map(text => h(XhLogLine, () => text)))),
+    h(XhLogScrollToEndTrigger),
+  ])
+}
 
-const carousel = (): VNode => h(XhCarouselRoot, { slideCount: 3, style: 'inline-size: 480px' }, () => [
-  h(XhCarouselViewport, { style: 'block-size: 200px' }, () =>
-    h(XhCarouselList, () => [0, 1, 2].map(index => h(XhCarouselItem, { index }, () => '')))),
-  h(XhCarouselPrevTrigger),
-  h(XhCarouselNextTrigger),
-  h(XhCarouselIndicatorGroup, () => [0, 1, 2].map(index => h(XhCarouselIndicator, { index }))),
-])
+function carousel(): VNode {
+  return h(XhCarouselRoot, { slideCount: 3, style: 'inline-size: 480px' }, () => [
+    h(XhCarouselViewport, { style: 'block-size: 200px' }, () =>
+      h(XhCarouselList, () => [0, 1, 2].map(index => h(XhCarouselItem, { index }, () => '')))),
+    h(XhCarouselPrevTrigger),
+    h(XhCarouselNextTrigger),
+    h(XhCarouselIndicatorGroup, () => [0, 1, 2].map(index => h(XhCarouselIndicator, { index }))),
+  ])
+}
 
 // 纯色图。与视口同比例（900 × 700）时 contain 之后铺满取景区，工具条与计数压在图上；
 // 缺省用一张小图，控制层压在下层上
-const image = (fill: string, width = 40, height = 30): string =>
-  `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="${fill}"/></svg>`)}`
+function image(fill: string, width = 40, height = 30): string {
+  return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="${fill}"/></svg>`)}`
+}
 
 /** variant 为 transparent 时遮罩不画底，下层直接透出来（背景被模态设为 inert，命中不到）。 */
 function imageViewer(src = image('transparent'), variant?: 'transparent'): () => VNode {
@@ -142,10 +150,12 @@ function imageViewer(src = image('transparent'), variant?: 'transparent'): () =>
   ])
 }
 
-const layout = (fixed: boolean) => (): VNode => h(XhLayoutRoot, { headerFixed: fixed, style: 'background: transparent' }, () => [
-  h(XhLayoutHeader, () => h('span', { 'data-testid': 'title' }, '控制台')),
-  h(XhLayoutContent, () => h('div', { style: 'block-size: 1200px' })),
-])
+function layout(fixed: boolean) {
+  return (): VNode => h(XhLayoutRoot, { headerFixed: fixed, style: 'background: transparent' }, () => [
+    h(XhLayoutHeader, () => h('span', { 'data-testid': 'title' }, '控制台')),
+    h(XhLayoutContent, () => h('div', { style: 'block-size: 1200px' })),
+  ])
+}
 
 // ── 像素取样 ──
 
@@ -232,7 +242,7 @@ async function judged(el: HTMLElement): Promise<void> {
 }
 
 describe('接入液态面', () => {
-  it('MessageFeed / Log 的回到底部：liquid 档挂进液态面，standard 档保持磨砂', async () => {
+  it('消息流与日志的回到底部：liquid 档挂进液态面，standard 档保持磨砂', async () => {
     for (const [scope, render] of [['message-feed', messageFeed], ['log', log]] as const) {
       await mount(render, 'oklch(0.96 0.02 100)')
       const trigger = await scrollAwayFromBottom(scope)
@@ -257,7 +267,7 @@ describe('接入液态面', () => {
     under = null
   })
 
-  it('Carousel：翻页钮与分页条挂进液态面，分页条成为液态胶囊', async () => {
+  it('走马灯：翻页钮与分页条挂进液态面，分页条成为液态胶囊', async () => {
     await mount(carousel, 'oklch(0.3 0.1 258)')
     const prev = part('carousel', 'prev-trigger')
     const group = part('carousel', 'indicator-group')
@@ -272,14 +282,14 @@ describe('接入液态面', () => {
     expectNoNestedLiquid()
   })
 
-  it('Carousel：standard 档的分页条没有面', async () => {
+  it('走马灯：standard 档的分页条没有面', async () => {
     await mount(carousel, 'oklch(0.3 0.1 258)', null)
     const style = getComputedStyle(part('carousel', 'indicator-group'))
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.paddingTop).toBe('0px')
   })
 
-  it('ImageViewer：工具条、计数与三颗钮挂进液态面，前景跟着墨色域走', async () => {
+  it('图片预览：工具条、计数与三颗钮挂进液态面，前景跟着墨色域走', async () => {
     // 透明遮罩：页面浅色，控制层判成浅色调、黑墨
     await mount(imageViewer(undefined, 'transparent'), 'oklch(0.96 0.02 100)')
     const toolbar = part('image-viewer', 'toolbar')
@@ -300,7 +310,7 @@ describe('接入液态面', () => {
     expectNoNestedLiquid()
   })
 
-  it('ImageViewer：缺省遮罩读成深色下层；透明遮罩下背景被模态压住，只猜色调、不换通透档', async () => {
+  it('图片预览：缺省遮罩读成深色下层；透明遮罩下背景被模态压住，只猜色调、不换通透档', async () => {
     await mount(imageViewer(), 'oklch(0.96 0.02 100)')
     const toolbar = part('image-viewer', 'toolbar')
     await judged(toolbar)
@@ -315,14 +325,14 @@ describe('接入液态面', () => {
     expect(counter.hasAttribute('data-xh-liquid-clarity')).toBe(false)
   })
 
-  it('ImageViewer：standard 档仍是那层深色纱', async () => {
+  it('图片预览：standard 档仍是那层深色纱', async () => {
     await mount(imageViewer(), 'oklch(0.96 0.02 100)', null)
     const toolbar = part('image-viewer', 'toolbar')
     expect(toolbar.hasAttribute('data-xh-ink')).toBe(false)
     expect(getComputedStyle(toolbar).backdropFilter).toBe('none')
   })
 
-  it('Layout：吸顶的顶栏挂进液态面，不吸顶的顶栏保持原样', async () => {
+  it('布局：吸顶的顶栏挂进液态面，不吸顶的顶栏保持原样', async () => {
     await mount(layout(true), 'oklch(0.3 0.1 258)')
     const header = part('layout', 'header')
     expect(header.hasAttribute('data-xh-liquid')).toBe(true)

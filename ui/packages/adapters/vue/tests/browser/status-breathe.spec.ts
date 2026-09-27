@@ -7,8 +7,8 @@ import { createApp, h, nextTick, ref } from 'vue'
 import {
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
-  XhApprovalRoot,
   XhApprovalPendingIndicator,
+  XhApprovalRoot,
   XhApprovalTitle,
   XhMessageFeedItem,
   XhMessageFeedList,
