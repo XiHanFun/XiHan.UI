@@ -483,6 +483,10 @@
           "name": "热力图"
         },
         {
+          "id": "hierarchy-chart",
+          "name": "层级图"
+        },
+        {
           "id": "pie-chart",
           "name": "饼图"
         },

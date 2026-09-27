@@ -41,6 +41,7 @@ const PUBLIC_EVENTS = {
   'datum-press': 'onDatumPress',
   'window-change': 'onWindowChange',
   'brush-selection-change': 'onBrushSelectionChange',
+  'root-key-change': 'onRootKeyChange',
 } as const
 
 function declaredEvents(component: Component): Set<string> {

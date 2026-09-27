@@ -26858,6 +26858,254 @@
   }
 }
 
+/* styles/hierarchy-chart.css */
+/* 定义 hierarchy chart 样式。 */
+
+/* 标题、视口、提示框、空态、焦点环与顺序色阶走 Chart 家族配方；下钻路径的项归 Collection Item 导航当前（nav 语境），
+   面、字色、字重与按压时间线由家族配方给，本皮肤只映射桥接槽。两份都 @import，单独引入仍成立。 */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='hierarchy-chart'] {
+  --xh-hierarchy-chart-skin: 1;
+}
+
+/* 几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
+[data-scope='hierarchy-chart'][data-part='root'] {
+  --xh-_chart-metric-bar-max: var(--xh-chart-bar-max);
+  --xh-_chart-metric-gap: var(--xh-hierarchy-chart-node-gap, var(--xh-chart-gap));
+  --xh-_chart-metric-line-width: var(--xh-chart-line-width);
+  --xh-_chart-metric-point-size: var(--xh-chart-point-size);
+  --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+  --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+  --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+  --xh-_chart-metric-radius: var(--xh-hierarchy-chart-node-radius, var(--xh-shape-inset));
+  --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+  --xh-_chart-metric-leading: var(--xh-leading-tight);
+  --xh-_chart-gap: var(--xh-hierarchy-chart-gap, var(--xh-space-3));
+  /* 路径上的尖角与作者塞进来的图标跟着路径的字号档走 */
+  --xh-icon-size: var(--xh-hierarchy-chart-icon-size, var(--xh-glyph-size-sm));
+}
+
+/* —— 家族配方的组件槽：标题、视口、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
+   对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
+[data-scope='hierarchy-chart'][data-part='viewport'] {
+  --xh-_chart-height: var(--xh-hierarchy-chart-height, var(--xh-chart-height));
+}
+
+[data-scope='hierarchy-chart'][data-part='tooltip'] {
+  --xh-_chart-tooltip-gap: var(--xh-hierarchy-chart-tooltip-gap, var(--xh-space-1));
+  --xh-_chart-tooltip-py: var(--xh-hierarchy-chart-tooltip-py, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-px: var(--xh-hierarchy-chart-tooltip-px, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-radius: var(--xh-hierarchy-chart-tooltip-radius, var(--xh-shape-overlay));
+  --xh-_chart-tooltip-shadow: var(--xh-hierarchy-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
+}
+
+[data-scope='hierarchy-chart'][data-part='tooltip-row'] {
+  --xh-_chart-tooltip-row-gap: var(--xh-hierarchy-chart-tooltip-row-gap, var(--xh-space-2));
+}
+
+[data-scope='hierarchy-chart'][data-part='tooltip-swatch'] {
+  --xh-_chart-tooltip-swatch-radius: var(--xh-hierarchy-chart-tooltip-swatch-radius, var(--xh-shape-inset));
+}
+
+[data-scope='hierarchy-chart'][data-part='empty'][data-state='loading'] {
+  --xh-_chart-empty-gap: var(--xh-hierarchy-chart-empty-gap, var(--xh-space-2));
+}
+
+/* —— 下钻路径：一行按钮，项与项之间画一个向前的尖角。尖角画在项的外面、不接指针，按钮的命中区只是自己的名字 —— */
+[data-scope='hierarchy-chart'][data-part='path'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--xh-hierarchy-chart-path-column-gap, calc(var(--xh-icon-size, var(--xh-glyph-size-sm)) + var(--xh-space-1) * 2));
+  row-gap: var(--xh-hierarchy-chart-path-row-gap, var(--xh-space-1));
+  font-size: var(--xh-hierarchy-chart-path-font-size, var(--xh-control-font-sm));
+}
+
+[data-scope='hierarchy-chart'][data-part='path'][hidden] {
+  display: none;
+}
+
+/* 项的几何、字号与面全经家族桥接槽：静息 muted，悬停换面，当前的根由连接层投影 data-xh-collection-terminal，
+   走家族的 terminal 态（不响应悬停与按下）。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background */
+[data-scope='hierarchy-chart'][data-part='path-item'] {
+  --xh-collection-block-padding: var(--xh-space-0);
+  --xh-collection-inline-padding: var(--xh-hierarchy-chart-path-item-px, var(--xh-space-1));
+  --xh-collection-radius: var(--xh-hierarchy-chart-path-item-radius, var(--xh-shape-control));
+  --xh-collection-font-size: var(--xh-hierarchy-chart-path-font-size, var(--xh-control-font-sm));
+  --xh-collection-fg-rest: var(--xh-hierarchy-chart-path-fg, var(--xh-fg-muted));
+  --xh-collection-bg-hover: var(--xh-hierarchy-chart-path-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-fg-hover: var(--xh-hierarchy-chart-path-item-fg-hover, var(--xh-fg-default));
+  --xh-collection-bg-pressed: var(--xh-hierarchy-chart-path-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-fg-terminal: var(--xh-hierarchy-chart-path-item-fg-current, var(--xh-fg-default));
+  --xh-collection-font-weight-terminal: var(--xh-hierarchy-chart-path-item-font-weight-current, var(--xh-font-weight-medium));
+
+  /* 不裁溢出：尖角画在项的盒子外面。名字长时整条路径折行，不截断 */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  border: none;
+  font-family: inherit;
+  line-height: var(--xh-leading-tight);
+  white-space: nowrap;
+}
+
+[data-scope='hierarchy-chart'][data-part='path-item'] + [data-scope='hierarchy-chart'][data-part='path-item']::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(100% + var(--xh-space-1));
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  margin-block: auto;
+  background-color: var(--xh-hierarchy-chart-path-separator-fg, var(--xh-fg-subtle));
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  pointer-events: none;
+}
+
+[data-scope='hierarchy-chart'][data-part='path-item'][hidden] {
+  display: none;
+}
+
+/* 从右往左排版时「向前」在左边 */
+[dir='rtl'] [data-scope='hierarchy-chart'][data-part='path-item']::before {
+  rotate: 180deg;
+}
+
+/* —— 色槽：第一层分支各取一个分类色，后代继承；作者可以在节点上覆盖 --xh-hierarchy-chart-series-color。
+   节点、名字与提示框的色标都带着色槽，各自从这里取系列色与配对的前景色 —— */
+[data-scope='hierarchy-chart'][data-xh-chart-slot='1'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-1));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-1);
+}
+
+[data-scope='hierarchy-chart'][data-xh-chart-slot='2'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-2));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-2);
+}
+
+[data-scope='hierarchy-chart'][data-xh-chart-slot='3'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-3));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-3);
+}
+
+[data-scope='hierarchy-chart'][data-xh-chart-slot='4'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-4));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-4);
+}
+
+[data-scope='hierarchy-chart'][data-xh-chart-slot='5'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-5));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-5);
+}
+
+[data-scope='hierarchy-chart'][data-xh-chart-slot='6'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-6));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-6);
+}
+
+[data-scope='hierarchy-chart'][data-xh-chart-slot='7'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-7));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-7);
+}
+
+[data-scope='hierarchy-chart'][data-xh-chart-slot='8'] {
+  --xh-_chart-series: var(--xh-hierarchy-chart-series-color, var(--xh-chart-categorical-8));
+  --xh-_chart-on-series: var(--xh-chart-on-categorical-8);
+}
+
+/* —— 节点：第一层取满色，往下每层向承载面混色变浅；名字的前景随之换：满色上取配对的前景色，
+   浅色上取正文色。连接层写的层按当前的根数，下钻之后看得见的第一层照样是满色 —— */
+[data-scope='hierarchy-chart'][data-part='node'],
+[data-scope='hierarchy-chart'][data-part='node-label'],
+[data-scope='hierarchy-chart'][data-part='group-header'] {
+  --xh-_hierarchy-mix: 100%;
+  --xh-_hierarchy-ink: var(--xh-_chart-on-series);
+}
+
+[data-scope='hierarchy-chart'][data-level='2'] {
+  --xh-_hierarchy-mix: 48%;
+  --xh-_hierarchy-ink: var(--xh-fg-default);
+}
+
+[data-scope='hierarchy-chart'][data-level='3'] {
+  --xh-_hierarchy-mix: 32%;
+  --xh-_hierarchy-ink: var(--xh-fg-default);
+}
+
+[data-scope='hierarchy-chart'][data-level='4'] {
+  --xh-_hierarchy-mix: 22%;
+  --xh-_hierarchy-ink: var(--xh-fg-default);
+}
+
+/* 相邻节点之间的间隙由几何留出，不画描边；指着一个节点时不在同一条祖孙链上的节点淡出，被指着的不位移 */
+[data-scope='hierarchy-chart'][data-part='node'] {
+  --xh-_hierarchy-fill: color-mix(in oklab, var(--xh-_chart-series) var(--xh-_hierarchy-mix), var(--xh-chart-surface));
+
+  fill: var(--xh-_hierarchy-fill);
+  stroke: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 有子节点的节点点下去是下钻 */
+[data-scope='hierarchy-chart'][data-part='node'][aria-expanded] {
+  cursor: pointer;
+}
+
+/* 按值着色：颜色由 Chart 家族配方按段号与段内百分比兑好放在私有槽里，不再按层变浅。色阶的起点贴着承载面、
+   终点远离承载面：浅的一段写正文色，深的一段写承载面色，亮暗主题下都读得清 */
+[data-scope='hierarchy-chart'][data-part='node'][data-seg] {
+  fill: var(--xh-_chart-seq-fill);
+}
+
+[data-scope='hierarchy-chart'][data-seg='low'] {
+  --xh-_hierarchy-ink: var(--xh-fg-default);
+}
+
+[data-scope='hierarchy-chart'][data-seg='high'] {
+  --xh-_hierarchy-ink: var(--xh-chart-surface);
+}
+
+[data-scope='hierarchy-chart'][data-part='node'][data-dimmed],
+[data-scope='hierarchy-chart'][data-part='node-label'][data-dimmed],
+[data-scope='hierarchy-chart'][data-part='group-header'][data-dimmed] {
+  opacity: var(--xh-chart-dim-alpha);
+}
+
+/* 名字与分组标题压在节点的颜色上：前景随层与着色方式取；它们不接指针，命中归节点 */
+[data-scope='hierarchy-chart'][data-part='node-label'],
+[data-scope='hierarchy-chart'][data-part='group-header'] {
+  fill: var(--xh-_hierarchy-ink);
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='hierarchy-chart'][data-part='group-header'] {
+  font-weight: var(--xh-font-weight-medium);
+}
+
+/* 强制色：节点改成系统色的面与描边，名字取正文色；路径的尖角取正文色；焦点环在配方里 */
+@media (forced-colors: active) {
+  [data-scope='hierarchy-chart'][data-part='node'],
+  [data-scope='hierarchy-chart'][data-part='node'][data-seg] {
+    fill: Canvas;
+    stroke: CanvasText;
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='hierarchy-chart'][data-part='node-label'],
+  [data-scope='hierarchy-chart'][data-part='group-header'] {
+    fill: CanvasText;
+  }
+
+  [data-scope='hierarchy-chart'][data-part='path-item'] + [data-scope='hierarchy-chart'][data-part='path-item']::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+}
+
 /* styles/hover-card.css */
 /* 定义 hover card 样式。 */
 

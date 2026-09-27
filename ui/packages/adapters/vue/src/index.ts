@@ -541,6 +541,10 @@ export { XhHeatmapCell, XhHeatmapColumnLabel, XhHeatmapGrid, XhHeatmapLegend, Xh
 export type { HeatmapCellSlotProps, HeatmapRootSlotProps } from './components/heatmap/heatmap'
 export { useHeatmap } from './components/heatmap/use-heatmap'
 export type { HeatmapContext } from './components/heatmap/use-heatmap'
+export { XhHierarchyChartCaption, XhHierarchyChartEmpty, XhHierarchyChartPath, XhHierarchyChartPlot, XhHierarchyChartRoot, XhHierarchyChartTooltip, XhHierarchyChartViewport } from './components/hierarchy-chart/hierarchy-chart'
+export type { HierarchyChartRootSlotProps, HierarchyChartTooltipSlotProps } from './components/hierarchy-chart/hierarchy-chart'
+export { useHierarchyChart } from './components/hierarchy-chart/use-hierarchy-chart'
+export type { HierarchyChartContext, HierarchyChartNotifiers } from './components/hierarchy-chart/use-hierarchy-chart'
 export { XhHighlight } from './components/highlight/highlight'
 export {
   XhHoverCardArrow,

@@ -106,6 +106,7 @@ const PRESSABLE = {
   'cartesian-chart': ['legend-item'],
   'pie-chart': ['legend-item'],
   'radar-chart': ['legend-item'],
+  'hierarchy-chart': [{ part: 'path-item', feedback: 'surface' }],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'search-item', feedback: 'surface' }],
   'tree-select': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],
@@ -252,6 +253,8 @@ const NO_PRESS = {
   'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
   'file-upload:dropzone': '大块投放区，按下回执由拖入态的描边与底色给出；缩放整块会把里面的说明文字一起抖起来',
   'truncate:root': '触发区就是被裁的那整段文本，缩放它会把整段排版一起抖起来',
+  // 数据标记：几何就是数据
+  'hierarchy-chart:node': '节点是数据标记，面积与位置就是数值；点下去的回执是整张图换到下一层，缩放它会让面积比例与相邻节点的间隙一起走样',
 }
 
 /**

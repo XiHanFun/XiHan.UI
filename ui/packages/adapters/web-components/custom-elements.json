@@ -27099,6 +27099,860 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/hierarchy-chart.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-hierarchy-chart>`：层级图宿主，看层级数据中各部分的占比，并逐层下钻。\n\n作者写外壳：root（`<figure>`）、caption、path、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，可选 empty 与 tooltip。\n路径项、节点、节点名与分组标题由本元素生成：路径项生成进 path，其余按场景生成进 plot，按 key 复用节点；\ntooltip 留空时写入缺省内容（路径、数值与两种占比），里面有作者写的节点时元素不碰它。摘要与数据表由元素追加在\nroot 末尾，视觉隐藏。\n\n数据与数值格式是对象或函数，只走 JS property。受控回到最顶层写 `rootKey = null`（property）。",
+          "name": "XhHierarchyChartElement",
+          "cssParts": [
+            {
+              "description": "`<figure>`，承载 pending、错误状态与色板",
+              "name": "root"
+            },
+            {
+              "description": "`<figcaption>`，图表的可及名来源",
+              "name": "caption"
+            },
+            {
+              "description": "下钻路径，路径项由元素生成；还在最顶层时收起",
+              "name": "path"
+            },
+            {
+              "description": "尺寸观测的宿主",
+              "name": "viewport"
+            },
+            {
+              "description": "绘图区 `<svg>`，节点与标签由元素生成",
+              "name": "plot"
+            },
+            {
+              "description": "提示框，留空时由元素写入缺省内容",
+              "name": "tooltip"
+            },
+            {
+              "description": "没有可画的节点时显示",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: hierarchyChartAnatomy, meta: hierarchyChartMeta, // plot 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { plot: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "ChartRow | readonly ChartRow[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<HierarchyChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "childrenField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "children-field"
+            },
+            {
+              "kind": "field",
+              "name": "idField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "id-field"
+            },
+            {
+              "kind": "field",
+              "name": "parentField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "parent-field"
+            },
+            {
+              "kind": "field",
+              "name": "nameField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name-field"
+            },
+            {
+              "kind": "field",
+              "name": "valueField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value-field"
+            },
+            {
+              "kind": "field",
+              "name": "layout",
+              "privacy": "public",
+              "type": {
+                "text": "HierarchyLayout | undefined"
+              },
+              "attribute": "layout"
+            },
+            {
+              "kind": "field",
+              "name": "tile",
+              "privacy": "public",
+              "type": {
+                "text": "HierarchyTile | undefined"
+              },
+              "attribute": "tile"
+            },
+            {
+              "kind": "field",
+              "name": "depth",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "depth"
+            },
+            {
+              "kind": "field",
+              "name": "colorBy",
+              "privacy": "public",
+              "type": {
+                "text": "HierarchyColorBy | undefined"
+              },
+              "attribute": "color-by"
+            },
+            {
+              "kind": "field",
+              "name": "palette",
+              "privacy": "public",
+              "type": {
+                "text": "ChartPalette | undefined"
+              },
+              "attribute": "palette"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "'vertical' | 'horizontal' | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "rootKey",
+              "privacy": "public",
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "attribute": "root-key"
+            },
+            {
+              "kind": "field",
+              "name": "defaultRootKey",
+              "privacy": "public",
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "attribute": "default-root-key"
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "attribute": "active-key"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "notifyRoot",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<HierarchyChartSchema>( this, hierarchyChartMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<HierarchyChartSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<HierarchyChartSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HierarchyChartApi | null"
+                }
+              },
+              "description": "连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "ChartDatumDetails | null"
+              },
+              "description": "激活的节点（悬停或聚焦）；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "HierarchyTooltipModel | null"
+              },
+              "description": "提示框的缺省内容模型；收起时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "没有可画的节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "path",
+              "type": {
+                "text": "readonly HierarchyPathItem[]"
+              },
+              "description": "下钻路径：从最顶层到当前的根。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentRootKey",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "此刻的根。rootKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "ChartKey | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "drillTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string | null"
+                  }
+                }
+              ],
+              "description": "下钻到某个节点（有子节点才下得去），null 回到最顶层。"
+            },
+            {
+              "kind": "method",
+              "name": "drillUp",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "上钻一层。"
+            },
+            {
+              "kind": "method",
+              "name": "setFocusedDatum",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "ref",
+                  "type": {
+                    "text": "{ seriesId: string, index: number } | null"
+                  }
+                }
+              ],
+              "description": "移动键盘锚点：只改锚点，不移动 DOM 焦点，也不派发事件。"
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "field",
+              "name": "#tooltipKey",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "上一次写进提示框与数据表的内容：没变就不重建。"
+            },
+            {
+              "kind": "field",
+              "name": "#table",
+              "privacy": "private",
+              "type": {
+                "text": "HierarchyChartApi['table'] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableHost",
+              "privacy": "private",
+              "type": {
+                "text": "Element | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintMarks",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HierarchyChartApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "ChartMark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HierarchyChartApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintPath",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HierarchyChartApi"
+                  }
+                }
+              ],
+              "description": "下钻路径：每一项生成一个按钮，按节点的身份复用。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintTooltip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tooltip",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HierarchyChartApi"
+                  }
+                }
+              ],
+              "description": "提示框留空时写缺省内容：头部是从当前的根到节点的路径，下面是数值与两种占比。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintA11y",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HierarchyChartApi"
+                  }
+                }
+              ],
+              "description": "摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。"
+            }
+          ],
+          "events": [
+            {
+              "description": "下钻或上钻换了根；detail 为 `{ rootKey }`，最顶层为 null",
+              "name": "root-key-change",
+              "type": {
+                "text": "HierarchyRootKeyChangeDetails"
+              }
+            },
+            {
+              "description": "指针或键盘换了激活的节点；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
+              "type": {
+                "text": "ChartActiveKeyChangeDetails"
+              }
+            },
+            {
+              "description": "悬停或聚焦到某个节点；detail 为节点详情，收起时为 null",
+              "name": "datum-active",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            },
+            {
+              "description": "指针点击叶子、Enter 按在叶子上或 Space 按在节点上；detail 为节点详情",
+              "name": "datum-press",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "嵌套数据的子节点字段，默认 children",
+              "name": "children-field",
+              "fieldName": "childrenField"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "扁平数据：行的身份字段",
+              "name": "id-field",
+              "fieldName": "idField"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "扁平数据：父节点的身份字段",
+              "name": "parent-field",
+              "fieldName": "parentField"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "名字字段，默认 name",
+              "name": "name-field",
+              "fieldName": "nameField"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数值字段，默认 value：只取叶子的值",
+              "name": "value-field",
+              "fieldName": "valueField"
+            },
+            {
+              "type": {
+                "text": "HierarchyLayout | undefined"
+              },
+              "description": "空间填充的方式，默认 treemap",
+              "name": "layout",
+              "fieldName": "layout"
+            },
+            {
+              "type": {
+                "text": "HierarchyTile | undefined"
+              },
+              "description": "矩形树图的铺法，默认 squarify",
+              "name": "tile",
+              "fieldName": "tile"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "同时看得见的层数，默认 2",
+              "name": "depth",
+              "fieldName": "depth"
+            },
+            {
+              "type": {
+                "text": "HierarchyColorBy | undefined"
+              },
+              "description": "着色，默认 branch",
+              "name": "color-by",
+              "fieldName": "colorBy"
+            },
+            {
+              "type": {
+                "text": "ChartPalette | undefined"
+              },
+              "description": "按值着色时顺序色阶的色板",
+              "name": "palette",
+              "fieldName": "palette"
+            },
+            {
+              "type": {
+                "text": "'vertical' | 'horizontal' | undefined"
+              },
+              "description": "冰柱图的方向，默认 vertical",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "description": "当前的根（受控）：节点的身份",
+              "name": "root-key",
+              "fieldName": "rootKey"
+            },
+            {
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "description": "初始的根（非受控）",
+              "name": "default-root-key",
+              "fieldName": "defaultRootKey"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数字与内建文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "description": "激活的节点（受控）：与别的图联动时是节点的身份",
+              "name": "active-key",
+              "fieldName": "activeKey"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-hierarchy-chart",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-hierarchy-chart-empty-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-height"
+            },
+            {
+              "name": "--xh-hierarchy-chart-icon-size"
+            },
+            {
+              "name": "--xh-hierarchy-chart-node-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-node-radius"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-column-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-fg"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-font-size"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-item-bg-hover"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-item-bg-pressed"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-item-fg-current"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-item-fg-hover"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-item-font-weight-current"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-item-px"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-item-radius"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-row-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-path-separator-fg"
+            },
+            {
+              "name": "--xh-hierarchy-chart-series-color"
+            },
+            {
+              "name": "--xh-hierarchy-chart-tooltip-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-tooltip-px"
+            },
+            {
+              "name": "--xh-hierarchy-chart-tooltip-py"
+            },
+            {
+              "name": "--xh-hierarchy-chart-tooltip-radius"
+            },
+            {
+              "name": "--xh-hierarchy-chart-tooltip-row-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-tooltip-shadow"
+            },
+            {
+              "name": "--xh-hierarchy-chart-tooltip-swatch-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhHierarchyChartElement",
+          "declaration": {
+            "name": "XhHierarchyChartElement",
+            "module": "src/elements/hierarchy-chart.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/highlight.ts",
       "declarations": [
         {
