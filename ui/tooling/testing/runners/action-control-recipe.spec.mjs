@@ -99,7 +99,7 @@ describe('action Control Family Recipe', () => {
     const outline = block(css, '[data-xh-action-control][data-xh-action-variant=\'outline\']')
     expect(outline).toContain('--xh-_action-variant-border-rest: var(--xh-_tone-border-control, var(--xh-border-control));')
     expect(outline).toContain('--xh-_action-variant-border-hover: var(--xh-_tone-border-control, var(--xh-border-control-hover));')
-    expect(outline).toContain('--xh-_action-variant-border-disabled: var(--xh-border-subtle);')
+    expect(outline).toContain('--xh-_action-variant-border-disabled: var(--xh-border-default);')
     const subtle = block(css, '[data-xh-action-control][data-xh-action-variant=\'subtle\']')
     expect(subtle).toContain('--xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));')
     expect(subtle).not.toContain('--xh-action-host-bg-')
