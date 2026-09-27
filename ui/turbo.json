@@ -12,6 +12,11 @@
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**", "*.vue", "tsconfig*.json", "package.json"],
       "outputs": []
     },
+    "@xihan-ui/testing#typecheck": {
+      "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/react#build", "@xihan-ui/web-components#build"],
+      "inputs": ["src/**", "tests/**", "spec/**", "runners/**", "*.vue", "tsconfig*.json", "package.json"],
+      "outputs": []
+    },
     "test": {
       "dependsOn": ["^build"],
       "passThroughEnv": ["VITEST_MAX_WORKERS"],
