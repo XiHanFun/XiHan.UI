@@ -11,9 +11,9 @@ import {
   XhApprovalItemIndicator,
   XhApprovalItemText,
   XhApprovalLiveRegion,
+  XhApprovalPendingIndicator,
   XhApprovalResult,
   XhApprovalRoot,
-  XhApprovalPendingIndicator,
   XhApprovalTitle,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
