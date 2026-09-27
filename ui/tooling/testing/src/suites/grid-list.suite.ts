@@ -4,6 +4,10 @@ import { nativeActivation, singleTabStop } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/'
 
+/**
+ * 行的禁用用 `disabled` 属性声明（Vue 侧它是组件 prop、不落 DOM）；
+ * WC 侧接线时把它摘掉、改由 aria-disabled 与 data-disabled 表达——row 不是表单控件，原生 disabled 在它上面不是有效属性。
+ */
 function row(value: string, label: string, disabled = false, action = false): FixtureNode {
   return {
     part: 'row',
@@ -71,7 +75,7 @@ export const gridListSuite: ConformanceSuite = {
             'data-value': 'a',
             'tabindex': '-1',
           },
-          'row[2]': { 'aria-disabled': 'true', 'data-disabled': '' },
+          'row[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           'row-content[0]': { role: 'gridcell' },
           'row-actions[0]': { role: 'gridcell' },
           'row-action[0]': { 'type': 'button', 'data-xh-action-control': '' },
