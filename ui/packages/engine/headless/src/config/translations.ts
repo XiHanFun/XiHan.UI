@@ -61,6 +61,7 @@ import type { FunnelChartTranslations } from '../funnel-chart/funnel-chart.types
 import type { GradientTextTranslations } from '../gradient-text/gradient-text.types'
 import type { GridTranslations } from '../grid/grid.types'
 import type { HeatmapTranslations } from '../heatmap/heatmap.types'
+import type { HierarchyChartTranslations } from '../hierarchy-chart/hierarchy-chart.types'
 import type { HighlightTranslations } from '../highlight/highlight.types'
 import type { HoverCardTranslations } from '../hover-card/hover-card.types'
 import type { IconWrapperTranslations } from '../icon-wrapper/icon-wrapper.types'
@@ -203,6 +204,7 @@ export interface XhTranslationOverrides {
   'gradient-text'?: Partial<GradientTextTranslations>
   'grid'?: Partial<GridTranslations>
   'heatmap'?: Partial<HeatmapTranslations>
+  'hierarchy-chart'?: Partial<HierarchyChartTranslations>
   'highlight'?: Partial<HighlightTranslations>
   'hover-card'?: Partial<HoverCardTranslations>
   'icon'?: Partial<IconTranslations>

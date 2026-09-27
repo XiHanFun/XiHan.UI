@@ -53,6 +53,7 @@ import { funnelChartSuite } from './funnel-chart.suite'
 import { gradientTextSuite } from './gradient-text.suite'
 import { gridSuite } from './grid.suite'
 import { heatmapSuite } from './heatmap.suite'
+import { hierarchyChartSuite } from './hierarchy-chart.suite'
 import { highlightSuite } from './highlight.suite'
 import { hoverCardSuite } from './hover-card.suite'
 import { iconWrapperSuite } from './icon-wrapper.suite'
@@ -280,4 +281,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   sparklineSuite,
   radarChartSuite,
   funnelChartSuite,
+  hierarchyChartSuite,
 ]

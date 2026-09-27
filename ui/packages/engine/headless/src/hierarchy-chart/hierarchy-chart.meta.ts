@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 hierarchy chart 相关实现。
+
+import type { ComponentMeta } from '../spec/types'
+
+// 根承载状态属性；视口是尺寸观测的宿主，没有它就量不出空间；绘图区是节点与键盘的唯一落点。
+// 下钻路径、提示框、空态都可以不放，标题也可以换成根上的 aria-label。
+export const hierarchyChartMeta: ComponentMeta = {
+  component: 'hierarchy-chart',
+  requiredParts: ['root', 'viewport', 'plot'],
+}

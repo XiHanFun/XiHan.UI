@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   XhFunnelChartRoot,
+  XhHierarchyChartRoot,
   XhInfiniteScrollRoot,
   XhJsonViewerRoot,
   XhListboxRoot,
@@ -212,6 +213,15 @@ const CASES: Case[] = [
     machine: { data: [{ stage: 'a', users: 3 }, { stage: 'b', users: 1 }], nameField: 'stage', valueField: 'users', shape: 'bar', conversion: 'none' },
     leaks: ['shape', 'conversion'],
     render: props => <XhFunnelChartRoot {...props} />,
+  },
+  {
+    name: 'hierarchy-chart',
+    scope: 'hierarchy-chart',
+    tag: 'figure',
+    token: '--xh-hierarchy-chart-probe',
+    machine: { data: { name: 'r', children: [{ name: 'a', value: 2 }, { name: 'b', value: 1 }] }, layout: 'sunburst', colorBy: 'uniform' },
+    leaks: ['layout', 'colorBy'],
+    render: props => <XhHierarchyChartRoot {...props} />,
   },
   {
     name: 'pin-input',

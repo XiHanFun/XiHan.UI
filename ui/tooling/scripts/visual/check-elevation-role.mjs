@@ -75,6 +75,7 @@ const EXPECTED = {
   'pie-chart': { tooltip: ['frosted'] },
   'radar-chart': { tooltip: ['frosted'] },
   'funnel-chart': { tooltip: ['frosted'] },
+  'hierarchy-chart': { tooltip: ['frosted'] },
   // 含日历网格与时间列的锚定面板：floating（实体底 + border-default + elevation-floating）
   'date-picker': { content: ['floating'] },
   // 含两张日历网格的锚定面板：floating

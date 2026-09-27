@@ -33726,6 +33726,527 @@
       "description": "heatmap 的 root、week-day 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-hierarchy-chart-empty-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 empty 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-height",
+      "component": "hierarchy-chart",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-height"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 viewport 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-icon-size",
+      "component": "hierarchy-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-node-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-gap"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 root 部件 --xh-_chart-metric-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-node-radius",
+      "component": "hierarchy-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-column-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "path"
+      ],
+      "property": [
+        "column-gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-icon-size"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path 部件 column-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-fg",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-font-size",
+      "component": "hierarchy-chart",
+      "part": [
+        "path",
+        "path-item"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-font-sm"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path、path-item 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-item-bg-hover",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "hover",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-item-bg-pressed",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-item-fg-current",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "current",
+        "xh-collection-context=nav",
+        "xh-collection-terminal"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-item-fg-hover",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "hover",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-item-font-weight-current",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "current",
+        "xh-collection-context=nav",
+        "xh-collection-terminal"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-item-px",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-item-radius",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-row-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "path"
+      ],
+      "property": [
+        "row-gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path 部件 row-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-path-separator-fg",
+      "component": "hierarchy-chart",
+      "part": [
+        "path-item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 path-item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-series-color",
+      "component": "hierarchy-chart",
+      "part": [
+        "legend-swatch",
+        "node",
+        "pattern-line",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background",
+        "border",
+        "fill",
+        "stroke"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "mark=line",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns",
+        "xh-chart-slot=1",
+        "xh-chart-slot=2",
+        "xh-chart-slot=3",
+        "xh-chart-slot=4",
+        "xh-chart-slot=5",
+        "xh-chart-slot=6",
+        "xh-chart-slot=7",
+        "xh-chart-slot=8"
+      ],
+      "defaultToken": [
+        "--xh-chart-categorical-1",
+        "--xh-chart-categorical-2",
+        "--xh-chart-categorical-3",
+        "--xh-chart-categorical-4",
+        "--xh-chart-categorical-5",
+        "--xh-chart-categorical-6",
+        "--xh-chart-categorical-7",
+        "--xh-chart-categorical-8"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 legend-swatch、node、pattern-line、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-tooltip-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 tooltip 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-tooltip-px",
+      "component": "hierarchy-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 tooltip 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-tooltip-py",
+      "component": "hierarchy-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 tooltip 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-tooltip-radius",
+      "component": "hierarchy-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 tooltip 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-tooltip-row-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "tooltip-row"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 tooltip-row 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-tooltip-shadow",
+      "component": "hierarchy-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 tooltip 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-tooltip-swatch-radius",
+      "component": "hierarchy-chart",
+      "part": [
+        "tooltip-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-highlight-mark-bg",
       "component": "highlight",
       "part": [
@@ -34242,6 +34763,8 @@
         "move-up-trigger",
         "next-trigger",
         "next-year-trigger",
+        "path",
+        "path-item",
         "prev-trigger",
         "prev-year-trigger",
         "root",
@@ -34266,6 +34789,7 @@
       ],
       "property": [
         "block-size",
+        "column-gap",
         "inline-size",
         "margin-inline-start"
       ],
@@ -34307,7 +34831,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
