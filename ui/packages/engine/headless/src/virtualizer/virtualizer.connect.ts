@@ -70,6 +70,7 @@ export function connectVirtualizer<T extends PropTypes>(
       getRenderedItemRoots: (): readonly HTMLElement[] => [...(refs.get('getContentEl')()?.children ?? [])]
         .map(element => element.firstElementChild)
         .filter((element): element is HTMLElement => element instanceof scope.getWin().HTMLElement),
+      getViewportElement: () => refs.get('getViewportEl')(),
     } satisfies CollectionVirtualizer
     refs.set('collectionVirtualizer', collectionVirtualizer)
   }

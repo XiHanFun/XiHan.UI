@@ -335,7 +335,7 @@ describe('方向键导航', () => {
     const collection = ITEMS.map(item => ({ value: item.value, label: item.text, disabled: 'disabled' in item ? item.disabled : false }))
     const h = mount({
       collection,
-      virtualizer: { count: collection.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
+      virtualizer: { count: collection.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [], getViewportElement: () => null },
     })
     h.item('apple').focus()
     press(h.item('apple'), 'End')
@@ -349,7 +349,7 @@ describe('方向键导航', () => {
     const collection = ITEMS.map(item => ({ value: item.value, label: item.text }))
     expect(() => mount({
       collection,
-      virtualizer: { count: 1, scrollToIndex: vi.fn(), focusIndex: vi.fn(), getRenderedItemRoots: () => [] },
+      virtualizer: { count: 1, scrollToIndex: vi.fn(), focusIndex: vi.fn(), getRenderedItemRoots: () => [], getViewportElement: () => null },
     })).toThrow(/CollectionVirtualizer\.count/)
   })
 

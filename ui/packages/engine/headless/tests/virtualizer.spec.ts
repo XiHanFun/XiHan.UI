@@ -569,6 +569,7 @@ describe('命令式方法', () => {
     r.setProps({ count: 1200 })
     expect(r.api().collectionVirtualizer).toBe(bridge)
     expect(bridge.count).toBe(1200)
+    expect(bridge.getViewportElement()).toBe(r.viewport)
   })
 
   it('measureElement 把真实尺寸回喂给内核，位移与总长随之变', async () => {

@@ -1,4 +1,7 @@
+import type { CollectionVirtualizer } from '@xihan-ui/headless'
+import type { XhComboboxElement } from '../../src/elements/combobox'
 import type { XhListboxElement } from '../../src/elements/listbox'
+import type { XhTransferElement } from '../../src/elements/transfer'
 import type { XhVirtualizerElement } from '../../src/elements/virtualizer'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
@@ -12,6 +15,7 @@ const collection = Array.from({ length: 1000 }, (_, index) => ({ value: `item-${
 afterEach(() => {
   document.body.querySelectorAll('[data-test="collection-virtualizer"]')
     .forEach(node => node.remove())
+  document.getElementById('xh-portal-root')?.remove()
 })
 
 describe('collectionVirtualizer 正式接线', () => {
@@ -80,5 +84,101 @@ describe('collectionVirtualizer 正式接线', () => {
     await expect.poll(() => document.activeElement?.getAttribute('data-value')).toBe('item-1000')
     await expect.poll(() => (document.activeElement as HTMLElement).getAttribute('aria-posinset')).toBe('1000')
     expect(options().length).toBeLessThan(20)
+  })
+
+  it('transfer 自绘滚动条接管每侧 virtualizer viewport', async () => {
+    const stage = document.createElement('div')
+    stage.dataset.test = 'collection-virtualizer'
+    stage.innerHTML = `
+      <xh-transfer>
+        <div data-xh-part="root">
+          <div data-xh-part="source-panel"><div data-xh-part="list"><div id="transfer-virtual-viewport" style="block-size:100px;overflow:auto"><div style="block-size:1000px"></div></div></div></div>
+          <button data-xh-part="to-target-trigger"></button>
+          <div data-xh-part="target-panel"><div data-xh-part="list"></div></div>
+        </div>
+      </xh-transfer>
+    `
+    document.body.append(stage)
+    const viewport = stage.querySelector<HTMLElement>('#transfer-virtual-viewport')!
+    const transfer = stage.querySelector<XhTransferElement>('xh-transfer')!
+    const bridge: CollectionVirtualizer = {
+      count: 1,
+      scrollToIndex: () => {},
+      focusIndex: () => {},
+      getRenderedItemRoots: () => [],
+      getViewportElement: () => viewport,
+    }
+    transfer.collection = [{ value: 'one', label: '一' }]
+    transfer.virtualizers = { source: bridge }
+    transfer.requestUpdate()
+    await expect.poll(() => viewport.hasAttribute('data-xh-scrollbar')).toBe(true)
+    expect(getComputedStyle(viewport).scrollbarWidth).toBe('none')
+  })
+
+  it('combobox 滚动后仍铺满 viewport，不留下半面空白', async () => {
+    const stage = document.createElement('div')
+    stage.dataset.test = 'collection-virtualizer'
+    stage.innerHTML = `
+      <xh-combobox open-on-click placeholder="搜索城市">
+        <div data-xh-part="root">
+          <label data-xh-part="label">城市</label>
+          <div data-xh-part="control"><input data-xh-part="input"><button data-xh-part="trigger"></button></div>
+          <div data-xh-part="positioner"><div data-xh-part="content" style="overflow:visible;max-block-size:none">
+            <xh-virtualizer id="combobox-test-virtualizer" count="100" estimate-size="36" viewport-tab-index="-1">
+              <div data-xh-part="root"><div data-xh-part="viewport" style="block-size:240px"><div data-xh-part="content"></div></div></div>
+            </xh-virtualizer>
+          </div><div data-xh-part="empty">无匹配城市</div></div>
+        </div>
+      </xh-combobox>
+    `
+    document.body.append(stage)
+    const combobox = stage.querySelector<XhComboboxElement>('xh-combobox')!
+    const virtualizer = stage.querySelector<XhVirtualizerElement>('xh-virtualizer')!
+    const content = virtualizer.querySelector<HTMLElement>('[data-xh-part="content"]')!
+    const cities = Array.from({ length: 100 }, (_, index) => ({ value: `city-${index + 1}`, label: `城市 ${index + 1}` }))
+    combobox.collection = cities
+    const render = (virtualItems: readonly { index: number, key: string | number }[]): void => {
+      content.replaceChildren(...virtualItems.map((virtualItem) => {
+        const shell = document.createElement('div')
+        shell.dataset.xhPart = 'item'
+        shell.setAttribute('value', String(virtualItem.index))
+        shell.style.blockSize = '36px'
+        const option = document.createElement('div')
+        option.dataset.xhPart = 'item'
+        option.dataset.xhPartOwner = 'combobox'
+        option.setAttribute('value', cities[virtualItem.index]!.value)
+        const text = document.createElement('span')
+        text.dataset.xhPart = 'item-text'
+        text.textContent = cities[virtualItem.index]!.label
+        option.append(text)
+        shell.append(option)
+        return shell
+      }))
+      virtualizer.requestUpdate()
+      const bridge = virtualizer.collectionVirtualizer
+      if (bridge) {
+        combobox.virtualizer = bridge
+        combobox.requestUpdate()
+      }
+    }
+    virtualizer.addEventListener('range-change', event => render((event as CustomEvent).detail.virtualItems))
+    await expect.poll(() => virtualizer.collectionVirtualizer != null).toBe(true)
+    render(virtualizer.virtualItems)
+    const input = stage.querySelector<HTMLInputElement>('[data-xh-part="input"]')!
+    input.click()
+    const viewport = virtualizer.querySelector<HTMLElement>('[data-scope="virtualizer"][data-part="viewport"]')!
+    await expect.poll(() => viewport.clientHeight).toBe(240)
+    viewport.scrollTop = 828
+    viewport.dispatchEvent(new Event('scroll'))
+    const visibleItems = (): HTMLElement[] => {
+      const bounds = viewport.getBoundingClientRect()
+      return [...document.querySelectorAll<HTMLElement>('[data-scope="combobox"][data-part="item"]')]
+        .filter((item) => {
+          const rect = item.getBoundingClientRect()
+          return rect.bottom > bounds.top && rect.top < bounds.bottom
+        })
+    }
+    await expect.poll(() => visibleItems().length).toBeGreaterThanOrEqual(6)
+    expect(visibleItems()[0]!.textContent).toBe('城市 24')
   })
 })

@@ -181,13 +181,16 @@ export class XhTransferElement extends XhElement {
   }
 
   /**
-   * 两侧定高小列表各走一路自绘条：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、
-   * 贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；
+   * 两侧定高小列表各走一路自绘条：虚拟化时每侧改读 Virtualizer viewport，普通形态仍读 list；
+   * 多路形态按此刻在场的每个真实滚动层各建一套条子，挂在 root 这个定位盒上；
    * 两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算
    */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('root'),
-    scrollables: () => this.getParts('list'),
+    scrollables: () => this.getParts('list').map((list) => {
+      const side = list.dataset.side as TransferSide | undefined
+      return (side ? this.virtualizers?.[side]?.getViewportElement() : null) ?? list
+    }),
     anchor: 'layer',
     axes: ['vertical', 'horizontal'],
     props: () => ({ dir: this.direction }),

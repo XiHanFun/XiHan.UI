@@ -660,7 +660,7 @@ describe('上下方向键在可见行上走', () => {
     const visible = flattenTree(COLLECTION, ['src', 'utils'])
     const h = mount({
       defaultExpandedValue: ['src', 'utils'],
-      virtualizer: { count: visible.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
+      virtualizer: { count: visible.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [], getViewportElement: () => null },
     })
     h.branch('src').branch.focus()
     press(h.branch('src').branch, 'End')

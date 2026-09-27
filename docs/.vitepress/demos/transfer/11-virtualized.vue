@@ -2,9 +2,24 @@
 <script setup lang="ts">
 import type { CollectionVirtualizer, TransferItem, TransferSide } from "@xihan-ui/headless";
 import {
-  XhTransferItem, XhTransferItemCheckbox, XhTransferItemText, XhTransferList,
-  XhTransferRoot, XhTransferSourcePanel, XhTransferTargetPanel, XhTransferToSourceTrigger,
-  XhTransferToTargetTrigger, XhVirtualizerContent, XhVirtualizerItem, XhVirtualizerRoot,
+  XhTransferEmpty,
+  XhTransferItem,
+  XhTransferItemCheckbox,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferPanelCount,
+  XhTransferPanelHeader,
+  XhTransferPanelTitle,
+  XhTransferRoot,
+  XhTransferSearch,
+  XhTransferSelectAllTrigger,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
+  XhTransferToSourceTrigger,
+  XhTransferToTargetTrigger,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
   XhVirtualizerViewport,
 } from "@xihan-ui/vue";
 import { computed, defineComponent, onMounted, onUpdated, reactive, ref } from "vue";
@@ -17,41 +32,71 @@ const virtualizers = computed(() => ({ ...bridges }));
 const BridgeCapture = defineComponent({
   props: { side: { type: String, required: true }, bridge: { type: Object, required: true } },
   setup(props, { slots }) {
-    const publish = () => { bridges[props.side as TransferSide] = props.bridge as CollectionVirtualizer; };
-    onMounted(publish); onUpdated(publish);
+    const publish = (): void => {
+      bridges[props.side as TransferSide] = props.bridge as CollectionVirtualizer;
+    };
+    onMounted(publish);
+    onUpdated(publish);
     return () => slots.default?.();
   },
 });
 </script>
 
 <template>
-  <XhTransferRoot v-model:value="value" :collection="items" :virtualizers="virtualizers">
-    <XhTransferSourcePanel v-slot="{ items: panelItems }">
-      <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
-        <BridgeCapture side="source" :bridge="slot.collectionVirtualizer">
-          <XhTransferList style="overflow: visible; max-block-size: none">
-            <XhVirtualizerViewport style="block-size: 220px"><XhVirtualizerContent>
-              <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
-                <XhTransferItem :value="panelItems[virtualItem.index].value"><XhTransferItemCheckbox /><XhTransferItemText>{{ panelItems[virtualItem.index].label }}</XhTransferItemText></XhTransferItem>
-              </XhVirtualizerItem>
-            </XhVirtualizerContent></XhVirtualizerViewport>
-          </XhTransferList>
-        </BridgeCapture>
-      </XhVirtualizerRoot>
-    </XhTransferSourcePanel>
-    <XhTransferToTargetTrigger /><XhTransferToSourceTrigger />
-    <XhTransferTargetPanel v-slot="{ items: panelItems }">
-      <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
-        <BridgeCapture side="target" :bridge="slot.collectionVirtualizer">
-          <XhTransferList style="overflow: visible; max-block-size: none">
-            <XhVirtualizerViewport style="block-size: 220px"><XhVirtualizerContent>
-              <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
-                <XhTransferItem :value="panelItems[virtualItem.index].value"><XhTransferItemCheckbox /><XhTransferItemText>{{ panelItems[virtualItem.index].label }}</XhTransferItemText></XhTransferItem>
-              </XhVirtualizerItem>
-            </XhVirtualizerContent></XhVirtualizerViewport>
-          </XhTransferList>
-        </BridgeCapture>
-      </XhVirtualizerRoot>
-    </XhTransferTargetPanel>
-  </XhTransferRoot>
+  <div style="inline-size: 100%; max-inline-size: 640px">
+    <XhTransferRoot v-model:value="value" :collection="items" :virtualizers="virtualizers" searchable>
+      <XhTransferSourcePanel v-slot="{ items: panelItems }">
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>待选权限</XhTransferPanelTitle>
+          <XhTransferPanelCount />
+          <XhTransferSelectAllTrigger>全选</XhTransferSelectAllTrigger>
+        </XhTransferPanelHeader>
+        <XhTransferSearch placeholder="搜索待选权限" />
+        <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
+          <BridgeCapture side="source" :bridge="slot.collectionVirtualizer">
+            <XhTransferList style="overflow: visible; max-block-size: none">
+              <XhVirtualizerViewport style="block-size: 220px">
+                <XhVirtualizerContent>
+                  <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
+                    <XhTransferItem :value="panelItems[virtualItem.index].value">
+                      <XhTransferItemCheckbox />
+                      <XhTransferItemText>{{ panelItems[virtualItem.index].label }}</XhTransferItemText>
+                    </XhTransferItem>
+                  </XhVirtualizerItem>
+                </XhVirtualizerContent>
+              </XhVirtualizerViewport>
+            </XhTransferList>
+          </BridgeCapture>
+        </XhVirtualizerRoot>
+        <XhTransferEmpty>暂无待选权限</XhTransferEmpty>
+      </XhTransferSourcePanel>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
+      <XhTransferTargetPanel v-slot="{ items: panelItems }">
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>已选权限</XhTransferPanelTitle>
+          <XhTransferPanelCount />
+          <XhTransferSelectAllTrigger>全选</XhTransferSelectAllTrigger>
+        </XhTransferPanelHeader>
+        <XhTransferSearch placeholder="搜索已选权限" />
+        <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
+          <BridgeCapture side="target" :bridge="slot.collectionVirtualizer">
+            <XhTransferList style="overflow: visible; max-block-size: none">
+              <XhVirtualizerViewport style="block-size: 220px">
+                <XhVirtualizerContent>
+                  <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
+                    <XhTransferItem :value="panelItems[virtualItem.index].value">
+                      <XhTransferItemCheckbox />
+                      <XhTransferItemText>{{ panelItems[virtualItem.index].label }}</XhTransferItemText>
+                    </XhTransferItem>
+                  </XhVirtualizerItem>
+                </XhVirtualizerContent>
+              </XhVirtualizerViewport>
+            </XhTransferList>
+          </BridgeCapture>
+        </XhVirtualizerRoot>
+        <XhTransferEmpty>暂无已选权限</XhTransferEmpty>
+      </XhTransferTargetPanel>
+    </XhTransferRoot>
+  </div>
 </template>
