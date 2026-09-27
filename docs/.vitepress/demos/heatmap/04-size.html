@@ -1,9 +1,10 @@
 <!-- 尺寸 | size 改变格子边长与行首星期名的留白，一屏能放下的周数随之变化 -->
 <div id="heatmap-size-mount" style="display: grid; gap: 16px"></div>
 
-<!-- 元素不生成结构：外壳只写 root，一整年的月份行、七行星期与图例由脚本照 grid 铺 -->
+<!-- 元素不生成结构：外壳只写 root，一整年的月份行、七行星期与图例由脚本照 grid 铺。
+     宿主自己就是 grid 项，min-width: 0 写在它身上，放不下的那一档才在栏内横着滚 -->
 <template id="heatmap-size-template">
-  <xh-heatmap start-date="2024-01-01" end-date="2024-12-31">
+  <xh-heatmap start-date="2024-01-01" end-date="2024-12-31" style="min-width: 0">
     <div data-xh-part="root"></div>
   </xh-heatmap>
 </template>
