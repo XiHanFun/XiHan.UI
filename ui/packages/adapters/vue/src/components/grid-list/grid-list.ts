@@ -83,18 +83,19 @@ export const XhGridListRow = defineComponent({
 function rowPart(name: string, getter: keyof Pick<
   ReturnType<typeof useGridList>['api']['value'],
   'getRowSelectionIndicatorProps' | 'getRowContentProps' | 'getRowTextProps' | 'getRowDescriptionProps' | 'getRowActionsProps'
->): ReturnType<typeof defineComponent> {
+>, tag: 'div' | 'span' = 'div'): ReturnType<typeof defineComponent> {
   return defineComponent({
     name,
     setup(_, { slots }) {
       const context = useGridListContext()
       const row = useGridListRow()
-      return () => h('div', (context.api.value[getter] as (props: GridListRowProps) => Record<string, unknown>)(row.value), slots.default?.())
+      return () => h(tag, (context.api.value[getter] as (props: GridListRowProps) => Record<string, unknown>)(row.value), slots.default?.())
     },
   })
 }
 
-export const XhGridListRowSelectionIndicator = rowPart('XhGridListRowSelectionIndicator', 'getRowSelectionIndicatorProps')
+// 选择标记与同族条目指示器一样是 span，与 React 版同一个标签
+export const XhGridListRowSelectionIndicator = rowPart('XhGridListRowSelectionIndicator', 'getRowSelectionIndicatorProps', 'span')
 export const XhGridListRowContent = rowPart('XhGridListRowContent', 'getRowContentProps')
 export const XhGridListRowText = rowPart('XhGridListRowText', 'getRowTextProps')
 export const XhGridListRowDescription = rowPart('XhGridListRowDescription', 'getRowDescriptionProps')
