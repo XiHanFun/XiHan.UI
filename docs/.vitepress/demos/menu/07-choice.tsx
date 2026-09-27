@@ -14,7 +14,7 @@ import {
 
 export function Demo() {
   const [checkboxValue, setCheckboxValue] = useState(["wrap"]);
-  const [radioValue, setRadioValue] = useState({ density: "comfortable" });
+  const [radioValue, setRadioValue] = useState<Record<string, string>>({ density: "comfortable" });
   return (
     <XhMenuRoot
       checkboxValue={checkboxValue}
