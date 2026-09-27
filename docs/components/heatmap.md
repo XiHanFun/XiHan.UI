@@ -121,6 +121,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 - 档数可调：未提供 `thresholds` 时把有数据的那几档在 (0, 最大值] 上等宽分开（分界取整、逐档至少加 1），提供时以其为准。分档由图表引擎的分档比例尺完成；`thresholds` 里有重复或不是有限数的值时剔除并在诊断通道报 `chart.invalid-range`，档数按剩下的算。
 - 在图外报告“总天数 / 空白天数与占比 / 最大值 / 平均值”不需要再次遍历数据：三张网格都带 `max`（最大值）、`total`（总和）与 `emptyCount`（值为 0 的格子数），格子总数从 `cells.size` 读取。`emptyCount` 统计值为 0 的格子：没有数据的日期与写了 0 的日期都计入。它不是色阶第 0 档的格子数：未提供 `thresholds` 时首个下界始终为 1，两个数相等；提供 `thresholds` 后第 0 档还会包含低于首个下界的非零值，两个数不再相等。
 - 悬停或键盘聚焦到某一格时显示详情条，内容由作者编写；组件只提供身份、位置与该格的数据（日期或行列、原始值、档位、在色阶中的位置）。详情条与对照条走 Chart 家族配方：详情条是与其余图表提示框同一副 frosted 材质、overlay 圆角与正文排版，不反白，`--xh-heatmap-tooltip-bg` / `-fg` / `-border` 只换颜色那一层，顶部的边界光与背景模糊照旧。
+- 首次出现时网格、星期名、月份名与对照条原样在场，有颜色的格子从空格底色填到自己的档位色，按日期先后（矩阵按列先后）一路扫过去；数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `value`）时同样播这段填色，网格一格颜色都没有时不播。之后的数据变化让各格从旧档的颜色过渡到新档，只在这一段过渡，主题、语气与色板的换色照常一步到位。扫描取 `--xh-motion-duration-reveal`，每格的填色取 `--xh-motion-duration-enter`，数据变化取 `--xh-motion-duration-morph`，在图或它的容器上改写它们只影响这张图。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时不再逐格扫过去，各格一起淡变填色，数据变化直接换色。
 - 语气与尺寸两轴与其他组件同源；色板轴是热力图独有的。
 - 两个适配器的作者侧写法不同，最终 DOM 一致：Vue 侧不写默认插槽时按形态自动铺开整棵树，另有 `cell` 插槽向每格放入内容（三种形态都铺，载荷是日历格或矩阵格，用 `'date' in cell` 区分）、`tooltip` 插槽编写详情条内容（写了才铺出详情条）；Web Components 侧元素不生成任何结构，各部件由作者写进标记，元素只按部件名打属性。
 - Web Components 侧铺一整年不需要手写三百多个格子：`<xh-heatmap>` 上有 `grid` / `monthGrid` / `matrixGrid` 三个只读属性，分别对应三种形态推导出的网格（行、列、月份段、星期名、档位标尺都在其中），按其循环生成节点即可；元素连接后即可读取，接线在此之后进行，当场铺出的格子能被接上。每次读取都重算整张网格，读取一次后缓存使用。两个插槽是 Vue 专属，WC 侧通过 `cell-active` 事件自行填充详情条。
@@ -199,6 +200,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `palette` | `HeatmapPalette` |  | 色板：基础色板的十二个色相加 gray，直接指定色阶满档一端的颜色；同时提供 tone 时以色板为准。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `animated` | `boolean` |  | 播放过渡，默认开：首次出现时有数据的格子按先后从空格底色填到自己的档位色， 之后的数据变化从旧档的颜色过渡到新档。关闭后直接画终态。 |
 | `translations` | `Partial<HeatmapTranslations>` |  |  |
 | `onCellFocus` | `(details: HeatmapCellFocusDetails) => void` |  | DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。 只由真实的聚焦触发，程序化移动锚点（`setFocusedCell`）不派发该回调。 |
 | `onCellActive` | `(details: HeatmapCellDetails \| null) => void` |  | 详情应显示哪一格：指针悬停或键盘聚焦都会走到这里，收起时为 null。 详情条的内容由作者决定，组件只报告是哪一格、数值多少。 |
@@ -255,7 +257,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 **状态**：`idle`
 
-**事件**：`CELL.FOCUS` · `CELL.BLUR` · `CELL.ENTER` · `CELL.LEAVE` · `DETAIL.DISMISS` · `FOCUS.SET`
+**事件**：`CELL.FOCUS` · `CELL.BLUR` · `CELL.ENTER` · `CELL.LEAVE` · `DETAIL.DISMISS` · `FOCUS.SET` · `TRANSITION.END`
 
 ### connect API
 
@@ -358,7 +360,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 ### 皮肤
 
-`@xihan-ui/styles/heatmap.css` 使用 `[data-scope="heatmap"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/heatmap.css` 使用 `[data-scope="heatmap"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -368,6 +370,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-animating` | ''（条件成立时才出现） |
 | `root` | `data-palette` | props.palette |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
@@ -375,6 +378,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `row` | `data-week` | String(row.week) |
 | `row` | `data-week-day` | undefined \| String(row.weekDay) |
 | `week-day` | `data-week-day` | undefined \| String(label.weekDay) |
+| `cell` | `data-drawing` | ''（条件成立时才出现） |
 | `cell` | `data-level` | String(level) |
 | `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
 | `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |
@@ -399,7 +403,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `--xh-heatmap-cell-radius` | `cell`<br>`legend-item` | `border-radius` | `default` | `--xh-shape-inset` | heatmap 的 cell、legend-item 部件 border-radius 覆盖槽。 |
 | `--xh-heatmap-cell-size` | `cell`<br>`legend-item`<br>`month-label`<br>`root`<br>`row`<br>`week-day` | `block-size`<br>`border`<br>`inline-size`<br>`margin-inline-start` | `@media print`<br>`default`<br>`first-child`<br>`level=1`<br>`level=2`<br>`level=3`<br>`size=lg`<br>`size=sm`<br>`variant=month`<br>`week`<br>`week-day` | `--xh-space-2`<br>`--xh-space-2_5`<br>`--xh-space-3` | heatmap 的 cell、legend-item、month-label、root、row、week-day 部件 block-size、border、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-heatmap-column-w` | `cell`<br>`column-label`<br>`root` | `inline-size` | `default`<br>`variant=matrix` | `--xh-_heatmap-row-h` | heatmap 的 cell、column-label、root 部件 inline-size 覆盖槽。 |
-| `--xh-heatmap-empty` | `cell`<br>`legend-item`<br>`root` | `background` | `default` | `--xh-bg-subtle-opaque` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
+| `--xh-heatmap-empty` | `cell`<br>`legend-item`<br>`root` | `background`<br>`background-color` | `@keyframes xh-heatmap-fill`<br>`default` | `--xh-bg-subtle-opaque` | heatmap 的 cell、legend-item、root 部件 background、background-color 覆盖槽。 |
 | `--xh-heatmap-fg` | `root` | `color` | `default` | `--xh-fg-muted` | heatmap 的 root 部件 color 覆盖槽。 |
 | `--xh-heatmap-font-size` | `root` | `font-size` | `default` | `--xh-_heatmap-font-size` | heatmap 的 root 部件 font-size 覆盖槽。 |
 | `--xh-heatmap-gap` | `root` | `gap` | `default` | `--xh-space-2` | heatmap 的 root 部件 gap 覆盖槽。 |
@@ -430,7 +434,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 动效角色：状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-heatmap-fill` 随皮肤自带，不引用别处文件里的名字；`background-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

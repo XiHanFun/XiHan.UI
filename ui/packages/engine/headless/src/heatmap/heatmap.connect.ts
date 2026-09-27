@@ -17,7 +17,7 @@ import type {
   HeatmapTipRect,
 } from './heatmap.grid'
 import type { HeatmapApi, HeatmapSchema } from './heatmap.types'
-import { contains, DIAGNOSTIC_CODES, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems, readDirection, reportDiagnostic } from '@xihan-ui/core'
+import { contains, dataAttr, DIAGNOSTIC_CODES, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems, readDirection, reportDiagnostic } from '@xihan-ui/core'
 import { heatmapAnatomy, heatmapCellQuery } from './heatmap.anatomy'
 import {
   buildHeatmapGrid,
@@ -33,6 +33,7 @@ import {
   heatmapNavTarget,
   heatmapTipPlacement,
   normalizeHeatmapThresholds,
+  parseHeatmapDate,
   resolveHeatmapTip,
 } from './heatmap.grid'
 import { heatmapActiveCell, heatmapActiveTip, heatmapGridOptions } from './heatmap.machine'
@@ -192,6 +193,33 @@ export function connectHeatmap<T extends PropTypes>(
     '--xh-_heatmap-level': `${heatmapLevelPercent(level, levels)}%`,
   })
 
+  const transition = context.get('transition')
+
+  /**
+   * 首次出现时一格在扫描里的位置（0–1）：日期形态按日期先后，矩阵按列先后。
+   * 样式乘上扫描的时长得到这一格开始填色的延迟，作者改了时长、系统开了减弱动效，延迟跟着缩放。
+   */
+  const revealAt = ((): ((cell: { date?: string, columnIndex?: number }) => number) => {
+    if (matrixGrid) {
+      const last = matrixGrid.columns.length - 1
+      return cell => (last > 0 ? (cell.columnIndex ?? 0) / last : 0)
+    }
+    // 区间的首末日，不是文档序的首末格：日历一行是一个星期几，末一行的末一格并不是最后一天
+    const first = parseHeatmapDate((monthGrid ?? grid).startDate)
+    const span = (parseHeatmapDate((monthGrid ?? grid).endDate) ?? 0) - (first ?? 0)
+    return cell => (first == null || !(span > 0) ? 0 : ((parseHeatmapDate(cell.date) ?? first) - first) / span)
+  })()
+
+  /** 格子的颜色：档位，以及首次出现时有颜色的格子要等扫描扫到才填色。 */
+  const cellPaint = (level: number, at: () => number): Record<string, unknown> => {
+    const drawing = transition === 'entry' && level > 0
+    return {
+      'data-level': String(level),
+      'data-drawing': dataAttr(drawing),
+      'style': drawing ? { ...levelStyle(level), '--xh-_chart-reveal-at': at().toFixed(3) } : levelStyle(level),
+    }
+  }
+
   /** 一步走到哪一格；走不动给 null（焦点原地不动）。 */
   const navTarget = (from: HeatmapCellRef, intent: HeatmapNavIntent): HeatmapCellRef | null => {
     if (matrixGrid) {
@@ -260,6 +288,8 @@ export function connectHeatmap<T extends PropTypes>(
       // 皮肤里消费它的规则排在语气那条之后，两个都写时色板压过语气
       'data-palette': prop('palette'),
       'data-size': prop('size'),
+      // 数据变化后的换色进行中：格子的颜色按数据角色的时长过渡，主题与语气换色不受它拖慢
+      'data-animating': dataAttr(transition === 'update'),
     }),
 
     getGridProps: () => normalize.element({
@@ -460,8 +490,7 @@ export function connectHeatmap<T extends PropTypes>(
           }),
           'aria-colindex': meta ? meta.columnIndex + 2 : undefined,
           'tabindex': anchorCell?.row === row && anchorCell.column === column ? 0 : -1,
-          'data-level': String(level),
-          'style': levelStyle(level),
+          ...cellPaint(level, () => revealAt({ columnIndex: meta?.columnIndex })),
           ...cellHandlers({ row, column }),
         })
       }
@@ -480,8 +509,7 @@ export function connectHeatmap<T extends PropTypes>(
         'aria-colindex': meta ? (monthGrid ? meta.weekDay + 1 : meta.weekIndex + 1) : undefined,
         // 锚点那一格独占 Tab 序列位
         'tabindex': anchorCell?.date === date ? 0 : -1,
-        'data-level': String(level),
-        'style': levelStyle(level),
+        ...cellPaint(level, () => revealAt({ date })),
         ...cellHandlers({ date }),
       })
     },

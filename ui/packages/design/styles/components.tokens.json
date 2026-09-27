@@ -33540,16 +33540,18 @@
         "root"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
+        "@keyframes xh-heatmap-fill",
         "default"
       ],
       "defaultToken": [
         "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
-      "description": "heatmap 的 cell、legend-item、root 部件 background 覆盖槽。"
+      "description": "heatmap 的 cell、legend-item、root 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-heatmap-fg",

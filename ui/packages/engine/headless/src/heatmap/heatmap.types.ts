@@ -173,6 +173,11 @@ export interface HeatmapSchema extends MachineSchema {
     palette?: HeatmapPalette
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /**
+     * 播放过渡，默认开：首次出现时有数据的格子按先后从空格底色填到自己的档位色，
+     * 之后的数据变化从旧档的颜色过渡到新档。关闭后直接画终态。
+     */
+    animated?: boolean
     translations?: Partial<HeatmapTranslations>
     /**
      * DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。
@@ -203,9 +208,18 @@ export interface HeatmapSchema extends MachineSchema {
     focusTip: HeatmapTipRect | null
     /** 上一次通知过的详情身份与数值；只用于去重，不对外。 */
     activeKey: string | null
+    /** 在播的过渡：entry 是首次出现的填色，update 是数据变化后的换色；没有在播时为 null。 */
+    transition: 'entry' | 'update' | null
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /** 根节点，由适配器注入：过渡的时长与减弱动效从它读；无 DOM 环境返回 null，此时不播过渡。 */
+    getRootEl: () => HTMLElement | null
+    /** 显示过的数据里有没有画得出来的格子（档位大于 0）：没有时数据到来按首次出现处理。 */
+    drawn: boolean
+    /** 撤掉在播过渡的计时器。 */
+    stopTransition: VoidFunction | null
+  }
   /** 焦点锚点与悬停都不编码进状态，状态机因此只有一个状态，逻辑全在 context 与 actions。 */
   state: 'idle'
   event:
@@ -215,10 +229,19 @@ export interface HeatmapSchema extends MachineSchema {
     | { type: 'CELL.LEAVE' }
     | { type: 'DETAIL.DISMISS' }
     | { type: 'FOCUS.SET', cell: HeatmapCellRef | null }
+    | { type: 'TRANSITION.END' }
   tag: never
   guard: never
-  action: 'setFocusedCell' | 'clearFocusWithin' | 'setHoveredCell' | 'clearHoveredCell' | 'dismissDetail' | 'notifyActive'
-  effect: never
+  action:
+    | 'setFocusedCell'
+    | 'clearFocusWithin'
+    | 'setHoveredCell'
+    | 'clearHoveredCell'
+    | 'dismissDetail'
+    | 'notifyActive'
+    | 'syncTransition'
+    | 'endTransition'
+  effect: 'trackTransition'
 }
 
 export interface HeatmapApi<T extends PropTypes = PropTypes> {

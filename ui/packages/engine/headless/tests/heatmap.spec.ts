@@ -9,7 +9,7 @@ import type { Service } from '@xihan-ui/core'
 import type { HeatmapCellFocusDetails, HeatmapSchema } from '../src/heatmap'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import {
   buildHeatmapGrid,
@@ -1383,5 +1383,121 @@ describe('网格自带的空白格计数', () => {
     })
     expect(grid.cells.size).toBe(6)
     expect(grid.emptyCount).toBe(5)
+  })
+})
+
+describe('过渡', () => {
+  // 计时器由假时钟推进；排在宿主提交之后的那一次核对走微任务，不被假时钟接管
+  const TIMERS: Parameters<typeof vi.useFakeTimers>[0] = { toFake: ['setTimeout', 'clearTimeout'] }
+
+  afterEach(() => vi.useRealTimers())
+
+  async function settle(): Promise<void> {
+    for (let i = 0; i < 4; i++)
+      await new Promise<void>(resolve => queueMicrotask(resolve))
+  }
+
+  /** 注入根节点再起跑：机器从它读过渡的时长，挂载后的那一次核对要等它在场。 */
+  async function rig(initial: Props): Promise<{ service: Service<HeatmapSchema>, set: (next: Props) => void, stop: () => void }> {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>(initial)
+    const service = createService(heatmapMachine, { props: () => props.get(), runtime })
+    const root = document.createElement('div')
+    document.body.append(root)
+    service.refs.set('getRootEl', () => root)
+    runtime.start()
+    await settle()
+    return {
+      service,
+      set: next => props.set({ ...props.get(), ...next }),
+      stop: () => {
+        runtime.stop()
+        root.remove()
+      },
+    }
+  }
+
+  const cell = (service: Service<HeatmapSchema>, date: string): Record<string, any> =>
+    apiOf(service).getCellProps({ date }) as Record<string, any>
+  const revealAt = (props: Record<string, any>): number => Number(props.style['--xh-_chart-reveal-at'])
+
+  it('挂载时就带着数据：有颜色的格子按日期先后等扫描扫到再填色，空格不参与；播完撤掉标记', async () => {
+    vi.useFakeTimers(TIMERS)
+    const { service, stop } = await rig({ ...RANGE, value: [...VALUE, { date: '2024-01-31', count: 4 }] })
+    expect(service.context.get('transition')).toBe('entry')
+    const first = cell(service, '2024-01-01')
+    const second = cell(service, '2024-01-02')
+    const last = cell(service, '2024-01-31')
+    expect(first['data-drawing']).toBe('')
+    expect(revealAt(first)).toBe(0)
+    expect(revealAt(second)).toBeGreaterThan(0)
+    expect(revealAt(last)).toBe(1)
+    expect(cell(service, '2024-01-15')['data-drawing']).toBeUndefined()
+    expect((apiOf(service).getRootProps() as Record<string, any>)['data-animating']).toBeUndefined()
+
+    vi.advanceTimersByTime(5000)
+    expect(service.context.get('transition')).toBeNull()
+    expect(cell(service, '2024-01-01')['data-drawing']).toBeUndefined()
+    expect(cell(service, '2024-01-01').style['--xh-_chart-reveal-at']).toBeUndefined()
+    stop()
+  })
+
+  it('数据晚于挂载到达（Web Components 连上之后才赋 value、异步取数）：仍按首次出现填色', async () => {
+    vi.useFakeTimers(TIMERS)
+    const { service, set, stop } = await rig({ ...RANGE })
+    expect(service.context.get('transition')).toBeNull()
+    set({ value: VALUE })
+    await settle()
+    expect(service.context.get('transition')).toBe('entry')
+    expect(cell(service, '2024-01-02')['data-drawing']).toBe('')
+    stop()
+  })
+
+  it('之后的数据变化按更新换色：根上标出换色进行中，格子不再逐个填色；换完撤掉', async () => {
+    vi.useFakeTimers(TIMERS)
+    const { service, set, stop } = await rig({ ...RANGE, value: VALUE })
+    vi.advanceTimersByTime(5000)
+    set({ value: [{ date: '2024-01-03', count: 6 }] })
+    await settle()
+    expect(service.context.get('transition')).toBe('update')
+    expect((apiOf(service).getRootProps() as Record<string, any>)['data-animating']).toBe('')
+    expect(cell(service, '2024-01-03')['data-drawing']).toBeUndefined()
+    vi.advanceTimersByTime(5000)
+    expect(service.context.get('transition')).toBeNull()
+    expect((apiOf(service).getRootProps() as Record<string, any>)['data-animating']).toBeUndefined()
+    stop()
+  })
+
+  it('animated 为 false 时首次出现与更新都直接画终态', async () => {
+    vi.useFakeTimers(TIMERS)
+    const { service, set, stop } = await rig({ ...RANGE, value: VALUE, animated: false })
+    expect(service.context.get('transition')).toBeNull()
+    expect(cell(service, '2024-01-02')['data-drawing']).toBeUndefined()
+    set({ value: [{ date: '2024-01-03', count: 6 }] })
+    await settle()
+    expect(service.context.get('transition')).toBeNull()
+    stop()
+  })
+
+  it('矩阵按列的先后扫过去：同一列的格子同时填色', async () => {
+    vi.useFakeTimers(TIMERS)
+    const { service, stop } = await rig({
+      variant: 'matrix',
+      rows: ['甲', '乙'],
+      columns: ['上午', '下午', '夜里'],
+      value: [
+        { row: '甲', column: '上午', value: 2 },
+        { row: '乙', column: '上午', value: 1 },
+        { row: '甲', column: '下午', value: 3 },
+        { row: '乙', column: '夜里', value: 5 },
+      ],
+    })
+    const at = (row: string, column: string): number =>
+      revealAt(apiOf(service).getCellProps({ row, column }) as Record<string, any>)
+    expect(at('甲', '上午')).toBe(0)
+    expect(at('乙', '上午')).toBe(0)
+    expect(at('甲', '下午')).toBe(0.5)
+    expect(at('乙', '夜里')).toBe(1)
+    stop()
   })
 })

@@ -6661,7 +6661,20 @@
     /* 空格与浅档在浅色底上几乎没有边界，描一圈极淡的线把方格勾出来。
        这一档不能取 border-subtle：它与空格底色 bg-subtle 是同一个原色，描了等于没描 */
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
-    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 首次出现：有颜色的格子从空格底色填到自己的档位色，按日期（矩阵按列）的先后扫过去。
+     连接层写入这一格在扫描里的位置，乘上扫描时长就是它开始填色的延迟；
+     减弱动效下扫描时长归零，各格一起淡变填色 */
+  [data-scope='heatmap'][data-part='cell'][data-drawing] {
+    animation: xh-heatmap-fill var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) both;
+    animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
+  }
+
+  /* 数据变化后的换色：各格从旧档的颜色过渡到新档。只在连接层标出的这一段过渡，
+     主题与语气的换色照常一步到位，不被数据的时长拖慢 */
+  [data-scope='heatmap'][data-part='root'][data-animating] [data-scope='heatmap'][data-part='cell'] {
+    transition: background-color var(--xh-motion-duration-morph) var(--xh-motion-ease-continuous);
   }
 
   /* 错列打在本行第一个格子上：打在行上会连行首的星期名一起往后推，
@@ -6918,6 +6931,15 @@
       forced-color-adjust: none;
       outline: var(--xh-stroke-thin) solid CanvasText;
       outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+  }
+}
+
+@layer xihan.motion {
+  /* 只写起点：终点是格子自己的档位色，作者改写 --xh-heatmap-cell-bg 时同样成立 */
+  @keyframes xh-heatmap-fill {
+    from {
+      background-color: var(--xh-_heatmap-empty);
     }
   }
 }

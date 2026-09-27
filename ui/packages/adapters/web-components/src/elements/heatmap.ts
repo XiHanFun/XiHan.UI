@@ -33,6 +33,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 数字属性：属性缺席或空串即 undefined，交回 connect 定缺省。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
+// 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+
 /** 往上找最近的某个角色节点，取它写着的 value：块把月份传给行，行把行身份传给格子。 */
 function ancestorValue(el: HTMLElement, part: string): string | undefined {
   const host = el.parentElement?.closest<HTMLElement>(`[${DATA_SCOPE}="heatmap"][${DATA_PART}="${part}"]`)
@@ -67,6 +70,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 色板，取基础色板同名色相作色阶满档的颜色；同时提供 tone 时以色板为准
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} animated - 播放过渡，默认开；`animated="false"` 时直接画终态
  * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }`
  * @fires cell-active - 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null
  * @csspart root - 承载三轴的最外层节点
@@ -105,6 +109,7 @@ export class XhHeatmapElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     palette: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    animated: { converter: BOOLEAN_CONVERTER },
   }
 
   declare value?: HeatmapValue[]
@@ -122,6 +127,7 @@ export class XhHeatmapElement extends XhElement {
   declare tone?: Tone
   declare palette?: HeatmapPalette
   declare size?: Size
+  declare animated?: boolean
 
   private readonly notifyFocus = (details: HeatmapCellFocusDetails): void => {
     this.dispatchEvent(new CustomEvent('cell-focus', { detail: details, bubbles: true, composed: true }))
@@ -131,8 +137,13 @@ export class XhHeatmapElement extends XhElement {
     this.dispatchEvent(new CustomEvent('cell-active', { detail: details, bubbles: true, composed: true }))
   }
 
-  // heatmap 机器无副作用：不需要 config/layer/refs，controller 只带 props。
-  private readonly ctrl = new MachineController<HeatmapSchema>(this, heatmapMachine, () => this.machineProps())
+  // 过渡的时长与减弱动效从 root 读：取值口惰性读，角色节点要等首次 updated 才发现得到
+  private readonly ctrl = new MachineController<HeatmapSchema>(
+    this,
+    heatmapMachine,
+    () => this.machineProps(),
+    { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) },
+  )
 
   private machineProps(): Partial<HeatmapSchema['props']> {
     return {
@@ -150,6 +161,7 @@ export class XhHeatmapElement extends XhElement {
       tone: this.tone,
       palette: this.palette,
       size: this.size,
+      animated: this.animated,
       translations: this.translations,
       onCellFocus: this.notifyFocus,
       onCellActive: this.notifyActive,
