@@ -33,6 +33,8 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 <XhDialogRoot defaultOpen />;
 ```
 
+`default*` 只在首次渲染时读取，之后修改不影响当前值，只改变表单重置的落点；要换初值就换 `key`。三端的取法见[初值的读取时机](../guide/machine#初值的读取时机)。
+
 载荷与 Vue 侧的明细对象相同：`{ open }`、`{ value }`、`{ checked }`。Vue 侧额外发出裸值事件是为了 `v-model`，React 没有这层语法，只保留明细一种。
 
 受控属性每帧读取：状态机不缓存上一次的值，浮层打开时修改 `closeOnEscape` 立即生效。

@@ -17,6 +17,11 @@ export interface LitRuntime extends ReactiveRuntime {
   unmount: () => void
   /** hostUpdate 调用，逐 tracker 比对依赖、变则触发。 */
   runTrackers: () => void
+  /**
+   * 挂载完成之后，有没有对外报告变化的 cell（带 onChange 的那类，即 default* / 受控值对应的状态）被写过。
+   * 挂载途中 entry 动作的写入不算：那是在按初值排初态。
+   */
+  written: () => boolean
 }
 
 interface Tracker {
@@ -33,6 +38,8 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
   const cleanups: Array<() => void> = []
   const trackers: Tracker[] = []
   let mounted = false
+  let settled = false
+  let written = false
 
   function cell<V>(params: () => CellParams<V>): Bindable<V> {
     const p0 = params()
@@ -50,7 +57,11 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
         return
       if (!isControlled())
         inner = value
-      params().onChange?.(value, prev)
+      const onChange = params().onChange
+      if (onChange !== undefined) {
+        written ||= settled
+        onChange(value, prev)
+      }
       host.requestUpdate()
     }
     return {
@@ -110,6 +121,7 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
         return
       mounted = true
       for (const fn of mounts) fn()
+      settled = true
     },
     unmount() {
       if (!mounted)
@@ -140,5 +152,6 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
       if (errors !== undefined)
         throw errors.length === 1 ? errors[0] : new AggregateError(errors, 'tracker 抛错')
     },
+    written: () => written,
   }
 }

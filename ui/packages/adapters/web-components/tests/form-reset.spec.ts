@@ -51,6 +51,33 @@ describe('xh-radio-group 在表单里', () => {
     expect(选中()).toBe('a')
   })
 
+  it('改过之后再换 default-value：当前值不动，重置回到新的那一份', async () => {
+    const form = mount(`
+      <form>
+        <xh-radio-group name="plan" default-value="a">
+          <div data-xh-part="item" value="a">甲</div>
+          <div data-xh-part="item" value="b">乙</div>
+          <div data-xh-part="item" value="c">丙</div>
+        </xh-radio-group>
+      </form>
+    `)
+    await tick()
+    const 选中 = (): string | null =>
+      [...form.querySelectorAll('[data-part="item"]')]
+        .find(e => e.getAttribute('aria-checked') === 'true')
+        ?.getAttribute('data-value') ?? null
+    form.querySelector<HTMLElement>('[data-part="item"][data-value="b"]')?.click()
+    await tick()
+
+    form.querySelector('xh-radio-group')!.setAttribute('default-value', 'c')
+    await tick()
+    expect(选中()).toBe('b')
+
+    form.reset()
+    await tick()
+    expect(选中()).toBe('c')
+  })
+
   it('重置被拦下时不动', async () => {
     const form = mount(`
       <form>
