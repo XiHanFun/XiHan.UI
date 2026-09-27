@@ -156,9 +156,12 @@ describe('过渡', () => {
     await settle()
     const line = one('line')
     expect(line.hasAttribute('data-drawing')).toBe(true)
+    await expect.poll(
+      () => Number.parseFloat(getComputedStyle(line).strokeDashoffset),
+      { timeout: 2000 },
+    ).toBeLessThan(1)
     const offset = Number.parseFloat(getComputedStyle(line).strokeDashoffset)
     expect(offset).toBeGreaterThan(0)
-    expect(offset).toBeLessThan(1)
     expect(Number(getComputedStyle(one('dot')).opacity)).toBe(0)
     state.animated = false
     await settle()

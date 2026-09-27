@@ -273,9 +273,12 @@ describe('过渡', () => {
     const early = all('bar').map(el => el.getBoundingClientRect())
     const line = one('line')
     expect(line.hasAttribute('data-drawing')).toBe(true)
+    await expect.poll(
+      () => Number.parseFloat(getComputedStyle(line).strokeDashoffset),
+      { timeout: 2000 },
+    ).toBeLessThan(1)
     const offset = Number.parseFloat(getComputedStyle(line).strokeDashoffset)
     expect(offset).toBeGreaterThan(0)
-    expect(offset).toBeLessThan(1)
     // 数据点等笔尖扫到才出现：笔尖还在起点附近，末端的点仍是透明的
     const dots = all('dot')
     expect(dots.length).toBeGreaterThan(1)
