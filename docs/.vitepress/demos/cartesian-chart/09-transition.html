@@ -15,7 +15,7 @@
   </div>
   <xh-cartesian-chart id="cartesian-chart-transition">
     <figure data-xh-part="root">
-      <figcaption data-xh-part="caption" id="cartesian-chart-transition-caption"></figcaption>
+      <figcaption data-xh-part="caption"></figcaption>
       <div data-xh-part="legend"></div>
       <div data-xh-part="viewport">
         <svg data-xh-part="plot"></svg>
@@ -28,7 +28,8 @@
 
 <script type="module">
   const chart = document.getElementById("cartesian-chart-transition");
-  const caption = document.getElementById("cartesian-chart-transition-caption");
+  // 部件的 id 归元素管（接线时换成它生成的那个），标题按部件取
+  const caption = chart.querySelector('[data-xh-part="caption"]');
   const months = ["一月", "二月", "三月", "四月", "五月", "六月"];
   const years = [
     { year: 2024, online: [82, 96, 110, 104, 128, 140], store: [64, 70, 66, 72, 80, 78] },
