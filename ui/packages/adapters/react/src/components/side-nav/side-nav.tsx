@@ -9,10 +9,12 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavNode, SideNavSchema, SideNavTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { renderAsChild } from '../../runtime/as-child'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -274,15 +276,17 @@ export function XhSideNavLinkText({ children, ...rest }: XhSideNavLinkTextProps)
   return <span {...mergeReactProps(ctx.api.getLinkTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
-export interface XhSideNavLinkProps extends Omit<ComponentPropsWithRef<'a'>, 'value'> {
+export interface XhSideNavLinkProps extends Omit<ComponentPropsWithRef<'a'>, 'value'>, AsChildProps {
   value: string
 }
-export function XhSideNavLink({ value, children, ...rest }: XhSideNavLinkProps): ReactNode {
+/** 导航链接。asChild 借用作者的子节点（如路由链接）作为链接，不再渲染自己的 `<a>`。 */
+export function XhSideNavLink({ value, asChild, children, ...rest }: XhSideNavLinkProps): ReactNode {
   const ctx = useSideNavContext()
   // 链接的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
     ctx.api.getLinkProps({ value }) as Record<string, unknown>,
     ['onFocus'],
   )
-  return <a {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>{children}</a>
+  const props = mergePartProps(mergeReactProps(bind.attrs, { ref: bind.ref }), rest as Record<string, unknown>)
+  return renderAsChild(asChild, children, props, 'side-nav', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })
 }

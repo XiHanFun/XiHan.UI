@@ -71,14 +71,28 @@ function unwrapElement(value: unknown): unknown {
   return value
 }
 
+export interface MergeIntoChildOptions {
+  /**
+   * 子节点是组件时缺省视作自带解剖，只落接线属性。路由链接这类只把属性转交给自己渲出元素的封装没有自己的解剖，
+   * 置 true 让部件的解剖与家族标记照样落上去。
+   */
+  applyAnatomy?: boolean
+}
+
 /**
  * 把部件属性合并到作者的子节点上。
  * @param nodes 默认插槽产出
  * @param props 部件该挂的属性（含 ref）
  * @param scope 部件所属组件名，只用于诊断文案
+ * @param options 解剖标记的落法
  * @returns 合并后的节点；子节点不合规时抛错
  */
-export function mergeIntoChild(nodes: readonly VNode[] | undefined, props: Record<string, unknown>, scope: string): VNode {
+export function mergeIntoChild(
+  nodes: readonly VNode[] | undefined,
+  props: Record<string, unknown>,
+  scope: string,
+  options: MergeIntoChildOptions = {},
+): VNode {
   const candidates = attributable(nodes ?? [], scope)
   if (candidates.length !== 1)
     throw new Error(`[xh] ${scope} asChild 需要恰好一个可挂载子节点，实际是 ${candidates.length} 个`)
@@ -86,7 +100,7 @@ export function mergeIntoChild(nodes: readonly VNode[] | undefined, props: Recor
 
   // 子节点自带解剖标记时不覆盖它，只落接线属性；否则整套属性都给它
   const merged: Record<string, unknown> = {}
-  const keepAnatomy = !carriesOwnAnatomy(child)
+  const keepAnatomy = !!options.applyAnatomy || !carriesOwnAnatomy(child)
   for (const [key, value] of Object.entries(props)) {
     if (!keepAnatomy && isRoleMarker(key))
       continue
