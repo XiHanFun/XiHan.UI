@@ -84,6 +84,10 @@ export function normalizeRadarSpec(
   const inds = indicatorSpecs(indicators)
   const issues: ChartSpecIssue[] = []
   const warnings: ChartSpecIssue[] = []
+  // 还没给指标就是没有可画的，按空态处理，与直角坐标图没给系列时一样。
+  // 自定义元素常在脚本赋值之前就已连接、建好机器，这时报「指标个数不对」是误报
+  if (inds.length === 0)
+    return { data: rows, indicators: inds, series: [], issues, warnings }
   if (inds.length < RADAR_MIN_INDICATORS || inds.length > RADAR_MAX_INDICATORS)
     issues.push({ code: DIAGNOSTIC_CODES.chartIndicatorCount, message: `雷达图要 ${RADAR_MIN_INDICATORS}–${RADAR_MAX_INDICATORS} 个指标，给了 ${inds.length} 个`, detail: { count: inds.length } })
   for (const ind of inds) {
