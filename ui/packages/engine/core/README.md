@@ -15,7 +15,7 @@ import type { PositionEnginePort } from '@xihan-ui/core'
 import { createAnatomy, createDismissLayer, createFocusScope, createMachine, createScope } from '@xihan-ui/core'
 ```
 
-子入口：`@xihan-ui/core/metadata`（锁步版本检查与框架元数据）、`@xihan-ui/core/skin-check`（皮肤缺失诊断）、`@xihan-ui/core/vite`（终端启动横幅，只跑在 Node 侧）、`@xihan-ui/core/vanilla`（原生信号响应式运行时）、`@xihan-ui/core/presence`（出入场存在性）、`@xihan-ui/core/date`（不带时区的日期值、公历运算、时区换算、按地区的周与格式化）。
+子入口：`@xihan-ui/core/metadata`（锁步版本检查与框架元数据）、`@xihan-ui/core/skin-check`（皮肤缺失诊断）、`@xihan-ui/core/vite`（终端启动横幅，只跑在 Node 侧）、`@xihan-ui/core/vanilla`（原生信号响应式运行时）、`@xihan-ui/core/presence`（出入场存在性）、`@xihan-ui/core/date`（Plain / Zoned 日期时间值、公历运算、时区换算、按地区的周与格式化）。
 
 ## 装
 

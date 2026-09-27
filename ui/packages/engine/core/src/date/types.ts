@@ -56,6 +56,17 @@ export interface PlainTimeLike {
 
 export interface PlainDateTimeLike extends PlainDateLike, PlainTimeLike {}
 
+/** 带 IANA 时区的墙上日期时间字段。 */
+export interface ZonedDateTimeLike extends PlainDateTimeLike {
+  timeZone: string
+}
+
+/** 已知时间点与 IANA 时区。 */
+export interface ZonedDateTimeInstantLike {
+  epochMilliseconds: number
+  timeZone: string
+}
+
 /** 加减日期用的时长；各字段是整数，可正可负，缺省 0。先加年月（按 overflow 处理越界的日），再加周与日。 */
 export interface DateDurationLike {
   years?: number
@@ -102,6 +113,9 @@ export interface DisambiguationOptions {
   disambiguation?: Disambiguation
 }
 
+/** 从墙上时间构造 ZonedDateTime 时同时处理日期越界与 DST 歧义。 */
+export interface ZonedDateTimeFromOptions extends OverflowOptions, DisambiguationOptions {}
+
 export interface DateDifferenceOptions {
   /** 结果里最大的单位，缺省 `day`：只给天数。取 `month` 或 `year` 时月数取不越过终点的最大值，起点加上结果恰好落在终点。 */
   largestUnit?: DateUnit
@@ -138,3 +152,6 @@ export interface TimeToStringOptions {
    */
   smallestUnit?: 'minute' | 'second' | 'millisecond'
 }
+
+/** ZonedDateTime 自带时区，调用方不能再用 Intl 选项覆盖它。 */
+export type ZonedDateTimeFormatOptions = Omit<Intl.DateTimeFormatOptions, 'timeZone'>
