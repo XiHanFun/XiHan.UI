@@ -33,6 +33,10 @@
     "./hierarchy": {
       "types": "./dist/hierarchy.d.ts",
       "import": "./dist/hierarchy.js"
+    },
+    "./sankey": {
+      "types": "./dist/sankey.d.ts",
+      "import": "./dist/sankey.js"
     }
   },
   "main": "./dist/index.js",
