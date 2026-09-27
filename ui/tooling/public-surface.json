@@ -11636,6 +11636,7 @@
       "rows"
     ],
     "heatmap": [
+      "animated",
       "columns",
       "dir",
       "endDate",
@@ -18154,6 +18155,7 @@
     "xh-fade-in",
     "xh-fade-out",
     "xh-glint",
+    "xh-heatmap-fill",
     "xh-item-in",
     "xh-markdown-stream-caret",
     "xh-markdown-stream-caret-in",
@@ -19139,6 +19141,7 @@
     },
     "xh-heatmap": {
       "attributes": [
+        "animated",
         "dir",
         "end-date",
         "first-day-of-week",

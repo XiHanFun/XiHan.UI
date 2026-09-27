@@ -85,6 +85,7 @@ export const XhHeatmapRoot = defineComponent({
     tone: { type: String as PropType<Tone> },
     palette: { type: String as PropType<HeatmapPalette> },
     size: { type: String as PropType<Size> },
+    animated: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<HeatmapTranslations>> },
   },
   // 只读事件，没有双向绑定：热力图不产生值，只报焦点与详情落在哪一格
@@ -108,7 +109,10 @@ export const XhHeatmapRoot = defineComponent({
       const api = ctx.api.value
       return h(
         'div',
-        api.getRootProps() as Record<string, unknown>,
+        {
+          ...api.getRootProps() as Record<string, unknown>,
+          ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
+        },
         slots.default
           ? slots.default({
               variant: api.variant,

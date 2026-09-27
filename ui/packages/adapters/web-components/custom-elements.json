@@ -27631,6 +27631,15 @@
             },
             {
               "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
               "name": "notifyFocus",
               "privacy": "private",
               "readonly": true
@@ -27646,7 +27655,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<HeatmapSchema>(this, heatmapMachine, () => this.machineProps())"
+              "default": "new MachineController<HeatmapSchema>( this, heatmapMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) }, )"
             },
             {
               "kind": "method",
@@ -27826,6 +27835,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
             }
           ],
           "superclass": {

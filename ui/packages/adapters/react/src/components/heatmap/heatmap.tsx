@@ -90,6 +90,8 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   tone?: Tone
   palette?: HeatmapPalette
   size?: Size
+  /** 播放过渡，默认开；关闭后直接画终态。 */
+  animated?: boolean
   translations?: Partial<HeatmapTranslations>
   /** 焦点落到某一格。 */
   onCellFocus?: HeatmapProps['onCellFocus']
@@ -117,6 +119,7 @@ export function XhHeatmapRoot({
   tone,
   palette,
   size,
+  animated,
   translations,
   onCellFocus,
   onCellActive,
@@ -140,6 +143,7 @@ export function XhHeatmapRoot({
     tone,
     palette,
     size,
+    animated,
     translations,
     onCellFocus,
     onCellActive,
@@ -164,7 +168,15 @@ export function XhHeatmapRoot({
       })
   return (
     <HeatmapProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
+      <div
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
+        )}
+      >
+        {body}
+      </div>
     </HeatmapProvider>
   )
 }
