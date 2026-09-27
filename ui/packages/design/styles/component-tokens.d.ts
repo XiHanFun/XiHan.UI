@@ -381,6 +381,8 @@ export type ComponentTokenName
     | '--xh-carousel-viewport-radius'
     | '--xh-cartesian-chart-bar-max'
     | '--xh-cartesian-chart-bar-radius'
+    | '--xh-cartesian-chart-brush-bg'
+    | '--xh-cartesian-chart-brush-border'
     | '--xh-cartesian-chart-empty-gap'
     | '--xh-cartesian-chart-gap'
     | '--xh-cartesian-chart-height'

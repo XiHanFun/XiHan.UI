@@ -139,6 +139,9 @@
     "breadcrumb": [
       "page-header"
     ],
+    "brush": [
+      "cartesian-chart"
+    ],
     "calendar": [
       "date-picker",
       "date-range-picker"
@@ -1796,6 +1799,7 @@
     "box": true,
     "branch": true,
     "breadcrumb": true,
+    "brush": true,
     "button": {
       "synonymOf": "trigger",
       "$description": "能点的东西一律用具名 *-trigger",

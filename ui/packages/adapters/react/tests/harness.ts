@@ -42,6 +42,7 @@ const PUBLIC_EVENTS = {
   'datum-active': 'onDatumActive',
   'datum-press': 'onDatumPress',
   'window-change': 'onWindowChange',
+  'brush-selection-change': 'onBrushSelectionChange',
 } as const
 
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
