@@ -74,7 +74,7 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 - `format` 指定数值格式（数字格式或函数），提示框、可及名与数据表共用。
 - 多张图接到同一个受控的 `activeKey` 上时，节点按身份、流带按「源→目标」与其他图对齐。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有流带才写 `emptyText`。
-- 首次出现时流带与节点一起淡入；之后的数据变化与图例切换从当前的位置与宽度插值到新布局，离开的节点与流带淡出后才移除。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
+- 首次出现时流带与节点一起淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化与图例切换从当前的位置与宽度插值到新布局，离开的节点与流带淡出后才移除。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），渐变、流带、节点、图例项与提示框的缺省内容由元素生成进去。
 - Web Components 侧的节点、流带与数值格式只走 JS property；流向、分列、列内次序、流带着色与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
 

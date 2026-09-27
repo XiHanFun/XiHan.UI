@@ -28,7 +28,7 @@
 - 悬停取指针下最深的节点：提示框的头部是从当前的根到这个节点的路径，下面是数值、占上一层与占总体；与它不在同一条祖孙链上的节点淡出到 `--xh-chart-dim-alpha`。
 - `format` 指定数值格式（数字格式或函数），标签、提示框、可及名与数据表共用。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
-- 首次出现时矩形淡入，旭日的扇区顺着扫开，圆堆积的圆从圆心长出，标签淡入。下钻与上钻从当前的画面插值到新画面：留下的节点从原位放大或缩回，新露出的节点出现、离开的淡出。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
+- 首次出现时矩形淡入，旭日的扇区顺着扫开，圆堆积的圆从圆心长出，标签淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场。下钻与上钻从当前的画面插值到新画面：留下的节点从原位放大或缩回，新露出的节点出现、离开的淡出。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、下钻路径、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、path、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），路径项、节点与提示框的缺省内容由元素生成进去。
 - Web Components 侧的数据与数值格式只走 JS property；字段名、布局、铺法、层数、着色、色板、方向与 `root-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
 

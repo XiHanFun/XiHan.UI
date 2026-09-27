@@ -7,7 +7,9 @@
 // 这里只管什么时候起跑、读哪一档时长与曲线、逐帧推进，以及什么时候不播。
 //
 // 首次出现播入场：柱沿值轴从基线长出、扇区顺着扫开、折线描出，其余淡入；折线上的点与饼图的外侧标签
-// 等笔尖或扫开的边缘到了才出现，环形中心等整圈扫完再淡入。之后的数据变化与图例切换按「更新」插值：
+// 等笔尖或扫开的边缘到了才出现，环形中心等整圈扫完再淡入。「首次出现」按数据层认：显示过的场景里一个数据
+// 标记都没有（数据晚于尺寸到达，比如 Web Components 连上之后才赋 data、异步取数），数据到来仍播入场，
+// 空态里已画出的坐标轴与网格从原处过渡，不重新淡入；场景里还没有数据标记时不播。之后的数据变化与图例切换按「更新」插值：
 // 留下的标记从当前位置走到新位置，新增的从基线出现，删掉的收回基线并淡出。各图表交给内核的数
 // （如环形中心的合计）随过渡从旧值滚到新值。尺寸、度量与字体换了不算变化：在跑的过渡换个终点、
 // 时钟照走，不在跑就直接落到新场景。减弱动效下几何直接到位、数值直接到终值，只留淡入淡出；标记
@@ -70,7 +72,7 @@ export interface ChartTransitionRun {
   readonly options: TransitionOptions
   /** 这一轮是首次出现。 */
   readonly entry: boolean
-  /** 这一轮起跑前真正显示过的目标场景；首次出现为 null。 */
+  /** 新出现的标记相对哪一帧算：更新是起跑前显示过的目标场景，首次出现是空态里的坐标轴与网格，从未显示过为 null。 */
   readonly base: Scene | null
   readonly numbersFrom: ChartNumbers
   numbersTo: ChartNumbers
@@ -149,6 +151,15 @@ function dataMarkCount(scene: Scene): number {
   }
   visit(scene.layers.data)
   return count
+}
+
+/** 数据层里有没有画得出来的标记：没有数据的折线系列也留着一条没有点的线，它什么都不画。 */
+function drawsData(scene: Scene): boolean {
+  const drawn = (marks: readonly Mark[]): boolean => marks.some(mark =>
+    mark.kind === 'group'
+      ? drawn(mark.children)
+      : mark.kind === 'line' || mark.kind === 'area' ? mark.points.length > 0 : true)
+  return drawn(scene.layers.data)
 }
 
 /** 新场景里有、旧场景里没有的标记。 */
@@ -247,9 +258,20 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
     return
   }
 
+  // 正在显示的画面里没有画得出来的数据就是首次出现：数据先到还是后到，入场都是同一段
+  const displayed = state.frame?.scene ?? base
+  const entry = displayed == null || !drawsData(displayed)
+  // 还没有可画的数据：没有什么可入场的，空态直接显示
+  if (entry && !drawsData(target)) {
+    halt(state)
+    return
+  }
+  // 首次出现只沿用空态里画出的坐标轴与网格，数据层与标签层按从未显示过处理
+  const origin = entry && displayed != null
+    ? createScene({ version: 0, layers: { back: displayed.layers.back }, bounds: displayed.bounds })
+    : entry ? null : base
   const reduced = resolveMotionPreference(plot) === 'reduce' || dataMarkCount(target) > CHART_ANIMATION_MARK_LIMIT
   const motion = readMotion(plot)
-  const entry = base == null
   const stagger = options.stagger ? motionStaggerStep : 0
   const timing: TransitionOptions = reduced
     ? { duration: motion.duration('enter'), easing: motion.easing('enter'), reducedMotion: true }
@@ -263,11 +285,15 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
     state.setFrame(null)
     return
   }
-  const from = entry
-    ? (!reduced && options.entry ? options.entry(target) : createScene({ version: 0, layers: {}, bounds: target.bounds }))
-    : state.frame?.scene ?? base
+  const seed = entry && !reduced && options.entry ? options.entry(target) : createScene({ version: 0, layers: {}, bounds: target.bounds })
+  // 空态里已画出的坐标轴与网格从正在显示的位置过渡，入场只管数据层与标签层
+  const from = !entry
+    ? displayed!
+    : origin == null
+      ? seed
+      : createScene({ version: 0, layers: { back: origin.layers.back, data: seed.layers.data, front: seed.layers.front }, bounds: seed.bounds })
   const plan = planTransition(from, target, timing)
-  const entering = enteringKeys(base, target)
+  const entering = enteringKeys(origin, target)
 
   // 逐个出现的标记按描线或扫开的曲线换算时间比例：位置在 p 的标记，等进程走到 p 才出现
   const revealDuration = motion.duration('reveal')
@@ -293,7 +319,7 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
     revealAt: reveal?.(target) ?? NONE,
     options: timing,
     entry,
-    base,
+    base: origin,
     numbersFrom,
     numbersTo: state.numbers,
     hold,

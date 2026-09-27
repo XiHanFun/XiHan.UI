@@ -76,7 +76,7 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 - `format` 指定数值格式（数字格式或函数），标签、提示框、可及名与数据表共用；转化率固定写成一位小数的百分数。
 - 多张图接到同一个受控的 `activeKey` 上时，漏斗图按阶段名与其他图的类目对齐。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有阶段时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
-- 首次出现时各阶段从中线（`align="start"` 时从起始边）一起横向展开，标签与转化率淡入；之后的数据变化从当前宽度插值到新宽度。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
+- 首次出现时各阶段从中线（`align="start"` 时从起始边）一起横向展开，标签与转化率淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化从当前宽度插值到新宽度。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），阶段、标签与转化率由元素生成进去。
 - Web Components 侧的数据与数值格式只走 JS property；字段名、形状、对齐、方向、转化率、标签、色板与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
 
