@@ -54,8 +54,8 @@ const BridgeCapture = defineComponent({
         <XhTransferSearch placeholder="搜索待选权限" />
         <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
           <BridgeCapture side="source" :bridge="slot.collectionVirtualizer">
-            <XhTransferList style="overflow: visible; max-block-size: none">
-              <XhVirtualizerViewport style="block-size: 220px">
+            <XhTransferList>
+              <XhVirtualizerViewport>
                 <XhVirtualizerContent>
                   <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
                     <XhTransferItem :value="panelItems[virtualItem.index].value">
@@ -81,8 +81,8 @@ const BridgeCapture = defineComponent({
         <XhTransferSearch placeholder="搜索已选权限" />
         <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
           <BridgeCapture side="target" :bridge="slot.collectionVirtualizer">
-            <XhTransferList style="overflow: visible; max-block-size: none">
-              <XhVirtualizerViewport style="block-size: 220px">
+            <XhTransferList>
+              <XhVirtualizerViewport>
                 <XhVirtualizerContent>
                   <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
                     <XhTransferItem :value="panelItems[virtualItem.index].value">

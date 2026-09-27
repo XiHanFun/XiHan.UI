@@ -352,6 +352,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-readonly` | ''（条件成立时才出现） |
 | `list` | `data-side` | panel.side |
+| `list` | `data-xh-virtualized` | ''（条件成立时才出现） |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-side` | group.side |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
