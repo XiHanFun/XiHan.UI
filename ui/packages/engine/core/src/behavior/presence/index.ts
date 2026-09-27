@@ -30,6 +30,8 @@ export interface PresenceHandle extends Disposable {
   onExitComplete: (fn: () => void) => Cleanup
   /** 退场开始前（同步）调用；动画探测器在此申领租约。 */
   onBeforeExit: (fn: () => void) => Cleanup
+  /** 退场中途被重新打开时（同步、在租约结清之前）调用；动画探测器在此把进场的起点接到退场的当前值上。 */
+  onReenter: (fn: () => void) => Cleanup
   /** 适配器在 open 变化、且 data-state 已提交到 DOM 之后调用。 */
   update: (open: boolean) => void
 }
@@ -51,6 +53,7 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
   const leases = new Set<LeaseEntry>()
   const exitCompleteFns = new Set<() => void>()
   const beforeExitFns = new Set<() => void>()
+  const reenterFns = new Set<() => void>()
 
   function transition(e: PresenceEvent): void {
     const prev = state
@@ -94,6 +97,9 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
       return
     open = nextOpen
     if (open) {
+      if (leases.size > 0) {
+        for (const fn of reenterFns) fn()
+      }
       for (const l of leases) l.settle()
       leases.clear()
       transition('OPEN')
@@ -124,6 +130,10 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
       beforeExitFns.add(fn)
       return () => void beforeExitFns.delete(fn)
     },
+    onReenter(fn) {
+      reenterFns.add(fn)
+      return () => void reenterFns.delete(fn)
+    },
     update,
     dispose() {
       if (disposed)
@@ -133,6 +143,7 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
       leases.clear()
       exitCompleteFns.clear()
       beforeExitFns.clear()
+      reenterFns.clear()
     },
   }
 }

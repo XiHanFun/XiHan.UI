@@ -55,6 +55,26 @@ describe('createPresence', () => {
     expect(lease!.settled).toBe(true)
   })
 
+  it('onReenter 只在退场中途重开时触发，且先于租约结清', () => {
+    const p = createPresence({ open: true, onRenderedChange: () => {} })
+    let lease: ReturnType<typeof p.claimExit> | undefined
+    const seen: boolean[] = []
+    p.onBeforeExit(() => {
+      lease = p.claimExit('anim')
+    })
+    p.onReenter(() => seen.push(lease!.settled))
+
+    p.update(false)
+    p.update(true)
+    expect(seen, '退场中重开触发一次，此刻租约还没结清').toEqual([false])
+
+    // 退场播完、卸载之后再打开，不算打断
+    p.update(false)
+    lease!.done()
+    p.update(true)
+    expect(seen).toEqual([false])
+  })
+
   it('onExitComplete 在卸载时触发一次', () => {
     const done = vi.fn()
     const p = createPresence({ open: true, onRenderedChange: () => {} })

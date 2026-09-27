@@ -24,6 +24,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_toast-progress-steps', 'packages/engine/headless/src/toast/toast.connect.ts'],
   // 同一批新到条目的错开序号：条目到达的追踪写进条目的内联样式，皮肤只读
   ['--xh-_stagger-index', 'packages/engine/core/src/behavior/arrival/track-arrivals.ts'],
+  // 退场中途重开时进场的起点透明度：退场探测按退场播到的位置写进节点的内联样式，进场关键帧只读
+  ['--xh-_enter-from-opacity', 'packages/engine/core/src/behavior/presence/animation-end.ts'],
   // 叠放的一摞里各条的层深：堆叠控制器写进条目的内联样式，皮肤按它逐层算收拢比例
   ['--xh-_toast-depth', 'packages/engine/headless/src/toast/toast.stack.ts'],
   // 图表提示框的锚点坐标：连接层按数据或指针的位置写进提示框的内联样式，皮肤只读
