@@ -1,7 +1,7 @@
+import type { TabsVariant } from '@xihan-ui/headless'
 // 关闭钮与所属标签平级、紧跟其后，画面上要收进标签面的行尾：钮整个落在标签盒里、块向居中、行尾留白与块向留白相等，
 // 标签文字不被它压住，下一枚标签的起点与没有关闭钮时一样。几何只有真实 Chromium 算得出，jsdom 不算数。
 import type { App } from 'vue'
-import type { TabsVariant } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhTabsCloseTrigger, XhTabsContent, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
@@ -31,7 +31,7 @@ async function mount(opts: { orientation?: Orientation, variant?: TabsVariant, c
   document.body.append(host)
   app = createApp({
     render: () => h(XhTabsRoot, {
-      defaultValue: 'a',
+      'defaultValue': 'a',
       orientation,
       variant,
       dir,

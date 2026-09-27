@@ -39,7 +39,7 @@ export const XhTabsRoot = defineComponent({
     lazyMount: Boolean,
     /** 标签被选走后卸掉面板内容。 */
     unmountOnExit: Boolean,
-    translations:{ type: Object as PropType<TabsProps['translations']> },
+    translations: { type: Object as PropType<TabsProps['translations']> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
